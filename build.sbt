@@ -10,16 +10,17 @@ lazy val commonSettings = Seq(
 
 // ************** cmd util functions
 
-def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-cmdout.txt"): Unit = {
+def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-console.log"): Unit = {
   val cmd = Process(
     Seq("pdflatex","-halt-on-error", texFile.getName), 
     workDir
   )
   val cmdOutputFile =  workDir / texFile.getName.replace(".tex", stdOutSuffix) 
   // val bibtexCmd = Process(Seq("bibtex", texFile.getName.replace(".tex", ".aux")), workDir)
-  val exitValue = cmd.#>(cmdOutputFile).run.exitValue
-  if (exitValue != 0) 
+  val exitValue = cmd.#>(cmdOutputFile).#&&(cmd).#>(cmdOutputFile).run.exitValue  
+  if (exitValue != 0) {
     error(s"\n*** ERROR: pdflatex exit code: $exitValue\nSee pdflatex output in: $cmdOutputFile")
+  }
 }
 
 // ************** 
@@ -44,7 +45,8 @@ lazy val lectures = (project in file("lectures")).
     copylectures := {
       println(" ******* copying lectures pdf files *******") 
       val fromDir = file("lectures/src/latex")
-      val toDir = file("lectures")
+      val toDir = file("lectures/slides")
+      IO.createDirectory(toDir)
       val pdfFiles = (fromDir * "*.pdf").get
       for (pdfFile <- pdfFiles) {
         println(s" *** copy $pdfFile")
