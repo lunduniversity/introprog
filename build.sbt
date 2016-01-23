@@ -66,13 +66,13 @@ lazy val util = (project in file("util")).
 
 // *************** 
 
+
 lazy val labs = (project in file("labs")).
   settings(commonSettings: _*).
   settings(
     name := "labs",
     EclipseKeys.withSource := true
   )  
-  
 
 // ***********************************************************
 
