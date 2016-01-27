@@ -1,5 +1,5 @@
 | W   | Tema              | Förel   | Innehåll |
-|:----|:------------------|:--------|:-|
+|:----|:------------------|:--------|:--|
 | W01 | Introduktion      | F01 F02 | om kursen, sekvens, alternativ, repetition, abstraktion, programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, virtuell maskin, värde, uttryck, variabel, typ, tilldelning, alternativ, if, else, true, false |
 | W02 | Kodstrukturer     | F03 F04 | loop-strukturer: while-sats, for-sats, algoritm: min/max, Integer.MIN_VALUE, Integer.MAX_VALUE, Paket, import, filstruktur, jar, dokumentation, programlayout, JDK, konstanter vs föränderlighet, objektorientering, klasser, objekt, referensvariabler, referenstilldelning, anropa metoder, SimpleWindow |
 | W03 | Funktioner        | F05 F06 | parameter, returtyp, värdeandrop, namnanrop, aritmetik, logik, slumptal |
