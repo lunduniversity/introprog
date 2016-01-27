@@ -95,7 +95,7 @@ object plan extends App {
       heading.map(h => row(h).padTo(maxSize(h), ' ') ).mkString("| "," | "," |")  
 
     def markdownHeadingSeparatorRow = 
-      heading.map(maxSize).map(s => "|:-".padTo(s + 3, '-')).mkString("","","|\n")
+      heading.map(maxSize).map(s => "|:--".padTo(s + 3, '-')).mkString("","","|\n")
     
     lazy val toMarkdown: String = 
       heading.map(h => h.padTo(maxSize(h), ' ')).mkString("| "," | "," |\n") + 
@@ -103,7 +103,7 @@ object plan extends App {
         bodyMap.map(markdownBodyRow).mkString("\n")
     
     lazy val htmlHeadings = 
-      heading.map(head => """<td align="left">""" + head + "</td>").
+      heading.map(head => """<th align="left">""" + head + "</th>").
         mkString(s"""<tr class="header">\n""", "\n", "</tr>")
     
     def htmlBodyRow(row: RowMap) = 
