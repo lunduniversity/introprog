@@ -5,19 +5,19 @@ object plan extends App {
       "Introduktion"      -> 
           "om kursen, sekvens, alternativ, repetition, abstraktion, programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, virtuell maskin, värde, uttryck, variabel, typ, tilldelning, alternativ, if, else, true, false",
       "Kodstrukturer"       -> 
-          "loop-strukturer: while-sats, for-sats, algoritm: min/max, Integer.MIN_VALUE, Integer.MAX_VALUE, Paket, import, filstruktur, jar, dokumentation, programlayout, JDK, konstanter vs föränderlighet, objektorientering, klasser, objekt, referensvariabler, referenstilldelning, anropa metoder, SimpleWindow",
+          "loop-strukturer: while-sats, for-sats, algoritm: min/max, Integer.MIN_VALUE, Integer.MAX_VALUE, Paket, import, filstruktur, jar, dokumentation, programlayout, JDK, konstanter vs föränderlighet, objektorientering, klasser, objekt, referensvariabler, referenstilldelning, anropa metoder, SimpleFxWindow",
       "Funktioner"        -> "parameter, returtyp, värdeandrop, namnanrop, aritmetik, logik, slumptal",
-      "Typer"             -> "klasser, arv, typhärledning, polymorfism, likhet, equals",
+      "Typer, Arv"        -> "klasser, arv, typhärledning, polymorfism, likhet, equals, Any, AnyVal, AnyRef",
       "Datastrukturer"    -> "tupler, Array, Map, List, Vector, föränderlighet, iterering",
       "Sekvenser"         -> "vektoralgoritmer, min/max, strängar, filer, Scanner,utdata med System.out, indata med Scanner, matriser",
-      "Mönster"           -> "match, Option, try, catch, Try, unapply, rekursion",
-      "KONTROLLSKRIVNING" -> "",
+      "Mönster, Undantag" -> "match, Option, null, try, catch, Try, unapply, rekursion",
+      "KONTROLLSKRIVN." -> "",
+      "Java + Scala"      -> 
+          "skillnader mellan Scala och Java, autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, vektorer i Java,  for-sats i Java, java for-each i Java, scala.collection.JavaConversions",
       "Matriser"          -> "matriser, nästlade for-satser, designexempel: Tre-i-rad",
-      "Java"              -> 
-          "skillnader mellan Scala och Java, autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, vektorer i Java,  for-sats i Java, java for-each i Java",
       "Sortering"         -> "compareTo, binärsökning, insättningssortering, urvalssortering, komplexitet, sortering på plats",
+      "Web, Android"      -> "HTML, Javascript, css, Scala.js, Android",
       "Trådar"            -> "Thread, Future, synchronized",
-      "Plattformar"       -> "HTML, Javascript, css, Scala.js, Android",
       "Designexempel"     -> "",
       "Tentaträning"      -> "",
       "TENTAMEN"          -> ""
@@ -34,7 +34,7 @@ object plan extends App {
     lazy val lecturesOfWeek = 
       Vector("F01 F02","F03 F04","F05 F06","F07 F08","F09 F10", "F11 F12", "F13 F14", "--") ++
       Vector("F15 F16","F17 F18","F19 F20","F21 F22","F23 F24", "F25 F26", "F27 F28", "--")
-    lazy val exerciseOfWeek = "Ö01,Ö02,Ö03,Ö04,Ö05,Ö06,Ö07,--,Ö08,Ö09,Ö10,Ö11,Ö12,Ö13,Extenta,--,--".split(',').toVector
+    lazy val exerciseOfWeek = "Ö01,Ö02,Ö03,Ö04,Ö05,Ö06,Ö07,--,Ö08,Ö09,Ö10,Ö11,Ö12,Uppsamling,Extenta,--,--".split(',').toVector
     lazy val labOfWeek = "Lab01,--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab07,Lab08,Lab09,Lab10,Lab11,Inl.Uppg.,--,--,--".split(',').toVector
       
     case class Date(year: Int, month: Int, dayOfMonth: Int) { 
@@ -60,7 +60,7 @@ object plan extends App {
       "Lp V" -> periodWeek(w),
       "Tema" -> theme(w),
       "Förel" -> lecturesOfWeek(w),
-      "Övn" -> exerciseOfWeek(w), 
+      "Resurstid" -> exerciseOfWeek(w), 
       "Lab" -> labOfWeek(w),
       "Innehåll" -> themeContentsOf(theme(w))
     )
@@ -69,7 +69,7 @@ object plan extends App {
   }
 
   object weekPlan extends Plan with Table {
-    lazy val heading = Seq("W", "Datum", "Lp V", "Tema", "Förel", "Övn", "Lab")
+    lazy val heading = Seq("W", "Datum", "Lp V", "Tema", "Förel", "Resurstid", "Lab")
   }
   
   object lecturePlan extends Plan with Table {
@@ -134,7 +134,7 @@ object plan extends App {
           |${bodyMap.map(latexBodyRow).mkString("\n")}
           |\\end{tabular}
           |""".stripMargin
-            }
+  }
 
   implicit class StringSaver(contents: String) {
     import java.nio.file.{Paths, Files}
