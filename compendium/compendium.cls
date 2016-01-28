@@ -7,6 +7,7 @@
 \usepackage{geometry} % to change margins:
 \geometry{hmargin={4.5cm,2.5cm}}
 \geometry{vmargin={3cm,3cm}}
+\usepackage{marginnote}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -41,8 +42,9 @@
 \noindent{\bf Uppgift~\arabic{TaskCounter}.~}%
 }
 
-\newcommand\TaskComputer{\Task{\footnotesize\smallpencil}~}
-\newcommand\TaskPencil{\Task{\hskip0.5mm\Large\Keyboard\hskip1.5mm}}
+\newcommand\TaskPencil{\Task{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}}
+%\newcommand\TaskComputer{\Task{\hskip0.5mm\Large\Keyboard\hskip1.5mm}}
+\newcommand\TaskComputer{\Task{\reversemarginpar\marginnote{\Large\Keyboard}[0cm]}}
 
 \usepackage{xcolor}
 
@@ -88,7 +90,6 @@
 
 
 \lstset{
-    language=Java, 
     basicstyle=\ttfamily\scriptsize\selectfont,
     keywordstyle=\bfseries\color{eclipsepurple},
     commentstyle=\color{mygreen},
@@ -96,11 +97,10 @@
     numbers=none,
     backgroundcolor=\color{gray!10},
     frame=single,
-    tabsize=4,
     rulecolor=\color{black!20},
     %title={\footnotesize\lstname},
-  breaklines=false,
-  breakatwhitespace=false,
+    breaklines=false,
+    breakatwhitespace=false,
     framextopmargin=2pt,
     framexbottommargin=2pt,
     showstringspaces=false,
@@ -122,6 +122,44 @@
 {Æ}{{\AE}}1
 {Ø}{{\O}}1
 }
+
+%  http://tex.stackexchange.com/questions/16654/newenvironment-newcommand-for-existing-environment-in-latex-beamer
+\lstnewenvironment{ClassSpec}[2][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{6}{7}\selectfont,%
+            backgroundcolor=,rulecolor=\color{black}, title={\texttt{\textcolor{blue}{\textbf{#2}}}}, frameround=tttt,language=,#1}%
+}{}
+
+\lstnewenvironment{Code}[1][]{%
+    \lstset{
+      language=Java,%
+      tabsize=4,
+      #1}%
+}{}
+
+\lstnewenvironment{Scala}[1][]{%
+    \lstset{
+      language=Java,%
+      tabsize=2,
+      #1}%
+}{}
+
+\lstnewenvironment{REPL}[1][]{%
+    \lstset{
+      basicstyle=\color{white}\ttfamily\scriptsize\selectfont,      
+      language=,%
+      tabsize=2,
+      backgroundcolor=\color{black!80},
+      frame=single,
+      #1}%
+}{}
+
+\lstnewenvironment{Java}[1][]{%
+    \lstset{
+      language=Java,%
+      tabsize=4,
+      #1}%
+}{}
+
 
 %http://tex.stackexchange.com/questions/203105/short-section-name-in-toc
 %\usepackage{etoolbox}
