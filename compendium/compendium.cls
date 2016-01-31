@@ -43,8 +43,7 @@
 }
 
 \newcommand\TaskPencil{\Task{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}}
-%\newcommand\TaskComputer{\Task{\hskip0.5mm\Large\Keyboard\hskip1.5mm}}
-\newcommand\TaskComputer{\Task{\reversemarginpar\marginnote{\Large\Keyboard}[0cm]}}
+%\newcommand\TaskComputer{\Task{\reversemarginpar\marginnote{\Large\Keyboard}[0cm]}}
 
 \usepackage{xcolor}
 
