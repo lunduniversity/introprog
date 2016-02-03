@@ -26,7 +26,7 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
 // ************** 
 
 lazy val pdflectures = taskKey[Unit]("Compile lectures in latex into pdf")
-lazy val copylectures = taskKey[Unit]("Copy lectures in pdf from src to top project level")
+lazy val copylectures = taskKey[Unit]("Copy lectures in pdf from src to lectures/slides")
 
 lazy val lectures = (project in file("lectures")).
   settings(commonSettings: _*).
@@ -56,21 +56,10 @@ lazy val lectures = (project in file("lectures")).
 )
 
 
-// *************** 
-
-lazy val util = (project in file("util")).
+lazy val workspace = (project in file("workspace")).
   settings(commonSettings: _*).
   settings(
-    name := "util"
-  )
-
-// *************** 
-
-
-lazy val labs = (project in file("labs")).
-  settings(commonSettings: _*).
-  settings(
-    name := "labs",
+    name := "workspace",
     EclipseKeys.withSource := true
   )  
 
