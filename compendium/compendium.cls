@@ -33,17 +33,7 @@
 \usepackage{sectsty} %change font on headings
 \allsectionsfont{\sffamily}
 
-\usepackage{marvosym,dingbat}
-
-\newcounter{TaskCounter}[section]
-\newcommand{\Task}{%
-\refstepcounter{TaskCounter}% 
-\ifnum\value{TaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
-\noindent{\bf Uppgift~\arabic{TaskCounter}.~}%
-}
-
-\newcommand\TaskPencil{\Task{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}}
-%\newcommand\TaskComputer{\Task{\reversemarginpar\marginnote{\Large\Keyboard}[0cm]}}
+\usepackage{marvosym,dingbat,amssymb}
 
 \usepackage{xcolor}
 
@@ -84,9 +74,41 @@
 \newcommand{\Emph}[1]{\textcolor{blue}{\textbf{#1}}}
 \newcommand{\Alert}[1]{\textcolor{red}{\textbf{#1}}}
 \newcommand{\Eng}[1]{(eng. {\textit{#1}})}
-\newcommand{\Key}[1]{\textcolor{eclipsepurple}{\textbf{\texttt{#1}}}}
+\newcommand{\key}[1]{\textcolor{eclipsepurple}{\textbf{\texttt{#1}}}}
 \newcommand{\code}{\lstinline[basicstyle=\ttfamily]}
 
+\newcommand{\ChapterUnnum}[1]{\chapter*{#1}\addcontentsline{toc}{chapter}{#1}}
+\newcommand{\SectionUnnum}[1]{\section*{#1}\addcontentsline{toc}{section}{#1}}
+\newcommand{\Exercise}[1]{\newpage\section{Övning: #1}}
+\newcommand{\Lab}[1]{\newpage\section{Laboration: #1}}
+\newcommand{\BasicTasks}{\subsection{Grundläggande uppgifter}}
+\newcommand{\ExtraTasks}{\subsection{Extrauppgifter: öva mer på grunderna}}
+\newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter: avancerad nivå}}
+\newcommand{\TaskSection}[1]{\subsubsection{#1}}
+
+\newcounter{TaskCounter}[section]
+\newcommand{\Task}{%
+\refstepcounter{TaskCounter}% 
+\ifnum\value{TaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
+\noindent{\bf Uppgift~\arabic{TaskCounter}.~}%
+}
+\newcommand\TaskPen{\Task{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}}
+
+\newcounter{SubtaskCounter}[TaskCounter]
+\newcommand{\Subtask}{%
+\refstepcounter{SubtaskCounter}% 
+\vspace{1em}%\ifnum\value{SubtaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
+\noindent{\noindent\alph{SubtaskCounter})~}%
+}
+
+
+\newenvironment{Goals}%
+{\subsubsection{Mål}\begin{itemize}[nosep]}%
+{\end{itemize}}
+
+\newenvironment{Preparations}%
+{\subsubsection{Förberedelser}\begin{itemize}[nosep]}%
+{\end{itemize}}
 
 \lstset{
     basicstyle=\ttfamily\scriptsize\selectfont,
