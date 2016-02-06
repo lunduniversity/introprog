@@ -23,11 +23,13 @@ object Main extends App {
   val weeks = (0 to 6) ++ (8 to 14)
   for (w <- weeks) {
     def toLatexItem(s: String) = s"\\item ${s.trim}\n"
+    val chapter    = "\\chapter{" + modulePlan.column("Modul")(w) + "}\n"
     val concepts   = modulePlan.column("Innehåll")(w).split(',').toVector
-    val latexItems = concepts.map(toLatexItem).mkString.trim 
+    val items      = concepts.map(toLatexItem).mkString.trim 
+    val result     = chapter + "\\begin{itemize}[nosep]\n" + items + "\\end{itemize}"
     val weekName   = modulePlan.column("W")(w).toLowerCase
-    val fileName   = s"../compendium/generated/$weekName-concepts-generated.tex"
-    latexItems.save(fileName)
+    val fileName   = s"../compendium/generated/$weekName-chaphead-generated.tex"
+    result.save(fileName)
     //println("\n" + fileName + "\n" + latexItems)
   }
 }
