@@ -12,7 +12,7 @@ trait Plan {
   lazy val modules: Seq[Module] = Vector(
     
     Module("Introduktion", 
-      id = "intro", exercise = "", lab = "textgame", contents = """
+      id = "intro", exercise = "hello", lab = "textgame", contents = """
       | om kursen, sekvens, alternativ, repetition, abstraktion, 
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, val, var,  
@@ -20,7 +20,7 @@ trait Plan {
       """.stripTrim),
       
     Module("Kodstrukturer", 
-      id = "codestruct", exercise = "", lab = "", contents = """
+      id = "codestruct", exercise = "code", lab = "", contents = """
       | while-sats, for-sats, algoritm: min/max, MIN_VALUE, MAX_VALUE, 
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
       | konstanter vs föränderlighet, objektorientering, klasser, objekt, 
@@ -29,7 +29,7 @@ trait Plan {
       """.stripTrim),
       
     Module("Funktioner, Objekt", 
-      id = "funobj", exercise = "", lab = "IDE", contents = """
+      id = "funobj", exercise = "fun", lab = "turtledraw", contents = """
       | parameter, returtyp, värdeandrop, namnanrop, namngivna parametrar,
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
       | objekt, modul, def, lazy val,  
@@ -37,26 +37,26 @@ trait Plan {
       """.stripTrim),
 
     Module("Datastrukturer", 
-      id = "data", exercise = "", lab = "", contents = """
+      id = "data", exercise = "data", lab = "complex", contents = """
       | tupler, case-klasser,
       | Array, Map, List, Vector, föränderlighet, iterering,
       | vektorer i Java vs Scala,
       """.stripTrim),
 
     Module("Vektoralgoritmer", 
-      id = "vect", exercise = "", lab = "", contents = """
+      id = "vect", exercise = "vector", lab = "cardgame", contents = """
       | vektoralgoritmer, min/max, strängar, filer, 
       | utdata med System.out, indata med Scanner, 
       """.stripTrim),
 
     Module("Klasser, Likhet", 
-      id = "classeq", exercise = "", lab = "", contents = """
+      id = "classeq", exercise = "class", lab = "shapes", contents = """
       | klasser, klassparameter, primär konstruktor, alternativa konstruktorer,
       | referenslikhet, strukturlikhet, eq vs ==, compareTo, 
       """.stripTrim),
 
     Module("Arv, Gränssnitt", 
-      id = "polymorf", exercise = "", lab = "", contents = """
+      id = "polymorf", exercise = "polymorf", lab = "turtlerace-T", contents = """
       | klasser, arv, polymorfism, likhet, equals, 
       | accessregler, private, public, protected, private[this],
       | trait, inmixning, 
@@ -66,18 +66,18 @@ trait Plan {
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
     Module("Mönster, Undantag", 
-      id = "pattern", exercise = "", lab = "", contents = """
+      id = "pattern", exercise = "match", lab = "mandelbrot", contents = """
       | match, Option, null, try, catch, Try, unapply, 
       """.stripTrim),
 
     Module("Matriser", 
-      id = "matrix", exercise = "", lab = "", contents = """
+      id = "matrix", exercise = "matrix", lab = "life", contents = """
       | matriser, nästlade for-satser, designexempel: Tre-i-rad, 
       | matriser i Java vs Scala, 
       """.stripTrim),
 
     Module("Sökning, Sortering", 
-      id = "sort", exercise = "", lab = "", contents = """
+      id = "sort", exercise = "sort", lab = "bank", contents = """
       | linjärsökning, binärsökning, 
       | insättningssortering, urvalssortering,
       | sortering till ny vektor, sortering på plats, 
@@ -85,7 +85,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Scala vs Java", 
-      id = "java", exercise = "", lab = "", contents = """
+      id = "scalajava", exercise = "scalajava", lab = "scalajava", contents = """
       | skillnader mellan Scala och Java, 
       | for-sats i Java, java for-each i Java, 
       | ArrayList<Integer>, scala.collection.JavaConversions, 
@@ -93,12 +93,12 @@ trait Plan {
       """.stripTrim),
 
     Module("Trådar, Web, Android", 
-      id = "thread", exercise = "", lab = "", contents = """
+      id = "thread", exercise = "thread", lab = "scalajs", contents = """
       | Thread, Future, HTML, Javascript, css, Scala.js, Android,
       """.stripTrim),
 
     Module("Designexempel", 
-      id = "design", exercise = "", lab = "", contents = """
+      id = "design", exercise = "design", lab = "imagefilter-T", contents = """
       """.stripTrim),
 
     Module("Tentaträning", 
@@ -135,9 +135,16 @@ trait Plan {
     else exerciseNumOfWeek(w)
   }
   
-  lazy val labOfWeek = 
+  lazy val labNumOfWeek = 
     "Lab01,--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab07,Lab08,Lab09,Lab10,Lab11,Inl.Uppg.,--,--,--".
        split(',').toVector
+
+  lazy val labOfWeek = for (w <- 0 until labNumOfWeek.size) yield {
+    if (labNumOfWeek(w).startsWith("L") && modules(w).lab != "")  
+      modules(w).lab
+    else labNumOfWeek(w)
+  }
+
     
   lazy val startLp1 = Date(2016, 8, 29) // Måndag 2016-Aug-29 
   
