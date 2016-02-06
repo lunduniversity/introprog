@@ -29,7 +29,7 @@ object Main extends App {
     val result     = chapter + "\\begin{itemize}[nosep]\n" + items + "\\end{itemize}"
     val weekName   = modulePlan.column("W")(w).toLowerCase
     val fileName   = s"../compendium/generated/$weekName-chaphead-generated.tex"
-    result.save(fileName)
+    result.latexEscape.save(fileName)
     //println("\n" + fileName + "\n" + latexItems)
   }
 }

@@ -16,7 +16,7 @@ trait Plan {
       | om kursen, sekvens, alternativ, repetition, abstraktion, 
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, val, var,  
-      | alternativ, if, else, true, false, logik, 
+      | alternativ, if, else, true, false, logik, block, namnsynlighet
       """.stripTrim),
       
     Module("Kodstrukturer", 
@@ -38,7 +38,7 @@ trait Plan {
 
     Module("Datastrukturer", 
       id = "data", exercise = "complex", lab = "files", contents = """
-      | tupler, case-klasser,
+      | tupler, case-klasser, case-object i Scala vs enum i java
       | Array, Map, List, Vector, föränderlighet, iterering,
       | vektorer i Java vs Scala,
       | filer, Source.fromFile, java.nio.file
