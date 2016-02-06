@@ -46,6 +46,8 @@
 \usepackage{amsmath,scalerel} %http://tex.stackexchange.com/questions/125523/is-there-a-bigcdot-symbol-in-latex
 \usepackage{longtable}
 \usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{titletoc}
 
 \usepackage[normalem]{ulem}  % for strikethrough: \sout{Hello World}
 
@@ -127,7 +129,6 @@
     showstringspaces=false,
 }
 \lstset{literate=%
-%swedish and german letters
 {Å}{{\AA}}1
 {Ä}{{\"A}}1
 {Ö}{{\"O}}1
@@ -137,14 +138,12 @@
 {å}{{\aa}}1
 {ä}{{\"a}}1
 {ö}{{\"o}}1
-%danish letters
 {æ}{{\ae}}1
 {ø}{{\o}}1
 {Æ}{{\AE}}1
 {Ø}{{\O}}1
 }
 
-%  http://tex.stackexchange.com/questions/16654/newenvironment-newcommand-for-existing-environment-in-latex-beamer
 \lstnewenvironment{ClassSpec}[2][]{%
     \lstset{basicstyle=\ttfamily\fontsize{6}{7}\selectfont,%
             backgroundcolor=,rulecolor=\color{black}, title={\texttt{\textcolor{blue}{\textbf{#2}}}}, frameround=tttt,language=,#1}%
@@ -181,16 +180,3 @@
       #1}%
 }{}
 
-
-%http://tex.stackexchange.com/questions/203105/short-section-name-in-toc
-%\usepackage{etoolbox}
-%\makeatletter
-% Insert [short title] for \section in ToC
-%\patchcmd{\beamer@section}{{#2}{\the\c@page}}{{#1}{\the\c@page}}{}{}
-% Insert [short title] for \section in Navigation
-%\patchcmd{\beamer@section}{{\the\c@section}{\secname}}{{\the\c@section}{#1}}{}{}
-% Insert [short title] for \subsection in ToC
-%\patchcmd{\beamer@subsection}{{#2}{\the\c@page}}{{#1}{\the\c@page}}{}{}
-% Insert [short title] for \subsection  in Navigation
-%\patchcmd{\beamer@subsection}{{\the\c@subsection}{#2}}{{\the\c@subsection}{#1}}{}{}
-%\makeatother
