@@ -3,33 +3,31 @@ object Main extends App {
   import StringExtras._
 
   object weekPlan extends Plan with Table {
-    lazy val heading = Seq("W", "Datum", "Lp V", "Modul", "Förel", "Resurstid", "Lab")
+    override val heading = 
+      Seq("W", "Datum", "Lp V", "Modul", "Förel", "Övn", "Lab")
   }
   
-  object lecturePlan extends Plan with Table {
-    lazy val heading = Seq("W", "Modul", "Förel", "Innehåll")
+  object modulePlan extends Plan with Table {
+    override val heading = Seq("W", "Modul", "Innehåll")
   }
   
-  object conceptList extends Plan with Table {
-    lazy val heading = Seq("Modul", "Innehåll")
-    def toItem(s: String) = s"\\item ${s.trim}\n"
-    def toLatexItems(module: String) = 
-      s"${moduleConceptsOfKey(module).map(toItem).mkString.trim}".stripMargin
-  }
- 
-  println("\n" + weekPlan.toMarkdown    + "\n")
-  println(       lecturePlan.toMarkdown + "\n")
+  println("\n" + weekPlan.toMarkdown   + "\n")
+  println(       modulePlan.toMarkdown + "\n")
   
-  weekPlan.   toMarkdown.save("weekplan-generated.md")
-  weekPlan.   toHtml    .save("weekplan-generated.html")
-  weekPlan.   toLatex   .save("weekplan-generated.tex")
-  lecturePlan.toMarkdown.save("lectureplan-generated.md")
-  lecturePlan.toHtml    .save("lectureplan-generated.html")
+  weekPlan.  toMarkdown.save("week-plan-generated.md")
+  weekPlan.  toHtml    .save("week-plan-generated.html")
+  weekPlan.  toLatex   .save("week-plan-generated.tex")
+  modulePlan.toMarkdown.save("module-plan-generated.md")
+  modulePlan.toHtml    .save("module-plan-generated.html")
   
-  for (w <- 1 to 7) {
-    val key = conceptList.moduleKeyOfIndex(w-1) 
-    val list = conceptList.toLatexItems(key)
-    val fileName = s"../compendium/generated/week0$w-concepts-generated.tex"
-    list.save(fileName)
+  val weeks = (0 to 6) ++ (8 to 14)
+  for (w <- weeks) {
+    def toLatexItem(s: String) = s"\\item ${s.trim}\n"
+    val concepts   = modulePlan.column("Innehåll")(w).split(',').toVector
+    val latexItems = concepts.map(toLatexItem).mkString.trim 
+    val weekName   = modulePlan.column("W")(w).toLowerCase
+    val fileName   = s"../compendium/generated/$weekName-concepts-generated.tex"
+    latexItems.save(fileName)
+    //println("\n" + fileName + "\n" + latexItems)
   }
 }
