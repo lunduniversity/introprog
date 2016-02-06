@@ -85,7 +85,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Scala vs Java", 
-      id = "scalajava", exercise = "scalajava", lab = "scalajava", contents = """
+      id = "scalajava", exercise = "scalajava", lab = "scalajava-T", contents = """
       | skillnader mellan Scala och Java, 
       | for-sats i Java, java for-each i Java, 
       | ArrayList<Integer>, scala.collection.JavaConversions, 
@@ -98,7 +98,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Designexempel", 
-      id = "design", exercise = "design", lab = "imagefilter-T", contents = """
+      id = "design", exercise = "design", lab = "", contents = """
       """.stripTrim),
 
     Module("Tentaträning", 
