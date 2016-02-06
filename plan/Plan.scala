@@ -37,16 +37,17 @@ trait Plan {
       """.stripTrim),
 
     Module("Datastrukturer", 
-      id = "data", exercise = "data", lab = "complex", contents = """
+      id = "data", exercise = "complex", lab = "files", contents = """
       | tupler, case-klasser,
       | Array, Map, List, Vector, föränderlighet, iterering,
       | vektorer i Java vs Scala,
+      | filer, Source.fromFile, java.nio.file
       """.stripTrim),
 
     Module("Vektoralgoritmer", 
       id = "vect", exercise = "vector", lab = "cardgame", contents = """
       | vektoralgoritmer, min/max, strängar, filer, 
-      | utdata med System.out, indata med Scanner, 
+      | java System.out.println, Scanner, 
       """.stripTrim),
 
     Module("Klasser, Likhet", 
@@ -56,7 +57,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Arv, Gränssnitt", 
-      id = "polymorf", exercise = "polymorf", lab = "turtlerace-T", contents = """
+      id = "polymorf", exercise = "trait", lab = "turtlerace-T", contents = """
       | klasser, arv, polymorfism, likhet, equals, 
       | accessregler, private, public, protected, private[this],
       | trait, inmixning, 
@@ -71,7 +72,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Matriser", 
-      id = "matrix", exercise = "matrix", lab = "life", contents = """
+      id = "matrix", exercise = "matrix", lab = "maze", contents = """
       | matriser, nästlade for-satser, designexempel: Tre-i-rad, 
       | matriser i Java vs Scala, 
       """.stripTrim),
@@ -93,7 +94,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Trådar, Web, Android", 
-      id = "thread", exercise = "thread", lab = "scalajs", contents = """
+      id = "thread", exercise = "thread", lab = "life", contents = """
       | Thread, Future, HTML, Javascript, css, Scala.js, Android,
       """.stripTrim),
 
@@ -106,7 +107,7 @@ trait Plan {
       """.stripTrim),
 
     Module(name = "TENTAMEN", id = "", exercise = "", lab = "", contents = "")
-    )
+  )
   
   lazy val contentsOfModule: Map[String, String] = 
     modules.map(m => (m.name, m.contents)).toMap
