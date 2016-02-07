@@ -1,6 +1,6 @@
-package lab01
+package lab_textgame
 
-import se.lth.cs.pt.window.SimpleWindow
+import cslib.window.SimpleWindow
 
 object hello { 
   def main(args: Array[String]): Unit = {
