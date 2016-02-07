@@ -4,7 +4,7 @@ import Keys._
 
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
-  version := "2016.0.1",
+  version := "16.1",
   scalaVersion := "2.11.7"
 )
 
