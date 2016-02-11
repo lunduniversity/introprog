@@ -12,7 +12,7 @@ trait Plan {
   lazy val modules: Seq[Module] = Vector(
     
     Module("Introduktion", 
-      id = "intro", exercise = "hello", lab = "textgame", contents = """
+      id = "intro", exercise = "expressions", lab = "textgame", contents = """
       | om kursen, sekvens, alternativ, repetition, abstraktion, 
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, val, var,  
@@ -20,7 +20,7 @@ trait Plan {
       """.stripTrim),
       
     Module("Kodstrukturer", 
-      id = "codestruct", exercise = "code", lab = "", contents = """
+      id = "codestruct", exercise = "statements", lab = "", contents = """
       | while-sats, for-sats, algoritm: min/max, MIN_VALUE, MAX_VALUE, 
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
       | konstanter vs föränderlighet, objektorientering, klasser, objekt, 
@@ -29,7 +29,7 @@ trait Plan {
       """.stripTrim),
       
     Module("Funktioner, Objekt", 
-      id = "funobj", exercise = "fun", lab = "turtledraw", contents = """
+      id = "funobj", exercise = "functions", lab = "turtledraw", contents = """
       | parameter, returtyp, värdeandrop, namnanrop, namngivna parametrar,
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
       | objekt, modul, def, lazy val,  
@@ -37,7 +37,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Datastrukturer", 
-      id = "data", exercise = "complex", lab = "files", contents = """
+      id = "data", exercise = "data", lab = "files", contents = """
       | tupler, case-klasser, case-object i Scala vs enum i java
       | Array, Map, List, Vector, föränderlighet, iterering,
       | vektorer i Java vs Scala,
@@ -45,19 +45,19 @@ trait Plan {
       """.stripTrim),
 
     Module("Vektoralgoritmer", 
-      id = "vect", exercise = "vector", lab = "cardgame", contents = """
+      id = "vect", exercise = "vectors", lab = "cardgame", contents = """
       | vektoralgoritmer, min/max, strängar, filer, 
       | java System.out.println, Scanner, 
       """.stripTrim),
 
     Module("Klasser, Likhet", 
-      id = "classeq", exercise = "class", lab = "shapes", contents = """
+      id = "classeq", exercise = "classes", lab = "shapes", contents = """
       | klasser, klassparameter, primär konstruktor, alternativa konstruktorer,
       | referenslikhet, strukturlikhet, eq vs ==, compareTo, 
       """.stripTrim),
 
     Module("Arv, Gränssnitt", 
-      id = "polymorf", exercise = "trait", lab = "turtlerace-T", contents = """
+      id = "polymorf", exercise = "traits", lab = "turtlerace-T", contents = """
       | klasser, arv, polymorfism, likhet, equals, 
       | accessregler, private, public, protected, private[this],
       | trait, inmixning, 
@@ -67,25 +67,25 @@ trait Plan {
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
     Module("Mönster, Undantag", 
-      id = "pattern", exercise = "match", lab = "mandelbrot", contents = """
+      id = "pattern", exercise = "matching", lab = "mandelbrot", contents = """
       | match, Option, null, try, catch, Try, unapply, 
       """.stripTrim),
 
     Module("Matriser", 
-      id = "matrix", exercise = "matrix", lab = "maze", contents = """
+      id = "matrix", exercise = "matrices", lab = "maze", contents = """
       | matriser, nästlade for-satser, designexempel: Tre-i-rad, 
       | matriser i Java vs Scala, 
       """.stripTrim),
 
     Module("Sökning, Sortering", 
-      id = "sort", exercise = "sort", lab = "bank", contents = """
+      id = "sort", exercise = "sorting", lab = "bank", contents = """
       | linjärsökning, binärsökning, 
       | insättningssortering, urvalssortering,
       | sortering till ny vektor, sortering på plats, 
       | algoritmisk komplexitet, 
       """.stripTrim),
 
-    Module("Scala vs Java", 
+    Module("Scala och Java", 
       id = "scalajava", exercise = "scalajava", lab = "scalajava-T", contents = """
       | skillnader mellan Scala och Java, 
       | for-sats i Java, java for-each i Java, 
@@ -94,11 +94,11 @@ trait Plan {
       """.stripTrim),
 
     Module("Trådar, Web, Android", 
-      id = "thread", exercise = "thread", lab = "life", contents = """
+      id = "thread", exercise = "threads", lab = "life", contents = """
       | Thread, Future, HTML, Javascript, css, Scala.js, Android,
       """.stripTrim),
 
-    Module("Designexempel", 
+    Module("Design", 
       id = "design", exercise = "design", lab = "", contents = """
       """.stripTrim),
 
@@ -127,7 +127,7 @@ trait Plan {
     Vector("F15 F16","F17 F18","F19 F20","F21 F22","F23 F24", "F25 F26", "F27 F28", "--")
 
   lazy val exerciseNumOfWeek = 
-    "Ö01,Ö02,Ö03,Ö04,Ö05,Ö06,Ö07,--,Ö08,Ö09,Ö10,Ö11,Ö12,Uppsaml.,Extenta,--,--".
+    "Ö01,Ö02,Ö03,Ö04,Ö05,Ö06,Ö07,--,Ö08,Ö09,Ö10,Ö11,Ö12,Uppsamling,Extenta,--,--".
       split(',').toVector
       
   lazy val exerciseOfWeek = for (w <- 0 until exerciseNumOfWeek.size) yield {
