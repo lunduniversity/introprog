@@ -13,7 +13,7 @@
 \usepackage[T1]{fontenc}
 
 %%% FONT PACKAGES
-\usepackage[scaled=0.95]{beramono} % inconsolata or beramono ???
+\usepackage[scaled=0.85]{beramono} % inconsolata or beramono ???
 \usepackage{fouriernc} % serif: new century schoolbook
 \usepackage{avant}     % sans serif: Avant Garde
 
@@ -113,7 +113,7 @@
 {\end{itemize}}
 
 \lstset{
-    basicstyle=\ttfamily\scriptsize\selectfont,
+    basicstyle=\ttfamily\selectfont,
     keywordstyle=\bfseries\color{eclipsepurple},
     commentstyle=\color{mygreen},
     numberstyle={\footnotesize},
@@ -165,7 +165,7 @@
 
 \lstnewenvironment{REPL}[1][]{%
     \lstset{
-      basicstyle=\color{white}\ttfamily\scriptsize\selectfont,      
+      basicstyle=\color{white}\ttfamily\fontsize{9}{10}\selectfont,      
       language=,%
       tabsize=2,
       backgroundcolor=\color{black!80},
@@ -179,4 +179,8 @@
       tabsize=4,
       #1}%
 }{}
+
+\newcommand{\scalainputlisting}[2][]{\lstinputlisting[%
+language=Java,%
+tabsize=2,#1]{#2}}
 
