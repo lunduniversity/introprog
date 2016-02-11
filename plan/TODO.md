@@ -43,6 +43,7 @@
 ## Beslut att fatta
 
 * Struktur på kompediet? Moduler Tema{Teori+Övn+Lab} eller separata delar?
+* Vilken collection ska vara favorit i början? Vector || List || Array 
 * Använda MCL:s bok?
 * Använda Ammonite?
 * Kompendiestruktur: Övningar+Labbar+Teori per kapitel eller olika delar?
@@ -53,6 +54,9 @@
 * Behålla samarbetsbonus på tentan?
 * Ska samarbetsbonusen få skapa godkänt betyg eller bara påverka betyg 4 och 5?
 * Scala 2.12?
+* Undersöka hur mycket man kan använda av följande webbresurser direkt eller delvis i kursen:
+  * http://www.tutorialspoint.com/scala/
+  * http://scala-ide.org/docs/current-user-doc/features/scaladebugger/index.html 
 
 ## Fattade beslut
 
