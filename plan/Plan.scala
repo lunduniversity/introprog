@@ -17,11 +17,12 @@ trait Plan {
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, val, var,  
       | alternativ, if, else, true, false, logik, MinValue, MaxValue, aritmetik
+      | logik, de Morgans lagar
       """.stripTrim),
       
     Module("Kodstrukturer", 
       id = "codestruct", exercise = "statements", lab = "", contents = """
-      | while-sats, for-sats, algoritm: min/max, , 
+      | while-sats, for-sats, algoritmer: min/max, summering, swap, 
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
       | konstanter vs föränderlighet, objektorientering, klasser, objekt, 
       | referensvariabler, referenstilldelning, anropa metoder, block, namnsynlighet
