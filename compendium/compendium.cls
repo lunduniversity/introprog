@@ -86,21 +86,23 @@
 \newcommand{\BasicTasks}{\subsection{Grundläggande uppgifter}}
 \newcommand{\ExtraTasks}{\subsection{Extrauppgifter: öva mer på grunderna}}
 \newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter: avancerad nivå}}
-\newcommand{\TaskSection}[1]{\subsubsection{#1}}
+\newcommand{\TaskSection}[1]{\subsubsection*{#1}}
 
 \newcounter{TaskCounter}[section]
 \newcommand{\Task}{%
 \refstepcounter{TaskCounter}% 
 \ifnum\value{TaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
-\noindent{\bf Uppgift~\arabic{TaskCounter}.~}%
+\pagebreak[1]\noindent{\bf Uppgift~\arabic{TaskCounter}.~}%
 }
 \newcommand\TaskPen{\Task{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}}
-
+\newcommand\Pen{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}
 \newcounter{SubtaskCounter}[TaskCounter]
-\newcommand{\Subtask}{%
-\refstepcounter{SubtaskCounter}% 
-\vspace{1em}%\ifnum\value{SubtaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
-\noindent{\noindent\alph{SubtaskCounter})~}%
+
+\newcommand{\Subtask}{\refstepcounter{SubtaskCounter}% 
+%\vspace{1em}%
+\ifnum\value{SubtaskCounter}>1\vspace{0.25em}\else\vspace{0.5em}\fi%
+{\pagebreak[0]\noindent
+\alph{SubtaskCounter})~}%
 }
 
 

@@ -16,15 +16,15 @@ trait Plan {
       | om kursen, sekvens, alternativ, repetition, abstraktion, 
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, val, var,  
-      | alternativ, if, else, true, false, logik, block, namnsynlighet
+      | alternativ, if, else, true, false, logik, MinValue, MaxValue, aritmetik
       """.stripTrim),
       
     Module("Kodstrukturer", 
       id = "codestruct", exercise = "statements", lab = "", contents = """
-      | while-sats, for-sats, algoritm: min/max, MIN_VALUE, MAX_VALUE, 
+      | while-sats, for-sats, algoritm: min/max, , 
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
       | konstanter vs föränderlighet, objektorientering, klasser, objekt, 
-      | referensvariabler, referenstilldelning, anropa metoder,
+      | referensvariabler, referenstilldelning, anropa metoder, block, namnsynlighet
       | SimpleWindow, 
       """.stripTrim),
       
@@ -40,7 +40,7 @@ trait Plan {
       id = "data", exercise = "data", lab = "files", contents = """
       | tupler, case-klasser, case-object i Scala vs enum i java
       | Array, Map, List, Vector, föränderlighet, iterering,
-      | vektorer i Java vs Scala,
+      | vektorer i Java vs Scala, Complex, Rational
       | filer, Source.fromFile, java.nio.file
       """.stripTrim),
 
@@ -51,9 +51,9 @@ trait Plan {
       """.stripTrim),
 
     Module("Klasser, Likhet", 
-      id = "classeq", exercise = "classes", lab = "shapes", contents = """
+      id = "classes", exercise = "classes", lab = "shapes", contents = """
       | klasser, klassparameter, primär konstruktor, alternativa konstruktorer,
-      | referenslikhet, strukturlikhet, eq vs ==, compareTo, 
+      | referenslikhet, strukturlikhet, eq vs ==, compareTo, Shape, Point, Rectangle
       """.stripTrim),
 
     Module("Arv, Gränssnitt", 
