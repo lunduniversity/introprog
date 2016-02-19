@@ -25,27 +25,27 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
 
 // ************** 
 
-lazy val pdflectures = taskKey[Unit]("Compile lectures in latex into pdf")
-lazy val copylectures = taskKey[Unit]("Copy lectures in pdf from src to lectures/slides")
+lazy val pdfslides = taskKey[Unit]("Compile slides in slides/latex using pdflatex")
+lazy val copyslides = taskKey[Unit]("Copy *.pdf from slides/latex to slides/pdf")
 
-lazy val lectures = (project in file("lectures")).
+lazy val slides = (project in file("slides")).
   settings(commonSettings: _*).
   settings(
-    name := "lectures",
+    name := "slides",
     EclipseKeys.skipProject := true,
-    pdflectures := { 
-      println(" ******* building pdflectures *******") 
-      val workDir = file("lectures/src/latex")
+    pdfslides := { 
+      println(" ******* compiling slides to pdf*******") 
+      val workDir = file("slides/latex")
       val texFiles = (workDir * "*.tex").get
       for (texFile <- texFiles) {
         println(s" *** pdflatex $texFile")
         runPdfLatexCmd(texFile, workDir)         
       } 
     },
-    copylectures := {
-      println(" ******* copying lectures pdf files *******") 
-      val fromDir = file("lectures/src/latex")
-      val toDir = file("lectures/slides")
+    copyslides := {
+      println(" ******* copying slides to pdf *******") 
+      val fromDir = file("slides/latex")
+      val toDir = file("slides/pdf")
       IO.createDirectory(toDir)
       val pdfFiles = (fromDir * "*.pdf").get
       for (pdfFile <- pdfFiles) {

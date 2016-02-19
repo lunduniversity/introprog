@@ -32,4 +32,15 @@ object Main extends App {
     result.latexEscape.save(fileName)
     //println("\n" + fileName + "\n" + latexItems)
   }
+  
+  def exerciseRow(s: String) = s"""\\ExeRow{$s}""" 
+  def labRow(s: String) = s"""\\LabRow{$s}""" 
+  def row(col: String) = weeks.map(weekPlan.column(col)(_)).filterNot(_ == "--")
+  val labs = row("Lab").map(labRow).mkString("\n")
+  println(labs)
+  labs.save("../compendium/generated/labs-generated.tex")
+  val exercises = row("Övn").filterNot(Set("Uppsamling","Extenta").contains(_)).map(exerciseRow).mkString("\n")
+  println(exercises)
+  exercises.save("../compendium/generated/exercises-generated.tex")
+
 }

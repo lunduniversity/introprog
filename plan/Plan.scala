@@ -12,7 +12,7 @@ trait Plan {
   lazy val modules: Seq[Module] = Vector(
     
     Module("Introduktion", 
-      id = "intro", exercise = "expressions", lab = "textgame", contents = """
+      id = "intro", exercise = "expressions", lab = "kojo", contents = """
       | om kursen, sekvens, alternativ, repetition, abstraktion, 
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, val, var,  
@@ -30,7 +30,7 @@ trait Plan {
       """.stripTrim),
       
     Module("Funktioner, Objekt", 
-      id = "funobj", exercise = "functions", lab = "turtledraw", contents = """
+      id = "funobj", exercise = "functions", lab = "simplewindow", contents = """
       | parameter, returtyp, värdeandrop, namnanrop, namngivna parametrar,
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
       | objekt, modul, def, lazy val,  
@@ -58,7 +58,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Arv, Gränssnitt", 
-      id = "polymorf", exercise = "traits", lab = "turtlerace-T", contents = """
+      id = "polymorf", exercise = "traits", lab = "turtlerace-team", contents = """
       | klasser, arv, polymorfism, likhet, equals, 
       | accessregler, private, public, protected, private[this],
       | trait, inmixning, 
@@ -68,7 +68,7 @@ trait Plan {
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
     Module("Mönster, Undantag", 
-      id = "pattern", exercise = "matching", lab = "mandelbrot", contents = """
+      id = "pattern", exercise = "matching", lab = "newlab-team", contents = """
       | match, Option, null, try, catch, Try, unapply, 
       """.stripTrim),
 
@@ -79,7 +79,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Sökning, Sortering", 
-      id = "sort", exercise = "sorting", lab = "bank", contents = """
+      id = "sort", exercise = "sorting", lab = "bank-team", contents = """
       | linjärsökning, binärsökning, 
       | insättningssortering, urvalssortering,
       | sortering till ny vektor, sortering på plats, 
@@ -87,7 +87,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Scala och Java", 
-      id = "scalajava", exercise = "scalajava", lab = "scalajava-T", contents = """
+      id = "scalajava", exercise = "scalajava", lab = "scalajava-team", contents = """
       | skillnader mellan Scala och Java, 
       | for-sats i Java, java for-each i Java, 
       | ArrayList<Integer>, scala.collection.JavaConversions, 
