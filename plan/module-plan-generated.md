@@ -1,7 +1,7 @@
 | W   | Modul                | Innehåll |
 |:----|:---------------------|:--|
-| W01 | Introduktion         | om kursen, sekvens, alternativ, repetition, abstraktion, programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, virtuell maskin, värde, uttryck, variabel, typ, tilldelning, val, var, alternativ, if, else, true, false, logik, MinValue, MaxValue, aritmetik |
-| W02 | Kodstrukturer        | while-sats, for-sats, algoritm: min/max, , paket, import, filstruktur, jar, dokumentation, programlayout, JDK, konstanter vs föränderlighet, objektorientering, klasser, objekt, referensvariabler, referenstilldelning, anropa metoder, block, namnsynlighet SimpleWindow |
+| W01 | Introduktion         | om kursen, sekvens, alternativ, repetition, abstraktion, programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, virtuell maskin, värde, uttryck, variabel, typ, tilldelning, val, var, alternativ, if, else, true, false, logik, MinValue, MaxValue, aritmetik logik, de Morgans lagar |
+| W02 | Kodstrukturer        | while-sats, for-sats, algoritmer: min/max, summering, swap, paket, import, filstruktur, jar, dokumentation, programlayout, JDK, konstanter vs föränderlighet, objektorientering, klasser, objekt, referensvariabler, referenstilldelning, anropa metoder, block, namnsynlighet SimpleWindow |
 | W03 | Funktioner, Objekt   | parameter, returtyp, värdeandrop, namnanrop, namngivna parametrar, aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, objekt, modul, def, lazy val, aritmetik, slumptal |
 | W04 | Datastrukturer       | tupler, case-klasser, case-object i Scala vs enum i java Array, Map, List, Vector, föränderlighet, iterering, vektorer i Java vs Scala, Complex, Rational filer, Source.fromFile, java.nio.file |
 | W05 | Vektoralgoritmer     | vektoralgoritmer, min/max, strängar, filer, java System.out.println, Scanner |
