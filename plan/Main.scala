@@ -11,14 +11,19 @@ object Main extends App {
     override val heading = Seq("W", "Modul", "Innehåll")
   }
   
-  println("\n" + weekPlan.toMarkdown   + "\n")
-  println(       modulePlan.toMarkdown + "\n")
+  object overview extends Plan with Table {
+    override val heading = Seq("W", "Modul", "Övn", "Lab")
+  }
+  
+  //println("\n" + weekPlan.toMarkdown   + "\n")
+  //println(       modulePlan.toMarkdown + "\n")
   
   weekPlan.  toMarkdown.save("week-plan-generated.md")
   weekPlan.  toHtml    .save("week-plan-generated.html")
   weekPlan.  toLatex   .save("week-plan-generated.tex")
   modulePlan.toMarkdown.save("module-plan-generated.md")
   modulePlan.toHtml    .save("module-plan-generated.html")
+  overview  .toLatex   .save("overview-generated.tex")
   
   val weeks = (0 to 6) ++ (8 to 14)
   for (w <- weeks) {
@@ -37,10 +42,10 @@ object Main extends App {
   def labRow(s: String) = s"""\\LabRow{$s}""" 
   def row(col: String) = weeks.map(weekPlan.column(col)(_)).filterNot(_ == "--")
   val labs = row("Lab").map(labRow).mkString("\n")
-  println(labs)
+  //println(labs)
   labs.save("../compendium/generated/labs-generated.tex")
   val exercises = row("Övn").filterNot(Set("Uppsamling","Extenta").contains(_)).map(exerciseRow).mkString("\n")
-  println(exercises)
+  //println(exercises)
   exercises.save("../compendium/generated/exercises-generated.tex")
 
 }
