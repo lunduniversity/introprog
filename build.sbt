@@ -35,7 +35,7 @@ lazy val slides = (project in file("slides")).
     EclipseKeys.skipProject := true,
     pdfslides := { 
       println(" ******* compiling slides to pdf*******") 
-      val workDir = file("slides/latex")
+      val workDir = file("slides")
       val texFiles = (workDir * "*.tex").get
       for (texFile <- texFiles) {
         println(s" *** pdflatex $texFile")
@@ -44,7 +44,7 @@ lazy val slides = (project in file("slides")).
     },
     copyslides := {
       println(" ******* copying slides to pdf *******") 
-      val fromDir = file("slides/latex")
+      val fromDir = file("slides")
       val toDir = file("slides/pdf")
       IO.createDirectory(toDir)
       val pdfFiles = (fromDir * "*.pdf").get
