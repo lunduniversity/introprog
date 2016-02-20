@@ -137,3 +137,9 @@
 % Insert [short title] for \subsection  in Navigation
 %\patchcmd{\beamer@subsection}{{\the\c@subsection}{#2}}{{\the\c@subsection}{#1}}{}{}
 %\makeatother
+
+
+\newif\ifkompendium
+\kompendiumfalse
+
+
