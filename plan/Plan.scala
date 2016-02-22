@@ -15,14 +15,14 @@ trait Plan {
       id = "intro", exercise = "expressions", lab = "kojo", contents = """
       | om kursen, sekvens, alternativ, repetition, abstraktion, 
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
-      | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, val, var,  
+      | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
       | alternativ, if, else, true, false, logik, MinValue, MaxValue, aritmetik
-      | logik, de Morgans lagar
+      | logik, de Morgans lagar, while-sats, algoritm: swap
       """.stripTrim),
       
     Module("Kodstrukturer", 
       id = "codestruct", exercise = "statements", lab = "", contents = """
-      | while-sats, for-sats, algoritmer: min/max, summering, swap, 
+      | samling: Range, for-sats, algoritm: min/max, algoritm: summering,  
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
       | konstanter vs föränderlighet, objektorientering, klasser, objekt, 
       | referensvariabler, referenstilldelning, anropa metoder, block, namnsynlighet
@@ -33,7 +33,7 @@ trait Plan {
       id = "funobj", exercise = "functions", lab = "simplewindow", contents = """
       | parameter, returtyp, värdeandrop, namnanrop, namngivna parametrar,
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
-      | objekt, modul, def, lazy val,  
+      | objekt, modul, lazy val,  
       | aritmetik, slumptal, 
       """.stripTrim),
 

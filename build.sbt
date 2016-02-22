@@ -26,7 +26,6 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
 // ************** 
 
 lazy val pdfslides = taskKey[Unit]("Compile slides in slides/latex using pdflatex")
-lazy val copyslides = taskKey[Unit]("Copy *.pdf from slides/latex to slides/pdf")
 
 lazy val slides = (project in file("slides")).
   settings(commonSettings: _*).
@@ -41,19 +40,8 @@ lazy val slides = (project in file("slides")).
         println(s" *** pdflatex $texFile")
         runPdfLatexCmd(texFile, workDir)         
       } 
-    },
-    copyslides := {
-      println(" ******* copying slides to pdf *******") 
-      val fromDir = file("slides")
-      val toDir = file("slides/pdf")
-      IO.createDirectory(toDir)
-      val pdfFiles = (fromDir * "*.pdf").get
-      for (pdfFile <- pdfFiles) {
-        println(s" *** copy $pdfFile")
-        IO.copyFile(pdfFile, toDir / pdfFile.getName)         
-      } 
     }
-)
+  )
 
 
 lazy val workspace = (project in file("workspace")).
@@ -62,6 +50,12 @@ lazy val workspace = (project in file("workspace")).
     name := "workspace",
     EclipseKeys.withSource := true
   )  
+  
+lazy val compendium =   (project in file("compendium")).
+  settings(commonSettings: _*).
+  settings(
+    name := "compendium"
+  )
 
 // ***********************************************************
 
