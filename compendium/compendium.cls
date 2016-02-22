@@ -94,15 +94,15 @@
 \ifnum\value{TaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
 \pagebreak[1]\noindent{\bf Uppgift~\arabic{TaskCounter}.~}%
 }
-\newcommand\TaskPen{\Task{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}}
+%\newcommand\TaskPen{\Task{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}}
 \newcommand\Pen{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}
 \newcounter{SubtaskCounter}[TaskCounter]
 
 \newcommand{\Subtask}{\refstepcounter{SubtaskCounter}% 
 %\vspace{1em}%
 \ifnum\value{SubtaskCounter}>1\vspace{0.25em}\else\vspace{0.5em}\fi%
-{\pagebreak[0]\noindent
-\alph{SubtaskCounter})~}%
+{\pagebreak[0]\noindent%%
+\alph{SubtaskCounter})\hspace{1em}\rlap{~}}%
 }
 
 
