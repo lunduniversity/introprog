@@ -1,10 +1,10 @@
 | W   | Modul                | Innehåll |
 |:----|:---------------------|:--|
-| W01 | Introduktion         | om kursen, sekvens, alternativ, repetition, abstraktion, programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, virtuell maskin, värde, uttryck, variabel, typ, tilldelning, val, var, alternativ, if, else, true, false, logik, MinValue, MaxValue, aritmetik logik, de Morgans lagar |
-| W02 | Kodstrukturer        | while-sats, for-sats, algoritmer: min/max, summering, swap, paket, import, filstruktur, jar, dokumentation, programlayout, JDK, konstanter vs föränderlighet, objektorientering, klasser, objekt, referensvariabler, referenstilldelning, anropa metoder, block, namnsynlighet SimpleWindow |
-| W03 | Funktioner, Objekt   | parameter, returtyp, värdeandrop, namnanrop, namngivna parametrar, aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, objekt, modul, def, lazy val, aritmetik, slumptal |
+| W01 | Introduktion         | om kursen, sekvens, alternativ, repetition, abstraktion, programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, virtuell maskin, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def, alternativ, if, else, true, false, MinValue, MaxValue, aritmetik logiska uttryck, de Morgans lagar, while-sats, for-sats |
+| W02 | Kodstrukturer        | samling: Range, for-uttryck, algoritm: swap, algoritm: min/max, algoritm: summering, paket, import, filstruktur, jar, dokumentation, programlayout, JDK, konstanter vs föränderlighet, objektorientering, klasser, objekt, referensvariabler, referenstilldelning, anropa metoder, block, namnsynlighet SimpleWindow |
+| W03 | Funktioner, Objekt   | parameter, returtyp, värdeandrop, namnanrop, namngivna parametrar, aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, objekt, modul, lazy val, aritmetik, slumptal |
 | W04 | Datastrukturer       | tupler, case-klasser, case-object i Scala vs enum i java Array, Map, List, Vector, föränderlighet, iterering, vektorer i Java vs Scala, Complex, Rational filer, Source.fromFile, java.nio.file |
-| W05 | Vektoralgoritmer     | vektoralgoritmer, min/max, strängar, filer, java System.out.println, Scanner |
+| W05 | Vektoralgoritmer     | vektoralgoritmer, min/max, strängar, registrering, java System.out.println, Scanner |
 | W06 | Klasser, Likhet      | klasser, klassparameter, primär konstruktor, alternativa konstruktorer, referenslikhet, strukturlikhet, eq vs ==, compareTo, Shape, Point, Rectangle |
 | W07 | Arv, Gränssnitt      | klasser, arv, polymorfism, likhet, equals, accessregler, private, public, protected, private[this], trait, inmixning, Any, AnyVal, AnyRef, Nothing |
 | KS  | KONTROLLSKRIVN.      |  |

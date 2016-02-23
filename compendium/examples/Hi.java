@@ -1,5 +1,6 @@
-public class Hi{
+// Hi.java
+public class Hi {
     public static void main(String[] args) {
-        System.out.println("hej Java");
+        System.out.println("Hej Java-app!");
     }
 }

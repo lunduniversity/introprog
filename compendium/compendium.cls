@@ -92,7 +92,7 @@
 \newcommand{\Task}{%
 \refstepcounter{TaskCounter}% 
 \ifnum\value{TaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
-\pagebreak[1]\noindent{\bf Uppgift~\arabic{TaskCounter}.~}%
+\pagebreak[1]\noindent{\Emph{Uppgift~\arabic{TaskCounter}.}~}%
 }
 %\newcommand\TaskPen{\Task{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}}
 \newcommand\Pen{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}
@@ -167,7 +167,7 @@
 
 \lstnewenvironment{REPL}[1][]{%
     \lstset{
-      basicstyle=\color{white}\ttfamily\fontsize{9}{10}\selectfont,      
+      basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
       language=,%
       tabsize=2,
       backgroundcolor=\color{black!80},
@@ -183,6 +183,10 @@
 }{}
 
 \newcommand{\scalainputlisting}[2][]{\lstinputlisting[%
+language=Java,%
+tabsize=2,#1]{#2}}
+
+\newcommand{\javainputlisting}[2][]{\lstinputlisting[%
 language=Java,%
 tabsize=2,#1]{#2}}
 

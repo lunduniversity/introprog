@@ -16,13 +16,13 @@ trait Plan {
       | om kursen, sekvens, alternativ, repetition, abstraktion, 
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
-      | alternativ, if, else, true, false, logik, MinValue, MaxValue, aritmetik
-      | logik, de Morgans lagar, while-sats, algoritm: swap
+      | alternativ, if, else, true, false, MinValue, MaxValue, aritmetik
+      | logiska uttryck, de Morgans lagar, while-sats, for-sats 
       """.stripTrim),
       
     Module("Kodstrukturer", 
       id = "codestruct", exercise = "statements", lab = "", contents = """
-      | samling: Range, for-sats, algoritm: min/max, algoritm: summering,  
+      | samling: Range, for-uttryck, algoritm: swap, algoritm: min/max, algoritm: summering,  
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
       | konstanter vs föränderlighet, objektorientering, klasser, objekt, 
       | referensvariabler, referenstilldelning, anropa metoder, block, namnsynlighet
@@ -47,7 +47,7 @@ trait Plan {
 
     Module("Vektoralgoritmer", 
       id = "vect", exercise = "vectors", lab = "cardgame", contents = """
-      | vektoralgoritmer, min/max, strängar, filer, 
+      | vektoralgoritmer, min/max, strängar, registrering,
       | java System.out.println, Scanner, 
       """.stripTrim),
 
@@ -79,7 +79,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Sökning, Sortering", 
-      id = "sort", exercise = "sorting", lab = "bank-team", contents = """
+      id = "sort", exercise = "sorting", lab = "surveydata-team", contents = """
       | linjärsökning, binärsökning, 
       | insättningssortering, urvalssortering,
       | sortering till ny vektor, sortering på plats, 
