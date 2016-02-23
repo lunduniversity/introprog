@@ -1,5 +1,5 @@
 object Hello {
   def main(args: Array[String]): Unit = {
-    println("hejsan appen")
+    println("Hej scala-app!")
   }
 }
