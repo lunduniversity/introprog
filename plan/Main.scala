@@ -139,6 +139,35 @@ object Main extends App {
     """.stripMargin
 
     val templateSol = s"""
+      |%!TEX root = ../compendium.tex
+      |
+      |\\ExerciseSolution{\\ExeWeek${weekNumAlpha(week)}}
+      |
+      |\\BasicTasks %%%%%%%%%%%
+      |
+      |\\Task 
+      |
+      |\\Subtask \\code{42}
+      |
+      |\\Subtask Lösningstext.
+      |
+      |
+      |\\ExtraTasks %%%%%%%%%%%%
+      |
+      |\\Task 
+      |
+      |\\Subtask \\code{42}
+      |
+      |\\Subtask Lösningstext.
+      |
+      |
+      |\\AdvancedTasks %%%%%%%%%
+      |
+      |\\Task 
+      |
+      |\\Subtask \\code{42}
+      |
+      |\\Subtask Lösningstext.
     """.stripMargin
         
     val prefix = "../compendium/modules"
@@ -156,7 +185,7 @@ object Main extends App {
     create(chap,templateChap, true)
     create(exe, templateExe, weekPlan.exerciseNumOfWeek(week).startsWith("Ö"))
     create(lab, templateLab, weekPlan.labNumOfWeek(week).startsWith("L"))
-    create(sol, "", weekPlan.exerciseNumOfWeek(week).startsWith("Ö"))  
+    create(sol, templateSol, weekPlan.exerciseNumOfWeek(week).startsWith("Ö"))  
   }
   
   weeks.drop(2).foreach(createFilesOfWeek)  //make sure not to overwrite files...
