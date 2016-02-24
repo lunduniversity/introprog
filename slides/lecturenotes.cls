@@ -69,6 +69,8 @@
 \centering\includegraphics[width=1.0\textwidth]{#2}
 }}
 
+\newcommand{\SlideOnly}[1]{#1}
+
 \newcommand{\vecka}{1}
 
 %http://tex.stackexchange.com/questions/104220/beamer-tableofcontents-does-not-display-the-correct-section-number-after-setco

@@ -81,9 +81,10 @@
 
 \newcommand{\ChapterUnnum}[1]{\chapter*{#1}\addcontentsline{toc}{chapter}{#1}}
 \newcommand{\SectionUnnum}[1]{\section*{#1}\addcontentsline{toc}{section}{#1}}
-\newcommand{\Exercise}[1]{\newpage\section{Övning: #1}}
-\newcommand{\Lab}[1]{\newpage\section{Laboration: #1}}
-\newcommand{\BasicTasks}{\subsection{Grundläggande uppgifter}}
+\newcommand{\Exercise}[1]{\newpage\section{Övning: {\tt #1}}}
+\newcommand{\ExerciseSolution}[1]{\newpage\section{Lösningar till övning: {\tt #1}}}
+\newcommand{\Lab}[1]{\newpage\section{Laboration: {\tt #1}}}
+\newcommand{\BasicTasks}{\subsection{Grunduppgifter}}
 \newcommand{\ExtraTasks}{\subsection{Extrauppgifter: öva mer på grunderna}}
 \newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter: avancerad nivå}}
 \newcommand{\TaskSection}[1]{\subsubsection*{#1}}
