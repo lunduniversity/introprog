@@ -66,7 +66,7 @@ object Main extends App {
   val nameDefs = (for (w <- weeks) yield namesOfWeek(w)).mkString("\n")
   nameDefs.save("../compendium/generated/names-generated.tex")
   
-  // *** Generate dummy files if not exists
+  // *** Generate template files if not exists
   def isExistingPath(path: String) = {
     import java.nio.file.{Paths, Files}
     Files.exists(Paths.get(path))
@@ -74,6 +74,73 @@ object Main extends App {
   
   def createFilesOfWeek(week: Int): Unit = {
     val weekNum = weekPlan.column("W")(week).drop(1)
+    val templateChap = s"""
+      |%!TEX root = ../compendium.tex
+      |
+      |\\input{generated/w$weekNum-chaphead-generated.tex}
+    """.stripMargin
+    
+    val templateExe = s"""
+      |%!TEX root = ../compendium.tex
+      |
+      |\\Exercise{\\ExeWeek${weekNumAlpha(week)}}
+      |
+      |\\begin{Goals}
+      |\\item 
+      |\\end{Goals}
+      |
+      |\\begin{Preparations}
+      |\\item 
+      |\\end{Preparations}
+      |
+      |\\BasicTasks %%%%%%%%%%%%%%%%
+      |
+      |\\Task 
+      |
+      |\\Subtask 
+      |
+      |\\ExtraTasks %%%%%%%%%%%%%%%%%%%
+      |
+      |\\Task 
+      |
+      |\\AdvancedTasks %%%%%%%%%%%%%%%%%
+      |
+      |\\Task     
+    """.stripMargin
+    
+    val templateLab = s"""
+      |%!TEX root = ../compendium.tex
+      |
+      |\\Lab{\\LabWeek${weekNumAlpha(week)}}
+      |
+      |\\begin{Goals}
+      |\\item Att lära sig.
+      |\\end{Goals}
+      |
+      |\\begin{Preparations}
+      |\\item Att göra.
+      |\\end{Preparations}
+      |
+      |\\subsection{Obligatoriska uppgifter}
+      |
+      |\\Task En labbuppgiftsbeskrivning.
+      |
+      |\\Subtask En underuppgift.
+      |
+      |\\Subtask En underuppgift.
+      |
+      |\\subsection{Frivilliga extrauppgifter}
+      |
+      |\\Task En labbuppgiftsbeskrivning.
+      |
+      |\\Subtask En underuppgift.
+      |
+      |\\Subtask En underuppgift.
+    """.stripMargin
+
+    val templateSol = s"""
+    """.stripMargin
+        
     val prefix = "../compendium/modules"
     val (chap, exe, lab, sol) = (
       s"$prefix/w$weekNum-chapter.tex",
@@ -81,17 +148,18 @@ object Main extends App {
       s"$prefix/w$weekNum-lab.tex",
       s"$prefix/w$weekNum-solutions.tex"
     )
-    def create(fileName: String, data: String) = if (!isExistingPath(fileName)) {
-      println("Creating " + fileName)
-      //data.save(faleName)
+    def create(fileName: String, data: String, isNonEmpty: Boolean): Unit = { 
+      if (!isExistingPath(fileName)) {  // make dure not to overwrite a file
+        if (isNonEmpty) data.save(fileName) else "%%% EMPTY".save(fileName)
+      }
     }
-    create(chap,"")
-    create(exe, "")
-    create(lab, "")
-    create(sol, "")  
+    create(chap,templateChap, true)
+    create(exe, templateExe, weekPlan.exerciseNumOfWeek(week).startsWith("Ö"))
+    create(lab, templateLab, weekPlan.labNumOfWeek(week).startsWith("L"))
+    create(sol, "", weekPlan.exerciseNumOfWeek(week).startsWith("Ö"))  
   }
   
-  weeks.drop(2).foreach(createFilesOfWeek)
+  weeks.drop(2).foreach(createFilesOfWeek)  //make sure not to overwrite files...
   
 }
 
