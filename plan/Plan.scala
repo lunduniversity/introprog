@@ -12,8 +12,8 @@ trait Plan {
   lazy val modules: Seq[Module] = Vector(
     
     Module("Introduktion", 
-      id = "intro", exercise = "expressions", lab = "kojo", contents = """
-      | om kursen, sekvens, alternativ, repetition, abstraktion, 
+      id = "intro", exercise = "expressions", lab = "kojoturtle", contents = """
+      | sekvens, alternativ, repetition, abstraktion, programmeringsspråk,
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
       | alternativ, if, else, true, false, MinValue, MaxValue, aritmetik
@@ -21,7 +21,7 @@ trait Plan {
       """.stripTrim),
       
     Module("Kodstrukturer", 
-      id = "codestruct", exercise = "statements", lab = "", contents = """
+      id = "codestruct", exercise = "programs", lab = "", contents = """
       | samling: Range, for-uttryck, algoritm: swap, algoritm: min/max, algoritm: summering,  
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
       | konstanter vs föränderlighet, objektorientering, klasser, objekt, 
@@ -38,7 +38,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Datastrukturer", 
-      id = "data", exercise = "data", lab = "files", contents = """
+      id = "data", exercise = "data", lab = "textfiles", contents = """
       | tupler, case-klasser, case-object i Scala vs enum i java
       | Array, Map, List, Vector, föränderlighet, iterering,
       | vektorer i Java vs Scala, Complex, Rational
