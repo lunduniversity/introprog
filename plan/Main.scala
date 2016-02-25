@@ -30,7 +30,8 @@ object Main extends App {
   // *** Generate chapter heads with topics of each module
   for (w <- weeks) {
     def toLatexItem(s: String) = s"\\item ${s.trim}\n"
-    val chapter    = "\\chapter{" + modulePlan.column("Modul")(w) + "}\n"
+    val label      = "\\label{chapter:" + modulePlan.column("W")(w) + "}"
+    val chapter    = "\\chapter{" + modulePlan.column("Modul")(w) + s"}$label\n"
     val concepts   = modulePlan.column("Innehåll")(w).split(',').toVector
     val items      = concepts.map(toLatexItem).mkString.trim 
     val result     = chapter + "\\begin{itemize}[nosep]\n" + items + "\n\\end{itemize}"

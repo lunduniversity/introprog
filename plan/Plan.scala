@@ -16,7 +16,7 @@ trait Plan {
       | sekvens, alternativ, repetition, abstraktion, programmeringsspråk,
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
-      | alternativ, if, else, true, false, MinValue, MaxValue, aritmetik
+      | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random
       | logiska uttryck, de Morgans lagar, while-sats, for-sats 
       """.stripTrim),
       
