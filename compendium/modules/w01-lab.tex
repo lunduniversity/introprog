@@ -4,7 +4,11 @@
 
 \subsubsection{Mål}
 \begin{itemize}[nosep]
-\item Använda sekvens, alternativ, repetition, abstraktion.
+\item Kunna kombinera principerna sekvens, alternativ, repetition, och abstraktion i skapandet av egna program om minst 20 rader kod.
+\item Kunna förklara vad ett program gör i termer av sekvens, alternativ, repetition, och abstraktion.
+\item Kunna formatera egna program så att de blir lätta att läsa och förstå.
+\item Kunna genomföra upprepade varv i cykeln \emph{editera-exekvera-felsöka/förbättra} för att succesivt bygga upp allt mer utvecklade program. 
+\item Kunna identifiera liknande satser och utifrån dessa skapa återanvändbara abstraktioner.
 \end{itemize}
 
 \subsubsection{Förberedelser}
@@ -19,23 +23,120 @@
 
 \Task \textit{Sekvens}. 
 
-\Subtask Starta Kojo. Använd procedurerna \code{clear}, \code{forward} och \code{right} för att instruera sköldpaddan att rita en kvadrat.
+\Subtask Starta Kojo. Skriv in nedan program och tryck på den gröna play-knappen. Välj antingen svenska eller engelska. 
 
-\Subtask Ge \code{forward} en parameter så att kvadraten blir större.
+\begin{multicols}{2}
+\noindent Svenska:
+\begin{Code}
+sudda
 
-\Subtask Rita en triangel.
+fram; höger
+fram; vänster
+\end{Code}
+
+\columnbreak
+\noindent Engelska:
+\begin{Code}
+clear
+
+forward; right
+forward; left
+\end{Code}
+
+
+\end{multicols}
+
+\Subtask Prova att ändra på ordningen mellan satserna och använd den gula play-knappen  (programspårning) för att studera vad som händer.
+
+\Subtask Rita en kvadrat.
+
+\Subtask Ge \code{fram} (eller \code{forward}) en parameter så att kvadraten blir större.
+
+\Subtask Rita en triangel genom att ge lämplig vinkel som parameter till det kommando som orsakar vridningen av sköldpaddan.
 
 \Task \textit{Repetition}. 
 
 \Subtask Använd proceduren \code+repeat(4){ ??? }+ och rita en kvadrat.
 
-\Subtask Använd proceduren \code{setAnimationDelay} med lämplig parameter och öka antalet repetitioner så att sköldpaddan går ungefär hundra varv på 2 sekunder.
+\Subtask Använd proceduren \code{sakta} (eller \code{setAnimationDelay}) med lämplig parameter och öka antalet repetitioner så att sköldpaddan går ungefär hundra varv i kvadraten på 2 sekunder.
+
+\Task \textit{Abstraktion}. 
+
+\Task \textit{Alternativ}.
+
+\Task \textit{Tidmätning}. Hur snabb är din dator?
+
+\Subtask \label{task:timer} Skriv in koden nedan i Kojos editor och kör med den gröna play-knappen. Hur långt tid tar det för din dator att räkna till 4.4 miljarder?
+
+\begin{Code}
+object timer {
+  def now: Long = System.currentTimeMillis
+  var saved: Long = now
+  def elapsedMillis: Long = now - saved
+  def elapsedSeconds: Double = elapsedMillis / 1000.0
+  def reset: Unit = { saved = now }
+}
+
+// HUVUDPROGRAM:
+timer.reset
+var i = 0L
+while (i < 1e8.toLong) { i += 1 }
+val t = timer.elapsedSeconds
+println("Räknade till " + i + " på " + t + " sekunder.")
+\end{Code}
+
+\Subtask  Kör nedan Linux-kommandot upprepade gånger i ett terminalfönster. Med hur många MHz kör din dators klocka för tillfället? Prova medan du kör tidmätningen i Kojo.
+\begin{REPL}
+> lscpu | grep MHz
+\end{REPL}
+
+\Subtask Ändra i koden i uppgift \ref{task:timer}) så att \code{while}-loopen bara kör 5 gånger. Kör programmet med den \emph{gula} play-kappen. Scrolla i programspårningen och förklara vad som händer. Klicka på \code{CALL}-rutorna och se vilken rad som markeras i ditt program.
+
+\Subtask Lägg till koden nedan i ditt program och försök ta reda på ungefär hur långt din dator hinner räkna till på en sekund för \code{Long}- respektive \code{Int}-variabler. Använd den gröna play-knappen.
+\begin{Code}
+def timeLong(n: Long): Double = {
+  timer.reset
+  var i = 0L
+  while (i < n) { i += 1 }
+  timer.elapsedSeconds
+}
+
+def timeInt(n: Int): Double = {
+  timer.reset
+  var i = 0
+  while (i < n) { i += 1 }
+  timer.elapsedSeconds
+}
+
+def show(msg: String, sec: Double): Unit = {
+  print(msg + ": ")
+  println(sec + " seconds")
+}
+
+def report(n: Long): Unit = {
+  show("Long " + n, timeLong(n))
+  if (n <= Int.MaxValue) show("Int  " + n, timeInt(n.toInt))
+}
+
+// HUVUDPROGRAM, mätningar:
+
+report(Int.MaxValue)
+
+for (i <- 1 to 10) {
+  report(4.26e9.toLong)
+}
+\end{Code}
+
+\Subtask Hur mycket snabbare går det att räkna med \code{Int}-variabler jämfört med \code{Long}-variabler?
+
+ 
+
 
 \subsection{Frivilliga extrauppgifter}
 
-\Task Ladda ner och gör uppgifterna i dessa pdf-kompendier:
+\Task Ladda ner dessa pdf-kompendier och gör några uppgifter som du tycker verkar intressanta:
 
-\Subtask ''Uppdrag med Kojo'' som kan laddas ner här: \href{http://fileadmin.cs.lth.se/cs/Personal/Bjorn_Regnell/uppdrag.pdf}{http://www.lth.se/programmera}
+\Subtask ''Uppdrag med Kojo'' som kan laddas ner här:\\ \href{http://fileadmin.cs.lth.se/cs/Personal/Bjorn_Regnell/uppdrag.pdf}{fileadmin.cs.lth.se/cs/Personal/Bjorn\_Regnell/uppdrag.pdf}
 
 \Subtask ''Programming Fundamentals with Kojo'' som kan laddas ner här:\\
  \href{http://wiki.kogics.net/kojo-codeactive-books}{wiki.kogics.net/kojo-codeactive-books}

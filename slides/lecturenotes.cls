@@ -10,6 +10,15 @@
 
 \usepackage{xcolor}
 
+
+\definecolor{mygreen}{rgb}{0,0.5,0}
+\definecolor{mylinkcolor}{rgb}{0,0,0.6}
+\definecolor{myemphcolor}{rgb}{0,0.5,0.1}
+\definecolor{myalertcolor}{rgb}{0.5,0,0.1}
+\definecolor{eclipsepurple}{rgb}{0.5,0,0.25}
+\definecolor{eclipseblue}{rgb}{0.16,0,1.0}
+\definecolor{eclipsegreen}{rgb}{0,0.5,0}
+
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 %\usepackage{bera}
@@ -27,7 +36,7 @@
 \usepackage{xspace} %http://www.math.tamu.edu/~harold.boas/courses/math696/why-macros.html
 \usepackage{hyperref}
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
-\hypersetup{colorlinks=true,linkcolor=, linkbordercolor=, urlbordercolor=green!70!black, urlcolor=green!70!black, pdfborderstyle={/S/U/W 1}}
+\hypersetup{colorlinks=true,linkcolor=, linkbordercolor=, urlbordercolor=mylinkcolor, urlcolor=mylinkcolor, pdfborderstyle={/S/U/W 1}}
 
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning}
@@ -48,16 +57,6 @@
 \newenvironment{SlideSimple}[2][]
   {\begin{frame}[fragile,plain, environment=SlideSimple,#1]{#2}}
   {\end{frame}}  
-
-%  http://tex.stackexchange.com/questions/16654/newenvironment-newcommand-for-existing-environment-in-latex-beamer
-\lstnewenvironment{ClassSpec}[2][]{%
-    \lstset{basicstyle=\ttfamily\fontsize{6}{7}\selectfont,%
-            backgroundcolor=,rulecolor=\color{black}, title={\texttt{\textcolor{blue}{\textbf{#2}}}}, frameround=tttt,language=,#1}%
-}{}
-
-\lstnewenvironment{Code}[1][]{%
-    \lstset{basicstyle=\ttfamily\fontsize{7}{9}\selectfont,#1}%
-}{}
 
   
 \newcommand{\Subsection}[1]{\subsection{#1}\frame{\centering\huge\bfseries\textcolor{blue}{#1}}}
@@ -81,22 +80,39 @@
 \makeatother
 
 
-\definecolor{mygreen}{rgb}{0,0.6,0}
-\definecolor{eclipsepurple}{rgb}{0.5,0,0.25}
 
-\newcommand{\Emph}[1]{\textcolor{blue}{\textbf{#1}}}
-\newcommand{\Alert}[1]{\textcolor{red}{\textbf{#1}}}
+\newcommand{\Emph}[1]{\textcolor{myemphcolor}{\textbf{#1}}}
+\newcommand{\Alert}[1]{\textcolor{myalertcolor}{\textbf{#1}}}
 \newcommand{\Eng}[1]{(eng. {\textit{#1}})}
 \newcommand{\Key}[1]{\textcolor{eclipsepurple}{\textbf{\texttt{#1}}}}
 \newcommand{\code}{\lstinline[basicstyle=\ttfamily]}
 
 
+\lstdefinelanguage{Scala}{
+  morekeywords={abstract,case,catch,class,def,%
+    do,else,extends,false,final,finally,%
+    for,forSome,if,implicit,import,lazy,match,%
+    new,null,object,override,package,%
+    private,protected,return,sealed,%
+    super,this,throw,trait,true,try,%
+    type,val,var,while,with,yield},
+  otherkeywords={=>,<-,<\%,<:,>:,@},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[n]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]',
+  morestring=[b]"""
+}
+
+
 \lstset{
-    language=Java, 
+    language=Scala, 
     basicstyle=\ttfamily\scriptsize\selectfont,
     keywordstyle=\bfseries\color{eclipsepurple},
-    commentstyle=\color{mygreen},
+    commentstyle=\color{eclipsegreen},
     numberstyle={\footnotesize},
+    stringstyle=\color{eclipseblue},
     numbers=none,
     backgroundcolor=\color{gray!10},
     frame=single,
@@ -109,6 +125,7 @@
     framexbottommargin=2pt,
     showstringspaces=false,
 }
+
 \lstset{literate=%
 %swedish and german letters
 {Å}{{\AA}}1
@@ -140,6 +157,26 @@
 %\patchcmd{\beamer@subsection}{{\the\c@subsection}{#2}}{{\the\c@subsection}{#1}}{}{}
 %\makeatother
 
+
+%  http://tex.stackexchange.com/questions/16654/newenvironment-newcommand-for-existing-environment-in-latex-beamer
+\lstnewenvironment{ClassSpec}[2][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{6}{7}\selectfont,%
+            backgroundcolor=,rulecolor=\color{black}, title={\texttt{\textcolor{blue}{\textbf{#2}}}}, frameround=tttt,language=,otherkeywords={},#1}%
+}{}
+
+\lstnewenvironment{Code}[1][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{7}{9}\selectfont,#1}%
+}{}
+
+\lstnewenvironment{REPL}[1][]{%
+    \lstset{
+      basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
+      language=,otherkeywords={},%
+      tabsize=2,
+      backgroundcolor=\color{black!80},
+      frame=single,
+      #1}%
+}{}
 
 \newif\ifkompendium
 \kompendiumfalse

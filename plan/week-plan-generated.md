@@ -1,6 +1,6 @@
 | W   | Datum       | Lp V  | Modul                | Förel   | Övn         | Lab             |
 |:----|:------------|:------|:---------------------|:--------|:------------|:----------------|
-| W01 | 29/8-2/9    | Lp1V1 | Introduktion         | F01 F02 | expressions | kojoturtle      |
+| W01 | 29/8-2/9    | Lp1V1 | Introduktion         | F01 F02 | expressions | kojo            |
 | W02 | 5/9-9/9     | Lp1V2 | Kodstrukturer        | F03 F04 | programs    | --              |
 | W03 | 12/9-16/9   | Lp1V3 | Funktioner, Objekt   | F05 F06 | functions   | simplewindow    |
 | W04 | 19/9-23/9   | Lp1V4 | Datastrukturer       | F07 F08 | data        | textfiles       |
