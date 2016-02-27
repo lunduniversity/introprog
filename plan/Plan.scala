@@ -12,7 +12,7 @@ trait Plan {
   lazy val modules: Seq[Module] = Vector(
     
     Module("Introduktion", 
-      id = "intro", exercise = "expressions", lab = "kojoturtle", contents = """
+      id = "intro", exercise = "expressions", lab = "kojo", contents = """
       | sekvens, alternativ, repetition, abstraktion, programmeringsspråk,
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
@@ -22,10 +22,13 @@ trait Plan {
       
     Module("Kodstrukturer", 
       id = "codestruct", exercise = "programs", lab = "", contents = """
-      | samling: Range, for-uttryck, algoritm: swap, algoritm: min/max, algoritm: summering,  
+      | samling: Range, for-uttryck, map, foreach, flatMap,
+      | algoritm vs implementation, pseudokod, 
+      | algoritm: swap, algoritm: summering, algoritm: min/max,  
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
-      | konstanter vs föränderlighet, objektorientering, klasser, objekt, 
-      | referensvariabler, referenstilldelning, anropa metoder, block, namnsynlighet
+      | konstanter vs föränderlighet, objektorientering, klasser, objekt, punktnotation, 
+      | referensvariabler, referenstilldelning, anropa metoder, block, 
+      | namnsynlighet, namnöverskuggning,
       | SimpleWindow, 
       """.stripTrim),
       

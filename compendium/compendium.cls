@@ -37,6 +37,14 @@
 
 \usepackage{xcolor}
 
+\definecolor{mygreen}{rgb}{0,0.4,0}
+\definecolor{mylinkcolor}{rgb}{0,0.1,0.5}
+\definecolor{myemphcolor}{rgb}{0,0.4,0.1}
+\definecolor{myalertcolor}{rgb}{0.4,0.1,0}
+\definecolor{eclipsepurple}{rgb}{0.5,0,0.25}
+\definecolor{eclipseblue}{rgb}{0.16,0,1.0}
+\definecolor{eclipsegreen}{rgb}{0,0.5,0}
+
 \usepackage{enumitem}
 
 \linespread{1.0} 
@@ -56,7 +64,7 @@
 \usepackage{xspace} %http://www.math.tamu.edu/~harold.boas/courses/math696/why-macros.html
 \usepackage[pdfpagelayout=TwoPageRight]{hyperref}
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
-\hypersetup{colorlinks=true,linkcolor=, linkbordercolor=, urlbordercolor=green!70!black, urlcolor=green!70!black, pdfborderstyle={/S/U/W 1}}
+\hypersetup{colorlinks=true,linkcolor=, linkbordercolor=, urlbordercolor=mylinkcolor, urlcolor=mylinkcolor, pdfborderstyle={/S/U/W 1}}
 
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning}
@@ -70,11 +78,8 @@
 \tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3cm, rectangle split, rectangle split parts = 3]
 \tikzstyle{umlarrow}=[->, >=open triangle 90, thick]
 
-\definecolor{mygreen}{rgb}{0,0.6,0}
-\definecolor{eclipsepurple}{rgb}{0.5,0,0.25}
-
-\newcommand{\Emph}[1]{\textcolor{blue}{\textbf{#1}}}
-\newcommand{\Alert}[1]{\textcolor{red}{\textbf{#1}}}
+\newcommand{\Emph}[1]{\textcolor{myemphcolor}{\textbf{#1}}}
+\newcommand{\Alert}[1]{\textcolor{myalertcolor}{\textbf{#1}}}
 \newcommand{\Eng}[1]{(eng. {\textit{#1}})}
 \newcommand{\key}[1]{\textcolor{eclipsepurple}{\textbf{\texttt{#1}}}}
 \newcommand{\code}{\lstinline[basicstyle=\ttfamily]}
@@ -105,7 +110,7 @@
 {\pagebreak[0]\noindent%%
 \alph{SubtaskCounter})\hspace{1em}\rlap{~}}%
 }
-
+\renewcommand{\theSubtaskCounter}{\alph{SubtaskCounter}}
 
 \newenvironment{Goals}%
 {\subsubsection{Mål}\begin{itemize}[nosep]}%
@@ -115,7 +120,28 @@
 {\subsubsection{Förberedelser}\begin{itemize}[nosep]}%
 {\end{itemize}}
 
+
+\lstdefinelanguage{Scala}{
+  morekeywords={abstract,case,catch,class,def,%
+    do,else,extends,false,final,finally,%
+    for,forSome,if,implicit,import,lazy,match,%
+    new,null,object,override,package,%
+    private,protected,return,sealed,%
+    super,this,throw,trait,true,try,%
+    type,val,var,while,with,yield},
+  otherkeywords={=>,<-,<\%,<:,>:,@},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[n]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]',
+  morestring=[b]"""
+}
+
+
 \lstset{
+    language=Scala,
+    tabsize=2,
     basicstyle=\ttfamily\selectfont,
     keywordstyle=\bfseries\color{eclipsepurple},
     commentstyle=\color{mygreen},
@@ -148,46 +174,29 @@
 }
 
 \lstnewenvironment{ClassSpec}[2][]{%
-    \lstset{basicstyle=\ttfamily\fontsize{6}{7}\selectfont,%
-            backgroundcolor=,rulecolor=\color{black}, title={\texttt{\textcolor{blue}{\textbf{#2}}}}, frameround=tttt,language=,#1}%
+    \lstset{basicstyle=\ttfamily\fontsize{9}{11}\selectfont,%
+            backgroundcolor=,rulecolor=\color{black}, title={\texttt{\textcolor{blue}{\textbf{#2}}}}, frameround=tttt,language=,otherkeywords={},#1}%
 }{}
 
 \lstnewenvironment{Code}[1][]{%
-    \lstset{
-      language=Java,%
-      tabsize=4,
-      #1}%
-}{}
-
-\lstnewenvironment{Scala}[1][]{%
-    \lstset{
-      language=Java,%
-      tabsize=2,
-      #1}%
+    \lstset{#1}%
 }{}
 
 \lstnewenvironment{REPL}[1][]{%
     \lstset{
       basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
-      language=,%
+      language=,otherkeywords={},%
       tabsize=2,
       backgroundcolor=\color{black!80},
       frame=single,
       #1}%
 }{}
 
-\lstnewenvironment{Java}[1][]{%
-    \lstset{
-      language=Java,%
-      tabsize=4,
-      #1}%
-}{}
-
 \newcommand{\scalainputlisting}[2][]{\lstinputlisting[%
-language=Java,%
+language=Scala,%
 tabsize=2,#1]{#2}}
 
 \newcommand{\javainputlisting}[2][]{\lstinputlisting[%
 language=Java,%
-tabsize=2,#1]{#2}}
+tabsize=4,#1]{#2}}
 
