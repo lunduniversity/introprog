@@ -1,64 +1,95 @@
 # TODO
 
-## Påbörjat
+## Started
 
-* Göra veckoplan med temainnehåll
-* Kompendium
-  * Teorikapitel
-  * Labbar
-  * Övningar
-  * Verktygskapitel
+* Make week plan and module plan with module contents fro each week
+* Compendium
+  * Theory slides and notes
+  * Labs
+  * Exercises
+  * Tool chapters
+  * Solutions to exercises
+  * etc
 
-## Ej påborjat
+## Pending 
 
-* Fastställa budged med Roger och Per
-* Föreläsningar
-* Utbilda handledare
-  * Göra google-forms-inbjudan
-  * Intervjua kandidater
-* Samaställa kursutvärderingsresultat och dra slutsatser
-* Utveckla gruppaktiviteter i första veckan
-* Fördela arbetet Maj/Gustav/Handledare
-* Göra institutionspresentation och bjud in alla lärare
+
+* Make lecture slides
+* Develop self study and training support for teaching assistants (TA) in Scala
+* Interview candidates for teaching assistants (TA)
+* Analyze and draw conclusions from CEQ
+* Develop team activities for collaboration teams for the first week
+* Distribute responsibilities among Maj/Gustav/TA
+  * Dev lead
+  * Test lead
 * Skapa stängt repo med labblösningar 
-* Kontakta Mark C. Lewis på Trinity Univ och fråga om erfarenheter
-* Installation av verktyg i källaren
-  * Packa ihop tar.gz med scalaide till per foreby (se mejl med instr.)
+* Talk to Mark C. Lewis at Trinity Univ about experiences with diverse student pre knowledge
+* Trigger install of tools on student computers
+  * Make zip with scalaide to sysadm 
   * http://wiki.eclipse.org/FAQ_How_do_I_increase_the_heap_size_available_to_Eclipse%3F 
-  * sbt?
   * ammonite?
-* Följa upp schemaremiss-svar
-* Skapa fiktiv kontrollskrivning
-* Skapa fiktiv extenta
-* Gästföreläsare
+* Follow up schedule requests implementation by schema@lth
+* Create fictitious chepoint exam (kontrollskrivning)
+* Create fictitious 
+* Find guest lecturers for the first weeks to stimulate student identification as becoming professional software engineers
 
-## Klart
+## Done
 
-* Skapa schemaremiss-svar och skicka till Roger
-* Skapa öppet repo på github
+* Make response to schedule inquiry to head of teaching
+* Create open repo at github
+* Present course plan to course leaders for feedback
+* Make budget proposal for course dev to head of department
+* Create basic structure for compendium
+* Create infrastructure to generate plans and compendium files
+* Create latex hacks to slurp slides from lectures into compendium
+* Make google-forms-invitation to teaching assistants
 
+# Decisions 
 
-# Beslut 
+## To Be Decided
 
-## Beslut att fatta
-
-* Struktur på kompediet? Moduler Tema{Teori+Övn+Lab} eller separata delar?
-* Vilken collection ska vara favorit i början? Vector || List || Array 
+* Decide on licensing for derivative material from previous course
 * Använda MCL:s bok?
-* Använda Ammonite?
-* Kompendiestruktur: Övningar+Labbar+Teori per kapitel eller olika delar?
-* Paketstruktur: cslib? eller se.lth.cs.pgk.
-* Källkodsfilstruktur: src/paket eller src/main/scala/paket
-* Fler grupplabbar?
-* Tidigarelägga första grupplabben?
-* Behålla samarbetsbonus på tentan?
-* Ska samarbetsbonusen få skapa godkänt betyg eller bara påverka betyg 4 och 5?
+* Use Ammonite?
+* CS lab lib dir structure in workspace: cslib or se.lth.cs.pgk.
+* Src dir structure in workspace: src/paket eller src/main/scala/paket
+* How many team labs?
+* When to place the first team lab?
+* Keep collaboration bonus to the exam?
+* Should collaboration bonus not affect approval and only higher grades?
 * Scala 2.12?
-* Undersöka hur mycket man kan använda av följande webbresurser direkt eller delvis i kursen:
+* Investigate if we can/should apply these tutorials in the course:
   * http://www.tutorialspoint.com/scala/
   * http://scala-ide.org/docs/current-user-doc/features/scaladebugger/index.html 
 
-## Fattade beslut
+## Decided
 
-* Använda sbt? JA
+* Language English or Swedish?
+  * **Swedish** for the body of the compendium and for lecture slides. *RATIONALE:* All students in the current course know Swedish; native speaking improves learning. Translation can come later.
+  * **English** for all other stuff in the repo and its documentation. *RATIONALE:* All contributors are assumed to know English. Prepare for translation contributions to English and other languages.
+
+* Structure of compendium? Integrated Modules Theme{Theory+Exercises+Labs} or separate parts for labs and exercises separated from the theory?
+  * **Integrated modules** *RATIONALE:*  Easier to follow each module as a trail of weeks.
+
+* Use sbt?
+  * **NO** for students on student machines; unclear how to centralize ivy cache 
+  * **YES** for the repo building process - teaching assistants use sbt to build the repo 
+  * **NO** for ScalaIDE - no good support for sbt in scalaide yet
+
+* Decide on licensing for new material
+  * **CC BY-SA** *RATIONALE:* Copy left license increase the chance of this repo to be useful by others and create most value out of tax payers money.
  
+ 
+* Which collection should be our favorite beginner collection? Vector || List || Array 
+  * **Vector**  *RATIONALE:*  Array is mutable and == does not work as expected and generic parameters need a context bound: [T : reflect.ClassTag]. Introduce Array later as a performance optimization when we are ready to discuss the difference between reference and structural equality. List has the "strange" cons syntax, which makes more sense after pattern matching and recursion have been introduced.
+
+    scala> def f[A : reflect.ClassTag](n: Int) = new Array[A](n)
+    f: [A](n: Int)(implicit evidence$1: scala.reflect.ClassTag[A])Array[A]
+
+    scala> f(42)
+    res0: Array[Nothing] = Array(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)
+
+    scala> f[Int](42)
+    res1: Array[Int] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+  
+
