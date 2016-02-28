@@ -82,7 +82,7 @@
  
 * Which collection should be our favorite beginner collection? Vector || List || Array 
   * **Vector**  *RATIONALE:*  Array is mutable and == does not work as expected and generic parameters need a context bound: [T : reflect.ClassTag]. Introduce Array later as a performance optimization when we are ready to discuss the difference between reference and structural equality. List has the "strange" cons syntax, which makes more sense after pattern matching and recursion have been introduced.
-
+```
     scala> def f[A : reflect.ClassTag](n: Int) = new Array[A](n)
     f: [A](n: Int)(implicit evidence$1: scala.reflect.ClassTag[A])Array[A]
 
@@ -91,5 +91,5 @@
 
     scala> f[Int](42)
     res1: Array[Int] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-  
+```
 
