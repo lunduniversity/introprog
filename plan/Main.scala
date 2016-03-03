@@ -38,7 +38,6 @@ object Main extends App {
     val weekName   = modulePlan.column("W")(w).toLowerCase
     val fileName   = s"../compendium/generated/$weekName-chaphead-generated.tex"
     result.latexEscape.save(fileName)
-    //println("\n" + fileName + "\n" + latexItems)
   }
   
   // *** Generate table body rows of progress protocoll in compendium prechapters
@@ -67,7 +66,7 @@ object Main extends App {
   val nameDefs = (for (w <- weeks) yield namesOfWeek(w)).mkString("\n")
   nameDefs.save("../compendium/generated/names-generated.tex")
   
-  // *** Generate template files if not exists
+  // *** Generate template files if not exists -- this is only needed once in the begining...
   def isExistingPath(path: String) = {
     import java.nio.file.{Paths, Files}
     Files.exists(Paths.get(path))

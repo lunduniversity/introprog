@@ -22,14 +22,14 @@
 * Distribute responsibilities among Maj/Gustav/TA
   * Dev lead
   * Test lead
-* Skapa stängt repo med labblösningar 
+* Create closed repo with lab solutions 
 * Talk to Mark C. Lewis at Trinity Univ about experiences with diverse student pre knowledge
 * Trigger install of tools on student computers
   * Make zip with scalaide to sysadm 
   * http://wiki.eclipse.org/FAQ_How_do_I_increase_the_heap_size_available_to_Eclipse%3F 
   * ammonite?
 * Follow up schedule requests implementation by schema@lth
-* Create fictitious chepoint exam (kontrollskrivning)
+* Create fictitious checkpoint exam (kontrollskrivning)
 * Create fictitious 
 * Find guest lecturers for the first weeks to stimulate student identification as becoming professional software engineers
 
@@ -72,9 +72,8 @@
   * **Integrated modules** *RATIONALE:*  Easier to follow each module as a trail of weeks.
 
 * Use sbt?
-  * **NO** for students on student machines; unclear how to centralize ivy cache 
+  * **NO** for students on student machines; unclear how to best centralize ivy cache 
   * **YES** for the repo building process - teaching assistants use sbt to build the repo 
-  * **NO** for ScalaIDE - no good support for sbt in scalaide yet
 
 * Decide on licensing for new material
   * **CC BY-SA** *RATIONALE:* Copy left license increase the chance of this repo to be useful by others and create most value out of tax payers money.
@@ -82,6 +81,7 @@
  
 * Which collection should be our favorite beginner collection? Vector || List || Array 
   * **Vector**  *RATIONALE:*  Array is mutable and == does not work as expected and generic parameters need a context bound: [T : reflect.ClassTag]. Introduce Array later as a performance optimization when we are ready to discuss the difference between reference and structural equality. List has the "strange" cons syntax, which makes more sense after pattern matching and recursion have been introduced.
+
 ```
     scala> def f[A : reflect.ClassTag](n: Int) = new Array[A](n)
     f: [A](n: Int)(implicit evidence$1: scala.reflect.ClassTag[A])Array[A]

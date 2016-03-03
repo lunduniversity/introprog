@@ -131,9 +131,9 @@ trait Plan {
     Vector("F15 F16","F17 F18","F19 F20","F21 F22","F23 F24", "F25 F26", "F27 F28", "--")
 
   lazy val exerciseNumOfWeek = 
-    "Ö01,Ö02,Ö03,Ö04,Ö05,Ö06,Ö07,--,Ö08,Ö09,Ö10,Ö11,Ö12,Uppsamling,Extenta,--,--".
-      split(',').toVector
-      
+    ("Övn01,Övn02,Övn03,Övn04,Övn05,Övn06,Övn07,--," + 
+     "Övn08,Övn09,Övn10,Övn11,Övn12,Uppsamling,Extenta,--,--").split(',').toVector
+          
   lazy val exerciseOfWeek = for (w <- 0 until exerciseNumOfWeek.size) yield {
     if (exerciseNumOfWeek(w).startsWith("Ö") && modules(w).exercise != "")  
       modules(w).exercise
