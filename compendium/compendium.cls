@@ -101,9 +101,10 @@
 \pagebreak[1]\noindent{\Emph{Uppgift~\arabic{TaskCounter}.}~}%
 }
 %\newcommand\TaskPen{\Task{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}}
-\newcommand\Pen{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}
-\newcounter{SubtaskCounter}[TaskCounter]
+\newcommand\Pen{\reversemarginpar\marginnote{\footnotesize\Emph{\smallpencil}}[0cm]}
+\newcommand\Checkpoint{\reversemarginpar\marginnote{\small\Alert{\checkmark \eye}}[0cm]}
 
+\newcounter{SubtaskCounter}[TaskCounter]
 \newcommand{\Subtask}{\refstepcounter{SubtaskCounter}% 
 %\vspace{1em}%
 \ifnum\value{SubtaskCounter}>1\vspace{0.25em}\else\vspace{0.5em}\fi%
