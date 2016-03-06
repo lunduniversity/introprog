@@ -157,6 +157,7 @@
     framextopmargin=2pt,
     framexbottommargin=2pt,
     showstringspaces=false,
+    columns=fullflexible,keepspaces
 }
 \lstset{literate=%
 {Å}{{\AA}}1
