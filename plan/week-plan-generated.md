@@ -8,7 +8,7 @@
 | W06 | 3/10-7/10   | Lp1V6 | Klasser, Likhet      | F11 F12 | classes     | shapes          |
 | W07 | 10/10-14/10 | Lp1V7 | Arv, Gränssnitt      | F13 F14 | traits      | turtlerace-team |
 | KS  | ksdatum     | TP1   | KONTROLLSKRIVN.      | --      | --          | --              |
-| W08 | 31/10-4/11  | Lp2V1 | Mönster, Undantag    | F15 F16 | matching    | newlab-team     |
+| W08 | 31/10-4/11  | Lp2V1 | Mönster, Undantag    | F15 F16 | matching    | chords-team     |
 | W09 | 7/11-11/11  | Lp2V2 | Matriser             | F17 F18 | matrices    | maze            |
 | W10 | 14/11-18/11 | Lp2V3 | Sökning, Sortering   | F19 F20 | sorting     | surveydata-team |
 | W11 | 21/11-25/11 | Lp2V4 | Scala och Java       | F21 F22 | scalajava   | scalajava-team  |
