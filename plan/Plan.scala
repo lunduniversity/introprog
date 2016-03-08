@@ -16,8 +16,8 @@ trait Plan {
       | sekvens, alternativ, repetition, abstraktion, programmeringsspråk,
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
-      | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random
-      | logiska uttryck, de Morgans lagar, while-sats, for-sats 
+      | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random,
+      | logiska uttryck, de Morgans lagar, while-sats, for-sats, 
       """.stripTrim),
       
     Module("Kodstrukturer", 
@@ -42,10 +42,10 @@ trait Plan {
 
     Module("Datastrukturer", 
       id = "data", exercise = "data", lab = "textfiles", contents = """
-      | tupler, case-klasser, case-object i Scala vs enum i java
+      | tupler, case-klasser, case-object, enum i java ???,
       | Array, Map, List, Vector, föränderlighet, iterering,
-      | vektorer i Java vs Scala, Complex, Rational
-      | filer, Source.fromFile, java.nio.file
+      | vektorer i Java vs Scala, Complex, Rational,
+      | läsa/skriva textfiler, Source.fromFile, java.nio.file
       """.stripTrim),
 
     Module("Vektoralgoritmer", 
@@ -57,7 +57,7 @@ trait Plan {
     Module("Klasser, Likhet", 
       id = "classes", exercise = "classes", lab = "shapes", contents = """
       | klasser, klassparameter, primär konstruktor, alternativa konstruktorer,
-      | referenslikhet, strukturlikhet, eq vs ==, compareTo, Shape, Point, Rectangle
+      | referenslikhet, strukturlikhet, eq vs ==, compareTo, Shape, Point, Rectangle,
       """.stripTrim),
 
     Module("Arv, Gränssnitt", 
@@ -71,7 +71,7 @@ trait Plan {
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
     Module("Mönster, Undantag", 
-      id = "pattern", exercise = "matching", lab = "newlab-team", contents = """
+      id = "pattern", exercise = "matching", lab = "chords-team", contents = """
       | match, Option, null, try, catch, Try, unapply, 
       """.stripTrim),
 
