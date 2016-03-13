@@ -1,5 +1,7 @@
 # Länkar
 
+* Länk till kickoff för pgk-utvecklare: https://github.com/lunduniversity/introprog/blob/master/teachers/course-dev-2016/kickoff-2016march11.pdf 
+
 * Scala-bok:
 https://www.artima.com/pins1ed/ 
 
