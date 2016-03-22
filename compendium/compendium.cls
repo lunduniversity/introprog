@@ -109,8 +109,9 @@
 %\vspace{1em}%
 \ifnum\value{SubtaskCounter}>1\vspace{0.25em}\else\vspace{0.5em}\fi%
 {\pagebreak[0]\noindent%%
-\alph{SubtaskCounter})\hspace{1em}\rlap{~}}%
+\makebox[2em][l]{\alph{SubtaskCounter})}}%
 }
+
 \renewcommand{\theSubtaskCounter}{\alph{SubtaskCounter}}
 
 \newenvironment{Goals}%

@@ -22,7 +22,7 @@ trait Plan {
       
     Module("Kodstrukturer", 
       id = "codestruct", exercise = "programs", lab = "", contents = """
-      | samling: Range, for-uttryck, map, foreach, flatMap,
+      | Range, Array, for-uttryck, map, foreach, 
       | algoritm vs implementation, pseudokod, 
       | algoritm: swap, algoritm: summering, algoritm: min/max,  
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
@@ -43,7 +43,8 @@ trait Plan {
     Module("Datastrukturer", 
       id = "data", exercise = "data", lab = "textfiles", contents = """
       | tupler, case-klasser, case-object, enum i java ???,
-      | Array, Map, List, Vector, föränderlighet, iterering,
+      | Array, Map, List, Vector, Set, föränderlighet, iterering,
+      | flatten, flatMap, 
       | vektorer i Java vs Scala, Complex, Rational,
       | läsa/skriva textfiler, Source.fromFile, java.nio.file
       """.stripTrim),
@@ -51,7 +52,7 @@ trait Plan {
     Module("Vektoralgoritmer", 
       id = "vect", exercise = "vectors", lab = "cardgame", contents = """
       | vektoralgoritmer, min/max, strängar, registrering,
-      | java System.out.println, Scanner, 
+      | java.lang.System.out.println, java.util.Scanner, 
       """.stripTrim),
 
     Module("Klasser, Likhet", 
