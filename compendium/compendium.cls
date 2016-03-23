@@ -52,6 +52,9 @@
 
 \usepackage{lipsum} % to create dummy text with \lipsum
 \usepackage{amsmath,scalerel} %http://tex.stackexchange.com/questions/125523/is-there-a-bigcdot-symbol-in-latex
+
+\usepackage[linesnumbered,lined,boxed]{algorithm2e} % for writing pseudo-code
+
 \usepackage{longtable}
 \usepackage{booktabs}
 \usepackage{titlesec}
