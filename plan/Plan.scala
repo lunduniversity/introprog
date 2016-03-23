@@ -26,7 +26,7 @@ trait Plan {
       | algoritm vs implementation, pseudokod, 
       | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX,  
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
-      | block, namnsynlighet, namnöverskuggning,
+      | block, namnsynlighet, namnöverskuggning, lokala variabler
       """.stripTrim),
       
     Module("Funktioner, Objekt", 
