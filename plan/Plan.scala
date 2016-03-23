@@ -33,9 +33,11 @@ trait Plan {
       id = "funobj", exercise = "functions", lab = "simplewindow", contents = """
       | parameter, returtyp, värdeandrop, namnanrop, default-argument, namngivna argument,
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
+      | äkta funktioner,
       | objekt, modul, punktnotation, lazy val, apply,   
-      | konstanter vs föränderlighet, referensvariabler, referenstilldelning, 
       | objektorientering, klasser, tillstånd, attribut, 
+      | konstanter vs föränderlighet, referensvariabler vs enkla värden, referenstilldelning, 
+      | scala.Any, scala.AnyVal, scala.AnyRef, java.lang.Object
       | java.util.Random, 
       | cslib.window.SimpleWindow, 
       """.stripTrim),
