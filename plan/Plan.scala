@@ -22,14 +22,13 @@ trait Plan {
       
     Module("Kodstrukturer", 
       id = "codestruct", exercise = "programs", lab = "", contents = """
-      | Range, Array, for-uttryck, map, foreach, 
+      | Range, Array, Vector, for-uttryck, map, foreach, 
       | algoritm vs implementation, pseudokod, 
-      | algoritm: swap, algoritm: summering, algoritm: min/max,  
+      | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX,  
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
       | konstanter vs föränderlighet, objektorientering, klasser, objekt, punktnotation, 
       | referensvariabler, referenstilldelning, anropa metoder, block, 
       | namnsynlighet, namnöverskuggning,
-      | SimpleWindow, 
       """.stripTrim),
       
     Module("Funktioner, Objekt", 
@@ -38,6 +37,7 @@ trait Plan {
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
       | objekt, modul, lazy val,  
       | aritmetik, slumptal, 
+      | SimpleWindow, 
       """.stripTrim),
 
     Module("Datastrukturer", 
@@ -51,7 +51,7 @@ trait Plan {
 
     Module("Vektoralgoritmer", 
       id = "vect", exercise = "vectors", lab = "cardgame", contents = """
-      | vektoralgoritmer, min/max, strängar, registrering,
+      | vektoralgoritmer, algoritm: VECTOR-MIN/MAX, strängar, algoritm: VECTOR-REGISTER,
       | java.lang.System.out.println, java.util.Scanner, 
       """.stripTrim),
 
@@ -84,10 +84,10 @@ trait Plan {
 
     Module("Sökning, Sortering", 
       id = "sort", exercise = "sorting", lab = "surveydata-team", contents = """
-      | linjärsökning, binärsökning, 
-      | insättningssortering, urvalssortering,
-      | sortering till ny vektor, sortering på plats, 
+      | algoritm: LINEAR-SEARCH, algortim: BINARY-SEARCH, 
       | algoritmisk komplexitet, 
+      | sortering till ny vektor, sortering på plats, 
+      | algoritm: INSERTION-SORT, algoritm: SELECTION-SORT,
       """.stripTrim),
 
     Module("Scala och Java", 
