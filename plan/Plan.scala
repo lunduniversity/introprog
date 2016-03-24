@@ -25,8 +25,8 @@ trait Plan {
       | Range, Array, Vector, for-uttryck, map, foreach, 
       | algoritm vs implementation, pseudokod, 
       | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX,  
+      | block, namnsynlighet, namnöverskuggning, lokala variabler,
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
-      | block, namnsynlighet, namnöverskuggning, lokala variabler
       """.stripTrim),
       
     Module("Funktioner, Objekt", 
