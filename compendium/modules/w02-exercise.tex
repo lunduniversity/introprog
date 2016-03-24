@@ -375,19 +375,133 @@ scala> (1 to 8888).sum
 \Subtask Vad är fördelen med att deklarationer inne i ett block är lokala?
 
 
-\Task \emph{Paket, \code{import} och klassfilstrukturer.}
+\Task \label{task:package} \emph{Paket, \code{import} och klassfilstrukturer.} Med Java-8-plattformen kommer 4020 färdiga klasser, som är organiserade i 217 olika paket.\footnote{Se Stackoverflow: \href{http://stackoverflow.com/questions/3112882/how-many-classes-are-there-in-java-standard-edition}{how-many-classes-are-there-in-java-standard-edition}}
+
+\Subtask Vilka paket finns i paketet javax som börjar på s?
+
+\begin{REPL}
+scala> javax.s   //tryck på TAB-tangenten
+\end{REPL} 
+
+\Subtask Kör raderna nedan i REPL. Beskriv vad som händer för varje rad.
+\begin{REPL}[numbers=left, numberstyle=\color{black}\ttfamily\scriptsize\selectfont]
+scala> import javax.swing.JOptionPane
+scala> def msg(s: String) = JOptionPane.showMessageDialog(null, s)
+scala> msg("Hej på dej!")
+scala> def input(msg: String) = JOptionPane.showInputDialog(null, msg)
+scala> input("Vad heter du?")
+scala> import JOptionPane.{showOptionDialog => optDlg}
+scala> def inputOption(msg: String, opt: Array[Object]) = 
+         optDlg(null, msg, "Option", 0, 0, null, opt, opt(0))
+scala> inputOption("Vad väljer du?", Array("Sten", "Sax", "Påse"))
+\end{REPL} 
+
+\Subtask Vad hade du behövt ändra på efterföljande rader om import-satsen på rad 1 ovan ej hade gjorts?
+
+\Subtask Skapa med en editor filen paket.scala och kompilera. Rita en bild av hur katalogstrukturen ser ut.
+
+\begin{Code}
+package gurka.tomat.banan
+
+package p1 {
+  package p11 {
+    object hello {
+      def hello = println("Hej paket p1.p11!")
+    }
+  }
+  package p12 {
+    object hello {
+      def hello = println("Hej paket p1.p12!")
+    }
+  }
+}
+
+package p2 {
+  package p21 {
+    object hello {
+      def hello = println("Hej paket p2.p21!")
+    }
+  }
+}
+
+object Main {
+  def main(args: Array[String]): Unit = {
+    import p1._
+    p11.hello.hello
+    p12.hello.hello
+    import p2.{p21 => apelsin}
+    apelsin.hello.hello
+  }
+}
+\end{Code}
+
+\begin{REPL}
+> gedit paket.scala
+> scalac paket.scala
+> scala gurka.tomat.banan.Main
+> ls -R
+\end{REPL}
 
 \Task \emph{Skapa \code{jar}-filer och använda classpath}
+
+\Subtask Skriv kommandot \code{jar} i terminalen och undersök vad som finns för optioner. Se speciellt ''Example 1.'' i hjälputskriften.
+
+\Subtask Som en fortsättning på uppgift \ref{task:package}, packa ihop biblioteket \code{gurka} i en jar-fil med nedan kommando, samt kör igång REPL med jar-filen på classpath.
+
+\begin{REPL}
+> jar cvf mittpaket.jar gurka
+> scala -cp mittpaket.jar
+scala> gurka.tomat.banan.Main.main(Array())
+\end{REPL}
+
+ 
+
 
 \Task \emph{Skapa dokumentation med \code{scaladoc}-kommandot}
 
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task 
+
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
+
 
 \Task ArrayBuffer vs Vector vs Array och metoden append
 
 \Task Läs om krullparenetser och vanliga parenteser på stack overflow: \\ \href{http://stackoverflow.com/questions/4386127/what-is-the-formal-difference-in-scala-between-braces-and-parentheses-and-when}{what-is-the-formal-difference-in-scala-between-braces-and-parentheses-and-when}
+
+\Task Bygg vidare på koden nedan och gör ett Sten-Sax-Påse-spel\footnote{\href{https://sv.wikipedia.org/wiki/Sten,\_sax,\_p\%C3\%A5se}{sv.wikipedia.org/wiki/Sten,\_sax,\_p\%C3\%A5se}} som även meddelar vem som vinner. Koden fungerar att köra som den är, men funktionen \code{winner} är ej klar. \emph{Tips:} Du kan använda modulo-räkning med \%
+-operatorn för att avgöra vem som vinner.
+
+\begin{Code}[basicstyle=\ttfamily\footnotesize\selectfont]]
+object Rock {
+  import javax.swing.JOptionPane
+  import JOptionPane.{showOptionDialog => optDlg}
+  
+  def inputOption(msg: String, opt: Vector[String]) = 
+    optDlg(null, msg, "Option", 0, 0, null, opt.toArray[Object], opt(0))
+    
+  def msg(s: String) = JOptionPane.showMessageDialog(null, s)  
+  
+  val opt =  Vector("Sten", "Sax", "Påse")
+   
+  def userChoice = inputOption("Vad väljer du?", opt)
+  
+  def computerChoice = (math.random * 3).toInt     
+  
+  def winnerMsg(user: Int, computer: Int) = "??? vann!"
+  
+  def main(args: Array[String]): Unit = {
+    var keepPlaying = true
+    while (keepPlaying) {
+      val u = userChoice
+      val c = computerChoice
+      msg("Du valde " + opt(u) + "\n" + 
+          "Datorn valde " + opt(c) + "\n" + 
+          winnerMsg(u, c))
+      if (u != c) keepPlaying = false 
+    }
+  }
+}
+\end{Code}
