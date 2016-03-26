@@ -112,6 +112,62 @@ Vad skriver nedan satser ut? Förklara vad som händer.
 \Subtask\Pen Varför är det bra att explicit ange \code{Unit} som returtyp för procedurer?
 
 
+\Task \emph{Värdeanrop och namnanrop (fördröjd evaluering).} Deklarera nedan funktioner i REPL eller Kojo.
+
+\begin{Code}
+def snark = {print("snark "); Thread.sleep(1000); 42}
+def callByValue(x: Int) = x + x
+def callByName(x: => Int) = x + x
+\end{Code}
+
+Evaluera nedan uttryck. Förklara vad som händer.
+
+\Subtask \code{snark}
+
+\Subtask \code{snark; snark; snark}
+
+\Subtask \code{callByValue(1)}
+
+\Subtask \code{callByName(1)}
+
+\Subtask \code{callByValue(snark)}
+
+\Subtask \code{callByName(snark)}
+
+
+\Subtask Förklara vad som händer här:
+\begin{REPL}
+scala> def görDetta(block: => Unit) = block
+scala> görDetta(println("hej"))
+scala> görDetta{println("goddag")}
+scala> görDetta{println("hej"); println("svejs")}
+\end{REPL}
+
+
+\Task \emph{Uppdelad parameterlista.} Man kan dela upp parametrarna till en funktion i flera parameterlistor.
+
+\Subtask Förklara vad som händer här:
+\begin{REPL}
+scala> def add(a: Int)(b: Int) = a + b
+scala> add(22)(20)
+scala> add(22)(add(1)(19))
+\end{REPL}
+
+
+\Task \emph{Skapa dina egen kontrollstruktur.} Använd fördröjd evaluering och stegad funktion och skapa din egen loop-konstruktion.
+\begin{REPL}
+scala> def upprepa(n: Int)(block: => Unit) = {
+         var i = 0
+         while (i < n) {block; i = i + 1}
+       }
+scala> upprepa(10)(println("hej"))
+scala> upprepa(1000){
+  val tärning = (math.random * 6 + 1).toInt
+  print(tärning + " ")
+}
+\end{REPL}
+Förklara vad som händer ovan.
+
 
 \Task \emph{Funktion som värde.} Funktioner är äkta värden i Scala.
 
@@ -141,7 +197,7 @@ scala> val d = räkna(42, dubbla)
 scala> val h = räkna(42, halva)
 \end{REPL}
 
-\Task \emph{Objekt som moduler.} Ett objekt kan samla användbara funktioner och variabler. Ett objekt som kapslar in användbara koddelar kallas en \textbf{modul}. Moduler kan i sin tur innehålla moduler. Man kommer åt innehållet i en modul med punktnotation. Deklarera modulen nedan i Scala REPL eller i Kojo. 
+\Task \emph{Objekt som moduler.} Ett objekt kan samla användbara funktioner och variabler. Ett objekt som kapslar in användbara koddelar kallas en \textbf{modul}. Moduler kan i sin tur innehålla objekt (moduler). Man kommer åt innehållet i en modul med punktnotation. Med import slipper man punktnotation. Deklarera modulerna \code{stringstat} och \code{Test} nedan i Scala REPL eller i Kojo. 
 
 \begin{Code}
 object stringstat {
@@ -165,7 +221,7 @@ object stringstat {
   }
 }
   
-object stringstatTest {
+object Test {
   import stringstat._
   def apply(n: Int = 42): Unit = {
     val s1 = "Fem myror är fler än fyra elefanter. Ät gurka."
@@ -177,9 +233,9 @@ object stringstatTest {
 }
 \end{Code}
 
-\Subtask Anropa \code{stringstatTest()} och förklara vad som händer. Vad skrivs ut?
+\Subtask Anropa \code{Test()} och förklara vad som händer. Vad skrivs ut?
 
-\Subtask Vilket av objekten i modulen \code{stringstat} har tillstånd vilket är tillståndslöst? Vad består tillståndet av?
+\Subtask Vilket av objekten i modulen \code{stringstat} har tillstånd och vilket av objekten är tillståndslöst? Vad består tillståndet av?
 
 
 \Task \emph{Äkta funktioner.} En \textbf{äkta funktion} ger alltid samma resultat med samma argument. Vilka funktioner i objektet \code{findPurity} nedan är äkta funktioner? Anropa de funktioner som inte är äkta i REPL och visa att de kan ge olika resultat för samma argument.
