@@ -12,8 +12,7 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task \emph{Definiera och anropa funktioner.} 
-\\En funktion med två parametrar definieras med följande syntax i Scala: \\ \texttt{\code{def} \textit{namn}(\textit{parameter1}: \textit{Typ1}, \textit{parameter2}: \textit{Typ2}): \textit{Returtyp} = \textit{returvärde}}
+\Task \label{task:funcall}\emph{Definiera och anropa funktioner.} En funktion med två parametrar definieras med följande syntax i Scala: \vspace{0.5em} \\  \texttt{\code{def} \textit{namn}(\textit{parameter1}: \textit{Typ1}, \textit{parameter2}: \textit{Typ2}): \textit{Returtyp} = \textit{returvärde}}
 
 \Subtask Definiera en funktion med namnet \code{öka} som har en heltalsparameter \code{x} och som returnerar \code{x + 1}. Ange returtypen explicit. Testa funktionen i REPL med argumentet 42.
 
@@ -35,7 +34,171 @@ scala> öka(42)
 
 \Subtask Definera funktionen \code{minska(x: Int): Int} med returvärdet \code{x - 1}.
 
-\Subtask Vad har uttrycket \code{öka(minska(öka(öka(minska(minska(42))))))}
+\Subtask Vad är värdet av uttrycket \code{öka(minska(öka(öka(minska(minska(42))))))}
+
+
+\Task \emph{Funktion med flera parametrar.} Definiera i REPL två funktioner \code{sum} och \code{diff} med två heltalsparametrar som returnerar summan respektive differensen av argumenten: \\
+\code{def sum(x: Int, y: Int): Int = x + y} \\
+\code{def diff(x: Int, y: Int): Int = x - y} \\
+Vad har nedan uttryck för värden?
+
+\Subtask \code{diff(0, 100)}
+
+\Subtask \code{diff(100, add(42, 43))}
+
+\Subtask \code{sum(sum(42, 43), diff(100, sum(0, 0))}
+
+\Subtask \code{sum(diff(Byte.MaxValue, Byte.MinValue),1)}
+
+\Task \emph{Funktion med default-värden.} Förklara vad som händer här?
+\begin{REPL}
+scala> def inc(i: Int, j: Int = 1) = i + j
+scala> inc(42, 2)
+scala> inc(42, 1)
+scaka> inc(42)
+\end{REPL}
+
+\Task \emph{Funktionsanrop med namngivna argument.} 
+\begin{REPL}
+scala> def skrivNamn(förnamn: String, efternamn: String) = 
+         println("Namn: " + efternamn + ", " + förnamn)
+scala> skrivNamn("Kim", "Robinson")
+scala> skrivNamn(förnamn = "Viktor", efternamn = "Oval")
+scaka> skrivNamn(efternamn = "Triangelsson", förnamn = "Stina")
+\end{REPL}
+
+\Subtask Förklara vad som händer ovan?
+
+\Subtask\Pen Vad är fördelen med namngivna argument?
+
+
+
+\Task \emph{Applicera en funktion på elementen i en samling.} Använd dina funktioner \code{öka} och \code{minska} från uppgift \ref{task:funcall}. Vad har nedan uttryck för värde?
+
+\Subtask \code{for (i <- 0 to 4) yield öka(i)}
+
+\Subtask \code{for (i <- 1 to 5) yield minska(i)}
+
+\Subtask \code{(0 to 4).map(i => öka(i))}
+
+\Subtask \code{(1 to 5).map(i => minska(i))}
+
+\Subtask \code{(0 to 4).map(öka)}
+
+\Subtask \code{(1 to 5).map(minska)}
+
+\Subtask \code{Vector(12, 3, 41, -8).map(öka)}
+
+\Subtask \code{Vector(12, 3, 41, -8).map(öka).map(minska).map(minska)}
+
+
+
+\Task En funktion som inte returnerar ngt intressant värde, men som anropas för det den \emph{gör} kallas \textbf{procedur}. Definiera följande procedur i REPL: \\ 
+\code{def tUvirks(msg: String) = println(msg.reverse)} \\
+Vad skriver nedan satser ut? Förklara vad som händer.
+
+\Subtask \code{println("sallad".reverse)}
+
+\Subtask \code{tUvirks("sallad")}
+
+\Subtask \code{val x = tUvirks("sallad"); println(x)}
+
+\Subtask \code{def enhetsvärdet = (); println(enhetsvärdet)}
+
+\Subtask \code{def bortkastad: Unit = 1 + 1; println(bortkastad)}
+
+\Subtask \code|def bortkastad2 = {val x = 1 + 1}; println(bortkastad2)|
+
+\Subtask\Pen Varför är det bra att explicit ange \code{Unit} som returtyp för procedurer?
+
+
+
+\Task \emph{Funktion som värde.} Funktioner är äkta värden i Scala.
+
+\Subtask \label{subtask:funcval} Förklara vad som händer nedan. Notera understrecket på rad 4:
+
+\begin{REPL}[numbers=left, numberstyle=\color{black}\ttfamily\scriptsize\selectfont]
+scala> def inc(x: Int): Int = x + 1
+scala> inc(42)
+scala> Vector(12, 3, 41, -8).map(inc)
+scala> val f = inc _
+scala> Vector(12, 3, 41, -8).map(f)
+\end{REPL}
+
+\Subtask Vad händer om du bara skriver \code{val f = inc} utan understreck?
+
+\Subtask På liknande sätt som i uppgift \ref{subtask:funcval}: definiera en funktion \code{dec} som i stället \emph{minskar} med 1. Deklarera ett funktionsvärde \code{g} som tilldelas funktionen \code{dec} och kör sedan \code{g} på varje element i \code{Vector(12, 3, 41, -8)} med metoden \code{map}.
+
+\Subtask\Pen Vad har variablerna \code{f} och \code{g} ovan för typ?
+
+\Subtask Förklara vad som händer nedan. Vad får \code{d} och \code{h} för värde?
+
+\begin{REPL}
+scala> def räkna(x: Int, f: Int => Int) = f(x,y)
+scala> def dubbla(x: Int, y: Int) = 2 * x
+scala> def halva(x: Int, y: Int) = x / 2
+scala> val d = räkna(42, dubbla)
+scala> val h = räkna(42, halva)
+\end{REPL}
+
+\Task \emph{Objekt som moduler.} Ett objekt kan samla användbara funktioner och variabler. Ett objekt som kapslar in användbara koddelar kallas en \textbf{modul}. Moduler kan i sin tur innehålla moduler. Man kommer åt innehållet i en modul med punktnotation. Deklarera modulen nedan i Scala REPL eller i Kojo. 
+
+\begin{Code}
+object stringstat {
+  object stringfun {
+    def sentences(s: String): Array[String] = s.split('.')
+    def words(s: String): Array[String] = s.split(' ')
+    def countWords(s: String): Int = words(s).size
+    def countSentences(s: String): Int = sentences(s).size
+  }
+  
+  object statistics {
+    var history = ""
+    def printFreq(s: String): Unit = {
+      println("\n---- Frekvenser ----")
+      println("Antal tecken:   " + s.size)
+      println("Antal ord:      " + stringfun.countWords(s))
+      println("Antal meningar: " + stringfun.countSentences(s))
+      history = history + " " + s
+    }
+    def printTotal: Unit = printFreq(history)
+  }
+}
+  
+object stringstatTest {
+  import stringstat._
+  def apply(n: Int = 42): Unit = {
+    val s1 = "Fem myror är fler än fyra elefanter. Ät gurka."
+    val s2 = "Galaxer i mina braxer. Tomat är gott. Hejsan."
+    statistics.printFreq(s1 * n)
+    statistics.printFreq(s2 * n)
+    statistics.printTotal
+  }
+}
+\end{Code}
+
+\Subtask Anropa \code{stringstatTest()} och förklara vad som händer. Vad skrivs ut?
+
+\Subtask Vilket av objekten i modulen \code{stringstat} har tillstånd vilket är tillståndslöst? Vad består tillståndet av?
+
+
+\Task \emph{Äkta funktioner.} En \textbf{äkta funktion} ger alltid samma resultat med samma argument. Vilka funktioner i objektet \code{findPurity} nedan är äkta funktioner? Anropa de funktioner som inte är äkta i REPL och visa att de kan ge olika resultat för samma argument.
+
+\begin{Code}
+object findPurity {
+  var x = 0
+  val y = x
+  def inc(i: Int) = i + 1
+  def oink(i: Int) = {x = x + i; "Pig says oink " + x}
+  def addX(i: Int): Int = x + i
+  def addY(i: Int): Int = y + i
+  def isPalindrome(s: String): Boolean = s == s.reverse
+  def rnd(min: Int, max: Int) = math.random * max + min
+}
+\end{Code}
+
+
+
 
 \Task Föränderlighet och oföränderlighet.
 
@@ -80,10 +243,7 @@ println(x3)
 println(y3)
 \end{Code}
 
-\Subtask Vad ger nedan kod för utskrift?
-
-\Subtask Vad ger nedan kod för utskrift?
-
+\Subtask\Pen Vad finns det för fördelar med oföränderliga objekt?
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
