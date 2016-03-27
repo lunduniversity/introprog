@@ -32,66 +32,69 @@ trait Plan {
       
     Module("Funktioner, Objekt", 
       id = "funobj", exercise = "functions", lab = "simplewindow", contents = """
+      | definera funktion, anropa funktion,
       | parameter, returtyp, värdeandrop, namnanrop, default-argument, namngivna argument,
+      | applicera funktion på alla element i en samling, procedur, 
+      | typen Unit och värdet (),  
+      | värdeanrop vs namnanrop, uppdelad parameterlista, skapa egen kontrollstruktur, 
+      | objekt, modul, punktnotation, tillstånd,
+      | funktionsvärde, funktionstyp, äkta funktion, stegad funktion, apply, lazy val,     
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
-      | äkta funktioner,
-      | objekt, modul, punktnotation, lazy val, apply, tillstånd,   
       """.stripTrim),
 
     Module("Datastrukturer", 
-      id = "data", exercise = "data", lab = "textfiles", contents = """
-      | tupler, klasser, case-klasser, case-object, 
-      | objektorientering, attribut (fält), medlemmar, metoder, 
-      | konstanter vs föränderlighet, referensvariabler vs enkla värden, referenstilldelning, 
-      | scala.Any, scala.AnyVal, scala.AnyRef, java.lang.Object
+      id = "datastruct", exercise = "data", lab = "textfiles", contents = """
+      | objektorientering, attribut (fält), medlem, metod, 
+      | tupel, klass, case-klass, case-object, isInstanceOf,
+      | Complex, Rational,
+      | föränderlighet vs oföränderlighet, referensvariabler vs enkla värden, referenstilldelning, 
+      | Any vs AnyVal vs AnyRef, Any vs java.lang.Object,
       | java.util.Random, 
       | cslib.window.SimpleWindow, 
-      | Array, Map, List, Vector, Set, 
-      | typparametrar, generisk samling som parameter,
-      | översikt samlingsmetoder, flatten, flatMap, 
-      | Complex, Rational,
-      | strängar, läsa/skriva textfiler, Source.fromFile, java.nio.file,
-      | samlingar i Java vs Scala, scala.collection.JavaConverters,
+      | List, Vector, Set, Map, 
+      | typparameter, generisk samling som parameter,
+      | översikt samlingsmetoder, 
+      | översikt strängmetoder, läsa/skriva textfiler, Source.fromFile, java.nio.file,
       """.stripTrim),
 
     Module("Vektoralgoritmer", 
-      id = "vect", exercise = "vectors", lab = "cardgame", contents = """
-      | vektoralgoritmer,  algoritm: VECTOR-COPY,   
+      id = "vectalg", exercise = "vectors", lab = "cardgame", contents = """
+      | vektoralgoritm,  algoritm: VECTOR-COPY,   
       | in-place vs copy, algoritm: VECTOR-REVERSE, algoritm: VECTOR-REGISTER, 
       | java.util.Scanner, java.util.ArrayList, scala.collection.mutable.Buffer,
       """.stripTrim),
 
     Module("Klasser, Likhet", 
-      id = "classes", exercise = "classes", lab = "shapes", contents = """
-      | klasser, klassparameter, primär konstruktor, alternativa konstruktorer,
+      id = "classsim", exercise = "classes", lab = "shapes", contents = """
+      | klass, klassparameter, primär konstruktor, alternativ konstruktor,
       | referenslikhet, strukturlikhet, eq vs ==, compareTo, Shape, Point, Rectangle,
       | inkapsling, accessregler, private, public, 
       """.stripTrim),
 
     Module("Arv, Gränssnitt", 
       id = "polymorf", exercise = "traits", lab = "turtlerace-team", contents = """
-      | klasser, arv, polymorfism, likhet, equals, 
+      | klass, arv, polymorfism, likhet, equals, asInstanceOf,
       | accessregler vid arv, protected, private[this],
-      | trait, inmixning, 
-      | Any, AnyVal, AnyRef, Nothing, 
+      | abstrakt klass, trait, inmixning, klass vs trait, 
+      | Any vs Nothing, 
       """.stripTrim),
 
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
     Module("Mönster, Undantag", 
-      id = "pattern", exercise = "matching", lab = "chords-team", contents = """
-      | match, Option, null, try, catch, Try, unapply, 
+      id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
+      | mönstermatchning, match, Option, null, try, catch, Try, unapply, 
       """.stripTrim),
 
     Module("Matriser, Typparametrar", 
       id = "matrix", exercise = "matrices", lab = "maze", contents = """
-      | matriser, nästlade for-satser, designexempel: Tre-i-rad, 
-      | generiska funktioner, generiska klasser,  
+      | matris, nästlade for-satser, designexempel: Tre-i-rad, 
+      | generisk funktion, generisk klass,  
       | matriser i Java vs Scala, 
       """.stripTrim),
 
     Module("Sökning, Sortering", 
-      id = "sort", exercise = "sorting", lab = "surveydata-team", contents = """
+      id = "searchsort", exercise = "sorting", lab = "surveydata-team", contents = """
       | algoritm: LINEAR-SEARCH, algortim: BINARY-SEARCH, 
       | algoritmisk komplexitet, 
       | sortering till ny vektor, sortering på plats, 
@@ -103,11 +106,12 @@ trait Plan {
       | skillnader mellan Scala och Java, 
       | for-sats i Java, java for-each i Java, 
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
+      | samlingar i Java vs Scala, scala.collection.JavaConverters,
       | enum i java ???,
       """.stripTrim),
 
     Module("Trådar, Web, Android", 
-      id = "thread", exercise = "threads", lab = "life", contents = """
+      id = "threadetc", exercise = "threads", lab = "life", contents = """
       | Thread, Future, HTML, Javascript, css, Scala.js, Android,
       """.stripTrim),
 
