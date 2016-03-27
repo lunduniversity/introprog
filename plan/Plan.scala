@@ -22,11 +22,12 @@ trait Plan {
       
     Module("Kodstrukturer", 
       id = "codestruct", exercise = "programs", lab = "", contents = """
-      | Range, Array, Vector, for-uttryck, map, foreach, 
+      | Range, Array, Vector, iterering, for-uttryck, map, foreach, 
       | algoritm vs implementation, pseudokod, 
       | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX,  
       | block, namnsynlighet, namnöverskuggning, lokala variabler,
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
+      | main i Java vs Scala, java.lang.System.out.println,
       """.stripTrim),
       
     Module("Funktioner, Objekt", 
@@ -34,39 +35,43 @@ trait Plan {
       | parameter, returtyp, värdeandrop, namnanrop, default-argument, namngivna argument,
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
       | äkta funktioner,
-      | objekt, modul, punktnotation, lazy val, apply,   
-      | objektorientering, klasser, tillstånd, attribut, 
-      | konstanter vs föränderlighet, referensvariabler vs enkla värden, referenstilldelning, 
-      | scala.Any, scala.AnyVal, scala.AnyRef, java.lang.Object
-      | java.util.Random, 
-      | cslib.window.SimpleWindow, 
+      | objekt, modul, punktnotation, lazy val, apply, tillstånd,   
       """.stripTrim),
 
     Module("Datastrukturer", 
       id = "data", exercise = "data", lab = "textfiles", contents = """
-      | tupler, case-klasser, case-object, enum i java ???,
-      | Array, Map, List, Vector, Set, föränderlighet, iterering,
-      | flatten, flatMap, 
-      | vektorer i Java vs Scala, Complex, Rational,
-      | läsa/skriva textfiler, Source.fromFile, java.nio.file
+      | tupler, klasser, case-klasser, case-object, enum i java ???,
+      | objektorientering, attribut (fält), medlemmar, metoder, 
+      | konstanter vs föränderlighet, referensvariabler vs enkla värden, referenstilldelning, 
+      | scala.Any, scala.AnyVal, scala.AnyRef, java.lang.Object
+      | java.util.Random, 
+      | cslib.window.SimpleWindow, 
+      | Array, Map, List, Vector, Set, 
+      | typparametrar, generisk samling som parameter,
+      | översikt samlingsmetoder, flatten, flatMap, 
+      | Complex, Rational,
+      | strängar, läsa/skriva textfiler, Source.fromFile, java.nio.file,
+      | samlingar i Java vs Scala, scala.collection.JavaConverters,
       """.stripTrim),
 
     Module("Vektoralgoritmer", 
       id = "vect", exercise = "vectors", lab = "cardgame", contents = """
-      | vektoralgoritmer, algoritm: VECTOR-MIN/MAX, strängar, algoritm: VECTOR-REGISTER,
-      | java.lang.System.out.println, java.util.Scanner, 
+      | vektoralgoritmer,  algoritm: VECTOR-COPY,   
+      | in-place vs copy, algoritm: VECTOR-REVERSE, algoritm: VECTOR-REGISTER, 
+      | java.util.Scanner, java.util.ArrayList, scala.collection.mutable.Buffer,
       """.stripTrim),
 
     Module("Klasser, Likhet", 
       id = "classes", exercise = "classes", lab = "shapes", contents = """
       | klasser, klassparameter, primär konstruktor, alternativa konstruktorer,
       | referenslikhet, strukturlikhet, eq vs ==, compareTo, Shape, Point, Rectangle,
+      | inkapsling, accessregler, private, public, 
       """.stripTrim),
 
     Module("Arv, Gränssnitt", 
       id = "polymorf", exercise = "traits", lab = "turtlerace-team", contents = """
       | klasser, arv, polymorfism, likhet, equals, 
-      | accessregler, private, public, protected, private[this],
+      | accessregler vid arv, protected, private[this],
       | trait, inmixning, 
       | Any, AnyVal, AnyRef, Nothing, 
       """.stripTrim),
@@ -78,9 +83,10 @@ trait Plan {
       | match, Option, null, try, catch, Try, unapply, 
       """.stripTrim),
 
-    Module("Matriser", 
+    Module("Matriser, Typparametrar", 
       id = "matrix", exercise = "matrices", lab = "maze", contents = """
       | matriser, nästlade for-satser, designexempel: Tre-i-rad, 
+      | generiska funktioner, generiska klasser,  
       | matriser i Java vs Scala, 
       """.stripTrim),
 
@@ -96,7 +102,6 @@ trait Plan {
       id = "scalajava", exercise = "scalajava", lab = "scalajava-team", contents = """
       | skillnader mellan Scala och Java, 
       | for-sats i Java, java for-each i Java, 
-      | ArrayList<Integer>, scala.collection.JavaConversions, 
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
       """.stripTrim),
 
