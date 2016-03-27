@@ -28,13 +28,15 @@ object Main extends App {
   val weeks = (0 to 6) ++ (8 to 14) //exlude exam weeks
   
   // *** Generate chapter heads with topics of each module
+  val conceptBegin = """\begin{multicols}{2}\begin{itemize}[nosep,label={$\square$}]""" + "\n"
+  val conceptEnd   = """\end{itemize}\end{multicols}""" + "\n"
   for (w <- weeks) {
     def toLatexItem(s: String) = s"\\item ${s.trim}\n"
     val label      = "\\label{chapter:" + modulePlan.column("W")(w) + "}"
     val chapter    = "\\chapter{" + modulePlan.column("Modul")(w) + s"}$label\n"
     val concepts   = modulePlan.column("Innehåll")(w).split(',').toVector
     val items      = concepts.map(toLatexItem).mkString.trim 
-    val result     = chapter + "\\begin{itemize}[nosep]\n" + items + "\n\\end{itemize}"
+    val result     = chapter + conceptBegin + items + conceptEnd
     val weekName   = modulePlan.column("W")(w).toLowerCase
     val fileName   = s"../compendium/generated/$weekName-chaphead-generated.tex"
     result.latexEscape.save(fileName)

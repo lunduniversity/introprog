@@ -50,7 +50,7 @@ Vad har nedan uttryck för värden?
 
 \Subtask \code{sum(diff(Byte.MaxValue, Byte.MinValue),1)}
 
-\Task \emph{Funktion med default-värden.} Förklara vad som händer här?
+\Task \emph{Funktion med default-argument.} Förklara vad som händer här?
 \begin{REPL}
 scala> def inc(i: Int, j: Int = 1) = i + j
 scala> inc(42, 2)
@@ -93,7 +93,7 @@ scaka> skrivNamn(efternamn = "Triangelsson", förnamn = "Stina")
 
 
 
-\Task En funktion som inte returnerar ngt intressant värde, men som anropas för det den \emph{gör} kallas \textbf{procedur}. Definiera följande procedur i REPL: \\ 
+\Task En funktion som inte returnerar något intressant värde, men som anropas för det den \emph{gör} kallas \textbf{procedur}. Definiera följande procedur i REPL: \\ 
 \code{def tUvirks(msg: String) = println(msg.reverse)} \\
 Vad skriver nedan satser ut? Förklara vad som händer.
 
@@ -141,6 +141,8 @@ scala> def görDetta(block: => Unit) = block
 scala> görDetta(println("hej"))
 scala> görDetta{println("goddag")}
 scala> görDetta{println("hej"); println("svejs")}
+scala> def görDettaTvåGånger(block: => Unit) = {block; block}
+scala> görDettaTvåGånger{println("goddag")}
 \end{REPL}
 
 
@@ -191,13 +193,39 @@ scala> Vector(12, 3, 41, -8).map(f)
 
 \begin{REPL}
 scala> def räkna(x: Int, f: Int => Int) = f(x,y)
-scala> def dubbla(x: Int, y: Int) = 2 * x
-scala> def halva(x: Int, y: Int) = x / 2
+scala> def dubbla(x: Int) = 2 * x
+scala> def halva(x: Int) = x / 2
 scala> val d = räkna(42, dubbla)
 scala> val h = räkna(42, halva)
 \end{REPL}
 
-\Task \emph{Objekt som moduler.} Ett objekt kan samla användbara funktioner och variabler. Ett objekt som kapslar in användbara koddelar kallas en \textbf{modul}. Moduler kan i sin tur innehålla objekt (moduler). Man kommer åt innehållet i en modul med punktnotation. Med import slipper man punktnotation. Deklarera modulerna \code{stringstat} och \code{Test} nedan i Scala REPL eller i Kojo. 
+\Task\emph{Stegade funktioner (''Curry-funktioner'').} Förklara vad som händer nedan.
+\begin{REPL}
+scala> def sum(a: Int)(b: Int) = a + b
+scala> sum(1)(2)
+scala> val f = sum(42) _
+scala> f(1)
+scala> val inc = sum(1) _
+scala> val dec = sum(-1) _
+scala> inc(42)
+scala> dec(42)
+\end{REPL}
+
+\Task \emph{Objekt som moduler.} 
+
+\Subtask Lär dig följande terminologi utantill: 
+
+\begin{itemize}[noitemsep, nolistsep]
+\item Ett objekt som samlar funktioner och variabler kallas även en \textbf{modul}. 
+\item Funktioner i objekt kallas även \textbf{metoder}. 
+\item Variabler och metoder i objekt kallas \textbf{medlemmar}. 
+\item Moduler kan i sin tur innehålla moduler, i godtyckligt nästlingsdjup. 
+\item Man kommer åt innehållet i en modul med \textbf{punktnotation}. 
+\item Med \textbf{import} slipper man punktnotation. 
+\item Ett objekt med variabler sägs ha ett \textbf{tillstånd}.
+\end{itemize}
+
+\Subtask Deklarera modulerna \code{stringstat} och \code{Test} nedan i REPL eller i Kojo. 
 
 \begin{Code}
 object stringstat {
@@ -238,10 +266,10 @@ object Test {
 \Subtask Vilket av objekten i modulen \code{stringstat} har tillstånd och vilket av objekten är tillståndslöst? Vad består tillståndet av?
 
 
-\Task \emph{Äkta funktioner.} En \textbf{äkta funktion} ger alltid samma resultat med samma argument. Vilka funktioner i objektet \code{findPurity} nedan är äkta funktioner? Anropa de funktioner som inte är äkta i REPL och visa att de kan ge olika resultat för samma argument.
+\Task \emph{Äkta funktioner.} En \textbf{äkta funktion} ger alltid samma resultat med samma argument.  
 
 \begin{Code}
-object findPurity {
+object inSearchOfPurity {
   var x = 0
   val y = x
   def inc(i: Int) = i + 1
@@ -253,53 +281,25 @@ object findPurity {
 }
 \end{Code}
 
+\Subtask\Pen Vilka funktioner i objektet \code{inSearchOfPurity} är äkta funktioner?
+
+\Subtask \label{subtask:nonpure} Anropa de funktioner som inte är äkta i REPL och demonstrera med exempel att de kan ge olika resultat för samma argument.
+
+\Subtask Vad objektets tillstånd efter dina körningar i uppgift \ref{subtask:nonpure}? 
+
+\Subtask Vilken del av tillståndet i objektet är oföränderligt?
 
 
 
-\Task Föränderlighet och oföränderlighet.
+\Task Funktioner är objekt med en \code{apply}-metod.
 
-\Subtask Innan du kör nedan kod: Försök lista ut vad som kommer skrivas ut. Rita minnessituationen efter varje tilldelning.
 
-\begin{Code}
-println("\n--- Example 1: mutable value assigmnent")
-var x1 = 42
-var y1 = x1
-x1 = x1 + 42
-println(x1)
-println(y1)
-\end{Code}
 
-\Subtask Innan du kör nedan kod: Försök lista ut vad som kommer skrivas ut. Rita minnessituationen efter varje tilldelning.
+\Task Skillnaden mellan \code{val}, \code{lazy val} och \code{def}.
 
-\begin{Code}
-println("\n--- Example 2: mutable object reference assignment")
-class MutableInt(private var i: Int) {
-  def +(a: Int): MutableInt = { i = i + a; this }
-  override def toString = i.toString
-}
-var x2 = new MutableInt(42)
-var y2 = x2
-x2 = x2 + 42
-println(x2)
-println(y2)
-\end{Code}
 
-\Subtask Innan du kör nedan kod: Försök lista ut vad som kommer skrivas ut. Rita minnessituationen efter varje tilldelning.
+\Task \emph{Rekursion.}
 
-\begin{Code}
-println("\n--- Example 3: immutable object reference assignment")
-class ImmutableInt(val i: Int) {
-  def +(a: Int): ImmutableInt = new ImmutableInt(i + a) 
-  override def toString = i.toString
-}
-var x3 = new ImmutableInt(42)
-var y3 = x3
-x3 = x3 + 42
-println(x3)
-println(y3)
-\end{Code}
-
-\Subtask\Pen Vad finns det för fördelar med oföränderliga objekt?
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
