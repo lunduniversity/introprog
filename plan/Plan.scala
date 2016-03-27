@@ -15,7 +15,9 @@ trait Plan {
       id = "intro", exercise = "expressions", lab = "kojo", contents = """
       | sekvens, alternativ, repetition, abstraktion, programmeringsspråk,
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
-      | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
+      | virtuell maskin, REPL,  
+      | literal, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
+      | println, typen Unit, enhetsvärdet (),  
       | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random,
       | logiska uttryck, de Morgans lagar, while-sats, for-sats, 
       """.stripTrim),
@@ -35,10 +37,10 @@ trait Plan {
       | definera funktion, anropa funktion,
       | parameter, returtyp, värdeandrop, namnanrop, default-argument, namngivna argument,
       | applicera funktion på alla element i en samling, procedur, 
-      | typen Unit och värdet (),  
       | värdeanrop vs namnanrop, uppdelad parameterlista, skapa egen kontrollstruktur, 
-      | objekt, modul, punktnotation, tillstånd,
-      | funktionsvärde, funktionstyp, äkta funktion, stegad funktion, apply, lazy val,     
+      | objekt, modul, punktnotation, tillstånd, metod, medlem, 
+      | funktionsvärde, funktionstyp, äkta funktion, stegad funktion, apply, lazy val, 
+      | lokala funktioner,    
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
       """.stripTrim),
 
@@ -74,7 +76,7 @@ trait Plan {
     Module("Arv, Gränssnitt", 
       id = "polymorf", exercise = "traits", lab = "turtlerace-team", contents = """
       | klass, arv, polymorfism, likhet, equals, asInstanceOf,
-      | accessregler vid arv, protected, private[this],
+      | accessregler vid arv, protected, private[this], final,
       | abstrakt klass, trait, inmixning, klass vs trait, 
       | Any vs Nothing, 
       """.stripTrim),
