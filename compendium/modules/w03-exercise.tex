@@ -40,7 +40,7 @@ scala> öka(42)
 \Task \emph{Funktion med flera parametrar.} Definiera i REPL två funktioner \code{sum} och \code{diff} med två heltalsparametrar som returnerar summan respektive differensen av argumenten: \\
 \code{def sum(x: Int, y: Int): Int = x + y} \\
 \code{def diff(x: Int, y: Int): Int = x - y} \\
-Vad har nedan uttryck för värden?
+Vad har nedan uttryck för värden? Förklara vad som händer.
 
 \Subtask \code{diff(0, 100)}
 
@@ -73,7 +73,7 @@ scaka> skrivNamn(efternamn = "Triangelsson", förnamn = "Stina")
 
 
 
-\Task \emph{Applicera en funktion på elementen i en samling.} Använd dina funktioner \code{öka} och \code{minska} från uppgift \ref{task:funcall}. Vad har nedan uttryck för värde?
+\Task \emph{Applicera en funktion på elementen i en samling.} Använd dina funktioner \code{öka} och \code{minska} från uppgift \ref{task:funcall}. Vad har nedan uttryck för värde? Förklara vad som händer.
 
 \Subtask \code{for (i <- 0 to 4) yield öka(i)}
 
@@ -112,7 +112,7 @@ Vad skriver nedan satser ut? Förklara vad som händer.
 \Subtask\Pen Varför är det bra att explicit ange \code{Unit} som returtyp för procedurer?
 
 
-\Task \emph{Värdeanrop och namnanrop (fördröjd evaluering).} Deklarera nedan funktioner i REPL eller Kojo.
+\Task \emph{Värdeanrop och namnanrop (fördröjd evaluering, ''lata'' argument).} Deklarera nedan funktioner i REPL eller Kojo.
 
 \begin{Code}
 def snark = {print("snark "); Thread.sleep(1000); 42}
@@ -146,9 +146,7 @@ scala> görDettaTvåGånger{println("goddag")}
 \end{REPL}
 
 
-\Task \emph{Uppdelad parameterlista.} Man kan dela upp parametrarna till en funktion i flera parameterlistor.
-
-\Subtask Förklara vad som händer här:
+\Task \emph{Uppdelad parameterlista.} Man kan dela upp parametrarna till en funktion i flera parameterlistor. Förklara vad som händer här:
 \begin{REPL}
 scala> def add(a: Int)(b: Int) = a + b
 scala> add(22)(20)
@@ -168,7 +166,7 @@ scala> upprepa(1000){
   print(tärning + " ")
 }
 \end{REPL}
-Förklara vad som händer ovan.
+Förklara vad som händer ovan. (Det är så som \code{upprepa} i Kojo är definierad.)
 
 
 \Task \emph{Funktion som värde.} Funktioner är äkta värden i Scala.
@@ -295,10 +293,129 @@ object inSearchOfPurity {
 
 
 
-\Task Skillnaden mellan \code{val}, \code{lazy val} och \code{def}.
+\Task \emph{Fördröjd initialisering (''lata'' variabler).} 
+
+\Subtask \label{subtask:delayalloc} Förklara vad som händer här:
+\begin{REPL}
+scala> val olat = 42
+scala> lazy val lat = 42
+scala> println(lat)
+scala> val nu = {Thread.sleep(1000); println("nu"); 42}
+scala> lazy val sen = {Thread.sleep(1000); println("sen"); 42}
+scala> def igen = {Thread.sleep(1000); println("hver gang"); 42}
+scala> println(nu)
+scala> println(sen)
+scala> println(igen)
+scala> println(nu)
+scala> println(sen)
+scala> println(igen)
+scala> object m {lazy val stor = Array.fill(1e9.toInt)(liten); val liten = 42}
+scala> m.liten
+scala> m.stor
+\end{REPL}
+
+\Subtask\Pen Vad är skillnaden mellan \code{val}, \code{lazy val} och \code{def}, vad gäller \emph{när} evalueringen sker?
 
 
-\Task \emph{Rekursion.}
+\Subtask \label{subtask:forwardref} Förklara vad som händer här:
+\begin{REPL}
+scala> object objektÄrLata { val sen = { println("nu!"); 42 } }
+scala> objektÄrLata
+scala> objektÄrLata.sen
+scala> {val x = y; val y = 42}
+scala> object buggig {val a = b; val b = 42}
+scala> buggig.a
+scala> object funkar {lazy val a = b; val b = 42}
+scala> funkar.a
+scala> object nowarning {val many = Array.fill(10)(one); val one = 1}
+scala> nowarning.many
+\end{REPL}
+
+\Subtask\Pen Med ledning av uppgift \ref{subtask:delayalloc} och uppgift \ref{subtask:forwardref}, beskriv två olika situationer när kan man ha nytta av \code{lazy val}?
+
+
+\Task \emph{Aktiveringspost.} Antag att vi bara kan addera eller subtrahera med ett. Då kan man ändå skapa en additionsfunktion på nedan (ganska omständliga) sätt. Skriv nedan program i en editor, kompilera och exekvera. 
+\begin{Code}
+object Count {
+  def inc(x: Int) = {println("inc[x = " + x + "]"); x + 1}
+  def dec(x: Int) = {println("dec[x = " + x + "]"); x - 1}
+
+  def add(x: Int, y: Int) = {
+    println("add[x = " + x + ", y = " + y + "]")
+    var result = x; 
+    var i = 0; 
+    while (i < math.abs(y)){
+      result = if (y >= 0) inc(result) else dec(result)
+      i = i + 1
+    }
+    result
+  }
+
+  def main(args: Array[String]): Unit = {
+    val x =  inc(dec(inc(0)))
+    println(x)
+    val y = add(1, add(1, add(1, -2)))
+    println(y)
+  }
+}
+\end{Code}
+
+\Subtask Vad skrivs ut? Förklara vad som händer.
+
+\Subtask\Pen Rita hur anropsstacken förändras under exekveringen av main-metoden.
+
+
+\Task \emph{Lokala funktioner.} Skapa nedan program i en editor, kompilera och exekvera. I programmet nedan har metoden \code{add} två lokala funktioner som skiljer sig från metoderna med samma namn. 
+\begin{Code}
+object Count {
+  def inc(x: Int) = x + 1
+  def dec(x: Int) = x - 1
+
+  def add(x: Int, y: Int) = {
+    def inc(x: Int) = {println("inc[x = " + x + "]"); x + 1}
+    def dec(x: Int) = {println("dec[x = " + x + "]"); x - 1}
+    println("add[x = " + x + ", y = " + y + "]")
+    var result = x; 
+    var i = 0; 
+    while (i < math.abs(y)){
+      result = if (y >= 0) inc(result) else dec(result)
+      i = i + 1
+    }
+    result
+  }
+
+  def main(args: Array[String]): Unit = {
+    val x =  inc(dec(inc(0)))
+    println(x)
+    val y = add(1, add(1, add(1, -2)))
+    println(y)
+  }
+}
+\end{Code}
+
+\Subtask Vad skrivs ut? Förklara vad som händer.
+
+\Subtask\Pen Vad är fördelen med lokala funktioner?
+
+
+
+\Task \emph{Rekursion.} Förklara vad som händer nedan. 
+
+\begin{REPL}
+scala> def countdown(x: Int): Unit = if (x >0) {println(x); countdown(x -1)}
+scala> countdown(10)
+scala> countdown(-1)
+scala> def eternal(x: Int): Unit = {println(x); eternal(x-1)}
+scala> eternal(10)
+scala> def finalCountdown(x: Int): Int = {println(x); finalCountdown(x-1); 0}
+scala> finalCountdown(10)
+scala> def signum(a: Int): Int = if (a >= 0) 1 else -1 
+scala> def add(x: Int, y: Int): Int = 
+         if (y == 0) x else add(x + 1, y - signum(y))
+scala> add(100,100)
+scala> add(Int.MaxValue, 0)
+scala> add(0, Int.MaxValue)
+\end{REPL}
 
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
@@ -307,4 +424,9 @@ object inSearchOfPurity {
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task 
+\Task Kolla bajtkoden.
+\begin{REPL}
+scala> def plus(x: Int, y: Int) = x + y
+scala> :javap plus
+\end{REPL}
+
