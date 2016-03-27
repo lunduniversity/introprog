@@ -40,7 +40,7 @@ trait Plan {
 
     Module("Datastrukturer", 
       id = "data", exercise = "data", lab = "textfiles", contents = """
-      | tupler, klasser, case-klasser, case-object, enum i java ???,
+      | tupler, klasser, case-klasser, case-object, 
       | objektorientering, attribut (fält), medlemmar, metoder, 
       | konstanter vs föränderlighet, referensvariabler vs enkla värden, referenstilldelning, 
       | scala.Any, scala.AnyVal, scala.AnyRef, java.lang.Object
@@ -103,6 +103,7 @@ trait Plan {
       | skillnader mellan Scala och Java, 
       | for-sats i Java, java for-each i Java, 
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
+      | enum i java ???,
       """.stripTrim),
 
     Module("Trådar, Web, Android", 
