@@ -399,16 +399,23 @@ object Count {
 
 
 
-\Task \emph{Rekursion.} Förklara vad som händer nedan. 
+\Task \emph{Rekursion.} 
+
+\Subtask Förklara vad som händer nedan. 
 
 \begin{REPL}
-scala> def countdown(x: Int): Unit = if (x >0) {println(x); countdown(x -1)}
+scala> def countdown(x: Int): Unit = if (x > 0) {println(x); countdown(x -1)}
 scala> countdown(10)
 scala> countdown(-1)
-scala> def eternal(x: Int): Unit = {println(x); eternal(x-1)}
-scala> eternal(10)
-scala> def finalCountdown(x: Int): Int = {println(x); finalCountdown(x-1); 0}
-scala> finalCountdown(10)
+scala> def finalCountdown(x: Byte): Unit = 
+         {println(x); Thread.sleep(100); finalCountdown((x-1).toByte); 1 / x}
+scala> finalCountdown(Byte.MaxValue)
+\end{REPL}
+
+\Subtask Vad händer om du gör satsen som riskerar division med noll \emph{före} det rekursiva anropet i funktionen \code{finalCountdown} ovan?
+
+\Subtask Förklara vad som händer nedan. Varför tar sista raden längre tid än näst sista raden?
+\begin{REPL}
 scala> def signum(a: Int): Int = if (a >= 0) 1 else -1 
 scala> def add(x: Int, y: Int): Int = 
          if (y == 0) x else add(x + 1, y - signum(y))
@@ -418,15 +425,64 @@ scala> add(0, Int.MaxValue)
 \end{REPL}
 
 
+
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task 
+\Task Visa anropsstacken genom att kasta undantag.
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
+
+
 \Task Kolla bajtkoden.
 \begin{REPL}
-scala> def plus(x: Int, y: Int) = x + y
-scala> :javap plus
+scala> def plusxy(x: Int, y: Int) = x + y
+scala> :javap plusxy
 \end{REPL}
+
+\Subtask Leta upp raden \code{public int plusxy(int, int);} och studera koden efter \code{Code:} och försök gissa vilken instruktion som utför själva additionen.
+
+\Subtask Lägg till en parameter till: \\ \code{def plusxyz(x: Int, y: Int, z: Int) = x + y + z}
+\\ och studera bajtkoden med \code{:javap plusxyz}. Vad skiljer bajtkoden mellan \code{plusxy} och \code{plusxyz}?
+
+\Subtask\Pen Läs om bajtkod här: \href{https://en.wikipedia.org/wiki/Java\_bytecode}{en.wikipedia.org/wiki/Java\_bytecode}. Vad betyder den inledande bokstaven i additionsinstruktionen?
+
+
+\Task Undersök svansrekursion genom att kasta undantag. Förklara vad som händer. Kan du hitta bevis för att kompilatorn kan optimera rekursionen till en vanlig loop?
+
+\begin{REPL}
+scala> def explode = throw new Exception("BANG!!!")
+scala> explode
+scala> lastException.printStackTrace
+scala> def countdown(n: Int): Unit = 
+         if (n == 0) explode else countdown(n-1)
+scala> countdown(10)
+scala> lastException.printStackTrace
+scala> def countdown2(n: Int): Unit = 
+         if (n == 0) explode else {countdown2(n-1); print("no tailrec")}
+scala> countdown2(10)
+scala> countdown2(1000)
+scala> lastException
+scala> lastException.getStackTrace.size
+scala> :javap countdown
+scala> :javap countdown2
+\end{REPL}
+
+\Task \emph{\code{@tailrec}-annotering.} Du kan be kompilatorn att ge felmeddelande om den inte kan optimera koden till en loop utan aktiveringsposter på stacken. Prova nedan i REPL och förklara vad som händer. 
+\begin{REPL}
+scala> def countNoTailrec(n: Long): Unit = 
+         if (n <= 0L) println("Klar! " + n) else {countNoTailrec(n-1L); ()}
+scala> countNoTailrec(1000L)
+scala> countNoTailrec(100000L) 
+scala> import scala.annotation.tailrec
+scala> @tailrec def countNoTailrec(n: Long): Unit = 
+         if (n <= 0L) println("Klar! " + n) else {countNoTailrec(n-1L); ()}        
+scala> @tailrec def countTailrec(n: Long): Unit = 
+         if (n <= 0L) println("Klar! " + n) else countTailrec(n-1L)
+scala> countTailrec(1000L)
+scala> countTailrec(100000L)
+scala> countTailrec(Int.MaxValue.toLong * 2L)
+\end{REPL}
+
+
 
