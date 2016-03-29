@@ -118,11 +118,11 @@
 \renewcommand{\theSubtaskCounter}{\alph{SubtaskCounter}}
 
 \newenvironment{Goals}%
-{\subsubsection{Mål}\begin{itemize}[nosep]}%
+{\subsubsection{Mål}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
 \newenvironment{Preparations}%
-{\subsubsection{Förberedelser}\begin{itemize}[nosep]}%
+{\subsubsection{Förberedelser}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
 
