@@ -83,8 +83,60 @@ scala> k.toString
 
 \Subtask\Pen Ibland räcker det fint med en tupel, men ofta vill man ha en klass istället. Beskriv några fördelar med en Konto-klassen ovan jämfört med en tupel av typen \code{(Int, Long)}.
 
+\begin{REPL}
+scala> var k3 = (0, 12345L)
+scala> k3 = (k3._1 + 100, k3._2)
 
-\Task Klass med attribut och metoder.
+\end{REPL}
+
+
+\Task Publikt versus privat attribut. 
+
+\begin{REPL}
+scala> class Konto1(val nummer: Long){ var saldo = 0 }
+scala> val k1 = new Konto1(12345678901L)
+scala> k1.nummer
+scala> k1.saldo += 1000
+scala> class Konto2(val nummer: Long){ private var saldo = 0 }
+scala> val k2 = new Konto2(12345678901L)
+scala> k2.nummer
+scala> k2.saldo += 1000
+\end{REPL}
+
+\Subtask Vad händer ovan?
+
+\Subtask Förbättra implementationen av klassen \code{Konto} enligt nedan:
+
+\begin{Code}
+class Konto(val nummer: Long){ 
+  private var saldo = 0
+  def in(belopp: Int): Unit = {saldo += belopp}
+  def ut(belopp: Int): Unit = {saldo -= belopp}
+  def show: Unit = 
+    println("Konto Nr: " + nummer + " saldo: " + saldo) 
+}
+
+object Main {
+  def main(args: Array[String]): Unit = {
+    val k = new Konto(1234L)
+    k.show
+    k.in(1000)
+    println("Uttag: " + k.ut(500))
+    println("Uttag: " + k.ut(1000))
+    k.show
+  }
+}
+\end{Code}
+
+\Subtask Spara koden i en fil, kompilera och kör. Testa även vad som händer om du försöker komma åt attributet \code{saldo} i main-metoden med t.ex. \code{println(k.saldo)} eller \code{k.saldo += 1000}. 
+
+\Subtask Vi ska nu förhindra överuttag. Ändra i metoden \code{ut} så att den får signaturen \code{ut(belopp: Int): (Int Int) = ???} och implementera \code{ut} så att den returnerar både beloppet man verkligen kan ta ut och kvarvarande saldo. Om man försöker ta ut mer än det finns på kontot så ska saldot bli 0 och man får bara ut det som finns kvar. Spara, kompilera, kör. 
+
+\Subtask Förbättra metoderna \code{in} och \code{ut} så att man inte kan sätta in eller ta ut negativa belopp.
+
+\Subtask Vad är fördelen med att göra föränderliga attribut privata och bara påverka deras värden indirekt via metoder?
+
+
 
 \Task Föränderlighet och oföränderlighet.
 
@@ -130,6 +182,9 @@ println(y3)
 \end{Code}
 
 \Subtask\Pen Vad finns det för fördelar med oföränderliga objekt?
+
+
+\Task Skapa ett nytt konto
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
