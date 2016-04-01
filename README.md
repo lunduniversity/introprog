@@ -83,7 +83,7 @@ The directories are organized in this hierarchy:
 
 * Synching your fork: If you install the GitHib client (avaliable for Win and Mac but not Linux) called "GitHub desktop" https://desktop.github.com/ you can keep your fork in synch with the upstream repo by a single click in the gui. Otherwise, this is how to pull changes from upstream to your fork with git commands: https://help.github.com/articles/syncing-a-fork/ 
 
-* Before you change locally, do `git pull` or press the synch button in the GitHub desktop gui. Then when you are ready do `git commit -am "msg"` and then `git posh`, or commit in the gui and press the synch button.
+* Before you change locally, do `git pull` or press the synch button in the GitHub desktop gui. Then when you are ready do `git commit -am "msg"` and then `git push`, or commit in the gui and press the synch button.
 
 * When you are ready with a change that is good enough to be incorporated in upstream, then create a pull request: https://help.github.com/articles/creating-a-pull-request/
 
