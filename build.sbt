@@ -2,11 +2,34 @@ import sbt._
 import Process._
 import Keys._
 
+
+lazy val hello = taskKey[Unit]("Prints welcome message")
+
+hello := {
+  println("*** WELCOME TO lunduniversity/introprog")
+}
+
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
   version := "16.1",
   scalaVersion := "2.11.7"
 )
+
+
+lazy val plan = (project in file("plan")).
+  settings(commonSettings: _*).
+  settings(
+    name := "plan"
+  ) 
+
+lazy val workspace = (project in file("workspace")).
+  settings(commonSettings: _*).
+  settings(
+    name := "workspace",
+    EclipseKeys.withSource := true
+  )
+
+
 
 // ************** cmd util functions
 
@@ -20,47 +43,32 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
   val exitValue = cmd.#>(cmdOutputFile).#&&(cmd).#>(cmdOutputFile).run.exitValue  
   if (exitValue != 0) {
     error(s"\n*** ERROR: pdflatex exit code: $exitValue\nSee pdflatex output in: $cmdOutputFile")
-  }
+  } else println(s"     Log file: $cmdOutputFile")
 }
 
 // ************** 
 
-lazy val pdfslides = taskKey[Unit]("Compile slides in slides/latex using pdflatex")
+lazy val pdf = taskKey[Unit]("Compile slides and compendium using pdflatex")
 
-lazy val slides = (project in file("slides")).
-  settings(commonSettings: _*).
-  settings(
-    name := "slides",
-    EclipseKeys.skipProject := true,
-    pdfslides := { 
-      println(" ******* compiling slides to pdf*******") 
-      val workDir = file("slides")
-      val texFiles = (workDir * "*.tex").get
-      for (texFile <- texFiles) {
-        println(s" *** pdflatex $texFile")
-        runPdfLatexCmd(texFile, workDir)         
-      } 
-    }
-  )
-
-
-lazy val workspace = (project in file("workspace")).
-  settings(commonSettings: _*).
-  settings(
-    name := "workspace",
-    EclipseKeys.withSource := true
-  )  
-  
-lazy val compendium =   (project in file("compendium")).
-  settings(commonSettings: _*).
-  settings(
-    name := "compendium"
-  )
-
-// ***********************************************************
+pdf := { 
+  println(" ******* compiling slides to pdf*******") 
+  val workDir = file("slides")
+  val texFiles = (workDir * "*.tex").get
+  for (texFile <- texFiles) {
+    println(s" *** pdflatex $texFile")
+    runPdfLatexCmd(texFile, workDir)         
+  } 
+  println(" ******* compiling compendium to pdf*******") 
+  runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))         
+} 
 
 lazy val root = (project in file(".")).
+  aggregate(workspace, plan).
   settings(commonSettings: _*).
   settings(
     name := "introprog"
-  )
+  ) 
+
+// ***********************************************************
+
+

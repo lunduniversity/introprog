@@ -16,6 +16,16 @@ object StringExtras {
     }
   }
   
+
+  implicit class StringToPath(s: String) {
+    import java.nio.file.{Paths, Files}
+    import java.nio.charset.StandardCharsets.UTF_8
+    
+    def toPath = Paths.get(s)
+  }
+
+  
+  
   implicit class StringLatexEscaper(s: String) {
     def latexEscape = {
       val escapeChars = "&_"
