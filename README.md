@@ -85,7 +85,7 @@ The directories are organized in this hierarchy:
 
 * When you are ready with a change that is good enough to be incorporated in upstream, then create a pull request: https://help.github.com/articles/creating-a-pull-request/
 
-#### Guidelines
+#### Writing commit messages
 
 * Write concise and informative [commit messages](http://chris.beams.io/posts/git-commit/) that explains why the commit was made. 
 * Start each commit message with a direct verb, preferably one of the following:
