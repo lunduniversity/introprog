@@ -25,6 +25,30 @@ The directories are organized in this hierarchy:
 
 ## How to contribute to this repo
 
+### Coding style guides
+
+When learning how to program it is more important to write *something* and start experimenting in a playful way, than to forcefully adhere to a particular coding standard; but students should also (eventually) understand the benefits of having a coding standard. 
+
+In this course we pragmatically follow these style guides: 
+
+* Scala style:
+  * The Scala style guide: http://docs.scala-lang.org/style/ 
+  * A Scala best practice guide: https://github.com/alexandru/scala-best-practices
+* Java style:
+  * http://www.oracle.com/technetwork/java/codeconventions-150003.pdf
+
+When you make contributions to code in this repo and when you review pull-requests, check that the contributions follow the above guidlines pragmatically. In particular, **lab assigments stubs** and **answers to exercises** should, if there are no special reasons not to, follow the above style guides.
+
+Here are some other inspiring style guides that illustrate the variety in what different organisations impose:
+* Scala:
+  * http://twitter.github.io/effectivescala/
+  * https://github.com/databricks/scala-style-guide
+  * https://github.com/paypal/scala-style-guide
+* Java:
+  * https://google.github.io/styleguide/javaguide.html
+  * https://wiki.eclipse.org/Coding_Conventions 
+  * https://www.securecoding.cert.org/confluence/display/java/Java+Coding+Guidelines
+
 ### Latex commands used in `compedium/` and `slides/`
 
 * `\begin{Slide}` and `\end{Slide}` defined in `slides/lecture-notes.cls` is used to generate beamer slides and in `compendium/compendium.cls` and to generate framed text in compendium chapters together with lecture notes that appear after each slide.
