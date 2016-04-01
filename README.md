@@ -67,9 +67,7 @@ The directories are organized in this hierarchy:
 
 ## How to contribute to this repo
 
-### Using git and GitHub
-
-#### Fork and clone
+### Fork and clone
 
 * Learn the basics about git, especially the "Getting Started" and "Git Basics" sections in this book: https://git-scm.com/book/en/v2 
 
@@ -81,13 +79,21 @@ The directories are organized in this hierarchy:
 
 * **Clone** your fork to your local computer: https://help.github.com/articles/cloning-a-repository/ 
 
-* Synching your fork: If you install the GitHib client (avaliable for Win and Mac but not Linux) called "GitHub desktop" https://desktop.github.com/ you can keep your fork in synch with the upstream repo by a single click in the gui. Otherwise, this is how to pull changes from upstream to your fork with git commands: https://help.github.com/articles/syncing-a-fork/ 
+### Keeping your fork in synch
 
-* Before you change locally, do `git pull` or press the synch button in the GitHub desktop gui. Then when you are ready do `git commit -am "msg"` and then `git push`, or commit in the gui and press the synch button.
+* Synching your fork: If you install the GitHib client (avaliable for Win and Mac but not Linux) called "GitHub desktop" https://desktop.github.com/ you can keep your fork in synch with the upstream repo by a single click in the gui. 
 
-* When you are ready with a change that is good enough to be incorporated in upstream, then create a pull request: https://help.github.com/articles/creating-a-pull-request/
+* Otherwise, this is how to pull changes from upstream to your fork with git commands: https://help.github.com/articles/syncing-a-fork/ 
 
-#### Writing commit messages
+### Making contributions
+
+* Before you change locally, make sure your fork is in synch (see above). Frequently do `git pull` or press the synch button in the GitHub desktop gui. 
+
+* Whenever you are ready with an incremental change do `git commit -am "msg"` and then `git push`, or commit in the gui and press the synch button.
+
+* When you are ready with a contribution that is good enough to be incorporated in upstream, then create a pull request: https://help.github.com/articles/creating-a-pull-request/
+
+### Writing commit messages
 
 * Write concise and informative [commit messages](http://chris.beams.io/posts/git-commit/) that explains why the commit was made. 
 * Start each commit message with a direct verb, preferably one of the following:
