@@ -54,7 +54,7 @@ The directories are organized in this hierarchy:
 
 * Install sbt: http://www.scala-sbt.org/release/docs/Setup.html
 
-* Download this repo: https://github.com/lunduniversity/introprog/archive/master.zip or make a fork and then a clone as explained [below](https://github.com/lunduniversity/introprog#how-to-contribute-to-this-repo))
+* Download this repo: https://github.com/lunduniversity/introprog/archive/master.zip (or make a fork and then a clone as explained [below](https://github.com/lunduniversity/introprog#how-to-contribute-to-this-repo))
 
 * Unpack the zip in some suitable directory named introprog.
 
