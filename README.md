@@ -56,9 +56,9 @@ Here are some other inspiring style guides that illustrate the variety in what d
 * Check out already written `.tex` and compare with the compiled `.pdf` to see the conventions we use.
 
 * Examples: 
-  * `\begin{Slide}` and `\end{Slide}` defined in `slides/lecture-notes.cls` is used to generate beamer slides and in `compendium/compendium.cls` and to generate framed text in compendium chapters together with lecture notes that appear after each slide.
   * `begin{Code}` ... `\end{Code}` and `\scalainputlisting{examples/hello-app.scala}` is used for Scala code 
   * `\begin{Code}[language=Java]` ... `\end{Code}` and `\javainputlisting{examples/Hi.java}` is used for Java code
+  * `\begin{Slide}` and `\end{Slide}` defined in `slides/lecture-notes.cls` and in `compendium/compendium.cls` is used to generate beamer slides and to generate framed text in compendium chapters together with lecture notes that appear after each slide.
 
 
  
