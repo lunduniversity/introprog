@@ -52,9 +52,11 @@ The directories are organized in this hierarchy:
 
 * Install sbt: http://www.scala-sbt.org/release/docs/Setup.html
 
-* Clone this repo: https://help.github.com/articles/cloning-a-repository/
+* Download this repo: https://github.com/lunduniversity/introprog/archive/master.zip or make a fork and then a clone as explained [below](https://github.com/lunduniversity/introprog#how-to-contribute-to-this-repo))
 
-* run these sbt commands in a terminal window in the root directory of the clone on your local machine:
+* Unpack the zip in some suitable directory named introprog.
+
+* run these sbt commands in a terminal window in the introprog directory:
   * `sbt compile` to compile all sources 
   * `sbt eclipse` to make eclipse project files 
   * `sbt plan/run` to generate the planning files 
@@ -65,7 +67,7 @@ The directories are organized in this hierarchy:
 
 ### Using git and GitHub
 
-#### Getting started
+#### Fork and clone
 
 * Learn the basics about git, especially the "Getting Started" and "Git Basics" sections in this book: https://git-scm.com/book/en/v2 
 
