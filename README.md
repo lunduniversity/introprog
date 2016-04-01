@@ -2,6 +2,8 @@
 
 This is the repo of a course given by Lund University called "Introduction to Programming" using Scala and Java. The repo contains course material in Swedish and some English along with code examples and libraries used in exercises and labs.
 
+Course homepage (in Swedish): http://cs.lth.se/pgk/ 
+
 ## Contents of this repo
 
 The main directories are:
