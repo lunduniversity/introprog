@@ -29,13 +29,15 @@ The directories are organized in this hierarchy:
 
 #### Getting started
 
-* Get an account at github if you don't have one already. Recommended user name if in doubt: firstnamefamilyname
+* Learn the basics about git, especially the "Getting started" section in this book: https://git-scm.com/book/en/v2 
+
+* Get an account at github if you don't have one already. Recommended user name if in doubt: `firstnamefamilyname` with no capital letters and no hyphens.
 
 * Install git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 
-* Make a fork of lunduniverity/introprog in GitHub to your own GitHub account: https://help.github.com/articles/fork-a-repo/ 
+* Make a **fork** of lunduniverity/introprog (this repo is from now on called "**upstream**") in GitHub to your own GitHub account: https://help.github.com/articles/fork-a-repo/ 
 
-* Clone your fork to your local computer: https://help.github.com/articles/cloning-a-repository/ 
+* **Clone** your fork to your local computer: https://help.github.com/articles/cloning-a-repository/ 
 
 * Synching your fork: If you install the GitHib client (avaliable for Win and Mac but not Linux) called "GitHub desktop" https://desktop.github.com/ you can keep your fork in synch with the upstream repo by a single click in the gui. Otherwise, this is how to pull changes from upstream to your fork with git commands: https://help.github.com/articles/syncing-a-fork/ 
 
@@ -45,7 +47,8 @@ The directories are organized in this hierarchy:
 
 #### Guidelines
 
-* Be careful when you write commit messages: make them informative and start each commit message with one of the following words:
+* Write concise and informative [commit messages](http://chris.beams.io/posts/git-commit/) that explains why the commit was made. 
+* Start each commit message with a direct verb, preferably one of the following:
   * `add` when you have created new stuff that was not there before
   * `update` when you have changed existing stuff
   * `fix` when you have corrected a bug or fixed a typo etc.
@@ -53,8 +56,8 @@ The directories are organized in this hierarchy:
   * `rename` when you have renamed files or other stuff without changing appearance/meaning
   * `refactor` when you have changed things structurally but not changed actual appearance/meaning
 * Example of commit messages
-  * `git commit -am "update exercise w03 improve explanation"
-  * `git commit -am "add task in exercises w05 vector copy"
+  * `git commit -am "update exercise w03 to improve explanation"`
+  * `git commit -am "add task in exercises w05 vector copy"`
 * Make small commits and commit often. Try to keep commits atomic and only within one file if meaningful.
 * Make sure your change compiles before committing. Do *not* push code that does not compile!
 
@@ -85,9 +88,9 @@ Here are some other inspiring style guides that illustrate the variety in what d
 
 ### Latex guide 
 
-* Make sure you have your tex editor set to UTF-8 encoding. If you get strange errors in relation to swedish characters, this is likely due to problems relating to platform-specific non-utf-8 encodings on mac or windows.
+* Make sure you have your tex editor set to UTF-8 encoding. If you get strange errors in relation to Swedish characters, this is likely due to problems relating to non-UTF-8 encodings on mac or windows. Linux usually works out-of-the-box.
 
-* Install texlive-full to get all extra latex stuff that is needed to compile the tex code in this repo. If you don't know which editor to use, try out textworks.
+* Install texlive-full to get all extra latex stuff that is needed to compile the tex code in this repo. If you don't know which tex editor to use, try textworks.
 
 * Check out the `.cls` files in `compedium/` and `slides/` that provide many useful latex commands.
 
