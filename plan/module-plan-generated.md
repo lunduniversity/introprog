@@ -6,7 +6,7 @@
 | W04 | Datastrukturer          | objektorientering, attribut (fält), medlem, metod, tupel, klass, case-klass, case-object, isInstanceOf, Complex, Rational, föränderlighet vs oföränderlighet, referensvariabler vs enkla värden, referenstilldelning, Any vs AnyVal vs AnyRef, Any vs java.lang.Object, java.util.Random, cslib.window.SimpleWindow, List, Vector, Set, Map, typparameter, generisk samling som parameter, översikt samlingsmetoder, översikt strängmetoder, läsa/skriva textfiler, Source.fromFile, java.nio.file |
 | W05 | Vektoralgoritmer        | vektoralgoritm, algoritm: VECTOR-COPY, in-place vs copy, algoritm: VECTOR-REVERSE, algoritm: VECTOR-REGISTER, java.util.Scanner, java.util.ArrayList, scala.collection.mutable.Buffer |
 | W06 | Klasser, Likhet         | klass, klassparameter, primär konstruktor, alternativ konstruktor, referenslikhet, strukturlikhet, eq vs ==, compareTo, Shape, Point, Rectangle, inkapsling, accessregler, private, public |
-| W07 | Arv, Gränssnitt         | klass, arv, polymorfism, likhet, equals, asInstanceOf, accessregler vid arv, protected, private[this], abstrakt klass, trait, inmixning, klass vs trait, Any vs Nothing |
+| W07 | Arv, Gränssnitt         | klass, arv, polymorfism, likhet, equals, asInstanceOf, accessregler vid arv, protected, private[this], final, abstrakt klass, trait, inmixning, klass vs trait, Any vs Nothing |
 | KS  | KONTROLLSKRIVN.         |  |
 | W08 | Mönster, Undantag       | mönstermatchning, match, Option, null, try, catch, Try, unapply |
 | W09 | Matriser, Typparametrar | matris, nästlade for-satser, designexempel: Tre-i-rad, generisk funktion, generisk klass, matriser i Java vs Scala |

@@ -1,35 +1,73 @@
-# introprog
+# lunduniversity/introprog
 
 This is the repo of a course given by Lund University called "Introduction to Programming" using Scala and Java. The repo contains course material in Swedish and some English along with code examples and libraries used in exercises and labs.
 
 ## Contents of this repo
 
+The main directories are:
+* `compendium` with the course teaching material including lecture notes, exercises, labs, etc.
+  * `modules` with lectures exercises and labs for each week
+  * `generated` with output from execution of `plan/Main.scala` included in the compendium
+* `slides` with lecture notes in project friendly format
+* `workspace` with student workspace including lab code skeletons, examples, code libs etc. 
+* `plan` with module contents and concepts per week
+* `img` images used in compendium and slides
+* `refs` extra readings, background material
+* `teachers` information for teachers
+
 The directories are organized in this hierarchy: 
 
-    ├── compendium
-    │   ├── examples
-    │   ├── generated
-    │   ├── modules
-    │   ├── postchapters
-    │   └── prechapters
-    ├── plan
-    │   ├── concepts
-    │   ├── courseplan
-    ├── slides
-    │   └── body
-    └── workspace
+        $ tree -d -L 2
+        .
+        ├── compendium
+        │   ├── examples
+        │   ├── generated
+        │   ├── modules
+        │   ├── postchapters
+        │   └── prechapters
+        ├── img
+        │   └── kojo
+        ├── plan
+        │   ├── concepts
+        │   ├── courseplan
+        │   └── ideas
+        ├── refs
+        ├── slides
+        │   └── body
+        ├── teachers
+        │   └── course-dev-2016
+        └── workspace
+            ├── cslib
+            ├── week01
+            └── week03
+
 
 ## How to use this repo
 
+* Download the [compedium](https://github.com/lunduniversity/introprog/raw/master/compendium/compendium.pdf).
+
+* Download the [workspace](zipfile to be uploaded). <- TODO ->
+
 ## How to build this repo
+
+* Install sbt: http://www.scala-sbt.org/release/docs/Setup.html
+
+* Clone this repo: https://help.github.com/articles/cloning-a-repository/
+
+* run these sbt commands in a terminal window in the root directory of the clone on your local machine:
+  * `sbt compile` to compile all sources 
+  * `sbt eclipse` to make eclipse project files 
+  * `sbt plan/run` to generate the planning files 
+  * `sbt pdf` to make slides and compendium using pdflatex
+
 
 ## How to contribute to this repo
 
-### GitHub and git guide
+### Using git and GitHub
 
 #### Getting started
 
-* Learn the basics about git, especially the "Getting started" section in this book: https://git-scm.com/book/en/v2 
+* Learn the basics about git, especially the "Getting Started" and "Git Basics" sections in this book: https://git-scm.com/book/en/v2 
 
 * Get an account at github if you don't have one already. Recommended user name if in doubt: `firstnamefamilyname` with no capital letters and no hyphens.
 
@@ -62,7 +100,7 @@ The directories are organized in this hierarchy:
 * Make sure your change compiles before committing. Do *not* push code that does not compile!
 
 
-### Coding style guides
+### Coding style 
 
 When learning how to program it is more important to write *something* and start experimenting in a playful way, than to forcefully adhere to a particular coding standard; but students should also (eventually) understand the benefits of having a coding standard. 
 

@@ -27,10 +27,11 @@ lazy val week03 =(project in file("week03")).
     name := "week03"
   ).dependsOn(cslib)
   
-lazy val root = (project in file(".")). 
+lazy val workspace = (project in file(".")). 
   settings(commonSettings: _*).
   settings(
     name := "workspace" ,
+    EclipseKeys.withSource := true,
     EclipseKeys.skipProject := true,
     EclipseKeys.skipParents in ThisBuild := true  // ??? https://github.com/typesafehub/sbteclipse/wiki/Using-sbteclipse
  )
