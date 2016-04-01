@@ -145,8 +145,8 @@ Here are some other inspiring style guides that illustrate the variety in what d
 * Check out some similar, already written `.tex` document and compare with the compiled `.pdf` to see the commands and conventions we use. 
 
 * Some custom latex commands in our .cls files: 
-  * `\begin{Code}` ... `\end{Code}` and `\scalainputlisting{examples/hello-app.scala}` is used for Scala code 
-  * `\begin{Code}[language=Java]` ... `\end{Code}` and `\javainputlisting{examples/Hi.java}` is used for Java code
+  * `\begin{Code}` ... `\end{Code}` and `\scalainputlisting{examples/hello-app.scala}` are used for Scala code 
+  * `\begin{Code}[language=Java]` ... `\end{Code}` and `\javainputlisting{examples/Hi.java}` are used for Java code
   * `\begin{Slide}` and `\end{Slide}` defined in `slides/lecture-notes.cls` and in `compendium/compendium.cls` is used to generate beamer slides and to generate framed text in compendium chapters together with lecture notes that appear after each slide.
 
 
