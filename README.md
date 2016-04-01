@@ -77,7 +77,7 @@ The directories are organized in this hierarchy:
 
 * Install git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 
-* Make a **fork** of lunduniverity/introprog (this repo is from now on called "**upstream**") in GitHub to your own GitHub account: https://help.github.com/articles/fork-a-repo/ 
+* Make a **fork** of lunduniverity/introprog in GitHub to your own GitHub account: https://help.github.com/articles/fork-a-repo/ 
 
 * **Clone** your fork to your local computer: https://help.github.com/articles/cloning-a-repository/ 
 
