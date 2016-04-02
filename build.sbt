@@ -6,7 +6,7 @@ import Keys._
 lazy val hello = taskKey[Unit]("Prints welcome message")
 
 hello := {
-  println("*** WELCOME TO lunduniversity/introprog")
+  println("===== WELCOME TO lunduniversity/introprog =====")
 }
 
 lazy val commonSettings = Seq(
@@ -29,7 +29,11 @@ lazy val workspace = (project in file("workspace")).
     EclipseKeys.withSource := true
   )
 
+lazy val build = taskKey[Unit]("plan/run before pdf")
 
+lazy val gen = taskKey[Unit]("alias for plan/run")
+
+gen := (run in Compile in plan).toTask("").value
 
 // ************** cmd util functions
 
@@ -66,7 +70,12 @@ lazy val root = (project in file(".")).
   aggregate(workspace, plan).
   settings(commonSettings: _*).
   settings(
-    name := "introprog"
+    name := "introprog",
+    build := Def.sequential(
+      hello, 
+      (run in Compile in plan).toTask(""),
+      pdf
+    ).value 
   ) 
 
 // ***********************************************************
