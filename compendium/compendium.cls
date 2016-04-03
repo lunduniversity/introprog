@@ -199,8 +199,20 @@
       tabsize=2,
       backgroundcolor=\color{black!80},
       frame=single,
+      numbers=left, numberstyle=\color{black}\ttfamily\scriptsize\selectfont
       #1}%
 }{}
+
+\lstnewenvironment{REPLnonum}[1][]{%
+    \lstset{
+      basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
+      language=,otherkeywords={},%
+      tabsize=2,
+      backgroundcolor=\color{black!80},
+      frame=single,
+      #1}%
+}{}
+
 
 \newcommand{\scalainputlisting}[2][]{\lstinputlisting[%
 language=Scala,%
