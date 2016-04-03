@@ -338,6 +338,25 @@ println(y3)
 \Subtask\Pen Vad finns det för fördelar med oföränderliga datastrukturer?
 
 
+\Task \emph{Några samlingar i Scalas standardbibliotek.} En \textbf{samling} är en datastruktur som samlar många objekt av samma typ. I paketet \code{scala.collection} finns en hel massa samlingar som är användbara till olika saker. De har en stor mängd metoder. De olika samlingarna har en stor mängd metoder gemensamt -- därför har man nytta av det man lärt sig om metoderna i en samling när man ska lära sig använda en annan samling. Vi har redan tidigare sett samlingen \code{Vector}. 
+
+\begin{REPL}
+scala> val tärningskast = Vector.fill(10000)((math.random * 6 + 1).toInt)
+scala> tä   // tryck TAB
+scala> tärningskast.  // tryck TAB
+\end{REPL}
+
+\Subtask Ungefär hur många metoder finns det som man kan göra på objekt av typen \code{Vector}?
+
+\Subtask Prova nedan metoder:
+\begin{REPL}
+scala> val tärningskast = Vector.fill(10000)((math.random * 6 + 1).toInt)
+scala> tä   // tryck TAB
+scala> tärningskast.  // tryck TAB
+\end{REPL}
+
+
+\Subtask Läs om metoderna här: och försök förklara vad som händer ovan.
 
 \Task Jämföra List och Vector.
 
@@ -345,6 +364,8 @@ println(y3)
 
 \Subtask Keno-bollar.
 
+
+\Task Map. Huvudstäder.
 
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
@@ -360,7 +381,7 @@ class Account(val number: Long, val maxCredit: Int){
     balance
   }
   
-  def withdraw	(amount: Int): (Int, Int) = if (amount > 0) { 
+  def withdraw(amount: Int): (Int, Int) = if (amount > 0) { 
     val allowedWithdrawal = 
       if (amount < balance + maxCredit) amount 
       else balance + maxCredit 
@@ -381,8 +402,128 @@ object Main {
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task\Pen Undersök vilka metoder som finns i klassen Any här: \href{http://www.scala-lang.org/api/current/\#scala.Any}{http://www.scala-lang.org/api/current/\#scala.Any}. Prova några av metoderna i REPL.
+\Task Undersök vilka metoder som finns i klassen Any här: \href{http://www.scala-lang.org/api/current/\#scala.Any}{http://www.scala-lang.org/api/current/\#scala.Any}. Prova några av metoderna i REPL.
+
+\Task Jämför tidsprestanda mellan List och Vector vid hantering i början och i slutet. Hur snabbt går nedan på din dator? (Nedan är kört med en i7-4790K CPU @ 4.00GHz.) %sudo lshw -class processor
+
+\begin{REPLnonum}
+scala> :paste
+
+def time(n: Int)(block: => Unit): Double =  {
+  def now = System.nanoTime
+  var timestamp = now
+  var sum = 0L
+  var i = 0
+  while (i < n) {
+    block
+    sum = sum + (now - timestamp)
+    timestamp = now
+    i = i + 1
+  }
+  val average = sum.toDouble / n
+  println("Average time: " + average + " ns")
+  average
+}
+
+scala> val l = List.fill(100000)(math.random)
+scala> val v = Vector.fill(100000)(math.random)
+
+scala> (for(i <- 1 to 20) yield time(100000){l.take(10)}).min
+Average time: 47.1852 ns
+Average time: 41.64156 ns
+Average time: 105.53986 ns
+Average time: 41.91562 ns
+Average time: 41.73559 ns
+Average time: 63.17134 ns
+Average time: 52.93756 ns
+Average time: 41.58533 ns
+Average time: 41.68017 ns
+Average time: 60.18881 ns
+Average time: 41.69867 ns
+Average time: 41.60771 ns
+Average time: 60.32759 ns
+Average time: 41.62671 ns
+Average time: 43.88916 ns
+Average time: 70.47824 ns
+Average time: 41.68801 ns
+Average time: 41.67223 ns
+Average time: 41.67262 ns
+Average time: 102.84893 ns
+res85: Double = 41.58533
+
+scala> (for(i <- 1 to 20) yield time(100000){v.take(10)}).min
+Average time: 312.67005 ns
+Average time: 88.60023 ns
+Average time: 73.21829 ns
+Average time: 92.148 ns
+Average time: 91.01078 ns
+Average time: 87.82874 ns
+Average time: 74.04663 ns
+Average time: 94.16038 ns
+Average time: 88.4243 ns
+Average time: 105.88971 ns
+Average time: 98.85731 ns
+Average time: 72.77369 ns
+Average time: 97.04337 ns
+Average time: 90.01969 ns
+Average time: 88.11196 ns
+Average time: 75.20191 ns
+Average time: 93.72112 ns
+Average time: 110.19777 ns
+Average time: 132.4207 ns
+Average time: 324.28702 ns
+res86: Double = 72.77369
+
+scala> (for(i <- 1 to 20) yield time(1000){l.takeRight(10)}).min
+Average time: 247365.43 ns
+Average time: 212801.958 ns
+Average time: 212335.938 ns
+Average time: 212313.427 ns
+Average time: 212524.963 ns
+Average time: 219525.627 ns
+Average time: 223059.563 ns
+Average time: 222426.504 ns
+Average time: 221838.828 ns
+Average time: 223268.567 ns
+Average time: 222739.402 ns
+Average time: 222685.229 ns
+Average time: 223122.599 ns
+Average time: 222683.921 ns
+Average time: 222865.865 ns
+Average time: 222889.118 ns
+Average time: 223247.135 ns
+Average time: 222016.82 ns
+Average time: 223040.299 ns
+Average time: 222624.613 ns
+res87: Double = 212313.427
+
+scala> (for(i <- 1 to 20) yield time(1000){v.takeRight(10)}).min
+Average time: 2665.715 ns
+Average time: 190634.043 ns
+Average time: 773.111 ns
+Average time: 509.008 ns
+Average time: 519.04 ns
+Average time: 418.172 ns
+Average time: 365.54 ns
+Average time: 409.016 ns
+Average time: 353.115 ns
+Average time: 503.679 ns
+Average time: 421.369 ns
+Average time: 388.685 ns
+Average time: 461.725 ns
+Average time: 390.791 ns
+Average time: 381.83 ns
+Average time: 309.667 ns
+Average time: 372.09 ns
+Average time: 312.254 ns
+Average time: 323.925 ns
+Average time: 310.261 ns
+res88: Double = 309.667
+
+\end{REPLnonum}
 
 
-\Task     
+
+\Task Studera skillnader i prestanda mellan olika samlingar här: \\ \href{http://docs.scala-lang.org/overviews/collections/performance-characteristics.html}{docs.scala-lang.org/overviews/collections/performance-characteristics.html} \\
+(Mer om detta i kommande kurser.)
     
