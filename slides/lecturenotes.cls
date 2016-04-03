@@ -178,6 +178,17 @@
       #1}%
 }{}
 
+
+\lstnewenvironment{REPLnonum}[1][]{%
+    \lstset{
+      basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
+      language=,otherkeywords={},%
+      tabsize=2,
+      backgroundcolor=\color{black!80},
+      frame=single,
+      #1}%
+}{}
+
 \newif\ifkompendium
 \kompendiumfalse
 
