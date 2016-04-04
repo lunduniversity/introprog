@@ -56,8 +56,13 @@ Skiss på labbar
  * Kanske extrauppg: modala dialoger med textinput istf readLine/Scanner/arg; bygg vidare på hur JOptionDialog användes i övn 2
 
 ## cardgame
+  * huvudmål: 
+    1. träna på "vektoralgoritmer" alltså indexering i Vector, Array, och ev även "associativa arrayer" alltså en Map
+    1. blanda element SHUFFLE
+    1. registrering, räkna frekvenser 
+  * Uppdrag: simulera eller spela kortspel eller patiens
   * Implementera algoritmen shuffle  (finns redan på samlingar i Scala men bra träning att implementera själv)
-  * Använd kortspel, tex patienten från EDA016 lab 8 Vektorer, simulering patient; eller ngt roligare :)
+  * Återanvänd ev patienten från EDA016 lab 8 Vektorer, simulering patient; eller ngt roligare :)
   * Använd strängar och heltal för konstanter för korten  
   * case class Card("Spades", 13) Engelska el. Svenska???
   * Lägg till registrering
@@ -66,46 +71,84 @@ Skiss på labbar
   * Använda wild-card-syntaxen vid metodanrop på collection 
    
 ## shapes          
-  * Skapa klasser som representerar geometriska objekt och rita ut. 
-  * Gör ett ritprogram? inspireras av gamla inlämningsuppg
+  * Huvudmål (vi väntar alltså med arv)
+    1. Skapa egna klasser
+    1. Skapa klasser som har attribut som är referenser till andra klasser
+    1. Klasser som tar metoder som har andra klasser av samma typ som parameter så att man måste fatta this och other
+    1. Koncept kopplade till klasser: 
+      * Alternativ konstruktur vs fabriksmetoder
+      * Equals
+      * inklapsling av var.
+      * private, public
+
+  * Ide till uppdrag: Skapa klasser som representerar geometriska objekt och rita ut. 
+  * Gör ett ritprogram? inspireras av gamla inlämningsuppg Draw; gör allt själv i simple window som man känner att man har kontroll.
+  * Rita ngt fint med många trianglar, tex en julgran
   * Rectangle(Point(3,4), Point(7,8)).draw
-  * Är detta för tråkigt utan arv???
-  * Alternativ konstruktur vs fabriksmetoder
-  * Equals
-  * inklapsling av var.
-  * private, public
+  * Kan man fylla i sina shapes med färg eller är det för svårt?
+  * Är detta för tråkigt/krystat utan arv? Rectangle extends Shape... Arv behövs egentligen bara om man ska lägga olika shapes i samma datastruktur.
   
 ## turtlerace-team 
-  * översätt befintlig labb
-  * träna på arv
+  * Huvudmål: träna på arv, super, polymorfism, stoppa subklasser i samma samling
+  * översätt befintlig labb och gör den roligare och lite svårare
   * gör team-inslaget mer omfattande så att det blir mer att göra som ska passa ihop
 
 ## chords-team     
-  * 
+  * Utgå från kontrollskrivningen om ackord och gör ngt kul, kanske rita ackord i simple window: 
+    * http://fileadmin.cs.lth.se/cs/Education/eda016/2015/kontroll/kontroll-2015okt27.pdf
+    * http://fileadmin.cs.lth.se/cs/Education/eda016/2015/kontroll/kontroll-2015okt27-losning.pdf
+  * Ide till extrauppgift om det inte är för svårt: spela toner med java midi, kanske man kan göra en SimpleMidi-klass som spelar en ton i taget och wrappa detta:
+    * http://stackoverflow.com/questions/16462854/midi-beginner-need-to-play-one-note 
+    * https://docs.oracle.com/javase/8/docs/api/javax/sound/midi/MidiSystem.html
   
 ## maze            
+  * återanvänd gamla maze, men kanske lägg till animering av sprite som går genom labyrinten som extrauppgift eller ngt
   
 ## surveydata-team 
-
+  * utgå från tentan om enkätanalys och gör ngt kul:
+    * http://fileadmin.cs.lth.se/cs//Education/grundkurs/extentor/160113.pdf
+    * http://fileadmin.cs.lth.se/cs//Education/grundkurs/extentor/sol-160113.pdf
+    
 ## scalajava-team  
-
+  * ideer välkomna!
+  
 ## life            
- * Inl.Uppg.       
-## bank
-## game
-## image
+  * återanvänd gamla life men gör ev. ngt roligare
+  * extrauppgift att byta ut view Scala.js så allt kör i browsern
+  * extrauppgift att byta view mot Android så allt kör i telefonen
+
+  
+## Inlämningsuppgifter
+  
+* Inlämningsuppgifter ska vara lite större program. Hur ska vi definiera "större"?
+* Programmet ska innehålla mpnga klasser i Scala och några klasser i Java som används från Scala-klasserna (men inte tvärtom)
+* Vi skulle kunna höja ribba lite och kräva att de lägger ut scaladoc + javadoc för sin uppgift på sin skol-hemsida.   
+
+### Inl.Uppg. bank
+  * Definiera vilka klasser som ska vara i Java och vilka som ska vara i Scala?
+  * Gör banken mer realistsik; använd immutable saker och spara transaktioner som utförs för varje konto?
+  * inpspireras av joda.time och joda.money  ?  
+
+### Inl. Uppg game
+  * Idéer välkomna. Ngt turtagningsspel som ritas upp. Två mänskliga spelare eller en ganska dum datorspelare? Tic tac toe? Go? Othello?
+
+### Inl. Uppg image
+  * Gör ngt kul med bildbehandling typ image-filter från tidigare. Vad ska vi ev översätta till Scala?
 
 
 # Konsekvenser av ovan lab-skisser för övningar
-## övn functions kolla args(0) == 
- if (!args.isEmpty) {
+
+## övn functions kolla vad vi kan ha med om args(0) 
+ if (args.size == 1) {
    val filename = args(0) 
-      
- }
- if (args.size == 2) {
- }
+   etc...    
+ } else if (args.size == 2) {
+   etc....
+ } else  if (args.size == 0 {
+   etc..
+ } else ???
  
- * lägg till _ + 2 etc  ??? Förklara wild-card-syntaxen i funktioner. Anonyma argument.
+ * lägg till _ + 2 etc  ??? Förklara wild-card-syntaxen i funktioner "anonyma argument"
  
 ## övn data
 :type i REPL på övning "data" eller övn expressions
