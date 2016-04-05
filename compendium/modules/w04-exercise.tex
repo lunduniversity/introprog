@@ -358,7 +358,80 @@ scala> tärningskast.  // tryck TAB
 
 \Subtask Läs om metoderna här: och försök förklara vad som händer ovan.
 
-\Task Jämföra List och Vector.
+\Task \emph{Några viktiga samlingsmetoder.} Deklarera följande vektorer i REPL. 
+\begin{REPL}
+scala> val xs = (1 to 10).toVector
+scala> val a = Vector("abra", "ka", "dabra")
+scala> val b = Vector( "sim", "sala", "bim", "sala", "bim")
+scala> val stor = Vector.fill(100000)(math.random)
+\end{REPL}
+Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla samlingar som är indexerbara sekvenser. Vad har uttrycken för värde och typ? Förklara vad metoden gör. Studera även vad dokumentationen säger om metoden här: \href{http://docs.scala-lang.org/overviews/collections/seqs}{docs.scala-lang.org/overviews/collections/seqs}
+
+\Subtask \code{a(1)}
+
+\Subtask \code{a apply 1}
+
+\Subtask \code{a.indices}
+
+\Subtask \code{a.isDefinedAt(3)}
+
+\Subtask \code{a.isDefinedAt(100)}
+
+\Subtask \code{a.size}
+
+\Subtask \code{a indexOf "ka"}
+
+\Subtask \code{b.lastIndexOf("sala")}
+
+\Subtask \code{b.indexWhere(s => s.startsWith("b"))}
+
+\Subtask \code{a ++ b}
+
+\Subtask \code{a ++ stor}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\noindent Det finns också användbara metoder som går att köra på \emph{alla} samlingar även om de inte är indexerbara. Vad har uttrycken för värde och typ? Förklara vad metoden gör. Studera även vad dokumentationen säger om metoden här: \href{http://docs.scala-lang.org/overviews/collections/trait-traversable}{docs.scala-lang.org/overviews/collections/trait-traversable} och här: \href{http://docs.scala-lang.org/overviews/collections/trait-iterable}{docs.scala-lang.org/overviews/collections/trait-iterable}
+
+
+\Subtask \code{val ys = xs.map(_ * 5)}
+
+\Subtask \code{xs ++ ys}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}	
+
+\Task \emph{Jämföra List och Vector.} En indexerbar sekvens av värden kallas vektor eller lista. I Scala finns flera klasser som kan kan indexeras, däribland klasserna \code{Vector} och \code{List}. 
+
+\Subtask \emph{Likheter mellan \code{Vector} och \code{List}.} Kör nedan rader i REPL. Prova indexera i båda och studera hur stor andel av metoderna som är gemensamma.
+\begin{REPL}
+scala> val sv = Vector("en", "två", "tre", "fyra")
+scala> val en = List("one", "two", "three", "four")
+scala> sv(0) + sv(3)
+scala> en(0) + en(3)
+scala> sv. //tryck TAB 
+scala> en. //tryck TAB
+\end{REPL}
+
+\Subtask \emph{Skillnader mellan \code{Vector} och \code{List}.} \code{List} är sämre än \code{Vector} på nästan allt, utom att bearbeta elementen i \emph{början} av en \code{List}; vill man lägga till och ta bort i början av en \code{List} så kan det ibland vara ungefär dubbelt så fort. Det finns också ett fåtal speciella metoder som bara finns i \code{List} för att skapa en \code{List} och lägga till i början av en \code{List}. 
+
+\begin{REPL}
+scala> var xs = "one" :: "two" :: "three" :: "four" :: Nil
+scala> xs = "zero" :: xs
+scala> val ys = xs.reverse ::: xs
+\end{REPL}
+
 
 \Task Mängd.
 
@@ -404,7 +477,9 @@ object Main {
 
 \Task Undersök vilka metoder som finns i klassen Any här: \href{http://www.scala-lang.org/api/current/\#scala.Any}{http://www.scala-lang.org/api/current/\#scala.Any}. Prova några av metoderna i REPL.
 
-\Task Jämför tidsprestanda mellan List och Vector vid hantering i början och i slutet. Hur snabbt går nedan på din dator? (Nedan är kört med en i7-4790K CPU @ 4.00GHz.) %sudo lshw -class processor
+\Task Jämför tidsprestanda mellan List och Vector vid hantering i början och i slutet. 
+
+\Subtask Hur snabbt går nedan på din dator? (Nedan är kört med en i7-4790K CPU @ 4.00GHz.) %sudo lshw -class processor
 
 \begin{REPLnonum}
 scala> :paste
@@ -425,10 +500,11 @@ def time(n: Int)(block: => Unit): Double =  {
   average
 }
 
-scala> val l = List.fill(100000)(math.random)
-scala> val v = Vector.fill(100000)(math.random)
+scala> val n = 100000
+scala> val l = List.fill(n)(math.random)
+scala> val v = Vector.fill(n)(math.random)
 
-scala> (for(i <- 1 to 20) yield time(100000){l.take(10)}).min
+scala> (for(i <- 1 to 20) yield time(n){l.take(10)}).min
 Average time: 47.1852 ns
 Average time: 41.64156 ns
 Average time: 105.53986 ns
@@ -451,7 +527,7 @@ Average time: 41.67262 ns
 Average time: 102.84893 ns
 res85: Double = 41.58533
 
-scala> (for(i <- 1 to 20) yield time(100000){v.take(10)}).min
+scala> (for(i <- 1 to 20) yield time(n){v.take(10)}).min
 Average time: 312.67005 ns
 Average time: 88.60023 ns
 Average time: 73.21829 ns
@@ -522,8 +598,10 @@ res88: Double = 309.667
 
 \end{REPLnonum}
 
-
+\Subtask Varför går det olika snabbt olika körningar?
 
 \Task Studera skillnader i prestanda mellan olika samlingar här: \\ \href{http://docs.scala-lang.org/overviews/collections/performance-characteristics.html}{docs.scala-lang.org/overviews/collections/performance-characteristics.html} \\
 (Mer om detta i kommande kurser.)
+
+\Task Gör något rekursivt med en lista för att visa hur syntaxen kan se ut med cons.
     
