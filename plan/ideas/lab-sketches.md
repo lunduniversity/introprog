@@ -60,7 +60,7 @@ Nytt namn: "pirates"  ???
    1. använda Eclipse inkl enkel debugging 
    1. bearbeta text, läsa/spara på textfil
    
- * Uppdrag: skapa program som läser och skriver filer för att lösa en textbehandlingsuppgifter 
+ * Uppdrag: skapa program som läser och skriver filer för att lösa textbehandlingsuppgifter 
 
  * idé: utgå från en piratberättelse, manipulera text  
 
