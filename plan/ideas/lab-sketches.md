@@ -19,6 +19,9 @@ Skiss på labbar
 Byta namn på labben till bugs el likn. beroende på vad det blir för rolig uppgift ???
 
   * Huvudmål: skapa och använda funktioner; nästlade funktionsanrop, många one-liners
+  
+  * Träna på println-debugging?  
+  
   * Uppdrag: Gör ett enkelt spel, tex köra omkring och leta mat och undvika buggar; poängräkning; game-loop
     
   * Skapa modul som samlar ritfunktioner. Eventuellt dela upp i flera moduler.
