@@ -9,6 +9,8 @@ object Main extends App {
   lazy val isPlanParent = filesHere.contains("plan")  
   lazy val currentDir = if (isPlanParent) "plan/" else "" 
   
+  lazy val texUtf = "%!TEX encoding = UTF-8 Unicode\n"
+  
   println("*** plan generation started in: " + here)
   
   object weekPlan extends Plan with Table {
@@ -27,10 +29,10 @@ object Main extends App {
  
   weekPlan.  toMarkdown.save(currentDir + "week-plan-generated.md")
   weekPlan.  toHtml    .save(currentDir + "week-plan-generated.html")
-  weekPlan.  toLatex   .save(currentDir + "week-plan-generated.tex")
+  weekPlan.  toLatex   .prepend(texUtf).save(currentDir + "week-plan-generated.tex")
   modulePlan.toMarkdown.save(currentDir + "module-plan-generated.md")
   modulePlan.toHtml    .save(currentDir + "module-plan-generated.html")
-  overview  .toLatex   .save(currentDir + "overview-generated.tex")
+  overview  .toLatex   .prepend(texUtf).save(currentDir + "overview-generated.tex")
   
   val weeks = (0 to 6) ++ (8 to 14) //exlude exam weeks
   
@@ -47,7 +49,7 @@ object Main extends App {
     val result     = chapter + conceptBegin + items + conceptEnd
     val weekName   = modulePlan.column("W")(w).toLowerCase
     val fileName   = s"../compendium/generated/$weekName-chaphead-generated.tex"
-    result.latexEscape.save(currentDir+fileName)
+    result.latexEscape.prepend(texUtf).save(currentDir+fileName)
   }
   
   // *** Generate table body rows of progress protocoll in compendium prechapters
@@ -55,13 +57,13 @@ object Main extends App {
   def labRow(s: String) = s"""\\LabRow{$s}""" 
   def row(col: String) = weeks.map(weekPlan.column(col)(_)).filterNot(_ == "--")
   val labs = row("Lab").map(labRow).mkString("\n")
-  labs.save(currentDir+"../compendium/generated/labs-generated.tex")
+  labs.prepend(texUtf).save(currentDir+"../compendium/generated/labs-generated.tex")
   val exercises = 
         row("Övn").
         filterNot(Set("Uppsamling","Extenta").
         contains(_)).
         map(exerciseRow).mkString("\n")
-  exercises.save(currentDir + "../compendium/generated/exercises-generated.tex")
+  exercises.prepend(texUtf).save(currentDir + "../compendium/generated/exercises-generated.tex")
 
   // *** Generate latex commands for lab and exercise names
   val weekNumAlpha =  //as latex cannot have numbers in command names AARGH!!
@@ -74,7 +76,7 @@ object Main extends App {
   def namesOfWeek(w: Int) = 
     nameDefRow(w, weekPlan.column("Lab")(w), weekPlan.column("Övn")(w))
   val nameDefs = (for (w <- weeks) yield namesOfWeek(w)).mkString("\n")
-  nameDefs.save(currentDir + "../compendium/generated/names-generated.tex")
+  nameDefs.prepend(texUtf).save(currentDir + "../compendium/generated/names-generated.tex")
 
   /*
   // *** Generate template files if not exists -- this is only needed once in the begining...
@@ -192,9 +194,9 @@ object Main extends App {
       val fileName = currentDir + file
       if (!isExistingPath(fileName)) {  // make sure not to overwrite a file
         if (isNonEmpty) 
-          data.save(fileName) 
+          data.prepend(texUtf).save(fileName) 
         else 
-          "%%% EMPTY".save(fileName)
+          "%%% EMPTY".prepend(texUtf).save(fileName)
       } else println("ALERT!!! NOTHING SAVED -- FILE EXISTS: " + fileName) 
     }
     create(chap,templateChap, true)
