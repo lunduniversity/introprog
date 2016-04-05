@@ -49,7 +49,7 @@ Byta namn på labben till bugs el likn. beroende på vad det blir för rolig upp
        
 ## Lab textfiles 
 
-Nytt namn: "pirates"  
+Nytt namn: "pirates"  ???
 
  * huvudmål: 
    1. använda samlingar, map filter i kedjor
@@ -69,7 +69,7 @@ Nytt namn: "pirates"
 
  * Använda datastrukturer: Tuple, Vector, Map, Set? för textbehandling
 
- * Samlingsmetoder: mkString, .ap, filter, indexering i Map, split(',')
+ * Samlingsmetoder: mkString, map, filter, indexering i Map, split(',')
 
  * Visa debuggern, felsöka, kolla värdet på variabel i runtime. Youtube-film på debugging?
 
@@ -180,7 +180,8 @@ Byta namn till turtlegraphics el liknande ???
   1. Sortera raderna i en matris av strängar med avseende på en viss kolumn
   1. Träna igen på registrering
   1. extrauppgift: gör din sorteringsfunktion generisk ?? 
-  ```def sort[T](in: Vector[T], isBefor: (T, T) => Boolean):Vector[T]```
+  
+  ```def sort[T](in: Vector[T], isBefore: (T, T) => Boolean):Vector[T]```
   
 * Idé till uppdrag: utgå från tentan om enkätanalys och gör ngt kul:
   * http://fileadmin.cs.lth.se/cs//Education/grundkurs/extentor/160113.pdf
