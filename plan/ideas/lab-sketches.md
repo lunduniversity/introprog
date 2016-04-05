@@ -7,9 +7,9 @@
 
 ## Svenska vs.Engelska
 
-* Kod i Labbar som ges och ska utvecklas av den labbande ska vara på Engelska.  (Även man inte blir uk om man använder svenska). Idéen är att signalera att när man kodar för att det ska bli ngt "riktigt" kodar man på engelska.
+* Kod i Labbar som ges till de labbande ska vara på Engelska.  (Även om labbande inte blir underkända eller bannade om de använder svenska namn...). Idéen är att signalera att när man kodar för att det ska bli ngt "riktigt" kodar man på engelska.
 
-* Men på övningar och förel är svenska variabelnamn ok för att tydliggöra att detta har jag hittat på och detta är nyckelord etc. Idéen är att signalera att när man lär sig och lekel kan man hitta på tokroliga namn och använda svenska hur mycket man vill.
+* Men på övningar och föreläsningar är svenska variabelnamn ok för att tydliggöra att detta har jag hittat på och detta är ett nyckelord etc. Idén är att signalera att när man lär sig och experimenterar kan man hitta på tokroliga namn och använda svenska hur mycket man vill.
 
 Skiss på labbar
 ================
