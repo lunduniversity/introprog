@@ -23,7 +23,7 @@ object prepend {
   
   def prepend(dir: String, prep: String, fileType: String): Unit = {
     lazy val here = Paths.get(dir).toFile
-    println("Workdir: " + here)
+    println("Workdir: " + here.getAbsolutePath)
     lazy val files = here.list.toVector.filter(_.endsWith(fileType)).filterNot(isDir)
     println("Line to prepend: '" + prep + "'")
     println("File type filter: " + fileType)
@@ -40,9 +40,9 @@ object prepend {
   }
       
   def main(args: Array[String]) = {
-    args.toSeq match {
-      case Seq(dir, pre, fileType) => prepend(dir, pre, fileType)
-      case Seq() => prepend(".", "%!TEX encoding = UTF-8 Unicode", ".tex")
+    args match {
+      case Array(dir, pre, fileType) => prepend(dir, pre, fileType)
+      case Array() => prepend(".", "%!TEX encoding = UTF-8 Unicode", ".tex")
       case _ =>  println("""Usage: scala prepend "~/dir" "line to prepend" .filetype""")
     }
   }
