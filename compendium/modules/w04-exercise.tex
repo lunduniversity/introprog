@@ -338,7 +338,7 @@ println(y3)
 \Subtask\Pen Vad finns det för fördelar med oföränderliga datastrukturer?
 
 
-\Task \emph{Några samlingar i Scalas standardbibliotek.} En \textbf{samling} är en datastruktur som samlar många objekt av samma typ. I paketet \code{scala.collection} finns en hel massa samlingar som är användbara till olika saker. De har en stor mängd metoder. De olika samlingarna har en stor mängd metoder gemensamt -- därför har man nytta av det man lärt sig om metoderna i en samling när man ska lära sig använda en annan samling. Vi har redan tidigare sett samlingen \code{Vector}. 
+\Task \emph{Några anvädnbara samlingar.} En \textbf{samling} \Eng{collection} är en datastruktur som samlar många objekt av samma typ. I paketen \code{scala.collection} och \code{java.util} finns en hel massa samlingar med en uppsjö metoder som är användbara till olika saker. De olika samlingarna i \code{scala.collection} är ordnade i en gemensam hierarki och det de har många gemensamma metoder -- därför har man nytta av det man lärt sig om metoderna i en Scala-samling när man ska lära sig använda en annan samling. Vi har redan tidigare sett samlingen \code{Vector}.:
 
 \begin{REPL}
 scala> val tärningskast = Vector.fill(10000)((math.random * 6 + 1).toInt)
@@ -395,7 +395,7 @@ Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla sam
 
 \Subtask \code{}
 
-\noindent Det finns också användbara metoder som går att köra på \emph{alla} samlingar även om de inte är indexerbara. Vad har uttrycken för värde och typ? Förklara vad metoden gör. Studera även vad dokumentationen säger om metoden här: \href{http://docs.scala-lang.org/overviews/collections/trait-traversable}{docs.scala-lang.org/overviews/collections/trait-traversable} och här: \href{http://docs.scala-lang.org/overviews/collections/trait-iterable}{docs.scala-lang.org/overviews/collections/trait-iterable}
+Det finns också användbara metoder som går att köra på \emph{alla} samlingar även om de inte är indexerbara. Vad har uttrycken för värde och typ? Förklara vad metoden gör. Studera även vad dokumentationen säger om metoden här: \href{http://docs.scala-lang.org/overviews/collections/trait-traversable}{docs.scala-lang.org/overviews/collections/trait-traversable} och här: \href{http://docs.scala-lang.org/overviews/collections/trait-iterable}{docs.scala-lang.org/overviews/collections/trait-iterable}
 
 
 \Subtask \code{val ys = xs.map(_ * 5)}
@@ -411,6 +411,36 @@ Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla sam
 \Subtask \code{}
 
 \Subtask \code{}	
+
+\Task Samlingarna är tätt integrerade med övriga kodbibliotek, exempelvis \code{scala.util.Random} och \code{scala.io.Source}. 
+
+\Subtask Vad händer här? (Metoden \code{shuffle} skapar en ny samling med elementen i slumpvis ordning.)
+\begin{Code}
+val xs = Vector(1,2,3)
+def blandat = scala.util.Random.shuffle(xs)
+def test = if (xs == blandat) "lika" else "olika"
+(for(i <- 1 to 100) yield test).count(_ == "lika")
+\end{Code}
+
+
+\Subtask Skapa en textfil med namnet \code{fil.txt} som innehåller lite text och läs in den med: \\\code{scala.io.Source.fromFile("fil.txt", "UTF-8").getLines.toVector}
+\begin{REPL}
+> cat > fil.txt
+hejsan
+svejsan
+> scala
+scala> val xs = scala.io.Source.fromFile("fil.txt", "UTF-8").getLines.toVector
+scala> xs.foreach(println)
+\end{REPL}
+
+
+\Subtask Vad händer här? (Metoden \code{trim} på värden av typen \code{String} ger en ny sträng med blanktecken i början och slutet borttagna.) 
+\begin{REPL}
+scala> val pgk = scala.io.Source.fromURL("http://cs.lth.se/pgk/","UTF-8").getLines.toVector
+scala> pgk.map(_.trim).filterNot(_.startsWith("<")).filterNot(_.isEmpty).foreach(println)
+\end{REPL}
+
+
 
 \Task \emph{Jämföra List och Vector.} En indexerbar sekvens av värden kallas vektor eller lista. I Scala finns flera klasser som kan kan indexeras, däribland klasserna \code{Vector} och \code{List}. 
 
