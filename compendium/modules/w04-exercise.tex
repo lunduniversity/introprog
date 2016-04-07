@@ -43,6 +43,15 @@ scala> pts.foreach(println)
 \end{REPLnonum}
 Vilken typ har vektorn \code{pts} ovan?
 
+
+\Subtask För 2-tupler finns ett kortare skrivsätt:
+\begin{REPLnonum}
+scala> ("Skåne", "Malmö")
+scala> "Skåne -> "Malmö"
+scala> val huvudstäder = Vector("Sverige" -> "Stockholm", "Norge" -> "Oslo") 
+\end{REPLnonum}
+Lägg till fler huvudstäder i vektorn ovan.
+
 \Subtask Funktioner kan ta tupler som parametrar.
 \begin{REPL}
 scala> def length(pt: (Double, Double)) = math.hypot(pt._1, pt._2) 
@@ -373,27 +382,34 @@ Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla sam
 
 \Subtask \code{a.isDefinedAt(100)}
 
-\Subtask \code{a.length}
+\Subtask \code{stor.length}
 
-\Subtask \code{a.size}
-
-\Subtask \code{a.indices}  % advanced
+\Subtask \code{stor.size}
 
 \Subtask \code{a indexOf "ka"}
 
 \Subtask \code{b.lastIndexOf("sala")}
 
-\Subtask \code{b.indexWhere(s => s.startsWith("b"))}  % advanced
-
 \Subtask \code{"först" +: b}
 
 \Subtask \code{a :+ "sist"}
 
+\Subtask \code{xs.updated(2,42)}
+
 \Subtask \code{a.padTo(10, "!")}
 
-\Subtask \code{xs.patch(1, Vector(42,43,44), 7)} % advanced
+\Subtask \code{b.sorted}
 
-\Subtask \code{xs.updated(2,42)}
+\Subtask \code{b.reverse}
+
+\Subtask \code{a.startsWith(Vector("abra", "ka"))}
+
+\Subtask \code{"hejsan".endsWith("san")}
+
+\Subtask \code{b.distinct}
+
+
+
 
 \Task \emph{Några genrella samlingsmetoder.} Det finns metoder som går att köra på \emph{alla} samlingar även om de inte är indexerbara. Vad har uttrycken nedan för värde och typ? Förklara vad som händer med hjälp av dessa översikter:  \href{http://docs.scala-lang.org/overviews/collections/trait-traversable}{docs.scala-lang.org/overviews/collections/trait-traversable} \\ \href{http://docs.scala-lang.org/overviews/collections/trait-iterable}{docs.scala-lang.org/overviews/collections/trait-iterable}
 
@@ -402,7 +418,6 @@ Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla sam
 \Subtask \code{a ++ stor}
 
 \Subtask \code{val ys = xs.map(_ * 5)}
-
 
 \Subtask \code{}
 
@@ -414,7 +429,21 @@ Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla sam
 
 \Subtask \code{}	
 
-\Task Samlingarna är tätt integrerade med övriga kodbibliotek, exempelvis \code{scala.util.Random} och \code{scala.io.Source}. 
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}	
+
+
+
+
+
+\Task De olika samlingarna i \code{scala.collection} används flitigt i andra paket, exempelvis \code{scala.util} och \code{scala.io}. 
 
 \Subtask Vad händer här? (Metoden \code{shuffle} skapar en ny samling med elementen i slumpvis ordning.)
 \begin{Code}
@@ -456,7 +485,7 @@ scala> sv. //tryck TAB
 scala> en. //tryck TAB
 \end{REPL}
 
-\Subtask \emph{Skillnader mellan \code{Vector} och \code{List}.} \code{List} är sämre än \code{Vector} på nästan allt, utom att bearbeta elementen i \emph{början} av en \code{List}; vill man lägga till och ta bort i början av en \code{List} så kan det ibland vara ungefär dubbelt så fort. Det finns också ett fåtal speciella metoder som bara finns i \code{List} för att skapa en \code{List} och lägga till i början av en \code{List}. 
+\Subtask \emph{Skillnader mellan \code{Vector} och \code{List}.} Klassen \code{Vector} i Scala har ''under huven'' en avancerad datastruktur i form av ett s.k. självbalancerande träd, vilket gör att \code{List} är långsammare än \code{Vector} på nästan allt, \emph{utom} att bearbeta elementen i \emph{början} av sekvensen; vill man lägga till och ta bort i början av en \code{List} så kan det ibland vara ungefär dubbelt så fort jämfört med \code{Vector}. Det finns också ett fåtal speciella metoder som bara finns i \code{List} för att skapa en lista och lägga till i början av en lista. 
 
 \begin{REPL}
 scala> var xs = "one" :: "two" :: "three" :: "four" :: Nil
@@ -465,17 +494,68 @@ scala> val ys = xs.reverse ::: xs
 \end{REPL}
 
 
-\Task Mängd.
+\Task \emph{Mängd.} En mängd är en samling som garanterar att det inte finns några dubbletter. Det går dessutom snabbt att kolla om ett element finns eller inte i en mängd. Ordningen på elementen i samlingen \code{Set} hamnar ibland, av effektivitetsskäl, i en förvånande ordning.
+\begin{REPL}
+scala> val s = Set("Malmö", "Stockolm", "Göteborg", "Köpenhamn", "Oslo")
+s: scala.collection.immutable.Set[String] = 
+     Set(Oslo, Malmö, Köpenhamn, Stockolm, Göteborg)
 
-\Subtask Keno-bollar.
+scala> val t = Set("Sverige", "Sverige", "Sverige", "Danmark", "Norge")
+t: scala.collection.immutable.Set[String] = Set(Sverige, Danmark, Norge)
+\end{REPL}
+Vad blir värde och typ av uttrycken i deluppgifterna nedan baserat på ovan deklarationer?
+
+\Subtask \code{s + "Malmö" == s}
+
+\Subtask \code{s ++ t}
+
+\Subtask \code{Set("Malmö", "Oslo").subsetOf(s)}
+
+\Subtask \code{s subsetOf Set("Malmö", "Oslo")}
+
+\Subtask \code{s contains "Lund"}
+
+\Subtask \code{s apply "Lund"}
+
+\Subtask \code{s("Malmö")}
+
+\Subtask \code{s - "Stockholm"}
+
+\Subtask \code{t - ("Norge", "Danmark", "Tyskland")}
+
+\Subtask \code{s -- t}
+
+\Subtask \code{s -- Set("Malmö", "Oslo")}
+
+\Subtask \code{Set(1,2,3) intersect Set(2,3,4)}
+
+\Subtask \code{Set(1,2,3) & Set(2,3,4)}
+
+\Subtask \code{Set(1,2,3) union Set(2,3,4)}
+
+\Subtask \code{Set(1,2,3) | Set(2,3,4)}
 
 
-\Task Map. Huvudstäder.
+\Task Map. Samlingen \code{Map} är mycket användbar. Med den kan man mycket snabbt leta upp ett värde om man har en nyckel. Samlingen \code{Map} liknar en vektor, men där man kan ''indexera'' med vilken typ av värde som helst, t.ex. en sträng.
+\begin{REPL}
+scala> var huvudstad = 
+  Map("Sverige" -> "Stockholm", "Norge" -> "Oslo", "Skåne" -> "Malmö") 
+\end{REPL}
 
+\Subtask \code{huvudstad apply "Skåne"}
+
+\Subtask \code{huvudstad("Skåne")}
+
+\Subtask \code{huvudstad.contains("Skåne")}
+
+\Subtask \code{huvudstad.contains("Skåne")}
+
+\Subtask \code{huvudstad += "Danmark" -> "Köpenhamn"}
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task 
+
+\Task Träna mer på  klass
 
 \begin{Code}
 class Account(val number: Long, val maxCredit: Int){ 
@@ -505,6 +585,17 @@ object Main {
 }
 \end{Code}
 
+
+
+\Task Träna mer på mängd  
+
+\Subtask Keno-bollar.
+
+
+
+
+
+
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
 \Task \emph{Dokumentationen för \code{Any}.} Undersök vilka metoder som finns i klassen Any här: \href{http://www.scala-lang.org/api/current/\#scala.Any}{http://www.scala-lang.org/api/current/\#scala.Any}. Prova några av metoderna i REPL.
@@ -517,6 +608,37 @@ scala> Vector.tabulate(10)(i => i % 3)
 \end{REPLnonum}
 
 \Subtask Klicka på det blåa stora o-et överst på sidan, för att växla till klass-vyn och studera listan med alla metoder  i klassen \code{Vector}. 
+
+
+\Task \emph{Fler metoder på indexerbara sekvenser.} Deklarera följande vektorer i REPL. 
+\begin{REPL}
+scala> val xs = (1 to 10).toVector
+scala> val a = Vector("abra", "ka", "dabra")
+scala> val b = Vector( "sim", "sala", "bim", "sala", "bim")
+\end{REPL}
+Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla samlingar som är indexerbara sekvenser. Vad har uttrycken för värde och typ? Förklara vad metoden gör. Studera även denna  översikt: \href{http://docs.scala-lang.org/overviews/collections/seqs}{docs.scala-lang.org/overviews/collections/seqs}
+
+\Subtask \code{b.indexWhere(s => s.startsWith("b"))}  % advanced
+
+\Subtask \code{a.indices}  % advanced
+
+\Subtask \code{xs.patch(1, Vector(42,43,44), 7)} % advanced
+
+\Subtask \code{xs.segmentLength(_ < 8, 2)} % advanced
+
+\Subtask \code{b.sortBy(_.reverse)}  % advanced
+
+\Subtask \code{b.sortWith((s1, s2) => s1.size < s2.size)} % advanced
+
+\Subtask \code{a.reverseMap(_.size)}	% advanced
+
+\Subtask \code{a intersect Vector("ka", "boom", "pow")} % advanced
+
+\Subtask \code{a diff Vector("ka")} % advanced
+
+\Subtask \code{a union Vector("ka", "boom", "pow")} % advanced
+
+
 
 \Task Jämför tidsprestanda mellan List och Vector vid hantering i början och i slutet. 
 
