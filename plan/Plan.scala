@@ -58,10 +58,11 @@ trait Plan {
       | översikt strängmetoder, läsa/skriva textfiler, Source.fromFile, java.nio.file,
       """.stripTrim),
 
-    Module("Vektoralgoritmer", 
-      id = "vectalg", exercise = "vectors", lab = "cardgame", contents = """
-      | vektoralgoritm,  algoritm: VECTOR-COPY,   
-      | in-place vs copy, algoritm: VECTOR-REVERSE, algoritm: VECTOR-REGISTER, 
+    Module("Sekvensalgoritmer", 
+      id = "seqalg", exercise = "sequences", lab = "cardgame", contents = """
+      | sekvensalgoritm,  algoritm: SEQ-COPY,   
+      | in-place vs copy, algoritm: SEQ-REVERSE, algoritm: SEQ-REGISTER,
+      | sekvenser i Java vs Scala, for-sats i Java,
       | java.util.Scanner, java.util.ArrayList, scala.collection.mutable.Buffer,
       | java.util.Random, slumptalsfrö, 
       """.stripTrim),
