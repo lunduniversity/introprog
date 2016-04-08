@@ -14,13 +14,41 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task Föränderliga, intexerbara sekvenser:
+\Task Föränderliga, intexerbara sekvenser: \code{Array} och \code{ArrayBuffer}
 
-\Subtask Samlingen \emph{scala.Array} har speciellt stöd i JVM och är extra snabb att allokera och indexera i. Dock kan man inte ändra storleken efter att en Array allokerats. Vill man det måste man kopiera den till en ny, större array.
+\Subtask Samlingen \code{scala.Array} har speciellt stöd i JVM och är extra snabb att allokera och indexera i. Dock kan man inte ändra storleken efter att en Array allokerats. Behöver man mer plats för man kopiera den till en ny, större array. Koden nedan visar hur det kan gå till.
+\begin{REPL}
+scala> val xs = Array(42, 43, 44)
+scala> val ys = new Array[Int](4)
+scala> for (i <- 0 until xs.size){ys(i) = xs(i)}
+scala> ys(3) = 45
+\end{REPL}
+Definiera funktionen \code{def extendAndAppend(xs: Array[Int], x): Array[Int]} som implementerar denna algoritm. 
 
-\Subtask Samlingen \emph{scala.collection.mutable.ArrayBuffer} är inte riktigt lika snabb i alla lägen som Array men man kan ändra storlek. Om man stegvis vill förändra en sekvens kan man använda en ArrayBuffer.
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+ 
+ \Input{Heltalsarray $xs$ och heltalet $x$}
+ \Output{En ny array som som är en kopia av $xs$ men med $x$ tillagt på slutet som extra element.}
+ $n \leftarrow$ anatlet element i $xs$ \\
+ $ys \leftarrow$ en ny array med plats för $n + 1$ element\\
+ $i \leftarrow 0$  \\
+ \While{$i \leq n$}{
+  $ys(i) \leftarrow xs(i)$
+ }
+ $ys(n) \leftarrow x$ 
+\end{algorithm}
 
-\Task \emph{Kopiering och uppdatering.} Metoder på oföränderliga samlingar skapar nya samlingar istället för att ändra. Därför behöver man inte själv skapa kopior.
+
+
+\Subtask Samlingen \code{scala.collection.mutable.ArrayBuffer} är inte riktigt lika snabb i alla lägen som Array men storleksändring hanteras automatiskt. Om man stegvis vill förändra en sekvens kan man använda en ArrayBuffer. Vad händer nedan?
+\begin{REPL}
+scala> 
+
+\end{REPL}
+
+
+\Task \emph{Kopiering och uppdatering.} Metoder på oföränderliga samlingar skapar nya samlingar istället för att ändra. Därför behöver man inte själv skapa kopior. När en föränderlig samling uppdateras på plats, syns denna förändring via alla referenser till samlingen.
 
 \begin{REPL}
 scala> val xs = Vector(1, 2, 3)
@@ -35,19 +63,22 @@ scala> ys
 scala> zs
 \end{REPL}
 
-\Subtask Påverkas \code{xs} av updateringen av ys ovan? Varför?
+\Subtask Syns updateringen av objektet som \code{ys} refererar till via referensen \code{xs}? Varför?
 
-\Subtask Påverkas \code{ys} av uppdateringen av \code{zs} ovan? Varför? 
+\Subtask Syns updateringen av objektet som \code{zs} refererar till via referensen \code{ys}? Varför? 
 
-\Subtask Påverkas \code{xs} av uppdateringen av \code{zs} ovan? Varför? 
+\Subtask Syns updateringen av objektet som \code{zs} refererar till via referensen \code{xs}? Varför?
 
-\Task \emph{Skapa kopior av föränderliga samlingar.} Om man inte vill att en uppdatering av en föränderlig samling ska få en påverkan på andra koddelar som refererar till samlingen, kan man behöva göra explicita kopior. Det finns färdiga metoder för detta
+\Task \emph{Skapa kopior av föränderliga samlingar.} Om man inte vill att en uppdatering av en föränderlig samling ska få oönskad påverkan på andra koddelar som refererar till samlingen, behöver man göra kopior av samlingen före uppdatering. Det finns färdiga metoder för kopiering av objekt av typen Array i paketet \code{java.util.Arrays}. 
 
-\Subtask\Pen Rita en bild av hur minnet ser ut efter varje tilldelning. Vad har \code{xs}, \code{ys} och \code{zs} efter exekveringen av nedan rader? Varför? 
+\Subtask\Pen Studera dokumentationen för metoden \code{java.util.Arrays.copyOf} här:\\ \href{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html\#copyOf-int:A-int-}{docs.oracle.com/javase/8/docs/api/java/util/Arrays.html\#copyOf-int:A-int-} \\
+Notera att syntaxen för arrayer i Java är annorlunda: När det står \code{int[]} i Java så motsvarar det \code{Array[Int]} i Scala. Vad används den andra parametern till?
+
+\Subtask\Pen Rita en bild av hur minnet ser ut efter varje tilldelning nedan. Vad har \code{xs}, \code{ys} och \code{zs} för värden efter exekveringen av raderna 1--5? Varför? 
 \begin{REPL}
 scala> val xs = Array(1, 2, 3, 4)
 scala> val ys = xs
-scala> val zs = java.util.Arrays.copy(xs, xs.size - 1)
+scala> val zs = java.util.Arrays.copyOf(xs, xs.size - 1)
 sxala> xs(0) = 42
 scala> zs(0) = 84
 scala> ys
