@@ -64,6 +64,7 @@ trait Plan {
       | in-place vs copy, algoritm: SEQ-REVERSE, algoritm: SEQ-REGISTER,
       | sekvenser i Java vs Scala, for-sats i Java,
       | java.util.Scanner, java.util.ArrayList, scala.collection.mutable.Buffer,
+      | StringBuilder,
       | java.util.Random, slumptalsfrö, 
       """.stripTrim),
 
