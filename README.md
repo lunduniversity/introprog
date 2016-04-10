@@ -46,7 +46,7 @@ The directories are organized in this hierarchy:
 
 ## How to use this repo
 
-* Download the [compedium](https://github.com/lunduniversity/introprog/raw/master/compendium/compendium.pdf).
+* Download the [compendium](https://github.com/lunduniversity/introprog/raw/master/compendium/compendium.pdf).
 
 * Download the [workspace](zipfile to be uploaded). <- TODO ->
 
@@ -89,7 +89,7 @@ If you like to use the [scala build tool, sbt](http://www.scala-sbt.org) it is e
 
 * Install git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 
-* Make a **fork** of lunduniverity/introprog in GitHub to your own GitHub account: https://help.github.com/articles/fork-a-repo/ 
+* Make a **fork** of lunduniversity/introprog in GitHub to your own GitHub account: https://help.github.com/articles/fork-a-repo/ 
 
 * **Clone** your fork to your local computer: https://help.github.com/articles/cloning-a-repository/ 
 
@@ -152,9 +152,9 @@ Here are some other inspiring style guides that illustrate the variety in what d
 
 * Make sure you have your tex editor set to UTF-8 encoding. If you get strange errors in relation to Swedish characters, this is likely due to problems relating to non-UTF-8 encodings on mac or windows. Linux usually works out-of-the-box.
 
-* Install texlive-full to get all extra latex stuff that is needed to compile the tex code in this repo. If you don't know which tex editor to use, try textworks.
+* Install texlive-full to get all extra latex stuff that is needed to compile the tex code in this repo. If you don't know which tex editor to use, try texworks.
 
-* Check out the `.cls` files in `compedium/` and `slides/` that provide many useful latex commands.
+* Check out the `.cls` files in `compendium/` and `slides/` that provide many useful latex commands.
 
 * Check out some similar, already written `.tex` document and compare with the compiled `.pdf` to see the commands and conventions we use. 
 
