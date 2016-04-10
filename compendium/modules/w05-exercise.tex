@@ -14,7 +14,25 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
+\Task \emph{Variabelt antal argument.} Det går fint att deklarera en funktion som tar en argumentsekvens av godtycklig längd. 
+
+\Subtask Vad händer nedan?
+\begin{REPL}
+scala> def printAll(xs: Int*) = xs.foreach(println)
+scala> printAll(42)
+scala> printAll(1, 2, 7, 42)
+scala> def printStrings(wa: String*) = println(wa)
+scala> printStrings("hej","på","dej")
+\end{REPL}
+
+\Subtask Vad har parametern \code{wa} i \code{printStrings} ovan för typ?
+
+\Subtask Ändra i \code{printAll} så att även längden på \code{xs} skrivs ut före utskriften av alla element. Testa att anropa \code{printAll} med olika antal parametrar. 
+
+\Subtask Vad händer om du anropar \code{printAll} med noll parametrar?
+
 \Task \emph{Oföränderliga sekvenser med föränderliga objekt.} 
+
 \Subtask Vad får xs för värde efter att attributet i objektet som \code{c2} refererar till ändras på rad 4 nedan? Förklara vad som händer.
 \begin{REPL}
 scala> class IntCell(var x: Int){override def toString = "[Int](" + x + ")"}
@@ -23,19 +41,21 @@ scala> val xs = Vector(c1, c2, c3)
 scala> c2.x = 42
 scala> xs
 \end{REPL}
-\Subtask Vad krävs för att allt ''innehåll'' i en oföränderlig samling garanterat ska förbli oförändrat? 
-\Subtask Varför står ordet 'innehåll' inom situationstecken i föregående fråga?
+
+\Subtask\Pen Rita en bild av minnessituationen efter rad 4 ovan.
+
+\Subtask\Pen Vad krävs för att allt innehåll i en oföränderlig samling garanterat ska förbli oförändrat? 
 
 \Task Föränderliga, indexerbara sekvenser: \code{Array} och \code{ArrayBuffer}
 
 \Subtask Samlingen \code{scala.Array} har speciellt stöd i JVM och är extra snabb att allokera och indexera i. Dock kan man inte ändra storleken efter att en Array allokerats. Behöver man mer plats kan man kopiera den till en ny, större array. Koden nedan visar hur det kan gå till.
 \begin{REPL}
 scala> val xs = Array(42, 43, 44)
-scala> val ys = new Array[Int](4)
+scala> val ys = new Array[Int](4)  //plats för 4 heltal, från början nollor
 scala> for (i <- 0 until xs.size){ys(i) = xs(i)}
 scala> ys(3) = 45
 \end{REPL}
-Definiera funktionen \code{def copyAppend(xs: Array[Int], x): Array[Int]} som implementerar nedan algoritm, \emph{efter} att du rätta de \textbf{två buggarna} i algoritmens while-loop:
+Definiera funktionen \code{def copyAppend(xs: Array[Int], x): Array[Int]} som implementerar nedan algoritm, \emph{efter} att du rätta de \textbf{\color{red}{två buggarna}} i algoritmens while-loop:
 
 \begin{algorithm}[H]
  \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
@@ -53,14 +73,20 @@ Definiera funktionen \code{def copyAppend(xs: Array[Int], x): Array[Int]} som im
 
 
 
-\Subtask Samlingen \code{scala.collection.mutable.ArrayBuffer} är inte riktigt lika snabb i alla lägen som Array men storleksändring hanteras automatiskt. Ofta använder ArrayBuffer om man stegvis vill bygga upp en sekvens. Vad händer nedan?
+\Subtask Samlingen \code{scala.collection.mutable.ArrayBuffer} är inte riktigt lika snabb i alla lägen som \code{scala.Array} men storleksändring hanteras automatiskt, vilket är en stor fördel då man slipper att själv implementera algoritmer liknande \code{copyAppend} ovan. Speciellt använder man ofta \code{ArrayBuffer} om man stegvis vill bygga upp en sekvens. Vad händer nedan?
 \begin{REPL}
-scala> 
-
+scala> val xs = scala.collection.mutable.ArrayBuffer.empty[Int]
+scala> xs.append(1, 2)
+scala> while (xs.last < 100) {xs.append(xs.takeRight(2).sum); println(xs)}
+scala> xs.last
+scala> xs.length
 \end{REPL}
 
+\Subtask Talen i sekvensen som produceras ovan kallas Fibonaccital\footnote{\href{https://sv.wikipedia.org/wiki/Fibonaccital}{sv.wikipedia.org/wiki/Fibonaccital}}. Hur lång ska en Fibonacci-sekvens vara för att det sista elementet ska komma så nära (men inte över) \code{Int.MaxValue} som möjligt?
 
-\Task \emph{Kopiering och uppdatering.} Metoder på oföränderliga samlingar skapar nya samlingar istället för att ändra. Därför behöver man inte själv skapa kopior. När en föränderlig samling uppdateras på plats, syns denna förändring via alla referenser till samlingen.
+
+
+\Task \emph{Kopiering och uppdatering.} Metoder på oföränderliga samlingar skapar nya samlingar istället för att ändra. Därför behöver man inte själv skapa kopior. När en \emph{föränderlig} samling uppdateras på plats, syns denna förändring via alla referenser till samlingen.
 
 \begin{REPL}
 scala> val xs = Vector(1, 2, 3)
@@ -81,12 +107,12 @@ scala> zs
 
 \Subtask Syns updateringen av objektet som \code{zs} refererar till via referensen \code{xs}? Varför?
 
-\Task \emph{Skapa kopior av föränderliga samlingar.} Om man inte vill att en uppdatering av en föränderlig samling ska få oönskad påverkan på andra koddelar som refererar till samlingen, behöver man göra kopior av samlingen före uppdatering. Det finns färdiga metoder för kopiering av objekt av typen Array i paketet \code{java.util.Arrays}. 
+\Task \emph{Färdig metod för att skapa kopia av array.} Om man inte vill att en uppdatering av en föränderlig samling ska få oönskad påverkan på andra koddelar som refererar till samlingen, behöver man göra kopior av samlingen före uppdatering. Det finns färdiga metoder för kopiering av objekt av typen Array i paketet \code{java.util.Arrays}. 
 
 \Subtask\Pen Studera dokumentationen för metoden \code{java.util.Arrays.copyOf} här:\\ \href{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html\#copyOf-int:A-int-}{docs.oracle.com/javase/8/docs/api/java/util/Arrays.html\#copyOf-int:A-int-} \\
 Notera att syntaxen för arrayer i Java är annorlunda: När det står \code{int[]} i Java så motsvarar det \code{Array[Int]} i Scala. Vad används den andra parametern till?
 
-\Subtask\Pen Rita en bild av hur minnet ser ut efter varje tilldelning nedan. Vad har \code{xs}, \code{ys} och \code{zs} för värden efter exekveringen av raderna 1--5? Varför? 
+\Subtask\Pen Rita en bild av hur minnet ser ut efter varje tilldelning nedan. Vad har \code{xs}, \code{ys} och \code{zs} för värden efter exekveringen av raderna 1--5 nedan? Varför? 
 \begin{REPL}
 scala> val xs = Array(1, 2, 3, 4)
 scala> val ys = xs
@@ -98,19 +124,110 @@ scala> xs
 scala> zs
 \end{REPL}
 
+\Task \emph{Algortim: SEQ-REVERSE-COPY.} Implementera nedan algoritm:
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+ 
+ \Input{Heltalsarray $xs$ och heltalet $x$}
+ \Output{En ny heltalsarray med elementen i $xs$ i omvänd ordning.}
+ $n \leftarrow$ antalet element i $xs$ \\
+ $ys \leftarrow$ en ny array med plats för $n$ element\\
+ $i \leftarrow 0$  \\
+ \While{$i < n$}{
+  $ys(n - i - 1) \leftarrow xs(i)$ \\
+  $i \leftarrow i + 1$
+ }
+ \Return $ys$
+\end{algorithm}
+
+\Subtask\Pen Skriv implementation med penna och papper. Använd en \code{while}-sats på samma sätt som i algoritmen. Prova sedan din implementation på dator och kolla så att den fungerar.
+
+\Subtask\Pen \label{subtask:for-seq-copy} Skriv implementationen med penna och papper igen, men använd nu istället en \code{for}-sats som räknar baklänges. Prova sedan din implementation på dator och kolla så att den fungerar. 
+
+\Subtask Definiera en funktion i REPL med namnet \code{reverseCopy} med din implementation i uppgift \ref{subtask:for-seq-copy}.  
 
 
+\Task \emph{Algortim: SEQ-REVERSE.} Strängar av typen \code{String} är oföränderliga. Vill man ändra i en sträng utan att skapa en ny kopia kan man använda en \code{StringBuffer} enligt nedan algoritm som vänder bak-och-fram på en sträng. 
 
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+ 
+ \Input{En sträng $s$ av typen \texttt{String}}
+ \Output{En ny sträng av typen \texttt{String}}
+ $sb \leftarrow$ en ny \texttt{StringBuilder} som innehåller $s$ \\
+ $n \leftarrow$ antalet tecken i $s$\\
+ $i \leftarrow 0$  \\
+ \For{$i \leftarrow 0$ \KwTo $\frac{n}{2} - 1$}{
+  $temp \leftarrow sb(i)$ \\
+  $sb(i) \leftarrow sb(n - i - 1)$ \\
+  $sb(n - i - 1) \leftarrow temp$ \\
+ }
+ \Return $sb$ omvandlad till en \texttt{String}
+\end{algorithm}
 
+\Subtask Implementera algoritmen ovan i en funktion med signaturen: \\
+ \code{def reverseString(s: String): String}
 
+\begin{Code}
+// Kod till facit:
+def reverseString(s: String): String = {
+  val sb = new StringBuilder(s)
+  val n = sb.length
+  for (i <-0 until n / 2) { 
+    val temp = sb(i)
+    sb(i) = sb(n - i - 1)
+    sb(n - i - 1) = temp
+  }
+  sb.toString     
+}
+\end{Code}
+
+\Subtask Använd din funktion \code{reverseString} från föregående deluppgift i en ny funktion med signaturen:\\
+ \code{def isPalindrome(s: String): Boolean} \\ som avgör om en sträng är en palindrom.\footnote{\href{https://sv.wikipedia.org/wiki/Palindrom}{sv.wikipedia.org/wiki/Palindrom}} 
+
+\Subtask\Pen Man kan med en \code{while}-sats och indexering direkt i en \code{String} avgöra om en sträng är en palindrom utan att kopiera den till en \code{StringBuilder}. Implementera en ny variant av \code{isPalindrome} som använder denna metod. Skriv först algoritmen på papper i pseudo-kod.
+
+\begin{Code}
+// Kod till facit:
+def isPalindrome(s: String): Boolean = {
+  val n = s.length
+  var foundDiff = false
+  var i = 0
+  while (i < n/2 && !foundDiff)  { 
+    foundDiff = s(i) != s(n - i - 1)
+    i += 1
+  }
+  !foundDiff
+}
+\end{Code}
 
 \Task Keno-dragningar under ett år -> Registrering...
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task 
+
+
+
+
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task     
+\Task Studera skillnader och likheter mellan 
+
+\Subtask \code{Array}
+
+\Subtask \code{WrappedArray}  
+
+\Subtask \code{ArraySeq} 
+
+\noindent genom att läsa mer om dessa arrayvarianter här: \\
+\href{http://docs.scala-lang.org/overviews/collections/concrete-mutable-collection-classes}{docs.scala-lang.org/overviews/collections/concrete-mutable-collection-classes} \\  
+\href{http://docs.scala-lang.org/overviews/collections/arrays.html}{docs.scala-lang.org/overviews/collections/arrays.html}  \\ 
+\href{http://stackoverflow.com/questions/5028551/scala-array-vs-arrayseq}{stackoverflow.com/questions/5028551/scala-array-vs-arrayseq}   
+    
+    
+\Task Studera vad metoden \code{java.util.Arrays.deepEquals} gör här:\\
+\href{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#deepEquals-java.lang.Object:A-java.lang.Object:A-}{Arrays.html\#deepEquals-java.lang.Object:A-java.lang.Object:A-} \\
+Vad skiljer ovan metod från metoden \code{java.util.Arrays.equals}?
     
