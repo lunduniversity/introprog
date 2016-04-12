@@ -4,7 +4,7 @@
 \ProvidesClass{lecturenotes}[2015/08/14 Document class lecturenotes based on beamer]
 %\LoadClass[handout]{beamer}
 \LoadClass{beamer}
-
+\usepackage{etex} % after adding algorithm2e paga then strange error otherwise if not this package etex is included: http://tex.stackexchange.com/questions/38607/no-room-for-a-new-dimen
 \beamertemplatenavigationsymbolsempty
 \usetheme{Antibes} \usecolortheme{default}
 
@@ -37,6 +37,9 @@
 \usepackage{hyperref}
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
 \hypersetup{colorlinks=true,linkcolor=, linkbordercolor=, urlbordercolor=mylinkcolor, urlcolor=mylinkcolor, pdfborderstyle={/S/U/W 1}}
+
+\usepackage[%linesnumbered,%lined, %boxed
+]{algorithm2e} % for writing pseudo-code
 
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning}
@@ -169,6 +172,17 @@
 }{}
 
 \lstnewenvironment{REPL}[1][]{%
+    \lstset{
+      basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
+      language=,otherkeywords={},%
+      tabsize=2,
+      backgroundcolor=\color{black!80},
+      frame=single,
+      #1}%
+}{}
+
+
+\lstnewenvironment{REPLnonum}[1][]{%
     \lstset{
       basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
       language=,otherkeywords={},%

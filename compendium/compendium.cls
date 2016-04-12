@@ -52,6 +52,9 @@
 
 \usepackage{lipsum} % to create dummy text with \lipsum
 \usepackage{amsmath,scalerel} %http://tex.stackexchange.com/questions/125523/is-there-a-bigcdot-symbol-in-latex
+
+\usepackage[linesnumbered,lined,boxed]{algorithm2e} % for writing pseudo-code
+
 \usepackage{longtable}
 \usepackage{booktabs}
 \usepackage{titlesec}
@@ -109,16 +112,17 @@
 %\vspace{1em}%
 \ifnum\value{SubtaskCounter}>1\vspace{0.25em}\else\vspace{0.5em}\fi%
 {\pagebreak[0]\noindent%%
-\alph{SubtaskCounter})\hspace{1em}\rlap{~}}%
+\makebox[2em][l]{\alph{SubtaskCounter})}}%
 }
+
 \renewcommand{\theSubtaskCounter}{\alph{SubtaskCounter}}
 
 \newenvironment{Goals}%
-{\subsubsection{Mål}\begin{itemize}[nosep]}%
+{\subsubsection{Mål}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
 \newenvironment{Preparations}%
-{\subsubsection{Förberedelser}\begin{itemize}[nosep]}%
+{\subsubsection{Förberedelser}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
 
@@ -173,6 +177,10 @@
 {ø}{{\o}}1
 {Æ}{{\AE}}1
 {Ø}{{\O}}1
+{─}{{\textemdash}}1
+{└}{{|}}1
+{├}{{|}}1
+{│}{{|}}1
 }
 
 \lstnewenvironment{ClassSpec}[2][]{%
@@ -191,8 +199,20 @@
       tabsize=2,
       backgroundcolor=\color{black!80},
       frame=single,
+      numbers=left, numberstyle=\color{black}\ttfamily\scriptsize\selectfont
       #1}%
 }{}
+
+\lstnewenvironment{REPLnonum}[1][]{%
+    \lstset{
+      basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
+      language=,otherkeywords={},%
+      tabsize=2,
+      backgroundcolor=\color{black!80},
+      frame=single,
+      #1}%
+}{}
+
 
 \newcommand{\scalainputlisting}[2][]{\lstinputlisting[%
 language=Scala,%
