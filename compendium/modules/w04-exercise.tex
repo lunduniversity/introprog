@@ -4,16 +4,44 @@
 \Exercise{\ExeWeekFOUR}
 
 \begin{Goals}
-\item 
+\item Kunna skapa och använda tupler, som variabelvärden, parametrar och returvärden.
+
+\item Förstå skillnaden mellan ett objekt och en klass och kunna förklara betydelsen av begreppet instans.
+
+\item Kunna skapa och använda attribut som medlemmar i objekt och klasser och som som klassparametrar.
+
+\item Beskriva innebörden av och syftet med att ett attribut är privat.
+
+\item Kunna byta ut implementationen av metoden \code{toString}.
+
+\item Kunna skapa och använda en objektfabrik med metoden \code{apply}.
+
+\item Kunna skapa och använda en enkel case-klass.
+
+\item Kunna använda operatornotation och förklara relationen till punktnotation.
+
+\item Förstå konsekvensen av uppdatering av föränderlig data i samband med multipla referenser.
+
+\item Känna till och kunna använda några grundläggande metoder på samlingar.
+
+\item Känna till den principiella skillnaden mellan \code{List} och \code{Vector}.
+
+\item Kunna skapa och använda en oföränderlig mängd med klassen \code{Set}.
+
+\item Förstå skillnaden mellan en mängd och en sekvens.
+
+\item Kunna skapa och använda en nyckel-värde-tabell, \code{Map}.
+
+\item Förstå likheter och skillnader mellan en \code{Map} och en \code{Vektor}.
 \end{Goals}
 
 \begin{Preparations}
-\item 
+\item Studera teorin i kapitel~\ref{chapter:W04}.
 \end{Preparations}
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task \emph{En enkel datastruktur: tupel.} Du kan samla flera värden i en tupel. Du kommer åt värdena med en metod som har namnet understreck följt av ordningsnumret.
+\Task \emph{En enkel datastruktur: tupel.} Du kan samla olika data i en tupel. Du kommer åt värdena med en metod som har namnet understreck följt av ordningsnumret.
 \begin{REPL}
 scala> val namn = ("Pippi", "Långstrump")
 scala> namn._1
@@ -43,13 +71,22 @@ scala> pts.foreach(println)
 \end{REPLnonum}
 Vilken typ har vektorn \code{pts} ovan?
 
+
+\Subtask För 2-tupler finns ett kortare skrivsätt:
+\begin{REPLnonum}
+scala> ("Skåne", "Malmö")
+scala> "Skåne -> "Malmö"
+scala> val huvudstäder = Vector("Sverige" -> "Stockholm", "Norge" -> "Oslo") 
+\end{REPLnonum}
+Lägg till fler huvudstäder i vektorn ovan.
+
 \Subtask Funktioner kan ta tupler som parametrar.
 \begin{REPL}
 scala> def length(pt: (Double, Double)) = math.hypot(pt._1, pt._2) 
 scala> length((3.0, 4.0))
 scala> length(3.0, 4.0)    //kompilatorn lägger till parenteserna innan anrop
 \end{REPL}
-Applicera funktionen \code{length} ovan på alla tupler i samlingen pts från uppgift \ref{subtask:tuplecoll} med \code{map}. Vad får resultatet för värde och typ?
+Applicera funktionen \code{length} ovan på alla tupler i samlingen \code{pts} från uppgift \ref{subtask:tuplecoll} med \code{map}. Vad får resultatet för värde och typ?
 
 \Subtask Funktioner kan ge tupler som resultat.
 \begin{REPL}
@@ -93,7 +130,7 @@ scala> println("Konto: " + k2.nummer + " Saldo:" k2.saldo)
 \Subtask\Pen Vad hade det fått för konsekvenser om attributet \code{nummer} vore oföränderligt i klassen ovan? (Jämför med objektet \code{mittKonto}.)
 
 
-\Task \emph{Klass med attribut som parametrar.} Om man vill ge attributen initialvärden när objektet skaps med \code{new} kan placera attributen i en parameterlista till klassen. Koden körs när objektet skapas och attributen tilldelas sina initaialvärden, kallas \textbf{konstruktor} \Eng{constructor}.
+\Task \emph{Klass med attribut som parametrar.} Om man vill ge attributen initialvärden när objektet skaps med \code{new} kan placera attributen i en parameterlista till klassen. Koden som körs när objektet skapas och attributen tilldelas sina initaialvärden, kallas \textbf{konstruktor} \Eng{constructor}.
 
 \begin{REPL}
 scala> class Konto(var saldo: Int, val nummer: Long)
@@ -338,7 +375,7 @@ println(y3)
 \Subtask\Pen Vad finns det för fördelar med oföränderliga datastrukturer?
 
 
-\Task \emph{Några samlingar i Scalas standardbibliotek.} En \textbf{samling} är en datastruktur som samlar många objekt av samma typ. I paketet \code{scala.collection} finns en hel massa samlingar som är användbara till olika saker. De har en stor mängd metoder. De olika samlingarna har en stor mängd metoder gemensamt -- därför har man nytta av det man lärt sig om metoderna i en samling när man ska lära sig använda en annan samling. Vi har redan tidigare sett samlingen \code{Vector}. 
+\Task \emph{Några anvädnbara samlingar.} En \textbf{samling} \Eng{collection} är en datastruktur som samlar många objekt av samma typ. I \code{scala.collection} och \code{java.util} finns många olika samlingar med en uppsjö användbara metoder. De olika samlingarna i \code{scala.collection} är ordnade i en gemensam hierarki med många gemensamma metoder; därför har man nytta av det man lär sig om metoderna i en Scala-samling när man använder en annan samling. Vi har redan tidigare sett samlingen \code{Vector}:
 
 \begin{REPL}
 scala> val tärningskast = Vector.fill(10000)((math.random * 6 + 1).toInt)
@@ -346,31 +383,208 @@ scala> tä   // tryck TAB
 scala> tärningskast.  // tryck TAB
 \end{REPL}
 
-\Subtask Ungefär hur många metoder finns det som man kan göra på objekt av typen \code{Vector}?
+\Subtask Ungefär hur många metoder finns det som man kan göra på objekt av typen \code{Vector}? Det är svårt att lära sig alla dessa på en gång, så vi väljer ut några få i kommande uppgifter.
 
-\Subtask Prova nedan metoder:
+\Subtask Jämför överlappet mellan metoderna i \code{Vector} och \code{List} och uppskatta hur stor andel av metoderna som är gemensamma: 
 \begin{REPL}
-scala> val tärningskast = Vector.fill(10000)((math.random * 6 + 1).toInt)
-scala> tä   // tryck TAB
-scala> tärningskast.  // tryck TAB
+scala> val myntkast = 
+         List.fill(10000)(if (math.random < 0.5) "krona" else "klave")
+scala> my   // tryck TAB
+scala> myntkast.  // tryck TAB
+\end{REPL}
+
+\Task \emph{Några viktiga samlingsmetoder.} Deklarera följande vektorer i REPL. 
+\begin{REPL}
+scala> val xs = (1 to 10).toVector
+scala> val a = Vector("abra", "ka", "dabra")
+scala> val b = Vector( "sim", "sala", "bim", "sala", "bim")
+scala> val stor = Vector.fill(100000)(math.random)
+\end{REPL}
+Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla samlingar som är indexerbara sekvenser. Givet deklarationerna ovan: vad har uttrycken nedan för värde och typ? Förklara vad som händer hälp av denna  översikt: \href{http://docs.scala-lang.org/overviews/collections/seqs}{docs.scala-lang.org/overviews/collections/seqs}
+
+\Subtask \code{a(1) + xs(1)}
+
+\Subtask \code{a apply 0}
+
+\Subtask \code{a.isDefinedAt(3)}
+
+\Subtask \code{a.isDefinedAt(100)}
+
+\Subtask \code{stor.length}
+
+\Subtask \code{stor.size}
+
+\Subtask \code{a indexOf "ka"}
+
+\Subtask \code{b.lastIndexOf("sala")}
+
+\Subtask \code{"först" +: b}
+
+\Subtask \code{a :+ "sist"}
+
+\Subtask \code{xs.updated(2,42)}
+
+\Subtask \code{a.padTo(10, "!")}
+
+\Subtask \code{b.sorted}
+
+\Subtask \code{b.reverse}
+
+\Subtask \code{a.startsWith(Vector("abra", "ka"))}
+
+\Subtask \code{"hejsan".endsWith("san")}
+
+\Subtask \code{b.distinct}
+
+
+
+
+\Task \emph{Några genrella samlingsmetoder.} Det finns metoder som går att köra på \emph{alla} samlingar även om de inte är indexerbara. Givet deklarationerna i föregående uppgift: vad har uttrycken nedan för värde och typ? Förklara vad som händer med hjälp av dessa översikter: \\ \href{http://docs.scala-lang.org/overviews/collections/trait-traversable}{docs.scala-lang.org/overviews/collections/trait-traversable} \\ \href{http://docs.scala-lang.org/overviews/collections/trait-iterable}{docs.scala-lang.org/overviews/collections/trait-iterable}
+
+\Subtask \code{a ++ b}
+
+\Subtask \code{a ++ stor}
+
+\Subtask \code{val ys = xs.map(_ * 5)}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}	
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}	
+
+
+
+
+
+\Task De olika samlingarna i \code{scala.collection} används flitigt i andra paket, exempelvis \code{scala.util} och \code{scala.io}. 
+
+\Subtask Vad händer här? (Metoden \code{shuffle} skapar en ny samling med elementen i slumpvis ordning.)
+\begin{Code}
+val xs = Vector(1,2,3)
+def blandat = scala.util.Random.shuffle(xs)
+def test = if (xs == blandat) "lika" else "olika"
+(for(i <- 1 to 100) yield test).count(_ == "lika")
+\end{Code}
+
+
+\Subtask Skapa en textfil med namnet \code{fil.txt} som innehåller lite text och läs in den med: \\\code{scala.io.Source.fromFile("fil.txt", "UTF-8").getLines.toVector}
+\begin{REPL}
+> cat > fil.txt
+hejsan
+svejsan
+> scala
+scala> val xs = scala.io.Source.fromFile("fil.txt", "UTF-8").getLines.toVector
+scala> xs.foreach(println)
 \end{REPL}
 
 
-\Subtask Läs om metoderna här: och försök förklara vad som händer ovan.
-
-\Task Jämföra List och Vector.
-
-\Task Mängd.
-
-\Subtask Keno-bollar.
+\Subtask Vad händer här? (Metoden \code{trim} på värden av typen \code{String} ger en ny sträng med blanktecken i början och slutet borttagna.) 
+\begin{REPL}
+scala> val pgk = scala.io.Source.fromURL("http://cs.lth.se/pgk/","UTF-8").getLines.toVector
+scala> pgk.map(_.trim).filterNot(_.startsWith("<")).filterNot(_.isEmpty).foreach(println)
+\end{REPL}
 
 
-\Task Map. Huvudstäder.
 
+\Task \emph{Jämföra List och Vector.} En indexerbar sekvens av värden kallas vektor eller lista. I Scala finns flera klasser som kan kan indexeras, däribland klasserna \code{Vector} och \code{List}. 
+
+\Subtask \emph{Likheter mellan \code{Vector} och \code{List}.} Kör nedan rader i REPL. Prova indexera i båda och studera hur stor andel av metoderna som är gemensamma.
+\begin{REPL}
+scala> val sv = Vector("en", "två", "tre", "fyra")
+scala> val en = List("one", "two", "three", "four")
+scala> sv(0) + sv(3)
+scala> en(0) + en(3)
+scala> sv. //tryck TAB 
+scala> en. //tryck TAB
+\end{REPL}
+
+\Subtask \emph{Skillnader mellan \code{Vector} och \code{List}.} Klassen \code{Vector} i Scala har ''under huven'' en avancerad datastruktur i form av ett s.k. självbalanserande träd, vilket gör att \code{Vector} är snabbare än \code{List} på nästan allt, \emph{utom} att bearbeta elementen i \emph{början} av sekvensen; vill man lägga till och ta bort i början av en \code{List} så kan det ibland gå ungefär dubbelt så fort jämfört med \code{Vector}, medan alla andra operationer är lika snabba eller snabbare med \code{Vector}. Det finns ett fåtal speciella metoder, som bara finns i \code{List}, för att skapa en lista och lägga till i början av en lista. 
+
+\begin{REPL}
+scala> var xs = "one" :: "two" :: "three" :: "four" :: Nil
+scala> xs = "zero" :: xs
+scala> val ys = xs.reverse ::: xs
+\end{REPL}
+
+
+\Task \emph{Mängd.} En mängd är en samling som garanterar att det inte finns några dubbletter. Det går dessutom snabbt att kolla om ett element finns eller inte i en mängd. Elementen i samlingen \code{Set} hamnar ibland, av effektivitetsskäl, i en förvånande ordning.
+\begin{REPL}
+scala> val s = Set("Malmö", "Stockolm", "Göteborg", "Köpenhamn", "Oslo")
+s: scala.collection.immutable.Set[String] = 
+     Set(Oslo, Malmö, Köpenhamn, Stockolm, Göteborg)
+
+scala> val t = Set("Sverige", "Sverige", "Sverige", "Danmark", "Norge")
+t: scala.collection.immutable.Set[String] = Set(Sverige, Danmark, Norge)
+\end{REPL}
+Givet ovan deklarationer: vad blir värde och typ av nedan uttryck?
+
+\Subtask \code{s + "Malmö" == s}
+
+\Subtask \code{s ++ t}
+
+\Subtask \code{Set("Malmö", "Oslo").subsetOf(s)}
+
+\Subtask \code{s subsetOf Set("Malmö", "Oslo")}
+
+\Subtask \code{s contains "Lund"}
+
+\Subtask \code{s apply "Lund"}
+
+\Subtask \code{s("Malmö")}
+
+\Subtask \code{s - "Stockholm"}
+
+\Subtask \code{t - ("Norge", "Danmark", "Tyskland")}
+
+\Subtask \code{s -- t}
+
+\Subtask \code{s -- Set("Malmö", "Oslo")}
+
+\Subtask \code{Set(1,2,3) intersect Set(2,3,4)}
+
+\Subtask \code{Set(1,2,3) & Set(2,3,4)}
+
+\Subtask \code{Set(1,2,3) union Set(2,3,4)}
+
+\Subtask \code{Set(1,2,3) | Set(2,3,4)}
+
+
+\Task \emph{Slå upp värden från nycklar med Map.} Samlingen \code{Map} är mycket användbar. Med den kan man snabbt leta upp ett värde om man har en nyckel. Samlingen \code{Map} är en generalisering av en vektor, där man kan ''indexera'', inte bara med ett heltal, utan med vilken typ av värde som helst, t.ex. en sträng.
+\begin{REPL}
+scala> var huvudstad = 
+  Map("Sverige" -> "Stockholm", "Norge" -> "Oslo", "Skåne" -> "Malmö") 
+\end{REPL}
+Givet ovan variabel \code{huvudstad}, vad händer nedan?
+
+\Subtask \code{huvudstad apply "Skåne"}
+
+\Subtask \code{huvudstad("Skåne")}
+
+\Subtask \code{huvudstad.contains("Skåne")}
+
+\Subtask \code{huvudstad.contains("Malmö")}
+
+\Subtask \code{huvudstad += "Danmark" -> "Köpenhamn"}
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task 
+
+\Task Träna mer på  klass
 
 \begin{Code}
 class Account(val number: Long, val maxCredit: Int){ 
@@ -400,11 +614,64 @@ object Main {
 }
 \end{Code}
 
+
+
+\Task Träna mer på mängd  
+
+\Subtask Keno-bollar.
+
+
+
+
+
+
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task Undersök vilka metoder som finns i klassen Any här: \href{http://www.scala-lang.org/api/current/\#scala.Any}{http://www.scala-lang.org/api/current/\#scala.Any}. Prova några av metoderna i REPL.
+\Task \emph{Dokumentationen för \code{Any}.} Undersök vilka metoder som finns i klassen Any här: \href{http://www.scala-lang.org/api/current/\#scala.Any}{http://www.scala-lang.org/api/current/\#scala.Any}. Prova några av metoderna i REPL.
 
-\Task Jämför tidsprestanda mellan List och Vector vid hantering i början och i slutet. Hur snabbt går nedan på din dator? (Nedan är kört med en i7-4790K CPU @ 4.00GHz.) %sudo lshw -class processor
+\Task \emph{Dokumentationen för samlingar.} Leta upp metoden \code{tabulate} i dokumentationen för objektet \code{Vector} nästan längst ner i listan här: \\ \href{http://www.scala-lang.org/api/current/#scala.collection.immutable.Vector$}{http://www.scala-lang.org/api/current/\#scala.collection.immutable.Vector\$} \\Leta upp den variant av \code{tabulate} som har signaturen:\\ \code{def tabulate[A](n: Int)(f: (Int) => A): Vector[A] }\\ Klicka på den gråfyllda trekanten till vänster om signaturen som fäller ut beskrivningen
+
+\Subtask Förklara vad som händer här:
+\begin{REPLnonum}
+scala> Vector.tabulate(10)(i => i % 3)
+\end{REPLnonum}
+
+\Subtask Klicka på det blåa stora o-et överst på sidan, för att växla till klass-vyn och studera listan med alla metoder  i klassen \code{Vector}. 
+
+
+\Task \emph{Fler metoder på indexerbara sekvenser.} Deklarera följande vektorer i REPL. 
+\begin{REPL}
+scala> val xs = (1 to 10).toVector
+scala> val a = Vector("abra", "ka", "dabra")
+scala> val b = Vector( "sim", "sala", "bim", "sala", "bim")
+\end{REPL}
+Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla samlingar som är indexerbara sekvenser. Vad har uttrycken för värde och typ? Förklara vad metoden gör. Studera även denna  översikt: \href{http://docs.scala-lang.org/overviews/collections/seqs}{docs.scala-lang.org/overviews/collections/seqs}
+
+\Subtask \code{b.indexWhere(s => s.startsWith("b"))}  % advanced
+
+\Subtask \code{a.indices}  % advanced
+
+\Subtask \code{xs.patch(1, Vector(42,43,44), 7)} % advanced
+
+\Subtask \code{xs.segmentLength(_ < 8, 2)} % advanced
+
+\Subtask \code{b.sortBy(_.reverse)}  % advanced
+
+\Subtask \code{b.sortWith((s1, s2) => s1.size < s2.size)} % advanced
+
+\Subtask \code{a.reverseMap(_.size)}	% advanced
+
+\Subtask \code{a intersect Vector("ka", "boom", "pow")} % advanced
+
+\Subtask \code{a diff Vector("ka")} % advanced
+
+\Subtask \code{a union Vector("ka", "boom", "pow")} % advanced
+
+
+
+\Task Jämför tidsprestanda mellan List och Vector vid hantering i början och i slutet. 
+
+\Subtask Hur snabbt går nedan på din dator? (Exemplet nedan är exekverat på en Intel i7-4790K CPU @ 4.00GHz.) %sudo lshw -class processor
 
 \begin{REPLnonum}
 scala> :paste
@@ -425,10 +692,11 @@ def time(n: Int)(block: => Unit): Double =  {
   average
 }
 
-scala> val l = List.fill(100000)(math.random)
-scala> val v = Vector.fill(100000)(math.random)
+scala> val n = 100000
+scala> val l = List.fill(n)(math.random)
+scala> val v = Vector.fill(n)(math.random)
 
-scala> (for(i <- 1 to 20) yield time(100000){l.take(10)}).min
+scala> (for(i <- 1 to 20) yield time(n){l.take(10)}).min
 Average time: 47.1852 ns
 Average time: 41.64156 ns
 Average time: 105.53986 ns
@@ -451,7 +719,7 @@ Average time: 41.67262 ns
 Average time: 102.84893 ns
 res85: Double = 41.58533
 
-scala> (for(i <- 1 to 20) yield time(100000){v.take(10)}).min
+scala> (for(i <- 1 to 20) yield time(n){v.take(10)}).min
 Average time: 312.67005 ns
 Average time: 88.60023 ns
 Average time: 73.21829 ns
@@ -522,8 +790,10 @@ res88: Double = 309.667
 
 \end{REPLnonum}
 
-
+\Subtask Varför går det olika snabbt olika körningar?
 
 \Task Studera skillnader i prestanda mellan olika samlingar här: \\ \href{http://docs.scala-lang.org/overviews/collections/performance-characteristics.html}{docs.scala-lang.org/overviews/collections/performance-characteristics.html} \\
 (Mer om detta i kommande kurser.)
+
+\Task Gör något rekursivt med en lista för att visa hur syntaxen kan se ut med cons.
     
