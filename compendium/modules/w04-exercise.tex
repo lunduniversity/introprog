@@ -1,27 +1,799 @@
-
+%!TEX encoding = UTF-8 Unicode
 %!TEX root = ../compendium.tex
 
 \Exercise{\ExeWeekFOUR}
 
 \begin{Goals}
-\item 
+\item Kunna skapa och använda tupler, som variabelvärden, parametrar och returvärden.
+
+\item Förstå skillnaden mellan ett objekt och en klass och kunna förklara betydelsen av begreppet instans.
+
+\item Kunna skapa och använda attribut som medlemmar i objekt och klasser och som som klassparametrar.
+
+\item Beskriva innebörden av och syftet med att ett attribut är privat.
+
+\item Kunna byta ut implementationen av metoden \code{toString}.
+
+\item Kunna skapa och använda en objektfabrik med metoden \code{apply}.
+
+\item Kunna skapa och använda en enkel case-klass.
+
+\item Kunna använda operatornotation och förklara relationen till punktnotation.
+
+\item Förstå konsekvensen av uppdatering av föränderlig data i samband med multipla referenser.
+
+\item Känna till och kunna använda några grundläggande metoder på samlingar.
+
+\item Känna till den principiella skillnaden mellan \code{List} och \code{Vector}.
+
+\item Kunna skapa och använda en oföränderlig mängd med klassen \code{Set}.
+
+\item Förstå skillnaden mellan en mängd och en sekvens.
+
+\item Kunna skapa och använda en nyckel-värde-tabell, \code{Map}.
+
+\item Förstå likheter och skillnader mellan en \code{Map} och en \code{Vektor}.
 \end{Goals}
 
 \begin{Preparations}
-\item 
+\item Studera teorin i kapitel~\ref{chapter:W04}.
 \end{Preparations}
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task 
+\Task \emph{En enkel datastruktur: tupel.} Du kan samla olika data i en tupel. Du kommer åt värdena med en metod som har namnet understreck följt av ordningsnumret.
+\begin{REPL}
+scala> val namn = ("Pippi", "Långstrump")
+scala> namn._1
+scala> namn._2
+scala> println("Förnamn: " + namn._1 + "\nEfternamn:" + namn._2)
+\end{REPL}
 
-\Subtask 
+\Subtask Definiera en oföränderlig variabel med namnet \code{pt} som representerar en punkt med x-koordinaten 15.9 och y-koordinaten 28.9. Använd sedan \code{math.hypt} för att ta reda på avståndet från origo till punkten. Vad blir svaret?
+
+\Subtask Du kan dela upp en tupel i sina beståndsdelar så här:
+\begin{REPLnonum}
+scala> val (förnamn, efternamn) = ("Ronja", "Rövardotter")
+\end{REPLnonum}
+Dela upp din punkt \code{pt} i sina beståndsdelar och kalla delarna \code{x} och \code{y}
+
+\Subtask Värdena i en tupel kan ha olika typ. 
+\begin{REPLnonum}
+scala> val creature = ("Doktor", "Krokodil", 65.0, false)
+scala> val (title, name, weight, isHuman)  = creature
+\end{REPLnonum}
+Vilken typ har 4-tupeln \code{creature} ovan?
+
+\Subtask \label{subtask:tuplecoll} Tupler kan ingå i samlingar.
+\begin{REPLnonum}
+scala> val pts = Vector((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0)) 
+scala> pts.foreach(println)
+\end{REPLnonum}
+Vilken typ har vektorn \code{pts} ovan?
+
+
+\Subtask För 2-tupler finns ett kortare skrivsätt:
+\begin{REPLnonum}
+scala> ("Skåne", "Malmö")
+scala> "Skåne -> "Malmö"
+scala> val huvudstäder = Vector("Sverige" -> "Stockholm", "Norge" -> "Oslo") 
+\end{REPLnonum}
+Lägg till fler huvudstäder i vektorn ovan.
+
+\Subtask Funktioner kan ta tupler som parametrar.
+\begin{REPL}
+scala> def length(pt: (Double, Double)) = math.hypot(pt._1, pt._2) 
+scala> length((3.0, 4.0))
+scala> length(3.0, 4.0)    //kompilatorn lägger till parenteserna innan anrop
+\end{REPL}
+Applicera funktionen \code{length} ovan på alla tupler i samlingen \code{pts} från uppgift \ref{subtask:tuplecoll} med \code{map}. Vad får resultatet för värde och typ?
+
+\Subtask Funktioner kan ge tupler som resultat.
+\begin{REPL}
+scala> def div(a: Int, b: Int) = (a / b, a % b)
+scala> div(10, 3)
+scala> (div(9,2), div(10,2))
+scala> (div(9,2)._2, div(10,2)._2)
+scala> val nOdd = (1 to 10).map(i => div(i, 2)._2).sum
+\end{REPL}
+Förklara vad som händer ovan. Använd \code{div} ovan för att ta reda på hur många udda tal finns det i intervallet $[1234, 3456]$.
+
+\Subtask En tupel med $n$ värden kallas $n$-tupel. Om man betraktar enhetsvärdet \code{()} som en tupel, vad kan man då kalla detta värde?
+
+\Task \emph{Objekt med attribut (fält).} Ett objekt kan samla data som hör ihop och på så sätt skapa en datastruktur. Data i ett objekt kallas \emph{attribut} eller \emph{fält}, \Eng{field}. Objekt som samlar enbart data kallas även \emph{post} \Eng{record}.
+\begin{REPLnonum}
+scala> object mittKonto { var saldo = 0; val nummer = 12345L }
+\end{REPLnonum}
+\Subtask Skriv en sats som sätter in ett slumpmässigt belopp mellan 0 och en miljon på \code{mittKonto} ovan med hjälp av punktnotation och tilldelning. 
+
+\Subtask Vad händer om du försöker ändra attributet \code{nummer}?
+
+\Task \emph{Klass med attribut.} Om du vill ha många objekt av samma typ, kan du använda en \textbf{klass}. På så sätt kan man skapa många datastrukturer av samma typ men med olika innehåll. Man skapar nya objekt med nyckelordet \code{new} följt av klassens namn. Klassen utgör en ''mall'' för objektet som skapas. Ett objekt som skapas med \code{new Klassnamn} kallas även en \textbf{instans} av klassen \code{Klassnamn}. Nedan skapas en datastruktur \code{Konto} som samlar data om ett bankonto. Poster av typen \code{Konto} håller reda på hur mycket pengar det finns på kontot och vilket kontonumret är:
+
+\begin{REPL}
+scala> class Konto {
+         var saldo = 0
+         var nummer = 0L
+       }
+scala> val k1 = new Konto
+scala> val k2 = new Konto
+scala> k1.saldo = 1000
+scala> k1.nummer = 12345L
+scala> k2.saldo = 2000
+scala> k2.nummer = 67890L
+scala> println("Konto: " + k1.nummer + " Saldo:" k1.saldo)
+scala> println("Konto: " + k2.nummer + " Saldo:" k2.saldo)
+\end{REPL}
+
+\Subtask\Pen Rita hur minnessituationen ser ut efter att ovan rader har exekverats.
+
+\Subtask\Pen Vad hade det fått för konsekvenser om attributet \code{nummer} vore oföränderligt i klassen ovan? (Jämför med objektet \code{mittKonto}.)
+
+
+\Task \emph{Klass med attribut som parametrar.} Om man vill ge attributen initialvärden när objektet skaps med \code{new} kan placera attributen i en parameterlista till klassen. Koden som körs när objektet skapas och attributen tilldelas sina initaialvärden, kallas \textbf{konstruktor} \Eng{constructor}.
+
+\begin{REPL}
+scala> class Konto(var saldo: Int, val nummer: Long)
+scala> val k = new Konto(0, 12345L)
+scala> println("Konto: " + k.nummer + " Saldo:" k.saldo)
+scala> println(k)
+scala> k.toString
+\end{REPL}
+
+\Subtask Den två sista raderna ovan skriver ut den identifierare som JVM använder för att hålla reda på objektet i sina interna datastrukturer. Vad skrivs ut?
+
+\Subtask Skapa ännu en instans av klassen Konto  med samma saldo och nummer som \code{k} ovan och spara den i \code{val k2} och undersök dess objektidentifierare. Får objekten \code{k} och \code{k2} olika objektidentifierare?
+
+\Subtask Sätt in olika belopp på respektive konto.
+
+\Subtask Vad händer om du försöker ändra attributet \code{nummer}?
+
+\Subtask\Pen Ibland räcker det fint med en tupel, men ofta vill man ha en klass istället. Beskriv några fördelar med en Konto-klassen ovan jämfört med en tupel av typen \code{(Int, Long)}.
+
+\begin{REPLnonum}
+scala> var k3 = (0, 12345L)
+scala> k3 = (k3._1 + 100, k3._2)
+\end{REPLnonum}
+
+\Task \emph{Publikt versus privat attribut.} Man kan förhindra att ett attribut syns utanför klassen med hjälp av nyckelordet \code{private}.  
+
+\begin{REPL}
+scala> class Konto1(val nummer: Long){ var saldo = 0 }
+scala> val k1 = new Konto1(12345678901L)
+scala> k1.nummer
+scala> k1.saldo += 1000
+scala> class Konto2(val nummer: Long){ private var saldo = 0 }
+scala> val k2 = new Konto2(12345678901L)
+scala> k2.nummer
+scala> k2.saldo += 1000
+\end{REPL}
+
+\Subtask Vad händer ovan?
+
+\Subtask Gör en ny version av klassen \code{Konto} enligt nedan:
+
+\begin{Code}
+class Konto(val nummer: Long){ 
+  private var saldo = 0
+  def in(belopp: Int): Unit = {saldo += belopp}
+  def ut(belopp: Int): Unit = {saldo -= belopp}
+  def show: Unit = 
+    println("Konto Nr: " + nummer + " saldo: " + saldo) 
+}
+
+object Main {
+  def main(args: Array[String]): Unit = {
+    val k = new Konto(1234L)
+    k.show
+    k.in(1000)
+    println("Uttag: " + k.ut(500))
+    println("Uttag: " + k.ut(1000))
+    k.show
+  }
+}
+\end{Code}
+
+\Subtask Spara koden i en fil, kompilera och kör. Testa även vad som händer om du försöker komma åt attributet \code{saldo} i main-metoden med t.ex. \code{println(k.saldo)} eller \code{k.saldo += 1000}. 
+
+\Subtask Vi ska nu förhindra överuttag. Ändra i metoden \code{ut} så att den får signaturen \code{ut(belopp: Int): (Int Int) = ???} och implementera \code{ut} så att den returnerar både beloppet man verkligen kan ta ut och kvarvarande saldo. Om man försöker ta ut mer än det finns på kontot så ska saldot bli 0 och man får bara ut det som finns kvar. Spara, kompilera, kör. 
+
+\Subtask Förbättra metoderna \code{in} och \code{ut} så att man inte kan sätta in eller ta ut negativa belopp.
+
+\Subtask Vad är fördelen med att göra föränderliga attribut privata och bara påverka deras värden indirekt via metoder?
+
+\Task \emph{Vilken typ har ett objekt?} Objektets typ bestäms av klassen. Vid tilldelning måste typerna passa ihop.
+
+\Subtask Vilka rader nedan ger felmeddelande? Hur lyder felmeddelandet?
+\begin{REPL}
+scala> class Punkt(val x: Double, val y: Double)
+scala> val pt: Punkt = new Punkt(10.0, 10.0)
+scala> val i: Int = pt.x
+scala> val (x: Double, y: Double) = (pt.x, pt.y)
+scala> val p: Double = new Punkt(5.0, 5.0)
+scala> val p = new Punkt(5.0, 5.0): Double
+scala> val p = new Punkt(5.0, 5.0): Punkt
+scala> pt: Punkt
+\end{REPL}
+
+
+\Subtask Man kan undersöka om ett objekt är av en viss typ med metoden \\ \code{isInstanceOf[Typnamn]}. Vad ger nedan anrop av metoden \code{isInstanceOf} för värde?
+\begin{REPL}
+scala> class Punkt(val x: Double, val y: Double)
+scala> val pt: Punkt = new Punkt(1.0, 2.0)
+scala> pt.isInstanceOf[Punkt]
+scala> pt.isInstanceOf[Double]
+scala> pt.x.isInstanceOf[Double]
+scala> pt.x.isInstanceOf[Int]
+scala> pt.x.isInstanceOf[Punkt]
+\end{REPL}
+
+\Task \emph{\code{Any}}. Alla klasser är också av typen \code{Any}. Alla klasser får därmed med sig några gemensamma metoder som finns i den fördefinierade klassen \code{Any}, däribland metoderna  \code{isInstanceOf} och \code{toString}.  Vad blir resultatet av respektive rad nedan? Vilken rad ger ett felmeddelande?
+
+\begin{REPL}
+scala> class Punkt(val x: Double, val y: Double)
+scala> val pt: Punkt = new Punkt(1.0, 2.0)
+scala> pt.isInstanceOf[Punkt]
+scala> pt.isInstanceOf[Any]
+scala> pt.x.toString
+scala> println(pt.x)
+scala> val a: Any = pt
+scala> println(a.x)
+scala> a.toString
+scala> p1.y.toString
+scala> a.y.toString
+\end{REPL}
+
+\Task \emph{Byta ut metoden \code{toString}}. I klassen \code{Any} finns metoden \code{toString} som skapar en strängrepresentation av objektet. Du kan byta ut metoden \code{toString} i klassen \code{Any} mot din egen implementation. Man använder nyckelordet \code{override} när man vill byta ut en metodimplementation.
+
+\begin{REPL}
+scala> class Punkt(val x: Double, val y: Double) {
+         override def toString: String = "[x=" + x + ",y=" + y + "]"
+       }
+scala> val pt = new Punkt(1.0, 42.0)
+scala> pt.toString
+scala> println(pt)
+\end{REPL}
+
+\Subtask Vad händer egentligen på sista raden ovan?
+
+\Subtask Omdefiniera toString så att den ger en sträng på formen \code{Punkt(1.0, 42.0)}.
+
+\Subtask Vad hände om du utelämnar nyckelordet \code{override} vid omdefiniering?
+
+\Task \emph{Objektfabrik med \code{apply}-metod.} Man kan ordna så att man slipper skriva \code{new} med ett s.k. \emph{fabriksobjekt} \Eng{factory object}. 
+\begin{Code}
+class Pt(val x: Double, y: Double) {
+  override def toString: String = "Pt(x=" + x + ",y=" + y + ")"
+}
+object Pt { 
+  def apply(x: Double, y: Double): Pt = new Pt(x, y)
+}
+\end{Code}
+
+\Subtask Skriv satser som använder metoden \code{apply} i fabriksobjektet \code{object Pt} för att skapa flera olika punkter.
+
+\Subtask Ge applymetoden default-argument 0.0 för både x och y så att \code{Pt()} skapar en punkt i origo.
+
+\Subtask Skapa en klass \code{Rational} som representerar rationellt tal som en kvot mellan två heltal. Ge klassen två oföränderliga, publika klassparameterattribut med namnen \code{nom} för täljaren och \code{denom} för nämnaren. 
+
+\Subtask Skapa ett fabriksobjekt med en \code{apply}-metod som tar två heltalsparametrar och skapar en instans av klassen \code{Rational}.
+
+\Subtask Skapa olika instanser av din klass \code{Rational} ovan med hjälp av fabriksobjektet.
+
+
+\Task \emph{Skapa en case-klass.} Med en case-klass får man \code{toString} och fabriksobjekt på köpet. Man behöver inte skriva \code{val} framför klassparametrar i case-klasser; klassparametrar blir publika, oföränderliga attribut automatiskt när man deklarerar en case-klass.
+
+\begin{REPL}
+scala> case class Pt(x: Double, y: Double) 
+scala> val p = Pt(1.0, 42.0)
+scala> p.toString
+scala> println(p)
+scala> println(Pt(5,6))
+\end{REPL}
+
+\Subtask Implementera din klass \code{Rational} från föregående uppgift, men nu som en case-klass.
+
+\Subtask Skapa en case-klass \code{Complex} som representerar komplext tal. Ge klassen två oföränderliga, publika Double-attribut: \code{re} som lagrar realdelen och \code{im} som lagrar imaginärdelen. 
+
+\Task \label{task:point} \emph{Metoder på datastrukturer.} En datastruktur blir mer användbar om det finns metoder som kan användas på datastrukturen. Metoder i Scala kan även ha (vissa) tecken som namn, t.ex. \code{+} enligt nedan.  
+\begin{REPL}
+scala> case class Point(x: Double, y: Double) {
+         def length: Double = math.hypot(x, y)   
+         def add(p: Point): Point = Point(x + p.x, y + p.y)
+         def +(p: Point): Point = Point(x + p.x, y + p.y)
+       }
+\end{REPL}
+
+\Subtask Använd metoden \code{lenght} för att ta reda på vad punkten med koordinaterna (3, 4) har för avstånd till origo?
+
+\Subtask Skriv satser som skapar två punkter (3,4) och (5, 6) och låt variablerna p1 och p2 referera till respektive punkt. Låt variabeln p3 bli summan av p1 och p2. Vad får uttrycken p3.x resp. p3.y för värden?
+
+\Task \emph{Operatornotation.} Vid punktnotation på formen: \\ \code{objekt.metod(parameter)} \\ där man anropar en metod med exakt en parameter, kan man skippa punkten och parenteserna och skriva:\\ \code{objekt metod parameter}  \\
+Detta förenklade skrivsätt kallas \textbf{operatornotation}.
+
+\Subtask Använd klassen \code{Point} från uppgift \ref{task:point} och prova nedan satser. Vilka rader använder operatortnotation och vilka rader använder punktnotation?
+\begin{REPL}
+scala> val p1 = Point(3,4)
+scala> val p2 = Point(3,4)
+scala> p1.add(p2)
+scala> p1 add p2
+scala> p1.+(p2)
+scala> p1 + p2
+scala> 42 + 1
+scala> 42.+(1)
+scala> 1.to(42)
+scala> 1 to 42
+\end{REPL}
+
+\Subtask Implementera metoderna \code{sub} och \code{-} i klassen \code{Point} och skriv uttryck som kombinerar add och sub, samt + och - i både punktnotation och operatornotation.
+
+
+
+\Task \emph{Föränderlighet och oföränderlighet.} Oföränderliga och föränderliga objekt beter sig olika vid tilldelning.  
+
+\Subtask\Pen Innan du kör nedan kod: Försök lista ut vad som kommer att skrivas ut. Rita minnessituationen efter varje tilldelning. 
+
+\begin{Code}
+println("\n--- Example 1: mutable value assigmnent")
+var x1 = 42
+var y1 = x1
+x1 = x1 + 42
+println(x1)
+println(y1)
+\end{Code}
+
+\Subtask\Pen Innan du kör nedan kod: Försök lista ut vad som kommer att skrivas ut. Rita minnessituationen efter varje tilldelning.
+
+\begin{Code}
+println("\n--- Example 2: mutable object reference assignment")
+class MutableInt(private var i: Int) {
+  def +(a: Int): MutableInt = { i = i + a; this }
+  override def toString: String = i.toString
+}
+var x2 = new MutableInt(42)
+var y2 = x2
+x2 = x2 + 42
+println(x2)
+println(y2)
+\end{Code}
+
+\Subtask\Pen Innan du kör nedan kod: Försök lista ut vad som kommer att skrivas ut. Rita minnessituationen efter varje tilldelning.
+
+\begin{Code}
+println("\n--- Example 3: immutable object reference assignment")
+class ImmutableInt(val i: Int) {
+  def +(a: Int): ImmutableInt = new ImmutableInt(i + a) 
+  override def toString: String = i.toString
+}
+var x3 = new ImmutableInt(42)
+var y3 = x3
+x3 = x3 + 42
+println(x3)
+println(y3)
+\end{Code}
+
+\Subtask\Pen Vad finns det för fördelar med oföränderliga datastrukturer?
+
+
+\Task \emph{Några anvädnbara samlingar.} En \textbf{samling} \Eng{collection} är en datastruktur som samlar många objekt av samma typ. I \code{scala.collection} och \code{java.util} finns många olika samlingar med en uppsjö användbara metoder. De olika samlingarna i \code{scala.collection} är ordnade i en gemensam hierarki med många gemensamma metoder; därför har man nytta av det man lär sig om metoderna i en Scala-samling när man använder en annan samling. Vi har redan tidigare sett samlingen \code{Vector}:
+
+\begin{REPL}
+scala> val tärningskast = Vector.fill(10000)((math.random * 6 + 1).toInt)
+scala> tä   // tryck TAB
+scala> tärningskast.  // tryck TAB
+\end{REPL}
+
+\Subtask Ungefär hur många metoder finns det som man kan göra på objekt av typen \code{Vector}? Det är svårt att lära sig alla dessa på en gång, så vi väljer ut några få i kommande uppgifter.
+
+\Subtask Jämför överlappet mellan metoderna i \code{Vector} och \code{List} och uppskatta hur stor andel av metoderna som är gemensamma: 
+\begin{REPL}
+scala> val myntkast = 
+         List.fill(10000)(if (math.random < 0.5) "krona" else "klave")
+scala> my   // tryck TAB
+scala> myntkast.  // tryck TAB
+\end{REPL}
+
+\Task \emph{Några viktiga samlingsmetoder.} Deklarera följande vektorer i REPL. 
+\begin{REPL}
+scala> val xs = (1 to 10).toVector
+scala> val a = Vector("abra", "ka", "dabra")
+scala> val b = Vector( "sim", "sala", "bim", "sala", "bim")
+scala> val stor = Vector.fill(100000)(math.random)
+\end{REPL}
+Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla samlingar som är indexerbara sekvenser. Givet deklarationerna ovan: vad har uttrycken nedan för värde och typ? Förklara vad som händer hälp av denna  översikt: \href{http://docs.scala-lang.org/overviews/collections/seqs}{docs.scala-lang.org/overviews/collections/seqs}
+
+\Subtask \code{a(1) + xs(1)}
+
+\Subtask \code{a apply 0}
+
+\Subtask \code{a.isDefinedAt(3)}
+
+\Subtask \code{a.isDefinedAt(100)}
+
+\Subtask \code{stor.length}
+
+\Subtask \code{stor.size}
+
+\Subtask \code{a indexOf "ka"}
+
+\Subtask \code{b.lastIndexOf("sala")}
+
+\Subtask \code{"först" +: b}
+
+\Subtask \code{a :+ "sist"}
+
+\Subtask \code{xs.updated(2,42)}
+
+\Subtask \code{a.padTo(10, "!")}
+
+\Subtask \code{b.sorted}
+
+\Subtask \code{b.reverse}
+
+\Subtask \code{a.startsWith(Vector("abra", "ka"))}
+
+\Subtask \code{"hejsan".endsWith("san")}
+
+\Subtask \code{b.distinct}
+
+
+
+
+\Task \emph{Några genrella samlingsmetoder.} Det finns metoder som går att köra på \emph{alla} samlingar även om de inte är indexerbara. Givet deklarationerna i föregående uppgift: vad har uttrycken nedan för värde och typ? Förklara vad som händer med hjälp av dessa översikter: \\ \href{http://docs.scala-lang.org/overviews/collections/trait-traversable}{docs.scala-lang.org/overviews/collections/trait-traversable} \\ \href{http://docs.scala-lang.org/overviews/collections/trait-iterable}{docs.scala-lang.org/overviews/collections/trait-iterable}
+
+\Subtask \code{a ++ b}
+
+\Subtask \code{a ++ stor}
+
+\Subtask \code{val ys = xs.map(_ * 5)}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}	
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}
+
+\Subtask \code{}	
+
+
+
+
+
+\Task De olika samlingarna i \code{scala.collection} används flitigt i andra paket, exempelvis \code{scala.util} och \code{scala.io}. 
+
+\Subtask Vad händer här? (Metoden \code{shuffle} skapar en ny samling med elementen i slumpvis ordning.)
+\begin{Code}
+val xs = Vector(1,2,3)
+def blandat = scala.util.Random.shuffle(xs)
+def test = if (xs == blandat) "lika" else "olika"
+(for(i <- 1 to 100) yield test).count(_ == "lika")
+\end{Code}
+
+
+\Subtask Skapa en textfil med namnet \code{fil.txt} som innehåller lite text och läs in den med: \\\code{scala.io.Source.fromFile("fil.txt", "UTF-8").getLines.toVector}
+\begin{REPL}
+> cat > fil.txt
+hejsan
+svejsan
+> scala
+scala> val xs = scala.io.Source.fromFile("fil.txt", "UTF-8").getLines.toVector
+scala> xs.foreach(println)
+\end{REPL}
+
+
+\Subtask Vad händer här? (Metoden \code{trim} på värden av typen \code{String} ger en ny sträng med blanktecken i början och slutet borttagna.) 
+\begin{REPL}
+scala> val pgk = scala.io.Source.fromURL("http://cs.lth.se/pgk/","UTF-8").getLines.toVector
+scala> pgk.map(_.trim).filterNot(_.startsWith("<")).filterNot(_.isEmpty).foreach(println)
+\end{REPL}
+
+
+
+\Task \emph{Jämföra List och Vector.} En indexerbar sekvens av värden kallas vektor eller lista. I Scala finns flera klasser som kan kan indexeras, däribland klasserna \code{Vector} och \code{List}. 
+
+\Subtask \emph{Likheter mellan \code{Vector} och \code{List}.} Kör nedan rader i REPL. Prova indexera i båda och studera hur stor andel av metoderna som är gemensamma.
+\begin{REPL}
+scala> val sv = Vector("en", "två", "tre", "fyra")
+scala> val en = List("one", "two", "three", "four")
+scala> sv(0) + sv(3)
+scala> en(0) + en(3)
+scala> sv. //tryck TAB 
+scala> en. //tryck TAB
+\end{REPL}
+
+\Subtask \emph{Skillnader mellan \code{Vector} och \code{List}.} Klassen \code{Vector} i Scala har ''under huven'' en avancerad datastruktur i form av ett s.k. självbalanserande träd, vilket gör att \code{Vector} är snabbare än \code{List} på nästan allt, \emph{utom} att bearbeta elementen i \emph{början} av sekvensen; vill man lägga till och ta bort i början av en \code{List} så kan det ibland gå ungefär dubbelt så fort jämfört med \code{Vector}, medan alla andra operationer är lika snabba eller snabbare med \code{Vector}. Det finns ett fåtal speciella metoder, som bara finns i \code{List}, för att skapa en lista och lägga till i början av en lista. 
+
+\begin{REPL}
+scala> var xs = "one" :: "two" :: "three" :: "four" :: Nil
+scala> xs = "zero" :: xs
+scala> val ys = xs.reverse ::: xs
+\end{REPL}
+
+
+\Task \emph{Mängd.} En mängd är en samling som garanterar att det inte finns några dubbletter. Det går dessutom snabbt att kolla om ett element finns eller inte i en mängd. Elementen i samlingen \code{Set} hamnar ibland, av effektivitetsskäl, i en förvånande ordning.
+\begin{REPL}
+scala> val s = Set("Malmö", "Stockolm", "Göteborg", "Köpenhamn", "Oslo")
+s: scala.collection.immutable.Set[String] = 
+     Set(Oslo, Malmö, Köpenhamn, Stockolm, Göteborg)
+
+scala> val t = Set("Sverige", "Sverige", "Sverige", "Danmark", "Norge")
+t: scala.collection.immutable.Set[String] = Set(Sverige, Danmark, Norge)
+\end{REPL}
+Givet ovan deklarationer: vad blir värde och typ av nedan uttryck?
+
+\Subtask \code{s + "Malmö" == s}
+
+\Subtask \code{s ++ t}
+
+\Subtask \code{Set("Malmö", "Oslo").subsetOf(s)}
+
+\Subtask \code{s subsetOf Set("Malmö", "Oslo")}
+
+\Subtask \code{s contains "Lund"}
+
+\Subtask \code{s apply "Lund"}
+
+\Subtask \code{s("Malmö")}
+
+\Subtask \code{s - "Stockholm"}
+
+\Subtask \code{t - ("Norge", "Danmark", "Tyskland")}
+
+\Subtask \code{s -- t}
+
+\Subtask \code{s -- Set("Malmö", "Oslo")}
+
+\Subtask \code{Set(1,2,3) intersect Set(2,3,4)}
+
+\Subtask \code{Set(1,2,3) & Set(2,3,4)}
+
+\Subtask \code{Set(1,2,3) union Set(2,3,4)}
+
+\Subtask \code{Set(1,2,3) | Set(2,3,4)}
+
+
+\Task \emph{Slå upp värden från nycklar med Map.} Samlingen \code{Map} är mycket användbar. Med den kan man snabbt leta upp ett värde om man har en nyckel. Samlingen \code{Map} är en generalisering av en vektor, där man kan ''indexera'', inte bara med ett heltal, utan med vilken typ av värde som helst, t.ex. en sträng.
+\begin{REPL}
+scala> var huvudstad = 
+  Map("Sverige" -> "Stockholm", "Norge" -> "Oslo", "Skåne" -> "Malmö") 
+\end{REPL}
+Givet ovan variabel \code{huvudstad}, vad händer nedan?
+
+\Subtask \code{huvudstad apply "Skåne"}
+
+\Subtask \code{huvudstad("Skåne")}
+
+\Subtask \code{huvudstad.contains("Skåne")}
+
+\Subtask \code{huvudstad.contains("Malmö")}
+
+\Subtask \code{huvudstad += "Danmark" -> "Köpenhamn"}
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task 
+
+\Task Träna mer på  klass
+
+\begin{Code}
+class Account(val number: Long, val maxCredit: Int){ 
+  private var balance = 0
+  
+  def deposit(amount: Int): Int = { 
+    if (amount > 0) {balance += amount}
+    balance
+  }
+  
+  def withdraw(amount: Int): (Int, Int) = if (amount > 0) { 
+    val allowedWithdrawal = 
+      if (amount < balance + maxCredit) amount 
+      else balance + maxCredit 
+    balance = balance - allowedWithdrawal
+    (allowedWithdrawal, balance)
+  } else (0, balance)
+  
+  def show: Unit = 
+    println("Account Nbr: " + number + " balance: " + balance) 
+}
+
+object Main {
+  def main(args: Array[String]): Unit = {
+    ???
+  }
+}
+\end{Code}
+
+
+
+\Task Träna mer på mängd  
+
+\Subtask Keno-bollar.
+
+
+
+
+
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task     
+\Task \emph{Dokumentationen för \code{Any}.} Undersök vilka metoder som finns i klassen Any här: \href{http://www.scala-lang.org/api/current/\#scala.Any}{http://www.scala-lang.org/api/current/\#scala.Any}. Prova några av metoderna i REPL.
+
+\Task \emph{Dokumentationen för samlingar.} Leta upp metoden \code{tabulate} i dokumentationen för objektet \code{Vector} nästan längst ner i listan här: \\ \href{http://www.scala-lang.org/api/current/#scala.collection.immutable.Vector$}{http://www.scala-lang.org/api/current/\#scala.collection.immutable.Vector\$} \\Leta upp den variant av \code{tabulate} som har signaturen:\\ \code{def tabulate[A](n: Int)(f: (Int) => A): Vector[A] }\\ Klicka på den gråfyllda trekanten till vänster om signaturen som fäller ut beskrivningen
+
+\Subtask Förklara vad som händer här:
+\begin{REPLnonum}
+scala> Vector.tabulate(10)(i => i % 3)
+\end{REPLnonum}
+
+\Subtask Klicka på det blåa stora o-et överst på sidan, för att växla till klass-vyn och studera listan med alla metoder  i klassen \code{Vector}. 
+
+
+\Task \emph{Fler metoder på indexerbara sekvenser.} Deklarera följande vektorer i REPL. 
+\begin{REPL}
+scala> val xs = (1 to 10).toVector
+scala> val a = Vector("abra", "ka", "dabra")
+scala> val b = Vector( "sim", "sala", "bim", "sala", "bim")
+\end{REPL}
+Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla samlingar som är indexerbara sekvenser. Vad har uttrycken för värde och typ? Förklara vad metoden gör. Studera även denna  översikt: \href{http://docs.scala-lang.org/overviews/collections/seqs}{docs.scala-lang.org/overviews/collections/seqs}
+
+\Subtask \code{b.indexWhere(s => s.startsWith("b"))}  % advanced
+
+\Subtask \code{a.indices}  % advanced
+
+\Subtask \code{xs.patch(1, Vector(42,43,44), 7)} % advanced
+
+\Subtask \code{xs.segmentLength(_ < 8, 2)} % advanced
+
+\Subtask \code{b.sortBy(_.reverse)}  % advanced
+
+\Subtask \code{b.sortWith((s1, s2) => s1.size < s2.size)} % advanced
+
+\Subtask \code{a.reverseMap(_.size)}	% advanced
+
+\Subtask \code{a intersect Vector("ka", "boom", "pow")} % advanced
+
+\Subtask \code{a diff Vector("ka")} % advanced
+
+\Subtask \code{a union Vector("ka", "boom", "pow")} % advanced
+
+
+
+\Task Jämför tidsprestanda mellan List och Vector vid hantering i början och i slutet. 
+
+\Subtask Hur snabbt går nedan på din dator? (Exemplet nedan är exekverat på en Intel i7-4790K CPU @ 4.00GHz.) %sudo lshw -class processor
+
+\begin{REPLnonum}
+scala> :paste
+
+def time(n: Int)(block: => Unit): Double =  {
+  def now = System.nanoTime
+  var timestamp = now
+  var sum = 0L
+  var i = 0
+  while (i < n) {
+    block
+    sum = sum + (now - timestamp)
+    timestamp = now
+    i = i + 1
+  }
+  val average = sum.toDouble / n
+  println("Average time: " + average + " ns")
+  average
+}
+
+scala> val n = 100000
+scala> val l = List.fill(n)(math.random)
+scala> val v = Vector.fill(n)(math.random)
+
+scala> (for(i <- 1 to 20) yield time(n){l.take(10)}).min
+Average time: 47.1852 ns
+Average time: 41.64156 ns
+Average time: 105.53986 ns
+Average time: 41.91562 ns
+Average time: 41.73559 ns
+Average time: 63.17134 ns
+Average time: 52.93756 ns
+Average time: 41.58533 ns
+Average time: 41.68017 ns
+Average time: 60.18881 ns
+Average time: 41.69867 ns
+Average time: 41.60771 ns
+Average time: 60.32759 ns
+Average time: 41.62671 ns
+Average time: 43.88916 ns
+Average time: 70.47824 ns
+Average time: 41.68801 ns
+Average time: 41.67223 ns
+Average time: 41.67262 ns
+Average time: 102.84893 ns
+res85: Double = 41.58533
+
+scala> (for(i <- 1 to 20) yield time(n){v.take(10)}).min
+Average time: 312.67005 ns
+Average time: 88.60023 ns
+Average time: 73.21829 ns
+Average time: 92.148 ns
+Average time: 91.01078 ns
+Average time: 87.82874 ns
+Average time: 74.04663 ns
+Average time: 94.16038 ns
+Average time: 88.4243 ns
+Average time: 105.88971 ns
+Average time: 98.85731 ns
+Average time: 72.77369 ns
+Average time: 97.04337 ns
+Average time: 90.01969 ns
+Average time: 88.11196 ns
+Average time: 75.20191 ns
+Average time: 93.72112 ns
+Average time: 110.19777 ns
+Average time: 132.4207 ns
+Average time: 324.28702 ns
+res86: Double = 72.77369
+
+scala> (for(i <- 1 to 20) yield time(1000){l.takeRight(10)}).min
+Average time: 247365.43 ns
+Average time: 212801.958 ns
+Average time: 212335.938 ns
+Average time: 212313.427 ns
+Average time: 212524.963 ns
+Average time: 219525.627 ns
+Average time: 223059.563 ns
+Average time: 222426.504 ns
+Average time: 221838.828 ns
+Average time: 223268.567 ns
+Average time: 222739.402 ns
+Average time: 222685.229 ns
+Average time: 223122.599 ns
+Average time: 222683.921 ns
+Average time: 222865.865 ns
+Average time: 222889.118 ns
+Average time: 223247.135 ns
+Average time: 222016.82 ns
+Average time: 223040.299 ns
+Average time: 222624.613 ns
+res87: Double = 212313.427
+
+scala> (for(i <- 1 to 20) yield time(1000){v.takeRight(10)}).min
+Average time: 2665.715 ns
+Average time: 190634.043 ns
+Average time: 773.111 ns
+Average time: 509.008 ns
+Average time: 519.04 ns
+Average time: 418.172 ns
+Average time: 365.54 ns
+Average time: 409.016 ns
+Average time: 353.115 ns
+Average time: 503.679 ns
+Average time: 421.369 ns
+Average time: 388.685 ns
+Average time: 461.725 ns
+Average time: 390.791 ns
+Average time: 381.83 ns
+Average time: 309.667 ns
+Average time: 372.09 ns
+Average time: 312.254 ns
+Average time: 323.925 ns
+Average time: 310.261 ns
+res88: Double = 309.667
+
+\end{REPLnonum}
+
+\Subtask Varför går det olika snabbt olika körningar?
+
+\Task Studera skillnader i prestanda mellan olika samlingar här: \\ \href{http://docs.scala-lang.org/overviews/collections/performance-characteristics.html}{docs.scala-lang.org/overviews/collections/performance-characteristics.html} \\
+(Mer om detta i kommande kurser.)
+
+\Task Gör något rekursivt med en lista för att visa hur syntaxen kan se ut med cons.
     
