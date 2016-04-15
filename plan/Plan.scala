@@ -98,6 +98,7 @@ trait Plan {
     Module("Mönster, Undantag", 
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
       | mönstermatchning, match, Option, null, try, catch, Try, unapply, 
+      | flatten, flatMap, partiella funktioner, collect 
       """.stripTrim),
 
     Module("Matriser, Typparametrar", 
@@ -125,9 +126,11 @@ trait Plan {
       | enum i java ???,
       """.stripTrim),
 
-    Module("Trådar, Web, Android", 
+    Module("Trådar, Web ???, Android ???", 
       id = "threadetc", exercise = "threads", lab = "life", contents = """
-      | Thread, Future, HTML, Javascript, css, Scala.js, Android,
+      | Thread, Future, Duration, Await, 
+      | (HTML ???), (Javascript ???), (css ???), 
+      | Scala.js ???, Android ???,
       """.stripTrim),
 
     Module("Design", 
