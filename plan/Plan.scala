@@ -41,6 +41,7 @@ trait Plan {
       | objekt, modul, punktnotation, tillstånd, metod, medlem, 
       | funktionsvärde, funktionstyp, äkta funktion, stegad funktion, apply, lazy val, 
       | lokala funktioner,    
+      | anonyma funktioner, lambda,
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
       | cslib.window.SimpleWindow, 
       """.stripTrim),
