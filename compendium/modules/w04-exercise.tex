@@ -258,7 +258,7 @@ scala> println(pt)
 
 \Subtask Omdefiniera toString så att den ger en sträng på formen \code{Punkt(1.0, 42.0)}.
 
-\Subtask Vad hände om du utelämnar nyckelordet \code{override} vid omdefiniering?
+\Subtask Vad händer om du utelämnar nyckelordet \code{override} vid omdefiniering?
 
 \Task \emph{Objektfabrik med \code{apply}-metod.} Man kan ordna så att man slipper skriva \code{new} med ett s.k. \emph{fabriksobjekt} \Eng{factory object}. 
 \begin{Code}
@@ -404,6 +404,40 @@ scala> my   // tryck TAB
 scala> myntkast.  // tryck TAB
 \end{REPL}
 
+\Task \emph{Typparameter.} Vissa funktioner är generella för många typer och tar en så kallad \textbf{typparameter} inom hakparenteser. Ofta slipper man skriva typparametrar, då kompilatorn kan härleda typen utifrån argumenten. Om man anger typparametrar explicit så hjälper kompilatorn dig med att kolla att det verkligen är rätt typ i samlingen. 
+
+\Subtask Vad händer nedan?
+\begin{REPL}
+scala> var xs = Vector.empty[Int]
+scala> xs = xs :+ "42" 
+scala> xs = xs :+ 43 :+ 64 :+ 46
+scala> xs
+scala> xs :+= "42".toInt 
+scala> var ys = Vector[Int]("ett", "två", "tre")
+scala> var ingenting = Vector.empty 
+scala> ingenting = Vector(1,2,3)
+\end{REPL}
+
+\Subtask Samlingar är mer användbara om de är \emph{generiska}, vilket innebär att elementens typ avgörs av en typparameter och därför kan vara av vilken typ som helst. Man kan definiera egna funktioner som tar generiska samlingar som parametrar. Förklara vad som händer här:
+\begin{REPL}
+scala> val vego = Vector("gurka", "tomat", "apelsin", "banan")
+scala> val prim = Vector(2, 3, 5, 7, 11, 13)
+scala> def först[T](xs: Vector[T]): T = xs.head
+scala> def sist[T](xs: Vector[T]) = xs.last
+scala> def förstOchSist[T](xs: Vector[T]): (T, T) = (xs.head, xs.last)
+scala> först(vego)
+scala> sist(prim)
+scala> förstOchSist(vego)
+scala> förstOchSist(prim)
+scala> def wrap[T](pair: (T, T))(xs: Vector[T]) = pair._1 +: xs :+ pair._2
+scala> wrap("Odla", "och ät!")(vego)
+scala> wrap("Odla", "och ät!")(vego).mkString(" ")
+\end{REPL}
+
+
+
+
+
 \Task \emph{Några viktiga samlingsmetoder.} Deklarera följande vektorer i REPL. 
 \begin{REPL}
 scala> val xs = (1 to 10).toVector
@@ -481,23 +515,30 @@ Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla sam
 
 \Subtask \code{Vector(e.isEmpty, e.nonEmpty)}
 
+\Subtask \code{a.contains("ka")}
+
+\Subtask \code{"ka" contains "a"}
+
 \Subtask \code{a.filter(s => s.contains("k")) }	
 
 \Subtask \code{a.filter(_.contains("k")) }	
 
 \Subtask \code{a.map(_.toUpperCase).filterNot(_.contains("K")) }	
 
+\Subtask \code{xs.filter(x => x % 2 == 0)}
+
+\Subtask \code{xs.filter(_ % 2 == 0)}
 
 
 \Task De olika samlingarna i \code{scala.collection} används flitigt i andra paket, exempelvis \code{scala.util} och \code{scala.io}. 
 
 \Subtask Vad händer här? (Metoden \code{shuffle} skapar en ny samling med elementen i slumpvis ordning.)
-\begin{Code}
+\begin{REPL}
 val xs = Vector(1,2,3)
 def blandat = scala.util.Random.shuffle(xs)
 def test = if (xs == blandat) "lika" else "olika"
 (for(i <- 1 to 100) yield test).count(_ == "lika")
-\end{Code}
+\end{REPL}
 
 
 \Subtask Skapa en textfil med namnet \code{fil.txt} som innehåller lite text och läs in den med: \\\code{scala.io.Source.fromFile("fil.txt", "UTF-8").getLines.toVector}
