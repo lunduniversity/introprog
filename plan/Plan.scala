@@ -128,7 +128,7 @@ trait Plan {
       | enum i java ???,
       """.stripTrim),
 
-    Module("Trådar, Web ???, Android ???", 
+    Module("Trådar", //, Web ???, Android ???", 
       id = "threadetc", exercise = "threads", lab = "life", contents = """
       | Thread, Future, Duration, Await, 
       | (HTML ???), (Javascript ???), (css ???), 
