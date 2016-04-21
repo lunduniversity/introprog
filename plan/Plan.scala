@@ -15,91 +15,124 @@ trait Plan {
       id = "intro", exercise = "expressions", lab = "kojo", contents = """
       | sekvens, alternativ, repetition, abstraktion, programmeringsspråk,
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
-      | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
+      | virtuell maskin, REPL,  
+      | literal, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
+      | inbyggda typer, Int, Long, Short, Double, Float, Byte, Char, String,
+      | println, typen Unit, enhetsvärdet (), stränginterpolatorn s,
       | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random,
       | logiska uttryck, de Morgans lagar, while-sats, for-sats, 
       """.stripTrim),
       
     Module("Kodstrukturer", 
       id = "codestruct", exercise = "programs", lab = "", contents = """
-      | samling: Range, for-uttryck, map, foreach, flatMap,
+      | Range, Array, Vector, iterering, for-uttryck, map, foreach, 
       | algoritm vs implementation, pseudokod, 
-      | algoritm: swap, algoritm: summering, algoritm: min/max,  
+      | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX,  
+      | block, namnsynlighet, namnöverskuggning, lokala variabler,
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
-      | konstanter vs föränderlighet, objektorientering, klasser, objekt, punktnotation, 
-      | referensvariabler, referenstilldelning, anropa metoder, block, 
-      | namnsynlighet, namnöverskuggning,
-      | SimpleWindow, 
+      | main i Java vs Scala, java.lang.System.out.println,
       """.stripTrim),
       
     Module("Funktioner, Objekt", 
       id = "funobj", exercise = "functions", lab = "simplewindow", contents = """
-      | parameter, returtyp, värdeandrop, namnanrop, namngivna parametrar,
+      | definera funktion, anropa funktion,
+      | parameter, returtyp, värdeandrop, namnanrop, default-argument, namngivna argument,
+      | applicera funktion på alla element i en samling, procedur, 
+      | värdeanrop vs namnanrop, uppdelad parameterlista, skapa egen kontrollstruktur, 
+      | objekt, modul, punktnotation, tillstånd, metod, medlem, 
+      | funktionsvärde, funktionstyp, äkta funktion, stegad funktion, apply, lazy val, 
+      | lokala funktioner,    
+      | anonyma funktioner, lambda,
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
-      | objekt, modul, lazy val,  
-      | aritmetik, slumptal, 
+      | cslib.window.SimpleWindow, 
       """.stripTrim),
 
     Module("Datastrukturer", 
-      id = "data", exercise = "data", lab = "textfiles", contents = """
-      | tupler, case-klasser, case-object, enum i java ???,
-      | Array, Map, List, Vector, föränderlighet, iterering,
-      | vektorer i Java vs Scala, Complex, Rational,
-      | läsa/skriva textfiler, Source.fromFile, java.nio.file
+      id = "datastruct", exercise = "data", lab = "textfiles", contents = """
+      | attribut (fält), medlem, metod, 
+      | tupel, klass, Any, isInstanceOf, toString, 
+      | case-klass, 
+      | Complex, Rational,
+      | föränderlighet vs oföränderlighet, 
+      | List, Vector, Set, Map, 
+      | typparameter, generisk samling som parameter,
+      | översikt samlingsmetoder, 
+      | översikt strängmetoder, läsa/skriva textfiler, Source.fromFile, java.nio.file,
       """.stripTrim),
 
-    Module("Vektoralgoritmer", 
-      id = "vect", exercise = "vectors", lab = "cardgame", contents = """
-      | vektoralgoritmer, min/max, strängar, registrering,
-      | java System.out.println, Scanner, 
+    Module("Sekvensalgoritmer", 
+      id = "seqalg", exercise = "sequences", lab = "cardgame", contents = """
+      | sekvensalgoritm,  algoritm: SEQ-COPY,   
+      | in-place vs copy, algoritm: SEQ-REVERSE, algoritm: SEQ-REGISTER,
+      | sekvenser i Java vs Scala, for-sats i Java,
+      | java.util.Scanner, java.util.ArrayList, scala.collection.mutable.Buffer,
+      | StringBuilder,
+      | java.util.Random, slumptalsfrö, 
       """.stripTrim),
 
     Module("Klasser, Likhet", 
-      id = "classes", exercise = "classes", lab = "shapes", contents = """
-      | klasser, klassparameter, primär konstruktor, alternativa konstruktorer,
-      | referenslikhet, strukturlikhet, eq vs ==, compareTo, Shape, Point, Rectangle,
+      id = "classsim", exercise = "classes", lab = "shapes", contents = """
+      | objektorientering, klass, Point, Rectangle,
+      | inkapsling, accessregler, private, public, private[this],
+      | getters och setters,
+      | klassparameter, primär konstruktor, alternativ konstruktor, 
+      | referensvariabler vs enkla värden, referenstilldelning vs värdetilldelning, 
+      | referenslikhet vs strukturlikhet, eq vs ==, compareTo, 
+      | implementera equals,
       """.stripTrim),
 
     Module("Arv, Gränssnitt", 
       id = "polymorf", exercise = "traits", lab = "turtlerace-team", contents = """
-      | klasser, arv, polymorfism, likhet, equals, 
-      | accessregler, private, public, protected, private[this],
-      | trait, inmixning, 
-      | Any, AnyVal, AnyRef, Nothing, 
+      | arv, polymorfism, likhet vid arv, asInstanceOf,
+      | klasser i Scala vs Java, Any vs java.lang.Object,
+      | klasshierarkin i Scala: Any AnyRef AnyVal Nothing Null,
+      | klasshierarkin i Scalas samlingar,
+      | Shape som basklass till Point och Rectangle, 
+      | accessregler vid arv, protected, private[this], final,
+      | abstrakt klass, trait, inmixning, klass vs trait, 
+      | case-object, typer med uppräknade värden, 
+      | värdeklasser extends AnyVal,
+      | implementera equals vid polymorfism ???,
       """.stripTrim),
 
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
     Module("Mönster, Undantag", 
-      id = "pattern", exercise = "matching", lab = "chords-team", contents = """
-      | match, Option, null, try, catch, Try, unapply, 
+      id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
+      | mönstermatchning, match, Option, null, try, catch, Try, unapply, 
+      | flatten, flatMap, partiella funktioner, collect 
       """.stripTrim),
 
-    Module("Matriser", 
+    Module("Matriser, Typparametrar", 
       id = "matrix", exercise = "matrices", lab = "maze", contents = """
-      | matriser, nästlade for-satser, designexempel: Tre-i-rad, 
+      | matris, nästlade for-satser, designexempel: Tre-i-rad, 
+      | generisk funktion, generisk klass,  
       | matriser i Java vs Scala, 
       """.stripTrim),
 
     Module("Sökning, Sortering", 
-      id = "sort", exercise = "sorting", lab = "surveydata-team", contents = """
-      | linjärsökning, binärsökning, 
-      | insättningssortering, urvalssortering,
-      | sortering till ny vektor, sortering på plats, 
+      id = "searchsort", exercise = "sorting", lab = "surveydata-team", contents = """
+      | algoritm: LINEAR-SEARCH, algortim: BINARY-SEARCH, 
       | algoritmisk komplexitet, 
+      | sortering till ny vektor, sortering på plats, 
+      | algoritm: INSERTION-SORT, algoritm: SELECTION-SORT,
+      | mer om filer, serialisering,
       """.stripTrim),
 
     Module("Scala och Java", 
       id = "scalajava", exercise = "scalajava", lab = "scalajava-team", contents = """
       | skillnader mellan Scala och Java, 
       | for-sats i Java, java for-each i Java, 
-      | ArrayList<Integer>, scala.collection.JavaConversions, 
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
+      | samlingar i Java vs Scala, scala.collection.JavaConverters,
+      | enum i java ???,
       """.stripTrim),
 
-    Module("Trådar, Web, Android", 
-      id = "thread", exercise = "threads", lab = "life", contents = """
-      | Thread, Future, HTML, Javascript, css, Scala.js, Android,
+    Module("Trådar", //, Web ???, Android ???", 
+      id = "threadetc", exercise = "threads", lab = "life", contents = """
+      | Thread, Future, Duration, Await, 
+      | (HTML ???), (Javascript ???), (css ???), 
+      | Scala.js ???, Android ???,
       """.stripTrim),
 
     Module("Design", 

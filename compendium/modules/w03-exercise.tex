@@ -1,25 +1,548 @@
+%!TEX encoding = UTF-8 Unicode
 %!TEX root = ../compendium.tex
 
 \Exercise{\ExeWeekTHREE}
 
 \begin{Goals}
-\item 
+\item Kunna skapa och använda funktioner med en eller flera parametrar, default-argument, namngivna argument, och uppdelad parameterlista.
+\item Kunna använda funktioner som äkta värden. 
+\item Kunna applicera en funktion på element i en samling.
+\item Förstå skillnader och likheter mellan en funktion och en procedur.
+\item Förstå skillnader och likheter mellan en värde-anrop och namnanrop.
+\item Kunna skapa en procedur i form av en enkel kontrollstruktur med fördröjd evaluering av ett block.
+\item Kunna skapa och använda objekt som moduler.
+\item Förstå skillnaden mellan äkta funktioner och funktioner med sidoeffekter.
+\item Kunna skapa och använda variabler med fördröjd initialisering och förstå när de är användbara.
+\item Kunna förklara hur nästlade funktionsanrop fungerar med hjälp av begreppet aktiveringspost.
+\item Kunna skapa och använda lokala funktioner, samt förstå nyttan med lokala funktioner.
+\item Känna till att funktioner är objekt med en \code{apply}-metod.
+\item Känna till stegade funktioner och kunna använda partiellt applicerade argument. 
+\item Känna till rekursion och kunna förklara hur rekursiva funktioner fungerar med hjälp av   anropsstacken.
+\item Känna till svansrekursion och att svansrekursiva funktioner kan optimeras till loopar.
 \end{Goals}
 
 \begin{Preparations}
-\item 
+\item Studera teorin i kapitel~\ref{chapter:W03}.
 \end{Preparations}
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task 
+\Task \label{task:funcall}\emph{Definiera och anropa funktioner.} En funktion med två parametrar definieras med följande syntax i Scala: \vspace{0.5em} \\  \texttt{\code{def} \textit{namn}(\textit{parameter1}: \textit{Typ1}, \textit{parameter2}: \textit{Typ2}): \textit{Returtyp} = \textit{returvärde}}
 
-\Subtask 
+\Subtask Definiera en funktion med namnet \code{öka} som har en heltalsparameter \code{x} och som returnerar \code{x + 1}. Ange returtypen explicit. Testa funktionen i REPL med argumentet 42.
+
+\begin{REPL}
+scala> ???  // definiera funktionen öka
+scala> öka(42)
+43
+\end{REPL}
+
+\Subtask\Pen Vad har funktionen \code{öka} i föregående uppgift för returtyp?
+
+\Subtask\Pen Vad gör kompilatorn om du utelämnar returtypen?
+
+\Subtask\Pen Varför kan det vara bra att ange returtypen explicit?
+
+\Subtask\Pen Vad är det för skillnad mellan parameter och argument?
+ 
+\Subtask Vad har uttrycket \code{öka(öka(öka(öka(42))))} för värde?
+
+\Subtask Definera funktionen \code{minska(x: Int): Int} med returvärdet \code{x - 1}.
+
+\Subtask Vad är värdet av uttrycket \code{öka(minska(öka(öka(minska(minska(42))))))}
+
+
+\Task \emph{Funktion med flera parametrar.} Definiera i REPL två funktioner \code{sum} och \code{diff} med två heltalsparametrar som returnerar summan respektive differensen av argumenten: \\
+\code{def sum(x: Int, y: Int): Int = x + y} \\
+\code{def diff(x: Int, y: Int): Int = x - y} \\
+Vad har nedan uttryck för värden? Förklara vad som händer.
+
+\Subtask \code{diff(0, 100)}
+
+\Subtask \code{diff(100, add(42, 43))}
+
+\Subtask \code{sum(sum(42, 43), diff(100, sum(0, 0))}
+
+\Subtask \code{sum(diff(Byte.MaxValue, Byte.MinValue),1)}
+
+\Task \emph{Funktion med default-argument.} Förklara vad som händer här?
+\begin{REPL}
+scala> def inc(i: Int, j: Int = 1) = i + j
+scala> inc(42, 2)
+scala> inc(42, 1)
+scaka> inc(42)
+\end{REPL}
+
+\Task \emph{Funktionsanrop med namngivna argument.} 
+\begin{REPL}
+scala> def skrivNamn(förnamn: String, efternamn: String) = 
+         println("Namn: " + efternamn + ", " + förnamn)
+scala> skrivNamn("Kim", "Robinson")
+scala> skrivNamn(förnamn = "Viktor", efternamn = "Oval")
+scaka> skrivNamn(efternamn = "Triangelsson", förnamn = "Stina")
+\end{REPL}
+
+\Subtask Förklara vad som händer ovan?
+
+\Subtask\Pen Vad är fördelen med namngivna argument?
+
+
+
+\Task \emph{Applicera en funktion på elementen i en samling.} Använd dina funktioner \code{öka} och \code{minska} från uppgift \ref{task:funcall}. Vad har nedan uttryck för värde? Förklara vad som händer.
+
+\Subtask \code{for (i <- 0 to 4) yield öka(i)}
+
+\Subtask \code{for (i <- 1 to 5) yield minska(i)}
+
+\Subtask \code{(0 to 4).map(i => öka(i))}
+
+\Subtask \code{(1 to 5).map(i => minska(i))}
+
+\Subtask \code{(0 to 4).map(öka)}
+
+\Subtask \code{(1 to 5).map(minska)}
+
+\Subtask \code{Vector(12, 3, 41, -8).map(öka)}
+
+\Subtask \code{Vector(12, 3, 41, -8).map(öka).map(minska).map(minska)}
+
+
+
+\Task En funktion som inte returnerar något intressant värde, men som anropas för det den \emph{gör} kallas \textbf{procedur}. Definiera följande procedur i REPL: \\ 
+\code{def tUvirks(msg: String) = println(msg.reverse)} \\
+Vad skriver nedan satser ut? Förklara vad som händer.
+
+\Subtask \code{println("sallad".reverse)}
+
+\Subtask \code{tUvirks("sallad")}
+
+\Subtask \code{val x = tUvirks("sallad"); println(x)}
+
+\Subtask \code{def enhetsvärdet = (); println(enhetsvärdet)}
+
+\Subtask \code{def bortkastad: Unit = 1 + 1; println(bortkastad)}
+
+\Subtask \code|def bortkastad2 = {val x = 1 + 1}; println(bortkastad2)|
+
+\Subtask\Pen Varför är det bra att explicit ange \code{Unit} som returtyp för procedurer?
+
+
+\Task \emph{Värdeanrop och namnanrop (fördröjd evaluering, ''lata'' argument).} Deklarera nedan funktioner i REPL eller Kojo.
+
+\begin{Code}
+def snark: Int = {print("snark "); Thread.sleep(1000); 42}
+def callByValue(x: Int) = x + x
+def callByName(x: => Int) = x + x
+\end{Code}
+
+Evaluera nedan uttryck. Förklara vad som händer.
+
+\Subtask \code{snark}
+
+\Subtask \code{snark; snark; snark}
+
+\Subtask \code{callByValue(1)}
+
+\Subtask \code{callByName(1)}
+
+\Subtask \code{callByValue(snark)}
+
+\Subtask \code{callByName(snark)}
+
+
+\Subtask Förklara vad som händer här:
+\begin{REPL}
+scala> def görDetta(block: => Unit) = block
+scala> görDetta(println("hej"))
+scala> görDetta{println("goddag")}
+scala> görDetta{println("hej"); println("svejs")}
+scala> def görDettaTvåGånger(block: => Unit) = {block; block}
+scala> görDettaTvåGånger{println("goddag")}
+\end{REPL}
+
+
+\Task \emph{Uppdelad parameterlista.} Man kan dela upp parametrarna till en funktion i flera parameterlistor. Förklara vad som händer här:
+\begin{REPL}
+scala> def add(a: Int)(b: Int) = a + b
+scala> add(22)(20)
+scala> add(22)(add(1)(19))
+\end{REPL}
+
+
+\Task \emph{Skapa din egen kontrollstruktur.} Använd fördröjd evaluering och stegad funktion och skapa din egen loop-konstruktion.
+\begin{REPL}
+scala> def upprepa(n: Int)(block: => Unit) = {
+         var i = 0
+         while (i < n) {block; i = i + 1}
+       }
+scala> upprepa(10)(println("hej"))
+scala> upprepa(1000){
+  val tärning = (math.random * 6 + 1).toInt
+  print(tärning + " ")
+}
+\end{REPL}
+Förklara vad som händer ovan. (Det är så som \code{upprepa} i Kojo är definierad.)
+
+
+\Task \emph{Funktion som värde.} Funktioner är äkta värden i Scala.
+
+\Subtask \label{subtask:funcval} Förklara vad som händer nedan. Notera understrecket på rad 4:
+
+\begin{REPL}[numbers=left, numberstyle=\color{black}\ttfamily\scriptsize\selectfont]
+scala> def inc(x: Int): Int = x + 1
+scala> inc(42)
+scala> Vector(12, 3, 41, -8).map(inc)
+scala> val f = inc _
+scala> Vector(12, 3, 41, -8).map(f)
+\end{REPL}
+
+\Subtask Vad händer om du bara skriver \code{val f = inc} utan understreck?
+
+\Subtask På liknande sätt som i uppgift \ref{subtask:funcval}: definiera en funktion \code{dec} som i stället \emph{minskar} med 1. Deklarera ett funktionsvärde \code{g} som tilldelas funktionen \code{dec} och kör sedan \code{g} på varje element i \code{Vector(12, 3, 41, -8)} med metoden \code{map}.
+
+\Subtask\Pen Vad har variablerna \code{f} och \code{g} ovan för typ?
+
+\Subtask Förklara vad som händer nedan. Vad får \code{d} och \code{h} för värde?
+
+\begin{REPL}
+scala> def räkna(x: Int, f: Int => Int) = f(x,y)
+scala> def dubbla(x: Int) = 2 * x
+scala> def halva(x: Int) = x / 2
+scala> val d = räkna(42, dubbla)
+scala> val h = räkna(42, halva)
+\end{REPL}
+
+\Task\emph{Stegade funktioner (''Curry-funktioner'').} Förklara vad som händer nedan.
+\begin{REPL}
+scala> def sum(a: Int)(b: Int) = a + b
+scala> sum(1)(2)
+scala> val f = sum(42) _
+scala> f(1)
+scala> val inc = sum(1) _
+scala> val dec = sum(-1) _
+scala> inc(42)
+scala> dec(42)
+\end{REPL}
+
+\Task \emph{Objekt som moduler.} 
+
+\Subtask Lär dig följande terminologi utantill: 
+
+\begin{itemize}[noitemsep, nolistsep]
+\item Ett objekt som samlar funktioner och variabler kallas även en \textbf{modul}. 
+\item Funktioner i objekt kallas även \textbf{metoder}. 
+\item Variabler och metoder i objekt kallas \textbf{medlemmar}. 
+\item Moduler kan i sin tur innehålla moduler, i godtyckligt nästlingsdjup. 
+\item Man kommer åt innehållet i en modul med \textbf{punktnotation}. 
+\item Med \textbf{import} slipper man punktnotation. 
+\item Ett objekt med variabler sägs ha ett \textbf{tillstånd}.
+\end{itemize}
+
+\Subtask Deklarera modulerna \code{stringstat} och \code{Test} nedan i REPL eller i Kojo. 
+
+\begin{Code}
+object stringstat {
+  object stringfun {
+    def sentences(s: String): Array[String] = s.split('.')
+    def words(s: String): Array[String] = s.split(' ')
+    def countWords(s: String): Int = words(s).size
+    def countSentences(s: String): Int = sentences(s).size
+  }
+  
+  object statistics {
+    var history = ""
+    def printFreq(s: String): Unit = {
+      println("\n---- Frekvenser ----")
+      println("Antal tecken:   " + s.size)
+      println("Antal ord:      " + stringfun.countWords(s))
+      println("Antal meningar: " + stringfun.countSentences(s))
+      history = history + " " + s
+    }
+    def printTotal: Unit = printFreq(history)
+  }
+}
+  
+object Test {
+  import stringstat._
+  def apply(n: Int = 42): Unit = {
+    val s1 = "Fem myror är fler än fyra elefanter. Ät gurka."
+    val s2 = "Galaxer i mina braxer. Tomat är gott. Hejsan."
+    statistics.printFreq(s1 * n)
+    statistics.printFreq(s2 * n)
+    statistics.printTotal
+  }
+}
+\end{Code}
+
+\Subtask Anropa \code{Test()} och förklara vad som händer. Vad skrivs ut?
+
+\Subtask Vilket av objekten i modulen \code{stringstat} har tillstånd och vilket av objekten är tillståndslöst? Vad består tillståndet av?
+
+
+\Task \emph{Äkta funktioner.} En \textbf{äkta funktion} ger alltid samma resultat med samma argument.  
+
+\begin{Code}
+object inSearchOfPurity {
+  var x = 0
+  val y = x
+  def inc(i: Int) = i + 1
+  def oink(i: Int) = {x = x + i; "Pig says oink " + x}
+  def addX(i: Int): Int = x + i
+  def addY(i: Int): Int = y + i
+  def isPalindrome(s: String): Boolean = s == s.reverse
+  def rnd(min: Int, max: Int) = math.random * max + min
+}
+\end{Code}
+
+\Subtask\Pen Vilka funktioner i objektet \code{inSearchOfPurity} är äkta funktioner?
+
+\Subtask \label{subtask:nonpure} Anropa de funktioner som inte är äkta i REPL och demonstrera med exempel att de kan ge olika resultat för samma argument.
+
+\Subtask Vad objektets är tillstånd efter dina körningar i uppgift \ref{subtask:nonpure}? 
+
+\Subtask Vilken del av tillståndet i objektet är oföränderligt?
+
+
+
+\Task Funktioner är objekt med en \code{apply}-metod. 
+
+\Subtask Förklara vad som händer här:
+\begin{REPL}
+scala> object plus { def apply(x: Int, y: Int) = x + y }
+scala> plus.apply(42,43)
+scala> plus(42, 43)
+scala> val add: (Int, Int) => Int = (x, y) => x + y
+scala> add(42, 42)
+scala> add.   // tryck på TAB
+scala> add.apply(42, 42)
+scala> val inc = add.curried(1)
+scala> inc(42)
+\end{REPL}
+
+\Subtask Definiera i REPL ett objekt som heter \code{Slumptal} som har en \code{apply}-metod som tar två heltalsparametrar \code{a} och \code{b} och som med hjälp av \code{math.random} returnerar ett slumpal i intervallet $[a, b]$. Anropa objektets \code{apply}-metod med \code{(1 to 100).foreach(println(???))}, där \code{???} ersätts först med punktnotation och sedan med funktionsappliceringssyntax. 
+
+
+
+\Task \emph{Fördröjd initialisering (''lata'' variabler).} 
+
+\Subtask \label{subtask:delayalloc} Förklara vad som händer här:
+\begin{REPL}
+scala> val olat = 42
+scala> lazy val lat = 42
+scala> println(lat)
+scala> val nu = {Thread.sleep(1000); println("nu"); 42}
+scala> lazy val sen = {Thread.sleep(1000); println("sen"); 42}
+scala> def igen = {Thread.sleep(1000); println("hver gang"); 42}
+scala> println(nu)
+scala> println(sen)
+scala> println(igen)
+scala> println(nu)
+scala> println(sen)
+scala> println(igen)
+scala> object m {lazy val stor = Array.fill(1e9.toInt)(liten); val liten = 42}
+scala> m.liten
+scala> m.stor
+\end{REPL}
+
+\Subtask\Pen Vad är skillnaden mellan \code{val}, \code{lazy val} och \code{def}, vad gäller \emph{när} evalueringen sker?
+
+
+\Subtask \label{subtask:forwardref} Förklara vad som händer här:
+\begin{REPL}
+scala> object objektÄrLata { val sen = { println("nu!"); 42 } }
+scala> objektÄrLata
+scala> objektÄrLata.sen
+scala> {val x = y; val y = 42}
+scala> object buggig {val a = b; val b = 42}
+scala> buggig.a
+scala> object funkar {lazy val a = b; val b = 42}
+scala> funkar.a
+scala> object nowarning {val many = Array.fill(10)(one); val one = 1}
+scala> nowarning.many
+\end{REPL}
+
+\Subtask\Pen Med ledning av uppgift \ref{subtask:delayalloc} och uppgift \ref{subtask:forwardref}, beskriv två olika situationer när kan man ha nytta av \code{lazy val}?
+
+
+\Task \emph{Aktiveringspost.} Antag att vi bara kan addera eller subtrahera med ett. Då kan man ändå skapa en additionsfunktion på nedan (ganska omständliga) sätt. Skriv nedan program i en editor, kompilera och exekvera. 
+\begin{Code}
+object Count {
+  def inc(x: Int) = {println("inc[x = " + x + "]"); x + 1}
+  def dec(x: Int) = {println("dec[x = " + x + "]"); x - 1}
+
+  def add(x: Int, y: Int) = {
+    println("add[x = " + x + ", y = " + y + "]")
+    var result = x; 
+    var i = 0; 
+    while (i < math.abs(y)){
+      result = if (y >= 0) inc(result) else dec(result)
+      i = i + 1
+    }
+    result
+  }
+
+  def main(args: Array[String]): Unit = {
+    val x =  inc(dec(inc(0)))
+    println(x)
+    val y = add(1, add(1, add(1, -2)))
+    println(y)
+  }
+}
+\end{Code}
+
+\Subtask Vad skrivs ut? Förklara vad som händer.
+
+\Subtask\Pen Rita hur anropsstacken förändras under exekveringen av main-metoden.
+
+
+\Task \emph{Lokala funktioner.} Skapa nedan program i en editor, kompilera och exekvera. I programmet nedan har metoden \code{add} två lokala funktioner som skiljer sig från metoderna med samma namn. 
+\begin{Code}
+object Count {
+  def inc(x: Int) = x + 1
+  def dec(x: Int) = x - 1
+
+  def add(x: Int, y: Int) = {
+    def inc(x: Int) = {println("inc[x = " + x + "]"); x + 1}
+    def dec(x: Int) = {println("dec[x = " + x + "]"); x - 1}
+    println("add[x = " + x + ", y = " + y + "]")
+    var result = x; 
+    var i = 0; 
+    while (i < math.abs(y)){
+      result = if (y >= 0) inc(result) else dec(result)
+      i = i + 1
+    }
+    result
+  }
+
+  def main(args: Array[String]): Unit = {
+    val x =  inc(dec(inc(0)))
+    println(x)
+    val y = add(1, add(1, add(1, -2)))
+    println(y)
+  }
+}
+\end{Code}
+
+\Subtask Vad skrivs ut? Förklara vad som händer.
+
+\Subtask\Pen Vilka fördelar finns med lokala funktioner?
+
+
+\Task \emph{Anonyma funktioner.} Vi har flera gånger sett syntaxen \code{i => i + 1}, till exempel i en loop \code{(1 to 10).map(i => i + 1)} där funktionen \code{i => i + 1} appliceras på alla heltal från 1 till och med 10. Funktionen \code{i => i + 1} kallas en \textbf{anonym} funktion, eftersom den inte har något namn, till skillnad från \code{def öka(i: Int): Int = i + 1}, som har namnet \code{öka}. 
+
+Anonyma funktioner kallas även för \emph{funktionsliteraler} eller \emph{lambda}.
+
+Det finns ett ännu kortare sätt att skriva en anonym funktion om den bara använder sin parameter en enda gång, med understreck \code{ _ + 1} som expanderas av kompilatorn till \code{ngtnamn => ngtnamn + 1} (namnet på parametern spelar ingen roll; kompilatorn väljer något eget, internt namn). 
+
+\Subtask Förklara vad som händer nedan. Vad blir resultatet av varje uttryck?
+
+\begin{REPL}
+scala> (1 to 4).map(i => i + 1)
+scala> (1 to 4).map(_ + 1)
+scala> (1 to 4).map(math.pow(2, _))
+scala> (1 to 4).map(math.pow(_, 2))
+scala> (1 to 4).map(i => i.toString)
+scala> (1 to 4).map(_.toString)
+\end{REPL}
+
+\Subtask\Pen Vilken typ kommer kompilatorn att härleda för de anonyma funktionerna i argumenten till metoden \code{map} på rad 1--6 i uppgiften ovan? Vad använder kompilatorn för information i dessa exempel för att härleda funktionstyperna?
+
+\Subtask\Pen Vilka felmeddelande ger kompilatorn när den inte kan lista ut att funktionsliteralerna nedan har typen \code{Int => Int}?
+
+\begin{REPL}
+scala> val inc = i => i + 1
+scala> val inc = (i: Int) => i + 1
+scala> (1 to 10).map(inc)
+scala> val dec = _ - 1 
+scala> val dec: Int => Int = _ - 1
+scala> (1 to 10).map(dec)
+\end{REPL}
+
+
+
+\Task \emph{Rekursion.} En rekursiv funktion anropar sig själv.
+
+\Subtask Förklara vad som händer nedan. 
+
+\begin{REPL}
+scala> def countdown(x: Int): Unit = if (x > 0) {println(x); countdown(x -1)}
+scala> countdown(10)
+scala> countdown(-1)
+scala> def finalCountdown(x: Byte): Unit = 
+         {println(x); Thread.sleep(100); finalCountdown((x-1).toByte); 1 / x}
+scala> finalCountdown(Byte.MaxValue)
+\end{REPL}
+
+\Subtask Vad händer om du gör satsen som riskerar division med noll \emph{före} det rekursiva anropet i funktionen \code{finalCountdown} ovan?
+
+\Subtask Förklara vad som händer nedan. Varför tar sista raden längre tid än näst sista raden?
+\begin{REPL}
+scala> def signum(a: Int): Int = if (a >= 0) 1 else -1 
+scala> def add(x: Int, y: Int): Int = 
+         if (y == 0) x else add(x + 1, y - signum(y))
+scala> add(100,100)
+scala> add(Int.MaxValue, 0)
+scala> add(0, Int.MaxValue)
+\end{REPL}
+
+
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task 
+\Task Visa anropsstacken genom att kasta undantag.
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task 
+
+
+\Task \emph{Kolla bajtkoden.}
+\begin{REPL}
+scala> def plusxy(x: Int, y: Int) = x + y
+scala> :javap plusxy
+\end{REPL}
+
+\Subtask Leta upp raden \code{public int plusxy(int, int);} och studera koden efter \code{Code:} och försök gissa vilken instruktion som utför själva additionen.
+
+\Subtask Lägg till en parameter till: \\ \code{def plusxyz(x: Int, y: Int, z: Int) = x + y + z}
+\\ och studera bajtkoden med \code{:javap plusxyz}. Vad skiljer bajtkoden mellan \code{plusxy} och \code{plusxyz}?
+
+\Subtask\Pen Läs om bajtkod här: \href{https://en.wikipedia.org/wiki/Java\_bytecode}{en.wikipedia.org/wiki/Java\_bytecode}. Vad betyder den inledande bokstaven i additionsinstruktionen?
+
+
+\Task \emph{Undersök svansrekursion genom att kasta undantag.} Förklara vad som händer. Kan du hitta bevis för att kompilatorn kan optimera rekursionen till en vanlig loop?
+
+\begin{REPL}
+scala> def explode = throw new Exception("BANG!!!")
+scala> explode
+scala> lastException.printStackTrace
+scala> def countdown(n: Int): Unit = 
+         if (n == 0) explode else countdown(n-1)
+scala> countdown(10)
+scala> lastException.printStackTrace
+scala> def countdown2(n: Int): Unit = 
+         if (n == 0) explode else {countdown2(n-1); print("no tailrec")}
+scala> countdown2(10)
+scala> countdown2(1000)
+scala> lastException
+scala> lastException.getStackTrace.size
+scala> :javap countdown
+scala> :javap countdown2
+\end{REPL}
+
+\Task \emph{\code{@tailrec}-annotering.} Du kan be kompilatorn att ge felmeddelande om den inte kan optimera koden till en loop och därmed öka prestanda och unvika en överfull anropssstack \Eng{stack overflow}. Prova nedan rader i REPL och förklara vad som händer. 
+\begin{REPL}
+scala> def countNoTailrec(n: Long): Unit = 
+         if (n <= 0L) println("Klar! " + n) else {countNoTailrec(n-1L); ()}
+scala> countNoTailrec(1000L)
+scala> countNoTailrec(100000L) 
+scala> import scala.annotation.tailrec
+scala> @tailrec def countNoTailrec(n: Long): Unit = 
+         if (n <= 0L) println("Klar! " + n) else {countNoTailrec(n-1L); ()}        
+scala> @tailrec def countTailrec(n: Long): Unit = 
+         if (n <= 0L) println("Klar! " + n) else countTailrec(n-1L)
+scala> countTailrec(1000L)
+scala> countTailrec(100000L)
+scala> countTailrec(Int.MaxValue.toLong * 2L)
+\end{REPL}
+
+
