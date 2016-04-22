@@ -101,11 +101,20 @@ If you like to use the [scala build tool, sbt](http://www.scala-sbt.org) it is e
 
 ### Making contributions
 
+* If you find a typo or minor issue that is staright-forward to fix you are very welcome to create a pull request directly as explained below. BUt if your contribution is more significant you should open an issue first and start a discussion about your proposal. In the latter case, click the issue tab at the top of this page.
+
 * Before you change locally, make sure your fork is in synch (see above). Frequently do `git pull` or press the synch button in the GitHub desktop gui. 
 
-* Whenever you are ready with an incremental change do `git commit -am "msg"` and then `git push`, or commit in the gui and press the synch button.
+* You must check that your fix compiles (to Latex or bytecode) before you commit.
+
+* Whenever you are ready with an incremental change, do `git commit -am "msg"` and then `git push`, or commit in the gui and press the synch button. Think carefully about your commit message, as discussed in the next section.
 
 * When you are ready with a contribution that is good enough to be incorporated in upstream, then create a pull request: https://help.github.com/articles/creating-a-pull-request/
+
+* Keep your pull requests minimal and coherent to create a small change sets that will be easy to merge as a single unit. Don't pack a lot of unrelated changes in the same pull request.
+
+* Don't include pdfs or binaries in the pull request. The maintainers will recompile the repo after your pull request has been merged. You can then chceckout your pdf:s before you synch with upstream.
+
 
 ### Writing commit messages
 
