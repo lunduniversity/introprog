@@ -92,6 +92,7 @@
 \newcommand{\Exercise}[1]{\newpage\section{Övning: {\tt #1}}}
 \newcommand{\ExerciseSolution}[1]{\newpage\section{{\tt #1}}}
 \newcommand{\Lab}[1]{\newpage\section{Laboration: {\tt #1}}}
+\newcommand{\Assignment}[1]{\newpage\section{Inlämningsuppgift: {\tt #1}}}
 \newcommand{\BasicTasks}{\subsection{Grunduppgifter}}
 \newcommand{\ExtraTasks}{\subsection{Extrauppgifter: öva mer på grunderna}}
 \newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter: avancerad nivå}}
