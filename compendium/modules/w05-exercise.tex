@@ -148,7 +148,7 @@ scala> zs
 \Subtask Definiera en funktion i REPL med namnet \code{reverseCopy} med din implementation i uppgift \ref{subtask:for-seq-copy}.  
 
 
-\Task \emph{Algortim: SEQ-REVERSE.} Strängar av typen \code{String} är oföränderliga. Vill man ändra i en sträng utan att skapa en ny kopia kan man använda en \code{StringBuffer} enligt nedan algoritm som vänder bak-och-fram på en sträng. 
+\Task \emph{Algoritm: SEQ-REVERSE.} Strängar av typen \code{String} är oföränderliga. Vill man ändra i en sträng utan att skapa en ny kopia kan man använda en \code{StringBuffer} enligt nedan algoritm som vänder bak-och-fram på en sträng. 
 
 \begin{algorithm}[H]
  \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
@@ -201,6 +201,58 @@ def isPalindrome(s: String): Boolean = {
   !foundDiff
 }
 \end{Code}
+
+\Task \emph{Algoritm: SEQ-REGISTER.} Algoritmer för registrering löser problemet att räkna förekomst av olika saker, till exempel antalet tärningskast som gav en sexa. Antag att vi har följande vektor \code{xs} som representerar 13 st tärningskast:
+\begin{REPL}
+scala> val xs =  Vector(5, 3, 1, 6, 1, 3, 5, 1, 1, 6, 3, 2, 6)
+\end{REPL}
+
+\Subtask Använd metoderna \code{filter} och \code{size} på \code{xs} för att filtrera ut alla 6:or och räkna hur många de är.
+
+\Subtask Använd metoderna \code{filter} och \code{size} på \code{xs} för att filtrera ut alla jämna kast och räkna hur många de är.
+
+\Subtask Metoden \code{groupBy} på en samling tar en funktion \code{f} som parameter och skapar en ny \code{Map} med nycklar \code{k} som är associerade till samlingar som utgör grupper av värden där 
+\code{f(x) == k}.  Vad händer här:
+\begin{REPL}
+scala> xs.groupBy(x => x % 2)
+scala> xs.groupBy(_ % 2)
+scala> xs.groupBy(_ % 3)
+scala> xs.groupBy(_ % 3).foreach(println)
+scala> val freqEvenOdd = xs.groupBy(_ % 2).map(p => (p._1, p._2.size)) 
+scala> val nEven = freqEvenOdd(0)
+scala> val nOdd = freqEvenOdd(1)
+\end{REPL}
+
+\Subtask Använd metoden \code{groupBy} på \code{xs} med den s.k. identitetsfunktionen \code{i => i} som returnerar sitt eget argument. Vad händer? 
+
+\Subtask Definiera en \code{val freq: Map[Int, Int]} som räknar antalet olika tärningsutfall i \code{xs}. Använd metoden \code{groupBy} på \code{xs} med identitetsfunktionen följt av en \code{map} med funktionen \code{p => (p._1, p._2.size)}.
+
+\Subtask Du ska nu själv implementera en registreringsalgoritm. Skriv en funktion:
+\begin{Code}
+def tärningsRegistrering(xs: Array[Int]): Array[Int] = ???
+\end{Code}
+som implementerar nedan algoritm (utan att använda \code{groupBy} eller andra färdiga metoder på samlingar förutom \code{size} och \code{apply}).
+
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+ 
+ \Input{En array $xs$ med heltal mellan 1 och 6 som representerar utfall av många tärningskast.}
+ \Output{En array $f$ med 7 st element där $f(0)$ innehåller totala antalet kast, $f(1)$ anger antalet ettor, $f(2)$ antalet tvåor, etc. till och med $f(6)$ som anger antalet sexor.}
+ $f \leftarrow$ en ny array med $7$ element där alla element initaliseras till 0.\\
+ $f(0) \leftarrow$ antalet element i $xs$ \\
+ $i \leftarrow 0$  \\
+ \While{$i < f(0)$}{
+  $f(xs(i)) \leftarrow f(xs(i)) + 1$ \\
+  $i \leftarrow i + 1$
+ }
+ \Return $f$ 
+\end{algorithm}
+
+
+
+
+
 
 \Task Keno-dragningar under ett år -> Registrering...
 
