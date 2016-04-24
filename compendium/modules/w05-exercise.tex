@@ -202,7 +202,7 @@ def isPalindrome(s: String): Boolean = {
 }
 \end{Code}
 
-\Task \emph{Algoritm: SEQ-REGISTER.} Algoritmer för registrering löser problemet att räkna förekomst av olika saker, till exempel antalet tärningskast som gav en sexa. Antag att vi har följande vektor \code{xs} som representerar 13 st tärningskast:
+\Task \label{task:seq-reg} \emph{Algoritm: SEQ-REGISTER.} Algoritmer för registrering löser problemet att räkna förekomst av olika saker, till exempel antalet tärningskast som gav en sexa. Antag att vi har följande vektor \code{xs} som representerar 13 st tärningskast:
 \begin{REPL}
 scala> val xs =  Vector(5, 3, 1, 6, 1, 3, 5, 1, 1, 6, 3, 2, 6)
 \end{REPL}
@@ -249,9 +249,83 @@ som implementerar nedan algoritm (utan att använda \code{groupBy} eller andra f
  \Return $f$ 
 \end{algorithm}
 
+Testa din funktion med nedan funktionsanrop:
+\begin{REPL}
+scala> tärningsRegistrering(Array.fill(1000)((math.random * 6).toInt +1))
+res12: Array[Int] = Array(1000, 174, 174, 167, 171, 145, 169)
+\end{REPL}
+
+\begin{Code}
+// kod till facit:
+def tärningsRegistrering(xs: Array[Int]): Array[Int] = {
+  val f = Array.fill(7)(0)
+  f(0) = xs.size
+  var i = 0
+  while (i < f(0)) {
+    f(xs(i)) += 1
+    i += 1
+  }
+  f 
+}
+\end{Code}
 
 
+\Task \emph{Deterministiska pseudoslumptalssekvenser med \code{java.util.Random}.} Klassen \code{java.util.Random} ger möjlighet att generera en sekvens av tal som verkar slumpmässiga. Genom att välja ett visst s.k. \textbf{frö} \Eng{seed} kan man få samma sekvens av pseudoslumptal varje gång.
 
+\Subtask\Pen Sök upp och studera dokumentationen för \code{java.util.Random}. Hur skapar man en ny instans av klassen \code{Random}? Vad gör operationen \code{nextInt} på \code{Random}-objekt. 
+
+\Subtask Förklara vad som händer nedan?
+\begin{REPL}
+import java.util.Random
+val frö = 42L
+val rnd = new Random(frö)
+rnd.nextInt(10)
+(1 to 100).foreach(print(rnd.nextInt(10)))
+val rnd1 = new Random(frö)
+val rnd2 = new Random(frö)
+val rnd3 = new Random(System.nanoTime)
+val rnd4 = new Random((math.random * Long.MaxValue).toLong)
+def flip(r: Random) = if (r.nextInt(2) > 0) "krona" else "klave" 
+val xs = (1 to 100).map{i => (flip(rnd1), flip(rnd2), flip(rnd3), flip(rnd4))} 
+xs foreach println
+xs.exists(q => q._1 != q._2)
+xs.exists(q => q._1 != q._3)
+\end{REPL} 
+
+\Subtask\Pen Nämn några sammanhang då det är användbart att kunna bestämma fröet till en slumptalssekvens.
+
+\Subtask Blir det samma sekvens om du använder fröet \code{42L} som argument till konstruktorn vid skapandet av en instans av \code{java.util.Random} på en \emph{annan} dator?
+
+\Subtask Sök reda på dokumentationen för \code{java.math.random} och undersök hur denna sekvens skapas. 
+
+\Subtask Vad blir det för frö till slumpalssekvensen om man skapar ett \code{Random}-objekt med hjälp av konstruktorn utan parameter?
+
+\Task \emph{Undersök om tärningskast är rektangelfördelade.} \\ Skriv en funktion \\ \code{def testRandom(r: Random, n: Int): Unit = ???} \\ som ger följande utskrift.
+\begin{REPL}
+scala> val rnd = new Random(42L)
+scala> testRandom(rnd, 1000)
+Antal kast: 1000
+Antal 1:or: 178
+Antal 2:or: 187
+Antal 3:or: 167
+Antal 4:or: 148
+Antal 5:or: 155
+Antal 6:or: 165
+\end{REPL}
+
+\emph{Tips:} 
+Använd din funktion \code{tärningsRegistrering} från uppgift \ref{task:seq-reg}.
+
+
+\begin{Code}
+// kod till facit
+def testRandom(r: Random, n: Int): Unit = {
+  val xs = Array.fill(n)(r.nextInt(6) + 1)
+  val f = tärningsRegistrering(xs)
+  println("Antal kast: " + f(0))
+  for (i <- 1 to 6) println(s"Antal $i:or: " + f(i)) 
+}
+\end{Code}
 
 
 \Task Keno-dragningar under ett år -> Registrering...
@@ -259,7 +333,7 @@ som implementerar nedan algoritm (utan att använda \code{groupBy} eller andra f
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
 
-
+\Task Implementera funktionen \code{tärningsRegistrering} från uppgift \ref{task:seq-reg} på nytt, men nu med en \code{for}-sats istället.
 
 
 
