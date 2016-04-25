@@ -55,15 +55,18 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
 lazy val pdf = taskKey[Unit]("Compile slides and compendium using pdflatex")
 
 pdf := { 
-  println(" ******* compiling slides to pdf*******") 
+  println(" ******* compiling slides to pdf *******") 
   val workDir = file("slides")
   val texFiles = (workDir * "*.tex").get
   for (texFile <- texFiles) {
     println(s" *** pdflatex $texFile")
     runPdfLatexCmd(texFile, workDir)         
   } 
-  println(" ******* compiling compendium to pdf*******") 
+  println(" ******* compiling compendium to pdf *******") 
   runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))         
+  
+  println(" ******* compiling exercises to pdf *******") 
+  runPdfLatexCmd(texFile = file("exercises.tex"), workDir = file("compendium"))     
 } 
 
 lazy val root = (project in file(".")).

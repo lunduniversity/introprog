@@ -17,7 +17,8 @@ trait Plan {
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, REPL,  
       | literal, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
-      | println, typen Unit, enhetsvärdet (),  
+      | inbyggda typer, Int, Long, Short, Double, Float, Byte, Char, String,
+      | println, typen Unit, enhetsvärdet (), stränginterpolatorn s,
       | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random,
       | logiska uttryck, de Morgans lagar, while-sats, for-sats, 
       """.stripTrim),
@@ -41,6 +42,7 @@ trait Plan {
       | objekt, modul, punktnotation, tillstånd, metod, medlem, 
       | funktionsvärde, funktionstyp, äkta funktion, stegad funktion, apply, lazy val, 
       | lokala funktioner,    
+      | anonyma funktioner, lambda,
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
       | cslib.window.SimpleWindow, 
       """.stripTrim),
@@ -98,6 +100,7 @@ trait Plan {
     Module("Mönster, Undantag", 
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
       | mönstermatchning, match, Option, null, try, catch, Try, unapply, 
+      | flatten, flatMap, partiella funktioner, collect 
       """.stripTrim),
 
     Module("Matriser, Typparametrar", 
@@ -125,9 +128,11 @@ trait Plan {
       | enum i java ???,
       """.stripTrim),
 
-    Module("Trådar, Web, Android", 
+    Module("Trådar", //, Web ???, Android ???", 
       id = "threadetc", exercise = "threads", lab = "life", contents = """
-      | Thread, Future, HTML, Javascript, css, Scala.js, Android,
+      | Thread, Future, Duration, Await, 
+      | (HTML ???), (Javascript ???), (css ???), 
+      | Scala.js ???, Android ???,
       """.stripTrim),
 
     Module("Design", 
