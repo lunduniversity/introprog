@@ -12,7 +12,7 @@
 | W09 | 7/11-11/11  | Lp2V2 | Matriser, Typparametrar | F17 F18 | matrices    | maze            |
 | W10 | 14/11-18/11 | Lp2V3 | Sökning, Sortering      | F19 F20 | sorting     | surveydata-team |
 | W11 | 21/11-25/11 | Lp2V4 | Scala och Java          | F21 F22 | scalajava   | scalajava-team  |
-| W12 | 28/11-2/12  | Lp2V5 | Trådar, Web, Android    | F23 F24 | threads     | life            |
+| W12 | 28/11-2/12  | Lp2V5 | Trådar                  | F23 F24 | threads     | life            |
 | W13 | 5/12-9/12   | Lp2V6 | Design                  | F25 F26 | Uppsamling  | Inl.Uppg.       |
 | W14 | 12/12-16/12 | Lp2V7 | Tentaträning            | F27 F28 | Extenta     | --              |
 | T   | tentadatum  | TP2   | TENTAMEN                | --      | --          | --              |
