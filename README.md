@@ -161,6 +161,8 @@ Here are some other inspiring style guides that illustrate the variety in what d
 
 * Make sure you have your tex editor set to UTF-8 encoding. If you get strange errors in relation to Swedish characters, this is likely due to problems relating to non-UTF-8 encodings on mac or windows. Linux usually works out-of-the-box.
 
+* For OSX users there are some problems with El-Capitan. For some users there are problems compiling .tex-files in the terminal out of the box. Using TeXShop to compile the document seems to resolve the issue. To configure TeXShop correctly on El-Capitan, follow the guide https://www.tug.org/mactex/UpdatingForElCapitan.pdf
+
 * Install texlive-full to get all extra latex stuff that is needed to compile the tex code in this repo. If you don't know which tex editor to use, try texworks.
 
 * Check out the `.cls` files in `compendium/` and `slides/` that provide many useful latex commands.
