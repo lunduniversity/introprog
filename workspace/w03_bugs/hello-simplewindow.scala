@@ -1,5 +1,3 @@
-package mypackage
-
 import cslib.window.SimpleWindow
 
 object hello { 
