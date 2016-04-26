@@ -34,7 +34,7 @@ trait Plan {
       """.stripTrim),
       
     Module("Funktioner, Objekt", 
-      id = "funobj", exercise = "functions", lab = "simplewindow", contents = """
+      id = "funobj", exercise = "functions", lab = "bugs", contents = """
       | definera funktion, anropa funktion,
       | parameter, returtyp, värdeandrop, namnanrop, default-argument, namngivna argument,
       | applicera funktion på alla element i en samling, procedur, 
@@ -48,7 +48,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Datastrukturer", 
-      id = "datastruct", exercise = "data", lab = "textfiles", contents = """
+      id = "datastruct", exercise = "data", lab = "pirates", contents = """
       | attribut (fält), medlem, metod, 
       | tupel, klass, Any, isInstanceOf, toString, 
       | case-klass, 
@@ -61,7 +61,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Sekvensalgoritmer", 
-      id = "seqalg", exercise = "sequences", lab = "cardgame", contents = """
+      id = "seqalg", exercise = "sequences", lab = "cards", contents = """
       | sekvensalgoritm,  algoritm: SEQ-COPY,   
       | in-place vs copy, algoritm: SEQ-REVERSE, algoritm: SEQ-REGISTER,
       | sekvenser i Java vs Scala, for-sats i Java,
@@ -71,7 +71,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Klasser, Likhet", 
-      id = "classsim", exercise = "classes", lab = "shapes", contents = """
+      id = "classsim", exercise = "classes", lab = "turtlegraphics", contents = """
       | objektorientering, klass, Point, Rectangle,
       | inkapsling, accessregler, private, public, private[this],
       | getters och setters,
@@ -120,7 +120,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Scala och Java", 
-      id = "scalajava", exercise = "scalajava", lab = "scalajava-team", contents = """
+      id = "scalajava", exercise = "scalajava", lab = "lthopoly-team", contents = """
       | skillnader mellan Scala och Java, 
       | for-sats i Java, java for-each i Java, 
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
@@ -174,7 +174,7 @@ trait Plan {
   }
   
   lazy val labNumOfWeek = 
-    "Lab01,--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab07,Lab08,Lab09,Lab10,Lab11,Inl.Uppg.,--,--,--".
+    "Lab01,--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab07,Lab08,Lab09,Lab10,Lab11,Projekt,--,--,--".
        split(',').toVector
 
   lazy val labOfWeek = for (w <- 0 until labNumOfWeek.size) yield {
