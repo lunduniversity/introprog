@@ -184,10 +184,25 @@
 {│}{{|}}1
 }
 
-\lstnewenvironment{ClassSpec}[2][]{%
+\lstnewenvironment{JavaSpec}[2][]{%
     \lstset{basicstyle=\ttfamily\fontsize{9}{11}\selectfont,%
-            backgroundcolor=,rulecolor=\color{black}, title={\texttt{\textcolor{blue}{\textbf{#2}}}}, frameround=tttt,language=,otherkeywords={},#1}%
+            backgroundcolor=\color{white},rulecolor=\color{black},title={\fontsize{9}{11}\selectfont\texttt{\textcolor{black}{\textbf{#2}}}}, frameround=tttt,language=,otherkeywords={},#1}%
 }{}
+
+%\lstnewenvironment{ScalaSpec}[2][]{%
+%    \lstset{basicstyle=\ttfamily\fontsize{9}{11}\selectfont,%
+%            backgroundcolor=,rulecolor=\color{black}, title={\sffamily{\textcolor{purple}{\textbf{#2}}}}, frame=single,language=Scala,tabsize=2,otherkeywords={},#1}%
+%}{}
+
+\lstnewenvironment{ScalaSpec}[2][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{9}{11}\selectfont,%
+            backgroundcolor=\color{white},,
+            title={\hskip-0.38em\colorbox{black!70}{\parbox{\dimexpr\textwidth+1\fboxsep-2\fboxrule\relax}{\fontsize{9}{11}\selectfont\color{white}{\textit{Specification} \textsf{\textbf{#2}}}}}},%
+            identifierstyle=\color{black!80},%
+            rulecolor=\color{black!60},frame=tRbL,framerule=1.2pt,%
+            language=Scala,#1}%
+}{}
+
 
 \lstnewenvironment{Code}[1][]{%
     \lstset{#1}%
