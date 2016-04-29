@@ -231,7 +231,7 @@ scala> val nOdd = freqEvenOdd(1)
 \begin{Code}
 def tärningsRegistrering(xs: Array[Int]): Array[Int] = ???
 \end{Code}
-som implementerar nedan algoritm (utan att använda \code{groupBy} eller andra färdiga metoder på samlingar förutom \code{size} och \code{apply}).
+som implementerar nedan algoritm (som alltså inte använder \code{groupBy} eller andra färdiga metoder på samlingar förutom \code{size} och \code{apply}).
 
 
 \begin{algorithm}[H]
@@ -268,6 +268,47 @@ def tärningsRegistrering(xs: Array[Int]): Array[Int] = {
   f 
 }
 \end{Code}
+
+\Task \emph{Algoritm: SEQ-REMOVE-COPY.} Ibland vill man kopiera alla element till en ny \code{Array} \emph{utom} ett element på en viss plats \code{pos}.   
+
+\Subtask\Pen Skriv algoritmen SEQ-REMOVE-COPY i pseudokod med penna på papper.
+
+\Subtask Implementera algoritmen SEQ-REMOVE-COPY i en funktion med denna signatur:
+\begin{Code}
+def removeCopy(xs: Array[Int], pos: Int): Array[Int]
+\end{Code}
+
+\begin{Code}
+// kod till facit
+def removeCopy(xs: Array[Int], pos: Int): Array[Int] = {
+  val n = xs.size
+  val ys = Array.ofDim[Int](n - 1)
+  for (i <- 0 until pos) ys(i) = xs(i)
+  for (i <- pos+1 until n) ys(i - 1) = xs(i)
+  ys
+} 
+\end{Code}
+
+\Task \emph{Algoritm: SEQ-REMOVE.} Ibland vill man tabort ett element på en viss position i en befintlig \code{Array} utan att kopiera alla element till en ny \code{Array}. Ett sätt att göra detta är att flytta alla efterföljande element ett steg mot lägre index och låta sista platsen bli 0.   
+
+\Subtask\Pen Skriv algoritmen SEQ-REMOVE i pseudokod med penna på papper.
+
+\Subtask Implementera algoritmen SEQ-REMOVE i en funktion med denna signatur:
+\begin{Code}
+def remove(xs: Array[Int], pos: Int): Unit
+\end{Code}
+
+\begin{Code}
+// kod till facit
+def remove(xs: Array[Int], pos: Int): Unit = {
+  val n = xs.size
+  for (i <- pos+1 until n) xs(i - 1) = xs(i)
+  xs(n-1) = 0
+} 
+\end{Code}
+ 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
 
 
 \Task \emph{Deterministiska pseudoslumptalssekvenser med \code{java.util.Random}.} Klassen \code{java.util.Random} ger möjlighet att generera en sekvens av tal som verkar slumpmässiga. Genom att välja ett visst s.k. \textbf{frö} \Eng{seed} kan man få samma sekvens av pseudoslumptal varje gång.
@@ -314,7 +355,7 @@ Antal 6:or: 165
 \end{REPL}
 
 \emph{Tips:} 
-Använd din funktion \code{tärningsRegistrering} från uppgift \ref{task:seq-reg}.
+Anropa din funktion \code{tärningsRegistrering} från uppgift \ref{task:seq-reg}.
 
 
 \begin{Code}
@@ -328,16 +369,80 @@ def testRandom(r: Random, n: Int): Unit = {
 \end{Code}
 
 
-\Task Keno-dragningar under ett år -> Registrering...
+\ExtraTasks\Task \emph{Algoritm: SEQ-INSERT-COPY.} 
 
-\ExtraTasks %%%%%%%%%%%%%%%%%%%
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+ 
+ \Input{En sekvens $xs$ av typen \texttt{Array[Int]} och heltalen $x$ och $pos$}
+ \Output{En ny sekvens av typen \texttt{Array[Int]} som är en kopia av $xs$ men där $x$ är infogat på plats $pos$}
+ $n \leftarrow$ antalet element $xs$\\ 
+ $ys \leftarrow$ en ny \texttt{Array[Int]} med plats för $n+1$ element \\
+ \For{$i \leftarrow 0$ \KwTo $pos - 1$}{
+  $ys(i) \leftarrow xs(i)$
+ }
+ $ys(pos) \leftarrow x$ \\
+ \For{$i \leftarrow pos$ \KwTo $n - 1$}{
+  $ys(i + 1) \leftarrow xs(i)$
+ }
+ \Return $ys$ 
+\end{algorithm}
 
+\Subtask Implementera ovan algoritm i en funktion med denna signatur:
+\begin{Code}
+def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int]
+\end{Code}
+
+\begin{Code}
+// kod till facit
+def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int] = {
+  val n = xs.size
+  val ys = Array.ofDim[Int](n + 1)
+  for (i <- 0 until pos) ys(i) = xs(i)
+  ys(pos) = x
+  for (i <- pos until n) ys(i + 1) = xs(i)
+  ys
+} 
+\end{Code}
+
+\Subtask Vad måste \code{pos} vara för att det ska fungera med en tom array som argument?
+
+\Subtask Vad händer om din funktion anropas med ett negativt argument för \code{pos}?
+
+\Subtask Vad händer om din funktion anropas med \code{pos} lika med \code{xs.size}?
+
+\Subtask Vad händer om din funktion anropas med \code{pos} större än \code{xs.size}?
+
+
+
+\Task \emph{Algoritm: SEQ-INSERT.} Man kan implementera algoritmen SEQ-INSERT på plats i en \code{Array[Int]} så att alla elementen efter \code{pos} flyttas fram ett steg och att sista elementet ''försvinner''.
+
+\Subtask\Pen Skriv algoritment SEQ-INSERT i pseudokod med penna och papper.
+
+\Subtask Implemtera SEQ-INSERT i en funktion med denna signatur:
+\begin{Code}
+def insert(xs: Array[Int], x: Int, pos: Int): Unit
+\end{Code}
 
 \Task Implementera funktionen \code{tärningsRegistrering} från uppgift \ref{task:seq-reg} på nytt, men nu med en \code{for}-sats istället.
 
 
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
+
+\Task Sök reda på dokumentationen för metoden \code{patch} på klassen \code{Array}.
+
+\Subtask Använd metoden \code{patch} för att implementera SEQ-INSERT-COPY: 
+\begin{Code}
+def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int] = 
+  xs.patch(???, ???, ???)
+\end{Code}
+
+\Subtask Använd metoden \code{patch} för att  implementera SEQ-REMOVE-COPY: 
+\begin{Code}
+def removeCopy(xs: Array[Int], pos: Int): Array[Int] = 
+  xs.patch(???, ???, ???)
+\end{Code}
 
 \Task Studera skillnader och likheter mellan 
 
@@ -356,4 +461,6 @@ def testRandom(r: Random, n: Int): Unit = {
 \Task Studera vad metoden \code{java.util.Arrays.deepEquals} gör här:\\
 \href{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#deepEquals-java.lang.Object:A-java.lang.Object:A-}{Arrays.html\#deepEquals-java.lang.Object:A-java.lang.Object:A-} \\
 Vad skiljer ovan metod från metoden \code{java.util.Arrays.equals}?
+
+\Task Keno-dragningar under ett år -> Registrering...
     
