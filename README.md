@@ -161,6 +161,7 @@ Here are some other inspiring style guides that illustrate the variety in what d
 
 * Make sure you have your TeX editor set to UTF-8 encoding. If you get strange errors in relation to Swedish characters, this is likely due to problems relating to non-UTF-8 encodings on Mac or Windows. Linux usually works out-of-the-box.
 
+
 * Install [texlive-full](https://www.tug.org/texlive/) to get all extra latex stuff that is needed to compile the tex code in this repo. If you don't know which tex editor to use, try [texworks](https://www.tug.org/texworks/).
 
 * For Mac OSX users: there are some problems with El-Capitan and TeX. For some users there are problems compiling .tex-files in the terminal out of the box. You may get this error message: 'mktexpk: No such file or directory' or similar. Using TeXShop to compile the document seems to resolve the issue. To configure TeXShop correctly on El-Capitan, follow the guide https://www.tug.org/mactex/UpdatingForElCapitan.pdf
