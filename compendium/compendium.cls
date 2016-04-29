@@ -86,6 +86,7 @@
 \newcommand{\Eng}[1]{(eng. {\textit{#1}})}
 \newcommand{\key}[1]{\textcolor{eclipsepurple}{\textbf{\texttt{#1}}}}
 \newcommand{\code}{\lstinline[basicstyle=\ttfamily]}
+\newcommand{\jcode}{\lstinline[basicstyle=\ttfamily,language=Java]}
 
 \newcommand{\ChapterUnnum}[1]{\chapter*{#1}\addcontentsline{toc}{chapter}{#1}}
 \newcommand{\SectionUnnum}[1]{\section*{#1}\addcontentsline{toc}{section}{#1}}
