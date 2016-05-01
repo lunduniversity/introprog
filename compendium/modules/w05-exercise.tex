@@ -438,7 +438,7 @@ scala> DiceReg2.rnd
 
 \Subtask Kompilera och kör med indatasekvensen \texttt{1 2 3 4 -1} och notera hur registreringen sker.
 
-\Subtask Programmet fungerar inte som det ska. Du behöver korrigera 3 saker för att programmet ska göra rätt. Rätta buggarna och prova igen med olika indata.
+\Subtask Programmet fungerar inte som det ska. Du behöver korrigera 3 saker för att programmet ska göra rätt. Rätta buggarna och spara det rättade programmet som \texttt{DiceScan.java}. Kompilera och testa att det rättade programmer fungerar med olika indata.
 
  
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
@@ -538,7 +538,11 @@ Vad skiljer ovan metod från metoden \code{java.util.Arrays.equals}?
 
 \Task Keno-dragningar under ett år -> Registrering...
 
-\Task \emph{Använda \code{jline} istället för \code{Scanner} i REPL.} Om du använder  \code{java.util.Scanner} i Scala REPL så ekas inte de tecken som skrivs. Om du vill se vad du skriver vid indata i REPL kan du använda \code{jline.console.ConsoleReader}. Då får du dessutom editeringsfunktioner vid inmatning med t.ex. Ctrl+A och Ctrl+K. Med pil upp och pil ner kan du bläddra i inmatningshistoriken.
+\Task \emph{Använda \code{jline} istället för \code{Scanner} i REPL.} Om du använder  \code{java.util.Scanner} i Scala REPL så ekas inte de tecken som skrivs, så som sker om du använder scannern med \code{System.in} i en kompilerad applikation. Om du vill se vad du skriver vid indata i REPL kan du använda \code{jline}\footnote{
+\href{https://github.com/jline/jline2}{github.com/jline/jline2}
+} och klassen \code{jline.console.ConsoleReader}\footnote{
+\href{http://jline.github.io/jline2/apidocs/reference/jline/console/ConsoleReader.html}{jline.github.io/jline2/apidocs/reference/jline/console/ConsoleReader.html}}. 
+Då får du dessutom editeringsfunktioner vid inmatning med t.ex. Ctrl+A och Ctrl+K så som i en vanlig unixterminal. Med pil upp och pil ner kan du bläddra i inmatningshistoriken.
 \begin{REPL}
 val scan = new java.util.Scanner(System.in)
 scan.next
@@ -547,9 +551,10 @@ val cr = new jline.console.ConsoleReader
 cr.readLine
 cr.readLine("> ")
 cr.readLine("Ange tal: ").toInt
+scala.util.Try{cr.readLine("Ange tal: ").toInt}.toOption
 \end{REPL} 
 
-\Subtask Prova ovan rader i REPL. Vad händer om du matar in bokstäver i stället för siffror på sista raden ovan?
+\Subtask Prova ovan rader i REPL. Vad händer om du matar in bokstäver i stället för siffror på sista raden ovan? (Mer om \code{Option} i kapitel \ref{chapter:W08}).
 
 \Subtask Skriv ett funktion \code{readPalindromLoop} som låter användaren mata in strängar och som kollar om de är palindromer så som nedan REPL-körning indikerar. Skriv funktionen i en editor och klistra in den i REPL enligt nedan istället för \code{???}
 
@@ -575,4 +580,31 @@ dallassallad är en palindrom!
 > 
 Tack och hej!
 scala>
-\end{REPL}    
+\end{REPL}
+
+\Subtask Skapa ett objekt med inläsningsstöd enligt nedan specifikation. Objektet ska delegera implementationerna till ett attribut \code{private val reader} som innehåller en referens till ett \code{ConsoleReader}-objekt.
+\begin{ScalaSpec}{termutil}
+object termutil {
+  /** Reads one line from terminal input. */
+  def readLine: String = ???
+
+  /** Prints prompt and reads one line. */
+  def readLine(prompt: String): String = ???
+
+  /** Reads one line and converts it to an Int. 
+   *  If a non-integer is input, a NumberFormatException is thrown.  */
+  def readInt: Int = ???
+
+  /** Prints prompt, reads one line and converts it to an Int. 
+   *  If a non-integer is input, a NumberFormatException is thrown.  */
+  def readInt(prompt: String): Int = ???
+
+  /** Reads one line and converts it to an Option[Int]
+   *  with Some integer or None if the input cannot be converted.  */
+  def readIntOpt: Option[Int] = ???
+
+  /** Prints prompt, reads one line and converts it to an Option[Int]
+   *  with Some integer or None if the input cannot be converted.  */
+  def readIntOpt(prompt: String): Option[Int] = ???
+}
+\end{ScalaSpec}
