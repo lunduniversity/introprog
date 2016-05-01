@@ -222,9 +222,9 @@ scala> class Punkt(val x: Double, val y: Double)
 scala> val pt: Punkt = new Punkt(1.0, 2.0)
 scala> pt.isInstanceOf[Punkt]
 scala> pt.isInstanceOf[Double]
+scala> pt.x.isInstanceOf[Punkt]
 scala> pt.x.isInstanceOf[Double]
 scala> pt.x.isInstanceOf[Int]
-scala> pt.x.isInstanceOf[Punkt]
 \end{REPL}
 
 \Task \emph{\code{Any}}. Alla klasser är också av typen \code{Any}. Alla klasser får därmed med sig några gemensamma metoder som finns i den fördefinierade klassen \code{Any}, däribland metoderna  \code{isInstanceOf} och \code{toString}.  Vad blir resultatet av respektive rad nedan? Vilken rad ger ett felmeddelande?
@@ -258,7 +258,7 @@ scala> println(pt)
 
 \Subtask Omdefiniera toString så att den ger en sträng på formen \code{Punkt(1.0, 42.0)}.
 
-\Subtask Vad hände om du utelämnar nyckelordet \code{override} vid omdefiniering?
+\Subtask Vad händer om du utelämnar nyckelordet \code{override} vid omdefiniering?
 
 \Task \emph{Objektfabrik med \code{apply}-metod.} Man kan ordna så att man slipper skriva \code{new} med ett s.k. \emph{fabriksobjekt} \Eng{factory object}. 
 \begin{Code}
@@ -295,7 +295,7 @@ scala> println(Pt(5,6))
 
 \Subtask Skapa en case-klass \code{Complex} som representerar komplext tal. Ge klassen två oföränderliga, publika Double-attribut: \code{re} som lagrar realdelen och \code{im} som lagrar imaginärdelen. 
 
-\Task \label{task:point} \emph{Metoder på datastrukturer.} En datastruktur blir mer användbar om det finns metoder som kan användas på datastrukturen. Metoder i Scala kan även ha (vissa) tecken som namn, t.ex. \code{+} enligt nedan.  
+\Task \label{task:point} \emph{Metoder på datastrukturer.} En datastruktur blir mer användbar om det finns metoder som kan användas på datastrukturen. Metoder i Scala kan även ha (vissa) specialtecken som namn, t.ex. \code{+} enligt nedan.  
 \begin{REPL}
 scala> case class Point(x: Double, y: Double) {
          def length: Double = math.hypot(x, y)   
@@ -308,10 +308,10 @@ scala> case class Point(x: Double, y: Double) {
 
 \Subtask Skriv satser som skapar två punkter (3,4) och (5, 6) och låt variablerna p1 och p2 referera till respektive punkt. Låt variabeln p3 bli summan av p1 och p2. Vad får uttrycken p3.x resp. p3.y för värden?
 
-\Task \emph{Operatornotation.} Vid punktnotation på formen: \\ \code{objekt.metod(parameter)} \\ där man anropar en metod med exakt en parameter, kan man skippa punkten och parenteserna och skriva:\\ \code{objekt metod parameter}  \\
+\Task \emph{Operatornotation.} Vid punktnotation på formen: \\ \code{objekt.metod(argument)} \\ kan man skippa punkten och parenteserna och skriva:\\ \code{objekt metod argument}  \\
 Detta förenklade skrivsätt kallas \textbf{operatornotation}.
 
-\Subtask Använd klassen \code{Point} från uppgift \ref{task:point} och prova nedan satser. Vilka rader använder operatortnotation och vilka rader använder punktnotation?
+\Subtask Använd klassen \code{Point} från uppgift \ref{task:point} och prova nedan satser. Vilka rader använder operatortnotation och vilka rader använder punktnotation? Vilka rader ger felmeddelande?
 \begin{REPL}
 scala> val p1 = Point(3,4)
 scala> val p2 = Point(3,4)
@@ -321,11 +321,22 @@ scala> p1.+(p2)
 scala> p1 + p2
 scala> 42 + 1
 scala> 42.+(1)
+scala> 42.+ 1
+scala> 42 +(1)
 scala> 1.to(42)
 scala> 1 to 42
+scala> 1.(to 42)
 \end{REPL}
 
 \Subtask Implementera metoderna \code{sub} och \code{-} i klassen \code{Point} och skriv uttryck som kombinerar add och sub, samt + och - i både punktnotation och operatornotation.
+
+\Subtask Operatornotation fungerar även med flera argument. Man använder då parenteser om listan med argumenten: 
+\code{ objekt metod (arg1, arg2)}  \\
+Definiera en metod \\
+\code{def scale(a: Double, b: Double) = Point(x * a, y * b)} \\ 
+i klassen \code{Point} och skriv satser som använder metoden med punktnotation och operatornotation. 
+
+
 
 
 
@@ -393,6 +404,40 @@ scala> my   // tryck TAB
 scala> myntkast.  // tryck TAB
 \end{REPL}
 
+\Task \emph{Typparameter.} Vissa funktioner är generella för många typer och tar en så kallad \textbf{typparameter} inom hakparenteser. Ofta slipper man skriva typparametrar, då kompilatorn kan härleda typen utifrån argumenten. Om man anger typparametrar explicit så hjälper kompilatorn dig med att kolla att det verkligen är rätt typ i samlingen. 
+
+\Subtask Vad händer nedan?
+\begin{REPL}
+scala> var xs = Vector.empty[Int]
+scala> xs = xs :+ "42" 
+scala> xs = xs :+ 43 :+ 64 :+ 46
+scala> xs
+scala> xs :+= "42".toInt 
+scala> var ys = Vector[Int]("ett", "två", "tre")
+scala> var ingenting = Vector.empty 
+scala> ingenting = Vector(1,2,3)
+\end{REPL}
+
+\Subtask Samlingar är mer användbara om de är \emph{generiska}, vilket innebär att elementens typ avgörs av en typparameter och därför kan vara av vilken typ som helst. Man kan definiera egna funktioner som tar generiska samlingar som parametrar. Förklara vad som händer här:
+\begin{REPL}
+scala> val vego = Vector("gurka", "tomat", "apelsin", "banan")
+scala> val prim = Vector(2, 3, 5, 7, 11, 13)
+scala> def först[T](xs: Vector[T]): T = xs.head
+scala> def sist[T](xs: Vector[T]) = xs.last
+scala> def förstOchSist[T](xs: Vector[T]): (T, T) = (xs.head, xs.last)
+scala> först(vego)
+scala> sist(prim)
+scala> förstOchSist(vego)
+scala> förstOchSist(prim)
+scala> def wrap[T](pair: (T, T))(xs: Vector[T]) = pair._1 +: xs :+ pair._2
+scala> wrap("Odla", "och ät!")(vego)
+scala> wrap("Odla", "och ät!")(vego).mkString(" ")
+\end{REPL}
+
+
+
+
+
 \Task \emph{Några viktiga samlingsmetoder.} Deklarera följande vektorer i REPL. 
 \begin{REPL}
 scala> val xs = (1 to 10).toVector
@@ -414,13 +459,17 @@ Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla sam
 
 \Subtask \code{stor.size}
 
+\Subtask \code{stor.min}
+
+\Subtask \code{stor.max}
+
 \Subtask \code{a indexOf "ka"}
 
 \Subtask \code{b.lastIndexOf("sala")}
 
-\Subtask \code{"först" +: b}
+\Subtask \code{"först" +: b   //minnesregel: colon on the collection side}
 
-\Subtask \code{a :+ "sist"}
+\Subtask \code{a :+ "sist"    //minnesregel: colon on the collection side}
 
 \Subtask \code{xs.updated(2,42)}
 
@@ -438,8 +487,7 @@ Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla sam
 
 
 
-
-\Task \emph{Några genrella samlingsmetoder.} Det finns metoder som går att köra på \emph{alla} samlingar även om de inte är indexerbara. Givet deklarationerna i föregående uppgift: vad har uttrycken nedan för värde och typ? Förklara vad som händer med hjälp av dessa översikter: \\ \href{http://docs.scala-lang.org/overviews/collections/trait-traversable}{docs.scala-lang.org/overviews/collections/trait-traversable} \\ \href{http://docs.scala-lang.org/overviews/collections/trait-iterable}{docs.scala-lang.org/overviews/collections/trait-iterable}
+\Task \emph{Några generella samlingsmetoder.} Det finns metoder som går att köra på \emph{alla} samlingar även om de inte är indexerbara. Givet deklarationerna i föregående uppgift: vad har uttrycken nedan för värde och typ? Förklara vad som händer med hjälp av dessa översikter: \\ \href{http://docs.scala-lang.org/overviews/collections/trait-traversable}{docs.scala-lang.org/overviews/collections/trait-traversable} \\ \href{http://docs.scala-lang.org/overviews/collections/trait-iterable}{docs.scala-lang.org/overviews/collections/trait-iterable}
 
 \Subtask \code{a ++ b}
 
@@ -447,39 +495,50 @@ Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla sam
 
 \Subtask \code{val ys = xs.map(_ * 5)}
 
-\Subtask \code{}
+\Subtask \code{b.toSet     // En mängd har inga dubletter}
 
-\Subtask \code{}
+\Subtask \code{a.head + b.last}
 
-\Subtask \code{}
+\Subtask \code{a.tail}
 
-\Subtask \code{}
+\Subtask \code{a.head +: a.tail == a}
 
-\Subtask \code{}	
+\Subtask \code{Vector(a.head) ++ Vector(b.last)}
 
-\Subtask \code{}
+\Subtask \code{a.take(1) ++ b.takeRight(1)}	
 
-\Subtask \code{}
+\Subtask \code{a.drop(2) ++ b.drop(1).dropRight(2)}
 
-\Subtask \code{}
+\Subtask \code{a.drop(100)}
 
-\Subtask \code{}
+\Subtask \code{val e = Vector.empty[String]; e.take(100)}
 
-\Subtask \code{}	
+\Subtask \code{Vector(e.isEmpty, e.nonEmpty)}
 
+\Subtask \code{a.contains("ka")}
 
+\Subtask \code{"ka" contains "a"}
 
+\Subtask \code{a.filter(s => s.contains("k")) }	
+
+\Subtask \code{a.filter(_.contains("k")) }	
+
+\Subtask \code{a.map(_.toUpperCase).filterNot(_.contains("K")) }	
+
+\Subtask \code{xs.filter(x => x % 2 == 0)}
+
+\Subtask \code{xs.filter(_ % 2 == 0)}
 
 
 \Task De olika samlingarna i \code{scala.collection} används flitigt i andra paket, exempelvis \code{scala.util} och \code{scala.io}. 
 
 \Subtask Vad händer här? (Metoden \code{shuffle} skapar en ny samling med elementen i slumpvis ordning.)
-\begin{Code}
+\begin{REPL}
 val xs = Vector(1,2,3)
 def blandat = scala.util.Random.shuffle(xs)
 def test = if (xs == blandat) "lika" else "olika"
 (for(i <- 1 to 100) yield test).count(_ == "lika")
-\end{Code}
+\end{REPL}
 
 
 \Subtask Skapa en textfil med namnet \code{fil.txt} som innehåller lite text och läs in den med: \\\code{scala.io.Source.fromFile("fil.txt", "UTF-8").getLines.toVector}
@@ -495,8 +554,13 @@ scala> xs.foreach(println)
 
 \Subtask Vad händer här? (Metoden \code{trim} på värden av typen \code{String} ger en ny sträng med blanktecken i början och slutet borttagna.) 
 \begin{REPL}
-scala> val pgk = scala.io.Source.fromURL("http://cs.lth.se/pgk/","UTF-8").getLines.toVector
-scala> pgk.map(_.trim).filterNot(_.startsWith("<")).filterNot(_.isEmpty).foreach(println)
+scala> val pgk = 
+  scala.io.Source.fromURL("http://cs.lth.se/pgk/","UTF-8").getLines.toVector
+scala> pgk.foreach(println)
+scala> pgk.map(_.trim).
+         filterNot(_.startsWith("<")).
+         filterNot(_.isEmpty).
+         foreach(println)
 \end{REPL}
 
 
@@ -513,7 +577,7 @@ scala> sv. //tryck TAB
 scala> en. //tryck TAB
 \end{REPL}
 
-\Subtask \emph{Skillnader mellan \code{Vector} och \code{List}.} Klassen \code{Vector} i Scala har ''under huven'' en avancerad datastruktur i form av ett s.k. självbalanserande träd, vilket gör att \code{Vector} är snabbare än \code{List} på nästan allt, \emph{utom} att bearbeta elementen i \emph{början} av sekvensen; vill man lägga till och ta bort i början av en \code{List} så kan det ibland gå ungefär dubbelt så fort jämfört med \code{Vector}, medan alla andra operationer är lika snabba eller snabbare med \code{Vector}. Det finns ett fåtal speciella metoder, som bara finns i \code{List}, för att skapa en lista och lägga till i början av en lista. 
+\Subtask \emph{Skillnader mellan \code{Vector} och \code{List}.} Klassen \code{Vector} i Scala har ''under huven'' en avancerad datastruktur i form av ett s.k. självbalanserande träd, vilket gör att \code{Vector} är snabbare än \code{List} på nästan allt, \emph{utom} att bearbeta elementen i \emph{början} av sekvensen; vill man lägga till och ta bort i början av en \code{List} så kan det ibland gå ungefär dubbelt så fort jämfört med \code{Vector}, medan alla andra operationer är lika snabba eller snabbare med \code{Vector}. Det finns ett fåtal speciella metoder, som bara finns i \code{List}, för att skapa en lista och lägga till i början av en lista. Vad händer nedan?
 
 \begin{REPL}
 scala> var xs = "one" :: "two" :: "three" :: "four" :: Nil
@@ -522,7 +586,7 @@ scala> val ys = xs.reverse ::: xs
 \end{REPL}
 
 
-\Task \emph{Mängd.} En mängd är en samling som garanterar att det inte finns några dubbletter. Det går dessutom snabbt att kolla om ett element finns eller inte i en mängd. Elementen i samlingen \code{Set} hamnar ibland, av effektivitetsskäl, i en förvånande ordning.
+\Task \emph{Mängd.} En mängd är en samling som garanterar att det inte finns några dubbletter. Det går dessutom väligt snabbt, även i stora mängder, att kolla om ett element finns eller inte i mängden. Elementen i samlingen \code{Set} hamnar ibland, av effektivitetsskäl, i en förvånande ordning.
 \begin{REPL}
 scala> val s = Set("Malmö", "Stockolm", "Göteborg", "Köpenhamn", "Oslo")
 s: scala.collection.immutable.Set[String] = 
@@ -564,22 +628,68 @@ Givet ovan deklarationer: vad blir värde och typ av nedan uttryck?
 \Subtask \code{Set(1,2,3) | Set(2,3,4)}
 
 
-\Task \emph{Slå upp värden från nycklar med Map.} Samlingen \code{Map} är mycket användbar. Med den kan man snabbt leta upp ett värde om man har en nyckel. Samlingen \code{Map} är en generalisering av en vektor, där man kan ''indexera'', inte bara med ett heltal, utan med vilken typ av värde som helst, t.ex. en sträng.
+\Task \emph{Slå upp värden från nycklar med \code{Map}.} Samlingen \code{Map} är mycket användbar. Med den kan man snabbt leta upp ett värde om man har en nyckel. Samlingen \code{Map} är en generalisering av en vektor, där man kan ''indexera'', inte bara med ett heltal, utan med vilken typ av värde som helst, t.ex. en sträng. Datastrukturen \code{Map} är en s.k. \emph{associativ array}\footnote{\href{https://en.wikipedia.org/wiki/Associative_array}{https://en.wikipedia.org/wiki/Associative\_array}}, implementerad som en s.k. \emph{hashtabell}\footnote{\href{https://en.wikipedia.org/wiki/Hash_table}{https://en.wikipedia.org/wiki/Hash\_table}}. 
 \begin{REPL}
 scala> var huvudstad = 
   Map("Sverige" -> "Stockholm", "Norge" -> "Oslo", "Skåne" -> "Malmö") 
 \end{REPL}
-Givet ovan variabel \code{huvudstad}, vad händer nedan?
+Givet ovan variabel \code{huvudstad}, förklara vad som händer nedan?
 
 \Subtask \code{huvudstad apply "Skåne"}
 
-\Subtask \code{huvudstad("Skåne")}
+\Subtask \code{huvudstad("Sverige")}
 
 \Subtask \code{huvudstad.contains("Skåne")}
 
 \Subtask \code{huvudstad.contains("Malmö")}
 
 \Subtask \code{huvudstad += "Danmark" -> "Köpenhamn"}
+
+\Subtask \code{huvudstad.foreach(println)} 
+
+\Subtask \code{huvudstad getOrElse ("Norge", "???") }
+
+\Subtask \code{huvudstad getOrElse ("Finland", "???") }
+
+\Subtask \code{huvudstad.keys.toVector.sorted}
+
+\Subtask \code{huvudstad.values.toVector.sorted}
+
+\Subtask \code{huvudstad - "Skåne"}
+
+\Subtask \code{huvudstad - "Jylland"}
+
+\Subtask \code{huvudstad = huvudstad.updated("Skåne","Lund") }
+
+
+
+\Task \emph{Skapa Map från en samling.}
+
+\Subtask Definiera denna vektor och undersök dess typ:
+\begin{Code}
+val pairs = Vector(
+  ("Björn", 46462229009L), 
+  ("Maj", 46462221667L), 
+  ("Gustav", 46462224906L))
+\end{Code}
+
+\Subtask Vad har variablen \code{telnr} nedan för typ: \\ \code{var telnr = pairs.toMap}
+
+\Subtask Använd \code{telnr} för att slå upp telefonnummer för Maj och Kim med hjälp av metoderna \code{apply}, \code{get}.
+
+\Subtask Använd metoden \code{getOrElse} vid upplagningar av \code{telnr} och ge \code{-1L} som telefonnummer i händelse av att ett nummer inte finns. 
+
+\Subtask Lägg till \code{("Fröken Ur", 464690510L)} i \code{telnr}-mappen.
+
+\Subtask Skapa en \code{Vector[(String, String)]} enligt nedan, så att telefonnumret blir en sträng utan inledande landsnummer men med en nolla i riktnumret. Byt ut \code{???} mot lämpligt uttryck.
+\begin{REPL}
+scala> telnr.toVector.map(p => ???) 
+res85: Vector[(String, String)] = Vector(("Björn", "0462229009"), ("Maj", 
+"0462221667"), ("Gustav", "0462224906"), ("Fröken Ur", 04690510"))
+
+\end{REPL}
+
+\Subtask Använd vektorn i resultatet ovan för att skapa en ny \code{Map[String, String]} med nationella telefonnumer. Slå upp numret till Fröken Ur.
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 

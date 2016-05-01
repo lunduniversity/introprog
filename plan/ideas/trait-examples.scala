@@ -43,6 +43,6 @@ object Test {
     (new Student("Oddput Clementin", "Lund University")).pr
     (new Researcher("Marie Currie", "Professor", "Lund University")).pr
     (new PhDStudent("Alfons Einstein", "Lund University")).pr
-    (new Person("Oddput Clementin") with HasTitle { val title = "Mr."}).pr      
+    (new Person("Oddput Clementin") with HasTitle with HasUniversity { val title = "Mr."}).pr      
   }
 }

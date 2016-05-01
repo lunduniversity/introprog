@@ -17,7 +17,8 @@ trait Plan {
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, REPL,  
       | literal, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
-      | println, typen Unit, enhetsvärdet (),  
+      | inbyggda typer, Int, Long, Short, Double, Float, Byte, Char, String,
+      | println, typen Unit, enhetsvärdet (), stränginterpolatorn s,
       | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random,
       | logiska uttryck, de Morgans lagar, while-sats, for-sats, 
       """.stripTrim),
@@ -33,7 +34,7 @@ trait Plan {
       """.stripTrim),
       
     Module("Funktioner, Objekt", 
-      id = "funobj", exercise = "functions", lab = "simplewindow", contents = """
+      id = "funobj", exercise = "functions", lab = "bugs", contents = """
       | definera funktion, anropa funktion,
       | parameter, returtyp, värdeandrop, namnanrop, default-argument, namngivna argument,
       | applicera funktion på alla element i en samling, procedur, 
@@ -41,12 +42,13 @@ trait Plan {
       | objekt, modul, punktnotation, tillstånd, metod, medlem, 
       | funktionsvärde, funktionstyp, äkta funktion, stegad funktion, apply, lazy val, 
       | lokala funktioner,    
+      | anonyma funktioner, lambda,
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
       | cslib.window.SimpleWindow, 
       """.stripTrim),
 
     Module("Datastrukturer", 
-      id = "datastruct", exercise = "data", lab = "textfiles", contents = """
+      id = "datastruct", exercise = "data", lab = "pirates", contents = """
       | attribut (fält), medlem, metod, 
       | tupel, klass, Any, isInstanceOf, toString, 
       | case-klass, 
@@ -59,17 +61,17 @@ trait Plan {
       """.stripTrim),
 
     Module("Sekvensalgoritmer", 
-      id = "seqalg", exercise = "sequences", lab = "cardgame", contents = """
+      id = "seqalg", exercise = "sequences", lab = "cards", contents = """
       | sekvensalgoritm,  algoritm: SEQ-COPY,   
       | in-place vs copy, algoritm: SEQ-REVERSE, algoritm: SEQ-REGISTER,
       | sekvenser i Java vs Scala, for-sats i Java,
-      | java.util.Scanner, java.util.ArrayList, scala.collection.mutable.Buffer,
+      | java.util.Scanner, scala.collection.mutable.ArrayBuffer,
       | StringBuilder,
       | java.util.Random, slumptalsfrö, 
       """.stripTrim),
 
     Module("Klasser, Likhet", 
-      id = "classsim", exercise = "classes", lab = "shapes", contents = """
+      id = "classsim", exercise = "classes", lab = "turtlegraphics", contents = """
       | objektorientering, klass, Point, Rectangle,
       | inkapsling, accessregler, private, public, private[this],
       | getters och setters,
@@ -98,6 +100,7 @@ trait Plan {
     Module("Mönster, Undantag", 
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
       | mönstermatchning, match, Option, null, try, catch, Try, unapply, 
+      | flatten, flatMap, partiella funktioner, collect 
       """.stripTrim),
 
     Module("Matriser, Typparametrar", 
@@ -117,17 +120,20 @@ trait Plan {
       """.stripTrim),
 
     Module("Scala och Java", 
-      id = "scalajava", exercise = "scalajava", lab = "scalajava-team", contents = """
+      id = "scalajava", exercise = "scalajava", lab = "lthopoly-team", contents = """
       | skillnader mellan Scala och Java, 
       | for-sats i Java, java for-each i Java, 
+      | java.util.ArrayList, 
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
       | samlingar i Java vs Scala, scala.collection.JavaConverters,
       | enum i java ???,
       """.stripTrim),
 
-    Module("Trådar, Web, Android", 
+    Module("Trådar", //, Web ???, Android ???", 
       id = "threadetc", exercise = "threads", lab = "life", contents = """
-      | Thread, Future, HTML, Javascript, css, Scala.js, Android,
+      | Thread, Future, Duration, Await, 
+      | (HTML ???), (Javascript ???), (css ???), 
+      | Scala.js ???, Android ???,
       """.stripTrim),
 
     Module("Design", 
@@ -169,7 +175,7 @@ trait Plan {
   }
   
   lazy val labNumOfWeek = 
-    "Lab01,--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab07,Lab08,Lab09,Lab10,Lab11,Inl.Uppg.,--,--,--".
+    "Lab01,--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab07,Lab08,Lab09,Lab10,Lab11,Projekt,--,--,--".
        split(',').toVector
 
   lazy val labOfWeek = for (w <- 0 until labNumOfWeek.size) yield {
