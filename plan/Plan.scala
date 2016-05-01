@@ -65,7 +65,7 @@ trait Plan {
       | sekvensalgoritm,  algoritm: SEQ-COPY,   
       | in-place vs copy, algoritm: SEQ-REVERSE, algoritm: SEQ-REGISTER,
       | sekvenser i Java vs Scala, for-sats i Java,
-      | java.util.Scanner, java.util.ArrayList, scala.collection.mutable.ArrayBuffer,
+      | java.util.Scanner, scala.collection.mutable.ArrayBuffer,
       | StringBuilder,
       | java.util.Random, slumptalsfrö, 
       """.stripTrim),
@@ -123,6 +123,7 @@ trait Plan {
       id = "scalajava", exercise = "scalajava", lab = "lthopoly-team", contents = """
       | skillnader mellan Scala och Java, 
       | for-sats i Java, java for-each i Java, 
+      | java.util.ArrayList, 
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
       | samlingar i Java vs Scala, scala.collection.JavaConverters,
       | enum i java ???,
