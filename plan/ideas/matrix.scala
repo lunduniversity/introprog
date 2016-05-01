@@ -2,7 +2,7 @@ case class Maze(data: Vector[Vector[Boolean]]) {
   val wallChar: Char = '\u2588'  // full block unicode character
   def boolToWall(b: Boolean): Char =  if (b) wallChar else ' '
   override def toString = 
-    data.map(_.map(boolToWall)).mkString("\n")  
+    data.map(_.map(boolToWall).mkString).mkString("\n")  
 }
 object Maze {
   def apply(rows: String*): Maze =  {
