@@ -148,7 +148,7 @@ scala> zs
 \Subtask Definiera en funktion i REPL med namnet \code{reverseCopy} med din implementation i uppgift \ref{subtask:for-seq-copy}.  
 
 
-\Task \emph{Algortim: SEQ-REVERSE.} Strängar av typen \code{String} är oföränderliga. Vill man ändra i en sträng utan att skapa en ny kopia kan man använda en \code{StringBuffer} enligt nedan algoritm som vänder bak-och-fram på en sträng. 
+\Task \emph{Algoritm: SEQ-REVERSE.} Strängar av typen \code{String} är oföränderliga. Vill man ändra i en sträng utan att skapa en ny kopia kan man använda en \code{StringBuilder} enligt nedan algoritm som vänder bak-och-fram på en sträng. 
 
 \begin{algorithm}[H]
  \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
@@ -202,16 +202,321 @@ def isPalindrome(s: String): Boolean = {
 }
 \end{Code}
 
-\Task Keno-dragningar under ett år -> Registrering...
+\Task \label{task:seq-reg} \emph{Algoritm: SEQ-REGISTER.} Algoritmer för registrering löser problemet att räkna förekomst av olika saker, till exempel antalet tärningskast som gav en sexa. Antag att vi har följande vektor \code{xs} som representerar 13 st tärningskast:
+\begin{REPL}
+scala> val xs =  Vector(5, 3, 1, 6, 1, 3, 5, 1, 1, 6, 3, 2, 6)
+\end{REPL}
 
+\Subtask Använd metoderna \code{filter} och \code{size} på \code{xs} för att filtrera ut alla 6:or och räkna hur många de är.
+
+\Subtask Använd metoderna \code{filter} och \code{size} på \code{xs} för att filtrera ut alla jämna kast och räkna hur många de är.
+
+\Subtask Metoden \code{groupBy} på en samling tar en funktion \code{f} som parameter och skapar en ny \code{Map} med nycklar \code{k} som är associerade till samlingar som utgör grupper av värden där 
+\code{f(x) == k}.  Vad händer här:
+\begin{REPL}
+scala> xs.groupBy(x => x % 2)
+scala> xs.groupBy(_ % 2)
+scala> xs.groupBy(_ % 3)
+scala> xs.groupBy(_ % 3).foreach(println)
+scala> val freqEvenOdd = xs.groupBy(_ % 2).map(p => (p._1, p._2.size)) 
+scala> val nEven = freqEvenOdd(0)
+scala> val nOdd = freqEvenOdd(1)
+\end{REPL}
+
+\Subtask Använd metoden \code{groupBy} på \code{xs} med den s.k. identitetsfunktionen \code{i => i} som returnerar sitt eget argument. Vad händer? 
+
+\Subtask Definiera en \code{val freq: Map[Int, Int]} som räknar antalet olika tärningsutfall i \code{xs}. Använd metoden \code{groupBy} på \code{xs} med identitetsfunktionen följt av en \code{map} med funktionen \code{p => (p._1, p._2.size)}.
+
+\Subtask Du ska nu själv implementera en registreringsalgoritm. Skriv en funktion:
+\begin{Code}
+def tärningsRegistrering(xs: Array[Int]): Array[Int] = ???
+\end{Code}
+som implementerar nedan algoritm (som alltså inte använder \code{groupBy} eller andra färdiga metoder på samlingar förutom \code{size} och \code{apply}).
+
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+ 
+ \Input{En array $xs$ med heltal mellan 1 och 6 som representerar utfall av många tärningskast.}
+ \Output{En array $f$ med 7 st element där $f(0)$ innehåller totala antalet kast, $f(1)$ anger antalet ettor, $f(2)$ antalet tvåor, etc. till och med $f(6)$ som anger antalet sexor.}
+ $f \leftarrow$ en ny array med $7$ element där alla element initaliseras till 0.\\
+ $f(0) \leftarrow$ antalet element i $xs$ \\
+ $i \leftarrow 0$  \\
+ \While{$i < f(0)$}{
+  $f(xs(i)) \leftarrow f(xs(i)) + 1$ \\
+  $i \leftarrow i + 1$
+ }
+ \Return $f$ 
+\end{algorithm}
+
+Testa din funktion med nedan funktionsanrop:
+\begin{REPL}
+scala> tärningsRegistrering(Array.fill(1000)((math.random * 6).toInt +1))
+res12: Array[Int] = Array(1000, 174, 174, 167, 171, 145, 169)
+\end{REPL}
+
+\begin{Code}
+// kod till facit:
+def tärningsRegistrering(xs: Array[Int]): Array[Int] = {
+  val f = Array.fill(7)(0)
+  f(0) = xs.size
+  var i = 0
+  while (i < f(0)) {
+    f(xs(i)) += 1
+    i += 1
+  }
+  f 
+}
+\end{Code}
+
+\Task \emph{Algoritm: SEQ-REMOVE-COPY.} Ibland vill man kopiera alla element till en ny \code{Array} \emph{utom} ett element på en viss plats \code{pos}.   
+
+\Subtask\Pen Skriv algoritmen SEQ-REMOVE-COPY i pseudokod med penna på papper.
+
+\Subtask Implementera algoritmen SEQ-REMOVE-COPY i en funktion med denna signatur:
+\begin{Code}
+def removeCopy(xs: Array[Int], pos: Int): Array[Int]
+\end{Code}
+
+\begin{Code}
+// kod till facit
+def removeCopy(xs: Array[Int], pos: Int): Array[Int] = {
+  val n = xs.size
+  val ys = Array.ofDim[Int](n - 1)
+  for (i <- 0 until pos) ys(i) = xs(i)
+  for (i <- pos+1 until n) ys(i - 1) = xs(i)
+  ys
+} 
+\end{Code}
+
+\Task \emph{Algoritm: SEQ-REMOVE.} Ibland vill man ta bort ett element på en viss position i en befintlig \code{Array} utan att kopiera alla element till en ny \code{Array}. Ett sätt att göra detta är att flytta alla efterföljande element ett steg mot lägre index och låta sista platsen bli 0.   
+
+\Subtask\Pen Skriv algoritmen SEQ-REMOVE i pseudokod med penna på papper.
+
+\Subtask Implementera algoritmen SEQ-REMOVE i en funktion med denna signatur:
+\begin{Code}
+def remove(xs: Array[Int], pos: Int): Unit
+\end{Code}
+
+\begin{Code}
+// kod till facit
+def remove(xs: Array[Int], pos: Int): Unit = {
+  val n = xs.size
+  for (i <- pos+1 until n) xs(i - 1) = xs(i)
+  xs(n-1) = 0
+} 
+\end{Code}
+ 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+
+
+\Task \emph{Deterministiska pseudoslumptalssekvenser med \code{java.util.Random}.} Klassen \code{java.util.Random} ger möjlighet att generera en sekvens av tal som verkar slumpmässiga. Genom att välja ett visst s.k. \textbf{frö} \Eng{seed} kan man få samma sekvens av pseudoslumptal varje gång.
+
+\Subtask\Pen Sök upp och studera dokumentationen för \code{java.util.Random}. Hur skapar man en ny instans av klassen \code{Random}? Vad gör operationen \code{nextInt} på \code{Random}-objekt. 
+
+\Subtask Förklara vad som händer nedan?
+\begin{REPL}
+import java.util.Random
+val frö = 42L
+val rnd = new Random(frö)
+rnd.nextInt(10)
+(1 to 100).foreach(print(rnd.nextInt(10)))
+val rnd1 = new Random(frö)
+val rnd2 = new Random(frö)
+val rnd3 = new Random(System.nanoTime)
+val rnd4 = new Random((math.random * Long.MaxValue).toLong)
+def flip(r: Random) = if (r.nextInt(2) > 0) "krona" else "klave" 
+val xs = (1 to 100).map{i => (flip(rnd1), flip(rnd2), flip(rnd3), flip(rnd4))} 
+xs foreach println
+xs.exists(q => q._1 != q._2)
+xs.exists(q => q._1 != q._3)
+\end{REPL} 
+
+\Subtask\Pen Nämn några sammanhang då det är användbart att kunna bestämma fröet till en slumptalssekvens.
+
+\Subtask Blir det samma sekvens om du använder fröet \code{42L} som argument till konstruktorn vid skapandet av en instans av \code{java.util.Random} på en \emph{annan} dator?
+
+\Subtask Sök reda på dokumentationen för \code{java.math.random} och undersök hur denna sekvens skapas. 
+
+\Subtask Vad blir det för frö till slumpalssekvensen om man skapar ett \code{Random}-objekt med hjälp av konstruktorn utan parameter?
+
+\Task \emph{Undersök om tärningskast är rektangelfördelade.} \\ Skriv en funktion \\ \code{def testRandom(r: Random, n: Int): Unit = ???} \\ som ger följande utskrift.
+\begin{REPL}
+scala> val rnd = new Random(42L)
+scala> testRandom(rnd, 1000)
+Antal kast: 1000
+Antal 1:or: 178
+Antal 2:or: 187
+Antal 3:or: 167
+Antal 4:or: 148
+Antal 5:or: 155
+Antal 6:or: 165
+\end{REPL}
+
+\emph{Tips:} 
+Anropa din funktion \code{tärningsRegistrering} från uppgift \ref{task:seq-reg}.
+
+
+\begin{Code}
+// kod till facit
+def testRandom(r: Random, n: Int): Unit = {
+  val xs = Array.fill(n)(r.nextInt(6) + 1)
+  val f = tärningsRegistrering(xs)
+  println("Antal kast: " + f(0))
+  for (i <- 1 to 6) println(s"Antal $i:or: " + f(i)) 
+}
+\end{Code}
+
+\Task \emph{Array och \code{for}-sats i Java.} 
+
+\Subtask Skriv nedan program i en editor och spara i filen \code{DiceReg.java}:
+
+\javainputlisting{examples/DiceReg.java} 
+
+\Subtask Kompilera med \code{javac DiceReg.java} och kör med \code{java DiceReg 10000 42} och förklara vad som händer.
+
+\Subtask\Pen Beskriv skillnaderna mellan Scala och Java, vad gäller syntaxen för array och \code{for}-sats. Beskriv några andra skillnader mellan språken som syns i programmet ovan.
+
+\Subtask Ändra i programmet ovan så att loop-variabeln \code{i} skrivs ut i varje runda i varje \code{for}-sats. Kompilera om och kör.
+
+\Subtask Skriv om programmet ovan genom att abstrahera huvudprogrammets delar till de statiska metoderna \code{parseArguments}, \code{registerPips} och \code{printReg} enligt nedan skelett. Notera speciellt hur \code{private} och \code{public} är angivet. Spara programmet i filen \code{DiceReg2.java}.
+
+\begin{Code}[language=Java]
+// DiceReg2.java
+import java.util.Random;
+
+public class DiceReg2 {
+    public static int[] diceReg = new int[6];  
+    private static Random rnd = new Random();
+
+    public static int parseArguments(String[] args) {
+        // ???
+        return n;        
+    }
+    
+    public static void registerPips(int n){
+        // ???
+    }
+    
+    public static void printReg() {
+        // ???
+    }
+
+    public static void main(String[] args) {
+        int n = parseArguments(args);
+        registerPips(n);
+        printReg();
+    }
+}
+\end{Code}
+
+\Subtask Starta Scala REPL i samma bibliotek som filen \texttt{DiceReg2.class} ligger i och kör nedan satser och förklara vad som händer:
+\begin{REPL}
+scala> DiceReg2.main(Array("1000","42"))
+scala> DiceReg2.diceReg
+scala> DiceReg2.registerPips(1000)
+scala> DiceReg2.printReg
+scala> DiceReg2.registerPips(1000)
+scala> DiceReg2.printReg
+scala> DiceReg2.rnd
+\end{REPL}
+
+\Subtask Växla synligheten på attributen mellan \jcode{private} och \jcode{public}, kompilera om och studera effekten i Scala REPL. Hur lyder felmeddelandet om du försöker komma åt en privat medlem?
+
+\Subtask\Pen Ange en viktig anledning till att man kan vilja göra medlemmar privata.
+
+
+
+\Task \emph{Läsa in tal med \code{java.util.Scanner}.} Med \jcode{new Scanner(System.in)} skapas ett objekt som kan läsa in tal som användaren skriver i terminalfönstret.
+
+\Subtask Sök upp och studera dokumentationen för \code{java.util.Scanner}. Vad gör metoderna \jcode{hasNextInt()} och \jcode{nextInt()}?
+
+\Subtask Skriv nedan program i en editor och spara i filen \code{DiceScanBuggy.java}:
+
+\javainputlisting{examples/DiceScanBuggy.java} 
+
+\Subtask Kompilera och kör med indatasekvensen \texttt{1 2 3 4 -1} och notera hur registreringen sker.
+
+\Subtask Programmet fungerar inte som det ska. Du behöver korrigera 3 saker för att programmet ska göra rätt. Rätta buggarna och spara det rättade programmet som \texttt{DiceScan.java}. Kompilera och testa att det rättade programmer fungerar med olika indata.
+
+ 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
+\Task \emph{Algoritm: SEQ-INSERT-COPY.} 
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+ 
+ \Input{En sekvens $xs$ av typen \texttt{Array[Int]} och heltalen $x$ och $pos$}
+ \Output{En ny sekvens av typen \texttt{Array[Int]} som är en kopia av $xs$ men där $x$ är infogat på plats $pos$}
+ $n \leftarrow$ antalet element $xs$\\ 
+ $ys \leftarrow$ en ny \texttt{Array[Int]} med plats för $n+1$ element \\
+ \For{$i \leftarrow 0$ \KwTo $pos - 1$}{
+  $ys(i) \leftarrow xs(i)$
+ }
+ $ys(pos) \leftarrow x$ \\
+ \For{$i \leftarrow pos$ \KwTo $n - 1$}{
+  $ys(i + 1) \leftarrow xs(i)$
+ }
+ \Return $ys$ 
+\end{algorithm}
+
+\Subtask Implementera ovan algoritm i en funktion med denna signatur:
+\begin{Code}
+def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int]
+\end{Code}
+
+\begin{Code}
+// kod till facit
+def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int] = {
+  val n = xs.size
+  val ys = Array.ofDim[Int](n + 1)
+  for (i <- 0 until pos) ys(i) = xs(i)
+  ys(pos) = x
+  for (i <- pos until n) ys(i + 1) = xs(i)
+  ys
+} 
+\end{Code}
+
+\Subtask Vad måste \code{pos} vara för att det ska fungera med en tom array som argument?
+
+\Subtask Vad händer om din funktion anropas med ett negativt argument för \code{pos}?
+
+\Subtask Vad händer om din funktion anropas med \code{pos} lika med \code{xs.size}?
+
+\Subtask Vad händer om din funktion anropas med \code{pos} större än \code{xs.size}?
 
 
+
+\Task \emph{Algoritm: SEQ-INSERT.} Man kan implementera algoritmen SEQ-INSERT på plats i en \code{Array[Int]} så att alla elementen efter \code{pos} flyttas fram ett steg och att sista elementet ''försvinner''.
+
+\Subtask\Pen Skriv algoritment SEQ-INSERT i pseudokod med penna och papper.
+
+\Subtask Implemtera SEQ-INSERT i en funktion med denna signatur:
+\begin{Code}
+def insert(xs: Array[Int], x: Int, pos: Int): Unit
+\end{Code}
+
+\Task Implementera funktionen \code{tärningsRegistrering} från uppgift \ref{task:seq-reg} på nytt, men nu med en \code{for}-sats istället.
 
 
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
+
+\Task Sök reda på dokumentationen för metoden \code{patch} på klassen \code{Array}.
+
+\Subtask Använd metoden \code{patch} för att implementera SEQ-INSERT-COPY: 
+\begin{Code}
+def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int] = 
+  xs.patch(???, ???, ???)
+\end{Code}
+
+\Subtask Använd metoden \code{patch} för att  implementera SEQ-REMOVE-COPY: 
+\begin{Code}
+def removeCopy(xs: Array[Int], pos: Int): Array[Int] = 
+  xs.patch(???, ???, ???)
+\end{Code}
 
 \Task Studera skillnader och likheter mellan 
 
@@ -230,4 +535,76 @@ def isPalindrome(s: String): Boolean = {
 \Task Studera vad metoden \code{java.util.Arrays.deepEquals} gör här:\\
 \href{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#deepEquals-java.lang.Object:A-java.lang.Object:A-}{Arrays.html\#deepEquals-java.lang.Object:A-java.lang.Object:A-} \\
 Vad skiljer ovan metod från metoden \code{java.util.Arrays.equals}?
-    
+
+\Task Keno-dragningar under ett år -> Registrering...
+
+\Task \emph{Använda \code{jline} istället för \code{Scanner} i REPL.} Om du använder  \code{java.util.Scanner} i Scala REPL så ekas inte de tecken som skrivs, så som sker om du använder scannern med \code{System.in} i en kompilerad applikation. Om du vill se vad du skriver vid indata i REPL kan du använda \code{jline}\footnote{
+\href{https://github.com/jline/jline2}{github.com/jline/jline2}
+} och klassen \code{jline.console.ConsoleReader}\footnote{
+\href{http://jline.github.io/jline2/apidocs/reference/jline/console/ConsoleReader.html}{jline.github.io/jline2/apidocs/reference/jline/console/ConsoleReader.html}}. 
+Då får du dessutom editeringsfunktioner vid inmatning med t.ex. Ctrl+A och Ctrl+K så som i en vanlig unixterminal. Med pil upp och pil ner kan du bläddra i inmatningshistoriken.
+\begin{REPL}
+val scan = new java.util.Scanner(System.in)
+scan.next
+scan.nextInt
+val cr = new jline.console.ConsoleReader
+cr.readLine
+cr.readLine("> ")
+cr.readLine("Ange tal: ").toInt
+scala.util.Try{cr.readLine("Ange tal: ").toInt}.toOption
+\end{REPL} 
+
+\Subtask Prova ovan rader i REPL. Vad händer om du matar in bokstäver i stället för siffror på sista raden ovan? (Mer om \code{Option} i kapitel \ref{chapter:W08}).
+
+\Subtask Skriv ett funktion \code{readPalindromLoop} som låter användaren mata in strängar och som kollar om de är palindromer så som nedan REPL-körning indikerar. Skriv funktionen i en editor och klistra in den i REPL enligt nedan istället för \code{???}
+
+\begin{REPL}
+scala> val cr = new jline.console.ConsoleReader
+scala> def isPalindrome(s: String): Boolean = s == s.reverse
+scala> :paste 
+// Entering paste mode (ctrl-D to finish)
+
+def readPalindromLoop: Unit = ???
+
+// Exiting paste mode, now interpreting.
+
+readPalindromLoop: Unit
+
+scala> readPalindromLoop
+Ange sträng följt av <Enter>
+Programmet avslutas med tom sträng + <Enter>
+> gurka
+gurka är ingen palindrom
+> dallassallad
+dallassallad är en palindrom!
+> 
+Tack och hej!
+scala>
+\end{REPL}
+
+\Subtask Skapa ett objekt med inläsningsstöd enligt nedan specifikation. Objektet ska delegera implementationerna till ett attribut \code{private val reader} som innehåller en referens till ett \code{ConsoleReader}-objekt.
+\begin{ScalaSpec}{termutil}
+object termutil {
+  /** Reads one line from terminal input. */
+  def readLine: String = ???
+
+  /** Prints prompt and reads one line. */
+  def readLine(prompt: String): String = ???
+
+  /** Reads one line and converts it to an Int. 
+   *  If a non-integer is input, a NumberFormatException is thrown.  */
+  def readInt: Int = ???
+
+  /** Prints prompt, reads one line and converts it to an Int. 
+   *  If a non-integer is input, a NumberFormatException is thrown.  */
+  def readInt(prompt: String): Int = ???
+
+  /** Reads one line and converts it to an Option[Int]
+   *  with Some integer or None if the input cannot be converted.  */
+  def readIntOpt: Option[Int] = ???
+
+  /** Prints prompt, reads one line and converts it to an Option[Int]
+   *  with Some integer or None if the input cannot be converted.  */
+  def readIntOpt(prompt: String): Option[Int] = ???
+}
+\end{ScalaSpec}

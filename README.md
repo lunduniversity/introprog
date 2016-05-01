@@ -95,17 +95,26 @@ If you like to use the [scala build tool, sbt](http://www.scala-sbt.org) it is e
 
 ### Keeping your fork in synch
 
-* If you install the GitHib client (avaliable for Win and Mac but not Linux) called "GitHub desktop" https://desktop.github.com/ you can keep your fork in synch with the upstream repo by a single click in the gui. 
+* If you install the GitHub client (avaliable for Win and Mac but not Linux) called "GitHub desktop" https://desktop.github.com/ you can keep your fork in synch with the upstream repo by a single click in the GUI.
 
 * Otherwise, this is how to pull changes from upstream to your fork with git commands: https://help.github.com/articles/syncing-a-fork/ 
 
 ### Making contributions
 
-* Before you change locally, make sure your fork is in synch (see above). Frequently do `git pull` or press the synch button in the GitHub desktop gui. 
+* If you find a typo or minor issue that is straight-forward to fix you are very welcome to create a pull request directly as explained below. But if your contribution is more significant you should open an issue first and start a discussion about your proposal. In the latter case, click the issue tab at the top of this page.
 
-* Whenever you are ready with an incremental change do `git commit -am "msg"` and then `git push`, or commit in the gui and press the synch button.
+* Before you change locally, make sure your fork is in synch (see above). Frequently do `git pull` or press the synch button in the GitHub desktop GUI.
+
+* You must check that your fix compiles (to Latex or bytecode) before you commit.
+
+* Whenever you are ready with an incremental change, do `git commit -m "msg"` and then `git push`, or commit in the GUI and press the synch button. Think carefully about your commit message, as discussed in the next section.
 
 * When you are ready with a contribution that is good enough to be incorporated in upstream, then create a pull request: https://help.github.com/articles/creating-a-pull-request/
+
+* Keep your pull requests minimal and coherent to create a small change sets that will be easy to merge as a single unit. Don't pack a lot of unrelated changes in the same pull request. Take a look [here](https://github.com/lunduniversity/introprog/pulls?q=is%3Apr+is%3Aclosed) for examples of previously accepted pull requests.
+
+* Don't include pdf:s or binaries in the pull request. The maintainers will recompile the repo after your pull request has been merged. You can then checkout your pdf:s before you synch with upstream.
+
 
 ### Writing commit messages
 
@@ -136,7 +145,7 @@ In this course we pragmatically follow these style guides:
 * Java style:
   * http://www.oracle.com/technetwork/java/codeconventions-150003.pdf
 
-When you make contributions to code in this repo and when you review pull-requests, check that the contributions follow the above guidlines pragmatically. In particular, **lab assigments stubs** and **answers to exercises** should, if there are no special reasons not to, follow the above style guides.
+When you make contributions to code in this repo and when you review pull-requests, check that the contributions follow the above guidelines pragmatically. In particular, **lab assigments stubs** and **answers to exercises** should, if there are no special reasons not to, follow the above style guides.
 
 Here are some other inspiring style guides that illustrate the variety in what different organisations impose:
 * Scala:
@@ -150,9 +159,12 @@ Here are some other inspiring style guides that illustrate the variety in what d
 
 ### Latex guide 
 
-* Make sure you have your tex editor set to UTF-8 encoding. If you get strange errors in relation to Swedish characters, this is likely due to problems relating to non-UTF-8 encodings on mac or windows. Linux usually works out-of-the-box.
+* Make sure you have your TeX editor set to UTF-8 encoding. If you get strange errors in relation to Swedish characters, this is likely due to problems relating to non-UTF-8 encodings on Mac or Windows. Linux usually works out-of-the-box.
 
-* Install texlive-full to get all extra latex stuff that is needed to compile the tex code in this repo. If you don't know which tex editor to use, try texworks.
+
+* Install [texlive-full](https://www.tug.org/texlive/) to get all extra latex stuff that is needed to compile the tex code in this repo. If you don't know which tex editor to use, try [texworks](https://www.tug.org/texworks/).
+
+* For Mac OSX users: there are some problems with El-Capitan and TeX. For some users there are problems compiling .tex-files in the terminal out of the box. You may get this error message: 'mktexpk: No such file or directory' or similar. Using TeXShop to compile the document seems to resolve the issue. To configure TeXShop correctly on El-Capitan, follow the guide https://www.tug.org/mactex/UpdatingForElCapitan.pdf
 
 * Check out the `.cls` files in `compendium/` and `slides/` that provide many useful latex commands.
 
@@ -162,6 +174,3 @@ Here are some other inspiring style guides that illustrate the variety in what d
   * `\begin{Code}` ... `\end{Code}` and `\scalainputlisting{examples/hello-app.scala}` are used for Scala code 
   * `\begin{Code}[language=Java]` ... `\end{Code}` and `\javainputlisting{examples/Hi.java}` are used for Java code
   * `\begin{Slide}` and `\end{Slide}` defined in `slides/lecture-notes.cls` and in `compendium/compendium.cls` is used to generate beamer slides and to generate framed text in compendium chapters together with lecture notes that appear after each slide.
-
-
- 
