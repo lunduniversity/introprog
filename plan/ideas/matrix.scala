@@ -80,7 +80,7 @@ object Matrix {
   def apply[T](data: Vector[T]*): Matrix[T] = {
     val firstRowColSize = if (data.size > 0) data(0).size else 0 
     val isAllRowsEqualColSize = data.map(_.size).forall(_ == firstRowColSize)
-    assert(isAllRowsEqualColSize, "all rows equal column size")
+    assert(isAllRowsEqualColSize, "all rows must have equal column size")
     new Matrix(data.toVector)
   }
 }
