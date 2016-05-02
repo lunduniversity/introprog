@@ -2,10 +2,13 @@ class Turtle
  
 case class Maze(data: Vector[Vector[Boolean]]) {
   val wallChar: Char = '#'  // or '\u2588' for full block unicode character
+
   def boolToWall(b: Boolean): Char =  if (b) wallChar else ' '
+
   override def toString = 
     data.map(_.map(boolToWall).mkString).mkString("\n")  
-  def draw(t: Turtle) = ???
+
+    def draw(t: Turtle) = ???
 }
 
 object Maze {
@@ -14,11 +17,14 @@ object Maze {
     val data: Vector[Vector[Boolean]] = xs.map(_.map(charToBool).toVector)
     new Maze(data)
   }
+
   def fromFile(fileName: String): Maze = {
     val lines = scala.io.Source.fromFile(fileName).getLines
     fromStrings(lines.toVector)
   }
+
   def apply(rows: String*): Maze = fromStrings(rows.toVector) 
+
   def random(rows: Int, cols: Int): Maze = ???
 }
 
