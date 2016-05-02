@@ -11,8 +11,6 @@
 \item Kunna byta mellan ArrayLists och Array
 \item Kunna hur man läser in från fil
 \item Kunna for-sats i Java
-
-
 \end{Goals}
 
 \begin{Preparations}
@@ -30,7 +28,79 @@ I denna labb skall ni tillverka lthopoly, en variant av det välkända brädspel
 Beroende på vilken av rutorna spelaren hamnar på sker olika saker. I fallet att man hamnar på RiskSpace får spelaren dra ett s.k. RiskCard, som antingen förflyttar spelaren framåt eller bakåt längs spelplanen. 
 Skulle spelaren hamna på ChanceSpace kan denne antingen vinna eller förlora pengar genom att dra ett ChanceCard. Skulle spelaren hamna på en HouseSpace får denne alternativet att köpa rutan, förutsatt att den inte köpts av någon annan spelare, om så är fallet måste spelaren som hamnade på rutan betala hyra till ägaren.
 
-Den visuella representationen av spelet sker via konsolfönstret med hjälp av klassen \code{TextUI}. 
+Den visuella representationen av spelet sker via konsolfönstret med hjälp av klassen \code{TextUI}. \code{TextUI} är en färdigskriven klass med statiska metoder som gör det möjligt att skriva ut två kolumner av text i konsollfönstret. Utskriften kan exempelvis se ut såhär:
+
+\begin{REPL}
+Studiecentrum(20)(Valthor)
+A-huset(25) (Jonas)                                                                                                          
+ChansRuta                                                                                                             
+ChansRuta                                                                                                              
+Moroten och piskan(40)
+V-Huset(45)                                                                                                        
+RiskRuta (Oskar)                                                                                                         
+ChansRuta                                                                                                        
+LED-Cafe(70)               Oskar slog en 6:a!                                           
+F-Huset(75)                Flytta framåt 6 steg                                        
+ChansRuta                  Oskar drog ett kort: Inkassera 50 SEK!
+Ideet(80)                  Oskar har avslutat sin runda.                              
+ChansRuta                  Nästa spelare: Jonas                                      
+E-huset(100)               Jonas slog en 1:a!                                       
+RiskRuta                   Grattis, Jonas är nu den stolta ägaren av A-huset!
+\end{REPL}
+
+Notera att utskriftens två kolumner är oberoende av varandra och kan uppdateras separat. För att uppdatera UI:t och få input av användaren finns följande metoder:
+
+\begin{Code}
+    /**
+     * Clears the right column (without reprinting)
+     */
+    public static void emptyRightColumn();
+
+    /**
+     * Clears the left column (without reprinting)
+     */
+    public static void emptyLeftColumn();
+
+    /**
+     * Adds a new string to be printed in the right column
+     * every time it updates. Does not reprint the UI.
+     */
+    public static void addToRightColumn(String event);
+
+    /**
+     * Adds a new string to be printed in the left column
+     * every time it updates. Does not reprint the UI.
+     */
+    public static void addToLeftColumn(String event);
+
+    /**
+     * Prints a console plot of the given array.
+     */
+    public static void printStatistics(int[] moneyLog);
+
+    /**
+     * Prints a large number of newlines, visually clearing the console
+     */
+    public static void clearConsole();
+
+    /**
+     * Resets the left column with the toString of the GameBoard
+     * and reprints both columns.
+     * @param board
+     */
+    public static void updateConsole(GameBoard board);
+
+    /**
+     * Prompts the user to select one of the given options.
+     *
+     * @param options An ArrayList containing a list of
+               descriptions for the possible options.
+     * @return the index of the option selected by the user.
+     */
+    public static int promptForInput(List<String> options);
+}
+\end{Code}
+
 För att läsa in korten och rutorna används klassen DocumentParser, som har vissa metoder (men inte alla) färdigimplementerade.
 Main-klassen skall vara skriven i Scala, men övriga klasser i Java. 
 Labben är en teamlabb och jämn arbetsfördelning förväntas av eleverna.
