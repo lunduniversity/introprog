@@ -1,22 +1,26 @@
+class Turtle 
+ 
 case class Maze(data: Vector[Vector[Boolean]]) {
-  val wallChar: Char = '\u2588'  // full block unicode character
+  val wallChar: Char = '#'  // or '\u2588' for full block unicode character
   def boolToWall(b: Boolean): Char =  if (b) wallChar else ' '
   override def toString = 
     data.map(_.map(boolToWall).mkString).mkString("\n")  
+  def draw(t: Turtle) = ???
 }
+
 object Maze {
-  def apply(rows: String*): Maze =  {
+  def fromStrings(xs: Vector[String]): Maze = {
     def charToBool(ch: Char): Boolean = if (ch != ' ') true else false
-    val data = for (s <- rows) yield s.map(charToBool).toVector
-    new Maze(data.toVector)
+    val data: Vector[Vector[Boolean]] = xs.map(_.map(charToBool).toVector)
+    new Maze(data)
   }
   def fromFile(fileName: String): Maze = {
-    val data = scala.io.Source.fromFile("maze-simple.txt").getLines.toVector
-    Maze(data: _*)
+    val lines = scala.io.Source.fromFile(fileName).getLines
+    fromStrings(lines.toVector)
   }
+  def apply(rows: String*): Maze = fromStrings(rows.toVector) 
+  def random(rows: Int, cols: Int): Maze = ???
 }
-
-
 
 /** A Boolean Matrix */
 
