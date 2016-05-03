@@ -186,7 +186,7 @@
 }
 
 \lstnewenvironment{JavaSpec}[2][]{%
-    \lstset{basicstyle=\ttfamily\fontsize{9}{11}\selectfont,%
+    \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
             backgroundcolor=\color{white},rulecolor=\color{black},title={\fontsize{9}{11}\selectfont\texttt{\textcolor{black}{\textbf{#2}}}}, frameround=tttt,language=,otherkeywords={},#1}%
 }{}
 
@@ -207,6 +207,10 @@
 
 \lstnewenvironment{Code}[1][]{%
     \lstset{#1}%
+}{}
+
+\lstnewenvironment{CodeSmall}[1][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,#1}%
 }{}
 
 \lstnewenvironment{REPL}[1][]{%
