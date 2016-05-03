@@ -14,8 +14,54 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
+\Task \emph{Referensvariabler, objektkonstruktion och new.}
 
-\Task \emph{\code{private}.} Undersök nedan vad nyckelorder \code{private} får för konsekvenser. Förklara vad som händer. Vilka rader ger vilka felmeddelanden?
+\Subtask Vad händer nedan? Vilka rader ger felmeddelande och i så fall hur lyder felmeddelandet?
+
+\begin{REPL}
+scala> class Gurka(val vikt: Int)
+scala> var g: Gurka = null
+scala> g.vikt
+scala> g = new Gurka(42)
+scala> g.vikt
+scala> g = null
+scala> g.vikt
+scala> var i: Int = null
+\end{REPL}
+
+\Subtask\Pen Rita minnessituationen efter raderna 2, 4, 6.
+
+\Task \emph{Klasser och instanser.} 
+
+\Subtask Vad händer nedan?
+\begin{REPL}
+scala> :pa
+class Arm(val ärTillVänster: Boolean)  
+class Ben(val ärTillVänster: Boolean)
+class Huvud(val harHår: Boolean)
+class RymdVarelse {
+  var arm1 = new Arm(true)
+  var arm2 = new Arm(false)
+  var ben1 = new Ben(true)
+  var ben2 = new Ben(false)
+  var huvud1 = new Huvud(false)
+  var huvud2 = new Huvud(true)
+  def ärSkallig = !huvud1.harHår && !huvud2.harHår
+}
+scala> val alien = new RymdVarelse
+scala> alien.ärSkallig
+scala> val predator = new RymdVarelse
+scala> predator.ärSkallig
+scala> predator.huvud2 = alien.huvud1
+scala> predator.ärSkallig
+\end{REPL}
+
+\Subtask\Pen Rita minnessituationen efter rad 18.
+
+\Subtask\Pen Vad händer så småningom med det ursprungliga huvud2-objektet i predator efter tilldelningen på rad 18? Går det att referera till detta objekt på något sätt?
+
+
+\Task \emph{Synlighet i primärkonstruktorer.} Undersök nedan vad nyckelorden \code{val} och \code{private} får för konsekvenser. Förklara vad som händer. Vilka rader ger vilka felmeddelanden?
 
 \begin{REPL}
 scala> class Gurka1(vikt: Int)
@@ -27,13 +73,60 @@ scala> new Gurka3(42).vikt
 scala> class Gurka4(private val vikt: Int, kompis: Gurka4){
          def kompisVikt = kompis.vikt
        }
-scala> new Gurka4(42, null).kompisVikt
+scala> val ingenGurka: Gurka4 = null
+scala> new Gurka4(42, ingenGurka).kompisVikt
 scala> new Gurka4(42, new Gurka4(84, null)).kompisVikt
 scala> class Gurka5(private[this] val vikt: Int, kompis: Gurka5){
          def kompisVikt = kompis.vikt
        }
+scala> class Gurka6 private (vikt: Int)
+scala> new Gurka6(42)
+scala> :pa
+class Gurka7 private (var vikt: Int)
+object Gurka7 { 
+  def apply(vikt: Int) = {
+    require(vikt >= 0, s"negativ vikt: $vikt")
+    new Gurka7(vikt)
+  }
+}
+scala> new Gurka7(-42)
+scala> Gurka7(-42)
+scala> val g = Gurka7(42)
+scala> g.vikt
+scala> g.vikt = -1
+scala> g.vikt 
 \end{REPL}
 
+
+\Task \emph{Egendefinierad setter kombinerat med privat konstruktor.} 
+
+\Subtask Förklara vad som händer nedan. Vilka rader ger vilka felmeddelanden?
+\begin{REPL}
+scala> :pa
+class Gurka8 private (private var _vikt: Int) {
+  def vikt = _vikt
+  def vikt_=(v: Int): Unit = {
+    require(v >= 0, s"negativ vikt: $v")
+    _vikt = v
+  }
+}
+
+object Gurka8 { 
+  def apply(vikt: Int) = {
+    require(vikt >= 0, s"negativ vikt: $vikt")
+    new Gurka8(vikt)
+  }
+}
+scala> val g = new Gurka8(-42)
+scala> val g = new Gurka8(42)
+scala> g.vikt
+scala> g.vikt = 0
+scala> g.vikt = -1
+scala> g.vikt += 42
+scala> g.vikt -= 1000
+\end{REPL}
+
+\Subtask\Pen Vad är fördelen med möjligheten att skapa egendefienerade setters?
 
 \Task \label{task:Square} \emph{Klassen \code{Square}.} 
 
@@ -81,13 +174,13 @@ scala> s2.scale(math.Pi) isEqualSize s2
 scala> s2.scale(math.Pi) isEqualSize s2.scale(math.Pi)
 \end{REPL}
 
-\Subtask Gör primärkonstruktorn i klassen \code{Square} privat och säkerställ i fabriksobjektet att det inte går att skapa kvadrater med negativ sida. Använd \code{assert}.  
+\Subtask Gör primärkonstruktorn i klassen \code{Square} privat och säkerställ i fabriksobjektet att det inte går att skapa kvadrater med negativ sida. Använd \code{require}.  
 
-\Subtask Lägg till ett privat attribut \code{var moved: Int} i klassen Square som räknar hur många gånger en instans har flyttats. 
+\Subtask Lägg till ett privat attribut \code{var numberOfMoves: Int} i klassen Square som räknar hur många gånger en instans har flyttats. 
 
 \Subtask Lägg till en privat variabel \code{var created: Vector[Square]} i kompanjonsobjektet som sparar alla kvadratobjekt som skapats.
 
-\Subtask Lägg till en metod \code{def totalMoved: Int} i kompanjonsobjektet som räknar ut det totala antalet förflyttningar som skett.
+\Subtask Lägg till en metod \code{def totalNumberOfMoves: Int} i kompanjonsobjektet som räknar ut det totala antalet förflyttningar som skett.
 
 \Subtask\Pen Varför är det avgörande för korrektheten av beräkningen av totala antalet förflyttningar i föregående uppgift att konstruktorn i klassen \code{Square} är privat? 
 
