@@ -52,7 +52,7 @@ trait Plan {
       | attribut (fält), medlem, metod, 
       | tupel, klass, Any, isInstanceOf, toString, 
       | case-klass, 
-      | Complex, Rational,
+      | Rational,
       | föränderlighet vs oföränderlighet, 
       | List, Vector, Set, Map, 
       | typparameter, generisk samling som parameter,
@@ -72,7 +72,7 @@ trait Plan {
 
     Module("Klasser, Likhet", 
       id = "classsim", exercise = "classes", lab = "turtlegraphics", contents = """
-      | objektorientering, klass, Point, Square,
+      | objektorientering, klass, Point, Square, Complex, 
       | inkapsling, accessregler, private, private[this],
       | getters och setters, 
       | new, null,
