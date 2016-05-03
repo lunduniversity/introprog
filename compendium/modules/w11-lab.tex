@@ -28,7 +28,7 @@ I denna labb skall ni tillverka lthopoly, en variant av det välkända brädspel
 Beroende på vilken av rutorna spelaren hamnar på sker olika saker. I fallet att man hamnar på MoveSpace får spelaren dra ett s.k. MoveCard, som antingen förflyttar spelaren framåt eller bakåt längs spelplanen. 
 Skulle spelaren hamna på MoneySpace kan denne antingen vinna eller förlora pengar genom att dra ett MoneyCard. Skulle spelaren hamna på en HouseSpace får denne alternativet att köpa rutan, förutsatt att den inte köpts av någon annan spelare, om så är fallet måste spelaren som hamnade på rutan betala hyra till ägaren.
 
-Den visuella representationen av spelet sker via konsolfönstret med hjälp av klassen \code{TextUI}. \code{TextUI} är en färdigskriven klass med statiska metoder som gör det möjligt att skriva ut två kolumner av text i konsollfönstret. Utskriften kan exempelvis se ut såhär:
+Den visuella representationen av spelet sker via konsolfönstret med hjälp av klassen \code{TextUI}. \code{TextUI} är en färdigskriven klass med statiska metoder som gör det möjligt att skriva ut två kolumner av text i konsolfönstret. Utskriften kan exempelvis se ut såhär:
 
 \begin{REPL}
 Studiecentrum(20)(Valthor)
@@ -84,6 +84,7 @@ Notera att utskriftens två kolumner är oberoende av varandra och kan uppdatera
      */
     public static int promptForInput(List<String> options);
 \end{JavaSpec}
+
 \subsubsection{Implementeras Själv}
 \begin{JavaSpec}{class Player}
 
@@ -109,10 +110,10 @@ public void setPosition(int pos)
 public BoardSpace()
 
 /* Ger en vektor av möjliga val för spelare som står på rutan. */
-public abstract PlayerAction[] getPossibleActions(GameBoard board);
+public abstract int[] getPossibleActions(GameBoard board);
 
 /* Genomför det val som skickas med. */
-public abstract void action(GameBoard board, PlayerAction action);
+public abstract void action(GameBoard board, int action);
 
 /*Ger en strängrepresentation av rutan. */
 public abstract String toString();
@@ -123,7 +124,7 @@ public abstract String toString();
 public GameBoard(Player[] players) 
 
 /** Ger en vektor av möjliga val för spelaren vars tur det är. */
-public PlayerAction[] getPossibleActions()
+public int[] getPossibleActions()
 
 /** Ger sant eller falskt beroende på om spelet är slut eller ej.*/
 public boolean isGameOver()
@@ -132,7 +133,7 @@ public boolean isGameOver()
 public Player getRichestPlayer()
 
 /** Genomför valet action för den aktuella spelaren. */
-public void doAction(PlayerAction action)
+public void doAction(int action)
 
 /** Ger spelaren vars tur det är. */
 public Player getCurrentPlayer()
@@ -171,7 +172,7 @@ public MoveCard(String description, int position)
 \begin{itemize}
 \item Om någon spelare har mindre än 0 SEK kvar skall spelet sluta.
 \item Om någon spelare hamnar på en husruta som ägs av en annan spelare måste denne betala ägaren husets hyra i SEK.
-\item Om en spelare väljer att ta ett kort skall det värde som påverkas av kortet justeras. För Riskkort innebär detta en förflyttning medan för Chanskort en ändring av pengar.
+\item Om en spelare väljer att ta ett kort skall det värde som påverkas av kortet justeras. För MoveCard innebär detta en förflyttning medan för MoneyCard en ändring av pengar.
 
 \end{itemize}
 
@@ -193,14 +194,15 @@ public MoveCard(String description, int position)
 
 \Subtask Implementera klassen Player.
 
-\Task I denna uppgift skall tre olika typer av spelrutor implementeras, som alla ärver ifrån klassen \code{BoardSpace}. Ni kommer då behöva implementera de tre abstrakta metoderna i BoardSpace i respeketive subklass. Här behöver subklasserna tillgång till spelbrädet då förändringen av speltillståndet sker till störren delen i metoden action för de olika rutorna. Rutan som representerar ett hus kommer dessutom behöva ett attribut som håller koll på vem som äger rutan, medan rutorna som representerar chans- och riskhändelserna kommer behöva tillgång till vektorer av de kort som läses in.
+\Task I denna uppgift skall tre olika typer av spelrutor implementeras, som alla ärver ifrån klassen \code{BoardSpace}. Ni kommer då behöva implementera de tre abstrakta metoderna i BoardSpace i respeketive subklass. Här behöver subklasserna tillgång till spelbrädet då förändringen av speltillståndet sker till störren delen i metoden action för de olika rutorna. HouseSpace kommer dessutom behöva ett attribut som håller koll på vem som äger rutan, medan MoveSpace och MoneySpace kommer behöva tillgång till vektorer av de kort som läses in.
 
-
-\Subtask Implementera en klass för varje typ av spelruta.
+\Subtask Implementera en klass för varje typ av spelruta. 
+För att skriva metoden action kommer ni behöva nyttja att klassen \code{GameBoard} har statiska variabler som representerar de olika spelarvalen.
 \newline
 \newline
 \noindent
-\textbf{Obs!} Än så länge kommer logiken inte fungera då inga metoder är implementerade i BoardGame ännu, det går trots detta bra att anropa metoderna utan kompileringsfel (i väntan på att de implementeras)
+\textbf{Obs!} Än så länge kommer logiken inte fungera då inga metoder är implementerade i BoardGame, det går trots detta bra att anropa metoderna utan kompileringsfel (i väntan på att de implementeras).
+
 
 \Task Nu är det dags att implementera getBoard() i klassen \code{DocumentParser}. I denna metod skall ni läsa in från filen board.txt och nyttja de metoder ni redan skrivit för att läsa in MoveSpaces och MoneySpaces. Viktigt här är att ordningen i vilken de olika rutorna är representerade i textfilen spelar roll, då den utgör upplägget av spelplanen. Alltså, beroende på vilken ruta som läses in från textfilen skall motsvarande objekt som representerar denna ruta konstrueras och läggas till i en ArrayList<BoardSpace> som slutligen returneras.
 
@@ -214,10 +216,11 @@ public MoveCard(String description, int position)
 \textbf{Tips!} 
 
 \begin{itemize}
-\item Privata hjälpmetoder kan hjälpa till att underlätta.
+\item Använd privata hjälpmetoder för att underlätta implementeringen.
 \item Metoden printStatistics i klassen \code{TextUI} tar en vektor av int-värden som inparameter, vilket är opassande då det underlättar att lagra pengahistoriken i en arrayList (eftersom dess storlek inte är bestämd). Det är därför lämpligt att skriva en metod som flyttar över samtliga Integer-objekt från ArrayList<Integers> till en vektor av ints. Detta fungerar trots att de har olika typer p.g.a. autoboxing. 
-\item Tänk på att spelarna skall kunna gå runt spelplanen obegränsat antal gånger.
+\item Tänk på att spelarna skall kunna gå runt spelplanen ett obegränsat antal gånger.
 \item Tänk på att dela upp arbetet så att det sker en lämpligt arbetsfördelning inom gruppen, men samarbeta så att ni vet hur era olika implementationer interagerar.
+\item Glöm inte att skicka strängar till  \code{TextUI} för att generera utskrift när uppdatering sker.
 \end{itemize}
 
 
