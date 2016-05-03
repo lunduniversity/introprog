@@ -72,11 +72,13 @@ trait Plan {
 
     Module("Klasser, Likhet", 
       id = "classsim", exercise = "classes", lab = "turtlegraphics", contents = """
-      | objektorientering, klass, Point, Rectangle,
-      | inkapsling, accessregler, private, public, private[this],
-      | getters och setters,
-      | klassparameter, primär konstruktor, alternativ konstruktor, 
-      | referensvariabler vs enkla värden, referenstilldelning vs värdetilldelning, 
+      | objektorientering, klass, Point, Square,
+      | inkapsling, accessregler, private, private[this],
+      | getters och setters, 
+      | new, null,
+      | referensklasser vs värdeklasser, 
+      | klassparameter, primär konstruktor, 
+      | alternativ konstruktor, 
       | referenslikhet vs strukturlikhet, eq vs ==, compareTo, 
       | implementera equals,
       """.stripTrim),
@@ -88,7 +90,7 @@ trait Plan {
       | klasshierarkin i Scala: Any AnyRef AnyVal Nothing Null,
       | klasshierarkin i Scalas samlingar,
       | Shape som basklass till Point och Rectangle, 
-      | accessregler vid arv, protected, private[this], final,
+      | accessregler vid arv, protected, final,
       | abstrakt klass, trait, inmixning, klass vs trait, 
       | case-object, typer med uppräknade värden, 
       | värdeklasser extends AnyVal,
@@ -99,7 +101,7 @@ trait Plan {
 
     Module("Mönster, Undantag", 
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
-      | mönstermatchning, match, Option, null, try, catch, Try, unapply, 
+      | mönstermatchning, match, Option, try, catch, Try, unapply, 
       | flatten, flatMap, partiella funktioner, collect 
       """.stripTrim),
 
@@ -122,6 +124,8 @@ trait Plan {
     Module("Scala och Java", 
       id = "scalajava", exercise = "scalajava", lab = "lthopoly-team", contents = """
       | skillnader mellan Scala och Java, 
+      | referensvariabler vs enkla värden i Java,
+      | referenstilldelning vs värdetilldelning i Java,
       | for-sats i Java, java for-each i Java, 
       | java.util.ArrayList, 
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
