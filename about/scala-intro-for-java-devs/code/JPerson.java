@@ -10,8 +10,7 @@ public class JPerson {
     }
 
     public JPerson(String n) {
-      name = n;
-      age = 42;
+      this(n, 42);
     }
 
     public String getName() {
