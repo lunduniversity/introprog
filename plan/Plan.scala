@@ -51,8 +51,7 @@ trait Plan {
       id = "datastruct", exercise = "data", lab = "pirates", contents = """
       | attribut (fält), medlem, metod, 
       | tupel, klass, Any, isInstanceOf, toString, 
-      | case-klass, 
-      | Rational,
+      | case-klass, Rational,
       | föränderlighet vs oföränderlighet, 
       | List, Vector, Set, Map, 
       | typparameter, generisk samling som parameter,
@@ -72,37 +71,36 @@ trait Plan {
 
     Module("Klasser, Likhet", 
       id = "classsim", exercise = "classes", lab = "turtlegraphics", contents = """
-      | objektorientering, klass, Point, Square, Complex, 
-      | inkapsling, accessregler, private, private[this],
+      | objektorientering, klass, Point, Square, 
+      | inkapsling, accessregler, private, private[this], kompanjonsobjekt,
       | getters och setters, 
       | new, null,
-      | referensklasser vs värdeklasser, 
-      | klassparameter, primär konstruktor, 
-      | alternativ konstruktor, 
-      | referenslikhet vs strukturlikhet, eq vs ==, compareTo, 
-      | implementera equals,
+      | klassparameter, primär konstruktor, objektfabriksmetod, 
+      | referenslikhet vs strukturlikhet, eq vs ==, 
       """.stripTrim),
 
     Module("Arv, Gränssnitt", 
       id = "polymorf", exercise = "traits", lab = "turtlerace-team", contents = """
-      | arv, polymorfism, likhet vid arv, asInstanceOf,
+      | arv, polymorfism, asInstanceOf,
       | klasser i Scala vs Java, Any vs java.lang.Object,
       | klasshierarkin i Scala: Any AnyRef AnyVal Nothing Null,
+      | referensklasser vs värdeklasser, 
       | klasshierarkin i Scalas samlingar,
       | Shape som basklass till Point och Rectangle, 
       | accessregler vid arv, protected, final,
       | abstrakt klass, trait, inmixning, klass vs trait, 
-      | case-object, typer med uppräknade värden, 
+      | case-object, typer med uppräknade värden,  
       | värdeklasser extends AnyVal,
-      | implementera equals vid polymorfism ???,
       """.stripTrim),
 
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
     Module("Mönster, Undantag", 
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
-      | mönstermatchning, match, Option, try, catch, Try, unapply, 
-      | flatten, flatMap, partiella funktioner, collect 
+      | mönstermatchning, match, Option, try, catch, Try, unapply, sealed, 
+      | flatten, flatMap, partiella funktioner, collect, 
+      | implementera equals utan arv, Complex,  
+      | implementera equals med arv, Shape,  
       """.stripTrim),
 
     Module("Matriser, Typparametrar", 
@@ -114,18 +112,21 @@ trait Plan {
 
     Module("Sökning, Sortering", 
       id = "searchsort", exercise = "sorting", lab = "surveydata-team", contents = """
+      | compareTo på strängar, trait Ordered[T], 
       | algoritm: LINEAR-SEARCH, algortim: BINARY-SEARCH, 
       | algoritmisk komplexitet, 
       | sortering till ny vektor, sortering på plats, 
       | algoritm: INSERTION-SORT, algoritm: SELECTION-SORT,
       | mer om filer, serialisering,
-      """.stripTrim),
+      """.stripTrim),  
+      //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
     Module("Scala och Java", 
       id = "scalajava", exercise = "scalajava", lab = "lthopoly-team", contents = """
       | skillnader mellan Scala och Java, 
       | referensvariabler vs enkla värden i Java,
       | referenstilldelning vs värdetilldelning i Java,
+      | alternativ konstruktor i Scala och Java, 
       | for-sats i Java, java for-each i Java, 
       | java.util.ArrayList, 
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
