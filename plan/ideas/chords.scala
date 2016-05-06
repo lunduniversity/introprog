@@ -106,13 +106,19 @@ object model {
     def unapply(s: String): Option[Ukulele] = ???
   }  
   
-  implicit class ChordMidiPlayer(c: Chord) {
-    def play: Unit = ???  // some midi magic TODO
+  object PlayDecorator {
+    implicit class ChordMidiPlayer(c: Chord) {
+      def play: Unit = ???  // some midi magic TODO
+    }
   }
   
-  implicit class ChordSimpleWindowDrawer(c: Chord) {
-    /** opens a SimpleWindow and draws chord, notes are played when clicked */
-    def draw: Unit = ??? 
+  object DrawDecorator {
+    type SimpleWindow = Nothing // To be removed and connected to cslib
+
+    implicit class ChordSimpleWindowDrawer(c: Chord) {
+      /** opens a SimpleWindow and draws chord, notes are played when clicked */
+      def draw(w: SimpleWindow): Unit = ??? 
+    }
   }
 }
 
