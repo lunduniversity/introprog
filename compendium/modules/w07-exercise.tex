@@ -9,14 +9,191 @@
 \end{Goals}
 
 \begin{Preparations}
-\item 
+\item Studera teorin i kapitel \ref{chapter:W07}.
 \end{Preparations}
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task 
+\Task \emph{Gemensam bastyp.} Man vill ofta lägga in objekt av olika typ i samma samling.
+\begin{REPL}
+class Gurka(val vikt: Int)
+class Tomat(val vikt: Int)
+val gurkor = Vector(new Gurka(100), new Gurka(200))
+val grönsaker = Vector(new Gurka(300), new Tomat(42))
+\end{REPL}
+\Subtask Om en samling innehåller flera olika typer försöker kompilatorn härlöeda den mest specifika gemensamma typen. Vad blir det för typ på värdet \code{grönsaker} ovan?
+
+\Subtask Försök ta reda på summan av vikterna enligt nedan. Vad ger andra raden för felmeddelande? Varför?
+
+\begin{REPL}
+gurkor.map(_.vikt).sum
+grönsaker.map(_.vikt).sum
+\end{REPL}
+
+\Subtask Vi kan göra så att vi kan komma åt vikten på alla grönsaker genom att ge gurkor och tomater en gemensam bastyp som de olika konkreta grönsakstyperna utvidgar med nyckelordet \code{extends}. Attributet \code{vikt} i traiten \code{Grönsak} nedan initialiseras inte förrän konstruktorerna anropas när vi gör \code{new} på någon av de konreta klasserna \code{Gurka} eller \code{Tomat}. 
+
+\begin{REPL}
+trait Grönsak { val vikt: Int } 
+class Gurka(val vikt: Int) extends Grönsak
+class Tomat(val vikt: Int) extends Grönsak
+val gurkor = Vector(new Gurka(100), new Gurka(200))
+val grönsaker = Vector(new Gurka(300), new Tomat(42))
+\end{REPL}
+
+\Subtask Vad blir det nu för typ på värdet av \code{grönsaker} ovan? 
+
+\Subtask Fungerar det nu att räkna ut summan av vikterna i \code{grönsaker} med \code{grönsaker.map(_.vikt).sum}?
+
+
+\Subtask En trait liknar en klass, men man kan inte instansiera den och den kan inte ha några parametrar. En typ som inte kan instansieras kallas \textbf{abstrakt} \Eng{abstract}. Vad blir det för felmeddelande om du försöker göra \code{new} på en trait enligt nedan?
+\begin{REPL}
+trait Grönsak{ val vikt: Int } 
+new Grönsak
+\end{REPL}
+
+
+\Subtask Traiten \code{Grönsak} har en abstrakt medlem \code{vikt}. Värdet \code{vikt} sägs vara abstrakt eftersom det saknar utan definition -- den bara har ett namn och en typ men inget värde. Du kan instansiera den abstrakta traiten \code{Grönsak} om du fyller i det som ''fattas'', nämligen ett värde på \code{vikt}. Man kan fylla på det som fattas i ett block efter typens namn vid instansiering. Vad får \code{anonymGrönsak} nedan för typ och strängrepresenation?
+\begin{REPL}
+val anonymGrönsak = new Grönsak { val vikt = 42 }
+\end{REPL}
+
+
+
+
+\Task \emph{Inmixning.} Man kan utvidga en klass med multipla traits med nyckelordet \code{with}. På så sätt kan man fördela medlemmar i olika traits och återanvända gemensamma koddelar genom så kallad \textbf{inmixning}, så som nedan exempel visar. 
+
+En alternativ fågeltaxonomi, speciellt populär i Skåne, delar in alla fåglar i två specifika kategorier: Kråga respektive Ånka. Krågor kan flyga men inte simma, medan Ånkor kan simma och oftast även flyga. Fågel i generell, kollektiv bemärkelse kallas på gammal skånska för Fyle.
+
+\begin{Code}
+trait Fyle { 
+  val läte: String
+  def väsnas: Unit = print(läte)
+  val ärSimkunnig: Boolean
+  val ärFlygkunnig: Boolean
+}
+
+trait KanSimma { val ärSimkunnig = true }
+trait KanInteSimma { val ärSimkunnig = false }
+trait KanFlyga { val ärFlygkunnig = true }
+trait KanKanskeFlyga { val ärFlygkunnig = math.random < 0.8 }
+
+class Kråga extends Fyle with KanFlyga with KanInteSimma {
+  val läte = "krax"  
+  override def väsnas = print(läte * 2)
+} 
+
+class Ånka extends Fyle with KanSimma with KanKanskeFlyga {
+  val läte = "kvack"
+  override def väsnas = print(läte * 4)
+} 
+\end{Code}
+
+\Subtask En flitig fågelskådare hittar 42 fåglar i en skog där fågelsorterna är lika sannolika, representerat av vektorn \code{fyle} nedan. Skriv ett uttryck som undersöker hur många av dessa som är flygkunniga Ånkor, genom att använda metoderna \code{filter}, \code{isInstanceOf}, \code{ärFlygkunnig} och \code{size}.   
+\begin{REPL}
+scala> val fyle = 
+         Vector.fill(42)(if (math.random > 0.5) new Kråga else new Ånka)
+scala> fyle.foreach(_.väsnas)
+scala> val antalFlygånkor: Int = ??? 
+\end{REPL}
+
+\begin{Code}
+// kod till facit
+fyle.filter(f => f.isInstanceOf[Ånka] && f.ärFlygkunnig).size
+\end{Code}
+
+\Subtask Om alla de fåglar som fågelskådaren hittade skulle väsnas exakt en gång var, hur många krax och hur många kvack skulle då höras? Använd metoderna \code{filter} och \code{size}, samt predikatet \code{ärSimKunnig} för att beräkna antalet krax respektive kvack.
+\begin{REPL}
+scala> val antalKrax: Int = ???
+scala> val antalKvack: Int = ??? 
+\end{REPL}
+
+\begin{Code}
+// kod till facit
+val antalKrax: Int = fyle.filter(f => !f.ärSimkunnig).size * 2
+val antalKvack: Int = fyle.filter(f => f.ärSimkunnig).size * 4
+\end{Code}
+
+\Task \emph{Typtester med \code{isInstanceOf} och typkonvertering med \code{asInstanceOf}.} Gör nedan deklarationer och instansieringar.
+\begin{REPL}
+scala> trait A; trait B extends A; class C extends B; class D extends B
+scala> val (c, d) = (new C, new D)   
+scala> val a: A = c
+scala> val b: B = d
+\end{REPL}
+
+\Subtask Rita en bild över vilka typer som ärver vilka.
+
+\Subtask Vilket resultat ger dessa typtester? Varför?
+\begin{REPL}
+scala> c.isInstanceOf[C]
+scala> c.isInstanceOf[D]
+scala> d.isInstanceOf[B]
+scala> c.isInstanceOf[A]
+scala> b.isInstanceOf[A]
+scala> b.isInstanceOf[D]
+scala> a.isInstanceOf[B]
+scala> c.isInstanceOf[AnyRef]
+scala> c.isInstanceOf[Any]
+scala> c.isInstanceOf[AnyVal]
+scala> c.isInstanceOf[Object]
+scala> 42.isInstanceOf[Object]
+scala> 42.isInstanceOf[Any]
+\end{REPL}
+
+\Subtask Vilka av dessa typkonverteringar ger felmeddelande? Vilket och varför?
+\begin{REPL}
+scala> c.asInstanceOf[B]
+scala> c.asInstanceOf[A]
+scala> d.asInstanceOf[C]
+scala> a.asInstanceOf[B]
+scala> a.asInstanceOf[C]
+scala> a.asInstanceOf[D]
+scala> a.asInstanceOf[E]
+scala> b.asInstanceOf[A]
+\end{REPL}
+
+
+
+
+
+\Task \emph{Uppräknade värden.}
 
 \Subtask 
+
+\begin{REPL}
+trait Färg
+case object Spader extends Färg
+case object Hjärter extends Färg
+case object Ruter extends Färg
+case object Klöver extends Färg
+\end{REPL}
+
+\Subtask 
+
+\begin{REPL}
+trait Färg
+object Färg { 
+  val values: Vector[Färg] = Vector(Spader, Hjärter, Ruter, Klöver)
+}
+case object Spader extends Färg
+case object Hjärter extends Färg
+case object Ruter extends Färg
+case object Klöver extends Färg
+\end{REPL}
+
+
+\Subtask 
+\begin{REPL}
+abstract class Färg(val toInt: Int)
+object Färg { 
+  val values: Vector[Färg] = Vector(Spader, Hjärter, Ruter, Klöver)
+}
+case object Spader extends Färg(0)
+case object Hjärter extends Färg(1)
+case object Ruter extends Färg(2)
+case object Klöver extends Färg(3)
+\end{REPL}
+
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
