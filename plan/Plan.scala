@@ -69,8 +69,8 @@ trait Plan {
       | java.util.Random, slumptalsfrö, 
       """.stripTrim),
 
-    Module("Klasser, Likhet", 
-      id = "classsim", exercise = "classes", lab = "turtlegraphics", contents = """
+    Module("Klasser", 
+      id = "class", exercise = "classes", lab = "turtlegraphics", contents = """
       | objektorientering, klass, Point, Square, 
       | inkapsling, accessregler, private, private[this], kompanjonsobjekt,
       | getters och setters, 
@@ -79,18 +79,16 @@ trait Plan {
       | referenslikhet vs strukturlikhet, eq vs ==, 
       """.stripTrim),
 
-    Module("Arv, Gränssnitt", 
+    Module("Arv", 
       id = "polymorf", exercise = "traits", lab = "turtlerace-team", contents = """
       | arv, polymorfism, asInstanceOf,
-      | klasser i Scala vs Java, Any vs java.lang.Object,
-      | klasshierarkin i Scala: Any AnyRef AnyVal Nothing Null,
+      | klasshierarkin i Scala: Any AnyRef Object AnyVal Nothing Null,
       | referensklasser vs värdeklasser, 
       | klasshierarkin i Scalas samlingar,
       | Shape som basklass till Point och Rectangle, 
       | accessregler vid arv, protected, final,
       | abstrakt klass, trait, inmixning, klass vs trait, 
       | case-object, typer med uppräknade värden,  
-      | värdeklasser extends AnyVal,
       """.stripTrim),
 
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
@@ -124,6 +122,7 @@ trait Plan {
     Module("Scala och Java", 
       id = "scalajava", exercise = "scalajava", lab = "lthopoly-team", contents = """
       | skillnader mellan Scala och Java, 
+      | klasser i Scala vs Java, 
       | referensvariabler vs enkla värden i Java,
       | referenstilldelning vs värdetilldelning i Java,
       | alternativ konstruktor i Scala och Java, 

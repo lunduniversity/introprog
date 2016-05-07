@@ -172,7 +172,6 @@ object model {
   
   object DrawDecorator {
     type SimpleWindow = Nothing // To be removed and connected to cslib
-
     implicit class ChordSimpleWindowDrawer(c: Chord) {
       /** opens a SimpleWindow and draws chord, notes are played when clicked */
       def draw(w: SimpleWindow): Unit = ??? 
