@@ -196,13 +196,18 @@ object database {
 
 
 object terminal {
-  private val scan = new java.util.Scanner(System.in)
+  import java.util.Scanner
+  private var scan = new Scanner(System.in)
   var prompt: String = "> "
-  def readLine: String = scan.nextLine
+  def readLine: String = Try { scan.nextLine } getOrElse {
+    // Is there a better way to handle Ctrl+D or Ctrl+Z more gracefully ????
+    scan = new Scanner(System.in)
+    "" 
+  }
   def cmdLine: Vector[String] = {
     print(prompt)
     readLine.split(' ').toVector
-  }// How to handle exception on Ctrl+D ????
+  } 
 }
 
 object Main {
