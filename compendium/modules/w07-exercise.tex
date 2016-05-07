@@ -14,6 +14,23 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
+\Task \emph{Polymorfism i samband med arv.} Polymorfism betyder ''många skepnader''. I samband med arv  innebär det att flera subtyper, till exempel \code{Ko} och \code{Gris}, kan hantera gemensamt som om de vore instanser av samma supertyp, så som \code{Djur}. Subklasser kan implementera en metod med samma namn på olika sätt. Vilken metod som exekveras bestäms vid körtid beroende på vilken subtyp som instansieras. På så sätt kan olika djur komma i många skepnader. 
+
+\Subtask Implementera funktionen \code{skapaDjur} nedan så att den returnerar antingen en ny Ko eller en ny Gris med lika sannolikhet.
+
+\begin{REPL}
+scala> trait Djur { def väsnas: Unit }
+scala> class Ko   extends Djur { def väsnas = println("Muuuuuuu") }
+scala> class Gris extends Djur { def väsnas = println("Nöffnöff") }
+scala> def skapaDjur: Djur = ??? 
+scala> val bondgård = (1 to 42).map(i => skapaDjur)
+scala> bondgård.foreach(_.väsnas) 
+\end{REPL}
+
+\Subtask Lägg till ett djur av typen Häst som väsnas på lämpligt sätt och modifiera \code{skapaDjur} så att det skapas kor, grisar och hästar med lika sannolikhet.
+
+
+
 \Task \emph{Gemensam bastyp.} Man vill ofta lägga in objekt av olika typ i samma samling.
 \begin{REPL}
 class Gurka(val vikt: Int)
@@ -21,7 +38,7 @@ class Tomat(val vikt: Int)
 val gurkor = Vector(new Gurka(100), new Gurka(200))
 val grönsaker = Vector(new Gurka(300), new Tomat(42))
 \end{REPL}
-\Subtask Om en samling innehåller flera olika typer försöker kompilatorn härlöeda den mest specifika gemensamma typen. Vad blir det för typ på värdet \code{grönsaker} ovan?
+\Subtask Om en samling innehåller objekt av flera olika typer försöker kompilatorn härleda den mest specifika typen som objekten har gemensamt. Vad blir det för typ på värdet \code{grönsaker} ovan?
 
 \Subtask Försök ta reda på summan av vikterna enligt nedan. Vad ger andra raden för felmeddelande? Varför?
 
@@ -57,12 +74,10 @@ new Grönsak
 val anonymGrönsak = new Grönsak { val vikt = 42 }
 \end{REPL}
 
-
-
-
 \Task \emph{Inmixning.} Man kan utvidga en klass med multipla traits med nyckelordet \code{with}. På så sätt kan man fördela medlemmar i olika traits och återanvända gemensamma koddelar genom så kallad \textbf{inmixning}, så som nedan exempel visar. 
 
-En alternativ fågeltaxonomi, speciellt populär i Skåne, delar in alla fåglar i två specifika kategorier: Kråga respektive Ånka. Krågor kan flyga men inte simma, medan Ånkor kan simma och oftast även flyga. Fågel i generell, kollektiv bemärkelse kallas på gammal skånska för Fyle.
+En alternativ fågeltaxonomi, speciellt populär i Skåne, delar in alla fåglar i två specifika kategorier: Kråga respektive Ånka. Krågor kan flyga men inte simma, medan Ånkor kan simma och oftast även flyga. Fågel i generell, kollektiv bemärkelse kallas på gammal skånska för Fyle.%
+\footnote{\href{http://www.klangfix.se/ordlista.htm}{www.klangfix.se/ordlista.htm}}
 
 \begin{Code}
 trait Fyle { 
@@ -72,9 +87,9 @@ trait Fyle {
   val ärFlygkunnig: Boolean
 }
 
-trait KanSimma { val ärSimkunnig = true }
-trait KanInteSimma { val ärSimkunnig = false }
-trait KanFlyga { val ärFlygkunnig = true }
+trait KanSimma       { val ärSimkunnig = true }
+trait KanInteSimma   { val ärSimkunnig = false }
+trait KanFlyga       { val ärFlygkunnig = true }
 trait KanKanskeFlyga { val ärFlygkunnig = math.random < 0.8 }
 
 class Kråga extends Fyle with KanFlyga with KanInteSimma {

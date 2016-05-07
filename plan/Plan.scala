@@ -81,13 +81,13 @@ trait Plan {
 
     Module("Arv", 
       id = "polymorf", exercise = "traits", lab = "turtlerace-team", contents = """
-      | arv, polymorfism, asInstanceOf,
+      | arv, polymorfism, trait, extends, asInstanceOf, with, inmixning, 
       | klasshierarkin i Scala: Any AnyRef Object AnyVal Nothing Null,
-      | referensklasser vs värdeklasser, 
+      | referenstyper vs värdetyper, 
       | klasshierarkin i Scalas samlingar,
       | Shape som basklass till Point och Rectangle, 
       | accessregler vid arv, protected, final,
-      | abstrakt klass, trait, inmixning, klass vs trait, 
+      | klass vs trait, abstract class, 
       | case-object, typer med uppräknade värden,  
       """.stripTrim),
 
