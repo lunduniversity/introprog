@@ -148,7 +148,7 @@ scala> zs
 \Subtask Definiera en funktion i REPL med namnet \code{reverseCopy} med din implementation i uppgift \ref{subtask:for-seq-copy}.  
 
 
-\Task \emph{Algortim: SEQ-REVERSE.} Strängar av typen \code{String} är oföränderliga. Vill man ändra i en sträng utan att skapa en ny kopia kan man använda en \code{StringBuffer} enligt nedan algoritm som vänder bak-och-fram på en sträng. 
+\Task \emph{Algoritm: SEQ-REVERSE.} Strängar av typen \code{String} är oföränderliga. Vill man ändra i en sträng utan att skapa en ny kopia kan man använda en \code{StringBuilder} enligt nedan algoritm som vänder bak-och-fram på en sträng. 
 
 \begin{algorithm}[H]
  \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
@@ -202,16 +202,247 @@ def isPalindrome(s: String): Boolean = {
 }
 \end{Code}
 
-\Task Keno-dragningar under ett år -> Registrering...
+\Task \label{task:seq-reg} \emph{Algoritm: SEQ-REGISTER.} Algoritmer för registrering löser problemet att räkna förekomst av olika saker, till exempel antalet tärningskast som gav en sexa. Antag att vi har följande vektor \code{xs} som representerar 13 st tärningskast:
+\begin{REPL}
+scala> val xs =  Vector(5, 3, 1, 6, 1, 3, 5, 1, 1, 6, 3, 2, 6)
+\end{REPL}
 
-\ExtraTasks %%%%%%%%%%%%%%%%%%%
+\Subtask Använd metoderna \code{filter} och \code{size} på \code{xs} för att filtrera ut alla 6:or och räkna hur många de är.
+
+\Subtask Använd metoderna \code{filter} och \code{size} på \code{xs} för att filtrera ut alla jämna kast och räkna hur många de är.
+
+\Subtask Metoden \code{groupBy} på en samling tar en funktion \code{f} som parameter och skapar en ny \code{Map} med nycklar \code{k} som är associerade till samlingar som utgör grupper av värden där 
+\code{f(x) == k}.  Vad händer här:
+\begin{REPL}
+scala> xs.groupBy(x => x % 2)
+scala> xs.groupBy(_ % 2)
+scala> xs.groupBy(_ % 3)
+scala> xs.groupBy(_ % 3).foreach(println)
+scala> val freqEvenOdd = xs.groupBy(_ % 2).map(p => (p._1, p._2.size)) 
+scala> val nEven = freqEvenOdd(0)
+scala> val nOdd = freqEvenOdd(1)
+\end{REPL}
+
+\Subtask Använd metoden \code{groupBy} på \code{xs} med den s.k. identitetsfunktionen \code{i => i} som returnerar sitt eget argument. Vad händer? 
+
+\Subtask Definiera en \code{val freq: Map[Int, Int]} som räknar antalet olika tärningsutfall i \code{xs}. Använd metoden \code{groupBy} på \code{xs} med identitetsfunktionen följt av en \code{map} med funktionen \code{p => (p._1, p._2.size)}.
+
+\Subtask Du ska nu själv implementera en registreringsalgoritm. Skriv en funktion:
+\begin{Code}
+def tärningsRegistrering(xs: Array[Int]): Array[Int] = ???
+\end{Code}
+som implementerar nedan algoritm (som alltså inte använder \code{groupBy} eller andra färdiga metoder på samlingar förutom \code{size} och \code{apply}).
+
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+ 
+ \Input{En array $xs$ med heltal mellan 1 och 6 som representerar utfall av många tärningskast.}
+ \Output{En array $f$ med 7 st element där $f(0)$ innehåller totala antalet kast, $f(1)$ anger antalet ettor, $f(2)$ antalet tvåor, etc. till och med $f(6)$ som anger antalet sexor.}
+ $f \leftarrow$ en ny array med $7$ element där alla element initaliseras till 0.\\
+ $f(0) \leftarrow$ antalet element i $xs$ \\
+ $i \leftarrow 0$  \\
+ \While{$i < f(0)$}{
+  $f(xs(i)) \leftarrow f(xs(i)) + 1$ \\
+  $i \leftarrow i + 1$
+ }
+ \Return $f$ 
+\end{algorithm}
+
+Testa din funktion med nedan funktionsanrop:
+\begin{REPL}
+scala> tärningsRegistrering(Array.fill(1000)((math.random * 6).toInt +1))
+res12: Array[Int] = Array(1000, 174, 174, 167, 171, 145, 169)
+\end{REPL}
+
+\begin{Code}
+// kod till facit:
+def tärningsRegistrering(xs: Array[Int]): Array[Int] = {
+  val f = Array.fill(7)(0)
+  f(0) = xs.size
+  var i = 0
+  while (i < f(0)) {
+    f(xs(i)) += 1
+    i += 1
+  }
+  f 
+}
+\end{Code}
+
+\Task \emph{Algoritm: SEQ-REMOVE-COPY.} Ibland vill man kopiera alla element till en ny \code{Array} \emph{utom} ett element på en viss plats \code{pos}.   
+
+\Subtask\Pen Skriv algoritmen SEQ-REMOVE-COPY i pseudokod med penna på papper.
+
+\Subtask Implementera algoritmen SEQ-REMOVE-COPY i en funktion med denna signatur:
+\begin{Code}
+def removeCopy(xs: Array[Int], pos: Int): Array[Int]
+\end{Code}
+
+\begin{Code}
+// kod till facit
+def removeCopy(xs: Array[Int], pos: Int): Array[Int] = {
+  val n = xs.size
+  val ys = Array.ofDim[Int](n - 1)
+  for (i <- 0 until pos) ys(i) = xs(i)
+  for (i <- pos+1 until n) ys(i - 1) = xs(i)
+  ys
+} 
+\end{Code}
+
+\Task \emph{Algoritm: SEQ-REMOVE.} Ibland vill man tabort ett element på en viss position i en befintlig \code{Array} utan att kopiera alla element till en ny \code{Array}. Ett sätt att göra detta är att flytta alla efterföljande element ett steg mot lägre index och låta sista platsen bli 0.   
+
+\Subtask\Pen Skriv algoritmen SEQ-REMOVE i pseudokod med penna på papper.
+
+\Subtask Implementera algoritmen SEQ-REMOVE i en funktion med denna signatur:
+\begin{Code}
+def remove(xs: Array[Int], pos: Int): Unit
+\end{Code}
+
+\begin{Code}
+// kod till facit
+def remove(xs: Array[Int], pos: Int): Unit = {
+  val n = xs.size
+  for (i <- pos+1 until n) xs(i - 1) = xs(i)
+  xs(n-1) = 0
+} 
+\end{Code}
+ 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+
+
+\Task \emph{Deterministiska pseudoslumptalssekvenser med \code{java.util.Random}.} Klassen \code{java.util.Random} ger möjlighet att generera en sekvens av tal som verkar slumpmässiga. Genom att välja ett visst s.k. \textbf{frö} \Eng{seed} kan man få samma sekvens av pseudoslumptal varje gång.
+
+\Subtask\Pen Sök upp och studera dokumentationen för \code{java.util.Random}. Hur skapar man en ny instans av klassen \code{Random}? Vad gör operationen \code{nextInt} på \code{Random}-objekt. 
+
+\Subtask Förklara vad som händer nedan?
+\begin{REPL}
+import java.util.Random
+val frö = 42L
+val rnd = new Random(frö)
+rnd.nextInt(10)
+(1 to 100).foreach(print(rnd.nextInt(10)))
+val rnd1 = new Random(frö)
+val rnd2 = new Random(frö)
+val rnd3 = new Random(System.nanoTime)
+val rnd4 = new Random((math.random * Long.MaxValue).toLong)
+def flip(r: Random) = if (r.nextInt(2) > 0) "krona" else "klave" 
+val xs = (1 to 100).map{i => (flip(rnd1), flip(rnd2), flip(rnd3), flip(rnd4))} 
+xs foreach println
+xs.exists(q => q._1 != q._2)
+xs.exists(q => q._1 != q._3)
+\end{REPL} 
+
+\Subtask\Pen Nämn några sammanhang då det är användbart att kunna bestämma fröet till en slumptalssekvens.
+
+\Subtask Blir det samma sekvens om du använder fröet \code{42L} som argument till konstruktorn vid skapandet av en instans av \code{java.util.Random} på en \emph{annan} dator?
+
+\Subtask Sök reda på dokumentationen för \code{java.math.random} och undersök hur denna sekvens skapas. 
+
+\Subtask Vad blir det för frö till slumpalssekvensen om man skapar ett \code{Random}-objekt med hjälp av konstruktorn utan parameter?
+
+\Task \emph{Undersök om tärningskast är rektangelfördelade.} \\ Skriv en funktion \\ \code{def testRandom(r: Random, n: Int): Unit = ???} \\ som ger följande utskrift.
+\begin{REPL}
+scala> val rnd = new Random(42L)
+scala> testRandom(rnd, 1000)
+Antal kast: 1000
+Antal 1:or: 178
+Antal 2:or: 187
+Antal 3:or: 167
+Antal 4:or: 148
+Antal 5:or: 155
+Antal 6:or: 165
+\end{REPL}
+
+\emph{Tips:} 
+Anropa din funktion \code{tärningsRegistrering} från uppgift \ref{task:seq-reg}.
+
+
+\begin{Code}
+// kod till facit
+def testRandom(r: Random, n: Int): Unit = {
+  val xs = Array.fill(n)(r.nextInt(6) + 1)
+  val f = tärningsRegistrering(xs)
+  println("Antal kast: " + f(0))
+  for (i <- 1 to 6) println(s"Antal $i:or: " + f(i)) 
+}
+\end{Code}
+
+
+\ExtraTasks\Task \emph{Algoritm: SEQ-INSERT-COPY.} 
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+ 
+ \Input{En sekvens $xs$ av typen \texttt{Array[Int]} och heltalen $x$ och $pos$}
+ \Output{En ny sekvens av typen \texttt{Array[Int]} som är en kopia av $xs$ men där $x$ är infogat på plats $pos$}
+ $n \leftarrow$ antalet element $xs$\\ 
+ $ys \leftarrow$ en ny \texttt{Array[Int]} med plats för $n+1$ element \\
+ \For{$i \leftarrow 0$ \KwTo $pos - 1$}{
+  $ys(i) \leftarrow xs(i)$
+ }
+ $ys(pos) \leftarrow x$ \\
+ \For{$i \leftarrow pos$ \KwTo $n - 1$}{
+  $ys(i + 1) \leftarrow xs(i)$
+ }
+ \Return $ys$ 
+\end{algorithm}
+
+\Subtask Implementera ovan algoritm i en funktion med denna signatur:
+\begin{Code}
+def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int]
+\end{Code}
+
+\begin{Code}
+// kod till facit
+def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int] = {
+  val n = xs.size
+  val ys = Array.ofDim[Int](n + 1)
+  for (i <- 0 until pos) ys(i) = xs(i)
+  ys(pos) = x
+  for (i <- pos until n) ys(i + 1) = xs(i)
+  ys
+} 
+\end{Code}
+
+\Subtask Vad måste \code{pos} vara för att det ska fungera med en tom array som argument?
+
+\Subtask Vad händer om din funktion anropas med ett negativt argument för \code{pos}?
+
+\Subtask Vad händer om din funktion anropas med \code{pos} lika med \code{xs.size}?
+
+\Subtask Vad händer om din funktion anropas med \code{pos} större än \code{xs.size}?
 
 
 
+\Task \emph{Algoritm: SEQ-INSERT.} Man kan implementera algoritmen SEQ-INSERT på plats i en \code{Array[Int]} så att alla elementen efter \code{pos} flyttas fram ett steg och att sista elementet ''försvinner''.
+
+\Subtask\Pen Skriv algoritment SEQ-INSERT i pseudokod med penna och papper.
+
+\Subtask Implemtera SEQ-INSERT i en funktion med denna signatur:
+\begin{Code}
+def insert(xs: Array[Int], x: Int, pos: Int): Unit
+\end{Code}
+
+\Task Implementera funktionen \code{tärningsRegistrering} från uppgift \ref{task:seq-reg} på nytt, men nu med en \code{for}-sats istället.
 
 
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
+
+\Task Sök reda på dokumentationen för metoden \code{patch} på klassen \code{Array}.
+
+\Subtask Använd metoden \code{patch} för att implementera SEQ-INSERT-COPY: 
+\begin{Code}
+def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int] = 
+  xs.patch(???, ???, ???)
+\end{Code}
+
+\Subtask Använd metoden \code{patch} för att  implementera SEQ-REMOVE-COPY: 
+\begin{Code}
+def removeCopy(xs: Array[Int], pos: Int): Array[Int] = 
+  xs.patch(???, ???, ???)
+\end{Code}
 
 \Task Studera skillnader och likheter mellan 
 
@@ -230,4 +461,6 @@ def isPalindrome(s: String): Boolean = {
 \Task Studera vad metoden \code{java.util.Arrays.deepEquals} gör här:\\
 \href{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#deepEquals-java.lang.Object:A-java.lang.Object:A-}{Arrays.html\#deepEquals-java.lang.Object:A-java.lang.Object:A-} \\
 Vad skiljer ovan metod från metoden \code{java.util.Arrays.equals}?
+
+\Task Keno-dragningar under ett år -> Registrering...
     
