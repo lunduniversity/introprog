@@ -14,22 +14,6 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task \emph{Polymorfism i samband med arv.} Polymorfism betyder ''många skepnader''. I samband med arv  innebär det att flera subtyper, till exempel \code{Ko} och \code{Gris}, kan hantera gemensamt som om de vore instanser av samma supertyp, så som \code{Djur}. Subklasser kan implementera en metod med samma namn på olika sätt. Vilken metod som exekveras bestäms vid körtid beroende på vilken subtyp som instansieras. På så sätt kan olika djur komma i många skepnader. 
-
-\Subtask Implementera funktionen \code{skapaDjur} nedan så att den returnerar antingen en ny Ko eller en ny Gris med lika sannolikhet.
-
-\begin{REPL}
-scala> trait Djur { def väsnas: Unit }
-scala> class Ko   extends Djur { def väsnas = println("Muuuuuuu") }
-scala> class Gris extends Djur { def väsnas = println("Nöffnöff") }
-scala> def skapaDjur: Djur = ??? 
-scala> val bondgård = (1 to 42).map(i => skapaDjur)
-scala> bondgård.foreach(_.väsnas) 
-\end{REPL}
-
-\Subtask Lägg till ett djur av typen Häst som väsnas på lämpligt sätt och modifiera \code{skapaDjur} så att det skapas kor, grisar och hästar med lika sannolikhet.
-
-
 
 \Task \emph{Gemensam bastyp.} Man vill ofta lägga in objekt av olika typ i samma samling.
 \begin{REPL}
@@ -47,7 +31,9 @@ gurkor.map(_.vikt).sum
 grönsaker.map(_.vikt).sum
 \end{REPL}
 
-\Subtask Vi kan göra så att vi kan komma åt vikten på alla grönsaker genom att ge gurkor och tomater en gemensam bastyp som de olika konkreta grönsakstyperna utvidgar med nyckelordet \code{extends}. Attributet \code{vikt} i traiten \code{Grönsak} nedan initialiseras inte förrän konstruktorerna anropas när vi gör \code{new} på någon av de konreta klasserna \code{Gurka} eller \code{Tomat}. 
+\Subtask Vi kan göra så att vi kan komma åt vikten på alla grönsaker genom att ge gurkor och tomater en gemensam bastyp som de olika konkreta grönsakstyperna utvidgar med nyckelordet \code{extends}. Man säger att subtyperna \code{Gurka} och \code{Tomat} \textbf{ärver} egenskaperna hos supertypen \code{Grönsak}. 
+
+Attributet \code{vikt} i traiten \code{Grönsak} nedan initialiseras inte förrän konstruktorerna anropas när vi gör \code{new} på någon av de klasserna \code{Gurka} eller \code{Tomat}. 
 
 \begin{REPL}
 trait Grönsak { val vikt: Int } 
@@ -74,15 +60,75 @@ new Grönsak
 val anonymGrönsak = new Grönsak { val vikt = 42 }
 \end{REPL}
 
-\Task \emph{Inmixning.} Man kan utvidga en klass med multipla traits med nyckelordet \code{with}. På så sätt kan man fördela medlemmar i olika traits och återanvända gemensamma koddelar genom så kallad \textbf{inmixning}, så som nedan exempel visar. 
+
+
+\Task \emph{Polymorfism i samband med arv.} Polymorfism betyder ''många skepnader''. I samband med arv  innebär det att flera subtyper, till exempel \code{Ko} och \code{Gris}, kan hanteras gemensamt som om de vore instanser av samma supertyp, så som \code{Djur}. Subklasser kan implementera en metod med samma namn på olika sätt. Vilken metod som exekveras bestäms vid körtid beroende på vilken subtyp som instansieras. På så sätt kan djur komma i många skepnader. 
+
+\Subtask Implementera funktionen \code{skapaDjur} nedan så att den returnerar antingen en ny Ko eller en ny Gris med lika sannolikhet.
+
+\begin{REPL}
+scala> trait Djur { def väsnas: Unit }
+scala> class Ko   extends Djur { def väsnas = println("Muuuuuuu") }
+scala> class Gris extends Djur { def väsnas = println("Nöffnöff") }
+scala> def skapaDjur: Djur = ??? 
+scala> val bondgård = Vector.fill(42)(skapaDjur)
+scala> bondgård.foreach(_.väsnas) 
+\end{REPL}
+
+\Subtask Lägg till ett djur av typen Häst som väsnas på lämpligt sätt och modifiera \code{skapaDjur} så att det skapas kor, grisar och hästar med lika sannolikhet.
+
+
+
+\Task \emph{Bastypen \code{Shape} och subtyperna \code{Rectangle} och \code{Circle}.} Du ska nu skapa ett litet bibliotek för geometriska former med oföränderliga objekt implementerade med hjälp av case-klasser. De geometriska formerna har en gemensam bastyp kallad \code{Shape}. Skriv nedan kod i en editor och klistra sedan in den i REPL med kommandot \code{:paste}.
+\begin{Code}
+case class Point(x: Double, y: Double) {
+  def move(dx: Double, dy: Double): Point = Point(x + dx, y + dx)
+}
+
+trait Shape {
+  def pos: Point
+  def move(dx: Double, dy: Double): Shape
+}
+
+case class Rectangle(
+  pos: Point, 
+  dx: Double,
+  dy: Double
+) extends Shape {
+  override def move(dx: Double, dy: Double): Rectangle = 
+    Rectangle(pos.move(dx, dy), this.dx, this.dy)
+}
+
+case class Circle(pos: Point, radius: Double) extends Shape {
+  override def move(dx: Double, dy: Double): Circle = 
+    Circle(pos.move(dx, dy), radius)
+}
+\end{Code}
+
+\Subtask Instansiera några cirklar och rektanglar och gör några relativa förflyttningar av dina instanser genom att anropa \code{move}. 
+
+\Subtask Lägg till metoden \code{moveTo} i \code{Point}, \code{Shape}, \code{Rectangle} och \code{Circle} som gör en absoult förflyttning till kordinaterna \code{x} och \code{y}. Klistra in i REPL och testa på några instanser av \code{Rectangle} och \code{Circle}.
+
+\Subtask Lägg till metoden \code{distanceTo(that: Point): Double } i case-klassen \code{Point} som räknar ut avståndet till en annan punkt. Klistra in i REPL och testa på några instanser av \code{Rectangle} och \code{Circle}.
+
+\Subtask Läg till en konkret metod \code{distanceTo(that: Shape): Double } i traiten \code{Shape} som räknar ut avståndet till positionen för en annan Shape med hjälp av \code{math.hypot}. Klistra in i REPL och testa på några instanser av \code{Rectangle} och \code{Circle}.
+
+ 
+
+
+
+
+
+\Task \label{task:fyle} \emph{Inmixning.} Man kan utvidga en klass med multipla traits med nyckelordet \code{with}. På så sätt kan man fördela medlemmar i olika traits och återanvända gemensamma koddelar genom så kallad \textbf{inmixning}, så som nedan exempel visar. 
 
 En alternativ fågeltaxonomi, speciellt populär i Skåne, delar in alla fåglar i två specifika kategorier: Kråga respektive Ånka. Krågor kan flyga men inte simma, medan Ånkor kan simma och oftast även flyga. Fågel i generell, kollektiv bemärkelse kallas på gammal skånska för Fyle.%
 \footnote{\href{http://www.klangfix.se/ordlista.htm}{www.klangfix.se/ordlista.htm}}
+Skriv in nedan kod i en editor och spara den för kommande uppgifter. Klistra in koden i REPL med kommandot \code{:paste}.
 
 \begin{Code}
 trait Fyle { 
   val läte: String
-  def väsnas: Unit = print(läte)
+  def väsnas: Unit = print(läte * 2)
   val ärSimkunnig: Boolean
   val ärFlygkunnig: Boolean
 }
@@ -94,7 +140,6 @@ trait KanKanskeFlyga { val ärFlygkunnig = math.random < 0.8 }
 
 class Kråga extends Fyle with KanFlyga with KanInteSimma {
   val läte = "krax"  
-  override def väsnas = print(läte * 2)
 } 
 
 class Ånka extends Fyle with KanSimma with KanKanskeFlyga {
@@ -103,7 +148,7 @@ class Ånka extends Fyle with KanSimma with KanKanskeFlyga {
 } 
 \end{Code}
 
-\Subtask En flitig fågelskådare hittar 42 fåglar i en skog där fågelsorterna är lika sannolika, representerat av vektorn \code{fyle} nedan. Skriv ett uttryck som undersöker hur många av dessa som är flygkunniga Ånkor, genom att använda metoderna \code{filter}, \code{isInstanceOf}, \code{ärFlygkunnig} och \code{size}.   
+\Subtask En flitig ornitolog hittar 42 fåglar i en skog där alla fågelsorter är lika sannolika, representerat av vektorn \code{fyle} nedan. Skriv ett uttryck som undersöker hur många av dessa som är flygkunniga Ånkor, genom att använda metoderna \code{filter}, \code{isInstanceOf}, \code{ärFlygkunnig} och \code{size}.   
 \begin{REPL}
 scala> val fyle = 
          Vector.fill(42)(if (math.random > 0.5) new Kråga else new Ånka)
@@ -116,7 +161,7 @@ scala> val antalFlygånkor: Int = ???
 fyle.filter(f => f.isInstanceOf[Ånka] && f.ärFlygkunnig).size
 \end{Code}
 
-\Subtask Om alla de fåglar som fågelskådaren hittade skulle väsnas exakt en gång var, hur många krax och hur många kvack skulle då höras? Använd metoderna \code{filter} och \code{size}, samt predikatet \code{ärSimKunnig} för att beräkna antalet krax respektive kvack.
+\Subtask Om alla de fåglar som ornitologen hittade skulle väsnas exakt en gång var, hur många krax och hur många kvack skulle då höras? Använd metoderna \code{filter} och \code{size}, samt predikatet \code{ärSimKunnig} för att beräkna antalet krax respektive kvack.
 \begin{REPL}
 scala> val antalKrax: Int = ???
 scala> val antalKvack: Int = ??? 
@@ -128,7 +173,45 @@ val antalKrax: Int = fyle.filter(f => !f.ärSimkunnig).size * 2
 val antalKvack: Int = fyle.filter(f => f.ärSimkunnig).size * 4
 \end{Code}
 
-\Task \emph{Typtester med \code{isInstanceOf} och typkonvertering med \code{asInstanceOf}.} Gör nedan deklarationer och instansieringar.
+\Task \emph{Finala klasser.} Om man vill förhindra att man kan göra \code{extend} på en klass kan man göra den final genom att placera nyckelordet \code{final} före nyckelordet \code{class}.
+
+\Subtask Eftersom klassificeringen av fåglar i uppgiften ovan i antingen Ånkor eller Krågor är fullständig och det inte finns några subtyper till varken Ånkor eller Krågor är det lämpligt att göra dessa finala. Ändra detta i din kod.
+
+\Subtask Testa att ändå försöka göra en subklass \code{Simkråga extends Kråga}. Vad ger kompilatorn för felmeddelande om man försöker utvidga en final klass?   
+
+
+\Task \emph{Accessregler vid arv och nyckelordet \code{protected}.} Om en medlem i en supertyp är privat så kan man inte komma åt den i en subklass. Ibland vill man att subklassen ska kunna komma åt en medlem även om den ska vara otillgänglig i annan kod. 
+
+\begin{REPL}
+trait Super { 
+  private val minHemlis = 42
+  protected val vårHemlis = 42
+}
+class Sub extends Super { 
+  def avslöja = minHemlis
+  def krypisk = vårHemlis * math.Pi
+}
+\end{REPL} 
+  
+\Subtask Vad blir felmeddelandet när klassen \code{Sub} försöker accessa \code{minHemlis}?
+
+\Subtask Deklarera \code{Sub} på nytt, men nu utan den förbjudna metoden \code{avslöja}. Vad blir felmeddelandet om du försöker komma åt \code{vårHemlis} via en instans av klassen \code{Sub}? Prova till exempel med \code{new Sub.vårHemlis}
+
+\Subtask Fungerar det att anropa metoden \code{kryptisk} på instanser av klassen \code{Sub}?
+
+\Task \emph{Använding av \code{protected}.} Den flitige ornitologen från uppgift \ref{task:fyle} ska ringmärka alla 42 fåglar hen hittat i skogen. När hen ändå håller på bestämmer hen att i även försöka ta reda på hur mycket oväsen som skapas av respektive fågelsort. För detta ändamål apterar den flitige ornitologen en linuxdator på allt infångat fyle. Du ska hjälpa ornitologen att skriva programmet. 
+
+\Subtask Inför en \code{protected var lätesräknare} i traiten \code{Fyle} och skriv kod på lämpliga ställen för att 
+
+\Subtask Inför en metod \code{antalLäten} som returnerar antalet krax respektive kvack som en viss fågel yttrat sedan dess skapelse.
+
+\Subtask\Pen Varför inte använda \code{private} i stället for \code{protected}?
+
+\Subtask\Pen Varför är det bra att göra lätesräknaren oåtkomlig från ''utsidan''? 
+
+
+
+\Task \emph{Typtester med \code{isInstanceOf} och typkonvertering med \code{asInstanceOf}.} Gör nedan deklarationer.
 \begin{REPL}
 scala> trait A; trait B extends A; class C extends B; class D extends B
 scala> val (c, d) = (new C, new D)   
@@ -168,6 +251,33 @@ scala> b.asInstanceOf[A]
 \end{REPL}
 
 
+
+\Task \emph{Regler för \code{override}, \code{private} och \code{final}.} 
+
+\Subtask \label{subtask:overriderules} Undersök ersättning av abstrakta, konkreta, privata och finala medlemmar genom att skriva in raderna nedan en i taget i REPL. Vilka rader ger felmeddelande? Varför? Vid felmeddelande: notera hur felmeddelandet lyder och ändra deklarationen av den felande medlemmen så att koden blir kompilerbar (eller om det är enda lösningen: ta bort den felaktiga medlemmen), innan du provar efterkommande rad. 
+
+\begin{REPL}
+trait Super1 { def a: Int; def b = 42; private def c = "hemlis" }
+class Sub2 extends Super1 { def a = 43; def b = 43; def c = 43 }   
+class Sub3 extends Super1 { def a = 43; override def b = 43 }   
+class Sub4 extends Super1 { def a = 43; override def c = "43" } 
+trait Super5 { final def a: Int; final def b = 42 }
+class Sub6 extends Super5 { override def a = 43; def b = 43 }   
+class Sub7 extends Super5 { def a = 43; override def b = 43 }   
+class Sub8 extends Super5 { def a = 43; override def c = "43" }   
+trait Super9 { val a: Int; val b = 42; lazy val c: String = "lazy" }
+class Sub10 extends Super9 { override def a = 43; override val b = 43 }   
+class Sub11 extends Super9 { val a = 43; override lazy val b = 43 }   
+class Sub12 extends Super9 { val a = 43; override var b = 43 }
+class Sub13 extends Super9 { val a = 43; override lazy val c = "still lazy" } 
+class SubSub extends Sub13 { override val a = 44}  
+trait Super14 { var a: Int; var b = 42; var c: String }
+class Sub15 extends Super14 { def a = 43; override var b = 43; val c = "?" } 
+\end{REPL}
+
+\Subtask Skapa instanser av klasserna Sub3, Sub13 och SubSub från ovan deluppgift och undersök alla medlemmarnas värden för respektive instans. Förklara varför de har dessa värden.
+
+\Subtask Läs igenom reglerna i kapitel  \ref{slideW05:overriderules} om vad som gäller vid arv och ersättning av medlemmar. Gör några egna undersökningar i REPL som försöker bryta mot någon regel som inte testades i deluppgift \ref{subtask:overriderules}.
 
 
 
@@ -216,5 +326,5 @@ case object Klöver extends Färg(3)
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task     
+\Task TODO: Gör en fördjupningsuppgift inspirerat av denna \url{http://stackoverflow.com/questions/16173477/usages-of-null-nothing-unit-in-scala}    
     

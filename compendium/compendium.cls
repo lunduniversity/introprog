@@ -128,6 +128,15 @@
 {\end{itemize}}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% changes to make slide stuff look good in compendium
+
+\newcommand{\pause}{}% do nothing
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% lingstings specifics:
+
 \lstdefinelanguage{Scala}{
   morekeywords={abstract,case,catch,class,def,%
     do,else,extends,false,final,finally,%
