@@ -12,12 +12,15 @@ import java.util.concurrent.*;
  * 
  * @author Per Holm (and several others in earlier versions)
  * @version 2.2 (2015-08-09) Add Sprite support (Maj Stenmark, Björn Regnell)
+ * @version 2.3 (2016-05-09) Add setExitOnLastClose 
  */
 public class SimpleWindow {
 	public final static int MOUSE_EVENT = 1; // mouse click event type
 	public final static int KEY_EVENT = 2; // key pressed event type
 
 	private static int nbrOpenFrames = 0; // number of open frames
+	private static boolean isExitOnLastClose = true; // controls exit window behavior
+	
 	private JFrame frame; // the frame
 	private SWCanvas canvas; // the drawing area
 	private AWTEvent lastEvent; // the last event (mouse or key)
@@ -28,6 +31,7 @@ public class SimpleWindow {
 	private char key; // key event parameter
 	private MouseEventHandler mouseHandler; // mouse event handler
 	private KeyEventHandler keyHandler; // key event handler
+	
 
 	/*-------- Public window operations --------*/
 
@@ -322,6 +326,18 @@ public class SimpleWindow {
 			}
 		}
 	}
+	
+	/* ------- Exit Behavior ---------*/
+	
+	/**
+	 * 
+	 * @param exitOnLastClose
+	 *               Enables/disables System.Exit(0) on close of last window
+	 */
+	
+	public static void setExitOnLastClose(boolean exitOnLastClose){
+		isExitOnLastClose = exitOnLastClose;
+	}
 
 	/*-------- Event handlers --------*/
 
@@ -349,7 +365,7 @@ public class SimpleWindow {
 			if (nbrOpenFrames > 0) {
 				frame.setVisible(false);
 				frame.dispose();
-			} else {
+			} else if (isExitOnLastClose){
 				System.exit(0);
 			}
 		}
