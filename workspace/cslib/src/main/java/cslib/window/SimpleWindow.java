@@ -9,7 +9,7 @@ import java.util.concurrent.*;
 /**
  * A simple window to draw in, used in "Objektorienterad programmering och
  * Java".
- * 
+ *
  * @author Per Holm (and several others in earlier versions)
  * @version 2.2 (2015-08-09) Add Sprite support (Maj Stenmark, Björn Regnell)
  */
@@ -29,11 +29,16 @@ public class SimpleWindow {
 	private MouseEventHandler mouseHandler; // mouse event handler
 	private KeyEventHandler keyHandler; // key event handler
 
+    // If true, call System.exit(0) when last window is closed.
+    // This must be static since multiple windows could be present and the
+    // behavior is expected to be set on a application-basis and not on a window-basis.
+	private static boolean exitOnLastClose = true;
+
 	/*-------- Public window operations --------*/
 
 	/**
 	 * Creates a window and makes it visible.
-	 * 
+	 *
 	 * @param width
 	 *            the width of the window
 	 * @param height
@@ -72,7 +77,7 @@ public class SimpleWindow {
 
 	/**
 	 * Returns the width of the window.
-	 * 
+	 *
 	 * @return the width of the window
 	 */
 	public int getWidth() {
@@ -81,7 +86,7 @@ public class SimpleWindow {
 
 	/**
 	 * Returns the height of the window.
-	 * 
+	 *
 	 * @return the height of the window
 	 */
 	public int getHeight() {
@@ -115,11 +120,15 @@ public class SimpleWindow {
 		}
 	}
 
+    public static void setExitOnLastClose(boolean exitOnLastClose) {
+        SimpleWindow.exitOnLastClose = exitOnLastClose;
+    }
+
 	/*-------- drawing operations --------*/
 
 	/**
 	 * Moves the pen to a new position.
-	 * 
+	 *
 	 * @param x
 	 *            the x coordinate of the new position
 	 * @param y
@@ -131,7 +140,7 @@ public class SimpleWindow {
 
 	/**
 	 * Moves the pen to a new position while drawing a line.
-	 * 
+	 *
 	 * @param x
 	 *            the x coordinate of the new position
 	 * @param y
@@ -143,7 +152,7 @@ public class SimpleWindow {
 
 	/**
 	 * Writes a string at the current position.
-	 * 
+	 *
 	 * @param txt
 	 *            the string to write
 	 */
@@ -163,7 +172,7 @@ public class SimpleWindow {
 
 	/**
 	 * Returns the pen's x coordinate.
-	 * 
+	 *
 	 * @return the x coordinate
 	 */
 	public int getX() {
@@ -172,7 +181,7 @@ public class SimpleWindow {
 
 	/**
 	 * Returns the pen's y coordinate.
-	 * 
+	 *
 	 * @return the y coordinate
 	 */
 	public int getY() {
@@ -181,7 +190,7 @@ public class SimpleWindow {
 
 	/**
 	 * Sets the line width.
-	 * 
+	 *
 	 * @param width
 	 *            the new width (in pixels)
 	 */
@@ -191,7 +200,7 @@ public class SimpleWindow {
 
 	/**
 	 * Sets the line color.
-	 * 
+	 *
 	 * @param col
 	 *            the new color
 	 */
@@ -201,7 +210,7 @@ public class SimpleWindow {
 
 	/**
 	 * Returns the current line width.
-	 * 
+	 *
 	 * @return the line width (in pixels)
 	 */
 	public int getLineWidth() {
@@ -210,7 +219,7 @@ public class SimpleWindow {
 
 	/**
 	 * Returns the current line color.
-	 * 
+	 *
 	 * @return the line color
 	 */
 	public Color getLineColor() {
@@ -230,7 +239,7 @@ public class SimpleWindow {
 
 	/**
 	 * Returns the mouse x coordinate at the last mouse click.
-	 * 
+	 *
 	 * @return the x coordinate
 	 */
 	public int getMouseX() {
@@ -239,7 +248,7 @@ public class SimpleWindow {
 
 	/**
 	 * Returns the mouse y coordinate at the last mouse click.
-	 * 
+	 *
 	 * @return the y coordinate
 	 */
 	public int getMouseY() {
@@ -248,7 +257,7 @@ public class SimpleWindow {
 
 	/**
 	 * Adds a sprite to the window.
-	 * 
+	 *
 	 * @param sprite
 	 */
 	public void addSprite(Sprite sprite) {
@@ -290,7 +299,7 @@ public class SimpleWindow {
 
 	/**
 	 * Returns the type of the last event.
-	 * 
+	 *
 	 * @return the event type (KEY_EVENT = key, MOUSE_EVENT = mouse)
 	 */
 	public int getEventType() {
@@ -299,18 +308,18 @@ public class SimpleWindow {
 
 	/**
 	 * Returns the key that was pressed on a key event.
-	 * 
+	 *
 	 * @return the character code for the key
 	 */
 	public char getKey() {
 		return key;
 	}
-	
+
 	/*-------- Delay --------*/
 
 	/**
 	 * Wait for a specified time.
-	 * 
+	 *
 	 * @param ms
 	 *            the number of milliseconds to wait
 	 */
@@ -350,7 +359,12 @@ public class SimpleWindow {
 				frame.setVisible(false);
 				frame.dispose();
 			} else {
-				System.exit(0);
+                if(SimpleWindow.exitOnLastClose) {
+                    System.exit(0);
+                } else {
+				    frame.setVisible(false);
+				    frame.dispose();
+                }
 			}
 		}
 	}
@@ -374,7 +388,7 @@ class SWCanvas extends JPanel {
 		/*
 		 * Creating the offscreen drawing image. Used to do it like this:
 		 * img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED);
-		 * but then the colors are wrong (IndexColorModel instead of 
+		 * but then the colors are wrong (IndexColorModel instead of
 		 * DirectColorModel.
 		 */
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -419,7 +433,7 @@ class SWCanvas extends JPanel {
 	void lineTo(int x, int y) {
 		Graphics2D g = img.createGraphics();
 		g.setColor(lineColor);
-		g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT, 
+		g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
 				BasicStroke.JOIN_MITER));
 		g.drawLine(this.x, this.y, x, y);
 		moveTo(x, y);
