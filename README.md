@@ -163,6 +163,8 @@ Here are some other inspiring style guides that illustrate the variety in what d
 
 * Install [texlive-full](https://www.tug.org/texlive/) to get all extra latex stuff that is needed to compile the tex code in this repo. If you don't know which tex editor to use, try [texworks](https://www.tug.org/texworks/).
 
+* For Mac OSX users: there are some problems with El-Capitan and TeX. For some users there are problems compiling .tex-files in the terminal out of the box. You may get this error message: 'mktexpk: No such file or directory' or similar. Using TeXShop to compile the document seems to resolve the issue. To configure TeXShop correctly on El-Capitan, follow the guide https://www.tug.org/mactex/UpdatingForElCapitan.pdf
+
 * Check out the `.cls` files in `compendium/` and `slides/` that provide many useful latex commands.
 
 * Check out some similar, already written `.tex` document and compare with the compiled `.pdf` to see the commands and conventions we use. 
