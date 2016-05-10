@@ -5,11 +5,22 @@
 \Exercise{\ExeWeekFIVE}
 
 \begin{Goals}
-\item 
+\item Kunna implementera funktioner som tar argumentsekvenser av godtycklig längd.
+\item Kunna tolka enkla sekvensalgoritmer i pseudokod och implementera dem i programkod, t.ex. tillägg i slutet, insättning, borttagning, omvändning, etc., både genom kopiering till ny sekvens och genom förändring på plats i befintlig sekvens.  
+\item Kunna använda föränderliga och oföränderliga sekvenser.
+\item Förstå skillnaden mellan om sekvenser är föränderliga och om innehållet i sekvenser är föränderligt.
+\item Känna till på vilket sätt \code{Array} har en särställning i JVM.
+\item Kunna välja när det är lämpligt att använda \code{Vector}, \code{Array} och \code{ArrayBuffer}.
+\item Känna till att klassen \code{Arrays} har färdiga metoder för kopiering.
+\item Kunna implementera algoritmer som registrerar antalet förekomster av objekt i en sekvens som indexeras med antalet förekomster.
+\item Kunna generera sekvenser av pseudoslumptal med specificerat slumptalsfrö. 
+\item Kunna implementera sekvensalgoritmer i Java med \jcode{for}-sats och primitiva arrayer. 
+\item Kunna beskriva skillnaden i syntax mellan arrayer i Scala och Java.
+\item Kunna använda klassen \code{java.uti.Scanner} i Scala och Java för att läsa in heltalssekvenser från \code{System.in}. 
 \end{Goals}
 
 \begin{Preparations}
-\item 
+\item Studera teorin i kapitel \ref{chapter:W05}.
 \end{Preparations}
 
 \BasicTasks %%%%%%%%%%%%%%%%
@@ -289,7 +300,7 @@ def removeCopy(xs: Array[Int], pos: Int): Array[Int] = {
 } 
 \end{Code}
 
-\Task \emph{Algoritm: SEQ-REMOVE.} Ibland vill man tabort ett element på en viss position i en befintlig \code{Array} utan att kopiera alla element till en ny \code{Array}. Ett sätt att göra detta är att flytta alla efterföljande element ett steg mot lägre index och låta sista platsen bli 0.   
+\Task \emph{Algoritm: SEQ-REMOVE.} Ibland vill man ta bort ett element på en viss position i en befintlig \code{Array} utan att kopiera alla element till en ny \code{Array}. Ett sätt att göra detta är att flytta alla efterföljande element ett steg mot lägre index och låta sista platsen bli 0.   
 
 \Subtask\Pen Skriv algoritmen SEQ-REMOVE i pseudokod med penna på papper.
 
@@ -368,8 +379,82 @@ def testRandom(r: Random, n: Int): Unit = {
 }
 \end{Code}
 
+\Task \emph{Array och \code{for}-sats i Java.} 
 
-\ExtraTasks\Task \emph{Algoritm: SEQ-INSERT-COPY.} 
+\Subtask Skriv nedan program i en editor och spara i filen \code{DiceReg.java}:
+
+\javainputlisting{examples/DiceReg.java} 
+
+\Subtask Kompilera med \code{javac DiceReg.java} och kör med \code{java DiceReg 10000 42} och förklara vad som händer.
+
+\Subtask\Pen Beskriv skillnaderna mellan Scala och Java, vad gäller syntaxen för array och \code{for}-sats. Beskriv några andra skillnader mellan språken som syns i programmet ovan.
+
+\Subtask Ändra i programmet ovan så att loop-variabeln \code{i} skrivs ut i varje runda i varje \code{for}-sats. Kompilera om och kör.
+
+\Subtask Skriv om programmet ovan genom att abstrahera huvudprogrammets delar till de statiska metoderna \code{parseArguments}, \code{registerPips} och \code{printReg} enligt nedan skelett. Notera speciellt hur \code{private} och \code{public} är angivet. Spara programmet i filen \code{DiceReg2.java}.
+
+\begin{Code}[language=Java]
+// DiceReg2.java
+import java.util.Random;
+
+public class DiceReg2 {
+    public static int[] diceReg = new int[6];  
+    private static Random rnd = new Random();
+
+    public static int parseArguments(String[] args) {
+        // ???
+        return n;        
+    }
+    
+    public static void registerPips(int n){
+        // ???
+    }
+    
+    public static void printReg() {
+        // ???
+    }
+
+    public static void main(String[] args) {
+        int n = parseArguments(args);
+        registerPips(n);
+        printReg();
+    }
+}
+\end{Code}
+
+\Subtask Starta Scala REPL i samma bibliotek som filen \texttt{DiceReg2.class} ligger i och kör nedan satser och förklara vad som händer:
+\begin{REPL}
+scala> DiceReg2.main(Array("1000","42"))
+scala> DiceReg2.diceReg
+scala> DiceReg2.registerPips(1000)
+scala> DiceReg2.printReg
+scala> DiceReg2.registerPips(1000)
+scala> DiceReg2.printReg
+scala> DiceReg2.rnd
+\end{REPL}
+
+\Subtask Växla synligheten på attributen mellan \jcode{private} och \jcode{public}, kompilera om och studera effekten i Scala REPL. Hur lyder felmeddelandet om du försöker komma åt en privat medlem?
+
+\Subtask\Pen Ange en viktig anledning till att man kan vilja göra medlemmar privata.
+
+
+
+\Task \emph{Läsa in tal med \code{java.util.Scanner}.} Med \jcode{new Scanner(System.in)} skapas ett objekt som kan läsa in tal som användaren skriver i terminalfönstret.
+
+\Subtask Sök upp och studera dokumentationen för \code{java.util.Scanner}. Vad gör metoderna \jcode{hasNextInt()} och \jcode{nextInt()}?
+
+\Subtask Skriv nedan program i en editor och spara i filen \code{DiceScanBuggy.java}:
+
+\javainputlisting{examples/DiceScanBuggy.java} 
+
+\Subtask Kompilera och kör med indatasekvensen \texttt{1 2 3 4 -1} och notera hur registreringen sker.
+
+\Subtask Programmet fungerar inte som det ska. Du behöver korrigera 3 saker för att programmet ska göra rätt. Rätta buggarna och spara det rättade programmet som \texttt{DiceScan.java}. Kompilera och testa att det rättade programmer fungerar med olika indata.
+
+ 
+\ExtraTasks %%%%%%%%%%%%%%%%%%%
+
+\Task \emph{Algoritm: SEQ-INSERT-COPY.} 
 
 \begin{algorithm}[H]
  \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
@@ -463,4 +548,76 @@ def removeCopy(xs: Array[Int], pos: Int): Array[Int] =
 Vad skiljer ovan metod från metoden \code{java.util.Arrays.equals}?
 
 \Task Keno-dragningar under ett år -> Registrering...
-    
+
+\Task \emph{Använda \code{jline} istället för \code{Scanner} i REPL.} Om du använder  \code{java.util.Scanner} i Scala REPL så ekas inte de tecken som skrivs, så som sker om du använder scannern med \code{System.in} i en kompilerad applikation. Om du vill se vad du skriver vid indata i REPL kan du använda \code{jline}\footnote{
+\href{https://github.com/jline/jline2}{github.com/jline/jline2}
+} och klassen \code{jline.console.ConsoleReader}\footnote{
+\href{http://jline.github.io/jline2/apidocs/reference/jline/console/ConsoleReader.html}{jline.github.io/jline2/apidocs/reference/jline/console/ConsoleReader.html}}. 
+Då får du dessutom editeringsfunktioner vid inmatning med t.ex. Ctrl+A och Ctrl+K så som i en vanlig unixterminal. Med pil upp och pil ner kan du bläddra i inmatningshistoriken.
+\begin{REPL}
+val scan = new java.util.Scanner(System.in)
+scan.next
+scan.nextInt
+val cr = new jline.console.ConsoleReader
+cr.readLine
+cr.readLine("> ")
+cr.readLine("Ange tal: ").toInt
+scala.util.Try{cr.readLine("Ange tal: ").toInt}.toOption
+\end{REPL} 
+
+\Subtask Prova ovan rader i REPL. Vad händer om du matar in bokstäver i stället för siffror på sista raden ovan? (Mer om \code{Option} i kapitel \ref{chapter:W08}).
+
+\Subtask Skriv ett funktion \code{readPalindromLoop} som låter användaren mata in strängar och som kollar om de är palindromer så som nedan REPL-körning indikerar. Skriv funktionen i en editor och klistra in den i REPL enligt nedan istället för \code{???}
+
+\begin{REPL}
+scala> val cr = new jline.console.ConsoleReader
+scala> def isPalindrome(s: String): Boolean = s == s.reverse
+scala> :paste 
+// Entering paste mode (ctrl-D to finish)
+
+def readPalindromLoop: Unit = ???
+
+// Exiting paste mode, now interpreting.
+
+readPalindromLoop: Unit
+
+scala> readPalindromLoop
+Ange sträng följt av <Enter>
+Programmet avslutas med tom sträng + <Enter>
+> gurka
+gurka är ingen palindrom
+> dallassallad
+dallassallad är en palindrom!
+> 
+Tack och hej!
+scala>
+\end{REPL}
+
+\Subtask Skapa ett objekt med inläsningsstöd enligt nedan specifikation. Objektet ska delegera implementationerna till ett attribut \code{private val reader} som innehåller en referens till ett \code{ConsoleReader}-objekt.  
+\begin{ScalaSpec}{termutil}
+object termutil {
+  /** Reads one line from terminal input. */
+  def readLine: String = ???
+
+  /** Prints prompt and reads one line. */
+  def readLine(prompt: String): String = ???
+
+  /** Reads one line and converts it to an Int. 
+   *  If a non-integer is input, a NumberFormatException is thrown.  */
+  def readInt: Int = ???
+
+  /** Prints prompt, reads one line and converts it to an Int. 
+   *  If a non-integer is input, a NumberFormatException is thrown.  */
+  def readInt(prompt: String): Int = ???
+
+  /** Reads one line and converts it to an Option[Int]
+   *  with Some integer or None if the input cannot be converted.  */
+  def readIntOpt: Option[Int] = ???
+
+  /** Prints prompt, reads one line and converts it to an Option[Int]
+   *  with Some integer or None if the input cannot be converted.  */
+  def readIntOpt(prompt: String): Option[Int] = ???
+}
+\end{ScalaSpec}
+Biblioteket jline finns inbyggd i REPL men om du vill kompilera din kod separat kan du ladda ner jar-filen här: \href{http://repo1.maven.org/maven2/jline/jline/2.10/}{repo1.maven.org/maven2/jline/jline/2.10/} eller så hittar du den bland dina Scala-installationsfiler och kan kopiera filen till dit du vill ha den. Placera jline-jar-filen i samma bibliotek som din kod, eller lägg den i ett biblioteket där du vill ha den och placera jarfilen på classpath med optionen \code{-cp} när du kompilerar ungefär så här: \\ 
+\code{scalac -cp "lib/jline-2.10.jar" termutil.scala}
