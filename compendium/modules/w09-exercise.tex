@@ -14,13 +14,57 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task 
+\Task \emph{case class StringMatix with heading using Vector[Vector[String]]}
+
+\Task \emph{Dense Matrix of Double using private Array[Double]}
+
+\Task \emph{Sparse Matrix of Double using private mutable.Map[(Int, Int), Double]}
+
+
+\Task \emph{Generiska klasser.} 
+
 \begin{REPL}
-scala> class Cell[T](var x: T){
-         val typeName: String = x.getClass.getTypeName
-         override def toString = "[" + typeName + "](" + x + ")"
+scala> class Cell[T](var value: T){
+         override def toString = "Cell(" + value + ")"
        }
+scala> val c = new Cell(42)
 \end{REPL}
+
+\Subtask Lägg till en metod \code{def concat[U](that: Cell[U]):Cell[String]} i klassen \code{Cell} som konkatenerar strängrepresentationerna av de båda cellvärdena.
+
+\begin{REPL}
+scala> val a = new Cell("hej")
+scala> val b = new Cell(42)
+scala> a concat b
+\end{REPL}
+
+\begin{Code}
+// kod till facit
+class Cell[T](var value: T){
+  override def toString = "Cell(" + value + ")"
+  def concat[U](that: Cell[U]): Cell[String] = 
+    new Cell[String](value.toString + that.value.toString)
+}
+\end{Code}
+
+\Subtask\Pen Vad händer om du i stället för typparameternamnet \code{U} i \code{concat} använder namnet \code{T}?
+
+\Task \emph{Skapa en generisk, ofäränderlig matrisklass.}
+
+\begin{Code}
+case class Matrix[T](data: Vector[Vector[T]]) {
+  def apply(x: Int, y: Int): T = ???
+  def get(x: Int, y: Int): Option[T] = ???
+  def row(r: Int): Vector[T] = ???
+  def col(c: Int): Vector[T] = ???
+  def updated(x: Int, y: Int, value: T): Matrix[T] = ???
+}
+object Matrix {
+  def empty[T]: Matrix[T] = new Matrix[T](Vector())
+  def ofRowSize[T](rowSize: Int)(elements: T*): Matrix[T] =
+    new Matrix(elements.toVector.grouped(rowSize).toVector)
+}
+\end{Code}
 
 \Subtask 
 
