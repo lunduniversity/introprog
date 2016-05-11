@@ -22,6 +22,8 @@ Inom musik utgår man från en skala med 12 olika toner (C, C\#, D, D\#, E, F, F
 
 Laborationen kommer bestå av ett textbaserat användargränssnitt där man kommer ha möjlighet bl.a. att lägga till nya ackord, rita upp ackord och spela ackord. En ton anges på följande format "E2", vilket innebär andra oktaven tonen E. Rekommenderad stämning för gitarr resp. ukulele är: E2, A2, D3, G3, B3, E4 resp. G4, C4, E4, A4. Denna stämning kommer fungera för de fördefinierad ackorden i filen chords.txt.
 
+Om ni är fler än fyra i gruppen behöver ni även göra extrauppgiften, men om ni däremot är enbart tre behöver ni inte implementera play.
+
 \subsection{Obligatoriska uppgifter}
 
 \Task \code{Notes}. Objektet ska kunna omvandla en tons namn (t.ex. "E2") till
@@ -29,7 +31,7 @@ en heltalsrepresentation och tvärtom.
 
 \Subtask Implementera först metoden \code{fromNbrToNote} med hjälp av \code{%}-operatorn
 
-\Subtask Implementera metoden \code{unapply} som ska ta in en sträng (t.ex. "E2") och tonens nummer. "E2"   kommer översättas till 16 och "C1"    till 0. Använd attributet \code{toNumber} för att översätta en ton utan oktav ("C\#", "E") till ett nummer. Titta gärna på vad metoden \code{zipWithIndex.toMap} gör och Använd den i \code{toNumber}.
+\Subtask Implementera metoden \code{unapply} som ska ta in en sträng (t.ex. "E2") och tonens nummer. "E2" kommer översättas till 16 och "C1" till 0, dock kommer t.ex. C\# inte kunna ha en oktavering. Använd attributet \code{toNumber} för att översätta en ton utan oktav ("C\#", "E") till ett nummer. Titta gärna på vad metoden \code{zipWithIndex.toMap} gör och Använd den i \code{toNumber}.
 
 \Subtask Skriv ett program som testar de olika metoderna
 
@@ -40,15 +42,15 @@ spelas.
 \Subtask Implementera \code{toString} så att den matchar utskriften i filen \textit{chords.txt}. I objektet \code{Chord} ska \code{toString} vara på formen
 D:-1 -1 0 2 3 2
 
-\Subtask Implementera metoden \code{isIncludedBy}.  Använd \code{.split(";")} för att dela upp strängen \code{filter} i de olika filtersträngarna. Kolla för varje filtersträng om den includeras i \code{toString}. Exempel på filtersträng: "git:G B uku". \textbf{Tänk på att metoden \code{forall} kollar om ett villkor gäller för alla möjligheter. I det här fallet räcker det att det gäller för ett av fallen}
+\Subtask Implementera metoden \code{isIncludedBy}.  Använd \code{.split(";")} för att dela upp strängen \code{filter} i de olika filtersträngarna. Kolla för varje filtersträng om den includeras i \code{toString}. Exempel på filtersträng: "git:G;B;uku". \textbf{Tänk på att metoden \code{forall} kollar om ett villkor gäller för alla möjligheter. I det här fallet räcker det att det gäller för ett av fallen}
 
 \Subtask Implementera \code{isGit} och \code{isUku} som jämför början av strängen \code{s} och returnerar \code{true} om strängen matcher ett gitarrackord resp. ukuleleackord.
-
-\Subtask Implemetera \code{instToChord} med hjälp av \code{matching} och låt basfallet (om ackordet är varken gitarrackord eller ukuleleackord) retunera \code{None}.
 
 \Subtask Implementera klassen \code{Guitar}. \code{toString} ska vara på samma format som i filen \textit{chords.txt}.
 
 \Subtask Skapa en ny klass \code{Ukulele} som har liknande beteende som \code{Guitar}.
+
+\Subtask Implemetera \code{instToChord} med hjälp av \code{matching} och låt basfallet (om ackordet är varken gitarrackord eller ukuleleackord) retunera \code{None}.
 
 \Task \code{database}. Kommer hålla reda på alla ackord i programmet. Testa varje metod innan nästa blir implemeterad. Det blir då lättare att upptäcka fel i koden.
 
@@ -56,9 +58,9 @@ D:-1 -1 0 2 3 2
 
 \Subtask Implementera \code{find} och \code{updateFilter}. \code{find} ska inte retunera enbart den första förkomsten av söksträngen utan alla. Metoden \code{find} i \code{Vector} retunerar enbart första förekomsten.
 
-\Subtask Implementera \code{filteredChords} och \code{sort} med hjälp av metoden \code{isIncludedBy} i \code{Chord}. Tom filtersträng innebär att inget filter appliceras.
+\Subtask Implementera \code{filteredChords} och \code{sort} med hjälp av metoden \code{isIncludedBy} i \code{Chord}. Tom filtersträng innebär att inget filter appliceras. Vid \code{sort} kan man ta hjälp av metoden \code{sortBy} i \code{Vector}.
 
-\Subtask Implementera \code{delete}. \textbf{Tänk på att \code{delete} ska radera ackordet på plats $i$ i filteredChords}
+\Subtask Implementera \code{delete}. \textbf{Tänk på att \code{delete} ska radera ackordet på plats $i$ i \code{filteredChords} och inte i code{allChords}}
 
 \Task textui
 
@@ -85,9 +87,9 @@ D:-1 -1 0 2 3 2
 
 \item \code{Quit}. Använd \code{matching} för att ta hand om fallet när användaren anger arguement till kommandot, vilket inte behövs. Skapa en hjälpmetod \code{quitPrompt} som returnerar en \code{Boolean} med värdet \code{true} om användaren anger 'y', \code{False} om användaren anger 'n' och som körs igen vi felaktigt svar (allt annat än 'y' och 'n'). Även 'Y' och 'N' ska vara acceptabelt svar.
 
-\item \code{Play}. Använd \code{matching} för att bryta ut de olika argumenten och för att ta hand om felfallet inga argument. Första argumentet är tempo i millisekunder och resten är siffror som motsvarar platsen för ackordet i den filtrerade listan. Varje sträng i argumentlistan ska omvandlas till \code{Int} och det är viktigt att ta hand om fallet då användaren anger något annat än en siffra. Använd \code{Try} och \code{matching} för att ta hand om felet. Använd \code{ChordPlayer} för att spela upp ett ackord.
+\item \code{Play}. Använd \code{matching} för att bryta ut de olika argumenten och för att ta hand om felfallet inga argument. Första argumentet är tempo i millisekunder och resten är siffror som motsvarar platsen för ackordet i den filtrerade listan. Varje sträng i argumentlistan ska omvandlas till \code{Int} och det är viktigt att ta hand om fallet då användaren anger något annat än en siffra. Använd \code{Try} och \code{matching} för att ta hand om felet. Använd \code{ChordPlayer} för att spela upp ett ackord. \textbf{Kom ihåg att lägga till kommandot i listan med kommandon i \code{doCommand}}
 
-\item \code{Draw}. Använd \code{matching} för att ta hand om felfallen inget argument eller fler än ett argument. Argumentet motsvarar ackordets plats i den filtrerade litan. Använd \code{Try} och \code{matching} för att ta hand om felet att användaren anger något annat än en siffra. Använd \code{ChordDraw} för att rita upp ackord.
+\item \code{Draw}. Använd \code{matching} för att ta hand om felfallen inget argument eller fler än ett argument. Argumentet motsvarar ackordets plats i den filtrerade litan. Använd \code{Try} och \code{matching} för att ta hand om felet att användaren anger något annat än en siffra. Använd \code{ChordDraw} för att rita upp ackord. \textbf{Kom ihåg att lägga till kommandot i listan med kommandon i \code{doCommand}}
 \end{itemize}
 
 \Task \code{ChordPlayer}. Ska spela upp enstaka ackord \code{chord} med en viss längd \code{time} i millisekunder.
@@ -98,7 +100,7 @@ D:-1 -1 0 2 3 2
 
 \Subtask Skapa ett nytt kommando i \code{textui} som heter \textit{play}. Se instruktioner för \code{textui}.
 
-\subsection{Frivilliga extrauppgifter}
+\subsection{Extrauppgifter}
 
 \Task ChordDraw
 
@@ -110,6 +112,6 @@ D:-1 -1 0 2 3 2
 
 \Subtask Rita ut ett kryss där en sträng trycks ner. \textbf{Tänk på att -1 och 0 anger att en sträng inte trycks ner}.
 
-\Subtask Implementera metoden \code{play} som börjar med att vänta på ett event från SimpleWindow, sedan kollar om eventet är av typen \code{SimpleWindow.MOUSE_EVENT}. Sedan ska man kolla om användaren trycket på någon sträng (ett intervall på -10 till +10 i förhållande till strängens x-koordinat kan anses vara på strängen). Om användaren tryckt på en sträng ska denna spelas med hjälp av \code{SimpleNotePlayer}.
+\Subtask Implementera metoden \code{play} som börjar med att vänta på ett event från \code{SimpleWindow}, sedan kollar om eventet är av typen \code{SimpleWindow.MOUSE_EVENT}. Sedan ska man kolla om användaren trycket på någon sträng (ett intervall på -10 till +10 i förhållande till strängens x-koordinat kan anses vara på strängen). Om användaren tryckt på en sträng ska denna spelas med hjälp av \code{SimpleNotePlayer}.
 
 \Subtask Skapa ett nytt kommando i \code{textui} som heter \textit{draw}. Se instruktioner för \code{textui}.
