@@ -86,6 +86,7 @@
 \newcommand{\Eng}[1]{(eng. {\textit{#1}})}
 \newcommand{\key}[1]{\textcolor{eclipsepurple}{\textbf{\texttt{#1}}}}
 \newcommand{\code}{\lstinline[basicstyle=\ttfamily]}
+\newcommand{\jcode}{\lstinline[basicstyle=\ttfamily,language=Java]}
 
 \newcommand{\ChapterUnnum}[1]{\chapter*{#1}\addcontentsline{toc}{chapter}{#1}}
 \newcommand{\SectionUnnum}[1]{\section*{#1}\addcontentsline{toc}{section}{#1}}
@@ -126,6 +127,15 @@
 {\subsubsection{Förberedelser}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% changes to make slide stuff look good in compendium
+
+\newcommand{\pause}{}% do nothing
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% lingstings specifics:
 
 \lstdefinelanguage{Scala}{
   morekeywords={abstract,case,catch,class,def,%
@@ -185,7 +195,7 @@
 }
 
 \lstnewenvironment{JavaSpec}[2][]{%
-    \lstset{basicstyle=\ttfamily\fontsize{9}{11}\selectfont,%
+    \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
             backgroundcolor=\color{white},rulecolor=\color{black},title={\fontsize{9}{11}\selectfont\texttt{\textcolor{black}{\textbf{#2}}}}, frameround=tttt,language=,otherkeywords={},#1}%
 }{}
 
@@ -206,6 +216,10 @@
 
 \lstnewenvironment{Code}[1][]{%
     \lstset{#1}%
+}{}
+
+\lstnewenvironment{CodeSmall}[1][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,#1}%
 }{}
 
 \lstnewenvironment{REPL}[1][]{%
