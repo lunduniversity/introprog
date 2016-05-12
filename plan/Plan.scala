@@ -71,24 +71,27 @@ trait Plan {
 
     Module("Klasser", 
       id = "class", exercise = "classes", lab = "turtlegraphics", contents = """
-      | objektorientering, klass, Point, Square, 
+      | objektorientering, klass, Point, Square, Complex,
+      | new, null, this, 
       | inkapsling, accessregler, private, private[this], kompanjonsobjekt,
       | getters och setters, 
-      | new, null,
       | klassparameter, primär konstruktor, objektfabriksmetod, 
+      | överlagring av metoder,
       | referenslikhet vs strukturlikhet, eq vs ==, 
       """.stripTrim),
 
     Module("Arv", 
       id = "polymorf", exercise = "traits", lab = "turtlerace-team", contents = """
-      | arv, polymorfism, asInstanceOf,
-      | klasshierarkin i Scala: Any AnyRef Object AnyVal Nothing Null,
-      | referensklasser vs värdeklasser, 
-      | klasshierarkin i Scalas samlingar,
-      | Shape som basklass till Point och Rectangle, 
+      | arv, polymorfism, trait, extends, asInstanceOf, with, inmixning,
+      | supertyp, subtyp, bastyp, override, 
+      | klasshierarkin i Scala: Any AnyRef Object AnyVal Null Nothing,
+      | referenstyper vs värdetyper, 
+      | klasshierarkin i scala.collection,
+      | Shape som bastyp till Point och Rectangle, 
       | accessregler vid arv, protected, final,
-      | abstrakt klass, trait, inmixning, klass vs trait, 
+      | klass vs trait, abstract class,
       | case-object, typer med uppräknade värden,  
+      | översiktligt om trait som gränssnitt, 
       """.stripTrim),
 
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
@@ -97,8 +100,8 @@ trait Plan {
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
       | mönstermatchning, match, Option, try, catch, Try, unapply, sealed, 
       | flatten, flatMap, partiella funktioner, collect, 
-      | implementera equals utan arv, Complex,  
-      | implementera equals med arv, Shape,  
+      | implementera equals utan arv för Complex,  
+      | implementera equals med arv för Shape,  
       """.stripTrim),
 
     Module("Matriser, Typparametrar", 
@@ -130,6 +133,7 @@ trait Plan {
       | java.util.ArrayList, 
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
       | samlingar i Java vs Scala, scala.collection.JavaConverters,
+      | översiktligt om relationen mellan trait och interface,
       | enum i java ???,
       """.stripTrim),
 
