@@ -5,26 +5,148 @@
 \Lab{\LabWeekSIX}
 
 \begin{Goals}
-\item Att lära sig.
+\item Kunna skapa egna klasser.
+\item Förstå skillnaden mellan klasser och objekt.
+\item Förstå skillnaden mellan muterbara och omuterbara objekt.
+\item Känna till och kunna skapa egna equals-metoder.
+\item Förstå hur ett objekt kan innehålla referenser till objekt av andra klasser, och varför detta kan vara användbart.
+\item Träna på att fatta beslut om vilka datatyper som bäst passar en viss tillämpning.
 \end{Goals}
 
 \begin{Preparations}
 \item Att göra.
 \end{Preparations}
 
+\subsection{Bakgrund}
+
+Under den här laborationen ska du skriva en samling av klasser som tillsammans kan användas för att rita i en fönsterruta. För att ge dig en grund att stå på får du tillgång till den färdigskrivna klassen SimpleWindow. SimpleWindow är en fönsterruta som tillåter programmeraren att rita linjer med hjälp utav en "penna". SimpleWindow håller koll på pennans nuvarande position och kan ombes att flytta pennan genom att antingen lyfta den eller genom att rita en rak linje till en ny position.
+
+\begin{Code}
+class SimpleWindow {
+  /** Constructs a new SimpleWindow */
+  def this(xSize : Int, ySize : Int, windowTitle : String) : Unit
+
+  /** Moves the pen to the given coordinates without
+      drawing a line. */
+  def moveTo(x : Int, y : Int) : Unit
+
+  /** Draws a line from the pen's current position
+      to the given coordinates. */
+  def lineTo(x : Int, y : Int) : Unit
+}
+\end{Code}
+
+Med hjälp utav SimpleWindow kan vi nu skapa en Turtle-klass som fungerar likt den i Kojo. 
+
 \subsection{Obligatoriska uppgifter}
 
-\Task En labbuppgiftsbeskrivning.
+\Task Skapa en klass Point för att beskriva en viss koordinat (x,y) i ett fönster. Klassen ska vara omuterbar - man ska alltså inte kunna ändra på en koordinat efter att den har skapats.
 
-\Subtask En underuppgift.
+\Subtask Hur borde specifikationen för Point se ut? Vilka attribut bör den innehålla?
 
-\Subtask En underuppgift.
+\Subtask Tänk efter när du väljer synlighetsnivå för klassens attribut. Bör klassen ha några metoder?
+
+\Subtask I klassen Point, lägg till en equals-metod som kan avgöra om en viss Point är samma punkt som en annan.
+
+\begin{Code}
+// ...
+
+/** Returns true if the other Point represents
+    the same coordinates as this Point */
+def equals(other : Point) : Boolean
+
+// ...
+\end{Code}
+
+\Subtask När equals-metoden körs i kodsnutten nedan, vilken Point kommer parametern other referera till?
+\begin{REPL}
+scala> val a = new Point(1,1)
+scala> val b = new Point(2,2)
+scala> a.equals(b)
+\end{REPL}
+
+\Task Skapa en klass Turtle enligt följande specifikation:
+
+\begin{Code}
+/**
+  * A Kojo-like Turtle class that can be used to draw shapes
+    in a SimpleWindow.
+  * @param window     The window the turtle should be placed in.
+  * @param position   A Point representing the turtle's starting
+                      coordinates.
+  * @param angle      The angle between the turtle direction and
+                      the X-axis measured in degrees.
+  * @param isPenDown  A boolean representing the turtle's pen
+                      position. True if the pen is down.
+  */
+class Turtle(window: SimpleWindow, private var position: Point,
+      private var angle: Double, private var isPenDown: Boolean) {
+  /**
+    * Moves the turtle to a new position without drawing a line.
+    */
+  def jumpTo(newPosition: Point) : Unit
+
+  /**
+    * Moves the turtle forward in its current direction, drawing
+      a line if the pen is down.
+    * @param length The number of pixels to move forward.
+    */
+  def forward(length: Double): Unit
+
+  /**
+    * Turns the turtle to the right.
+    *
+    * @param turnAngle The number of degrees to turn.
+    */
+  def turnLeft(turnAngle: Double): Unit
+
+  /**
+    * Turns the turtle to the left.
+    *
+    * @param turnAngle The number of degrees to turn.
+    */
+  def turnRight(turnAngle: Double): Unit
+
+  /**
+    * Turns the turtle straight up.
+    */
+  def turnNorth: Unit
+
+  /**
+    * Sets the turtle's pen down, causing it to draw lines when
+      the turtle moves.
+    */
+  def penDown(): Unit
+
+  /**
+    * Lifts the turtle's pen, preventing it from drawing lines,
+      even when it moves.
+    */
+  def penUp(): Unit
+}
+
+\end{Code}
+
+\Subtask Implementera klassen Turtle.
+
+\Subtask Svara på följande frågor om Turtle: Vilka attribut finns i klassen, och vilken synlighetsnivå har de? Vilka konstruktorer finns? 
+
+\Subtask Är klassen muterbar eller omuterbar? Motivera! Hade man kunnat göra tvärtom?
+
+\Subtask Just nu behöver användaren av en Turtle specificera alla detaljer om en Turtles ursprungliga tillstånd som parametervärden för att skapa den. För att underlätta för användaren ska du nu skapa en alternativ konstruktor som kräver färre parametrar. Vilka konstruktorparametrar skulle kunna bytas ut mot rimliga default-värden?
+
+\Subtask Använd din Turtle för att rita en cirkel.
+
+\Subtask Skapa ett par av Turtles i samma fönster som rör sig sammanvävt. Fungerar allt som tänkt?
 
 \subsection{Frivilliga extrauppgifter}
 
-\Task En labbuppgiftsbeskrivning.
+\Task Skapa en klass Rectangle
+\begin{Code}
+class Rectangle(position: Point, side: Int) {
+  def draw(turtle: Turtle): Unit
+  def scale(factor : Double): Rectangle
+}
+\end{Code}
 
-\Subtask En underuppgift.
-
-\Subtask En underuppgift.
-    
+\Task TODO: Skapa en klass som tar en Rectangle som parameter och ritar ut en sammansatt figur av flera omskalade rektanglar.
