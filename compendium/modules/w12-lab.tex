@@ -5,26 +5,147 @@
 \Lab{\LabWeekTWELVE}
 
 \begin{Goals}
-\item Att lära sig.
+    \item Kunna hur man kan använda matriser som en datastruktur.
+    \item Kunna separera beteende från vy med hjälp av \emph{Model-View} uppdelning.
+    \item Känna till grundläggande cellulära automata. % \eng{cellular automata}.
+    % Följande rad är kanske inte aktuell, trådar tas upp i övningarna och hör inte riktigt hemma här då det är svårt att få in på ett smakligt sätt då Scala-kompilatorn och JVMen redan lyckas optimera koden så att den blir parallell.
+    \item Känna till trådar, en grundläggande metod för att köra flera metoder \emph{samtidigt}.
 \end{Goals}
 
+% TODO: Some more preparations needed
 \begin{Preparations}
-\item Att göra.
+    \item Läs igenom laborationen.
+    % TODO: The following are just "fun" preparations, which will give the student more insight into the field but aren't
+    %       actually required to complete the lab. They are optionals really.
+    %\item Läs om Life på Wikipedia.
+    %\item Läs om Cellulära automata på Wikipedia.
 \end{Preparations}
 
+\subsection{Bakgrund}
+
+% Hur mycket bakgrund, vilken typ av bakgrund är lämplig/intressant/relevant?
+Spelet Life (även kallat \emph{Conway's Game of Life} efter skaparen och matematikern John Horton Conway) simulerar en koloni av encelliga organismer som lever, förökar sig och dör på ett bräde. Varje enskild cells överlevnad bestäms av några enkla regler som beror på dess omgivning, detta är en s.k. \emph{cellulär automata}\footnote{Detta är ett exempel på s.k. `emergence' and `self-organization'}.  Spelet går ut på att simulera flera generationer av en cellkoloni.
+
+Spelet har inga medvetna spelare (ett så kallat `zero-player game') och slutresultatet beror fullständigt på startkonfigurationen.
+
+
+%Life (även kallat \emph{Conway's Game of Life} efter skaparen och matematikern John Horton Conway)
+%är en cellulär automata som med enkla regler kan ge upphov till komplexa beteenden och har blivit känt som ett exempel på `emergence' and `self-organization'.
+
+%Spelet har noll medvetna spelare (ett så kallat `zero-player game') där slutresultatet beror fullständigt på startkonfigurationen.
+
+% TODO: Inför bild över brädet
+% TODO: Inför bild över Moore grannskapet (och kanske även von Neumann grannskapet)
+
+\subsection{Reglerna}
+
+Reglerna i spelet är följande:
+
+\begin{enumerate}
+    \item Spelbrädet består av en matris med $n$ rader och $m$ kolumner ($n$ och $m$ brukar ibland modelleras som $\infty$)
+    \item Varje cell i matrisen kan vid varje tidpunkt (varje generation) ha ett av två tillstånd: levande eller död
+    \item Varje cells tillstånd i nästa generation bestäms av följande regler:
+        \begin{enumerate}
+            \item Om cellen är levande och har två eller tre grannar så lever den vidare, annars dör den.
+            \item Om cellen är död och har exakt tre grannar så föds den och dess tillstånd ändras till levande, annars fortsätter den vara död.
+        \end{enumerate}
+\end{enumerate}
+
+
+För mer om Game of Life, se Wikipedia:
+
+\begin{enumerate}
+    \item Engelska: \url{https://en.wikipedia.org/wiki/Conway's_Game_of_Life}
+    \item Svenska: \url{https://sv.wikipedia.org/wiki/Game_of_Life}
+\end{enumerate}
+
+
 \subsection{Obligatoriska uppgifter}
+	% Förslag på hur de kan bygga upp programmet: 1) skapa en main-klass som öppnar ett fönster som visar ett x gånger y stort fönster. 
+	% 2) skapa en klass Cell som har attributet levande eller död. Gör en metod där man kan ändra tillståndet på cellen.
+	% 3) skapa en matris av celler som alla initieras som döda.
+	% 4) koppla ihop modellen och vyn så att om man genom att klicka i vyn kan ändra cellens tillstånd. Testa att det fungerar. Gör så att vyn uppdateras efter cellerna i modellen när man klickar på "next generation".
+	% 5) Studera traitet Rule i filen blahblah. Implementera reglerna (ge lite förklarande kodexempel för traitet Rule eller var det finns)
+	% 6) Skriv metod(er) som räknar upp generationer. 
+	% 7) Testa nedanstående startfigurer (inkludera bilder på t ex en slider). Beter det sig som förväntat? 
+	
+    % Gör denna tasken till en preparation?
+    
+    \Task{Skapa en modell som kan visas i vyn.}
+    % Visa gärna hur den ska se ut.
 
-\Task En labbuppgiftsbeskrivning.
+    \Subtask{En underuppgift.} % 
 
-\Subtask En underuppgift.
+    \Subtask{En underuppgift.}
+    
+    
 
-\Subtask En underuppgift.
+
+    \Task{Implementera Life-regeln med hjälp av traitet Rule.}
+
+    \Subtask{En underuppgift.}
+
+    \Subtask{En underuppgift.}
+
 
 \subsection{Frivilliga extrauppgifter}
 
-\Task En labbuppgiftsbeskrivning.
+% Uncertain if any of these will be upgraded to obligatory assignments
 
-\Subtask En underuppgift.
+\Task{Implementera andra regler för cellulära automata.}
 
-\Subtask En underuppgift.
-    
+    Det finns massor med regler för cellulära automata med sina egna intressanta beteenden och tillstånd.
+    Gör den eller de du tycker verkar mest intressant!
+
+    Fler regler kan finnas här: \url{https://en.wikipedia.org/wiki/Category:Cellular_automaton_rules}
+
+    Nedan följer några roliga exempel som valts ut och anses lämpliga.
+
+    \Subtask{Implementera cyklisk cellulär automata.}
+
+        Denna typ av automata kallar cyklisk just för att det finns $N$ möjliga tillstånd och när tillståndet N-1 nås så är `nästa' tillstånd $0$.
+        Detta beteendet kan beskrivas med modulo-operatorn: $T_{nästa} = T_{nuvarande} + 1 \% N$
+
+        Regeln för att en cell byter tillstånd ges av att om en granne till den aktuella cellen har tillståndet exakt ett över cellens tillstånd så får cellen sin grannes tillstånd.
+
+        För att få intressant beteende brukar man initialisera hela brädet så att varje cell får ett slumpvalt tillstånd.
+
+        \url{https://en.wikipedia.org/wiki/Cyclic_cellular_automaton}
+
+    \Subtask{Implementera Wireworld}
+
+        Wireworld är ett lite annorlunda då man i Wireworld designar `kretsar' inte helt olika de som finns i moderna datorer.
+
+        I Wireworld kan man skapa komponenter som fungerar som dioder samt transistorer, och med dessa bygga logiska grindar.
+
+        \url{https://en.wikipedia.org/wiki/Wireworld}
+
+
+\Task{Implementera spara och ladda}
+    Svårighet: Medel
+
+    \Subtask{Spara brädets tillstånd.}
+        Tillståndet ska sparas till ett format som både är lätt att spara/exportera och ladda/importera.
+        Förslagsvis kan man använda formatet CSV (Comma Separated Values) eller helt enkelt bara skriva
+        ut matrisen rad för rad där varje cell skrivs ut som en etta eller nolla.
+
+    \Subtask{Ladda in det exporterade tillståndet.}
+        Implementera en metod för att läsa in det sparade tillståndet
+
+
+\Task{Alternativ vy: Kör programmet i webbläsaren med Scala.js}
+
+
+\Task{Alternativ vy: Kör programmet på Android}
+
+% Detta kan kräva speciell IDE (android-studio) och eventuellt en Android-emulator som inte kan köras på skolans datorer.
+
+
+\Task{Implementera brädet som en sparse-matris}
+Svårighet: Medel
+
+I den tidigare lösningen har vi allokerat en hel matris där bara en del av brädet vanligtvis är levande, en sådan matris kallas för en sparse matris (en matris där majoriteten av värdena är 0).
+
+    \Subtask{???}
+
+
