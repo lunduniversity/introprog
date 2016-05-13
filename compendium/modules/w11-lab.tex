@@ -5,41 +5,231 @@
 \Lab{\LabWeekELEVEN}
 
 \begin{Goals}
-\item Hur autoboxing fungerar i Java
-\item Skillnaden mellan statiska och icke-statiska metoder
-\item Skillnaden mellan Objekt och Primitiva typer för listor
-\item Hur man läser in från fil
-\item Grundläggande hantering av exceptions
-\item Skillnader i forloops mellan Scala och Java
-
+\item Förstå hur autoboxing fungerar i Java
+\item Förstå vad statiska metoder och attribut innebär
+\item Förstå skillnad mellan primitiva typer och objekt i listor
+\item Kunna byta mellan ArrayLists och Array
+\item Kunna hur man läser in från fil
+\item Kunna for-sats i Java
 \end{Goals}
 
 \begin{Preparations}
-\item Läs avsnitt 3.10, om static, i läroboken
+\item Scanner
+\item ArrayList
+\item Enum?
+\item Statiskt
+\item Autoboxing
+\item Arv
 \end{Preparations}
 
 \subsection{Bakgrund}
-I denna labb skall ni tillverka LTH-o-pol, en variant av det välkända brädspelet Monopol med några simplifieringar. Spelet går ut på att spelarna i tur och ordning slår en tärning, varpå deras pjäs flyttas det antal steg som tärningen visar. Det finns tre typer av rutor, RiskSpace, ChanceSpace och HouseSpace. Beroende på vilken av rutorna spelaren hamnar på sker olika saker. I fallet att man hamnar på RiskSpace får spelaren dra ett s.k. RiskCard, som antingen förflyttar spelaren framåt eller bakåt längs den tänkta spelplanen. Skulle spelaren hamna på ChanceSpace kan denne antingen vinna eller förlora pengar genom att dra ett ChanceCard. Skulle spelaren hamna på en HouseSpace får denne alternativet att köpa rutan, förutsatt att den inte köpts av någon annan spelare, om så är fallet måste spelaren som hamnade på rutan betala hyra till ägaren.
-Den visuella representationen av spelet sker via konsolfönstret med hjälp av klassen XXXXXX. 
-För att läsa in korten och rutorna används klassen DocumentParser, som har vissa metoder (men inte alla) färdigimplementerade.
-Main-klassen skall vara skriven i Scala, men övriga klasser i Java. 
-Eftersom labben är en s.k. teamlab är ett förslag till arbetsfördelning att varje person implementerar en utav underuppgifterna.
+I denna labb skall ni tillverka lthopoly, en variant av det välkända brädspelet Monopol med några simplifieringar. Spelet går ut på att spelarna i tur och ordning slår en tärning, varpå deras pjäs flyttas det antal steg som tärningen visar. Det finns tre typer av rutor som alla ärver BoardSpace, och har olika beteenden. Dessa tre typer kallas för MoveSpace, MoneySpace och HouseSpace.
+
+Beroende på vilken av rutorna spelaren hamnar på sker olika saker. I fallet att man hamnar på MoveSpace får spelaren dra ett s.k. MoveCard, som antingen förflyttar spelaren framåt eller bakåt längs spelplanen. 
+Skulle spelaren hamna på MoneySpace kan denne antingen vinna eller förlora pengar genom att dra ett MoneyCard. Skulle spelaren hamna på en HouseSpace får denne alternativet att köpa rutan, förutsatt att den inte köpts av någon annan spelare, om så är fallet måste spelaren som hamnade på rutan betala hyra till ägaren.
+
+Den visuella representationen av spelet sker via konsolfönstret med hjälp av klassen \code{TextUI}. \code{TextUI} är en färdigskriven klass med statiska metoder som gör det möjligt att skriva ut två kolumner av text i konsollfönstret. Utskriften kan exempelvis se ut såhär:
+
+\begin{REPL}
+Studiecentrum(20)(Valthor)
+A-huset(25) (Jonas)                                                                                                          
+ChansRuta                                                                                                             
+ChansRuta                                                                                                              
+Moroten och piskan(40)
+V-Huset(45)                                                                                                        
+RiskRuta (Oskar)                                                                                                         
+ChansRuta                                                                                                        
+LED-Cafe(70)               Oskar slog en 6:a!                                           
+F-Huset(75)                Flytta framåt 6 steg                                        
+ChansRuta                  Oskar drog ett kort: Inkassera 50 SEK!
+Ideet(80)                  Oskar har avslutat sin runda.                              
+ChansRuta                  Nästa spelare: Jonas                                      
+E-huset(100)               Jonas slog en 1:a!                                       
+RiskRuta                   Grattis, Jonas är nu den stolta ägaren av A-huset!
+\end{REPL}
+
+Notera att utskriftens två kolumner är oberoende av varandra och kan uppdateras separat. För att uppdatera UI:t och få input av användaren finns följande metoder:
+\subsubsection{Färdigimplementerat}
+\begin{JavaSpec}{class TextUI}
+     /**Clears the right column (without reprinting). */
+    public static void emptyRightColumn();
+
+    /** Clears the left column (without reprinting). */
+    public static void emptyLeftColumn();
+
+    /** Adds a new string to be printed in the right column
+     * every time it updates. Does not reprint the UI. */
+    public static void addToRightColumn(String event);
+
+    /** Adds a new string to be printed in the left column
+     * every time it updates. Does not reprint the UI. */
+    public static void addToLeftColumn(String event);
+
+    /** Prints a console plot of the given array. */
+    public static void printStatistics(int[] moneyLog);
+
+    /** Prints a large number of newlines, visually clearing the console. */
+    public static void clearConsole();
+
+    /** Resets the left column with the toString of the GameBoard
+     * and reprints both columns.
+     * @param board. 
+     */
+    public static void updateConsole(GameBoard board);
+
+    /**Prompts the user to select one of the given options.
+     * @param options An ArrayList containing a list of
+     *          descriptions for the possible options.
+     * @return the index of the option selected by the user.
+     */
+    public static int promptForInput(List<String> options);
+\end{JavaSpec}
+\subsubsection{Implementeras Själv}
+\begin{JavaSpec}{class Player}
+
+/**Beskriver en spelare med pengar money, namn name och position pos . */
+public Player(int money, String name, int pos)
+
+/**Ger en int med spelarens pengar. */
+public int getMoney()
+
+/** Ändrar spelarens pengar. */
+public void setMoney(int money)
+
+/** Ger en int med spelarens position. */
+public int getPosition()
+
+/** Ändrar spelarens position. */
+public void setPosition(int pos)
+
+\end{JavaSpec}
+
+\begin{JavaSpec}{class BoardSpace}
+/**Beskriver en generell ruta på spelplanen. */
+public BoardSpace()
+
+/* Ger en vektor av möjliga val för spelare som står på rutan. */
+public abstract PlayerAction[] getPossibleActions(GameBoard board);
+
+/* Genomför det val som skickas med. */
+public abstract void action(GameBoard board, PlayerAction action);
+
+/*Ger en strängrepresentation av rutan. */
+public abstract String toString();
+\end{JavaSpec}
+
+\begin{JavaSpec}{class GameBoard}
+/**Beskriver ett spelbräde med en vektor av spelarna players. */
+public GameBoard(Player[] players) 
+
+/** Ger en vektor av möjliga val för spelaren vars tur det är. */
+public PlayerAction[] getPossibleActions()
+
+/** Ger sant eller falskt beroende på om spelet är slut eller ej.*/
+public boolean isGameOver()
+
+/** Hämtar den för närvarande rikaste spelaren. */
+public Player getRichestPlayer()
+
+/** Genomför valet action för den aktuella spelaren. */
+public void doAction(PlayerAction action)
+
+/** Ger spelaren vars tur det är. */
+public Player getCurrentPlayer()
+
+/** Ger rutan som den aktuella spelaren står på. */
+public BoardSpace getCurrentBoardSpace()
+
+/** Förflyttar nuvarande spelare. */
+public void moveCurrentPlayer(int adjustment)
+
+/** Ger en vektor med totala summan pengar för varje runda,
+ * där runda ett är index 0 och sista rundan är i sista elementet 
+ * i vektorn.  */
+public int[] getStatistics()
+
+/** Ger en strängrepresentation av spelbrädet. */
+public String toString()
+\end{JavaSpec}
+
+\begin{JavaSpec}{class DocumentParser}
+/* Ger en representation av spelplanen i en lista. */
+public static ArrayList<BoardSpace> getBoard()
+\end{JavaSpec}
+
+\begin{JavaSpec}{class MoneyCard}
+/* Beskriver ett pengakort. */
+public MoneyCard(String description, int money)
+\end{JavaSpec}
+\begin{JavaSpec}{class MoveCard}
+/* Beskriver ett flyttkort. */
+public MoveCard(String description, int position)
+\end{JavaSpec}
+
+\subsubsection{Spelregler}
+
+\begin{itemize}
+\item Om någon spelare har mindre än 0 SEK kvar skall spelet sluta.
+\item Om någon spelare hamnar på en husruta som ägs av en annan spelare måste denne betala ägaren husets hyra i SEK.
+\item Om en spelare väljer att ta ett kort skall det värde som påverkas av kortet justeras. För Riskkort innebär detta en förflyttning medan för Chanskort en ändring av pengar.
+
+\end{itemize}
+
+
 
 \subsection{Obligatoriska uppgifter}
 
-\Task Här skall ni skriva en statisk metod för inläsning av data från fil i klassen DocumentParser. Här får filstrukturen väljas helt fritt så länge resultatet av inläsningen blir att man kan anropa metoderna getRiskCards och getChanceCards och få kort enligt den kortstruktur som implementeras. Även klasserna RiskCard och ChanceCard skall implementeras så att det går bra ihop med inläsningen.
+\Task Här skall ni skriva en statisk metod för inläsning av data från fil i klassen DocumentParser. Här får inläsningssättet väljas helt fritt så länge resultatet av inläsningen blir att man kan anropa getBoard() och få kort enligt den kortstruktur som implementeras. Även klasserna MoveCard och MoneyCard skall implementeras så att det går bra ihop med inläsningen.
+\newline
+\newline
+\noindent
+\textbf{Obs!} Se textfilerna moneycards.txt, movecards.txt och board.txt för förståelse för hur inläsningen bör gå till för korten. 
 
-\Subtask Implementera klassen RiskCard.
+\Subtask Implementera klassen MoveCard.
 
-\Subtask Implementera klassen ChanceCard.
+\Subtask Implementera klassen MoneyCard.
 
-\Task 
+\Subtask Implementera två statiska metoder för att hämta en vektor med MoveCards respektive MoneyCard från fil i DocumentParser.
+
+\Subtask Implementera klassen Player.
+
+\Task I denna uppgift skall tre olika typer av spelrutor implementeras, som alla ärver ifrån klassen \code{BoardSpace}. Ni kommer då behöva implementera de tre abstrakta metoderna i BoardSpace i respeketive subklass. Här behöver subklasserna tillgång till spelbrädet då förändringen av speltillståndet sker till störren delen i metoden action för de olika rutorna. Rutan som representerar ett hus kommer dessutom behöva ett attribut som håller koll på vem som äger rutan, medan rutorna som representerar chans- och riskhändelserna kommer behöva tillgång till vektorer av de kort som läses in.
+
+
+\Subtask Implementera en klass för varje typ av spelruta.
+\newline
+\newline
+\noindent
+\textbf{Obs!} Än så länge kommer logiken inte fungera då inga metoder är implementerade i BoardGame ännu, det går trots detta bra att anropa metoderna utan kompileringsfel (i väntan på att de implementeras)
+
+\Task Nu är det dags att implementera getBoard() i klassen \code{DocumentParser}. I denna metod skall ni läsa in från filen board.txt och nyttja de metoder ni redan skrivit för att läsa in MoveSpaces och MoneySpaces. Viktigt här är att ordningen i vilken de olika rutorna är representerade i textfilen spelar roll, då den utgör upplägget av spelplanen. Alltså, beroende på vilken ruta som läses in från textfilen skall motsvarande objekt som representerar denna ruta konstrueras och läggas till i en ArrayList<BoardSpace> som slutligen returneras.
+
+\Subtask Implementera getBoard().
+
+\Task För att kunna skriva ut och visa spelplanen använder sig klassen \code{TextUI}  av metoden toString() i klassen \code{GameBoard}. Denna ger en textrepresentation av spelplanen. Övriga metoder i klassen \code{GameBoard} skall nu implementeras, nyttja att  \code{TextUI} har metoder för att lägga till utskrifter i olika kolumner för utskrifter av händelser. Det skall inte förekomma någon direkt utskrift i  \code{GameBoard}, alla utskrifter ska gå via \code{TextUI}. I slutet av varje spelares tur skall dessutom den totala summan av pengar hos alla spelare läggas till i en ArrayList, för att det efter spelets slut skall kunna visas statistik för den totala ekonomin.
+
+\Subtask Implementera GameBoard.
+\newline
+\newline
+\textbf{Tips!} 
+
+\begin{itemize}
+\item Privata hjälpmetoder kan hjälpa till att underlätta.
+\item Metoden printStatistics i klassen \code{TextUI} tar en vektor av int-värden som inparameter, vilket är opassande då det underlättar att lagra pengahistoriken i en arrayList (eftersom dess storlek inte är bestämd). Det är därför lämpligt att skriva en metod som flyttar över samtliga Integer-objekt från ArrayList<Integers> till en vektor av ints. Detta fungerar trots att de har olika typer p.g.a. autoboxing. 
+\item Tänk på att spelarna skall kunna gå runt spelplanen obegränsat antal gånger.
+\item Tänk på att dela upp arbetet så att det sker en lämpligt arbetsfördelning inom gruppen, men samarbeta så att ni vet hur era olika implementationer interagerar.
+\end{itemize}
+
+
+
 
 \subsection{Frivilliga extrauppgifter}
 
-\Task En labbuppgiftsbeskrivning.
+\Task Här är det dags att utöka spelet för att ge utökad funktionalitet som liknar det riktiga spelet.
 
-\Subtask En underuppgift.
+\Subtask Implementera så att varje spelare får extra pengar då den passerar början av listan.
 
-\Subtask En underuppgift.
+\Subtask Implementera så att om en spelare hamnar på en ruta de äger sedan tidigare så har de möjlighet att öka hyran för den ifall någon annan spelare skulle hamna på den.
+
+\Subtask Implementera så att spelarna själva måste betala en femtedel värdet av sina hus varje runda (varje gång de passerar ett varv på brädet).
     
