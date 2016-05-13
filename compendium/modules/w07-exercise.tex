@@ -5,7 +5,21 @@
 \Exercise{\ExeWeekSEVEN}
 
 \begin{Goals}
-\item 
+\item Förstå följande begrepp: 
+  \begin{itemize}[nosep, label={$\square$},] 
+  \item bastyp,  \item supertyp, \item subtyp, \item abstrakt typ, \item polymorfism. 
+  \end{itemize}
+\item Kunna deklarera och använda en arvshierarki i flera nivåer med nyckelordet \code{extends}.
+\item Kunna deklarera och använda inmixning med flera traits och nyckelordet \code{with}.
+\item Kunna deklarera och känna till nyttan med finala klasser och finala attribut och nyckelordet \code{final}.  
+\item Känna till synlighetsregler vid arv och nyttan med privata och skyddade attribut.
+\item Kunna deklarera och använda skyddade attrinbute med nyckelordet \code{protected}.
+\item Känna till hur typtester och typkonvertering vid arv kan göras med metoderna \code{isInstanceOf} och \code{asInstanceOf} och känna till att detta görs bättre med \code{match} (som kommer i kapitel \ref{chapter:W08}).
+\item Känna till begreppet anonym klass.
+\item Kunna deklarera och använda överskuggade metoder med nyckelordet \code{override}.
+\item Känna till reglerna som gäller vid överskuggning av olika sorters medlemmar.
+\item Kunna deklarera och använda hierarkier av klasser där konstruktorparametrar överförs till superklasser. 
+\item Kunna deklarera och använda uppräknade värden med case-objekt och gemensam bastyp.
 \end{Goals}
 
 \begin{Preparations}
@@ -33,7 +47,7 @@ grönsaker.map(_.vikt).sum
 
 \Subtask Vi kan göra så att vi kan komma åt vikten på alla grönsaker genom att ge gurkor och tomater en gemensam bastyp som de olika konkreta grönsakstyperna utvidgar med nyckelordet \code{extends}. Man säger att subtyperna \code{Gurka} och \code{Tomat} \textbf{ärver} egenskaperna hos supertypen \code{Grönsak}. 
 
-Attributet \code{vikt} i traiten \code{Grönsak} nedan initialiseras inte förrän konstruktorerna anropas när vi gör \code{new} på någon av de klasserna \code{Gurka} eller \code{Tomat}. 
+Attributet \code{vikt} i traiten \code{Grönsak} nedan initialiseras inte förrän konstruktorerna anropas när vi gör \code{new} på någon av klasserna \code{Gurka} eller \code{Tomat}. 
 
 \begin{REPL}
 trait Grönsak { val vikt: Int } 
@@ -55,7 +69,9 @@ new Grönsak
 \end{REPL}
 
 
-\Subtask Traiten \code{Grönsak} har en abstrakt medlem \code{vikt}. Värdet \code{vikt} sägs vara abstrakt eftersom det saknar utan definition -- den bara har ett namn och en typ men inget värde. Du kan instansiera den abstrakta traiten \code{Grönsak} om du fyller i det som ''fattas'', nämligen ett värde på \code{vikt}. Man kan fylla på det som fattas i ett block efter typens namn vid instansiering. Vad får \code{anonymGrönsak} nedan för typ och strängrepresenation?
+\Subtask Traiten \code{Grönsak} har en abstrakt medlem \code{vikt}. Den sägs vara abstrakt eftersom den saknar definition -- medlemmen har bara ett namn och en typ men inget värde. Du kan instansiera den abstrakta traiten \code{Grönsak} om du fyller i det som ''fattas'', nämligen ett värde på \code{vikt}. Man kan fylla på det som fattas i genom att ''hänga på'' ett block efter typens namn vid instansiering. Man får då vad som kallas en \textbf{anonym} klass, i detta fall en ganska konstig grönsak som inte är någon speciell sorts grönsak med som ändå har en vikt. 
+
+Vad får \code{anonymGrönsak} nedan för typ och strängrepresenation?
 \begin{REPL}
 val anonymGrönsak = new Grönsak { val vikt = 42 }
 \end{REPL}
@@ -201,13 +217,13 @@ class Sub extends Super {
 
 \Task \emph{Använding av \code{protected}.} Den flitige ornitologen från uppgift \ref{task:fyle} ska ringmärka alla 42 fåglar hen hittat i skogen. När hen ändå håller på bestämmer hen att i även försöka ta reda på hur mycket oväsen som skapas av respektive fågelsort. För detta ändamål apterar den flitige ornitologen en linuxdator på allt infångat fyle. Du ska hjälpa ornitologen att skriva programmet. 
 
-\Subtask Inför en \code{protected var lätesräknare} i traiten \code{Fyle} och skriv kod på lämpliga ställen för att 
+\Subtask Inför en \code{protected var räknaLäte} i traiten \code{Fyle} och skriv kod på lämpliga ställen för att räkna hur många läten som respektive fågelinstans yttrar.
 
 \Subtask Inför en metod \code{antalLäten} som returnerar antalet krax respektive kvack som en viss fågel yttrat sedan dess skapelse.
 
 \Subtask\Pen Varför inte använda \code{private} i stället for \code{protected}?
 
-\Subtask\Pen Varför är det bra att göra lätesräknaren oåtkomlig från ''utsidan''? 
+\Subtask\Pen Varför är det bra att göra räknar-variabeln oåtkomlig från ''utsidan''? 
 
 
 
@@ -254,7 +270,7 @@ scala> b.asInstanceOf[A]
 
 \Task \emph{Regler för \code{override}, \code{private} och \code{final}.} 
 
-\Subtask \label{subtask:overriderules} Undersök ersättning av abstrakta, konkreta, privata och finala medlemmar genom att skriva in raderna nedan en i taget i REPL. Vilka rader ger felmeddelande? Varför? Vid felmeddelande: notera hur felmeddelandet lyder och ändra deklarationen av den felande medlemmen så att koden blir kompilerbar (eller om det är enda lösningen: ta bort den felaktiga medlemmen), innan du provar efterkommande rad. 
+\Subtask \label{subtask:overriderules} Undersök överskuggningning av abstrakta, konkreta, privata och finala medlemmar genom att skriva in raderna nedan en i taget i REPL. Vilka rader ger felmeddelande? Varför? Vid felmeddelande: notera hur felmeddelandet lyder och ändra deklarationen av den felande medlemmen så att koden blir kompilerbar (eller om det är enda rimliga lösningen: ta bort den felaktiga medlemmen), innan du provar efterkommande rad. 
 
 \begin{REPL}
 trait Super1 { def a: Int; def b = 42; private def c = "hemlis" }
@@ -277,21 +293,85 @@ class Sub15 extends Super14 { def a = 43; override var b = 43; val c = "?" }
 
 \Subtask Skapa instanser av klasserna Sub3, Sub13 och SubSub från ovan deluppgift och undersök alla medlemmarnas värden för respektive instans. Förklara varför de har dessa värden.
 
-\Subtask Läs igenom reglerna i kapitel  \ref{slideW05:overriderules} om vad som gäller vid arv och ersättning av medlemmar. Gör några egna undersökningar i REPL som försöker bryta mot någon regel som inte testades i deluppgift \ref{subtask:overriderules}.
+\Subtask Läs igenom reglerna i kapitel  \ref{slideW05:overriderules} om vad som gäller vid arv och överskuggning av medlemmar. Gör några egna undersökningar i REPL som försöker bryta mot någon regel som inte testades i deluppgift \ref{subtask:overriderules}.
+
+\Task \emph{Supertyp med parameter.} En trait kan inte ha någon parameter. Vill man ha en parameter till supertypen måste man använda en klass istället, enligt nedan exempel. 
+
+Utbildningsdepartementet vill i sitt system hålla koll på vissa personer och skapar därför en klasshierarki enligt nedan. Skriv in koden i en editor och klipp sedan in den i REPL.
+\begin{Code}
+class Person(namn: String)
+
+class Akademiker(
+  namn: String,   
+  universitet: String) extends Person(namn)
+
+class Student(
+  namn: String, 
+  universitet: String,
+  program: String) extends Akademiker(namn, universitet)
+
+class Forskare(
+  namn: String, 
+  universitet: String, 
+  titel: String) extends Akademiker(namn, universitet)
+\end{Code} 
 
 
+\Subtask Deklara 4 olika \code{val}-värden med lämpliga namn som refererar till olika instanser av alla olika klasser ovan och ge attributen valfria initialvärden genom olika parametrar till konstruktorerna.
 
-\Task \emph{Uppräknade värden.}
+\Subtask Skriv två satser: en som först stoppar in instanserna i en \code{Vector} och en som sedan loopar igenom vektorn och skriv ut alla instansers \code{toString} och \code{namn}. 
 
-\Subtask 
 
+\Subtask Utbildningsdepartementet bestämmer sig för att bara hålla koll på studenter och forskare vill att det inte ska gå att instansiera objekt av typerna \code{Person} och \code{Forskare}. Det kan åstadkommas genom att placera nyckelordet \code{abstract} före \code{class}. Vilket blir felmeddelande om man försöker instansiera en \code{abstract class}?
+
+\Subtask Utbildningsdeparetementets utvecklare vill slippa implementera \code{toString} och slippa skriva \code{new} vid instansiering och gör därför om typerna \code{Student} och \code{Forskare} till case-klasser. Skapa instanser case-klasserna \code{Student} och \code{Forskare} och skriv ut deras \code{toString}. Hur ser utskriften ut?
+
+\Subtask Eftersom utbildningsdepartementet numera deklarerar \code{Personer} och \code{Akademiker} som abstrakta, väljer man att göra om dessa typer till traits istället för klasser. Man inför också en case-klass \code{IckeAkademiker} som man tänker använda i olika statistiska medborgarundersökningar. Dessutom förser man alla personer med ett personnummer representerat som en \code{Long}. Hur ser utvecklarnas kod ut? Skriv ett testprogram som skapar några instanser och skriver ut deras attribut. 
+
+\Subtask\Pen I vilka sammanhang lämpligt eller nödvändigt att använda en \code{trait} respektive en \code{class}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+När använda trait och när använda klass? GÖR SLAJD OCH FRÅGA OM DETTA MED EN PENNAUPPGIFT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\Task \emph{Uppräknade värden.} Ett sätt att hålla reda på uppräknade värden, t.ex. färgen på olika kort i en kortlek, är att använda olika heltal som får representera de olika värdena, till exempel så här:\footnote{Om namnkonventioner för konstanter i Scala: läs under rubriken ''Constants, Values, Variable and Methods'' här \href{http://docs.scala-lang.org/style/naming-conventions.html}{docs.scala-lang.org/style/naming-conventions.html}} 
+\begin{Code}
+object Färg {
+  val Spader = 1
+  val Hjärter = 2
+  val Ruter = 3
+  val Klöver = 4
+}
+
+case class Kort(färg: Int, valör: Int)
+\end{Code}
+Man kan hålla reda på färgen med en variabel av typen \code{Int} och tilldela den en viss färg med ovan konstanter. Och när man skapar ett kort behöver man inte komma ihåg vilket numret är.
 \begin{REPL}
+scala> val f = Färg.Spader
+scala> import Färg._
+scala> Kort(Ruter, 7)
+\end{REPL}
+En annan fördelen med detta är att man lätt kan loopa från 1 till 4 för att gå igenom alla färger. 
+\begin{REPL}
+scala> val kortlek = for (f <- 1 to 4; v <- 1 to 13) yield Kort(f, v)
+\end{REPL}
+Nackdelen är att kompilatorn vid kompileringstid inte kollar om variablerna av misstag råkar ges något värde utanför det giltiga intervallet, t.ex. 42. Detta får vi själv hålla koll på vid körtid, till exempel med funktionen \code{require} eller \code{if}-satser, etc.
+
+Istället kan man använda case-objekt enligt nedan deluppgifter och få hjälp av kompilatorn att hitta eventuella fel vid kompileringstid.  Ett case-objekt är som ett vanligt singelton-objekt men det får automatiskt en toString samma som namnet och kan användas i matchningar etc. (mer om match i kaptitel \ref{chapter:W08}). 
+
+\Subtask Deklarera följande uppräknade värden som singelton objekt med gemensam bastyp i en editor och klistra in i REPL med kommandot \code{:paste}.
+\begin{Code}
 trait Färg
 case object Spader extends Färg
 case object Hjärter extends Färg
 case object Ruter extends Färg
 case object Klöver extends Färg
-\end{REPL}
+
+case class Kort(färg: Färg, valör: Int)
+\end{Code}
+
 
 \Subtask 
 
@@ -318,25 +398,6 @@ case object Hjärter extends Färg(1)
 case object Ruter extends Färg(2)
 case object Klöver extends Färg(3)
 \end{REPL}
-
-\Task \emph{Supertyp med parameter.} En trait kan inte ha någon parameter. Vill man ha en parameter till supertypen måste man använda en klass istället.
-\begin{Code}
-class Person((namn: String)
-
-class Akademiker(
-  namn: String,   
-  universitet: String) extends Person(namn)
-
-class Student(
-  namn: String, 
-  universitet: String,
-  program: String) extends Akademiker(namn, universitet)
-
-class Forskare(
-  namn: String, 
-  universitet: String, 
-  titel: String) extends Akademiker(namn, universitet)
-\end{Code} 
 
 %%%%%%%%%%%%%% Abstract class .... arv med parametrar till konstruktor
 
