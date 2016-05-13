@@ -23,10 +23,16 @@
 \end{Preparations}
 
 \subsection{Bakgrund}
-I denna labb skall ni tillverka lthopoly, en variant av det välkända brädspelet Monopol med några simplifieringar. Spelet går ut på att spelarna i tur och ordning slår en tärning, varpå deras pjäs flyttas det antal steg som tärningen visar. Det finns tre typer av rutor som alla ärver BoardSpace, och har olika beteenden. Dessa tre typer kallas för MoveSpace, MoneySpace och HouseSpace.
+I denna labb skall ni tillverka lthopoly, en variant av det välkända brädspelet Monopol med några simplifieringar. Spelet går ut på att spelarna i tur och ordning slår en tärning, varpå deras pjäs flyttas det antal steg som tärningen visar. Rutorna representeras av tre klasser som alla ärver av klassen BoardSpace, nämligen MoveSpace, MoneySpace och HouseSpace. En stor skillnad här jämfört med tidigare labbar är att det mesta skall skrivas i Java.
 
-Beroende på vilken av rutorna spelaren hamnar på sker olika saker. I fallet att man hamnar på MoveSpace får spelaren dra ett s.k. MoveCard, som antingen förflyttar spelaren framåt eller bakåt längs spelplanen. 
-Skulle spelaren hamna på MoneySpace kan denne antingen vinna eller förlora pengar genom att dra ett MoneyCard. Skulle spelaren hamna på en HouseSpace får denne alternativet att köpa rutan, förutsatt att den inte köpts av någon annan spelare, om så är fallet måste spelaren som hamnade på rutan betala hyra till ägaren.
+Beroende på vilken av de tre rutorna spelaren hamnar på sker olika saker. För att representera rutorn används en ArrayList<BoardSpace> och spelar-objektens positioner används för att hämta motsvarande boardspace från listan. För de tre olika typerna av rutor gäller följande:
+
+\begin{itemize}
+\item MoveSpace: Om en spelare hamnar på denna ruta slumpas ett kort från högen av MoveCards, varpå spelaren förflyttas antingen framåt eller bakåt det antal steg som kortet anger.Kortets deskriptiva text skrivs även ut i spelfönstret.
+\item MoneySpace: Om en spelare hamnar på denna ruta slumpas ett kort från högen av MoneyCards, varpå spelaren antingen förlorar pengar eller vinnar pengar enl. kortet.Kortets deskriptiva text skrivs även ut i spelfönstret.
+\item HouseSpace: Om en spelare hamnar här gäller olika saker beroende på rutans två tillstånd. Om spelaren hamnar på en HouseSpace som ingen annan spelare har köpt upp skall spelaren få möjlighet att köpa denna om den har råd. Är det istället så att rutan ägs av en annan spelare den nuvarande spelaren betala hyra till ägaren (hyran är samma som inköpspriset). 
+\end{itemize}
+
 
 Den visuella representationen av spelet sker via konsolfönstret med hjälp av klassen \code{TextUI}. \code{TextUI} är en färdigskriven klass med statiska metoder som gör det möjligt att skriva ut två kolumner av text i konsolfönstret. Utskriften kan exempelvis se ut såhär:
 
@@ -180,23 +186,30 @@ public MoveCard(String description, int position)
 
 \subsection{Obligatoriska uppgifter}
 
-\Task Här skall ni skriva en statisk metod för inläsning av data från fil i klassen DocumentParser. Här får inläsningssättet väljas helt fritt så länge resultatet av inläsningen blir att man kan anropa getBoard() och få kort enligt den kortstruktur som implementeras. Även klasserna MoveCard och MoneyCard skall implementeras så att det går bra ihop med inläsningen.
+\Task Textfilern moneycards.txt , movecards.txt och board.txt innehåller information som skall nyttjas för att skapa de olika rutorna. För att kunna använda de färdiskrivna textfilerna behöver ni nu skriva en statisk metod för inläsning av data från fil i klassen DocumentParser. Hur ni väljer att läsa in från fil är valfritt,  så länge det går att anropa getBoard() och få en lista av rutor som motsvarar spelplanen. Även klasserna MoveCard och MoneyCard skall implementeras så att det går bra ihop med inläsningen.
+För skapa ett File-objekt med informationen från filerna kan följande kod användas:
 \newline
 \newline
+\code{File f = new File(DocumentParser.class.}
+\newline
+\code{getResource("/moneycards.txt").getFile());}
+\newline
+\newline
+Därefter kan ni använda er av ett scanner-objekt som itererar över Filen för att hämta ut den aktuella informationen.
 \noindent
-\textbf{Obs!} Se textfilerna moneycards.txt, movecards.txt och board.txt för förståelse för hur inläsningen bör gå till för korten. 
+\textbf{Obs!} Se textfilerna moneycards.txt, movecards.txt och board.txt för förståelse för hur inläsningen bör gå till för korten.  Ni kan nyttja metoden .split(String) för att ta dela upp indatan.
 
 \Subtask Implementera klassen MoveCard.
 
 \Subtask Implementera klassen MoneyCard.
 
-\Subtask Implementera två statiska metoder för att hämta en vektor med MoveCards respektive MoneyCard från fil i DocumentParser.
+\Subtask Implementera metoderna getMoneyCards() och getMoveCards() i DocumentParser.
 
 \Subtask Implementera klassen Player.
 
-\Task I denna uppgift skall tre olika typer av spelrutor implementeras, som alla ärver ifrån klassen \code{BoardSpace}. Ni kommer då behöva implementera de tre abstrakta metoderna i BoardSpace i respeketive subklass. Här behöver subklasserna tillgång till spelbrädet då förändringen av speltillståndet sker till störren delen i metoden action för de olika rutorna. HouseSpace kommer dessutom behöva ett attribut som håller koll på vem som äger rutan, medan MoveSpace och MoneySpace kommer behöva tillgång till vektorer av de kort som läses in.
+\Task I denna uppgift skall de tre olika typerna av spelrutor implementeras, som alla ärver ifrån klassen \code{BoardSpace}. Ni kommer då behöva implementera de tre abstrakta metoderna i BoardSpace i respeketive subklass. Här behöver subklasserna tillgång till spelbrädet då förändringen av speltillståndet sker till störren delen i metoden \code{action} för de olika rutorna. HouseSpace kommer dessutom behöva ett attribut som håller koll på vem som äger rutan, medan MoveSpace och MoneySpace kommer behöva tillgång till vektorer av de kort som läses in.
 
-\Subtask Implementera en klass för varje typ av spelruta. 
+\Subtask Implementera en klass för varje typ av spelruta. Tänk på att MoveSpace och MoneySpace behöver tillgång till kortlekarna respektive kortlekar.
 För att skriva metoden action kommer ni behöva nyttja att klassen \code{GameBoard} har statiska variabler som representerar de olika spelarvalen.
 \newline
 \newline
@@ -204,7 +217,9 @@ För att skriva metoden action kommer ni behöva nyttja att klassen \code{GameBo
 \textbf{Obs!} Än så länge kommer logiken inte fungera då inga metoder är implementerade i BoardGame, det går trots detta bra att anropa metoderna utan kompileringsfel (i väntan på att de implementeras).
 
 
-\Task Nu är det dags att implementera getBoard() i klassen \code{DocumentParser}. I denna metod skall ni läsa in från filen board.txt och nyttja de metoder ni redan skrivit för att läsa in MoveSpaces och MoneySpaces. Viktigt här är att ordningen i vilken de olika rutorna är representerade i textfilen spelar roll, då den utgör upplägget av spelplanen. Alltså, beroende på vilken ruta som läses in från textfilen skall motsvarande objekt som representerar denna ruta konstrueras och läggas till i en ArrayList<BoardSpace> som slutligen returneras.
+
+\Task Nu är det dags att implementera getBoard() i klassen \code{DocumentParser}. I denna metod skall ni läsa in från filen board.txt och nyttja de metoder ni redan skrivit för att nu kunna skapa MoveSpaces och MoneySpaces. Viktigt här är att ordningen i vilken de olika rutorna är representerade i textfilen spelar roll, då den utgör upplägget av spelplanen. Alltså, beroende på vilken ruta som läses in från textfilen skall motsvarande objekt som representerar denna ruta konstrueras och läggas till i en ArrayList<BoardSpace> som slutligen returneras.
+\textbf{Fundera på om det behöver skapas flera objekt av varje typ av ruta.} 
 
 \Subtask Implementera getBoard().
 
@@ -213,15 +228,21 @@ För att skriva metoden action kommer ni behöva nyttja att klassen \code{GameBo
 \Subtask Implementera GameBoard.
 \newline
 \newline
-\textbf{Tips!} 
+\textbf{Tips:}
 
 \begin{itemize}
 \item Använd privata hjälpmetoder för att underlätta implementeringen.
-\item Metoden printStatistics i klassen \code{TextUI} tar en vektor av int-värden som inparameter, vilket är opassande då det underlättar att lagra pengahistoriken i en arrayList (eftersom dess storlek inte är bestämd). Det är därför lämpligt att skriva en metod som flyttar över samtliga Integer-objekt från ArrayList<Integers> till en vektor av ints. Detta fungerar trots att de har olika typer p.g.a. autoboxing. 
+\item Metoden printStatistics i klassen \code{TextUI} tar en vektor av int-värden som inparameter, vilket är opassande då det underlättar att lagra pengahistoriken i en arrayList (eftersom dess storlek inte är bestämd). Det är därför lämpligt att skriva en metod som flyttar över samtliga Integer-objekt från ArrayList<Integers> till en vektor av primitiva int-värden. Detta fungerar trots att de har olika typer p.g.a. autoboxing. 
 \item Tänk på att spelarna skall kunna gå runt spelplanen ett obegränsat antal gånger.
 \item Tänk på att dela upp arbetet så att det sker en lämpligt arbetsfördelning inom gruppen, men samarbeta så att ni vet hur era olika implementationer interagerar.
 \item Glöm inte att skicka strängar till  \code{TextUI} för att generera utskrift när uppdatering sker.
 \end{itemize}
+
+\Task Med spelplanen implementerad behövs en main-metod för att kunna starta spelet.  
+
+\Subtask Implementera getAction i Scala. Metoden skall nyttja de statiska variablerna från GameBoard för att ge en lämplig utskrift. Detta är metoden som kommunicerar med TextUI-klassen för att begära input från användarna.
+
+\Subtask Implementera main-metoden i Scala.
 
 
 
@@ -230,9 +251,9 @@ För att skriva metoden action kommer ni behöva nyttja att klassen \code{GameBo
 
 \Task Här är det dags att utöka spelet för att ge utökad funktionalitet som liknar det riktiga spelet.
 
-\Subtask Implementera så att varje spelare får extra pengar då den passerar början av listan.
+\Subtask Implementera funktionalitet för att varje spelare ska få extra pengar då den passerar början av listan.
 
-\Subtask Implementera så att om en spelare hamnar på en ruta de äger sedan tidigare så har de möjlighet att öka hyran för den ifall någon annan spelare skulle hamna på den.
+\Subtask Implementera funktionalitet för att varje spelare som hamnar på en ruta de äger sedan tidigare har möjlighet att öka hyran för rutan ifall någon annan spelare skulle hamna på den.
 
-\Subtask Implementera så att spelarna själva måste betala en femtedel värdet av sina hus varje runda (varje gång de passerar ett varv på brädet).
+\Subtask Implementera funktionalitet för att spelarna själva måste betala en femtedel värdet av sina hus varje runda (varje gång de passerar ett varv på brädet).
     
