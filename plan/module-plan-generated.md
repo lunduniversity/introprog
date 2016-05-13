@@ -13,6 +13,6 @@
 | W10 | Sökning, Sortering      | compareTo på strängar, trait Ordered[T], algoritm: LINEAR-SEARCH, algortim: BINARY-SEARCH, algoritmisk komplexitet, sortering till ny vektor, sortering på plats, algoritm: INSERTION-SORT, algoritm: SELECTION-SORT, mer om filer, serialisering |
 | W11 | Scala och Java          | skillnader mellan Scala och Java, klasser i Scala vs Java, referensvariabler vs enkla värden i Java, referenstilldelning vs värdetilldelning i Java, alternativ konstruktor i Scala och Java, for-sats i Java, java for-each i Java, java.util.ArrayList, autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, samlingar i Java vs Scala, scala.collection.JavaConverters, översiktligt om relationen mellan trait och interface, namnkonventioner för konstanter, enum i java ??? |
 | W12 | Trådar                  | Thread, Future, (Duration ???), (Await ???), HTML, (Javascript ???), (css ???), (Scala.js ???), (Android ???) |
-| W13 | Design                  | designexempel, utvecklingsprocessen krav-design-implementation-test, översiktligt om trait som gränssnitt |
+| W13 | Design                  | designexempel, the expression problem, utvecklingsprocessen, krav-design-implementation-test, översiktligt om trait som gränssnitt |
 | W14 | Tentaträning            |  |
 | T   | TENTAMEN                |  |

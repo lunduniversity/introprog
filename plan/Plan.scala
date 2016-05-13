@@ -147,7 +147,8 @@ trait Plan {
     Module("Design", 
       id = "design", exercise = "design", lab = "", contents = """
       | designexempel,
-      | utvecklingsprocessen krav-design-implementation-test,
+      | the expression problem,
+      | utvecklingsprocessen, krav-design-implementation-test,
       | översiktligt om trait som gränssnitt, 
       """.stripTrim),
 
