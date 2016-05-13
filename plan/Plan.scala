@@ -91,7 +91,6 @@ trait Plan {
       | accessregler vid arv, protected, final,
       | klass vs trait, abstract class,
       | case-object, typer med uppräknade värden,  
-      | översiktligt om trait som gränssnitt, 
       """.stripTrim),
 
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
@@ -147,6 +146,9 @@ trait Plan {
 
     Module("Design", 
       id = "design", exercise = "design", lab = "", contents = """
+      | designexempel,
+      | utvecklingsprocessen krav-design-implementation-test,
+      | översiktligt om trait som gränssnitt, 
       """.stripTrim),
 
     Module("Tentaträning", 
