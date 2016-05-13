@@ -134,6 +134,7 @@ trait Plan {
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
       | samlingar i Java vs Scala, scala.collection.JavaConverters,
       | översiktligt om relationen mellan trait och interface,
+      | namnkonventioner för konstanter,
       | enum i java ???,
       """.stripTrim),
 
