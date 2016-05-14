@@ -96,7 +96,7 @@
 \newcommand{\Eng}[1]{(eng. {\textit{#1}})}
 \newcommand{\Key}[1]{\textcolor{eclipsepurple}{\textbf{\texttt{#1}}}}
 \newcommand{\code}{\lstinline[basicstyle=\ttfamily]}
-
+\newcommand{\jcode}{\lstinline[basicstyle=\ttfamily,language=Java]}
 
 \lstdefinelanguage{Scala}{
   morekeywords={abstract,case,catch,class,def,%
