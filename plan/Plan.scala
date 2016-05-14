@@ -91,7 +91,6 @@ trait Plan {
       | accessregler vid arv, protected, final,
       | klass vs trait, abstract class,
       | case-object, typer med uppräknade värden,  
-      | översiktligt om trait som gränssnitt, 
       """.stripTrim),
 
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
@@ -134,6 +133,7 @@ trait Plan {
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
       | samlingar i Java vs Scala, scala.collection.JavaConverters,
       | översiktligt om relationen mellan trait och interface,
+      | namnkonventioner för konstanter,
       | enum i java ???,
       """.stripTrim),
 
@@ -146,6 +146,10 @@ trait Plan {
 
     Module("Design", 
       id = "design", exercise = "design", lab = "", contents = """
+      | designexempel,
+      | the expression problem,
+      | utvecklingsprocessen, krav-design-implementation-test,
+      | översiktligt om trait som gränssnitt, 
       """.stripTrim),
 
     Module("Tentaträning", 
