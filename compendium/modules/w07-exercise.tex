@@ -439,9 +439,65 @@ def färgPoäng(xs: Vector[Kort]): Int = xs.map(_.färg.toInt).sum
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task 
+\Task Polynom
+
+\begin{CodeSmall}
+//kod till facit  TODO: INTE ALLS FÄRDIGT
+
+trait Term {
+  def const: BigDecimal
+  protected def silentConst: String = 
+    if (const == BigDecimal(1)) "" else const.toString
+  def *(that: Term): Term
+  def ^(e: Int): Term
+}
+
+case class Const(const: BigDecimal) extends Term {
+  override def toString = const.toString
+  def *(that: Term): Term = that match {
+    case Const(c)     => Const(c * const)
+    case Var(c, n, e) => Var(c * const, n, e)
+    case Prod(c, vs)  => ??? 
+  }
+}
+
+case class Var(const: BigDecimal, name: Char, exp: BigInt) extends Term {
+  private def silentExp: String = 
+    if (exp == BigInt(1)) "" else "^"+exp.toString
+  def ^(e: Int) = Var(const.pow(e), name, e * exp) 
+  def *(c: BigDecimal) = Var(const * c, name, exp)
+  def /(c: BigDecimal) = Var(const / c, name, exp)
+  def constUnit: Var = Var(1.0, name, exp)
+  def *(that: Var): Term = {
+    Prod(const * that.const, Vector(this.constUnit, that.constUnit))
+  }
+  override def toString = s"$silentConst$name$silentExp" 
+}
+
+object Var{
+  def apply(name: Char) = new Var(1, name, 1)
+  def apply(const: Double, name: Char) = new Var(const, name, 1)
+}
+
+case class Prod(const: BigDecimal, vars: Vector[Var]) extends Term  {
+  override def toString = silentConst + vars.mkString
+}
+
+case class Poly(xs: Vector[Term]) {  // etc etc
+}
+
+\end{CodeSmall}
+
+
+\Task Numbers  TODO: Fundera på om detta är lönt eller blir exemplet för krångligt ???
+
+\scalainputlisting[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]{examples/numbers.scala}
+
+
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
 \Task TODO: Gör en fördjupningsuppgift inspirerat av denna \url{http://stackoverflow.com/questions/16173477/usages-of-null-nothing-unit-in-scala}    
     
+    
+\Task Plynomdivision    
