@@ -20,6 +20,7 @@
 \item Autoboxing
 \item Arv
 \item Läs igenom Bakgrunden, Kodstrukturen och alla kommentarer i kodskelettet.
+\item Exceptions
 \end{Preparations}
 
 \subsection{Bakgrund}
@@ -114,84 +115,110 @@ Välj ett alternativ:
 
 \subsubsection{Implementeras Själv}
 \begin{JavaSpec}{class Player}
+	/** Creates a new player*/
+	public Player(String name, int money, int pos);
 
-/**Beskriver en spelare med pengar money, namn name och position pos . */
-public Player(int money, String name, int pos)
+	/** Returns the players money*/
+	public int getMoney() ;
 
-/**Ger en int med spelarens pengar. */
-public int getMoney()
+	/** Adjusts the players money*/
+	public void adjustMoney(int money);
 
-/** Ändrar spelarens pengar. */
-public void setMoney(int money)
+	/** Returns the players position*/
+	public int getPosition();
 
-/** Ger en int med spelarens position. */
-public int getPosition()
+	/** Returns a string representation of the player*/
+	public String toString();
 
-/** Ändrar spelarens position. */
-public void setPosition(int pos)
+	/** Sets the players position*/
+	public void setPosition(int pos) ;
 
 \end{JavaSpec}
 
 \begin{JavaSpec}{class BoardSpace}
-/**Beskriver en generell ruta på spelplanen. */
-public BoardSpace()
+    /** Returns a array of int describing possible
+      * game actions available while on this space*/
+    public abstract int[] getPossibleActions(GameBoard board);
 
-/* Ger en vektor av möjliga val för spelare som står på rutan. */
-public abstract int[] getPossibleActions(GameBoard board);
+    /** Executes a game action available while on this space*/
+    public abstract void action(GameBoard board, int action);
 
-/* Genomför det val som skickas med. */
-public abstract void action(GameBoard board, int action);
-
-/*Ger en strängrepresentation av rutan. */
-public abstract String toString();
+    /** Returns a string representation of this BoardSpace*/
+    public abstract String toString();
 \end{JavaSpec}
 
 \begin{JavaSpec}{class GameBoard}
-/**Beskriver ett spelbräde med en vektor av spelarna players. */
-public GameBoard(Player[] players) 
+    /** Creates a new board ready to play */
+    public GameBoard(List<Player> players);
 
-/** Ger en vektor av möjliga val för spelaren vars tur det är. */
-public int[] getPossibleActions()
+    /** Returns a array of int describing possible game actions */
+    public int[] getPossibleActions() ;
+    
+    /** Checks whether the game is over */
+    public boolean isGameOver();
+    
+    /** Returns the player with the most money */
+    public Player getRichestPlayer();
 
-/** Ger sant eller falskt beroende på om spelet är slut eller ej.*/
-public boolean isGameOver()
+    /** Returns a array with all the players */
+    public List<Player> getPlayers();
 
-/** Hämtar den för närvarande rikaste spelaren. */
-public Player getRichestPlayer()
+    /** Returns a list with all the board spaces */
+    public List<BoardSpace> getBoardSpaces();
 
-/** Genomför valet action för den aktuella spelaren. */
-public void doAction(int action)
+    /** Performs an action for the current player */
+    public void doAction(int action);
+ 
+    /** Returns the currently active player */
+    public Player getCurrentPlayer();
 
-/** Ger spelaren vars tur det är. */
-public Player getCurrentPlayer()
+    /** Returns the boardspace corresponding to the position 
+      * of the current player. */
+    public BoardSpace getCurrentBoardSpace();
 
-/** Ger rutan som den aktuella spelaren står på. */
-public BoardSpace getCurrentBoardSpace()
+    /** Moves the currently active player adjustments spaces forward.
+      * Negative adjustment moves the player backwards*/
+    public void moveCurrentPlayer(int adjustment);
+    
+    /** Returns an ArrayList<Integer> of the players cash balance*/
+    public ArrayList<Integer> getStatistics();
 
-/** Förflyttar nuvarande spelare. */
-public void moveCurrentPlayer(int adjustment)
-
-/** Ger en vektor med totala summan pengar för varje runda,
- * där runda ett är index 0 och sista rundan är i sista elementet 
- * i vektorn.  */
-public int[] getStatistics()
-
-/** Ger en strängrepresentation av spelbrädet. */
-public String toString()
+    /** String Representation of the GameBoard */
+    public String toString() ;
 \end{JavaSpec}
 
 \begin{JavaSpec}{class DocumentParser}
-/* Ger en representation av spelplanen i en lista. */
-public static ArrayList<BoardSpace> getBoard()
+	/**Returns a ArrayList of Boardspaces loaded from a file*/
+	public static ArrayList<BoardSpace> getBoard();
+
+	/**Returns a array of MoneyCards loaded from file*/
+	public static MoneyCard[] getMoneyCards();
+
+	/**Returns a array of MoveCards loaded from file*/
+	public static MoveCard[] getMoveCards();
 \end{JavaSpec}
 
 \begin{JavaSpec}{class MoneyCard}
-/* Beskriver ett pengakort. */
-public MoneyCard(String description, int money)
+    /**Creates a new MoneyCard*/
+    public MoneyCard( String description, int money);
+
+    /**Returns the cards money adjustment value*/
+    public int getMoney();
+
+    /**Returns the description of why the money is adjusted*/ 
+    public String getDescription();
 \end{JavaSpec}
+
 \begin{JavaSpec}{class MoveCard}
-/* Beskriver ett flyttkort. */
-public MoveCard(String description, int position)
+    /**Creates a new MoveCard*/
+    public MoveCard( String description, int positionAdjustment) ;
+
+    /**Returns the position adjustment*/
+    public int getPositionAdjustment();
+
+    /**Returns the description of why the position is adjusted*/
+    public String getDescription();
+
 \end{JavaSpec}
 
 \subsubsection{Spelregler}
