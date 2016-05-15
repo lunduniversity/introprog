@@ -28,23 +28,28 @@ I denna labb skall ni tillverka lthopoly, en variant av det välkända brädspel
 Beroende på vilken av de tre möjliga ruttyperna spelaren hamnar på sker olika saker:
 
 \begin{itemize}
-\item MoveSpace: Om en spelare hamnar på denna ruta slumpas ett kort från högen av MoveCards, varpå spelaren förflyttas antingen framåt eller bakåt det antal steg som kortet anger.Kortets deskriptiva text skrivs även ut i spelfönstret.
-\item MoneySpace: Om en spelare hamnar på denna ruta slumpas ett kort från högen av MoneyCards, varpå spelaren antingen förlorar pengar eller vinnar pengar enl. kortet.Kortets deskriptiva text skrivs även ut i spelfönstret.
-\item HouseSpace: Om en spelare hamnar här gäller olika saker beroende på rutans två tillstånd. Om spelaren hamnar på en HouseSpace som ingen annan spelare har köpt upp skall spelaren få möjlighet att köpa denna om den har råd. Är det istället så att rutan ägs av en annan spelare den nuvarande spelaren betala hyra till ägaren (hyran är samma som inköpspriset). 
+\item MoveSpace: Om en spelare hamnar på denna ruta slumpas ett kort från en vektor av MoveCards, varpå spelaren förflyttas antingen framåt eller bakåt det antal steg som kortet anger.Kortets deskriptiva text skrivs även ut i spelfönstret.
+\item MoneySpace: Om en spelare hamnar på denna ruta slumpas ett kort från en vektor av MoneyCards, varpå spelaren antingen förlorar pengar eller vinnar pengar enl. kortet.Kortets deskriptiva text skrivs även ut i spelfönstret.
+\item HouseSpace: Skulle en spelare hamnar här gäller olika saker beroende på rutans två tillstånd. Hamnar spelaren på en HouseSpace som ingen annan spelare har köpt upp skall spelaren få möjlighet att köpa denna om den har råd (inköpspriset är en hyra). Är det istället så att rutan ägs av en annan spelare den nuvarande spelaren betala hyra till ägaren (hyran är samma som inköpspriset). 
 \end{itemize}
 
 \subsection{Kodstruktur}
 Klassen GameBoard håller koll på spelets tillstånd.
 GameBoard använder sig några sorters hjälpobjekt för att hålla koll på detaljerna kring spelet. 
 För varje spelare finns ett Player-objekt håller koll på information gällande den spelaren och GameBoard lagrar dessa in en List<Player>.
-De ovannämda ruttyperna implementeras som tre olika subklasser till BoardSpace. GameBoard lagrar dessa i en ArrayList<BoardSpace> som representerar hela spelplanen, där objektens index i listan motsvaras av rutornas position på spelplanen. Första rutan har index 0 och sista rutan på spelplanen har index \code{spaces.size()-1}.
+
+De ovannämda tre ruttyperna implementeras som tre olika subklasser till BoardSpace. GameBoard lagrar dessa i en ArrayList<BoardSpace> som representerar hela spelplanen, där objektens index i listan motsvaras av rutornas position på spelplanen. Första rutan har index 0 och sista rutan på spelplanen har index \code{spaces.size()-1}.
+
 GameBoard har en metod getPossibleActions som returnerar en lista över alla möjliga spelarhandlingar för den nuvarande spelaren. Denna används av mainmetoden för att be användaren välja nästa handling. 
 Olika sorters spelarhandlingar representeras av statiska int-variabler i klassen GameBoard. Vid val av handling matar användaren in handlingens siffervärde i konsolen. Varje handling motsvaras då alltid av samma inmatningsvärde för användaren.
 
 
 
 
-Den visuella representationen av spelet sker via konsolfönstret med hjälp av klassen \code{TextUI}. \code{TextUI} är en färdigskriven klass med metoder som gör det enkelt att skriva ut spelplanen och en logg av spelhistoriken i konsolfönstret. Utskriften kan exempelvis se ut såhär:
+Den visuella representationen av spelet sker via konsolfönstret med hjälp av klassen \code{TextUI}. \code{TextUI} är en färdigskriven klass med metoder som gör det enkelt att skriva ut spelplanen och en logg av spelhistoriken i konsolfönstret.
+Alla utskrifter under spelets gång ska gå via \code{TextUI}.
+\newline
+Utskriften kan exempelvis se ut såhär:
 
 \begin{REPL}
 ============================================================
@@ -151,19 +156,21 @@ Välj ett alternativ:
     /** Creates a new board ready to play */
     public GameBoard(List<Player> players);
 
-    /** Returns a array of int describing possible game actions */
+    /**Returns an int array containing possible game actions.
+     * A game action can be any of the static constants in
+     * GameBoard*/
     public int[] getPossibleActions() ;
     
-    /** Checks whether the game is over */
+    /** Checks whether the game is over or not */
     public boolean isGameOver();
     
     /** Returns the player with the most money */
     public Player getRichestPlayer();
 
-    /** Returns a array with all the players */
+    /** Returns a list of all players */
     public List<Player> getPlayers();
 
-    /** Returns a list with all the board spaces */
+    /** Returns a list of all BoardSpaces */
     public List<BoardSpace> getBoardSpaces();
 
     /** Performs an action for the current player */
@@ -180,7 +187,8 @@ Välj ett alternativ:
       * Negative adjustment moves the player backwards*/
     public void moveCurrentPlayer(int adjustment);
     
-    /** Returns an ArrayList<Integer> of the players cash balance*/
+     /** Returns an ArrayList<Integer> containing the total
+     *  sum of in the game after a round */
     public ArrayList<Integer> getStatistics();
 
     /** String Representation of the GameBoard */
@@ -224,18 +232,24 @@ Välj ett alternativ:
 \subsubsection{Spelregler}
 
 \begin{itemize}
+\item Varje spelare måste alltid börja sin runda med att slå en tärning innan den gör någon annan spelhandling, d.v.s. någon annan handling som påverkar spelets tillstånd (exempelvis kan man alltid visa spelplanen eller avsluta spelet).
 \item Om någon spelare har mindre än 0 SEK kvar skall spelet sluta.
-\item Om någon spelare hamnar på en husruta som ägs av en annan spelare måste denne betala ägaren husets hyra i SEK.
-\item Om en spelare väljer att ta ett kort skall det värde som påverkas av kortet justeras. För MoveCard innebär detta en förflyttning medan för MoneyCard en ändring av pengar.
-\item Spelplanen skall vara cyklisk, d.v.s. att nästa ruta efter sista rutan är den första rutan på spelplanen.
+\item Om någon spelare hamnar på en husruta som ägs av en annan spelare måste denne betala ägaren husets hyra i SEK. Om ingen äger huset ges spelaren möjlighet att köpa det för ett belopp motsvarande en hyra (förutsatt att den har råd).
+\item Om en spelare hamnar på en MoveSpace eller ett MoneySpace får spelaren möjligheten att dra ett kort. För MoveCard innebär detta en förflyttning (bakåt eller framåt) medan för MoneyCard en minskning eller ökning av pengar.
+\item Spelplanen skall vara cyklisk, d.v.s. att rutan direkt efter sista rutan är den första rutan på spelplanen.
 \end{itemize}
-
-
+Nedan visas ett förenklat flödesdiagram för en spelrunda.
+\newline
+\includegraphics[width=\textwidth]{../img/w11-lab/lthopoly.png}
 
 \subsection{Obligatoriska uppgifter}
 
-\Task Textfilern moneycards.txt , movecards.txt och board.txt innehåller information som skall nyttjas för att skapa de olika rutorna. För att kunna använda de färdiskrivna textfilerna behöver ni nu skriva en statisk metod för inläsning av data från fil i klassen DocumentParser. Hur ni väljer att läsa in från fil är valfritt,  så länge det går att anropa getBoard() och få en lista av rutor som motsvarar spelplanen. Även klasserna MoveCard och MoneyCard skall implementeras så att det går bra ihop med inläsningen.
-För skapa ett File-objekt med informationen från filerna kan följande kod användas:
+\Task All information om olika kort och om spelplanens upplägg finns i textfiler som måste läsas in med hjälp av metoderna i klassen DocumentParser. 
+Textfilerna moneycards.txt och movecards.txt innehåller information om de olika korten som finns.
+Varje rad innehåller en förklaring för kortet följt av ett värde separerat med semikolon. Dessa sparas i en vektor och när en spelare hamnar på en MoveSpace eller MoneySpace dras ett slumpmässigt kort från vektorn. Vektorn måste alltså skickas med till motsvarande ruta när rut-objektet skapas.
+Filen board.txt innehåller spelplanen, men behandlas först i uppgift 3.
+
+För att skapa ett File-objekt med informationen från filerna kan följande kod användas:
 \newline
 \newline
 \code{File f = new File(DocumentParser.class.}
@@ -243,9 +257,10 @@ För skapa ett File-objekt med informationen från filerna kan följande kod anv
 \code{getResource("/moneycards.txt").getFile());}
 \newline
 \newline
-Därefter kan ni använda er av ett scanner-objekt som itererar över Filen för att hämta ut den aktuella informationen.
+Därefter kan ni använda er av ett scanner-objekt som får tillgång till Filen för att läsa in en rad i taget.
 \noindent
-\textbf{Obs!} Se textfilerna moneycards.txt, movecards.txt och board.txt för förståelse för hur inläsningen bör gå till för korten.  Ni kan nyttja metoden .split(String) för att ta dela upp indatan.
+\newline
+\textbf{Obs!} Se textfilerna moneycards.txt, movecards.txt och board.txt för förståelse för hur inläsningen bör gå till för korten. \newline Ni kan nyttja metoden \code{String.split(String delimiter)} för att dela en sträng i en array av fält, där \code{delimiter} är den avgränsade strängen som används vid uppdelningen.
 
 \Subtask Implementera klassen MoveCard.
 
@@ -255,10 +270,10 @@ Därefter kan ni använda er av ett scanner-objekt som itererar över Filen för
 
 \Subtask Implementera klassen Player.
 
-\Task I denna uppgift skall de tre olika typerna av spelrutor implementeras, som alla ärver ifrån klassen \code{BoardSpace}. Ni kommer då behöva implementera de tre abstrakta metoderna i BoardSpace i respeketive subklass. Här behöver subklasserna tillgång till spelbrädet då förändringen av speltillståndet sker till störren delen i metoden \code{action} för de olika rutorna. HouseSpace kommer dessutom behöva ett attribut som håller koll på vem som äger rutan, medan MoveSpace och MoneySpace kommer behöva tillgång till vektorer av de kort som läses in.
+\Task I denna uppgift skall de tre olika subklasserna till BoardSpace implementeras.
 
 \Subtask Implementera en klass för varje typ av spelruta. Tänk på att MoveSpace och MoneySpace behöver tillgång till respektive kortlekar.
-För att skriva metoden action kommer ni behöva nyttja att klassen \code{GameBoard} har statiska variabler som representerar de olika spelarvalen.
+För att skriva metoden action kommer ni behöva nyttja att klassen \code{GameBoard} har statiska konstanterna som representerar de olika spelarvalen.
 \newline
 \newline
 \noindent
@@ -266,7 +281,8 @@ För att skriva metoden action kommer ni behöva nyttja att klassen \code{GameBo
 
 
 
-\Task Nu är det dags att implementera getBoard() i klassen \code{DocumentParser}. I denna metod skall ni läsa in från filen board.txt och nyttja de metoder ni redan skrivit för att nu kunna skapa MoveSpaces och MoneySpaces. Viktigt här är att ordningen i vilken de olika rutorna är representerade i textfilen spelar roll, då den utgör upplägget av spelplanen. Alltså, beroende på vilken ruta som läses in från textfilen skall motsvarande objekt som representerar denna ruta konstrueras och läggas till i en ArrayList<BoardSpace> som slutligen returneras.
+\Task Nu är det dags att implementera getBoard() i klassen \code{DocumentParser}. I denna metod skall ni läsa in från filen board.txt och nyttja de metoder ni redan skrivit för att nu kunna skapa MoveSpaces och MoneySpaces. Radernas ordning i filen bestämmer deras ordning på spelplanen. Varje rad börjar antingen med orden ''Move'', ''Money'' eller ''House''. House-rader följs dessutom av husets hyra och dess namn separerat av semikolon. Baserat på radens första ord skall ett motsvarande objekt konstrueras och läggas till i en ArrayList<BoardSpace> som slutligen returneras.
+
 
 
 \Subtask Implementera getBoard().
@@ -277,9 +293,7 @@ För att skriva metoden action kommer ni behöva nyttja att klassen \code{GameBo
 \item Behöver flera objekt skapas av varje ruttyp?
 \end{itemize}
 
-\Task För att kunna skriva ut och visa spelplanen använder sig klassen \code{TextUI}  av metoden toString() i klassen \code{GameBoard}. Denna ger en textrepresentation av spelplanen. Övriga metoder i klassen \code{GameBoard} skall nu implementeras, nyttja att  \code{TextUI} har metoder för att lägga till utskrifter i olika kolumner för utskrifter av händelser. Det skall inte förekomma någon direkt utskrift i  \code{GameBoard}, alla utskrifter ska gå via \code{TextUI}. I slutet av varje spelares tur skall dessutom den totala summan av pengar hos alla spelare läggas till i en ArrayList, för att det efter spelets slut skall kunna visas statistik för den totala ekonomin. 
-
-\Subtask Implementera GameBoard.
+\Task Implementera GameBoard enligt specifikationen.
 \newline
 \newline
 \textbf{Tips:}
@@ -288,8 +302,8 @@ För att skriva metoden action kommer ni behöva nyttja att klassen \code{GameBo
 \item Ni kan använda privata hjälpmetoder för att underlätta implementeringen.
 \item Metoden printStatistics i klassen \code{TextUI} tar en vektor av int-värden som inparameter, vilket är opassande då det underlättar att lagra pengahistoriken i en arrayList (eftersom dess storlek inte är bestämd). Det är därför lämpligt att skriva en metod som flyttar över samtliga Integer-objekt från ArrayList<Integers> till en vektor av primitiva int-värden. Detta fungerar trots att de har olika typer p.g.a. autoboxing. 
 \item Tänk på att spelarna skall kunna gå runt spelplanen ett obegränsat antal gånger.
-\item Tänk på att dela upp arbetet så att det sker en lämpligt arbetsfördelning inom gruppen, men samarbeta så att ni vet hur era olika implementationer interagerar.
-\item Glöm inte att skicka strängar till  \code{TextUI} för att generera utskrift när uppdatering sker.
+\item Glöm inte att alla utskrifter skall gå via  \code{TextUI}.
+\item Se flödesdiagrammet för att få en överblick för vilka actions som är tillåtna vid en given tidpunkt.
 \end{itemize}
 
 \textbf{Fundera på}
@@ -297,18 +311,22 @@ För att skriva metoden action kommer ni behöva nyttja att klassen \code{GameBo
 \item Varför tar konstruktorn i GameBoard emot en List<Player> istället för en ArrayList<Player>?
 \end{itemize}
 
-\Task Med spelplanen implementerad behövs en main-metod för att kunna starta spelet. I mainmetoden skapas GameBoard och alla Spelare. Spelet körs sedan som en loop där GameBoarden tillfrågas vilka spelarhandlingar som är tillåtna för den nuvarande spelaren, erbjuder spelaren möjligheten att välja något av dessa alternativ, och matar sedan in spelarens val tillbaka till GameBoard som hanterar valet. GameBoard ska alltså hantera all spellogik internt.  Spelloopen skall köras tills dess att spelet är över enligt GameBoard.isGameOver.
+\Task Med spelplanen implementerad behövs en main-metod för att kunna starta spelet. I main-metoden skapas GameBoard samt alla Spelare. Spelet körs sedan som en loop där GameBoard tillfrågas vilka spelarhandlingar som är tillåtna för den nuvarande spelaren, erbjuder spelaren möjligheten att välja något av dessa alternativ, och matar sedan in spelarens val tillbaka till GameBoard som hanterar valet. GameBoard ska alltså hantera all spellogik internt.  Spelloopen skall köras tills dess att spelet är över enligt GameBoard.isGameOver.
 
 \Subtask Implementera getAction i Scala. Metoden ska anropa TextUI.promptForInput med en lämplig lista av tupler för att begära input från användarna. Metoden skall nyttja de statiska variablerna från GameBoard för att ge en lämplig utskrift.
 
 \Subtask Implementera main-metoden i Scala.
 
+\Subtask Efter att spelet har avslutats skall den totala mängden pengar i spelet plottas som en funktion av rundindexet. Själva uppritningen sker med hjälp av den färdigskrivna metoden plotStatistics i TextUI som kräver en Buffer[Int] innehållande varje rundas totalsumma. 
 
-
+\textbf{Tips:}
+\begin{itemize}
+\item Nyttja scala.collection.JavaConverters för att konvertera Javas datatyper till Scala.
+\end{itemize}
 
 \subsection{Frivilliga extrauppgifter}
 
-\Task Här är det dags att utöka spelet för att ge utökad funktionalitet som liknar det riktiga spelet.
+\Task Utöka spelet med ny spelmekanik.
 
 \Subtask Implementera funktionalitet för att varje spelare ska få extra pengar då den passerar första spelrutan.
 
