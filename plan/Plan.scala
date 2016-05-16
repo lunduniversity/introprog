@@ -44,6 +44,7 @@ trait Plan {
       | lokala funktioner,    
       | anonyma funktioner, lambda,
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
+      | algoritm: GCD (största gemensamma delare),
       | cslib.window.SimpleWindow, 
       """.stripTrim),
 
@@ -51,7 +52,7 @@ trait Plan {
       id = "datastruct", exercise = "data", lab = "pirates", contents = """
       | attribut (fält), medlem, metod, 
       | tupel, klass, Any, isInstanceOf, toString, 
-      | case-klass, Rational,
+      | case-klass, räkna med bråk och klassen Frac,
       | föränderlighet vs oföränderlighet, 
       | List, Vector, Set, Map, 
       | typparameter, generisk samling som parameter,
@@ -91,7 +92,6 @@ trait Plan {
       | accessregler vid arv, protected, final,
       | klass vs trait, abstract class,
       | case-object, typer med uppräknade värden,  
-      | översiktligt om trait som gränssnitt, 
       """.stripTrim),
 
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
@@ -134,6 +134,7 @@ trait Plan {
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
       | samlingar i Java vs Scala, scala.collection.JavaConverters,
       | översiktligt om relationen mellan trait och interface,
+      | namnkonventioner för konstanter,
       | enum i java ???,
       """.stripTrim),
 
@@ -146,6 +147,10 @@ trait Plan {
 
     Module("Design", 
       id = "design", exercise = "design", lab = "", contents = """
+      | designexempel,
+      | the expression problem,
+      | utvecklingsprocessen, krav-design-implementation-test,
+      | översiktligt om trait som gränssnitt, 
       """.stripTrim),
 
     Module("Tentaträning", 
