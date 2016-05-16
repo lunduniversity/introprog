@@ -139,9 +139,9 @@ trait Plan {
 
     Module("Trådar", //, Web ???, Android ???", 
       id = "threadetc", exercise = "threads", lab = "life", contents = """
-      | Thread, Future, Duration, Await, 
-      | (HTML ???), (Javascript ???), (css ???), 
-      | Scala.js ???, Android ???,
+      | Thread, Future, (Duration ???), (Await ???), 
+      | HTML, (Javascript ???), (css ???), 
+      | (Scala.js ???), (Android ???),
       """.stripTrim),
 
     Module("Design", 
