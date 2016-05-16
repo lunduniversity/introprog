@@ -17,6 +17,7 @@ import java.util.concurrent.*;
 public class SimpleWindow {
 	public final static int MOUSE_EVENT = 1; // mouse click event type
 	public final static int KEY_EVENT = 2; // key pressed event type
+	public final static int CLOSE_EVENT = 3; // window closed event type
 
 	private static int nbrOpenFrames = 0; // number of open frames
 	private static boolean isExitOnLastClose = true; // controls exit window behavior
@@ -70,6 +71,9 @@ public class SimpleWindow {
 		keyHandler = new KeyEventHandler();
 		eventQueue = new LinkedBlockingQueue<AWTEvent>();
 
+		canvas.addMouseListener(mouseHandler);
+		canvas.addKeyListener(keyHandler);
+		
 		frame.pack();
 		open();
 	}
@@ -265,8 +269,6 @@ public class SimpleWindow {
 	 * Waits for event (mouse click or key press).
 	 */
 	public void waitForEvent() {
-		canvas.addMouseListener(mouseHandler);
-		canvas.addKeyListener(keyHandler);
 		canvas.setFocusable(true);
 		canvas.requestFocus();
 
@@ -284,12 +286,39 @@ public class SimpleWindow {
 			MouseEvent mEvent = (MouseEvent) lastEvent;
 			mouseX = mEvent.getX();
 			mouseY = mEvent.getY();
+		} else if (lastEvent.getID() == WindowEvent.WINDOW_CLOSED ||
+				lastEvent.getID() == WindowEvent.WINDOW_CLOSING) {
+			eventType = CLOSE_EVENT;
 		} else {
 			System.err.println("Internal SimpleWindowError: "
 					+ " unknown event type, " + lastEvent.getID());
 		}
-		canvas.removeMouseListener(mouseHandler);
-		canvas.removeKeyListener(keyHandler);
+	}
+	
+	public boolean isEventAvailable() {
+		canvas.setFocusable(true);
+		canvas.requestFocus();
+		lastEvent = eventQueue.poll();
+		if (lastEvent == null){
+			return false;
+		} else {
+			if (lastEvent.getID() == KeyEvent.KEY_TYPED) {
+				eventType = KEY_EVENT;
+				key = ((KeyEvent) lastEvent).getKeyChar();
+			} else if (lastEvent.getID() == MouseEvent.MOUSE_PRESSED) {
+				eventType = MOUSE_EVENT;
+				MouseEvent mEvent = (MouseEvent) lastEvent;
+				mouseX = mEvent.getX();
+				mouseY = mEvent.getY();
+			} else if (lastEvent.getID() == WindowEvent.WINDOW_CLOSED ||
+					lastEvent.getID() == WindowEvent.WINDOW_CLOSING) {
+				eventType = CLOSE_EVENT;
+			} else {
+				System.err.println("Internal SimpleWindowError: "
+						+ " unknown event type, " + lastEvent.getID());
+			}
+			return true;
+		}
 	}
 
 	/**
@@ -362,10 +391,11 @@ public class SimpleWindow {
 	class WindowEventHandler extends WindowAdapter {
 		public void windowClosing(WindowEvent e) {
 			nbrOpenFrames--;
-			if (nbrOpenFrames > 0) {
+			if (nbrOpenFrames > 0 || !isExitOnLastClose) {
+				eventQueue.offer(e);
 				frame.setVisible(false);
 				frame.dispose();
-			} else if (isExitOnLastClose){
+			} else {
 				System.exit(0);
 			}
 		}
