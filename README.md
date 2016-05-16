@@ -177,6 +177,10 @@ Here are some other inspiring style guides that illustrate the variety in what d
  
 # License
 
+Copyright 2016 by the authors and Department of Computer Science at Lund University, Sweden.
+
+Contributors: https://github.com/lunduniversity/introprog/blob/master/contributors.tex
+
 This work is licensed under a
 Creative Commons Attribution-ShareAlike 4.0 International License.
 
