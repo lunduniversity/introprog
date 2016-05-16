@@ -11,6 +11,7 @@
 	\item Kunna byta mellan representationer av en spelplan.
 \end{Goals}
 
+\subsection{Bakgrund}
 I detta projektet ska du implementera din egen version av spelet tic-tac-toe (eller som vi på svenska kallar det, tre i rad)! Du kommer börja med att implementera en version där du kan spela mot en kursare och sen gå vidare till att implementera en datorspelare som lägger sin pjäs slumpmässigt och till slut en som inte kan förlora!
 
 
@@ -26,18 +27,18 @@ Om du känner dig säker på hur reglerna i tic-tac-toe funkar kan du skippa det
 
 \subsection{Teori}
 
-Representationen är vald till en endimensionell vektor av typen Int av storlek 9 där element $[0,2]$ \footnote{med beteckningen [x,y] menas alla heltal från x till y, dvs: x, x+1, x+2, ... , y-1, y. [0,2] = {0,1,2}} representerar den första raden $[3,5]$ andra och $[6,8]$ den tredje. Anledningen till detta är att vi vill ha en representation så att spelaren kan svara vilket drag den vill göra med ett heltal.
+Representationen är vald till en endimensionell vektor av typen Int av storlek 9 där element $[0,2]$ \footnote{Med beteckningen [x,y] menas alla heltal från x till y, dvs: x, x+1, x+2, ... , y-1, y. [0,2] = {0,1,2}} representerar den första raden $[3,5]$ andra och $[6,8]$ den tredje. Anledningen till detta är att vi vill ha en representation så att spelaren kan svara vilket drag den vill göra med ett heltal.
 Varje element i vektorn ska kunna representera en tom plats, en plats allokerad av \texttt{x} och en plats allokerad av \texttt{o}. Detta innebär att en vektor av typen Boolean inte räcker till. Istället väjs den (kanske lite minnesöverflödiga) typen Int. Vi har valt representationen där 0 representerar tom plats, 1 representerar \texttt{x} och -1 representerar \texttt{o}. Denna representation är dels smidig för vår framtida OptimalP och även för att avgöra om spelare \texttt{x} eller \texttt{o} har vunnit. Man kan exempelvis summera en rad och kolla om radens summa är 3, då har \texttt{x} vunnit eller -3, då har \texttt{o} vunnit.
  
 \subsection{Obligatoriska uppgifter}
 
-\Task Implementera ett fungerande spel genom att utöka kodskeletten i klasserna Player, HumanPlayer och Game.
+\Task Implementera ett fungerande spel genom att utöka kodskeletten i klasserna Player, HumanP och Game.
 
-\Subtask Implementera funktionen gameWon i klassen Player som testar huruvida spelaren \code{who} vunnit spelet.
+\Subtask Implementera funktionen \code{gameWon} i klassen Player som testar huruvida spelaren \code{who} vunnit spelet.
 
-\Subtask Implementera en HumanP.
+\Subtask Implementera HumanPs \code{move}-funktion.
 
-\Subtask Implementera en version av Game, börja med att alltid spela ett spel och alltid rita spelplanen. main, draw och play behöver implementeras. Men all funktionalitet i main behöver ännu inte finnas.\footnote{Notera att man behöver invertera spelplanen om den ska skickas till spelare två (alternativs låta spelaren hålla reda på om den är \texttt{x} eller \texttt{o}). Förslagsvis löses detta med en extra funktion invGame som skapar en ny array med omvända tecken till orginalarrayen.}
+\Subtask Implementera en version av Game. Börja med att alltid spela ett spel och alltid rita spelplanen. \code{main}, \code{draw} och \code{play} behöver implementeras. All funktionalitet i main behöver ännu inte finnas.\footnote{Notera att man behöver invertera spelplanen om den ska skickas till spelare två (alternativt låta spelaren hålla reda på om den är \texttt{x} eller \texttt{o}). Förslagsvis löses detta med en extra funktion invGame som skapar en ny array med omvända tecken till orginalarrayen.}
 
 \Task Randomized player
 
@@ -45,7 +46,7 @@ Varje element i vektorn ska kunna representera en tom plats, en plats allokerad 
 
 \Subtask Ändra Game så att användaren tillåts stänga av ritfunktionen och i så fall tillåts välja antalet spel.
 
-\Subtask Vad är sannolikheterna för att \texttt{x} vinner, \texttt{o} vinner och att det blir oavgjort om två randomized players spelar mot varandra?
+\Subtask Vad är sannolikheterna för att \texttt{x} vinner, \texttt{o} vinner och att det blir oavgjort om två RandP spelar mot varandra?
 
 Hamnar man i närheten av dessa resultat tror vi på er RandP.
 \begin{itemize}
@@ -56,7 +57,7 @@ Hamnar man i närheten av dessa resultat tror vi på er RandP.
 
 \Subtask Varför är det större sannolikhet för \texttt{x} att vinna än \texttt{o}?
 
-\Task Optimal Player
+\Task Optimal player
 
 Betrakta den givna funktionen \texttt{eval}
 \begin{Code}
@@ -86,7 +87,7 @@ def eval(game: Array[Int], depth: Int, who: Int): Int = {
 }
 \end{Code}
 
-\texttt{eval} avgör om du är i en vinnande, förlorande eller oavgjord situation, givet att båda spelare spelar optimalt. Det som nog är svårast att förstå är varför vi retunerar \texttt{-min} på slutet. \texttt{min} sparar det sämsta värdet som vår motståndare kan få givet våra möjliga drag. Vi observerar att vi är i precis omvänd situation jämfört med vår motståndare. Om vår moståndare definitivt vinner förlorar vi definitivt, om det blir oavgjort för vår motståndare blir det också oavgjort för oss, och om vår motståndare definitivt förlorar, då vinner vi. Vi representerade ju vinst med 1, oavgjort med 0 och förlust med -1. Det är alltså härifrån minustecknet kommer ifrån. Vill man läsa mer om detta kan man kolla in wikipedias artikel https://en.wikipedia.org/wiki/Minimax om minmax-evaluering. Vi tar helt enekelt det draget som är sämst för vår motståndare.
+\texttt{eval} avgör om du är i en vinnande, förlorande eller oavgjord situation, givet att båda spelare spelar optimalt. Det som nog är svårast att förstå är varför vi retunerar \texttt{-min} på slutet. \texttt{min} sparar det sämsta värdet som vår motståndare kan få givet våra möjliga drag. Vi observerar att vi är i precis omvänd situation jämfört med vår motståndare. Om vår moståndare definitivt vinner förlorar vi definitivt, om det blir oavgjort för vår motståndare blir det också oavgjort för oss, och om vår motståndare definitivt förlorar, då vinner vi. Vi representerade ju vinst med 1, oavgjort med 0 och förlust med -1. Det är alltså härifrån minustecknet kommer ifrån. Vill man läsa mer om detta kan man kolla in wikipedias artikel https://en.wikipedia.org/wiki/Minimax om minmax-evaluering. Vi tar helt enkelt det draget som är sämst för vår motståndare.
 
 \Subtask Implementera move-funktionen till OptimalP.
 
