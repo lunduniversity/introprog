@@ -14,33 +14,120 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task \label{task:switch} \emph{Hur funkar en \jcode{switch}-sats i Java?} Ibland vill man testa om ett värde kan vara ett av många  olika alternativ och då kan man använda en sekvens av \code{if}-\code{else}, men det finns ett annat alternativ: i Java och många andra språk finns en \jcode{switch}-sats kollar flera alternativ i en sats, se t.ex. \href{https://en.wikipedia.org/wiki/Switch_statement}{en.wikipedia.org/wiki/Switch\_statement}.
+\Task \label{task:switch} \emph{Hur funkar en \jcode{switch}-sats i Java (och flera andra språk)?} Det händer ofta att man vill testa om ett värde är ett av många olika alternativ. Då kan man använda en sekvens av många \code{if}-\code{else}, ett för varje alternativ. Men det finns ett annat sätt i Java och många andra språk: man kan använda \jcode{switch} som kollar flera alternativ i en och samma sats, se t.ex. \href{https://en.wikipedia.org/wiki/Switch_statement}{en.wikipedia.org/wiki/Switch\_statement}.
 
 \Subtask Skriv in nedan kod i en kodeditor. Spara med namnet \texttt{Switch.java} och kompilera filen med kommandot \texttt{javac Switch.java}. Kör den med \texttt{java Switch} och ange din favoritgrönsak som argumnet till programmet. Vad händer? Förklara hur \jcode{switch}-satsen fungerar.
 
 \javainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/Switch.java}
 
-\Subtask \label{subtask:break} Vad händer om du tar bort \jcode{break}-satsen på rad 15?
+\Subtask \label{subtask:break} Vad händer om du tar bort \jcode{break}-satsen på rad 16?
 
 
 
-\Task \emph{Matcha värden.} I Scala finns ingen \jcode{switch}-sats. I stället har Scala ett \code{match}-uttryck som är mer kraftfullt. Dock saknar Scala nyckelordet \jcode{break} och Scalas \code{match}-uttryck kan inte ''falla igenom'' som skedde i uppgift \ref{task:switch}\ref{subtask:break}.
 
-\Subtask Skriv nedan program med en kodeditor och spara i filen \texttt{Match.scala}. Kompilera med \texttt{scalac Match.scala}. Kör med \texttt{scala Match} och ge som argument din favoritgrönsak. Vad händer? Förklara hur ett \code{match}-uttryck fungerar.
+\Task \label{task:vegomatch} \emph{Matcha värden.} I Scala finns ingen \jcode{switch}-sats. I stället har Scala ett \code{match}-uttryck som är mer kraftfullt. Dock saknar Scala nyckelordet \jcode{break} och Scalas \code{match}-uttryck kan inte ''falla igenom'' som skedde i uppgift \ref{task:switch}\ref{subtask:break}.
+
+\Subtask \label{subtask:vegomatch} Skriv nedan program med en kodeditor och spara i filen \texttt{Match.scala}. Kompilera med \texttt{scalac Match.scala}. Kör med \texttt{scala Match} och ge som argument din favoritgrönsak. Vad händer? Förklara hur ett \code{match}-uttryck fungerar.
 
 \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/Match.scala}
+
+\Subtask Vad blir det för felmeddelande om du tar bort case-grenen för defaultvärden och indata väljs så att inga case-grenar matchar? Är det ett körtidsfel eller ett kompileringsfel?
 
 
 \Subtask\Pen Beskriv några skillnader i syntax och semantik mellan Javas flervalssats \jcode{switch} och Scalas flervalsuttryck \code{match}.
 
 
-\Task \emph{TODO Villkor i match-grenar.} \Eng{guards} \code{if math.random > 0.5} 
 
-\Task \emph{TODO Matcha på case-klasser.}  
 
-\Task \emph{TODO matcha på case-objekt. Nyttan med sealed.} Ska detta vara fördjupning??
+\Task \emph{Gard i case-grenar.} Med hjälp en gard \Eng{guard} i en case-gren kan man begränsa med ett villkor om grenen ska väljas. 
 
-\Task \emph{TODO Matcha på Option.}  
+Utgå från koden i uppgift \ref{task:vegomatch}\ref{subtask:vegomatch} och byt ut case-grenen för \code{'g'}-matchning till nedan variant med en gard med nyckelordet \code{if} (notera att det inte behövs parenteser runt villkoret):
+\begin{Code}
+    case 'g' if math.random > 0.5 => "gurka är gott ibland..."
+\end{Code}
+Kompilera om och kör programmet upprepade gånger med olika indata tills alla grenar i \code{match}-uttrycket har exekverats. Förklara vad som händer.
+
+\Task \label{task:match-caseclass} \emph{Matcha på case-klasser.} Scalas \code{match}-uttryck är extra kraftfulla om de används tillsammans med \code{case}-klasser: då kan fält extraheras automatiskt och bindas till lokala namn direkt i case-grenen som nedan exempel visar (notera att \code{v} och \code{rutten} inte behöver deklareras explicit).   
+
+\Subtask Vad skrivs ut nedan? Varför? Prova att byta namn på \code{v} och \code{rutten}.
+\begin{REPL}
+scala> case class Gurka(vikt: Int, ärRutten: Boolean)
+scala> val g = Gurka(100, true)
+scala> g match { case Gurka(v,rutten) => println("G" + v + rutten) }
+\end{REPL}
+
+\Subtask Skriv sedan nedan i REPL och tryck TAB två gånger efter punkten. Vad har \code{unapply}-metoden för resultattyp?  
+\begin{REPL}
+scala> Gurka.unapply   // Tryck TAB två gånger
+\end{REPL}
+Bakgrund för kännedom: Case-klasser får av kompilatorn automatiskt ett s.k. kompanjonsobjekt \Eng{companion object}, i detta fallet \code{object Gurka}. Det objektet får av kompilatorn automatiskt en \code{unapply}-metod. Det är \code{unapply} som anropas ''under huven'' när case-klassernas fält extraheras vid matchning med \code{match}, men detta sker alltså automatiskt och man behöver inte explicit nyttja \code{unapply} om man inte själv vill implementera s.k. extraherare \Eng{extractors}, se fördjupningsuppgift \ref{task:extractor}. 
+
+\Subtask Anropa \code{unapply}-metoden enligt nedan. Vad blir resultatet?
+\begin{REPL}
+scala> Gurka.unapply(g)   
+\end{REPL}
+Vi ska i senare uppgifter undersöka hur typerna \code{Option} och \code{Some} fungerar och hur man kan ha nytta av dessa i andra sammanhang.
+
+\Subtask Spara programmet nedan i filen \texttt{vegomatch.scala} och kompilera med \code{scalac vegomatch.scala} och kör med \code{scala vegomatch.Main 1000} i terminalen. Förklara hur predikatet \code{ärÄtvärd} fungerar. 
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/vegomatch.scala}
+
+
+
+\Task Man kan åstadkomma urskiljningen av de ätbara grönsakerna i uppgift \ref{task:match-caseclass} med polymorfism i stället för \code{match}. 
+
+\Subtask Gör en ny variant av ditt program enligt nedan riktlinjer och spara den modifierade koden i filen \texttt{vegopoly.scala} och kompilera och kör.
+\begin{itemize}[noitemsep]
+\item Ta bort predikatet \code{ärÄtvärd} i objektet \code{Main} och inför i stället en abstrakt metod \code{def ärÄtbar: Boolean} i traiten \code{Grönsak}.
+\item Inför konkreta värden i respektive grönsak som definierar ätbarheten.
+\item Ändra i huvudprogrammet enligt ovan ändringar så att \code{ärÄtvärd} anropas som en metod på de skördade grönsaksobjekten när de ätvarda ska filtreras ut.
+\end{itemize} 
+
+\Subtask Lägg till en ny grönsak \code{case class Brocolli} och definiera dess ätbarhet. Ändra i slump-funktionerna så att brocolli blir ännu ovanligare än gurka.
+
+\Subtask\Pen Jämför lösningen med \code{match} i uppgift \ref{task:match-caseclass} och lösningen ovan med polymorfism. Vilka är för- och nackdelarna med respektive lösning. Diskutera två olika situationer: 1) att uppsättningen grönsaker inte ändras särskilt ofta medan definitionerna av ätbarhet ändras väldigt ofta och 2) att uppsättningen grönsaker ändras väldigt ofta men att ätbarhetsdefinitionerna inte ändras särskilt ofta.
+
+
+
+\Task \emph{Matcha på case-objekt och nyttan med \code{sealed}.} Skapa nedan kod i en editor, och klistra in i REPL med kommandot \code{:pa}. Notera nyckelordet \code{sealed}.
+\begin{Code}
+sealed trait Färg
+object Färg { 
+  val values = Vector(Spader, Hjärter, Ruter, Klöver) 
+}
+case object Spader  extends Färg
+case object Hjärter extends Färg
+case object Ruter   extends Färg
+case object Klöver  extends Färg
+\end{Code}
+
+\Subtask Skapa en funktion \code{def parafärg(f: Färg): Färg} i en editor, som med hjälp av ett match-uttryck returnerar parallellfärgerna: paralellfärgen till \code{Hjärter} är \code{Ruter} och vice versa, medan parallellfärgen till \code{Klöver} är \code{Spader} och vice versa. Klistra in funktionen i REPL.
+\begin{REPL}
+scala> val xs = Vector.fill(5)(Färg.values((math.random * 4).toInt))  
+scala> xs.map(parafärg)
+\end{REPL}
+
+\begin{Code}
+// kod till facit
+def parafärg(f: Färg): Färg = f match {
+  case Spader  => Klöver
+  case Hjärter => Ruter
+  case Ruter   => Hjärter
+  case Klöver  => Spader
+}
+\end{Code}
+
+\Subtask Vi ska nu undersöka vad som händer om man glömmer en av case-grenarna i matchningen i \code{parafärg}? ''Glöm'' alltså avsiktligt en av case-grenarna och klistra in den nya \code{parafärg} med den ofullständiga matchningen. Hur lyder varningen? Kommer varningen vid körtid eller vid kompilering? 
+
+\Subtask Anropa \code{parafärg} med den ''glömda'' färgen. Hur lyder felmeddelandet? Är det ett kompileringsfel eller ett körtidsfel?
+
+\Subtask\Pen Förklara vad nyckelordet \code{sealed} innebär och vilken nytta man kan ha av att \textbf{försegla} en supertyp.
+
+
+\Task \emph{Betydelsen av små och stora begynnelsebokstaver vid matchning.} TODO
+
+
+
+\Task \emph{TODO Använda och matcha på Option.}  
 
 \Task \emph{TODO Fånga undantantag i Java} Integer.parseInt
 
@@ -79,12 +166,18 @@ scala> g.equals  // tryck TAB två gånger
 
 
 
-\Task \emph{Klassen \code{Complex} och metoden \code{equals}.} Implementera klassen \code{Complex} som representerar ett komplext tal\footnote{\href{https://sv.wikipedia.org/wiki/Komplexa_tal}{sv.wikipedia.org/wiki/Komplexa\_tal}} med realdel och imaginärdel.
+\Task \emph{Klassen \code{Complex} och metoden \code{equals}.} Implementera klassen \code{Complex} som representerar ett komplext tal\footnote{\href{https://sv.wikipedia.org/wiki/Komplexa_tal}{sv.wikipedia.org/wiki/Komplexa\_tal}} med realdel och imaginärdel. I stället för att använda en case-klass och en \code{equals}-metod som automatiskt ger innehållslikhet, ska du träna på att implementera en egen \code{equals}.
 
-\begin{REPL}
-scala> class Complex(val re: Double, im: Double)
-
-\end{REPL}
+\begin{Code}
+class Complex(re: Double, im: Double) extends  {
+  def abs: Double = math.hypot(re, im)
+  override def toString = s"Complex($re, $im)"
+  //override def equals(other: Any): Boolean = ???
+}
+case object Complex {
+  def apply(re: Double, im: Double): Complex = new Complex(re, im)
+}
+\end{Code}
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
@@ -92,5 +185,15 @@ scala> class Complex(val re: Double, im: Double)
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task Överskugga equals vid arv, exempel Shape. Ska detta vara fördjupning???     
+\Task Överskugga equals vid arv. Ska detta vara fördjupning???     
+
+\begin{Code}
+trait Number
+class Complex(re: Double, im: Double) extends Number {
+  override def equals(other: Any): Boolean = ???
+}
+class Rational(numerator: Int, denominator: Int) extends Number {
+  override def equals(other: Any): Boolean = ???
+}
+\end{Code}
     
