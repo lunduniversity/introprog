@@ -4,10 +4,14 @@
 
    Run with sbt in terminal (note the quotes):
    $ sbt "run w01"  
+   $ sbt "run --all"
+   $ sbt "run --init w07"
 
    Or compile and run manually in terminal:
    $ scalac solucheck.scala
-   $ scala solucheck w01   
+   $ scala solucheck w01 
+   $ scala solucheck --all
+   $ scala solucheck -- init w07  
 
 */
 
