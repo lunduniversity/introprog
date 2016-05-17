@@ -41,10 +41,10 @@ object solucheck {
     
   def reportDiffSubtasks(week: String, exec: TaskData, solu: TaskData): Unit = {
     val errDiff  = "*** DIFF #SUBTASKS ***"
-    val errUnsol = "*** UNSOLVED TASKS ***"
+    val errUnsol = "*** UNSOLVED TASK  ***"
     val errExtra = "*** EXTRA SOLUTION ***"
     exec.zipWithIndex.collect{ case ((text,n),i) =>
-      val taskId = s"Task ${i.toString.padTo(2,' ')}: $text"
+      val taskId = s"Task ${(i+1)cd ...toString.padTo(2,' ')}: $text"
       solu.lift(i) match {
         case Some((_, nsolu)) => 
           if (n - nsolu != 0) println(s"$errDiff $taskId: DIFF ${n - nsolu}")
