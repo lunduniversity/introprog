@@ -4,6 +4,14 @@ This is the repo of a course given by Lund University called "Introduction to Pr
 
 Course homepage (in Swedish): http://cs.lth.se/pgk/ 
 
+This is work in progress; the first instance of the course starts 
+
+## How to use this repo
+
+* Download the latest version of the [compendium](https://github.com/lunduniversity/introprog/raw/master/compendium/compendium.pdf).
+
+* Download the [workspace](zipfile to be uploaded). <- TODO ->
+
 ## Contents of this repo
 
 The main directories are:
@@ -43,12 +51,6 @@ The directories are organized in this hierarchy:
             ├── week01
             └── week03
 
-
-## How to use this repo
-
-* Download the [compendium](https://github.com/lunduniversity/introprog/raw/master/compendium/compendium.pdf).
-
-* Download the [workspace](zipfile to be uploaded). <- TODO ->
 
 ## How to build this repo
 
