@@ -3,19 +3,425 @@
 
 \Assignment{bank}
 
+\subsection{Fokus}
+\begin{itemize}[nosep,label={$\square$},leftmargin=*]
+\item Kunna implementera ett helt program efter given specifikation
+\item Kunna sätta samman olika delar från olika moduler
+\item Förstå hur Java-klasser kan användas i Scala
+\item Förstå och bedöma när immutable/mutable såväl som var/val bör användas i större sammanhang
+\item Kunna använda sig av kompanjons-objekt
+\item Kunna läsa och skriva till fil
+\item Kunna söka i olika datastrukturer på olika sätt
+\end{itemize}
+
+\subsection{Bakgrund}
+
+I detta projekt ska du skriva ett program som håller reda på bankkonton och kunder i en bank. Programmet ska även hålla reda på bankens nuvarande tillstånd, såväl som föregående.
+Tillstånden ska vid varje tillståndsförändring skrivas till fil så att utifall banken skulle krascha finns alla transaktioner som genomförts sparade,  banken kan således återställas.
+
+Programmet ska vara helt textbaserat, man ska alltså interagera med programmet via konsollen där en meny skrivs ut och input görs via tangentbordet.
+
+Du ska skriva hela programmet själv, men det ska dock följa de specifikationer som ges i uppgiften, såväl som de objektorienterade principer du lärt dig i kursen.
+
+\subsection{Krav}
+
+Kraven för bankapplikationen återfinns här nedan. För att bli godkänd på denna uppgift måste samtliga krav uppfyllas:
+
+\begin{itemize}
+\item Programmet ska ha följande menyval:
+
+\begin{itemize}
+\item 1. Hitta konton för en viss kontoinnehavare.
+\item 2. Söka efter kontoinnehavare på (del av) namn.
+\item 3. Sätta in pengar på ett konto.
+\item 4. Ta ut pengar på ett konto.
+\item 5. Överföra pengar mellan två olika konton.
+\item 6. Skapa ett nytt konto.
+\item 7. Ta bort ett befintligt konto.
+\item 8. Skriv ut bankens alla konton, sorterade i bokstavsordning efter innehavare.
+\item 9. Återställa banken till ett tidigare tillstånd för ett givet datum. För simplictet får alla transaktioner genomförda efter det datum banken återställts till permanent kasseras. 
+\item 10. Avsluta.
+\end{itemize}
+
+\item Programmet ska skapa ett nytt tillstånd med tidsstämpel och spara gamla tillstånd varje gång då:
+\begin{itemize}
+\item Pengar sätts in eller tas ut från ett konto.
+\item Pengar överförs mellan två konton.
+\item Ett konto skapas.
+\item Ett konto tas bort.
+\end{itemize}
+\item Då bankens tillstånd förändras ska detta skrivas till fil.
+\item Då banken startas upp ska transaktionshistoriken läsas in så att banken laddar senaste sparade tillståndet.
+\item Inga utskrifter eller inläsningar får göras i klasserna Customer, BankAccount, Bank, State eller Transaction. Allt som berör användargränssnittet ska ske i BankApplication. Det är tillåtet att använda valfritt antalat hjälpmetoder och hjälpklasser i klassen BankApplication.
+\item Alla metoder och attribut ska ha lämpliga åtkomsträttigheter.
+\item Valet av val/var och immutable/mutable måste vara lämpliga.
+\item Din indata måste ge samma resultat som i exemplen (som kommer komma i framtiden) i bilagan.
+\item Rimlig felhantering ska finnas, det är alltså önskvärt att programmet inte kraschar då man matar in felaktig input, utan istället säger till användaren att input är ogiltlig.
+\item Programdesignen ska följa de specifikationer som är angivna nedan.
+\end{itemize}
+
+\subsection{Design}
+Nedan följer specifikationerna för de olika klasserna bankapplikationen måste innehålla:
+
+
+\begin{ScalaSpec}{BankAccount}
+
+/**
+ * Creates a new bank account for the customer provided.
+ * The account is given a unique account number and initially
+ * got a balance of 0 kr.
+ */
+class BankAccount(val holder: Customer) = ???
+
+ /**
+   * Deposits provided amount on this account.
+   */
+  def deposit(amount: Int): Unit = ???
+
+/**
+   * Returns the balance of this account.
+   */
+  def getBalance: Int = ???
+
+/**
+   * Withdraws provided amount from this acccount, if there
+   * is enough money on the account. Returns true if the 
+   * transaction was successfull, otherwise false. 
+   */
+  def withdraw(amount: Int): Boolean = ???
+
+\end{ScalaSpec}
+
+
+
+\begin{ScalaSpec}{Bank}
+
+/**
+ * Creates a new bank with no accounts and no state. 
+ */
+class Bank() = ???
+
+  /**
+   * Adds a new account in the bank.
+   * The account number generates for the account is returned.
+   */
+  def addAccount(name: String, id: Int): Int = ???
+
+ /**
+   * Returns the customer with provided id. If no such customer
+   * existed, return null.
+   */
+  def findHolder(id: Int): Customer = ???
+
+ /**
+   * Removes the bank account with provided account number,
+   * returns true if successfull, otherwise false is returned.
+   */
+  def removeAccount(accountNbr: Int): Boolean = ???
+
+ /**
+   * Returns a list with every bank account in the bank.
+   */
+  def getAllAccounts(): ArrayBuffer[BankAccount] = ???
+
+  /**
+   * Returns the account holding provided account number.
+   * If no such account exists null is returned.
+   */
+  def findByNumber(accountNbr: Int): BankAccount = ???
+
+/**
+   * Returns a list with every account belonging to the customer
+   * with provided id.
+   */
+  def findAccountsForHolder(id: Int): ArrayBuffer[BankAccount] = ???
+
+/**
+   * Returns a list with all customers which names matches
+   * with provided name pattern.
+   */
+  def findByName(namePattern: String): ArrayBuffer[Customer] = ???
+
+ /**
+   * Executes a transaction in the bank.
+   */
+  def makeTransaction(transaction: Transaction): String = ???
+
+ /**
+   * Resets the bank to the state corresponding to given date.
+   * Returns true if successful, otherwise false.
+   */
+  def returnToState(returnDate: Date): Boolean = ???
+
+
+\end{ScalaSpec}
+
+
+\begin{ScalaSpec}{Transaction}
+/**
+ * Describes a transaction for a bank.
+ */
+abstract class Transaction = ???
+
+\end{ScalaSpec}
+
+
+\begin{ScalaSpec}{Customer}
+/**
+ * Describes a customer of a bank with provided name and id.
+ */
+class Customer(val name: String, val id: Int) = ???
+
+\end{ScalaSpec}
+
+
+För att använda tidsstämplar ska klassen Date som finns bifogat i kursens workspace användas. Det är en enkel wrapper av Java.time.
+
+
 \subsection{Obligatoriska uppgifter}
 
-\Task En uppgift.
+\Task Implementera klassen Customer
 
-\Subtask En underuppgift.
+\Task Implementera klassen BankAccount
 
-\Subtask En underuppgift.
+\Task Implementera den transakationsklass som skapar ett nytt konto.
+
+\Task Skapa klassen BankApplication.
+
+\Subtask Klassen BankApplication ska innehålla main-metoden. Det kan vara bra att innan man fortsätter se till att denna klass skriver ut menyn korrekt och kan ta input från tangentbordet som motsvarar de menyval som finns.
+
+\Task Implementera klassen Bank
+
+\Subtask Implementera menyval 6 och 8. Testa noga.
+
+\Subtask Implementera tillståndsfunktionaliteten. Varje ny transaktion ska ge upphov till ett nytt tillstånd och gamla tillstånd ska sparas som historik till det nya tillståndet.
+
+\Subtask Implementera alla andra menyval, förutom menyval 9. Implementera även de klasser som förlängar Transaction utefter att de behövs för nya menyval.
+Testa de nya menyvalen noga efterhand som du implementerar dem, i synnerhet så att tillståndsförändringarna fungerar korrekt. Gör de utökningar du anser behövs. 
+
+\Task Implementera menyval 9. Testa noga. Det är viktigt att denna funktionalitet fungerar bra innan man går vidare.
+
+\Task Implementera säkerhetskopiering av tillstånden.
+
+\Subtask Implementera utskriften till fil då ett nytt tillstånd skapas, utskriften ska ske omedelbart. Banken ska ej behöva avslutas för att utskriften ska hamna på fil, om så vore fallet kan information fortfarande gå förlorad om banken kraschar.
+
+\Subtask Implementera inläsningen från fil då banken startas.
+
 
 \subsection{Frivilliga extrauppgifter}
 
-\Task En uppgift.
+Gör först klart inlämningsuppgiftens obligatoriska delar. Därefter kan du, om du vill, utöka ditt
+program enligt följande.
 
-\Subtask En underuppgift.
+\Task Skriv en eller flera av klasserna Customer, BankAccount och State i Java istället och använd istället för Scala versionen.
 
-\Subtask En underuppgift.
+\Task	Implementera ett nytt menyalternativ som skriver ut all kontohistorik för en given person. I historiken ska dåvarande saldo vid varje transaktion synas.
 
+\subsection{Exempel på körning av programmet}
+
+Nedan visas möjliga exempel på körning av programmet. Data som matas in av användaren är markerad i fetstil.
+Ditt program måste inte se identiskt ut, men den övergripande strukturen såväl som resultat av körningen ska vara densamma.
+När exemplet börjar förutsätts det att banken inte har några konton.
+\newline
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\newline
+1.   Hitta ett konto för en given kund\newline
+2.   Sök efter en kund utifrån (del av) angivet namn\newline
+3.   Sätt in pengar\newline
+4.   Ta ut pengar\newline
+5.   Överför pengar mellan konton\newline
+6.   Skapa nytt konto\newline
+7.   Radera existerande konto\newline
+8.   Skriv ut alla konton i banken\newline
+9.   Återställ banken till ett tidigare datum\newline
+10. Avsluta\newline
+Val: \textbf{6}\newline
+Namn: \textbf{Adam Asson}\newline
+Id: \textbf{6707071234}\newline
+Nytt konto skapat med kontonummer: 1001\newline
+10:03:0 CET 5 / 14 - 2016\newline
+\newline
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\newline
+1.   Hitta ett konto för en given kund\newline
+2.   Sök efter en kund utifrån (del av) angivet namn\newline
+3.   Sätt in pengar\newline
+4.   Ta ut pengar\newline
+5.   Överför pengar mellan konton\newline
+6.   Skapa nytt konto\newline
+7.   Radera existerande konto\newline
+8.   Skriv ut alla konton i banken\newline
+9.   Återställ banken till ett tidigare datum\newline
+10. Avsluta\newline
+Val: \textbf{6}\newline
+Namn: \textbf{Berit Besson}\newline
+Id: \textbf{8505255678}\newline
+Nytt konto skapat med kontonummer: 1001\newline
+10:12:0 CET 5 / 14 - 2016\newline
+\newline
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\newline
+1.   Hitta ett konto för en given kund\newline
+2.   Sök efter en kund utifrån (del av) angivet namn\newline
+3.   Sätt in pengar\newline
+4.   Ta ut pengar\newline
+5.   Överför pengar mellan konton\newline
+6.   Skapa nytt konto\newline
+7.   Radera existerande konto\newline
+8.   Skriv ut alla konton i banken\newline
+9.   Återställ banken till ett tidigare datum\newline
+10. Avsluta\newline
+Val: \textbf{8}\newline
+Konto 1000 (Adam Asson, id 850127) 0 kr\newline
+Konto 1001 (Berit Besson, id 900318) 0 kr\newline
+10:13:0 CET 5 / 14 - 2016\newline
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\newline
+1.   Hitta ett konto för en given kund\newline
+2.   Sök efter en kund utifrån (del av) angivet namn\newline
+3.   Sätt in pengar\newline
+4.   Ta ut pengar\newline
+5.   Överför pengar mellan konton\newline
+6.   Skapa nytt konto\newline
+7.   Radera existerande konto\newline
+8.   Skriv ut alla konton i banken\newline
+9.   Återställ banken till ett tidigare datum\newline
+10. Avsluta\newline
+Val: \textbf{6}\newline
+Namn: \textbf{Berit Besson}\newline
+Id: \textbf{8505255678}\newline
+Nytt konto skapat med kontonummer: 1002\newline
+13:56:0 CET 5 / 14 - 2016\newline
+\newline
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\newline
+1.   Hitta ett konto för en given kund\newline
+2.   Sök efter en kund utifrån (del av) angivet namn\newline
+3.   Sätt in pengar\newline
+4.   Ta ut pengar\newline
+5.   Överför pengar mellan konton\newline
+6.   Skapa nytt konto\newline
+7.   Radera existerande konto\newline
+8.   Skriv ut alla konton i banken\newline
+9.   Återställ banken till ett tidigare datum\newline
+10. Avsluta\newline
+Val: \textbf{8}\newline
+Namn: \textbf{erit}
+Konto 1001 (Berit Besson, id 900318) 0 kr\newline
+Konto 1002 (Berit Besson, id 900318) 0 kr\newline
+14:01:0 CET 5 / 14 - 2016\newline
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\newline
+1.   Hitta ett konto för en given kund\newline
+2.   Sök efter en kund utifrån (del av) angivet namn\newline
+3.   Sätt in pengar\newline
+4.   Ta ut pengar\newline
+5.   Överför pengar mellan konton\newline
+6.   Skapa nytt konto\newline
+7.   Radera existerande konto\newline
+8.   Skriv ut alla konton i banken\newline
+9.   Återställ banken till ett tidigare datum\newline
+10. Avsluta\newline
+Val: \textbf{3}\newline
+Kontonummer: \textbf{1000}\newline
+Summa: \textbf{5000}\newline
+Transaktionen lyckades.\newline
+14:36:0 CET 5 / 14 - 2016\newline
+\newline
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\newline
+1.   Hitta ett konto för en given kund\newline
+2.   Sök efter en kund utifrån (del av) angivet namn\newline
+3.   Sätt in pengar\newline
+4.   Ta ut pengar\newline
+5.   Överför pengar mellan konton\newline
+6.   Skapa nytt konto\newline
+7.   Radera existerande konto\newline
+8.   Skriv ut alla konton i banken\newline
+9.   Återställ banken till ett tidigare datum\newline
+10. Avsluta\newline
+Val: \textbf{5}\newline
+Kontonummer att överföra ifrån: \textbf{1000}\newline
+Kontonummer att överföra till: \textbf{1001}\newline
+Summa: \textbf{1000}\newline
+Transaktionen lyckades.\newline
+14:37:0 CET 5 / 14 - 2016\newline
+\newline
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\newline
+1.   Hitta ett konto för en given kund\newline
+2.   Sök efter en kund utifrån (del av) angivet namn\newline
+3.   Sätt in pengar\newline
+4.   Ta ut pengar\newline
+5.   Överför pengar mellan konton\newline
+6.   Skapa nytt konto\newline
+7.   Radera existerande konto\newline
+8.   Skriv ut alla konton i banken\newline
+9.   Återställ banken till ett tidigare datum\newline
+10. Avsluta\newline
+Val: \textbf{8}\newline
+Konto 1000 (Adam Asson, id 850127) 4000 kr\newline
+Konto 1001 (Berit Besson, id 900318) 1000 kr\newline
+Konto 1002 (Berit Besson, id 900318) 0 kr\newline
+14:52:0 CET 5 / 14 - 2016\newline
+\newline
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\newline
+1.   Hitta ett konto för en given kund\newline
+2.   Sök efter en kund utifrån (del av) angivet namn\newline
+3.   Sätt in pengar\newline
+4.   Ta ut pengar\newline
+5.   Överför pengar mellan konton\newline
+6.   Skapa nytt konto\newline
+7.   Radera existerande konto\newline
+8.   Skriv ut alla konton i banken\newline
+9.   Återställ banken till ett tidigare datum\newline
+10. Avsluta\newline
+Val: \textbf{9}\newline
+Vilket datum vill du återställa banken till?
+År: \textbf{2016}\newline
+Månad: \textbf{5}\newline
+Datum (dag): \textbf{8}\newline
+Timme: \textbf{10}\newline
+Minut: \textbf{5}\newline
+Banken återställd.\newline
+15:00:0 CET 5 / 14 - 2016\newline
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\newline
+1.   Hitta ett konto för en given kund\newline
+2.   Sök efter en kund utifrån (del av) angivet namn\newline
+3.   Sätt in pengar\newline
+4.   Ta ut pengar\newline
+5.   Överför pengar mellan konton\newline
+6.   Skapa nytt konto\newline
+7.   Radera existerande konto\newline
+8.   Skriv ut alla konton i banken\newline
+9.   Återställ banken till ett tidigare datum\newline
+10. Avsluta\newline
+Val: \textbf{8}\newline
+Konto 1000 (Adam Asson, id 850127) 0 kr\newline
+15:01:0 CET 5 / 14 - 2016\newline
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\newline
+1.   Hitta ett konto för en given kund\newline
+2.   Sök efter en kund utifrån (del av) angivet namn\newline
+3.   Sätt in pengar\newline
+4.   Ta ut pengar\newline
+5.   Överför pengar mellan konton\newline
+6.   Skapa nytt konto\newline
+7.   Radera existerande konto\newline
+8.   Skriv ut alla konton i banken\newline
+9.   Återställ banken till ett tidigare datum\newline
+10. Avsluta\newline
+Val: \textbf{3}\newline
+Kontonummer: \textbf{1001}\newline
+Summa: \textbf{5000}\newline
+Transaktionen misslyckades. Inget sådant konto hittades.\newline
+15:06:0 CET 5 / 14 - 2016\newline
+\newline
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\newline
+1.   Hitta ett konto för en given kund\newline
+2.   Sök efter en kund utifrån (del av) angivet namn\newline
+3.   Sätt in pengar\newline
+4.   Ta ut pengar\newline
+5.   Överför pengar mellan konton\newline
+6.   Skapa nytt konto\newline
+7.   Radera existerande konto\newline
+8.   Skriv ut alla konton i banken\newline
+9.   Återställ banken till ett tidigare datum\newline
+10. Avsluta\newline
+Val: \textbf{3}\newline
+Kontonummer: \textbf{1001}\newline
+Summa: \textbf{5000}\newline
+Transaktionen misslyckades.  Otillräckligt saldo.\newline
+15:23:0 CET 5 / 14 - 2016\newline
+\newline

@@ -4,6 +4,14 @@ This is the repo of a course given by Lund University called "Introduction to Pr
 
 Course homepage (in Swedish): http://cs.lth.se/pgk/ 
 
+This is work in progress; the first instance of the course starts 
+
+## How to use this repo
+
+* Download the latest version of the [compendium](https://github.com/lunduniversity/introprog/raw/master/compendium/compendium.pdf).
+
+* Download the [workspace](zipfile to be uploaded). <- TODO ->
+
 ## Contents of this repo
 
 The main directories are:
@@ -43,12 +51,6 @@ The directories are organized in this hierarchy:
             ├── week01
             └── week03
 
-
-## How to use this repo
-
-* Download the [compendium](https://github.com/lunduniversity/introprog/raw/master/compendium/compendium.pdf).
-
-* Download the [workspace](zipfile to be uploaded). <- TODO ->
 
 ## How to build this repo
 
@@ -174,3 +176,29 @@ Here are some other inspiring style guides that illustrate the variety in what d
   * `\begin{Code}` ... `\end{Code}` and `\scalainputlisting{examples/hello-app.scala}` are used for Scala code 
   * `\begin{Code}[language=Java]` ... `\end{Code}` and `\javainputlisting{examples/Hi.java}` are used for Java code
   * `\begin{Slide}` and `\end{Slide}` defined in `slides/lecture-notes.cls` and in `compendium/compendium.cls` is used to generate beamer slides and to generate framed text in compendium chapters together with lecture notes that appear after each slide.
+ 
+# License
+
+Copyright &copy; 2015-2016. Dept. of Computer Science at Lund University, Lund, Sweden.
+
+Contributors: https://github.com/lunduniversity/introprog/blob/master/contributors.tex
+
+This work is licensed under a
+Creative Commons Attribution-ShareAlike 4.0 International License.
+
+
+You are free to:
+
+* Share — copy and redistribute the material in any medium or format
+* Adapt — remix, transform, and build upon the materia for any purpose, even commercially.
+* The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+Under the following terms:
+
+* Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+*  ShareAlike — If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
+* No additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
+
+
+See http://creativecommons.org/licenses/by-sa/4.0/
+

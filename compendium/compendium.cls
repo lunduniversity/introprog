@@ -29,6 +29,7 @@
 %\usepackage{PTSans}
 
 \usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage{changepage}   % for the adjustwidth environment to make narrow paragraphs
 
 \usepackage{sectsty} %change font on headings
 \allsectionsfont{\sffamily}
@@ -127,6 +128,19 @@
 {\subsubsection{Förberedelser}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
+\newenvironment{Background}%
+{\begin{adjustwidth}{\parindent}{}\small \emph{Bakgrund för kännedom:}}%
+{\end{adjustwidth}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% changes to make slide stuff look good in compendium
+
+\newcommand{\pause}{}% do nothing
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% lingstings specifics:
 
 \lstdefinelanguage{Scala}{
   morekeywords={abstract,case,catch,class,def,%
@@ -179,6 +193,7 @@
 {ø}{{\o}}1
 {Æ}{{\AE}}1
 {Ø}{{\O}}1
+{`}{{\`{}}}1
 {─}{{\textemdash}}1
 {└}{{|}}1
 {├}{{|}}1
@@ -186,7 +201,7 @@
 }
 
 \lstnewenvironment{JavaSpec}[2][]{%
-    \lstset{basicstyle=\ttfamily\fontsize{9}{11}\selectfont,%
+    \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
             backgroundcolor=\color{white},rulecolor=\color{black},title={\fontsize{9}{11}\selectfont\texttt{\textcolor{black}{\textbf{#2}}}}, frameround=tttt,language=,otherkeywords={},#1}%
 }{}
 
@@ -207,6 +222,10 @@
 
 \lstnewenvironment{Code}[1][]{%
     \lstset{#1}%
+}{}
+
+\lstnewenvironment{CodeSmall}[1][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,#1}%
 }{}
 
 \lstnewenvironment{REPL}[1][]{%

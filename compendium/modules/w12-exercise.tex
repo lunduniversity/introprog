@@ -5,24 +5,189 @@
 \Exercise{\ExeWeekTWELVE}
 
 \begin{Goals}
-\item 
+\item Känna till vad en tråd är och kunna förklara begreppet jämlöpande exekvering.
+\item Känna till vad metoderna \code{run} och \code{start} gör i klassen \code{Thread}.
+\item Kunna skapa och starta en tråd där metoden \code{run} är ersatt.
+\item Kunna skapa ett enkelt program som från två trådar tävlar om att uppdatera en variabel och förklara varför beteendet kan bli oförutsägbart.
+\item Kunna använda en \code{Future} för att köra igång flera parallella beräkningar.
+\item Kunna registrera en callback på en \code{Future} med metoden \code{onComplete}.
+\item Känna till att webbsidor beskrivs av HTML-kod och kunna skapa en minimal webbsida.
+\item Kunna ladda ner en webbsida med \code{scala.io.Source.fromURL}.
 \end{Goals}
 
 \begin{Preparations}
-\item 
+\item Studera teorin i kapitel \ref{chapter:W12}.
 \end{Preparations}
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task 
+\Task \emph{Trådar.}  Klassen \code{java.lang.Thread} används för att skapa  \textbf{trådar} med jämlöpande exekvering \Eng{concurrent execution}. På så sätt kan man få olika koddelar att köra samtidigt. 
 
-\Subtask 
+Klassen \code{Thread} definierar metoden \code{run} som är tom. Vill man att tråden ska göra något vettigt får man ersätta metoden med det man vill ska göras. En tråd körs igång med metoden \code{start} och då anropas automatiskt \code{run}-metoden och tråden exekverar koden jämlöpande med övriga trådar. Om man anropar \code{run} direkt blir det \emph{inte} jämlöpande exekvering. Med metoden \code{isAlive} kan man kollar om tråden ''lever'', d.v.s om den håller på att köra sin \code{run}-metod.
+
+\Subtask Skapa en tom tråd och kör igång den enligt nedan. Varför händer det inget när du anropar \code{start}.
+\begin{REPL}
+val t1 = new Thread
+t1.setName("tomma tråden")
+t1.getName
+t1.toString
+t1.isAlive
+t1.start
+t1.isAlive
+\end{REPL}
+
+\Subtask Skapa en tråd som gör något som tar lite tid och kör med \code{run} resp. \code{start}.
+\begin{REPL}
+def zzz = { print("zzzzzz"); Thread.sleep(5000); println(" VAKEN!")}
+zzz
+val t2 = new Thread{ override def run = zzz }
+t2.run
+t2.run; println("Gomorron!")
+t2.start; println("Gomorron!")
+t2.start
+\end{REPL}
+
+\Subtask Vad händer om man anropar \code{start} mer än en gång på samma tråd?
+
+
+\Subtask Skapa två trådar med icke-tomma \code{run}-metoder och kör igång dem samtidigt. Vilken ordning skrivs hälsningarna ut efter rad 3 resp. rad 4 nedan? Förklara vad som händer.
+\begin{REPL}
+val g = new Thread{ override def run = for (i <- 1 to 100) print("Gurka ") }
+val t = new Thread{ override def run = for (i <- 1 to 100) print("Tomat ") }
+g.run; t.run
+g.start; t.start
+\end{REPL}
+
+\Subtask Använd \code{Thread.sleep} enligt nedan. Är beteendet helt förutsägbart (deterministiskt)? Förklara vad som händer.
+\begin{REPL}
+def ibland(block: => Unit) = new Thread {
+  override def run = while(true) { block; Thread.sleep(600) }
+}.start
+ibland(print("zzz ")); ibland(print("snark ")); ibland(println("hej!")) 
+\end{REPL}
+
+
+\Task \emph{Jämlöpande variabeluppdatering.} Skriv klasserna \code{Bank} och \code{Kund} i en editor och klistra sedan in koden i REPL.
+
+\begin{Code}
+class Bank { 
+  private var saldo = 0;
+  def visaSaldo: Unit = println(s"saldo: $saldo")
+  def sättIn: Unit = { saldo += 1 } 
+  def taUt: Unit   = { saldo -= 1 }
+}
+
+class Kund(bank: Bank) {
+  def slösaSpara = {bank.taUt; Thread.sleep(1); bank.sättIn}
+}
+\end{Code}
+
+\Subtask Använd funktionen \code{ibland} från föregående uppgift. Förklara vad som händer nedan.
+
+\begin{REPL}
+val bank = new Bank
+bank.visaSaldo
+bank.sättIn
+bank.visaSaldo
+bank.taUt
+bank.visaSaldo
+
+val bamse = new Kund(bank)
+val skutt = new Kund(bank)
+
+bamse.sparaSlösa
+skutt.sparaSlösa
+bank.visaSaldo
+
+def ofta(block: => Unit) = new Thread {
+  override def run = while(true) { block; Thread.sleep(1) }
+}.start
+
+ofta(bamse.slösaSpara); ofta(skutt.slösaSpara)
+
+ibland(bank.visaSaldo)
+\end{REPL}
+
+
+\Task \emph{Jämlöpande exekvering med \code{scala.concurrent.Future}.} Att hålla reda på trådar kan bli ganska knepigt. Med hjälp av \code{scala.concurrent.Future} kan man sätta igåg beräkningar i nya trådar och sedan köra vidare med annat. Detta sker ''under huven'' med hjälp av ett avancerat ramverk för multitrådning i s.k. trådpooler som heter Akka\footnote{\url{http://akka.io/}} och möjliggör paralellprogrammering på en högre abstraktionsnivån. 
+
+I denna uppgift ska du ladda ner webbsidor paralellt med hjälp \code{Future} så att en nedladdning kan avslutas under tiden en annan dröjer.  
+
+\Subtask Koden för en minimal webbsida ser ut som nedan. Du kan beskåda sidan här: \url{http://fileadmin.cs.lth.se/pgk/mini.html} eller skriva in nedan kod i en fil som heter något som slutar på \texttt{.html} och öppna filen i din webbläsare.
+
+\begin{verbatim}
+<!DOCTYPE html>
+<html>
+<body>
+HELLO WORLD!
+</body>
+</html>
+\end{verbatim}
+
+\Subtask För att simulera slöa webbservrar kan man ladda ner en sida via sajten \texttt{http://deelay.me/}. Ladda ner ovan sida med 2 sekunders fördröjning:\\
+\url{http://deelay.me/2000/http://fileadmin.cs.lth.se/pgk/mini.html}
+
+\Subtask Man kan ladda ner webbsidor med \code{scala.io.Source}. Vad händer nedan? Hur lång tid måste du i medeltal, bästa fall respektive värsta fall vänta innan du kan se första webbsidan i vektorn \code{laddningar} nedan?
+
+\begin{REPL}
+scala> def ladda(url: String) = scala.io.Source.fromURL(url).getLines.toVector
+scala> def slöladda(url: String) = {
+         val delay = (math.random * 1000 + 2000).toInt 
+         val delaySite = s"http://deelay.me/$delay/"
+         ladda(delaySite+url)
+      }
+scala> ladda("http://fileadmin.cs.lth.se/pgk/mini.html")
+scala> def seg = slöladda("http://fileadmin.cs.lth.se/pgk/mini.html")
+scala> val laddningar = Vector.fill(10)(seg)
+scala> laddningar(0)
+\end{REPL}
+
+\Subtask Innan vi kan köra igång en \code{Future} så måste vi importera den underliggande exekveringsmiljön som är redo att parallelisera ditt program i trådar utan att du själv måste skapa dem. Detta görs med nedan import-satser. Förklara vad som händer nedan.
+\begin{REPL}
+scala> import scala.concurrent._ 
+scala> import ExecutionContext.Implicits.global
+scala> val f = Future{ seg }
+scala> f   // kolla om den är klar annars prova igen senare
+scala> f
+\end{REPL}
+
+\Subtask Ladda indata utan att blockera \Eng{non-blocking input}. Förklara vad som händer nedan.
+\begin{REPL}
+scala> val nonblock = Future{ Vector.fill(10)(seg) }
+scala> nonblock   // kolla igen senare om ej klar
+scala> nonblock  
+\end{REPL}
+
+\Subtask Ladda indata separat i olika parallella trådar. Förklara vad som händer nedan.
+\begin{REPL}
+scala> val para = Vector.fill(10)(Future{ seg })
+scala> para
+scala> para.map(_.isCompleted)   
+scala> para.map(_.isCompleted) // studera hur de blir färdiga en efter en
+scala> para(0)
+\end{REPL}
+
+\Subtask Registrera en s.k. \emph{callback} med metoden \code{onComplete}. Förklara vad som händer nedan.
+
+\begin{REPL}
+scala> val action = Vector.fill(10)(Future{ seg })
+scala> action(0).onComplete(xs => println(s"ready:$xs"))
+scala> // vänta tills laddning på plats 0 är klar
+\end{REPL}
+
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
-
-\Task 
+  
+\Task TODO  %%%%%%%%%%%%%%%%%%%
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task     
-    
+\Task Sök upp och studera dokumentationen för klassen \code{java.lang.Thread}.
+
+\Subtask Klassen \code{Thread} har funnits med länge och allteftersom JVM:en har utvecklats så har några metoder tillkommit och andra har blivit utfasade \Eng{deprecated}. Vilka metoder i klassen \code{Thread} är markerade deprecated och ska därmed fasas ut?
+
+\Subtask Läs mer om \code{Future} och jämlöpande exekvering i Scala här:\\
+\href{http://alvinalexander.com/scala/future-example-scala-cookbook-oncomplete-callback}{alvinalexander.com/scala/future-example-scala-cookbook-oncomplete-callback}
+
+\Subtask Läs lite mer om jämlöpande exekvering och multitrådade program i Java här: \href{http://www.tutorialspoint.com/java/java_multithreading.htm}{www.tutorialspoint.com/java/java\_multithreading.htm}  \\
+\noindent När man skriver program med jämlöpande exekvering finns det många fallgropar; det kan bli kapplöpning \Eng{race conditions} om gemensamma resurser och dödläge \Eng{deadlock} där inget händer får att trådar väntar på varandra. Mer om detta i senare kurser. 
