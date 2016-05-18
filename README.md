@@ -177,7 +177,7 @@ Here are some other inspiring style guides that illustrate the variety in what d
  
 # License
 
-Copyright &copy; 2015-2016 Computer Science at Lund University, Lund, Sweden.
+Copyright &copy; 2015-2016. Dept. of Computer Science at Lund University, Lund, Sweden.
 
 Contributors: https://github.com/lunduniversity/introprog/blob/master/contributors.tex
 
