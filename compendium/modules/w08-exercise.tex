@@ -162,7 +162,7 @@ scala> g match {
 
 I Java\footnote{Scala har också \code{null} men det behövs bara vid samverkan med Java-kod.} används värdet \code{null} för att indikera att en referens saknar värde. Man får då komma ihåg att testa om värdet saknas varje gång sådana värden ska behandlas, , t.ex. med  \code+if (ref != null) { ...} else { ... }+. Ett annat vanligt trick är att låta \code{-1} indikera sakande positiva heltal, till exempel saknade index, som får behandlas med \code+if (i != -1) { ...} else { ... }+. 
 
-I Scala finns en speciell typ \code{Option} som möjliggör smidig och typsäker hantering av saknade värden. Om ett kanske saknat värde packas in i en \code{Option} blir det medlem i en speciell slags samling som bara kan innehålla \emph{inget} eller \emph{något} värde, och alltså har antingen storleken \code{0} eller \code{1}.   
+I Scala finns en speciell typ \code{Option} som möjliggör smidig och typsäker hantering av saknade värden. Om ett kanske saknat värde packas in i en \code{Option} \Eng{wrapped in an Option}, finns det i en speciell slags samling som bara kan innehålla \emph{inget} eller \emph{något} värde, och alltså har antingen storleken \code{0} eller \code{1}.    
 
 \Subtask Förklara vad som händer nedan.
 \begin{REPL}
@@ -255,55 +255,109 @@ $ java TryCatch
 
 
 
-\Task \emph{TODO Fånga undantantag i Scala med \code{scala.util.Try}.} Integer.parseInt  
+\Task \emph{Fånga undantantag i Scala med \code{scala.util.Try}.} I paketet \code{scala.util} finns typen \code{Try} med stort T som är som en slags samling som kan innehålla antingen ett ''lyckat'' eller ''misslyckat'' värde. Om beräkningen av värdet lyckades och inga undantag kastas blir värdet wrappat i en \code{Sucess}, annars blir undantaget wrappat i en \code{Failure}. Man kan extrahera värdet, respektive undantaget, med mönstermatchning, men det är oftast smidigare att använda samlingsmetoderna \code{map} och \code{foreach}, i likhet med hur \code{Option} används. Det finns även en smidig metod \code{recover} på objekt av typen \code{Try} där man kan skicka med kod som körs om det uppstår en undantagssituation. 
+
+\Subtask Förklara vad som händer nedan.
+\begin{REPL}
+scala> def pang = throw new Exception("PANG!")
+scala> import scala.util.{Try, Success, Failure}
+scala> Try{pang}
+scala> Try{pang}.recover{case e: Throwable => s"desermerad bomb: $e"}
+scala> Try{"tyst"}.recover{case e: Throwable => s"desermerad bomb: $e"}
+scala> def kanskePang = if (math.random > 0.5) "tyst" else pang
+scala> def kanskeOk = Try{ kanskePang}
+scala> val xs = Vector.fill(100)(kanskeOk)
+scala> xs(13) match {
+         case Success(x) => ":)"
+         case Failure(e) => ":( " + e
+       }
+scala> x(13).isSuccess
+scala> x(13).isFailure
+scala> xs.count(_.isFailure)
+scala> xs.find(_.isFailure)
+scala> val badOpt = xs.find(_.isFailure)
+scala> val goodOpt = xs.find(_.isSuccess)
+scala> badOpt
+scala> badOpt.get
+scala> badOpt.get.get
+scala> badOpt.map(_.getOrElse("bomben desermerad!")).get
+scala> goodOpt.map(_.getOrElse("bomben desermerad!")).get
+scala> xs.map(_.getOrElse("bomben desermerad!")).foreach(println)
+scala> xs.map(_.toOption)
+scala> xs.map(_.toOption).flatten
+scala> xs.map(_.toOption).flatten.size
+\end{REPL}
 
 
+\Subtask Vad har funktionen \code{pang} för returtyp?
 
-\Task \emph{TODO flatten och flatMap med Option och Try}
+\Subtask\Pen Varför får funktionen \code{kanskePang} den härledda returtypen \code{String}?
 
+\Task \emph{TODO flatten och flatMap med Option och Try} TODO Ska detta vara fördjupning???
 
 
 \Task \emph{TODO partiella funktioner och metoderna collect och collectFirst på samlingar} TODO Ska detta vara fördjupning???
 
 
-\Task \emph{Överskugga metoden \code{equals}.}  Om man överskuggar den befintliga metoden \code{equals} så kommer metoden \code{==} att fungera annorlunda. Vi börjar att studera den befintliga equals med referenslikhet.
+\Task \emph{Metoden \code{equals}.}  Om man överskuggar den befintliga metoden \code{equals} så kommer metoden \code{==} att fungera annorlunda. Man kan då själv åstadkomma innehållslikhet i stället för referenslikhet. Vi börjar att studera den befintliga equals med referenslikhet.
 
+\Subtask \label{subtask:refequals} Vad händer nedan? Om du trycker TAB \emph{två} gånger efter ett metodnamn får du se metodens signatur. Vilken signatur har metoden \code{equals}?
 \begin{REPL}
-scala> class Gurka(val vikt: Int)
-scala> val g1, g2 = new Gurka(42)
-scala> val g3 = new Gurka(42)
+scala> class Gurka(val vikt: Int, ärÄtbar: Boolean)
+scala> val g1 = new Gurka(42, true)
+scala> val g2 = g1
+scala> val g3 = new Gurka(42, true)
 scala> g1 == g2
 scala> g1 == g3
 scala> g1.equals  // tryck TAB två gånger
 \end{REPL}
 
-\Subtask Om du trycker TAB \emph{två} gånger efter ett metodnamn får du se metodens signatur. Vilken signatur har metoden \code{equals}?
+\Subtask\Pen Rita minnessituationen efter rad 4.
 
-\Subtask Byt ut equals enligt nedan och förklara vad som händer.
+\Subtask \emph{Överskugga metoderna \code{equals} och \code{hashCode}.} 
 
-\begin{REPL}
-scala> class Gurka(val vikt: Int) { 
-         override def equals(other: Any): Boolean = other match {
-           
-         } 
-scala> val g = new Gurka(42)
-scala> g.equals  // tryck TAB två gånger
-\end{REPL}
+\begin{Background}
+Det visar sig förvånande komplicerat att implementera innehållslikhet med metoden \code{equals} så att den ger bra resultat under alla speciella omständigheter. Till exempel måste man även överskugga en metod vid namn \code{haschCode} om man överskuggar \code{equals}, eftersom dessa båda används gemensamt av effektivitetsskäl för att skapa den interna lagringen av objekten i vissa samlingar. Om man missar det kan objekt bli ''osynliga'' i \code{hashCode}-baserade samlingar -- men mer om detta i senare kurser. Om objekten ingår i en öppen arvshierarki blir det också mer komplicerat; det är enklare om man har att göra med finala klasser. Dessutom krävs speciella hänsyn om klassen har en typparameter.
+\end{Background}
 
-
-
-\Task \emph{Klassen \code{Complex} och metoden \code{equals}.} Implementera klassen \code{Complex} som representerar ett komplext tal\footnote{\href{https://sv.wikipedia.org/wiki/Komplexa_tal}{sv.wikipedia.org/wiki/Komplexa\_tal}} med realdel och imaginärdel. I stället för att använda en case-klass och en \code{equals}-metod som automatiskt ger innehållslikhet, ska du träna på att implementera en egen \code{equals}.
+\noindent Definera klassen nedan i REPL med överskuggade \code{equals} och \code{hashCode}; den ärver inte något och är final.
 
 \begin{Code}
-class Complex(re: Double, im: Double) extends  {
+// fungerar fint om klassen är final och inte ärver något
+final class Gurka(val vikt: Int, ärÄtbar: Boolean) { 
+  override def equals(other: Any): Boolean = other match {
+    case that: Gurka => this.vikt == that.vikt
+    case _ => false     
+  }
+  override def hashCode: Int = (vikt, ärÄtbar).## //förklaras sen
+}
+\end{Code}
+\Subtask Vad händer nedan?
+\begin{REPL}
+scala> val g1 = new Gurka(42, true)
+scala> val g2 = g1
+scala> val g3 = new Gurka(42, true)
+scala> g1 == g2
+scala> g1 == g3
+\end{REPL}
+\Subtask\Pen Hur märker man ovan att den överskuggade \code{equals} medför att \code{==} nu ger innehållslikhet? Jämför minnessituationen efter rad 3 med uppgift \ref{subtask:refequals}. 
+
+
+\Subtask \emph{Klassen \code{Complex} och metoden \code{equals}.} Implementera klassen \code{Complex} som representerar ett komplext tal med realdel och imaginärdel. I stället för att, som man ofta gör i Scala, använda en case-klass och en \code{equals}-metod som automatiskt ger innehållslikhet, ska du träna på att implementera en egen \code{equals}.
+
+\begin{Code}
+class Complex(re: Double, im: Double) extends Number {
   def abs: Double = math.hypot(re, im)
   override def toString = s"Complex($re, $im)"
-  //override def equals(other: Any): Boolean = ???
+  override def equals(other: Any): Boolean = ???
+  override def hashCode: Int  = ???
 }
 case object Complex {
   def apply(re: Double, im: Double): Complex = new Complex(re, im)
 }
 \end{Code}
+
+\Task \emph{Implementera en egen, typsäker innehållstest med metoden \code{===}.} TODO ??? Ska detta vara med ???
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
