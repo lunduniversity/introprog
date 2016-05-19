@@ -8,6 +8,7 @@
 \geometry{hmargin={4.5cm,2.5cm}}
 \geometry{vmargin={3cm,3cm}}
 \usepackage{marginnote}
+\usepackage{float}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -29,6 +30,7 @@
 %\usepackage{PTSans}
 
 \usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage{changepage}   % for the adjustwidth environment to make narrow paragraphs
 
 \usepackage{sectsty} %change font on headings
 \allsectionsfont{\sffamily}
@@ -127,6 +129,19 @@
 {\subsubsection{Förberedelser}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
+\newenvironment{Background}%
+{\begin{adjustwidth}{\parindent}{}\small \emph{Bakgrund för kännedom:}}%
+{\end{adjustwidth}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% changes to make slide stuff look good in compendium
+
+\newcommand{\pause}{}% do nothing
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% lingstings specifics:
 
 \lstdefinelanguage{Scala}{
   morekeywords={abstract,case,catch,class,def,%
@@ -179,6 +194,7 @@
 {ø}{{\o}}1
 {Æ}{{\AE}}1
 {Ø}{{\O}}1
+{`}{{\`{}}}1
 {─}{{\textemdash}}1
 {└}{{|}}1
 {├}{{|}}1
