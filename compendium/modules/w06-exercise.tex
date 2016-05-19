@@ -5,16 +5,28 @@
 \Exercise{\ExeWeekSIX}
 
 \begin{Goals}
-\item 
+\item Kunna deklarera klasser med klassparametrar.
+\item Kunna skapa objekt med \code{new} och konstruktorargument.
+\item Förstå innebörden av referensvariabler och värdet \code{null}.
+\item Förstå innebörden av begreppen instans och referenslikhet.
+\item Kunna använda nyckelordet \code{private} för att styra synlighet i primärkonstruktor.
+\item Förstå i vilka sammanhang man kan ha nytta av en privat konstruktor.
+\item Kunna implementera en klass utifrån en specikation.
+\item Förstå skillnaden mellan referenslikhet och strukturlikhet.
+\item Känna till hur case-klasser hanterar likhet.
+\item Förstå nyttan med att möjliggöra framtida förändring av attributrepresentation.
+\item Känna till begreppen getters och setters. 
+\item Känna till accessregler för kompanjonsobjekt.
+\item Känna till skillnaden mellan \code{==} och \code{eq}, samt \code{!=} versus \code{ne}.
 \end{Goals}
 
 \begin{Preparations}
-\item 
+\item Studera teorin i kapitel \ref{chapter:W06}.
 \end{Preparations}
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task \emph{Referensvariabler, \code{null} och \code{new}.}
+\Task \emph{Instansiering med \code{new} och värdet \code{null}.} Man skapar instanser av klasser med \code{new}. Då anropas konstruktorn och plats reserveras i datorns minne för objektet. Variabler av referenstyp som inte refererar till något objekt har värdet \code{null}. 
 
 \Subtask Vad händer nedan? Vilka rader ger felmeddelande och i så fall hur lyder felmeddelandet?
 
@@ -167,10 +179,10 @@ object Square {
 \begin{REPL}
 scala> val (s1, s2) = (Square(0,0,2), Square(1, 10, 2))
 scala> val s3 = s1.move(1,-5)
-scala> s1 isEqualSize s3
-scala> s2 isEqualSize s1
-scala> s2.scale(math.Pi) isEqualSize s2
-scala> s2.scale(math.Pi) isEqualSize s2.scale(math.Pi)
+scala> s1 isEqualSizeAs s3
+scala> s2 isEqualSizeAs s1
+scala> s2.scale(math.Pi) isEqualSizeAs s2
+scala> s2.scale(math.Pi) isEqualSizeAs s2.scale(math.Pi)
 \end{REPL}
 
 \Subtask Gör primärkonstruktorn i klassen \code{Square} privat och säkerställ i fabriksobjektet att det inte går att skapa kvadrater med negativ sida. Använd \code{require}.  
@@ -182,6 +194,26 @@ scala> s2.scale(math.Pi) isEqualSize s2.scale(math.Pi)
 \Subtask Lägg till en metod \code{def totalNumberOfMoves: Int} i kompanjonsobjektet som räknar ut det totala antalet förflyttningar som skett.
 
 \Subtask\Pen Varför är det avgörande för korrektheten av beräkningen av totala antalet förflyttningar i föregående uppgift att konstruktorn i klassen \code{Square} är privat? 
+
+\Subtask\Pen Vad kallas en metod som gör \code{new} och returnerar referensen till det nyskapade objektet?
+
+
+\Task \emph{Referenslikhet versus strukturlikhet.} Metoden \code{==} på case-klasser ger \textbf{strukturlikhet} (även kallad innehållslikhet) så att \emph{innehållet} i klassens klassparametrar jämförs om de har lika värde, medan för vanliga klasser ger metoden \code{==} \textbf{referenslikhet} där olika objekt är olika även om de har samma innehåll (om man inte byter ut metoden \code{equals} som anropas av \code{==} -- detta ska vi titta närmare på i kapitel \ref{chapter:W08}).
+
+\begin{REPL}
+scala> class GurkaRef(val vikt: Int)
+scala> case class GurkaStrukt(val vikt: Int)
+scala> val a = new GurkaRef(42)
+scala> val b = new GurkaRef(42)
+scala> val c = new GurkaStrukt(42)
+scala> val d = new GurkaStrukt(42)
+scala> a == b
+scala> c == d 
+\end{REPL}
+
+\Subtask Förklara vad som händer ovan.
+
+\Subtask Istället för \code{==}, prova metoden \code{eq} på objekten ovan. Metoden \code{eq} ger alltid referenslikhet (även om byter ut metoden \code{equals}).
 
 
 
@@ -197,21 +229,23 @@ scala> s2.scale(math.Pi) isEqualSize s2.scale(math.Pi)
 
 \Subtask Lägg till ett kompanjonsobjekt med medlemmen \code{val origin} som ger en punkt i origo.
 
-\Subtask Undersök metoderna \code{==}, \code{equals} och \code{eq} och förklara vad som händer nedan:
+\Subtask Undersök metoderna \code{==}, \code{!=}, \code{eq} och \code{ne} och förklara vad som händer nedan:
 \begin{REPL}
 scala> Point(1, 2) == Point(1, 3)
+scala> Point(1, 2) != Point(1, 3)
 scala> Point(1, 2) == Point(1, 2)
-scala> Point(1, 2) equals Point(1, 3)
-scala> Point(1, 2) equals Point(1, 2)
-scala> Point.origin.move(1, 1) equals Point.origin.move(1, 1)
-scala> Point.origin.move(1, 1).move(1,1) == Point(2, 2)
+scala> Point(1, 2) != Point(1, 2)
+scala> Point.origin.move(1, 1) == Point.origin.move(1, 1)
+scala> Point.origin.move(1, 1).move(1,1) != Point(2, 2)
 scala> Point(0, 0) eq Point(0, 0)
+scala> Point(0, 0) ne Point(0, 0)
 scala> Point.origin eq Point.origin
+scala> Point.origin ne Point.origin
 scala> val p1 = Point(0,0)
 scala> val p2 = p2
 scala> p1 eq p2
 \end{REPL}
-
+1
 \Subtask Vad ger \code{Point.origin eq Point.origin} för resultat om \code{origin} iställed  implementeras som \code{def origin: Point = Point(0, 0)}
 
 \Subtask\Pen Vad är det för skillnad på strukturlikhet och referenslikhet?
@@ -227,7 +261,7 @@ case class Point(x: Int, y: Int) {
 }
 
 object Point {
-  val origin: Point = Point(0, 0)
+  val origin: Point = new Point(0, 0)
 }
 \end{CodeSmall}
 
@@ -278,16 +312,23 @@ case class Point(p:(Int,Int)) {
 }
 
 object Point {
-  val origin: Point = Point(0, 0)
+  val origin: Point = new Point(0, 0)
 }
 \end{CodeSmall}
 
+
+
 \Task\Pen Vad behöver du ändra i klassen \code{Square} från deluppgift \ref{task:Square} för att den ska fungera med en \code{Point} med 2-tuple-position från deluppgift \ref{task:PointTuple}?
 
-\Task \emph{Klassen \code{Complex} och metoden \code{equals}.}
+
+
 
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
+
+\Task \code{class Frac private (numerator: BigInt, denominator: BigInt)}  TODO: Ungefär som Rational i pins1ed med GCD
+
+
 
 \Task \emph{Klassen \code{Frog}} 
 

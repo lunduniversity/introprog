@@ -16,7 +16,7 @@ trait Plan {
       | sekvens, alternativ, repetition, abstraktion, programmeringsspråk,
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, REPL,  
-      | literal, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
+      | literal, värde, uttryck, identifierare, variabel, typ, tilldelning, namn, val, var, def,  
       | inbyggda typer, Int, Long, Short, Double, Float, Byte, Char, String,
       | println, typen Unit, enhetsvärdet (), stränginterpolatorn s,
       | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random,
@@ -44,6 +44,7 @@ trait Plan {
       | lokala funktioner,    
       | anonyma funktioner, lambda,
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
+      | algoritm: GCD (största gemensamma delare),
       | cslib.window.SimpleWindow, 
       """.stripTrim),
 
@@ -51,8 +52,7 @@ trait Plan {
       id = "datastruct", exercise = "data", lab = "pirates", contents = """
       | attribut (fält), medlem, metod, 
       | tupel, klass, Any, isInstanceOf, toString, 
-      | case-klass, 
-      | Rational,
+      | case-klass, räkna med bråk och klassen Frac,
       | föränderlighet vs oföränderlighet, 
       | List, Vector, Set, Map, 
       | typparameter, generisk samling som parameter,
@@ -70,39 +70,38 @@ trait Plan {
       | java.util.Random, slumptalsfrö, 
       """.stripTrim),
 
-    Module("Klasser, Likhet", 
-      id = "classsim", exercise = "classes", lab = "turtlegraphics", contents = """
-      | objektorientering, klass, Point, Square, Complex, 
-      | inkapsling, accessregler, private, private[this],
+    Module("Klasser", 
+      id = "class", exercise = "classes", lab = "turtlegraphics", contents = """
+      | objektorientering, klass, Point, Square, Complex,
+      | new, null, this, 
+      | inkapsling, accessregler, private, private[this], kompanjonsobjekt,
       | getters och setters, 
-      | new, null,
-      | referensklasser vs värdeklasser, 
-      | klassparameter, primär konstruktor, 
-      | alternativ konstruktor, 
-      | referenslikhet vs strukturlikhet, eq vs ==, compareTo, 
-      | implementera equals,
+      | klassparameter, primär konstruktor, objektfabriksmetod, 
+      | överlagring av metoder,
+      | referenslikhet vs strukturlikhet, eq vs ==, 
       """.stripTrim),
 
-    Module("Arv, Gränssnitt", 
+    Module("Arv", 
       id = "polymorf", exercise = "traits", lab = "turtlerace-team", contents = """
-      | arv, polymorfism, likhet vid arv, asInstanceOf,
-      | klasser i Scala vs Java, Any vs java.lang.Object,
-      | klasshierarkin i Scala: Any AnyRef AnyVal Nothing Null,
-      | klasshierarkin i Scalas samlingar,
-      | Shape som basklass till Point och Rectangle, 
+      | arv, polymorfism, trait, extends, asInstanceOf, with, inmixning,
+      | supertyp, subtyp, bastyp, override, 
+      | klasshierarkin i Scala: Any AnyRef Object AnyVal Null Nothing,
+      | referenstyper vs värdetyper, 
+      | klasshierarkin i scala.collection,
+      | Shape som bastyp till Point och Rectangle, 
       | accessregler vid arv, protected, final,
-      | abstrakt klass, trait, inmixning, klass vs trait, 
-      | case-object, typer med uppräknade värden, 
-      | värdeklasser extends AnyVal,
-      | implementera equals vid polymorfism ???,
+      | klass vs trait, abstract class,
+      | case-object, typer med uppräknade värden,  
       """.stripTrim),
 
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
     Module("Mönster, Undantag", 
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
-      | mönstermatchning, match, Option, try, catch, Try, unapply, 
-      | flatten, flatMap, partiella funktioner, collect 
+      | mönstermatchning, match, Option, try, catch, Try, unapply, sealed, 
+      | flatten, flatMap, partiella funktioner, collect, 
+      | implementera equals utan arv för Complex,  
+      | implementera equals med arv för Shape,  
       """.stripTrim),
 
     Module("Matriser, Typparametrar", 
@@ -114,34 +113,44 @@ trait Plan {
 
     Module("Sökning, Sortering", 
       id = "searchsort", exercise = "sorting", lab = "surveydata-team", contents = """
+      | compareTo på strängar, trait Ordered[T], 
       | algoritm: LINEAR-SEARCH, algortim: BINARY-SEARCH, 
       | algoritmisk komplexitet, 
       | sortering till ny vektor, sortering på plats, 
       | algoritm: INSERTION-SORT, algoritm: SELECTION-SORT,
       | mer om filer, serialisering,
-      """.stripTrim),
+      """.stripTrim),  
+      //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
     Module("Scala och Java", 
       id = "scalajava", exercise = "scalajava", lab = "lthopoly-team", contents = """
       | skillnader mellan Scala och Java, 
+      | klasser i Scala vs Java, 
       | referensvariabler vs enkla värden i Java,
       | referenstilldelning vs värdetilldelning i Java,
+      | alternativ konstruktor i Scala och Java, 
       | for-sats i Java, java for-each i Java, 
       | java.util.ArrayList, 
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
       | samlingar i Java vs Scala, scala.collection.JavaConverters,
+      | översiktligt om relationen mellan trait och interface,
+      | namnkonventioner för konstanter,
       | enum i java ???,
       """.stripTrim),
 
     Module("Trådar", //, Web ???, Android ???", 
       id = "threadetc", exercise = "threads", lab = "life", contents = """
-      | Thread, Future, Duration, Await, 
-      | (HTML ???), (Javascript ???), (css ???), 
-      | Scala.js ???, Android ???,
+      | Thread, Future, (Duration ???), (Await ???), 
+      | HTML, (Javascript ???), (css ???), 
+      | (Scala.js ???), (Android ???),
       """.stripTrim),
 
     Module("Design", 
       id = "design", exercise = "design", lab = "", contents = """
+      | designexempel,
+      | the expression problem,
+      | utvecklingsprocessen, krav-design-implementation-test,
+      | översiktligt om trait som gränssnitt, 
       """.stripTrim),
 
     Module("Tentaträning", 
