@@ -152,7 +152,7 @@ Here are some other inspiring style guides that illustrate the variety in what d
   * `\begin{Code}[language=Java]` ... `\end{Code}` and `\javainputlisting{examples/Hi.java}` are used for Java code
   * `\begin{Slide}` and `\end{Slide}` defined in `slides/lecture-notes.cls` and in `compendium/compendium.cls` is used to generate beamer slides and to generate framed text in compendium chapters together with lecture notes that appear after each slide.
   
-## How to make figures
+#### How to make figures
 
 Here is an example of our convention for figures (using the float-package):
 
