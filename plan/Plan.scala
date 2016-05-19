@@ -16,7 +16,7 @@ trait Plan {
       | sekvens, alternativ, repetition, abstraktion, programmeringsspråk,
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, REPL,  
-      | literal, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
+      | literal, värde, uttryck, identifierare, variabel, typ, tilldelning, namn, val, var, def,  
       | inbyggda typer, Int, Long, Short, Double, Float, Byte, Char, String,
       | println, typen Unit, enhetsvärdet (), stränginterpolatorn s,
       | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random,
@@ -44,6 +44,7 @@ trait Plan {
       | lokala funktioner,    
       | anonyma funktioner, lambda,
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
+      | algoritm: GCD (största gemensamma delare),
       | cslib.window.SimpleWindow, 
       """.stripTrim),
 
@@ -51,7 +52,7 @@ trait Plan {
       id = "datastruct", exercise = "data", lab = "pirates", contents = """
       | attribut (fält), medlem, metod, 
       | tupel, klass, Any, isInstanceOf, toString, 
-      | case-klass, Rational,
+      | case-klass, räkna med bråk och klassen Frac,
       | föränderlighet vs oföränderlighet, 
       | List, Vector, Set, Map, 
       | typparameter, generisk samling som parameter,
