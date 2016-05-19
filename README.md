@@ -152,7 +152,7 @@ Here are some other inspiring style guides that illustrate the variety in what d
   * `\begin{Code}[language=Java]` ... `\end{Code}` and `\javainputlisting{examples/Hi.java}` are used for Java code
   * `\begin{Slide}` and `\end{Slide}` defined in `slides/lecture-notes.cls` and in `compendium/compendium.cls` is used to generate beamer slides and to generate framed text in compendium chapters together with lecture notes that appear after each slide.
   
-#### How to make figures
+#### How to make figures in the compendium
 
 Here is an example of our convention for figures (using the float-package):
 
@@ -163,7 +163,9 @@ Here is an example of our convention for figures (using the float-package):
         \label{fig:eclipse:ide:open}
         \end{figure}
 
-  
+Adapt the size of the figure width to make it look good by changing 0.7 above to something appropriate depending on the proportion of height/width of your figure.
+
+Labels are named with the convention `\label{chap:subchap:subsubchap:somegoodname}`
  
 # License
 
