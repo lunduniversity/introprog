@@ -142,6 +142,8 @@ Here are some other inspiring style guides that illustrate the variety in what d
 * For Mac OSX users: there are some problems with El-Capitan and TeX. For some users there are problems compiling .tex-files in the terminal out of the box. You may get this error message: 'mktexpk: No such file or directory' or similar. Using TeXShop to compile the document seems to resolve the issue. To configure TeXShop correctly on El-Capitan, follow the guide https://www.tug.org/mactex/UpdatingForElCapitan.pdf
 
 * Check out the `.cls` files in `compendium/` and `slides/` that provide many useful latex commands.
+  * [compendium.cls](https://github.com/lunduniversity/introprog/blob/master/compendium/compendium.cls)
+  * [lecturenotes.cls](https://github.com/lunduniversity/introprog/blob/master/slides/lecturenotes.cls)
 
 * Check out some similar, already written `.tex` document and compare with the compiled `.pdf` to see the commands and conventions we use. 
 
@@ -149,6 +151,8 @@ Here are some other inspiring style guides that illustrate the variety in what d
   * `\begin{Code}` ... `\end{Code}` and `\scalainputlisting{examples/hello-app.scala}` are used for Scala code 
   * `\begin{Code}[language=Java]` ... `\end{Code}` and `\javainputlisting{examples/Hi.java}` are used for Java code
   * `\begin{Slide}` and `\end{Slide}` defined in `slides/lecture-notes.cls` and in `compendium/compendium.cls` is used to generate beamer slides and to generate framed text in compendium chapters together with lecture notes that appear after each slide.
+  
+  
  
 # License
 
