@@ -8,6 +8,7 @@
 \geometry{hmargin={4.5cm,2.5cm}}
 \geometry{vmargin={3cm,3cm}}
 \usepackage{marginnote}
+\usepackage{float}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
