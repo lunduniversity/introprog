@@ -25,33 +25,6 @@ The main directories are:
 * `refs` extra readings, background material
 * `teachers` information for teachers
 
-The directories are organized in this hierarchy: 
-
-        $ tree -d -L 2
-        .
-        ├── compendium
-        │   ├── examples
-        │   ├── generated
-        │   ├── modules
-        │   ├── postchapters
-        │   └── prechapters
-        ├── img
-        │   └── kojo
-        ├── plan
-        │   ├── concepts
-        │   ├── courseplan
-        │   └── ideas
-        ├── refs
-        ├── slides
-        │   └── body
-        ├── teachers
-        │   └── course-dev-2016
-        └── workspace
-            ├── cslib
-            ├── week01
-            └── week03
-
-
 ## How to build this repo
 
 ### With sbt
