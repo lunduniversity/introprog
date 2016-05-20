@@ -82,6 +82,11 @@
 
 \newcommand{\vecka}{1}
 
+%%% SLIDE SIZES with no affect in compedium
+\newcommand{\SlideFontSize}[2]{\fontsize{#1}{#2}\selectfont}
+\newcommand{\SlideFontSmall}{\SlideFontSize{9}{11}}
+\newcommand{\SlideFontTiny}{\SlideFontSize{8}{10}}
+
 %http://tex.stackexchange.com/questions/104220/beamer-tableofcontents-does-not-display-the-correct-section-number-after-setco
 \makeatletter 
 \newcommand{\setnextsection}[1]{%
