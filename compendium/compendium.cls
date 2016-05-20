@@ -138,6 +138,10 @@
 %%% changes to make slide stuff look good in compendium
 
 \newcommand{\pause}{}% do nothing
+%%% SLIDE SIZES with no affect in compedium
+\newcommand{\SlideFontSize}[2]{}
+\newcommand{\SlideFontSmall}{}
+\newcommand{\SlideFontTiny}{}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
