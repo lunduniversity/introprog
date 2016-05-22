@@ -11,23 +11,10 @@
 
 */
 
-object io {
-  import java.nio.file.{Paths, Files}
-  import java.nio.charset.StandardCharsets.UTF_8
+object solucheck {
 
   def load(fileName: String): String =
     scala.io.Source.fromFile(fileName, "UTF-8").getLines.mkString("\n")
-    
-  def save(fileName: String, data: String) = {
-    println("Saving file: " + Paths.get(fileName))
-    Files.write(Paths.get(fileName), data.getBytes(UTF_8))
-  }
-  
-  def list(path: String): Vector[String] = ???
-      
-}
-
-object solucheck {
 
   def errExit(msg: String): Unit = { Console.err.println(msg); System.exit(1) }
 
@@ -73,7 +60,7 @@ object solucheck {
     val dir="../../compendium/modules"
     val execFile = s"$dir/$week-exercise.tex" 
     val soluFile = s"$dir/$week-solutions.tex"
-    def prepare(file: String) = count(split(io.load(file)))
+    def prepare(file: String) = count(split(load(file)))
     val (exec, solu) = (prepare(execFile), prepare(soluFile))
     println(s"Exercise: $execFile: #Tasks:  ${exec.size}")
     println(s"Solution: $soluFile: #Tasks: ${solu.size}")
