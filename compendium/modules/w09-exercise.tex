@@ -137,7 +137,7 @@ scala> println(matrixToString(yatzyMatrix(10)))
 4 5 5 2 3
 
 \end{REPL}
-Ett omständligt sätt\footnote{Detta är ett vanligt förekommande, imperativt anreppssätt som är bra att kunna när du stöter på språk som saknar funktionsprogrammeringsmöjligheter med \code{map} etc.} att göra detta på visas nedan. Förklara hur nedan kod fungerar. Lista sedan istället ut hur \code{map} och \code{mkString} kan använda för att på ett enklare sätt åstadkommer samma sak som nedan. Testa din enklare lösning i REPL.
+Ett imperativt sätt\footnote{Detta anreppssätt är bra att kunna när du stöter på samlingar och språk saknar funktionsprogrammeringsmöjligheter och \code{map}, \code{mkString} etc.} att göra detta på visas nedan. Förklara hur nedan kod fungerar. Lista sedan istället ut hur \code{map} och \code{mkString} kan använda för att på ett enklare sätt åstadkommer samma sak som nedan. Testa din enklare lösning i REPL.
 \begin{Code}
 def matrixToString(xss: Vector[Vector[Int]]): String = {
   val sb = new StringBuilder()
@@ -163,8 +163,59 @@ def matrixToString(xss: Vector[Vector[Int]]): String =
 
 
 
-\Task \emph{case class StringMatix with heading using Vector[Vector[String]]}
+\Task \emph{Strängtabell med rubriker.} Implementera objektet \code{table} nedan.
 
+\begin{ScalaSpec}{object table}
+object table {
+  type StrVec = Vector[String]
+  type Matrix = Vector[StrVec]
+  
+  case class Table(headings: StrVec, data: Matrix){
+    val nrows = ???
+    val ncols = ???
+    def apply(row: Int, col: Int): String = ???
+    def row(r: Int): StrVec = ???
+    def col(c: Int): StrVec = ???
+    val indexOfHeading: Map[String, Int] = ???
+    def col(heading: String): StrVec = ???
+    def valuesOfHeading(heading: String): StrVec = ???
+    override def toString: String = ???
+  }
+  case object Table {
+    def fromFile(fileName: String): Table = ???
+  }
+}
+\end{ScalaSpec}
+
+
+\begin{CodeSmall}
+// kod till facit
+object table {
+  type StrVec = Vector[String]
+  type Matrix = Vector[StrVec]
+  
+  case class Table(headings: StrVec, data: Matrix){
+    val nrows = data.size
+    val ncols = headings.size
+    require(data.forall(r => r.size == ncols))
+    def apply(row: Int, col: Int): String = data(row)(col)
+    def row(r: Int): StrVec = data(r)
+    def col(c: Int): StrVec = data.map(r => r(c))
+    lazy val indexOfHeading: Map[String, Int] = headings.zipWithIndex.toMap
+    def col(heading: String): StrVec = col(indexOfHeading(heading)) 
+    def valuesOfHeading(heading: String): StrVec = col(heading).distinct
+    override lazy val toString: String = 
+      headings.mkString(";") + "\n" +data.map(_.mkString(";")).mkString("\n")
+  }
+  case object Table {
+    def fromFile(fileName: String): Table = {
+      val lines = scala.io.Source.fromFile(fileName).getLines.toVector
+      val m: Matrix  = lines.map(_.split(';').toVector) 
+      new Table(m.head, m.tail)
+    }
+  }
+}
+\end{CodeSmall}
 
 
 \Task Skapa en oföränderlig, final klass \code{Mat} för matematiska matriser och en oföränderlig, final klass \code{Vec} för matematiska vektorer. \code{Mat} ska internt lagra elementen i en privat endimensionell array av flyttal av typen \code{Float}. Klasserna ska inte vara case-klasser, men det ska ändå gå att skapa matriser med uttrycket Mat.ofDim(3,7)(1.0,42,3.2,1.0,2.2,3) tack vare  kompanjonsobjekt med lämpliga fabriksmetoder. TODO etc etc.
