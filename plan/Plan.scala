@@ -98,7 +98,7 @@ trait Plan {
 
     Module("Mönster, Undantag", 
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
-      | mönstermatchning, match, Option, try, catch, Try, unapply, sealed, 
+      | mönstermatchning, match, Option, try, catch, finally ???, Try, unapply, sealed, 
       | flatten, flatMap, partiella funktioner, collect, 
       | implementera equals utan arv för Complex,  
       | implementera equals med arv för Shape,  
