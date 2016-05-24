@@ -163,26 +163,34 @@ def matrixToString(xss: Vector[Vector[Int]]): String =
 
 
 
-\Task \emph{Strängtabell med rubriker.} Implementera objektet \code{table} nedan.
+\Task \emph{Strängtabell med rubriker.} 
+
+\Subtask Implementera objektet \code{table} nedan.
+
+\Subtask Gör ett program som kan köras från terminalen med xxx som ger följande utskrift ??? todo. Ger antalet förekomster av resp unika värde i resp kolumn. Alltså registrering.
 
 \begin{ScalaSpec}{object table}
 object table {
-  type StrVec = Vector[String]
-  type Matrix = Vector[StrVec]
+  type Row = Vector[String]
+  type Col = Vector[String]
+  type Matrix = Vector[Row]
+  val emptyRow, emptyCol = Vector[String]()
   
-  case class Table(headings: StrVec, data: Matrix){
+  case class Table(data: Matrix, headings: Row = emptyRow){
     val nrows = ???
     val ncols = ???
     def apply(row: Int, col: Int): String = ???
-    def row(r: Int): StrVec = ???
-    def col(c: Int): StrVec = ???
+    def row(r: Int): Row = ???
+    def col(c: Int): Col = ???
+    def heading(c: Int): String = headings.lift(c).getOrElse(s"Col$c") 
     val indexOfHeading: Map[String, Int] = ???
-    def col(heading: String): StrVec = ???
-    def valuesOfHeading(heading: String): StrVec = ???
+    def col(heading: String): Col = ???
+    def valuesOfHeading(heading: String): Col = ???
     override def toString: String = ???
   }
   case object Table {
-    def fromFile(fileName: String): Table = ???
+    def fromFileWithHeadings(fileName: String): Table = ???
+    def fromFileNoHeadings(fileName: String): Table = ???
   }
 }
 \end{ScalaSpec}
@@ -208,10 +216,15 @@ object table {
       headings.mkString(";") + "\n" +data.map(_.mkString(";")).mkString("\n")
   }
   case object Table {
-    def fromFile(fileName: String): Table = {
+    def fromFileNoHeadings(fileName: String): Table = {
       val lines = scala.io.Source.fromFile(fileName).getLines.toVector
       val m: Matrix  = lines.map(_.split(';').toVector) 
-      new Table(m.head, m.tail)
+      new Table(m)
+    }
+    def fromFileWithHeadings(fileName: String): Table = {
+      val lines = scala.io.Source.fromFile(fileName).getLines.toVector
+      val m: Matrix  = lines.map(_.split(';').toVector) 
+      new Table(m.tail, m.head)
     }
   }
 }
