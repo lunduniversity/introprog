@@ -10,16 +10,159 @@
 \end{Goals}
 
 \begin{Preparations}
-\item Att göra.
+\item Använd övningarna i kapitel~\ref{exe:W03} för att ta reda på hur man skriver en \code{main}-funktion i Scala.
 \end{Preparations}
+
+
 
 \subsection{Obligatoriska uppgifter}
 
-\Task En labbuppgiftsbeskrivning.
 
-\Subtask En underuppgift.
+\begin{quote}
+\textbf{Blockmullvad} (\textit{Talpa laterculus}) är ett fantasidjur i familjen mullvadsdjur. 
+Den är känd för sitt karaktäristiska kvadratiska utseende.
+Den lever mest ensam i sina underjordiska gångar som till skillnad från mullvadens (\emph{Talpa europaea}) har helt raka väggar.
+\end{quote}
 
-\Subtask En underuppgift.
+\begin{figure}
+\end{figure}
+
+\Task
+Du ska skriva ett Scala-program med en vanlig texteditor och kompilera ditt program med kommandot \texttt{scalac} och sedan köra programmet med kommandot \texttt{scala}.
+
+\Subtask
+Öppna en texteditor, till exempel gedit eller Atom (se appendix~\ref{appendix:edit} för hjälp).
+Skapa en ny fil med namnet \texttt{Mole.scala} och spara den i en ny katalog i din hemkatalog, till exempel \texttt{\textasciitilde/pgk/mole/Mole.scala}, där \texttt{\textasciitilde} är din hemkatalog.
+
+\Subtask
+Öppna ett terminalfönster (se appendix~\ref{appendix:terminal} för hjälp).
+Navigera till din nya katalog med \texttt{cd}-kommandot \Eng{change directory} och kontrollera med \texttt{ls}-kommandot \Eng{list} att din nya fil finns där.
+\begin{REPLnonum}
+> cd ~/pgk/mole
+> ls
+\end{REPLnonum}
+Om allt går bra ska \texttt{ls}-kommandot skriva ut \texttt{Mole.scala}.
+
+\Subtask
+Gå tillbaka till din texteditor och skriv in ett object med namnet \code{Mole} i din fil.
+Lägg till en \code{main}-funktion i objektet som skriver ut texten \emph{Keep on digging!} med hjälp av funktionen \code{println}.
+Behöver du hjälp kan du gå tillbaka till övningarna i kapitel~\ref{exe:W03}.
+
+\Subtask
+Kör kommandot \texttt{scalac Mole.scala} i terminalfönstret för att kompilera ditt program.
+Om kompilatorn rapporterar några fel rättar du till det i din texteditor kompilerar igen.
+Kontrollera sedan med \texttt{ls}-kommandot att några filer som slutar på \texttt{class} har skapats.
+
+\Subtask
+Kör kommandot \texttt{scala Mole} för att köra ditt program.
+Om att går bra ska texten du angivit skrivas ut i terminalfönstret.
+
+
+\Task
+Nu har du skrivit ett Scala-program som skriver ut en uppmaning till en mullvad att fortsätta gräva.
+Det programmet är inte så användbart, eftersom mullvadar inte kan inte läsa.
+Nästa steg är att skriva ett grafiskt program, snarare än ett textbaserat.
+
+Funktionen \code{println} som anropas i \code{main}-funktionen ingår i Scalas standardbibliotek.
+Ett programbibliotek innehåller kod eller kompilerade programsnuttar som kan användas av andra program, och för de flesta programspråk ingår ett standardbiblitek som alla program kan nyttja.
+Till grafiken i denna uppgift ska du använda ett biblitek som kallas \emph{cslib} och som kommer att användas även i senare labbar.
+
+\Subtask
+Gå till kursens webbsida \url{https://cs.lth.se/pgk/} och ladda ner \href{https://cs.lth.se/pgk/cslib.jar}{cslib.jar} och lägg den i samma katalog som ditt Scala program.
+En \texttt{jar}-fil är egenligen en \texttt{zip}-fil som innehåller färdiga \texttt{class}-filer.
+
+\Subtask
+Byt ut \code{println}-anropet så att \code{main}-funktionen innehåller följande rader:
+\begin{Code}
+val w = new cslib.window.SimpleWindow(300, 500, "Digging")
+w.moveTo(10, 10)
+w.lineTo(10, 20)
+w.lineTo(20, 20)
+w.lineTo(20, 10)
+w.lineTo(10, 10)
+\end{Code}
+Den första raden skapar ett nytt \code{SimpleWindow} som ritar upp ett fönster som är 300 bildpunkter brett och 500 bildpunkter högt med titeln \emph{Digging}.
+\code{SimpleWindow} har en \emph{penna} som kan flyttas runt och rita linjer.
+Anropet \code{w.moveTo(10, 10)} flyttar pennan för fönstret \code{w} till position $(10,10)$ utan att rita något, och anropet \code{w.lineTo(10, 20)} ritar en linje därifrån till position $(10, 20)$.
+
+\Subtask
+Nu ska du kompilera ditt program, men eftersom \code{SimpleWindow} inte finns i Scalas standardbiblitek utan i \texttt{cslib.jar} behöver du visa kompilatorn var den ska leta.
+Det gör du genom att ange en \emph{classpath}, dvs. en sökväg till \texttt{class}-filer, när du kompilerar.
+Använd flaggan \texttt{-cp cslib.jar} för att ange \texttt{cslib.jar} som classpath och kompilera ditt Scala-program igen:
+\begin{REPLnonum}
+> scalac -cp cslib.jar Mole.scala
+\end{REPLnonum}
+
+\Subtask
+Nu ska du köra ditt program, och då behöver du också ange var \texttt{class}-filerna ligger.
+Du ska ange den katalog där \texttt{class}-filerna för \code{Mole} ligger, som du just kompilerat, men du ska också ange \texttt{cslib.jar}, och det gör du med en kolon-separerad lista, till exempel \texttt{sökväg1:sökväg2:sökväg3}.
+Katalogen du står i, där dina \texttt{class}-filer ligger, kan anges med en punkt (\texttt{.}).
+Kör programmet med följande kommando:
+\begin{REPLnonum}
+> scala -cp .:cslib.jar Mole
+\end{REPLnonum}
+Du ska nu få upp ett fönster med en liten kvadrat utritad i övre vänstra hörnet.
+
+
+\Task
+Hela ditt program är för tillfället samlat i en och samma funktion, vilket fungerar bra för väldigt små program.
+Nu ska vi dela upp programmet så det blir lättare att återanvända samma kodsnuttar.
+
+\Subtask
+Lägg till ett objekt med namnet \code{Graphics} i \texttt{Mole.scala} och flytta dit deklarationen av fönstret \code{w}.
+Skapa en ny funktion med namnet \code{square} i det nya objektet och flytta dit koden som ritar kvadraten.
+Anropa \code{square} i din \code{main}-funktion.
+Filen \texttt{Mole.scala} ska se ut såhär:
+\begin{Code}
+object Graphics {
+	val w = new cslib.window.SimpleWindow(300, 500, "Digging")
+	def square(): Unit = ???
+}
+object Mole {
+	def main(args: Array[String]): Unit = {
+		Graphics.square()
+	}
+}
+\end{Code}
+Observera att du inte kan anropa \code{square} direkt i funktionen \code{main}, utan måste ange att det är \code{square} metoden inuti \code{Graphics} du vill anropa.
+
+\Subtask
+Kompilera \texttt{Mole.scala} med \texttt{scalac}.
+Glöm inte att ange korrekt classpath.
+(Tips: Du kan trycka uppåtpil för att komma till tidigare kommandon i terminalen.)
+Kontrollera med \texttt{ls} att det nu också finns \texttt{class}-filer för \code{Graphics}-objektet.
+
+\Subtask
+Kör programmet \code{Mole} med \texttt{scala}.
+Glöm inte att ange korrekt classpath.
+Om allt fungerar ska programmet göra samma sak som innan.
+
+\Task
+Nu har du gjort ett grafiskt program, men ännu syns ingen mullvad.
+Det är dags att ta reda på hur koordinatsystemet fungerar i denna grafiska miljö, så vi kan få mullvaden att hitta rätt.
+
+\Subtask
+Ändra i \code{Graphics.square} så att kvadraten ritas upp i \emph{övre högra} hörnet istället.
+Prova dig fram för att ta reda på hur koordinatsystemet fungerar genom att ändra i koden, kompilera och köra programmet tills du får rätt på det.
+
+\Subtask
+För att kunna rita ut flera kvadrater på olika ställen ska du lägga till två parametrar till \code{Graphics.square}.
+Funktionen ska nu ha följande form:
+\begin{Code}
+def square(x: Int, y: Int) = ???
+\end{Code}
+Ändra i koden så kvadraten ritas ut med övre vänstra hörnet i den position som parametrarna \code{x} och \code{y} anger.
+Ändra också i \code{Mole.main} så att \code{Graphics.square} anropas med lämpliga parametrar.
+Kompilera och kör programmet och tills du får det att fungera.
+Se till att du kan rita ut kvadraten på olika ställen i fönstret genom att ange olika parametrar.
+
+
+\Task
+\code{???}
+
+\Subtask
+\code{???}
+
 
 \subsection{Frivilliga extrauppgifter}
 
