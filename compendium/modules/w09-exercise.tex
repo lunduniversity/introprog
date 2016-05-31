@@ -66,65 +66,70 @@ scala> val m5 = Vector.fill(42){ m2(1).map(e => (e * math.random).toInt) }
 
 
 
-\Task \emph{Skapa och itererar över matriser.} Vi ska skapa matriser där varje rad representerar 5 tärningskast i spelet Yatzy.\footnote{\href{https://sv.wikipedia.org/wiki/Yatzy}{sv.wikipedia.org/wiki/Yatzy}}
+\Task \emph{Skapa och itererar över matriser.} Vi ska skapa matriser där varje rad representerar 5 kast med en tärning \Eng{dice} i spelet Yatzy.\footnote{\href{https://sv.wikipedia.org/wiki/Yatzy}{sv.wikipedia.org/wiki/Yatzy}}
 
 
-\Subtask Definiera i REPL en funktion \code{def throwDie: Int = ???} som returnerar ett slumptal mellan 1 och 6.
+\Subtask Definiera i REPL en funktion \code{def throwDice: Int = ???} som returnerar ett slumptal mellan 1 och 6.
 \begin{Code}
 // kod till facit
-def throwDie: Int = (math.random * 6).toInt + 1
+def throwDice: Int = (math.random * 6).toInt + 1
 \end{Code}
 
 
 \Subtask Skapa nedan heltalsmatris i REPL. Vilken dimension får matrisen?
 \begin{REPL}
 val ds1 = for (i <- 1 to 1000) yield { 
-            for (j <- 1 to 5) yield throwDie 
+            for (j <- 1 to 5) yield throwDice 
           }
 \end{REPL}
 
-\Subtask Man kan också använda nedan varianter för att skapa en heltalsmatris. Vilken variant av \code{ds1} ... \code{ds4} ger den mest specifika typen?  
+\Subtask\Pen Man kan också använda nedan varianter för att skapa en heltalsmatris. Vilken av varianterna \code{ds1} ... \code{ds5} tycker du är lättast att läsa och förstå? Prova respektive variant i REPL och ange vilken typ på \code{ds1} ... \code{ds5} som härleds av kompilatorn.
 \begin{REPL}
-val ds2 = (1 to 1000).map(i => (1 to 5).map(j => throwDie))  
-val ds3 = (1 to 1000).map(i => Vector.fill(5)(throwDie)) 
-val ds4 = for (i <- 1 to 1000) yield Vector.fill(5)(throwDie) 
-val ds5 = Vector.fill(1000)(Vector.fill(5)(throwDie))
+val ds2 = (1 to 1000).map(i => (1 to 5).map(j => throwDice))  
+val ds3 = (1 to 1000).map(i => Vector.fill(5)(throwDice)) 
+val ds4 = for (i <- 1 to 1000) yield Vector.fill(5)(throwDice) 
+val ds5 = Vector.fill(1000)(Vector.fill(5)(throwDice))
 \end{REPL}
 
-\Subtask\Pen Vilken variant ovan tycker du är lättast att läsa och förstå?
 
-\Subtask Definiera en funktion \\ \code{def throwDices(n: Int): Vector[Int] = ???}\\ som ger en heltalsvektor med $n$ stycken slumpvisa tärningskast. Kasten ska vara sorterade i växande ordning; använd för detta ändamål samlingsmetoden \code{sorted}.
+\Subtask Definiera en funktion \\ \code{def throw(n: Int): Vector[Int] = ???}\\ som ger en heltalsvektor med $n$ stycken slumpvisa tärningskast. Kasten ska vara sorterade i växande ordning; använd för detta ändamål samlingsmetoden \code{sorted}.
 \begin{Code}
 // kod till facit
-def throwDices(n: Int) = Vector.fill(n)(throwDie).sorted
+def throw(n: Int) = Vector.fill(n)(throwDice).sorted
 \end{Code}
 
 
-\Subtask Definera i REPL en funktion \code{isYatzy(xs: Vector[Int]): Boolean = ???} som testar om alla elementen i en heltalsvektor är samma. 
+\Subtask Definera i REPL en funktion \code{isYatzy(xs: Vector[Int]): Boolean = ???} som testar om alla elementen i en heltalsvektor är samma. Använd samlingsmetoden \code{forall}. 
 \begin{Code}
 // kod till facit
 def isYatzy(xs: Vector[Int]): Boolean = xs.forall(_ == xs(0))
 \end{Code}
 
-\Subtask Deklarera nedan typ-alias: 
-\begin{REPL}
-scala> type DiceMat = Vector[Vector[Int]]
-\end{REPL}
-\Subtask\Pen Nämn några fördelar med att använda typ-alias?
-
-
-{\color{red}{TODO: Till facit: (1) Slipper skriva långa typer om och om igen; kan i stället använda kortare namn (2) kan lätt ändra typ senare genom att bara ändra på ett ställe (3) Koden blir lättare att begripa då typnamnet kan hjälpa till att beskriva vad typen används till på samma sätt som en klass, men man behöver inte skapa en klass -- det kan göras senare om behov uppstår.}}
-
-
-\Subtask Skapa en funktion \code{def yatzyMatrix(m: Int): DiceMat = ???} som med hjälp av funktionen \code{throwDices} skapar en matris med \code{n} st vektorer med vardera 5 slumpvisa tärningskast.
+\Subtask Implementera \code{isYatzy} igen med ett imperativt angreppssätt som använder en \code{while}-sats (alltså utan att använda funktionella  \code{forall}). Ta hjälp av en variabel \code{i} som håller reda på index och en variabel \code{foundDiff} som håller reda på om ett avvikande värde upptäcks. Funktionen blir ca 10 rader, så det kan vara lämpligt att öppna en editor att skriva i medan du klurar ut lösningen. Prova genom att klistra in i REPL. 
 \begin{Code}
 // kod till facit
-def yatzyMatrix(m: Int): DiceMat = Vector.fill(m)(throwDices(5))
+def isYatzy(xs: Vector[Int]): Boolean = {
+  var foundDiff = false
+  var i = 0
+  while (i < xs.size  && !foundDiff){
+    foundDiff = xs(i) != xs(0)
+    i += 1
+  } 
+  !foundDiff
+}
 \end{Code}
 
-\Subtask Skapa en funktion som returnerar en utskriftsvänlig sträng \\ \code{def matrixToString(xss: Vector[Vector[Int]]): String = ???} \\ En uskrift enligt nedan ska ge följande format. 
+
+\Subtask Skapa en funktion  \\ \code{def diceMatrix(m: Int, n: Int): Vector[Vector[Int]] = ???} \\ som med hjälp av funktionen \code{throw} skapar en matris med \code{m} st vektorer med vardera \code{n} slumpvisa tärningskast.
+\begin{Code}
+// kod till facit
+def diceMatrix(m: Int, n: Int): Vector[Vector[Int]] = 
+  Vector.fill(m)(throw(n))
+\end{Code}
+
+\Subtask Skapa en funktion som returnerar en utskriftsvänlig sträng \\ \code{def diceMatrixToString(xss: Vector[Vector[Int]]): String = ???} \\med hjälp av \code{map} och \code{mkString}, som fungerar enligt nedan. 
 \begin{REPL}
-scala> println(matrixToString(yatzyMatrix(10)))
+scala> println(diceMatrixToString(diceMatrix(10, 5)))
 4 5 5 3 3
 1 4 1 3 1
 1 3 1 5 5
@@ -137,9 +142,16 @@ scala> println(matrixToString(yatzyMatrix(10)))
 4 5 5 2 3
 
 \end{REPL}
-Ett imperativt sätt\footnote{Detta anreppssätt är bra att kunna när du stöter på samlingar och språk saknar funktionsprogrammeringsmöjligheter och \code{map}, \code{mkString} etc.} att göra detta på visas nedan. Förklara hur nedan kod fungerar. Lista sedan istället ut hur \code{map} och \code{mkString} kan använda för att på ett enklare sätt åstadkommer samma sak som nedan. Testa din enklare lösning i REPL.
 \begin{Code}
-def matrixToString(xss: Vector[Vector[Int]]): String = {
+// kod till facit
+def diceMatrixToString(xss: Vector[Vector[Int]]): String = 
+  xss.map(_.mkString(" ")).mkString("\n")
+\end{Code}
+
+
+\Subtask\Pen Ett imperativt sätt\footnote{Detta anreppssätt är bra att kunna när du stöter på samlingar och/eller språk som saknar funktionsprogrammeringsmöjligheter med \code{map}, \code{mkString} etc.} att göra detta på visas nedan. Förklara hur nedan kod fungerar. Vad händer om \code{xss} är tom? Vad händer om \code{xss} bara innehåller tomma vektorer? Nämn en fördel och en nackdel med att använda \code{val sb: StringBuilder} och \code{append}, jämfört med en vanlig \code{var s: String} och \code{+} för tillägg i slutet.
+\begin{Code}
+def diceMatrixToString(xss: Vector[Vector[Int]]): String = {
   val sb = new StringBuilder()
   for(m <- 0 until xss.size) {
     for(n <- 0 until xss(m).size) { 
@@ -152,97 +164,158 @@ def matrixToString(xss: Vector[Vector[Int]]): String = {
 }
 \end{Code}
 
- 
+\Subtask Implementera funktionen \\ \code{def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]]} \\ som filtrerar fram alla yatzy-rader i matrisen \code{xss} enligt nedan. Använd din funktion \code{isYatzy} och samlingsmetoden \code{filter}. 
+\begin{REPL}
+scala> println(diceMatrixToString(filterYatzy(diceMatrix(10000, 5))))
+2 2 2 2 2
+3 3 3 3 3
+1 1 1 1 1
+3 3 3 3 3
+4 4 4 4 4
+6 6 6 6 6
+2 2 2 2 2
+3 3 3 3 3
+2 2 2 2 2
+6 6 6 6 6
+4 4 4 4 4
+2 2 2 2 2
+4 4 4 4 4
+
+\end{REPL}
+
 \begin{Code}
 // kod till facit
-def matrixToString(xss: Vector[Vector[Int]]): String = 
-  xss.map(_.mkString(" ")).mkString("\n")
+def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] = 
+  xss.filter(isYatzy)
+\end{Code}
+
+\Subtask Gör som träning en imperativ implementation av \code{filterYatzy} med en \code{for}-sats (alltså utan att använda \code{filter}, och utan att använda \code{yield}). 
+\begin{CodeSmall}
+// kod till facit
+def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] = {
+  var result: Vector[Vector[Int]] = Vector()
+  for (i <- 0 until xss.size) {
+    if (isYatzy(xss(i))) result = result :+ xss(i) 
+  } 
+  result
+}
+\end{CodeSmall}
+
+\Subtask\Pen Tycker du din imperativa lösning är lättare eller svårare att läsa och förstå jämfört nedan funktionella lösning med ett \code{for}-uttryck och \code{yield}?
+\begin{CodeSmall}
+def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] = {
+  for (i <- 0 until xss.size if isYatzy(xss(i))) yield xss(i)
+}.toVector  
+\end{CodeSmall}
+
+\Subtask Implementera funktionen \\ 
+\code{def yatzyPips(xss: Vector[Vector[Int]]): Vector[Int]} \\ som ger en vektor med tärningsvärdena för de kast i matrisen \code{xss} som gav yatzy enligt nedan. Använd din funktion \code{isYatzy} och samlingsmetoden \code{filter}. 
+\begin{REPL}
+scala> yatzyPips(diceMatrix(10000, 5))
+res42: Vector[Int] = Vector(3, 5, 6, 6, 3, 3, 2, 6, 1, 3)
+\end{REPL}
+
+\begin{Code}
+// kod till facit
+def yatzyPips(xss: Vector[Vector[Int]]): Vector[Int] = 
+  xss.filter(isYatzy).map(_.head)
 \end{Code}
 
 
 
+\Task \emph{Strängtabell med rubrikrad.} Denna övning utgör en början på det du ska göra under veckans laboration.
 
+\Subtask Implementera case-klassen \code{Table} enligt nedan specifikation. Du kan förutsätta att alla rader har lika många kolumner som antalet element i \code{headings}, samt att alla rubrikerna i \code{headings} är unika. Detta förutsätts också gälla för indatafiler som läses in med \code{fromFile}. 
+\\ \noindent \emph{Tips:} 
+\begin{itemize}[nolistsep,noitemsep]
+\item Värdet \code{indexOfHeading} skapas lättas med hjälp av metoden \code{zipWithIndex} som fungerar på alla sekvenssamlingar.
+\item Skapa en indatafil som du kan använda för att testa att \code{Table} fungerar. 
+\end{itemize}
 
-\Task \emph{Strängtabell med rubriker.} 
+\begin{ScalaSpec}{Table}
+case class Table(
+  data: Vector[Vector[String]], 
+  headings: Vector[String], 
+  sep: String){
+  /** A 2-tuple with (number of rows, number of columns) in data */
+  val dim: (Int, Int) = ???
 
-\Subtask Implementera objektet \code{table} nedan.
+  /** The element in row r an column c of data, counting from 0 */
+  def apply(r: Int, c: Int): String = ???
 
-\Subtask Gör ett program som kan köras från terminalen med xxx som ger följande utskrift ??? todo. Ger antalet förekomster av resp unika värde i resp kolumn. Alltså registrering.
+  /** The row-vector r in data, counting from 0 */
+  def row(r: Int): Vector[String]= ???
 
-\begin{ScalaSpec}{object table}
-object table {
-  type Row = Vector[String]
-  type Col = Vector[String]
-  type Matrix = Vector[Row]
-  val emptyRow, emptyCol = Vector[String]()
-  
-  case class Table(data: Matrix, headings: Row = emptyRow){
-    val nrows = ???
-    val ncols = ???
-    def apply(row: Int, col: Int): String = ???
-    def row(r: Int): Row = ???
-    def col(c: Int): Col = ???
-    def heading(c: Int): String = headings.lift(c).getOrElse(s"Col$c") 
-    val indexOfHeading: Map[String, Int] = ???
-    def col(heading: String): Col = ???
-    def valuesOfHeading(heading: String): Col = ???
-    override def toString: String = ???
-  }
-  case object Table {
-    def fromFileWithHeadings(fileName: String): Table = ???
-    def fromFileNoHeadings(fileName: String): Table = ???
-  }
+  /** The column-vector c in data, counting from 0 */
+  def col(c: Int): Vector[String] = ???
+
+  /** A map from heading to index counting from 0 */
+  lazy val indexOfHeading: Map[String, Int] = ???
+
+  /** The column-vector with heading h in data */
+  def col(h: String): Vector[String] = ???
+
+  /** A vector with the distinct, sorted values of col with heading h */ 
+  def values(h: String): Vector[String] = ???
+
+  /** Headings and data with columns separated by sep */
+  override lazy val toString: String = ???
+}
+case object Table {
+  /** Creates a new Table from fileName with columns split by sep */
+  def fromFile(fileName: String, separator: Char = ';'): Table = ???
 }
 \end{ScalaSpec}
 
 
 \begin{CodeSmall}
 // kod till facit
-object table {
-  type StrVec = Vector[String]
-  type Matrix = Vector[StrVec]
-  
-  case class Table(headings: StrVec, data: Matrix){
-    val nrows = data.size
-    val ncols = headings.size
-    require(data.forall(r => r.size == ncols))
-    def apply(row: Int, col: Int): String = data(row)(col)
-    def row(r: Int): StrVec = data(r)
-    def col(c: Int): StrVec = data.map(r => r(c))
-    lazy val indexOfHeading: Map[String, Int] = headings.zipWithIndex.toMap
-    def col(heading: String): StrVec = col(indexOfHeading(heading)) 
-    def valuesOfHeading(heading: String): StrVec = col(heading).distinct
-    override lazy val toString: String = 
-      headings.mkString(";") + "\n" +data.map(_.mkString(";")).mkString("\n")
-  }
-  case object Table {
-    def fromFileNoHeadings(fileName: String): Table = {
-      val lines = scala.io.Source.fromFile(fileName).getLines.toVector
-      val m: Matrix  = lines.map(_.split(';').toVector) 
-      new Table(m)
-    }
-    def fromFileWithHeadings(fileName: String): Table = {
-      val lines = scala.io.Source.fromFile(fileName).getLines.toVector
-      val m: Matrix  = lines.map(_.split(';').toVector) 
-      new Table(m.tail, m.head)
-    }
+
+case class Table(
+  data: Vector[Vector[String]], 
+  headings: Vector[String], 
+  sep: String){
+
+  val dim: (Int, Int) = (data.size, headings.size)
+
+  def apply(r: Int, c: Int): String = data(r)(c)
+
+  def row(r: Int): Vector[String]= data(r)
+
+  def col(c: Int): Vector[String] = data.map(r => r(c))
+
+  lazy val indexOfHeading: Map[String, Int] = headings.zipWithIndex.toMap
+
+  def col(h: String): Vector[String] = col(indexOfHeading(h)) 
+
+  def values(h: String): Vector[String] = col(h).distinct.sorted
+
+  override lazy val toString: String = 
+    headings.mkString(sep) + "\n" +data.map(_.mkString(sep)).mkString("\n")
+}
+case object Table {
+  def fromFile(fileName: String, separator: Char = ';'): Table = {
+    val lines = scala.io.Source.fromFile(fileName).getLines.toVector
+    val matrix= lines.map(_.split(separator).toVector) 
+    new Table(matrix.tail, matrix.head, separator.toString)
   }
 }
 \end{CodeSmall}
 
+\Subtask Skapa med hjälp av \code{Table} ett program som kan köras från terminalen med \texttt{scala regtable infile.csv ';'} som ger en utskrift av antalet förekomster av respektive unika värde i respektive kolumn (alltså en variant av registrering).
 
-\Task Skapa en oföränderlig, final klass \code{Mat} för matematiska matriser och en oföränderlig, final klass \code{Vec} för matematiska vektorer. \code{Mat} ska internt lagra elementen i en privat endimensionell array av flyttal av typen \code{Float}. Klasserna ska inte vara case-klasser, men det ska ändå gå att skapa matriser med uttrycket Mat.ofDim(3,7)(1.0,42,3.2,1.0,2.2,3) tack vare  kompanjonsobjekt med lämpliga fabriksmetoder. TODO etc etc.
+
+
+\Task \emph{En klass för matematiska matriser.}
+
+\Subtask Skapa en oföränderlig, final klass \code{Mat} för matematiska matriser. \code{Mat} ska internt lagra elementen i en privat \emph{endimensionell} array av flyttal av typen \code{Array[Double]}. Klassen ska inte vara en case-klass. Det ska gå att skapa matriser med uttrycket Mat.ofDim(3,7)(1.0,42,3.2,1.0,2.2,3) tack vare  kompanjonsobjekt med lämpliga fabriksmetoder. 
 
 \Subtask Överskugga metoden equals och ge klasserna \code{Mat} och \code{Vec} innehållslikhet i stället för referenslikhet när \code{==} anropas.
 
-\Subtask Implementera egna innehålllikhetsmetoder med namnet \code{===} på både \code{Mat} och \code {Vec} som är typsäkra, d.v.s. bara tillåter jämförelse mellan matriser, resp. vektorer.
+\Subtask Implementera egna innehålllikhetsmetoder med namnet \code{===} på \code{Mat} som är typsäker, d.v.s. bara tillåter jämförelse mellan matriser, resp. vektorer.
 
 
-\Task \emph{Dense Matrix of Double using private Array[Double]}
-
-
-\Task \emph{Sparse Matrix of Double using private mutable.Map[(Int, Int), Double]}
-
+\Task \emph{Sparse Matrix of Float using private mutable.Map[(Int, Int), Double]}
 
 
 
@@ -303,39 +376,33 @@ object Matrix {
 
 \Task Skapa ett yatzy-spel i terminalen.
 
-\Subtask Skapa med en editor ett objekt enligt nedan specifikation. Lägg till predikat för att kolla olika giltiga kombinationer i Yatzy\footnote{\href{https://en.wikipedia.org/wiki/Yahtzee}{n.wikipedia.org/wiki/Yahtzee}} etcetera och bygg ett huvudprogram som testar dina funktioner Kompilera och testa i terminalen allteftersom du lagger till nya funktioner enligt nedan deluppgifter.
+\Subtask Skapa med en editor ett objekt enligt nedan specifikation. Läs om hur de olika predikaten för att kolla olika giltiga kombinationer i Yatzy ska fungera här: \href{https://en.wikipedia.org/wiki/Yahtzee}{n.wikipedia.org/wiki/Yahtzee}. Bygg ett huvudprogram som testar dina funktioner. Kompilera och testa i terminalen allteftersom du lagger till nya funktioner enligt nedan deluppgifter.
+
+\begin{ScalaSpec}{YatzyGame}
+/** En skiss på en klass som kan användas för att göra ett yatzy-spel */
+case class YatzyGame(val thrown: Vector[Vector[Int]]) {
+  /** Creates a new YatzyGame with a new row of 5 dice appended to thrown  */
+  def throw: YatzyGame = ???
+
+  /** Creates a new YatzyGame with the indices of the last row re-thrown  */
+  def throw(indices: Vector[Int]): YatzyGame = ???
+}
+
+object YatzyGame {
+  def isYatzy(xs: Vector[Int]): Boolean = ???
+  def isThreeOfAKind(xs: Vector[Int]): Boolean = ???
+  def isFourOfAKind(xs: Vector[Int]): Boolean = ???
+  def isFullHouse(xs: Vector[Int]): Boolean = ???
+  def isSmallStraight(xs: Vector[Int]): Boolean = ???
+  def isLargeStraight(xs: Vector[Int]): Boolean = ???
+}
+\end{ScalaSpec}
+
 
 \Subtask Använd objektet för att med hjälp av många slumpmässiga utfall beräkna sannolikheter för några olika giltiga kombinationer. Använd, om du vill, möjligheten som reglerna ger att slå om tärningar i två yterliggare kast, där de tärningar som slås om väljs slumpmässigt.
 
 \Subtask Bygg ett förenklat yazty-spel i terminalen där användaren kan bestämma vilka tärningar som ska slås om.
 
-\begin{ScalaSpec}{object yahtzee}
-/** En skiss på ett objekt som kan användas för att göra ett yatzy-spel */
-object yahtzee {
-  type Die = Int
-  type DiceVec = Vector[Die]
-  type DiceMat = Vector[DiceVec]
-
-  def throwOne: Die = ???
-  
-  def throwAll: DiceVec = Vector.fill(5)(throwDie).sorted
-
-  /** Takes a DiceVec and a list of index and returns a new DiceVec 
-    * with the dices in the index list re-thrown */
-  def throwAgain(dv: DiceVec)(indicesToThrow: Int*): DiceVec = ???
-
-  def yatzyMatrix(m: Int): DiceMat = 
-  
-  def matrixToString(xss: DiceMat): String = ???
-  
-  def isYahtzee(xs: DiceVec): Boolean = ???
-  def isThreeOfAKind(xs: DiceVec): Boolean = ???
-  def isFourOfAKind(xs: DiceVec): Boolean = ???
-  def isFullHouse(xs: DiceVec): Boolean = ???
-  def isSmallStraight(xs: DiceVec): Boolean = ???
-  def isLargeStraight(xs: DiceVec): Boolean = ???
-}
-\end{ScalaSpec}
 
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
