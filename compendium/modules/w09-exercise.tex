@@ -66,7 +66,7 @@ scala> val m5 = Vector.fill(42){ m2(1).map(e => (e * math.random).toInt) }
 
 
 
-\Task \emph{Skapa och itererar över matriser.} Vi ska skapa matriser där varje rad representerar 5 kast med en tärning \Eng{dice} i spelet Yatzy.\footnote{\href{https://sv.wikipedia.org/wiki/Yatzy}{sv.wikipedia.org/wiki/Yatzy}}
+\Task \emph{Skapa och itererar över matriser.} Vi ska skapa matriser där varje rad representerar 5 kast med en tärning spelet Yatzy.\footnote{\href{https://sv.wikipedia.org/wiki/Yatzy}{sv.wikipedia.org/wiki/Yatzy}}
 
 
 \Subtask Definiera i REPL en funktion \code{def throwDice: Int = ???} som returnerar ett slumptal mellan 1 och 6.
@@ -92,10 +92,10 @@ val ds5 = Vector.fill(1000)(Vector.fill(5)(throwDice))
 \end{REPL}
 
 
-\Subtask Definiera en funktion \\ \code{def throw(n: Int): Vector[Int] = ???}\\ som ger en heltalsvektor med $n$ stycken slumpvisa tärningskast. Kasten ska vara sorterade i växande ordning; använd för detta ändamål samlingsmetoden \code{sorted}.
+\Subtask Definiera en funktion \\ \code{def roll(n: Int): Vector[Int] = ???}\\ som ger en heltalsvektor med $n$ stycken slumpvisa tärningskast. Kasten ska vara sorterade i växande ordning; använd för detta ändamål samlingsmetoden \code{sorted}.
 \begin{Code}
 // kod till facit
-def throw(n: Int) = Vector.fill(n)(throwDice).sorted
+def roll(n: Int) = Vector.fill(n)(throwDice).sorted
 \end{Code}
 
 
@@ -120,11 +120,11 @@ def isYatzy(xs: Vector[Int]): Boolean = {
 \end{Code}
 
 
-\Subtask Skapa en funktion  \\ \code{def diceMatrix(m: Int, n: Int): Vector[Vector[Int]] = ???} \\ som med hjälp av funktionen \code{throw} skapar en matris med \code{m} st vektorer med vardera \code{n} slumpvisa tärningskast.
+\Subtask Skapa en funktion  \\ \code{def diceMatrix(m: Int, n: Int): Vector[Vector[Int]] = ???} \\ som med hjälp av funktionen \code{roll} skapar en matris med \code{m} st vektorer med vardera \code{n} slumpvisa tärningskast.
 \begin{Code}
 // kod till facit
 def diceMatrix(m: Int, n: Int): Vector[Vector[Int]] = 
-  Vector.fill(m)(throw(n))
+  Vector.fill(m)(roll(n))
 \end{Code}
 
 \Subtask Skapa en funktion som returnerar en utskriftsvänlig sträng \\ \code{def diceMatrixToString(xss: Vector[Vector[Int]]): String = ???} \\med hjälp av \code{map} och \code{mkString}, som fungerar enligt nedan. 
@@ -304,19 +304,7 @@ case object Table {
 
 \Subtask Skapa med hjälp av \code{Table} ett program som kan köras från terminalen med \texttt{scala regtable infile.csv ';'} som ger en utskrift av antalet förekomster av respektive unika värde i respektive kolumn (alltså en variant av registrering).
 
-
-
-\Task \emph{En klass för matematiska matriser.}
-
-\Subtask Skapa en oföränderlig, final klass \code{Mat} för matematiska matriser. \code{Mat} ska internt lagra elementen i en privat \emph{endimensionell} array av flyttal av typen \code{Array[Double]}. Klassen ska inte vara en case-klass. Det ska gå att skapa matriser med uttrycket Mat.ofDim(3,7)(1.0,42,3.2,1.0,2.2,3) tack vare  kompanjonsobjekt med lämpliga fabriksmetoder. 
-
-\Subtask Överskugga metoden equals och ge klasserna \code{Mat} och \code{Vec} innehållslikhet i stället för referenslikhet när \code{==} anropas.
-
-\Subtask Implementera egna innehålllikhetsmetoder med namnet \code{===} på \code{Mat} som är typsäker, d.v.s. bara tillåter jämförelse mellan matriser, resp. vektorer.
-
-
-\Task \emph{Sparse Matrix of Float using private mutable.Map[(Int, Int), Double]}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \Task \emph{Matriser i Java.}
@@ -374,21 +362,21 @@ object Matrix {
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task Skapa ett yatzy-spel i terminalen.
+\Task \emph{Skapa ett yatzy-spel för användning i terminalen.}
 
-\Subtask Skapa med en editor ett objekt enligt nedan specifikation. Läs om hur de olika predikaten för att kolla olika giltiga kombinationer i Yatzy ska fungera här: \href{https://en.wikipedia.org/wiki/Yahtzee}{n.wikipedia.org/wiki/Yahtzee}. Bygg ett huvudprogram som testar dina funktioner. Kompilera och testa i terminalen allteftersom du lagger till nya funktioner enligt nedan deluppgifter.
+\Subtask Skapa med en editor en klass enligt nedan specifikation. Läs om hur de olika predikaten för att kolla olika giltiga kombinationer i Yatzy ska fungera här: \href{https://en.wikipedia.org/wiki/Yahtzee}{en.wikipedia.org/wiki/Yahtzee}. Bygg ett huvudprogram som testar dina funktioner. Kompilera och testa i terminalen allteftersom du lägger till nya funktioner.
 
-\begin{ScalaSpec}{YatzyGame}
-/** En skiss på en klass som kan användas för att göra ett yatzy-spel */
-case class YatzyGame(val thrown: Vector[Vector[Int]]) {
-  /** Creates a new YatzyGame with a new row of 5 dice appended to thrown  */
-  def throw: YatzyGame = ???
+\begin{ScalaSpec}{YatzyRows}
+/** En skiss på en klass som kan användas till ett förenklat yatzy-spel */
+case class YatzyRows(val rows: Vector[Vector[Int]]) {
+  /** A new YatzyRows with a new row of 5 dice rolls appended to rows  */
+  def roll: YatzyRows = ???
 
-  /** Creates a new YatzyGame with the indices of the last row re-thrown  */
-  def throw(indices: Vector[Int]): YatzyGame = ???
+  /** A new YatzyGame with some indices of the last row re-rolled  */
+  def reroll(indices: Vector[Int]): YatzyRows = ???
 }
 
-object YatzyGame {
+object YatzyRows {
   def isYatzy(xs: Vector[Int]): Boolean = ???
   def isThreeOfAKind(xs: Vector[Int]): Boolean = ???
   def isFourOfAKind(xs: Vector[Int]): Boolean = ???
@@ -399,13 +387,25 @@ object YatzyGame {
 \end{ScalaSpec}
 
 
-\Subtask Använd objektet för att med hjälp av många slumpmässiga utfall beräkna sannolikheter för några olika giltiga kombinationer. Använd, om du vill, möjligheten som reglerna ger att slå om tärningar i två yterliggare kast, där de tärningar som slås om väljs slumpmässigt.
+\Subtask Använd \code{YatzyRows} för att med hjälp av många tärningskast beräkna sannolikheter för några olika giltiga kombinationer. Använd, om du vill, möjligheten som reglerna ger att slå om tärningar i två yterliggare kast, där de tärningar som slås om väljs slumpmässigt.
 
-\Subtask Bygg ett förenklat yazty-spel i terminalen där användaren kan bestämma vilka tärningar som ska slås om.
+\Subtask Bygg ett förenklat yazty-spel i terminalen där användaren kan bestämma vilka tärningar som ska slås om. Använd \code{Scanner} för att läsa indata från användaren. Börja med något riktigt enkelt och bygg sedan vidare på ditt spel genom att införa fler och fler funktioner.
 
 
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task Skapa ett interface trait Matrix[T] med konkreta finala implementationer FloatMatrix och IntMatrix StringMatrix som implementerar interfacet. De konkreta klasserna ska ha privata konstruktorer så att fabriksobjekent i kompanjonsobjektet Matrix används för att skapa instanser.
+
+\Task \emph{En klass för matematiska matriser.}
+
+\Subtask Skapa en oföränderlig, final klass \code{Mat} för matematiska matriser. \code{Mat} ska internt lagra elementen i en privat \emph{endimensionell} array av flyttal av typen \code{Array[Double]}. Klassen ska inte vara en case-klass. Det ska gå att skapa matriser med uttrycket Mat.ofDim(3,7)(1.0,42,3.2,1.0,2.2,3) tack vare  kompanjonsobjekt med lämpliga fabriksmetoder. 
+
+\Subtask Överskugga metoden equals och ge klasserna \code{Mat} och \code{Vec} innehållslikhet i stället för referenslikhet när \code{==} anropas.
+
+\Subtask Implementera egna innehålllikhetsmetoder med namnet \code{===} på \code{Mat} som är typsäker, d.v.s. bara tillåter jämförelse mellan matriser.
+
+
+\Subtask \emph{Sparse Matrix of Float using private mutable.Map[(Int, Int), Double]}
+
+
     
