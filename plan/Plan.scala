@@ -112,7 +112,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Sökning, Sortering", 
-      id = "searchsort", exercise = "sorting", lab = "surveydata-team", contents = """
+      id = "searchsort", exercise = "sorting", lab = "surveydata", contents = """
       | compareTo på strängar, trait Ordered[T], 
       | algoritm: LINEAR-SEARCH, algortim: BINARY-SEARCH, 
       | algoritmisk komplexitet, 
