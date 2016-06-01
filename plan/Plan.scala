@@ -34,7 +34,7 @@ trait Plan {
       """.stripTrim),
       
     Module("Funktioner, Objekt", 
-      id = "funobj", exercise = "functions", lab = "bugs", contents = """
+      id = "funobj", exercise = "functions", lab = "blockmole", contents = """
       | definera funktion, anropa funktion,
       | parameter, returtyp, värdeandrop, namnanrop, default-argument, namngivna argument,
       | applicera funktion på alla element i en samling, procedur, 
