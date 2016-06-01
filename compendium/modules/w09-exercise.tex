@@ -105,7 +105,7 @@ def roll(n: Int) = Vector.fill(n)(throwDice).sorted
 def isYatzy(xs: Vector[Int]): Boolean = xs.forall(_ == xs(0))
 \end{Code}
 
-\Subtask Implementera \code{isYatzy} igen med ett imperativt angreppssätt som använder en \code{while}-sats (alltså utan att använda funktionella  \code{forall}). Ta hjälp av en variabel \code{i} som håller reda på index och en variabel \code{foundDiff} som håller reda på om ett avvikande värde upptäcks. Funktionen blir ca 10 rader, så det kan vara lämpligt att öppna en editor att skriva i medan du klurar ut lösningen. Prova genom att klistra in i REPL. 
+\Subtask Implementera \code{isYatzy} igen med ett imperativt angreppssätt som använder en \code{while}-sats (alltså utan att använda funktionella  \code{forall}). Ta hjälp av en variabel \code{i} som håller reda på index och en variabel \code{foundDiff} som håller reda på om ett avvikande värde upptäcks. Funktionen blir ca 10 rader, så det kan vara lämpligt att öppna en editor att skriva i medan du klurar ut lösningen. Börja med att skriva pseudokod, gärna med penna på papper. Prova genom att klistra in i REPL. 
 \begin{Code}
 // kod till facit
 def isYatzy(xs: Vector[Int]): Boolean = {
@@ -149,7 +149,7 @@ def diceMatrixToString(xss: Vector[Vector[Int]]): String =
 \end{Code}
 
 
-\Subtask\Pen Ett imperativt sätt\footnote{Detta anreppssätt är bra att kunna när du stöter på samlingar och/eller språk som saknar funktionsprogrammeringsmöjligheter med \code{map}, \code{mkString} etc.} att göra detta på visas nedan. Förklara hur nedan kod fungerar. Vad händer om \code{xss} är tom? Vad händer om \code{xss} bara innehåller tomma vektorer? Nämn en fördel och en nackdel med att använda \code{val sb: StringBuilder} och \code{append}, jämfört med en vanlig \code{var s: String} och \code{+} för tillägg i slutet.
+\Subtask\Pen Ett imperativt sätt\footnote{Imperativa anreppssätt är nödvändiga att kunna när du stöter på samlingar och/eller språk som saknar funktionsprogrammeringsmöjligheter med \code{map}, \code{mkString} etc.} att göra detta på visas nedan. Förklara hur nedan kod fungerar. Vad händer om \code{xss} är tom? Vad händer om \code{xss} bara innehåller tomma vektorer? Nämn en fördel och en nackdel med att använda \code{val sb: StringBuilder} och \code{append}, jämfört med en vanlig \code{var s: String} och \code{+} för tillägg i slutet.
 \begin{Code}
 def diceMatrixToString(xss: Vector[Vector[Int]]): String = {
   val sb = new StringBuilder()
@@ -228,7 +228,7 @@ def yatzyPips(xss: Vector[Vector[Int]]): Vector[Int] =
 \Subtask Implementera case-klassen \code{Table} enligt nedan specifikation. Du kan förutsätta att alla rader har lika många kolumner som antalet element i \code{headings}, samt att alla rubrikerna i \code{headings} är unika. Detta förutsätts också gälla för indatafiler som läses in med \code{fromFile}. 
 \\ \noindent \emph{Tips:} 
 \begin{itemize}[nolistsep,noitemsep]
-\item Värdet \code{indexOfHeading} skapas lättas med hjälp av metoden \code{zipWithIndex} som fungerar på alla sekvenssamlingar.
+\item Värdet \code{indexOfHeading} kan skapas med hjälp av metoden \code{zipWithIndex} som fungerar på alla sekvenssamlingar, samt metoden \code{toMap} som fungerar på sekvenser av 2-tupler. Undersök först hur metoderna fungerar i REPL och sök upp deras dokumentation.
 \item Skapa en indatafil som du kan använda för att testa att \code{Table} fungerar. 
 \end{itemize}
 
@@ -261,7 +261,7 @@ case class Table(
   /** Headings and data with columns separated by sep */
   override lazy val toString: String = ???
 }
-case object Table {
+object Table {
   /** Creates a new Table from fileName with columns split by sep */
   def fromFile(fileName: String, separator: Char = ';'): Table = ???
 }
@@ -293,7 +293,7 @@ case class Table(
   override lazy val toString: String = 
     headings.mkString(sep) + "\n" +data.map(_.mkString(sep)).mkString("\n")
 }
-case object Table {
+object Table {
   def fromFile(fileName: String, separator: Char = ';'): Table = {
     val lines = scala.io.Source.fromFile(fileName).getLines.toVector
     val matrix= lines.map(_.split(separator).toVector) 
@@ -306,23 +306,49 @@ case object Table {
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\Task \emph{Generiska funkioner.} En generisk funktion har (minst) en typparameter inom klammerparenteser efter namnet, till exempel \code{[T]}. Denna typ förekommer sedan som typ på (någon av) parametrarna i parameterlistan. Kompilatorn härleder en konkret typ vid kompileringstid och ersätter typparametern med denna konkreta typ. På så sätt kan en funktion fungera för många olika typer. 
 
-\Task \emph{Matriser i Java.}
+\Subtask Förklara för varje rad nedan vad som händer.
+
+\begin{REPL}
+scala> def tnirp[T](x: T): Unit = println(x.toString.reverse)
+scala> tnirp(42)
+scala> tnirp("hej")
+scala> case class Gurka(vikt: Int)
+scala> tnirp(Gurka(42))
+scala> tnirp[String](42)
+scala> tnirp[Double](42)
+\end{REPL}
+
+\Subtask Man kan kombinera generiska funktioner med funktioner som tar funktioner som parametrar. Det är så \code{map} och \code{foreach} är implementerade. Förklara för varje rad nedan vad som händer.
+
+\begin{REPL}
+scala> def compose[A, B, C](f: A => B, g: B => C)(x: A): C = g(f(x))
+scala> def inc(x: Int): Int = x + 1
+scala> def half(x: Int): Double = x / 2.0
+scala> compose(inc, half)(42)
+scala> compose(half, inc)(42)
+\end{REPL}
+
+\Subtask Hur lyder felmeddelandet på sista raden ovan? Ändra \code{inc} och/eller \code{half} så att typerna passar.
 
 
+\Task \emph{Generiska klasser.} Även klasser kan vara generiska. En generisk klass har (minst) en typparameter inom klammerparenteser efter klassens namn. 
 
-
-
-\Task \emph{Generiska klasser.} 
+\Subtask Testa nedan generiska klass \code{Cell[T]} i REPL. Skapa instanser av klassen \code{Cell[T]} där typparametern \code{T} binds till olika konkreta typer och förklara vad som händer.
 
 \begin{REPL}
 scala> class Cell[T](var value: T){
          override def toString = "Cell(" + value + ")"
        }
-scala> val c = new Cell(42)
+scala> new Cell(42)
+scala> new Cell("hej")
+scala> new Cell(new Cell(math.Pi))
+scala> new Cell[String](42)
+scala> new Cell[Double](42)
 \end{REPL}
 
-\Subtask Lägg till en metod \code{def concat[U](that: Cell[U]):Cell[String]} i klassen \code{Cell} som konkatenerar strängrepresentationerna av de båda cellvärdena.
+\Subtask Lägg till metoden \code{def concat[U](that: Cell[U]):Cell[String]} i klassen \code{Cell} som konkatenerar strängrepresentationerna av de båda cellvärdena.
 
 \begin{REPL}
 scala> val a = new Cell("hej")
@@ -335,30 +361,163 @@ scala> a concat b
 class Cell[T](var value: T){
   override def toString = "Cell(" + value + ")"
   def concat[U](that: Cell[U]): Cell[String] = 
-    new Cell[String](value.toString + that.value.toString)
+    new Cell(value.toString + that.value.toString)
 }
 \end{Code}
 
 \Subtask\Pen Vad händer om du i stället för typparameternamnet \code{U} i \code{concat} använder namnet \code{T}?
 
-\Task \emph{Skapa en generisk, ofäränderlig matrisklass.}
+\Task \emph{Skapa en generisk, ofäränderlig matrisklass.} Med hjälp av en typparameter kan vi skapa en matrisklass som kan innehålla vilka element som helst. Implementera nedan specifikation. Testa din matrisklass i REPL för olika typer av element.
 
-\begin{Code}
+\begin{ScalaSpec}{Matrix[T]}
 case class Matrix[T](data: Vector[Vector[T]]) {
-  def apply(x: Int, y: Int): T = ???
-  def get(x: Int, y: Int): Option[T] = ???
+
+  /** The element at row r and column c */
+  def apply(r: Int, c: Int): T = ???
+
+  /** Gives Some[T](element) at row r and column c 
+   *  if r and c are within index bounds, else None */
+  def get(r: Int, c: Int): Option[T] = ???
+
+  /** The row vector of row r */ 
   def row(r: Int): Vector[T] = ???
+
+  /** The column vector of column c */ 
   def col(c: Int): Vector[T] = ???
-  def updated(x: Int, y: Int, value: T): Matrix[T] = ???
+
+  /** A new Matrix with element at row r and col c updated */
+  def updated(r: Int, c: Int, value: T): Matrix[T] = ???
 }
 object Matrix {
   def empty[T]: Matrix[T] = new Matrix[T](Vector())
   def ofRowSize[T](rowSize: Int)(elements: T*): Matrix[T] =
     new Matrix(elements.toVector.grouped(rowSize).toVector)
 }
+\end{ScalaSpec}
+
+
+\Task \label{task:arraymatrix-java} \emph{Matriser med array i Java.} Om man redan vid allokering vet hur många element en matris ska ha, använder man i Java gärna en array av arrayer. En heltalsmatris (en array av array av heltal) skrivs i Java med dubbla hakparentespar \jcode{int[][]} direkt efter typen. Vid allokering använder man nyckelordet \code{new} och antalet element i respektive dimension anges inom hakperenteserna; t.ex. så ger \jcode{new int[42][21]} en matris med 42 rader och 21 kolumner, vilket motsvarar att man i Scala skriver\footnote{Ett annat, längre men tydligare, sätt att skriva detta i Scala där initialvärdet framgår explicit: \code{Array.fill(42)(Array.fill(21)(0))}}  \code{Array.ofDim[Int](42,21)}. Alla element får defaultvärdet för typen, som är \code{0} för typen \code{Int} i Scala, motsvarande \jcode{int} i Java.
+
+\Subtask Skriv nedan program i en editor och spara koden i filen \texttt{ArrayMatrix.java} och kompilera med \texttt{javac ArrayMatrix.java} och kör i terminalen med \texttt{java ArrayMatrix} och undersök utskriften. Förklara vad som händer. Notera några skillnader i hur matriser används i Scala och Java.
+
+
+\begin{Code}[language=Java]
+// ArrayMatrix.java
+
+public class ArrayMatrix {
+
+    public static void showMatrix(int[][] m){
+        System.out.println("\n--- showMatrix ---");
+        for (int row = 0; row < m.length; row++){
+            for (int col = 0; col < m[row].length; col++) {
+                System.out.print("[" + row + "]");
+                System.out.print("[" + col + "] = ");
+                System.out.print(m[row][col] + "; ");
+            }
+            System.out.println();
+        }
+    }
+    
+    public static void main(String[] args) {
+        System.out.println("ArrayMatrix test");
+        int[][] xss = new int[10][5];
+        showMatrix(xss);
+    }
+}
 \end{Code}
 
-\Subtask 
+\Subtask Implementera nedan metod \code{fillRnd} med kod som fyller matrisen \code{m} med slumptal mellan \code{1} och \code{n}.
+\begin{Code}[language=Java]
+    public static void fillRnd(int[][] m, int n){
+        /* ??? * /
+    }
+\end{Code}
+\noindent \emph{Tips:} med detta uttryck skapas ett slumptal mellan 1 och 42 i Java:\\
+\jcode{(int) (Math.random() * 42 + 1)} \\
+där typkonverteringen \jcode{(int)} ger samma effekt som ett anrop av metoden \code{toInt} i Scala; alltså att dubbelprecisionsflyttal omvandlas till heltal genom avkortning av alla eventuella decimaler.
+
+
+Ändra huvudprogrammet till:
+\begin{Code}[language=Java]
+    public static void main(String[] args) {
+        System.out.println("ArrayMatrix test");
+        int[][] xss = new int[10][5];
+        showMatrix(xss);
+        fillRnd(xss, 6);
+        showMatrix(xss);
+    }
+\end{Code}
+
+Programmet ska ge en utskrift som liknar följande:
+\begin{REPL}
+$ javac ArrayMatrix.java 
+$ java ArrayMatrix 
+ArrayMatrix test
+
+--- showMatrix ---
+[0][0] = 0; [0][1] = 0; [0][2] = 0; [0][3] = 0; [0][4] = 0; 
+[1][0] = 0; [1][1] = 0; [1][2] = 0; [1][3] = 0; [1][4] = 0; 
+[2][0] = 0; [2][1] = 0; [2][2] = 0; [2][3] = 0; [2][4] = 0; 
+[3][0] = 0; [3][1] = 0; [3][2] = 0; [3][3] = 0; [3][4] = 0; 
+[4][0] = 0; [4][1] = 0; [4][2] = 0; [4][3] = 0; [4][4] = 0; 
+[5][0] = 0; [5][1] = 0; [5][2] = 0; [5][3] = 0; [5][4] = 0; 
+[6][0] = 0; [6][1] = 0; [6][2] = 0; [6][3] = 0; [6][4] = 0; 
+[7][0] = 0; [7][1] = 0; [7][2] = 0; [7][3] = 0; [7][4] = 0; 
+[8][0] = 0; [8][1] = 0; [8][2] = 0; [8][3] = 0; [8][4] = 0; 
+[9][0] = 0; [9][1] = 0; [9][2] = 0; [9][3] = 0; [9][4] = 0; 
+
+--- showMatrix ---
+[0][0] = 6; [0][1] = 2; [0][2] = 6; [0][3] = 3; [0][4] = 5; 
+[1][0] = 2; [1][1] = 4; [1][2] = 6; [1][3] = 1; [1][4] = 1; 
+[2][0] = 5; [2][1] = 4; [2][2] = 4; [2][3] = 1; [2][4] = 5; 
+[3][0] = 4; [3][1] = 6; [3][2] = 6; [3][3] = 1; [3][4] = 3; 
+[4][0] = 4; [4][1] = 6; [4][2] = 2; [4][3] = 3; [4][4] = 2; 
+[5][0] = 2; [5][1] = 4; [5][2] = 5; [5][3] = 5; [5][4] = 3; 
+[6][0] = 6; [6][1] = 5; [6][2] = 2; [6][3] = 4; [6][4] = 3; 
+[7][0] = 1; [7][1] = 6; [7][2] = 1; [7][3] = 6; [7][4] = 2; 
+[8][0] = 1; [8][1] = 1; [8][2] = 5; [8][3] = 3; [8][4] = 2; 
+[9][0] = 1; [9][1] = 1; [9][2] = 1; [9][3] = 5; [9][4] = 4; 
+
+\end{REPL}
+
+ 
+
+\begin{Code}[language=Java]
+// kod till facit:
+public class ArrayMatrix {
+
+    public static void showMatrix(int[][] m){
+        System.out.println("\n--- showMatrix ---");
+        for (int row = 0; row < m.length; row++){
+            for (int col = 0; col < m[row].length; col++) {
+                System.out.print("[" + row + "]");
+                System.out.print("[" + col + "] = ");
+                System.out.print(m[row][col] + "; ");
+            }
+            System.out.println();
+        }
+    }
+    
+    public static void fillRnd(int[][] m, int n){
+        for (int row = 0; row < m.length; row++){
+            for (int col = 0; col < m[row].length; col++) {
+              m[row][col] = (int) (Math.random() * n + 1);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println("ArrayMatrix test");
+        int[][] xss = new int[10][5];
+        showMatrix(xss);
+        fillRnd(xss, 6);
+        showMatrix(xss);
+    }
+}
+\end{Code}
+
+
+
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
@@ -396,16 +555,23 @@ object YatzyRows {
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
 
-\Task \emph{En klass för matematiska matriser.}
+\Task \emph{Klasser för täta och glesa matematiska matriser med flyttal.} \\TODO!!!
 
-\Subtask Skapa en oföränderlig, final klass \code{Mat} för matematiska matriser. \code{Mat} ska internt lagra elementen i en privat \emph{endimensionell} array av flyttal av typen \code{Array[Double]}. Klassen ska inte vara en case-klass. Det ska gå att skapa matriser med uttrycket Mat.ofDim(3,7)(1.0,42,3.2,1.0,2.2,3) tack vare  kompanjonsobjekt med lämpliga fabriksmetoder. 
+\Subtask Skapa en oföränderlig, final klass \code{DenseMatrix} för matematiska matriser med dubbelprecisionsflyttal. \code{DenseMatrix} ska internt lagra elementen i en privat \emph{endimensionell} array av flyttal av typen \code{Array[Double]}. Klassen ska inte vara en case-klass. Det ska gå att skapa matriser med uttrycket DenseMatrix.ofDim(3,7)(1.0,42,3.2,1.0,2.2,3) tack vare ett kompanjonsobjekt med lämplig fabriksmetod som anropar den privata konstruktorn. 
 
-\Subtask Överskugga metoden equals och ge klasserna \code{Mat} och \code{Vec} innehållslikhet i stället för referenslikhet när \code{==} anropas.
+\Subtask Överskugga metoderna equals och hashcode och ge \code{DenseMatrix} innehållslikhet i stället för referenslikhet.
 
-\Subtask Implementera egna innehålllikhetsmetoder med namnet \code{===} på \code{Mat} som är typsäker, d.v.s. bara tillåter jämförelse mellan matriser.
+\Subtask Implementera egna innehålllikhetsmetoder med namnet \code{===} på \code{DenseMatrix} som är typsäker, d.v.s. bara tillåter jämförelse mellan matriser.
+
+\Subtask \emph{SparseMatrix med private mutable.Map[(Int, Int), Double]} som bara lagrar index som inte är noll.
+
+\Subtask Implementera addition, subtraktion och multiplikation av matriser.
+
+\Subtask Skapa ett trait Matrix som både DenseMatrix och SparseMatrix ärver, med lämpliga abstrakta och konkreta medlemmar.
+
+\Task \emph{Matriser med \jcode{ArrayList} i Java.} Om man i Java inte vet antalet element i matrisen från början kan man använda en lista av typen \jcode{ArrayList}, där varje element i sin tur innehåller en lista av typen\jcode{ArrayList}. Javas \jcode{ArrayList} är en generisk samling som motsvaras av Scalas \code{ArrayBuffer}. Generiska samlingar i Java kan endast innehålla referenstyper; vill man ha en primitiv typ, t.ex. \jcode{int}, behöver man packa in denna i en s.k. wrapper-klass, t.ex.  klassen \jcode{Integer}. Det finns en wrapper-klass för varje primitiv typ i Java. Matristypen för en heltalstyp i Java skrivs \jcode{ArrayList<ArrayList<Integer>>} där alltså \code{<T>} motsvarar Scalas hakparenteser \code{[T]} för typparametern T.
 
 
-\Subtask \emph{Sparse Matrix of Float using private mutable.Map[(Int, Int), Double]}
-
+\Subtask TODO!! Hitta på deluppgifter med \jcode{ArrayList<ArrayList<Integer>>} som illustrerar ovan. Peka framåt till scalajava-veckan.
 
     
