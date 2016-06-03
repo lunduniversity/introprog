@@ -106,13 +106,13 @@ Du ska nu få upp ett fönster med en liten kvadrat utritad i övre vänstra hö
 
 \Task
 Hela ditt program är för tillfället samlat i en och samma funktion, vilket fungerar bra för väldigt små program.
-Nu ska vi dela upp programmet så det blir lättare att återanvända samma kodsnuttar.
+Nu ska vi strukturera programmet så det blir lättare att återanvända samma kodsnuttar.
 
 \Subtask
 Lägg till ett objekt med namnet \code{Graphics} i \texttt{Mole.scala} och flytta dit deklarationen av fönstret \code{w}.
 Skapa en ny funktion med namnet \code{square} i det nya objektet och flytta dit koden som ritar kvadraten.
 Anropa \code{square} i din \code{main}-funktion.
-Filen \texttt{Mole.scala} ska se ut såhär:
+Filen \texttt{Mole.scala} ska se ut såhär (förutom \code{???}):
 \begin{Code}
 object Graphics {
 	val w = new cslib.window.SimpleWindow(300, 500, "Digging")
@@ -124,7 +124,7 @@ object Mole {
 	}
 }
 \end{Code}
-Observera att du inte kan anropa \code{square} direkt i funktionen \code{main}, utan måste ange att det är \code{square} metoden inuti \code{Graphics} du vill anropa.
+Observera att du inte kan anropa \code{square} direkt i funktionen \code{main}, utan måste ange att det är \code{square} funktionen inuti \code{Graphics} du vill anropa.
 
 \Subtask
 Kompilera \texttt{Mole.scala} med \texttt{scalac}.
@@ -158,16 +158,190 @@ Se till att du kan rita ut kvadraten på olika ställen i fönstret genom att an
 
 
 \Task
-\code{???}
+Nu ska du skapa ett nytt koordinatsystem för \code{Graphics} som har \emph{stora} bildpunkter.
+Vi kallar \code{Graphics} stora bildpunkterna för \emph{block} för att lättare skilja dem från \code{SimpleWindow}s bildpunkter.
+Om blockstorleken är $b$, så ligger koordinaten $(x, y)$ i \code{Graphics} på koordinaten $(xb, yb)$ i \code{SimpleWindow}.
 
 \Subtask
-\code{???}
+Lägg till följande deklarationer överst i objektet \code{Graphics}.
+\begin{Code}
+val width = 30
+val height = 50
+val blockSize = 10
+\end{Code}
+Ändra bredden på ditt \code{SimpleWindow} till \code{width * blockSize} och ändra höjden till \code{height * blockSize}.
 
+\Subtask
+Ändra nu i \code{square} så parametrarna \code{x} och \code{y} blir \code{Graphics}-koordinater istället för \code{SimpleWindow}-koordinater.
+Ändra också sidlängden på kvadraten att vara lika stor som \code{blockSize}.
+Anropet till \code{moveTo} ska alltså se ut såhär:
+\begin{Code}
+w.moveTo(x * blockSize, y * blockSize)
+\end{Code}
+
+\Subtask
+Nu när \code{Graphics} koordinatsystem är förändrat behöver parametrarna till \code{Graphics.square} i \code{Mole.main} justeras.
+Ändra parametrarna och testa ditt program genom att kompilera och köra med \texttt{scalac} respektive \texttt{scala}.
+(Glöm inte att ange korrekt classpath.)
+
+\Subtask \emph{(Frivilligt)} Prova gärna att rita ut ett Tetris-block i \code{Mole.main} med hjälp av \code{Graphics.square}.
+
+\Task
+Kvadraterna som du ritat påminner om konturen på en blockmullvad, men en blockmullvad är inte ihålig.
+Du ska skapa en funktion som ritar en fylld kvadrat genom att rita linjer tätt intill varandra.
+
+\Subtask
+Skapa en ny funktion i \code{Graphics} med namnet \code{block} och två parametrar \code{x} och \code{y} av typen \code{Int} och returtypen \code{Unit}.
+Metodens \emph{kropp} ska se ut såhär:
+\begin{Code}
+{
+    val left = x * blockSize
+    val right = left + blockSize - 1
+    val top = y * blockSize
+    val bottom = top + blockSize - 1
+
+    for (row <- top to bottom) {
+      w.moveTo(left, row)
+      w.lineTo(right, row)
+    }
+}
+\end{Code}
+
+\Subtask\Pen
+Metoden \code{block} ritar ett antal linjer.
+I vilken ordning ritas linjerna?
+
+\Subtask
+Byt ut alla \code{Graphics.square}-anrop i \code{Mole.main} mot \code{Graphics.block}-anrop.
+Kompilera och kör ditt program.
+
+
+\Task
+Det finns många sätt att beskriva färger.
+I naturligt språk har vi olika namn på färgerna, till exempel \emph{vitt}, \emph{rosa} och \emph{magenta}.
+I datorn är det vanligt att beskriva färgerna som en blandning av \emph{rött}, \emph{grönt} och \emph{blått} i det så kallade RGB-systemet.
+\code{SimpleWindow} använder typen \code{java.awt.Color} för att beskriva färger och \code{java.awt.Color} bygger på RGB.
+Det finns några fördefinierade färger i \code{java.awt.Color}, till exempel \code{java.awt.Color.black} för svart \Eng{black} och \code{java.awt.Color.green} för grönt \Eng{green}.
+Andra färger kan skapas genom att ange mängden rött, grönt och blått.
+
+\Subtask
+Skapa ett nytt objekt i \texttt{Mole.scala} med namnet \code{Colors} och lägg in följande definitioner:
+\begin{Code}
+val mole = new java.awt.Color(51, 51, 0)
+val soil = new java.awt.Color(153, 102, 51)
+val tunnel = new java.awt.Color(204, 153, 102)
+\end{Code}
+% val sky = new java.awt.Color(51, 51, 204)
+% val grass = new java.awt.Color(51, 204, 51)
+Den tre parametrarna till \code{new java.awt.Color(r, g, b)} anger hur mycket \emph{rött}, \emph{grönt} respektive \emph{blått} som färgen ska innehålla, och mängderna ska vara i intervallet 0--255.
+Färgen $(153, 102, 51)$ innebär ganska mycket rött, lite mindre grönt och ännu mindre blått och det upplevs som brunt.
+Objektet \code{Colors} är en färgpallett, men vi har inte ritat något med färg ännu.
+Kompilera och kör ditt program ändå, för att se så programmet fungerar lika dant som sist.
+
+\Subtask
+Lägg till en parameter till \code{Graphics.block} sist i parameterlistan med namnet \code{color} och typen \code{java.awt.Color}.
+Låt \emph{default-argumentet} för den nya parametern vara \code{java.awt.Color.black}.
+(Kommer du inte ihåg hur man gör default-argument kan du titta på övningarna i kapitel~\ref{exe:W03}.)
+För att ändra färgen på blocket kan du byta linjefärg innan du ritar.
+Lägg till följande rad i början på \code{Graphics.block}:
+\begin{Code}
+w.setLineColor(color)
+\end{Code}
+Kompilera och kör ditt program igen för att set om det fortfarande fungerar.
+
+\Subtask\Pen
+Funktionen \code{Graphics.block} har tre parametrar, men den anropas bara med två parametrar i \code{Mole.main}.
+Varför är det tillåtet?
+Vilket värde har den tredje parametern om ingen anges?
+
+\Subtask
+Ändra i \code{Mole.main} och lägg till en av definitionerna från objektet \code{Colors} som tredje parameter till \code{Graphics.block}.
+Kompilera och kör ditt program och upplev världen i färg.
+
+\Task
+Nu ska du skriva en funktion för att rita en rektangel och rektangeln ska ritas med hjälp av funktionen \code{block}.
+Sen ska du rita upp mullvadens underjordiska värld med hjälp av denna funktion.
+
+\Subtask
+Lägg till en funktion i objektet \code{Graphics} med namnet \code{rectangle} som tar fem parametrar \code{x}, \code{y}, \code{width} och \code{height} av typen \code{Int} och \code{color} av typen \code{java.awt.Color}.
+Parametrarna \code{x} och \code{y} anger \code{Graphics}-koordinaten för rektangelns övre vänstra hörn och \code{width} och \code{height} anger bredden respektive höjden.
+Använd följande \code{for}-satser för att rita ut rektangeln.
+\begin{Code}
+for (row <- y until (y + height)) {
+	for (col <- x until (x + width)) {
+		block(row, col, color)
+	}
+}
+\end{Code}
+
+\Subtask\Pen
+I vilken ordning ritas blocken ut?
+
+% \Subtask\Pen (Fråga något om skuggning gällande \code{width} och \code{height}.)
+
+\Subtask
+Skriv en funktion i objektet \code{Mole} med namnet \code{drawWorld} som ritar ut mullvadens värld, det vill säga en massa jord där den kan gräva sina tunnlar.
+\code{Mole.drawWorld} ska inte ha någon parameterlista och returtypen ska vara \code{Unit} och den ska anropa \code{Graphics.rectangle} för att rita en rekltangel med färgen \code{Colors.soil} som precis täcker fönstret.
+Eftersom funktionen har många parametrar som lätt kan blandas ihop ska du använda namngivna argument vid anropet.
+(Om du har glömt hur man använder namngivna argument kan du titta på övningarna i kapitel~\ref{exe:W03}.)
+
+\Subtask
+Anropa \code{Mole.drawWorld} i \code{Mole.main} och testa så att det fungerar genom att kompilera och köra.
+
+\Task
+I \code{SimpleWindow} finns funktioner för att känna av tangenttryckningar och musklick.
+Du ska använda de funktionerna för att styra en liten blockmullvad.
+
+\Subtask
+Lägg till följande funktion i objektet \code{Graphics}:
+\begin{Code}
+def waitForKey: Char = {
+	do {
+		w.waitForEvent
+	} while (w.getEventType != SimpleWindow.KEY_EVENT)
+	w.getKey
+}
+\end{Code}
+Det finns olika sorters händelser som ett \code{SimpleWindow} kan reagera på, till exempel tangenttryckningar och musklick.
+Funktionen som du precis lagt in väntar på en händelse i ditt \code{SimpleWindow} (\code{w.waitForEvent}) ända tills det kommer en tangenttryckning (\code{KEY_EVENT}).
+När det kommit en tangenttryckning anropas \code{w.getKey} för att ta reda på vilken bokstav eller vilket tecken det blev, och det resultatet blir också resultatet av \code{waitForKey}, eftersom det ligger sist i \texttt{\{\}}-blocket.
+
+\Subtask
+Lägg till en funktion i objektet \code{Mole} med namnet \code{dig}, som har två parametrar \code{x} och \code{y} av typen \code{Int} och returtypen \code{Unit}.
+Funktionens kropp ska se ut såhär (fast utan \code{???}):
+\begin{Code}
+{
+	Graphics.block(x, y, Colors.mole) // ritar ut mullvaden
+	val key = Graphics.waitForKey // väntar på tangenttryckning
+	if (key == 'w') dig(???, ???)
+	else if (key == 'a') dig(???, ???)
+	else if (key == 's') dig(???, ???)
+	else if (key == 'd') dig(???, ???)
+	else dig(x, y)
+}
+\end{Code}
+Fyll i alla \code{???} så att \code{'w'} styr mullvaden ett steg uppåt, \code{'a'} ett steg åt vänster, \code{'s'} ett steg nedåt och \code{'d'} ett steg åt höger.
+
+\Subtask
+Ändra \code{Mole.main} att innehålla bara två anrop: Ett till \code{drawWorld} och ett till \code{dig} med lämpliga parametrar.
+Kompilera och kör ditt program för att se om programmer reagerar på w, a, s och d.
+
+\Subtask
+Om programmet fungerar kommer det bli många mullvad som tillsammans bildar en lång mask, och det är ju lite underligt.
+Lägg till ett anrop i \code{Mole.dig} som ritar ut en bit tunnel på position $(x, y)$ efter anropet till \code{Graphics.waitForKey} men innan \code{if}-uttrycket.
+Kompilera och kör ditt program för att gräva tunnlar med din blockmullvad.
 
 \subsection{Frivilliga extrauppgifter}
 
-\Task En labbuppgiftsbeskrivning.
+\Task
+TODO: Begränsa mullvaden att inte kunna gräva sig utanför fönstret.
 
-\Subtask En underuppgift.
+\Task
+TODO: Lägg till himmel och gräs i ovandelen av fönstret i funktionen \code{Mole.drawWorld}.
 
-\Subtask En underuppgift.
+\Task
+TODO: Begränsa mullvaden till ''gravitationen''.
+
+\Task
+TODO: Använd timeout för att få mullvaden att springa själv.
+
