@@ -149,7 +149,7 @@ class Square(val x: Int, val y: Int, val side: Int) {
   /** The area of this Square */
   val area: Int = ???
   
-  /** Moves this square to position (x + dx, y + dy) */
+  /** Creates a new Square moved to position (x + dx, y + dy) */
   def move(dx: Int, dy: Int): Square = ???
   
   /** Tests if this Square has equal size as that Square */
@@ -185,17 +185,8 @@ scala> s2.scale(math.Pi) isEqualSizeAs s2
 scala> s2.scale(math.Pi) isEqualSizeAs s2.scale(math.Pi)
 \end{REPL}
 
-\Subtask Gör primärkonstruktorn i klassen \code{Square} privat och säkerställ i fabriksobjektet att det inte går att skapa kvadrater med negativ sida. Använd \code{require}.  
 
-\Subtask Lägg till ett privat attribut \code{var numberOfMoves: Int} i klassen Square som räknar hur många gånger en instans har flyttats. 
 
-\Subtask Lägg till en privat variabel \code{var created: Vector[Square]} i kompanjonsobjektet som sparar alla kvadratobjekt som skapats.
-
-\Subtask Lägg till en metod \code{def totalNumberOfMoves: Int} i kompanjonsobjektet som räknar ut det totala antalet förflyttningar som skett.
-
-\Subtask\Pen Varför är det avgörande för korrektheten av beräkningen av totala antalet förflyttningar i föregående uppgift att konstruktorn i klassen \code{Square} är privat? 
-
-\Subtask\Pen Vad kallas en metod som gör \code{new} och returnerar referensen till det nyskapade objektet?
 
 
 \Task \emph{Referenslikhet versus strukturlikhet.} Metoden \code{==} på case-klasser ger \textbf{strukturlikhet} (även kallad innehållslikhet) så att \emph{innehållet} i klassens klassparametrar jämförs om de har lika värde, medan för vanliga klasser ger metoden \code{==} \textbf{referenslikhet} där olika objekt är olika även om de har samma innehåll (om man inte byter ut metoden \code{equals} som anropas av \code{==} -- detta ska vi titta närmare på i kapitel \ref{chapter:W08}).
@@ -318,7 +309,7 @@ object Point {
 
 
 
-\Task\Pen Vad behöver du ändra i klassen \code{Square} från deluppgift \ref{task:Square} för att den ska fungera med en \code{Point} med 2-tuple-position från deluppgift \ref{task:PointTuple}?
+\Task\Pen Vad behöver du ändra i klassen \code{Square} från uppgift \ref{task:Square} för att den ska fungera med en \code{Point} med 2-tupel från uppgift \ref{task:PointTuple}?
 
 
 
@@ -351,6 +342,104 @@ class Frog(startX: Int, startY: Int) {
 }
 
 \end{ScalaSpec}
+
+\Task \emph{En föränderlig kvadrat.} 
+
+\begin{CodeSmall}
+/** A class representing a square objects with position and side. */
+class Square private (val initX: Int, val initY: Int, val initSide: Int) {
+  
+  private var numberOfMoves = 0;
+  private var _x = initX;
+  private var _y = initY;
+  private var _side = initSide;
+  
+  def x: Int = _x
+  def y: Int = _y
+  def pos: (Int, Int) = ???
+  def side = _side
+
+  /** The area of this Square */
+  def area: Int = ???
+
+  /** Moves this square to position (x + xd, y + dy) */
+  def move(dx: Int, dy: Int): Unit = ???
+
+  /** Moves this square to position (x, y) */
+  def moveTo(x: Int, y: Int): Unit = ???
+
+  /** A string representation of this Square */
+  override def toString: String = 
+    s"Square[x: $x, y: $y, side: $side, #moved: $numberOfMoves]"
+}
+
+object Square {
+  private var created = Vector[Square]()
+ 
+  /** Creates a Square, saves a ref in created and returns the newly created Square */  
+  private def create(x: Int, y: Int, side: Int, nMoves: Int): Square = ???
+ 
+  /** A square placed in origin with size 1 */
+  val unit: Square =  create(0, 0, 1, 0)
+
+  /** Constructs a new Square object at (x, y) with size side */
+  def apply(x: Int, y: Int, side: Int): Square = {
+    require(side >= 0, s"side must be positive: $side")
+    create(x, y, side, 0)
+  }
+
+  /** Constructs a new Square object at (0, 0) with side 1 */
+  def apply(): Square = create(0, 0, 1, 0)
+
+  /** Returns the total number of moves that have been made */
+  def totalNumberOfMoves: Int = ???
+} 
+\end{CodeSmall}
+
+\Subtask\Pen Varför är det avgörande för korrektheten av beräkningen av totala antalet förflyttningar i föregående uppgift att konstruktorn i klassen \code{Square} är privat? 
+
+\Subtask\Pen Vad kallas en metod som gör \code{new} och returnerar referensen till det nyskapade objektet?
+
+
+\begin{CodeSmall}
+// Kod till facit
+class Square private (val x: Int, val y: Int, val side: Int) {
+
+  private var numberOfMoves = 0
+  
+  val area: Int = side*side
+
+  def move(dx: Int, dy: Int): Square =
+    Square.create(x + dx, y + dy, side, numberOfMoves + 1)
+
+  def isEqualSizeAs(that: Square): Boolean = side == that.side
+
+  def scale(factor: Double): Unit =
+    Square.create(x, y, math.rint(side*factor).toInt, numberOfMoves)
+   
+  override def toString: String = s"x: $x, y: $y, side: $side, #moved: $numberOfMoves"
+}
+
+object Square {
+  private var created = Vector[Square]()
+ 
+  private def create(x: Int, y: Int, side: Int, nMoves: Int): Square = {
+    created :+= new Square(x, y, side, nMoves)    
+    created.last    
+  }
+ 
+  val unit: Square =  create(0, 0, 1, 0)
+
+  def apply(x: Int, y: Int, side: Int): Square = {
+    require(side >= 0, s"side must be positive: $side")
+    create(x, y, side, 0)
+  }
+
+  def apply(): Square = create(0, 0, 1, 0)
+
+  def totalNumberOfMoves: Int = created.map(_.numberOfMoves).sum
+} 
+\end{CodeSmall}
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
