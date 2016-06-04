@@ -99,9 +99,10 @@ trait Plan {
     Module("Mönster, Undantag", 
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
       | mönstermatchning, match, Option, try, catch, finally ???, Try, unapply, sealed, 
+      | switch-sats i Java,
       | flatten, flatMap, partiella funktioner, collect, 
       | implementera equals utan arv för Complex,  
-      | implementera equals med arv för Shape,  
+      | implementera equals med arv för Shape ???,  
       """.stripTrim),
 
     Module("Matriser, Typparametrar", 
