@@ -8,6 +8,7 @@
 \geometry{hmargin={4.5cm,2.5cm}}
 \geometry{vmargin={3cm,3cm}}
 \usepackage{marginnote}
+\usepackage{float}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -65,6 +66,7 @@
 
 \usepackage{multicol} \setlength{\columnsep}{5mm}
 \usepackage{listings}
+\usepackage{upquote} %http://tex.stackexchange.com/questions/145416/how-to-have-straight-single-quotes-in-lstlistings
 \usepackage{xspace} %http://www.math.tamu.edu/~harold.boas/courses/math696/why-macros.html
 \usepackage[pdfpagelayout=TwoPageRight]{hyperref}
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
@@ -137,6 +139,10 @@
 %%% changes to make slide stuff look good in compendium
 
 \newcommand{\pause}{}% do nothing
+%%% SLIDE SIZES with no affect in compedium
+\newcommand{\SlideFontSize}[2]{}
+\newcommand{\SlideFontSmall}{}
+\newcommand{\SlideFontTiny}{}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
