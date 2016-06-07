@@ -37,7 +37,7 @@ object Main extends App {
   val weeks = (0 to 6) ++ (8 to 14) //exlude exam weeks
   
   // *** Generate chapter heads with topics of each module
-  val conceptBegin = "Koncept du ska lära dig denna vecka:\n" +
+  val conceptBegin = "Begrepp du ska lära dig denna vecka:\n" +
     """\begin{multicols}{2}\begin{itemize}[nosep,label={$\square$},leftmargin=*]""" + "\n"
   val conceptEnd   = """\end{itemize}\end{multicols}""" + "\n"
   for (w <- weeks) {
