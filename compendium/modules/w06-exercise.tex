@@ -128,8 +128,8 @@ object Gurka8 {
     new Gurka8(vikt)
   }
 }
-scala> val g = new Gurka8(-42)
-scala> val g = new Gurka8(42)
+scala> val g = Gurka8(-42)
+scala> val g = Gurka8(42)
 scala> g.vikt
 scala> g.vikt = 0
 scala> g.vikt = -1
@@ -139,17 +139,17 @@ scala> g.vikt -= 1000
 
 \Subtask\Pen Vad är fördelen med möjligheten att skapa egendefienerade setters?
 
-\Task \label{task:Square} \emph{Klassen \code{Square}.} 
+\Task \label{task:Square} \emph{En oföränderlig kvadrat.} 
 
-\Subtask Implementera \code{Square} enligt nedan specifikation. Gör  implementationen i en kodeditor, så som \code{gedit}, och klistra in klassen i Scala REPL efter kommandot \code{:pa} (förkortning av \code{:paste}). På så sätt blir \code{object Square} ett kompanjonsobjekt till \code{class Square}.
+\Subtask Implementera klassen \code{Square} enligt nedan specifikation. Gör  implementationen i en kodeditor, så som \code{gedit}, och klistra in klassen i Scala REPL efter kommandot \code{:pa} (förkortning av \code{:paste}). På så sätt blir \code{object Square} ett kompanjonsobjekt till \code{class Square}.
 
 \begin{ScalaSpec}{Square}
-/** A class representing a square objects with position and side. */
+/** A class representing a square object with position and side. */
 class Square(val x: Int, val y: Int, val side: Int) {
   /** The area of this Square */
   val area: Int = ???
   
-  /** Moves this square to position (x + xd, y + dy) */
+  /** Creates a new Square moved to position (x + dx, y + dy) */
   def move(dx: Int, dy: Int): Square = ???
   
   /** Tests if this Square has equal size as that Square */
@@ -185,20 +185,11 @@ scala> s2.scale(math.Pi) isEqualSizeAs s2
 scala> s2.scale(math.Pi) isEqualSizeAs s2.scale(math.Pi)
 \end{REPL}
 
-\Subtask Gör primärkonstruktorn i klassen \code{Square} privat och säkerställ i fabriksobjektet att det inte går att skapa kvadrater med negativ sida. Använd \code{require}.  
-
-\Subtask Lägg till ett privat attribut \code{var numberOfMoves: Int} i klassen Square som räknar hur många gånger en instans har flyttats. 
-
-\Subtask Lägg till en privat variabel \code{var created: Vector[Square]} i kompanjonsobjektet som sparar alla kvadratobjekt som skapats.
-
-\Subtask Lägg till en metod \code{def totalNumberOfMoves: Int} i kompanjonsobjektet som räknar ut det totala antalet förflyttningar som skett.
-
-\Subtask\Pen Varför är det avgörande för korrektheten av beräkningen av totala antalet förflyttningar i föregående uppgift att konstruktorn i klassen \code{Square} är privat? 
-
-\Subtask\Pen Vad kallas en metod som gör \code{new} och returnerar referensen till det nyskapade objektet?
 
 
-\Task \emph{Referenslikhet versus strukturlikhet.} Metoden \code{==} på case-klasser ger \textbf{strukturlikhet} (även kallad innehållslikhet) så att \emph{innehållet} i klassens klassparametrar jämförs om de har lika värde, medan för vanliga klasser ger metoden \code{==} \textbf{referenslikhet} där olika objekt är olika även om de har samma innehåll (om man inte byter ut metoden \code{equals} som anropas av \code{==} -- detta ska vi titta närmare på i kapitel \ref{chapter:W08}).
+
+
+\Task \emph{Referenslikhet versus strukturlikhet.} Metoden \code{==} på case-klasser ger \textbf{strukturlikhet} (även kallad innehållslikhet) så att \emph{innehållet} i klassens klassparametrar jämförs om de har lika värde, medan för vanliga klasser ger metoden \code{==} \textbf{referenslikhet} där olika objekt är olika även om de har samma innehåll (om man inte överskuggar metoden \code{equals} som anropas av \code{==} vilket vi ska titta närmare på i kapitel \ref{chapter:W08}).
 
 \begin{REPL}
 scala> class GurkaRef(val vikt: Int)
@@ -236,17 +227,17 @@ scala> Point(1, 2) != Point(1, 3)
 scala> Point(1, 2) == Point(1, 2)
 scala> Point(1, 2) != Point(1, 2)
 scala> Point.origin.move(1, 1) == Point.origin.move(1, 1)
-scala> Point.origin.move(1, 1).move(1,1) != Point(2, 2)
+scala> Point.origin.move(1, 1).move(1, 1) != Point(2, 2)
 scala> Point(0, 0) eq Point(0, 0)
 scala> Point(0, 0) ne Point(0, 0)
 scala> Point.origin eq Point.origin
 scala> Point.origin ne Point.origin
-scala> val p1 = Point(0,0)
-scala> val p2 = p2
+scala> val p1 = Point(0, 0)
+scala> val p2 = p1
 scala> p1 eq p2
 \end{REPL}
-1
-\Subtask Vad ger \code{Point.origin eq Point.origin} för resultat om \code{origin} iställed  implementeras som \code{def origin: Point = Point(0, 0)}
+
+\Subtask Vad ger \code{Point.origin eq Point.origin} för resultat om \code{origin} istället  implementeras som \code{def origin: Point = Point(0, 0)}
 
 \Subtask\Pen Vad är det för skillnad på strukturlikhet och referenslikhet?
 
@@ -316,43 +307,213 @@ object Point {
 }
 \end{CodeSmall}
 
+\Task\Pen Vad behöver du ändra i klassen \code{Square} från uppgift \ref{task:Square} för att den ska fungera med en \code{Point} med 2-tupel från uppgift \ref{task:PointTuple}?
 
+\Task \emph{Objekt med föränderligt tillstång \Eng{mutable state}.} Du ska implementera en modell av en hoppande groda som uppfyller följande krav: 
+\begin{enumerate}[nolistsep, noitemsep]
+\item Varje grodobjekt ska hålla reda på var den är.
+\item Varje grodobjekt ska hålla reda på hur långt grodan hoppat totalt.
+\item Varje grodobjekt ska kunna beräkna hur långt det är mellan grodans nuvarande position och utgångsläget.
+\item Alla grodor börjar sitt hoppande i origo.
+\item En groda kan hoppa enligt två metoder: 
+  \begin{itemize} [nolistsep, noitemsep]
+  \item relativ förflyttning enligt parametrarna \code{dx} och \code{dy},  
+  \item slumpmässig förflyttning $[1, 10]$ i x-led och $[1, 10]$ i y-led. 
+  \end{itemize}
+\end{enumerate}
 
-\Task\Pen Vad behöver du ändra i klassen \code{Square} från deluppgift \ref{task:Square} för att den ska fungera med en \code{Point} med 2-tuple-position från deluppgift \ref{task:PointTuple}?
+\Subtask Implementera klassen \code{Frog} enligt nedan specifikation och ovan krav. \\  \emph{Tips:}
+  \begin{itemize} [nolistsep, noitemsep]
+  \item Om namnet man vill ge ett privat föränderligt attribut ''krockar'' med ett metodnamn, är det vanligt att man börjar attributets namn med understreck, t.ex. \code{private var _x } för att på så sätt undkomma namnkonflikten. 
+  \item Inför en metod i taget och klistra in den nya grodan i REPL efter varje utvidgning och testa. 
+  \end{itemize}
 
+\begin{ScalaSpec}{Frog}
+class Frog private (initX: Int = 0, initY: Int = 0) {
+  def jump(dx: Int, dy: Int): Unit = ???
+  def x: Int = ??? 
+  def y: Int = ???
+  def randomJump: Unit = ???
+  def distanceToStart: Double = ???
+  def distanceJumped: Double = ???
+  def distanceTo(that: Frog): Double = ???
+}
+object Frog {
+  def spawn(): Frog = ???
+}
+\end{ScalaSpec}
 
+\Subtask Skriv ett testhuvudprogram som kontrollerar så att alla krav är uppfyllda och att alla metoder fungerar som de ska. 
 
+\Subtask\Pen Vad kallas en metod som enbart returnerar värdet av ett privat attribut?
+
+\Subtask\Pen Hur kan man från en metods signatur få en ledtråd om att ett objekt har föränderligt tillstånd \Eng{mutable state}?
+
+\Subtask Inför setters för attributen som håller reda på x- och y-postitionen. Förändringar av positionen i x- eller y-led ska räknas som ett hopp och alltså registreras i det attribut som håller reda på det ackumulerade hoppavståndet.
+
+\Subtask Simulera ett massivt grodhoppande med krockdetektering genom att skapa 1000 grodor som till att börja med är placerade på x-axeln med avståndet $1.0$ längdenheter mellan sig. Låt grodorna i en \code{while}-sats hoppa slumpmässigt tills någon groda befinner sig närmare än $0.5$ längdenheter som är definitionen på att de har krockat. Räkna hur många looprundor som behövs innan något grodpar krockar och skriv ut antalet. \\ \emph{Tips:} Börja med pseudokod på papper. Använd en grodvektor. \\ \emph{TODO!!! Kolla så att det är lagom med 1000 stycken och 1.0 i uppgiften ovan.}
 
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task \code{class Frac private (numerator: BigInt, denominator: BigInt)}  TODO: Ungefär som Rational i pins1ed med GCD
+\Task \emph{En kvadratklass med föränderligt tillstånd \Eng{mutable state}.} Webbshoppen UberSquare säljer flyttbara kvadrater. I affärsmodellen ingår att ta betalt per förflytttning. Du ska hjälpa UberSquare med att utveckla en enkel systemprototyp. 
 
+\Subtask Implementera \code{Square} enligt nedan specifikation, under uppfyllandet av följande krav:
 
+\begin{enumerate}[nolistsep, noitemsep]
+\item Till skillnad från uppgift \ref{task:Square} ska du nu göra en kvadrat med föränderligt tillstånd \Eng{mutable state}. I stället för att vid förflyttning returnera ett nytt kvadratobjekt, returneras \code{Unit} i samband med att privata attribut uppdateras.
+\item Du ska införa funktionalitet som räknar antalet förflyttningar som gjorts för varje kvadrat som skapats och även räkna ut det totala antalet förflyttningar som någonsin gjorts.
+\item Varje gång förflyttning sker adderas en kostnad till den ackumulerade kostnaden för respektive kvadrat. Kostnaden för varje förflyttning är avståndet till ursprungsläget multiplicerat med storleken på kvadraten.
+\end{enumerate}
 
-\Task \emph{Klassen \code{Frog}} 
-
-\Subtask 
-
-\begin{ScalaSpec}{Frog}
-class Frog(startX: Int, startY: Int) {
-
-  def jump(dx: Int, dy: Int): Unit = ???
-
-  def x: Int = ??? 
+\begin{ScalaSpec}{Square}
+/** A mutable and expensive Square. */
+class Square private (val initX: Int, val initY: Int, val initSide: Int) {
   
+  private var nMoves = 0;
+  private var sumCost = 0.0;
+  private var _x = initX;
+  private var _y = initY;
+  private var _side = initSide;
+  
+  private def addCost: Unit = { 
+   sumCost += ???
+  }
+  
+  /** The current position on the x axis */
+  def x: Int = ???
+
+  /** The current position on the y axis */
   def y: Int = ???
- 
-  def randomJump: Unit = ???
+
+  /** The size of this Square */
+  def side = ???
+
+  /** Scales the side of this square and rounds it to nearest integer */
+  def scale(factor: Double): Unit = ???
+
+  /** Moves this square to position (x + xd, y + dy) */
+  def move(dx: Int, dy: Int): Unit = ???
+
+  /** Moves this square to position (x, y) */
+  def moveTo(x: Int, y: Int): Unit = ???
   
-  def distanceToStart: Double = ???
+  /** The accumulated cost of this Square */
+  def cost: Double = ???
+
+  /** Reset the cost of this Square */
+  def pay: Unit = ???
   
-  def distanceJumped: Double = ???
+  /** A string representation of this Square */
+  override def toString: String = 
+    s"Square[($x, $y), side: $side, #moves: $nMoves times, cost: $sumCost]"
 }
 
+object Square {
+  private var created = Vector[Square]()
+ 
+  /** Constructs a new Square object at (x, y) with size side */
+  def apply(x: Int, y: Int, side: Int): Square = {
+    require(side >= 0, s"side must be positive: $side")
+    ???
+  }
+
+  /** Constructs a new Square object at (0, 0) with side 1 */
+  def apply(): Square = apply(0, 0, 1)
+
+  /** The total number of moves that have been made for all squares. */
+  def totalNumberOfMoves: Int = ???
+  
+  /** The total cost of all squares. */  
+  def totalCost: Double = ???
+} 
 \end{ScalaSpec}
+
+\Subtask Testa din kvadratprototyp i REPL enligt nedan:
+\begin{REPL}
+scala> val xs = Vector.fill(10)(Square())
+scala> xs.foreach(_.move(2,3))
+scala> xs.foreach(_.scale(2.9))
+scala> val (m, c) = (Square.totalNumberOfMoves, Square.totalCost)
+m: Int = 10
+c: Double = 36.055512754639885
+\end{REPL}
+
+\begin{CodeSmall}
+// Kod till facit
+/** A mutable and expensive Square. */
+class Square private (val initX: Int, val initY: Int, val initSide: Int) {
+  
+  private var nMoves = 0;
+  private var sumCost = 0.0;
+  private var _x = initX;
+  private var _y = initY;
+  private var _side = initSide;
+  
+  private def addCost: Unit = { 
+   sumCost += math.hypot(x - initX, y - initY) * side
+  }
+  
+  /** The current position on the x axis */
+  def x: Int = _x
+
+  /** The current position on the y axis */
+  def y: Int = _y
+
+  /** The size of the side */
+  def side = _side
+
+  /** Scales the size of this square and rounds it to nearest integer */
+  def scale(factor: Double): Unit = { _side = (_side * factor).round.toInt }
+
+  /** Moves this square to position (x + xd, y + dy) */
+  def move(dx: Int, dy: Int): Unit = { 
+    _x += dx; _y += dy; 
+    nMoves += 1
+    addCost
+  }
+
+  /** Moves this square to position (x, y) */
+  def moveTo(x: Int, y: Int): Unit = { 
+    _x = x; _y = y; 
+    nMoves += 1
+    addCost
+  }
+  
+  /** The accumulated cost of this Square */
+  def cost: Double = sumCost
+
+  /** Reset the cost of this Square */
+  def pay: Unit = {sumCost = 0}
+  
+  /** A string representation of this Square */
+  override def toString: String = 
+    s"Square[($x, $y), side: $side, #moves: $nMoves times, cost: $sumCost]"
+}
+
+object Square {
+  private var created = Vector[Square]()
+ 
+  /** Constructs a new Square object at (x, y) with size side */
+  def apply(x: Int, y: Int, side: Int): Square = {
+    require(side >= 0, s"side must be positive: $side")
+    val sq = (new Square(x, y, side))
+    created :+= sq
+    sq
+  }
+
+  /** Constructs a new Square object at (0, 0) with side 1 */
+  def apply(): Square = apply(0, 0, 1)
+
+  /** The total number of moves that have been made for all squares. */
+  def totalNumberOfMoves: Int = created.map(_.nMoves).sum
+  
+  /** The total cost of all squares. */  
+  def totalCost: Double = created.map(_.cost).sum
+} 
+\end{CodeSmall}
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task     
+\Task \code{class Rational private (numerator: BigInt, denominator: BigInt)}  TODO: Ungefär som Rational i pins1ed med GCD
     

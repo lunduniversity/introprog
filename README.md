@@ -4,7 +4,7 @@ This is the repo of a course given by Lund University called "Introduction to Pr
 
 Course homepage (in Swedish): http://cs.lth.se/pgk/ 
 
-This is work in progress; the first instance of the course starts 
+This is work in progress; the first instance of the course starts this fall semester, August 29, 2016 at LTH in Lund.
 
 ## How to use this repo
 
