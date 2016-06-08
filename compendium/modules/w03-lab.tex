@@ -4,13 +4,18 @@
 \Lab{\LabWeekTHREE}
 
 \begin{Goals}
+\item Kunna kompilera Scalaprogram med \texttt{scalac}.
+\item Kunna köra Scalaprogram med \texttt{scala}.
 \item Kunna definiera och anropa funktioner.
-\item Kunna definiera default-argument.
-\item Kunna ange parametervärden med parameternamn.
+\item Kunna använda och förstå default-argument.
+\item Kunna ange argument med parameternamn.
+\item Kunna definiera objekt med medlemmar.
+\item Förstå kvalificerade namn och import.
+\item Förstå synlighet och skuggning.
 \end{Goals}
 
 \begin{Preparations}
-\item Använd övningarna i kapitel~\ref{exe:W03} för att ta reda på hur man skriver en \code{main}-funktion i Scala.
+\item Gör övningarna i kapitel~\ref{exe:W03}. 
 \end{Preparations}
 
 
@@ -72,14 +77,16 @@ Gå till kursens webbsida \url{https://cs.lth.se/pgk/} och ladda ner \href{https
 En \texttt{jar}-fil är egenligen en \texttt{zip}-fil som innehåller färdiga \texttt{class}-filer.
 
 \Subtask
-Byt ut \code{println}-anropet så att \code{main}-funktionen innehåller följande rader:
+Byt ut \code{main}-funktionens kropp mot följande block:
 \begin{Code}
-val w = new cslib.window.SimpleWindow(300, 500, "Digging")
-w.moveTo(10, 10)
-w.lineTo(10, 20)
-w.lineTo(20, 20)
-w.lineTo(20, 10)
-w.lineTo(10, 10)
+{
+	val w = new cslib.window.SimpleWindow(300, 500, "Digging")
+	w.moveTo(10, 10)
+	w.lineTo(10, 20)
+	w.lineTo(20, 20)
+	w.lineTo(20, 10)
+	w.lineTo(10, 10)
+}
 \end{Code}
 Den första raden skapar ett nytt \code{SimpleWindow} som ritar upp ett fönster som är 300 bildpunkter brett och 500 bildpunkter högt med titeln \emph{Digging}.
 \code{SimpleWindow} har en \emph{penna} som kan flyttas runt och rita linjer.
@@ -145,22 +152,16 @@ Det är dags att ta reda på hur koordinatsystemet fungerar i denna grafiska mil
 Ändra i \code{Graphics.square} så att kvadraten ritas upp i \emph{övre högra} hörnet istället.
 Prova dig fram för att ta reda på hur koordinatsystemet fungerar genom att ändra i koden, kompilera och köra programmet tills du får rätt på det.
 
-\Subtask
-För att kunna rita ut flera kvadrater på olika ställen ska du lägga till två parametrar till \code{Graphics.square}.
-Funktionen ska nu ha följande form:
-\begin{Code}
-def square(x: Int, y: Int) = ???
-\end{Code}
-Ändra i koden så kvadraten ritas ut med övre vänstra hörnet i den position som parametrarna \code{x} och \code{y} anger.
-Ändra också i \code{Mole.main} så att \code{Graphics.square} anropas med lämpliga parametrar.
-Kompilera och kör programmet och tills du får det att fungera.
-Se till att du kan rita ut kvadraten på olika ställen i fönstret genom att ange olika parametrar.
+\Subtask\Checkpoint
+Visa kvadraten för din labbhandledare och förklara vad de två parametrarna gör genom att peka ut ungefär var positionerna $(0,0)$, $(300, 0)$, $(0, 300)$ och $(300, 300)$ ligger.
 
+\Subtask
+Ta bort anropet till funktionen \code{square} när du har visat den för din labbhandledare.
 
 \Task
 Nu ska du skapa ett nytt koordinatsystem för \code{Graphics} som har \emph{stora} bildpunkter.
 Vi kallar \code{Graphics} stora bildpunkterna för \emph{block} för att lättare skilja dem från \code{SimpleWindow}s bildpunkter.
-Om blockstorleken är $b$, så ligger koordinaten $(x, y)$ i \code{Graphics} på koordinaten $(xb, yb)$ i \code{SimpleWindow}.
+Om blockstorleken är $b$, så ligger koordinaten $(x, y)$ i \code{Graphics} på koordinaten $(bx, by)$ i \code{SimpleWindow}.
 
 \Subtask
 Lägg till följande deklarationer överst i objektet \code{Graphics}.
@@ -170,25 +171,6 @@ val height = 50
 val blockSize = 10
 \end{Code}
 Ändra bredden på ditt \code{SimpleWindow} till \code{width * blockSize} och ändra höjden till \code{height * blockSize}.
-
-\Subtask
-Ändra nu i \code{square} så parametrarna \code{x} och \code{y} blir \code{Graphics}-koordinater istället för \code{SimpleWindow}-koordinater.
-Ändra också sidlängden på kvadraten att vara lika stor som \code{blockSize}.
-Anropet till \code{moveTo} ska alltså se ut såhär:
-\begin{Code}
-w.moveTo(x * blockSize, y * blockSize)
-\end{Code}
-
-\Subtask
-Nu när \code{Graphics} koordinatsystem är förändrat behöver parametrarna till \code{Graphics.square} i \code{Mole.main} justeras.
-Ändra parametrarna och testa ditt program genom att kompilera och köra med \texttt{scalac} respektive \texttt{scala}.
-(Glöm inte att ange korrekt classpath.)
-
-\Subtask \emph{(Frivilligt)} Prova gärna att rita ut ett Tetris-block i \code{Mole.main} med hjälp av \code{Graphics.square}.
-
-\Task
-Kvadraterna som du ritat påminner om konturen på en blockmullvad, men en blockmullvad är inte ihålig.
-Du ska skapa en funktion som ritar en fylld kvadrat genom att rita linjer tätt intill varandra.
 
 \Subtask
 Skapa en ny funktion i \code{Graphics} med namnet \code{block} och två parametrar \code{x} och \code{y} av typen \code{Int} och returtypen \code{Unit}.
@@ -209,10 +191,11 @@ Metodens \emph{kropp} ska se ut såhär:
 
 \Subtask\Pen
 Metoden \code{block} ritar ett antal linjer.
+Hur många linjer ritas ut?
 I vilken ordning ritas linjerna?
 
 \Subtask
-Byt ut alla \code{Graphics.square}-anrop i \code{Mole.main} mot \code{Graphics.block}-anrop.
+Anropa funktionen \code{Graphics.block} några gånger i \code{Mole.main} så att några block ritas upp i fönstret när programmet körs.
 Kompilera och kör ditt program.
 
 
@@ -259,17 +242,33 @@ Vilket värde har den tredje parametern om ingen anges?
 Kompilera och kör ditt program och upplev världen i färg.
 
 \Task
+I programmet används många långa namn med punkter, som till exempel \code{java.awt.Color} och \code{Graphics.block}.
+Dessa punkt-separerade namn kallas \emph{kvalificerade} namn.
+För att slippa skriva dessa långa namn hela tiden kan man \emph{importera} en definition och sen använda bara den sista delen av namnet.
+
+\Subtask
+Importera namnet \code{java.awt.Color} i objektet \code{Colors}. Ändra sen alla \code{new java.awt.Color(...)} i objektet till \code{new Color(...)}.
+(Har du glömt hur man importerar ett namn kan du gå tillbaka till övningarna i kapitel~\ref{exe:W02}.)
+
+\Subtask\Pen
+I vilka av objekten \code{Mole}, \code{Colors} och \code{Graphics} kan du använda det korta respektive det kvalificerade namnet av \code{java.awt.Color}?
+
+\Subtask
+Importera namnet \code{java.awt.Color} så att det korta namnet \code{Color} kan användas i objekten \code{Colors} \code{Graphics} men inte i \code{Mole}.
+Åndra också i \code{Graphics} så att bara det korta namnet används.
+
+\Task
 Nu ska du skriva en funktion för att rita en rektangel och rektangeln ska ritas med hjälp av funktionen \code{block}.
 Sen ska du rita upp mullvadens underjordiska värld med hjälp av denna funktion.
 
 \Subtask
-Lägg till en funktion i objektet \code{Graphics} med namnet \code{rectangle} som tar fem parametrar \code{x}, \code{y}, \code{width} och \code{height} av typen \code{Int} och \code{color} av typen \code{java.awt.Color}.
+Lägg till en funktion i objektet \code{Graphics} med namnet \code{rectangle} som tar fem parametrar \code{x}, \code{y}, \code{width} och \code{height} av typen \code{Int} och \code{color} av typen \code{Color}.
 Parametrarna \code{x} och \code{y} anger \code{Graphics}-koordinaten för rektangelns övre vänstra hörn och \code{width} och \code{height} anger bredden respektive höjden.
 Använd följande \code{for}-satser för att rita ut rektangeln.
 \begin{Code}
-for (row <- y until (y + height)) {
-	for (col <- x until (x + width)) {
-		block(row, col, color)
+for (yy <- y until (y + height)) {
+	for (xx <- x until (x + width)) {
+		block(xx, yy, color)
 	}
 }
 \end{Code}
@@ -281,7 +280,7 @@ I vilken ordning ritas blocken ut?
 
 \Subtask
 Skriv en funktion i objektet \code{Mole} med namnet \code{drawWorld} som ritar ut mullvadens värld, det vill säga en massa jord där den kan gräva sina tunnlar.
-\code{Mole.drawWorld} ska inte ha någon parameterlista och returtypen ska vara \code{Unit} och den ska anropa \code{Graphics.rectangle} för att rita en rekltangel med färgen \code{Colors.soil} som precis täcker fönstret.
+\code{Mole.drawWorld} ska inte ha några parametrar och returtypen ska vara \code{Unit} och den ska anropa \code{Graphics.rectangle} för att rita en rekltangel med färgen \code{Colors.soil} som precis täcker fönstret.
 Eftersom funktionen har många parametrar som lätt kan blandas ihop ska du använda namngivna argument vid anropet.
 (Om du har glömt hur man använder namngivna argument kan du titta på övningarna i kapitel~\ref{exe:W03}.)
 
@@ -293,13 +292,13 @@ I \code{SimpleWindow} finns funktioner för att känna av tangenttryckningar och
 Du ska använda de funktionerna för att styra en liten blockmullvad.
 
 \Subtask
-Lägg till följande funktion i objektet \code{Graphics}:
+Importera \code{cslib.window.SimpleWindow} i objektet \code{Graphics} och lägg till följande funktion:
 \begin{Code}
-def waitForKey: Char = {
+def waitForKey(): Char = {
 	do {
-		w.waitForEvent
-	} while (w.getEventType != SimpleWindow.KEY_EVENT)
-	w.getKey
+		w.waitForEvent()
+	} while (w.getEventType() != SimpleWindow.KEY_EVENT)
+	w.getKey()
 }
 \end{Code}
 Det finns olika sorters händelser som ett \code{SimpleWindow} kan reagera på, till exempel tangenttryckningar och musklick.
