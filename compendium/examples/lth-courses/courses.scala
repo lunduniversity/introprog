@@ -12,11 +12,12 @@ object courses {
   lazy val lth2016: Vector[Course] = download()
     
   case class Course(
-    code: String,
-    nameSv: String, 
-    nameEn: String, 
+    code:    String,
+    nameSv:  String, 
+    nameEn:  String, 
     credits: Double,
-    level: String)
+    level:   String
+  )
     
   object Course {
     def fromHtml(s: String): Course = {
