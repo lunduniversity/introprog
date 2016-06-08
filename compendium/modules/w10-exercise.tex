@@ -14,15 +14,201 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task 
+\Task \emph{Jämföra strängar i Scala.}
 
-\Subtask 
+
+\Task \emph{Jämföra strängar i Java.}
+
+
+\Task \emph{Sök bland LTH:s kurser med linjärsökning} 
+
+\Subtask Surfa till denna URL:\\ {\nolinebreak[4]\footnotesize\url{http://kurser.lth.se/lot/?lasar=16_17&soek_text=&sort=kod&val=kurs&soek=t}}
+\\
+och inspektera html-koden i din webbläsare genom att trycka \emph{Ctrl+U} (fungerar i Firefox och Chrome). Rulla ner till rad 171 och framåt. Var finns antalet poäng för resp kurs i html-koden?
+
+\Subtask \label{subtask:download-lthcourses} Klistra in objektet \code{courses} med kommandot \code{:paste} i REPL.\footnote{Du kan ladda ner koden från: \\ \href{https://raw.githubusercontent.com/lunduniversity/introprog/master/compendium/examples/lth-courses/courses.scala}{github.com/lunduniversity/introprog/tree/master/compendium/examples/lth-courses/courses.scala}} Vad gör koden?
+
+\scalainputlisting{examples/lth-courses/courses.scala}
+
+\Subtask \emph{Linjärsökning med find.} Teknologen Oddput Clementina vill gå första bästa datavetenskapskurs som är på G2-nivå. Hjälp Oddput med att söka upp första bästa kurs genom linjärsökning med samlingsmetoden \code{find}. Kurskoder vid datavetenskap börjar på EDA eller ETS. \emph{Tips:} Du har nytta av att definiera predikatet \code{def isCS(s: String): Boolean} som i sin tur lämpligen nyttjar strängmetoden \code{startsWith}.
+
+\begin{REPL}
+// kod till facit
+scala> def isCS(s: String) = s.startsWith("EDA") || s.startsWith("ETS")
+scala> val x = courses.lth2016.find(c => isCS(c.code) && c.level == "G2").get
+x: courses.Course = Course(EDA031,C++ - programmering,C++ Programming,7.5,G2)
+\end{REPL}
+
+\Subtask \emph{Implementera linjärsökning.} Som träning ska du nu implementera en egen linjärsökningsfunktion med signaturen: \\ \code{def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = ???}
+\\ Funktionen ska ta en sekvenssamling \code{xs} och ett predikat \code{p} och returnera index för första hittade elementet i \code{xs} där \code{p} gäller. Om det inte finns något element som uppfyller predikatet ska -1 returneras. Skriv först pseudokod för funktionen med penna och papper. Använd \code{while}. 
+
+
+
+\Subtask Definiera en funktion \code{def rndCode: String} som genererar slumpmässiga kurskoder (tre bokstäver mellan A och Z och tre siffror mellan 0 och 9). Använd \code{rndCode} för att fylla en vektor kallad \code{xs} med en halv miljon slumpmässiga kurskoder. För varje slumpkod i \code{xs} sök med din funktion \code{linearSearch} efter index i vektorn \code{courses.lth2016} från deluppgift \ref{subtask:download-lthcourses}. Mät totala tiden för de $500000$ linjärsökningarna med hjälp av funktionen \code{time} nedan.
+\begin{Code}
+def time[T](code: => T): (T, Long) = {
+  val now = System.currentTimeMillis
+  val result = code
+  val elapsed = System.currentTimeMillis - now
+  println(s"time: $elapsed ms") 
+  (result, elapsed)
+}
+\end{Code}
+ 
+
+\begin{Code}
+// kod till facit
+def rndCode: String = {
+  import math.{random => r}
+  def ch: Char = ((r * ('Z' - 'A')).toInt + 'A').toChar
+  def dig: Int   = (r * 9).toInt + 1
+  val xs = ((1 to 3).map(_ => ch) ++ (1 to 3).map(_ => dig))
+  xs.mkString
+}
+
+val xs = Vector.fill(500000)(rndCode)
+val (ix, elapsed) = 
+  time{xs.map(x => linearSearch(courses.lth2016)(_.code == x))}
+ix.filterNot(_ == -1).size
+\end{Code}
+
+
+
+\Subtask Hur kan du implementera \code{linearSearch} med den inbyggda samlingsmetoden \code{indexWhere}?
+
+\begin{Code}
+// kod till facit
+def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = 
+  xs.indexWhere(p)
+\end{Code}
+
+
+
+\Task \emph{Sortering med inbyggda sorteringsmetoder.} TODO!!!
+
+\Subtask \emph{\code{sorted}}
+
+\Subtask \emph{\code{sortWith}}
+
+\Subtask \emph{\code{sortBy}}
+
+
+
+
+\Task \emph{Sök bland LTH:s kurser med binärsökning.} Om en samling är sorterad kan man utnyttja detta för att göra snabbare sökning. Vid \textbf{binärsökning} \Eng{binary search}\footnote{\href{https://en.wikipedia.org/wiki/Binary_search_algorithm}{en.wikipedia.org/wiki/Binary\_search\_algorithm}} börjar man på mitten och kollar vilken halva att  söka vidare i, sedan delar man upp denna halva på mitten och kollar vilken fjärdedel att söka vidare i etc.
+
+\Subtask Sökning med inbyggd binärsökningsmetoden \code{scala.collection.Searching.search}. TODO!!!
+
+\Subtask Implementera binärsökning. TODO!!!
+
+
+
+\Task \emph{Linjärsökning i Java.} Denna uppgift bygger vidare på uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W09}. Du ska göra en variant på linjärsökning som innebär att leta upp första yatzy-raden i en matris där varje rad innehåller utfallet av 5 tärningskast. 
+
+\Subtask Lägg till metoderna \code{isYatzy} och \code{findFirstYatzyRow} klassen \code{ArrayMatrix} i uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W09} enligt nedan. Börja med metoden  \code{isYatzy}. Det finns en bug i koden nedan -- rätta bugen och testa så att metoden fungerar. 
+
+\begin{Code}[language=Java]
+    public static boolean isYatzy(int[] dice){
+        int col = 1;
+        boolean allSimilar = true;
+        while (col < dice.length && allSimilar) {
+          allSimilar = dice[0] == dice[col];
+        }
+        return allSimilar;
+    }
+    
+    /** Finds first yatzy row in m; returns -1 if not found */
+    public static int findFirstYatzyRow(int[][] m, int n){
+        int row = 0;
+        int result = -1;
+        while (???) {
+             /* linjärsökning  */ 
+        }
+        return result;
+    }
+\end{Code}
+
+\Subtask Implementera sedan \code{findFirstYatzyRow}. Skapa först pseudo-kod för länjärsökningsalgoritmen innan du skriver implementationen i Java. 
+Testa ditt program genom att lägga till följande rader i huvudprogrammet:
+\begin{Code}[language=Java]
+        int[][] yss = new int[2500][5];
+        fillRnd(yss, 6);
+        int i = findFirstYatzyRow(yss);
+        System.out.println("First Yatzy Index: " + i);
+\end{Code}
+
+
+
+
+\begin{Code}[language=Java]
+// kod till facit
+    public static boolean isYatzy(int[] dice){
+        int col = 1;
+        boolean allSimilar = true;
+        while (col < dice.length && allSimilar) {
+          allSimilar = dice[0] == dice[col];
+          col++;
+        }
+        return allSimilar;
+    }
+    
+    public static int findFirstYatzyRow(int[][] m){
+        int row = 0;
+        int result = -1;
+        while (row < m.length && result < 0){
+            if (isYatzy(m[row])) {
+              result = row;
+            } else {
+              row = row + 1;    
+            }
+        }
+        return result;
+    }
+\end{Code}
+
+
+
+\Task Implementera sortering till ny Vector med instickssortering. TODO!!!
+
+
+\Task Implementera sortering på plats i en Array med urvalssortering. TODO!!!
+
+
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task 
+
+\Task Implementera sortering på plats i en Array med instickssortering. TODO!!!
+
+
+\Task Implementera sortering till ny Vector med urvalssortering. TODO!!!
+
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task     
+\Task  Ordering och Order TODO!!!
+
+\Task java.util.Arrays.binarySearch  TODO!!! \\ \url{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html}
+
+\Task java.util.Arrays.sort  TODO!!!
+
+\Task java.util.Comparator  TODO!!!
+
+\Task Svenska bokstäver TODO!!
+
+\url{http://stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala} 
+
+\begin{REPL}
+scala> val fel = Vector("ö","å","ä","z").sorted
+fel: scala.collection.immutable.Vector[String] = Vector(z, ä, å, ö)
+
+scala val svColl = java.text.Collator.getInstance(new java.util.Locale("sv"))
+
+scala> val svOrd = Ordering.comparatorToOrdering(svColl)
+svOrd: scala.math.Ordering[Object] = scala.math.LowPriorityOrderingImplicits$$anon$7@64dbfba5
+
+scala> val rätt = Vector("ö","å","ä","z").sorted(svOrd)
+rätt: scala.collection.immutable.Vector[String] = Vector(z, å, ä, ö)
+\end{REPL}
+
     
