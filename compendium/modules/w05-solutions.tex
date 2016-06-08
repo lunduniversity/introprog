@@ -32,7 +32,7 @@ Referensena till c2 och xs ändras aldrig.
 xs kommer fortfarande ha tre vektorer som refererar till c1, c2, c3, däremot refererar dessa i sin tur till var sin int som är Mutable. 
 I detta fallet ändras c2.x:s referens från 8 till 42.
 
-\Subtask ****Rita bild****
+\Subtask \includegraphics{../img/w05-solutions/memory-pic-1}
 
 \Subtask Istället för att skriva \code{IntCell(var x: Int)} så kan man skriva \code{IntCell(val x: Int)} där varje cells intvärde kommer vara oförändlig. 
 Alltså då attributen till objekten är “Val” så kommer även de att vara oförändliga. 
@@ -90,7 +90,13 @@ Därför kommer alla ändringar i zs att påverka ys (så länge de pekar på sa
 
 \Subtask Den andra parametern anger hur stor den nya vektorn som returneras ska vara.
 
-\Subtask ****Rita bild****\\
+\Subtask \begin{enumerate}
+\item \includegraphics[scale=1.2]{../img/w05-solutions/memory-pic-2}
+\item \includegraphics[scale=1.2]{../img/w05-solutions/memory-pic-3}
+\item \includegraphics[scale=1.2]{../img/w05-solutions/memory-pic-4}
+\item \includegraphics[scale=1.2]{../img/w05-solutions/memory-pic-5}
+\item \includegraphics[scale=1.2]{../img/w05-solutions/memory-pic-6}
+\end{enumerate}
 xs = Array(42, 2, 3, 4)\\
 ys = Array(42, 2, 3 ,4)\\
 zs = Array(84, 2, 3)\\
@@ -438,5 +444,56 @@ public class DiceScanBuggy {
 		registerPips();
 		printReg();
 	}
+}
+\end{Code}
+
+\Task % Uppgift 15
+
+\Subtask \begin{Code}
+def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int] = {
+  val n = xs.size
+  val ys = Array.ofDim[Int](n + 1)
+  for (i <- 0 until pos) ys(i) = xs(i)
+  ys(pos) = x
+  for (i <- pos until n) ys(i + 1) = xs(i)
+  ys
+} 
+\end{Code}
+
+\Subtask \code{pos} måste vara \code{0}.
+
+\Subtask \begin{REPL}
+java.lang.ArrayIndexOutOfBoundsException: -1
+\end{REPL}
+
+\Subtask Elementet \code{x} läggs till på slutet av arrayen, alltså kommer den returnerande arrayen vara större än den som skickades in.
+
+\Subtask \begin{REPL}
+java.lang.ArrayIndexOutOfBoundsException: 5
+\end{REPL}
+Man får \code{ArrayIndexOutOfBoundsException} då indexeringen är utanför storleken hos arrayen.
+
+\Task % Uppgift 16
+
+\Subtask ****Skriv psedokod****
+
+\Subtask \begin{Code}
+def insert(xs: Array[Int], x: Int, pos: Int): Unit = {
+  val n = xs.size
+  val ys = xs.clone
+  xs(pos) = x
+  for (i <- pos + 1 until n) xs(i) = ys(i - 1)
+} 
+\end{Code}
+
+
+\Task % Uppgift 17
+
+\begin{Code}
+def tärningsRegistrering(xs: Array[Int]): Array[Int] = {
+  val f = Array.fill(7)(0)
+  f(0) = xs.size
+  for(i <- 0 until f(0)) f(xs(i)) += 1
+  f 
 }
 \end{Code}
