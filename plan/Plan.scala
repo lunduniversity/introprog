@@ -15,95 +15,142 @@ trait Plan {
       id = "intro", exercise = "expressions", lab = "kojo", contents = """
       | sekvens, alternativ, repetition, abstraktion, programmeringsspråk,
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
-      | virtuell maskin, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
+      | virtuell maskin, REPL,  
+      | literal, värde, uttryck, identifierare, variabel, typ, tilldelning, namn, val, var, def,  
+      | inbyggda typer, Int, Long, Short, Double, Float, Byte, Char, String,
+      | println, typen Unit, enhetsvärdet (), stränginterpolatorn s,
       | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random,
       | logiska uttryck, de Morgans lagar, while-sats, for-sats, 
       """.stripTrim),
       
     Module("Kodstrukturer", 
       id = "codestruct", exercise = "programs", lab = "", contents = """
-      | samling: Range, for-uttryck, map, foreach, flatMap,
+      | Range, Array, Vector, iterering, for-uttryck, map, foreach, 
       | algoritm vs implementation, pseudokod, 
-      | algoritm: swap, algoritm: summering, algoritm: min/max,  
+      | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX,  
+      | block, namnsynlighet, namnöverskuggning, lokala variabler,
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
-      | konstanter vs föränderlighet, objektorientering, klasser, objekt, punktnotation, 
-      | referensvariabler, referenstilldelning, anropa metoder, block, 
-      | namnsynlighet, namnöverskuggning,
-      | SimpleWindow, 
+      | main i Java vs Scala, java.lang.System.out.println,
       """.stripTrim),
       
     Module("Funktioner, Objekt", 
-      id = "funobj", exercise = "functions", lab = "simplewindow", contents = """
-      | parameter, returtyp, värdeandrop, namnanrop, namngivna parametrar,
+      id = "funobj", exercise = "functions", lab = "bugs", contents = """
+      | definera funktion, anropa funktion,
+      | parameter, returtyp, värdeandrop, namnanrop, default-argument, namngivna argument,
+      | applicera funktion på alla element i en samling, procedur, 
+      | värdeanrop vs namnanrop, uppdelad parameterlista, skapa egen kontrollstruktur, 
+      | objekt, modul, punktnotation, tillstånd, metod, medlem, 
+      | funktionsvärde, funktionstyp, äkta funktion, stegad funktion, apply, lazy val, 
+      | lokala funktioner,    
+      | anonyma funktioner, lambda,
       | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
-      | objekt, modul, lazy val,  
-      | aritmetik, slumptal, 
+      | algoritm: GCD (största gemensamma delare),
+      | cslib.window.SimpleWindow, 
       """.stripTrim),
 
     Module("Datastrukturer", 
-      id = "data", exercise = "data", lab = "textfiles", contents = """
-      | tupler, case-klasser, case-object, enum i java ???,
-      | Array, Map, List, Vector, föränderlighet, iterering,
-      | vektorer i Java vs Scala, Complex, Rational,
-      | läsa/skriva textfiler, Source.fromFile, java.nio.file
+      id = "datastruct", exercise = "data", lab = "pirates", contents = """
+      | attribut (fält), medlem, metod, 
+      | tupel, klass, Any, isInstanceOf, toString, 
+      | case-klass, räkna med bråk och klassen Frac,
+      | föränderlighet vs oföränderlighet, 
+      | List, Vector, Set, Map, 
+      | typparameter, generisk samling som parameter,
+      | översikt samlingsmetoder, 
+      | översikt strängmetoder, läsa/skriva textfiler, Source.fromFile, java.nio.file,
       """.stripTrim),
 
-    Module("Vektoralgoritmer", 
-      id = "vect", exercise = "vectors", lab = "cardgame", contents = """
-      | vektoralgoritmer, min/max, strängar, registrering,
-      | java System.out.println, Scanner, 
+    Module("Sekvensalgoritmer", 
+      id = "seqalg", exercise = "sequences", lab = "cards", contents = """
+      | sekvensalgoritm,  algoritm: SEQ-COPY,   
+      | in-place vs copy, algoritm: SEQ-REVERSE, algoritm: SEQ-REGISTER,
+      | sekvenser i Java vs Scala, for-sats i Java,
+      | java.util.Scanner, scala.collection.mutable.ArrayBuffer,
+      | StringBuilder,
+      | java.util.Random, slumptalsfrö, 
       """.stripTrim),
 
-    Module("Klasser, Likhet", 
-      id = "classes", exercise = "classes", lab = "shapes", contents = """
-      | klasser, klassparameter, primär konstruktor, alternativa konstruktorer,
-      | referenslikhet, strukturlikhet, eq vs ==, compareTo, Shape, Point, Rectangle,
+    Module("Klasser", 
+      id = "class", exercise = "classes", lab = "turtlegraphics", contents = """
+      | objektorientering, klass, Point, Square, Complex,
+      | new, null, this, 
+      | inkapsling, accessregler, private, private[this], kompanjonsobjekt,
+      | getters och setters, 
+      | klassparameter, primär konstruktor, objektfabriksmetod, 
+      | överlagring av metoder,
+      | referenslikhet vs strukturlikhet, eq vs ==, 
       """.stripTrim),
 
-    Module("Arv, Gränssnitt", 
+    Module("Arv", 
       id = "polymorf", exercise = "traits", lab = "turtlerace-team", contents = """
-      | klasser, arv, polymorfism, likhet, equals, 
-      | accessregler, private, public, protected, private[this],
-      | trait, inmixning, 
-      | Any, AnyVal, AnyRef, Nothing, 
+      | arv, polymorfism, trait, extends, asInstanceOf, with, inmixning,
+      | supertyp, subtyp, bastyp, override, 
+      | klasshierarkin i Scala: Any AnyRef Object AnyVal Null Nothing,
+      | referenstyper vs värdetyper, 
+      | klasshierarkin i scala.collection,
+      | Shape som bastyp till Point och Rectangle, 
+      | accessregler vid arv, protected, final,
+      | klass vs trait, abstract class,
+      | case-object, typer med uppräknade värden,  
       """.stripTrim),
 
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
     Module("Mönster, Undantag", 
-      id = "pattern", exercise = "matching", lab = "chords-team", contents = """
-      | match, Option, null, try, catch, Try, unapply, 
+      id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
+      | mönstermatchning, match, Option, try, catch, Try, unapply, sealed, 
+      | flatten, flatMap, partiella funktioner, collect, 
+      | implementera equals utan arv för Complex,  
+      | implementera equals med arv för Shape,  
       """.stripTrim),
 
-    Module("Matriser", 
+    Module("Matriser, Typparametrar", 
       id = "matrix", exercise = "matrices", lab = "maze", contents = """
-      | matriser, nästlade for-satser, designexempel: Tre-i-rad, 
+      | matris, nästlade for-satser, designexempel: Tre-i-rad, 
+      | generisk funktion, generisk klass,  
       | matriser i Java vs Scala, 
       """.stripTrim),
 
     Module("Sökning, Sortering", 
-      id = "sort", exercise = "sorting", lab = "surveydata-team", contents = """
-      | linjärsökning, binärsökning, 
-      | insättningssortering, urvalssortering,
-      | sortering till ny vektor, sortering på plats, 
+      id = "searchsort", exercise = "sorting", lab = "surveydata-team", contents = """
+      | compareTo på strängar, trait Ordered[T], 
+      | algoritm: LINEAR-SEARCH, algortim: BINARY-SEARCH, 
       | algoritmisk komplexitet, 
-      """.stripTrim),
+      | sortering till ny vektor, sortering på plats, 
+      | algoritm: INSERTION-SORT, algoritm: SELECTION-SORT,
+      | mer om filer, serialisering,
+      """.stripTrim),  
+      //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
     Module("Scala och Java", 
-      id = "scalajava", exercise = "scalajava", lab = "scalajava-team", contents = """
+      id = "scalajava", exercise = "scalajava", lab = "lthopoly-team", contents = """
       | skillnader mellan Scala och Java, 
+      | klasser i Scala vs Java, 
+      | referensvariabler vs enkla värden i Java,
+      | referenstilldelning vs värdetilldelning i Java,
+      | alternativ konstruktor i Scala och Java, 
       | for-sats i Java, java for-each i Java, 
-      | ArrayList<Integer>, scala.collection.JavaConversions, 
+      | java.util.ArrayList, 
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
+      | samlingar i Java vs Scala, scala.collection.JavaConverters,
+      | översiktligt om relationen mellan trait och interface,
+      | namnkonventioner för konstanter,
+      | enum i java ???,
       """.stripTrim),
 
-    Module("Trådar, Web, Android", 
-      id = "thread", exercise = "threads", lab = "life", contents = """
-      | Thread, Future, HTML, Javascript, css, Scala.js, Android,
+    Module("Trådar", //, Web ???, Android ???", 
+      id = "threadetc", exercise = "threads", lab = "life", contents = """
+      | Thread, Future, (Duration ???), (Await ???), 
+      | HTML, (Javascript ???), (css ???), 
+      | (Scala.js ???), (Android ???),
       """.stripTrim),
 
     Module("Design", 
       id = "design", exercise = "design", lab = "", contents = """
+      | designexempel,
+      | the expression problem,
+      | utvecklingsprocessen, krav-design-implementation-test,
+      | översiktligt om trait som gränssnitt, 
       """.stripTrim),
 
     Module("Tentaträning", 
@@ -141,7 +188,7 @@ trait Plan {
   }
   
   lazy val labNumOfWeek = 
-    "Lab01,--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab07,Lab08,Lab09,Lab10,Lab11,Inl.Uppg.,--,--,--".
+    "Lab01,--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab07,Lab08,Lab09,Lab10,Lab11,Projekt,--,--,--".
        split(',').toVector
 
   lazy val labOfWeek = for (w <- 0 until labNumOfWeek.size) yield {

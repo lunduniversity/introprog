@@ -8,6 +8,7 @@
 \geometry{hmargin={4.5cm,2.5cm}}
 \geometry{vmargin={3cm,3cm}}
 \usepackage{marginnote}
+\usepackage{float}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -29,6 +30,7 @@
 %\usepackage{PTSans}
 
 \usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage{changepage}   % for the adjustwidth environment to make narrow paragraphs
 
 \usepackage{sectsty} %change font on headings
 \allsectionsfont{\sffamily}
@@ -52,6 +54,9 @@
 
 \usepackage{lipsum} % to create dummy text with \lipsum
 \usepackage{amsmath,scalerel} %http://tex.stackexchange.com/questions/125523/is-there-a-bigcdot-symbol-in-latex
+
+\usepackage[linesnumbered,lined,boxed]{algorithm2e} % for writing pseudo-code
+
 \usepackage{longtable}
 \usepackage{booktabs}
 \usepackage{titlesec}
@@ -83,12 +88,14 @@
 \newcommand{\Eng}[1]{(eng. {\textit{#1}})}
 \newcommand{\key}[1]{\textcolor{eclipsepurple}{\textbf{\texttt{#1}}}}
 \newcommand{\code}{\lstinline[basicstyle=\ttfamily]}
+\newcommand{\jcode}{\lstinline[basicstyle=\ttfamily,language=Java]}
 
 \newcommand{\ChapterUnnum}[1]{\chapter*{#1}\addcontentsline{toc}{chapter}{#1}}
 \newcommand{\SectionUnnum}[1]{\section*{#1}\addcontentsline{toc}{section}{#1}}
 \newcommand{\Exercise}[1]{\newpage\section{Övning: {\tt #1}}}
 \newcommand{\ExerciseSolution}[1]{\newpage\section{{\tt #1}}}
 \newcommand{\Lab}[1]{\newpage\section{Laboration: {\tt #1}}}
+\newcommand{\Assignment}[1]{\newpage\section{Projektuppgift: {\tt #1}}}
 \newcommand{\BasicTasks}{\subsection{Grunduppgifter}}
 \newcommand{\ExtraTasks}{\subsection{Extrauppgifter: öva mer på grunderna}}
 \newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter: avancerad nivå}}
@@ -109,18 +116,36 @@
 %\vspace{1em}%
 \ifnum\value{SubtaskCounter}>1\vspace{0.25em}\else\vspace{0.5em}\fi%
 {\pagebreak[0]\noindent%%
-\alph{SubtaskCounter})\hspace{1em}\rlap{~}}%
+\makebox[2em][l]{\alph{SubtaskCounter})}}%
 }
+
 \renewcommand{\theSubtaskCounter}{\alph{SubtaskCounter}}
 
 \newenvironment{Goals}%
-{\subsubsection{Mål}\begin{itemize}[nosep]}%
+{\subsubsection{Mål}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
 \newenvironment{Preparations}%
-{\subsubsection{Förberedelser}\begin{itemize}[nosep]}%
+{\subsubsection{Förberedelser}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
+\newenvironment{Background}%
+{\begin{adjustwidth}{\parindent}{}\small \emph{Bakgrund för kännedom:}}%
+{\end{adjustwidth}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% changes to make slide stuff look good in compendium
+
+\newcommand{\pause}{}% do nothing
+%%% SLIDE SIZES with no affect in compedium
+\newcommand{\SlideFontSize}[2]{}
+\newcommand{\SlideFontSmall}{}
+\newcommand{\SlideFontTiny}{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% lingstings specifics:
 
 \lstdefinelanguage{Scala}{
   morekeywords={abstract,case,catch,class,def,%
@@ -173,15 +198,39 @@
 {ø}{{\o}}1
 {Æ}{{\AE}}1
 {Ø}{{\O}}1
+{`}{{\`{}}}1
+{─}{{\textemdash}}1
+{└}{{|}}1
+{├}{{|}}1
+{│}{{|}}1
 }
 
-\lstnewenvironment{ClassSpec}[2][]{%
-    \lstset{basicstyle=\ttfamily\fontsize{9}{11}\selectfont,%
-            backgroundcolor=,rulecolor=\color{black}, title={\texttt{\textcolor{blue}{\textbf{#2}}}}, frameround=tttt,language=,otherkeywords={},#1}%
+\lstnewenvironment{JavaSpec}[2][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
+            backgroundcolor=\color{white},rulecolor=\color{black},title={\fontsize{9}{11}\selectfont\texttt{\textcolor{black}{\textbf{#2}}}}, frameround=tttt,language=,otherkeywords={},#1}%
 }{}
+
+%\lstnewenvironment{ScalaSpec}[2][]{%
+%    \lstset{basicstyle=\ttfamily\fontsize{9}{11}\selectfont,%
+%            backgroundcolor=,rulecolor=\color{black}, title={\sffamily{\textcolor{purple}{\textbf{#2}}}}, frame=single,language=Scala,tabsize=2,otherkeywords={},#1}%
+%}{}
+
+\lstnewenvironment{ScalaSpec}[2][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
+            backgroundcolor=\color{white},,
+            title={\hskip-0.38em\colorbox{black!70}{\parbox{\dimexpr\textwidth+1\fboxsep-2\fboxrule\relax}{\fontsize{10}{12}\selectfont\color{white}{\textit{Specification} \texttt{\textbf{#2}}}}}},%
+            identifierstyle=\color{black!80},%
+            rulecolor=\color{black!60},frame=tRbL,framerule=1.2pt,%
+            language=Scala,#1}%
+}{}
+
 
 \lstnewenvironment{Code}[1][]{%
     \lstset{#1}%
+}{}
+
+\lstnewenvironment{CodeSmall}[1][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,#1}%
 }{}
 
 \lstnewenvironment{REPL}[1][]{%
@@ -191,8 +240,20 @@
       tabsize=2,
       backgroundcolor=\color{black!80},
       frame=single,
+      numbers=left, numberstyle=\color{black}\ttfamily\scriptsize\selectfont
       #1}%
 }{}
+
+\lstnewenvironment{REPLnonum}[1][]{%
+    \lstset{
+      basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
+      language=,otherkeywords={},%
+      tabsize=2,
+      backgroundcolor=\color{black!80},
+      frame=single,
+      #1}%
+}{}
+
 
 \newcommand{\scalainputlisting}[2][]{\lstinputlisting[%
 language=Scala,%

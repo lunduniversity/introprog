@@ -4,7 +4,7 @@
 \ProvidesClass{lecturenotes}[2015/08/14 Document class lecturenotes based on beamer]
 %\LoadClass[handout]{beamer}
 \LoadClass{beamer}
-
+\usepackage{etex} % after adding algorithm2e paga then strange error otherwise if not this package etex is included: http://tex.stackexchange.com/questions/38607/no-room-for-a-new-dimen
 \beamertemplatenavigationsymbolsempty
 \usetheme{Antibes} \usecolortheme{default}
 
@@ -38,6 +38,9 @@
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
 \hypersetup{colorlinks=true,linkcolor=, linkbordercolor=, urlbordercolor=mylinkcolor, urlcolor=mylinkcolor, pdfborderstyle={/S/U/W 1}}
 
+\usepackage[%linesnumbered,%lined, %boxed
+]{algorithm2e} % for writing pseudo-code
+
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning}
 %https://www.sharelatex.com/blog/2013/08/29/tikz-series-pt3.html
@@ -58,7 +61,14 @@
   {\begin{frame}[fragile,plain, environment=SlideSimple,#1]{#2}}
   {\end{frame}}  
 
-  
+%\usepackage[framemethod=default]{mdframed}
+%\mdfdefinestyle{exampledefault}{%
+%rightline=true,innerleftmargin=10,innerrightmargin=10,
+%frametitlerule=true,frametitlerulecolor=green,
+%frametitlebackgroundcolor=yellow,
+%frametitlerulewidth=2pt}
+% USAGE: \begin{mdframed}[style=exampledefault,frametitle={My Title}] 
+
 \newcommand{\Subsection}[1]{\subsection{#1}\frame{\centering\huge\bfseries\textcolor{blue}{#1}}}
 
 \newlength\slidefontsize
@@ -71,6 +81,11 @@
 \newcommand{\SlideOnly}[1]{#1}
 
 \newcommand{\vecka}{1}
+
+%%% SLIDE SIZES with no affect in compedium
+\newcommand{\SlideFontSize}[2]{\fontsize{#1}{#2}\selectfont}
+\newcommand{\SlideFontSmall}{\SlideFontSize{9}{11}}
+\newcommand{\SlideFontTiny}{\SlideFontSize{8}{10}}
 
 %http://tex.stackexchange.com/questions/104220/beamer-tableofcontents-does-not-display-the-correct-section-number-after-setco
 \makeatletter 
@@ -86,7 +101,7 @@
 \newcommand{\Eng}[1]{(eng. {\textit{#1}})}
 \newcommand{\Key}[1]{\textcolor{eclipsepurple}{\textbf{\texttt{#1}}}}
 \newcommand{\code}{\lstinline[basicstyle=\ttfamily]}
-
+\newcommand{\jcode}{\lstinline[basicstyle=\ttfamily,language=Java]}
 
 \lstdefinelanguage{Scala}{
   morekeywords={abstract,case,catch,class,def,%
@@ -159,16 +174,37 @@
 
 
 %  http://tex.stackexchange.com/questions/16654/newenvironment-newcommand-for-existing-environment-in-latex-beamer
-\lstnewenvironment{ClassSpec}[2][]{%
+\lstnewenvironment{JavaSpec}[2][]{%
     \lstset{basicstyle=\ttfamily\fontsize{6}{7}\selectfont,%
             backgroundcolor=,rulecolor=\color{black}, title={\texttt{\textcolor{blue}{\textbf{#2}}}}, frameround=tttt,language=,otherkeywords={},#1}%
 }{}
+
+\lstnewenvironment{ScalaSpec}[2][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{6}{7}\selectfont,%
+            backgroundcolor=,,%\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}{#1#2\ttfamily#3}
+            title={\hskip-0.38em\colorbox{black!70}{\parbox{\dimexpr\textwidth+1\fboxsep-2\fboxrule\relax}{\fontsize{7}{8}\selectfont\color{white}{\textit{Specification} \textbf{#2}}}}},%
+            identifierstyle=\color{black!80},%
+            rulecolor=\color{black!60},frame=tRbL,framerule=1.2pt,%
+            language=Scala,#1}%
+}{}
+
 
 \lstnewenvironment{Code}[1][]{%
     \lstset{basicstyle=\ttfamily\fontsize{7}{9}\selectfont,#1}%
 }{}
 
 \lstnewenvironment{REPL}[1][]{%
+    \lstset{
+      basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
+      language=,otherkeywords={},%
+      tabsize=2,
+      backgroundcolor=\color{black!80},
+      frame=single,
+      #1}%
+}{}
+
+
+\lstnewenvironment{REPLnonum}[1][]{%
     \lstset{
       basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
       language=,otherkeywords={},%
