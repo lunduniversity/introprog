@@ -178,44 +178,15 @@ scala> zs
 \Subtask Implementera algoritmen ovan i en funktion med signaturen: \\
  \code{def reverseString(s: String): String}
 
-\begin{Code}
-// Kod till facit:
-def reverseString(s: String): String = {
-  val sb = new StringBuilder(s)
-  val n = sb.length
-  for (i <- 0 until n / 2) { 
-    val temp = sb(i)
-    sb(i) = sb(n - i - 1)
-    sb(n - i - 1) = temp
-  }
-  sb.toString     
-}
-\end{Code}
-
 \Subtask Använd din funktion \code{reverseString} från föregående deluppgift i en ny funktion med signaturen:\\
  \code{def isPalindrome(s: String): Boolean} \\ som avgör om en sträng är en palindrom.\footnote{\href{https://sv.wikipedia.org/wiki/Palindrom}{sv.wikipedia.org/wiki/Palindrom}} 
 
 \Subtask\Pen Man kan med en \code{while}-sats och indexering direkt i en \code{String} avgöra om en sträng är en palindrom utan att kopiera den till en \code{StringBuilder}. Implementera en ny variant av \code{isPalindrome} som använder denna metod. Skriv först algoritmen på papper i pseudo-kod.
 
-\begin{Code}
-// Kod till facit:
-def isPalindrome(s: String): Boolean = {
-  val n = s.length
-  var foundDiff = false
-  var i = 0
-  while (i < n/2 && !foundDiff)  { 
-    foundDiff = s(i) != s(n - i - 1)
-    i += 1
-  }
-  !foundDiff
-}
-\end{Code}
-
 \Task \label{task:seq-reg} \emph{Algoritm: SEQ-REGISTER.} Algoritmer för registrering löser problemet att räkna förekomst av olika saker, till exempel antalet tärningskast som gav en sexa. Antag att vi har följande vektor \code{xs} som representerar 13 st tärningskast:
 \begin{REPL}
 scala> val xs =  Vector(5, 3, 1, 6, 1, 3, 5, 1, 1, 6, 3, 2, 6)
 \end{REPL}
-
 \Subtask Använd metoderna \code{filter} och \code{size} på \code{xs} för att filtrera ut alla 6:or och räkna hur många de är.
 
 \Subtask Använd metoderna \code{filter} och \code{size} på \code{xs} för att filtrera ut alla jämna kast och räkna hur många de är.
@@ -231,7 +202,6 @@ scala> val freqEvenOdd = xs.groupBy(_ % 2).map(p => (p._1, p._2.size))
 scala> val nEven = freqEvenOdd(0)
 scala> val nOdd = freqEvenOdd(1)
 \end{REPL}
-
 \Subtask Använd metoden \code{groupBy} på \code{xs} med den s.k. identitetsfunktionen \code{i => i} som returnerar sitt eget argument. Vad händer? 
 
 \Subtask Definiera en \code{val freq: Map[Int, Int]} som räknar antalet olika tärningsutfall i \code{xs}. Använd metoden \code{groupBy} på \code{xs} med identitetsfunktionen följt av en \code{map} med funktionen \code{p => (p._1, p._2.size)}.
@@ -241,7 +211,6 @@ scala> val nOdd = freqEvenOdd(1)
 def tärningsRegistrering(xs: Array[Int]): Array[Int] = ???
 \end{Code}
 som implementerar nedan algoritm (som alltså inte använder \code{groupBy} eller andra färdiga metoder på samlingar förutom \code{size} och \code{apply}).
-
 
 \begin{algorithm}[H]
  \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
@@ -264,20 +233,6 @@ scala> tärningsRegistrering(Array.fill(1000)((math.random * 6).toInt +1))
 res12: Array[Int] = Array(1000, 174, 174, 167, 171, 145, 169)
 \end{REPL}
 
-\begin{Code}
-// kod till facit:
-def tärningsRegistrering(xs: Array[Int]): Array[Int] = {
-  val f = Array.fill(7)(0)
-  f(0) = xs.size
-  var i = 0
-  while (i < f(0)) {
-    f(xs(i)) += 1
-    i += 1
-  }
-  f 
-}
-\end{Code}
-
 \Task \emph{Algoritm: SEQ-REMOVE-COPY.} Ibland vill man kopiera alla element till en ny \code{Array} \emph{utom} ett element på en viss plats \code{pos}.   
 
 \Subtask\Pen Skriv algoritmen SEQ-REMOVE-COPY i pseudokod med penna på papper.
@@ -287,17 +242,6 @@ def tärningsRegistrering(xs: Array[Int]): Array[Int] = {
 def removeCopy(xs: Array[Int], pos: Int): Array[Int]
 \end{Code}
 
-\begin{Code}
-// kod till facit
-def removeCopy(xs: Array[Int], pos: Int): Array[Int] = {
-  val n = xs.size
-  val ys = Array.fill(n - 1)(0)
-  for (i <- 0 until pos) ys(i) = xs(i)
-  for (i <- pos+1 until n) ys(i - 1) = xs(i)
-  ys
-} 
-\end{Code}
-
 \Task \emph{Algoritm: SEQ-REMOVE.} Ibland vill man ta bort ett element på en viss position i en befintlig \code{Array} utan att kopiera alla element till en ny \code{Array}. Ett sätt att göra detta är att flytta alla efterföljande element ett steg mot lägre index och låta sista platsen bli 0.   
 
 \Subtask\Pen Skriv algoritmen SEQ-REMOVE i pseudokod med penna på papper.
@@ -305,15 +249,6 @@ def removeCopy(xs: Array[Int], pos: Int): Array[Int] = {
 \Subtask Implementera algoritmen SEQ-REMOVE i en funktion med denna signatur:
 \begin{Code}
 def remove(xs: Array[Int], pos: Int): Unit
-\end{Code}
-
-\begin{Code}
-// kod till facit
-def remove(xs: Array[Int], pos: Int): Unit = {
-  val n = xs.size
-  for (i <- pos+1 until n) xs(i - 1) = xs(i)
-  xs(n-1) = 0
-} 
 \end{Code}
  
 
@@ -337,7 +272,7 @@ scala> val rnd3 = new Random(System.nanoTime)
 scala> val rnd4 = new Random((math.random * Long.MaxValue).toLong)
 scala> def flip(r: Random) = if (r.nextInt(2) > 0) "krona" else "klave" 
 scala> val xs = (1 to 100).map{i => 
-         (flip(rnd1), flip(rnd2), flip(rnd3), flip(rnd4))} 
+			(flip(rnd1), flip(rnd2), flip(rnd3), flip(rnd4))} 
 scala> xs foreach println
 scala> xs.exists(q => q._1 != q._2)
 scala> xs.exists(q => q._1 != q._3)
@@ -368,16 +303,6 @@ Antal 6:or: 165
 Anropa din funktion \code{tärningsRegistrering} från uppgift \ref{task:seq-reg}.
 
 
-\begin{Code}
-// kod till facit
-def testRandom(r: Random, n: Int): Unit = {
-  val xs = Array.fill(n)(r.nextInt(6) + 1)
-  val f = tärningsRegistrering(xs)
-  println("Antal kast: " + f(0))
-  for (i <- 1 to 6) println(s"Antal $i:or: " + f(i)) 
-}
-\end{Code}
-
 \Task \emph{Array och \code{for}-sats i Java.} 
 
 \Subtask Skriv nedan program i en editor och spara i filen \code{DiceReg.java}:
@@ -390,7 +315,7 @@ def testRandom(r: Random, n: Int): Unit = {
 
 \Subtask Ändra i programmet ovan så att loop-variabeln \code{i} skrivs ut i varje runda i varje \code{for}-sats. Kompilera om och kör.
 
-\Subtask Skriv om programmet ovan genom att abstrahera huvudprogrammets delar till de statiska metoderna \code{parseArguments}, \code{registerPips} och \code{printReg} enligt nedan skelett. Notera speciellt hur \code{private} och \code{public} är angivet. Spara programmet i filen \code{DiceReg2.java}.
+\Subtask Skriv om programmet ovan genom att abstrahera huvudprogrammets delar till de statiska metoderna \code{parseArguments}, \code{registerPips} och \code{printReg} enligt nedan skelett. Notera speciellt hur \jcode{private} och \jcode{public} är angivet. Spara programmet i filen \code{DiceReg2.java} och kompilera med \texttt{javac DiceReg2.java} i terminalen.
 
 \begin{Code}[language=Java]
 // DiceReg2.java
@@ -450,18 +375,16 @@ scala> DiceReg2.rnd
 
 \Subtask Programmet fungerar inte som det ska. Du behöver korrigera 3 saker för att programmet ska göra rätt. Rätta buggarna och spara det rättade programmet som \texttt{DiceScan.java}. Kompilera och testa att det rättade programmer fungerar med olika indata.
 
- 
 
-\Task\Pen \emph{Välja sekvenssamling.} Vilken av \code{Vector}, \code{Array} och \code{ArrayBuffer} hade du valt i dessa situationer?
-
-\Subtask Ditt program innehåller en sekvens av objekt med data om alla ca $10^7$ medborgare i sverige. Efter nogranna mätningar visar det sig att tillägg av objekt på godtyckliga ställen i sekvensen är en flaskhals.
-
-\Subtask Ditt program innehåller en sekvens av objekt med data om ca $10^2$ \href{https://sv.wikipedia.org/wiki/Residensstad#Sverige}{residensstäder} i Sverige. Senast det skedde en uppdatering av mängden referensstäder var 1997. Prestandamätningar visar att det är uppdatering av attributvärden i objekten som tar mest tid. Städerna behöver kunna bearbetas i godtycklig ordning.
-
-\Subtask Ditt program innehåller en sekvens av ca $10^9$ osorterade heltal som ska läsas in från fil och sorteras på plats i minnet. Det första talet i filen anger antalet heltal. Det är viktigt att sorteringen går snabbt. När talen är sorterade ska de skrivas tillbaka till fil i sorterad ordning. 
-
-\Subtask Ditt program innehåller en sekvens av ett känt antal oföränderliga objekt med data om genomförda banktransaktioner. Sekvensen ska bearbetas parallellt i godtycklig ordning med olika algoritmer som kan köras oberoende av varandra.   
-
+\Task\Pen \emph{Välja sekvenssamling.} Vilken av \code{Vector}, \code{Array} och \code{ArrayBuffer} hade du valt i dessa situationer?		
+	
+\Subtask Ditt program innehåller en sekvens av objekt med data om alla ca $10^7$ medborgare i sverige. Efter noggranna mätningar visar det sig att tillägg av objekt på godtyckliga ställen i sekvensen är en flaskhals.		
+		
+\Subtask Ditt program innehåller en sekvens av objekt med data om ca $10^2$ \href{https://sv.wikipedia.org/wiki/Residensstad#Sverige}{residensstäder} i Sverige. Senast det skedde en uppdatering av mängden referensstäder var 1997. Prestandamätningar visar att det är uppdatering av attributvärden i objekten som tar mest tid. Städerna behöver kunna bearbetas i godtycklig ordning.		
+		
+\Subtask Ditt program innehåller en sekvens av ca $10^9$ osorterade heltal som ska läsas in från fil och sorteras på plats i minnet. Det första talet i filen anger antalet heltal. Det är viktigt att sorteringen går snabbt. När talen är sorterade ska de skrivas tillbaka till fil i sorterad ordning. 		
+		
+\Subtask Ditt program innehåller en sekvens av ett känt antal oföränderliga objekt med data om genomförda banktransaktioner. Sekvensen ska bearbetas parallellt i godtycklig ordning med olika algoritmer som kan köras oberoende av varandra.
  
  
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
@@ -488,18 +411,6 @@ scala> DiceReg2.rnd
 \Subtask Implementera ovan algoritm i en funktion med denna signatur:
 \begin{Code}
 def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int]
-\end{Code}
-
-\begin{Code}
-// kod till facit
-def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int] = {
-  val n = xs.size
-  val ys = Array.ofDim[Int](n + 1)
-  for (i <- 0 until pos) ys(i) = xs(i)
-  ys(pos) = x
-  for (i <- pos until n) ys(i + 1) = xs(i)
-  ys
-} 
 \end{Code}
 
 \Subtask Vad måste \code{pos} vara för att det ska fungera med en tom array som argument?
@@ -567,14 +478,14 @@ Vad skiljer ovan metod från metoden \code{java.util.Arrays.equals}?
 \href{http://jline.github.io/jline2/apidocs/reference/jline/console/ConsoleReader.html}{jline.github.io/jline2/apidocs/reference/jline/console/ConsoleReader.html}}. 
 Då får du dessutom editeringsfunktioner vid inmatning med t.ex. Ctrl+A och Ctrl+K så som i en vanlig unixterminal. Med pil upp och pil ner kan du bläddra i inmatningshistoriken.
 \begin{REPL}
-val scan = new java.util.Scanner(System.in)
-scan.next
-scan.nextInt
-val cr = new jline.console.ConsoleReader
-cr.readLine
-cr.readLine("> ")
-cr.readLine("Ange tal: ").toInt
-scala.util.Try{cr.readLine("Ange tal: ").toInt}.toOption
+scala> val scan = new java.util.Scanner(System.in)
+scala> scan.next
+scala> scan.nextInt
+scala> val cr = new jline.console.ConsoleReader
+scala> cr.readLine
+scala> cr.readLine("> ")
+scala> cr.readLine("Ange tal: ").toInt
+scala> scala.util.Try{cr.readLine("Ange tal: ").toInt}.toOption
 \end{REPL} 
 
 \Subtask Prova ovan rader i REPL. Vad händer om du matar in bokstäver i stället för siffror på sista raden ovan? (Mer om \code{Option} i kapitel \ref{chapter:W08}).
