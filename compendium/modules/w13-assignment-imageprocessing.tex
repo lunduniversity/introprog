@@ -1,0 +1,214 @@
+%!TEX encoding = UTF-8 Unicode
+%!TEX root = ../compendium.tex
+
+\Assignment{imageprocessing}
+
+\subsection{Bakgrund}
+
+En digital bild består av ett rutnät (en matris) av pixlar. Varje pixel har en färg, och om man har många pixlar flyter de samman för ögat så att de tillsammans skapar en bild.
+
+Det finns olika system för hur man färgsätter de olika pixlarna. T.ex. så används CMYK-modellen (cyan, magenta, gul, svart) vid blandning av färg som ska tryckas på papper eller annat material. På en dator däremot används vanligtvis RGB-systemet. RGB-systemet har tre grundfärger: röd, grön och blå. Mättnaden av varje grundfärg anges av ett heltal som vi i fortsättningen förutsätter ligger i intervallet [0, 255]. 0 anger ”ingen färg” och 255 anger ”maximal färg”. Man kan därmed representera 256 × 256 × 256 = 16 777 216 olika färgnyanser. Man kan också representera gråskalor; det gör man med färger som har samma värde på alla tre grundfärgerna: (0, 0, 0) är helt svart, (255, 255, 255) är helt vitt.
+
+
+\subsection{Uppgiften}
+Du ska skriva ett program där du implementerar olika filter som ska manipulera en given bild på ett flertal olika sätt. Filterklasserna ska ärva från en abstrakt ImageFilter-klass som är skriven i Java.
+
+Följande beskriver ImageFilter-klassen.
+
+\begin{JavaSpec}{abstract class ImageFilter}
+/**
+ * Skapar ett filterobjekt med ett givet namn.
+ */
+protected ImageFilter(String name);
+
+/**
+ * Tar reda på filtrets namn.
+ */
+public String getName();
+
+/**
+ * Filtrerar bilden i matrisen inPixels och returnerar
+ * resultatet i en ny matris. Utnyttjar eventuellt 
+ * värdet av paramValue
+ */
+public abstract Color[][] apply(Color[][] inPixels,
+				 double paramValue);
+
+/**
+ * Berättar huruvida ett filter behöver ett parmetervärde eller inte
+ * @return true ifall parametervärde behövs, annars false
+ */
+public abstract boolean needsParameter();
+
+/**
+ * Beräknar intensiteten hos alla pixlarna i pixels,
+ * returnerar resultatet i en ny matris.
+ */
+protected short[][] computeIntensity(Color[][] pixels):
+
+/**
+ * Faltar punkten p[i][j] med faltningskärnan kernel.
+ * 
+ * @param p 		matris med talvärden
+ * @param i 		radindex får den aktuella punkten
+ * @param j 		kolonnindex får den aktuella punkten
+ * @param kernel	faltningskärnan, en 3x3-matris
+ * @param weight	summan av elementen i kernel
+ * @return 		resultatet av faltningen
+ */
+protected short convolve(short[][] p, int i, int j, 
+			short[][] kernel, int weight);
+\end{JavaSpec}
+
+Utöver filterklasserna ska du även implementera FilterChooser som hanterar val av filter och FilterList som kan applicera ett variabelt antal filter på en och samma bild. Du får tillgång till en Image-klass som representerar en bild samt ett ImageUI som hjälper att ladda in en JPEG bild.
+
+\begin{ScalaSpec}{Image}
+class Image(val image: BufferedImage);
+
+/** Returns a matrix of Color-objects that represents an image */
+def getColorMatrix: Array[Array[Color]];
+
+/** Updates the image in accordance with the given Color-matrix */
+def updateImage(pixels: Array[Array[Color]]): Unit;
+\end{ScalaSpec}
+
+\begin{ScalaSpec}{FilterList}
+class FilterList = ???
+
+/** Adds a filter to the FilterList */
+def addFilter(filter: ImageFilter): Unit = ???
+  
+/** Applies all the filters on the given Image and draws it on SimpleWindow */
+def applyFilters(image: Image, sw: SimpleWindow): Unit = ???
+\end{ScalaSpec}
+
+\begin{ScalaSpec}{FilterChooser}
+/** Creates a FilterChooser with all the available filters */
+class FilterChooser(filters: Array[ImageFilter]) = ???
+  
+/** Shows which filters are available and lets the user choos filters
+*   until an escape sequence has been given and returns a FilterList which
+*   contain the chosen filters
+*   Example: 
+*   Tryck på 1 för Blått-filter
+*   Tryck på 2 för Kontrast-filter
+*   Tryck på 3 för Gauss-filter
+*   Tryck på 4 för Sobel-filter
+*   Tryck 42 om du inte vill ha fler filter
+*/
+def chooseFilters(): FilterList = ???
+\end{ScalaSpec}
+
+
+\Task Implementera ett blåfilter. Det vill säga skapa ett filter där varje pixelelement bara innehåller den blå komponenten. Testa filteret genom att skriva en main metod. Använd ImageUI för att välja en bild på följande sätt:
+\begin{Code}
+val im = new Image(ImageUI.getImage)
+\end{Code}
+Använd SimpleWindow för att visa bilden.
+
+\Task Implementera ett inverteringsfilter som skapar en negativ kopia av bilden. 
+Fundera över vad som kan menas med en inverterad eller negativ kopia: de nya RGBvärdena är inte ett dividerat med de gamla värdena (då skulle de nya värdena bli flyttal) och inte de gamla värdena med ombytt tecken (då skulle de nya värdena bli negativa).
+
+\Task Implementera ett filter som gör om bilden till en gråskalebild. Använd ImageFilters computeIntensity metod för att bestämma vilken intensitet varje bildelement ska ha. Om intensiteten i ett bildelement till exempel är 105 så ska ett nytt Color objekt med värdena (105, 105, 105) skapas.
+
+\Task Skapa ett filter som krypterar bilden med xor-operatorn. Varje bildelement krypteras genom att använda xor-operatorn med ursprungsvärdena för rött, grönt och blått tillsammans med ett slumpmässigt heltalsvärde som genereras av Javas Random klass.
+
+
+
+\Task Gaussfiltrering. Skriv en klass GaussFilter där ImageFilters convolve metod används. Varje färg ska behandlas separat. Gör på följande sätt:
+\begin{enumerate}
+	\item Bilda tre short-matriser och lagra pixlarnas red-, green- och blue-komponenter i matriserna.
+	\item Utför faltningen av de tre komponenterna för varje element och lagra ett nytt Colorobjekt i outPixels för varje punkt.
+	\item Elementen i ramen behandlas inte, men i outPixels måste också dessa element få värden. Enklast är att flytta över dessa element oförändrade från inPixels till outPixels. Man kan också sätta dem till Color.WHITE, men då kommer den filtrerade bilden att se något mindre ut.
+\end{enumerate}
+
+Metoden faltar punkten p[i][j] med faltningskärnan kernel och ska anropas med red-, green- och blue-matrisen. weight är summan av elementen i kernel. Faltningskärnan kan vara ett attribut i klassen och ska vara en matris med följande utseende:
+$$
+\begin{pmatrix}
+  0 & 1 & 0 \\
+  1 & 4 & 1 \\
+  0 & 1 & 0 \\
+\end{pmatrix}
+$$
+\Task Sobelfiltrering.
+\begin{enumerate} 
+	\item Beräkna intensitetsmatrisen med metoden computeIntensity.
+	\item Falta varje punkt i intensitetsmatrisen med två kärnor:
+$$
+X\_SOBEL =
+\begin{pmatrix}
+  -1 & 0 & 1 \\
+  -2 & 0 & 2 \\
+  -1 & 0 & 1 \\
+\end{pmatrix}
+Y\_SOBEL =
+\begin{pmatrix}
+  -1 & -2 & -1 \\
+  0 & 0 & 0 \\
+  1 & 2 & 1 \\
+\end{pmatrix}
+$$
+	Använd metoden convolve med vikten 1. Koefficienterna i matrisen X\_SOBEL uttrycker derivering i x-led, i Y\_SOBEL faltning i y-led. För att förklara varför koefficienterna ibland är 1 och ibland 2 måste man studera den bakomliggande teorin noggrant, men det gör vi inte här.
+	\item Om resultaten av faltningen i en punkt betecknas med sx och sy så får man en indikator på närvaron av en kontur med Math.abs(sx) + Math.abs(sy). Absolutbelopp behöver man eftersom man har negativa koefficienter i faltningsmatriserna. 
+	\item  Sätt pixeln till svart om indikatorn är större än tröskelvärdet, till vit annars. Tröskelvärdet bestäms av paramValue. Skriv en klass SobelFilter som implementerar denna algoritm.
+\end{enumerate}
+
+\Task Implementera FilterList enligt specifikationerna ovan.
+
+\Task Implementera FilterChooser enligt specifikationerna ovan.
+
+\Task Knyt ihop allt i ett ImageProcessing object som ska innehålla en main metod där allt körs från. Utskrifterna ska se ut på följande sätt:
+
+{\setlength{\parindent}{0cm}
+
+ Välj en av följande bilder genom att mata in en siffra\newline
+
+0. boy.jpg\newline
+1. car.jpg\newline
+2. duck.jpg\newline
+3. facade.jpg\newline
+4. jay.jpg\newline
+5. moon.jpg\newline
+6. obidos.jpg\newline
+7. sgrada.jpg\newline
+8. shuttle.jpg\newline
+Ditt val: 1\newline
+Bild car.jpg laddad\newline
+Tryck på 0 för Vanligt-filter\newline
+Tryck på 1 för Blått-filter\newline
+Tryck på 2 för Krypterat-filter\newline
+Tryck på 3 för Inverterat-filter\newline
+Tryck på 4 för Grått-filter\newline
+Tryck på 5 för Kontrast-filter\newline
+Tryck på 6 för Gauss-filter\newline
+Tryck på 7 för Sobel-filter\newline
+Tryck 42 om du inte vill använda fler filter\newline
+Välj ett filter 1\newline
+Välj ett filter 42\newline
+Välja ny bild? (y/n) n\newline
+}
+
+Tänk på att användaren kan mata in otillåtna värden. Detta ska hanteras på lämpligt sätt.
+
+\subsection{Frivilliga extrauppgifter}
+
+\Task Förbättring av kontrasten i bild. Vi inskränker oss här till att förbättra kontrasten i gråskalebilder. Om man applicerar kontrastfiltrering på en färgbild så kommer bilden att konverteras till en gråskalebild. (Man kan naturligtvis förbättra kontrasten i en färgbild och få en färgbild som resultat. Då behandlar man de tre färgkanalerna var för sig.) Många bilder lider av alltför låg kontrast. Det beror på att bilden inte utnyttjar hela det tillgängliga området 0–255 för intensiteten. Man får en bild med bättre kontrast om man ”töjer ut” intervallet enligt följande formel (lineär interpolation):
+
+$$newIntensity = 255 * (intensity - 45) / (225 - 45)$$
+
+Som synes kommer en punkt med intensiteten 45 att få den nya intensiteten 0 och en punkt med intensiteten 225 att få den nya intensiteten 255. Mellanliggande punkter sprids ut jämnt över intervallet [0, 255]. För punkter med en intensitet mindre än 45 sätter man den nya intensiteten till 0, för punkter med en intensitet större än 225 sätter man den nya intensiteten till 255. Vi kallar intervallet där de flesta pixlarna finns för [lowCut, highCut]. De punkter som har intensitet mindre än lowCut sätter man till 0, de som har intensitet större än highCut sätter man till 255. För de övriga punkterna interpolerar man med formeln ovan (45 ersätts med lowCut, 225 med highCut).
+
+Det återstår nu att hitta lämpliga värden på lowCut och highCut. Detta är inte något som kan göras helt automatiskt, eftersom värdena beror på intensitetsfördelningen hos bildpunkterna. Man börjar med att beräkna bildens intensitetshistogram, dvs hur många punkter i bilden som har intensiteten 0, hur många som har intensiteten 1, . . . , till och med 255. Detta är ett typiskt registreringsproblem som ska lösas enligt metoden i avsnitt 8.10 i läroboken. %Kanske ändra och förklara då Per Holms bok inte ska användas?
+
+I de flesta bildbehandlingsprogram kan man sedan titta på histogrammet och interaktivt bestämma värdena på lowCut och highCut. Så ska vi dock inte göra här. I stället bestämmer vi oss för ett procenttal cutOff (som vi matar in i Parameter-rutan i användargränssnittet) och beräknar lowCut så att cutOff procent av punkterna i bilden har en intensitet som är mindre än lowCut och highCut så att cutOff procent av punkterna har en intensitet som är större än highCut.
+
+Exempel: antag att en bild innehåller 100 000 pixlar och att cutOff är 1.5. Beräkna bildens intensitetshistogram i en vektor int[] histogram = new int[256]. Beräkna lowCut så att histogram[0] + histogram[1] + ... + histogram[lowCut] = 0.015 * 100000 (så nära det går att komma, det blir troligen inte exakt likhet). Beräkna highCut på liknande sätt.
+Sammanfattning av algoritmen:
+\begin{enumerate}
+	\item Beräkna intensiteterna hos alla punkterna i bilden, lagra dem i en short-matris. Använd den färdigskrivna metoden computeIntensity.
+	\item Beräkna bildens intensitetshistogram.
+	\item Parametervärdet paramValue är det värde som ska användas som cutOff.
+	\item Beräkna lowCut och highCut enligt ovan.
+	\item Beräkna nya intensiteter enligt interpolationsformeln och lagra de nya pixlarna i outPixels.
+\end{enumerate}
+Skriv en klass ContrastFilter som implementerar algoritmen. I katalogen images kan bilden moon.jpg vara lämpliga att testa, eftersom den har låg kontrast. Anmärkning: om cutOff sätts = 0 så får man samma resultat av denna filtrering som man får av GrayScaleFilter. Detta kan man se genom att studera interpolationsformeln.

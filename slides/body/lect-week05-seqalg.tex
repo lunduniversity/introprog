@@ -1,0 +1,123 @@
+%!TEX encoding = UTF-8 Unicode
+%!TEX root = ../lect-week05.tex
+
+%%%
+
+\begin{Slide}{Vad är en sekvensalgoritm?}
+\begin{itemize} 
+\item En algoritm är en stegvis beskrivning av hur man löser ett problem. 
+\item En sekvensalgoritm är en algoritm där dataelement i sekvens utgör en viktig del av problembeskrivningen och/eller lösningen.   
+
+\item Exempel: sortera en sekvens av personer efter deras ålder.
+
+\item Två olika principer:
+\begin{itemize} 
+\item Skapa \Emph{ny sekvens} utan att förändra indatasekvensen
+\item Ändra \Emph{på plats} \Eng{in place} i den \Alert{föränderliga} indatasekvensen
+\end{itemize}
+\end{itemize}
+
+\end{Slide}
+
+
+\begin{Slide}{Några indexerbara samlingar}
+\begin{itemize}
+\item Oföränderliga:  
+  \begin{itemize} 
+  \item Kan \Alert{ej} ändra elementreferenserna: \\ 
+    Scala: \Emph{Vector}, \Emph{List}
+  \end{itemize}
+
+\item Föränderliga: kan \Alert{ändra} elemententreferenserna
+  \begin{itemize} 
+  \item Kan \Alert{ej ändra storlek} efter allokering: \\ Scala+Java: \Emph{Array} 
+  \item Kan ändra storlek efter allokering: \\ Scala: \Emph{ArrayBuffer} \\ Java: \Emph{ArrayList}
+  \end{itemize}
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Algoritm: SEQ-COPY}
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+ \Input{Heltalsarray $xs$} 
+ \Output{En ny heltalsarray som är en kopia av $xs$. \\ \vspace{1em}}
+ $n \leftarrow$ antalet element i $xs$ \\
+ $ys \leftarrow$ en ny array med plats för $n$ element\\
+ $i \leftarrow 0$  \\
+ \While{$i < n$}{
+  $ys(i) \leftarrow xs(i)$\\
+  $i \leftarrow i + 1$\\
+ }
+ \Return $ys$
+\end{algorithm}
+\end{Slide}
+
+
+
+\begin{Slide}{Egenskaper hos några sekvenssamlingar}
+\begin{itemize}\SlideFontSmall
+
+\item \code{Vector} 
+  \begin{itemize}\SlideFontSmall
+  \item \Emph{Oföränderlig}
+  \item \Emph{Bra till det mesta} och hyffsat \Emph{snabb}
+  \end{itemize}
+
+\item \code{List}   
+  \begin{itemize}\SlideFontSmall
+  \item \Emph{Oföränderlig}
+  \item Snabb vid bearbetning \Emph{i början} 
+  \item Smidig \& snabb vid \Emph{rekursiva} algoritmer
+  \item Långsam vid godtycklig \Alert{indexering} och bearbetning \Alert{i slutet}
+  \end{itemize}
+
+\item \code{Array} 
+  \begin{itemize}\SlideFontSmall
+  \item \Alert{Föränderlig}: \Emph{snabb indexering \& uppdatering}
+  \item Kan \Alert{ej ändra storlek}; storlek anges vid allokering
+  \item Har särställning i JVM: ger maskinkod med snabb minnesaccess  
+  \end{itemize}
+
+\item \code{ArrayBuffer}  
+  \begin{itemize}\SlideFontSmall
+  \item \Alert{Föränderlig}: \Emph{snabb indexering \& uppdatering}
+  \item Kan \Emph{ändra storlek} efter allokering
+  \end{itemize}
+
+\item Om prestandakritiskt: undersök om \code{Array} är snabbare  
+
+\end{itemize}
+\end{Slide}
+
+
+
+
+\begin{Slide}{Vilken sekvenssamling ska jag välja?}
+\begin{itemize}
+
+\item \code{Vector} 
+  \begin{itemize}\SlideFontSmall
+  \item Om du vill ha oföränderlighet: \code{val xs = Vector[MyType](...)}
+  \item Om du behöver ändra men ej prestandakritiskt:\\ \code{var xs = Vector.empty[MyType]}
+  \item Om du ännu inte vet vilken som är bäst. (Du kan alltid ändra efter att du mätt prestanda och kollat flaskhalsar.)
+  \end{itemize}
+
+\item \code{Array} 
+  \begin{itemize}\SlideFontSmall
+  \item Om det \Alert{verkligen behövs} av prestandaskäl och du kan bestämma en lämplig storlek vid allokering:\\ \code{val xs = Array.fill(initSize)(initValue)}
+  \end{itemize}
+
+\item \code{ArrayBuffer}  
+  \begin{itemize}\SlideFontSmall
+  \item det \Alert{verkligen behövs} av prestandaskäl och du behöver kunna ändra storlek efter allokering:\\ \code{val xs = ArrayBuffer.empty[MyType]} 
+  \end{itemize}
+
+\end{itemize}
+\end{Slide}
+
+
+
+
+
+
+
