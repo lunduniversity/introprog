@@ -11,8 +11,8 @@
 \item Kunna skapa ett enkelt program som från två trådar tävlar om att uppdatera en variabel och förklara varför beteendet kan bli oförutsägbart.
 \item Kunna använda en \code{Future} för att köra igång flera parallella beräkningar.
 \item Kunna registrera en callback på en \code{Future} med metoden \code{onComplete}.
-\item Känna till att webbsidor beskrivs av HTML-kod och kunna skapa en minimal webbsida.
-\item Kunna ladda ner en webbsida med \code{scala.io.Source.fromURL}.
+%\item Känna till att webbsidor beskrivs av HTML-kod och kunna skapa en minimal webbsida.
+%\item Kunna ladda ner en webbsida med \code{scala.io.Source.fromURL}.
 \end{Goals}
 
 \begin{Preparations}
@@ -169,7 +169,7 @@ scala> Await.result(big(1234567), 20.seconds)
 
 
 
-\Task \emph{Använda \code{Future} för att ladda ner flera saker samtidigt.}
+\Task \emph{Använda \code{Future} för att göra flera saker samtidigt.}
 I denna uppgift ska du ladda ner webbsidor parallellt med hjälp av \code{Future}, så att en nedladdning kan avslutas under tiden en annan dröjer.  
 
 \Subtask Koden för en minimal webbsida ser ut som nedan. Du kan beskåda sidan här: \url{http://fileadmin.cs.lth.se/pgk/mini.html} eller skriva in nedan kod i en fil som heter något som slutar på \texttt{.html} och öppna filen i din webbläsare.
@@ -245,19 +245,51 @@ scala> Future{ olycka }.onFailure{ case e => println(s":( $e") }
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task \emph{Studera dokumentation.} 
+
+\Task Räkna ut stora primtal parallellt genom att använda nedan funktioner. Implementera \code{isPrime} enligt pseudokod från den engelska wikipediasidan om primtalstest\footnote{\href{https://en.wikipedia.org/wiki/Primality_test}{en.wikipedia.org/wiki/Primality\_test}} med den s.k. ''naiva algoritmen''.  Räkna ut 10 st slumpvisa primtal med 16 siffror vardera.
+
+\begin{Code}
+def isPrime(n: BigInt): Boolean = ???
+
+def nextPrime(start: BigInt): BigInt = {
+  var i = start
+  while (!isPrime(i)) { i += 1 }
+  i
+}
+
+def randomBigInt(nDigits: Int): BigInt = {
+   def rndChar = ('0' + (math.random * 10).toInt).toChar
+   val str = Array.fill(nDigits)(rndChar).mkString
+   BigInt(str)
+}
+\end{Code}
+
+\begin{Code}
+// kod till facit
+
+def isPrime(n: BigInt): Boolean = n match {
+  case _ if n < 1 => false
+  case _ if n < 3 => true
+  case _ if n % 2 == 0 || n % 3 == 0 => false
+  case _ => 
+    var i = BigInt(5)
+    while (i * i < n) {
+      if (n % i == 0 || n % (i + 2) == 0) return false
+      i += 6
+    }
+    true
+}
+
+import scala.concurrent._
+import ExecutionContext.Implicits.global
+
+val primes = Vector.fill(10)(Future{nextPrime(randomBigInt(16))})
+primes.foreach(_.onSuccess{case i => println(i)})
+\end{Code}
 
 
-\Subtask Studera dokumentationen för \code{scala.concurrent.Future}\footnote{\href{http://www.scala-lang.org/files/archive/api/current/\#scala.concurrent.Future}{http://www.scala-lang.org/files/archive/api/current/\#scala.concurrent.Future}}. Hur samverkar \code{Future} med \code{Try}? Vilka vanliga metoder på samlinbgar känner du igen?
 
-\Subtask Studera dokumentationen för \code{scala.concurrent.duration.Duration}\footnote{\href{http://www.scala-lang.org/api/current/\#scala.concurrent.duration.Duration}{www.scala-lang.org/api/current/\#scala.concurrent.duration.Duration}}. Vilka tidsenheter kan användas? 
-
-\Subtask Vid import av \code{scala.concurrent.duration._ } dekoreras de numeriska klasserna med metoder för att skapa instanser av klassen \code{Duration}. Detta möjligörs med hjälp av klassen \code{scala.concurrent.duration.DurationConversions}. Studera dess dokumentation och testa att i REPL skapa några tidsperioder med metoderna på \code{Int}.
-
-
-
-
-\Task\Pen Svara på nedan teorifrågor.
+\Task\Pen \emph{Svara på teorifrågor.}
 
 \Subtask Vad är en tråd?
 
@@ -270,7 +302,9 @@ scala> Future{ olycka }.onFailure{ case e => println(s":( $e") }
 \Subtask Vad innbär det att kod är \emph{trådsäker}?
 
 \Subtask Nämn några fördelar med att använda Future jämfört med att använda trådar direkt.
-  
+
+
+\Task Läs om och testa klasserna AtomicBoolean, AtomicDouble och AtomicReferens för atomär uppdatering i paketet \code{java.util.concurrent.atomic}. Använd några av dessa tillsammans med \code{scala.concurrent.Future}. 
 
 
 
@@ -278,6 +312,15 @@ scala> Future{ olycka }.onFailure{ case e => println(s":( $e") }
 
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
+
+\Task\Pen \emph{Studera dokumentation.} 
+
+\Subtask Studera dokumentationen för \code{scala.concurrent.Future}\footnote{\href{http://www.scala-lang.org/files/archive/api/current/\#scala.concurrent.Future}{http://www.scala-lang.org/files/archive/api/current/\#scala.concurrent.Future}}. Hur samverkar \code{Future} med \code{Try} och \code{Option}? Vilka vanliga samlingsmetoder känner du igen?
+
+\Subtask Studera dokumentationen för \code{scala.concurrent.duration.Duration}\footnote{\href{http://www.scala-lang.org/api/current/\#scala.concurrent.duration.Duration}{www.scala-lang.org/api/current/\#scala.concurrent.duration.Duration}}. Vilka tidsenheter kan användas? 
+
+\Subtask Vid import av \code{scala.concurrent.duration._ } dekoreras de numeriska klasserna med metoder för att skapa instanser av klassen \code{Duration}. Detta möjligörs med hjälp av klassen \code{scala.concurrent.duration.DurationConversions}. Studera dess dokumentation och testa att i REPL skapa några tidsperioder med metoderna på \code{Int}.
+
 
 \Task \emph{Skapa din egen multitrådade webbserver.} 
 
@@ -404,7 +447,15 @@ Hur stora tal klarar din server nu? Vad händer med servern när minnet tar slut
 \noindent När man skriver program med jämlöpande exekvering finns det många fallgropar; det kan bli kapplöpning \Eng{race conditions} om gemensamma resurser och dödläge \Eng{deadlock} där inget händer för att trådar väntar på varandra. Mer om detta i senare kurser. 
 
 
-\Task Lär dig mer om HTML här: \url{http://www.w3schools.com/html/}
+\Task Fördjupa dig inom webbteknologi. 
+    
+\Subtask Lär dig om HTML här: \url{http://www.w3schools.com/html/}
 
-\Task Läs om Scala.JS\footnote{\href{https://www.scala-js.org/}{www.scala-js.org/}} och ta reda på vad det används till.
+\Subtask Lär dig om Javascript här: \url{http://www.w3schools.com/js/}
+
+\Subtask Lär dig om CSS här: \url{http://www.w3schools.com/css/}
+
+\Subtask Lär dig om Scala.JS här: \url{http://www.scala-js.org/}
+
+
 

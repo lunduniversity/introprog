@@ -119,7 +119,6 @@ trait Plan {
       | algoritmisk komplexitet, 
       | sortering till ny vektor, sortering på plats, 
       | algoritm: INSERTION-SORT, algoritm: SELECTION-SORT,
-      | mer om filer, serialisering,
       """.stripTrim),  
       //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
@@ -137,13 +136,16 @@ trait Plan {
       | översiktligt om relationen mellan trait och interface,
       | namnkonventioner för konstanter,
       | enum i java ???,
+      | mer om filer ???, serialisering ???,
       """.stripTrim),
 
-    Module("Trådar", //, Web ???, Android ???", 
-      id = "threadetc", exercise = "threads", lab = "life", contents = """
-      | Thread, Future, (Duration ???), (Await ???), 
-      | HTML, (Javascript ???), (css ???), 
-      | (Scala.js ???), (Android ???),
+    Module("Trådar",  
+      id = "threads", exercise = "threads", lab = "life", contents = """
+      | tråd, jämlöpande exekvering,  
+      | icke-blockerande anrop, callback,
+      | java.lang.Thread, 
+      | java.util.concurrent.atomic.AtomicInteger,
+      | scala.concurrent.Future, 
       """.stripTrim),
 
     Module("Design", 
