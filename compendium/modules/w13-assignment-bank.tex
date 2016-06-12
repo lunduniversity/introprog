@@ -59,7 +59,7 @@ Kraven för bankapplikationen återfinns här nedan. För att bli godkänd på d
 \item Din indata måste ge samma resultat som i exemplen (som kommer komma i framtiden) i bilagan.
 \item Rimlig felhantering ska finnas, det är alltså önskvärt att programmet inte kraschar då man matar in felaktig input, utan istället säger till användaren att input är ogiltlig.
 \item Programdesignen ska följa de specifikationer som är angivna nedan.
-\item Det räcker med att banken ska kunna hantera heltal, men dessa ska ske med klassen \texttt{BigInteger}.
+\item Det räcker med att banken ska kunna hantera heltal, men dessa ska ske med klassen \texttt{BigInt}.
 \item Kontonummer ska genereras i klassen \texttt{BankAccount}, dessa ska vara unika för varje konto. Vid en tillståndförändringar ska dessa återställas, detta betyder att om en återställning tar bort ett konto så ska detta kontonummer återigen bli tillgängligt.
 \end{itemize}
 
@@ -111,8 +111,11 @@ class BankAccount(val holder: Customer) = {
 /**
  * Describes an event happening in the bank.
  */
-abstract class BankEvent = {
-
+abstract class BankEvent {   
+  /**
+   * Output format for the transaction.
+   */
+  def write: String
 }
 
 \end{ScalaSpec}
@@ -167,13 +170,17 @@ class Bank() = {
    * Returns a string with information whether the
    * transaction was successful or failed.
    */
-  def makeTransaction(transaction: Transaction): String = ???
+  def doEvent(transaction: Transaction): String = ???
 
- /**
-   * Resets the bank to the state corresponding to given date.
-   * Returns true if successful, otherwise false.
+  /**
+   * Resets the bank to the state with time-stamp corresponding to the
+   * provided date. If the date provided doesn't correspond exactly to 
+   * any time-stamp then the nearest time-stamp with a date previous 
+   *  to the provided date is used instead.
+   * Returns a string with information whether the transaction was 
+   * successful or failed.
    */
-  def returnToState(returnDate: Date): Boolean = ???
+  def returnToState(returnDate: Date): String = ???
 
 }
 \end{ScalaSpec}
@@ -192,7 +199,7 @@ class State(val log: Queue[(Transaction, Date)])
 \end{ScalaSpec}
 
 
-För att använda tidsstämplar ska klassen Date som finns bifogat i kursens workspace användas. Det är en enkel wrapper av Java.time.
+För att använda tidsstämplar ska klassen Date som finns bifogat i kursens workspace användas. Detta är en enkel wrapper av Java.time.
 
 
 \subsection{Tips} 
@@ -200,7 +207,7 @@ För att använda tidsstämplar ska klassen Date som finns bifogat i kursens wor
 \begin{itemize}
 \item För att representera tillstånden är det viktigt att alla händelser som förändrar tillståndet representeras av ett \texttt{BankEvent}.
 
-\item För att skriva till fil på ett enkelt sätt kan man t.ex. använda sig av klassen \texttt{FileWriter} som finns tillgänglig i \texttt{java.io.FileWriter}
+\item För att skriva till fil på ett enkelt sätt kan man t.ex. använda sig av klassen \texttt{Files} som finns tillgänglig i \texttt{java.nio.file}. För att undvika portabilitetsproblem kan man då använda sig av ett bestämt \texttt{Charset}, t.ex. \texttt{UTF\_8}, som finns tillgänglig i {java.nio.charset.StandardCharsets.UTF\_8}.
 
 \item För att läsa ifrån en fil kan man t.ex. använda sig av klassen \texttt{Source} som finns tillgänglig i \texttt{scala.io.Source}. 
 
@@ -263,12 +270,12 @@ De olika klasserna av \texttt{BankEvent} representeras med följande bokstav:
 
 \subsection{Frivilliga extrauppgifter}
 
-Gör först klart inlämningsuppgiftens obligatoriska delar. Därefter kan du, om du vill, utöka ditt
+Gör först klart projektets obligatoriska delar. Därefter kan du, om du vill, utöka ditt
 program enligt följande.
 
-\Task Skriv en eller flera av klasserna \texttt{Customer}, \texttt{BankAccount} och \texttt{State} i Java istället och använd istället för Scala versionen.
+\Task Skriv en eller flera av klasserna \texttt{Customer}, \texttt{BankAccount} och \texttt{State} i Java istället och använd istället för din Scala versionen.
 
-\Task	Implementera ett nytt menyalternativ som skriver ut all kontohistorik för en given person. I historiken ska dåvarande saldo vid varje transaktion synas.
+\Task	Implementera ett nytt menyalternativ som skriver ut all kontohistorik för en given person. I historiken ska typ av transaktion med tillhörande parametrar, dåvarande saldo vid transaktionen synas såväl som datumet för transaktionen synas.
 
 \subsection{Exempel på körning av programmet}
 
