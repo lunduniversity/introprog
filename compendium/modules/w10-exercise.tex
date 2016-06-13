@@ -14,7 +14,7 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task \emph{Jämföra strängar i Scala.} I Scala kan strängar jämföras med operatorerna \code{== != < <= > >=}  där likhet/olikhet avgörs av om alla tecken i strängen är lika eller inte, medan större/mindre avgörs av sorteringsordningen i enlighet med varje teckens Unicode\footnote{\href{https://sv.wikipedia.org/wiki/Unicode}{sv.wikipedia.org/wiki/Unicode}}-värde. 
+\Task \label{task:string-order-operators}\emph{Jämföra strängar i Scala.} I Scala kan strängar jämföras med operatorerna \code{== != < <= > >=}  där likhet/olikhet avgörs av om alla tecken i strängen är lika eller inte, medan större/mindre avgörs av sorteringsordningen i enlighet med varje teckens Unicode\footnote{\href{https://sv.wikipedia.org/wiki/Unicode}{sv.wikipedia.org/wiki/Unicode}}-värde. 
 
 \Subtask Vad ger följande jämförelser för värde?
 \begin{REPL}
@@ -49,7 +49,43 @@ scala> "hej".compareTo("hej")
 \Subtask Vad skriver följande Java-program ut?
 \javainputlisting{examples/StringEqTest.java}
 
-\Task \label{task:timed}\emph{Tidmätning.} I kommande uppgifter kommer vi att ha nytta av funktionen \code{timed} enligt nedan. 
+
+\Task \emph{Sortering med inbyggda sorteringsmetoder.} För de inbyggda typerna (\code{Int}, \code{Double}, \code{String}, etc.) finns en fördefinierad ordning som gör så att färdiga sorteringsmetoder fungerar på alla samlingar i \code{scala.collection}. Även att jämförelseoperatorerna i uppgift \ref{task:string-order-operators} fungerar enligt den fördefinierade ordningsdefinitionen för alla inbyggda typer. Denna ordningsdefinition är \textit{implicit tillgänglig} vilket betyder att kompilatorn hittar ordningsdefinitionen utan att vi explicit måste ange den.
+
+\Subtask Testa metoden \code{sorted} på några olika samlingar. Förklara vad som händer. Hur lyder felmeddelande på sista raden? Varför blir det fel?
+
+\begin{REPL}
+scala> Vector(1.1, 4.2, 2.4, 42.0, 9.9).sorted
+scala> val xs = (100000 to 1 by -1).toArray
+scala> xs.sorted
+scala> xs.map(_.toString).sorted
+scala> xs.map(_.toByte).sorted.distinct
+scala> class Person(firsName: String, familyName: String)
+scala> val ps = Vector(Person("Zeb", "Robinson"), Person("Robin","Zebson")) 
+scala> ps.sorted
+\end{REPL}	
+
+\Subtask Om man har en samling med egendefinierade klasser eller man vill ha en annan sorteringsordning får man definiera ordningen själv. Ett helt generellt sätt att göra detta på  illustreras i uppgift \ref{task:custom-ordering-order}, men de båda hjälpmetoderna \code{sortWith} och \code{sortBy} räcker i de flesta fall. Hur de används illustreras nedan. Metoden \code{sortBy} kan användas om man tar fram ett värde av inbyggd typ och är nöjd med den inbyggda sorteringsordningen. 
+
+Metoden \code{sortWith} används om man vill skicka med ett eget jämförelsepredikat som ordnar två element; funktionen ska returnerna \code{true} om det första elementet ska vara först, annars \code{false}.
+
+\begin{REPL}
+scala> class Person(firsName: String, familyName: String)
+scala> val ps = Vector(Person("Zeb", "Robinson"), Person("Robin","Zebson")) 
+scala> ps.sortBy(_.firstName)
+scala> ps.sortBy(_.lastName)
+scala> ps.sortBy  // tryck TAB två gånger för att se signaturen
+scala> ps.sortWith((p1, p2) => p1.firstName > p2.firstName) 
+scala> ps.sortWith  // tryck TAB två gånger för att se signaturen
+scala> Vector(9,5,2,6,9).sortWith((x1, x2) => x1 % 2 > x2 % 2)
+\end{REPL}
+Vad har metoderna \code{sortWith} och \code{sortBy} för signaturer? 
+
+\Subtask Lägg till attributet \code{age: Int} i klassen \code{Person} ovan och lägg till fler personer med olika namn och ålder i en vektor och sortera den med \code{sortBy} och \code{sortWith} för olika attribut. Välj själv några olika sätt att sortera på. 
+
+
+
+\Task \label{task:timed}\emph{Tidmätning.} I kommande uppgifter kommer du att ha nytta av funktionen \code{timed} enligt nedan. 
 \begin{Code}
 def timed[T](code: => T): (T, Long) = {
   val now = System.nanoTime
@@ -78,7 +114,7 @@ scala> timed{ s.contains(1) }
 
 \Subtask \emph{Sökning med inbyggd binärsökning.} Om en samling är sorterad kan man utnyttja detta för att göra snabbare sökning. Vid \textbf{binärsökning} \Eng{binary search}\footnote{\href{https://en.wikipedia.org/wiki/Binary_search_algorithm}{en.wikipedia.org/wiki/Binary\_search\_algorithm}} börjar man på mitten och kollar vilken halva att  söka vidare i; sedan delar man upp denna halva på mitten och kollar vilken fjärdedel att söka vidare i, etc. 
 
-I objektet \code{scala.collection.Searching}\footnote{\href{http://www.scala-lang.org/api/current/\#scala.collection.Searching$}{http://www.scala-lang.org/api/current/\#scala.collection.Searching\$}} finns en metod \code{search} som, om den importeras, erbjuder binärsökning för alla sorterade sekvenssamlingar. Om samlingen är sorterad ger den ett objekt av case-klassen \code{Found} som innehåller indexet för platsen där elementet först hittats; alternativt om det som eftersöks ej finns, ges ett objekt av case-klassen \code{InsertionPoint} som innehåller indexet där elementet borde ha varit placerad om det funnits i samlingen. Observera att om samlingen inte är sorterad är resultatet ''odefinierat'', d.v.s. något returneras men det är inte att lita på; man måste alltså först sortera samlingen eller vara helt säker på att den är sorterad. 
+I objektet \code{scala.collection.Searching}\footnote{\href{http://www.scala-lang.org/api/current/\#scala.collection.Searching$}{http://www.scala-lang.org/api/current/\#scala.collection.Searching\$}} finns en metod \code{search} som, om den importeras, erbjuder binärsökning för alla sorterade sekvenssamlingar. Om samlingen är sorterad ger den ett objekt av case-klassen \code{Found} som innehåller indexet för platsen där elementet först hittats; alternativt om det som eftersöks ej finns, ges ett objekt av case-klassen \code{InsertionPoint} som innehåller indexet där elementet borde ha varit placerad om det funnits i samlingen. Observera att om samlingen inte är sorterad är resultatet ''odefinierat'', d.v.s. något returneras men det är \emph{inte} att lita på; man måste alltså först sortera samlingen eller vara helt säker på att den är sorterad. 
 
 Undersök hur \code{search} fungerar genom att förklara vad som händer nedan. Vilken är snabbast av \code{lin} och \code{bin} nedan? Använd \code{timed} från uppgift \ref{task:timed}.
 
@@ -101,13 +137,8 @@ scala> timed{ bin(udda.last, udda) }
 
 
 
-\Task \emph{Sortering med inbyggda sorteringsmetoder.} TODO!!!
 
-\Subtask \emph{\code{sorted}}
 
-\Subtask \emph{\code{sortWith}}
-
-\Subtask \emph{\code{sortBy}}
 
 
 \Task \emph{Sök bland LTH:s kurser med linjärsökning} 
@@ -130,7 +161,9 @@ x: courses.Course = Course(EDA031,C++ - programmering,C++ Programming,7.5,G2)
 \end{REPL}
 
 \Subtask \emph{Implementera linjärsökning.} Som träning ska du nu implementera en egen linjärsökningsfunktion med signaturen: \\ \code{def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = ???}
-\\ Funktionen ska ta en sekvenssamling \code{xs} och ett predikat \code{p} och returnera index för första hittade elementet i \code{xs} där \code{p} gäller. Om det inte finns något element som uppfyller predikatet ska -1 returneras. Skriv först pseudokod för funktionen med penna och papper. Använd \code{while}. 
+\\ Funktionen ska ta en sekvenssamling \code{xs} och ett predikat \code{p} som ger true om parametern är ett eftersökt element, och returnera index för första hittade elementet i \code{xs} där \code{p} gäller. Om det inte finns något element som uppfyller predikatet ska -1 returneras. Skriv först pseudokod för funktionen med penna och papper. Använd \code{while}. 
+
+Typen \code{Seq} är supertyp till alla sekvenssamlingar, så om vi använder den som parametertyp för parametern \code{xs} så fungerar funktionen för \code{Vector}, \code{Array}, \code{List}, etc. Genom typparametern \code{T} blir funktionen generisk och fungerar för godtycklig typ. 
 
 
 
@@ -253,9 +286,9 @@ Testa ditt program genom att lägga till följande rader i huvudprogrammet:
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task \emph{Undersök om en sekvens är sorterad.} Ett enkelt och lättläst sätt att undersöka om en sekvens är sorterad visas nedan. Denna lösning är dock relativt långsam för stora samlingar.
+\Task \label{task:isSorted} \emph{Undersök om en sekvens är sorterad.} Ett enkelt och lättläst sätt att undersöka om en sekvens är sorterad visas nedan. Denna lösning är dock relativt långsam för stora samlingar.
 \begin{REPL}
-scala> def isSorted[T](xs: Seq[T]): Boolean = {xs == xs.sorted}
+scala> def isSorted(xs: Vector[Int]): Boolean = xs == xs.sorted
 \end{REPL}
 \Subtask\Pen  Om \code{xs} har $10^6$ element, hur många jämförelser kommer i värsta fall att ske med \code{isStorted} enligt ovan. \emph{Tips:} metoden \code{sorted} använder algoritmen Timsort%
 % som i värsta fall gör $n * log(n)$ jämförelser
@@ -265,28 +298,148 @@ TODO!!! Till facit: $n + n * log(n)$
 
 \Subtask Implementera en effektivare variant av \code{isSorted} som använder en \code{while}-sats.
 
-\Subtask Man kan kolla om en sekvens är sorterad med det listiga tricket att först zippa sekvensen med sin egen svans och sedan kolla om alla element-par uppfyller sorteringskriteriet, alltså \code{xs.zip(xs.tail).forall(???)} där ??? byts ut mot lämpligt predikat. Vilken typ har 2-tupeln \code{xs.zip(xs.tail))} om \code{xs} är av typen \code{Vector[Int]}? Implementera \code{isSorted} med detta listiga trick.
+\Subtask \label{subtask:isSorted-zip} Man kan kolla om en sekvens är sorterad med det listiga tricket att först zippa sekvensen med sin egen svans och sedan kolla om alla element-par uppfyller sorteringskriteriet, alltså \code{xs.zip(xs.tail).forall(???)} där ??? byts ut mot lämpligt predikat. Vilken typ har 2-tupeln \code{xs.zip(xs.tail))} om \code{xs} är av typen \code{Vector[Int]}? Implementera \code{isSorted} med detta listiga trick.
+\begin{Code}
+// kod till facit
+def isSorted(xs: Vector[Int]): Boolean = 
+  xs.zip(xs.tail).forall(x => x._1 <= x._2) 
+\end{Code}
+Om du är nyfiken på hur du kan göra \code{isSorted} mer generellt användbar för olika ordningsdefinitioner och olika typer, gör uppgift \ref{task:implicit-ordering}
 
 
-\Task Implementera sortering på plats i en Array med instickssortering. TODO!!!
 
+\Task Implementera och testa sortering på plats i en array med heltal med \emph{instickssortering}\footnote{\href{https://en.wikipedia.org/wiki/Insertion_sort}{en.wikipedia.org/wiki/Insertion\_sort}}. 
 
-\Task \label{task:swedish-letter-ordering}Implementera sortering till ny Vector med urvalssortering. TODO!!!
+\Subtask Implementera och testa funktionen nedan i Scala med följande signatur:
+\begin{Code}
+  def insertionSort(xs: Array[Int]): Unit 
+\end{Code}
+Placera metoden i ett objekt med lämpligt namn, samt skapa ett huvudprogram med testkod. Kompilera och kör från terminalen. Börja med att skriva sorteringsalgoritmen i pseudokod.
+
+\Subtask Implementera och testa metoden nedan i Java med följande signatur:
+\begin{Code}[language=Java]
+  public static void insertionSort(int[] xs) 
+\end{Code}
+Plancera metoden i klass med lämpligt namn, samt skapa ett huvudprogram med testkod. Börja med att skriva sorteringsalgoritmen i pseudokod.
+
+\Task Implementera och testa sortering till ny vektor med urvalssortering\footnote{\href{https://en.wikipedia.org/wiki/Selection_sort}{en.wikipedia.org/wiki/Selection\_sort}}, enligt nedan skiss.
+\begin{Code}
+def selectionSort(xs: Vector[String]): Vector[String] = {
+  var result = Vector.empty[String]
+  ???
+  result
+}
+\end{Code} 
 
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task TODO!!! Implementera \code{isSorted} dels med \code{view} och dels med \code{zipped} för att visa icke-strikt evaluering så att det blir effektivt för stora samlingar.
+\Task \emph{Typklasser och implicita argument.} I Scala finns möjligheter till avancerad funktionsprogrammering med s.k. \textbf{typklasser}. Vi nosar lite i denna uppgift lite på hur implicita argument kan användas för att skapa generiska typklasser för att illustrera hur implicita ordningarna är definierade i Scalas standardbibliotek. 
 
-\Task  Ordering och Order TODO!!!
+\Subtask \emph{Implicita argument och implicita värden.}
+\begin{REPL}
+scala> def add(x: Int)(implicit y: Int) = x + y
+scala> add(1)(2)
+scala> implicit val ngtNamn = 42   
+scala> add(1)
+\end{REPL}
+
+
+\Subtask \emph{Typklasser.} Genom att kombinera implicita värden, generiska klasser och implicita argument får man möjligheten att göra s.k. \textbf{typklasser} som definierar generella beteenden som fungerar för befintliga typer utan att dessa befintliga typer behöver ändras. 
+
+Vad händer nedan? Vilka rader ger felmeddelande? Varför? 
+
+\begin{REPL}
+scala> trait CanCompare[T] { def compare(a: T, b: T): Int }
+scala> def sort2[T](a: T, b: T)(implicit cc: CanCompare[T]): (T, T) = 
+         if (cc.compare(a, b) > 0) (b, a) else (a, b)  
+scala> sort2(42, 41)
+scala> implicit object intComparator extends CanCompare[Int]{
+         override def compare(a: Int, b: Int): Int = a - b
+       } 
+scala> sort2(42, 41)
+scala> sort2(42.0, 41.0)
+\end{REPL}
+
+\Subtask Definiera ett implicit objekt som gör så att \code{sort2} fungerar för värden av typen \code{Double}.
+
+\Subtask Definiera ett implicit objekt som gör så att \code{sort2} fungerar för värden av typen \code{String}.
+
+
+\Task \label{task:implicit-ordering}\emph{Användning av implicit ordning.} Vi ska nu göra \code{isSorted} från uppgift \ref{task:isSorted} mer generellt användbar genom att möjliggöra att implicita ordningsfunktioner finns tillgängliga for olika typer.
+
+\Subtask  Med signaturen  \code{isSorted(xs: Vector[Int]): Boolean} så 
+fungerar sorteringstestet bara för samlingar av typen \code{Vector[Int]}. 
+Om vi i stället använder 
+\code{isSorted(xs: Seq[Int]): Boolean } fungerar den för alla samlingar med heltal, även \code{Array} och \code{List}. Testa detta.
+
+\Subtask Men vi vill gärna att \code{isSorted} ska fungera för alla typer T. Detta kan göras med nedan funktion eftersom metoden \code{sorted} är definierad för alla samlingar där typen \code{T} har en implicit ordning. Speciellt gäller detta för alla de inbyggda typerna \code{Int}, \code{Double}, \code{String}, etc.
+\begin{Code}
+def isSorted[T](xs: Seq[T]): Boolean = xs == xs.sorted 
+\end{Code}
+Testa metoden ovan i REPLn enligt nedan.
+\begin{REPL}
+scala> isSorted(Vector(1,2,3))
+scala> isSorted(Array(1,2,3,1))
+scala> isSorted(Vector("A","B","C"))
+scala> isSorted(List("A","B","C","A"))
+scala> class Person(firsName: String, familyName: String)
+scala> val persons = Vector(Person("Zeb", "Robson"), Person("Robin","Zebson")) 
+scala> isSorted(persons)
+\end{REPL}
+Vad ger sista raden för felmeddelande? Varför?
+
+
+\Subtask Vi vill gärna använda ordningsoperatorer på parmaterar av typ \code{[T]} till vår generiska funktion med typparametern \code{[T]}, så att vi till exempel ska kunna implementera isSorted med \code{while} eller vårt zip-trick från uppgift \ref{task:isSorted}\ref{subtask:isSorted-zip}. Men det blir problem enligt nedan. Hur lyder felmeddelandet nedan? Vad saknas?
+
+\begin{REPL}
+scala> def isSorted[T](xs: Seq[T]): Boolean =  
+         xs.zip(xs.tail).forall(x => x._1 <= x._2)
+\end{REPL}
+
+\Subtask Man kan berätta för kompilatorn att den ska leta efter implicita ordningar enligt typargumentet som vid kompileringstid binds till typparametern \code{T}. Dett kan göras genom att utöka signaturen för \code{isSorted} med en andra parameterlista, som tar en implicit parameter enligt följande:
+
+\begin{CodeSmall}
+def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean =  
+  xs.zip(xs.tail).forall(x => ord.lteq(x._1, x._2))
+\end{CodeSmall}
+
+Det finns fördefinierade implicita objekt \code{Ordering[T]} för alla inbyggda typer, alltså t.ex. \code{Ordering[Int]}, \code{Ordering[String]}, etc. Objekt av typen \code{Ordering} har jämförelsemetoder som t.ex. \code{lteq} (förk. \emph{less than or equal}) och \code{gt} (förk. \emph{greater than}) 
+
+Testa så att kompilatorn ordningen för de samlingar med de inbyggda typerna. Det blir fortfarande problem för egendefinierade klasser. Detta ska vi lösa i kommande uppgift.
+
+
+
+\Task  \label{task:custom-ordering-order} Skapa egna varianter av Ordering och Ordered TODO!!!
+
+
+
+
+\Task TODO!!! Implementera \code{isSorted} från uppgift \ref{task:isSorted}\ref{subtask:isSorted-zip} dels med \code{view} och dels med \code{zipped} för att visa icke-strikt evaluering så att det blir effektivt för stora samlingar.
 
 \Task java.util.Arrays.binarySearch  TODO!!! \\ \url{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html}
 
 \Task java.util.Arrays.sort  TODO!!!
 
-\Task java.util.Comparator  TODO!!!
+\Task \emph{Jämförelsestöd i Java.} 
+Java har motsvarigheter till \code{Ordering} och \code{Ordered}, som heter \code{java.util.Comparator} och \code{java.lang.Comparable}. I själva verket så är Scalas \code{Ordering} en subtyp till Javas \code{Comparator}, medan Scalas \code{Ordered} är en subtyp till Javas \code{Comparable}. 
+\begin{itemize}[nolistsep, noitemsep]
+\item \code{Comparable} används som sypertyp för klasser som vill kunna jämföra ''sig själv'' med andra objekt.
+\item \code{Comparator} används för att skapa fristående ordningar som kan jämföra \emph{två olika} objekt av någon mer eller mindre specifik typ.
+\end{itemize}
 
-\Task Svenska bokstäver TODO!!
+
+\Subtask Sök upp dokumentationen för \code{java.lang.Comparable}. Vilken enda abstrakt metod måste implementeras i subtyper som utökar denna typ? 
+
+\Subtask Sök upp dokumentationen för \code{java.util.Comparator} och TODO???
+
+\Subtask
+\begin{REPL}
+TODO!!!
+\end{REPL}
+
+
+\Task \label{task:swedish-letter-ordering} Svenska bokstäver TODO!!
 
 \url{http://stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala} 
 
