@@ -359,13 +359,12 @@ scala> def isSorted(xs: Vector[Int]): Boolean = xs == xs.sorted
 
 \Subtask Implementera en effektivare variant av \code{isSorted} som använder en \code{while}-sats.
 
-\Subtask \label{subtask:isSorted-zip} Man kan kolla om en sekvens är sorterad med det listiga tricket att först zippa sekvensen med sin egen svans och sedan kolla om alla element-par uppfyller sorteringskriteriet, alltså \code{xs.zip(xs.tail).forall(???)} där ??? byts ut mot lämpligt predikat. Vilken typ har 2-tupeln \code{xs.zip(xs.tail))} om \code{xs} är av typen \code{Vector[Int]}? Implementera \code{isSorted} med detta listiga trick.
+\Subtask \label{subtask:isSorted-zip} Man kan kolla om en sekvens är sorterad med det listiga tricket att först zippa sekvensen med sin egen svans och sedan kolla om alla element-par uppfyller sorteringskriteriet, alltså \code{xs.zip(xs.tail).forall(???)} där ??? byts ut mot lämpligt predikat. Vilken typ har 2-tupeln \code{xs.zip(xs.tail))} om \code{xs} är av typen \code{Vector[Int]}? Implementera \code{isSorted} med detta listiga trick. (Senare, i fördjupningsuppgift \ref{task:implicit-ordering}, ska vi göra \code{isSorted} generellt användbar för olika typer och olika ordningsdefinitioner.)
 \begin{Code}
 // kod till facit
 def isSorted(xs: Vector[Int]): Boolean = 
   xs.zip(xs.tail).forall(x => x._1 <= x._2) 
 \end{Code}
-Om du är nyfiken på hur du kan göra \code{isSorted} mer generellt användbar för olika ordningsdefinitioner och olika typer, gör uppgift \ref{task:implicit-ordering}
 
 
 
@@ -381,7 +380,7 @@ Placera metoden i ett objekt med lämpligt namn, samt skapa ett huvudprogram med
 \begin{Code}[language=Java]
   public static void insertionSort(int[] xs) 
 \end{Code}
-Plancera metoden i klass med lämpligt namn, samt skapa ett huvudprogram med testkod. Börja med att skriva sorteringsalgoritmen i pseudokod.
+Placera metoden i en klass med lämpligt namn, samt skapa ett huvudprogram med testkod. Börja med att skriva sorteringsalgoritmen i pseudokod.
 
 \Task Implementera och testa sortering till ny vektor med urvalssortering\footnote{\href{https://en.wikipedia.org/wiki/Selection_sort}{en.wikipedia.org/wiki/Selection\_sort}}, enligt nedan skiss.
 \begin{Code}
@@ -452,14 +451,14 @@ scala> isSorted(persons)
 Vad ger sista raden för felmeddelande? Varför?
 
 
-\Subtask Vi vill gärna använda ordningsoperatorer på parmaterar av typ \code{[T]} till vår generiska funktion med typparametern \code{[T]}, så att vi till exempel ska kunna implementera isSorted med \code{while} eller vårt zip-trick från uppgift \ref{task:isSorted}\ref{subtask:isSorted-zip}. Men det blir problem enligt nedan. Hur lyder felmeddelandet nedan? Vad saknas?
+\Subtask Vi vill gärna kunna jämföra element av godtycklig typ \code{T}, så att vi till exempel ska kunna implementera en generisk isSorted med \code{while} eller vårt zip-trick från uppgift \ref{task:isSorted}\ref{subtask:isSorted-zip}. Men det blir problem enligt nedan. Hur lyder felmeddelandet? Vad saknas?
 
 \begin{REPL}
 scala> def isSorted[T](xs: Seq[T]): Boolean =  
          xs.zip(xs.tail).forall(x => x._1 <= x._2)
 \end{REPL}
 
-\Subtask Man kan berätta för kompilatorn att den ska leta efter implicita ordningar enligt typargumentet som vid kompileringstid binds till typparametern \code{T}. Dett kan göras genom att utöka signaturen för \code{isSorted} med en andra parameterlista, som tar en implicit parameter enligt följande:
+\Subtask Man kan berätta för kompilatorn att den ska leta efter implicita ordningar av typen  \code{T}. Detta kan göras genom att utöka signaturen för \code{isSorted} med en andra parameterlista, som tar en implicit parameter enligt följande:
 
 \begin{CodeSmall}
 def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean =  
@@ -468,7 +467,7 @@ def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean =
 
 Det finns fördefinierade implicita objekt \code{Ordering[T]} för alla inbyggda typer, alltså t.ex. \code{Ordering[Int]}, \code{Ordering[String]}, etc. Objekt av typen \code{Ordering} har jämförelsemetoder som t.ex. \code{lteq} (förk. \emph{less than or equal}) och \code{gt} (förk. \emph{greater than}) 
 
-Testa så att kompilatorn hittar ordningen för de samlingar med de inbyggda typerna. Visa också att det fortfarande blir problem för egendefinierade klasser, t.ex. \code{Person} enligt tidigare. Detta ska vi råda bot på i kommande uppgift.
+Testa så att kompilatorn hittar ordningen för samlingar av värden som är av de inbyggda typerna. Visa också att det fortfarande blir problem för egendefinierade klasser, t.ex. \code{Person} enligt tidigare. Detta ska vi råda bot på i kommande uppgift.
 
 
 
