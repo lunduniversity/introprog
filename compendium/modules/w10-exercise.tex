@@ -141,7 +141,7 @@ scala> timed{ bin(udda.last, udda) }
 
 
 
-\Task \emph{Sök bland LTH:s kurser med linjärsökning} 
+\Task \label{task:linsearch-lth}\emph{Sök bland LTH:s kurser med linjärsökning} 
 
 \Subtask Surfa till denna URL:\\ {\nolinebreak[4]\footnotesize\url{http://kurser.lth.se/lot/?lasar=16_17&soek_text=&sort=kod&val=kurs&soek=t}}
 \\
@@ -166,8 +166,18 @@ x: courses.Course = Course(EDA031,C++ - programmering,C++ Programming,7.5,G2)
 Typen \code{Seq} är supertyp till alla sekvenssamlingar, så om vi använder den som parametertyp för parametern \code{xs} så fungerar funktionen för \code{Vector}, \code{Array}, \code{List}, etc. Genom typparametern \code{T} blir funktionen generisk och fungerar för godtycklig typ. 
 
 
+\begin{Code}
+// kod till facit
+def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = {
+  var i = 0
+  while(i < xs.size && !p(xs(i))) i += 1 
+  if (i < xs.size) i else -1
+}
+\end{Code}
 
-\Subtask Definiera en funktion \code{def rndCode: String} som genererar slumpmässiga kurskoder (tre bokstäver mellan A och Z och tre siffror mellan 0 och 9). Använd \code{rndCode} för att fylla en vektor kallad \code{xs} med en halv miljon slumpmässiga kurskoder. För varje slumpkod i \code{xs} sök med din funktion \code{linearSearch} efter index i vektorn \code{courses.lth2016} från deluppgift \ref{subtask:download-lthcourses}. Mät totala tiden för de $500000$ linjärsökningarna med hjälp av funktionen \code{timed} från uppgift \ref{task:timed} och spara resultatet för senare jämförelse med binärsökning i kommande uppgifter.
+
+
+\Subtask \label{subtask:linsearch-rndCode} Definiera en funktion \code{def rndCode: String} som genererar slumpmässiga kurskoder (tre bokstäver mellan A och Z och tre siffror mellan 0 och 9). Använd \code{rndCode} för att fylla en vektor kallad \code{xs} med en halv miljon slumpmässiga kurskoder. För varje slumpkod i \code{xs} sök med din funktion \code{linearSearch} efter index i vektorn \code{courses.lth2016} från deluppgift \ref{subtask:download-lthcourses}. Mät totala tiden för de $500000$ linjärsökningarna med hjälp av funktionen \code{timed} från uppgift \ref{task:timed} och spara resultatet för senare jämförelse med binärsökning i kommande uppgifter.
 
  
 
@@ -182,9 +192,9 @@ def rndCode: String = {
 }
 
 val xs = Vector.fill(500000)(rndCode)
-val (ix, elapsed) = 
+val (ixs, elapsedLin) = 
   timed{xs.map(x => linearSearch(courses.lth2016)(_.code == x))}
-ix.filterNot(_ == -1).size
+ixs.filterNot(_ == -1).size
 \end{Code}
 
 
@@ -199,11 +209,61 @@ def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int =
 
 
 
-\Task \emph{Sök bland LTH:s kurser med binärsökning.} 
+\Task \emph{Sök bland LTH:s kurser med binärsökning.} \\Sökningsalgoritmen BINSEARCH kan formuleras med nedan pseudokod:
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+
+ \Input{En växande sorterad sekvens $xs$ med $n$ heltal och \\ ett eftersökt heltal $key$}
+ \Output{Ett heltal $i \geq 0$ som anger platsen där $x$ finns, eller ett negativt tal $i$ där $-i$ motsvarar platsen där $x$ ska sättas in i sorterad ordning om $x$ ej finns i samlingen.}
+ sätt intervallet ($low$, $high$) till ($0$, $n - 1$) \\
+ $found \leftarrow \bf{false}$ \\
+ $mid \leftarrow -1$\\
+ \While{$low \leq high$~$\bf{and}~\bf{not}$ $found$}{
+   $mid \leftarrow $ platsen mitt emellan $low$ och $high$\\
+   \eIf{$xs(mid)$ == $key$}{$found \leftarrow \bf{true}$}{
+     \eIf{$xs(mid) < key$}{$low \leftarrow mid + 1$}{$high \leftarrow mid - 1$}
+    }
+ }
+ \eIf{$found$}{\Return $mid$}{\Return $-(low + 1)$} 
+\end{algorithm}
+
+\Subtask Prova algoritmen ovan med penna och papper på en sorterade sekvens med mindre än 10 heltal. Prova om algoritmen fungerar med ett jämt antal tal, ett udda antal tal, en sekvens med ett heltal och en tom sekvens. Prova både om talet du letar efter finns och om det inte finns.
+
+\Subtask Testa \code{binarySearch} i REPL för olika fall. Vad händer om sekvensen inte är sorterad?
+
+\Subtask Implementera binärsökning för \code{Seq[String]} och testa att leta efter LTH-kurser enligt nedan skiss. Använd \code{rndCode}, \code{timed} och \code{courses} från tidigare uppgifter.
+\begin{Code}
+def binarySearch(xs: Seq[String], key: String): Int = ??? 
+
+val lthCodesSorted = courses.lth2016.map(_.code).sorted
+val xs = Vector.fill(500000)(rndCode)
+val (_, elapsedBin) = 
+  timed{xs.map(x => binarySearch(lthCodesSorted, x))}
+val (_, elapsedLin) = 
+  timed{xs.map(x => linearSearch(lthCodesSorted)(_ == x))}
+println(elapsedLin / elapsedBin)
+\end{Code}
+
+\begin{Code}
+// kod till facit
+def binarySearch(xs: Seq[String], key: String): Int = {
+  var (low, high) = (0, xs.size -1)
+  var found = false
+  var mid = -1
+  while (low <= high && !found) {
+    mid = (low + high)/2
+    if (xs(mid) == key) found = true 
+    else if (xs(mid) < key) low = mid + 1
+    else high = mid -1
+  }
+  if (found) mid else -(low +1)
+} 
+\end{Code}
+
+\Subtask Hur mycket snabbare är binärsökning jämfört med linjärsökning i detta fallet?\footnote{Vid en körning på en i7-4970K med 4.0GHz blev \code{elapsedLin} cirka $2500~ms$ och \code{elapsedBin} cirka $70~ms$ och binärsökning var alltså en faktor $35$ gånger snabbare än linjärsökning i detta fallet.}
 
 
-
-\Subtask Implementera binärsökning. TODO!!!
 
 
 
@@ -294,7 +354,8 @@ scala> def isSorted(xs: Vector[Int]): Boolean = xs == xs.sorted
 % som i värsta fall gör $n * log(n)$ jämförelser
 \footnote{\href{https://en.wikipedia.org/wiki/Timsort}{en.wikipedia.org/wiki/Timsort}}\textsuperscript{, }\footnote{\href{http://stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}{stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}}.
 
-TODO!!! Till facit: $n + n * log(n)$
+
+\frame{Svar till facit: $n + n * log(n)$}
 
 \Subtask Implementera en effektivare variant av \code{isSorted} som använder en \code{while}-sats.
 
@@ -334,18 +395,19 @@ def selectionSort(xs: Vector[String]): Vector[String] = {
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task \emph{Typklasser och implicita argument.} I Scala finns möjligheter till avancerad funktionsprogrammering med s.k. \textbf{typklasser}. Vi nosar lite i denna uppgift lite på hur implicita argument kan användas för att skapa generiska typklasser för att illustrera hur implicita ordningarna är definierade i Scalas standardbibliotek. 
+\Task \emph{Typklasser och implicita parametrar.} I Scala finns möjligheter till avancerad funktionsprogrammering med s.k. \textbf{typklasser}. Vi nosar lite i denna uppgift lite på hur implicita argument kan användas för att skapa generiska typklasser för att illustrera hur implicita ordningarna är definierade i Scalas standardbibliotek. 
 
-\Subtask \emph{Implicita argument och implicita värden.}
+\Subtask \emph{Implicit parameter och implicit värde.} Med nyckelordet \code{implicit} framför en parameter öppnar man för möjligheten att låta kompilatorn ge argumentet ''automatiskt'' om den kan hitta ett värde med passande typ som också är deklarerat med \code{implicit}, så som visas nedan. 
 \begin{REPL}
 scala> def add(x: Int)(implicit y: Int) = x + y
 scala> add(1)(2)
+scala> add(1)
 scala> implicit val ngtNamn = 42   
 scala> add(1)
 \end{REPL}
+Vad blir felmeddelandet på rad 3 ovan? Varför fungerar det på rad 5 utan fel?
 
-
-\Subtask \emph{Typklasser.} Genom att kombinera implicita värden, generiska klasser och implicita argument får man möjligheten att göra s.k. \textbf{typklasser} som definierar generella beteenden som fungerar för befintliga typer utan att dessa befintliga typer behöver ändras. 
+\Subtask \emph{Typklasser.} Genom att kombinera implicita värden, generiska klasser och implicita parametrar får man möjligheten att göra s.k. \textbf{typklasser} som definierar generella beteenden som fungerar för befintliga typer utan att implementationen av dessa befintliga typer behöver ändras. 
 
 Vad händer nedan? Vilka rader ger felmeddelande? Varför? 
 
@@ -366,7 +428,7 @@ scala> sort2(42.0, 41.0)
 \Subtask Definiera ett implicit objekt som gör så att \code{sort2} fungerar för värden av typen \code{String}.
 
 
-\Task \label{task:implicit-ordering}\emph{Användning av implicit ordning.} Vi ska nu göra \code{isSorted} från uppgift \ref{task:isSorted} mer generellt användbar genom att möjliggöra att implicita ordningsfunktioner finns tillgängliga for olika typer.
+\Task \label{task:implicit-ordering}\emph{Användning av implicit ordning.} Vi ska nu göra \code{isSorted} från uppgift \ref{task:isSorted} mer generellt användbar genom att möjliggöra att implicita ordningsfunktioner finns tillgängliga för olika typer.
 
 \Subtask  Med signaturen  \code{isSorted(xs: Vector[Int]): Boolean} så 
 fungerar sorteringstestet bara för samlingar av typen \code{Vector[Int]}. 
@@ -406,7 +468,7 @@ def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean =
 
 Det finns fördefinierade implicita objekt \code{Ordering[T]} för alla inbyggda typer, alltså t.ex. \code{Ordering[Int]}, \code{Ordering[String]}, etc. Objekt av typen \code{Ordering} har jämförelsemetoder som t.ex. \code{lteq} (förk. \emph{less than or equal}) och \code{gt} (förk. \emph{greater than}) 
 
-Testa så att kompilatorn ordningen för de samlingar med de inbyggda typerna. Det blir fortfarande problem för egendefinierade klasser. Detta ska vi lösa i kommande uppgift.
+Testa så att kompilatorn hittar ordningen för de samlingar med de inbyggda typerna. Visa också att det fortfarande blir problem för egendefinierade klasser, t.ex. \code{Person} enligt tidigare. Detta ska vi råda bot på i kommande uppgift.
 
 
 
