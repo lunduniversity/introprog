@@ -345,7 +345,7 @@ def insertionSort(xs: Seq[Int]): Seq[Int] = ???
 
 \emph{Lösningsidé:} Skapa en ny, tom sekvens som ska bli vårt sorterade resultat. För varje element i den osorterade sekvensen: Sätt in det på rätt plats i den nya sorterade sekvensen.   
 
-\Subtask \emph{Pseduokod:} Kör nedan pseudokod med papper och penna t.ex. på sekvensen 5 1 4 3 2 1. Rita minnessituationen efter varje runda i loopen. Här använder vi internt i funktionen en föränderlig \code{ArrayBuffer} som är snabb på insättning och avslutar med \code{toVector} så att vi lämnar ifrån oss en oföränderlig sekvens.
+\Subtask \emph{Pseduokod:} Kör nedan pseudokod med papper och penna t.ex. på sekvensen 5 1 4 3 2 1. Rita minnessituationen efter varje runda i loopen. Här använder vi internt i funktionen föränderliga \code{ArrayBuffer} som är snabb på insättning och avslutar med \code{toVector} så att vi lämnar ifrån oss en oföränderlig sekvens.
 
 \begin{algorithm}[H]
     $result \leftarrow$ en ny, tom ArrayBuffer \\
@@ -392,9 +392,43 @@ def insertionSort(xs: Seq[Int]): Seq[Int] = {
 
 
 
-\Task Implementera sortering på plats \Eng{in-place} i en \code{Array} med urvalssortering \Eng{selection sort}. TODO!!!
+\Task Implementera sortering på plats \Eng{in-place} i en \code{Array[String]} med urvalssortering \Eng{selection sort} 
 
+\emph{Lösningsidé:} För alla index $i$: sök $minIndex$ för ''minsta'' strängen från plats $i$ till sista plats och byt plats mellan strängarna på plats $i$ och plats $minIndex$. Se även animering här: \href{https://sv.wikipedia.org/wiki/Urvalssortering}{sv.wikipedia.org/wiki/Urvalssortering}
 
+Imlementera enligt nedan skiss.  \emph{Tips:} Du har nytta av en modifierad variant av lösningen till uppgift \ref{task:minindex} i kapitel \ref{chapter:W02}.
+\begin{Code}
+def selectionSortInPlace(xs: Array[String]): Unit = {
+  def indexOfMin(startFrom: Int): Int = ??? 
+  def swapIndex(i1: Int, i2: Int): Unit = ???
+  for (i <- 0 to xs.size - 1) swapIndex(i, indexOfMin(i))
+}
+\end{Code} 
+
+\begin{Code}
+// kod till facit
+def selectionSortInPlace(xs: Array[String]): Unit = {
+  
+  def indexOfMin(startFrom: Int): Int = {
+    var minPos = startFrom
+    var i = startFrom + 1
+    while (i < xs.size) {
+      if (xs(i) < xs(minPos)) minPos = i
+      i += 1
+    }
+    minPos
+  }
+  
+  def swapIndex(i1: Int, i2: Int): Unit = {
+    val temp = xs(i1)
+    xs(i1) = xs(i2)
+    xs(i2) = temp
+  }
+  
+  for (i <- 0 to xs.size - 1) swapIndex(i, indexOfMin(i))
+}
+
+\end{Code}
 
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
@@ -435,19 +469,27 @@ Placera metoden i ett objekt med lämpligt namn, samt skapa ett huvudprogram med
 \end{Code}
 Placera metoden i en klass med lämpligt namn, samt skapa ett huvudprogram med testkod. Börja med att skriva sorteringsalgoritmen i pseudokod.
 
-\Task Implementera och testa sortering till ny vektor med urvalssortering\footnote{\href{https://en.wikipedia.org/wiki/Selection_sort}{en.wikipedia.org/wiki/Selection\_sort}}, enligt nedan skiss.
+\Task Implementera och testa sortering till ny sekvens med urvalssortering\footnote{\href{https://en.wikipedia.org/wiki/Selection_sort}{en.wikipedia.org/wiki/Selection\_sort}} i Scala, enligt nedan skiss. \emph{Tips:} Du har nytta av lösningen till uppgift \ref{task:minindex} i kapitel \ref{chapter:W02}.
 \begin{Code}
-def selectionSort(xs: Vector[String]): Vector[String] = {
-  var result = Vector.empty[String]
-  ???
-  result
+def selectionSort(xs: Seq[String]): Seq[String] = {
+  def indexOfMin(xs: Seq[String]): Int = ??? 
+  val unsorted = xs.toBuffer
+  val result = scala.collection.mutable.ArrayBuffer.empty[Int]
+  /* 
+  så länge unsorted inte är tom {
+    minPos = indexOfMin(unsorted)
+    elem   = unsorted.remove(minPos)
+    result.append(elem)
+  }
+  */
+  result.toVector
 }
 \end{Code} 
 
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task \emph{Typklasser och implicita parametrar.} I Scala finns möjligheter till avancerad funktionsprogrammering med s.k. \textbf{typklasser}. Vi nosar lite i denna uppgift lite på hur implicita argument kan användas för att skapa generiska typklasser för att illustrera hur implicita ordningarna är definierade i Scalas standardbibliotek. 
+\Task \emph{Typklasser och implicita parametrar.} I Scala finns möjligheter till avancerad funktionsprogrammering med s.k. \textbf{typklasser}. Vi nosar lite i denna uppgift lite på hur implicita argument kan användas för att skapa typklasser för att illustrera hur implicita ordningarna är definierade i Scalas standardbibliotek. 
 
 \Subtask \emph{Implicit parameter och implicit värde.} Med nyckelordet \code{implicit} framför en parameter öppnar man för möjligheten att låta kompilatorn ge argumentet ''automatiskt'' om den kan hitta ett värde med passande typ som också är deklarerat med \code{implicit}, så som visas nedan. 
 \begin{REPL}
@@ -485,7 +527,11 @@ scala> sort2(42.0, 41.0)
 \Subtask  Med signaturen  \code{isSorted(xs: Vector[Int]): Boolean} så 
 fungerar sorteringstestet bara för samlingar av typen \code{Vector[Int]}. 
 Om vi i stället använder 
-\code{isSorted(xs: Seq[Int]): Boolean } fungerar den för alla samlingar med heltal, även \code{Array} och \code{List}. Testa detta.
+\code{isSorted(xs: Seq[Int]): Boolean } fungerar den för alla samlingar med heltal, även \code{Array} och \code{List}. Testa nedan funktion i REPL med heltalssekvenser av olika typ.
+\begin{Code}
+def isSorted(xs: Seq[Int]): Boolean = xs == xs.sorted 
+\end{Code}
+
 
 \Subtask Men vi vill gärna att \code{isSorted} ska fungera för alla typer T. Detta kan göras med nedan funktion eftersom metoden \code{sorted} är definierad för alla samlingar där typen \code{T} har en implicit ordning. Speciellt gäller detta för alla de inbyggda typerna \code{Int}, \code{Double}, \code{String}, etc.
 \begin{Code}
@@ -555,7 +601,7 @@ TODO!!!
 
 \Task \label{task:swedish-letter-ordering} Svenska bokstäver TODO!!
 
-\url{http://stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala} 
+\noindent\small{\url{http://stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}}
 
 \begin{REPL}
 scala> val fel = Vector("ö","å","ä","z").sorted
