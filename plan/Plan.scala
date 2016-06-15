@@ -27,7 +27,7 @@ trait Plan {
       id = "codestruct", exercise = "programs", lab = "", contents = """
       | Range, Array, Vector, iterering, for-uttryck, map, foreach, 
       | algoritm vs implementation, pseudokod, 
-      | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX,  
+      | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX, algoritm: MININDEX,
       | block, namnsynlighet, namnöverskuggning, lokala variabler,
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
       | main i Java vs Scala, java.lang.System.out.println,
