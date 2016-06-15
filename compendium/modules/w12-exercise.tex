@@ -73,7 +73,7 @@ class Kund(bank: Bank) {
 }
 \end{Code}
 
-\Subtask Använd funktionen \code{ibland} från föregående uppgift. Förklara vad som händer nedan.
+\Subtask Använd funktionen \code{ibland} från föregående uppgift och kör nedan rader i REPL. Resultatet av jämlöpande variabeluppdatering blir här heltokigt och leder till mycket upprörda bankkunder och -ägare. Förklara vad som händer.
 
 \begin{REPL}
 val bank = new Bank
@@ -100,7 +100,7 @@ ibland(bank.visaSaldo)
 \end{REPL}
 
 
-\Task \emph{Trådsäkra \code{AtomicInteger}.} Det finns stöd i JVM för att åstadkomma uppdateringar som inte kan avbrytas av andra trådar under pågånde minnesskrivning. En operation som inte kan avbrytas kallas \textbf{atomär} \Eng{Atomic}. Studera dokumentationen för \code{AtomicInteger}\footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html}{docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html}} och prova nedan kod. Förklara vad som händer.
+\Task \emph{Trådsäkra \code{AtomicInteger}.} Det finns stöd i JVM för att åstadkomma uppdateringar som inte kan avbrytas av andra trådar under pågånde minnesskrivning. En operation som inte kan avbrytas kallas \textbf{atomär} \Eng{atomic}. Studera dokumentationen för \code{AtomicInteger}\footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html}{docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html}} och prova nedan kod. Förklara vad som händer.
 
 Använd funktionerna \code{ofta} och \code{ibland} från tidigare uppgifter.
 \begin{Code}
@@ -115,7 +115,8 @@ class SäkerBank {
 class SäkerKund(bank: SäkerBank) {
   def slösaSpara = {bank.taUt; Thread.sleep(1); bank.sättIn}
 }
-
+\end{Code}
+\begin{REPL}
 val säkerBank = new SäkerBank
 val farmor = new SäkerKund(säkerBank) 
 val vargen = new SäkerKund(säkerBank) 
@@ -123,9 +124,9 @@ val vargen = new SäkerKund(säkerBank)
 ofta(farmor.slösaSpara); ofta(vargen.slösaSpara)
 
 ibland(säkerBank.visaSaldo)
+\end{REPL}
 
 
-\end{Code}
 
 
 
@@ -320,7 +321,7 @@ primes.foreach(_.onSuccess{case i => println(i)})
 \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/simple-web-server/webserver.scala}
 
 \Subtask Du ska nu skapa en webbserver som gör något lite mer intressant. Den ska svara om du surfar till \url{http://localhost:8089/fib/13} med det 13:e Fibbonnaci-talet\footnote{\href{https://sv.wikipedia.org/wiki/Fibonaccital}{https://sv.wikipedia.org/wiki/Fibonaccital}}. 
-Spara din webserver från föregående deluppgift under det nya namnet \texttt{fibserver.scala} och använd koden nedan och lägg till och ändra så att din server kan svara med Fibonaccital. 
+Spara din webserver från föregående deluppgift under det nya namnet \texttt{fibserver.scala} och använd koden nedan och lägg till och ändra så att din server kan svara med Fibonaccital. Vi börjar med att räkna ut Fibonaccital i funktionen \code{compute.fib} nedan på ett onödigt processorkrävande sätt med exponentiell tidskomplexitet så att webbservern verkligen får jobba, för att i senare deluppgifter implementera \code{compute.fib} med linjär tidskomplexitet och därmed undvika onödig planetuppvärmning.
 \begin{CodeSmall}
   object compute {
     def fib(n: BigInt): BigInt = {
@@ -420,7 +421,7 @@ object compute {
     else s.take(n) + "</br>" + insertBreak(s.drop(n),n)
   }
 \end{Code}
-Använd sen rekursiva funktionen ovan för att pilla in radbrytningstaggar på var $n$:te position i långa strängar. Testa hur det ser ut på webbsidan med ovan funktion när din server svarar med väldigt stora tal.
+Använd den rekursiva funktionen ovan för att pilla in radbrytningstaggar på var $n$:te position i långa strängar. Testa hur det ser ut på webbsidan med ovan funktion när din server svarar med väldigt stora tal.
 
 \Subtask Vi ska nu använda det större heap-minnet i stälet för stack-minnet och därmed inte begränsas av stackens max-storlek. Skriv om \code{fastFib} så att den använder en \code{while}-sats i stället för ett rekursivt anrop. Denna uppgift är ganska klurig, men om du kör fast kan du snegla i lösningarna i Appendix för inspiration. 
 

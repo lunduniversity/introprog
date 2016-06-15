@@ -261,7 +261,7 @@ def binarySearch(xs: Seq[String], key: String): Int = {
 } 
 \end{Code}
 
-\Subtask Hur mycket snabbare är binärsökning jämfört med linjärsökning i detta fallet?\footnote{Vid en körning på en i7-4970K med 4.0GHz blev \code{elapsedLin} cirka $2500~ms$ och \code{elapsedBin} cirka $70~ms$ och binärsökning var alltså en faktor $35$ gånger snabbare än linjärsökning i detta fallet.}
+\Subtask Hur mycket snabbare blev binärsökningen jämfört med linjärsökningen?\footnote{Vid en körning på en i7-4970K med 4.0GHz tog \code{elapsedLin} cirka $2500~ms$ och \code{elapsedBin} cirka $70~ms$ och binärsökning var alltså en faktor $35$ gånger snabbare än linjärsökning.}
 
 
 
@@ -269,10 +269,10 @@ def binarySearch(xs: Seq[String], key: String): Int = {
 
 \Task \emph{Linjärsökning i Java.} Denna uppgift bygger vidare på uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W09}. Du ska göra en variant på linjärsökning som innebär att leta upp första yatzy-raden i en matris där varje rad innehåller utfallet av 5 tärningskast. 
 
-\Subtask Du ska lägga till metoderna \code{isYatzy} och \code{findFirstYatzyRow} i klassen \code{ArrayMatrix} i uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W09} enligt nedan skiss. Börja med metoden  \code{isYatzy}. Det finns en bug i \code{isYatzy} -- rätta bugen och testa så att metoden fungerar. 
+\Subtask Du ska lägga till metoderna \code{isYatzy} och \code{findFirstYatzyRow} i klassen \code{ArrayMatrix} i uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W09} enligt nedan skiss. Vi börjar med metoden  \code{isYatzy} i denna deluppgift (nästa deluppgift handlar om \code{findFirstYatzyRow}). OBS! Det finns en bug i \code{isYatzy} -- rätta bugen och testa så att den fungerar. 
 
 \begin{Code}[language=Java]
-    public static boolean isYatzy(int[] dice){
+    public static boolean isYatzy(int[] dice){ /* has one bug! */
         int col = 1;
         boolean allSimilar = true;
         while (col < dice.length && allSimilar) {
@@ -286,7 +286,7 @@ def binarySearch(xs: Seq[String], key: String): Int = {
         int row = 0;
         int result = -1;
         while (???) {
-             /* linjärsökning  */ 
+             /* linear search  */ 
         }
         return result;
     }
@@ -308,7 +308,8 @@ def binarySearch(xs: Seq[String], key: String): Int = {
 
 
 \Subtask Implementera \code{findFirstYatzyRow}. Skapa först pseudo-kod för länjärsökningsalgoritmen innan du skriver implementationen i Java. 
-Testa ditt program genom att lägga till följande rader i huvudprogrammet:
+Testa ditt program genom att lägga till följande rader i huvudprogrammet. 
+Metoden \code{fillRnd} ingår i uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W09}.
 \begin{Code}[language=Java]
         int[][] yss = new int[2500][5];
         fillRnd(yss, 6);
@@ -337,10 +338,62 @@ Testa ditt program genom att lägga till följande rader i huvudprogrammet:
 
 
 
-\Task Implementera sortering till ny Vector med instickssortering. TODO!!!
+\Task Implementera sortering av en heltalssekvens till en \emph{ny} sekvens med \textbf{insättningssortering} \Eng{insertion sort} i en funktion med följande signatur:
+\begin{Code}
+def insertionSort(xs: Seq[Int]): Seq[Int] = ??? 
+\end{Code}
+
+\emph{Lösningsidé:} Skapa en ny, tom sekvens som ska bli vårt sorterade resultat. För varje element i den osorterade sekvensen: Sätt in det på rätt plats i den nya sorterade sekvensen.   
+
+\Subtask \emph{Pseduokod:} Kör nedan pseudokod med papper och penna t.ex. på sekvensen 5 1 4 3 2 1. Rita minnessituationen efter varje runda i loopen. Här använder vi internt i funktionen en föränderlig \code{ArrayBuffer} som är snabb på insättning och avslutar med \code{toVector} så att vi lämnar ifrån oss en oföränderlig sekvens.
+
+\begin{algorithm}[H]
+    $result \leftarrow$ en ny, tom ArrayBuffer \\
+    \ForEach{element $e$ \bf{in} $xs$}{ 
+      $pos \leftarrow$  leta upp rätt position i $result$ \\
+      stoppa in $e$ på plats $pos$ i $result$
+    }
+    $result$.toVector
+\end{algorithm}
 
 
-\Task Implementera sortering på plats i en Array med urvalssortering. TODO!!!
+\Subtask Implementera \code{insertionSort}. Använd en \code{while}-loop för att implementera rad 3 i pseduokoden. Sök upp dokumentationen för metoden \code{insert} på \code{ArrayBuffer}. Testa  \code{insert} på \code{ArrayBuffer} i REPL och verifiera att den kan användas för att stoppa in på slutet på den ''oanvända'' positionen som är precis efter sista positionen. Vad händer om man gör \code{insert} på positionen \code{size+2}? 
+
+Klistra in din implementation i REPL och testa så att allt fungerar:
+\begin{REPL}
+scala> insertionSort(Vector())
+res0: Seq[Int] = Vector()
+
+scala> insertionSort(Vector(42))
+res1: Seq[Int] = Vector(42)
+
+scala> insertionSort(Vector(1,2,3))
+res2: Seq[Int] = Vector(1, 2, 3)
+
+scala> insertionSort(Vector(5,1,4,3,2,1))
+res3: Seq[Int] = Vector(1, 1, 2, 3, 4, 5)
+\end{REPL}
+
+
+!!!Kod till facit:
+\begin{Code}[numbers=left]
+def insertionSort(xs: Seq[Int]): Seq[Int] = {
+  val result = scala.collection.mutable.ArrayBuffer.empty[Int]
+  for (e <- xs) {
+    var pos = 0
+    while (pos < result.size && result(pos) < e) pos += 1
+    result.insert(pos,e)
+  }
+  result.toVector
+}
+\end{Code}
+
+
+
+
+
+\Task Implementera sortering på plats \Eng{in-place} i en \code{Array} med urvalssortering \Eng{selection sort}. TODO!!!
+
 
 
 
@@ -451,7 +504,7 @@ scala> isSorted(persons)
 Vad ger sista raden för felmeddelande? Varför?
 
 
-\Subtask Vi vill gärna kunna jämföra element av godtycklig typ \code{T}, så att vi till exempel ska kunna implementera en generisk isSorted med \code{while} eller vårt zip-trick från uppgift \ref{task:isSorted}\ref{subtask:isSorted-zip}. Men det blir problem enligt nedan. Hur lyder felmeddelandet? Vad saknas?
+\Subtask Vi vill gärna kunna jämföra element av godtycklig typ \code{T}, så att vi till exempel ska kunna implementera en generisk \code{isSorted} med \code{while} eller vårt \code{zip}-trick från uppgift \ref{task:isSorted}\ref{subtask:isSorted-zip}. Men det blir problem enligt nedan. Hur lyder felmeddelandet? Vad saknas?
 
 \begin{REPL}
 scala> def isSorted[T](xs: Seq[T]): Boolean =  
