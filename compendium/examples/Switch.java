@@ -15,7 +15,7 @@ public class Switch {
             System.out.println("tomat är gott!");
             break;
         case 'b': 
-            System.out.println("brocolli är gott!");
+            System.out.println("broccoli är gott!");
             break;
         default:
             System.out.println(favorite + " är äckligt!");
