@@ -5,11 +5,11 @@
 \Exercise{\ExeWeekTEN}
 
 \begin{Goals}
-\item 
+\item \TODO
 \end{Goals}
 
 \begin{Preparations}
-\item 
+\item \TODO
 \end{Preparations}
 
 \BasicTasks %%%%%%%%%%%%%%%%
@@ -65,7 +65,7 @@ scala> val ps = Vector(Person("Zeb", "Robinson"), Person("Robin","Zebson"))
 scala> ps.sorted
 \end{REPL}	
 
-\Subtask Om man har en samling med egendefinierade klasser eller man vill ha en annan sorteringsordning får man definiera ordningen själv. Ett helt generellt sätt att göra detta på  illustreras i uppgift \ref{task:custom-ordering-order}, men de båda hjälpmetoderna \code{sortWith} och \code{sortBy} räcker i de flesta fall. Hur de används illustreras nedan. Metoden \code{sortBy} kan användas om man tar fram ett värde av inbyggd typ och är nöjd med den inbyggda sorteringsordningen. 
+\Subtask Om man har en samling med egendefinierade klasser eller man vill ha en annan sorteringsordning får man definiera ordningen själv. Ett helt generellt sätt att göra detta på  illustreras i uppgift \ref{task:custom-ordering}, men de båda hjälpmetoderna \code{sortWith} och \code{sortBy} räcker i de flesta fall. Hur de används illustreras nedan. Metoden \code{sortBy} kan användas om man tar fram ett värde av inbyggd typ och är nöjd med den inbyggda sorteringsordningen. 
 
 Metoden \code{sortWith} används om man vill skicka med ett eget jämförelsepredikat som ordnar två element; funktionen ska returnerna \code{true} om det första elementet ska vara först, annars \code{false}.
 
@@ -559,29 +559,44 @@ scala> def isSorted[T](xs: Seq[T]): Boolean =
          xs.zip(xs.tail).forall(x => x._1 <= x._2)
 \end{REPL}
 
-\Subtask Man kan berätta för kompilatorn att den ska leta efter implicita ordningar av typen  \code{T}. Detta kan göras genom att utöka signaturen för \code{isSorted} med en andra parameterlista, som tar en implicit parameter enligt följande:
+\Subtask \emph{Implicita ordningar.} Man kan berätta för kompilatorn att den ska leta efter implicita ordningar av typen  \code{T}. Detta kan göras genom att utöka signaturen för \code{isSorted} med en andra parameterlista, som tar en implicit parameter enligt följande:
 
 \begin{CodeSmall}
 def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean =  
   xs.zip(xs.tail).forall(x => ord.lteq(x._1, x._2))
 \end{CodeSmall}
 
-Det finns fördefinierade implicita objekt \code{Ordering[T]} för alla inbyggda typer, alltså t.ex. \code{Ordering[Int]}, \code{Ordering[String]}, etc. Objekt av typen \code{Ordering} har jämförelsemetoder som t.ex. \code{lteq} (förk. \emph{less than or equal}) och \code{gt} (förk. \emph{greater than}) 
-
+Det finns fördefinierade implicita objekt \code{Ordering[T]} för alla inbyggda typer, alltså t.ex. \code{Ordering[Int]}, \code{Ordering[String]}, etc. Objekt av typen \code{Ordering} har jämförelsemetoder som t.ex. \code{lteq} (förk. \emph{less than or equal}) och \code{gt} (förk. \emph{greater than}).
 Testa så att kompilatorn hittar ordningen för samlingar av värden som är av de inbyggda typerna. Visa också att det fortfarande blir problem för egendefinierade klasser, t.ex. \code{Person} enligt tidigare. Detta ska vi råda bot på i kommande uppgift.
 
+\Subtask \emph{Importera implicita ordningsoperatorer från en \code{Ordering}.} Om man gör import på en \code{Ordering} får man tillgång till implicita konverteringar som gör att jämförelseoperatorerna fungerar. Testa nedan variant av \code{isSorted} på olika sekvenstyper och se att \code{<=} nu fungerar.
+\begin{CodeSmall}
+def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean = {  
+  import ord._
+  xs.zip(xs.tail).forall(x => x._1 <= x._2)
+}
+\end{CodeSmall}
 
 
-\Task  \label{task:custom-ordering-order} Skapa egna varianter av Ordering och Ordered TODO!!!
+\Task  \label{task:custom-ordering} \emph{Skapa en egen \code{Ordering}.}  
+
+\Subtask Med hjälp av metoden \code{by} i objektet \code{scala.math.Ordering} kan man skapa ordningar genom att bifoga ett predikat som avgör om 
+
+Om du har en case-klass med många fält och vill ha en fördefinierad implicit sorteringsordning samt även erbjuda en alternativ sorteringsordning kan du placera ordningar 
+\begin{Code}
+case class  Person(name: String, height: Double)
+object Person {
+} 
+\end{Code}
+
+\Task Ordered - [eller ska vi skippa det???] \TODO
 
 
+\Task \TODO Implementera \code{isSorted} från uppgift \ref{task:isSorted}\ref{subtask:isSorted-zip} dels med \code{view} och dels med \code{zipped} för att visa icke-strikt evaluering så att det blir effektivt för stora samlingar.
 
+\Task java.util.Arrays.binarySearch  \TODO \\ \url{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html}
 
-\Task TODO!!! Implementera \code{isSorted} från uppgift \ref{task:isSorted}\ref{subtask:isSorted-zip} dels med \code{view} och dels med \code{zipped} för att visa icke-strikt evaluering så att det blir effektivt för stora samlingar.
-
-\Task java.util.Arrays.binarySearch  TODO!!! \\ \url{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html}
-
-\Task java.util.Arrays.sort  TODO!!!
+\Task java.util.Arrays.sort  \TODO
 
 \Task \emph{Jämförelsestöd i Java.} 
 Java har motsvarigheter till \code{Ordering} och \code{Ordered}, som heter \code{java.util.Comparator} och \code{java.lang.Comparable}. I själva verket så är Scalas \code{Ordering} en subtyp till Javas \code{Comparator}, medan Scalas \code{Ordered} är en subtyp till Javas \code{Comparable}. 
@@ -593,30 +608,30 @@ Java har motsvarigheter till \code{Ordering} och \code{Ordered}, som heter \code
 
 \Subtask Sök upp dokumentationen för \code{java.lang.Comparable}. Vilken enda abstrakt metod måste implementeras i subtyper som utökar denna typ? 
 
-\Subtask Sök upp dokumentationen för \code{java.util.Comparator} och TODO???
+\Subtask Sök upp dokumentationen för \code{java.util.Comparator}  \TODO
 
 \Subtask
 \begin{REPL}
-TODO!!!
+\TODO
 \end{REPL}
 
 
-\Task \label{task:swedish-letter-ordering} Svenska bokstäver TODO!!
+\Task \label{task:swedish-letter-ordering} \emph{Fixa svensk sorteringsordning av ÅÄÖ.} Svenska bokstäver kommer i, för svenskar, konstig ordning om man inte vidtar speciella åtgärder. Med hjälp av klassen \code{java.text.Collator} kan man få en \code{Comparator} för strängar som följer lokala regler för en massa språk på planeten jorden. 
 
-\noindent\small{\url{http://stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}}
+\Subtask Verifiera att sorteringsordningen blir rätt i REPL enligt nedan. 
 
 \begin{REPL}
 scala> val fel = Vector("ö","å","ä","z").sorted
-fel: scala.collection.immutable.Vector[String] = Vector(z, ä, å, ö)
-
-scala val svColl = java.text.Collator.getInstance(new java.util.Locale("sv"))
-
+scala> val svColl = java.text.Collator.getInstance(new java.util.Locale("sv"))
 scala> val svOrd = Ordering.comparatorToOrdering(svColl)
-svOrd: scala.math.Ordering[Object] = scala.math.LowPriorityOrderingImplicits$$anon$7@64dbfba5
-
 scala> val rätt = Vector("ö","å","ä","z").sorted(svOrd)
-rätt: scala.collection.immutable.Vector[String] = Vector(z, å, ä, ö)
 \end{REPL}
+\Subtask Använd metoden ovan för att skriva ett program som skriver ut raderna i en textfil i korrekt svensk sorteringsordning. Programmet ska kunna köras med kommandot:\\\texttt{scala sorted -sv textfil.txt}
+
+\Subtask Läs mer här: \\
+\noindent\small{\href{http://stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}{stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}}
+
+
 
 \Task Fördjupa dig inom webbteknologi. 
     
