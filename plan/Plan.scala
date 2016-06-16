@@ -114,10 +114,12 @@ trait Plan {
 
     Module("Sökning, Sortering", 
       id = "searchsort", exercise = "sorting", lab = "surveydata", contents = """
-      | compareTo på strängar, trait Ordered[T], 
+      | strängjämförelse, compareTo, ordning, trait Ordered[T],
+      | linjärsökning, binärsökning, 
       | algoritm: LINEAR-SEARCH, algortim: BINARY-SEARCH, 
       | algoritmisk komplexitet, 
       | sortering till ny vektor, sortering på plats, 
+      | insättningssortering, urvalssortering, 
       | algoritm: INSERTION-SORT, algoritm: SELECTION-SORT,
       """.stripTrim),  
       //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
