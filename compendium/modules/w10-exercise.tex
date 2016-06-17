@@ -359,9 +359,9 @@ def insertionSort(xs: Seq[Int]): Seq[Int] = ???
 \end{algorithm}
 
 
-\Subtask Implementera \code{insertionSort}. Använd en \code{while}-loop för att implementera rad 3 i pseduokoden. Sök upp dokumentationen för metoden \code{insert} på \code{ArrayBuffer}. Testa  \code{insert} på \code{ArrayBuffer} i REPL och verifiera att den kan användas för att stoppa in på slutet på den ''oanvända'' positionen som är precis efter sista positionen. Vad händer om man gör \code{insert} på positionen \code{size+2}? 
+\Subtask Implementera \code{insertionSort}. Använd en \code{while}-loop för att implementera rad 3 i pseduokoden. Sök upp dokumentationen för metoden \code{insert} på \code{ArrayBuffer}. Testa  \code{insert} på \code{ArrayBuffer} i REPL och verifiera att den kan användas för att stoppa in på slutet på den ''oanvända'' positionen som är precis efter sista positionen. Vad händer om man gör \code{insert} på positionen \code{size + 2}? 
 
-Klistra in din implementation i REPL och testa så att allt fungerar:
+Klistra in din implementation av \code{insertionSort} i REPL och testa så att allt fungerar:
 \begin{REPL}
 scala> insertionSort(Vector())
 res0: Seq[Int] = Vector()
@@ -491,7 +491,7 @@ def selectionSort(xs: Seq[String]): Seq[String] = {
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task \emph{Typklasser och implicita parametrar.} I Scala finns möjligheter till avancerad funktionsprogrammering med s.k. \textbf{typklasser}. Vi nosar lite i denna uppgift lite på hur implicita argument kan användas för att skapa typklasser för att illustrera hur implicita ordningarna är definierade i Scalas standardbibliotek. 
+\Task \emph{Typklasser och implicita parametrar.} I Scala finns möjligheter till avancerad funktionsprogrammering med s.k. \textbf{typklasser}, som definierar generella beteenden som fungerar för befintliga typer utan att implementationen av dessa befintliga typer behöver ändras. Vi nosar i denna uppgift på hur implicita argument kan användas för att skapa typklasser, illustrerat med hjälp av implicita ordningarna, som är en typisk och användbar tillämpning av konceptet typklasser. 
 
 \Subtask \emph{Implicit parameter och implicit värde.} Med nyckelordet \code{implicit} framför en parameter öppnar man för möjligheten att låta kompilatorn ge argumentet ''automatiskt'' om den kan hitta ett värde med passande typ som också är deklarerat med \code{implicit}, så som visas nedan. 
 \begin{REPL}
@@ -503,7 +503,7 @@ scala> add(1)
 \end{REPL}
 Vad blir felmeddelandet på rad 3 ovan? Varför fungerar det på rad 5 utan fel?
 
-\Subtask \emph{Typklasser.} Genom att kombinera implicita värden, generiska klasser och implicita parametrar får man möjligheten att göra s.k. \textbf{typklasser} som definierar generella beteenden som fungerar för befintliga typer utan att implementationen av dessa befintliga typer behöver ändras. 
+\Subtask \emph{Typklasser.} Genom att kombinera koncepten implicita värden, generiska klasser och implicita parametrar får man möjligheten att göra typklasser, så som \code{CanCompare} nedan, som vi kan få att fungera för befintliga typer utan att de behöver ändras. 
 
 Vad händer nedan? Vilka rader ger felmeddelande? Varför? 
 
@@ -535,7 +535,7 @@ def isSorted(xs: Seq[Int]): Boolean = xs == xs.sorted
 \end{Code}
 
 
-\Subtask Men vi vill gärna att \code{isSorted} ska fungera för alla typer T. Detta kan göras med nedan funktion eftersom metoden \code{sorted} är definierad för alla samlingar där typen \code{T} har en implicit ordning. Speciellt gäller detta för alla de inbyggda typerna \code{Int}, \code{Double}, \code{String}, etc.
+\Subtask Men vi vill gärna att \code{isSorted} ska fungera för godtyckliga typer T som har en ordningsdefinition. Detta kan göras med nedan funktion eftersom metoden \code{sorted} är definierad för alla samlingar där typen \code{T} har en implicit ordning. Speciellt gäller detta för alla de inbyggda typerna \code{Int}, \code{Double}, \code{String}, etc.
 \begin{Code}
 def isSorted[T](xs: Seq[T]): Boolean = xs == xs.sorted 
 \end{Code}
@@ -567,9 +567,9 @@ def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean =
 \end{CodeSmall}
 
 Det finns fördefinierade implicita objekt \code{Ordering[T]} för alla inbyggda typer, alltså t.ex. \code{Ordering[Int]}, \code{Ordering[String]}, etc. Objekt av typen \code{Ordering} har jämförelsemetoder som t.ex. \code{lteq} (förk. \emph{less than or equal}) och \code{gt} (förk. \emph{greater than}).
-Testa så att kompilatorn hittar ordningen för samlingar av värden som är av de inbyggda typerna. Visa också att det fortfarande blir problem för egendefinierade klasser, t.ex. \code{Person} enligt tidigare. Detta ska vi råda bot på i kommande uppgift.
+Testa så att kompilatorn hittar ordningen för samlingar av värden av inbyggda typer. Visa även att det fortfarande blir problem för egendefinierade klasser, t.ex. \code{Person} enligt tidigare (detta ska vi råda bot på i uppgift \ref{task:custom-ordering}).
 
-\Subtask \emph{Importera implicita ordningsoperatorer från en \code{Ordering}.} Om man gör import på en \code{Ordering} får man tillgång till implicita konverteringar som gör att jämförelseoperatorerna fungerar. Testa nedan variant av \code{isSorted} på olika sekvenstyper och se att \code{<=} nu fungerar.
+\Subtask \emph{Importera implicita ordningsoperatorer från en \code{Ordering}.} Om man gör import på ett \code{Ordering}-objekt får man tillgång till implicita konverteringar som gör att jämförelseoperatorerna fungerar. Testa nedan variant av \code{isSorted} på olika sekvenstyper och verifiera att \code{<=}, \code{>}, etc., nu fungerar enligt nedan.
 \begin{CodeSmall}
 def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean = {  
   import ord._
@@ -578,45 +578,111 @@ def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean = {
 \end{CodeSmall}
 
 
-\Task  \label{task:custom-ordering} \emph{Skapa en egen \code{Ordering}.}  
+\Task  \label{task:custom-ordering} \emph{Skapa egen implicit ordning med \code{Ordering}.}  
 
-\Subtask Med hjälp av metoden \code{by} i objektet \code{scala.math.Ordering} kan man skapa ordningar genom att bifoga ett predikat som avgör om 
+\Subtask Ett sätt att skapa en egen, specialanpassad ordning är att mappa dina objekt till typer som redan har en implicit ordning. Med hjälp av metoden \code{by} i objektet \code{scala.math.Ordering} kan man skapa ordningar genom bifoga en funktion \code{T => S} där \code{T} är typen för de objekt du vill ordna och \code{S} är någon annan typ, t.ex. \code{String} eller \code{Int}, där det redan finns en implicit ordning.
+\begin{REPL}
+scala> case class Team(name: String, ranking: Int)
+scala> val xs = 
+         Vector(Team("fnatic", 1499), Team("nip", 1473), Team("lumi", 1601))
+scala> xs.sorted  // Hur lyder felmeddelandet? Varför blir det fel?
+scala> val teamNameOrdering = Ordering.by((t: Team) => t.name)
+scala> xs.sorted(teamNameOrdering)   //explicit ordning
+scala> implicit val teamRankOrdering = Ordering.by((t: Team) => t.ranking)
+scala> xs.sorted   // Varför funkar det nu?
+\end{REPL}
 
-Om du har en case-klass med många fält och vill ha en fördefinierad implicit sorteringsordning samt även erbjuda en alternativ sorteringsordning kan du placera ordningar 
+\Subtask Vill man sortera i omvänd ordning kan man använda 
+\code{Ordering.fromLessThan} som tar en funktion \code{(T, T) => Boolean} vilken ska ge \code{true} om första parametern ska komma före, annars \code{false}. Om vi vill sortera efter \code{ranking} i omvänd ordning kan vi göra så här:
+\begin{REPL}
+scala> val highestRankingFirst = 
+         Ordering.fromLessThan[Team]((t1, t2) => t1.ranking > t2.ranking)
+scala> xs.sorted(highestRankingFirst)
+\end{REPL}
+
+\Subtask Om du har en case-klass med flera fält och vill ha en fördefinierad implicit sorteringsordning samt även erbjuda en alternativ sorteringsordning kan du placera olika ordningsdefinitioner i ett kompanjonsobjekt; detta är nämligen ett av de ställen där kompilatorn söker efter eventuella implicita värden innan den ger upp att leta. 
 \begin{Code}
-case class  Person(name: String, height: Double)
-object Person {
-} 
+case class  Team(name: String, ranking: Int)
+object Team {
+  implicit val highestRankingFirst = Ordering.fromLessThan[Team]{
+    (t1, t2) => t1.ranking > t2.ranking
+  }
+  val nameOrdering = Ordering.by((t: Team) => t.name)
+}
 \end{Code}
+\begin{REPL}
+scala> :pa
+// Exiting paste mode, now interpreting.
+case class  Team(name: String, ranking: Int)
+object Team {
+  implicit val highestRankingFirst = 
+    Ordering.fromLessThan[Team]{(t1, t2) => t1.ranking > t2.ranking}
+  val nameOrdering = Ordering.by((t: Team) => t.name)
+}
+scala> val xs = 
+         Vector(Team("fnatic", 1499), Team("nip", 1473), Team("lumi", 1601))
+scala> xs.sorted
+scala> xs.sorted(Team.nameOrdering)
+\end{REPL}
 
-\Task Ordered - [eller ska vi skippa det???] \TODO
 
 
-\Task \TODO Implementera \code{isSorted} från uppgift \ref{task:isSorted}\ref{subtask:isSorted-zip} dels med \code{view} och dels med \code{zipped} för att visa icke-strikt evaluering så att det blir effektivt för stora samlingar.
+\Subtask Det går också med kompanjonsobjektet ovan att få jämförelseoperatorer att fungera med din case-klass, genom att importera medlemmarna i lämpligt ordningsobjekt. Verifiera att så är fallet enligt nedan:
+\begin{REPL}
+scala> Team("fnatic",1499) < Team("gurka", 2)  // Vilket fel? Varför?
+scala> import Team.highestRankingFirst._
+scala> Team("fnatic",1499) < Team("gurka", 2)  // Inget fel? Varför?
+\end{REPL}
 
-\Task java.util.Arrays.binarySearch  \TODO \\ \url{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html}
 
-\Task java.util.Arrays.sort  \TODO
+\Task \emph{Specialanpassad ordning genom att ärva från \code{Ordered}.} Om det finns \emph{en} väldefinierad, specifik ordning som man vill ska gälla för sina case-klass-instanser kan man göra den ordnad genom att låta case-klassen mixa in traiten \code{Ordered} och implementera den abstrakta metoden \code{compare}. 
+
+\begin{Background}
+En trait som används på detta sätt kallas \textbf{gränssnitt} \Eng{interface}, och om man \emph{implementerar} ett gränssnitt så uppfyller man ett ''kontrakt'', som i detta fall innebär att man implementerar det som krävs av ordnade objekt, nämligen att de har en konkret \code{compare}-metod. Du lär dig mer om gränssnitt i kommande kurser. 
+\end{Background}
+
+\Subtask Implementera case-klassen \code{Team} så att den är en subtyp till \code{Ordered} enligt nedan skiss. Högre rankade lag ska komma före lägre rankade lag. Metoden \code{compare} ska ge ett heltal som är negativt om \code{this} kommer före \code{that}, noll om de ordnas lika, annars positivt. 
+
+\begin{CodeSmall}
+case class  Team(name: String, ranking: Int) extends Ordered[Team]{
+  override def compare(that: Team): Int = ???
+} 
+\end{CodeSmall}
+\emph{Tips:} Du kan anropa metoden \code{compare} på alla inbyggda typer, t.ex. \code{Int}, eftersom de är implicit ordnade. Genom att negera uttrycket blir ordningen den omvända.
+\begin{REPL}
+scala> -(2.compare(1))  
+\end{REPL}
+
+\Subtask Testa att  din case-klass nu uppfyller det som krävs för att vara ordnad. 
+\begin{REPL}
+scala> Team("fnatic",1499) < Team("gurka", 2) 
+\end{REPL}
+
+\begin{CodeSmall}
+// kod till facit
+case class  Team(name: String, ranking: Int) extends Ordered[Team]{
+  override def compare(that: Team): Int = -ranking.compare(that.ranking)
+} 
+\end{CodeSmall}
 
 \Task \emph{Jämförelsestöd i Java.} 
 Java har motsvarigheter till \code{Ordering} och \code{Ordered}, som heter \code{java.util.Comparator} och \code{java.lang.Comparable}. I själva verket så är Scalas \code{Ordering} en subtyp till Javas \code{Comparator}, medan Scalas \code{Ordered} är en subtyp till Javas \code{Comparable}. 
 \begin{itemize}[nolistsep, noitemsep]
-\item \code{Comparable} används som sypertyp för klasser som vill kunna jämföra ''sig själv'' med andra objekt.
-\item \code{Comparator} används för att skapa fristående ordningar som kan jämföra \emph{två olika} objekt av någon mer eller mindre specifik typ.
+\item Javas \code{Comparator} och Scalas \code{Ordered} används för att skapa fristående ordningar som kan jämföra \emph{två olika} objekt. I Scala kan dessa göras implicit tillgängliga. I Javas samlingsbibliotek skickas instanser av \code{Comparator} med som explicita argument.
+\item Javas \code{Comparable} och Scalas \code{Ordered} används som sypertyp för klasser som vill kunna jämföra ''sig själv'' med andra objekt och har \emph{en} specifik ordningsdefinition.
 \end{itemize}
 
+\Subtask Sök upp dokumentationen för \code{java.util.Comparator}. Vilken abstrakt metod måste implementeras och vad gör den? 
 
-\Subtask Sök upp dokumentationen för \code{java.lang.Comparable}. Vilken enda abstrakt metod måste implementeras i subtyper som utökar denna typ? 
+\Subtask Sök upp dokumentationen för \code{java.lang.Comparable}. Vilken abstrakt metod måste implementeras och vad gör den? 
 
-\Subtask Sök upp dokumentationen för \code{java.util.Comparator}  \TODO
-
-\Subtask
+\Subtask  \TODO
 \begin{REPL}
 \TODO
 \end{REPL}
 
 
-\Task \label{task:swedish-letter-ordering} \emph{Fixa svensk sorteringsordning av ÅÄÖ.} Svenska bokstäver kommer i, för svenskar, konstig ordning om man inte vidtar speciella åtgärder. Med hjälp av klassen \code{java.text.Collator} kan man få en \code{Comparator} för strängar som följer lokala regler för en massa språk på planeten jorden. 
+\Task \label{task:swedish-letter-ordering} \emph{Fixa svensk sorteringsordning av ÄÅÖ.} Svenska bokstäver kommer i, för svenskar, konstig ordning om man inte vidtar speciella åtgärder. Med hjälp av klassen \code{java.text.Collator} kan man få en \code{Comparator} för strängar som följer lokala regler för en massa språk på planeten jorden. 
 
 \Subtask Verifiera att sorteringsordningen blir rätt i REPL enligt nedan. 
 
@@ -631,6 +697,11 @@ scala> val rätt = Vector("ö","å","ä","z").sorted(svOrd)
 \Subtask Läs mer här: \\
 \noindent\small{\href{http://stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}{stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}}
 
+
+
+\Task java.util.Arrays.binarySearch  \TODO \\ \url{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html}
+
+\Task java.util.Arrays.sort  \TODO
 
 
 \Task Fördjupa dig inom webbteknologi. 
