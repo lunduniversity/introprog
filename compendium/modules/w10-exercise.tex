@@ -25,7 +25,7 @@ scala> "AAA" < "aaa"
 scala> "ÄÄÄ" < "ÖÖÖ"
 scala> "ÅÅÅ" < "ÄÄÄ"
 \end{REPL}
-Tyvärr så följer ordningen av ÅÄÖ inte svenska regler, men det ignorerar vi i fortsättningen för enkelhets skull; om du är intresserad av hur man kan fixa  detta, gör uppgift \ref{task:swedish-letter-ordering}. 
+Tyvärr så följer ordningen av ÄÅÖ inte svenska regler, men det ignorerar vi i fortsättningen för enkelhets skull; om du är intresserad av hur man kan fixa  detta, gör uppgift \ref{task:swedish-letter-ordering}. 
 
 \Subtask\Pen Vilken av strängarna $s1$ och $s2$ kommer först (d.v.s. är mindre) om $s1$ utgör början av $s2$ och $s2$ innehåller fler tecken än $s1$? 
 
@@ -582,30 +582,30 @@ def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean = {
 
 \Subtask Ett sätt att skapa en egen, specialanpassad ordning är att mappa dina objekt till typer som redan har en implicit ordning. Med hjälp av metoden \code{by} i objektet \code{scala.math.Ordering} kan man skapa ordningar genom bifoga en funktion \code{T => S} där \code{T} är typen för de objekt du vill ordna och \code{S} är någon annan typ, t.ex. \code{String} eller \code{Int}, där det redan finns en implicit ordning.
 \begin{REPL}
-scala> case class Team(name: String, ranking: Int)
+scala> case class Team(name: String, rank: Int)
 scala> val xs = 
          Vector(Team("fnatic", 1499), Team("nip", 1473), Team("lumi", 1601))
 scala> xs.sorted  // Hur lyder felmeddelandet? Varför blir det fel?
 scala> val teamNameOrdering = Ordering.by((t: Team) => t.name)
 scala> xs.sorted(teamNameOrdering)   //explicit ordning
-scala> implicit val teamRankOrdering = Ordering.by((t: Team) => t.ranking)
+scala> implicit val teamRankOrdering = Ordering.by((t: Team) => t.rank)
 scala> xs.sorted   // Varför funkar det nu?
 \end{REPL}
 
 \Subtask Vill man sortera i omvänd ordning kan man använda 
-\code{Ordering.fromLessThan} som tar en funktion \code{(T, T) => Boolean} vilken ska ge \code{true} om första parametern ska komma före, annars \code{false}. Om vi vill sortera efter \code{ranking} i omvänd ordning kan vi göra så här:
+\code{Ordering.fromLessThan} som tar en funktion \code{(T, T) => Boolean} vilken ska ge \code{true} om första parametern ska komma före, annars \code{false}. Om vi vill sortera efter \code{rank} i omvänd ordning kan vi göra så här:
 \begin{REPL}
-scala> val highestRankingFirst = 
-         Ordering.fromLessThan[Team]((t1, t2) => t1.ranking > t2.ranking)
-scala> xs.sorted(highestRankingFirst)
+scala> val highestRankFirst = 
+         Ordering.fromLessThan[Team]((t1, t2) => t1.rank > t2.rank)
+scala> xs.sorted(highestRankFirst)
 \end{REPL}
 
 \Subtask Om du har en case-klass med flera fält och vill ha en fördefinierad implicit sorteringsordning samt även erbjuda en alternativ sorteringsordning kan du placera olika ordningsdefinitioner i ett kompanjonsobjekt; detta är nämligen ett av de ställen där kompilatorn söker efter eventuella implicita värden innan den ger upp att leta. 
 \begin{Code}
-case class  Team(name: String, ranking: Int)
+case class  Team(name: String, rank: Int)
 object Team {
-  implicit val highestRankingFirst = Ordering.fromLessThan[Team]{
-    (t1, t2) => t1.ranking > t2.ranking
+  implicit val highestRankFirst = Ordering.fromLessThan[Team]{
+    (t1, t2) => t1.rank > t2.rank
   }
   val nameOrdering = Ordering.by((t: Team) => t.name)
 }
@@ -613,10 +613,10 @@ object Team {
 \begin{REPL}
 scala> :pa
 // Exiting paste mode, now interpreting.
-case class  Team(name: String, ranking: Int)
+case class  Team(name: String, rank: Int)
 object Team {
-  implicit val highestRankingFirst = 
-    Ordering.fromLessThan[Team]{(t1, t2) => t1.ranking > t2.ranking}
+  implicit val highestRankFirst = 
+    Ordering.fromLessThan[Team]{(t1, t2) => t1.rank > t2.rank}
   val nameOrdering = Ordering.by((t: Team) => t.name)
 }
 scala> val xs = 
@@ -630,7 +630,7 @@ scala> xs.sorted(Team.nameOrdering)
 \Subtask Det går också med kompanjonsobjektet ovan att få jämförelseoperatorer att fungera med din case-klass, genom att importera medlemmarna i lämpligt ordningsobjekt. Verifiera att så är fallet enligt nedan:
 \begin{REPL}
 scala> Team("fnatic",1499) < Team("gurka", 2)  // Vilket fel? Varför?
-scala> import Team.highestRankingFirst._
+scala> import Team.highestRankFirst._
 scala> Team("fnatic",1499) < Team("gurka", 2)  // Inget fel? Varför?
 \end{REPL}
 
@@ -643,11 +643,11 @@ En trait som används på detta sätt kallas \textbf{gränssnitt} \Eng{interface
 
 \Subtask Implementera case-klassen \code{Team} så att den är en subtyp till \code{Ordered} enligt nedan skiss. Högre rankade lag ska komma före lägre rankade lag. Metoden \code{compare} ska ge ett heltal som är negativt om \code{this} kommer före \code{that}, noll om de ordnas lika, annars positivt. 
 
-\begin{CodeSmall}
-case class  Team(name: String, ranking: Int) extends Ordered[Team]{
+\begin{Code}
+case class Team(name: String, rank: Int) extends Ordered[Team]{
   override def compare(that: Team): Int = ???
 } 
-\end{CodeSmall}
+\end{Code}
 \emph{Tips:} Du kan anropa metoden \code{compare} på alla inbyggda typer, t.ex. \code{Int}, eftersom de är implicit ordnade. Genom att negera uttrycket blir ordningen den omvända.
 \begin{REPL}
 scala> -(2.compare(1))  
@@ -660,8 +660,8 @@ scala> Team("fnatic",1499) < Team("gurka", 2)
 
 \begin{CodeSmall}
 // kod till facit
-case class  Team(name: String, ranking: Int) extends Ordered[Team]{
-  override def compare(that: Team): Int = -ranking.compare(that.ranking)
+case class  Team(name: String, rank: Int) extends Ordered[Team]{
+  override def compare(that: Team): Int = -rank.compare(that.rank)
 } 
 \end{CodeSmall}
 
@@ -669,17 +669,59 @@ case class  Team(name: String, ranking: Int) extends Ordered[Team]{
 Java har motsvarigheter till \code{Ordering} och \code{Ordered}, som heter \code{java.util.Comparator} och \code{java.lang.Comparable}. I själva verket så är Scalas \code{Ordering} en subtyp till Javas \code{Comparator}, medan Scalas \code{Ordered} är en subtyp till Javas \code{Comparable}. 
 \begin{itemize}[nolistsep, noitemsep]
 \item Javas \code{Comparator} och Scalas \code{Ordering} används för att skapa fristående ordningar som kan jämföra \emph{två olika} objekt. I Scala kan dessa göras implicit tillgängliga. I Javas samlingsbibliotek skickas instanser av \code{Comparator} med som explicita argument.
-\item Javas \code{Comparable} och Scalas \code{Ordered} används som sypertyp för klasser som vill kunna jämföra ''sig själv'' med andra objekt och har \emph{en} specifik ordningsdefinition.
+\item Javas \code{Comparable} och Scalas \code{Ordered} används som sypertyp för klasser som vill kunna jämföra ''sig själv'' med andra objekt och har \emph{en} naturlig ordningsdefinition.
 \end{itemize}
 
-\Subtask Sök upp dokumentationen för \code{java.util.Comparator}. Vilken abstrakt metod måste implementeras och vad gör den? 
+\Subtask\Pen Sök upp dokumentationen för \code{java.util.Comparator}. Vilken abstrakt metod måste implementeras och vad gör den? 
 
-\Subtask Sök upp dokumentationen för \code{java.lang.Comparable}. Vilken abstrakt metod måste implementeras och vad gör den? 
-
-\Subtask  \TODO
+\Subtask  I paketet \code{java.util.Arrays} finns en metod \code{sort} som tar en \code{Array[T]} och en \code{Comparable[T]}. Testa att använda dessa i REPL enligt nedan skiss. Starta om REPL så att ev. tidigare implicita ordningar för \code{Team} inte finns kvar.
 \begin{REPL}
-\TODO
+scala> import java.util.Comparator
+scala> val teamComparator = new Comparator[Team]{
+         def compare(o1: Team, o2: Team) = ???
+       }
+scala> val xs = 
+         Array(Team("fnatic", 1499), Team("nip", 1473), Team("lumi", 1601))
+scala> java.util.Arrays.sort(xs.toArray, teamComparator)
+scala> xs
 \end{REPL}
+\begin{Code}
+// kod till facit
+val teamComparator = new Comparator[Team]{
+  def compare(o1: Team, o2: Team) = o2.rank - o1.rank
+}
+\end{Code}
+
+\Subtask I Scala finns en behändig metod \code{Ordering.comparatorToOrdering} som skapar en implicit tillgänglig ordning om man har en \code{java.util.Comparator}. Testa detta enligt nedan i REPL, med deklarationerna från föregående deluppgift.
+\begin{REPL}
+scala> implicit val teamOrd = Ordering.comparatorToOrdering(teamComparator)
+scala> xs.sorted
+\end{REPL}
+
+
+
+\Subtask\Pen Sök upp dokumentationen för \code{java.lang.Comparable}. Vilken abstrakt metod måste implementeras och vad gör den? 
+
+\Subtask Gör så att klassen \code{Point} är \code{Comparable} och att punkter närmare origo sorteras före punkter som är längre ifrån origo enligt nedan skiss. I Scala är typer som är \code{Comparable} implicit även \code{Ordered}, varför sorteringen nedan funkar. Verfiera detta i REPL när du klurat ut hur implementera \code{compareTo}. 
+
+\begin{Code}
+case class Point(x: Int, y: Int) extends Comparable[Point] {
+  def distanceFromOrigin: Double = ???
+  def compareTo(that: Point): Int = ???
+}
+\end{Code}
+\begin{REPL}
+scala> val xs = Seq(Point(10,10), Point(2,1), Point(5,3), Point(0,0))
+scala> xs.sorted
+\end{REPL}
+\begin{Code}
+// kod till facit
+case class Point(x: Int, y: Int) extends Comparable[Point] {
+  def distanceFromOrigin: Double = math.hypot(x, y)
+  def compareTo(that: Point): Int = 
+    (distanceFromOrigin - that.distanceFromOrigin).round.toInt
+}
+\end{Code}
 
 
 \Task \label{task:swedish-letter-ordering} \emph{Fixa svensk sorteringsordning av ÄÅÖ.} Svenska bokstäver kommer i, för svenskar, konstig ordning om man inte vidtar speciella åtgärder. Med hjälp av klassen \code{java.text.Collator} kan man få en \code{Comparator} för strängar som följer lokala regler för en massa språk på planeten jorden. 
@@ -700,8 +742,6 @@ scala> val rätt = Vector("ö","å","ä","z").sorted(svOrd)
 
 
 \Task java.util.Arrays.binarySearch  \TODO \\ \url{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html}
-
-\Task java.util.Arrays.sort  \TODO
 
 
 \Task Fördjupa dig inom webbteknologi. 
