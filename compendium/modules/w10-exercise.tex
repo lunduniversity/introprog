@@ -5,11 +5,19 @@
 \Exercise{\ExeWeekTEN}
 
 \begin{Goals}
-\item \TODO
+\item Förstå hur sorteringsordningen är definierad för strängar.
+\item Förstå skillnaderna mellan strängjämförelser i Scala och Java, samt kunna jämföra strängar med jämförelsoperatorer i Scala och med \code{compareTo} i Java.
+\item Kunna sortera sekvenssamlingar innehållande objekt av grundtyper med hjälp av inbyggda och egendefinierade sorteringsordningar med metoderna \code{sorted}, \code{sortBy} och \code{sortWidth}.
+\item Kunna använda inbyggda linjärsöknings- och binärsökningsmetoder. 
+\item Kunna implementera en egen sökalgoritm med linjärsökning och binärsökning.
+\item Förstå när binärsökning är lämplig och möjlig.
+\item Kunna implementera en enkel sorteringsalgoritm, t.ex. insättningssortering eller urvalssortering, både till ny samling och på plats.   
+\item Känna till hur implicita sorteringsordningar används för grundtyperna och egendefinierade typer.
+\item Känna till existensen av, funktionen hos, och relatoinen mellan klasserna \code{Ordering} och \code{Comparator}, samt  \code{Ordered} och \code{Comparable}.
 \end{Goals}
 
 \begin{Preparations}
-\item \TODO
+\item Studera innebörden av veckans begrepp. 
 \end{Preparations}
 
 \BasicTasks %%%%%%%%%%%%%%%%
@@ -50,7 +58,7 @@ scala> "hej".compareTo("hej")
 \javainputlisting{examples/StringEqTest.java}
 
 
-\Task \emph{Sortering med inbyggda sorteringsmetoder.} För de inbyggda typerna (\code{Int}, \code{Double}, \code{String}, etc.) finns en fördefinierad ordning som gör så att färdiga sorteringsmetoder fungerar på alla samlingar i \code{scala.collection}. Även att jämförelseoperatorerna i uppgift \ref{task:string-order-operators} fungerar enligt den fördefinierade ordningsdefinitionen för alla inbyggda typer. Denna ordningsdefinition är \textit{implicit tillgänglig} vilket betyder att kompilatorn hittar ordningsdefinitionen utan att vi explicit måste ange den.
+\Task \emph{Sortering med inbyggda sorteringsmetoder.} För grundtyperna (\code{Int}, \code{Double}, \code{String}, etc.) finns en fördefinierad ordning som gör så att färdiga sorteringsmetoder fungerar på alla samlingar i \code{scala.collection}. Även att jämförelseoperatorerna i uppgift \ref{task:string-order-operators} fungerar enligt den fördefinierade ordningsdefinitionen för alla grundtyper. Denna ordningsdefinition är \textit{implicit tillgänglig} vilket betyder att kompilatorn hittar ordningsdefinitionen utan att vi explicit måste ange den.
 
 \Subtask Testa metoden \code{sorted} på några olika samlingar. Förklara vad som händer. Hur lyder felmeddelande på sista raden? Varför blir det fel?
 
@@ -65,7 +73,7 @@ scala> val ps = Vector(Person("Zeb", "Robinson"), Person("Robin","Zebson"))
 scala> ps.sorted
 \end{REPL}	
 
-\Subtask Om man har en samling med egendefinierade klasser eller man vill ha en annan sorteringsordning får man definiera ordningen själv. Ett helt generellt sätt att göra detta på  illustreras i uppgift \ref{task:custom-ordering}, men de båda hjälpmetoderna \code{sortWith} och \code{sortBy} räcker i de flesta fall. Hur de används illustreras nedan. Metoden \code{sortBy} kan användas om man tar fram ett värde av inbyggd typ och är nöjd med den inbyggda sorteringsordningen. 
+\Subtask Om man har en samling med egendefinierade klasser eller man vill ha en annan sorteringsordning får man definiera ordningen själv. Ett helt generellt sätt att göra detta på  illustreras i uppgift \ref{task:custom-ordering}, men de båda hjälpmetoderna \code{sortWith} och \code{sortBy} räcker i de flesta fall. Hur de används illustreras nedan. Metoden \code{sortBy} kan användas om man tar fram ett värde av grundtyp och är nöjd med den inbyggda sorteringsordningen. 
 
 Metoden \code{sortWith} används om man vill skicka med ett eget jämförelsepredikat som ordnar två element; funktionen ska returnerna \code{true} om det första elementet ska vara först, annars \code{false}.
 
@@ -535,7 +543,7 @@ def isSorted(xs: Seq[Int]): Boolean = xs == xs.sorted
 \end{Code}
 
 
-\Subtask Men vi vill gärna att \code{isSorted} ska fungera för godtyckliga typer T som har en ordningsdefinition. Detta kan göras med nedan funktion eftersom metoden \code{sorted} är definierad för alla samlingar där typen \code{T} har en implicit ordning. Speciellt gäller detta för alla de inbyggda typerna \code{Int}, \code{Double}, \code{String}, etc.
+\Subtask Men vi vill gärna att \code{isSorted} ska fungera för godtyckliga typer T som har en ordningsdefinition. Detta kan göras med nedan funktion eftersom metoden \code{sorted} är definierad för alla samlingar där typen \code{T} har en implicit ordning. Speciellt gäller detta för alla de grundtyperna \code{Int}, \code{Double}, \code{String}, etc.
 \begin{Code}
 def isSorted[T](xs: Seq[T]): Boolean = xs == xs.sorted 
 \end{Code}
@@ -566,7 +574,7 @@ def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean =
   xs.zip(xs.tail).forall(x => ord.lteq(x._1, x._2))
 \end{CodeSmall}
 
-Det finns fördefinierade implicita objekt \code{Ordering[T]} för alla inbyggda typer, alltså t.ex. \code{Ordering[Int]}, \code{Ordering[String]}, etc. Objekt av typen \code{Ordering} har jämförelsemetoder som t.ex. \code{lteq} (förk. \emph{less than or equal}) och \code{gt} (förk. \emph{greater than}).
+Det finns fördefinierade implicita objekt \code{Ordering[T]} för alla grundtyper, alltså t.ex. \code{Ordering[Int]}, \code{Ordering[String]}, etc. Objekt av typen \code{Ordering} har jämförelsemetoder som t.ex. \code{lteq} (förk. \emph{less than or equal}) och \code{gt} (förk. \emph{greater than}).
 Testa så att kompilatorn hittar ordningen för samlingar av värden av inbyggda typer. Visa även att det fortfarande blir problem för egendefinierade klasser, t.ex. \code{Person} enligt tidigare (detta ska vi råda bot på i uppgift \ref{task:custom-ordering}).
 
 \Subtask \emph{Importera implicita ordningsoperatorer från en \code{Ordering}.} Om man gör import på ett \code{Ordering}-objekt får man tillgång till implicita konverteringar som gör att jämförelseoperatorerna fungerar. Testa nedan variant av \code{isSorted} på olika sekvenstyper och verifiera att \code{<=}, \code{>}, etc., nu fungerar enligt nedan.
@@ -648,7 +656,7 @@ case class Team(name: String, rank: Int) extends Ordered[Team]{
   override def compare(that: Team): Int = ???
 } 
 \end{Code}
-\emph{Tips:} Du kan anropa metoden \code{compare} på alla inbyggda typer, t.ex. \code{Int}, eftersom de är implicit ordnade. Genom att negera uttrycket blir ordningen den omvända.
+\emph{Tips:} Du kan anropa metoden \code{compare} på alla grundtyper, t.ex. \code{Int}, eftersom de är implicit ordnade. Genom att negera uttrycket blir ordningen den omvända.
 \begin{REPL}
 scala> -(2.compare(1))  
 \end{REPL}
