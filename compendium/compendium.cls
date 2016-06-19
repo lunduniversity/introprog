@@ -84,7 +84,7 @@
 \tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3cm, rectangle split, rectangle split parts = 3]
 \tikzstyle{umlarrow}=[->, >=open triangle 90, thick]
 
-\newcommand{\TODO}{\colorbox{blue!30}{TODO!!!}}
+\newcommand{\TODO}{\colorbox{blue!30}{TODO!!!}~}
 
 \newcommand{\Emph}[1]{\textcolor{myemphcolor}{\textbf{#1}}}
 \newcommand{\Alert}[1]{\textcolor{myalertcolor}{\textbf{#1}}}
