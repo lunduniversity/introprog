@@ -61,7 +61,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Sekvensalgoritmer", 
-      id = "seqalg", exercise = "sequences", lab = "cards", contents = """
+      id = "seqalg", exercise = "sequences", lab = "shuffle", contents = """
       | sekvensalgoritm,  algoritm: SEQ-COPY,   
       | in-place vs copy, algoritm: SEQ-REVERSE, algoritm: SEQ-REGISTER,
       | sekvenser i Java vs Scala, for-sats i Java,
