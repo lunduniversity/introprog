@@ -16,7 +16,7 @@ trait Plan {
       | sekvens, alternativ, repetition, abstraktion, programmeringsspråk,
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, REPL,  
-      | literal, värde, uttryck, variabel, typ, tilldelning, namn, val, var, def,  
+      | literal, värde, uttryck, identifierare, variabel, typ, tilldelning, namn, val, var, def,  
       | inbyggda typer, Int, Long, Short, Double, Float, Byte, Char, String,
       | println, typen Unit, enhetsvärdet (), stränginterpolatorn s,
       | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random,
@@ -27,14 +27,14 @@ trait Plan {
       id = "codestruct", exercise = "programs", lab = "", contents = """
       | Range, Array, Vector, iterering, for-uttryck, map, foreach, 
       | algoritm vs implementation, pseudokod, 
-      | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX,  
+      | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX, algoritm: MININDEX,
       | block, namnsynlighet, namnöverskuggning, lokala variabler,
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
       | main i Java vs Scala, java.lang.System.out.println,
       """.stripTrim),
       
     Module("Funktioner, Objekt", 
-      id = "funobj", exercise = "functions", lab = "bugs", contents = """
+      id = "funobj", exercise = "functions", lab = "blockmole", contents = """
       | definera funktion, anropa funktion,
       | parameter, returtyp, värdeandrop, namnanrop, default-argument, namngivna argument,
       | applicera funktion på alla element i en samling, procedur, 
@@ -98,10 +98,11 @@ trait Plan {
 
     Module("Mönster, Undantag", 
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
-      | mönstermatchning, match, Option, try, catch, Try, unapply, sealed, 
+      | mönstermatchning, match, Option, try, catch, finally ???, Try, unapply, sealed, 
+      | switch-sats i Java,
       | flatten, flatMap, partiella funktioner, collect, 
       | implementera equals utan arv för Complex,  
-      | implementera equals med arv för Shape,  
+      | implementera equals med arv för Shape ???,  
       """.stripTrim),
 
     Module("Matriser, Typparametrar", 
@@ -112,19 +113,21 @@ trait Plan {
       """.stripTrim),
 
     Module("Sökning, Sortering", 
-      id = "searchsort", exercise = "sorting", lab = "surveydata-team", contents = """
-      | compareTo på strängar, trait Ordered[T], 
+      id = "searchsort", exercise = "sorting", lab = "surveydata", contents = """
+      | strängjämförelse, compareTo, imlicit ordning, 
+      | linjärsökning, binärsökning, 
       | algoritm: LINEAR-SEARCH, algortim: BINARY-SEARCH, 
       | algoritmisk komplexitet, 
       | sortering till ny vektor, sortering på plats, 
+      | insättningssortering, urvalssortering, 
       | algoritm: INSERTION-SORT, algoritm: SELECTION-SORT,
-      | mer om filer, serialisering,
+      | Ordering[T], Ordered[T], Comparator[T], Comparable[T],
       """.stripTrim),  
       //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
     Module("Scala och Java", 
       id = "scalajava", exercise = "scalajava", lab = "lthopoly-team", contents = """
-      | skillnader mellan Scala och Java, 
+      | översikt av syntaxskillnader mellan Scala och Java, 
       | klasser i Scala vs Java, 
       | referensvariabler vs enkla värden i Java,
       | referenstilldelning vs värdetilldelning i Java,
@@ -136,13 +139,16 @@ trait Plan {
       | översiktligt om relationen mellan trait och interface,
       | namnkonventioner för konstanter,
       | enum i java ???,
+      | mer om filer ???, serialisering ???,
       """.stripTrim),
 
-    Module("Trådar", //, Web ???, Android ???", 
-      id = "threadetc", exercise = "threads", lab = "life", contents = """
-      | Thread, Future, (Duration ???), (Await ???), 
-      | HTML, (Javascript ???), (css ???), 
-      | (Scala.js ???), (Android ???),
+    Module("Trådar",  
+      id = "threads", exercise = "threads", lab = "life", contents = """
+      | tråd, jämlöpande exekvering,  
+      | icke-blockerande anrop, callback,
+      | java.lang.Thread, 
+      | java.util.concurrent.atomic.AtomicInteger,
+      | scala.concurrent.Future, 
       """.stripTrim),
 
     Module("Design", 

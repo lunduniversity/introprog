@@ -8,6 +8,7 @@
 \geometry{hmargin={4.5cm,2.5cm}}
 \geometry{vmargin={3cm,3cm}}
 \usepackage{marginnote}
+\usepackage{float}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -29,6 +30,7 @@
 %\usepackage{PTSans}
 
 \usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage{changepage}   % for the adjustwidth environment to make narrow paragraphs
 
 \usepackage{sectsty} %change font on headings
 \allsectionsfont{\sffamily}
@@ -64,6 +66,7 @@
 
 \usepackage{multicol} \setlength{\columnsep}{5mm}
 \usepackage{listings}
+\usepackage{upquote} %http://tex.stackexchange.com/questions/145416/how-to-have-straight-single-quotes-in-lstlistings
 \usepackage{xspace} %http://www.math.tamu.edu/~harold.boas/courses/math696/why-macros.html
 \usepackage[pdfpagelayout=TwoPageRight]{hyperref}
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
@@ -81,6 +84,8 @@
 \tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3cm, rectangle split, rectangle split parts = 3]
 \tikzstyle{umlarrow}=[->, >=open triangle 90, thick]
 
+\newcommand{\TODO}{\colorbox{blue!30}{TODO!!!}}
+
 \newcommand{\Emph}[1]{\textcolor{myemphcolor}{\textbf{#1}}}
 \newcommand{\Alert}[1]{\textcolor{myalertcolor}{\textbf{#1}}}
 \newcommand{\Eng}[1]{(eng. {\textit{#1}})}
@@ -95,8 +100,8 @@
 \newcommand{\Lab}[1]{\newpage\section{Laboration: {\tt #1}}}
 \newcommand{\Assignment}[1]{\newpage\section{Projektuppgift: {\tt #1}}}
 \newcommand{\BasicTasks}{\subsection{Grunduppgifter}}
-\newcommand{\ExtraTasks}{\subsection{Extrauppgifter: öva mer på grunderna}}
-\newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter: avancerad nivå}}
+\newcommand{\ExtraTasks}{\subsection{Extrauppgifter}}
+\newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter}}
 \newcommand{\TaskSection}[1]{\subsubsection*{#1}}
 
 \newcounter{TaskCounter}[section]
@@ -127,11 +132,19 @@
 {\subsubsection{Förberedelser}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
+\newenvironment{Background}%
+{\begin{adjustwidth}{\parindent}{}\small \emph{Bakgrund för kännedom:}}%
+{\end{adjustwidth}}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% changes to make slide stuff look good in compendium
 
 \newcommand{\pause}{}% do nothing
+%%% SLIDE SIZES with no affect in compedium
+\newcommand{\SlideFontSize}[2]{}
+\newcommand{\SlideFontSmall}{}
+\newcommand{\SlideFontTiny}{}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -163,9 +176,9 @@
     commentstyle=\color{mygreen},
     numberstyle={\footnotesize},
     numbers=none,
-    backgroundcolor=\color{gray!10},
+    backgroundcolor=\color{gray!15},
     frame=single,
-    rulecolor=\color{black!20},
+    rulecolor=\color{black!25},
     %title={\footnotesize\lstname},
     breaklines=false,
     breakatwhitespace=false,
@@ -188,6 +201,7 @@
 {ø}{{\o}}1
 {Æ}{{\AE}}1
 {Ø}{{\O}}1
+{`}{{\`{}}}1
 {─}{{\textemdash}}1
 {└}{{|}}1
 {├}{{|}}1
@@ -208,7 +222,7 @@
     \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
             backgroundcolor=\color{white},,
             title={\hskip-0.38em\colorbox{black!70}{\parbox{\dimexpr\textwidth+1\fboxsep-2\fboxrule\relax}{\fontsize{10}{12}\selectfont\color{white}{\textit{Specification} \texttt{\textbf{#2}}}}}},%
-            identifierstyle=\color{black!80},%
+            identifierstyle=\color{black},%
             rulecolor=\color{black!60},frame=tRbL,framerule=1.2pt,%
             language=Scala,#1}%
 }{}

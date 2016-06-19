@@ -4,6 +4,14 @@ This is the repo of a course given by Lund University called "Introduction to Pr
 
 Course homepage (in Swedish): http://cs.lth.se/pgk/ 
 
+This is work in progress; the first instance of the course starts this fall semester, August 29, 2016 at LTH in Lund.
+
+## How to use this repo
+
+* Download the latest version of the [compendium](https://github.com/lunduniversity/introprog/raw/master/compendium/compendium.pdf).
+
+* Download the [workspace](zipfile to be uploaded). <- TODO ->
+
 ## Contents of this repo
 
 The main directories are:
@@ -16,39 +24,6 @@ The main directories are:
 * `img` images used in compendium and slides
 * `refs` extra readings, background material
 * `teachers` information for teachers
-
-The directories are organized in this hierarchy: 
-
-        $ tree -d -L 2
-        .
-        ├── compendium
-        │   ├── examples
-        │   ├── generated
-        │   ├── modules
-        │   ├── postchapters
-        │   └── prechapters
-        ├── img
-        │   └── kojo
-        ├── plan
-        │   ├── concepts
-        │   ├── courseplan
-        │   └── ideas
-        ├── refs
-        ├── slides
-        │   └── body
-        ├── teachers
-        │   └── course-dev-2016
-        └── workspace
-            ├── cslib
-            ├── week01
-            └── week03
-
-
-## How to use this repo
-
-* Download the [compendium](https://github.com/lunduniversity/introprog/raw/master/compendium/compendium.pdf).
-
-* Download the [workspace](zipfile to be uploaded). <- TODO ->
 
 ## How to build this repo
 
@@ -167,6 +142,8 @@ Here are some other inspiring style guides that illustrate the variety in what d
 * For Mac OSX users: there are some problems with El-Capitan and TeX. For some users there are problems compiling .tex-files in the terminal out of the box. You may get this error message: 'mktexpk: No such file or directory' or similar. Using TeXShop to compile the document seems to resolve the issue. To configure TeXShop correctly on El-Capitan, follow the guide https://www.tug.org/mactex/UpdatingForElCapitan.pdf
 
 * Check out the `.cls` files in `compendium/` and `slides/` that provide many useful latex commands.
+  * [compendium.cls](https://github.com/lunduniversity/introprog/blob/master/compendium/compendium.cls)
+  * [lecturenotes.cls](https://github.com/lunduniversity/introprog/blob/master/slides/lecturenotes.cls)
 
 * Check out some similar, already written `.tex` document and compare with the compiled `.pdf` to see the commands and conventions we use. 
 
@@ -174,3 +151,44 @@ Here are some other inspiring style guides that illustrate the variety in what d
   * `\begin{Code}` ... `\end{Code}` and `\scalainputlisting{examples/hello-app.scala}` are used for Scala code 
   * `\begin{Code}[language=Java]` ... `\end{Code}` and `\javainputlisting{examples/Hi.java}` are used for Java code
   * `\begin{Slide}` and `\end{Slide}` defined in `slides/lecture-notes.cls` and in `compendium/compendium.cls` is used to generate beamer slides and to generate framed text in compendium chapters together with lecture notes that appear after each slide.
+  
+#### How to make figures in the compendium
+
+Here is an example of our convention for figures (using the float-package):
+
+        \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{../img/pirates/selectws.png}
+        \caption { \emph{Öppna workspace.} Bläddra fram till kursens workspace och klicka OK. }
+        \label{fig:eclipse:ide:open}
+        \end{figure}
+
+Adapt the size of the figure width to make it look good by changing 0.7 above to something appropriate depending on the proportion of height/width of your figure.
+
+Labels are named with the convention `\label{chap:subchap:subsubchap:somegoodname}`
+ 
+# License
+
+Copyright &copy; 2015-2016. Dept. of Computer Science at Lund University, Lund, Sweden.
+
+Contributors: https://github.com/lunduniversity/introprog/blob/master/contributors.tex
+
+This work is licensed under a
+Creative Commons Attribution-ShareAlike 4.0 International License.
+
+
+You are free to:
+
+* Share — copy and redistribute the material in any medium or format
+* Adapt — remix, transform, and build upon the materia for any purpose, even commercially.
+* The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+Under the following terms:
+
+* Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+*  ShareAlike — If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
+* No additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
+
+
+See http://creativecommons.org/licenses/by-sa/4.0/
+
