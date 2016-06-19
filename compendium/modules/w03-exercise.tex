@@ -6,6 +6,7 @@
 \begin{Goals}
 \item Kunna skapa och använda funktioner med en eller flera parametrar, default-argument, namngivna argument, och uppdelad parameterlista.
 \item Kunna använda funktioner som äkta värden. 
+\item Kunna skapa och använda anonyma funktioner (s.k. lambda-funktioner).
 \item Kunna applicera en funktion på element i en samling.
 \item Förstå skillnader och likheter mellan en funktion och en procedur.
 \item Förstå skillnader och likheter mellan en värde-anrop och namnanrop.
@@ -17,8 +18,8 @@
 \item Kunna skapa och använda lokala funktioner, samt förstå nyttan med lokala funktioner.
 \item Känna till att funktioner är objekt med en \code{apply}-metod.
 \item Känna till stegade funktioner och kunna använda partiellt applicerade argument. 
-\item Känna till rekursion och kunna förklara hur rekursiva funktioner fungerar med hjälp av   anropsstacken.
-\item Känna till svansrekursion och att svansrekursiva funktioner kan optimeras till loopar.
+\item Känna till rekursion och kunna förklara hur rekursiva funktioner fungerar.
+%\item Känna till svansrekursion och att svansrekursiva funktioner kan optimeras till loopar.
 \end{Goals}
 
 \begin{Preparations}
@@ -59,9 +60,9 @@ Vad har nedan uttryck för värden? Förklara vad som händer.
 
 \Subtask \code{diff(0, 100)}
 
-\Subtask \code{diff(100, add(42, 43))}
+\Subtask \code{diff(100, sum(42, 43))}
 
-\Subtask \code{sum(sum(42, 43), diff(100, sum(0, 0))}
+\Subtask \code{sum(sum(42, 43), diff(100, sum(0, 0)))}
 
 \Subtask \code{sum(diff(Byte.MaxValue, Byte.MinValue),1)}
 
@@ -169,19 +170,25 @@ scala> add(22)(add(1)(19))
 \end{REPL}
 
 
-\Task \emph{Skapa din egen kontrollstruktur.} Använd fördröjd evaluering och stegad funktion och skapa din egen loop-konstruktion.
+\Task \emph{Skapa din egen kontrollstruktur.} 
+
+\Subtask Använd fördröjd evaluering i kombination med en uppdelad parameterlista och skapa din egen kontrollstruktur enligt nedan. (Det är så här som loopen \code{upprepa} i Kojo är definierad.)
 \begin{REPL}
-scala> def upprepa(n: Int)(block: => Unit) = {
+scala> def upprepa(n: Int)(block: => Unit): Unit = {
          var i = 0
          while (i < n) {block; i = i + 1}
        }
+\end{REPL}
+       
+\Subtask Använd din nya loop-procedur och förklara vad som händer nedan. 
+\begin{REPL}
 scala> upprepa(10)(println("hej"))
 scala> upprepa(1000){
   val tärning = (math.random * 6 + 1).toInt
   print(tärning + " ")
 }
 \end{REPL}
-Förklara vad som händer ovan. (Det är så som \code{upprepa} i Kojo är definierad.)
+
 
 
 \Task \emph{Funktion som värde.} Funktioner är äkta värden i Scala.
@@ -232,7 +239,7 @@ scala> dec(42)
 \item Ett objekt som samlar funktioner och variabler kallas även en \textbf{modul}. 
 \item Funktioner i objekt kallas även \textbf{metoder}. 
 \item Variabler och metoder i objekt kallas \textbf{medlemmar}. 
-\item Moduler kan i sin tur innehålla moduler, i godtyckligt nästlingsdjup. 
+\item Moduler kan i sin tur innehålla moduler, i godtyckligt \textbf{nästlingsdjup}. 
 \item Man kommer åt innehållet i en modul med \textbf{punktnotation}. 
 \item Med \textbf{import} slipper man punktnotation. 
 \item Ett objekt med variabler sägs ha ett \textbf{tillstånd}.
@@ -279,7 +286,7 @@ object Test {
 \Subtask Vilket av objekten i modulen \code{stringstat} har tillstånd och vilket av objekten är tillståndslöst? Vad består tillståndet av?
 
 
-\Task \emph{Äkta funktioner.} En \textbf{äkta funktion} ger alltid samma resultat med samma argument.  
+\Task \emph{Äkta funktioner.} En \textbf{äkta funktion} ger alltid samma resultat med samma argument  (så som vi är vana vid inom matematiken).\footnote{Äkta funktioner uppfyller per definition  \textit{referentiell transparens} \Eng{referential transparency} som du kan läsa mer om här:  \href{https://en.wikipedia.org/wiki/Referential_transparency}{en.wikipedia.org/wiki/Referential\_transparency}}
 
 \begin{Code}
 object inSearchOfPurity {
@@ -298,7 +305,7 @@ object inSearchOfPurity {
 
 \Subtask \label{subtask:nonpure} Anropa de funktioner som inte är äkta i REPL och demonstrera med exempel att de kan ge olika resultat för samma argument.
 
-\Subtask Vad objektets är tillstånd efter dina körningar i uppgift \ref{subtask:nonpure}? 
+\Subtask Vad är objektets tillstånd efter dina körningar i uppgift \ref{subtask:nonpure}? 
 
 \Subtask Vilken del av tillståndet i objektet är oföränderligt?
 
@@ -372,8 +379,8 @@ object Count {
 
   def add(x: Int, y: Int) = {
     println("add[x = " + x + ", y = " + y + "]")
-    var result = x; 
-    var i = 0; 
+    var result = x 
+    var i = 0 
     while (i < math.abs(y)){
       result = if (y >= 0) inc(result) else dec(result)
       i = i + 1
@@ -405,8 +412,8 @@ object Count {
     def inc(x: Int) = {println("inc[x = " + x + "]"); x + 1}
     def dec(x: Int) = {println("dec[x = " + x + "]"); x - 1}
     println("add[x = " + x + ", y = " + y + "]")
-    var result = x; 
-    var i = 0; 
+    var result = x 
+    var i = 0 
     while (i < math.abs(y)){
       result = if (y >= 0) inc(result) else dec(result)
       i = i + 1
@@ -495,7 +502,7 @@ scala> add(0, Int.MaxValue)
 
 
 
-\Task \emph{Kolla bajtkoden.}
+\Task \emph{Undersök den genererade byte-koden.} Kompilatorn genererar \textbf{byte-kod}, uttalas ''bajtkod'' \Eng{byte code}, som den virtuella maskinen tolkar och översätter till maskinkod medan programmet kör. Med kommandot \code{:javap} i REPL kan du undersöka byte-koden. 
 \begin{REPL}
 scala> def plusxy(x: Int, y: Int) = x + y
 scala> :javap plusxy
@@ -504,9 +511,9 @@ scala> :javap plusxy
 \Subtask Leta upp raden \code{public int plusxy(int, int);} och studera koden efter \code{Code:} och försök gissa vilken instruktion som utför själva additionen.
 
 \Subtask Lägg till en parameter till: \\ \code{def plusxyz(x: Int, y: Int, z: Int) = x + y + z}
-\\ och studera bajtkoden med \code{:javap plusxyz}. Vad skiljer bajtkoden mellan \code{plusxy} och \code{plusxyz}?
+\\ och studera byte-koden med \code{:javap plusxyz}. Vad skiljer byte-koden mellan \code{plusxy} och \code{plusxyz}?
 
-\Subtask\Pen Läs om bajtkod här: \href{https://en.wikipedia.org/wiki/Java\_bytecode}{en.wikipedia.org/wiki/Java\_bytecode}. Vad betyder den inledande bokstaven i additionsinstruktionen?
+\Subtask\Pen Läs om byte-kod här: \href{https://en.wikipedia.org/wiki/Java\_bytecode}{en.wikipedia.org/wiki/Java\_bytecode}. Vad betyder den inledande bokstaven i additionsinstruktionen?
 
 
 \Task \emph{Undersök svansrekursion genom att kasta undantag.} Förklara vad som händer. Kan du hitta bevis för att kompilatorn kan optimera rekursionen till en vanlig loop?

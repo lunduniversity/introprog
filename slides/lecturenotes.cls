@@ -33,6 +33,7 @@
 
 \usepackage{multicol} \setlength{\columnsep}{5mm}
 \usepackage{listings}
+\usepackage{upquote} %http://tex.stackexchange.com/questions/145416/how-to-have-straight-single-quotes-in-lstlistings
 \usepackage{xspace} %http://www.math.tamu.edu/~harold.boas/courses/math696/why-macros.html
 \usepackage{hyperref}
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
@@ -81,6 +82,11 @@
 \newcommand{\SlideOnly}[1]{#1}
 
 \newcommand{\vecka}{1}
+
+%%% SLIDE SIZES with no affect in compedium
+\newcommand{\SlideFontSize}[2]{\fontsize{#1}{#2}\selectfont}
+\newcommand{\SlideFontSmall}{\SlideFontSize{9}{11}}
+\newcommand{\SlideFontTiny}{\SlideFontSize{8}{10}}
 
 %http://tex.stackexchange.com/questions/104220/beamer-tableofcontents-does-not-display-the-correct-section-number-after-setco
 \makeatletter 

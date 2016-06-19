@@ -2,10 +2,21 @@
 %!TEX root = ../compendium.tex
 
 \Assignment{tictactoe}
-I detta projekt ska du implementera din egen version av spelet tic-tac-toe (eller som vi på svenska kallar det, tre i rad)! Du kommer börja med att implementera en version där du kan spela mot en kursare och sen gå vidare till att implementera en datorspelare som lägger sin pjäs slumpmässigt och till slut en som inte kan förlora!
+
+\begin{Goals}
+	\item Implementera ett helt program efter specifikation.
+	\item Få en inblick i hur rekursion kan användas, utöver svans-rekursion.
+	\item Bli introducerad till spelteori och hur man kan uttrycka optimal strategi för spelet tictactoe.
+	\item Träna på att använda abstrakta klasser.
+	\item Kunna byta mellan representationer av en spelplan.
+\end{Goals}
+
+\subsection{Bakgrund}
+I detta projektet ska du implementera din egen version av spelet tic-tac-toe (eller som vi på svenska kallar det, tre i rad)! Du kommer börja med att implementera en version där du kan spela mot en kursare och sen gå vidare till att implementera en datorspelare som lägger sin pjäs slumpmässigt och till slut en som inte kan förlora!
+
 
 \subsection{Regler}
-%Om du känner dig säker på hur reglerna i tic-tac-toe funkar kan du skippa detta. 
+Om du känner dig säker på hur reglerna i tic-tac-toe funkar kan du skippa detta. 
 \begin{itemize}
 	\item Spelplanen består av ett rutnät av storlek 3x3.
 	\item Det finns två spelare: \texttt{x} och \texttt{o}.
@@ -15,51 +26,106 @@ I detta projekt ska du implementera din egen version av spelet tic-tac-toe (elle
 \textit{Notera att pjäserna INTE får flyttas när de väl ligger på spelplanen.}
 
 \subsection{Teori}
-Representationen är vald till en endimensionell vektor av typen Int av storlek 9 där elementen 0 till och med 2  representerar den första raden, [3, 5] andra raden och [6, 8] den tredje. Anledningen till detta är att vi vill ha en representation så att spelaren kan svara vilket drag den vill göra med ett heltal.
-Varje element i vektorn ska kunna representera en tom plats, en plats allokerad av \texttt{x} och en plats allokerad av \texttt{o}. Detta innebär att en vektor av typen Boolean inte räcker till. Istället väjs den (kanske lite minnesöverflödiga) typen Int. Hint: en bra representation är 0 för tom plats, 1 för \texttt{x} och -1 för \texttt{o}. 
+
+Representationen är vald till en endimensionell vektor av typen Int av storlek 9 där element $[0,2]$ \footnote{Med beteckningen [x,y] menas alla heltal från x till y, dvs: x, x+1, x+2, ... , y-1, y. [0,2] = {0,1,2}} representerar den första raden $[3,5]$ andra och $[6,8]$ den tredje. Anledningen till detta är att vi vill ha en representation så att spelaren kan svara vilket drag den vill göra med ett heltal.
+Varje element i vektorn ska kunna representera en tom plats, en plats allokerad av \texttt{x} och en plats allokerad av \texttt{o}. Detta innebär att en vektor av typen Boolean inte räcker till. Istället väjs den (kanske lite minnesöverflödiga) typen Int. Vi har valt representationen där 0 representerar tom plats, 1 representerar \texttt{x} och -1 representerar \texttt{o}. Denna representation är dels smidig för vår framtida OptimalP och även för att avgöra om spelare \texttt{x} eller \texttt{o} har vunnit. Man kan exempelvis summera en rad och kolla om radens summa är 3, då har \texttt{x} vunnit eller -3, då har \texttt{o} vunnit.
  
 \subsection{Obligatoriska uppgifter}
 
 \Task Implementera ett fungerande spel genom att utöka kodskeletten i klasserna Player, HumanPlayer och Game.
 
-\Subtask Implementera funktionen gameWon i klassen Player som testar huruvida spelaren \code{who} vunnit spelet.
+\Subtask Implementera metoden \code{gameWon} i klassen Player som testar huruvida spelaren \code{who} vunnit spelet.
 
-\Subtask Implementera en HumanPlayer.
+\Subtask Implementera HumanPlayers \code{toString}-metod
 
-\Subtask Implementera första version av Game.
+\Subtask Implementera HumanPlayers \code{move}-metod.
 
-\Task Randomized player
+\Subtask Implementera en version av Game. Börja med att alltid spela ett spel och alltid rita spelplanen. \code{main}, \code{draw} och \code{play} behöver implementeras. All funktionalitet i main behöver ännu inte finnas.\footnote{Notera att man behöver invertera spelplanen om den ska skickas till spelare två (alternativt låta spelaren hålla reda på om den är \texttt{x} eller \texttt{o}). Förslagsvis löses detta med en extra metod invGame som skapar en ny array med omvända tecken till orginalarrayen.}
 
-\Subtask Implementera en spelare som väljer ett slumpmässigt giltigt drag.
+\Task RandomPlayer
 
-\Subtask Ändra Game så att användaren tillåts stänga av ritfunktionen och tillåts spela många spel.
+\Subtask Skapa en ny utökning av Player (kopiera HumanPlayer, och byt namn till RandomPlayer) där move istället för att läsa från System.in väljer ett random giltigt drag.
 
-\Subtask Vad är sannolikheterna för att \texttt{x} vinner, \texttt{o} vinner och att det blir oavgjort om två randomized players spelar mot varandra?
+\Subtask Ändra Game så att användaren tillåts stänga av ritfunktionen och i så fall tillåts välja antalet spel.
 
-Hamnar man i närheten av dessa resultat tror vi på er randomized player.
+\Subtask Vad är sannolikheterna för att \texttt{x} vinner, \texttt{o} vinner och att det blir oavgjort om två RandP spelar mot varandra?
+
+Hamnar man i närheten av dessa resultat tror vi på er RandP.
 \begin{itemize}
 	\item P(\texttt{x} vinner) = 0.586
 	\item P(\texttt{o} vinner) = 0.288
 	\item P(lika) = 0.126
 \end{itemize}
 
-
 \Subtask Varför är det större sannolikhet för \texttt{x} att vinna än \texttt{o}?
 
-\Task Optimal Player
+\Task OptimalPlayer
 
-\Subtask Läs igenom eval-funktionen och Appendix om max-min-evaluering.
+Betrakta den givna funktionen \texttt{eval}
+\begin{Code}
+/* returns 1 if there is a guaranteed strategy for who to win 
+ * returns 0 if there is a guaranteed strategy for who to draw 
+ * returns -1 if the opponent can force a win,
+ * no matter what who does.
+ * This is done by min,max-evaluation. 
+ * Find the move that gives the oppoent the worst possible
+ * position and return -min, this is our max.
+ */
+def eval(game: Array[Int], depth: Int, who: Int): Int = {
+	if(gameWon(game,-who)) return -1;
+	if(depth == 9) return 0;
+	var min = 1;
+	for(i <- 0 until 9) {
+		if(game(i) == 0) {
+			game(i) = who;
+			val score = eval(game,depth+1,-who);
+			if(score<min){
+				min = score;
+			}
+			game(i) = 0;
+		}
+	}
+	-min;
+}
+\end{Code}
 
-\Subtask Implementera Optimal Players move-funktion.
+\texttt{eval} avgör om du är i en vinnande, förlorande eller oavgjord situation, givet att båda spelare spelar optimalt. Det som nog är svårast att förstå är varför vi retunerar \texttt{-min} på slutet. \texttt{min} sparar det sämsta värdet som vår motståndare kan få givet våra möjliga drag. Vi observerar att vi är i precis omvänd situation jämfört med vår motståndare. Om vår moståndare definitivt vinner förlorar vi definitivt, om det blir oavgjort för vår motståndare blir det också oavgjort för oss, och om vår motståndare definitivt förlorar, då vinner vi. Vi representerade ju vinst med 1, oavgjort med 0 och förlust med -1. Det är alltså härifrån minustecknet kommer ifrån. Vill man läsa mer om detta kan man kolla in wikipedias artikel \footnote{\url{https://en.wikipedia.org/wiki/Minimax}} om minmax-evaluering. Vi tar helt enkelt det draget som är sämst för vår motståndare.
 
-\Subtask testa att spela mot din Optimal player med en human player, kan du spela lika? Kan du vinna?
+\Subtask Implementera move-metoden till OptimalPlayer genom att kalla på eval.
 
-\Subtask Vad händer om du sätter en random player mot Optimal player? Blir det någonsin oavgjort, hur ofta?
+\Subtask Låt två OptimalPlayer spela mot varandra. Det skall alltid bli oavgjort.
+
+\Subtask Testa att spela mot din OptimalPlayer med en HumanPlayer. Kan du spela lika? Kan du vinna?
+
+\Subtask Vad händer om du sätter en RandomPlayer mot OptimalPlayer? Blir det någonsin oavgjort, hur ofta? Bilr det någon skillad man byter vem som får spela först?
+
+\Task Utöka säkerheten och isoleringen av ditt program
+
+I nuläget finns det förmodligen ett problem med din nuvarande implemntation, och det är att du skickar iväg en mutable datastruktur till en Player som utifrån den mutable datan skall göra ett drag. Tänk om en elak programmerare bestämmer sig för att ändra på spelplanen i sin egna players move-metod. Då skulle man i princip kunna fuska. För att lösa detta kan man från Game istället för att ge ifrån sig den egna representationen av spelplanen göra en kopia och ge kopian till Playern.
 
 \subsection{Frivilliga extrauppgifter}
 
 \Task Hashning.
 
-\Subtask En underuppgift.
+Om du låter en OptimalPlayer spela mot en RandomPlayer 1000 gånger lär det ta ganska lång tid. Det behöver det inte göra. När OptimalPlayer bestämmer vilket drag den skall göra första gången går den ju igenom alla andra möjliga drag man kan komma till. Det visar sig att det inte finns så många unika spelbräden. Färre än $3^9 < 20000$. 
 
-\Subtask En underuppgift.
+Skapar vi istället ett uppslagsverk (HashMap) som innehåller ett värde för varje spelbräde kommer vi kunna spela mycket snabbare när väl HashMapen är genererad. Skillnaden i snabbhet för vårt program blir alltså att vi behöver göra ett uppslag i en tabell, jämfört med ungefär $9! > 300000$ funktionsanrop för ett drag på ett tomt spelbräde. 
+
+Det räcker med att modifirea evalueringsmetoden något för att bygga hashmapen. Sedan anropa denna med ett tomt bräde och så har vi vår HashMap och vår optimala spelare är nu supersnabb!
+
+Man får dock vara lite klurig, en Array[Int] går inte att använda som nyckel i en HashMap, då den inte har en implementerad hashCode-metod. Enklast är att göra om vår array till en sträng, genom att lägga värdena i arrayen efter varandra i strängen. Vi kan göra en privat metod \texttt{hash(Array[Int]):String} som konkatenerar värdena i arrayen. hash([0,0,0,1,1,0,-1,-1,0]) skall alltså retunera "000110-1-10".
+
+\Subtask Skapa en ny subklass HashOptimalPlayer.
+
+\Subtask Skapa och implementera en privat metod \texttt{hash(Array[Int]):String}
+
+\Subtask Implementera en konstruktor som skapar och genererar en HashMap.
+
+Här kan du använda koden som används i evalfunktionen, men med två små modifikationer:
+\begin{itemize}
+\item Vid start: Om det redan finns ett key-value-par i HashMapen: returnera värdet från HashMapen. 
+\item Vid slut: Innan du retunerar måste ett key-value-par läggas in i HashMapen som vi genererar.
+\end{itemize}
+\Subtask Låt move-metoden göra en Hashlookup med hjälp av \texttt{hash}-metoden och din HashMap.
+
+\Subtask Testa att låta en HashOptimalPlayer spela mot en RandomPlayer. Du märker nog att skapandet av en HashOptimalPlayer kommer ta lite tid, typ en halv sekund. Sedan skall det dock gå jättesnabbt när spelarna spelar. 100000 spel skall gå utan problem på någon sekund, vilket borde gå på tiotals minuter för den gamla OptimalPlayer.
