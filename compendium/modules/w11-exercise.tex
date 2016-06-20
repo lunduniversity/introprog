@@ -18,36 +18,183 @@
 
 \Task \emph{Grundläggande syntaxskillnader mellan Scala och Java.} 
 
-\Subtask Översätt nedan kod från Scala till Java. Skriv koden i en editor i två filer, en för Scala och en för Java. Kompilera båda programmen i terminalen och testa så de skriver ut samma sak. 
-
+\Subtask Översätt nedan kod från Scala till Java.
+\TODO
 \begin{Code}
+
 \end{Code}
 
 \Subtask Översätt nedan kod från Java till Scala.
-
-
-\Task \emph{Klasser i Scala kontra Java.}  
-
-\Subtask Översätt nedan klass från Scala till Java. I ställert för typerna Buffer och ArrayBuffer, använd typerna List och ArrayList.
-
+\TODO
 \begin{Code}
+
+\end{Code}
+
+
+
+\Task \emph{Klasser i Scala kontra klasser i Java.}  
+
+\Subtask Översätt nedan klass från Scala till Java. Skriv koden i en editor i två filer, en för Scala och en för Java. Kompilera båda programmen i terminalen och och starta REPL i samma bibliotek du kompilerat kodfilerna och testa att klasserna har (ungefär) motsvarande funktionalitet. För att namnen inte ska krocka, kalla javapunkten \code{JPoint}. 
+
+\emph{Tips:}
+\begin{itemize}[nolistsep, noitemsep]
+\item  I ställert för Scalas \code{ArrayBuffer}, använd Javas \code{java.util.ArrayList}. Undersök dokumentationen för \code{ArrayList} för att hitta motsvarigheten till \code{append}.
+\item I stället för default-argumentet i Scalas primärkonstruktor, använd en extra Java-konstruktor. 
+\item Placera kompanjonsobjektets medlemmar i Java-klassen som \jcode{static}-medlemmar.
+\item Kod i klasskroppen i Scalaklassen, så som if-satsen, placeras i lämplig konstruktor i Javaklassen.
+\end{itemize}
+
+\begin{Code}[numbers=left]
 class Point(val x: Int, val y: Int, addToGrid: Boolean = false) {
   import Point._
   
   if (addToGrid) grid.append(this)
   
-  def this() = this(0.0, 0.0)
+  def this() = this(0, 0)
   
+  def distanceTo(that: Point) = distanceBetween(this, that)
   
+  override def toString = s"Point($x, $y)"
 }
+
 object Point {
   import scala.collection.mutable.ArrayBuffer
-  private val grid: Buffer = ArrayBuffer.empty
   
+  private val grid = ArrayBuffer.empty[Point]
+  
+  def distanceBetween(p1: Point, p2: Point) = 
+    math.hypot(p1.x - p2.x, p1.y - p2.y)    
+  
+  def showGrid: Unit = println(grid.mkString("Grid{", ";", "}"))
 }
 \end{Code}
 
-\Subtask Översätt nedan klass från Java till Scala. 
+\begin{REPLnonum}
+$ scalac Point.scala
+$ javac JPoint.java
+$ scala
+scala> val p = new Point()
+scala> val jp = new JPoint()
+\end{REPLnonum}
+
+\begin{Code}[language=Java, numbers=left]
+// kod till facit
+import java.util.ArrayList;
+
+public class JPoint {
+    private int x, y;
+  
+    public JPoint(int x, int y){
+      this.x = x;
+      this.y = y;
+    }
+
+    public JPoint(int x, int y, boolean addToGrid){
+        this(x, y);
+        if (addToGrid) {
+            grid.add(this);
+        }
+    }
+  
+    public JPoint(){
+        this(0, 0)
+    }
+  
+    public int getX(){
+        return x;
+    }
+  
+    public int getY(){
+        return y;
+    }
+    
+    public double distanceTo(Point that) {
+      return distanceBetween(this, that);
+    }
+    
+    @override
+    public String toString() {
+        return "Point(" + x + ", " + y + ")";
+    }
+
+    private static ArrayList<Point> grid = new ArrayList<Point>();
+
+    public static Double distanceBetween(Point p1, Point p2) {
+        return Math.hypot(p1.x - p2.x, p1.y - p2.y);
+    }
+    
+    public static void showGrid() {
+        print("Grid{");
+        for (int i = 0; i < p.size(); i++){
+          print(grid.get(i));
+          if (i < p.size() - 1) {
+            print(";");
+          }
+        } 
+        print("}")
+    }
+}
+\end{Code}
+
+
+\Subtask Översätt nedan klass \code{JPerson} från Java till en case-klass \code{Person} i Scala med (minst) mostvarande funktionalitet. 
+
+\TODO
+\begin{Code}[language=Java]
+public final class JPerson {
+    private String name;
+    private int age;
+  
+    public JPerson(final String name, final double weight){
+        this.name = name;
+        this.weight = weight;
+    }
+
+    public JPerson(final String name){
+        this(name, 0);
+    }
+
+    public String getName {
+        return name;
+    }
+  
+    public int getAge {
+        return age;
+    }
+    
+    @override
+    public boolean equals(Object that){
+       TODO
+    }
+    
+    @override
+    public int hashCode{
+      return name.hashCode() * 41 + age;
+    }
+
+    @override
+    public String toString {
+      return "JPerson(" + name + ", " + age + ")";
+    }
+}
+\end{Code}
+
+\begin{Code}
+// kod till facit
+case class Person(name: String, age: Int = 0)
+\end{Code}
+
+\Subtask\Pen Undersök i REPL vilken funktionalitet i case-klassen Person som \emph{inte} är implementerad i \code{JPerson} ovan. Skriv upp namnen på case-klassens extra metoder samt deras signatur genom att för en \code{Person}-instans, och för kompansjonsobjektet \code{Person}, trycka på TAB-tangenten enligt nedan. Prova några av de extra metoderna i REPL och förklara vad de gör.
+
+\begin{REPL}
+scala> val p = Person("Björn",49)
+scala> p.      // tryck TAB en gång
+scala> Person. // tryck TAB en gång
+scala> p.copy  // tryck TAB en gång
+scala> p.copy()
+scala> p.copy(age = p.age + 1)
+scala> Person.unapply(p)
+\end{REPL}
 
 
 \Task \emph{Auto(un)boxing i JVM.} I JVM måste typparametern för generiska klasser vara av referenstyp. I Scala löser kompilatorn detta åt oss så att vi ändå kan ha t.ex. \code{Int} som argument till en typparameter i Scala. 
@@ -72,12 +219,13 @@ scala> c.value.getClass.getTypeName
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
 \TODO
+\Task     
 
-\Task 
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\TODO
+\TODO 
+\Task \emph{Gränssnitt i Scala och Java.} 
 
-\Task     
+
     
