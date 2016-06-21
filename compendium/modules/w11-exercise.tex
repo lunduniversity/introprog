@@ -14,9 +14,12 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\TODO
+\Task \emph{Grundläggande skillnader och likheter mellan Scala och Java.} 
 
-\Task \emph{Grundläggande syntaxskillnader mellan Scala och Java.} 
+\Subtask Översätt nedan kod från Java till Scala. Skriv Scala-koden i en fil som heter \texttt{hangman.scala} och kalla Scala-objektet med \code{main}-metoden för \code{hangman}. 
+
+\javainputlisting[numbers=left]{examples/scalajava/Hangman.java}
+
 
 \Subtask Översätt nedan kod från Scala till Java.
 \TODO
@@ -24,170 +27,73 @@
 
 \end{Code}
 
-\Subtask Översätt nedan kod från Java till Scala.
-\TODO
-\begin{Code}
-
-\end{Code}
 
 
 
-\Task \emph{Klasser i Scala kontra klasser i Java.}  
+\Task \emph{Översätta mellan klasser i Scala och klasser i Java.}  
 
-\Subtask Översätt nedan klass från Scala till Java. Skriv koden i en editor i två filer, en för Scala och en för Java. Kompilera båda programmen i terminalen och och starta REPL i samma bibliotek du kompilerat kodfilerna och testa att klasserna har (ungefär) motsvarande funktionalitet. För att namnen inte ska krocka, kalla javapunkten \code{JPoint}. 
+\Subtask Översätt nedan klass från Scala till Java. Klassen är en model av en punkt som kan sparas på begäran i en lista. Listan är privat för kompanjonsobjektet men kan skrivas ut med en metod \code{showSaved}. 
 
-\emph{Tips:}
+I framtiden vill man kanske ändra från \code{ArrayBuffer} till en annan sekvenssamlingsimplementation, t.ex. \code{ListBuffer}, som uppfyller egenskaperna hos supertypen \code{Buffer} men har andra prestandaegenskaper för olika operationer, varför attributet \code{saved} i kompanjonsobjektet är deklarerat med den mer generella typen.
+
+Skriv koden för respektive klass i en editor i två filer, en för Scala och en för Java. Vi ska i nästa deluppgift kompilera båda programmen i terminalen och testa att klasserna har motsvarande funktionalitet. 
+
+\scalainputlisting[numbers=left]{examples/scalajava/Point.scala}
+
+\emph{Tips och riktlinjer:}
 \begin{itemize}[nolistsep, noitemsep]
-\item  I ställert för Scalas \code{ArrayBuffer}, använd Javas \code{java.util.ArrayList}. Undersök dokumentationen för \code{ArrayList} för att hitta motsvarigheten till \code{append}.
+\item För att namnen inte ska krocka i våra kommande tester, kalla Javatypen för \code{JPoint}. 
+\item  I ställert för Scalas \code{ArrayBuffer} och \code{Buffer}, använd Javas \code{ArrayList} och \code{List} som båda ligger i paketet \code{java.util}. 
+\item Undersök dokumentationen för \code{java.util.List} för att hitta en motsvarighet till \code{prepend} för att lägga till i början av listan.
 \item I stället för default-argumentet i Scalas primärkonstruktor, använd en extra Java-konstruktor. 
-\item Placera kompanjonsobjektets medlemmar i Java-klassen som \jcode{static}-medlemmar.
-\item Kod i klasskroppen i Scalaklassen, så som if-satsen, placeras i lämplig konstruktor i Javaklassen.
+\item Det finns inga singelobjekt och inga kompanjonsobjekt i Java; istället kan man använda statiska klassmedlemmar. Placera Scala-kompanjonsobjektets medlemmars motsvarigheter \emph{innuti} Java-klassen och gör dem till \jcode{static}-medlemmar.
+\item Kod i klasskroppen i Scalaklassen, så som if-satsen på rad 4, placeras i lämplig konstruktor i Javaklassen.
+\item Utskrifter med \code{print} och \code{println} behöver i Java föregås av \code{System.out.}
+\item Det finns inget nyckelord \code{override} i Java, men en s.k. annotering som ger samma kompilatorhjälp. Den skrivs med ett snabel-a och stor begynnelsebokstav, så här: \jcode{ @Override }  före metoddeklarationen.
+\item I Java används konventionen att börja getter-metoder med ordet \code{get}, t.ex. \code{getX()}.
+\item Det finns ingen motsvarighet till \code{mkString} för \code{List} så du behöver själv gå igenom listan och hämta elementreferenser för utskrift med en \jcode{for}-loop. Notera att efter sista elementet ska radbrytning göras i utskriften och att inget komma ska skrivas ut efter sista elementet.
+\item I Java behövs en ny \jcode{import}-deklaration om man vill importera ännu en typ från samma paket.
+\item Metoder i Java slutar med \code{()} om de saknar parametrar. 
+\item Alla satser slutar med lättglömda semikolon.
 \end{itemize}
 
-\begin{Code}[numbers=left]
-class Point(val x: Int, val y: Int, addToGrid: Boolean = false) {
-  import Point._
-  
-  if (addToGrid) grid.append(this)
-  
-  def this() = this(0, 0)
-  
-  def distanceTo(that: Point) = distanceBetween(this, that)
-  
-  override def toString = s"Point($x, $y)"
-}
 
-object Point {
-  import scala.collection.mutable.ArrayBuffer
-  
-  private val grid = ArrayBuffer.empty[Point]
-  
-  def distanceBetween(p1: Point, p2: Point) = 
-    math.hypot(p1.x - p2.x, p1.y - p2.y)    
-  
-  def showGrid: Unit = println(grid.mkString("Grid{", ";", "}"))
-}
-\end{Code}
+\TODO Flytta nedan kod till facit:
+\javainputlisting[numbers=left]{examples/scalajava/JPoint.java}
 
+
+\Subtask Starta REPL i samma bibliotek som du kompilerat kodfilerna. Testa så att klasserna \code{Point} och \code{JPoint} beter sig på samma vis enligt nedan. Skriv även testkod i REPL för att avläsa de attributvärden som har getters och undersök att allt funkar som det ska.
 \begin{REPLnonum}
 $ scalac Point.scala
 $ javac JPoint.java
 $ scala
-scala> val p = new Point()
-scala> val jp = new JPoint()
+scala> val (p, jp) = (new Point, new JPoint)
+scala> p.distanceTo(new Point(3, 4))
+scala> Point.showSaved
+scala> jp.distanceTo(new JPoint(3, 4))
+scala> JPoint.showSaved
+scala> for (i <- 1 to 10) { new Point(i, i, true) }
+scala> Point.showSaved
+scala> for (i <- 1 to 10) { new JPoint(i, i, true) }
+scala> JPoint.showSaved
 \end{REPLnonum}
 
-\begin{Code}[language=Java, numbers=left]
-// kod till facit
-import java.util.ArrayList;
 
-public class JPoint {
-    private int x, y;
-  
-    public JPoint(int x, int y){
-      this.x = x;
-      this.y = y;
-    }
-
-    public JPoint(int x, int y, boolean addToGrid){
-        this(x, y);
-        if (addToGrid) {
-            grid.add(this);
-        }
-    }
-  
-    public JPoint(){
-        this(0, 0)
-    }
-  
-    public int getX(){
-        return x;
-    }
-  
-    public int getY(){
-        return y;
-    }
-    
-    public double distanceTo(Point that) {
-      return distanceBetween(this, that);
-    }
-    
-    @override
-    public String toString() {
-        return "Point(" + x + ", " + y + ")";
-    }
-
-    private static ArrayList<Point> grid = new ArrayList<Point>();
-
-    public static Double distanceBetween(Point p1, Point p2) {
-        return Math.hypot(p1.x - p2.x, p1.y - p2.y);
-    }
-    
-    public static void showGrid() {
-        print("Grid{");
-        for (int i = 0; i < p.size(); i++){
-          print(grid.get(i));
-          if (i < p.size() - 1) {
-            print(";");
-          }
-        } 
-        print("}")
-    }
-}
-\end{Code}
+\Subtask Översätt nedan klass \code{JPerson} från Java till en case-klass \code{Person} i Scala med  motsvarande funktionalitet. 
 
 
-\Subtask Översätt nedan klass \code{JPerson} från Java till en case-klass \code{Person} i Scala med (minst) mostvarande funktionalitet. 
+\javainputlisting[numbers=left]{examples/scalajava/JPerson.java}
 
-\TODO
-\begin{Code}[language=Java]
-public final class JPerson {
-    private String name;
-    private int age;
-  
-    public JPerson(final String name, final double weight){
-        this.name = name;
-        this.weight = weight;
-    }
 
-    public JPerson(final String name){
-        this(name, 0);
-    }
-
-    public String getName {
-        return name;
-    }
-  
-    public int getAge {
-        return age;
-    }
-    
-    @override
-    public boolean equals(Object that){
-       TODO
-    }
-    
-    @override
-    public int hashCode{
-      return name.hashCode() * 41 + age;
-    }
-
-    @override
-    public String toString {
-      return "JPerson(" + name + ", " + age + ")";
-    }
-}
-\end{Code}
-
+\TODO flytta dena kod till FACIT:
 \begin{Code}
-// kod till facit
 case class Person(name: String, age: Int = 0)
 \end{Code}
 
-\Subtask\Pen Undersök i REPL vilken funktionalitet i case-klassen Person som \emph{inte} är implementerad i \code{JPerson} ovan. Skriv upp namnen på case-klassens extra metoder samt deras signatur genom att för en \code{Person}-instans, och för kompansjonsobjektet \code{Person}, trycka på TAB-tangenten enligt nedan. Prova några av de extra metoderna i REPL och förklara vad de gör.
+\Subtask\Pen Undersök i REPL vilken funktionalitet i Scala-case-klassen \code{Person} som \emph{inte} är implementerad i Java-klassen \code{JPerson} ovan. Skriv upp namnen på några av case-klassens extra metoder samt deras signatur genom att för en \code{Person}-instans, och för kompansjonsobjektet \code{Person}, trycka på TAB-tangenten. Prova några av de extra metoderna i REPL och förklara vad de gör.
 
 \begin{REPL}
-scala> val p = Person("Björn",49)
+scala> val p = Person("Björn", 49)
 scala> p.      // tryck TAB en gång
 scala> Person. // tryck TAB en gång
 scala> p.copy  // tryck TAB en gång
@@ -197,35 +103,53 @@ scala> Person.unapply(p)
 \end{REPL}
 
 
-\Task \emph{Auto(un)boxing i JVM.} I JVM måste typparametern för generiska klasser vara av referenstyp. I Scala löser kompilatorn detta åt oss så att vi ändå kan ha t.ex. \code{Int} som argument till en typparameter i Scala. 
+\Task \emph{Auto(un)boxing i JVM.} I JVM måste typparametern för generiska klasser vara av referenstyp. I Scala löser kompilatorn detta åt oss så att vi ändå kan ha t.ex. \code{Int} som argument till en typparameter i Scala, medan man i Java \emph{inte} direkt kan ha den primitiva typen \jcode{int} som typparameter till t.ex. \code{ArrayList}.
 
-I Java och i den underliggande plattformen JVM används s.k. wrapper-klasser användas för att lösa detta, t.ex. genom wrapper-klassen \code{Integer} som boxar den primitiva typen \jcode{int}. Java-kompilatorn har stöd för att automatiskt packa in värden av primitiv typ i sådana wrapper-klasser för att skapa referenstyper och kan även automatiskt packa upp dem. 
+I Java och i den underliggande plattformen JVM används s.k. wrapper-klasser för att lösa detta, t.ex. genom wrapper-klassen \code{Integer} som boxar den primitiva typen \jcode{int}. Java-kompilatorn har stöd för att automatiskt packa in värden av primitiv typ i sådana wrapper-klasser för att skapa referenstyper och kan även automatiskt packa upp dem. 
 
-\Subtask Studera hur Scala-kompilatorn låter oss arbeta med en Cell[Int] även om det underliggande JVM:ens körtidstyp \Eng{runtime type} är en wrapper-klass. Man kan se JVM-körtidstypen med metoderna \code{getClass} och \code{getTypeName} enligt nedan.
+\Subtask Studera hur Scala-kompilatorn låter oss arbeta med en \code{Cell[Int]} även om det underliggande JVM:ens körtidstyp \Eng{runtime type} är en wrapper-klass. Man kan se JVM-körtidstypen med metoderna \code{getClass} och \code{getTypeName} enligt nedan.
 \begin{REPL}
 scala> class Cell[T](var value: T){
          val typeName: String = value.getClass.getTypeName
          override def toString = "Cell[" + typeName + "](" + value + ")"
        }
-scala> val c = new Cell(42)
+scala> val c = new Cell[Int](42)
 scala> c.value.getClass.getTypeName
 \end{REPL}
 
-\Subtask Vad är körtidstypen för c.value ovan? Förklara hur det kan komma sig? 
+\Subtask Vad är körtidstypen för \code{c.value} ovan? Förklara hur det kan komma sig trots att vi deklarerade med typargumentet \code{Int}? 
 
 
-\Subtask 
+\Subtask \TODO auto(un)boxing in Java och fallgropar
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\TODO
-\Task     
+\Subtask Översätt nedan kod från Java till Scala. Skriv koden i en fil som heter \texttt{showInt.scala} och kalla Scala-objektet med \code{main}-metoden för \code{showInt}.
+
+\emph{Tips:}
+\begin{itemize}[nolistsep, noitemsep]
+\item En Javaklass med bara statiska medlemmar motsvaras av ett singeltonobjekt i Scala, alltså en \code{object}-deklaration. Scala har därför inte nyckelordet \jcode{static}.
+\item Typen \jcode{Object} i Java motsvaras av Scalas \code{Any}.
+\item Du kan använda Scalas möjlighet med default-argument (som saknas i Java) för att bara definiera en enda \code{show}-metod med en tom sträng som default \code{msg}-argument.
+\item I Scala har objekt av typen \code{Char} en metod \code{def *(n: Int): String} som skapar en sträng med tecknet repeterat \code{n} gånger. Men du kan ju välja att ändå implementera metoden \code{repeatChar} med \code{StringBuilder} som nedan om du vill träna på att översätta en \code{for}-loop från Java till Scala.
+\item I stället för \code{Scanner.nextLine} kan du i Scala använda \code{scala.io.StdIn.readLine} som tar en prompt som parameter, men du kan också använda \code{Scanner} i Scala om du vill träna på det.
+\item I Java \emph{måste} man använda nyckelordet \jcode{return} om metoden inte är en \jcode{void}-metod, medan man i Scala faktiskt \emph{får} använda \code{return} även om man brukar undvika det och utnyttja att satser i Scala också är uttryck.
+\end{itemize}
+\javainputlisting[numbers=left]{examples/scalajava/JShowInt.java}
+
+\Subtask Kompilera din Scala-kod och kör i terminalen och testa så att allt funkar. Vill du även kompilera Java-koden finns den i kursens repo i biblioteket \texttt{compendium/examples/scalajava}.  
 
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
 \TODO 
 \Task \emph{Gränssnitt i Scala och Java.} 
+
+\Task\Pen Studera fallgropar för hur man skriver en \code{equals}-metod i Java här:
+\url{http://www.artima.com/lejava/articles/equality.html}\\
+Vilken fallgrop trillar man \emph{inte} i om man endast överskuggar \code{equals} i finala klasser som inte har några superklasser?
+
+\Task\Pen Studera det fullständiga receptet för hur man skriver en välfungerande \code{equals} och \code{hashcode} i Scala här: \url{http://www.artima.com/pins1ed/object-equality.html} 
 
 
     

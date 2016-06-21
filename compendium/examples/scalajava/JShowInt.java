@@ -24,22 +24,23 @@ public class JShowInt {
         return scan.nextLine();
     }
     
-    public static void intReport(int i) {
+    public static void showInt(int i) {
         int leading = Integer.numberOfLeadingZeros(i);
         String binaryString = 
             repeatChar('0', leading) + Integer.toBinaryString(i);
+        show(i,                        "Heltal: ");
         show((char) i,                 "Tecken: ");
         show(binaryString,             "Binärt: ");
         show(Integer.toHexString(i),   "Hex   : ");
         show(Integer.toOctalString(i), "Oktalt: ");
     }
     
-    public static void loopReport() {
+    public static void loop() {
         boolean hasExploded = false;
         while (!hasExploded) {
             try {
                 String s = readLine("Heltal annars pang: ");
-                intReport(Integer.parseInt(s));
+                showInt(Integer.parseInt(s));
             } catch (Throwable e){
                 show(e);
                 hasExploded = true;
@@ -49,11 +50,12 @@ public class JShowInt {
     }
     
     public static void main(String[] args){
-        if (args.size == 0) {
-            loopReport();
+        if (args.length == 0) {
+            loop();
         } else {
-            for (arg: args) {
-                intReport(Integre.parseInt(arg))
+            for (String arg: args) {
+                showInt(Integer.parseInt(arg));
+                System.out.println();
             }
         }
     }
