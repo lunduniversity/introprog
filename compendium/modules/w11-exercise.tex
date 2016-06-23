@@ -14,34 +14,67 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task \emph{Grundläggande skillnader och likheter mellan Scala och Java.} 
+\Task \emph{Översätta algoritmer och metoder från Java till Scala.} 
 
-\Subtask Översätt nedan kod från Java till Scala. Skriv Scala-koden i en fil som heter \texttt{hangman.scala} och kalla Scala-objektet med \code{main}-metoden för \code{hangman}. 
+\Subtask Översätt klassen \code{Hangman} nedan från Java till Scala enligt dessa riktlinjer:
+\begin{enumerate}[nolistsep, noitemsep]
+
+\item Skriv Scala-koden med en texteditor i en fil som heter \texttt{hangman1.scala} och kompilera med \code{scalac hangman1.scala} i terminalen; använd alltså \emph{inte} en IDE så som Eclipse eller IntelliJ utan en ''vanlig'' texteditor så som \code{gedit}.
+
+\item Översätt i denna första deluppgift \emph{så likt} den ursprungliga Java-kodens utseende (syntax)  som möjligt, med så få ändringar som möjligt. Du ska alltså behålla långa indrag, onödiga semikolon, onödiga \code{()}, onödiga \code|{}|, onödiga \code{System.out}, och onödiga \code{return}, även om det inte alls blir som man brukar skriva i Scala. Försök också i denna deluppgift göra så att betydelsen (semantiken) motsvarar den i Java, t.ex. genom att använda \code{var} overallt, även om det vore lämpligare med \code{val}. Du ska i \emph{nästa} deluppgift sedan göra om din Scala-kod så att den blir mer ''normal''.
+ 
+\item En Javaklass med bara statiska medlemmar motsvara ett Scalaobjekt med ''vanliga'' medlemmar. Kalla Scala-objektet för \code{hangman}. När man använder ett Scala objekt som en modul\footnote{\href{https://en.wikipedia.org/wiki/Modular_programming}{en.wikipedia.org/wiki/Modular\_programming}} (alltså en samling funktioner i en gemensam, avgränsad namnrymd) brukar man ha liten begynnelsebokstav, då man i Scala i detta fall ofta följer konventionen för paketnamn; ett paket är ju också en slags modul.
+
+\item För att tydliggöra att du använder Javas \code{Set} och \code{HashSet} i din Scala-kod, använd följande import-satser i \code{hangman1.scala}, som därmed döper om dina importerade namn och gör så att de inte krockar med Scalas inbyggda \code{Set} (denna form av import går inte att göra i Java).
+\begin{Code}
+import java.util.{Set => JSet};
+import java.util.{HashSet => JHashSet};
+\end{Code}
+
+\item Javas \code{i++} fungerar inte i Scala; man får istället skriva \code{i += 1} eller mindre vanliga \code{i = i + 1}.
+
+\item Typparametrar i Java skrivs inom \code{<>} medan Scalas syntax för typparametrar använder \code{[]}.
+
+\item Till skillnad från Java så har Scalas metoddeklarationer ett tilldelningstecken \code{=} efter returtypen, före kroppen.
+
+\item Du kan ladda ner Java-koden till \code{Hangman}-klassen nedan från kursens repo%
+\footnote{\href{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/scalajava/Hangman.java}{github.com/lunduniversity/introprog/blob/master/compendium/examples/scalajava/Hangman.java}}. I samma bibliotek ligger även lösningarna till översättningen i Scala, men frestas \emph{inte} att kolla på dessa förrän du gjort klart översättningarna och fått dem att kompilera och köra felfritt! 
+
+\end{enumerate}
 
 \javainputlisting[numbers=left]{examples/scalajava/Hangman.java}
 
+\TODO Flytta nedan kod till facit:
+\scalainputlisting[numbers=left]{examples/scalajava/hangman1.scala}
 
-\Subtask Översätt nedan kod från Scala till Java.
-\TODO
-\begin{Code}
 
-\end{Code}
 
+\Subtask Skapa en ny fil \code{hangman2.scala} med ett Scala-objekt \code{hangman} som till att börja med innehåller en kopia av din direkt-översatta Java-kod från föregående deluppgift. Omforma koden så att den blir mer som man brukar skriva i Scala, alltså mer ''Scala-idiomatisk''. Försök förenkla och förkorta så mycket du kan utan att göra avkall på läsbarheten.
+
+\emph{Tips och riktlinjer:}
+
+\begin{enumerate}[nolistsep, noitemsep]
+\item I metoden \code{printHangan} använd \code{take} och \code{mkString}.
+\item I metoden \code{makeGuess}, i stället för \code{Scanner}, använd \code{scala.io.StdIn.readLine}. 
+\item I metoden \code{download}, i stället för \code{java.net.URL} och \code{java.util.ArrayList}, använd \code{scala.io.Source.fromURL(address, coding).getLines.toVector}
+
+\end{enumerate}
+
+
+\TODO Flytta nedan kod till facit:
+\scalainputlisting[numbers=left]{examples/scalajava/hangman2.scala}
 
 
 
 \Task \emph{Översätta mellan klasser i Scala och klasser i Java.}  
-
-\Subtask Översätt nedan klass från Scala till Java. Klassen är en model av en punkt som kan sparas på begäran i en lista. Listan är privat för kompanjonsobjektet men kan skrivas ut med en metod \code{showSaved}. 
-
-I framtiden vill man kanske ändra från \code{ArrayBuffer} till en annan sekvenssamlingsimplementation, t.ex. \code{ListBuffer}, som uppfyller egenskaperna hos supertypen \code{Buffer} men har andra prestandaegenskaper för olika operationer, varför attributet \code{saved} i kompanjonsobjektet är deklarerat med den mer generella typen.
-
-Skriv koden för respektive klass i en editor i två filer, en för Scala och en för Java. Vi ska i nästa deluppgift kompilera båda programmen i terminalen och testa att klasserna har motsvarande funktionalitet. 
+Klassen \code{Point} nedan är en model av en punkt som kan sparas på begäran i en lista. Listan är privat för kompanjonsobjektet och kan skrivas ut med en metod \code{showSaved}. I koden används en \code{ArrayBuffer}, men i framtiden vill man, vid behov, kunna ändra från \code{ArrayBuffer} till en annan sekvenssamlingsimplementation, t.ex. \code{ListBuffer}, som uppfyller egenskaperna hos supertypen \code{Buffer}, men har andra prestandaegenskaper för olika operationer, varför attributet \code{saved} i kompanjonsobjektet är deklarerat med den mer generella typen.
 
 \scalainputlisting[numbers=left]{examples/scalajava/Point.scala}
 
+\Subtask Översätt klassen \code{Point} ovan från Scala till Java. Vi ska i nästa deluppgift kompilera både Scala-programmet ovan och ditt motsvarande Java-program i terminalen och testa i REPL att klasserna har motsvarande funktionalitet. 
+
 \emph{Tips och riktlinjer:}
-\begin{itemize}[nolistsep, noitemsep]
+\begin{enumerate}[nolistsep, noitemsep]
 \item För att namnen inte ska krocka i våra kommande tester, kalla Javatypen för \code{JPoint}. 
 \item  I ställert för Scalas \code{ArrayBuffer} och \code{Buffer}, använd Javas \code{ArrayList} och \code{List} som båda ligger i paketet \code{java.util}. 
 \item Undersök dokumentationen för \code{java.util.List} för att hitta en motsvarighet till \code{prepend} för att lägga till i början av listan.
@@ -54,8 +87,8 @@ Skriv koden för respektive klass i en editor i två filer, en för Scala och en
 \item Det finns ingen motsvarighet till \code{mkString} för \code{List} så du behöver själv gå igenom listan och hämta elementreferenser för utskrift med en \jcode{for}-loop. Notera att efter sista elementet ska radbrytning göras i utskriften och att inget komma ska skrivas ut efter sista elementet.
 \item I Java behövs en ny \jcode{import}-deklaration om man vill importera ännu en typ från samma paket.
 \item Metoder i Java slutar med \code{()} om de saknar parametrar. 
-\item Alla satser slutar med lättglömda semikolon.
-\end{itemize}
+\item Alla satser i Java slutar med lättglömda semikolon. (Efter att man i skrivit mycket Javakod och växlar till Scalakod är det svårt att vänja sig av med att skriva semikolon...)
+\end{enumerate}
 
 
 \TODO Flytta nedan kod till facit:
@@ -124,7 +157,7 @@ scala> c.value.getClass.getTypeName
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Subtask Översätt nedan kod från Java till Scala. Skriv koden i en fil som heter \texttt{showInt.scala} och kalla Scala-objektet med \code{main}-metoden för \code{showInt}.
+\Task Översätt nedan kod från Java till Scala. Skriv koden i en fil som heter \texttt{showInt.scala} och kalla Scala-objektet med \code{main}-metoden för \code{showInt}.
 
 \emph{Tips:}
 \begin{itemize}[nolistsep, noitemsep]
@@ -132,7 +165,7 @@ scala> c.value.getClass.getTypeName
 \item Typen \jcode{Object} i Java motsvaras av Scalas \code{Any}.
 \item Du kan använda Scalas möjlighet med default-argument (som saknas i Java) för att bara definiera en enda \code{show}-metod med en tom sträng som default \code{msg}-argument.
 \item I Scala har objekt av typen \code{Char} en metod \code{def *(n: Int): String} som skapar en sträng med tecknet repeterat \code{n} gånger. Men du kan ju välja att ändå implementera metoden \code{repeatChar} med \code{StringBuilder} som nedan om du vill träna på att översätta en \code{for}-loop från Java till Scala.
-\item I stället för \code{Scanner.nextLine} kan du i Scala använda \code{scala.io.StdIn.readLine} som tar en prompt som parameter, men du kan också använda \code{Scanner} i Scala om du vill träna på det.
+\item I stället för \code{Scanner.nextLine} kan använda \code{scala.io.StdIn.readLine} som tar en prompt som parameter, men du kan också använda \code{Scanner} i Scala om du vill träna på det.
 \item I Java \emph{måste} man använda nyckelordet \jcode{return} om metoden inte är en \jcode{void}-metod, medan man i Scala faktiskt \emph{får} använda \code{return} även om man brukar undvika det och utnyttja att satser i Scala också är uttryck.
 \end{itemize}
 \javainputlisting[numbers=left]{examples/scalajava/JShowInt.java}
