@@ -1,11 +1,11 @@
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.{Set => JSet};
+import java.util.{HashSet => JHashSet};
 import java.util.Scanner;
 
-public class Hangman {
-    public static String[] hangman = new String[]{
+object hangman {  // This is Java-like, non-idiomatic Scala code!
+     var hangman: Array[String] = Array[String](
         " ======  ",
         " |/   |  ",
         " |    O  ",
@@ -13,22 +13,23 @@ public class Hangman {
         " |   / \\ ",
         " |       ",
         " |       ",
-        " ==========================   RIP  :("};
-    
-    public static String runeberg = 
+        " ==========================   RIP  :(");
+        
+    var runeberg: String = 
       "http://runeberg.org/words/ord.ortsnamn.posten";
-    public static String latin1 = "ISO-8859-1"; 
-
-    public static void printHangman(int n){
-        for (int i = 0; i < n; i++){
-            System.out.println(hangman[i]);
+    
+    var latin1: String = "ISO-8859-1"; 
+    
+    def printHangman(n: Int): Unit = {
+        for (i: Int <- 0 until n){
+            System.out.println(hangman(i));
         }
     }
     
-    public static String hideSecret(String secret, 
-                                    Set<Character> found){
-        String result = "";
-        for (int i = 0; i < secret.length(); i++) {
+    def hideSecret(secret: String, 
+                   found: JSet[Character]): String = {
+        var result: String = "";
+        for (i: Int <- 0 until secret.length()) {
             if (found.contains(secret.charAt(i))) {
                 result += secret.charAt(i);
             } else { 
@@ -38,39 +39,39 @@ public class Hangman {
         return result;
     }
     
-    public static boolean foundAll(String secret, 
-                                   Set<Character> found){
-        boolean foundMissing = false;
-        int i = 0;
+    def foundAll(secret: String, 
+                 found: JSet[Character]): Boolean = {
+        var foundMissing: Boolean = false;
+        var i: Int = 0;
         while (i < secret.length() && !foundMissing) {
             foundMissing = !found.contains(secret.charAt(i));
-            i++;
+            i += 1;
         } 
         return !foundMissing;
     }
     
-    public static char makeGuess(){
-        Scanner scan = new Scanner(System.in);
-        String guess = "";
+    def makeGuess(): Char = {
+        var scan: Scanner = new Scanner(System.in);
+        var guess: String = "";
         do {
            System.out.println("Gissa ett tecken: ");
            guess = scan.next();
-        } while (guess.length() != 1);
+        } while (guess.length() > 1);
         return Character.toLowerCase(guess.charAt(0));
     }
 
-    public static int play(String secret){
-        Set<Character> found = new HashSet<Character>();
-        int bad = 0;
+    def play(secret: String): Int = {
+        var found: JSet[Character] = new JHashSet[Character]();
+        var bad: Int = 0;
         while (bad < hangman.length && !foundAll(secret, found)){
             printHangman(bad);
             System.out.print("\nFelgissningar: " + bad + "\t");
             System.out.println(hideSecret(secret, found));
-            char guess = makeGuess();
+            var guess: Char = makeGuess();
             if (secret.indexOf(guess) >= 0) {
                 found.add(guess);
             } else {
-              bad++;
+              bad += 1;
             }
         }
         if (foundAll(secret, found)) {
@@ -83,31 +84,35 @@ public class Hangman {
         return bad;           
     }
 
-    public static String download(String address, String coding){
-        String result = "eslöv";
+    def download(address: String,coding: String):  String = {
+        var result: String = "lackalänga";
         try {   
-            URL url = new URL(address);
-            ArrayList<String> words = new ArrayList<String>();
-            Scanner scan = new Scanner(url.openStream(), coding);
+            var url: URL = new URL(address);
+            var words: ArrayList[String] = 
+                new ArrayList[String]();
+            var scan: Scanner = 
+                new Scanner(url.openStream(), coding);
             while (scan.hasNext()) {
                 words.add(scan.next());    
             }
-            int rnd = (int) (Math.random() * words.size());
+            var rnd: Int = 
+                (Math.random() * words.size()).asInstanceOf[Int];
             result = words.get(rnd);
-        } catch (Throwable e) {
+        } catch { case e: Throwable =>  
             System.out.println("Error: " + e);
             System.out.println("Använder nödlösning.");
         }
         return result;
     }
     
-    public static void main(String[] args){
-        int badGuesses = 0;
+    def main(args: Array[String] ): Unit = {
+        var badGuesses: Int = 0;
         if (args.length > 0) {
-            int rnd = (int) (Math.random() * args.length);
-            badGuesses = play(args[rnd]);
+            var rnd: 
+                Int = (Math.random() * args.length).asInstanceOf[Int];
+            badGuesses = play(args(rnd));
         } else {
-            String secret = download(runeberg, latin1);
+            var secret: String = download(runeberg, latin1);
             badGuesses = play(secret);
         }
         System.out.println("Antal felgissningar: " + badGuesses);
