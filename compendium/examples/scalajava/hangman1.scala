@@ -5,7 +5,7 @@ import java.util.{HashSet => JHashSet};
 import java.util.Scanner;
 
 object hangman {  // This is Java-like, non-idiomatic Scala code!
-     var hangman: Array[String] = Array[String](
+     private var hangman: Array[String] = Array[String](
         " ======  ",
         " |/   |  ",
         " |    O  ",
@@ -15,18 +15,13 @@ object hangman {  // This is Java-like, non-idiomatic Scala code!
         " |       ",
         " ==========================   RIP  :(");
         
-    var runeberg: String = 
-      "http://runeberg.org/words/ord.ortsnamn.posten";
-    
-    var latin1: String = "ISO-8859-1"; 
-    
-    def printHangman(n: Int): Unit = {
+    private def printHangman(n: Int): Unit = {
         for (i: Int <- 0 until n){
             System.out.println(hangman(i));
         }
     }
     
-    def hideSecret(secret: String, 
+    private def hideSecret(secret: String, 
                    found: JSet[Character]): String = {
         var result: String = "";
         for (i: Int <- 0 until secret.length()) {
@@ -39,7 +34,7 @@ object hangman {  // This is Java-like, non-idiomatic Scala code!
         return result;
     }
     
-    def foundAll(secret: String, 
+    private def foundAll(secret: String, 
                  found: JSet[Character]): Boolean = {
         var foundMissing: Boolean = false;
         var i: Int = 0;
@@ -50,7 +45,7 @@ object hangman {  // This is Java-like, non-idiomatic Scala code!
         return !foundMissing;
     }
     
-    def makeGuess(): Char = {
+    private def makeGuess(): Char = {
         var scan: Scanner = new Scanner(System.in);
         var guess: String = "";
         do {
@@ -60,7 +55,24 @@ object hangman {  // This is Java-like, non-idiomatic Scala code!
         return Character.toLowerCase(guess.charAt(0));
     }
 
-    def play(secret: String): Int = {
+    def fromUrl(address: String, coding: String):  String = {
+        var result: String = "lackalänga";
+        try {   
+            var url: URL = new URL(address);
+            var words: ArrayList[String] = new ArrayList[String]();
+            var scan: Scanner = new Scanner(url.openStream(), coding);
+            while (scan.hasNext()) {
+                words.add(scan.next());    
+            }
+            var rnd: Int = (Math.random() * words.size()).asInstanceOf[Int];
+            result = words.get(rnd);
+        } catch { case e: Exception =>  
+            System.out.println("Error: " + e);
+        }
+        return result;
+    }
+
+    def play(secret: String): Unit = {
         var found: JSet[Character] = new JHashSet[Character]();
         var bad: Int = 0;
         while (bad < hangman.length && !foundAll(secret, found)){
@@ -78,43 +90,20 @@ object hangman {  // This is Java-like, non-idiomatic Scala code!
             System.out.println("BRA! :)");
         } else {
             System.out.println("Hängd! :(");
-            printHangman(hangman.length);
         }
         System.out.println("Rätt svar: " + secret);
-        return bad;           
+        System.out.println("Antal felgissningar: " + bad);
     }
 
-    def download(address: String,coding: String):  String = {
-        var result: String = "lackalänga";
-        try {   
-            var url: URL = new URL(address);
-            var words: ArrayList[String] = 
-                new ArrayList[String]();
-            var scan: Scanner = 
-                new Scanner(url.openStream(), coding);
-            while (scan.hasNext()) {
-                words.add(scan.next());    
-            }
-            var rnd: Int = 
-                (Math.random() * words.size()).asInstanceOf[Int];
-            result = words.get(rnd);
-        } catch { case e: Throwable =>  
-            System.out.println("Error: " + e);
-            System.out.println("Använder nödlösning.");
-        }
-        return result;
-    }
-    
     def main(args: Array[String] ): Unit = {
-        var badGuesses: Int = 0;
-        if (args.length > 0) {
-            var rnd: 
-                Int = (Math.random() * args.length).asInstanceOf[Int];
-            badGuesses = play(args(rnd));
+        if (args.length == 0) {
+            var runeberg: String = 
+                "http://runeberg.org/words/ord.ortsnamn.posten";
+            var latin1: String = "ISO-8859-1";
+            play(fromUrl(runeberg, latin1));
         } else {
-            var secret: String = download(runeberg, latin1);
-            badGuesses = play(secret);
+            var rnd: Int = (Math.random() * args.length).asInstanceOf[Int];
+            play(args(rnd));
         }
-        System.out.println("Antal felgissningar: " + badGuesses);
     }
 }
