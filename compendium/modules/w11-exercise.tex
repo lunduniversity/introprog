@@ -57,12 +57,29 @@ import java.util.{HashSet => JHashSet};
 \item I metoden \code{printHangan} använd \code{take} och \code{mkString}.
 \item I metoden \code{makeGuess}, i stället för \code{Scanner}, använd \code{scala.io.StdIn.readLine}. 
 \item I metoden \code{download}, i stället för \code{java.net.URL} och \code{java.util.ArrayList}, använd \code{scala.io.Source.fromURL(address, coding).getLines.toVector}
-
 \end{enumerate}
 
 
 \TODO Flytta nedan kod till facit:
 \scalainputlisting[numbers=left]{examples/scalajava/hangman2.scala}
+Om man inte vill lösa detta rekursivt och ha kvar den imperativa loopen i \code{play} kan det se ut så här:
+\begin{Code}
+  def play(secret: String): Int = {
+    var found = Set.empty[Char]
+    var bad = 0
+    while (bad < hangman.length && !foundAll(secret, found)){
+      println(renderHangman(bad))
+      print(s"\nFelgissningar: $bad\t")
+      println(hideSecret(secret, found))
+      val guess = makeGuess()
+      if (secret.contains(guess)) found += guess else bad += 1
+    }
+    val (happyMsg,  sadMsg) = ("BRA! :)", s"Hängd! :(")
+    val msg = if (foundAll(secret, found)) happyMsg else sadMsg 
+    println(s"$msg\nRätt svar: $secret")
+    bad           
+  }
+\end{Code}
 
 
 
