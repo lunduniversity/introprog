@@ -44,8 +44,8 @@ object hangman {
       }
       
     val (badGuesses, won) = loop(Set(),0)
-    if (won) println("BRA! :)") else println("Hängd! :(")
-    println(s"Rätt svar: $secret")
+    val msg = if (won) "BRA! :)" else "Hängd! :("
+    println(s"$msg\nRätt svar: $secret")
     println(s"Antal felgissningar: $badGuesses")
   }
 
