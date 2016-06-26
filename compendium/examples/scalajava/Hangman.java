@@ -5,24 +5,25 @@ import java.util.HashSet;
 import java.util.Scanner;
 
 public class Hangman {
-    private static String[] hangman = new String[]{
-        " ======  ",
-        " |/   |  ",
-        " |    O  ",
-        " |   -|- ",
-        " |   / \\ ",
-        " |       ",
-        " |       ",
-        " ==========================   RIP  :("};
-    
-    private static void printHangman(int n){
+    private static String renderHangman(int n){
+        String[] hangman = new String[]{
+            " ======  ",
+            " |/   |  ",
+            " |    O  ",
+            " |   -|- ",
+            " |   / \\ ",
+            " |       ",
+            " |       ",
+            " ==========================   RIP  :("};
+        StringBuilder result = new StringBuilder();    
         for (int i = 0; i < n; i++){
-            System.out.println(hangman[i]);
+            result.append(hangman[i]);
         }
+        return result.toString;
     }
     
     private static String hideSecret(String secret, 
-                                    Set<Character> found){
+                                     Set<Character> found){
         String result = "";
         for (int i = 0; i < secret.length(); i++) {
             if (found.contains(secret.charAt(i))) {
@@ -55,7 +56,7 @@ public class Hangman {
         return Character.toLowerCase(guess.charAt(0));
     }
 
-    public static String fromUrl(String address, String coding){
+    public static String download(String address, String coding){
         String result = "lackalänga";
         try {   
             URL url = new URL(address);
@@ -75,8 +76,9 @@ public class Hangman {
     public static void play(String secret){
         Set<Character> found = new HashSet<Character>();
         int bad = 0;
-        while (bad < hangman.length && !foundAll(secret, found)){
-            printHangman(bad);
+        boolean won = false;
+        while (bad < hangman.length && !won){
+            System.out.println(renderHangman(bad));
             System.out.print("\nFelgissningar: " + bad + "\t");
             System.out.println(hideSecret(secret, found));
             char guess = makeGuess();
@@ -85,8 +87,9 @@ public class Hangman {
             } else {
               bad++;
             }
+            won = foundAll(secret, found);
         }
-        if (foundAll(secret, found)) {
+        if (won) {
             System.out.println("BRA! :)");
         } else {
             System.out.println("Hängd! :(");
@@ -99,8 +102,7 @@ public class Hangman {
         if (args.length == 0) {
             String runeberg = 
                 "http://runeberg.org/words/ord.ortsnamn.posten";
-            String latin1 = "ISO-8859-1"; 
-            play(fromUrl(runeberg, latin1));
+            play(download(runeberg, "ISO-8859-1"));
         } else {
             int rnd = (int) (Math.random() * args.length);
             play(args[rnd]);
