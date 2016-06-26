@@ -4,25 +4,26 @@ import java.util.{Set => JSet};
 import java.util.{HashSet => JHashSet};
 import java.util.Scanner;
 
-object hangman {  // This is Java-like, non-idiomatic Scala code!
-     private var hangman: Array[String] = Array[String](
-        " ======  ",
-        " |/   |  ",
-        " |    O  ",
-        " |   -|- ",
-        " |   / \\ ",
-        " |       ",
-        " |       ",
-        " ==========================   RIP  :(");
-        
-    private def printHangman(n: Int): Unit = {
+object Hangman {  // This is Java-like, non-idiomatic Scala code!
+    private def renderHangman(n: Int): Unit = {
+        var hangman: Array[String] = Array[String](
+            " ======  ",
+            " |/   |  ",
+            " |    O  ",
+            " |   -|- ",
+            " |   / \\ ",
+            " |       ",
+            " |       ",
+            " ==========================   RIP  :(");
+        var result: StringBuilder = new StringBuilder();
         for (i: Int <- 0 until n){
-            System.out.println(hangman(i));
+            result.append(hangman(i));
         }
+        return result.toString;
     }
     
     private def hideSecret(secret: String, 
-                   found: JSet[Character]): String = {
+                           found: JSet[Character]): String = {
         var result: String = "";
         for (i: Int <- 0 until secret.length()) {
             if (found.contains(secret.charAt(i))) {
@@ -35,7 +36,7 @@ object hangman {  // This is Java-like, non-idiomatic Scala code!
     }
     
     private def foundAll(secret: String, 
-                 found: JSet[Character]): Boolean = {
+                         found: JSet[Character]): Boolean = {
         var foundMissing: Boolean = false;
         var i: Int = 0;
         while (i < secret.length() && !foundMissing) {
@@ -55,7 +56,7 @@ object hangman {  // This is Java-like, non-idiomatic Scala code!
         return Character.toLowerCase(guess.charAt(0));
     }
 
-    def fromUrl(address: String, coding: String):  String = {
+    def download(address: String, coding: String): String = {
         var result: String = "lackalänga";
         try {   
             var url: URL = new URL(address);
@@ -75,9 +76,10 @@ object hangman {  // This is Java-like, non-idiomatic Scala code!
     def play(secret: String): Unit = {
         var found: JSet[Character] = new JHashSet[Character]();
         var bad: Int = 0;
-        while (bad < hangman.length && !foundAll(secret, found)){
-            printHangman(bad);
-            System.out.print("\nFelgissningar: " + bad + "\t");
+        var won: Boolean = false;
+        while (bad < hangman.length && !won){
+            System.out.println(renderHangman(bad));
+            System.out.print("Felgissningar: " + bad + "\t");
             System.out.println(hideSecret(secret, found));
             var guess: Char = makeGuess();
             if (secret.indexOf(guess) >= 0) {
@@ -85,8 +87,9 @@ object hangman {  // This is Java-like, non-idiomatic Scala code!
             } else {
               bad += 1;
             }
+            won = foundAll(secret, found);
         }
-        if (foundAll(secret, found)) {
+        if (won) {
             System.out.println("BRA! :)");
         } else {
             System.out.println("Hängd! :(");
@@ -99,8 +102,7 @@ object hangman {  // This is Java-like, non-idiomatic Scala code!
         if (args.length == 0) {
             var runeberg: String = 
                 "http://runeberg.org/words/ord.ortsnamn.posten";
-            var latin1: String = "ISO-8859-1";
-            play(fromUrl(runeberg, latin1));
+            play(download(runeberg, "ISO-8859-1"));
         } else {
             var rnd: Int = (Math.random() * args.length).asInstanceOf[Int];
             play(args(rnd));
