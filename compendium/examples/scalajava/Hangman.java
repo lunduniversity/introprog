@@ -5,16 +5,17 @@ import java.util.HashSet;
 import java.util.Scanner;
 
 public class Hangman {
+    private static String[] hangman = new String[]{
+        " ======  ",
+        " |/   |  ",
+        " |    O  ",
+        " |   -|- ",
+        " |   / \\ ",
+        " |       ",
+        " |       ",
+        " ==========================   RIP  :("};
+            
     private static String renderHangman(int n){
-        String[] hangman = new String[]{
-            " ======  ",
-            " |/   |  ",
-            " |    O  ",
-            " |   -|- ",
-            " |   / \\ ",
-            " |       ",
-            " |       ",
-            " ==========================   RIP  :("};
         StringBuilder result = new StringBuilder();    
         for (int i = 0; i < n; i++){
             result.append(hangman[i]);
