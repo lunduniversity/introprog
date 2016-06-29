@@ -5,16 +5,17 @@ import java.util.{HashSet => JHashSet};
 import java.util.Scanner;
 
 object Hangman {  // This is Java-like, non-idiomatic Scala code!
+    private var hangman: Array[String] = Array[String](
+        " ======  ",
+        " |/   |  ",
+        " |    O  ",
+        " |   -|- ",
+        " |   / \\ ",
+        " |       ",
+        " |       ",
+        " ==========================   RIP  :(");
+        
     private def renderHangman(n: Int): Unit = {
-        var hangman: Array[String] = Array[String](
-            " ======  ",
-            " |/   |  ",
-            " |    O  ",
-            " |   -|- ",
-            " |   / \\ ",
-            " |       ",
-            " |       ",
-            " ==========================   RIP  :(");
         var result: StringBuilder = new StringBuilder();
         for (i: Int <- 0 until n){
             result.append(hangman(i));
