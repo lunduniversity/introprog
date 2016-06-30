@@ -2,7 +2,7 @@
 
 This is a utility that checks the latex code in the compendum dir of this repo to see if the number of tasks and subtasks in exercises corresponds to the number of tasks and subtasks in solutions.
 
-## Compile
+## Compile  in terminal
 
     sbt compile
     
@@ -10,7 +10,7 @@ or
 
     scalac solucheck.scala
 
-## Run
+## Run in terminal
 
 
 ### Overview of diffs
@@ -30,6 +30,7 @@ To get a detailed report of the diffs of a specific week's exercises, e.g. week 
     sbt "run w02"
 
 or 
+	
     scala solucheck w02
     
     
