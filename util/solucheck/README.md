@@ -34,12 +34,10 @@ or
     scala solucheck w02
     
     
-ger nu dummy \Task och \Subtask för lika många som finns i övningen
-
 
 ### Init week
 
-Before the first time you are making solutions for exercises in week XX:
+Before the first time you make solutions for exercises in week XX, you can run this to get dummy \Task and \Subtask tags in the solution file in correspondance with the existing exercise file:
 
     sbt "run --init wXX"
 
