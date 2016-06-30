@@ -151,7 +151,7 @@ scala> JPoint.showSaved
 \end{REPLnonum}
 
 
-\Subtask Översätt nedan klass \code{JPerson} från Java till en \code{case class Person} i Scala med  motsvarande funktionalitet.  
+\Subtask Översätt nedan Javaklass \code{JPerson} till en \code{case class Person} i Scala med  motsvarande funktionalitet.  
 
 
 \javainputlisting[numbers=left]{examples/scalajava/JPerson.java}
@@ -175,7 +175,7 @@ scala> Person.unapply(p)
 \end{REPL}
 
 
-\Task \emph{Auto(un)boxing i JVM.} I JVM måste typparametern för generiska klasser vara av referenstyp. I Scala löser kompilatorn detta åt oss så att vi ändå kan ha t.ex. \code{Int} som argument till en typparameter i Scala, medan man i Java \emph{inte} direkt kan ha den primitiva typen \jcode{int} som typparameter till t.ex. \code{ArrayList}.
+\Task \emph{Auto(un)boxing.} I JVM måste typparametern för generiska klasser vara av referenstyp. I Scala löser kompilatorn detta åt oss så att vi ändå kan ha t.ex. \code{Int} som argument till en typparameter i Scala, medan man i Java \emph{inte} direkt kan ha den primitiva typen \jcode{int} som typparameter till t.ex. \code{ArrayList}.
 
 I Java och i den underliggande plattformen JVM används s.k. wrapper-klasser för att lösa detta, t.ex. genom wrapper-klassen \code{Integer} som boxar den primitiva typen \jcode{int}. Java-kompilatorn har stöd för att automatiskt packa in värden av primitiv typ i sådana wrapper-klasser för att skapa referenstyper och kan även automatiskt packa upp dem. 
 
@@ -189,16 +189,47 @@ scala> val c = new Cell[Int](42)
 scala> c.value.getClass.getTypeName
 \end{REPL}
 
-%%% jobba vidare med ArrayList[Int] och ArrayList[Integer]
 
 \Subtask Vad är körtidstypen för \code{c.value} ovan? Förklara hur det kan komma sig trots att vi deklarerade med typargumentet \code{Int}? 
 
+\Subtask Studera dokumentationen för \code{java.lang.Integer}\footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html}{docs.oracle.com/javase/8/docs/api/java/lang/Integer.html}} och testa i REPL några av \emph{klassmetoderna} (de som är \jcode{static} och därmed kan anropas med punktnotation direkt på klassens namn utan \code{new}) och några av \emph{instansmetoderna} (de som inte är \jcode{static}). 
+\begin{REPL}
+scala> Integer.  //tryck TAB
+scala> Integer.
+scala> Integer.toBinaryString(42)
+scala> Integer.valueOf(42)
+scala> val i = new Integer(42)
+scala> i.  // tryck TAB
+scala> i.toString
+scala> i.compareTo  // tryck TAB 2 gånger
+scala> i.compareTo(Integer.valueOf(42))
+scala> i.compareTo(42)  // varför fungerar detta?      
+\end{REPL} 
 
-\Subtask \TODO auto(un)boxing in Java och fallgropar
+\Subtask\Pen Enligt dokumentationen\footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html\#compareTo-java.lang.Integer-}{docs.oracle.com/javase/8/docs/api/java/lang/Integer.html\#compareTo-java.lang.Integer-}} tar instansmetoden \code{compareTo} i klassen \code{Integer} en \code{Integer} som parameter. Hur kan det då komma sig att sista raden ovan fungerar med en \code{Int}?
+
+\Subtask Studera nedan Java-program och beskriv vad som kommer att skrivas ut \emph{innan} du kompilerar och testkör.
+
+\javainputlisting[numbers=left]{examples/scalajava/Autoboxing.java}
+
+\Subtask Ändra i programmet ovan så att autoboxing och autounboxing utnyttjas på alla ställen där så är möjligt. Utnyttja även att \code{toString}-metoden på \code{Integer} ger samma stränrepresentation som \jcode{int} vid utskrift. Fixa också så att du undviker \emph{fallgropen} att i Java jämföra med referenslikhet i stället för att använda \code{equals}. Testa så att allt fungerar som det borde efter dina ändringar.
+
+\TODO kod till facit:
+\javainputlisting[numbers=left]{examples/scalajava/Autoboxing2.java}
+
+\Subtask\Pen Antag att du råkar skriva \jcode{xs.add(0, pos)} på rad 14 i ditt program från föregående uppgift. Förklara hur autoboxingen stjälper dig i en \emph{fallgrop} då. 
+
+\Subtask\Pen Med ledning av de båda tidigare deluppgifterna: sammanfatta de två nämnda fallgropar med autoboxing i Java i två generella punkter, så att du har nytta av att memorera dem inför din framtida Javakodning.
+
+
+\Task \TODO JavaConverters
+
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task Översätt nedan kod från Java till Scala. Skriv koden i en fil som heter \texttt{showInt.scala} och kalla Scala-objektet med \code{main}-metoden för \code{showInt}.
+\Task Översätt nedan kod från Java till Scala. Skriv koden i en fil som heter \texttt{showInt.scala} och kalla Scala-objektet med \code{main}-metoden för \code{showInt}. Läs tipsen som följer efter koden innan du börjar. 
+
+\javainputlisting[numbers=left]{examples/scalajava/JShowInt.java}
 
 \emph{Tips:}
 \begin{itemize}[nolistsep, noitemsep]
@@ -209,15 +240,19 @@ scala> c.value.getClass.getTypeName
 \item I stället för \code{Scanner.nextLine} kan använda \code{scala.io.StdIn.readLine} som tar en prompt som parameter, men du kan också använda \code{Scanner} i Scala om du vill träna på det.
 \item I Java \emph{måste} man använda nyckelordet \jcode{return} om metoden inte är en \jcode{void}-metod, medan man i Scala faktiskt \emph{får} använda \code{return} även om man brukar undvika det och i stället utnyttja att satser i Scala också är uttryck.
 \end{itemize}
-\javainputlisting[numbers=left]{examples/scalajava/JShowInt.java}
+Kompilera din Scala-kod och kör i terminalen och testa så att allt funkar. Vill du även kompilera Java-koden så finns den i kursens repo i filen\\ \texttt{compendium/examples/scalajava/JShowInt.java}
 
-\Subtask Kompilera din Scala-kod och kör i terminalen och testa så att allt funkar. Vill du även kompilera Java-koden finns den i kursens repo i biblioteket \texttt{compendium/examples/scalajava}.  
+
+
+
+\Task \TODO 
+Fallgrop med Point som inte har equals och en Polygon som kolla hasVertex som inte hittas...\\ \url{https://github.com/bjornregnell/lth-eda016-2015/blob/master/lectures/examples/eclipse-ws/lecture-examples/src/week10/generics/TestPitfall3.java}
 
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\TODO 
-\Task \emph{Gränssnitt i Scala och Java.} 
+ 
+\Task \TODO \emph{Gränssnitt i Scala och Java.} 
 
 \Task\Pen Studera fallgropar för hur man skriver en \code{equals}-metod i Java här:
 \url{http://www.artima.com/lejava/articles/equality.html}\\
