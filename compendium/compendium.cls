@@ -20,7 +20,8 @@
 
 %\usepackage{bera}
 %\usepackage{lmodern} %latin modern
-%\usepackage{tgheros} % times
+%\usepackage{tgheros} % clone of Helvetica
+%\usepackage{tgtermes}% clone of times
 %\usepackage{bookman} 
 %\usepackage[sc]{mathpazo} %palatino
 %\usepackage{tgheros} %helvetica
