@@ -100,6 +100,13 @@
 
 \Subtask \code{zs.sum}
 
+\Subtask\Pen Datastrukturen \code{Range} håller reda på start- och slutvärde, samt stegstorleken för en uppräkning, men alla talen i uppräkningen genereras inte förrän så behövs. En \code{Int} tar 4 bytes i minnet. Ungefär hur mycket plats i minnet tar de objekt som variablerna \code{r} respektive \code{a} refererar till nedan? 
+\begin{REPL}
+scala> val r = (1 to Int.MaxValue by 2)
+scala> val a = r.toArray
+\end{REPL}
+\emph{Tips:} Använd uttrycket \code{ BigInt(Int.MaxValue) * 2 } i dina beräkningar.
+
 \Task \emph{Datastrukturen \code+Vector+.} Kör nedan kodrader i Scala REPL. Beskriv vad som händer.
 
 \Subtask \code{val words = Vector("hej","på","dej", "!")}
@@ -289,7 +296,7 @@ Skriv dessa rader i filen:
  skriv ut $sum$
 \end{algorithm}
 
-\Subtask\Pen Kör algoritmen steg för steg med penna och papper, där du skriver upp hur värdena för respektive variabel ändras. Det finns en bugg i algoritmen. Vilken? Rätta buggen.
+\Subtask\Pen Kör algoritmen steg för steg med penna och papper, där du skriver upp hur värdena för respektive variabel ändras. Det finns två buggar i algoritmen. Vilka? Rätta buggarna och test igen genom att ''köra'' algoritmen med penna på papper och kontrollera så att algoritmen fungerar för $n=0$, $n=1$, och $n=5$. Vad händer om $n=-1$?
 
 \Subtask Skapa med hjälp av en editor filen \code{sumn.scala}. Implementera algoritmen SUM enligt den rättade pseudokoden och placera implementationen i en main-metod i ett objekt med namnet \code{sumn}. Du kan skapa indata \code{n} till algoritmen med denna deklaration i början av din main-metod: \\ \code{val n = args(0).toInt} \\ Vad ger applikationen för utskrift om du kör den med argumentet 8888?
 
@@ -517,9 +524,50 @@ scala> :q
 > firefox index.html
 \end{REPL}
 
+\newpage
+
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
+\Task \label{task:minindex} Implementera algoritmen MININDEX som söker index för minsta heltalet i en sekvens. Pseudokod för algoritmen MININDEX:
 
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Utdata}
+
+ \Input{Sekvens $xs$ med $n$ st heltal.}
+ \Output{Index för det minsta talet eller $-1$ om $xs$ är tom.  }
+ $minPos \leftarrow 0 $\\
+ $i \leftarrow 1$ \\
+ \While{$i < n$}{
+   \If{xs(i) < $xs(minPos)$}{$minPos \leftarrow i$}
+   $i \leftarrow i + 1$
+ }
+ \eIf{$n > 0$}{\Return{$minPos$}}{\Return{$-1$}}
+\end{algorithm}
+
+\Subtask Prova algoritmen med penna och papper på sekvensen $(1, 2, -1, 4)$ och rita minnessituationen efter varje runda i loopen. Vad blir skillnaden i exekveringsförloppet om loopvariablen $i$  initialiserats till $0$ i stället för $1$?
+
+\Subtask Implementera algoritmen MININDEX i Scala i en funktion med denna signatur:
+\begin{Code}
+def indexOfMin(xs: Array[Int]): Int = ???
+\end{Code}
+Testa för olika fall: tom sekvens; sekvens med endast ett tal; lång sekvens med det minsta talet först, någonstans mitt i, samt sist.
+
+\begin{Code}
+// kod till facit
+def indexOfMin(xs: Array[Int]): Int = {
+  var minPos = 0
+  var i = 1
+  while (i < xs.size) {
+    if (xs(i) < xs(minPos)) minPos = i
+    i += 1
+  }
+  if (xs.size > 0) minPos else -1
+}
+
+
+\end{Code}
+
+\newpage
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
