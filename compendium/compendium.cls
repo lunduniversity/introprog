@@ -73,6 +73,8 @@
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
 \hypersetup{colorlinks=true,linkcolor=, linkbordercolor=, urlbordercolor=mylinkcolor, urlcolor=mylinkcolor, pdfborderstyle={/S/U/W 1}}
 
+\usepackage{pdfpages} % To include quickref booklet in appendix
+
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning}
 %https://www.sharelatex.com/blog/2013/08/29/tikz-series-pt3.html
