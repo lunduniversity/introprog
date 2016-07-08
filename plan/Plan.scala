@@ -61,7 +61,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Sekvensalgoritmer", 
-      id = "seqalg", exercise = "sequences", lab = "cards", contents = """
+      id = "seqalg", exercise = "sequences", lab = "shuffle", contents = """
       | sekvensalgoritm,  algoritm: SEQ-COPY,   
       | in-place vs copy, algoritm: SEQ-REVERSE, algoritm: SEQ-REGISTER,
       | sekvenser i Java vs Scala, for-sats i Java,
@@ -114,17 +114,20 @@ trait Plan {
 
     Module("Sökning, Sortering", 
       id = "searchsort", exercise = "sorting", lab = "surveydata", contents = """
-      | compareTo på strängar, trait Ordered[T], 
+      | strängjämförelse, compareTo, imlicit ordning, 
+      | linjärsökning, binärsökning, 
       | algoritm: LINEAR-SEARCH, algortim: BINARY-SEARCH, 
       | algoritmisk komplexitet, 
       | sortering till ny vektor, sortering på plats, 
+      | insättningssortering, urvalssortering, 
       | algoritm: INSERTION-SORT, algoritm: SELECTION-SORT,
+      | Ordering[T], Ordered[T], Comparator[T], Comparable[T],
       """.stripTrim),  
       //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
     Module("Scala och Java", 
       id = "scalajava", exercise = "scalajava", lab = "lthopoly-team", contents = """
-      | skillnader mellan Scala och Java, 
+      | översikt av syntaxskillnader mellan Scala och Java, 
       | klasser i Scala vs Java, 
       | referensvariabler vs enkla värden i Java,
       | referenstilldelning vs värdetilldelning i Java,
