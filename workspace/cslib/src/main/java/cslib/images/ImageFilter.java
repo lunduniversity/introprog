@@ -3,7 +3,7 @@ package cslib.images;
 import java.awt.Color;
 
 /**
- * Superklassen till alla filterklasser.
+ * Superklassen till alla filterklasser. 
  */
 public abstract class ImageFilter {
 	private String name; // filtrets namn
@@ -17,6 +17,7 @@ public abstract class ImageFilter {
 	protected ImageFilter(String name) {
 		this.name = name;
 	}
+
 
 	/**
 	 * Tar reda på filtrets namn.
@@ -38,6 +39,15 @@ public abstract class ImageFilter {
 	 * @return den filtrerade bilden
 	 */
 	public abstract Color[][] apply(Color[][] inPixels, double paramValue);
+
+
+	/**
+	 * Berättar huruvida ett filter behöver ett parmetervärde eller inte
+	 *  
+	 * @return true ifall parametervärde behövs, annars false
+	 */
+	public abstract boolean needsParameter();
+
 
 	/**
 	 * Beräknar intensiteten hos alla pixlarna i pixels, returnerar resultatet i
