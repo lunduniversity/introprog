@@ -73,8 +73,6 @@
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
 \hypersetup{colorlinks=true,linkcolor=, linkbordercolor=, urlbordercolor=mylinkcolor, urlcolor=mylinkcolor, pdfborderstyle={/S/U/W 1}}
 
-\usepackage{pdfpages} % To include quickref booklet in appendix
-
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning}
 %https://www.sharelatex.com/blog/2013/08/29/tikz-series-pt3.html
@@ -103,7 +101,6 @@
 \newcommand{\Exercise}[1]{\newpage\section{Övning: {\tt #1}}}
 \newcommand{\ExerciseSolution}[1]{\newpage\section{{\tt #1}}}
 \newcommand{\Lab}[1]{\newpage\section{Laboration: {\tt #1}}}
-\newcommand{\Teamlab}[1]{\newpage\section{Grupplaboration: {\tt #1}}}
 \newcommand{\Assignment}[1]{\newpage\section{Projektuppgift: {\tt #1}}}
 \newcommand{\BasicTasks}{\subsection{Grunduppgifter}}
 \newcommand{\ExtraTasks}{\subsection{Extrauppgifter}}

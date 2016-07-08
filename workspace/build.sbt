@@ -16,10 +16,10 @@ lazy val cslib = (project in file("cslib")).
   )
 
   
-lazy val w03_blockmole =(project in file("w03_blockmole")).
+lazy val w03_bugs =(project in file("w03_bugs")).
   settings(commonSettings: _*).
   settings(
-    name := "w03_blockmole",
+    name := "w03_bugs",
     EclipseKeys.skipProject := true    
   ).dependsOn(cslib)
   
@@ -30,10 +30,10 @@ lazy val w04_pirates =(project in file("w04_pirates")).
   ).dependsOn(cslib)  
 
   
-lazy val w05_shuffle =(project in file("w05_shuffle")).
+lazy val w05_cards =(project in file("w05_cards")).
   settings(commonSettings: _*).
   settings(
-    name := "w05_shuffle"
+    name := "w05_cards"
   ).dependsOn(cslib)  
   
   
