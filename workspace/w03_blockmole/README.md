@@ -13,6 +13,6 @@ Kompilera i linuxterminal med detta kommando:
 
 Kör i linuxterminal med detta kommando: 
 
-    scala -cp "cslib.jar:." hello.scala
+    scala -cp "cslib.jar:." hello
 
 Om du kör i Windows Powershell eller Cmd byt kolon mot semikolon i kommandona ovan.
