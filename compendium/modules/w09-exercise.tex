@@ -2,7 +2,7 @@
 
 %!TEX root = ../compendium.tex
 
-\Exercise{\ExeWeekNINE}
+\Exercise{\ExeWeekNINE}\label{exe:W09}
 
 \begin{Goals}
 \item Kunna skapa och använda matriser med nästlade strukturer av \code{Vector}.
@@ -10,12 +10,12 @@
 \item Kunna skapa och använda funktioner som tar matriser som parametrar.
 \item Känna till generiska funktioner.
 \item Känna till generiska klasser.
-\item Kunna använda enkla matriser i Javas inbyggda arrayer.
+\item Kunna skapa och använda matriser med hjälp inbyggda arrayer i Java.
 \item Kunna anända nästlade \code{for}-satser i Java för att iterera över elementen i en matris.
 \end{Goals}
 
 \begin{Preparations}
-\item Läs teorin i kapitel \ref{chapter:W09}.
+\item \StudyTheory{09} 
 \end{Preparations}
 
 \BasicTasks %%%%%%%%%%%%%%%%
@@ -308,7 +308,7 @@ object Table {
 }
 \end{CodeSmall}
 
-\Subtask Skapa med hjälp av \code{Table} ett program som kan köras från terminalen med \texttt{scala regtable infile.csv ';'} som ger en utskrift av antalet förekomster av respektive unika värde i respektive kolumn (alltså en variant av registrering).
+\Subtask Skapa med hjälp av \code{Table} ett program som kan köras från terminalen med \texttt{scala regtable infile.csv ';'} som ger en utskrift av antalet förekomster av olika värden i respektive kolumn (alltså en variant av registrering).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -373,33 +373,10 @@ class Cell[T](var value: T){
 
 \Subtask\Pen Vad händer om du i stället för typparameternamnet \code{U} i \code{concat} använder namnet \code{T}?
 
-\Task \emph{Skapa en generisk, ofäränderlig matrisklass.} Med hjälp av en typparameter kan vi skapa en matrisklass som kan innehålla vilka element som helst. Implementera nedan specifikation. Testa din matrisklass i REPL för olika typer av element.
+\Subtask\Pen Denna uppgift illustrerar grunderna för att hur generiska samlingar är konstruerde, men vi går inte djupare här (det kommer mer i fördjupningskursen). Fundera om du vill på hur en generisk Matris-klass skulle kunna se ut och om du är intresserad av att fördjupa dig så gör fördjupningsuppgift \ref{task:generic-matrix}. 
 
-\begin{ScalaSpec}{Matrix[T]}
-case class Matrix[T](data: Vector[Vector[T]]) {
 
-  /** The element at row r and column c */
-  def apply(r: Int, c: Int): T = ???
 
-  /** Gives Some[T](element) at row r and column c 
-   *  if r and c are within index bounds, else None */
-  def get(r: Int, c: Int): Option[T] = ???
-
-  /** The row vector of row r */ 
-  def row(r: Int): Vector[T] = ???
-
-  /** The column vector of column c */ 
-  def col(c: Int): Vector[T] = ???
-
-  /** A new Matrix with element at row r and col c updated */
-  def updated(r: Int, c: Int, value: T): Matrix[T] = ???
-}
-object Matrix {
-  def empty[T]: Matrix[T] = new Matrix[T](Vector())
-  def ofRowSize[T](rowSize: Int)(elements: T*): Matrix[T] =
-    new Matrix(elements.toVector.grouped(rowSize).toVector)
-}
-\end{ScalaSpec}
 
 
 \Task \label{task:arraymatrix-java} \emph{Matriser med array i Java.} Om man redan vid allokering vet hur många element en matris ska ha, använder man i Java gärna en array av arrayer. En heltalsmatris (en array av array av heltal) skrivs i Java med dubbla hakparentespar \jcode{int[][]} direkt efter typen. Vid allokering använder man nyckelordet \code{new} och antalet element i respektive dimension anges inom hakperenteserna; t.ex. så ger \jcode{new int[42][21]} en matris med 42 rader och 21 kolumner, vilket motsvarar att man i Scala skriver\footnote{Ett annat, längre men kanske tydligare, sätt att skriva detta i Scala där initialvärdet framgår explicit: \code{Array.fill(42)(Array.fill(21)(0))}}  \code{Array.ofDim[Int](42,21)}. Alla element får defaultvärdet för typen, som är \code{0} för typen \code{Int} i Scala, motsvarande \jcode{int} i Java.
@@ -432,10 +409,10 @@ public class ArrayMatrix {
 }
 \end{Code}
 
-\Subtask Implementera nedan metod \code{fillRnd} med kod som fyller matrisen \code{m} med slumptal mellan \code{1} och \code{n}.
+\Subtask Implementera nedan metod \code{fillRnd} inuti klassen \code{ArrayMatrix}. Skriv kod som fyller matrisen \code{m} med slumptal mellan \code{1} och \code{n}.
 \begin{Code}[language=Java]
     public static void fillRnd(int[][] m, int n){
-        /* ??? * /
+        /* ??? */
     }
 \end{Code}
 \noindent \emph{Tips:} med detta uttryck skapas ett slumptal mellan 1 och 42 i Java:\\
@@ -554,16 +531,94 @@ object YatzyRows {
 
 \Subtask Använd \code{YatzyRows} för att med hjälp av många tärningskast beräkna sannolikheter för några olika giltiga kombinationer. Använd, om du vill, möjligheten som reglerna ger att slå om tärningar i två yterliggare kast, där de tärningar som slås om väljs slumpmässigt.
 
-\Subtask Bygg ett förenklat yazty-spel i terminalen där användaren kan bestämma vilka tärningar som ska slås om. Använd \code{Scanner} för att läsa indata från användaren. Börja med något riktigt enkelt och bygg sedan vidare på ditt spel genom att införa fler och fler funktioner.
+\Subtask Bygg ett förenklat yatzy-spel i terminalen där användaren kan bestämma vilka tärningar som ska slås om. Använd \code{Scanner} för att läsa indata från användaren. Börja med något riktigt enkelt och bygg sedan vidare på ditt spel genom att införa fler och fler funktioner.
 
 
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
+\TODO
 
-\Task \emph{Klasser för täta och glesa matematiska matriser med flyttal.} \\TODO!!!
+\Task \label{task:generic-matrix} \emph{Skapa en generisk, ofäränderlig matrisklass.} (\TODO  Denna uppgift är inte färdig men tanken är att göra ngt kul med Matrix, kanske en SpriteEditor och ett enkelt SpriteGame där man har ett bräde med pjäser eller ngt) Med hjälp av en typparameter kan vi skapa en matrisklass som kan innehålla vilka element som helst. Implementera nedan specifikation. Testa din matrisklass i REPL för olika typer av element.
 
-\Subtask Skapa en oföränderlig, final klass \code{DenseMatrix} för matematiska matriser med dubbelprecisionsflyttal. \code{DenseMatrix} ska internt lagra elementen i en privat \emph{endimensionell} array av flyttal av typen \code{Array[Double]}. Klassen ska inte vara en case-klass. Det ska gå att skapa matriser med uttrycket DenseMatrix.ofDim(3,7)(1.0,42,3.2,1.0,2.2,3) tack vare ett kompanjonsobjekt med lämplig fabriksmetod som anropar den privata konstruktorn. 
+\begin{ScalaSpec}{Matrix[T]}
+case class Matrix[T](data: Vector[Vector[T]]){
+
+  def map[U](f: T => U): Matrix[U] = Matrix(data.map(_.map(f)))
+
+  def foreachRowCol[U](f: (Int, Int, T) => Unit): Unit = 
+    for (r <- 0 until data.size) {
+      for (c <- 0 until data(r).size) {
+        f(r, c, data(r)(c))
+      }
+    }
+
+  /** The element at row r and column c */
+  def apply(r: Int, c: Int): T = ???
+
+  /** Gives Some[T](element) at row r and column c 
+   *  if r and c are within index bounds, else None */
+  def get(r: Int, c: Int): Option[T] = ???
+
+  /** The row vector of row r */ 
+  def row(r: Int): Vector[T] = ???
+
+  /** The column vector of column c */ 
+  def col(c: Int): Vector[T] = ???
+
+  /** A new Matrix with element at row r and col c updated */
+  def updated(r: Int, c: Int, value: T): Matrix[T] = ???
+}
+object Matrix {
+  def fill[T](rowSize: Int, colSize: Int)(init: T): Matrix[T] = 
+    new Matrix(Vector.fill(rowSize)(Vector.fill(colSize)(init)))  
+}
+\end{ScalaSpec}
+
+\Subtask Använd ovan matrisklass för att göra en SpriteEditor med JColorChoser enligt nedan skiss.
+
+\begin{Code}
+object ColorChooser {
+  import java.awt.Color
+  import javax.swing.JColorChooser
+  
+  var title = "Pick Color"
+  private val chooser = new JColorChooser(Color.BLACK)
+  private val dialog = JColorChooser.
+    createDialog(null, title, true, jcs, null, null)
+  
+  def getColor(initColor: Color = Color.BLACK): Color = {
+    chooser.setColor(initColor)
+    dialog.setVisible(true)
+    chooser.getColor
+  }
+}
+
+class Sprite(
+  val id: String,
+  val size: (Int, Int),
+  val pixels: Matrix[Option[Int]], // None if transparent otherwise color number in colors
+  var scale: Int, 
+  var colors: Vector[java.awt.Color], 
+  var pos: (Int, Int, Int)  // (row, col, layer)
+){
+  def row = pos._1
+  def col = pos._2
+  def layer = pos._3
+}
+
+class SpriteEditor(rows: Int = 64, cols: Int = 64, scale: Int = 16, nColors: Int = 16) {
+  private val w = new SimpleWindow(???)
+  def edit: Unit = ???
+}
+
+\end{Code}
+
+
+
+\Task \TODO \emph{Klasser för täta och glesa matematiska matriser med flyttal.}  FUNDERA PÅ: om detta är för svårt när man inte läst linalg...
+
+\Subtask Skapa en oföränderlig, final klass \code{DenseMatrix} för matematiska matriser med dubbelprecisionsflyttal. \code{DenseMatrix} ska internt lagra elementen i en privat \emph{endimensionell} array av flyttal av typen \code{Array[Double]}. Klassen ska inte vara en case-klass. Det ska gå att skapa matriser med uttrycket DenseMatrix.ofDim(3,7)(1.0,42,3.2,1.0,2.2,3) tack vare ett kompanjonsobjekt med lämplig fabriksmetod som anropar den privata konstruktorn.  Om antalet element är för litet i förhållande till den angivna dimensionen så fyll på med nollor. Om det är för många tal i förhållande till dimensionen så kasta ett undantag \TODO tror jag??
 
 \Subtask Överskugga metoderna equals och hashcode och ge \code{DenseMatrix} innehållslikhet i stället för referenslikhet.
 
@@ -578,6 +633,6 @@ object YatzyRows {
 \Task \emph{Matriser med \jcode{ArrayList} i Java.} Om man i Java inte vet antalet element i matrisen från början kan man använda en lista av typen \jcode{ArrayList}, där varje element i sin tur innehåller en lista av typen\jcode{ArrayList}. Javas \jcode{ArrayList} är en generisk samling som motsvaras av Scalas \code{ArrayBuffer}. Generiska samlingar i Java kan endast innehålla referenstyper; vill man ha en primitiv typ, t.ex. \jcode{int}, behöver man packa in denna i en s.k. wrapper-klass, t.ex.  klassen \jcode{Integer}. Det finns en wrapper-klass för varje primitiv typ i Java. Matristypen för en heltalstyp i Java skrivs \jcode{ArrayList<ArrayList<Integer>>} där alltså \code{<T>} motsvarar Scalas hakparenteser \code{[T]} för typparametern T.
 
 
-\Subtask TODO!! Hitta på deluppgifter med \jcode{ArrayList<ArrayList<Integer>>} som illustrerar ovan. Peka framåt till scalajava-veckan.
+\Subtask \TODO Hitta på deluppgifter med \jcode{ArrayList<ArrayList<Integer>>} som illustrerar ovan. Peka framåt till scalajava-veckan.
 
     
