@@ -210,38 +210,43 @@ Hello \code{if}  \jcode{if}
 
 \vspace{\baselineskip}
 Hello \code{if}  \jcode{if}
-\clearpage
+
+\Newline\head{Option, Some, None}\Newline
+
+
+\Newline\head{scala.util.Try}\Newline
+
+\Newline\head{scala.concurrent.Future}\Newline
+
+
 
 
 \clearpage
 
+\head{The Scala Type System}\Newline
 
-
-
-\head{Type system}\Newline
-Scala's type hierarchy 
-\includegraphics[width=1.0\textwidth]{../img/hierarchy.pdf}
+\includegraphics[width=1.07\textwidth,trim=12mm 0 0 0cm]{../img/hierarchy.pdf}
 
 \Newline
 
 {\small \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{p{2.8cm}   l l l l}
-Size of basic types
-& \textbf{name} & \textbf{\# bits} & \textbf{range} & \textbf{JVM}\\ \cline{2-5} %\hline 
+\begin{tabular}{l  l l l l l}
+Basic types
+& \textbf{name} & \textbf{\# bits} & \textbf{range} & \textbf{Litteral} & \textbf{JVM} \\ \cline{2-6} %\hline 
 \\[-1em]
-&\texttt{Byte}   &  8  & $-2^7$ ... $2^7-1$   & \texttt{byte} \\
-&\texttt{Short}  &  16 & $-2^{15}$ ... $2^{15}-1$ & \texttt{short} \\
-&\texttt{Char}   &  16 & $0$ ... $2^{16}-1$ & \texttt{char} \\
-&\texttt{Int}    &  32 & $-2^{15}$ ... $2^{15}-1$ & \texttt{int} \\
-&\texttt{Long}   &  64 & $-2^{15}$ ... $2^{15}-1$ & \texttt{long} \\
-&\texttt{Float}  &  32 & ± $3.4028235 \cdot 10^{38}$  & \texttt{float} \\
-&\texttt{Double} &  64 & ± $1.7976931348623157 \cdot 10^{308}$ & \texttt{double} \\
+&\texttt{Byte}   &  8  & $-2^7$ ... $2^7-1$  & \texttt{0.toByte} & \texttt{byte} \\
+&\texttt{Short}  &  16 & $-2^{15}$ ... $2^{15}-1$ & \texttt{0.toShort}  & \texttt{short} \\
+&\texttt{Char}   &  16 & $0$ ... $2^{16}-1$ & \texttt{'0'} & \texttt{char} \\
+&\texttt{Int}    &  32 & $-2^{15}$ ... $2^{15}-1$ & \texttt{0} &\texttt{int} \\
+&\texttt{Long}   &  64 & $-2^{15}$ ... $2^{15}-1$ & \texttt{0L} &\texttt{long} \\
+&\texttt{Float}  &  32 & ± $3.4028235 \cdot 10^{38}$  & \texttt{0F} &\texttt{float} \\
+&\texttt{Double} &  64 & ± $1.7976931348623157 \cdot 10^{308}$ & \texttt{0.0} &\texttt{double} \\
 \end{tabular}
 }
 
-\Newline\head{Collections}
+\Newline\head{The Scala Standard Collection Library}
 {
-\small\renewcommand{\arraystretch}{1.25}
+\small\renewcommand{\arraystretch}{1.1}
 \begin{multicols}{2}
 \texttt{scala.collection.}
 \begin{tabular}{l l l}
@@ -253,9 +258,9 @@ Size of basic types
 \texttt{Map} & \texttt{Map} & \texttt{apply~~+~~-} \\
 \end{tabular}
 
-\vspace{0.5em}
+\vspace{0.2em}
 
-\texttt{String} and \texttt{Array} are implicit subtypes of \texttt{Seq}\\ making sequence methods work as for other collections. 
+\texttt{String} and \texttt{Array} are implicitly converted to \texttt{Seq}\\ making sequence methods work as for other collections. Allocate Int array of size n: \texttt{ new Array[Int](n)}
 
 
 \columnbreak
@@ -282,14 +287,20 @@ Size of basic types
 \end{center}
 \end{multicols}
 }
+
+{\small Concrete implementations of Set include HashSet, ListSet and BitSet. The subtype SortedSet is implemented by TreeSet.
+Concrete implementations of Map include HashMap and ListMap. The subtype SortedMap is implemented by TreeMap.
+
+}
+
 \clearpage
 
-\head{Operations in trait \texttt{Traversable}}\Newline
+\head{Methods in trait \texttt{Traversable}}\Newline
 
 {\small\renewcommand{\arraystretch}{1.2}
 \begin{tabular}{l p{3.4cm} p{6.6cm}}
-\textbf{What} & \textbf{Example} & \textbf{Explanation} \texttt{f} is function, \texttt{pf} is partial funct., \texttt{p} is predicate.\\ \hline
-Traverse: & \texttt{xs foreach f} & Executes f for every element of xs. Returntype \texttt{Unit}.\\ \cline{1-3}
+\textbf{What} & \textbf{Usage} & \textbf{Explanation} f is a function, pf is a partial funct., p is a predicate.\\ \hline
+Traverse: & \texttt{xs foreach f} & Executes f for every element of xs. Return type Unit.\\ \cline{1-3}
 
   Add: & \texttt{xs ++ ys} & A collection with xs followed by ys.\\\cline{1-3}
   
@@ -301,16 +312,16 @@ Traverse: & \texttt{xs foreach f} & Executes f for every element of xs. Returnty
    & \texttt{toSet} & Converts the collection to a set; duplicates removed.\\ \cline{2-3}
    & \texttt{toMap} & Converts a collection of key/value pairs to a map. \\ \cline{1-3}
 
-  Copy: & \texttt{xs copyToBuffer buf } & Copies all elements of xs to buffer buf. Returntype \texttt{Unit}\\ \cline{2-3}
-   & \texttt{xs copyToArray (arr, s, n)} & Copies at most n elements of the collection to array arr starting at index s (last two arguments are optional). Returntype \texttt{Unit}\\ \cline{1-3}
+  Copy: & \texttt{xs copyToBuffer buf } & Copies all elements of xs to buffer buf. Return type Unit.\\ \cline{2-3}
+   & \texttt{xs copyToArray (arr, s, n)} & Copies at most n elements of the collection to array arr starting at index s (last two arguments are optional). Return type Unit.\\ \cline{1-3}
 
   Size info: & \texttt{xs.isEmpty} & Returns true if the collection xs is empty.\\ \cline{2-3}
    & \texttt{xs.nonEmpty} & Returns true if the collection xs has at least one element.\\ \cline{2-3}
    & \texttt{xs.size} & Returns an \texttt{Int} with the number of elements in xs.\\ \cline{1-3}
    
 
-  Retrieval: & \texttt{xs.head \newline xs.last} &  	The first/last element of xs (or, some element, if no order is defined).\\ \cline{2-3}
-      & \texttt{xs.headOption \newline xs.lastOption} & The first/last element of xs (or, some element, if no order is defined) in an option value, or \texttt{None} if xs is empty.\\ \cline{2-3}
+  Retrieval: & \texttt{xs.head xs.last} &  	The first/last element of xs (or some elem, if order undefined).\\ \cline{2-3}
+      & \texttt{xs.headOption \newline xs.lastOption} & The first/last element of xs (or some element, if no order is defined) in an option value, or \texttt{None} if xs is empty.\\ \cline{2-3}
       & \texttt{xs find p} & An option with the first element satisfying p, or None.\\ \cline{1-3}
 
 
@@ -328,12 +339,12 @@ Traverse: & \texttt{xs foreach f} & Executes f for every element of xs. Returnty
       & \texttt{xs groupBy f} & Partition xs into a map of collections according to f.\\ \cline{1-3}
 
 
-  Conditions: & \texttt{xs forall p} & xxx\\ \cline{2-3}
-      & \texttt{xs exists p} & xxx\\ \cline{2-3}
-      & \texttt{xs count p} & xxx\\ \cline{1-3}
+  Conditions: & \texttt{xs forall p} & Returns true if p holds for all elements of xs.\\ \cline{2-3}
+      & \texttt{xs exists p} & Returns true if p holds for some element of xs.\\ \cline{2-3}
+      & \texttt{xs count p} & An \texttt{Int} with the number of elements in xs that satisfy p.\\ \cline{1-3}
 
   Folds: & \texttt{xs.foldLeft(z)(op) xs.foldRight(z)(op)} & Apply binary operation op between successive elements of xs, going left to right (or right to left) starting with z.\\ \cline{2-3}
-      & \texttt{xs reduceLeft op \newline xs reduceRight op} & Same as foldLeft/foldRight, but xs must be non-empty, starting with first element instead of z.\\ \cline{2-3}
+      & \texttt{xs reduceLeft op \newline xs reduceRight op} & Similar to foldLeft/foldRight, but xs must be non-empty, starting with first element instead of z.\\ \cline{2-3}
       & \texttt{xs.sum xs.product xs.min xs.max} & Calculation of the sum/product/min/max of the elements of xs, which must be numeric.\\ \cline{1-3}
                               
    Make string: & \texttt{xs mkString (start, sep, end)} & A string with all elements of xs between separators sep enclosed in strings start and end; start, sep, end are all optional.\\ \cline{1-3}
@@ -344,80 +355,238 @@ Traverse: & \texttt{xs foreach f} & Executes f for every element of xs. Returnty
 
 \clearpage
 
-\head{Operations in trait \texttt{Iterable}}\Newline
+\head{Methods in trait \texttt{Iterable}}\Newline
 
-{\small\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{l p{3.4cm} p{6.6cm}}
+{\small\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l p{3.4cm} p{6.8cm}}
 
-\textbf{What} & \textbf{Example} & \textbf{Explanation} \texttt{f} is function, \texttt{pf} is partial funct., \texttt{p} is predicate.\\ \hline
+\textbf{What} & \textbf{Usage} & \textbf{Explanation} \\ \hline
 
-  XXX: & \texttt{xxx} & xxx\\   \cline{2-3}
+  Iterators: & \texttt{val it = xs.iterator} & An iterator \texttt{it} of type \texttt{Iterator} that yields each element one by one: \texttt{ while (it.hasNext) f(it.next)}\\   \cline{2-3}
 
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{1-3}
+   & \texttt{xs grouped size} & An iterator yielding fixed-sized chunks of this collection.\\\cline{2-3}
+   & \texttt{xs sliding size} & An iterator yielding a sliding fixed-sized window of elements.\\\cline{1-3}
 
-  XXX: & \texttt{xxx} & xxx\\   \cline{2-3}
+  Subparts: & \texttt{xs takeRight n \newline xs dropRight n} & Similar to \texttt{take} and \texttt{drop} in \texttt{Traversable} but takes/drops the last n elements (or any n elements if the order is undefined).\\   \cline{1-3}
 
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{1-3}
+  Zippers: & \texttt{xs zip ys} &  	An iterable of pairs of corresponding elements from xs and ys.\\   \cline{2-3}
+   & \texttt{xs zipAll (ys, x, y)} & Similar to \texttt{zip}, but the shorter sequence is extended to match the longer one by appending elements x or y.\\\cline{2-3}
+   & \texttt{xs.zipWithIndex} & An iterable of pairs of elements from xs with their indices.\\\cline{1-3}
+
+  Compare: & \texttt{xs sameElements ys} & True if xs and ys contain the same elements in the same order.\\   \cline{1-3}
+
         
 \end{tabular}
 }  
 
 \Newline
-\head{Operations in trait \texttt{Seq}}\Newline
+\head{Methods in trait \texttt{Seq}}\Newline
 
-{\small\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{l p{3.4cm} p{6.6cm}}
+{\small\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l p{3.75cm} p{6.6cm}}
 
-\textbf{What} & \textbf{Example} & \textbf{Explanation} \texttt{f} is function, \texttt{pf} is partial funct., \texttt{p} is predicate.\\ \hline
+%\textbf{What} & \textbf{Usage} & \textbf{Explanation} \texttt{f} is function, \texttt{pf} is partial funct., \texttt{p} is predicate.\\ \hline
 
-  XXX: & \texttt{xxx} & xxx\\   \cline{2-3}
+  Indexing & \texttt{xs(i)  ~ xs apply i} & The element of xs at index i.\\   \cline{2-3}
 
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{1-3}
+   and size: & \texttt{xs.length} & Length of sequence. Same as \texttt{size} in \texttt{Traversable}.\\\cline{2-3}
+   & \texttt{xs.indices} & Returns a \texttt{Range} extending from 0 to xs.length - 1.\\\cline{2-3}
+   & \texttt{xs isDefinedAt i} & True if i is contained in xs.indices.\\\cline{2-3}
+   & \texttt{xs lengthCompare n} & Returns -1 if xs is shorter than n, +1 if it is longer, else 0. \\\cline{1-3}
 
-  XXX: & \texttt{xxx} & xxx\\   \cline{2-3}
+  
+  Index & \texttt{xs indexOf x} & The index of the first element in xs equal to x.\\   \cline{2-3}
+  search: & \texttt{xs lastIndexOf x} & The index of the last element in xs equal to x.\\\cline{2-3}
+   & \texttt{xs indexOfSlice ys \newline xs lastIndexOfSlice ys} & The (last) index of xs such that successive elements starting from that index form the sequence ys.\\\cline{2-3}
+   & \texttt{xs indexWhere p} & The index of the first element in xs that satisfies p.\\\cline{2-3}
+   & \texttt{xs segmentLength (p, i)} & The length of the longest uninterrupted segment of elements in xs, starting with xs(i), that all satisfy the predicate p.\\\cline{2-3}
+   & \texttt{xs prefixLength p} &  	Same as \texttt{ xs.segmentLength(p, 0)}\\\cline{1-3}
 
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{1-3}
+
+  Add: & {\texttt{x~+:~xs~~~~~xs~:+~x}}  & Prepend/Append x to xs. Colon on the collection side. \\   \cline{2-3}
+   & \texttt{xs padTo (len, x)} & Append the value x to xs until length len is reached.\\\cline{1-3}
+        
+
+  Update: & \texttt{xs patch (i, ys, r)} &  A copy of xs with r elements of xs replaced by ys starting at i. \\   \cline{2-3}
+   & \texttt{xs updated (i, x)} & A copy of xs with the element at index i replaced by x.\\\cline{2-3}
+   & \texttt{xs(i) = x \newline xs.update(i, x)} & Only available for mutable sequences. Changes the element of xs at index i to x. Return type Unit.\\\cline{1-3}
+        
+
+  Sort: & \texttt{xs.sorted} & A new Seq[A] sorted using implicitly available ordering of A. \\   \cline{2-3}
+   & \texttt{xs sortWith lt} &  	A new Seq[A] sorted using less than lt: (A, A) => Boolean.\\\cline{2-3}
+   & \texttt{xs sortBy f} &  	A new Seq[A] sorted using implicitly available ordering of B after applying f: A => B to each element.\\ \cline{1-3}
+        
+
+  Reverse: & \texttt{xs.reverse} & A new sequence with the elements of xs in reverse order. \\   \cline{2-3}
+   & \texttt{xs.reverseIterator} & An iterator yielding all the elements of xs in reverse order.\\\cline{2-3}
+   & \texttt{xs reverseMap f} & Similar to map in Traversable, but in reverse order.\\\cline{1-3}
+        
+
+  Tests: & \texttt{xs startsWith ys} & True if xs starts with sequence ys. \\   \cline{2-3}
+   & \texttt{xs endsWith ys} & True if xs ends with sequence ys.\\\cline{2-3}
+   & \texttt{xs contains x} & True if xs has an element equal to x.\\\cline{2-3}
+   & \texttt{xs containsSlice ys} & True if xs has a contiguous subsequence equal to ys\\\cline{2-3}
+   & \texttt{(xs corresponds ys)(p)} & True if corresponding elements satisfy the binary predicate p.\\\cline{1-3}
+   
+  Subparts: & \texttt{xs intersect ys} & The intersection of xs and ys, preserving element order.\\\cline{2-3}
+   & \texttt{xs diff ys} & The difference of xs and ys, preserving element order.\\\cline{2-3}
+   & \texttt{xs union ys} & Same as \texttt{xs ++ ys} in Traversable.\\\cline{2-3}
+   & \texttt{xs.distinct} & A subsequence of xs that contains no duplicated element.\\\cline{1-3}
+                   
+       
+        
+\end{tabular}
+}  
+
+
+
+\Newline
+\head{Methods in trait \texttt{Set}}\Newline
+
+{\small\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{p{5cm}  p{6.6cm}}
+
+%\textbf{Usage} & \textbf{Explanation} \\ \hline
+
+\texttt{xs(x)~~~xs~apply~x} & True if x is a member of xs. Also: xs contains x\\   \cline{1-2}
+
+\texttt{xs subsetOf ys} & True if ys is a subset of xs.\\\cline{1-2}
+
+\texttt{xs~+~x~~~~~~~~~~xs - x} \newline \texttt{xs~+~(x,~y,~z)~~xs~-~(x,~y,~z)}& Returns a new set including/excluding elements. \newline Addition/subtraction can be applied to many arguments.\\   \cline{1-2}
+
+\texttt{xs intersect ys} & A new set with elements in both xs and ys. Also: \texttt{\&} \\\cline{1-2}
+\texttt{xs union ys} & A new set with elements in either xs or ys or both. Also: \texttt{|} \\\cline{1-2}
+\texttt{xs diff ys} & A new set with elements in xs that are not in ys. Also: \texttt{\&\textasciitilde} \\\cline{1-2}
+        
+\end{tabular}
+}  
+
+\Newline
+\head{Additional methods only in trait \texttt{mutable.Set}}\Newline
+{\small\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{p{5cm}  p{6.6cm}}
+
+\texttt{xs~+=~x~~~~~~~~~~xs~-=~x} \newline \texttt{xs~+=~(x,~y,~z)~~xs~-=~(x,~y,~z)}& Returns the same set with included/excluded elements. \newline Addition/subtraction can be applied to many arguments.\\   \cline{1-2}
+
+\texttt{xs ++= ys} & Adds all elements in ys to set xs and returns xs itself. \\\cline{1-2}
+
+\texttt{xs add x} & Adds element x to xs and returns true if x was in xs, else false. \\\cline{1-2}
+\texttt{xs remove x} & Removes x from xs and returns true if x was in xs, else false. \\\cline{1-2}
+
+\texttt{xs retain p} & Keeps only those elements in xs that satisfy predicate p.\\   \cline{1-2}
+\texttt{xs.clear} &  	Removes all elements from xs. Return type Unit.\\   \cline{1-2}
+\texttt{xs(x) = b ~~~ xs.update(x, b)} & If b is true, adds x to xs, else removes x. Return type Unit.\\   \cline{1-2}
+\texttt{xs.clone} & Returns a new mutable set with the same elements as xs.\\   \cline{1-2}
+        
+\end{tabular}
+}  
+
+\Newline
+\head{Methods in trait \texttt{Map}}\Newline
+
+{\small\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{p{5.0cm}  p{6.6cm}}
+
+\texttt{ms get k} & The value associated with key k an option, None if not found.\\   \cline{1-2}
+
+\texttt{ms(k)~~~xs~apply~k} & The value associated with key k, or exception if not found.\\   \cline{1-2}
+
+\texttt{ms getOrElse (k, d)} & The value associated with key k in map ms, or d if not found.\\   \cline{1-2}
+
+\texttt{ms isDefinedAt k} & True if ms contains a mapping for key k. Also: ms.contains(k) \\   \cline{1-2}
+
+
+\texttt{ms + (k -> v)  ~~ ms + ((k, v))} \newline \texttt{ms updated (k, v)} & The map containing all mappings of ms as well as the mapping k -> v from key k to value v. Also: ms + (k -> v, l -> w) \\   \cline{1-2}
+
+\texttt{ms - k} & Excluding any mapping of key k. Also: ms - (k, l, m)\\   \cline{1-2}
+
+\texttt{ms ++ ks ~~~~ ms {-}{-} ks} & The mappings of ms with the mappings of ks added/removed.\\   \cline{1-2}
+
+\texttt{ms.keys  ~~~~~ ms.values} & An iterable containing each key/value in ms.\\   \cline{1-2}
         
 \end{tabular}
 }  
 
 
 \Newline
-\head{Operations in trait \texttt{Set}}\Newline
+\head{Additional methods only in trait \texttt{mutable.Map}}\Newline
 
-{\small\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{l p{3.4cm} p{6.6cm}}
+{\small\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{p{5.0cm}  p{6.8cm}}
 
-\textbf{What} & \textbf{Example} & \textbf{Explanation} \texttt{f} is function, \texttt{pf} is partial funct., \texttt{p} is predicate.\\ \hline
+\texttt{ms(k) = v ~~ ms.update(k, v)} & Adds mapping k to v, overwriting any previous mapping of k.\\   \cline{1-2}
 
-  XXX: & \texttt{xxx} & xxx\\   \cline{2-3}
+\texttt{ms += (k -> v) ~~~~ ms -= k} & Adds/Removes mappings. Also vid several arguments.\\   \cline{1-2}
 
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{1-3}
+\texttt{ms put (k, v) ~~~ ms remove k}& Adds/removes mapping; returns previous value of k as an option.\\   \cline{1-2}
 
-  XXX: & \texttt{xxx} & xxx\\   \cline{2-3}
+\texttt{ms retain p} & Keeps only mappings that have a key satisfying predicate p.\\   \cline{1-2}
 
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{2-3}
-   & \texttt{xxx} & xxx\\\cline{1-3}
+\texttt{ms.clear} & Removes all mappings from ms.\\   \cline{1-2}
+
+\texttt{ms transform f} & Transforms all associated values in map ms with function f.\\   \cline{1-2}
+
+\code|ms.clone| & Returns a new mutable map with the same mappings as ms.\\   \cline{1-2}
         
 \end{tabular}
 }  
+\vspace{0.5em}
+
+\textbf{\color{\LangColor}{Factory methods examples}}{\small : \texttt{
+Vector(1, 2, 3); collection.mutable.Set.empty[Int]; Map("Sweden" -> "Stockholm", "Denmark" -> "Copenhagen"); List.fill(3)('a'); Array.ofDim[Int](3,2)} gives \texttt{Array(Array(0, 0), Array(0, 0), Array(0, 0))} same as \texttt{Array.fill(3,2)(0)}; \texttt{ Vector.iterate(1.2, 3)(\_ + 0.5)} gives \texttt{Vector(1.2, 1.7, 2.2)}; \texttt{ Vector.tabulate(3)("s" + \_) }
+gives \code{ Vector("s0", "s1", "s2")}
+}
+
+
+
+\Newline\head{String methods}\Newline
+
+
+{\small\renewcommand{\arraystretch}{1.15}
+
+Some methods below are from java.lang.String and some methods are implicitly added from StringOps, etc.\\ Strings are implictly treated as Seq[Char] so all Seq methods also works.
+
+\vspace{0.5em}
+
+\begin{tabular}{l l}
+\code|s.capitalize| & Returns this string with first character converted to upper case. \\
+\code|s(i)  s apply i   s.charAt(i)| & Returns the character at index i. \\
+\code|s.compareTo(t)| & Returns x where x < 0 if s < t, x > 0 if s > t, x is 0 if s == t\\
+\code|s.compareToIgnoreCase(t)| & Similar to compateTo but not sensitive to case.\\
+\code|s.endsWith(t)| & True if string s ends with string t. \\
+\code|s.replaceAllLiterally(s1, s2)| & Replace all occurances of s1 with s2 in s. \\
+\code|s.split(c)| & Returns an array of strings split at every occurance of charachter c. \\
+\code|s.startsWith(t)| & True if string s begins with string t. \\
+\code|s.stripMargin| & Strips leading white space followed by | from each line in string.\\
+\code|s.substring(i)| & Returns a substring of s with all charcters from index i.\\
+\code|s.substring(i, j)| & Returns a substring of s from index i to index j-1.\\
+\code|s.toInt  s.toDouble  s.toFloat| & Parses s as an Int or Double etc. May throw an exception.\\
+\code|42.toString   42.0.toString| & Converts a number to a String.\\
+\code|s.toLowerCase| & Converts all characters to lower case.\\
+\code|s.toUpperCase| & Converts all characters to upper case. \\
+\code|s.trim| & Removes leading and trailing white space.\\
+\end{tabular}
+} 
+
+
+\Newline\head{scala.io.Source}\Newline
+
+\Newline\head{scala.io.StdIn}\Newline
+
+
+\Newline\head{Special characters and strings}\Newline
+
+{\small\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{p{0.6cm} l | r l}
+\textbf{Escape\newline char} &  & \textbf{String} & \\ 
+\code|\n| & line break & \code|"hello\nworld"| & string including escape char for line break\\
+\code|\t| & horisontal tab & \code|"""a "raw" string"""| & can include quotes and span multiple lines\\
+\code|\"| & double quote '' & \code|s"x is $x"| & the s interpolator inserts values of existing names\\
+\code|\'| & single quote ' &  \code|s"x+1 is ${x+1}"|& the s interpolator evaluates expressions within  \code|${}|\\
+\code|\\| & backslash \textbackslash &  & \\
+\end{tabular}
+} 
+
 
 \Newline\head{Reserved words}\Newline
 
@@ -428,7 +597,7 @@ abstract case catch class def do else extends false final
 finally for forSome if implicit import lazy macro match new 
 null object override package private protected return sealed 
 super this throw trait try true type val var while with yield 
-_ : = => <- <: <% >: # @ 
+_   :   =   =>   <-   <:   <%   >:   #   @ 
 \end{Code}
 
 
