@@ -53,6 +53,7 @@ trait Plan {
       | attribut (fält), medlem, metod, 
       | tupel, klass, Any, isInstanceOf, toString, 
       | case-klass, räkna med bråk och klassen Frac,
+      | samling, scala.collection, 
       | föränderlighet vs oföränderlighet, 
       | List, Vector, Set, Map, 
       | typparameter, generisk samling som parameter,
