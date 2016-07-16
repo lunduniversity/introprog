@@ -194,22 +194,49 @@
 \LangMarker{Scala}{1.5cm}
 \LangTitle{Scala Quick Reference}
 
-blablabla
 
-\Newline
-\head{Expressions}
-\begin{etab}
-Arithmetiskt uttryck & (x + 2) * i / 3          &  skrivs som i matematiken, för heltal är / \\
-                  &                            &  heltalsdivision, \% ''rest'' \secend
-\end{etab}
+\head{Expressions}\Newline
+
+{\small\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l l p{6.5cm}}
+literals  &  \code|0 0L 0.0 "0" '0' true false|   & Basic types e.g. Int, Long, Double, String, Char, Boolean \\
+block     &  \code|{ expr1; ...; exprN } |         &  The value of a block is the value of its last expression   \\
+if        &  \code|if (cond) expr1 else expr2 |  &   The value is expr1 if cond is true else expr2 \\
+for       &  \code|for (x <- xs) expr |          &   Loop for each x in xs, x visible in expr, type Unit   \\
+yield     &  \code|for (x <- xs) yield expr|     &   Yeilds a sequence with elems of expr for each x in xs \\
+while     &  \code|while (cond) expr |           &   Loop expr while cond is true, type Unit \\
+do while  &  \code|do expr while (cond) |        &   Dp expr at least once and then while cond is true, type Unit \\
+throw     &  \code|throw new Exception("Bang!") |  &  Throws an exception that halts execution if not in try catch  \\
+try       &  \code|try expr catch pf |           & Evaluate partial function pf if exception in expr, where pf e.g.: 
+\code|{case e: Exception => someBackupValue}| \\ 
+
+
+\end{tabular}
+}
+
+{\small
+\begin{tabular}{r l | r  p{5cm}}\hline\\
+\textbf{Precedence} & in operator notaion & Example expressions:& Explanation, x, i, j are integers \\
+\textbf{Lowest} & all letters  & \code|(x + 2) * i / 3| & Parenthesis control order of evaluation \\
+ & \code+|+       &  \code|1.+(2)|      & Method application, call method + on object 1\\
+ & \code|^|       &  \code|1 + 2|       & Operator notation equivalent to 1.+(2)\\
+ & \code|&|       &  \code|x < y|       & Yields true or false, other ops: > <= >= == !=\\
+ & \code|= !|     &  \code|cond1 && cond2|& Logical and, other boolean ops are or: || not: !\\
+ & \code|< >|     &  \code|f(1, 2, 3)|  & Function application, same as f.apply(1,2,3)\\
+ & \code|:|       &  \code|x => x + 1| & Function literal, anonymous function, ''lambda''\\
+ & \code|+ -|     &  \code|new C(1,2)| & Create object from class C with arguments 1,2\\
+ & \code|* / %|   &  \code|this|         & A reference to the object being defined\\
+\textbf{Highest} & other special characters &  \code|super.m|         & Refers to a member m of a supertype of this  \\
+Exception & assignment is lowest  & \code|null|         & Refers to an unreferrable object of type Null\\
+\end{tabular}
+}
+
+\head{Declarations}
 
 \vspace{\baselineskip}
 Hello \code{if}  \jcode{if}
 
-\head{Control structures}
 
-\vspace{\baselineskip}
-Hello \code{if}  \jcode{if}
 
 \Newline\head{Option, Some, None}\Newline
 
@@ -217,6 +244,15 @@ Hello \code{if}  \jcode{if}
 \Newline\head{scala.util.Try}\Newline
 
 \Newline\head{scala.concurrent.Future}\Newline
+
+
+
+
+
+
+\Newline\head{scala.io.Source}\Newline
+
+\Newline\head{scala.io.StdIn}\Newline
 
 
 
@@ -231,7 +267,7 @@ Hello \code{if}  \jcode{if}
 
 {\small \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{l  l l l l l}
-Basic types
+Numeric types
 & \textbf{name} & \textbf{\# bits} & \textbf{range} & \textbf{Litteral} & \textbf{JVM} \\ \cline{2-6} %\hline 
 \\[-1em]
 &\texttt{Byte}   &  8  & $-2^7$ ... $2^7-1$  & \texttt{0.toByte} & \texttt{byte} \\
@@ -438,9 +474,7 @@ Traverse: & \texttt{xs foreach f} & Executes f for every element of xs. Return t
 \end{tabular}
 }  
 
-
-
-\Newline
+%\Newline
 \head{Methods in trait \texttt{Set}}\Newline
 
 {\small\renewcommand{\arraystretch}{1.15}
@@ -532,9 +566,12 @@ Traverse: & \texttt{xs foreach f} & Executes f for every element of xs. Return t
 }  
 \vspace{0.5em}
 
-\textbf{\color{\LangColor}{Factory methods examples}}{\small : \texttt{
-Vector(1, 2, 3); collection.mutable.Set.empty[Int]; Map("Sweden" -> "Stockholm", "Denmark" -> "Copenhagen"); List.fill(3)('a'); Array.ofDim[Int](3,2)} gives \texttt{Array(Array(0, 0), Array(0, 0), Array(0, 0))} same as \texttt{Array.fill(3,2)(0)}; \texttt{ Vector.iterate(1.2, 3)(\_ + 0.5)} gives \texttt{Vector(1.2, 1.7, 2.2)}; \texttt{ Vector.tabulate(3)("s" + \_) }
-gives \code{ Vector("s0", "s1", "s2")}
+\textbf{\color{\LangColor}{Factory methods examples}:}
+{\small \texttt{ Vector(0, 0, 0) } same as \texttt{ Vector.fill(3)(0)} 
+\texttt{ collection.mutable.Set.empty[Int]; Map("se" -> "Sweden", "dk" -> "Denmark")
+\newline Array.ofDim[Int](3,2)} gives \texttt{Array(Array(0, 0), Array(0, 0), Array(0, 0))} same as \texttt{Array.fill(3,2)(0)}; 
+\texttt{ Vector.iterate(1.2, 3)(\_ + 0.5)} gives \texttt{Vector(1.2, 1.7, 2.2)}; 
+\newline \texttt{ Vector.tabulate(3)("s" + \_) } gives \code{ Vector("s0", "s1", "s2")}
 }
 
 
@@ -569,9 +606,23 @@ Some methods below are from java.lang.String and some methods are implicitly add
 } 
 
 
-\Newline\head{scala.io.Source}\Newline
 
-\Newline\head{scala.io.StdIn}\Newline
+\Newline\head{scala.collection.JavaConverters}\Newline
+
+{\small
+Enable \code{.asJava} and \code{.asScala} conversions: \code{ import collection.JavaConverters._ } 
+\vspace{0.5em}
+
+\begin{tabular}{r c l}
+\texttt{xs.asJava} on a \textbf{Scala} collection of type: & & \texttt{xs.asScala} on a \textbf{Java} collection of type: \\ 
+\texttt{Iterator} &               $\longleftrightarrow$ & \texttt{java.util.Iterator} \\
+\texttt{Iterable} &               $\longleftrightarrow$ & \texttt{java.lang.Iterable} \\
+\texttt{Iterable} &               $\leftarrow$ & \texttt{java.util.Collection} \\
+\texttt{mutable.Buffer} &         $\longleftrightarrow$  & \texttt{java.util.List} \\
+\texttt{mutable.Set} &            $\longleftrightarrow$  & \texttt{java.util.Set} \\
+\texttt{mutable.Map} &            $\longleftrightarrow$  & \texttt{java.util.Map} \\
+\texttt{mutable.ConcurrentMap} &  $\longleftrightarrow$  & \texttt{java.util.concurrent.ConcurrentMap} \\\end{tabular}
+}
 
 
 \Newline\head{Special characters and strings}\Newline
