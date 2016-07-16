@@ -147,8 +147,6 @@ scala> timed{ bin(udda.last, udda) }
 
 
 
-
-
 \Task \label{task:linsearch-lth}\emph{Sök bland LTH:s kurser med linjärsökning} 
 
 \Subtask Surfa till denna URL:\\ {\nolinebreak[4]\footnotesize\url{http://kurser.lth.se/lot/?lasar=16_17&soek_text=&sort=kod&val=kurs&soek=t}}
@@ -185,24 +183,31 @@ def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = {
 
 
 
-\Subtask \label{subtask:linsearch-rndCode} Definiera en funktion \code{def rndCode: String} som genererar slumpmässiga kurskoder (tre bokstäver mellan A och Z och tre siffror mellan 0 och 9). Använd \code{rndCode} för att fylla en vektor kallad \code{xs} med en halv miljon slumpmässiga kurskoder. För varje slumpkod i \code{xs} sök med din funktion \code{linearSearch} efter index i vektorn \code{courses.lth2016} från deluppgift \ref{subtask:download-lthcourses}. Mät totala tiden för de $500000$ linjärsökningarna med hjälp av funktionen \code{timed} från uppgift \ref{task:timed} och spara resultatet för senare jämförelse med binärsökning i kommande uppgifter.
-
- 
+\Subtask \label{subtask:linsearch-rndCode} Skriv i en editor en funktion \code{def rndCode: String} som genererar slumpmässiga kurskoder som består av 6 tecken enligt dessa regler: de första tre tecknen är bokstäver mellan A och Z, de sista två är siffror mellan 0 och 9, medan det fjärde tecknet kan vara antingen en siffra mellan 0 coh 0 eller ett av dessa tecken: \code{ACFGLMP}. \emph{Tips:} Använd REPL  för att stegvis bygga upp hjälpfunktioner som du, när de fungerar som de ska, klistrar in i ett editorfönster som lokala funktioner där du utvecklar den slutliga koden för en lättläst, concis och fungerande \code{rndCode}.
 
 \begin{Code}
 // kod till facit
 def rndCode: String = {
-  import math.{random => r}
-  def ch: Char = ((r * ('Z' - 'A')).toInt + 'A').toChar
-  def dig: Int   = (r * 9).toInt + 1
-  val xs = ((1 to 3).map(_ => ch) ++ (1 to 3).map(_ => dig))
-  xs.mkString
+  def rnd(n: Int) = (math.random * n).toInt
+  def letter    = (rnd('Z' - 'A') + 'A').toChar
+  def dig       = ('0' + rnd(9)).toChar  
+  val special   = "ACFGLMP" + dig
+  def digLetter = special(rnd(special.size))
+  Seq(letter, letter, letter, digLetter, dig, dig).mkString
 }
+\end{Code}
 
+
+\Subtask Använd \code{rndCode} från föregående deluppgift för att fylla en vektor kallad \code{xs} med en halv miljon slumpmässiga kurskoder. För varje slumpkod i \code{xs} sök med din funktion \code{linearSearch} efter index i vektorn \code{courses.lth2016} från deluppgift \ref{subtask:download-lthcourses}. Mät totala tiden för de $500000$ linjärsökningarna med hjälp av funktionen \code{timed} från uppgift \ref{task:timed}. Hur många av de slumpmässiga kurskoderna hittades bland de verkliga kurskoderna på LTH?
+
+ 
+\begin{Code}
+// kod till facit
+val lthCourses = courses.lth2016 //avoid including download time
 val xs = Vector.fill(500000)(rndCode)
 val (ixs, elapsedLin) = 
-  timed{xs.map(x => linearSearch(courses.lth2016)(_.code == x))}
-ixs.filterNot(_ == -1).size
+  timed{xs.map(x => linearSearch(lthCourses)(_.code == x))}
+val found = ixs.filterNot(_ == -1).size
 \end{Code}
 
 
@@ -271,7 +276,7 @@ def binarySearch(xs: Seq[String], key: String): Int = {
 } 
 \end{Code}
 
-\Subtask Hur mycket snabbare blev binärsökningen jämfört med linjärsökningen?\footnote{Vid en körning på en i7-4970K med 4.0GHz tog \code{elapsedLin} cirka $2500~ms$ och \code{elapsedBin} cirka $70~ms$ och binärsökning var alltså en faktor $35$ gånger snabbare än linjärsökning.}
+\Subtask Hur mycket snabbare blev binärsökningen jämfört med linjärsökningen?\footnote{Vid en körning på en i7-4970K med 4.0GHz tog \code{elapsedLin} cirka $3000~ms$ och \code{elapsedBin} cirka $60~ms$. Binärsökning var alltså i detta fall ungefär $50$ gånger snabbare än linjärsökning.}
 
 
 
@@ -447,9 +452,9 @@ def selectionSortInPlace(xs: Array[String]): Unit = {
 \begin{REPL}
 scala> def isSorted(xs: Vector[Int]): Boolean = xs == xs.sorted
 \end{REPL}
-\Subtask\Pen  Om \code{xs} har $10^6$ element, hur många jämförelser kommer i värsta fall att ske med \code{isStorted} enligt ovan. \emph{Tips:} metoden \code{sorted} använder algoritmen Timsort%
+\Subtask\Pen  Om \code{xs} har $10^6$ element, hur många jämförelser kommer i värsta fall att ske med \code{isStorted} enligt ovan. Metoden \code{sorted} använder algoritmen Timsort\footnote{\href{http://stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}{stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}}. Sök upp antalet jämförelser i värstafallet på wikipedia.%
 % som i värsta fall gör $n * log(n)$ jämförelser
-\footnote{\href{https://en.wikipedia.org/wiki/Timsort}{en.wikipedia.org/wiki/Timsort}}\textsuperscript{, }\footnote{\href{http://stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}{stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}}.
+\footnote{\href{https://en.wikipedia.org/wiki/Timsort}{en.wikipedia.org/wiki/Timsort}}.
 
 
 \frame{Svar till facit: $n + n * log(n)$}
