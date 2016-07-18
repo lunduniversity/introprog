@@ -30,11 +30,12 @@
 \setulmargins{10.0mm}{*}{*}
 \setheadfoot{0.1pt}{0.1pt}
 \checkandfixthelayout
+
 \usepackage{multicol} \setlength{\columnsep}{5mm}
 \usepackage{xcolor}
 \usepackage{array}
 
-\definecolor{mygreen}{rgb}{0,0.4,0}
+\definecolor{commentgreen}{rgb}{0,0.4,0}
 \definecolor{grammarcolor}{rgb}{0.3,0.6,0.1}
 \definecolor{mylinkcolor}{rgb}{0,0.1,0.5}
 \definecolor{myemphcolor}{rgb}{0,0.4,0.1}
@@ -49,6 +50,7 @@
 \newcommand{\RepL}{\textbf{\textcolor{grammarcolor}{~(~}}}
 \newcommand{\RepR}{\textbf{\textcolor{grammarcolor}{~)~}}}
 \newcommand{\Or}{\textbf{\textcolor{grammarcolor}{~|~}}}
+
 
 %---------------------------------------------------------------
 
@@ -116,7 +118,7 @@
     tabsize=2,
     basicstyle=\ttfamily\selectfont,
     keywordstyle=\bfseries\textcolor{eclipsepurple},
-    commentstyle=\textcolor{mygreen},
+    commentstyle=\textcolor{commentgreen},
     numberstyle={\footnotesize},
     numbers=none,
     %backgroundcolor=\textcolor{gray!15},
@@ -176,7 +178,7 @@
 \fancyhead{
 \ifodd\thepage\LangRectOdd{#1}{\LangColor}{#2}{#3}
 \else\LangRectEven{#1}{\LangColor}{#2}{#3}
-\fi
+\fi 
 }
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
@@ -187,18 +189,152 @@
 
 \newcommand{\LangTitle}[1]{{\centering \Huge{\bfseries\sffamily \color{\LangColor}{#1}}\par}}
 
-
+\newcommand{\Comment}[1]{\color{commentgreen}{#1}}
 
 \begin{document}
 
-\LangMarker{Scala}{1.5cm}{7}
-\LangTitle{LTH Scala Quick Ref}
+\LangMarker{Scala}{1.5cm}{8}
+\LangTitle{Scala Quick Ref @ Lund University}
+{\centering https://github.com/lunduniversity/introprog/tree/master/quickref \\
+{\small License: CC-BY-SA, \textcopyright~Dept. of Computer Science, Lund University.}\\
+{\small Pull requests welcome! Contact: bjorn.regnell@cs.lth.se}
+\par}
 
-\head{Expressions}\Newline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{0.5em}
+\head{Top-level definitions} \vspace{0.75em}
+\hspace{0.32em}\begin{minipage}{0.52\linewidth}%
+\begin{Code}[frame=single] %[frame=single]  [frame=none]
+// in file: hello.scala
+package x.y.z
+object HelloWorld {
+  def main(args: Array[String]): Unit = { 
+    println("Hello World") 
+  }
+}
+\end{Code}%
+\end{minipage}%
+\hfill\begin{minipage}{0.45\linewidth}
+\raggedright{\small
+A compilation unit (here hello.scala) consists of a sequence of packagings, import clauses, and class and object definitions, which may be preceded by a package clause, e.g.: \code|package x.y.z |that places the compiled file HelloWorld.class in directory x/y/z/
 
+\begin{tabular}{r @{}l} \\[-0.5em]
+\textbf{Compile}:  & \verb| scalac hello.scala| \\
+
+\textbf{Run}:  &  \verb| scala x.y.z.HelloWorld args| \\
+\end{tabular}%
+}%
+\end{minipage}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{0.1em}
+\head{Definitions and declarations}\Newline
+{\small\renewcommand{\arraystretch}{0.95}
+A \textbf{definition} binds a name to a value/implementation, while a \textbf{declaration} just introduces a name (and type) of an abstract member. Below \code|defsAndDecl| denotes a list of definitions and/or declarations. Modifiers on next page.  
+\newcommand{\MoveUp}{\\[-0.9em]}
+\newcommand{\FirstColWidth}{0.7cm}
+\begin{tabular}{@{}p{\FirstColWidth} l l}\\
+%\textbf{What} & \textbf{Example} & \textbf{Exlpanation} \\ \hline \\[-0.5em]
+Variable 
+& \code|val x = expr|  & \Comment{Variable x is assigned to expr. A \textbf{val} can only be \textbf{assigned once}.}\\
+& \code|val x: Int = 0|  & \Comment{Explicit type annotation,  expr: SomeType allowed after any expr.}\\ 
+& \code|var x = expr|  & \Comment{Variable x is assigned to expr. A \textbf{var} can be \textbf{re-assigned}.} \\
+& \code|val x, y = expr| & \Comment{Multiple initialisations, x and y is initialised to the same value.}\\
+& \code|val (x, y) = (e1, e2)| & \Comment{Tuple pattern initialisation, x is assigned to e1 and y to e2.}\\
+& \multicolumn{2}{l}{\code|val Seq(x, y) = Seq(e1, e2)|  \Comment{Sequence pattern initialisation, x is assigned to e1 and y to e2.}}\\
+& \code|val x: Int = _| & \Comment{Initialized to default value, 0 for number types, null for AnyRef types.}\\
+\end{tabular}
+\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
+Function
+& \code|def f(a: Int, b: Int): Int = a + b| & \Comment{Function f of type (Int, Int) => Int}\\
+& \code|def f(a: Int = 0, b: Int = 0): Int = a + b| & \Comment{Default arguments used if args omitted, f().}\\
+&  \code|f(b = 1, a = 3)| & \Comment{{\hspace{-0.25em} Named arguments can be used in any order.}}\\
+& \code|def add(a: Int)(b: Int): Int = a + b| & \Comment{Multiple parameter lists, apply: add(1)(2)} \\
+& \code|(a: Int, b: Int) => a + b| & \Comment{Anonymous function value, ''lambda''.}\\
+& \code|val g: (Int, Int) => Int = (a, b) => a + b| & \Comment{Types can be omitted in lambda if inferable.}\\
+& \multicolumn{2}{l}{\code|f _| \hspace{4.8em} \Comment{Replacing a parameter list with a space and underscore gives the function itself as a value.}}\\
+& \multicolumn{2}{l}{\code|val inc = add(1) _ |  \Comment{\hspace{6em} Partially applied function add(1), where inc is of type Int => Int}}\\
+& \multicolumn{2}{l}{\code|def addAll(xs: Int*) = xs.sum |  \Comment{\hspace{0.42em} Repeated parameters: addAll(1,2,3) or addAll(Seq(1,2,3): \_*) }}\\
+& \multicolumn{2}{l}{\code|def twice(block: => Unit) = \{ block; block \}| \Comment{\hspace{0.5em} Call-by-name argument evaluated later.}}\\
+\end{tabular}
+
+\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
+Object
+& \code|object Name { defsAndDecl } | \Comment{Singleton object auto-allocated when referenced the first time.}
+\end{tabular}
+
+\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
+Class
+& \code|class C(parameters) { defsAndDecl }| & \hspace{-3.2em}\Comment{A template for objects, which are allocated with \textbf{new}.} \\
+& \code|case class C(parameters) { defsAndDecl }| & \Comment{Case class parameters become val members,} \\
+& \multicolumn{2}{l}{\Comment{other case class goodies: equals, copy, hashcode, unapply, nice toString, companion object with apply factory.}}\\
+\end{tabular}
+
+\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
+Trait
+& \code|trait T { defsAndDecl }| & \Comment{A trait is an abstract class that can be used as as a \textbf{mixin} using \textbf{with}.}\\ 
+& \code|class C extends D with T| & \Comment{A class can only extend one normal class but many traits using \textbf{with}.}\\
+\end{tabular}
+
+\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
+Type
+& \code|type A = typeDef | & \Comment{Defines an alias A for the type in typeDef. Abstract if no typeDef.}
+\end{tabular}
+
+\begin{tabular}{@{}p{\FirstColWidth} l @{}l}\MoveUp
+Import
+& \code|import path.to.module.name | & \Comment{Makes name directly visible. Underscore imports all.}\\
+& \code|import path.to.{a, b => x, c => _} | & \Comment{Import several names, b renamed to x, c not imported.}\\
+\end{tabular}
+}% end small
+
+\vspace{0.6em}
 {\small
+\begin{tabular}{@{}l @{}l l}
+\textbf{Modifier} & \textbf{applies to} & \textbf{semantics}\\ \hline \\[-0.7em]
+\code|private[this] | & definitions, declarations & restricts access to this instance only; also private[p] for package p \\
+\code|private| & definitions, declarations & restricts access to directly enclosing class and its companion\\
+\code|protected| & definitions& restricts access to subtypes and companion\\
+\code|override| & definitions, declarations & mandatory if overriding  a concrete definition in a parent class\\
+\code|abstract| & class definitions & abstract classes cannot be instantiated (redundant for traits)\\
+\code|final| &  definitions & final members cannot be overridden, final classes cannot be extended\\
+\code|lazy| & val definitions & delays initialization of val, initialized when first referenced\\
+\code|sealed| & class definitions & restricts direct inheritance to classes in the same source file
+\\
+\end{tabular}
+}
 
-\renewcommand{\arraystretch}{1.05}
+\head{Getters, Setters and Companion}\Newline
+{\small
+\begin{tabular}{@{}l @{}l}
+\code|class A(initX: Int = 0) {| & \Comment{primary constructor: new A(1) or using default arg: new A()} \\
+\code|  private var _x = initX| & \Comment{private member only visible in A and its companion} \\
+\code|  def x: Int = _x| & \Comment{getter for private field \_x (name chosen to avoid clash with x)} \\
+\code|  def x_=(i: Int): Unit = { _x = i } | & \Comment{special setter assignment syntax: val a = new A(1); a.x = 2} \\
+\code|}| & \\
+\code|object A {| & \Comment{companion object if same name and in same code file} \\
+\multicolumn{2}{l}{~~\code|def apply(init: Int = 0): A = new A(init) |  \Comment{~factory method,  new not needed:  A.apply(1), A(1), A()}} \\
+\code|  val a = A(1)._x | & \Comment{Private members can be accessed in companion} \\
+\code|}|  \\
+\end{tabular}
+
+Getters and setters above are auto-created by using \textbf{var} in primary constructor: 
+~~~~~~\code|class A(var x: Int = 0)| \\
+Enforce the use of factory in companion only by private constructor: 
+~~\code|class A private (var x: Int = 0)| \\
+Instead of default arguments, an auxiliary constructor can be defined (less common): ~~~~\code|def this() = this(0)|
+
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Newline\head{Expressions}\Newline
+{\small\renewcommand{\arraystretch}{1.05}
 \begin{tabular}{@{}l p{4.3cm} p{6.5cm}}
 literals  &  \code|0 0L 0.0 "0" '0' true false|   & Basic types e.g. Int, Long, Double, String, Char, Boolean \\
 block     &  \code|{ expr1; ...; exprN } |         &  The value of a block is the value of its last expression   \\
@@ -233,111 +369,30 @@ Exception:& assignment = is lowest  & \code|null|         & Refers to a non-refe
 \end{tabular}
 
 }% end small
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\vspace{0.5em}
+~\\TODO
++= -= etc
 
-\Newline\head{Definitions and declarations}\Newline
+\Newline\head{Tuples}\Newline
 
+TODO
+
+\Newline\head{Generic classes and methods}\Newline
 {\small
-A \textbf{definition} binds a name to a value/implementation, while a \textbf{declaration} just introduces a name (and type) of an abstract member. Below \code|defsAndDecl| denotes a list of definitions and/or declarations. Modifiers on next page.  
-\newcommand{\MoveUp}{\\[-0.9em]}
-\newcommand{\FirstColWidth}{0.8cm}
-\begin{tabular}{@{}p{\FirstColWidth} l l}\\
-\textbf{What} & \textbf{Example} & \textbf{Exlpanation} \\ \hline \\[-0.5em]
-Variable 
-& \code|val x = expr|  & Variable x is assigned to expr. A \textbf{val} can only be \textbf{assigned once}. \\
-& \code|val x: Int = 0|  & Explicit type annotation. (expr : SomeType) allowed after any expr.     \\ 
-& \code|var x = expr|  & Variable x is assigned to expr. A \textbf{var} can be \textbf{re-assigned}. \\
-& \code|val x, y = expr| & Multiple initializations. Both x and y is initialized to expr.\\
-& \code|val (x, y) = (e1, e2)| & Pattern initialisation. x is initialized to e1 and y to e2. 
-\end{tabular}
-\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
-Function
-& \code|def f(a: Int, b: Int): Int = a + b| & Function f of type (Int, Int) => Int \\
-& \code|def f(a: Int = 0, b: Int = 0): Int = a + b| & Default arguments used if args omitted. \\
-&  \code|f(b = 1, a = 3)| & {\hspace{-0.25em} Named arguments can be used in any order.} \\
-& \code|(a: Int, b: Int) => a + b| & Anonymous function value, ''lambda''.\\
-& \code|val g: (Int, Int) => Int = (a, b) => a + b| & Types can be omitted if inferable.\\
-\end{tabular}
+\code|class Box[A](val a: A){ | \\
+\code|  def pairedWith[B](b: B): (A, B) = (a, b)| \\
+\code|}|
 
-\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
-Object
-& \code|object Name { defsAndDecl } | Singleton object auto-allocated when referenced first time.
-\end{tabular}
+\begin{Code}
+scala> new Box(new Box(0)).pairedWith(new Box(0.0))
+res65: (Box[Int], Box[Double]) = (Box@2a7e0b92,Box@713ea923)
+\end{Code}
 
-\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
-Class
-& \code|class C(parameters) { defsAndDecl }| & Prototype for objects allocated with new. \\
-& \code|case class C(parameters) { defsAndDecl }| & Parameters become val members, \\
-& case class goodies: equals, copy, hashcode, unapply, nice toString, & \hspace{-1em}companion object with apply factory. \\
-\end{tabular}
-
-\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
-Trait
-& \code|trait T { defsAndDecl }| & A trait is an abstract class that can be used as as a \textbf{mixin}  to some \\ 
-& \code|class C extends D with T| & ~~other class using \code|with|. Also called \textbf{interface}.\\
-\end{tabular}
-
-\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
-Type
-& \code|type A = typeDef | & Defines an alias A for the type in typeDef. Abstract if no typeDef.
-\end{tabular}
-
-\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
-Import
-& \code|import path.to.module.name | & makes a name directly visible.  \\
-& \code|import path.to.module._ | & Underscore imports all names. \\
-& \code|import path.to.{a, b => x, c => _} | & import several names, b renamed to x, c not imported \\
-\end{tabular}
-
-
-}% end small
-
-
-\clearpage
-{\small
-\begin{tabular}{@{}l @{}l l}
-\textbf{Modifyer} & \textbf{applies to} & \textbf{meaning}\\ \hline \\[-0.7em]
-\code|private[this] | & definitions, declarations & restricts access to this instance only\\
-\code|private| & definitions, declarations & restricts access to directly enclosing class and its companion\\
-\code|protected| & definitions& restricts access to subtypes and companion\\
-\code|override| & definitions, declarations & mandatory if overriding  a concrete definition in a parent class\\
-\code|abstract| & class definitions & abstract classes cannot be instantiated (redundant for traits)\\
-\code|final| &  definitions & final members cannot be overridden, final classes cannot be extended\\
-\code|lazy| & val definitions & delays initialization of val, initialized when first referenced\\
-\code|sealed| & class definitions & can only be directly inherited by classes in the same source file
-\\
-\end{tabular}
+Generic types are erased before JVM runtime except for Arrays, so a reflect.ClassTag is needed when constructing arrays from type arguments: \code|  def mkArray[A:reflect.ClassTag](a: A) = Array[A](a)| 
 }
 
-\vspace{0.5em}\head{Top-level definitions} \vspace{1em}
-
-\begin{minipage}{0.52\linewidth}%
-\begin{Code}[frame=single]
-// in file: hello.scala
-package x.y.z
-object HelloWorld {
-  def main(args: Array[String]): Unit = { 
-    println("Hello World") 
-  }
-}
-\end{Code}%
-\end{minipage}%
-\hfill\begin{minipage}{0.45\linewidth}
-\raggedright{\small
-A compilation unit (here hello.scala) consists of a sequence of packagings, import clauses, and class and object definitions, which may be preceded by a package clause: \code| package x.y.z | that places the compiled file HelloWorld.class in directory x/y/z/
-
-\begin{tabular}{r @{}l} \\[-0.5em]
-Compile:  & \verb| scalac hello.scala| \\
-
-Run:  &  \verb| scala x.y.z.HelloWorld args| \\
-\end{tabular}%
-}%
-\end{minipage}
-
-
-
-\head{Pattern matching and type tests}\vspace{0.5em}
+\Newline\head{Pattern matching and type tests}\vspace{0.5em}
 \begin{minipage}{0.3\linewidth}%
 \begin{Code}
 expr match {
@@ -399,12 +454,12 @@ def save(fileName: String, data: String) = {
 \end{Code}
 }
 
+
+
 \clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Newline\head{The Scala Type System}%\Newline
-
 \includegraphics[width=1.07\textwidth,trim=12mm 0 0 0cm]{../img/hierarchy.pdf}
-
-
 
 {\small \renewcommand{\arraystretch}{1.1}
 \textbf{Number types}\\
@@ -424,7 +479,7 @@ def save(fileName: String, data: String) = {
 & \code|x.ceil| & math.ceil(x), round up cut decimal\\
 
 \texttt{Long}   &  64 & $-2^{15}$ ... $2^{15}-1$ & \texttt{0L} & 
-& \code|x max y| & math.max(x, y), largest number\\
+& \code|x max y| & math.max(x, y), largest number, also min\\
 
 \texttt{Float}  &  32 & ± $3.4 \cdot 10^{38}$  & \texttt{0F} &
 & \code|x.toInt| & also toByte, toChar, toDouble etc.\\
@@ -486,7 +541,9 @@ def save(fileName: String, data: String) = {
 Concrete implementations of Map include HashMap and ListMap. The subtype SortedMap is implemented by TreeMap.
 
 }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 
 \head{Methods in trait \texttt{Traversable[A]}}\Newline
@@ -815,17 +872,19 @@ type val var while with yield  _   :   =   =>   <-   <:   <%   >:   #   @
 \end{Code}
 
 
-
+%%%************************************************************************************
+%%%*************************** JAVA STARTS HERE ***************************************
+%%%************************************************************************************
 
 \clearpage
 \setcounter{page}{1}
 \renewcommand{\LangColor}{blue}
-\LangMarker{Java}{3.5cm}{5}
+\LangMarker{Java}{3.5cm}{4}
 
-\LangTitle{LTH Java snabbreferens}
+\LangTitle{Java snabbreferens  @ Lunds universitet}
 \vspace{1em}
 
-{\small \Or~står för ''eller''. \RepL \RepR används för att gruppera alternativ. \OptL \OptR markerar sådant som inte alltid finns med. \jcode{stmt} är en sats. \jcode{x}, \jcode{i}, \jcode{s}, \jcode{ch} är variabler, \jcode{expr} är ett uttryck, \jcode{cond} är ett logiskt uttryck. Med \verb|...| avses valfri, extra kod.}
+{\small Vertikalstreck \Or~används mellan olika alternativ. Parenteser \RepL \RepR används för att gruppera en mängd alternativ. Hakparenteser \OptL \OptR markerar valfria delar. En sats betecknas \jcode{stmt} medan \jcode{x}, \jcode{i}, \jcode{s}, \jcode{ch} är variabler, \jcode{expr} är ett uttryck, \jcode{cond} är ett logiskt uttryck. Med \verb|...| avses valfri, extra kod.}
 
 %{\small Tecknet ~|~ står för ''eller''. Vanliga parenteser~(~)~används för att gruppera alternativ. Med~[~]~markeras sådant som inte alltid finns med. Med \jcode{stmt} avses en sats, \jcode{x}, \jcode{i}, \jcode{s}, \jcode{ch} är variabler, \jcode{expr} är ett uttryck, \jcode{cond} är ett logiskt uttryck.}
 
@@ -1069,26 +1128,5 @@ package private protected public return short static strictfp super
 switch synchronized this throw throws transient try void volatile while
 \end{Code}
 
-\clearpage
 
-\head{Free page with room for more ... }\Newline
-
-\Newline
-
-TODO: Update Java Quickref:
-\begin{itemize}
-\item Include new Java 8 stuff
-\item Improve formatting of code
-\item Translate to English
-\end{itemize}
-
-Pull requests are welcome! Contact: bjorn.regnell@cs.lth.se
-
-https://github.com/lunduniversity/introprog/tree/master/quickref
-
-Licence: CC-BY-SA, Copyright Dept. of Computer Science, Lund University.
-\\~\\
-Editor: Björn Regnell, Lund University, Sweden
-\\~\\
-Contributors: Björn Regnell, Per Holm, Sandra Nilsson, Anna Axelsson, Patrik Persson, Roy Andersson, ... 
 \end{document}
