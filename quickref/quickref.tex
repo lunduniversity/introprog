@@ -414,10 +414,12 @@ Empty tuple, unit value& \code|()|  &  \Comment{of type Unit, similar to Java vo
 2-tuple type    & \code|(Int, String)| & \Comment{same as Tuple2[Int, String]}  &  \\
                 &                      & \Comment{etc. until Tuple22}  &  \\
 \end{tabular}
+}%end small
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Newline\head{Pattern matching and type tests}\vspace{0.5em}
+\clearpage\vspace*{-2.0em}\head{Pattern matching and type tests}\vspace{0.5em}
+
 \begin{minipage}{0.3\linewidth}%
 \begin{Code}
 expr match {
@@ -434,7 +436,35 @@ TODO Explanation
 }%
 \end{minipage}
 
-\Newline\head{Generic classes and methods}\Newline
+
+
+\begin{minipage}{0.6\linewidth}%
+{\small
+\begin{Code}
+object Host {
+  def unapply(s: String): Option[String] = 
+    if (!s.startsWith("http://")) None
+    else s.stripPrefix("http://").split('/').headOption
+}
+str match { case Host(name) => ... }
+\end{Code}
+}%small
+\end{minipage}%
+\begin{minipage}{0.4\linewidth}
+{\hfill\raggedleft\small
+TODO Explanation \\
+TODO TODO \\
+TODO TODO \\
+TODO TODO \\
+TODO TODO \\
+TODO TODO \\
+}%
+\end{minipage}
+
+
+
+
+\vspace{0.5em}\head{Generic classes and methods}\Newline
 {\small
 \code|class Box[A](val a: A){ | \\
 \code|  def pairedWith[B](b: B): (A, B) = (a, b)| \\
@@ -449,15 +479,14 @@ Generic types are erased before JVM runtime except for Array, so a reflect.Class
 }%end small
 
 
-\Newline\head{Option, Some, None}\vspace{0.5em}
+\vspace{0.5em}\head{Option, Some, None}\vspace{0.5em}
 \begin{minipage}{0.3\linewidth}%
 {\small
 \begin{Code}
-def rnd = (math.random * 3).toInt
-val opt = Seq(42).get(rnd)
-opt match {
-  case Some(x) => f(x)
-  case None =>
+val maybe: Option[Int] = ...
+maybe match {
+  case Some(x) => ...
+  case None    => ...
 }
 \end{Code}
 }%small
@@ -465,7 +494,6 @@ opt match {
 \begin{minipage}{0.3\linewidth}
 {\hfill\raggedleft\small
 TODO Explanation \\
-TODO TODO \\
 TODO TODO \\
 TODO TODO \\
 TODO TODO \\
@@ -481,7 +509,7 @@ TODO TODO \\
 \end{tabular}
 }
 
-\Newline\head{scala.concurrent.Future}\Newline
+\vspace{0.5em}\head{scala.concurrent.Future}\Newline
 
 
 
@@ -511,27 +539,27 @@ def save(fileName: String, data: String) = {
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Newline\head{The Scala Type System}%\Newline
-\includegraphics[width=1.07\textwidth,trim=12mm 0 0 0cm]{../img/hierarchy.pdf}
+\vspace{-0.5em}\includegraphics[width=1.05\textwidth,trim=12mm 0 0 0cm]{../img/hierarchy.pdf}
 
-{\small \renewcommand{\arraystretch}{1.1}
+{\small \renewcommand{\arraystretch}{1.07}
 \textbf{Number types}\\
-\begin{tabular}{@{}l l l l p{2mm} | l l}
+\begin{tabular}{@{}l l @{\hspace{0.7em}}l @{\hspace{0.7em}}l @{}p{0.1em} | l l}
 \textbf{name} & \textbf{\# bits} & \textbf{range} & \textbf{litteral} &   & \multicolumn{2}{l}{\textbf{Methods on numbers}}\\ \cline{1-4}%\hline 
-& & & &\\[-1em]
-\texttt{Byte}   &  8  & $-2^7$ ... $2^7-1$  & &  
+& & & &\\[-0.8em]
+\texttt{Byte}   &  8  & $-2^7$ ... $2^7-1$  &\texttt{0.toByte} &  
 & \code|x.abs| & math.abs(x), absolute value\\
 
-\texttt{Short}  &  16 & $-2^{15}$ ... $2^{15}-1$ &   &  
+\texttt{Short}  &  16 & $-2^{15}$ ... $2^{15}-1$ & \texttt{0.toShort}  &  
 & \code|x.round| & math.round(x), to nearest Long\\
 
-\texttt{Char}   &  16 & $0$ ... $2^{16}-1$ & \texttt{'0'} &  
+\texttt{Char}   &  16 & $0$ ... $2^{16}-1$ & \code|'0' '\u0030'| &  
 & \code|x.floor| & math.floor(x), cut decimals\\
 
-\texttt{Int}    &  32 & $-2^{15}$ ... $2^{15}-1$ & \texttt{0} & 
+\texttt{Int}    &  32 & $-2^{15}$ ... $2^{15}-1$ & \texttt{0  0xF} & 
 & \code|x.ceil| & math.ceil(x), round up cut decimal\\
 
 \texttt{Long}   &  64 & $-2^{15}$ ... $2^{15}-1$ & \texttt{0L} & 
-& \code|x max y| & math.max(x, y), largest number, also min\\
+& \code|x max y| & math.max(x, y), gives largest, also min\\
 
 \texttt{Float}  &  32 & ± $3.4 \cdot 10^{38}$  & \texttt{0F} &
 & \code|x.toInt| & also toByte, toChar, toDouble etc.\\
@@ -544,7 +572,7 @@ def save(fileName: String, data: String) = {
 }
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Newline\head{The Scala Standard Collection Library}
 {
 \small\renewcommand{\arraystretch}{1.1}
@@ -562,7 +590,6 @@ def save(fileName: String, data: String) = {
 \vspace{0.2em}
 
 \texttt{String} and \texttt{Array} are implicitly converted to \texttt{Seq}\\ making sequence methods work as for other collections. Allocate Int array of size n: \code{ new Array[Int](n)}
-
 
 \columnbreak
 
@@ -591,7 +618,6 @@ def save(fileName: String, data: String) = {
 
 {\small Concrete implementations of Set include HashSet, ListSet and BitSet. The subtype SortedSet is implemented by TreeSet.
 Concrete implementations of Map include HashMap and ListMap. The subtype SortedMap is implemented by TreeMap.
-
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
