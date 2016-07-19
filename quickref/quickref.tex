@@ -189,7 +189,7 @@
 
 \newcommand{\LangTitle}[1]{{\centering \Huge{\bfseries\sffamily \color{\LangColor}{#1}}\par}}
 
-\newcommand{\Comment}[1]{\color{commentgreen}{#1}}
+\newcommand{\Comment}[1]{{\color{commentgreen}{#1}}}
 
 \begin{document}
 
@@ -234,7 +234,7 @@ A compilation unit (here hello.scala) consists of a sequence of packagings, impo
 {\small\renewcommand{\arraystretch}{0.95}
 A \textbf{definition} binds a name to a value/implementation, while a \textbf{declaration} just introduces a name (and type) of an abstract member. Below \code|defsAndDecl| denotes a list of definitions and/or declarations. Modifiers on next page.  
 \newcommand{\MoveUp}{\\[-0.9em]}
-\newcommand{\FirstColWidth}{0.7cm}
+\newcommand{\FirstColWidth}{0.65cm}
 \begin{tabular}{@{}p{\FirstColWidth} l l}\\
 %\textbf{What} & \textbf{Example} & \textbf{Exlpanation} \\ \hline \\[-0.5em]
 Variable 
@@ -274,8 +274,8 @@ Class
 
 \begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
 Trait
-& \code|trait T { defsAndDecl }| & \Comment{A trait is an abstract class that can be used as as a \textbf{mixin} using \textbf{with}.}\\ 
-& \code|class C extends D with T| & \Comment{A class can only extend one normal class but many traits using \textbf{with}.}\\
+& \code|trait T { defsAndDecl }| & \hspace{-0.9em}\Comment{A trait is an abstract class without parameters. Can be used as an interface.}\\ 
+& \code|class C extends D with T| & \hspace{-0.9em}\Comment{A class can only inherit one normal class but mix in many traits using \textbf{with}.}\\
 \end{tabular}
 
 \begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
@@ -294,37 +294,60 @@ Import
 {\small
 \begin{tabular}{@{}l @{}l l}
 \textbf{Modifier} & \textbf{applies to} & \textbf{semantics}\\ \hline \\[-0.7em]
-\code|private[this] | & definitions, declarations & restricts access to this instance only; also private[p] for package p \\
-\code|private| & definitions, declarations & restricts access to directly enclosing class and its companion\\
-\code|protected| & definitions& restricts access to subtypes and companion\\
-\code|override| & definitions, declarations & mandatory if overriding  a concrete definition in a parent class\\
-\code|abstract| & class definitions & abstract classes cannot be instantiated (redundant for traits)\\
-\code|final| &  definitions & final members cannot be overridden, final classes cannot be extended\\
-\code|lazy| & val definitions & delays initialization of val, initialized when first referenced\\
-\code|sealed| & class definitions & restricts direct inheritance to classes in the same source file
+\code|private[this] | & definitions, declarations & \Comment{Restricts access to this instance only; also private[p] for package p.} \\
+\code|private| & definitions, declarations & \Comment{Restricts access to directly enclosing class and its companion.}\\
+\code|protected| & definitions& \Comment{Restricts access to subtypes and companion.}\\
+\code|override| & definitions, declarations & \Comment{Mandatory if overriding  a concrete definition in a parent class.}\\
+\code|abstract| & class definitions & \Comment{Abstract classes cannot be instantiated (redundant for traits).}\\
+\code|final| &  definitions & \Comment{Final members cannot be overridden, final classes cannot be extended.}\\
+\code|lazy| & val definitions & \Comment{Delays initialization of val, initialized when first referenced.}\\
+\code|sealed| & class definitions & \Comment{Restricts direct inheritance to classes in the same source file.}
 \\
 \end{tabular}
 }
 
-\head{Getters, Setters and Companion}\Newline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{Special methods}\Newline
 {\small
 \begin{tabular}{@{}l @{}l}
-\code|class A(initX: Int = 0) {| & \Comment{primary constructor: new A(1) or using default arg: new A()} \\
+\code|class A(initX: Int = 0) {| & \Comment{\textbf{primary constructor}: new A(1) or using default arg: new A()} \\
 \code|  private var _x = initX| & \Comment{private member only visible in A and its companion} \\
-\code|  def x: Int = _x| & \Comment{getter for private field \_x (name chosen to avoid clash with x)} \\
-\code|  def x_=(i: Int): Unit = { _x = i } | & \Comment{special setter assignment syntax: val a = new A(1); a.x = 2} \\
+\code|  def x: Int = _x| & \Comment{\textbf{getter} for private field \_x (name chosen to avoid clash with x)} \\
+\code|  def x_=(i: Int): Unit = { _x = i } | & \Comment{special \textbf{setter} assignment syntax: val a = new A(1); a.x = 2} \\
+\code|  | & \Comment{} \\
 \code|}| & \\
-\code|object A {| & \Comment{companion object if same name and in same code file} \\
+\code|object A {| & \Comment{\textbf{companion object} if same name and in same code file} \\
 \multicolumn{2}{l}{~~\code|def apply(init: Int = 0): A = new A(init) |  \Comment{~factory method,  new not needed:  A.apply(1), A(1), A()}} \\
 \code|  val a = A(1)._x | & \Comment{Private members can be accessed in companion} \\
 \code|}|  \\
 \end{tabular}
 
-Getters and setters above are auto-created by using \textbf{var} in primary constructor: 
+
+\vspace{0.5em}
+Getters and setters above are auto-created by using \textbf{var} in primary constructor:
 ~~~~~~\code|class A(var x: Int = 0)| \\
 Enforce the use of factory in companion only by private constructor: 
 ~~\code|class A private (var x: Int = 0)| \\
 Instead of default arguments, an auxiliary constructor can be defined (less common): ~~~~\code|def this() = this(0)|
+
+\vspace{-0.2em}\hspace{0.32em}\begin{minipage}{0.65\linewidth}%
+{\small\begin{Code}[frame=none] %[frame=single]  [frame=none]
+class IntVec(private val xs: Array[Int]) {
+  def update(i: Int, x: Int): Unit = { xs(i) = x }
+  def apply(i: Int): Int = xs(i)
+}
+\end{Code}%
+}%
+\end{minipage}%
+\hfill\begin{minipage}{0.32\linewidth}
+\vspace{-0.5em}\raggedright{\small
+Special syntax for \textbf{update} and \textbf{apply}: \\
+v(0) = 0~\Comment{same as} v.update(0,0)\\
+v(0)\hspace{1.5em}\Comment{same as} v.apply(0)\\
+\Comment{where} val v = new IntVec(Array(1,2,3)) \\
+
+}%
+\end{minipage}
 
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -335,62 +358,64 @@ Instead of default arguments, an auxiliary constructor can be defined (less comm
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Newline\head{Expressions}\Newline
 {\small\renewcommand{\arraystretch}{1.05}
-\begin{tabular}{@{}l p{4.3cm} p{6.5cm}}
-literals  &  \code|0 0L 0.0 "0" '0' true false|   & Basic types e.g. Int, Long, Double, String, Char, Boolean \\
-block     &  \code|{ expr1; ...; exprN } |         &  The value of a block is the value of its last expression   \\
-if        &  \code|if (cond) expr1 else expr2 |  &   Value is expr1 if cond is true, expr2 if false (else is optional) \\
-match     &  \code|expr match caseClauses |  &  Matches expr against each case clause, see pattern matching.  \\
+\begin{tabular}{@{}l @{\hspace{0.9em}}l @{\hspace{0.2em}}l}
+literals  &  \code|0 0L 0.0 "0" '0' true false|   & \Comment{Basic types e.g. Int, Long, Double, String, Char, Boolean} \\
 
-for       &  \code|for (x <- xs) expr |          &   Loop for each x in xs, x visible in expr, type Unit   \\
-yield     &  \code|for (x <- xs) yield expr|     &   Yeilds a sequence with elems of expr for each x in xs \\
-while     &  \code|while (cond) expr |           &   Loop expr while cond is true, type Unit \\
-do while  &  \code|do expr while (cond) |        &   Do expr at least once, then loop while cond is true, type Unit \\
-throw     &  \code|throw new Exception("Bang!") |  &  Throws an exception that halts execution if not in try catch  \\
-try       &  \code|try expr catch pf |           & Evaluate partial function pf if exception in expr, where pf e.g.: 
-\code|{case e: Exception => someBackupValue}| \\ 
+block     &  \code|{ expr1; ...; exprN } |         &  \Comment{The value of a block is the value of its last expression}   \\
+if        &  \code|if (cond) expr1 else expr2 |  & \Comment{Value is expr1 if cond is true, expr2 if false (else is optional)} \\
+match     &  \code|expr match caseClauses |  &  \Comment{Matches expr against each case clause, see pattern matching. } \\
+
+for       &  \code|for (x <- xs) expr |          &   \Comment{Loop for each x in xs, x visible in expr, type Unit }  \\
+yield     &  \code|for (x <- xs) yield expr|     &   \Comment{Yeilds a sequence with elems of expr for each x in xs }\\
+while     &  \code|while (cond) expr |           &   \Comment{Loop expr while cond is true, type Unit }\\
+do while  &  \code|do expr while (cond) |        &   \Comment{Do expr at least once, then loop while cond is true, type Unit}\\
+throw     &  \code|throw new Exception("Bang!") |  &  \Comment{Throws an exception that halts execution if not in try catch } \\
+try       &  \code|try expr catch pf |           & \Comment{Evaluate partial function pf if exception in expr, where pf e.g.: } \\
+          & & \code|{case e: Exception => someBackupValue}| \\ 
 
 
 \end{tabular}
 
-\begin{tabular}{@{}r l | r  p{5cm}}%\hline
-\\[-0.75em]
-\textbf{Precedence} & of ops beginning with:& \textbf{Example expressions}:& \textbf{Explanation}, x,y of type Int \\ \cline{3-4} & & \\  [-1em]
-\textbf{Lowest}: & all letters  & \code|(x + 2) * i / 3| & Parenthesis control order of evaluation \\
- & \code+|+       &  \code|1.+(2)|      & Method application, call method + on object 1\\
- & \code|^|       &  \code|1 + 2|       & Operator notation equivalent to 1.+(2)\\
- & \code|&|       &  \code|x < y|       & Yields true or false, other ops: > <= >= == !=\\
- & \code|= !|     &  \code|cond1 && cond2|& Logical and; other boolean ops are or: || not: !\\
- & \code|< >|     &  \code|f(1, 2, 3)|  & Function application, same as f.apply(1,2,3)\\
- & \code|:|       &  \code|x => x + 1| & Function literal, anonymous function, ''lambda''\\
- & \code|+ -|     &  \code|new C(1,2)| & Create object from class C with arguments 1,2\\
- & \code|* / %|   &  \code|this|         & A reference to the object being defined\\
-\textbf{Highest}: & other special chars &  \code|super.m|         & Refers to a member m of a supertype of this  \\
-Exception:& assignment = is lowest  & \code|null|         & Refers to a non-referable object of type Null\\ %\hline
+\vspace{0.5em}
+\begin{tabular}{@{}l @{\hspace{0.2em}}r @{\hspace{0.6em}}l | r l}
+
+Evaluation order   & \code|(1 + 2) * 3| & \Comment{parenthesis control order} & \multicolumn{2}{r}{\textbf{Precedence} of operators beginning with:}\\ 
+
+Method application & \code|1.+(2)|  &  \Comment{call method + on object 1} & all letters & \textbf{lowest}\\ 
+
+Operator notation  & \code|1 + 2|  &   \Comment{same as 1.+(2)} & \code+|+ \\
+
+Conjunction  & \code|c1 && c2|  &  \Comment{true if both c1 \textbf{and} c2 true}  & \code|^|  \\
+Disjunction  & \code+c1 || c2+  &  \Comment{true if c1 \textbf{or} c2 true}  & \code|&|  \\
+Negation  & \code|!c|          &  \Comment{logical \textbf{not}, false if c is true}  & \code|=  !| \\
+
+Function application  & \code|f(1, 2, 3)|  &   \Comment{same as f.apply(1,2,3)} & \code|<  >|\\
+
+Function literal  & \code|x => x + 1|  &   \Comment{anonymous function, ''lambda''} & \code|:|\\
+
+Object creation  & \code|new C(1,2)|  &   \Comment{from class C with arguments 1,2} & \code|+ -|\\
+
+Self reference  & \code|this|  &  \Comment{refers to the object being defined} & \code|* / %| \\
+
+Supertype reference & \code|super.m|  &  \Comment{refers to member m of a supertype} & other special chars & \textbf{highest} \\
+Non-referable reference & \code|null|  &  \Comment{refers to null object of type Null} &  \\
+
+
+Assignment operator & \code|x += 1|  &  \Comment{expanded to x = x + 1} \\
+                    & \code|x -= 1|  &  \Comment{works for any op ending with =} \\
 \end{tabular}
 
-}% end small
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-~\\TODO
-+= -= etc
+~\\TODO\\
++= -= \%
 
 \Newline\head{Tuples}\Newline
 
 TODO
 
-\Newline\head{Generic classes and methods}\Newline
-{\small
-\code|class Box[A](val a: A){ | \\
-\code|  def pairedWith[B](b: B): (A, B) = (a, b)| \\
-\code|}|
 
-\begin{Code}
-scala> new Box(new Box(0)).pairedWith(new Box(0.0))
-res65: (Box[Int], Box[Double]) = (Box@2a7e0b92,Box@713ea923)
-\end{Code}
-
-Generic types are erased before JVM runtime except for Arrays, so a reflect.ClassTag is needed when constructing arrays from type arguments: \code|  def mkArray[A:reflect.ClassTag](a: A) = Array[A](a)| 
-}
 
 \Newline\head{Pattern matching and type tests}\vspace{0.5em}
 \begin{minipage}{0.3\linewidth}%
@@ -409,7 +434,21 @@ TODO Explanation
 }%
 \end{minipage}
 
-\head{Option, Some, None}\vspace{0.5em}
+\Newline\head{Generic classes and methods}\Newline
+{\small
+\code|class Box[A](val a: A){ | \\
+\code|  def pairedWith[B](b: B): (A, B) = (a, b)| \\
+\code|}|
+
+\begin{Code}
+new Box(new Box(0)).pairedWith(new Box("zero"))
+\end{Code}
+
+Generic types are erased before JVM runtime except for Array, so a reflect.ClassTag is needed when constructing arrays from type arguments: \code|  def mkArray[A:reflect.ClassTag](a: A) = Array[A](a)| 
+}%end small
+
+
+\Newline\head{Option, Some, None}\vspace{0.5em}
 \begin{minipage}{0.3\linewidth}%
 \begin{Code}
 opt match {
@@ -431,6 +470,9 @@ TODO Explanation
 \code|Try{expr1}.recover(expr2)| & TODO Explanation \\
 \end{tabular}
 }
+
+\Newline\head{scala.concurrent.Future}\Newline
+
 
 
 \Newline\head{Reading/writing from file and standard in/out:}\Newline
@@ -509,7 +551,7 @@ def save(fileName: String, data: String) = {
 
 \vspace{0.2em}
 
-\texttt{String} and \texttt{Array} are implicitly converted to \texttt{Seq}\\ making sequence methods work as for other collections. Allocate Int array of size n: \texttt{ new Array[Int](n)}
+\texttt{String} and \texttt{Array} are implicitly converted to \texttt{Seq}\\ making sequence methods work as for other collections. Allocate Int array of size n: \code{ new Array[Int](n)}
 
 
 \columnbreak
@@ -1050,7 +1092,7 @@ StringBuilder     & \mc{Modifierbara teckensträngar. length och charAt som Stri
 \head{Standardklasser, import java.util.Classname}
 \begin{etab}
 List              & \mc{List<E> är ett gränssnitt som beskriver listor med objekt av parameterklassen E. Man kan lägga in värden av standardtyperna genom att kapsla in dem, till exempel int i Integer-objekt. Gränssnittet implementeras av klasserna ArrayList<E> och LinkedList<E>, som har samma operationer. Man ska inte använda operationerna som har en position som parameter på en LinkedList (i stället en iterator). IndexOutOfBoundsException om någon position är fel.} \subsecend
-                  & \mc{För att operationerna contains, indexOf och remove(Object) ska fungera måste klassen E överskugga funktionen equals(Object). Integer och de andra typklasserna gör det.} \subsecend
+                  & \mc{För att operationerna contains, indexOf och remove(Object) ska fungera måste klassen E överskugga funktionen equals(Object). Integer och de andra wrapperklasserna gör det.} \subsecend
 ArrayList         & ArrayList<E>();                 &  skapar tom lista \\ 
 LinkedList        & LinkedList<E>();                &  skapar tom lista \\ 
                   & int size();                     &  antalet element \\
