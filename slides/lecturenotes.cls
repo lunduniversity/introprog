@@ -33,6 +33,7 @@
 
 \usepackage{multicol} \setlength{\columnsep}{5mm}
 \usepackage{listings}
+\usepackage{upquote} %http://tex.stackexchange.com/questions/145416/how-to-have-straight-single-quotes-in-lstlistings
 \usepackage{xspace} %http://www.math.tamu.edu/~harold.boas/courses/math696/why-macros.html
 \usepackage{hyperref}
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
@@ -61,7 +62,14 @@
   {\begin{frame}[fragile,plain, environment=SlideSimple,#1]{#2}}
   {\end{frame}}  
 
-  
+%\usepackage[framemethod=default]{mdframed}
+%\mdfdefinestyle{exampledefault}{%
+%rightline=true,innerleftmargin=10,innerrightmargin=10,
+%frametitlerule=true,frametitlerulecolor=green,
+%frametitlebackgroundcolor=yellow,
+%frametitlerulewidth=2pt}
+% USAGE: \begin{mdframed}[style=exampledefault,frametitle={My Title}] 
+
 \newcommand{\Subsection}[1]{\subsection{#1}\frame{\centering\huge\bfseries\textcolor{blue}{#1}}}
 
 \newlength\slidefontsize
@@ -74,6 +82,11 @@
 \newcommand{\SlideOnly}[1]{#1}
 
 \newcommand{\vecka}{1}
+
+%%% SLIDE SIZES with no affect in compedium
+\newcommand{\SlideFontSize}[2]{\fontsize{#1}{#2}\selectfont}
+\newcommand{\SlideFontSmall}{\SlideFontSize{9}{11}}
+\newcommand{\SlideFontTiny}{\SlideFontSize{8}{10}}
 
 %http://tex.stackexchange.com/questions/104220/beamer-tableofcontents-does-not-display-the-correct-section-number-after-setco
 \makeatletter 
@@ -89,7 +102,7 @@
 \newcommand{\Eng}[1]{(eng. {\textit{#1}})}
 \newcommand{\Key}[1]{\textcolor{eclipsepurple}{\textbf{\texttt{#1}}}}
 \newcommand{\code}{\lstinline[basicstyle=\ttfamily]}
-
+\newcommand{\jcode}{\lstinline[basicstyle=\ttfamily,language=Java]}
 
 \lstdefinelanguage{Scala}{
   morekeywords={abstract,case,catch,class,def,%
@@ -162,10 +175,20 @@
 
 
 %  http://tex.stackexchange.com/questions/16654/newenvironment-newcommand-for-existing-environment-in-latex-beamer
-\lstnewenvironment{ClassSpec}[2][]{%
+\lstnewenvironment{JavaSpec}[2][]{%
     \lstset{basicstyle=\ttfamily\fontsize{6}{7}\selectfont,%
             backgroundcolor=,rulecolor=\color{black}, title={\texttt{\textcolor{blue}{\textbf{#2}}}}, frameround=tttt,language=,otherkeywords={},#1}%
 }{}
+
+\lstnewenvironment{ScalaSpec}[2][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{6}{7}\selectfont,%
+            backgroundcolor=,,%\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}{#1#2\ttfamily#3}
+            title={\hskip-0.38em\colorbox{black!70}{\parbox{\dimexpr\textwidth+1\fboxsep-2\fboxrule\relax}{\fontsize{7}{8}\selectfont\color{white}{\textit{Specification} \textbf{#2}}}}},%
+            identifierstyle=\color{black!80},%
+            rulecolor=\color{black!60},frame=tRbL,framerule=1.2pt,%
+            language=Scala,#1}%
+}{}
+
 
 \lstnewenvironment{Code}[1][]{%
     \lstset{basicstyle=\ttfamily\fontsize{7}{9}\selectfont,#1}%
