@@ -8,6 +8,7 @@
 \geometry{hmargin={4.5cm,2.5cm}}
 \geometry{vmargin={3cm,3cm}}
 \usepackage{marginnote}
+\usepackage{float}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -19,7 +20,8 @@
 
 %\usepackage{bera}
 %\usepackage{lmodern} %latin modern
-%\usepackage{tgheros} % times
+%\usepackage{tgheros} % clone of Helvetica
+%\usepackage{tgtermes}% clone of times
 %\usepackage{bookman} 
 %\usepackage[sc]{mathpazo} %palatino
 %\usepackage{tgheros} %helvetica
@@ -29,6 +31,7 @@
 %\usepackage{PTSans}
 
 \usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage{changepage}   % for the adjustwidth environment to make narrow paragraphs
 
 \usepackage{sectsty} %change font on headings
 \allsectionsfont{\sffamily}
@@ -64,10 +67,13 @@
 
 \usepackage{multicol} \setlength{\columnsep}{5mm}
 \usepackage{listings}
+\usepackage{upquote} %http://tex.stackexchange.com/questions/145416/how-to-have-straight-single-quotes-in-lstlistings
 \usepackage{xspace} %http://www.math.tamu.edu/~harold.boas/courses/math696/why-macros.html
 \usepackage[pdfpagelayout=TwoPageRight]{hyperref}
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
 \hypersetup{colorlinks=true,linkcolor=, linkbordercolor=, urlbordercolor=mylinkcolor, urlcolor=mylinkcolor, pdfborderstyle={/S/U/W 1}}
+
+\usepackage{pdfpages} % To include quickref booklet in appendix
 
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning}
@@ -81,21 +87,27 @@
 \tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3cm, rectangle split, rectangle split parts = 3]
 \tikzstyle{umlarrow}=[->, >=open triangle 90, thick]
 
+\newcommand{\TODO}{\colorbox{blue!30}{TODO!!!}~}
+\newcommand{\StudyTheory}[1]{Studera begreppen i kapitel \ref{chapter:W#1}.}
+\newcommand{\DoExercise}[2]{Gör övning {\tt #1} i kapitel \ref{exe:W#2}.}
+
 \newcommand{\Emph}[1]{\textcolor{myemphcolor}{\textbf{#1}}}
 \newcommand{\Alert}[1]{\textcolor{myalertcolor}{\textbf{#1}}}
 \newcommand{\Eng}[1]{(eng. {\textit{#1}})}
 \newcommand{\key}[1]{\textcolor{eclipsepurple}{\textbf{\texttt{#1}}}}
 \newcommand{\code}{\lstinline[basicstyle=\ttfamily]}
+\newcommand{\jcode}{\lstinline[basicstyle=\ttfamily,language=Java]}
 
 \newcommand{\ChapterUnnum}[1]{\chapter*{#1}\addcontentsline{toc}{chapter}{#1}}
 \newcommand{\SectionUnnum}[1]{\section*{#1}\addcontentsline{toc}{section}{#1}}
 \newcommand{\Exercise}[1]{\newpage\section{Övning: {\tt #1}}}
 \newcommand{\ExerciseSolution}[1]{\newpage\section{{\tt #1}}}
 \newcommand{\Lab}[1]{\newpage\section{Laboration: {\tt #1}}}
-\newcommand{\Assignment}[1]{\newpage\section{Inlämningsuppgift: {\tt #1}}}
+\newcommand{\Teamlab}[1]{\newpage\section{Grupplaboration: {\tt #1}}}
+\newcommand{\Assignment}[1]{\newpage\section{Projektuppgift: {\tt #1}}}
 \newcommand{\BasicTasks}{\subsection{Grunduppgifter}}
-\newcommand{\ExtraTasks}{\subsection{Extrauppgifter: öva mer på grunderna}}
-\newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter: avancerad nivå}}
+\newcommand{\ExtraTasks}{\subsection{Extrauppgifter}}
+\newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter}}
 \newcommand{\TaskSection}[1]{\subsubsection*{#1}}
 
 \newcounter{TaskCounter}[section]
@@ -126,6 +138,23 @@
 {\subsubsection{Förberedelser}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
+\newenvironment{Background}%
+{\begin{adjustwidth}{\parindent}{}\small \emph{Bakgrund för kännedom:}}%
+{\end{adjustwidth}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% changes to make slide stuff look good in compendium
+
+\newcommand{\pause}{}% do nothing
+%%% SLIDE SIZES with no affect in compedium
+\newcommand{\SlideFontSize}[2]{}
+\newcommand{\SlideFontSmall}{}
+\newcommand{\SlideFontTiny}{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% lingstings specifics:
 
 \lstdefinelanguage{Scala}{
   morekeywords={abstract,case,catch,class,def,%
@@ -153,9 +182,9 @@
     commentstyle=\color{mygreen},
     numberstyle={\footnotesize},
     numbers=none,
-    backgroundcolor=\color{gray!10},
+    backgroundcolor=\color{gray!15},
     frame=single,
-    rulecolor=\color{black!20},
+    rulecolor=\color{black!25},
     %title={\footnotesize\lstname},
     breaklines=false,
     breakatwhitespace=false,
@@ -178,19 +207,39 @@
 {ø}{{\o}}1
 {Æ}{{\AE}}1
 {Ø}{{\O}}1
+{`}{{\`{}}}1
 {─}{{\textemdash}}1
 {└}{{|}}1
 {├}{{|}}1
 {│}{{|}}1
 }
 
-\lstnewenvironment{ClassSpec}[2][]{%
-    \lstset{basicstyle=\ttfamily\fontsize{9}{11}\selectfont,%
-            backgroundcolor=,rulecolor=\color{black}, title={\texttt{\textcolor{blue}{\textbf{#2}}}}, frameround=tttt,language=,otherkeywords={},#1}%
+\lstnewenvironment{JavaSpec}[2][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
+            backgroundcolor=\color{white},rulecolor=\color{black},title={\fontsize{9}{11}\selectfont\texttt{\textcolor{black}{\textbf{#2}}}}, frameround=tttt,language=,otherkeywords={},#1}%
 }{}
+
+%\lstnewenvironment{ScalaSpec}[2][]{%
+%    \lstset{basicstyle=\ttfamily\fontsize{9}{11}\selectfont,%
+%            backgroundcolor=,rulecolor=\color{black}, title={\sffamily{\textcolor{purple}{\textbf{#2}}}}, frame=single,language=Scala,tabsize=2,otherkeywords={},#1}%
+%}{}
+
+\lstnewenvironment{ScalaSpec}[2][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
+            backgroundcolor=\color{white},,
+            title={\hskip-0.38em\colorbox{black!70}{\parbox{\dimexpr\textwidth+1\fboxsep-2\fboxrule\relax}{\fontsize{10}{12}\selectfont\color{white}{\textit{Specification} \texttt{\textbf{#2}}}}}},%
+            identifierstyle=\color{black},%
+            rulecolor=\color{black!60},frame=tRbL,framerule=1.2pt,%
+            language=Scala,#1}%
+}{}
+
 
 \lstnewenvironment{Code}[1][]{%
     \lstset{#1}%
+}{}
+
+\lstnewenvironment{CodeSmall}[1][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,#1}%
 }{}
 
 \lstnewenvironment{REPL}[1][]{%
