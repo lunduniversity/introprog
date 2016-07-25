@@ -161,9 +161,7 @@ trait Plan {
       | översiktligt om trait som gränssnitt, programmeringsgränssnitt (api)
       """.stripTrim),
 
-    Module("Tentaträning", 
-      id = "exam", exercise = "", lab = "", contents = """
-      """.stripTrim),
+    Module("Tentaträning", id = "exam", exercise = "", lab = "", contents = ""),
 
     Module(name = "TENTAMEN", id = "", exercise = "", lab = "", contents = "")
   )
