@@ -32,6 +32,7 @@ object Main extends App {
   weekPlan.  toLatex   .prepend(texUtf).save(currentDir + "week-plan-generated.tex")
   modulePlan.toMarkdown.save(currentDir + "module-plan-generated.md")
   modulePlan.toHtml    .save(currentDir + "module-plan-generated.html")
+  modulePlan.latexTableBody.save(currentDir + "module-plan-generated.tex")
   overview  .toLatex   .prepend(texUtf).save(currentDir + "overview-generated.tex")
   
   val weeks = (0 to 6) ++ (8 to 14) //exlude exam weeks

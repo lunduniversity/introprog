@@ -1,5 +1,7 @@
 # lunduniversity/introprog
 
+[![Build Status](https://travis-ci.org/lunduniversity/introprog.svg?branch=master)](https://travis-ci.org/lunduniversity/introprog)
+
 This is the repo of a course given by Lund University called "Introduction to Programming" using Scala and Java. The repo contains course material in Swedish and some English along with code examples and libraries used in exercises and labs.
 
 Course homepage (in Swedish): http://cs.lth.se/pgk/ 
@@ -10,7 +12,7 @@ This is work in progress; the first instance of the course starts this fall seme
 
 * Download the latest version of the [compendium](https://github.com/lunduniversity/introprog/raw/master/compendium/compendium.pdf).
 
-* Download the [workspace](zipfile to be uploaded). <- TODO ->
+* Download the [workspace](https://github.com/lunduniversity/introprog/blob/master/lib/workspace.zip) to be used with your favorite code editor and IDE. See instructions in appendices in the compendium.
 
 ## Contents of this repo
 
