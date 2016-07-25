@@ -31,6 +31,9 @@
 
 \usepackage[normalem]{ulem}  % for strikethrough: \sout{Hello World}
 
+\usepackage{hyphenat}
+\hyphenation{intro-duktion}
+
 \usepackage{multicol} \setlength{\columnsep}{5mm}
 \usepackage{listings}
 \usepackage{upquote} %http://tex.stackexchange.com/questions/145416/how-to-have-straight-single-quotes-in-lstlistings
