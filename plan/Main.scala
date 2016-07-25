@@ -48,9 +48,11 @@ object Main extends App {
     def toLatexItem(s: String) = s"\\item ${s.trim}\n"
     val label      = "\\label{chapter:" + modulePlan.column("W")(w) + "}"
     val chapter    = "\\chapter{" + modulePlan.column("Modul")(w) + s"}$label\n"
-    val concepts   = modulePlan.column("Innehåll")(w).split(',').toVector
+    val concepts   = modulePlan.column("Innehåll")(w).split(',').toVector.filterNot(_.isEmpty)
     val items      = concepts.map(toLatexItem).mkString.trim 
-    val result     = chapter + conceptBegin(concepts.size) + items + conceptEnd(concepts.size)
+    val result     = chapter + (if (items.size == 0) "" else {
+      conceptBegin(concepts.size) + items + conceptEnd(concepts.size)
+    })
     val weekName   = modulePlan.column("W")(w).toLowerCase
     val fileName   = s"../compendium/generated/$weekName-chaphead-generated.tex"
     result.latexEscape.prepend(texUtf).save(currentDir+fileName)

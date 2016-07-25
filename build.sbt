@@ -46,6 +46,8 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
   // val bibtexCmd = Process(Seq("bibtex", texFile.getName.replace(".tex", ".aux")), workDir)
   val exitValue = cmd.#>(cmdOutputFile).#&&(cmd).#>(cmdOutputFile).run.exitValue  
   if (exitValue != 0) {
+    println("*** ############ ERROR LOG STARTS HERE ############### ***")
+    Process(Seq("cat", cmdOutputFile.getName), workDir).run
     error(s"\n*** ERROR: pdflatex exit code: $exitValue\nSee pdflatex output in: $cmdOutputFile")
   } else println(s"     Log file: $cmdOutputFile")
 }
