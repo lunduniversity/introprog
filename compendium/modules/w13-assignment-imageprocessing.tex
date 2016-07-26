@@ -17,9 +17,9 @@ Följande beskriver \code{ImageFilter}-klassen.
 
 \begin{JavaSpec}{abstract class ImageFilter}
 /**
- * Skapar ett filterobjekt med ett givet namn.
+ * Skapar ett filterobjekt med ett givet namn och antalet argument.
  */
-protected ImageFilter(String name);
+protected ImageFilter(String name, int nbrOfArgs);
 
 /**
  * Tar reda på filtrets namn.
@@ -27,18 +27,16 @@ protected ImageFilter(String name);
 public String getName();
 
 /**
- * Filtrerar bilden i matrisen inPixels och returnerar
- * resultatet i en ny matris. Utnyttjar eventuellt 
- * värdet av paramValue
+ * Tar reda på antalet argument filtret behöver till apply-metoden.
  */
-public abstract Color[][] apply(Color[][] inPixels,
-				 double paramValue);
+public int getNumberOfArguments();
 
 /**
- * Berättar huruvida ett filter behöver ett parmetervärde eller inte
- * @return true ifall parametervärde behövs, annars false
+ * Filtrerar bilden i matrisen inPixels och returnerar resultatet i 
+ * en ny matris. Utnyttjar eventuellt värdena i args.
  */
-public abstract boolean needsParameter();
+public abstract Color[][] apply(Color[][] inPixels, double[] args);
+
 
 /**
  * Beräknar intensiteten hos alla pixlarna i pixels,
@@ -80,11 +78,11 @@ class FilterChooser(filters: Array[ImageFilter]) = ???
 *   until an escape sequence has been given and returns a FilterList which
 *   contain the chosen filters
 *   Example: 
-*   Tryck på 1 för Blått-filter
-*   Tryck på 2 för Kontrast-filter
-*   Tryck på 3 för Gauss-filter
-*   Tryck på 4 för Sobel-filter
-*   Tryck 42 om du inte vill ha fler filter
+*   0. för Blått-filter
+*   2. för Kontrast-filter
+*   3. för Gauss-filter
+*   4. för Sobel-filter
+*   5. om du inte vill ha fler filter
 */
 def chooseFilters(): FilterList = ???
 \end{ScalaSpec}
@@ -101,6 +99,28 @@ def getColorMatrix: Array[Array[Color]];
 def updateImage(pixels: Array[Array[Color]]): Unit;
 \end{ScalaSpec}
 
+\begin{ScalaSpec}{ImageUI}
+object ImageUI;
+
+/** Returns a chosen image from the images folder.
+*   Prints:	
+*  
+*   Välj en av följande bilder genom att mata in en siffra
+*
+*   0. boy.jpg
+*   1. car.jpg
+*   2. duck.jpg
+*   3. facade.jpg
+*   4. jay.jpg
+*   5. moon.jpg
+*   6. obidos.jpg
+*   7. sgrada.jpg
+*   8. shuttle.jpg
+*   Ditt val: 
+*/
+def getImage: BufferedImage;
+\end{ScalaSpec}
+
 
 \Task \textbf{Blåfilter.} Skriv en klass \code{BlueFilter} som skapar en blå version av bilden. Det vill säga skapa ett filter där varje pixel bara innehåller den blå komponenten. Testa filtret genom att skapa ett \code{ImageProcessing}-object som ska innehålla en \code{main}-metod (\code{ImageProcessing} ska användas och utökas i senare uppgifter). Använd \code{ImageUI} för att välja en bild på följande sätt:
 \begin{Code}
@@ -108,7 +128,7 @@ val im = new Image(ImageUI.getImage)
 \end{Code}
 Använd \code{SimpleWindow} samt \code{image} attributet från \code{Image}-objektet för att visa bilden. 
 
-\Task \textbf{inverteringsfilter.} Skriv en klass \code{InvertFilter} som inverterar en bild dvs skapar en ''negativ'' kopia av bilden. Ljusa färger ska alltså bli mörka och mörka färger ska bli ljusa.
+\Task \textbf{Inverteringsfilter.} Skriv en klass \code{InvertFilter} som inverterar en bild dvs skapar en ''negativ'' kopia av bilden. Ljusa färger ska alltså bli mörka och mörka färger ska bli ljusa.
 Fundera över vad som kan menas med en inverterad eller negativ kopia: de nya RGB-värdena är inte ett dividerat med de gamla värdena (då skulle de nya värdena kunna bli flyttal) och inte de gamla värdena med ombytt tecken (då skulle de nya värdena bli negativa).
 
 \Task \textbf{Gråskalningsfilter.} Skriv en klass \code{GrayScaleFilter} som gör om bilden till en gråskalebild. Använd \code{ImageFilter}s \code{computeIntensity} metod för att bestämma vilken intensitet varje pixel ska ha. Om intensiteten i en pixel till exempel är 105 så ska ett nytt \code{Color}-objekt med värdena (105, 105, 105) skapas.
@@ -253,20 +273,20 @@ Skriv en klass \code{SobelFilter} som implementerar denna algoritm.
 6. obidos.jpg\newline
 7. sgrada.jpg\newline
 8. shuttle.jpg\newline
-Ditt val: 1\newline
+Ditt val: \textbf{1}\newline
 Bild car.jpg laddad\newline
-Tryck på 0 för Vanligt-filter\newline
-Tryck på 1 för Blått-filter\newline
-Tryck på 2 för Krypterat-filter\newline
-Tryck på 3 för Inverterat-filter\newline
-Tryck på 4 för Grått-filter\newline
-Tryck på 5 för Kontrast-filter\newline
-Tryck på 6 för Gauss-filter\newline
-Tryck på 7 för Sobel-filter\newline
-Tryck 42 om du inte vill använda fler filter\newline
-Välj ett filter 1\newline
-Välj ett filter 42\newline
-Välja ny bild? (y/n) n\newline
+0. för Vanligt-filter\newline
+1. för Blått-filter\newline
+2. för Krypterat-filter\newline
+3. för Inverterat-filter\newline
+4. för Grått-filter\newline
+5. för Kontrast-filter\newline
+6. för Gauss-filter\newline
+7. för Sobel-filter\newline
+8. om du inte vill använda fler filter\newline
+Välj ett filter \textbf{1}\newline
+Välj ett filter \textbf{8}\newline
+Välja ny bild? (y/n) \textbf{n}\newline
 }
 
 Tänk på att användaren kan mata in otillåtna värden. Detta ska hanteras på lämpligt sätt.
@@ -301,3 +321,5 @@ Sammanfattning av algoritmen:
 	\item Beräkna den nya intensiteten för varje pixel enligt interpolationsformeln och lagra de nya pixlarna i \code{outPixels}.
 \end{enumerate}
 Skriv en klass \code{ContrastFilter} som implementerar algoritmen. I katalogen \emph{images} kan bilden \emph{moon.jpg} vara lämpliga att testa, eftersom den har låg kontrast. Anmärkning: om \code{cutOff} sätts = 0 så får man samma resultat av denna filtrering som man får av \code{GrayScaleFilter}. Detta kan man se genom att studera interpolationsformeln.
+
+\Task \textbf{Eget filter.} Skapa ett eget filter som utnyttjar att \code{apply}-metoden tar emot en array av värden. Till exempel så kan du skicka in en array med fem värden där de två första värdena representerar ett intesitetsintervall och de tre sista värdena representerar röd-, grön- och blåkomponenterna till en färg som ska stoppas in där intensiteten hamnar utanför det givna intervallet. Ett annat alternativ kan vara att använda dig av metoder i \code{SimpleWindow} för att välja specifika pixlar på orginalbilden som sedan kan användas för att manipulera bilden i filtrets \code{apply}-metod. Valet är ditt!
