@@ -15,12 +15,15 @@ object Hangman {  // This is Java-like, non-idiomatic Scala code!
         " |       ",
         " ==========================   RIP  :(");
         
-    private def renderHangman(n: Int): Unit = {
+    private def renderHangman(n: Int): String = {
         var result: StringBuilder = new StringBuilder();
         for (i: Int <- 0 until n){
             result.append(hangman(i));
+            if (i < n - 1) {
+                result.append("\n");
+            }
         }
-        return result.toString;
+        return result.toString();
     }
     
     private def hideSecret(secret: String, 
