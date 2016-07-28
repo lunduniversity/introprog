@@ -58,12 +58,15 @@
 
 \usepackage[linesnumbered,lined,boxed]{algorithm2e} % for writing pseudo-code
 
-\usepackage{longtable}
+\usepackage{longtable}\usepackage{array}
 \usepackage{booktabs}
 \usepackage{titlesec}
 \usepackage{titletoc}
 
 \usepackage[normalem]{ulem}  % for strikethrough: \sout{Hello World}
+
+\usepackage{hyphenat}
+\hyphenation{sekvens-algoritmer}
 
 \usepackage{multicol} \setlength{\columnsep}{5mm}
 \usepackage{listings}
