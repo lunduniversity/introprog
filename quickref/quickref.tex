@@ -30,11 +30,12 @@
 \setulmargins{10.0mm}{*}{*}
 \setheadfoot{0.1pt}{0.1pt}
 \checkandfixthelayout
+
 \usepackage{multicol} \setlength{\columnsep}{5mm}
 \usepackage{xcolor}
 \usepackage{array}
 
-\definecolor{mygreen}{rgb}{0,0.4,0}
+\definecolor{commentgreen}{rgb}{0,0.4,0}
 \definecolor{grammarcolor}{rgb}{0.3,0.6,0.1}
 \definecolor{mylinkcolor}{rgb}{0,0.1,0.5}
 \definecolor{myemphcolor}{rgb}{0,0.4,0.1}
@@ -44,11 +45,12 @@
 \definecolor{eclipsegreen}{rgb}{0,0.5,0}
 
 
-\newcommand{\OptL}{\textbf{\textcolor{grammarcolor}{[}}}
-\newcommand{\OptR}{\textbf{\textcolor{grammarcolor}{]}}}
-\newcommand{\RepL}{\textbf{\textcolor{grammarcolor}{(}}}
-\newcommand{\RepR}{\textbf{\textcolor{grammarcolor}{)}}}
-\newcommand{\Or}{\textbf{\textcolor{grammarcolor}{|}}}
+\newcommand{\OptL}{\textbf{\textcolor{grammarcolor}{~[~}}}
+\newcommand{\OptR}{\textbf{\textcolor{grammarcolor}{~]~}}}
+\newcommand{\RepL}{\textbf{\textcolor{grammarcolor}{~(~}}}
+\newcommand{\RepR}{\textbf{\textcolor{grammarcolor}{~)~}}}
+\newcommand{\Or}{\textbf{\textcolor{grammarcolor}{~|~}}}
+
 
 %---------------------------------------------------------------
 
@@ -116,7 +118,7 @@
     tabsize=2,
     basicstyle=\ttfamily\selectfont,
     keywordstyle=\bfseries\textcolor{eclipsepurple},
-    commentstyle=\textcolor{mygreen},
+    commentstyle=\textcolor{commentgreen},
     numberstyle={\footnotesize},
     numbers=none,
     %backgroundcolor=\textcolor{gray!15},
@@ -155,28 +157,28 @@
 \newcommand{\jcode}{\lstinline[basicstyle=\ttfamily,language=Java]}
 
 \lstnewenvironment{Code}[1][]{%
-    \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,#1}%
+    \lstset{basicstyle=\ttfamily\fontsize{9}{11}\selectfont,#1}%
 }{}
 
 %*****************************************************************
 
 
 
-\newcommand{\LangRect}[4]{\tikz[overlay, remember picture,inner sep=7pt,minimum height=0.65cm] \node[fill=#2,text=white,rotate=90] at #4 (name) {\large\normalfont\textbf{#1} ~~{\small \thepage(4)}}; }  
+\newcommand{\LangRect}[5]{\tikz[overlay, remember picture,inner sep=7pt,minimum height=0.65cm] \node[fill=#2,text=white,rotate=90] at #4 (name) {\large\normalfont\textbf{#1} ~~{\small \thepage(#5)}}; }  
 
-\newcommand{\LangRectOdd}[3]{\LangRect{#1}{#2}{#3}{($(current page.north east)-(0.35,#3)$)}}  
-\newcommand{\LangRectEven}[3]{\LangRect{#1}{#2}{#3}{($(current page.north west)-(-0.35,#3)$)}}  
+\newcommand{\LangRectOdd}[4]{\LangRect{#1}{#2}{#3}{($(current page.north east)-(0.35,#3)$)}{#4}}  
+\newcommand{\LangRectEven}[4]{\LangRect{#1}{#2}{#3}{($(current page.north west)-(-0.35,#3)$)}{#4}}  
     
 
-\newcommand{\LangMarker}[2]{%param 1 = language, param 2 = offset from top
+\newcommand{\LangMarker}[3]{%param 1 = language, param 2 = offset from top
 %\fancyhead{} % clear all header fields
 \fancyfoot{} % clear all footer fields
 %\fancyfoot[RO]{\thepage}
 %\fancyfoot[LE]{\thepage}
 \fancyhead{
-\ifodd\thepage\LangRectOdd{#1}{\LangColor}{#2}
-\else\LangRectEven{#1}{\LangColor}{#2}
-\fi
+\ifodd\thepage\LangRectOdd{#1}{\LangColor}{#2}{#3}
+\else\LangRectEven{#1}{\LangColor}{#2}{#3}
+\fi 
 }
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
@@ -185,119 +187,457 @@
 
 \newcommand{\Newline}{\vspace{\baselineskip}}
 
-\newcommand{\LangTitle}[1]{{\centering \Huge{\bfseries\sffamily \color{\LangColor}{#1}}\par\Newline}}
+\newcommand{\LangTitle}[1]{{\centering \Huge{\bfseries\sffamily \color{\LangColor}{#1}}\par}}
 
-
+\newcommand{\Comment}[1]{{\color{commentgreen}{#1}}}
 
 \begin{document}
 
-\LangMarker{Scala}{1.5cm}
-\LangTitle{Scala Quick Reference}
+\LangMarker{Scala}{1.5cm}{8}
+\LangTitle{Scala Quick Ref @ Lund University}
+{\centering https://github.com/lunduniversity/introprog/tree/master/quickref \\
+{\small License: CC-BY-SA, \textcopyright~Dept. of Computer Science, Lund University.}\\
+{\small Pull requests welcome! Contact: bjorn.regnell@cs.lth.se}
+\par}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{0.5em}
+\head{Top-level definitions} \vspace{0.75em}
+\hspace{0.32em}\begin{minipage}{0.52\linewidth}%
+\begin{Code}[frame=single] %[frame=single]  [frame=none]
+// in file: hello.scala
+package x.y.z
+object HelloWorld {
+  def main(args: Array[String]): Unit = { 
+    println("Hi " + args.mkString(" ")) 
+  }
+}
+\end{Code}%
+\end{minipage}%
+\hfill\begin{minipage}{0.45\linewidth}
+\raggedright{\small
+A compilation unit (here hello.scala) consists of a sequence of packagings, import clauses, and class and object definitions, which may be preceded by a package clause, e.g.: \code|package x.y.z |that places the compiled file HelloWorld.class in directory x/y/z/
+
+\begin{tabular}{@{}r @{\hspace{0.5em}}l} \\[-0.5em]
+\textbf{Compile}:  & \verb|scalac hello.scala| \\
+\textbf{Run}:  &  \verb|scala x.y.z.HelloWorld args| \\[0.1em]
+&Execution starts in method main.
+\end{tabular}%
+}%
+\end{minipage} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\head{Expressions}\Newline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{0.1em}
+\head{Definitions and declarations}\Newline
+{\small\renewcommand{\arraystretch}{0.95}
+A \textbf{definition} binds a name to a value/implementation, while a \textbf{declaration} just introduces a name (and type) of an abstract member. Below \code|defsAndDecl| denotes a list of definitions and/or declarations.   
+\newcommand{\MoveUp}{\\[-0.9em]}
+\newcommand{\FirstColWidth}{0.65cm}
+\begin{tabular}{@{}p{\FirstColWidth} l l}\\
+%\textbf{What} & \textbf{Example} & \textbf{Exlpanation} \\ \hline \\[-0.5em]
+Variable 
+& \code|val x = expr|  & \Comment{Variable x is assigned to expr. A \textbf{val} can only be \textbf{assigned once}.}\\
+& \code|val x: Int = 0|  & \Comment{Explicit type annotation,  expr: SomeType allowed after any expr.}\\ 
+& \code|var x = expr|  & \Comment{Variable x is assigned to expr. A \textbf{var} can be \textbf{re-assigned}.} \\
+& \code|val x, y = expr| & \Comment{Multiple initialisations, x and y is initialised to the same value.}\\
+& \code|val (x, y) = (e1, e2)| & \Comment{Tuple pattern initialisation, x is assigned to e1 and y to e2.}\\
+& \multicolumn{2}{l}{\code|val Seq(x, y) = Seq(e1, e2)|  \Comment{Sequence pattern initialisation, x is assigned to e1 and y to e2.}}\\
+& \code|val x: Int = _| & \Comment{Initialized to default value, 0 for number types, null for AnyRef types.}\\
+\end{tabular}
 
-{\small\renewcommand{\arraystretch}{1.1}
-\begin{tabular}{l l p{6.5cm}}
-literals  &  \code|0 0L 0.0 "0" '0' true false|   & Basic types e.g. Int, Long, Double, String, Char, Boolean \\
-block     &  \code|{ expr1; ...; exprN } |         &  The value of a block is the value of its last expression   \\
-if        &  \code|if (cond) expr1 else expr2 |  &   The value is expr1 if cond is true else expr2 \\
-for       &  \code|for (x <- xs) expr |          &   Loop for each x in xs, x visible in expr, type Unit   \\
-yield     &  \code|for (x <- xs) yield expr|     &   Yeilds a sequence with elems of expr for each x in xs \\
-while     &  \code|while (cond) expr |           &   Loop expr while cond is true, type Unit \\
-do while  &  \code|do expr while (cond) |        &   Dp expr at least once and then while cond is true, type Unit \\
-throw     &  \code|throw new Exception("Bang!") |  &  Throws an exception that halts execution if not in try catch  \\
-try       &  \code|try expr catch pf |           & Evaluate partial function pf if exception in expr, where pf e.g.: 
-\code|{case e: Exception => someBackupValue}| \\ 
+\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
+Function
+& \code|def f(a: Int, b: Int): Int = a + b| & \Comment{Function f of type (Int, Int) => Int}\\
+& \code|def f(a: Int = 0, b: Int = 0): Int = a + b| & \Comment{Default arguments used if args omitted, f().}\\
+
+&  \code|f(b = 1, a = 3)| & \Comment{{\hspace{-0.25em} Named arguments can be used in any order.}}\\
+& \code|def add(a: Int)(b: Int): Int = a + b| & \Comment{Multiple parameter lists, apply: add(1)(2)} \\
+
+& \code|(a: Int, b: Int) => a + b| & \Comment{Anonymous function value, ''lambda''.}\\
+& \code|val g: (Int, Int) => Int = (a, b) => a + b| & \Comment{Types can be omitted in lambda if inferable.}\\
+
+& \multicolumn{2}{l}{\code|f _| \hspace{4.8em} \Comment{Replacing a parameter list with a space and underscore gives the function itself as a value.}}\\
+
+& \multicolumn{2}{l}{\code|val inc = add(1) _ | \hspace{-4.25em} \Comment{\hspace{6em} Partially applied function add(1) of add above, where inc is of type Int => Int}}\\
+
+& \multicolumn{2}{l}{\code|def addAll(xs: Int*) = xs.sum |  \Comment{\hspace{0.42em} Repeated parameters: addAll(1,2,3) or addAll(Seq(1,2,3): \_*) }}\\
+
+& \multicolumn{2}{l}{\code|def twice(block: => Unit) = \{ block; block \}| \Comment{\hspace{0.5em} Call-by-name argument evaluated later.}}\\
+\end{tabular}
+
+\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
+Object
+& \code|object Name { defsAndDecl } | \Comment{Singleton object auto-allocated when referenced the first time.}
+\end{tabular}
+
+\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
+Class
+& \code|class C(parameters) { defsAndDecl }| & \hspace{-3.2em}\Comment{A template for objects, which are allocated with \textbf{new}.} \\
+& \code|case class C(parameters) { defsAndDecl }| & \Comment{Case class parameters become val members,} \\
+& \multicolumn{2}{l}{\Comment{other case class goodies: equals, copy, hashcode, unapply, nice toString, companion object with apply factory.}}\\
+\end{tabular}
+
+\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
+Trait
+& \code|trait T { defsAndDecl }| & \hspace{-0.9em}\Comment{A trait is an abstract class without parameters. Can be used as an interface.}\\ 
+& \code|class C extends D with T| & \hspace{-0.9em}\Comment{A class can only \textbf{extend} one normal class but mix in many traits using \textbf{with}.}\\
+\end{tabular}
+
+\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
+Type
+& \code|type A = typeDef | & \Comment{Defines an alias A for the type in typeDef. Abstract if no typeDef.}
+\end{tabular}
+
+\begin{tabular}{@{}p{\FirstColWidth} l @{}l}\MoveUp
+Import
+& \code|import path.to.module.name | & \Comment{Makes name directly visible. Underscore imports all.}\\
+& \code|import path.to.{a, b => x, c => _} | & \Comment{Import several names, b renamed to x, c not imported.}\\
+\end{tabular}
+}% end small
+
+\vspace{0.6em}
+{\small
+\begin{tabular}{@{}l @{}l l}
+\textbf{Modifier} & \textbf{applies to} & \textbf{semantics}\\ \hline \\[-0.7em]
+\code|private[this] | & definitions, declarations & \Comment{Restricts access to this instance only; also private[p] for package p.} \\
+\code|private| & definitions, declarations & \Comment{Restricts access to directly enclosing class and its companion.}\\
+\code|protected| & definitions& \Comment{Restricts access to subtypes and companion.}\\
+\code|override| & definitions, declarations & \Comment{Mandatory if overriding  a concrete definition in a parent class.}\\
+\code|abstract| & class definitions & \Comment{Abstract classes cannot be instantiated (redundant for traits).}\\
+\code|final| &  definitions & \Comment{Final members cannot be overridden, final classes cannot be extended.}\\
+\code|lazy| & val definitions & \Comment{Delays initialization of val, initialized when first referenced.}\\
+\code|sealed| & class definitions & \Comment{Restricts direct inheritance to classes in the same source file.}
+\\
+\end{tabular}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{-1.5em}\head{Special methods}\Newline
+{\small
+\begin{tabular}{@{}l @{}l}
+\code|class A(initX: Int = 0) {| & \Comment{\textbf{primary constructor}: new A(1) or using default arg: new A()} \\
+\code|  private var _x = initX| & \Comment{private member only visible in A and its companion} \\
+\code|  def x: Int = _x| & \Comment{\textbf{getter} for private field \_x (name chosen to avoid clash with x)} \\
+\code|  def x_=(i: Int): Unit = { _x = i } | & \Comment{special \textbf{setter} assignment syntax: val a = new A(1); a.x = 2} \\
+\code|  | & \Comment{} \\
+\code|}| & \\
+\code|object A {| & \Comment{\textbf{companion object} if same name and in same code file} \\
+\code|  def apply(i: Int = 0) = new A(i) |  & \Comment{\textbf{factory method} makes new unnecessary:  A.apply(1), A(1), A()} \\
+\code|  val a = A(1)._x | & \Comment{private members can be accessed in companion} \\
+\code|}|  \\
+\end{tabular}
+
+
+\vspace{0.5em}
+Getters and setters above are auto-generated by \textbf{var} in primary constructor:
+ {\hfill\code|class A(var x: Int = 0)|}\\
+With \textbf{val} in primary constructor only getter, no setter, is generated:
+ {\hfill\code|class A(val x: Int = 0)|} \\
+\textbf{Private constructor} e.g. to enforce use of factory in companion only: 
+{\hfill\code|class A private (var x: Int = 0)|} \\
+Instead of default arguments, an \textbf{auxiliary constructor} can be defined (less common): {\hfill\code|def this() = this(0)|}
+
+\vspace{-0.2em}\hspace{0.32em}\begin{minipage}{0.65\linewidth}%
+{\small\begin{Code}[frame=none] %[frame=single]  [frame=none]
+class IntVec(private val xs: Array[Int]) {
+  def update(i: Int, x: Int): Unit = { xs(i) = x }
+  def apply(i: Int): Int = xs(i)
+}
+\end{Code}%
+}%
+\end{minipage}%
+\hfill\begin{minipage}{0.32\linewidth}
+\vspace{-0.5em}\raggedright{\small
+Special syntax for \textbf{update} and \textbf{apply}: \\
+v(0) = 0~\Comment{expanded to} v.update(0,0)\\
+v(0)\hspace{1.5em}\Comment{expanded to} v.apply(0)\\
+\Comment{where} val v = new IntVec(Array(1,2,3)) \\
+
+}%
+\end{minipage}
+
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Newline\head{Expressions}\Newline
+{\small\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}l @{\hspace{0.9em}}l @{\hspace{0.2em}}l}
+literals  &  \code|0 0L 0.0 "0" '0' true false|   & \Comment{Basic types e.g. Int, Long, Double, String, Char, Boolean} \\
+
+block     &  \code|{ expr1; ...; exprN } |         &  \Comment{The value of a block is the value of its last expression}   \\
+if        &  \code|if (cond) expr1 else expr2 |  & \Comment{Value is expr1 if cond is true, expr2 if false (else is optional)} \\
+match     &  \code|expr match caseClauses |  &  \Comment{Matches expr against each case clause, see pattern matching. } \\
+
+for       &  \code|for (x <- xs) expr |          &   \Comment{Loop for each x in xs, x visible in expr, type Unit }  \\
+yield     &  \code|for (x <- xs) yield expr|     &   \Comment{Yeilds a sequence with elems of expr for each x in xs }\\
+while     &  \code|while (cond) expr |           &   \Comment{Loop expr while cond is true, type Unit }\\
+do while  &  \code|do expr while (cond) |        &   \Comment{Do expr at least once, then loop while cond is true, type Unit}\\
+throw     &  \code|throw new Exception("Bang!") |  &  \Comment{Throws an exception that halts execution if not in try catch } \\
+try       &  \code|try expr catch pf |           & \Comment{Evaluate partial function pf if exception in expr, where pf e.g.: } \\
+          & & \code|{case e: Exception => someBackupValue}| \\ 
 
 
 \end{tabular}
+
+\vspace{0.25em}\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}l @{\hspace{-1.6em}}r @{\hspace{0.6em}}l | r l}
+
+Evaluation order   & \code|(1 + 2) * 3| & \Comment{parenthesis control order} & \multicolumn{2}{l}{\hspace{-0.2em}\textbf{Precedence} of operators beginning with:}\\ 
+
+Method application & \code|1.+(2)|  &  \Comment{call method + on object 1} & all letters & \textbf{lowest}\\ 
+
+Operator notation  & \code|1 + 2|  &   \Comment{same as 1.+(2)} & \code+|+ \\
+
+Conjunction  & \code|c1 && c2|  &  \Comment{true if both c1 \textbf{and} c2 true}  & \code|^|  \\
+Disjunction  & \code+c1 || c2+  &  \Comment{true if c1 \textbf{or} c2 true}  & \code|&|  \\
+Negation  & \code|!c|          &  \Comment{logical \textbf{not}, false if c is true}  & \code|=  !| \\
+
+Function application  & \code|f(1, 2, 3)|  &   \Comment{same as f.apply(1,2,3)} & \code|<  >|\\
+
+Function literal  & \code|x => x + 1|  &   \Comment{anonymous function, ''lambda''} & \code|:|\\
+
+Object creation  & \code|new C(1,2)|  &   \Comment{from class C with arguments 1,2} & \code|+ -|\\
+
+Self reference  & \code|this|  &  \Comment{refers to the object being defined} & \code|* / %| \\
+
+Supertype reference & \code|super.m|  &  \Comment{refers to member m of supertype} & other special chars & \textbf{highest} \\ %\cline{4-5}
+Non-referable reference & \code|null|  &  \Comment{refers to null object of type Null} & \\
+
+Assignment operator & \code|x += 1|  &  \Comment{expanded to x = x + 1}  &  \\
+                    & \code|x -= 1|  &  \Comment{works for any op ending with =} & 
+                     \multicolumn{2}{l}{\textbf{Integer division and reminder:}}\\
+
+
+Empty tuple, unit value& \code|()|  &  \Comment{of type Unit, similar to Java void}  & \multicolumn{2}{l}{\code|a / b|  \Comment{~no decimals if a, b Int, Short, Byte }} \\
+                    & \code|x -= 1|  &  \Comment{works for any op ending with =} & \multicolumn{2}{l}{\code|a \% b|  \Comment{~fulfills: (a / b) * b + (a \% b) == a}}\\
+
+2-tuple value   & \code|(1, "hello")| &  \Comment{same as new Tuple2(1, "hello")}  &  \\
+2-tuple type    & \code|(Int, String)| & \Comment{same as Tuple2[Int, String]}  &  \\
+                &                      & \Comment{etc. until Tuple22}  &  \\
+\end{tabular}
+}%end small
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage\vspace*{-2.0em}\head{Pattern matching, type tests and extractors}\vspace{0.5em}
+
+\vspace{0.25em}\renewcommand{\arraystretch}{1.0}
+{\small%
+\begin{tabular}{@{}l @{\hspace{-7.1em}}r}
+\code|expr match { | 
+& \Comment{expr is matched against patterns from top until match found, yielding the expression after =>}\\
+
+\code|  case "hello" => expr | 
+& \Comment{\textbf{literal pattern} matches any value equal (in terms of ==) to the literal}\\
+
+\code|  case x: C => expr | 
+& \Comment{\textbf{typed variable pattern} matches all instances of C, binding variable x to the instance} \\
+
+\code|  case C(x, y, z) => expr | 
+& \Comment{\textbf{constructor pattern} matches values of the form C(x, y, z), args bound to x,y,z}\\
+\code|  case (x, y, z) => expr  | & \Comment{\textbf{tuple pattern} matches tuple values, alias for constructor pattern Tuple3(x, y, z)}\\
+
+\code|  case x +: xs => expr | 
+& \Comment{\textbf{sequence extractor patterns} matches head and tail, also x +: y +: z +: xs etc.} \\ 
+
+\code+  case p1 | ... | pN => expr + 
+& \Comment{matches if at least one \textbf{pattern alternative} p1, p2 ... or pN  matches} \\ 
+
+\code|  case x@pattern => expr | 
+& \Comment{a \textbf{pattern binders} with the @ sign binds a variable to (part of) a pattern} \\ 
+
+
+\code|  case x => expr | 
+& \Comment{\textbf{untyped variable pattern} matches any value, typical ''catch all'' at bottom: \textbf{\texttt{case \_ =>}}} \\ 
+
+\code|}                         | & \Comment{Pattern matching on direct subtypes of a \textbf{sealed} class is checked if exhaustive by the compiler} \\
+\end{tabular}
+}% small
+
+\vspace{0.5em}{\small Matching with typed variable pattern \code| x match { case a: Int => a; case _ => 0}| is preferred over \\explicit isInstanceOf tests and casts: \code{ if (x.isInstanceOf[Int]) x.asInstanceOf[Int] else 0}}
+
+\vspace{0.25em}{\small The \textbf{unapply} method can be used in \textbf{extractor} pattern matching (to avoid extra class \& instance), e.g.:}
+
+\vspace{-0.5em}%
+\begin{minipage}{0.6\linewidth}%
+{\small
+\begin{Code}
+object Host {
+  def unapply(s: String): Option[String] = 
+    if (!s.startsWith("http://")) None
+    else s.stripPrefix("http://").split('/').headOption
 }
+\end{Code}
+}%small
+\end{minipage}%
+\begin{minipage}{0.4\linewidth}
+\vspace{-0.2em}{\hfill\raggedleft\small\Comment{
+\textbf{Extractor object}\\
+extractor must return \textbf{Option} \\ \textbf{None} gives no match in patterns\\
+\textbf{Some(x)} matches in patterns \\
+~\\
+}}%
+\end{minipage}
+
+\vspace{-0.5em}{\small\code|str match { case Host(name) => ... }|  {\hfill\Comment{\textbf{Extractor pattern} leads to a call to Host.unapply(str)}}}
+
+
+\vspace{0.5em}\head{Generic classes and methods}\vspace{0.75em}
+\renewcommand{\arraystretch}{1.0}
+{\small%
+\begin{tabular}{@{}l @{\hspace{-7.4em}}r}
+\code|class Box[T](val x: T){ | 
+& \Comment{a \textbf{generic class} Box with a \textbf{type parameter} T, allowing x to be of any type}\\
+
+\code|  def pairedWith[U](y: U): (T, U) = (x, y) | 
+& \Comment{a \textbf{generic method} with \textbf{type parameter} U} \\
+
+\code|}| 
+& \Comment{T is bound to the type of x, U is free in pairedWith, so y can be of any type}\\
+
+\code|val b = new Box(0) | 
+& \Comment{same as (with explicit type parameters):~~~val b: Box\textbf{[Int]} = new Box\textbf{[Int]}(0)}\\
+
+\code|val p = b.pairedWith(new Box("zero"))  | 
+& \Comment{the type of p is (Box[Int], Box[String])}\\
+
+\end{tabular}
+}% small
+
+\vspace{0.5em}{\small
+Generic types are erased before JVM runtime except for Array, so a reflect.ClassTag is needed when constructing arrays from generic type parameters: \code|  def mkArray[A:reflect.ClassTag](a: A) = Array[A](a)| 
+}%end small
+
+
+\vspace{0.5em}\head{scala.\{Option, Some, None\}, scala.util.\{Try, Success, Failure\}
+%, scala.concurrent.Future
+}\Newline
+
+{\small \textbf{Option[T]} is like a collection with zero or one element. \textbf{Some[T]} and \textbf{None} are subtypes of Option. }
+
+\renewcommand{\arraystretch}{1.0}\vspace{0.25em}
+{\small%
+
+
+\begin{tabular}{@{}l @{\hspace{1.0em}}l}
+
+\multicolumn{2}{l}{\hspace{-0.62em}\code|val opt: Option[String] = if (math.random > 0.9) Some("bingo") else None|} \\
+
+\code|opt.getOrElse(expr)| 
+& \Comment{x: T if opt == Some[T](x) else expr}\\
+
+\code|opt.map(x => ... }| 
+& \Comment{apply x => ... to x if opt is Some(x) else None}\\
+
+\code|opt.get| 
+& \Comment{x: T if Some[T](x) else throws NoSuchElementException}\\
+\end{tabular}
+
+\begin{tabular}{@{}l @{\hspace{1.0em}}r}
+\code|opt match { case Some(x) => expr1;  case None => expr2 } | 
+& \Comment{expr1 if Some(x) else expr2}\\
+\end{tabular}
+}% small
+
+{\small Other collection-like methods on \textbf{Option}: foreach, isEmpty, filter, toVector, ..., on \textbf{Try}: map, foreach, toOption, ... }
+
+
+\vspace{0.25em}
+{\small\renewcommand{\arraystretch}{1.0} 
+{\textbf{Try[T]} is like a collection with \textbf{Success[T]} or \textbf{Failure[E]}.\hfill\code|import scala.util.{Try, Success, Failure}|}
+
+\begin{tabular}{@{}l @{\hspace{-4.8em}}l}
+\code|Try{ ...; ...; expr1 }.getOrElse(expr2)| & \Comment{evaluates to expr1 if successful or expr2 if exception} \\
+
+\code|Try{...; expr1}.recover{ case e: Throwable => expr2 }| & \hspace{5em}\Comment{expr2 if exception else Success(expr1)} \\
+\end{tabular}
+\code|Try(1/0) match {case Success(x) => x; case Failure(e) => 0}| \Comment{~~e here ArithmeticException}
+}
+
+
+
+\vspace{0.5em}\head{Reading/writing from file, and standard in/out:}\Newline
+{\small
+\textbf{Read} string of lines from \textbf{file} (fromFile gives BufferedSource, getLines gives Iterator[String]; also fromURL):
+\code|val s = scala.io.Source.fromFile("f.txt", "UTF-8").getLines.mkString("\n")| 
+}
+
 
 {\small
-\begin{tabular}{r l | r  p{5cm}}\hline\\
-\textbf{Precedence} & in operator notaion & Example expressions:& Explanation, x, i, j are integers \\
-\textbf{Lowest} & all letters  & \code|(x + 2) * i / 3| & Parenthesis control order of evaluation \\
- & \code+|+       &  \code|1.+(2)|      & Method application, call method + on object 1\\
- & \code|^|       &  \code|1 + 2|       & Operator notation equivalent to 1.+(2)\\
- & \code|&|       &  \code|x < y|       & Yields true or false, other ops: > <= >= == !=\\
- & \code|= !|     &  \code|cond1 && cond2|& Logical and, other boolean ops are or: || not: !\\
- & \code|< >|     &  \code|f(1, 2, 3)|  & Function application, same as f.apply(1,2,3)\\
- & \code|:|       &  \code|x => x + 1| & Function literal, anonymous function, ''lambda''\\
- & \code|+ -|     &  \code|new C(1,2)| & Create object from class C with arguments 1,2\\
- & \code|* / %|   &  \code|this|         & A reference to the object being defined\\
-\textbf{Highest} & other special characters &  \code|super.m|         & Refers to a member m of a supertype of this  \\
-Exception & assignment is lowest  & \code|null|         & Refers to an unreferrable object of type Null\\
-\end{tabular}
+\vspace{0.25em}\textbf{Read} string from \textbf{standard in} (prompt string is optional) using readLine; \textbf{write} to \textbf{standard out} using println:
+\code|val s = scala.io.StdIn.readLine("prompt"); println("you wrote" + s)|
+
+\vspace{0.5em}\textbf{Write} string to \textbf{file} after \textbf{import java.nio.file.\{Path, Paths, Files\}; import java.nio.charset.StandardCharsets.UTF\_8}\vspace{-0.5em}
+\begin{Code}
+def save(fileName: String, data: String): Path = 
+    Files.write(Paths.get(fileName), data.getBytes(UTF_8))
+\end{Code}
 }
-
-\head{Declarations}
-
-\vspace{\baselineskip}
-Hello \code{if}  \jcode{if}
-
-
-
-\Newline\head{Option, Some, None}\Newline
-
-
-\Newline\head{scala.util.Try}\Newline
-
-\Newline\head{scala.concurrent.Future}\Newline
-
-
-
-
-
-
-\Newline\head{scala.io.Source}\Newline
-
-\Newline\head{scala.io.StdIn}\Newline
-
 
 
 
 \clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace*{-1.5em}\head{The Scala Type System}%\Newline
+\vspace{-0.5em}\includegraphics[width=1.05\textwidth,trim=12mm 0 0 0cm]{../img/hierarchy.pdf}
 
-\head{The Scala Type System}\Newline
+{\small \renewcommand{\arraystretch}{1.07}
+\textbf{Number types}\\
+\begin{tabular}{@{}l l @{\hspace{0.7em}}l @{\hspace{0.7em}}l @{}p{0.1em} | l l}
+\textbf{name} & \textbf{\# bits} & \textbf{range} & \textbf{litteral} &   & \multicolumn{2}{l}{\textbf{Methods on numbers}}\\ \cline{1-4}%\hline 
+& & & &\\[-0.8em]
+\texttt{Byte}   &  8  & $-2^7$ ... $2^7-1$  &\texttt{0.toByte} &  
+& \code|x.abs| & \Comment{math.abs(x), absolute value}\\
 
-\includegraphics[width=1.07\textwidth,trim=12mm 0 0 0cm]{../img/hierarchy.pdf}
+\texttt{Short}  &  16 & $-2^{15}$ ... $2^{15}-1$ & \texttt{0.toShort}  &  
+& \code|x.round| & \Comment{math.round(x), to nearest Long}\\
 
-\Newline
+\texttt{Char}   &  16 & $0$ ... $2^{16}-1$ & \code|'0' '\u0030'| &  
+& \code|x.floor| & \Comment{math.floor(x), cut decimals}\\
 
-{\small \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{l  l l l l l}
-Numeric types
-& \textbf{name} & \textbf{\# bits} & \textbf{range} & \textbf{Litteral} & \textbf{JVM} \\ \cline{2-6} %\hline 
-\\[-1em]
-&\texttt{Byte}   &  8  & $-2^7$ ... $2^7-1$  & \texttt{0.toByte} & \texttt{byte} \\
-&\texttt{Short}  &  16 & $-2^{15}$ ... $2^{15}-1$ & \texttt{0.toShort}  & \texttt{short} \\
-&\texttt{Char}   &  16 & $0$ ... $2^{16}-1$ & \texttt{'0'} & \texttt{char} \\
-&\texttt{Int}    &  32 & $-2^{15}$ ... $2^{15}-1$ & \texttt{0} &\texttt{int} \\
-&\texttt{Long}   &  64 & $-2^{15}$ ... $2^{15}-1$ & \texttt{0L} &\texttt{long} \\
-&\texttt{Float}  &  32 & ± $3.4028235 \cdot 10^{38}$  & \texttt{0F} &\texttt{float} \\
-&\texttt{Double} &  64 & ± $1.7976931348623157 \cdot 10^{308}$ & \texttt{0.0} &\texttt{double} \\
+\texttt{Int}    &  32 & $-2^{15}$ ... $2^{15}-1$ & \texttt{0  0xF} & 
+& \code|x.ceil| & \Comment{math.ceil(x), round up cut decimal}\\
+
+\texttt{Long}   &  64 & $-2^{15}$ ... $2^{15}-1$ & \texttt{0L} & 
+& \code|x max y| & \Comment{math.max(x, y), gives largest, also min}\\
+
+\texttt{Float}  &  32 & ± $3.4 \cdot 10^{38}$  & \texttt{0F} &
+& \code|x.toInt| & \Comment{also toByte, toChar, toDouble etc.}\\
+
+\texttt{Double} &  64 & ± $1.8 \cdot 10^{308}$ & \texttt{0.0} & 
+& \code|1 to 4| & \Comment{Range(1, 2, 3, 4)}\\
+ & & & & 
+ & \code|0 until 4| & \Comment{Range(0, 1, 2, 3)} \\
 \end{tabular}
 }
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Newline\head{The Scala Standard Collection Library}
 {
 \small\renewcommand{\arraystretch}{1.1}
 \begin{multicols}{2}
 \texttt{scala.collection.}
-\begin{tabular}{l l l}
+\begin{tabular}{@{}l l l}
 \texttt{immutable.} & \texttt{mutable.} & methods with good performance: \\
 \hline
-\texttt{Vector} & \texttt{ArrayBuffer} & \texttt{head tail apply +: :+}\\
-\texttt{List} &  \texttt{ListBuffer} &  \texttt{head +:}  \\
+\texttt{Vector} & \texttt{ArrayBuffer} & \texttt{head tail apply~~+: :+}\\
+\texttt{List} &  \texttt{ListBuffer} &  \texttt{head~~+:}  \\
 \texttt{Set} & \texttt{Set} & \texttt{contains~~+~~-}\\
 \texttt{Map} & \texttt{Map} & \texttt{apply~~+~~-} \\
 \end{tabular}
 
 \vspace{0.2em}
 
-\texttt{String} and \texttt{Array} are implicitly converted to \texttt{Seq}\\ making sequence methods work as for other collections. Allocate Int array of size n: \texttt{ new Array[Int](n)}
+\texttt{String} and \texttt{Array} are implicitly converted to \texttt{Seq}\\ making sequence methods work as for other sequences. \\
 
+\vspace{0.5em} \textbf{Allocate array} of Int of size n: \code{new Array[Int](n)}
 
 \columnbreak
 
@@ -324,17 +664,18 @@ Numeric types
 \end{multicols}
 }
 
-{\small Concrete implementations of Set include HashSet, ListSet and BitSet. The subtype SortedSet is implemented by TreeSet.
-Concrete implementations of Map include HashMap and ListMap. The subtype SortedMap is implemented by TreeMap.
-
+\vspace{-0.5em}{\small Concrete implementations of \textbf{Set} include HashSet, ListSet and BitSet; collection.\textbf{SortedSet} is implemented by TreeSet.\\
+Concrete implementations of \textbf{Map} include HashMap and ListMap; collection.\textbf{SortedMap} is implemented by TreeMap.
 }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 
-\head{Methods in trait \texttt{Traversable}}\Newline
+\head{Methods in trait \texttt{Traversable[A]}}\Newline
 
 {\small\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{l p{3.4cm} p{6.6cm}}
+\begin{tabular}{@{}l p{3.5cm} p{6.8cm}}
 \textbf{What} & \textbf{Usage} & \textbf{Explanation} f is a function, pf is a partial funct., p is a predicate.\\ \hline
 Traverse: & \texttt{xs foreach f} & Executes f for every element of xs. Return type Unit.\\ \cline{1-3}
 
@@ -391,10 +732,10 @@ Traverse: & \texttt{xs foreach f} & Executes f for every element of xs. Return t
 
 \clearpage
 
-\head{Methods in trait \texttt{Iterable}}\Newline
+\head{Methods in trait \texttt{Iterable[A]}}\Newline
 
 {\small\renewcommand{\arraystretch}{1.1}
-\begin{tabular}{l p{3.4cm} p{6.8cm}}
+\begin{tabular}{@{}l p{3.4cm} p{6.8cm}}
 
 \textbf{What} & \textbf{Usage} & \textbf{Explanation} \\ \hline
 
@@ -416,10 +757,10 @@ Traverse: & \texttt{xs foreach f} & Executes f for every element of xs. Return t
 }  
 
 \Newline
-\head{Methods in trait \texttt{Seq}}\Newline
+\head{Methods in trait \texttt{Seq[A]}}\Newline
 
 {\small\renewcommand{\arraystretch}{1.1}
-\begin{tabular}{l p{3.75cm} p{6.6cm}}
+\begin{tabular}{@{}l p{3.75cm} p{6.8cm}}
 
 %\textbf{What} & \textbf{Usage} & \textbf{Explanation} \texttt{f} is function, \texttt{pf} is partial funct., \texttt{p} is predicate.\\ \hline
 
@@ -475,10 +816,10 @@ Traverse: & \texttt{xs foreach f} & Executes f for every element of xs. Return t
 }  
 
 %\Newline
-\head{Methods in trait \texttt{Set}}\Newline
+\vspace*{-1.25em}\head{Methods in trait \texttt{Set[A]}}\Newline
 
-{\small\renewcommand{\arraystretch}{1.15}
-\begin{tabular}{p{5cm}  p{6.6cm}}
+{\small\renewcommand{\arraystretch}{1.125}
+\begin{tabular}{@{}p{5cm}  p{6.6cm}}
 
 %\textbf{Usage} & \textbf{Explanation} \\ \hline
 
@@ -496,9 +837,9 @@ Traverse: & \texttt{xs foreach f} & Executes f for every element of xs. Return t
 }  
 
 \Newline
-\head{Additional methods only in trait \texttt{mutable.Set}}\Newline
-{\small\renewcommand{\arraystretch}{1.15}
-\begin{tabular}{p{5cm}  p{6.6cm}}
+\head{Additional mutation methods in trait \texttt{mutable.Set[A]}}\Newline
+{\small\renewcommand{\arraystretch}{1.125}
+\begin{tabular}{@{}p{5cm}  p{6.6cm}}
 
 \texttt{xs~+=~x~~~~~~~~~~xs~-=~x} \newline \texttt{xs~+=~(x,~y,~z)~~xs~-=~(x,~y,~z)}& Returns the same set with included/excluded elements. \newline Addition/subtraction can be applied to many arguments.\\   \cline{1-2}
 
@@ -516,10 +857,10 @@ Traverse: & \texttt{xs foreach f} & Executes f for every element of xs. Return t
 }  
 
 \Newline
-\head{Methods in trait \texttt{Map}}\Newline
+\head{Methods in trait \texttt{Map[K, V]}}\Newline
 
-{\small\renewcommand{\arraystretch}{1.15}
-\begin{tabular}{p{5.0cm}  p{6.6cm}}
+{\small\renewcommand{\arraystretch}{1.125}
+\begin{tabular}{@{}p{5.0cm}  p{6.6cm}}
 
 \texttt{ms get k} & The value associated with key k an option, None if not found.\\   \cline{1-2}
 
@@ -543,10 +884,10 @@ Traverse: & \texttt{xs foreach f} & Executes f for every element of xs. Return t
 
 
 \Newline
-\head{Additional methods only in trait \texttt{mutable.Map}}\Newline
+\head{Additional mutation methods in trait \texttt{mutable.Map[K, V]}}\Newline
 
-{\small\renewcommand{\arraystretch}{1.15}
-\begin{tabular}{p{5.0cm}  p{6.8cm}}
+{\small\renewcommand{\arraystretch}{1.125}
+\begin{tabular}{@{}p{5.0cm}  p{6.8cm}}
 
 \texttt{ms(k) = v ~~ ms.update(k, v)} & Adds mapping k to v, overwriting any previous mapping of k.\\   \cline{1-2}
 
@@ -564,19 +905,25 @@ Traverse: & \texttt{xs foreach f} & Executes f for every element of xs. Return t
         
 \end{tabular}
 }  
-\vspace{0.5em}
 
-\textbf{\color{\LangColor}{Factory methods examples}:}
-{\small \texttt{ Vector(0, 0, 0) } same as \texttt{ Vector.fill(3)(0)} 
-\texttt{ collection.mutable.Set.empty[Int]; Map("se" -> "Sweden", "dk" -> "Denmark")
-\newline Array.ofDim[Int](3,2)} gives \texttt{Array(Array(0, 0), Array(0, 0), Array(0, 0))} same as \texttt{Array.fill(3,2)(0)}; 
-\texttt{ Vector.iterate(1.2, 3)(\_ + 0.5)} gives \texttt{Vector(1.2, 1.7, 2.2)}; 
-\newline \texttt{ Vector.tabulate(3)("s" + \_) } gives \code{ Vector("s0", "s1", "s2")}
+\vspace{1.0em}\head{Factory examples:}\Newline
+
+{\small%
+\code{Vector(0, 0, 0)} \Comment{ same as } \code{Vector.fill(3)(0)} \\
+\code{collection.mutable.Set.empty[Int]} \Comment{ same as } \code{collection.mutable.Set[Int]()}\\
+\mbox{\code{Map("se" -> "Sweden","nk" -> "Norway")} \Comment{same as } 
+\code{Map(("se","Sweden"),("nk","Norway"))}}\\
+\code{Array.ofDim[Int](3,2)} \Comment{gives} \texttt{Array(Array(0, 0), Array(0, 0), Array(0, 0))} \Comment{same as} \texttt{Array.fill(3,2)(0)}; 
+\texttt{ Vector.iterate(1.2, 3)(\_ + 0.5)} \Comment{gives} \texttt{Vector(1.2, 1.7, 2.2)}\\
+\texttt{Vector.tabulate(3)("s" + \_) } \Comment{gives} \code{ Vector("s0", "s1", "s2")}
 }
 
 
 
-\Newline\head{String methods}\Newline
+
+\clearpage
+
+\Newline\head{Strings}\Newline
 
 
 {\small\renewcommand{\arraystretch}{1.15}
@@ -585,23 +932,39 @@ Some methods below are from java.lang.String and some methods are implicitly add
 
 \vspace{0.5em}
 
-\begin{tabular}{l l}
-\code|s.capitalize| & Returns this string with first character converted to upper case. \\
-\code|s(i)  s apply i   s.charAt(i)| & Returns the character at index i. \\
-\code|s.compareTo(t)| & Returns x where x < 0 if s < t, x > 0 if s > t, x is 0 if s == t\\
-\code|s.compareToIgnoreCase(t)| & Similar to compateTo but not sensitive to case.\\
-\code|s.endsWith(t)| & True if string s ends with string t. \\
-\code|s.replaceAllLiterally(s1, s2)| & Replace all occurances of s1 with s2 in s. \\
-\code|s.split(c)| & Returns an array of strings split at every occurance of charachter c. \\
-\code|s.startsWith(t)| & True if string s begins with string t. \\
-\code|s.stripMargin| & Strips leading white space followed by | from each line in string.\\
-\code|s.substring(i)| & Returns a substring of s with all charcters from index i.\\
-\code|s.substring(i, j)| & Returns a substring of s from index i to index j-1.\\
-\code|s.toInt  s.toDouble  s.toFloat| & Parses s as an Int or Double etc. May throw an exception.\\
-\code|42.toString   42.0.toString| & Converts a number to a String.\\
-\code|s.toLowerCase| & Converts all characters to lower case.\\
-\code|s.toUpperCase| & Converts all characters to upper case. \\
-\code|s.trim| & Removes leading and trailing white space.\\
+\begin{tabular}{@{}l l}
+\code|s(i)  s apply i   s.charAt(i)| & \Comment{Returns the character at index i.} \\
+\code|s.capitalize| & \Comment{Returns this string with first character converted to upper case.} \\
+\code|s.compareTo(t)| & \Comment{Returns x where x < 0 if s < t, x > 0 if s > t, x is 0 if s == t}\\
+\code|s.compareToIgnoreCase(t)| & \Comment{Similar to compateTo but not sensitive to case.}\\
+\code|s.endsWith(t)| & \Comment{True if string s ends with string t.} \\
+\code|s.replaceAllLiterally(s1, s2)| & \Comment{Replace all occurances of s1 with s2 in s.} \\
+\code|s.split(c)| & \Comment{Returns an array of strings split at every occurance of charachter c.} \\
+\code|s.startsWith(t)| & \Comment{True if string s begins with string t.} \\
+\code|s.stripMargin| & \Comment{Strips leading white space followed by | from each line in string.}\\
+\code|s.substring(i)| & \Comment{Returns a substring of s with all charcters from index i.}\\
+\code|s.substring(i, j)| & \Comment{Returns a substring of s from index i to index j-1.}\\
+\code|s.toInt  s.toDouble  s.toFloat| & \Comment{Parses s as an Int or Double etc. May throw an exception.}\\
+\code|42.toString   42.0.toString| & \Comment{Converts a number to a String.}\\
+\code|s.toLowerCase| & \Comment{Converts all characters to lower case.}\\
+\code|s.toUpperCase| & \Comment{Converts all characters to upper case.} \\
+\code|s.trim| & \Comment{Removes leading and trailing white space.}\\
+\end{tabular}
+} 
+
+
+
+\Newline
+
+{\small\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}p{0.7cm} l | r l}
+\textbf{Escape} & \textbf{char} & \textbf{Special strings} & \\ 
+\code|\n| & line break & \code|"hello\nworld\t!"| & \Comment{string including escape char for line break and tab}\\
+\code|\t| & horisontal tab & \code|"""a "raw" string"""| & \Comment{can include quotes and span multiple lines}\\
+\code|\"| & double quote '' & \code|s"x is $x"| & \Comment{\textbf{s interpolator} inserts values of existing names}\\
+\code|\'| & single quote ' &  \code|s"x+1 is ${x+1}"|& \Comment{s interpolator evaluates expressions within}  \code|${}|\\
+\code|\\| & backslash \textbackslash & \code|f"$x%5.2f"| & \Comment{format Double x to 2 decimals at least 5 chars wide}\\
+\code|\u0041| &  unicode for A & \code|f"$y%5d"| & \Comment{format Int y right justified at least five chars wide}\\
 \end{tabular}
 } 
 
@@ -610,10 +973,10 @@ Some methods below are from java.lang.String and some methods are implicitly add
 \Newline\head{scala.collection.JavaConverters}\Newline
 
 {\small
-Enable \code{.asJava} and \code{.asScala} conversions: \code{ import collection.JavaConverters._ } 
+Enable \code{.asJava} and \code{.asScala} conversions: \code{ import scala.collection.JavaConverters._ } 
 \vspace{0.5em}
 
-\begin{tabular}{r c l}
+\begin{tabular}{@{}r c l}
 \texttt{xs.asJava} on a \textbf{Scala} collection of type: & & \texttt{xs.asScala} on a \textbf{Java} collection of type: \\ 
 \texttt{Iterator} &               $\longleftrightarrow$ & \texttt{java.util.Iterator} \\
 \texttt{Iterable} &               $\longleftrightarrow$ & \texttt{java.lang.Iterable} \\
@@ -625,95 +988,91 @@ Enable \code{.asJava} and \code{.asScala} conversions: \code{ import collection.
 }
 
 
-\Newline\head{Special characters and strings}\Newline
-
-{\small\renewcommand{\arraystretch}{1.15}
-\begin{tabular}{p{0.6cm} l | r l}
-\textbf{Escape\newline char} &  & \textbf{String} & \\ 
-\code|\n| & line break & \code|"hello\nworld"| & string including escape char for line break\\
-\code|\t| & horisontal tab & \code|"""a "raw" string"""| & can include quotes and span multiple lines\\
-\code|\"| & double quote '' & \code|s"x is $x"| & the s interpolator inserts values of existing names\\
-\code|\'| & single quote ' &  \code|s"x+1 is ${x+1}"|& the s interpolator evaluates expressions within  \code|${}|\\
-\code|\\| & backslash \textbackslash &  & \\
-\end{tabular}
-} 
-
 
 \Newline\head{Reserved words}\Newline
 
-{\small The 40 words and 10 symbols below have special meaning and cannot be used as identifiers in Scala.}
+{\small These 40 words and 10 symbols have special meaning and cannot be used as identifiers in Scala.}
  
 \begin{Code}[morekeywords={macro,\_},otherkeywords={>,<-,\%,<,>:,@,:,=,\#}]
-abstract case catch class def do else extends false final 
-finally for forSome if implicit import lazy macro match new 
-null object override package private protected return sealed 
-super this throw trait try true type val var while with yield 
-_   :   =   =>   <-   <:   <%   >:   #   @ 
+abstract case catch class def do else extends false final finally for 
+forSome if  implicit import lazy macro match new null object override 
+package private protected return sealed super this throw trait try true 
+type val var while with yield   _   :   =   =>   <-   <:   <%   >:   #   @ 
 \end{Code}
 
 
+%%%************************************************************************************
+%%%*************************** JAVA STARTS HERE ***************************************
+%%%************************************************************************************
 
+%%%%% TODO: Translate to English
 
-\clearpage
+\clearpage\renewcommand{\arraystretch}{0.91}
 \setcounter{page}{1}
 \renewcommand{\LangColor}{blue}
-\LangMarker{Java}{3.5cm}
+\LangMarker{Java}{3.5cm}{4}
 
-\LangTitle{Java snabbreferens}
+\LangTitle{Java snabbreferens  @ Lunds universitet}
+\vspace{1em}
 
-{\small Tecknet ~\Or~ står för ''eller''. Vanliga parenteser \RepL \RepR ~används för att gruppera alternativ. Med \OptL \OptR ~markeras sådant som inte alltid finns med. Med \jcode{stmt} avses en sats, \jcode{x}, \jcode{i}, \jcode{s}, \jcode{ch} är variabler, \jcode{expr} är ett uttryck, \jcode{cond} är ett logiskt uttryck.}
+{\small Vertikalstreck \Or~används mellan olika alternativ. Parenteser \RepL \RepR används för att gruppera en mängd alternativ. Hakparenteser \OptL \OptR markerar valfria delar. En sats betecknas \jcode{stmt} medan \jcode{x}, \jcode{i}, \jcode{s}, \jcode{ch} är variabler, \jcode{expr} är ett uttryck, \jcode{cond} är ett logiskt uttryck. Med \verb|...| avses valfri, extra kod.}
+
+%{\small Tecknet ~|~ står för ''eller''. Vanliga parenteser~(~)~används för att gruppera alternativ. Med~[~]~markeras sådant som inte alltid finns med. Med \jcode{stmt} avses en sats, \jcode{x}, \jcode{i}, \jcode{s}, \jcode{ch} är variabler, \jcode{expr} är ett uttryck, \jcode{cond} är ett logiskt uttryck.}
+
 
 \Newline
-\head{Satser}
-
-\begin{etab}
+\head{Satser}\Newline
+{\small
+\begin{tabular}{@{}l l l}
 Block   & \jcode|{stmt1; stmt2; ...}| &  fungerar ''utifrån'' som \textbf{en} sats \secend
 
-Tilldelningssats & \jcode|x = expr;|                 &  variabeln och uttrycket av kompatibel typ \secend
+Tilldelning & \verb|x = expr;|                 &  variabeln och uttrycket av kompatibel typ \secend
 
-Förkortade       & \jcode|x += expr; |                &  x = x + expr; även --=, *=, /= \\
-                 & \jcode|x++;  |                     &  x = x + 1; även x\hspace{0.5mm}-- -- \secend
+Förkortade       & \verb|x += expr; |                &  x = x + expr; även --=, *=, /= \\
+                 & \verb|x++;  |                     &  x = x + 1; även x\hspace{0.5mm}-- -- \secend
 
-if-sats          & \jcode|if (cond) {stmt; ...}|      &  utförs om cond är true \\
-                 & \OptL \jcode|else { stmt; ...}| \OptR&  utförs om false \secend
+if-sats          & \verb|if (cond) {stmt; ...}|      &  utförs om cond är true \\
+                 & \OptL \verb|else { stmt; ...}| \OptR&  utförs om false \secend
 
-switch-sats      & \jcode|switch (expr) {|         &  expr är ett heltalsuttryck \\ 
-                 & \jcode|    case A: stmt1; break;|  &  utförs om expr $=$ A (A konstant) \\
-                 & \jcode|    ...|                 & \\
-                 & \jcode|    default: stmtN; break;| &  utförs om inget case passar\\
-                 & \jcode|}|                   & \secend
+switch-sats      & \verb|switch (expr) {|         &  expr är ett heltalsuttryck \\ 
+                 & \verb|    case A: stmt1; break;|  &  utförs om expr $=$ A (A konstant) \\
+                 & \verb|    ...|                 & ''faller igenom'' om break saknas\\
+                 & \verb|    default: stmtN; break;| &  sats efter default: utförs om inget case passar\\
+                 & \verb|}|                   & \secend
 
-for-sats         & \jcode|for (int i = start; i < stop; i++) {| & \\
-                 & \jcode|    stmt;|  & satserna utförs för i = start, start+1, \ldots, stop$-1$ \\
-                 & \jcode|    ...;|         &  (ingen gång om start >= stop) \\
-                 & \jcode|}|                &  i++ kan ersättas med i = i + step \secend
+for-sats         & \verb|for (int i = a; i < b; i++) {| & satserna görs för i = a, a+1, \ldots, b-1\\
+                 & \verb|    stmt; ...|  & Görs ingen gång om a >= b \\
+                 & \verb|}  |         &  i++ kan ersättas med i = i + step \secend
+                 
+for-each-sats    & \verb|for (int x: xs) {|   & xs är en samling, här med heltal  \secend
+                 & \verb|    stmt; ...|  & x blir ett element i taget ur xs\\
+                 & \verb|}  |         &  fungerar även med array \secend
 
-while-sats       & \jcode|while (cond) {|          & \\
-                 & \jcode|    stmt; ...|           &  utförs så länge cond är true \\
-                 & \jcode|}|                       & \secend
+while-sats       & \verb|while (cond) {stmt; ...}|          & utförs så länge cond är true \secend
 
-do-while-sats    & \jcode|do {|                     & \\
-                 & \jcode|    stmt; ...|         &  utförs minst en gång, \\
-                 & \jcode|} while (cond);|          &  så länge cond är true \secend
+do-while-sats    & \verb|do {|                     & \\
+                 & \verb|    stmt; ...|         &  utförs minst en gång, \\
+                 & \verb|} while (cond);|          &  så länge cond är true \secend
 
-return-sats      & \jcode|return expr;|        &  returnerar funktionsresultat
-\end{etab}
+return-sats      & \verb|return expr;|        &  returnerar funktionsresultat
+\end{tabular}
+}
 
-\head{Uttryck}
+\Newline\head{Uttryck}
 \begin{etab}
-Aritmetiskt uttryck & (x + 2) * i / 3          &  skrivs som i matematiken, för heltal är / \\
-                  &                            &  heltalsdivision, \% ''rest'' \secend
+Aritmetiskt uttryck & (x + 2) * i / 2 + i \% 2   &  för heltal är / heltalsdivision, \% ''rest''   \secend
 
-Objektuttryck     & \mc{new Classname(\ldots) | ref-var | null | function-call | this | super} \secend
 
-Logiskt uttryck   & \mc{! log-expr | log-expr \&\& log-expr | log-expr || log-expr | function-call | relation | log-var | true | false} \subsecend
+Objektuttryck     & \mc{new Classname(\ldots) \Or ref-var \Or null \Or function-call \Or this \Or super} \secend
 
-Relation          & \mc{ expr ( < | <= | == | >= | > | != ) expr (för objektuttryck bara == och !=, också expr instanceof Classname)} \subsecend
+Logiskt uttryck   & \mc{! cond \Or  cond \&\& cond \Or  cond || cond \Or  relationsuttryck \Or true \Or  false} \subsecend
+
+Relationsuttryck  & expr \RepL < \Or <= \Or == \Or >= \Or > \Or != \RepR expr & för objektuttryck bara == och !=, också typtest med expr instanceof Classname \subsecend
 
 Funktionsanrop    & obj-expr.method(\ldots)    &  anropa ''vanlig metod'' (utför operation) \\
                   & Classname.method(\ldots)   &  anropa statisk metod \secend
 
-Vektor (array)    & new int[size]              &  skapar int-vektor med size element \\
+Array             & new int[size]              &  skapar int-array med size element \\
                   & vname[i]                   &  elementet med index i, 0..length$-1$\\
                   & vname.length               &  antalet element \secend
 
@@ -723,28 +1082,29 @@ Typkonvertering   & (newtype) expr             &  konverterar expr till typen ne
                   &                            &  är ett Square-objekt
 \end{etab}
 
-\clearpage 
+
+\clearpage
 \head{Deklarationer}
 \begin{etab}
-Allmänt           & \mc{[<protection>] [static] [final] <type> name1, name2, \ldots;} \secend
+Allmänt           & \mc{\OptL<protection> \OptR  \OptL static \OptR \OptL final \OptR <type> name1, name2, \ldots;} \secend
 
-<type>            & \mc{byte | short | int | long | float | double | boolean | char | Classname} \secend
+<type>            & \mc{byte \Or short \Or int \Or long \Or float \Or double \Or boolean \Or char \Or Classname} \secend
 
-<protection>      & public | private | protected &  för attribut och metoder i klasser \\
+<protection>      & public \Or private \Or protected &  för attribut och metoder i klasser \\
                   &                             &  (paketskydd om inget anges) \secend
 
 Startvärde        & int x = 5;                  &  startvärde bör alltid anges \secend
 
 Konstant          & final int N = 20;           &  konstantnamn med stora bokstäver \secend
 
-Vektor            & <type>[\hspace{0.4mm}] vname = new <type>[10]; &  deklarerar och skapar vektor
+Array             & <type>[\hspace{0.4mm}] vname = new <type>[10]; &  deklarerar och skapar array
 \end{etab}
 
 
 \head{Klasser}
 \begin{etab}
-Deklaration       & [public][abstract] class Classname & \\
-                  & \mc{\ind [extends Classname1] [implements Interface1, Interface2, \ldots] $\{$} \\
+Deklaration       & \OptL public\OptR \OptL abstract \OptR class Classname & \\
+                  & \mc{\ind \OptL extends Classname1\OptR \OptL implements Interface1, Interface2, \ldots\OptR $\{$} \\
                   & \ind <deklaration av attribut> & \\
                   & \ind <deklaration av konstruktorer> & \\
                   & \ind <deklaration av metoder> & \\
@@ -790,7 +1150,7 @@ System            & void System.out.print(String s); &  skriv ut strängen s \\
 \end{etab}
 \clearpage
 \begin{etab}
-Typklasser        & \mc{Till varje datatyp finns en typklass: char $\rightarrow$ Character, int $\rightarrow$ Integer, double $\rightarrow$ Double, \ldots\ Statiska konstanter MIN\_VALUE och MAX\_VALUE ger minsta respektive största värde. Exempel med klassen Integer:} \subsecend
+Wrapperklasser     & \mc{För varje datatyp finns en wrapperklass: char $\rightarrow$ Character, int $\rightarrow$ Integer, double $\rightarrow$ Double, \ldots\ Statiska konstanter MIN\_VALUE och MAX\_VALUE ger minsta respektive största värde. Exempel med klassen Integer:} \subsecend
                   & Integer(int value);             &  skapar ett objekt som innehåller value \\
                   & int intValue();                 &  tar reda på värdet \secend
 
@@ -802,7 +1162,7 @@ String            & \mc{Teckensträngar där tecknen inte kan ändras. ''asdf'' 
                   & int indexOf(char ch);           &  index för ch, $-1$ om inte finns \\
                   & int indexOf(char ch, int from); &  som indexOf men börjar leta på plats from \\
                   & String substring(int first, int last); &  kopia av tecknen first..last$-1$ \\
-                  & String[\hspace{0.5mm}] split(String delim); &  ger vektor med ''ord'' (ord är följder av \\
+                  & String[\hspace{0.5mm}] split(String delim); &  ger array med ''ord'' (ord är följder av \\
                   &                                 &  tecken åtskilda med tecknen i delim) \secend
 
                   & \mc{Konvertering mellan standardtyp och String (exempel med int, liknande för andra typer):} \subsecend
@@ -822,7 +1182,7 @@ StringBuilder     & \mc{Modifierbara teckensträngar. length och charAt som Stri
 \head{Standardklasser, import java.util.Classname}
 \begin{etab}
 List              & \mc{List<E> är ett gränssnitt som beskriver listor med objekt av parameterklassen E. Man kan lägga in värden av standardtyperna genom att kapsla in dem, till exempel int i Integer-objekt. Gränssnittet implementeras av klasserna ArrayList<E> och LinkedList<E>, som har samma operationer. Man ska inte använda operationerna som har en position som parameter på en LinkedList (i stället en iterator). IndexOutOfBoundsException om någon position är fel.} \subsecend
-                  & \mc{För att operationerna contains, indexOf och remove(Object) ska fungera måste klassen E överskugga funktionen equals(Object). Integer och de andra typklasserna gör det.} \subsecend
+                  & \mc{För att operationerna contains, indexOf och remove(Object) ska fungera måste klassen E överskugga funktionen equals(Object). Integer och de andra wrapperklasserna gör det.} \subsecend
 ArrayList         & ArrayList<E>();                 &  skapar tom lista \\ 
 LinkedList        & LinkedList<E>();                &  skapar tom lista \\ 
                   & int size();                     &  antalet element \\
@@ -834,15 +1194,15 @@ LinkedList        & LinkedList<E>();                &  skapar tom lista \\
                   & void add(E obj);                &  lägger in obj sist, efter existerande element \\
                   & void add(int i, E obj);         &  lägger in obj på plats i (efterföljande \\
                   &                                 &  element flyttas) \\
-                  & \ldots\ forts nästa sida        & 
-\end{etab}
-\secend
-\begin{etab}
                   & E set(int i, E obj);            &  ersätter elementet på plats i med obj \\
                   & E remove(int i);                &  tar bort elementet på plats i (efter- \\
                   &                                 &  följande element flyttas) \\
                   & boolean remove(Object obj);     &  tar bort objektet obj, om det finns \\
                   & void clear();                   &  tar bort alla element i listan \secend
+
+\end{etab}
+\secend
+\begin{etab}
 
 Random            & Random();                       &  skapar ''slumpmässig'' slumptalsgenerator \\
                   & Random(long seed);              &  -- med bestämt slumptalsfrö \\
@@ -899,5 +1259,6 @@ goto if implements import instanceof int interface long native new
 package private protected public return short static strictfp super 
 switch synchronized this throw throws transient try void volatile while
 \end{Code}
+
 
 \end{document}
