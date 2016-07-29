@@ -159,66 +159,21 @@ och inspektera html-koden i din webbläsare genom att trycka \emph{Ctrl+U} (fung
 
 \Subtask \emph{Linjärsökning med find.} Teknologen Oddput Clementina vill gå första bästa datavetenskapskurs som är på G2-nivå. Hjälp Oddput med att söka upp första bästa kurs genom linjärsökning med samlingsmetoden \code{find}. Kurskoder vid datavetenskap börjar på EDA eller ETS\footnote{Detta är en förenklad bild av LTH:s kurskodnamnsystem. Några kurser från EIT-institutionen  kommer att slinka med, men det bortser vi ifrån i denna uppgift.}. \emph{Tips:} Du har nytta av att definiera predikatet \code{def isCS(s: String): Boolean} som i sin tur lämpligen nyttjar strängmetoden \code{startsWith}.
 
-\begin{REPL}
-// kod till facit
-scala> def isCS(s: String) = s.startsWith("EDA") || s.startsWith("ETS")
-scala> val x = courses.lth2016.find(c => isCS(c.code) && c.level == "G2").get
-x: courses.Course = Course(EDA031,C++ - programmering,C++ Programming,7.5,G2)
-\end{REPL}
-
 \Subtask \emph{Implementera linjärsökning.} Som träning ska du nu implementera en egen linjärsökningsfunktion med signaturen: \\ \code{def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = ???}
 \\ Funktionen ska ta en sekvenssamling \code{xs} och ett predikat \code{p} som är en funktion som tar ett element och returnerar ett booleskt värde. Funktionen \code{p} ska ge true om parametern är ett eftersökt element. Funktionen \code{linearSearch} ska returnera index för första hittade elementet i \code{xs} där \code{p} gäller. Om det inte finns något element som uppfyller predikatet ska -1 returneras. Skriv först pseudokod för funktionen med penna och papper. Använd \code{while}. 
 
 Typen \code{Seq} är supertyp till alla sekvenssamlingar, så om vi använder den som parametertyp för parametern \code{xs} så fungerar funktionen för \code{Vector}, \code{Array}, \code{List}, etc. Genom typparametern \code{T} blir funktionen generisk och fungerar för godtycklig typ. 
 
 
-\begin{Code}
-// kod till facit
-def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = {
-  var i = 0
-  while(i < xs.size && !p(xs(i))) i += 1 
-  if (i < xs.size) i else -1
-}
-\end{Code}
-
-
 
 \Subtask \label{subtask:linsearch-rndCode} Skriv i en editor en funktion \code{def rndCode: String} som genererar slumpmässiga kurskoder som består av 6 tecken enligt dessa regler: de första tre tecknen är bokstäver mellan A och Z, de sista två är siffror mellan 0 och 9, medan det fjärde tecknet kan vara antingen en siffra mellan 0 och 9 eller ett av dessa tecken: \code{ACFGLMNP}. \emph{Tips:} Använd REPL  för att stegvis bygga upp hjälpfunktioner som du, när de fungerar som de ska, klistrar in i ett editorfönster som lokala funktioner där du utvecklar den slutliga koden för en lättläst, concis och fungerande \code{rndCode}.
-
-\begin{Code}
-// kod till facit
-def rndCode: String = {
-  def rnd(n: Int) = (math.random * n).toInt
-  def letter    = (rnd('Z' - 'A') + 'A').toChar
-  def dig       = ('0' + rnd(9)).toChar  
-  val special   = "ACFGLMP" + dig
-  def digLetter = special(rnd(special.size))
-  Seq(letter, letter, letter, digLetter, dig, dig).mkString
-}
-\end{Code}
 
 
 \Subtask Använd \code{rndCode} från föregående deluppgift för att fylla en vektor kallad \code{xs} med en halv miljon slumpmässiga kurskoder. För varje slumpkod i \code{xs} sök med din funktion \code{linearSearch} efter index i vektorn \code{courses.lth2016} från deluppgift \ref{subtask:download-lthcourses}. Mät totala tiden för de $500000$ linjärsökningarna med hjälp av funktionen \code{timed} från uppgift \ref{task:timed}. Hur många av de slumpmässiga kurskoderna hittades bland de verkliga kurskoderna på LTH?
 
- 
-\begin{Code}
-// kod till facit
-val lthCourses = courses.lth2016 //avoid including download time
-val xs = Vector.fill(500000)(rndCode)
-val (ixs, elapsedLin) = 
-  timed{xs.map(x => linearSearch(lthCourses)(_.code == x))}
-val found = ixs.filterNot(_ == -1).size
-\end{Code}
-
 
 
 \Subtask\Pen Hur kan du implementera \code{linearSearch} med den inbyggda samlingsmetoden \code{indexWhere}?
-
-\begin{Code}
-// kod till facit
-def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = 
-  xs.indexWhere(p)
-\end{Code}
 
 
 
@@ -260,25 +215,8 @@ val (_, elapsedLin) =
 println(elapsedLin / elapsedBin)
 \end{Code}
 
-\begin{Code}
-// kod till facit
-def binarySearch(xs: Seq[String], key: String): Int = {
-  var (low, high) = (0, xs.size -1)
-  var found = false
-  var mid = -1
-  while (low <= high && !found) {
-    mid = (low + high)/2
-    if (xs(mid) == key) found = true 
-    else if (xs(mid) < key) low = mid + 1
-    else high = mid -1
-  }
-  if (found) mid else -(low +1)
-} 
-\end{Code}
 
 \Subtask Hur mycket snabbare blev binärsökningen jämfört med linjärsökningen?\footnote{Vid en körning på en i7-4970K med 4.0GHz tog \code{elapsedLin} cirka $3000~ms$ och \code{elapsedBin} cirka $60~ms$. Binärsökning var alltså i detta fall ungefär $50$ gånger snabbare än linjärsökning.}
-
-
 
 
 
@@ -308,20 +246,6 @@ def binarySearch(xs: Seq[String], key: String): Int = {
 \end{Code}
 
 
-\begin{Code}[language=Java]
-// kod till facit
-    public static boolean isYatzy(int[] dice){
-        int col = 1;
-        boolean allSimilar = true;
-        while (col < dice.length && allSimilar) {
-          allSimilar = dice[0] == dice[col];
-          col++;
-        }
-        return allSimilar;
-    }
-\end{Code}
-
-
 \Subtask Implementera \code{findFirstYatzyRow}. Skapa först pseudo-kod för länjärsökningsalgoritmen innan du skriver implementationen i Java. 
 Testa ditt program genom att lägga till följande rader i huvudprogrammet. 
 Metoden \code{fillRnd} ingår i uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W09}.
@@ -332,24 +256,6 @@ Metoden \code{fillRnd} ingår i uppgift \ref{task:arraymatrix-java} i kapitel \r
         System.out.println("First Yatzy Index: " + i);
 \end{Code}
 
-
-
-
-\begin{Code}[language=Java]
-// kod till facit
-    public static int findFirstYatzyRow(int[][] m){
-        int row = 0;
-        int result = -1;
-        while (row < m.length && result < 0){
-            if (isYatzy(m[row])) {
-              result = row;
-            } else {
-              row = row + 1;    
-            }
-        }
-        return result;
-    }
-\end{Code}
 
 
 
@@ -390,19 +296,6 @@ res3: Seq[Int] = Vector(1, 1, 2, 3, 4, 5)
 \end{REPL}
 
 
-\begin{Code}[numbers=left]
-// kod till facit:
-def insertionSort(xs: Seq[Int]): Seq[Int] = {
-  val result = scala.collection.mutable.ArrayBuffer.empty[Int]
-  for (e <- xs) {
-    var pos = 0
-    while (pos < result.size && result(pos) < e) pos += 1
-    result.insert(pos,e)
-  }
-  result.toVector
-}
-\end{Code}
-
 
 
 
@@ -420,30 +313,7 @@ def selectionSortInPlace(xs: Array[String]): Unit = {
 }
 \end{Code} 
 
-\begin{Code}
-// kod till facit
-def selectionSortInPlace(xs: Array[String]): Unit = {
-  
-  def indexOfMin(startFrom: Int): Int = {
-    var minPos = startFrom
-    var i = startFrom + 1
-    while (i < xs.size) {
-      if (xs(i) < xs(minPos)) minPos = i
-      i += 1
-    }
-    minPos
-  }
-  
-  def swapIndex(i1: Int, i2: Int): Unit = {
-    val temp = xs(i1)
-    xs(i1) = xs(i2)
-    xs(i2) = temp
-  }
-  
-  for (i <- 0 to xs.size - 1) swapIndex(i, indexOfMin(i))
-}
 
-\end{Code}
 
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
