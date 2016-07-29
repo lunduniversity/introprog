@@ -51,14 +51,25 @@
     lazy val latexHeadings = 
       heading.map(h => s"\\textit{$h}").mkString(""," & "," \\\\ \\hline \\hline")
     
-    def latexBodyRow(row: RowMap) = 
-      heading.map(h => row(h).padTo(padWidth(h), ' ') ).mkString(""," & "," \\\\")
+    def latexBodyRowLastcolMulticolumnIfEmpty(row: RowMap) = {
+      def multicol(s: String) = s"\\multicolumn{2}{l}{$s}"
+      val rs = heading.map(row)
+      val rowStrings = if (!rs.endsWith(Seq(""))) rs else 
+          rs.dropRight(2) :+ multicol(rs.dropRight(1).lastOption.getOrElse(""))
+      rowStrings.mkString(""," & "," \\\\")
+    }
           
+    //def latexBodyRow(row: RowMap) = heading.map(row).mkString(""," & "," \\\\")
+
+    def latexTableBody: String = 
+      grid.map(latexBodyRowLastcolMulticolumnIfEmpty).mkString("\n")      
+      // grid.map(latexBodyRow).mkString("\n")
+    
+
     def toLatex: String = 
       s"""|\\begin{tabular}${Seq.fill(heading.size)("l").mkString("{","|","}")}
-          |${latexHeadings}
-          |${grid.map(latexBodyRow).mkString("\n")}
+          |$latexHeadings
+          |$latexTableBody
           |\\end{tabular}
           |""".stripMargin
-        
   }
