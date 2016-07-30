@@ -58,7 +58,8 @@
 
 \usepackage[linesnumbered,lined,boxed]{algorithm2e} % for writing pseudo-code
 
-\usepackage{longtable}\usepackage{array}
+\usepackage{array}
+\usepackage{longtable}
 \usepackage{booktabs}
 \usepackage{titlesec}
 \usepackage{titletoc}
@@ -77,6 +78,8 @@
 \hypersetup{colorlinks=true,linkcolor=, linkbordercolor=, urlbordercolor=mylinkcolor, urlcolor=mylinkcolor, pdfborderstyle={/S/U/W 1}}
 
 \usepackage{pdfpages} % To include quickref booklet in appendix
+
+\usepackage[labelfont=bf]{caption}  % to get bold faced table and figure captions
 
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning}
