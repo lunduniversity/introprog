@@ -13,8 +13,12 @@ object mio {  // some useful io utilities, load in REPL with :pa util/mio.scala
   def listFiles(dir: String): Vector[Path] = 
     Files.list(Paths.get(dir)).toArray.map(_.asInstanceOf[Path]).toVector
     
-  def ls = listFiles("").foreach(println)
-  def ls(dir: String) = listFiles(dir).foreach(println)
+  def ls: Unit = listFiles("").foreach(println)
+  def ls(dir: String): Unit = listFiles(dir).foreach(println)
+  
+  def currentDir: Path =  Paths.get("").toAbsolutePath
+  
+  def pwd: Unit = println(currentDir)
   
   def save(data: String, fileName: String): Unit = {
       println("Saving file: " + Paths.get(fileName))
