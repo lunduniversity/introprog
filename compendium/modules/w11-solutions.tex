@@ -93,12 +93,12 @@ Båda blir föränderliga motsvarigheter. Det visas genom att de till hör \code
 
 \begin{Code}
 object showInt {
-  def show(obj: Any, msg: String = "") = println(msg + obj)
+  def show(obj: Any, msg: String = ""): Unit = println(msg + obj)
 
   def repeatChar(ch: Char, n: Int): String = ch.toString * n
 
-  def showInt(i: Int) = {
-  import java.lang.Integer
+  def showInt(i: Int): Unit = {
+    import java.lang.Integer
     val leading = Integer.numberOfLeadingZeros(i)
     val binaryString = repeatChar('0', leading) + i.toBinaryString
     show(i,               "Heltal : ")
@@ -108,25 +108,19 @@ object showInt {
     show(i.toOctalString, "Oktal  : ")
   }
 
-  def loop {
-    import scala.io.StdIn.readLine
-    scala.util.Try {
-      val i = readLine("Heltal annars pang: ").toInt
-      showInt(i)
-      loop
-    }.recover{ case e: Exception =>
-      show(e)
-      show("PANG!")
-    }
-  }
 
-  def main(args: Array[String]): Unit = {
-    if(args.length == 0) {
-      loop
-    } else {
-      args.foreach(i => showInt(i.toInt))
+  import scala.io.StdIn.readLine
+  import scala.util.{Try,Success,Failure}
+
+  def loop: Unit =
+    Try { readLine("Heltal annars pang: ").toInt } match {
+      case Failure(e) => show(e); show("PANG!")
+      case Success(i) => showInt(i); loop
     }
-  }
+
+  def main(args: Array[String]): Unit =
+    if(args.length > 0) args.foreach(i => showInt(i.toInt))
+    else loop
 }
 \end{Code}
 
