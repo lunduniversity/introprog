@@ -1,8 +1,8 @@
 object courses {
   def download(year: String = "16_17"): Vector[Course]  = { 
-    val urlStart = "http://kurser.lth.se/lot/?lasar="
+    val urlStart = s"http://kurser.lth.se/lot/?lasar=$year"
     val urlSearch = "&soek_text=&sort=kod&val=kurs&soek=t"
-    val url = s"$urlStart$year$urlSearch"
+    val url = urlStart + urlSearch
     println("*** Downloading from: " + url)
     println("*** This may take a while...")
     val lines = scala.io.Source.fromURL(url).getLines.toVector  
