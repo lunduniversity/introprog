@@ -3,13 +3,82 @@
 
 \chapter{Dokumentation}
 
-\section{Vad gör ett dokumentationsverktyg?}
+Dokumentation hjälper andra att använda din kod, men underlättar även för dig själv när du vid ett senare tillfälle ska erinra dig hur den fungerar och hur du ska använda och bygga vidare på din kod. Modern systemutveckling baseras ofta på öppen källkod och färdiga api \Eng{application programming interface}, där kvaliteten på dokumentationen är avgörande för hur lätt det är att komma igång med att använda koden.
+
+Nedan listas exempel på olika typer av  dokumentation\footnote{\href{https://en.wikipedia.org/wiki/Software_documentation}{en.wikipedia.org/wiki/Software\_documentation}}:
+
+\begin{itemize}
+\item \textbf{Kravdokumentation} beskriver det övergripande målet med mjukvaran, samt funktionella krav och kvalitetskrav som uppfylls av systemet.
+\item \textbf{Designdokumentation} beskriver arkitekturen, hur koden är organiserad i moduler, och den interna systemstrukturen t.ex. i form av klasser, objekt och deras relation.
+\item \textbf{Slutanvändardokumentation} kan t.ex. vara manualer för användning av systemet och installationsanvisningar.
+\item \textbf{Teknisk dokumentation} kan t.ex. vara api-dokumentation som beskriver vilka funktioner som ingår i ett programbibliotek. Sådan dokumentation genereras ofta med hjälp av ett \textbf{dokumentationsverktyg}, som beskriv  i mer detalj i avsnitt \ref{appendix:buildtool}.  Annan teknisk dokumentation inkluderar instruktioner om hur man bygger koden med eventuellt tillhörande byggverktygskonfigurationsfiler; ofta byggförfarandet steg för steg i en textfil med namnet \code{README}. (Läs mer om byggverktyg i appendix \ref{appendix:build}.) 
+\end{itemize}
+
+\noindent Det är en stor utmaning att hålla dokumentationen uppdaterad allteftersom koden utvecklas. Även om man får hjälp att generera en navigerbar sajt av ett dokumentationsverktyg, måste själva \textit{innehållet} i de manuellt författade dokumentationskommentarerna vara i överensstämmelse med den aktuella versionen av koden. Uppdateras koden, måste man alltså vara noga med att uppdatera dokumentationskommentarerna, annars uppstår stor förvirring. 
+
+Detta problem är så pass allvarligt att man ska tänka sig noga för hur man kan formulera  dokumentationskommentarerna på ett framtidssäkert sätt, och hur omfattande de ska vara i förhållande till den framtida arbetsinsatsen med att hålla dem uppdaterade. Desto mer omfattande kommentarer desto mer jobb att hålla dem uppdaterade. 
+
+Det är i praktiken svårt att uppnå en optimal balans mellan bra och många kommentarer som \textit{hjälper} användaren, och å andra sidan svårunderhållna och föråldrade kommentarer som \textit{stjälper} användare.
+
+
+\section{Vad gör ett dokumentationsverktyg?}\label{appendix:buildtool}
+
+Ett dokumentationsverktyg genererar teknisk dokumentation av koden baserat på speciella \textbf{dokumentationskommentarer} som skrivs i koden omedelbart före deklarationer av det som ska dokumenteras. Dessa dokumentationskommentarer skrivs enligt en speciell syntax som dokumentationsverktyget kan tolka.
+
+Utdata från ett dokumentationsverktyg utgörs typiskt av en webbsajt med ändamålsenlig formatering och navigeringslänkar, se figur \ref{fig:appendix:doctool}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.8cm, scale=1.5]
+\node (input) [startstop] {\bf\sffamily Källkod};
+\node(inptext) [right of=input, text width=6cm, xshift=4.2cm]{med speciella dokumentationskommentarer före deklarationer};
+\node (compile) [process, below of=input] {\bf\sffamily Dokumentationsverktyg};
+%\node(explain) [right of=compile, text width=5cm, xshift=3.0cm]{Översätter från källkod till maskinkod};
+\node (output) [startstop, below of=compile] {\bf\sffamily Dokumentation};
+\node(outtext) [right of=output, text width=6cm, xshift=4.2cm]{t.ex. en webbsajt med dokumentation och navigationslänkar};
+\draw [arrow] (input) -- (compile);
+\draw [arrow] (compile) -- (output);
+\end{tikzpicture}
+    \caption{Ett dokumentationsverktyg läser koden och dokumentationskommentarer och genererar dokumentation, t.ex. i form av en webbsajt.}
+    \label{fig:appendix:doctool}
+\end{figure}
+
+
 
 \section{scaladoc}
+\newcommand{\scaladoc}{\texttt{scaladoc}}
+
+Med Scala-installationen följer dokumentationsverktyget \scaladoc, som genererar en webbsajt med ändamålsenlig layout och specialfunktioner för att navigera i dokumentationen. 
+
+Med omfattande och avancerade system, blir dokumentationen också omfattande och det krävs träning i att använda dokumentationssajter för att få maximal nytta av dem. I efterföljande avsnitt beskrivs först hur du använder dokumentation som är genererad med \scaladoc, sedan hur du själv kan generera sådan för din egen kod.
+
+
+\subsection{Använda dokumentation från scaladoc}
+
+Dokumentationen av Scalas standardbiliotek är genererad med \scaladoc~och att navigera i denna ger bra träning i hur man använder avancerad api-dokumentation. Du hittar dokumentationen för Scalas standardbibliotek här: \\
+\url{http://scala-lang.org/documentation/api.html}
+
+\subsection{Generera dokumentation med scaladoc}
+
+\scaladoc~läser kommentarer som börjar med \verb|/**| och slutar med \verb|*/| och associeras till efterföljande deklaration. Kör terminalkommandot \scaladoc~följt av vilken källkodsfil för vilken dokumentation:
+\begin{REPLnonum}
+$ scaladoc hello-person.scala
+\end{REPLnonum}
+
+I figur \ref{fig:scaladoc} visas kod med dokumentationskommentar och en del av den webbsajt som genereras.
+ 
+
+Du kan läsa mer om hur du skriver dokumentationskommentarer för \scaladoc~här: 
+\url{http://docs.scala-lang.org/style/scaladoc.html}
 
 % conversation of diffs between javadoc and scaladoc:
 %  https://groups.google.com/forum/#!msg/scala-user/q-Vw03zcIVs/CaTR5XL-BQAJ
 
-\url{http://docs.scala-lang.org/style/scaladoc.html}
 
 \section{javadoc}
+\newcommand{\javadoc}{\texttt{javadoc}}
+
+Med Java JDK följer dokumentationsverktyget \javadoc.
+
+Du kan läsa mer om hur man skriver \code{javadoc}-kommentarer här:\\
+\href{http://www.oracle.com/technetwork/java/javase/documentation/index-137868.html}{www.oracle.com/technetwork/java/javase/documentation/index-137868.html}
