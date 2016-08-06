@@ -1,12 +1,187 @@
 %!TEX encoding = UTF-8 Unicode
 %!TEX root = ../compendium.tex
 
-\chapter{Byggverktyg}
+\newcommand{\sbt}{\texttt{sbt} }
+
+\chapter{Byggverktyg}\label{appendix:build}
 
 \section{Vad gör ett byggverktyg?}
 
+Ett \textbf{byggverktyg} \Eng{build tool} används för att 
+\begin{itemize}
+\item ladda ner, 
+\item kompilera, 
+\item testköra, 
+\item paketera och 
+\item distribuera  
+\end{itemize}
+programvara. Ett stort utvecklingsprojekt kan innehålla många hundra kodfiler och under utvecklingens gång vill man kontinuerligt testköra systemet för att kontrollera att allt fortfarande fungerar; även den kod som inte ändrats, men som kanske ändå påverkas av ändringen. Ett byggverktyg används för att \textit{automatisera} denna process.
+
+Ett viktigt begrepp i byggsammanhang är \textbf{beroende} \Eng{dependency}. Om koden X behöver annan kod Y för att fungera, sägs kod X ha ett beroende till kod Y. 
+
+I konfigurationsfiler, som är skrivna i ett format som byggverktyget kan läsa, specificeras de beroenden som finns mellan olika koddelar. Byggverktyget analyserar dessa beroenden och, baserat på ändringstidsmarkeringar för kodfilerna, avgör byggverktyget vilken delmängd av kodfilerna som behöver \textbf{omkompileras} efter en ändring. Detta snabbar upp kompileringen avsevärt jämfört med en total omkompilering från grunden, som för ett stort projekt kan ta många minuter eller till och med timmar. Efter omkompilering av det som ändrats, kan byggverktyget instrueras att köra igenom testprogram och rapportera om testernas utfall, men även ladda upp körbara programpaket till t.ex. en webbserver.
+
+
+En vanlig typ av beroende är färdiga programbibliotek som utnyttjas av systemet under utveckling, vilket i praktiken ofta innebär att en sökväg till en den kompilerade koden för programbiblioteket behöver göras tillgänglig. I JVM-sammanhang innebär detta att sökvägen till alla nödvändiga jar-filer behöver finnas på sökvägslistan kallad \textbf{classpath}. 
+
+Många byggverktyg kan utföra så kallad \textbf{beroendeupplösning} \Eng{dependency resolution}, vilket innebär att nätverket av beroenden analyseras och rätt uppsättning programpaket görs tillgänglig under bygget. Detta kan även innebära att programpaket som är tillgängliga via nätet automatiskt laddas ned inför bygget, t.ex. via lagringsplatser för öppen källkod.   
+
+Även om man bara har ett litet kodprojekt med några få kodfiler, är det ändå smidigt att använda ett byggverktyg. Man kan nämligen göra så att byggverktyget är aktivt i bakgrunden och, så fort man sparar en ändring av koden, gör omkompilering och rapporterar eventuella kompileringsfel.
+
+Det är klokt att kompilera om ofta, helst vid varje liten ändring och rätta eventuella fel \textit{innan} nya ändringar görs, eftersom det är mycket lättare att klura ut ett enskilt problem efter en mindre ändring, än att åtgärda en massa svåra följdfel, som beror på en sekvens av omfattande ändringar, där misstaget begicks någon gång långt tidigare i ändringshistoriken. 
+
+En integrerad utvecklingsmiljö, så som Eclipse+ScalaIDE eller IntelliJ IDEA, bygger om koden kontinuerligt och kan ofta kommunicera med flera olika typer av byggverktyg för att i samklang med dessa automatisera byggprocessen.
+
+Det finns många olika byggverktyg. Några allmänt kända byggverktyg med öppen källkod listas nedan, tillsammans med namnen på deras konfigurationsfiler så att du ska känna igen vilket byggverktyg som används i  kodprojekt som du stöter på, t.ex. på GitHub.
+
+\begin{itemize}
+\item \sbt. Även kallad \textit{Scala Build Tool}. Användas för att bygga Java- och Scala-program i samexistens, men även för att automatisera en mängd andra saker. Byggverktyget är utvecklat i Scala och konfigurationsfilerna, som heter \texttt{build.sbt}, och innehåller Scala-kod som styr byggprocessen. 
+
+\item GNU \texttt{make}. Detta anrika byggverktyg har varit med ända sedan 1970-talet och används fortfarande för att bygga många Linux-system och är populärt vid utveckling med programspråken C och C++. Konfigurationsfilerna heter \texttt{Makefile} och har en egen besynnerlig syntax.
+
+\item Apache \texttt{ant}. Detta byggverktyg är utvecklat i Java som ett alternativ till \texttt{make} och används fortfarande i många Java-projekt, även om Maven och Gradle (se nedan) är vanligare numera. Konfigurationsfilerna heter \texttt{build.xml} och skrivs i språket XML enligt  speciella regler.
+
+\item Apache Maven, \texttt{mvn} är också skriven i Java och är en efterföljare till \texttt{ant}. Maven används av många Java-utvecklare. Konfigurationsfilerna heter \texttt{pom.xml} och skrivs i språket XML enligt  speciella regler.
+
+\item \texttt{gradle} bygger vidare på idéerna från \texttt{ant} och \texttt{maven} och är skrivet i Java och Groovy.  Konfigurationsfilerna skrivs i Groovy och heter \texttt{build.gradle}.  
+
+\end{itemize} 
+
 \section{Byggverktyget sbt}
+
+Byggverktyget \sbt är skrivet i Scala och är det mest populära byggverktyget bland Scala-utvecklare. Med \sbt kan du skriva byggkonfigurationsfiler i Scala och även styra byggprocessen via ett interaktivt kommandoskal i terminalfönstret. Med inkrementell (stegvis) kompilering och parallellkörning av byggprocessens olika delar, kan den snabbas upp avsevärt.    
+
 
 \subsection{Installera sbt}
 
+\sbt finns förinstallerat på LTH:s datorer och körs igång med kommandot \sbt i terminalen.
+
+Om du vill installera \sbt på din egen dator,
+säkerställ först att du har \code{java} på din dator med terminalkommandot \code{java -version}. Om \code{java} saknas, följ instruktionerna i avsnitt \ref{appendix:compile:install-jdk} på sidan \pageref{appendix:compile:install-jdk}. 
+Följ sedan instruktionerna här för att installera \sbt: \url{http://www.scala-sbt.org/download.html} 
+
+\begin{itemize}
+
+\item \textbf{Linux}. Om du surfar till ovan sida från en Linux-dator syns några terminalkommando som du använder för att installera \sbt i terminalen. 
+
+\item \textbf{Windows}. Om du surfar till ovan sida från en Windows-dator visas en länk till en \code{.msi}-fil. Ladda ner och dubbelklicka på den.
+
+\item \textbf{macOS}. Följ instruktionerna under rubriken \textit{Manual Installation}.
+
+\end{itemize}
+
+\noindent När du kör sbt första gången kommer ytterligare filer att laddas ner och installeras och delar av denna process kan ta lång tid. Ha tålamod och avbryt inte körningen, även om inget speciellt ser ut att hända på ett bra tag.
+
+\subsection{Anpassa sbt}
+För att följa de versioner av \sbt och Scala som vi använder i kursen, skapa med hjälp av editor en textfil med namnet \code{global.sbt} i katalogen \code{.sbt} som ligger i din hemkatalog efter att du installerat klart \sbt. Fråga vid behov någon om hjälp om hur man hittar dolda filer i ditt operativsystem, då filer som börjar med punkt ibland inte syns i filbläddraren. Filen ska ha följande innehåll:
+\begin{Code}
+scalaVersion := "2.11.8"
+
+sbtVersion := "0.13.12"
+\end{Code} 
+
+\noindent När du kör igång \sbt igen kommer ovan inställningar eventuellt medföra vissa nedladdningar, men när det är gjort har du rätt versioner tillgängliga och \sbt kommer att starta snabbt nästa gång.
+
+
 \subsection{Använda sbt}
+\sbt är konstruerat för att klara mycket stora projekt, men det är enkelt att använda \sbt också om du bara har ett litet projekt med någon enstaka kodfil. Med \sbt installerat, är det bara att skriva 
+\begin{REPLnonum}
+$ sbt run
+\end{REPLnonum} 
+i terminalen i det bibliotek där dina kodfiler ligger. \sbt letar då upp och kompilerar alla de \code{.scala}-filer som ligger i biblioteket och, om det bara finns ett objekt med main-metod, kör \sbt igång denna main-metod direkt, förutsatt att kompileringen kan avlutas utan fel. Även \code{.java}-filer kompileras automatiskt om de ligger i samma bibliotek.
+
+Om du enbart skriver \sbt körs det interaktiva kommandoskalet igång, där du kan köra kommando så som \code{compile} och \code{run}. Om du skriver ett \code{~} före kommandot \code{run}, enligt nedan kommer \sbt vara aktivt i bakgrunden medan du editerar och så fort du sparar en ändring kommer omkompilering av ändrade kodfiler ske, varefter main-metoden exekveras om kompileringen lyckades. 
+ 
+\begin{REPLnonum}
+$ sbt
+[info] Set current project to bjornr (in build file:/home/bjornr/)
+> ~run
+[info] Compiling 1 Scala source to /home/bjornr/target/scala-2.11/classes...
+[info] Running hello 
+Hello, World!
+[success] Total time: 1 s, completed Aug 4, 2016 10:05:17 PM
+1. Waiting for source changes... (press enter to interrupt)
+[info] Compiling 1 Scala source to /home/bjornr/target/scala-2.11/classes...
+[info] Running hello 
+Hello again, World!
+[success] Total time: 0 s, completed Aug 4, 2016 10:05:25 PM
+2. Waiting for source changes... (press enter to interrupt)
+
+\end{REPLnonum} 
+
+\noindent I ovan körning gör sbt en omkompilering, efter att en ändring av utskriftssträngen sparats.
+
+\begin{Code}
+// in file hello.scala
+
+object hello {
+  def main(args: Array[String]): Unit = {
+    println("Hello again, World!") // added 'again' then Ctrl+S 
+  }
+}
+\end{Code}
+
+
+\subsubsection{Katalogstruktur}
+
+Om man har kod i underkataloger förutsätter \sbt att du följer en viss, specifik katalogstruktur. Denna katalogstruktur används även av andra byggverktyg, så som Maven, och fungerar även i många utvecklingsmiljöer så som Eclipse och IntelliJ. 
+
+Det blir också mindre rörigt och lättare för alla att hitta i projektets baskatalog om dina kodfiler placeras i en given struktur som är allmänt accepterad.
+Placera därför gärna dina kodfiler i underkataloger enligt strukturen som visas i figur \ref{fig:sbt:dir-structure}. 
+
+\begin{figure}[H]
+\centering
+
+\begin{lstlisting}[frame=none, backgroundcolor=]
+					src/
+					  main/
+					    resources/
+					       <files to include in main jar here>
+					    scala/
+					       <main Scala sources>
+					    java/
+					       <main Java sources>
+					  test/
+					    resources
+					       <files to include in test jar here>
+					    scala/
+					       <test Scala sources>
+					    java/
+					       <test Java sources>
+\end{lstlisting}
+
+\caption{Katalogstrukturen i ett \sbt-projekt. Bara de kataloger som har något innehåll behöver finnas.}
+\label{fig:sbt:dir-structure}
+\end{figure}
+
+\noindent Lägg enligt denna struktur dina \code{.scala}-filer i underkatalogen \code{src/main/scala/} och dina \code{.java}-filer i underkatalogen \code{src/main/java/}. Om du lägger kod i biblioteken  \code{src/test/scala/} respektive \code{src/test/java/} kommer denna kod köras när du skriver \sbt-kommandot \code{test}. Om du lägger filer i underkatalogen \code{src/main/resources/} kommer dessa att paketeras med i jar-filen som skapas när du kör \sbt-kommandot \texttt{package}.
+
+Om du använder t.ex. \code{package x.y.z;} i din Java-kod, måste även strukturer på underkataloger matcha och kodfilen alltså ligga i  \code{src/main/java/x/y/z/}.
+
+I Scala är det egentligen inte nödvändigt att koden ligger i samma bibliotek som de kompilerade \code{.class}-filerna, men det är lika bra att följa paketstrukturen även för Scala-källkoden om du planerar att senare kan komma att köra din kod med Eclipse, som kräver denna överensstämmelse mellan paket och källkodskataloger för att kunna köra din kod.
+
+
+\subsubsection{Konfigurera dina byggen i filen \code{build.sbt}}
+
+Om du vill göra inställningar och även hjälpa andra att kunna återskapa dina byggen, så skapa en konfigurationsfil med namnet \code{build.sbt} och placera den i projektets baskatalog. Figur \ref{fig:sbt:build-file} visar en enkel byggkonfigurationsfil. Där väljer du namn på ditt projekt, sätter ett versionsnummer på ditt bygge, samt specificerar vilken version av Scala-kompilatorn du använder. Det senare är viktigt för att andra ska kunna bygga din kod under samma förutsättningar som du. 
+
+\begin{figure}[H]
+\centering
+\begin{Code}
+lazy val root = (project in file(".")).
+  settings(
+    name := "hello",
+    version := "1.0",
+    scalaVersion := "2.11.8"
+  )
+\end{Code}
+\caption{En enkel konfigurationsfil för \sbt som innehåller det som kallas en \textit{build definition} i \texttt{sbt}-termer. Filen ska ha namnet \code{build.sbt} och vara placerad i projektets baskatalog.}
+\label{fig:sbt:build-file}
+\end{figure}
+
+\noindent Du kan läsa mer om alla möjligheter med \sbt och hur man skapar mer avancerade byggkonfigurationsfiler här: \\
+\url{http://www.scala-sbt.org/0.13/docs/}
+
+Du hittar ett exempel på en avancerad byggdefinition i kursens repo, som har många aggregerade underprojekt, bl.a. för att bygga detta kompedium med \code{pdflatex}. I byggdefinitionen instrueras även \sbt att bygga kursens workspace, samt att generera de speciell projektfiler som Eclipse+ScalaIDE kräver med en \sbt-plugin. Filen finns här: \\
+\url{https://github.com/lunduniversity/introprog/blob/master/build.sbt}
+
