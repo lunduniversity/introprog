@@ -37,9 +37,8 @@ object mio {
   def pwd: Unit = println(currentDir)
 
   def save(data: String, 
-           fileName: String = "untitled.txt", 
-           isPrinting: Boolean = true): Unit = {
-      if (isPrinting) println("Saving file: " + Paths.get(fileName))
+           fileName: String = "untitled.txt"): Unit = {
+      println("Saving to file: " + Paths.get(fileName).toAbsolutePath)
       Files.write(Paths.get(fileName), data.getBytes(UTF_8))
   }
   
