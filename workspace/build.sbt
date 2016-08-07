@@ -27,14 +27,14 @@ lazy val w04_pirates =(project in file("w04_pirates")).
   settings(commonSettings: _*).
   settings(
     name := "w04_pirates"
-  ).dependsOn(cslib)  
+  )  
 
   
 lazy val w05_shuffle =(project in file("w05_shuffle")).
   settings(commonSettings: _*).
   settings(
     name := "w05_shuffle"
-  ).dependsOn(cslib)  
+  )  
   
   
 lazy val w06_turtlegraphics =(project in file("w06_turtlegraphics")).
@@ -74,7 +74,7 @@ lazy val w11_lthopoly_team =(project in file("w11_lthopoly_team")).
   settings(commonSettings: _*).
   settings(
     name := "w11_lthopoly_team"
-  ).dependsOn(cslib)  
+  )  
   
   
 lazy val w12_life =(project in file("w12_life")).
