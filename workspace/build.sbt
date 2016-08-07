@@ -12,15 +12,16 @@ lazy val commonSettings = Seq(
 lazy val cslib = (project in file("cslib")).
   settings(commonSettings: _*).
   settings(
-    name := "cslib"
+    name := "cslib",
+    javacOptions in (Compile,doc) ++= Seq("-encoding", "UTF-8", "-charset", "UTF-8", "-docencoding", "UTF-8")
   )
 
   
 lazy val w03_blockmole =(project in file("w03_blockmole")).
   settings(commonSettings: _*).
   settings(
-    name := "w03_blockmole",
-    EclipseKeys.skipProject := true    
+    name := "w03_blockmole"/*,
+    EclipseKeys.skipProject := true*/    
   ).dependsOn(cslib)
   
 lazy val w04_pirates =(project in file("w04_pirates")).
@@ -105,10 +106,10 @@ lazy val w13_tictactoe_proj =(project in file("w13_tictactoe_proj")).
 lazy val workspace = (project in file(".")). 
   settings(commonSettings: _*).
   settings(
-    name := "workspace" ,
+    name := "workspace" /*,
     EclipseKeys.withSource := true,
     EclipseKeys.skipProject := true,
-    EclipseKeys.skipParents in ThisBuild := true  
+    EclipseKeys.skipParents in ThisBuild := true  */
     // https://github.com/typesafehub/sbteclipse/wiki/Using-sbteclipse
  )
 
