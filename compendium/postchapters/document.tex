@@ -48,7 +48,7 @@ Utdata från ett dokumentationsverktyg utgörs typiskt av en webbsajt med ändam
 \section{scaladoc}
 \newcommand{\scaladoc}{\texttt{scaladoc}}
 
-Med Scala-installationen följer dokumentationsverktyget \scaladoc, som genererar en webbsajt med ändamålsenlig layout och specialfunktioner för att söka och navigera i dokumentationen. 
+Med Scala-installationen följer dokumentationsverktyget \scaladoc, som genererar en webbsajt med ändamålsenlig layout och specialfunktioner för att söka, filtrera och navigera i dokumentationen. 
 
 Dokumentationen av stora bibliotek kan bli omfattande och det krävs träning i att använda dokumentationssajter för att få maximal nytta av dem. I efterföljande avsnitt beskrivs först hur du använder dokumentation som är genererad med \scaladoc. Därefter visas hur du själv kan generera dokumentation för din egen kod.
 
@@ -115,7 +115,7 @@ Verktyget \scaladoc~läser kommentarer som börjar med \verb|/**| och slutar med
 \end{Code}
 Dokumentationskommentaren slutar med \code|*/| rakt under asterisk-kolumnen.
 
-I figur \ref{fig:scaladoc:mio} på sidan \pageref{fig:scaladoc:mio} visas exempel på dokumentationskommentarer. Annoteringen \code{@param} i början på en rad ger en speciell kommentar angående parametrar. Annoteringen \code{@return} i början av en rad ger en speciell kommentar angående vad som returneras vid metodanrop.
+I figur \ref{fig:scaladoc:mio} på sidan \pageref{fig:scaladoc:mio} visas exempel på dokumentationskommentarer. Annoteringen \verb|@param| i början på en rad ger en speciell kommentar angående parametrar. Annoteringen \verb|@return| i början av en rad ger en speciell kommentar angående vad som returneras vid metodanrop.
 
 
 \subsection{Generera dokumentation med scaladoc}
@@ -184,12 +184,79 @@ inkluderande bland annat:
 \section{javadoc}
 \newcommand{\javadoc}{\texttt{javadoc}}
 
-Med Java JDK följer dokumentationsverktyget \javadoc.
 
-\TODO \\
+Med Java JDK följer dokumentationsverktyget \javadoc, som utifrån dokumentationskommentarer i Java-kod genererar en webbsajt med navigationslänkar. Webbsidor genererade med \javadoc~erbjuder inte samma funktioner för sökning och filtrering som \scaladoc, men det fungerar bra hitta det man söker om navigationslänkarna används tillsammans med webbläsarens inbyggda sökfunktion (Ctrlf+F).
+
+\subsection{Använda dokumentation genererad med javadoc}
+
+I figur \ref{fig:javadoc:overview} visas exempel på \javadoc~för biblioteket \code{cslib}. Om du klickar på ett paket kan du navigera till en översikt av innehållet i paketet. Om du klickar på en klass får du en översikt av klassens medlemmar, så som visas i \ref{fig:javadoc:class}.  Om du t.ex. klickar på ett metodnamn får du se mer detaljerade kommentarer. 
+
+Ramarna till vänster på webbsidorna innehåller länkar till paket och klasser. Om du klickar på länken \textit{All Classes} överst till vänster för du en lista med navigationslänkar till alla tillgängliga klasser.De gulmarkerade rubrikerna visar vilken vy som är aktiv och navigationslänkar skrivs med blå text.
+
+\begin{figure}
+\includegraphics[width=1.0\textwidth]{../img/javadoc/javadoc-overview}
+    \caption{Delar av en webbsida genererad med hjälp av \javadoc.}
+    \label{fig:javadoc:overview}
+\end{figure}
+
+
+
+\begin{figure}
+\includegraphics[width=1.0\textwidth]{../img/javadoc/javadoc-class}
+    \caption{Delar av en webbsida med klassdokumentation genererad med hjälp av \javadoc.}
+    \label{fig:javadoc:class}
+\end{figure}
+
+
+
+
+
+
+\subsection{Skriva dokumentationskommentarer för javadoc}
+
+Kommentarer för \javadoc~och \scaladoc~ser ganska lika ut, även om det finns några skillnader. Det finns t.ex. inte lika många styrtecken för layouten i \javadoc~som i \scaladoc, och konventionen i Java är fyra blankstegs indrag och att fortsättningsrader i dokumentationskommentarer börjar asterisken under \textit{första} asterisken i öppningskommentaren. 
+
+Nedan visas delar av \javadoc-kommentarerna för klassen \code{SimpleWindow} och dess konstruktor:
+\begin{Code}[language=Java]
+package cslib.window;
+ 
+/** A simple window to draw in */
+public class SimpleWindow {
+   /**
+    * Creates a window and makes it visible.
+    * 
+    * @param width   the width of the window
+    * @param height  the height of the window
+    * @param title   the title of the window
+    */
+    public SimpleWindow(int width, int height, String title) {
+        ...
+\end{Code}
+Annoteringen \verb|@param| i början på en rad ger en speciell kommentar angående en parameter. Vid dokumentation av metoder kan annoteringen \verb|@return| användas i början av en rad för att skapa en speciell kommentar angående vad som returneras.
+
+Övergripande dokumentation om innehållet i ett paket läggs i en textfil i paketets katalog med namnet \texttt{package-info.java}, se till exempel här: \\ {\href{https://github.com/lunduniversity/introprog/tree/master/workspace/cslib/src/main/java/cslib/window}{\small github.com/lunduniversity/introprog/tree/master/workspace/cslib/src/main/java/cslib/window}
+
 
 Du kan läsa mer om hur man skriver \code{javadoc}-kommentarer här:\\
 \href{http://www.oracle.com/technetwork/java/javase/documentation/index-137868.html}{www.oracle.com/technetwork/java/javase/documentation/index-137868.html}
 
 % conversation of diffs between javadoc and scaladoc:
 %  https://groups.google.com/forum/#!msg/scala-user/q-Vw03zcIVs/CaTR5XL-BQAJ
+
+\subsection{Generera dokumentationskommentarer för javadoc}
+
+Om du står i den katalog där din källkod finns, kan du med nedan kommando i terminalen gå igenom alla paket och underpaket och generera \javadoc-webbsidor i katalogen \texttt{doc}. Du kan därefter öppna dokumentationen i en webbläsare.
+\begin{REPLnonum}[basicstyle=\color{white}\ttfamily\fontsize{9}{11}\selectfont]
+$ javadoc -d doc -encoding UTF-8 -charset UTF-8 -sourcepath . -subpackages . *
+$ firefox doc/index.html
+\end{REPLnonum}
+Ett smidigt sätt att generera både \scaladoc~och \javadoc~ är att använda \texttt{sbt}. 
+Om du lägger in nedan i \code{settings} i din \code{build.sbt} är det bara att skriva \code{sbt doc} i terminalen.
+\begin{Code}
+  javacOptions in (Compile, doc) ++= Seq(
+    "-encoding", "UTF-8", 
+    "-charset", "UTF-8", 
+    "-docencoding", "UTF-8")
+\end{Code}  
+
+\noindent Du kan också använda din IDE för att köra \javadoc. I Eclipse, använd menyn \MenuArrow{Project}\Menu{Generate Javadoc...}, medan du i IntelliJ hittar motsvarande i menyn \MenuArrow{Tools}\Menu{Generate Javadoc...}
