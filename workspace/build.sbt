@@ -13,7 +13,8 @@ lazy val cslib = (project in file("cslib")).
   settings(commonSettings: _*).
   settings(
     name := "cslib",
-    javacOptions in (Compile,doc) ++= Seq("-encoding", "UTF-8", "-charset", "UTF-8", "-docencoding", "UTF-8")
+    javacOptions in (Compile,doc) ++= Seq(
+      "-encoding", "UTF-8", "-charset", "UTF-8", "-docencoding", "UTF-8")
   )
 
   
