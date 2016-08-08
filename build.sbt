@@ -19,14 +19,15 @@ lazy val commonSettings = Seq(
 lazy val plan = (project in file("plan")).
   settings(commonSettings: _*).
   settings(
-    name := "plan"
+    name := "plan",
+    EclipseKeys.skipProject := true
   ) 
 
 lazy val workspace = (project in file("workspace")).
   settings(commonSettings: _*).
   settings(
-    name := "workspace" /*,
-    EclipseKeys.withSource := true */
+    name := "workspace",
+    EclipseKeys.withSource := true
   )
 
 lazy val build = taskKey[Unit]("plan/run before pdf")
