@@ -12,13 +12,16 @@ import java.util.concurrent.*;
  * 
  * @author Per Holm (and several others in earlier versions)
  * @version 2.2 (2015-08-09) Add Sprite support (Maj Stenmark, Björn Regnell)
- * @version 2.3 (2016-05-09) Add setExitOnLastClose 
+ * @version 2.3 (2016-05-09) Add setExitOnLastClose (Björn Regnell)
+ * @version 2.4 (2016-07-09) Add waitForEvent(int timeoutMillis) (Björn Regnell, Gustav Cedersjö, Patrik Persson)
  */
 public class SimpleWindow {
 	public final static int MOUSE_EVENT = 1; // mouse click event type
 	public final static int KEY_EVENT = 2; // key pressed event type
 	public final static int CLOSE_EVENT = 3; // window closed event type
-
+	public final static int TIMEOUT_EVENT = 4; // waitForEvent timeout event type
+	public final static int TIMEOUT_FOREVER = -1; // wait forever for new event
+	
 	private static int nbrOpenFrames = 0; // number of open frames
 	private static boolean isExitOnLastClose = true; // controls exit window behavior
 	
@@ -266,58 +269,58 @@ public class SimpleWindow {
 	/*-------- Event handling --------*/
 
 	/**
-	 * Waits for event (mouse click or key press).
+	 * Waits forever for event (mouse click or key press).
 	 */
 	public void waitForEvent() {
-		canvas.setFocusable(true);
-		canvas.requestFocus();
-
-		try {
-			lastEvent = eventQueue.take();
-		} catch (InterruptedException e) {
-			System.err.println("Internal SimpleWindowError: " + e);
-		}
-
-		if (lastEvent.getID() == KeyEvent.KEY_TYPED) {
-			eventType = KEY_EVENT;
-			key = ((KeyEvent) lastEvent).getKeyChar();
-		} else if (lastEvent.getID() == MouseEvent.MOUSE_PRESSED) {
-			eventType = MOUSE_EVENT;
-			MouseEvent mEvent = (MouseEvent) lastEvent;
-			mouseX = mEvent.getX();
-			mouseY = mEvent.getY();
-		} else if (lastEvent.getID() == WindowEvent.WINDOW_CLOSED ||
-				lastEvent.getID() == WindowEvent.WINDOW_CLOSING) {
-			eventType = CLOSE_EVENT;
-		} else {
-			System.err.println("Internal SimpleWindowError: "
-					+ " unknown event type, " + lastEvent.getID());
-		}
+	    waitForEvent(TIMEOUT_FOREVER);
 	}
 	
-	public boolean isEventAvailable() {
+	/**
+	 * Waits for event (mouse click or key press) or timeout.
+	 * @param timeoutMillis
+	 *            maximum waiting duration in milliseconds, 
+	 *            if timeoutMillis == TIMEOUT_FOREVER then block until event
+	 *            if timeoutMillis == 0 then return immediately
+	 *            if event queue is empty then a TIMEOUT_EVENT is generated
+	 */
+	public void waitForEvent(int timeoutMillis) {
 		canvas.setFocusable(true);
 		canvas.requestFocus();
-		lastEvent = eventQueue.poll();
+		
+		if (timeoutMillis == TIMEOUT_FOREVER || timeoutMillis < 0) {
+		    try {
+			      lastEvent = eventQueue.take();  // block until event 
+		    } catch (InterruptedException e) {
+			      System.err.println("SimpleWindow take interrupted: " + e);
+		    }
+		} else if (timeoutMillis == 0) {
+        lastEvent = eventQueue.poll();  // returns immediately if no event
+    } else {
+		    try {
+		        lastEvent = eventQueue.poll(timeoutMillis, TimeUnit.MICROSECONDS);
+		    } catch (InterruptedException e) {
+			      System.err.println("SimpleWindow poll interrupted: " + e);
+		    }
+    }		
+    
 		if (lastEvent == null){
-			return false;
+			  eventType = TIMEOUT_EVENT;
 		} else {
 			if (lastEvent.getID() == KeyEvent.KEY_TYPED) {
-				eventType = KEY_EVENT;
-				key = ((KeyEvent) lastEvent).getKeyChar();
+				  eventType = KEY_EVENT;
+				  key = ((KeyEvent) lastEvent).getKeyChar();
 			} else if (lastEvent.getID() == MouseEvent.MOUSE_PRESSED) {
-				eventType = MOUSE_EVENT;
-				MouseEvent mEvent = (MouseEvent) lastEvent;
-				mouseX = mEvent.getX();
-				mouseY = mEvent.getY();
+				  eventType = MOUSE_EVENT;
+				  MouseEvent mEvent = (MouseEvent) lastEvent;
+				  mouseX = mEvent.getX();
+				  mouseY = mEvent.getY();
 			} else if (lastEvent.getID() == WindowEvent.WINDOW_CLOSED ||
 					lastEvent.getID() == WindowEvent.WINDOW_CLOSING) {
-				eventType = CLOSE_EVENT;
+				  eventType = CLOSE_EVENT;
 			} else {
-				System.err.println("Internal SimpleWindowError: "
+				  System.err.println("Internal SimpleWindowError: "
 						+ " unknown event type, " + lastEvent.getID());
 			}
-			return true;
 		}
 	}
 
