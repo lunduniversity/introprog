@@ -1,5 +1,5 @@
 /**
- * Bildbehandling (ImageFilter och ImageGUI).
+ * Bildbehandling.
  */
 
 package cslib.images;

@@ -25,15 +25,15 @@ trait Plan {
       
     Module("Kodstrukturer", 
       id = "codestruct", exercise = "programs", lab = "", contents = """
-      | Range, Array, Vector, iterering, for-uttryck, map, foreach, 
+      | iterering, for-uttryck, map, foreach, Range, Array, Vector, 
       | algoritm vs implementation, pseudokod, 
-      | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX,  
+      | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX, algoritm: MININDEX,
       | block, namnsynlighet, namnöverskuggning, lokala variabler,
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK, 
       | main i Java vs Scala, java.lang.System.out.println,
       """.stripTrim),
       
-    Module("Funktioner, Objekt", 
+    Module("Funktioner, objekt", 
       id = "funobj", exercise = "functions", lab = "blockmole", contents = """
       | definera funktion, anropa funktion,
       | parameter, returtyp, värdeandrop, namnanrop, default-argument, namngivna argument,
@@ -53,6 +53,7 @@ trait Plan {
       | attribut (fält), medlem, metod, 
       | tupel, klass, Any, isInstanceOf, toString, 
       | case-klass, räkna med bråk och klassen Frac,
+      | samling, scala.collection, 
       | föränderlighet vs oföränderlighet, 
       | List, Vector, Set, Map, 
       | typparameter, generisk samling som parameter,
@@ -61,7 +62,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Sekvensalgoritmer", 
-      id = "seqalg", exercise = "sequences", lab = "cards", contents = """
+      id = "seqalg", exercise = "sequences", lab = "shuffle", contents = """
       | sekvensalgoritm,  algoritm: SEQ-COPY,   
       | in-place vs copy, algoritm: SEQ-REVERSE, algoritm: SEQ-REGISTER,
       | sekvenser i Java vs Scala, for-sats i Java,
@@ -96,7 +97,7 @@ trait Plan {
 
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
-    Module("Mönster, Undantag", 
+    Module("Mönster, undantag", 
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
       | mönstermatchning, match, Option, try, catch, finally ???, Try, unapply, sealed, 
       | switch-sats i Java,
@@ -105,26 +106,29 @@ trait Plan {
       | implementera equals med arv för Shape ???,  
       """.stripTrim),
 
-    Module("Matriser, Typparametrar", 
+    Module("Matriser, typparametrar", 
       id = "matrix", exercise = "matrices", lab = "maze", contents = """
       | matris, nästlade for-satser, designexempel: Tre-i-rad, 
       | generisk funktion, generisk klass,  
       | matriser i Java vs Scala, 
       """.stripTrim),
 
-    Module("Sökning, Sortering", 
+    Module("Sökning, sortering", 
       id = "searchsort", exercise = "sorting", lab = "surveydata", contents = """
-      | compareTo på strängar, trait Ordered[T], 
+      | strängjämförelse, compareTo, imlicit ordning, 
+      | linjärsökning, binärsökning, 
       | algoritm: LINEAR-SEARCH, algortim: BINARY-SEARCH, 
       | algoritmisk komplexitet, 
       | sortering till ny vektor, sortering på plats, 
+      | insättningssortering, urvalssortering, 
       | algoritm: INSERTION-SORT, algoritm: SELECTION-SORT,
+      | Ordering[T], Ordered[T], Comparator[T], Comparable[T],
       """.stripTrim),  
       //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
     Module("Scala och Java", 
       id = "scalajava", exercise = "scalajava", lab = "lthopoly-team", contents = """
-      | skillnader mellan Scala och Java, 
+      | översikt av syntaxskillnader mellan Scala och Java, 
       | klasser i Scala vs Java, 
       | referensvariabler vs enkla värden i Java,
       | referenstilldelning vs värdetilldelning i Java,
@@ -139,8 +143,9 @@ trait Plan {
       | mer om filer ???, serialisering ???,
       """.stripTrim),
 
-    Module("Trådar",  
+    Module("Webb, trådar",  
       id = "threads", exercise = "threads", lab = "life", contents = """
+      | översikt webbprogrammering, kort om html+css+javascript+scala.js,
       | tråd, jämlöpande exekvering,  
       | icke-blockerande anrop, callback,
       | java.lang.Thread, 
@@ -148,17 +153,15 @@ trait Plan {
       | scala.concurrent.Future, 
       """.stripTrim),
 
-    Module("Design", 
+    Module("Design, api", 
       id = "design", exercise = "design", lab = "", contents = """
       | designexempel,
       | the expression problem,
       | utvecklingsprocessen, krav-design-implementation-test,
-      | översiktligt om trait som gränssnitt, 
+      | översiktligt om trait som gränssnitt, programmeringsgränssnitt (api)
       """.stripTrim),
 
-    Module("Tentaträning", 
-      id = "exam", exercise = "", lab = "", contents = """
-      """.stripTrim),
+    Module("Tentaträning", id = "exam", exercise = "", lab = "", contents = ""),
 
     Module(name = "TENTAMEN", id = "", exercise = "", lab = "", contents = "")
   )
