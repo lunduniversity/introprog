@@ -60,11 +60,11 @@ lazy val w09_maze =(project in file("w09_maze")).
     name := "w09_maze"
   ).dependsOn(cslib)  
   
-lazy val w10_surveydata_team =(project in file("w10_surveydata_team")).
+lazy val w10_survey =(project in file("w10_survey")).
   settings(commonSettings: _*).
   settings(
-    name := "w10_surveydata_team"
-  ).dependsOn(cslib)  
+    name := "w10_survey"
+  )  
 
 lazy val w11_lthopoly_team =(project in file("w11_lthopoly_team")).
   settings(commonSettings: _*).
