@@ -44,7 +44,7 @@
 
 \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/Match.scala}
 
-\Subtask Vad blir det för felmeddelande om du tar bort case-grenen för defaultvärden och indata väljs så att inga case-grenar matchar? Är det ett körtidsfel eller ett kompileringsfel?
+\Subtask Vad blir det för felmeddelande om du tar bort case-grenen för defaultvärden och indata väljs så att inga case-grenar matchar? Är det ett exekveringsfel eller ett kompileringsfel?
 
 
 \Subtask\Pen Beskriv några skillnader i syntax och semantik mellan Javas flervalssats \jcode{switch} och Scalas flervalsuttryck \code{match}.
@@ -97,7 +97,7 @@ Vi ska i senare uppgifter undersöka hur typerna \code{Option} och \code{Some} f
 \item Ändra i huvudprogrammet i enlighet med ovan ändringar så att \code{ärÄtvärd} anropas som en metod på de skördade grönsaksobjekten när de ätvärda ska filtreras ut.
 \end{itemize} 
 
-\Subtask Lägg till en ny grönsak \code{case class Broccoli} och definiera dess ätbarhet. Ändra i slump-funktionerna så att broccoli blir ännu ovanligare än gurka.
+\Subtask Lägg till en ny grönsak \code{case class Broccoli} och definiera dess ätbarhet. Ändra i slump-funktionerna så att broccoli blir ovanligare än gurka.
 
 \Subtask\Pen Jämför lösningen med \code{match} i uppgift \ref{task:match-caseclass} och lösningen ovan med polymorfism. Vilka är för- och nackdelarna med respektive lösning. Diskutera två olika situationer på ett hypotetiskt företag som utvecklar mjukvara för jordbrukssektorn: 1) att uppsättningen grönsaker inte ändras särskilt ofta medan definitionerna av ätbarhet ändras väldigt ofta och 2) att uppsättningen grönsaker ändras väldigt ofta men att ätbarhetsdefinitionerna inte ändras särskilt ofta.
 
@@ -189,7 +189,9 @@ scala> def ökaOmFinns(opt: Option[Int]): Option[Int] = opt match {
          case Some(i) => Some(i + 1)
          case None    => None
        }
-scala> kanske.map(öka)       
+scala> val annanKanske = ökaOmFinns(kanske)
+scala> def öka(i: Int) = i + 1       
+scala> val merKanske = kanske.map(öka)       
 \end{REPL}
 
 \Subtask Mönstermatchingen ovan är minst lika knölig som en \code{if}-sats, men tack vare att en \code{Option} är en slags (liten) samling finns det smidigare sätt. Förklara vad som händer nedan.
@@ -228,10 +230,6 @@ e.find(_ > 42).foreach(_ => println("HITTAT!"))
 \Subtask\Pen Vilka är fördelerna med \code{Option} jämfört med \code{null} eller \code{-1} om man i sin kod glömmer hantera saknade värden?
 \\ \TODO  {\color{red}{Till facit:}} något i stil med: kompileringsfel vs körtidsfel + dokumentation av returvärden i funktioner direkt i kod istf i kommentarer. Förklara att det är mer typsäkert jmf m null och förklara vad ''typsäkert'' innebär.
 
-\Subtask\Pen Studera dokumentationen för \code{Option} här och se om du känner igen några av metoderna som också finns på samlingen \code{Vector}:\\ \href{http://www.scala-lang.org/api/current/index.html#scala.Option}{www.scala-lang.org/api/current/index.html\#scala.Option} 
-\\Förklara hur metoden \code{contains} på en \code{Option} fungerar med hjälp av dokumentationens exempel.
-
-
 
 \Task \emph{Kasta undantag.} Om man vill signalera att ett fel eller en onormal situtation uppstått så kan man \textbf{kasta} \Eng{throw} ett \textbf{undantag} \Eng{exception}. Då avbryts programmet direkt med ett felmeddelande, om man inte väljer att \textbf{fånga} \Eng{catch} undantaget. 
 
@@ -268,7 +266,7 @@ $ java TryCatch
 
 
 
-\Task \emph{Fånga undantantag i Scala med \code{scala.util.Try}.} I paketet \code{scala.util} finns typen \code{Try} med stort T som är som en slags samling som kan innehålla antingen ett ''lyckat'' eller ''misslyckat'' värde. Om beräkningen av värdet lyckades och inga undantag kastas blir värdet wrappat i en \code{Success}, annars blir undantaget wrappat i en \code{Failure}. Man kan extrahera värdet, respektive undantaget, med mönstermatchning, men det är oftast smidigare att använda samlingsmetoderna \code{map} och \code{foreach}, i likhet med hur \code{Option} används. Det finns även en smidig metod \code{recover} på objekt av typen \code{Try} där man kan skicka med kod som körs om det uppstår en undantagssituation. 
+\Task \emph{Fånga undantantag i Scala med \code{scala.util.Try}.} I paketet \code{scala.util} finns typen \code{Try} med stort T som är som en slags samling som kan innehålla antingen ett ''lyckat'' eller ''misslyckat'' värde. Om beräkningen av värdet lyckades och inga undantag kastas blir värdet inkapslat i en \code{Success}, annars blir undantaget inkapslat i en \code{Failure}. Man kan extrahera värdet, respektive undantaget, med mönstermatchning, men det är oftast smidigare att använda samlingsmetoderna \code{map} och \code{foreach}, i likhet med hur \code{Option} används. Det finns även en smidig metod \code{recover} på objekt av typen \code{Try} där man kan skicka med kod som körs om det uppstår en undantagssituation. 
 
 \Subtask Förklara vad som händer nedan.
 \begin{REPL}
@@ -305,12 +303,6 @@ scala> xs.map(_.toOption).flatten.size
 \Subtask Vad har funktionen \code{pang} för returtyp?
 
 \Subtask\Pen Varför får funktionen \code{kanskePang} den härledda returtypen \code{String}?
-
-\Task \TODO \emph{flatten och flatMap med Option och Try} Ska detta kanske hellre vara fördjupning???
-
-
-\Task \TODO \emph{partiella funktioner och metoderna collect och collectFirst på samlingar} Ska detta kanske hellre vara fördjupning???
-
 
 \Task \emph{Metoden \code{equals}.}  Om man överskuggar den befintliga metoden \code{equals} så kommer metoden \code{==} att fungera annorlunda. Man kan då själv åstadkomma innehållslikhet i stället för referenslikhet. Vi börjar att studera den befintliga equals med referenslikhet.
 
@@ -370,11 +362,20 @@ case object Complex {
 }
 \end{Code}
 
-\Task \TODO \emph{Implementera en egen, typsäker innehållstest med metoden \code{===}.} Ska detta vara med ???
-
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
+\Task\Pen Studera dokumentationen för \code{Option} här och se om du känner igen några av metoderna som också finns på samlingen \code{Vector}:\\ \href{http://www.scala-lang.org/api/current/index.html#scala.Option}{www.scala-lang.org/api/current/index.html\#scala.Option} 
+\\Förklara hur metoden \code{contains} på en \code{Option} fungerar med hjälp av dokumentationens exempel.
+
 \Task Gör motsvarande program i Scala som visas i uppgift \ref{task:javatry}, men utnyttja att Scalas \code{try}-\code{catch} är ett uttryck. Kompilera och kör och testa så att de ur användarens synvinkel fungerar precis på samma sätt. Notera de viktigaste skillnaderna mellan de båda programmen.
+
+
+\Task \TODO \emph{flatten och flatMap med Option och Try} Ska detta kanske hellre vara fördjupning???
+
+
+\Task \TODO \emph{partiella funktioner och metoderna collect och collectFirst på samlingar} Ska detta kanske hellre vara fördjupning???
+
+
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
@@ -382,7 +383,9 @@ case object Complex {
 
 \Task \TODO \label{task:extractor} Skapa din egen extraktor med metoden \code{unapply}.
 
-\Task \TODO Överskugga equals vid arv för Comlex och Rational nedan??? Ska detta vara fördjupning???     
+\Task \TODO \emph{Implementera en egen, typsäker innehållstest med metoden \code{===}.} Ska detta vara med ???
+
+\Task \TODO Överskugga equals vid arv för Comlpex och Rational nedan??? Ska detta vara fördjupning eller är det för krångligt???     
 
 \begin{Code}
 trait Number {
