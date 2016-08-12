@@ -117,6 +117,12 @@
 \newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter}}
 \newcommand{\TaskSection}[1]{\subsubsection*{#1}}
 
+\newcommand\Menu[1]{\textit{#1}}
+\newcommand\MenuArrow[1]{\Menu{#1}~$\rightarrow$~}
+\newcommand\FramedCheckmark[1]{~\frame{\checkmark}~~\textbf{#1}}
+\newcommand\FramedUnchecked[1]{$\Box$~\textbf{#1}}
+\newcommand\Button[1]{\fbox{\textbf{#1}}}
+
 \newcounter{TaskCounter}[section]
 \newcommand{\Task}{%
 \refstepcounter{TaskCounter}% 
