@@ -5,9 +5,7 @@ object SaveCrew {
   	  // change this code to your tests!
   	  
 			val filename = if(!argh.isEmpty) argh(0) else "crew.txt"
-			saveCrew(filename)
-			
-			
+		
 	}
   	
   	def saveCrew(fileName:String): Unit = ??? // add code for asking the user for crew members and save them to file
@@ -27,7 +25,7 @@ object Utils{
 	}		
 	def readWords(fileName: String): Vector[String] = {
 			scala.io.Source.fromFile(fileName).getLines.
-			map(_.replaceAll("[^a-zA-ZåäöÅÄÖ\\s]", " ")).
+			map(_.replaceAll("[^a-zA-ZåäöÅÄÖ\\s]", " ")).map(_.toLowerCase()).
 			flatMap(_.split("\\s+")).filter(!_.isEmpty).toVector
 	}
 }
