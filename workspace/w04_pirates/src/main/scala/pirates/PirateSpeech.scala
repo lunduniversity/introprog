@@ -2,22 +2,31 @@ package pirates
 
 object PirateSpeech {
   	def main(argh: Array[String]): Unit = {
-			val filename = if(!argh.isEmpty) argh(0) else "skattkammarön.txt"
+			val filename = if(!argh.isEmpty) argh(0) else "skattkammaron.txt"
 			// add your tests here!!!
 
 	}
-  
-  
+  	
+	def readBook(bookFile: String): Unit = ???
+	
+  /* Optional */
 	def readBook(bookFile: String, saveToFile: String): Unit = ???
   
+  
+  /* Optional */
 	def testSpeech(file: String): Unit = ???
 	 
   
-  
-	class FrequenceCounter{
+  class FrequencyCounter(word: String){
+	  
+	  import scala.collection.mutable.Map
 	  
 	  // add your code here
 	  
-	  def getBestGuess(): String = ???
+	  def addWord(other: String): Unit = ??? 
+ 	  
+	  def getBestGuess(): (String, Int) =  ???
+	  
+	  override def toString(): String = ???
 	}
 }
