@@ -27,12 +27,12 @@ object polynomial {
   }
 
   object Const {
-    final val Zero     = new Const(BigDecimal(0))
-    final val One      = new Const(BigDecimal(1))
-    final val MinusOne = new Const(BigDecimal(-1))
+    final val Zero     = Const(BigDecimal(0))
+    final val One      = Const(BigDecimal(1))
+    final val MinusOne = Const(BigDecimal(-1))
   }
 
-  case class Var(name: Char, exp: Int) extends Term {
+  case class Var(name: Char, exp: Int = 1) extends Term {
 
     private def silentExpString: String = 
       if (exp == 1) "" else "^"+exp.toString
@@ -57,13 +57,11 @@ object polynomial {
 
   object Var{
 
-    def apply(name: Char): Var = new Var(name, 1)
-    
     def apply(d: BigDecimal, name: Char): Prod = 
-      new Prod(Const(d), Set(Var(name)))
+      Prod(Const(d), Set(Var(name)))
     
     def apply(d: BigDecimal, name: Char, exp: Int): Prod = 
-      new Prod(Const(d), Set(new Var(name, exp)))
+      Prod(Const(d), Set(Var(name, exp)))
       
     def addExp(v1: Var, v2: Var): Var = Var(v1.name, v1.exp + v2.exp) 
 
@@ -101,7 +99,7 @@ object polynomial {
   }
   
   object Poly {
-    def apply(ts: Term*) : Poly = new Poly(ts.toSet)
+    def apply(ts: Term*) : Poly = Poly(ts.toSet)
   }
   
   val (x, y, z, s, t) = (Var('x'), Var('y'), Var('z'), Var('s'), Var('t'))
