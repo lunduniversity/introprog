@@ -19,7 +19,8 @@ lazy val commonSettings = Seq(
 lazy val plan = (project in file("plan")).
   settings(commonSettings: _*).
   settings(
-    name := "plan"
+    name := "plan",
+    EclipseKeys.skipProject := true
   ) 
 
 lazy val workspace = (project in file("workspace")).
