@@ -20,18 +20,19 @@
 \item \StudyTheory{10}
 \item \DoExercise{\ExeWeekTEN}{10}
 \item \ReadTheLab
-\item Svara på denna enkät $<<$ \TODO Länk till google forms-enkät $>>$  \\
-\TODO förslag till Anton på innehåll i google forms-enkät:\\ \textit{Vilket är ditt favoritalternativ?}
+\item Fyll i denna enkät: \url{https://goo.gl/forms/hC6JK2UQXVpbGECc2}  \\
+I enkäten ska du svarar på frågan: \textit{Vilket är ditt favoritalternativ?} \\
+gällande följande områden och svarsalternativen:
 \begin{itemize}[nolistsep,noitemsep]
-\item \textbf{program} (D, W, C, E, F, I, Bio, K, L, M, Bme, Nano, V), 
-\item \textbf{OS} (Win7, Win10, macOS X, Linux, Android, IOS, ChromeOS), 
+\item \textbf{lthprogram} (D, W, C, E, F, I, Bio, K, L, M, Bme, Nano, V), 
+\item \textbf{os} (Win7, Win10, macOS X, Linux, Android, IOS, ChromeOS), 
 \item \textbf{editor} (gedit, vim, emacs, vi, notepad++, sublime text, atom)
-\item \textbf{IDE} (Eclipse, IntelliJ/AndroidStudio, VisualStudio, xcode), 
+\item \textbf{ide} (Eclipse, IntelliJ/AndroidStudio, VisualStudio, xcode), 
 \item \textbf{socialnät} (facebook, snapchat, linkedin, instagram, github), 
 \item \textbf{webbläsare} (firefox, chrome, safari, edge, vivaldi, opera)
 \item \textbf{sorteringsalgoritm} (insättningssortering, urvalssortering)
 \item \textbf{språk} (Java, Python, PHP, C\#, Javascript, C++, C, Objective-C, R, Swift, Matlab, Ruby, Visual Basic, VBA, Scala, Perl, lua, Delphi)  \\
-Listan ordnad enligt \url{http://pypl.github.io/PYPL.html} i Aug 2016
+Listan enligt \url{http://pypl.github.io/PYPL.html} i Aug 2016
 % Alternativet är TIOBE, men den är längre...:
 %(Java, C, C++, C\#, Python, PHP, Javascript, Visual Basic, Perl, Pascal, Ruby, Swift, Groovy, R, Matlab, SQL, Go, Dart, Fortram, Lua, Ada, Lisp, Scala, Prolog, Haskell, Erlang, Rust)
 \end{itemize}
@@ -40,7 +41,7 @@ Listan ordnad enligt \url{http://pypl.github.io/PYPL.html} i Aug 2016
 
 \subsection{Bakgrund}
 
-I denna laboration ska du utveckla ett program som analyserar svar på enkäter med flervalsfrågor. Indata utgörs av text i form av \textbf{kolumnseparerade värden}, där varje persons svar finns på en egen rad och varje svarsrad innehåller svarsalternativ separerade med en \textbf{kolumnseparator} som till exempel kan vara \code{;} eller \code{\t}. Första raden i textfilen anger kolumnernas namn.
+I den här veckans laboration ska du utveckla ett program som analyserar svar på enkäter med flervalsfrågor. Indata utgörs av text i form av \textbf{kolumnseparerade värden}, där varje persons svar finns på en egen rad och varje svarsrad innehåller svarsalternativ separerade med en \textbf{kolumnseparator} som till exempel kan vara \code{;} eller \code{\t}. Första raden i textfilen anger kolumnernas namn.
 
 Exempel på indatafil: \footnote{\TODO gör indataexemplet lite längre så analysexempel blir lite roligare och låt indatafilen finnas med som testfil i workspace}
 \begin{CodeSmall}[language=, ]
@@ -52,66 +53,137 @@ E;emacs;Eclipse;Snapchat;Edge;urvalssortering;C
 
 Ditt program ska innehålla följande delar:
 \begin{itemize}
-\item En case-klass för strängmatriser 
-\item Funktioner för inläsning av tabellformatterad text.
+\item En case-klass för strängmatriser som heter \code{Table} med funktioner för inläsning av tabellformatterad text.
+\item En case-class för argumentparsning och kommandoexekvering som heter \code{Command}. 
 \item Funktioner för att presentera statistik från enkätdata med hjälp av registrering.
 \item \TODO mer här ?
 \end{itemize}
 
+\TODO workspace upplägg med tree stats
 
 Här är main. Fixa så den funkar.
 
 \scalainputlisting{../workspace/w10_survey/src/main/scala/stats/Main.scala}
 
 \TODO mer här...
+\TODO körs från kommandoraden med argument som sedan tolkas om till Command
+\TODO Command: tar ett Table, utför sin grejj och returnerar ett Table. Många Commands tolkas som en kedja, där output från det föregående kommandot är input till nästa.
+
 
 \subsection{Obligatoriska uppgifter}
 
-Klassen \code{Table} har parametern \code{matrix} som representerar den inlästa tabellformaterade datan i en tvådimensionell matris. Parametrarna \code{headings} och \code{sep} representerar rubrikerna för varje kolumn respektive separatorn som skiljer kolumnerna åt.
-
-\TODO kodkommentarer
 \Task Implementera klassen \code{Table} och objektet \code{Table} enligt specifikation:
+\TODO footnotes?
+\TODO kodkommentarer och scalainputlisting
 
 \begin{ScalaSpec}{Table}
+package stats
+
+/**
+ * A representation of text data in matrix form.
+ *
+ * @param matrix   The data. Rows in the outer Vector, columns in the inner.
+ * @param headings Column headings.
+ * @param sep      The String character that separates the columns.
+ */
 case class Table(matrix: Vector[Vector[String]], headings: Vector[String], sep: String) {
 
+  /**
+   * Returns the width (columns) and height (rows) of the
+   * matrix data.
+   */
   val dim: (Int, Int) = ???
 
+  /**
+   * Returns the values from a single column.
+   *
+   *  @param c The column index.
+   */
   def col(c: Int): Vector[String] = ???
 
+  /** Returns the matrix in text format */
   override lazy val toString: String = ???
 
+  /**
+   * Returns a copy of the current table sorted according to
+   * the specified column.
+   *
+   * @param c The column index.
+   */
   def sort(c: Int): Table = ???
 
-  def filter(c: Int, values: Vector[String]): Table = ???
+  /**
+   * Returns a copy of the current table filtered according to
+   * if the specified column is among the wanted values.
+   *
+   * @param c      The column index.
+   * @param wanted The wanted values.
+   */
+  def filter(c: Int, wanted: Vector[String]): Table = ???
 
-  def register(c: Int, values: Vector[String] = Vector()): ??? = ???
+  /**
+   * Returns the frequency registered data from a specified column.
+   *
+   * @param c The column index.
+   */
+  def register(c: Int): Vector[(String, Int)] = ???
 }
 
 object Table {
 
-  def fromFile(uri: String, sep: String): Option[Table] = ???
+  /**
+   * Opens and reads column separated text data from either
+   * a file or a URL into a Table.
+   *
+   * @param uri The location of the data.
+   * @param sep The separator that distinguishes columns.
+   */
+  def fromFile(uri: String, sep: String): Table = ???
 
+  /**
+   * Writes a text formatted Table to disk.
+   *
+   * @param path  The location of the file to write.
+   * @param table The table to be written.
+   */
   def toFile(path: String, table: Table): Unit = ???
 }
 \end{ScalaSpec}
 
-\Subtask Implementera \code{dim} och \code{toString}.
+\Subtask Implementera hela klassen \code{Table} förutom \code{register}. I \code{sort} och \code{filter} ska inbyggda funktioner för sortering och filtrering användas. Table är omuterbar, vilken behändig funktion ger \code{case class} som kan användas för att göra en kopia av Table i \code{sort} och \code{filter}?
 
-\Subtask Implementera \code{col}.%notera att det är möjligt att vektorerna som delar in raderna i kolumner kan vara av olika storlek. T.ex. om enkäten som datan kommer från ser ut: har du programmerat tidigare? (ja, nej) i vilket språk?
+\Subtask Flera av funktionerna tar emot kolumnindex som parameter, vilket problem kan uppstå om ett negativt tal eller ett relativt matrisen ett för stort tal tas emot?
 
-\Subtask Implementera \code{sort} med hjälp av någon av de inbyggda sorteringsfunktionerna.
+\Subtask Implementera \code{register}. Fundera ut en lämplig returtyp och om kolumnrubriken ska vara med i returdatan. Funktionen kommer senare användas för att skapa diagram som presenterar den registrerade datan. Om du fastnar: \footnote{Kolla på \code{groupBy}.}.
 
-\Subtask Implementera \code{filter} med hjälp av den inbyggda filterfuntionen.
+\Subtask Implementera objektet \code{Table}. Funktionen \code{fromFile} ska kunna ta emot antingen en webbadress eller en lokal sökväg. Varje rad läses in till en yttre vektor och därefter delas varje rad upp i kolumner:
+\begin{CodeSmall}[language=, ]
+Vector(Vector(rad1kolumn1,rad1kolumn2,rad1kolumn3),
+       Vector(rad2kolumn1,rad2kolumn2,rad2kolumn3),
+       Vector(rad3kolumn1,rad3kolumn2,rad3kolumn3))
+\end{CodeSmall}
+I \code{toFile} kan \code{java.nio}-paketet användas för att skriva till fil.
 
-\Subtask Implementera \code{register}. Fundera ut en lämplig returtyp och om kolumnrubriken ska vara med i returdatan. Metoden kommer senare användas för att skapa diagram som presenterar den registrerade datan.\footnote{Om du fastnar kolla in funktionen \code{groupBy}.}
+\Subtask Vilka problem kan uppstå vid inläsning av fil eller URL?
 
-\Task Implementera \code{fromFile} och \code{toFile} i objektet Table enligt specifikation:
-\begin{ScalaSpec}{Table}
+\Subtask Var hanteras problemen från tidigare frågor i programmet just nu?
 
-\end{ScalaSpec}
+\Subtask \TODO implementera Table main-funktion med indata utdata exempel
 
-\Subtask Implementera \code{fromFile}. Inläsning från fil är en oren operation i den mening att det är omöjligt att veta på förhand om det i slutändan är fildatan som fås tillbaka. Filen kanske inte finns eller kanske inte har passande rättigheter för att läsa. Detta måste hanteras på något sätt i programmet. En lösning är att använda klassen Option.
+
+
+\Task Komplettera klassen \code{Command} enligt specifikation:
+
+\ScalaSpecInputListing{Table}{../workspace/w10_survey/src/main/scala/stats/Table.scala}
+
+\Subtask Implementera \code{parseOne}. Observera att parametertypen är \code{Vector[String]}, precis som i \code{parseAll} men skillnaden är att \code{parseOne} ska matcha och returnera exakt ett kommando. I annat fall kastas undantaget \code{InvalidCommandException}. Till exempel \code{"-sort 4"} funkar men \code{"-sort 4 asdf"} funkar inte. Kommandona som ska kunna tas emot finns i \code{List}.
+
+\Subtask Implementera \code{parseAll}. Använd minustecknet som markerar starten för ett nytt kommando för att dela upp argumenten \code{args} i delar som sedan var för sig skickas med anrop till \code{parseOne}. Tips: \footnote{Kolla på \code{span} och \code{startsWith}.}.
+
+\Subtask Implementera slutligen \code{runAllWith}. 
+
+\Subtask Testa
+
 \subsection{Frivilliga extrauppgifter}
     
 \Task En labbuppgiftsbeskrivning.
