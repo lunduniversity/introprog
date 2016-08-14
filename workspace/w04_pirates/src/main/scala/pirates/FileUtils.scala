@@ -15,7 +15,7 @@ object FileUtils {
     val spaceConverted           = data.map(convertSpace)
     def isLetterOrSpace(c: Char) = c.isLetter || c.isSpaceChar 
     val lettersAndSpaces         = spaceConverted.filter(isLetterOrSpace)
-    val splitted: Array[String]  = lettersAndSpaces.split(' ')
-    splitted.filterNot(_.isEmpty).toVector
+    val words: Array[String]     = lettersAndSpaces.map(_.toLower).split(' ')
+    words.filterNot(_.isEmpty).toVector
   }
 }
