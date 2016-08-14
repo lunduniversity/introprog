@@ -173,7 +173,7 @@ scala> fyle.foreach(_.väsnas)
 scala> val antalFlygånkor: Int = ??? 
 \end{REPL}
 
-\Subtask Om alla de fåglar som ornitologen hittade skulle väsnas exakt en gång var, hur många krax och hur många kvack skulle då höras? Använd metoderna \code{filter} och \code{size}, samt predikatet \code{ärSimKunnig} för att beräkna antalet krax respektive kvack.
+\Subtask \label{subtask:fyle:sound} Om alla de fåglar som ornitologen hittade skulle väsnas exakt en gång var, hur många krax och hur många kvack skulle då höras? Använd metoderna \code{filter} och \code{size}, samt predikatet \code{ärSimKunnig} för att beräkna antalet krax respektive kvack.
 \begin{REPL}
 scala> val antalKrax: Int = ???
 scala> val antalKvack: Int = ??? 
@@ -358,9 +358,9 @@ Nackdelen är att kompilatorn vid kompileringstid inte kollar om variablerna av 
 
 Istället kan man använda case-objekt enligt nedan deluppgifter och få hjälp av kompilatorn att hitta eventuella fel vid kompileringstid.  Ett case-objekt är som ett vanligt singelton-objekt men det får automatiskt en toString samma som namnet och kan användas i matchningar etc. (mer om match i kaptitel \ref{chapter:W08}). 
 
-\Subtask Deklarera följande uppräknade värden som singelton objekt med gemensam bastyp i en editor och klistra in i REPL med kommandot \code{:paste}. 
+\Subtask Deklarera följande uppräknade värden som singelton objekt med gemensam bastyp i en editor och klistra in i REPL med kommandot \code{:paste}. Med nyckelordet \code{sealed} så ''förseglas'' klassen och inga andra direkta subtyper tillåts förutom de som finns i samma kod-fil eller block. I detta exempel  med kortfärger vet vi ju att det inte finns fler än dessa fyra färger.
 \begin{Code}
-trait Färg
+sealed trait Färg
 case object Spader extends Färg
 case object Hjärter extends Färg
 case object Ruter extends Färg
@@ -375,7 +375,7 @@ Skapa därefter några exempelinstanser av klassen \code{Kort}. Vad är fördele
 \Subtask Om man vill kunna iterera över alla värden är det bra om de finns i en samling med alla värden. Vi kan lägga en sådan i ett kompanjonsobjekt till bastypen. Uppdatera koden enligt nedan och klistra in på nytt i REPL med kommandot \code{:paste}. Skriv ut alla färgvärden med en \code{for}-sats.
 
 \begin{Code}
-trait Färg
+sealed trait Färg
 object Färg { 
   val values = Vector(Spader, Hjärter, Ruter, Klöver)
 }
@@ -399,7 +399,7 @@ scala> val blandad = scala.util.Random.shuffle(kortlek)
 \Subtask Om man även vill ha en heltalsrepresentation med en medlem \code{toInt} för alla värden, kan man ge bastypen en parameter och i stället för en trait (som inte kan ha några parametrar) använda en abstrakt klass.
 
 \begin{Code}
-abstract class Färg(val toInt: Int)
+sealed abstract class Färg(final val toInt: Int)
 object Färg { 
   val values = Vector(Spader, Hjärter, Ruter, Klöver)
 }
@@ -416,73 +416,17 @@ scala> färgPoäng(blandadKortlek.take(5))
 \end{REPL}
 
 
-
-
-
-
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task Det visar sig att vår flitige ornitolog från uppgift \ref{task:fyle} sov på en av föreläsningarna i zoologi när hen var nolla på Natfak, och därför helt missat fylekategorin \code{Pjodd}. Hjälp vår stackars ornitolog så att fylehierarkin nu även omfattar Pjoddar. En Pjodd kan flyga som en Kråga men den \code{ärLiten} medan en Kråga \code{ärStor}. En Pjodd kvittrar dubbelt så många gånger som en Ånka kvackar. En Pjodd \code{KanKanskeSimma} där simkunnighetssannolikheten är $0.2$. Låt ornitologen ånyo finna 42 slumpmässiga fåglar i skogen och filtrera fram lämpliga arter och undersök hur dessa väsnas.
+\Task Det visar sig att vår flitige ornitolog från uppgift \ref{task:fyle} sov på en av föreläsningarna i zoologi när hen var nolla på Natfak, och därför helt missat fylekategorin \code{Pjodd}. Hjälp vår stackars ornitolog så att fylehierarkin nu även omfattar Pjoddar. En Pjodd kan flyga som en Kråga men den \code{ärLiten} medan en Kråga \code{ärStor}. En Pjodd kvittrar dubbelt så många gånger som en Ånka kvackar. En Pjodd \code{KanKanskeSimma} där simkunnighetssannolikheten är $0.2$. Låt ornitologen ånyo finna 42 slumpmässiga fåglar i skogen och filtrera fram lämpliga arter. Undersök sedan hur dessa väsnas, i likhet med deluppgift \ref{task:fyle}\ref{subtask:fyle:sound}.
 
-\Task Polynom ??? INte färdigt; är det lönt att byga vidare på detta exempel??? Hur kommer undantag in här?
 
-\begin{CodeSmall}
-//kod till facit  TODO: INTE ALLS FÄRDIGT
-
-sealed trait Term {
-  def const: BigDecimal
-  protected def silentConst: String = 
-    if (const == BigDecimal(1)) "" else const.toString
-  def *(that: Term): Term
-  def ^(e: Int): Term
-}
-
-case class Const(const: BigDecimal) extends Term {
-  override def toString = const.toString
-  def *(that: Term): Term = that match {
-    case Const(c)     => Const(c * const)
-    case Var(c, n, e) => Var(c * const, n, e)
-    case Prod(c, vs)  => ??? 
-  }
-}
-
-case class Var(const: BigDecimal, name: Char, exp: BigInt) extends Term {
-  private def silentExp: String = 
-    if (exp == BigInt(1)) "" else "^"+exp.toString
-  def ^(e: Int) = Var(const.pow(e), name, e * exp) 
-  def *(c: BigDecimal) = Var(const * c, name, exp)
-  def /(c: BigDecimal) = Var(const / c, name, exp)
-  def constUnit: Var = Var(1.0, name, exp)
-  def *(that: Var): Term = {
-    Prod(const * that.const, Vector(this.constUnit, that.constUnit))
-  }
-  override def toString = s"$silentConst$name$silentExp" 
-}
-
-object Var{
-  def apply(name: Char) = new Var(1, name, 1)
-  def apply(const: Double, name: Char) = new Var(const, name, 1)
-}
-
-case class Prod(const: BigDecimal, vars: Vector[Var]) extends Term  {
-  override def toString = silentConst + vars.mkString
-}
-
-case class Poly(xs: Vector[Term]) {  // etc etc
-}
-
-\end{CodeSmall}
-
+\clearpage
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
 \Task \TODO Gör en fördjupningsuppgift inspirerat av denna \url{http://stackoverflow.com/questions/16173477/usages-of-null-nothing-unit-in-scala}    
     
-\Task \label{unapply} \TODO Gör en fördjupningsuppgift om extraherare \Eng{extractors} och implementera \code{unapply}.    
-    
-    
-\Task \TODO Plynomdivision ???
-
-\Task \TODO Numbers: Fundera på om detta är lönt eller blir exemplet för krångligt ??? Vad har detta med \code{match} och undantag att göra ??? Hitta på ngt bättre...
+\Task \TODO Numbers: Fundera på om detta är lönt eller blir exemplet för krångligt ??? Hitta annars på ngt bättre med en djup arvshierarki ...
 
 \scalainputlisting[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]{examples/numbers.scala}   
