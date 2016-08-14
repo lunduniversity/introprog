@@ -114,7 +114,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Sökning, sortering", 
-      id = "searchsort", exercise = "sorting", lab = "surveydata", contents = """
+      id = "searchsort", exercise = "sorting", lab = "survey", contents = """
       | strängjämförelse, compareTo, imlicit ordning, 
       | linjärsökning, binärsökning, 
       | algoritm: LINEAR-SEARCH, algortim: BINARY-SEARCH, 
