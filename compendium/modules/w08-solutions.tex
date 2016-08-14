@@ -5,27 +5,94 @@
 \ExerciseSolution{\ExeWeekEIGHT}
 
 
-\Task 
+\Task
 
-\Subtask \code{42}
+\Subtask Beroende på första bokstaven i din favoritgrönsak får du olika svar såsom \textit{gurka är gott!} vid första bokstaven $g$.\\
+Javas \jcode{switch}-sats testar den första bokstaven på favoritgrönsaken genom att stegvis jämföra den med \jcode{case}-uttrycken. Om första bokstaven \jcode{firstChar} matchar bokstaven efter ett \jcode{case} körs koden efter kolonet till \jcode{switch}-satsens slut eller tills ett \jcode{break} avbryter \jcode{switch}-satsen.\\
+Matchar inte \jcode{firstChar} något \jcode{case} så finns även \jcode{default}, som körs oavsett vilken första bokstaven är, ett generellt fall.
 
-\Subtask Lösningstext.
-
-\Task 
-
-
-
-\Task 
-
-\Subtask \code{42}
-
-\Subtask Lösningstext.
-
-
+\Subtask Om \jcode{case 't'} körs kommer både  \textit{tomat är gott!} och \textit{broccoli är gott!} skrivas ut, man säger att koden $"$faller igenom$"$. Utan \jcode{break}-satsen i Java körs koden i efterkommande \jcode{case} tills ett \jcode{break} avbryter exekveringen eller \jcode{switch}-satsen tar slut.
+ 
 
 \Task 
 
-\Subtask \code{42}
+\Subtask Svaret blir identiskt mot föregående uppgiften i Java.\\
+Scalas \code{match}-uttryck fungerar väldigt likt Javas \jcode{switch}. Den jämför stegvis värdet med varje \code{case} för att sedan returnera ett värde tillhörande motsvarande \code{case}.
 
-\Subtask Lösningstext.
-    
+\Subtask scala.MatchError (of class java.lang.Character). Körtidsfel, uppstår av en viss input under körningen.
+
+\Subtask Scalas \code{match} ersätter kolonet (:) i \jcode{switch} med Scalas högerpil (=>).\\
+\code{match} returnerar ett värde till skillnad från \jcode{switch} som inte returnerar något.
+\code{match} kan inte $"$falla igenom$"$ så ett \jcode{break} efter varje \jcode{case} är inte nödvändigt.
+
+
+\Task 
+\\
+Garden som införts vid \code{case 'g'} slumpar fram ett tal mellan 0 och 1 och om talet inte är större än $0.5$ så blir det ingen matchning med \code{case 'g'} och programmet testar vidare till grenen för default-värden.\\
+Gardens krav måste uppfyllas för att det ska matcha som vanligt.
+
+
+\Task
+
+\Subtask G100true. Vid byte av plats: Gtrue100.\\
+\code{match} testar om kompanjonsobjektet \code{Gurka} är av typen \code{Gurka} med två parametervärden. De angivna parametrarna tilldelas namn, \code{vikt} får namnet \code{v} och \code{ärRutten} namnet \code{rutten} som sedan skrivs ut. Byts namnen dessa ges skrivs de ut i den omvända ordningen. 
+
+\Subtask \code{Option[(Int, Boolean)]}
+
+\Subtask \code{Some((100, true))}, en \code{Option} med en tupel av parametrarna från g.
+
+\Subtask \code{ärÄtvärd} testar om \code{Grönsak g} är av typen \code{Gurka(v, rutten)} eller \code{Tomat}. Dessa har sedan garder.\\ \code{Gurka} måste ha \code{vikt} över 100 och \code{ärRutten} vara \code{false} för att \code{case Gurka} ska returnera \code{true}.\\ 
+\code{Tomat} måste ha \code{vikt} över 50 och \code{ärRutten} vara \code{false} för att \code{case Tomat} ska returnera \code{true}.\\
+Matchas inte \code{Grönsak g} med någon av dessa returneras default-värdet \code{false}.
+
+
+\Task
+
+\Subtask
+\begin{Code}
+package vegopoly
+
+trait Grönsak {
+	def vikt: Int
+	def ärRutten: Boolean
+	def ärÄtbar: Boolean
+}
+
+case class Gurka(vikt: Int, ärRutten: Boolean) extends
+	Grönsak { val ärÄtbar: Boolean = (!ärRutten && vikt > 100)}
+case class Tomat(vikt: Int, ärRutten: Boolean) extends
+	Grönsak { val ärÄtbar: Boolean = (!ärRutten && vikt > 50)}
+case class Broccoli(vikt: Int, ärRutten: Boolean) extends
+	Grönsak { val ärÄtbar: Boolean = (!ärRutten && vikt > 50)}
+
+object Main{
+	def slumpvikt: Int = (math.random*500 + 100).toInt
+	def slumprutten: Boolean = math.random > 0.8
+	def slumpgurka: Gurka = Gurka(slumpvikt, slumprutten)
+	def slumptomat: Tomat = Tomat(slumpvikt, slumprutten)
+	def slumpbroccoli: Broccoli = Broccoli(slumpvikt, slumprutten)
+	def slumpgrönsak: Grönsak = if (math.random > 0.2) slumpgurka 
+		else{
+			if (math.random > 0.2) slumptomat 
+				else slumpbroccoli}
+
+	def main(args: Array[String]): Unit = {
+		val skörd = Vector.fill(args(0).toInt)(slumpgrönsak)
+		val ätvärda = skörd.filter(_.ärÄtbar)
+		println("Antal skördade grönsaker: " + skörd.size)
+		println("Antal ätvärda grönsaker: " + ätvärda.size)
+	}
+}
+\end{Code}
+
+\Subtask 
+
+\Subtask
+
+
+\Task
+
+
+
+
+
