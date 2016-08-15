@@ -10,9 +10,8 @@
 \item Känna till hur strängar ordnas.
 \item Kunna läsa text i tabellform från fil och webbaddress.
 \item Kunna använda registrering (frekvensräkning) för enkla statistikberäkningar.
-\item Kunna skriva text i tabellform till fil.
-\item Kunna läsa kommandon från startargument.
-\item Kunna hantera oren (eng. impure) kod. (Exempelvis inläsning från tangenbordet)
+\item Kunna skriva till fil.
+\item Kunna omvandla startargument till kommandon.
 \item ... \TODO mer här
 \end{Goals}
 
@@ -41,148 +40,90 @@ Listan enligt \url{http://pypl.github.io/PYPL.html} i Aug 2016
 
 \subsection{Bakgrund}
 
-I den här veckans laboration ska du utveckla ett program som analyserar svar på enkäter med flervalsfrågor. Indata utgörs av text i form av \textbf{kolumnseparerade värden}, där varje persons svar finns på en egen rad och varje svarsrad innehåller svarsalternativ separerade med en \textbf{kolumnseparator} som till exempel kan vara \code{;} eller \code{\t}. Första raden i textfilen anger kolumnernas namn.
+I den här veckans laboration ska du utveckla ett program som analyserar svar på enkäter med flervalsfrågor. Indata utgörs av text i form av \textbf{kolumnseparerade värden}, där varje persons svar finns på en egen rad och varje svarsrad innehåller svarsalternativ separerade med en \textbf{kolumnseparator} som till exempel kan vara \code{\t} eller \code{,}. Första raden i textfilen anger kolumnernas namn.
 
-Exempel på indatafil: \footnote{\TODO gör indataexemplet lite längre så analysexempel blir lite roligare och låt indatafilen finnas med som testfil i workspace}
+Exempel på indatafil:%\footnote{\TODO gör indataexemplet lite längre så analysexempel blir lite roligare och låt indatafilen finnas med som testfil i workspace}
 \begin{CodeSmall}[language=, ]
-program;OS;editor;IDE;socialnät;webbläsare;sorteringsalgoritm;språk
-W;Gedit;Eclipse;Facebook;Firefox;insättningssortering;Java
-D;Atom;Intellij;GitHub;Vivaldi;urvalssortering;Scala
-E;emacs;Eclipse;Snapchat;Edge;urvalssortering;C
+Program,Indent,UI,Lang,OS,DevEnv
+D,Spaces,Terminal,C,BSD,Emacs
+C,Spaces,Terminal,Javascript,Windows 7,notepad++
+D,Spaces,GUI,Java,macOS,Gedit
+I,Tabs,Terminal,PHP,Windows 10,notepad++
+C,Spaces,GUI,Java,Windows 8,Eclipse
+D,Spaces,Terminal,Java,Windows 8,Eclipse
+F,Spaces,Terminal,C,Linux,Emacs
+D,Spaces,GUI,C,Linux,Vim
+Nano,Tabs,Terminal,Javascript,macOS,Vim
+C,Tabs,Terminal,C#,Windows 10,Visual Studio
+D,Tabs,GUI,Javascript,macOS,Emacs
+D,Spaces,GUI,Python,Windows 7,notepad++
+E,Spaces,Terminal,Java,Linux,Eclipse
+I,Tabs,Terminal,Python,Windows 10,notepad++
+K,Tabs,GUI,C#,Windows 7,Visual Studio
+F,Spaces,Terminal,C,Linux,Vim
+D,Tabs,GUI,C,Linux,Gedit
 \end{CodeSmall}
 
-Ditt program ska innehålla följande delar:
+Ditt program ska bestå av följande delar:
 \begin{itemize}
-\item En case-klass för strängmatriser som heter \code{Table} med funktioner för inläsning av tabellformatterad text.
-\item En case-class för argumentparsning och kommandoexekvering som heter \code{Command}. 
+\item En case-klass för strängmatriser som heter \code{Table} med funktioner för inläsning av tabellformatterad text, sortering, filtrering och registrering med avseende på en viss kolumn.
+\item Ett objekt för argumentparsning och kommandoexekvering som heter \code{Command}. Ett \code{Command} är också en egen typ: en funktion som tar emot ett \code{Table}, gör något med det och returnerar tillbaka det. På så vis kan flera kommandon exekveras som en kedja där varje kommando tar emot det föregående kommandots utdata som indata.
 \item Funktioner för att presentera statistik från enkätdata med hjälp av registrering.
-\item \TODO mer här ?
 \end{itemize}
 
-\TODO workspace upplägg med tree stats
-
-Här är main. Fixa så den funkar.
+Utöver \code{Table} och \code{Command} finns I mappen resources exempeldatan från tidigare i filen favorit.csv, använd den när du testar ditt program.
+Main är det som kör det slutgiltiga programmet, kolla på den för att få bättre uppfattning om hur programmet är uppbyggt.
 
 \scalainputlisting{../workspace/w10_survey/src/main/scala/stats/Main.scala}
 
-\TODO mer här...
-\TODO körs från kommandoraden med argument som sedan tolkas om till Command
-\TODO Command: tar ett Table, utför sin grejj och returnerar ett Table. Många Commands tolkas som en kedja, där output från det föregående kommandot är input till nästa.
 
 
 \subsection{Obligatoriska uppgifter}
 
-\Task Implementera klassen \code{Table} och objektet \code{Table} enligt specifikation:
-\TODO footnotes?
-\TODO kodkommentarer och scalainputlisting
+\Task Implementera \code{Table} enligt specifikation:
 
-\begin{ScalaSpec}{Table}
-package stats
+\ScalaSpecInputListing{Table}{../workspace/w10_survey/src/main/scala/stats/Table.scala}
 
-/**
- * A representation of text data in matrix form.
- *
- * @param matrix   The data. Rows in the outer Vector, columns in the inner.
- * @param headings Column headings.
- * @param sep      The String character that separates the columns.
- */
-case class Table(matrix: Vector[Vector[String]], headings: Vector[String], sep: String) {
+\Subtask Implementera klassen \code{Table} förutom \code{register}. I \code{sort} och \code{filter} ska inbyggda funktioner för sortering och filtrering användas. Eftersom \code{Table} är omuterbar måste en förändrad kopia av table skapas för att . Fundera på hur det ska gå till.
 
-  /**
-   * Returns the width (columns) and height (rows) of the
-   * matrix data.
-   */
-  val dim: (Int, Int) = ???
+\Subtask Implementera \code{register}. Fundera på huruvida kolumnrubriken ska vara med i returdatan. Funktionen kommer senare användas för att skapa diagram som presenterar den registrerade datan. Om du fastnar: \footnote{Läs om funktionen groupBy \code{groupBy}.}.
 
-  /**
-   * Returns the values from a single column.
-   *
-   *  @param c The column index.
-   */
-  def col(c: Int): Vector[String] = ???
+\Subtask Implementera objektet \code{Table}. Funktionen \code{fromFile} ska kunna ta emot antingen en webbadress eller en lokal sökväg. I ditt program räcker det med att undersöka ifall \code{uri} börjar på \code{"http"}.
 
-  /** Returns the matrix in text format */
-  override lazy val toString: String = ???
-
-  /**
-   * Returns a copy of the current table sorted according to
-   * the specified column.
-   *
-   * @param c The column index.
-   */
-  def sort(c: Int): Table = ???
-
-  /**
-   * Returns a copy of the current table filtered according to
-   * if the specified column is among the wanted values.
-   *
-   * @param c      The column index.
-   * @param wanted The wanted values.
-   */
-  def filter(c: Int, wanted: Vector[String]): Table = ???
-
-  /**
-   * Returns the frequency registered data from a specified column.
-   *
-   * @param c The column index.
-   */
-  def register(c: Int): Vector[(String, Int)] = ???
-}
-
-object Table {
-
-  /**
-   * Opens and reads column separated text data from either
-   * a file or a URL into a Table.
-   *
-   * @param uri The location of the data.
-   * @param sep The separator that distinguishes columns.
-   */
-  def fromFile(uri: String, sep: String): Table = ???
-
-  /**
-   * Writes a text formatted Table to disk.
-   *
-   * @param path  The location of the file to write.
-   * @param table The table to be written.
-   */
-  def toFile(path: String, table: Table): Unit = ???
-}
-\end{ScalaSpec}
-
-\Subtask Implementera hela klassen \code{Table} förutom \code{register}. I \code{sort} och \code{filter} ska inbyggda funktioner för sortering och filtrering användas. Table är omuterbar, vilken behändig funktion ger \code{case class} som kan användas för att göra en kopia av Table i \code{sort} och \code{filter}?
-
-\Subtask Flera av funktionerna tar emot kolumnindex som parameter, vilket problem kan uppstå om ett negativt tal eller ett relativt matrisen ett för stort tal tas emot?
-
-\Subtask Implementera \code{register}. Fundera ut en lämplig returtyp och om kolumnrubriken ska vara med i returdatan. Funktionen kommer senare användas för att skapa diagram som presenterar den registrerade datan. Om du fastnar: \footnote{Kolla på \code{groupBy}.}.
-
-\Subtask Implementera objektet \code{Table}. Funktionen \code{fromFile} ska kunna ta emot antingen en webbadress eller en lokal sökväg. Varje rad läses in till en yttre vektor och därefter delas varje rad upp i kolumner:
+Datan läses in till vektorn på detta vis:
 \begin{CodeSmall}[language=, ]
 Vector(Vector(rad1kolumn1,rad1kolumn2,rad1kolumn3),
        Vector(rad2kolumn1,rad2kolumn2,rad2kolumn3),
        Vector(rad3kolumn1,rad3kolumn2,rad3kolumn3))
 \end{CodeSmall}
-I \code{toFile} kan \code{java.nio}-paketet användas för att skriva till fil.
+I \code{toFile} kan valfritt paketet användas för att skriva till fil.
 
-\Subtask Vilka problem kan uppstå vid inläsning av fil eller URL?
+\Subtask Testa att köra \code{Table}. Borde ge utskriften (inklusive kolumnrubrik och totala antalet på första raden):
+\begin{REPLnonum}
+(DevEnv,5)
+(Vim,2)
+(Emacs,1)
+(Gedit,1)
+(Eclipse,1)
+\end{REPLnonum}
 
-\Subtask Var hanteras problemen från tidigare frågor i programmet just nu?
-
-\Subtask \TODO implementera Table main-funktion med indata utdata exempel
+\TODO ok med footnotes tips?
 
 
 
-\Task Komplettera klassen \code{Command} enligt specifikation:
+\Task Komplettera \code{Command} enligt specifikation:
 
-\ScalaSpecInputListing{Table}{../workspace/w10_survey/src/main/scala/stats/Table.scala}
+\ScalaSpecInputListing{Command}{../workspace/w10_survey/src/main/scala/stats/Command.scala}
 
-\Subtask Implementera \code{parseOne}. Observera att parametertypen är \code{Vector[String]}, precis som i \code{parseAll} men skillnaden är att \code{parseOne} ska matcha och returnera exakt ett kommando. I annat fall kastas undantaget \code{InvalidCommandException}. Till exempel \code{"-sort 4"} funkar men \code{"-sort 4 asdf"} funkar inte. Kommandona som ska kunna tas emot finns i \code{List}.
+\Subtask Implementera \code{parseOne}. Observera att likt \code{parseAll} är parametertypen \code{Vector[String]}, men skillnaden är att \code{parseOne} ska matcha och returnera exakt ett kommando. I annat fall kastas ett undantag (Exception). Till exempel \code{"-sort 4"} funkar men \code{"-sort 4 asdf"} funkar inte. Kommandona som ska kunna tas emot finns i \code{List}.
 
-\Subtask Implementera \code{parseAll}. Använd minustecknet som markerar starten för ett nytt kommando för att dela upp argumenten \code{args} i delar som sedan var för sig skickas med anrop till \code{parseOne}. Tips: \footnote{Kolla på \code{span} och \code{startsWith}.}.
+\Subtask Implementera \code{parseAll} som en rekursiv funktion. Använd minustecknet som markerar starten för ett nytt kommando för att dela upp argumenten \code{args} i delar som sedan var för sig skickas med i anrop till \code{parseOne}. Tips: \footnote{Kolla på \code{span} och \code{startsWith}.}.
 
-\Subtask Implementera slutligen \code{runAllWith}. 
+\Subtask Implementera slutligen \code{runAllWith}, även den är rekursivt.
 
-\Subtask Testa
+\Subtask Testa ditt program med \code{Main}-filen. \TODO exempeltestfall
+
+\url{https://docs.google.com/spreadsheets/d/1mgx4tqOYTdZVNkzXAENx7LVhxPGXugWEoyqzRtuf1JM/pub?gid=1841525127&single=true&output=csv}
 
 \subsection{Frivilliga extrauppgifter}
     
