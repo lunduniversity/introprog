@@ -117,6 +117,12 @@
 \newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter}}
 \newcommand{\TaskSection}[1]{\subsubsection*{#1}}
 
+\newcommand\Menu[1]{\textit{#1}}
+\newcommand\MenuArrow[1]{\Menu{#1}~$\rightarrow$~}
+\newcommand\FramedCheckmark[1]{~\frame{\checkmark}~~\textbf{#1}}
+\newcommand\FramedUnchecked[1]{$\Box$~\textbf{#1}}
+\newcommand\Button[1]{\fbox{\textbf{#1}}}
+
 \newcounter{TaskCounter}[section]
 \newcommand{\Task}{%
 \refstepcounter{TaskCounter}% 
@@ -240,6 +246,13 @@
             language=Scala,#1}%
 }{}
 
+\newcommand{\ScalaSpecInputListing}[3][]{\lstinputlisting[%
+basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
+            backgroundcolor=\color{white},
+            title={\hskip-0.38em\colorbox{black!70}{\parbox{\dimexpr\textwidth+1\fboxsep-2\fboxrule\relax}{\fontsize{10}{12}\selectfont\color{white}{\textit{Specification} \texttt{\textbf{#2}}}}}},%
+            identifierstyle=\color{black},%
+            rulecolor=\color{black!60},frame=tRbL,framerule=1.2pt,%
+            language=Scala,#1]{#3}}
 
 \lstnewenvironment{Code}[1][]{%
     \lstset{#1}%
