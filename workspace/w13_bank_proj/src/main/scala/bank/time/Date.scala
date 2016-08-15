@@ -1,7 +1,8 @@
 /** A simple wrapper of Java.time */
 
 package bank.time
-*/**
+ 
+ /**
  * Creates a Date object based on date given as parameters.
  */
 case class Date(year: Int, month: Int, dayOfMonth: Int, hour: Int, minute: Int) {  

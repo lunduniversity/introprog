@@ -38,7 +38,7 @@ Tyvärr så följer ordningen av ÄÅÖ inte svenska regler, men det ignorerar v
 \Subtask\Pen Vilken av strängarna $s1$ och $s2$ kommer först (d.v.s. är ''mindre'') om $s1$ utgör början av $s2$ och $s2$ innehåller fler tecken än $s1$? 
 
 
-\Task \emph{Jämföra strängar i Java.} I Java kan man \emph{inte} jämföra strängar med operatorerna \code{<}, \code{<=}, \code{>}, och \code{>=}. Dessutom ger operatorerna \code{==} och \code{!=} inte innehålls(o)likhet utan referens(o)likhet. Istället får man använda metoderna \code{equals} och \code{compareTo}, vilka också fungerar i Scala eftersom strängar i Scala och Java är av samma typ, nämligen \code{java.lang.String}.
+\Task \emph{Jämföra strängar i Java.} I Java kan man \textbf{inte} jämföra strängar med operatorerna \code{<}, \code{<=}, \code{>}, och \code{>=}. Dessutom ger operatorerna \code{==} och \code{!=} inte innehålls(o)likhet utan referens(o)likhet. Istället får man använda metoderna \code{equals} och \code{compareTo}, vilka också fungerar i Scala eftersom strängar i Scala och Java är av samma typ, nämligen \code{java.lang.String}.
 
 
 \Subtask Vad ger följande uttryck för värde?
@@ -159,66 +159,21 @@ och inspektera html-koden i din webbläsare genom att trycka \emph{Ctrl+U} (fung
 
 \Subtask \emph{Linjärsökning med find.} Teknologen Oddput Clementina vill gå första bästa datavetenskapskurs som är på G2-nivå. Hjälp Oddput med att söka upp första bästa kurs genom linjärsökning med samlingsmetoden \code{find}. Kurskoder vid datavetenskap börjar på EDA eller ETS\footnote{Detta är en förenklad bild av LTH:s kurskodnamnsystem. Några kurser från EIT-institutionen  kommer att slinka med, men det bortser vi ifrån i denna uppgift.}. \emph{Tips:} Du har nytta av att definiera predikatet \code{def isCS(s: String): Boolean} som i sin tur lämpligen nyttjar strängmetoden \code{startsWith}.
 
-\begin{REPL}
-// kod till facit
-scala> def isCS(s: String) = s.startsWith("EDA") || s.startsWith("ETS")
-scala> val x = courses.lth2016.find(c => isCS(c.code) && c.level == "G2").get
-x: courses.Course = Course(EDA031,C++ - programmering,C++ Programming,7.5,G2)
-\end{REPL}
-
 \Subtask \emph{Implementera linjärsökning.} Som träning ska du nu implementera en egen linjärsökningsfunktion med signaturen: \\ \code{def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = ???}
 \\ Funktionen ska ta en sekvenssamling \code{xs} och ett predikat \code{p} som är en funktion som tar ett element och returnerar ett booleskt värde. Funktionen \code{p} ska ge true om parametern är ett eftersökt element. Funktionen \code{linearSearch} ska returnera index för första hittade elementet i \code{xs} där \code{p} gäller. Om det inte finns något element som uppfyller predikatet ska -1 returneras. Skriv först pseudokod för funktionen med penna och papper. Använd \code{while}. 
 
 Typen \code{Seq} är supertyp till alla sekvenssamlingar, så om vi använder den som parametertyp för parametern \code{xs} så fungerar funktionen för \code{Vector}, \code{Array}, \code{List}, etc. Genom typparametern \code{T} blir funktionen generisk och fungerar för godtycklig typ. 
 
 
-\begin{Code}
-// kod till facit
-def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = {
-  var i = 0
-  while(i < xs.size && !p(xs(i))) i += 1 
-  if (i < xs.size) i else -1
-}
-\end{Code}
 
-
-
-\Subtask \label{subtask:linsearch-rndCode} Skriv i en editor en funktion \code{def rndCode: String} som genererar slumpmässiga kurskoder som består av 6 tecken enligt dessa regler: de första tre tecknen är bokstäver mellan A och Z, de sista två är siffror mellan 0 och 9, medan det fjärde tecknet kan vara antingen en siffra mellan 0 coh 0 eller ett av dessa tecken: \code{ACFGLMP}. \emph{Tips:} Använd REPL  för att stegvis bygga upp hjälpfunktioner som du, när de fungerar som de ska, klistrar in i ett editorfönster som lokala funktioner där du utvecklar den slutliga koden för en lättläst, concis och fungerande \code{rndCode}.
-
-\begin{Code}
-// kod till facit
-def rndCode: String = {
-  def rnd(n: Int) = (math.random * n).toInt
-  def letter    = (rnd('Z' - 'A') + 'A').toChar
-  def dig       = ('0' + rnd(9)).toChar  
-  val special   = "ACFGLMP" + dig
-  def digLetter = special(rnd(special.size))
-  Seq(letter, letter, letter, digLetter, dig, dig).mkString
-}
-\end{Code}
+\Subtask \label{subtask:linsearch-rndCode} Skriv i en editor en funktion \code{def rndCode: String} som genererar slumpmässiga kurskoder som består av 6 tecken enligt dessa regler: de första tre tecknen är bokstäver mellan A och Z, de sista två är siffror mellan 0 och 9, medan det fjärde tecknet kan vara antingen en siffra mellan 0 och 9 eller ett av dessa tecken: \code{ACFGLMNP}. \emph{Tips:} Använd REPL  för att stegvis bygga upp hjälpfunktioner som du, när de fungerar som de ska, klistrar in i ett editorfönster som lokala funktioner där du utvecklar den slutliga koden för en lättläst, concis och fungerande \code{rndCode}.
 
 
 \Subtask Använd \code{rndCode} från föregående deluppgift för att fylla en vektor kallad \code{xs} med en halv miljon slumpmässiga kurskoder. För varje slumpkod i \code{xs} sök med din funktion \code{linearSearch} efter index i vektorn \code{courses.lth2016} från deluppgift \ref{subtask:download-lthcourses}. Mät totala tiden för de $500000$ linjärsökningarna med hjälp av funktionen \code{timed} från uppgift \ref{task:timed}. Hur många av de slumpmässiga kurskoderna hittades bland de verkliga kurskoderna på LTH?
 
- 
-\begin{Code}
-// kod till facit
-val lthCourses = courses.lth2016 //avoid including download time
-val xs = Vector.fill(500000)(rndCode)
-val (ixs, elapsedLin) = 
-  timed{xs.map(x => linearSearch(lthCourses)(_.code == x))}
-val found = ixs.filterNot(_ == -1).size
-\end{Code}
-
 
 
 \Subtask\Pen Hur kan du implementera \code{linearSearch} med den inbyggda samlingsmetoden \code{indexWhere}?
-
-\begin{Code}
-// kod till facit
-def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = 
-  xs.indexWhere(p)
-\end{Code}
 
 
 
@@ -260,25 +215,8 @@ val (_, elapsedLin) =
 println(elapsedLin / elapsedBin)
 \end{Code}
 
-\begin{Code}
-// kod till facit
-def binarySearch(xs: Seq[String], key: String): Int = {
-  var (low, high) = (0, xs.size -1)
-  var found = false
-  var mid = -1
-  while (low <= high && !found) {
-    mid = (low + high)/2
-    if (xs(mid) == key) found = true 
-    else if (xs(mid) < key) low = mid + 1
-    else high = mid -1
-  }
-  if (found) mid else -(low +1)
-} 
-\end{Code}
 
 \Subtask Hur mycket snabbare blev binärsökningen jämfört med linjärsökningen?\footnote{Vid en körning på en i7-4970K med 4.0GHz tog \code{elapsedLin} cirka $3000~ms$ och \code{elapsedBin} cirka $60~ms$. Binärsökning var alltså i detta fall ungefär $50$ gånger snabbare än linjärsökning.}
-
-
 
 
 
@@ -308,20 +246,6 @@ def binarySearch(xs: Seq[String], key: String): Int = {
 \end{Code}
 
 
-\begin{Code}[language=Java]
-// kod till facit
-    public static boolean isYatzy(int[] dice){
-        int col = 1;
-        boolean allSimilar = true;
-        while (col < dice.length && allSimilar) {
-          allSimilar = dice[0] == dice[col];
-          col++;
-        }
-        return allSimilar;
-    }
-\end{Code}
-
-
 \Subtask Implementera \code{findFirstYatzyRow}. Skapa först pseudo-kod för länjärsökningsalgoritmen innan du skriver implementationen i Java. 
 Testa ditt program genom att lägga till följande rader i huvudprogrammet. 
 Metoden \code{fillRnd} ingår i uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W09}.
@@ -332,24 +256,6 @@ Metoden \code{fillRnd} ingår i uppgift \ref{task:arraymatrix-java} i kapitel \r
         System.out.println("First Yatzy Index: " + i);
 \end{Code}
 
-
-
-
-\begin{Code}[language=Java]
-// kod till facit
-    public static int findFirstYatzyRow(int[][] m){
-        int row = 0;
-        int result = -1;
-        while (row < m.length && result < 0){
-            if (isYatzy(m[row])) {
-              result = row;
-            } else {
-              row = row + 1;    
-            }
-        }
-        return result;
-    }
-\end{Code}
 
 
 
@@ -390,19 +296,6 @@ res3: Seq[Int] = Vector(1, 1, 2, 3, 4, 5)
 \end{REPL}
 
 
-\begin{Code}[numbers=left]
-// kod till facit:
-def insertionSort(xs: Seq[Int]): Seq[Int] = {
-  val result = scala.collection.mutable.ArrayBuffer.empty[Int]
-  for (e <- xs) {
-    var pos = 0
-    while (pos < result.size && result(pos) < e) pos += 1
-    result.insert(pos,e)
-  }
-  result.toVector
-}
-\end{Code}
-
 
 
 
@@ -420,48 +313,29 @@ def selectionSortInPlace(xs: Array[String]): Unit = {
 }
 \end{Code} 
 
-\begin{Code}
-// kod till facit
-def selectionSortInPlace(xs: Array[String]): Unit = {
-  
-  def indexOfMin(startFrom: Int): Int = {
-    var minPos = startFrom
-    var i = startFrom + 1
-    while (i < xs.size) {
-      if (xs(i) < xs(minPos)) minPos = i
-      i += 1
-    }
-    minPos
-  }
-  
-  def swapIndex(i1: Int, i2: Int): Unit = {
-    val temp = xs(i1)
-    xs(i1) = xs(i2)
-    xs(i2) = temp
-  }
-  
-  for (i <- 0 to xs.size - 1) swapIndex(i, indexOfMin(i))
-}
 
-\end{Code}
 
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task \label{task:isSorted} \emph{Undersök om en sekvens är sorterad.} Ett enkelt och lättläst sätt att undersöka om en sekvens är sorterad visas nedan. Denna lösning är dock relativt långsam för stora samlingar.
+\Task \label{task:isSorted} \emph{Undersök om en sekvens är sorterad.} Ett enkelt och lättläst sätt att undersöka om en sekvens är sorterad visas nedan. 
 \begin{REPL}
 scala> def isSorted(xs: Vector[Int]): Boolean = xs == xs.sorted
 \end{REPL}
-\Subtask\Pen  Om \code{xs} har $10^6$ element, hur många jämförelser kommer i värsta fall att ske med \code{isStorted} enligt ovan. Metoden \code{sorted} använder algoritmen Timsort\footnote{\href{http://stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}{stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}}. Sök upp antalet jämförelser i värstafallet på wikipedia.%
+Denna lösning är dock relativt långsam för stora samlingar. Man behöver ju inte först sortera  för att avgöra om det är sorterat (om man inte ändå hade tänkt sortera av andra skäl), det räcker att kolla att elementen är i växande ordning.
+
+\Subtask\Pen  Om \code{xs} har $n$ element, ungefär hur många jämförelser kommer i värsta fall att ske med \code{isStorted} ovan om man alltså först ska sortera och sedan jämföra den osorterade och den sorterade samlingen element för element? Metoden \code{sorted} använder algoritmen Timsort\footnote{\href{http://stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}{stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}}. Sök upp värstafallsprestandan för Timsort på wikipedia.%
 % som i värsta fall gör $n * log(n)$ jämförelser
-\footnote{\href{https://en.wikipedia.org/wiki/Timsort}{en.wikipedia.org/wiki/Timsort}}.
+\footnote{\href{https://en.wikipedia.org/wiki/Timsort}{en.wikipedia.org/wiki/Timsort}}
 
 
-\frame{Svar till facit: $n + n * log(n)$}
+\frame{\TODO Svar som ska till facit: $n + n * log(n)$}
 
-\Subtask Implementera en effektivare variant av \code{isSorted} som använder en \code{while}-sats.
+\Subtask\label{subtask:issorted} Implementera en effektivare variant av \code{isSorted} som använder en \code{while}-sats och kollar att elementen är i växande ordning.
 
-\Subtask \label{subtask:isSorted-zip} Man kan kolla om en sekvens är sorterad med det listiga tricket att först zippa sekvensen med sin egen svans och sedan kolla om alla element-par uppfyller sorteringskriteriet, alltså \code{xs.zip(xs.tail).forall(???)} där ??? byts ut mot lämpligt predikat. Vilken typ har 2-tupeln \code{xs.zip(xs.tail))} om \code{xs} är av typen \code{Vector[Int]}? Implementera \code{isSorted} med detta listiga trick. (Senare, i fördjupningsuppgift \ref{task:implicit-ordering}, ska vi göra \code{isSorted} generellt användbar för olika typer och olika ordningsdefinitioner.)
+\Subtask\Pen Vad blir antalet jämförelser i värstafallet med metoden i deluppgift \ref{subtask:issorted} om du har $n$ element?
+
+\Subtask \label{subtask:isSorted-zip} Man kan kolla om en sekvens är sorterad med det listiga tricket att först zippa sekvensen med sin egen svans och sedan kolla om alla element-par uppfyller sorteringskriteriet, alltså \code{xs.zip(xs.tail).forall(???)} där ??? byts ut mot lämpligt predikat. Vilken typ har 2-tupeln \code{xs.zip(xs.tail))} om \code{xs} är av typen \code{Vector[Int]}? Implementera \code{isSorted} med detta listiga trick. (I fördjupningsuppgift \ref{task:implicit-ordering} görs denna variant av \code{isSorted} generellt användbar för olika typer och olika ordningsdefinitioner.)
 \begin{Code}
 // kod till facit
 def isSorted(xs: Vector[Int]): Boolean = 
@@ -489,7 +363,7 @@ Placera metoden i en klass med lämpligt namn, samt skapa ett huvudprogram med t
 def selectionSort(xs: Seq[String]): Seq[String] = {
   def indexOfMin(xs: Seq[String]): Int = ??? 
   val unsorted = xs.toBuffer
-  val result = scala.collection.mutable.ArrayBuffer.empty[Int]
+  val result = scala.collection.mutable.ArrayBuffer.empty[String]
   /* 
   så länge unsorted inte är tom {
     minPos = indexOfMin(unsorted)
@@ -750,7 +624,7 @@ scala> val rätt = Vector("ö","å","ä","z").sorted(svOrd)
 \Subtask Använd metoden ovan för att skriva ett program som skriver ut raderna i en textfil i korrekt svensk sorteringsordning. Programmet ska kunna köras med kommandot:\\\texttt{scala sorted -sv textfil.txt}
 
 \Subtask Läs mer här: \\
-\noindent\small{\href{http://stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}{stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}}
+\noindent{\href{http://stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}{\small stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}}
 
 
 
