@@ -20,7 +20,7 @@ object Command {
   def parseOne(args: Vector[String]): Command = ???
 
   /**
-   * Turns a collection of arguments into a collection commands.
+   * Turns a collection of arguments into a collection of commands.
    */
   def parseAll(args: Vector[String]): Vector[Command] = ???
 

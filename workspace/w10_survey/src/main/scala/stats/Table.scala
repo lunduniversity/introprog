@@ -61,8 +61,8 @@ object Table {
    */
   def main(args: Array[String]): Unit = {
     val table = Table.fromFile("src/main/resources/favorit.csv", ",")
-    val tablefs = table.filter(4, Vector("Linux")).sort(5)
-    println(tablefs.register(5).mkString("\n"))
+    val tablefs = table.filter(4, Vector("Linux")).sort(6)
+    println(tablefs.register(6).mkString("\n"))
     toFile("src/main/resources/out.csv", tablefs)
   }
 }
