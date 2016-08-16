@@ -10,10 +10,12 @@ object Main {
   }
 
   /**
-   * Retrieves all possible actions from GameBoard and joins them with a corresponding description String into tuples.
-   * The tuples are then sent to the promptForInput method in TextUI.
-   * @return the user's choice as given by promptForInput.
-   */
+    * Retrieves all possible actions from GameBoard and joins them with
+    * a corresponding description String into tuples.
+    * The tuples are then sent to the promptForInput method in TextUI.
+    *
+    * @return the user's choice as given by promptForInput.
+    */
   def getAction(board: GameBoard): Int = ???
 
 }
