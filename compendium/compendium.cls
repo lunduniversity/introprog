@@ -246,6 +246,13 @@
             language=Scala,#1}%
 }{}
 
+\newcommand{\ScalaSpecInputListing}[3][]{\lstinputlisting[%
+basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
+            backgroundcolor=\color{white},
+            title={\hskip-0.38em\colorbox{black!70}{\parbox{\dimexpr\textwidth+1\fboxsep-2\fboxrule\relax}{\fontsize{10}{12}\selectfont\color{white}{\textit{Specification} \texttt{\textbf{#2}}}}}},%
+            identifierstyle=\color{black},%
+            rulecolor=\color{black!60},frame=tRbL,framerule=1.2pt,%
+            language=Scala,#1]{#3}}
 
 \lstnewenvironment{Code}[1][]{%
     \lstset{#1}%
