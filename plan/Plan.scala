@@ -207,13 +207,17 @@ trait Plan {
   lazy val startLp1 = Date(2016, 8, 29) // Måndag 2016-Aug-29 
   
   lazy val startLp2 = Date(2016, 10, 31) // Måndag 2016-Okt-31 
+  
+  lazy val ksdatum = Date(2016, 10, 25)  // Tisdag 2016-Okt-25
+  
+  lazy val tentadatum = Date(2017, 1, 9)  // Måndag 2017-Jan-9
 
   def weeksOf(date: Date, n: Int): Seq[String] = 
     for (week <- 0 until n) yield date.addDays(week*7).workWeek
 
   lazy val weekDates: Vector[String] = (
-    weeksOf(startLp1, 7) ++ Seq("ksdatum") ++ 
-    weeksOf(startLp2, 7) ++ Seq("tentadatum")
+    weeksOf(startLp1, 7) ++ Seq(ksdatum.shortDate) ++ 
+    weeksOf(startLp2, 7) ++ Seq(tentadatum.shortDate)
   ).toVector 
   
   def bodyItem(w: Int): Map[String, String] = Map(
