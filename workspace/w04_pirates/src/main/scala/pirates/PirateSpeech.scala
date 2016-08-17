@@ -1,32 +1,25 @@
 package pirates
 
 object PirateSpeech {
-  	def main(argh: Array[String]): Unit = {
-			val filename = if(!argh.isEmpty) argh(0) else "skattkammaron.txt"
-			// add your tests here!!!
+  def main(argh: Array[String]): Unit = {
+    val filename = if (!argh.isEmpty) argh(0) else "skattkammaron.txt"
+    // add your tests here!!!
+  }
 
-	}
-  	
-	def readBook(bookFile: String): Unit = ???
-	
+  def readBook(bookFile: String): Map[String, WordCounter] = {
+  	val words = ??? // ("herr", "trelawney", "doktor", "livesey", "och", ...)
+  	val wordSet = ??? //all words only once
+    
+  	val counterMap = ??? 
+    
+  	??? // go through the book looking at two words at a time 
+    
+    counterMap // return the map
+  }
+
   /* Optional */
-	def readBook(bookFile: String, saveToFile: String): Unit = ???
-  
-  
+  def readBook(bookFile: String, saveToFile: String):  Unit = ???
+
   /* Optional */
-	def testSpeech(file: String): Unit = ???
-	 
-  
-  class FrequencyCounter(word: String){
-	  
-	  import scala.collection.mutable.Map
-	  
-	  // add your code here
-	  
-	  def addWord(other: String): Unit = ??? 
- 	  
-	  def getBestGuess(): (String, Int) =  ???
-	  
-	  override def toString(): String = ???
-	}
+  def testSpeech(file: String): Unit = ???
 }
