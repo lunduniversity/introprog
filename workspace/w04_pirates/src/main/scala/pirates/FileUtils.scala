@@ -1,12 +1,12 @@
-package pirates 
+package pirates
 
 object FileUtils {
-  import java.nio.file.{Paths, Files}
+  import java.nio.file.{ Paths, Files }
 
-  def write(s: String, fileName: String): Unit = 
+  def save(s: String, fileName: String): Unit =
     Files.write(Paths.get(fileName), s.getBytes("UTF-8"))
 
-  def readLines(fileName: String): Vector[String] = 
+  def readLines(fileName: String): Vector[String] =
     scala.io.Source.fromFile(fileName)("UTF-8").getLines.toVector
 
   def readWords(fileName: String): Vector[String] = {
