@@ -1,14 +1,18 @@
 package turtlegraphics
 
 /** Immutable class representing a rectangle.
-  * @param position a Point representing the upper left corner of the rectangle (before rotation)
+  * @param position a Point representing the upper left corner of the rectangle
+  *                 (before rotation)
   * @param width    the width of the rectangle
   * @param height   the height of the rectangle
-  * @param angle    the angle of the rectangle (rotated around the upper left corner)
-  *                 Positive degrees indicate a counter clockwise rotation measured from the X-axis
+  * @param angle    the angle of the rectangle (rotated around the upper
+  *                 left corner) Positive degrees indicate a counter clockwise
+  *                 rotation measured from the X-axis
   */
-case class Rectangle(
-                      position: Point, width: Double, height: Double, angle: Double) {
+case class Rectangle(position: Point,
+                     width: Double,
+                     height: Double,
+                     angle: Double) {
   /** Draws the rectangle using a turtle */
   def draw(turtle: Turtle): Unit = ???
 
