@@ -1,7 +1,7 @@
 # How to scrap your fork and replace it with upstream
 
 ## 1. Make a copy of your changed files to some other dir outside of the forked repo
-This is **really important** or you will loose your work!
+This is **really important** or you will loose your work! Don't forget to copy any changed file.
 
 ## 2. run this in terminal
 This will **kill all your changes** and replace your fork with upstream
@@ -12,7 +12,7 @@ This will **kill all your changes** and replace your fork with upstream
     git reset --hard upstream/master  
     git push origin master —force
     
-## 3. copy back your changes, compile/test, commit and push
+## 3. copy back your changed files, compile/test, commit and push
 
    git add your-changed-file.tex
    git commit -m "informative message"
