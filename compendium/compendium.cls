@@ -95,7 +95,7 @@
 
 \newcommand{\TODO}{\colorbox{blue!30}{TODO!!!}~}
 \newcommand{\StudyTheory}[1]{Studera begreppen i kapitel \ref{chapter:W#1}.}
-\newcommand{\DoExercise}[2]{Gör övning {\tt #1} i kapitel \ref{exe:W#2}.}
+\newcommand{\DoExercise}[2]{Gör övning {\tt #1} i avsnitt \ref{exe:W#2}.}
 \newcommand{\ReadTheLab}{Läs igenom och begrunda hela laborationsinstruktionen.}
 
 \newcommand{\Emph}[1]{\textcolor{myemphcolor}{\textbf{#1}}}
