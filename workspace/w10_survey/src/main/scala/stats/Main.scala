@@ -10,7 +10,7 @@ object Main {
 
     case uri +: sep +: rest if rest != Vector() => {
       Try {
-    	  println(s"""Loading "$uri" with separator "$sep" ...\n""")
+        println(s"""Loading "$uri" with separator "$sep" ...\n""")
         val t = Table.fromFile(uri, sep)
         println(s"Done. Size: ${t.dim._1}x${t.dim._2}.\n")
         val commands = Command.parseAll(rest)
