@@ -15,23 +15,27 @@
 \begin{Preparations}
 \item \DoExercise{\ExeWeekSIX}{06}
 
+\item Studera dokumentationen för klassen \jcode{cslib.window.SimpleWindow} här: \url{http://cs.lth.se/pgk/api/}
+
 
 \end{Preparations}
 
 \subsection{Bakgrund}
 
-Under den här laborationen ska du skriva en samling av klasser som tillsammans kan användas för att rita i en fönsterruta. För att ge dig en grund att stå på får du tillgång till den färdigskrivna klassen SimpleWindow. SimpleWindow är en fönsterruta som tillåter programmeraren att rita linjer med hjälp utav en  ''penna''. SimpleWindow håller koll på pennans nuvarande position och kan ombes att flytta pennan genom att antingen lyfta den eller genom att rita en rak linje till en ny position.
+Under den här laborationen ska du skriva en samling av klasser som tillsammans kan användas för att rita i ett fönster. För att ge dig en grund att stå på får du tillgång till den färdigskrivna klassen SimpleWindow. SimpleWindow är en Java-klass som kan skapa ett enkelt ritfönster på skärmen, med metoder för att rita linjer, etc. SimpleWindow håller koll på en ''penna'' som representerar \textit{aktuell ritposition}. Det finns metoder för att flytta pennan och att rita en rak linje från pennans aktuella ritposition till en ny pennposition.
 
+Med hjälp av SimpleWindow ska du skapa en Turtle-klass, som ska fungera likt sköldpaddan i Kojo, vilken du använde i laborationen i avsnitt \ref{section:lab:kojo}. Delar av \href{http://cs.lth.se/pgk/api/}{dokumentationen} för SimpleWindow återspeglas i nedan specifikation.
 
+\vspace{1em}%hack to keep comment with method
 \begin{JavaSpec}{class SimpleWindow}
   /** mouse click event type */
-	public final static int MOUSE\_EVENT = 1;
+	public final static int MOUSE_EVENT = 1;
 
   /** key pressed event type */
-	public final static int KEY\_EVENT = 2;
+	public final static int KEY_EVENT = 2;
 
   /** window closed event type */
-	public final static int CLOSE\_EVENT = 3;
+	public final static int CLOSE_EVENT = 3;
 
   /** Creates a window and makes it visible. */
 	public SimpleWindow(int width, int height, String title);
@@ -99,7 +103,10 @@ Under den här laborationen ska du skriva en samling av klasser som tillsammans 
 
 \end{JavaSpec}
 
-Med hjälp utav SimpleWindow kan vi nu skapa en Turtle-klass som fungerar likt den i Kojo. 
+
+
+
+\clearpage
 
 \subsection{Obligatoriska uppgifter}
 
@@ -129,13 +136,13 @@ Med hjälp utav SimpleWindow kan vi nu skapa en Turtle-klass som fungerar likt d
 
 \Subtask Skapa två stycken Turtles i samma fönsterobjekt som rör sig alternerande. Fungerar allt som tänkt?
 
-\textbf{Tips:}
 \begin{itemize}
-\item SimpleWindow har sitt origo i övre vänstra hörnet, till skillnad från det nedre vänstra hörnet som är vanligt inom matematik.
+\item \textbf{Tips}: SimpleWindow har sitt origo i övre vänstra hörnet (och inte det nedre vänstra hörnet som är vanligt inom matematik).
 \end{itemize}
 
 \Task Skapa klassen Rectangle: 
 
+\vspace{1em}%hack to keep comment with method
 \ScalaSpecInputListing{Rectangle}{../workspace/w06_turtlegraphics/src/main/scala/turtlegraphics/Rectangle.scala}
 
 \Subtask Vilken synlighetsnivå bör konstruktorparametrarna ges? Motivera.
@@ -159,7 +166,7 @@ while(true){
 \end{Code}
 
 
-
+\clearpage
 
 \subsection{Frivilliga extrauppgifter}
 
@@ -175,30 +182,47 @@ while(true){
 
 \Subtask RectangleSequence är resultatet av flera lager utav abstraktioner. Vilka abstraktionslager ser du? Skulle man kunna abstrahera ytterligare?
 
-
-
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth, height = 0.3\pdfpageheight, keepaspectratio]{../img/w06-lab/RollingRectangle.png}
-\caption {Resultatet av \newline \code{RectangleSequence(Rectangle(Point(200, 200), 50, 30, 0), 5, 0, 70, -30, 0.67)}.}
+\caption {Resultatet av: \newline \texttt{RectangleSequence(\newline \mbox{~~Rectangle(Point(200, 200), 50, 30, 0), 5, 0, 70, -30, 0.67}\\) }}
 \label{fig:classes:turtlegraphics:rollingrectangle}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{Code}
+val w = new SimpleWindow(500, 500, "Shapes")
+val t = new Turtle(w, new Point(200, 200), 0, false)
+val rect = Rectangle(Point(225, 235), 50, 30, 0)
+val roll = RectangleSequence(rect, 100, 0, 2, 0, 0.98)
+for(i <- 0 to 360 by 20) {
+  roll.rotateLeft(i).draw(t)
+} 
+\end{Code}
+\caption {Kod som ritar bilden som visas i figur \ref{fig:classes:turtlegraphics:rectanglesequence} på sidan \pageref{fig:classes:turtlegraphics:rectanglesequence}.}
+\label{fig:classes:turtlegraphics:rectanglesequence:code}
 \end{figure}
 
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth, height = 0.3\pdfpageheight,keepaspectratio]{../img/w06-lab/RectangleSequence.png}
-\caption {Resultatet av följande kodsnutt.}
+\caption {Resultatet av koden i figur \ref{fig:classes:turtlegraphics:rectanglesequence:code}.}
 \label{fig:classes:turtlegraphics:rectanglesequence}
 
 \end{figure}
-\begin{Code}
-val w = new SimpleWindow(500, 500, "Shapes")
-val t = new Turtle(w, new Point(200, 200), 0, false)
-val rect = Rectangle(Point(225, 235), 50, 30, 0)
-val roll = RectangleSequence(rect, 100, 0, 2, 0, 0.98)
-     
-for(i <- 0 to 360 by 20) 
-      roll.rotateLeft(i).draw(t)
- 
-\end{Code}
+
+
+\Task Studera dokumentationen för de SimpleWindow-metoder som erbjuder hantering av händelser \Eng{event} och använd dessa för lösa deluppgifterna nedan.
+
+\Subtask Gör så att en Turtle kan styras med hjälp av tangentbordstryckningar A--S--D--W för vänster--ner--höger--upp och att den ritar ett spår allteftersom den förflyttas. 
+
+\Subtask Gör så att en andra Turtle kan styras med hjälp av tangentbordstryckningar J--K--L--I för vänster--ner--höger--upp och att den också ritar ett spår allteftersom den förflyttas. 
+
+\Subtask Gör så att, när de två sköldpaddorna ovan befinner sig tillräckligt nära varandra, det ritas ut en rektangel med hörn där de två sköldpaddorna finns. (Denna uppgift är lite svårare och kan behöva delas upp i delar.)
+
+
+\Task Studera dokumentationen för de SimpleWindow-metoder som erbjuder hantering av flyttbara bilder \Eng{sprites}. Gör så att en fin Sprite ritas vid positionen för de styrbara sköldpaddorna i föregående uppgift.
+
+\Task En riktig utmaning, för den som har lust: Implementera spelet ''Masken'' som beskrivs här: \url{https://sv.wikipedia.org/wiki/Snake}.
