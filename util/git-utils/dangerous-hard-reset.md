@@ -1,6 +1,7 @@
 # How to scrap your fork and replace it with upstream
 
-## 1. Make a copy of your changes to some dir outside the forked repo
+## 1. Make a copy of your changes to some other dir outside of the forked repo
+This is **really important** or you will loose your work!
 
 ## 2. run this in terminal
 This will **kill all your changes** and replace your fork with upstream
