@@ -238,12 +238,11 @@ log_2(n) = b
 Den finns som värde för en \emph{td} tagg, på följande vis: \code{<td class="mitt">2</td>}.
 
 \Subtask
-Koden laddar ner html-koden för sidan \href{http://kurser.lth.se/lot/?lasar=16_17&soek_text=&sort=kod&val=kurs&soek=t}{HÄR} och sparar den i en vektor. Sedan filtreras ut endast de rader som innehåller strängen ”kurskod” så att all onödig HTML-kod försvinner. Sedan konverteras detta, för varje rad, till \code{Course}-objekt med hjälp av metoden \code{fromHtml}. Eftersom variabeln \code{lth2016} är deklarerad som \code{lazy} kommer inte \code{download()} bli anropad förrän vi vill komma åt variabeln. Vi startar alltså processen genom att kalla på \code{lth2016}: 
+Koden laddar ner html-koden för sidan \\ \mbox{\small\url{http://kurser.lth.se/lot/?lasar=16_17&soek_text=&sort=kod&val=kurs&soek=t}} och sparar den i en vektor. Sedan filtreras ut endast de rader som innehåller strängen ”kurskod” så att all onödig HTML-kod försvinner. Sedan konverteras detta, för varje rad, till \code{Course}-objekt med hjälp av metoden \code{fromHtml}. Eftersom variabeln \code{lth2016} är deklarerad som \code{lazy} kommer inte \code{download()} bli anropad förrän vi vill komma åt variabeln. Vi startar alltså processen genom att referera variabeln \code{lth2016} i objektet \code{courses}: 
 
 \begin{REPLnonum}
 courses.lth2016
 \end{REPLnonum}
-
 Detta generarar en lång lista med \code{Course}-objekt. Antalet kurser är således lika med storleken på vektorn \code{lth2016}.
 
 \begin{REPLnonum}
@@ -269,23 +268,6 @@ def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = {
 \end{Code}
 
 \Subtask
-\textbf{Lösning 1}
-
-\begin{Code}
-def rndCode: String = {
-   val f = Vector('0','1','2','3','4','5','6','7','8','9','A'
-      ,'C','F','G','L','M','N','P')
-   val word = Stream.continually((Random.nextInt(26) + 65)
-      .toChar).take(3)
-   val fourth = Stream.continually(f(Random.nextInt(f.length)))
-      .take(1)
-   val num = Stream.continually(Random.nextInt(10)).take(2)
-   word ++ fourth ++ num mkString
-}
-\end{Code}
-
-\newpage
-\textbf{Lösning 2}
 
 \begin{Code}[language=Scala]
 def rndCode: String = {
@@ -434,6 +416,7 @@ def selectionSortInPlace(xs: Array[String]): Unit = {
 }
 \end{Code}
 
+<<<<<<< HEAD
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   EXTRAUPPGIFTER
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -447,19 +430,17 @@ Det tar i värsta fall $O(n*log(n))$ för timsort att sortera listan med $n$ ele
 
 \Subtask
 
-En något mer effektiv version av \code{isSorted} som stoppar direkt när den upptäcker att ett element inte matchar med den sorterade versionen.
+En mer effektiv version av \code{isSorted} som stoppar direkt när den upptäcker att ett element inte är sorterat.
 
 \begin{Code}
 def isSorted(xs: Vector[Int]): Boolean = {
 
-  val xssort = xs.sorted
-  var i = 0
-  while (i < xs.length && xs(i) == xssort(i)) {
-    i += 1
+  if(xs.length > 1){
+    for(i <- 0 until xs.length-1 if xs(i) > xs(i+1)){
+      return false
+    }
   }
-  if(i == xs.length - 1)
-    return true
-  false
+  true
 }
 \end{Code}
 
@@ -538,42 +519,19 @@ def selectionSort(xs: Seq[String]): Seq[String] = {
 
 \Task %Uppgift 14
 
-\TODO TA BORT LÖSNING OCH ERSÄTT MED TIPS
-
 
 \Subtask
-Felmeddelandet på rad 3 berättar att kompilatorn inte kunde hitta något implicit värde för parametern y. Detta fixar vi på rad 4 då vi skapar en \code{implicit val} av rätt typ (\code{Int}). Detta gör att rad 5 lyckas kompilera.
+___
 
 \Subtask
 
-Rad 4 kan ej exekveras för kompilatorn hittar inget implicit objekt som \code{extends CanCompare[T]} och vet därför inte hur den ska använda \code{compare}.
+___
 
 \Subtask
+Tänk på att det fortfarande måste returneras en Int.
 
-\begin{Code}
-implicit object doubleComparator extends CanCompare[Double]{
-  override def compare(a: Double, b: Double): Int = a - b toInt
-ing}
-\end{Code}
 
 \Subtask
+Undersök i Javas API hur metoden \Code{compareTo} är implementerad för strängar.
 
-\begin{Code}
-implicit object stringComparator extends CanCompare[String] {
-  override def compare(a: String, b: String): Int = {
-
-    var i = 0
-    while (i < a.length && i < b.length && a(i) == b(i)) {
-      i += 1
-    }
-
-    if (i == a.length || i == b.length) {
-      //there is no position where the two strings differ
-      return a.length - b.length
-    } else {
-      a(i) - b(i)
-    }
-  }
-}
-\end{Code}
 

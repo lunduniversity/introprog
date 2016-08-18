@@ -15,22 +15,27 @@
 \begin{Preparations}
 \item \DoExercise{\ExeWeekSIX}{06}
 
+\item Studera dokumentationen för klassen \jcode{cslib.window.SimpleWindow} här: \url{http://cs.lth.se/pgk/api/}
+
 
 \end{Preparations}
 
 \subsection{Bakgrund}
 
-Under den här laborationen ska du skriva en samling av klasser som tillsammans kan användas för att rita i en fönsterruta. För att ge dig en grund att stå på får du tillgång till den färdigskrivna klassen SimpleWindow. SimpleWindow är en fönsterruta som tillåter programmeraren att rita linjer med hjälp utav en  ''penna''. SimpleWindow håller koll på pennans nuvarande position och kan ombes att flytta pennan genom att antingen lyfta den eller genom att rita en rak linje till en ny position.
+Under den här laborationen ska du skriva en samling av klasser som tillsammans kan användas för att rita i ett fönster. För att ge dig en grund att stå på får du tillgång till den färdigskrivna klassen SimpleWindow. SimpleWindow är en Java-klass som kan skapa ett enkelt ritfönster på skärmen, med metoder för att rita linjer, etc. SimpleWindow håller koll på en ''penna'' som representerar \textit{aktuell ritposition}. Det finns metoder för att flytta pennan och att rita en rak linje från pennans aktuella ritposition till en ny pennposition.
 
+Med hjälp av SimpleWindow ska du skapa en Turtle-klass, som ska fungera likt sköldpaddan i Kojo, vilken du använde i laborationen i avsnitt \ref{section:lab:kojo}. Delar av \href{http://cs.lth.se/pgk/api/}{dokumentationen} för SimpleWindow återspeglas i nedan specifikation.
+
+\vspace{1em}%hack to keep comment with method
 \begin{JavaSpec}{class SimpleWindow}
   /** mouse click event type */
-	public final static int MOUSE\_EVENT = 1;
+	public final static int MOUSE_EVENT = 1;
 
   /** key pressed event type */
-	public final static int KEY\_EVENT = 2;
+	public final static int KEY_EVENT = 2;
 
   /** window closed event type */
-	public final static int CLOSE\_EVENT = 3;
+	public final static int CLOSE_EVENT = 3;
 
   /** Creates a window and makes it visible. */
 	public SimpleWindow(int width, int height, String title);
@@ -98,89 +103,32 @@ Under den här laborationen ska du skriva en samling av klasser som tillsammans 
 
 \end{JavaSpec}
 
-Med hjälp utav SimpleWindow kan vi nu skapa en Turtle-klass som fungerar likt den i Kojo. 
+
+
+
+\clearpage
 
 \subsection{Obligatoriska uppgifter}
 
 \Task Skapa en klass Point för att beskriva en viss koordinat (x,y) i ett fönster. Klassen ska vara omuterbar - man ska alltså inte kunna ändra på en koordinat efter att den har skapats. Notera att klassens attribut är av typen Double och inte Int, trots att de i någon mån beskriver en diskret pixelposition. Anledningen till detta är att det kan uppstå avrundningsfel vid upprepade förflyttningar. Detta blir särskilt märkbart då varje förflyttning är liten, som t.ex. när en Turtle används för att rita en cirkel.
 
-\begin{ScalaSpec}{Point}
-/** Represents a single Point in the x,y plane. */
-case class Point(val x: Double, val y: Double) {
-
-** Returns a new Point which has been moved some number of pixels */
-def translate(dx: Double, dy: Double) = ???
-}
-\end{ScalaSpec}
+\ScalaSpecInputListing{Point}{../workspace/w06_turtlegraphics/src/main/scala/turtlegraphics/Point.scala}
 
 \Subtask Implementera klassen Point.
 
-
-
-
 \Task Skapa klassen Turtle:
 
-\begin{ScalaSpec}{Turtle}
-/** A Kojo-like Turtle class that can be used to draw shapes
-    in a SimpleWindow.
-  * @param window     The window the turtle should be placed in.
-  * @param position   A Point representing the turtle's starting
-                      coordinates.
-  * @param angle      The angle between the turtle direction and
-                      the X-axis measured in degrees. 
-                      Positive degrees indicate a counter clockwise rotation.
-  * @param isPenDown  A boolean representing the turtle's pen
-                      position. True if the pen is down.
-  */
-class Turtle(window: SimpleWindow, private var position: Point,
-      private var angle: Double, private var isPenDown: Boolean) {
-
-  /** Gets the Turtle's current pixel position on the x axis */
-  def x: Int = ???
-
-  /** Gets the Turtle's current pixel position on the y axis
-      (measured from the top left) */
-  def y: Int = ???
-
-  /** Moves the turtle to a new position without drawing a line. */
-  def jumpTo(newPosition: Point) : Unit = ???
-
-  /** Moves the turtle forward in its current direction, drawing
-      a line if the pen is down.
-    * @param length The number of pixels to move forward.  */
-  def forward(length: Double): Unit = ???
-
-  /** Turns the turtle to the left.
-    *
-    * @param turnAngle The number of degrees to turn. */
-  def turnLeft(turnAngle: Double): Unit = ???
-
-  /** Turns the turtle to the right.
-    *
-    * @param turnAngle The number of degrees to turn. */
-  def turnRight(turnAngle: Double): Unit = ???
-
-  /** Turns the turtle straight up. */
-  def turnNorth(): Unit = ???
-
-  /** Sets the turtle's pen down, causing it to draw lines when
-      the turtle moves. */
-  def penDown(): Unit = ???
-
-  /** Lifts the turtle's pen, preventing it from drawing lines,
-      even when it moves. */
-  def penUp(): Unit = ???
-}
-
-\end{ScalaSpec}
-
-
+\ScalaSpecInputListing{Turtle}{../workspace/w06_turtlegraphics/src/main/scala/turtlegraphics/Turtle.scala}
 
 \Subtask Vilka attribut finns i klassen, och vilken synlighetsnivå har de? Vilken/vilka konstruktorer finns? 
 
 \Subtask Är klassen muterbar eller omuterbar? Motivera! Hade man kunnat göra tvärtom?
 
-\Subtask Implementera klassen Turtle enligt specifikationen ovan.
+\Subtask Implementera klassen Turtle enligt specifikationen ovan. När klassen är färdigimplementerad ska den kunna användas för att rita figurer från labbens main-metod i filen Main.scala.
+
+\ScalaSpecInputListing{Main}{../workspace/w06_turtlegraphics/src/main/scala/turtlegraphics/Main.scala}
+
+\Subtask Kör main-metoden ovan för att bekräfta att din implementation fungerar. Bilden ska visa två lika stora rektanglar i samma höjd.
 
 \Subtask Just nu behöver användaren av en Turtle specificera alla detaljer om en Turtles ursprungliga tillstånd som parametervärden för att skapa den. För att underlätta för användaren ska du nu skapa en alternativ konstruktor som kräver färre parametrar. Vilka konstruktorparametrar skulle kunna bytas ut mot rimliga default-värden?
 
@@ -188,42 +136,14 @@ class Turtle(window: SimpleWindow, private var position: Point,
 
 \Subtask Skapa två stycken Turtles i samma fönsterobjekt som rör sig alternerande. Fungerar allt som tänkt?
 
-\textbf{Tips:}
 \begin{itemize}
-\item SimpleWindow har sitt origo i övre vänstra hörnet, till skillnad från det nedre vänstra hörnet som är vanligt inom matematik.
+\item \textbf{Tips}: SimpleWindow har sitt origo i övre vänstra hörnet (och inte det nedre vänstra hörnet som är vanligt inom matematik).
 \end{itemize}
 
 \Task Skapa klassen Rectangle: 
 
-\begin{ScalaSpec}{Rectangle}
-/** Immutable class representing a rectangle.
-  * @param position a Point representing the upper left corner of the
-                    rectangle (before rotation)
-  * @param width    the width of the rectangle
-  * @param height   the height of the rectangle
-  * @param angle    the angle of the rectangle (rotated around
-                    the upper left corner)
-  */
-class Rectangle(position: Point, width: Double,
-                height : Double, angle : Double) {
-  /** Draws the rectangle using a turtle */
-  def draw(turtle: Turtle): Unit = ???
-
-  /** Returns a new Rectangle that is rotated to the left */
-  def rotateLeft(degrees: Double): Rectangle = ???
-
-  /** Returns a new Rectangle that is rotated to the right */
-  def rotateRight(degrees: Double): Rectangle = ???
-
-  /** Returns a new Rectangle that has been scaled by a size factor */
-  def scale(factor: Double): Rectangle = ???
-
-  /** Returns a new Rectangle that has been moved some number of pixels */
-  def translate(dx: Double, dy: Double): Rectangle = ???
-}
-\end{ScalaSpec}
-
-
+\vspace{1em}%hack to keep comment with method
+\ScalaSpecInputListing{Rectangle}{../workspace/w06_turtlegraphics/src/main/scala/turtlegraphics/Rectangle.scala}
 
 \Subtask Vilken synlighetsnivå bör konstruktorparametrarna ges? Motivera.
 
@@ -246,7 +166,7 @@ while(true){
 \end{Code}
 
 
-
+\clearpage
 
 \subsection{Frivilliga extrauppgifter}
 
@@ -254,42 +174,7 @@ while(true){
 \Task Skapa en klass RectangleSequence. I denna klass skall draw-metoden rita ut ett antal rektanglar där varje rektangel har förflyttat sig, roterats och skalats jämfört med föregående rektangel i sekvensen. Se bilder nedan.
 
 
-\begin{ScalaSpec}{RectangleSequence}
-/** Represents a sequence of Rectangles that have been translated,
-    rotated, and scaled down.
-  *
-  * @param rectangle        the rectangle to use as a base for the shape
-  * @param count            the number of rectangles to draw
-  * @param startAngle       the number of degrees to rotate the image
-  * @param step             the number of pixels to move each rectangle
-                            (in the direction of startAngle)
-  * @param rotationStep     the number of degrees to shift each rectangle
-                            with each roll
-  * @param scaleStep        the scale factor to use in each step
-                          
-  */
-case class RectangleSequence(rectangle: Rectangle,
-                             count: Int,
-                             angle: Double,
-                             step: Double,
-                             rotationStep: Double) {
-
-  /** Draws the image using a given Turtle */
-  def draw(turtle: Turtle): Unit = ???
-
-  /** Returns a new RectangleSequence that has been scaled with a size factor*/
-  def scale(factor: Double): RectangleSequence = ???
-
-  /** Returns a new RectangleSequence that has been rotated to the left */
-  def rotateLeft(degrees: Double): RectangleSequence = ???
-
-  /** Returns a new RectangleSequence that has been rotated to the right */
-  def rotateRight(degrees: Double): RectangleSequence = ???
-
-  /** Returns a new RectangleSequence that has moved some number of pixels*/
-  def translate(dx: Double, dy: Double): RectangleSequence = ???
-}
-\end{ScalaSpec}
+\ScalaSpecInputListing{RectangleSequence}{../workspace/w06_turtlegraphics/src/main/scala/turtlegraphics/RectangleSequence.scala}
 
 \Subtask Implementera RectangleSequence.
 
@@ -297,30 +182,47 @@ case class RectangleSequence(rectangle: Rectangle,
 
 \Subtask RectangleSequence är resultatet av flera lager utav abstraktioner. Vilka abstraktionslager ser du? Skulle man kunna abstrahera ytterligare?
 
-
-
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth, height = 0.3\pdfpageheight, keepaspectratio]{../img/w06-lab/RollingRectangle.png}
-\caption {Resultatet av \newline \code{RectangleSequence(Rectangle(Point(200, 200), 50, 30, 0), 5, 0, 70, -30, 0.67)}.}
+\caption {Resultatet av: \newline \texttt{RectangleSequence(\newline \mbox{~~Rectangle(Point(200, 200), 50, 30, 0), 5, 0, 70, -30, 0.67}\\) }}
 \label{fig:classes:turtlegraphics:rollingrectangle}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{Code}
+val w = new SimpleWindow(500, 500, "Shapes")
+val t = new Turtle(w, new Point(200, 200), 0, false)
+val rect = Rectangle(Point(225, 235), 50, 30, 0)
+val roll = RectangleSequence(rect, 100, 0, 2, 0, 0.98)
+for(i <- 0 to 360 by 20) {
+  roll.rotateLeft(i).draw(t)
+} 
+\end{Code}
+\caption {Kod som ritar bilden som visas i figur \ref{fig:classes:turtlegraphics:rectanglesequence} på sidan \pageref{fig:classes:turtlegraphics:rectanglesequence}.}
+\label{fig:classes:turtlegraphics:rectanglesequence:code}
 \end{figure}
 
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth, height = 0.3\pdfpageheight,keepaspectratio]{../img/w06-lab/RectangleSequence.png}
-\caption {Resultatet av följande kodsnutt.}
+\caption {Resultatet av koden i figur \ref{fig:classes:turtlegraphics:rectanglesequence:code}.}
 \label{fig:classes:turtlegraphics:rectanglesequence}
 
 \end{figure}
-\begin{Code}
-val w = new SimpleWindow(500, 500, "Shapes")
-val t = new Turtle(w, new Point(200, 200), 0, false)
-val rect = Rectangle(Point(225, 235), 50, 30, 0)
-val roll = RectangleSequence(rect, 100, 0, 2, 0, 0.98)
-     
-for(i <- 0 to 360 by 20) 
-      roll.rotateLeft(i).draw(t)
- 
-\end{Code}
+
+
+\Task Studera dokumentationen för de SimpleWindow-metoder som erbjuder hantering av händelser \Eng{event} och använd dessa för lösa deluppgifterna nedan.
+
+\Subtask Gör så att en Turtle kan styras med hjälp av tangentbordstryckningar A--S--D--W för vänster--ner--höger--upp och att den ritar ett spår allteftersom den förflyttas. 
+
+\Subtask Gör så att en andra Turtle kan styras med hjälp av tangentbordstryckningar J--K--L--I för vänster--ner--höger--upp och att den också ritar ett spår allteftersom den förflyttas. 
+
+\Subtask Gör så att, när de två sköldpaddorna ovan befinner sig tillräckligt nära varandra, det ritas ut en rektangel med hörn där de två sköldpaddorna finns. (Denna uppgift är lite svårare och kan behöva delas upp i delar.)
+
+
+\Task Studera dokumentationen för de SimpleWindow-metoder som erbjuder hantering av flyttbara bilder \Eng{sprites}. Gör så att en fin Sprite ritas vid positionen för de styrbara sköldpaddorna i föregående uppgift.
+
+\Task En riktig utmaning, för den som har lust: Implementera spelet ''Masken'' som beskrivs här: \url{https://sv.wikipedia.org/wiki/Snake}.
