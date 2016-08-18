@@ -5,9 +5,9 @@ import cslib.window.SimpleWindow
 
 
 /** Represents a single Point in the x,y plane. */
-case class Point(val x: Number, val y: Number) {
+case class Point(val x: Double, val y: Double) {
   /** Returns a new Point which has been moved some number of pixels */
-  def translate(dx: Number, dy: Number) = ???
+  def translate(dx: Double, dy: Double) = ???
 }
 
 /** A Kojo-like Turtle class that can be used to draw shapes in a SimpleWindow.
@@ -15,6 +15,7 @@ case class Point(val x: Number, val y: Number) {
   * @param window    The window the turtle should be placed in.
   * @param position  A Point representing the turtle's starting coordinates.
   * @param angle     The angle between the turtle direction and the X-axis measured in degrees.
+  *                   Positive degrees indicate a counter clockwise rotation.
   * @param isPenDown A boolean representing the turtle's pen position. True if the pen is down. */
 class Turtle(window: SimpleWindow,
              private var position: Point,
@@ -35,18 +36,18 @@ class Turtle(window: SimpleWindow,
     * @param length The number of pixels to move forward. */
   def forward(length: Double): Unit = ???
 
-  /** Turns the turtle to the right.
+  /** Turns the turtle to the left.
     *
     * @param turnAngle The number of degrees to turn. */
   def turnLeft(turnAngle: Double): Unit = ???
 
-  /** Turns the turtle to the left.
+  /** Turns the turtle to the right.
     *
     * @param turnAngle The number of degrees to turn. */
   def turnRight(turnAngle: Double): Unit = ???
 
   /** Turns the turtle straight up. */
-  def turnNorth: Unit = ???
+  def turnNorth(): Unit = ???
 
   /** Sets the turtle's pen down, causing it to draw lines when the turtle moves. */
   def penDown(): Unit = ???
@@ -60,6 +61,7 @@ class Turtle(window: SimpleWindow,
   * @param width    the width of the rectangle
   * @param height   the height of the rectangle
   * @param angle    the angle of the rectangle (rotated around the upper left corner)
+  *                 Positive degrees indicate a counter clockwise rotation measured from the X-axis
   */
 case class Rectangle(
                       position: Point, width: Double, height: Double, angle: Double) {
@@ -83,15 +85,18 @@ case class Rectangle(
   *
   * @param rectangle        the rectangle to use as a base for the composite shape
   * @param count            the number of rectangles to draw
-  * @param angle            the number of degrees to rotate the image
-  * @param step             the number of pixels to move each rectangle (in the direction of angle)
+  * @param startAngle       the number of degrees to rotate the image
+  *                         Positive degrees indicate a counter clockwise rotation measured from the X-axis
+  * @param step             the number of pixels to move each rectangle (in the direction of startAngle)
   * @param rotationStep     the number of degrees to shift each rectangle with each roll
+  * @param scaleStep        the scale factor to use in each step
   */
 case class RectangleSequence(rectangle: Rectangle,
                              count: Int,
-                             angle: Double,
+                             startAngle: Double,
                              step: Double,
-                             rotationStep: Double) {
+                             rotationStep: Double,
+                             scaleStep: Double) {
 
   /** Draws the image using a given Turtle */
   def draw(turtle: Turtle): Unit = ???

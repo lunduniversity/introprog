@@ -92,6 +92,11 @@ case class Maze(data: Vector[Vector[Boolean]]) {
     
     //Insert code here!
 
+    /**
+     *  Builds a brick in the wall at coordinates x, y of size blockSize.
+     *  @param x					The x coordinate at which to build the brick
+     *  @param y					The y coordinate at which to build the brick
+     */
     def brickInTheWall(x: Int, y: Int): Unit = {
       w.setLineWidth(1)
       for (j <- 1 until blockSize - 1) {
@@ -142,45 +147,55 @@ object Maze {
   def random(rows: Int, cols: Int): Maze = {
     import scala.collection.mutable.ArrayBuffer
     val rand = scala.util.Random
-    val matrix: ArrayBuffer[ArrayBuffer[Boolean]] = ArrayBuffer.fill(rows, cols)(true)
+    val maze: ArrayBuffer[ArrayBuffer[Boolean]] = ArrayBuffer.fill(rows, cols)(true)
     var counter = 0
-    val listOfWalls: ArrayBuffer[List[Int]] = ArrayBuffer()
+    val buffer: ArrayBuffer[List[Int]] = ArrayBuffer()
 
-    def addWallToList(row: Int, col: Int): Unit = {
-      if (col < cols - 2 && matrix(row)(col + 1)) {
+    /**
+     *  Adds all surrounding walls of a specified coordinate to the buffer of possible walls to choose from unless they are already added or outside of the maze with a margin of one element.
+     *  @param row		The row index of the coordinate
+     *  @param col		The column index of the coordinate
+     */
+    def addSurroundingWallsToBuffer(row: Int, col: Int): Unit = {
+      if (col < cols - 2 && maze(row)(col + 1)) {
         val eastWall = List(row, col + 1)
-        if (!listOfWalls.contains(eastWall))
-          listOfWalls += eastWall
+        if (!buffer.contains(eastWall))
+          buffer += eastWall
       }
-      if (col > 1 && matrix(row)(col - 1)) {
+      if (col > 1 && maze(row)(col - 1)) {
         val westWall = List(row, col - 1)
-        if (!listOfWalls.contains(westWall))
-          listOfWalls += westWall
+        if (!buffer.contains(westWall))
+          buffer += westWall
       }
-      if (row > 1 && matrix(row - 1)(col)) {
+      if (row > 1 && maze(row - 1)(col)) {
         val northWall = List(row - 1, col)
-        if (!listOfWalls.contains(northWall))
-          listOfWalls += northWall
+        if (!buffer.contains(northWall))
+          buffer += northWall
       }
-      if (row < rows - 2 && matrix(row + 1)(col)) {
+      if (row < rows - 2 && maze(row + 1)(col)) {
         val southWall = List(row + 1, col)
-        if (!listOfWalls.contains(southWall))
-          listOfWalls += southWall
+        if (!buffer.contains(southWall))
+          buffer += southWall
       }
     }
-
-    def wallsAround(row: Int, col: Int): Boolean = {
+    
+    /**
+     *  Checks whether there are three filled walls around the specified coordinate, returns true if that is the case, otherwise false.
+     *  @param row		The row index of the coordinate
+     *  @param col		The column index of the coordinate
+     */
+    def threeWallsAround(row: Int, col: Int): Boolean = {
       var counter = 0
-      if (matrix(row)(col + 1)) counter += 1
-      if (matrix(row)(col - 1)) counter += 1
-      if (matrix(row - 1)(col)) counter += 1
-      if (matrix(row + 1)(col)) counter += 1
+      if (maze(row)(col + 1)) counter += 1
+      if (maze(row)(col - 1)) counter += 1
+      if (maze(row - 1)(col)) counter += 1
+      if (maze(row + 1)(col)) counter += 1
       (counter == 3)
     }
     
     //Insert code here!
 
-    new Maze(matrix.map(_.toVector).toVector)
+    new Maze(maze.map(_.toVector).toVector)
   }
 
 }

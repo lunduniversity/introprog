@@ -2,6 +2,7 @@ import sbt._
 import Process._
 import Keys._
 
+libraryDependencies += "jline" % "jline" % "2.14.2"
 
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
