@@ -75,7 +75,9 @@
 \usepackage{xspace} %http://www.math.tamu.edu/~harold.boas/courses/math696/why-macros.html
 \usepackage[pdfpagelayout=TwoPageRight]{hyperref}
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
-\hypersetup{colorlinks=true,linkcolor=, linkbordercolor=, urlbordercolor=mylinkcolor, urlcolor=mylinkcolor, pdfborderstyle={/S/U/W 1}}
+\hypersetup{colorlinks=true, allcolors=mylinkcolor, 
+%linkcolor=, linkbordercolor=, urlbordercolor=mylinkcolor,
+ urlcolor=mylinkcolor, pdfborderstyle={/S/U/W 1}}
 
 \usepackage{pdfpages} % To include quickref booklet in appendix
 
@@ -107,11 +109,11 @@
 
 \newcommand{\ChapterUnnum}[1]{\chapter*{#1}\addcontentsline{toc}{chapter}{#1}}
 \newcommand{\SectionUnnum}[1]{\section*{#1}\addcontentsline{toc}{section}{#1}}
-\newcommand{\Exercise}[1]{\newpage\section{Övning: {\tt #1}}}
+\newcommand{\Exercise}[1]{\newpage\section{Övning: {\tt #1}}\label{section:exe:#1}}
 \newcommand{\ExerciseSolution}[1]{\newpage\section{{\tt #1}}}
-\newcommand{\Lab}[1]{\newpage\section{Laboration: {\tt #1}}}
-\newcommand{\Teamlab}[1]{\newpage\section{Grupplaboration: {\tt #1}}}
-\newcommand{\Assignment}[1]{\newpage\section{Projektuppgift: {\tt #1}}}
+\newcommand{\Lab}[1]{\newpage\section{Laboration: {\tt #1}}\label{section:lab:#1}}
+\newcommand{\Teamlab}[1]{\newpage\section{Grupplaboration: {\tt #1}}\label{section:lab:#1}}
+\newcommand{\Assignment}[1]{\newpage\section{Projektuppgift: {\tt #1}}\label{section:proj:#1}}
 \newcommand{\BasicTasks}{\subsection{Grunduppgifter}}
 \newcommand{\ExtraTasks}{\subsection{Extrauppgifter}}
 \newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter}}
