@@ -328,9 +328,6 @@ Denna lösning är dock relativt långsam för stora samlingar. Man behöver ju 
 % som i värsta fall gör $n * log(n)$ jämförelser
 \footnote{\href{https://en.wikipedia.org/wiki/Timsort}{en.wikipedia.org/wiki/Timsort}}
 
-
-\frame{\TODO Svar som ska till facit: $n + n * log(n)$}
-
 \Subtask\label{subtask:issorted} Implementera en effektivare variant av \code{isSorted} som använder en \code{while}-sats och kollar att elementen är i växande ordning.
 
 \Subtask\Pen Vad blir antalet jämförelser i värstafallet med metoden i deluppgift \ref{subtask:issorted} om du har $n$ element?
@@ -422,28 +419,14 @@ def isSorted(xs: Seq[Int]): Boolean = xs == xs.sorted
 \end{Code}
 
 
-\Subtask Men vi vill gärna att \code{isSorted} ska fungera för godtyckliga typer T som har en ordningsdefinition. Detta kan göras med nedan funktion eftersom metoden \code{sorted} är definierad för alla samlingar där typen \code{T} har en implicit ordning. Speciellt gäller detta för alla de grundtyperna \code{Int}, \code{Double}, \code{String}, etc.
-\begin{Code}
-def isSorted[T](xs: Seq[T]): Boolean = xs == xs.sorted 
-\end{Code}
-Testa metoden ovan i REPL enligt nedan.
-\begin{REPL}
-scala> isSorted(Vector(1,2,3))
-scala> isSorted(Array(1,2,3,1))
-scala> isSorted(Vector("A","B","C"))
-scala> isSorted(List("A","B","C","A"))
-scala> class Person(firsName: String, familyName: String)
-scala> val persons = Vector(Person("Zeb", "Robson"), Person("Robin","Zebson")) 
-scala> isSorted(persons)
-\end{REPL}
-Vad ger sista raden för felmeddelande? Varför?
-
-
 \Subtask Vi vill gärna kunna jämföra element av godtycklig typ \code{T}, så att vi till exempel ska kunna implementera en generisk \code{isSorted} med \code{while} eller vårt \code{zip}-trick från uppgift \ref{task:isSorted}\ref{subtask:isSorted-zip}. Men det blir problem enligt nedan. Hur lyder felmeddelandet? Vad saknas?
 
 \begin{REPL}
 scala> def isSorted[T](xs: Seq[T]): Boolean =  
          xs.zip(xs.tail).forall(x => x._1 <= x._2)
+
+scala> def isSorted(xs: Seq[Int]): Boolean = xs == xs.sorted          
+         
 \end{REPL}
 
 \Subtask \emph{Implicita ordningar.} Man kan berätta för kompilatorn att den ska leta efter implicita ordningar av typen  \code{T}. Detta kan göras genom att utöka signaturen för \code{isSorted} med en andra parameterlista, som tar en implicit parameter enligt följande:
@@ -454,7 +437,16 @@ def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean =
 \end{CodeSmall}
 
 Det finns fördefinierade implicita objekt \code{Ordering[T]} för alla grundtyper, alltså t.ex. \code{Ordering[Int]}, \code{Ordering[String]}, etc. Objekt av typen \code{Ordering} har jämförelsemetoder som t.ex. \code{lteq} (förk. \emph{less than or equal}) och \code{gt} (förk. \emph{greater than}).
-Testa så att kompilatorn hittar ordningen för samlingar av värden av inbyggda typer. Visa även att det fortfarande blir problem för egendefinierade klasser, t.ex. \code{Person} enligt tidigare (detta ska vi råda bot på i uppgift \ref{task:custom-ordering}).
+Testa så att kompilatorn hittar ordningen för samlingar av värden av inbyggda typer. Kontrollera även enligt nedan att det fortfarande blir problem för egendefinierade klasser, t.ex. \code{Person} enligt tidigare (detta ska vi råda bot på i uppgift \ref{task:custom-ordering}).
+\begin{REPL}
+scala> isSorted(Vector(1,2,3))
+scala> isSorted(Array(1,2,3,1))
+scala> isSorted(Vector("A","B","C"))
+scala> isSorted(List("A","B","C","A"))
+scala> class Person(firsName: String, familyName: String)
+scala> val persons = Vector(Person("Zeb", "Robson"), Person("Robin","Zebson")) 
+scala> isSorted(persons)
+\end{REPL}
 
 \Subtask \emph{Importera implicita ordningsoperatorer från en \code{Ordering}.} Om man gör import på ett \code{Ordering}-objekt får man tillgång till implicita konverteringar som gör att jämförelseoperatorerna fungerar. Testa nedan variant av \code{isSorted} på olika sekvenstyper och verifiera att \code{<=}, \code{>}, etc., nu fungerar enligt nedan.
 \begin{CodeSmall}
