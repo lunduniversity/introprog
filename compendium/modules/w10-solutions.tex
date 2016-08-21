@@ -5,6 +5,7 @@
 \ExerciseSolution{\ExeWeekTEN}
 
 % Grunduppgifter
+\BasicTasks
 
 \Task %Uppgift 1
 
@@ -149,9 +150,12 @@ Person(asson,assonson,1234), Person(anna,Book,2))
 
 \Task %Uppgift 4
 
-\Subtask Exekvera koden och du bör finna att det tar längre tid att hitta värdet 1 i vårt Set s än i vektorn v.
+\Subtask 
+Exekvera koden och du bör finna att det tar längre tid att hitta värdet 1 i vårt Set s än i vektorn v.
 
-\Subtask Ja varför?!
+\Subtask 
+
+En vektor har en sekventiell ordning som find kan använda, medan \code{Set} är internt ordnad  på ett annat sätt för att innehållskontroll ska gå extra snabbt. Anledningen att det tar tid för \code{find} på \code{Set} är att det först måste skapas en iterator innan vår mängd kan gås igenom från början till slut. Metoden \code{contains} på \code{Set} däremot är rasande snabb beroende på den interna strukturen hos objekt av typen \code{Set} (som är smart designad med s.k. hash-koder, där det går lika snabbt att hitta ett element oavsett vart det befinner sig).
 
 
 \Task %Uppgift 5
@@ -268,27 +272,6 @@ def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = {
 \end{Code}
 
 \Subtask
-
-%%% Nedan bortkommenterat av Björn den 2016-08-18; Vi använder inte Stream i denna kurs.
-%%% Dessutom kanske Stream blir deprecated och ersatt med LazyList i Scala 2.13
-%%% https://issues.scala-lang.org/browse/SI-9872
-%\textbf{Lösning 1}
-%
-%\begin{Code}
-%def rndCode: String = {
-%   val f = Vector('0','1','2','3','4','5','6','7','8','9','A'
-%      ,'C','F','G','L','M','N','P')
-%   val word = Stream.continually((Random.nextInt(26) + 65)
-%      .toChar).take(3)
-%   val fourth = Stream.continually(f(Random.nextInt(f.length)))
-%      .take(1)
-%   val num = Stream.continually(Random.nextInt(10)).take(2)
-%   word ++ fourth ++ num mkString
-%}
-%\end{Code}
-%
-%\newpage
-%\textbf{Lösning 2}
 
 \begin{Code}[language=Scala]
 def rndCode: String = {
@@ -437,11 +420,141 @@ def selectionSortInPlace(xs: Array[String]): Unit = {
 }
 \end{Code}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   EXTRAUPPGIFTER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ExtraTasks
 \Task %Uppgift 11
 
-\Subtask $n + n * log(n)$
 
-\Subtask \TODO
+\Subtask
 
-\Subtask \TODO
+Det tar i värsta fall $O(n*log(n))$ för timsort att sortera listan med $n$ element. Sedan krävs $n$ stycken jämförelser mellan den sorterade och osorterade listan. Det totala antalet jämförelser i värstafallet uppgår därför till $n + n*log(n)$.
+
+\Subtask
+
+En mer effektiv version av \code{isSorted} som stoppar direkt när den upptäcker att ett element inte är sorterat.
+
+\begin{Code}
+def isSorted(xs: Vector[Int]): Boolean = {
+
+  if(xs.length > 1){
+    for(i <- 0 until xs.length-1 if xs(i) > xs(i+1)){
+      return false
+    }
+  }
+  true
+}
+\end{Code}
+
+\Subtask
+
+2-tupeln är av typen \code{(Int, Int)}.
+
+\begin{Code}
+def isSorted(xs: Vector[Int]): Boolean = 
+  xs.zip(xs.tail).forall(x => x._1 <= x._2) 
+\end{Code}
+
+
+\Task %Uppgift 12
+
+\Subtask
+
+\begin{Code}
+def insertionSort(xs: Array[Int]): Unit = {
+
+  for(elem <- 1 until xs.length if xs.length > 0){
+    var pos = elem
+    while(pos > 0 && xs(pos) < xs(pos - 1)){
+      val temp = xs(pos -1)
+      xs(pos -1) = xs(pos)
+      xs(pos) = temp
+      pos -= 1
+    }
+  }
+}
+\end{Code}
+
+\Subtask
+
+\begin{Code}[language=Java]
+public static void insertionSort(int[] xs) {
+
+    if (xs.length < 1)
+        return;
+
+    for (int i = 1; i < xs.length; i++) {
+        int pos = i;
+
+        for (; pos > 0 && xs[pos] < xs[pos - 1]; pos--) {
+            int temp = xs[pos - 1];
+            xs[pos - 1] = xs[pos];
+            xs[pos] = temp;
+        }
+    }
+}
+\end{Code}
+
+
+\Task %Uppgift 13
+
+\begin{Code}
+def selectionSort(xs: Seq[String]): Seq[String] = {
+  def indexOfMin(xs: Seq[String]): Int = xs.indexOf(xs.min)
+  val unsorted = xs.toBuffer
+  val result = scala.collection.mutable.ArrayBuffer.empty[String]
+
+  while (!unsorted.isEmpty) {
+    val minPos = indexOfMin(unsorted)
+    val elem = unsorted.remove(minPos)
+    result.append(elem)
+  }
+
+  result.toVector
+}
+\end{Code}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   FÖRDJUPNINGSUPPGIFTER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\AdvancedTasks
+
+\Task %Uppgift 14
+
+
+\Subtask
+---
+
+
+\Subtask
+---
+
+
+\Subtask
+Tänk på att det fortfarande måste returneras en Int.
+
+
+\Subtask
+Undersök i Javas API hur metoden \code{compareTo} är implementerad för strängar.
+
+
+\Task %Uppgift 15
+
+---
+
+
+\Task %Uppgift 16
+
+---
+
+
+\Task %Uppgift 17
+
+
+
 
