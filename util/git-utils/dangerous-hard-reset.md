@@ -10,7 +10,7 @@ This will **kill all your changes** and replace your fork with upstream
     git fetch upstream
     git checkout master
     git reset --hard upstream/master  
-    git push origin master —force
+    git push origin master --force
     
 ## 3. copy back your changed files, compile/test, commit and push
 
