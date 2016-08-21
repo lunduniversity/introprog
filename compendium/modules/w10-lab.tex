@@ -5,7 +5,7 @@
 \Lab{\LabWeekTEN}
 
 \begin{Goals}
-\item Kunna använda inbyggda sorteringsfunktioner
+\item Kunna använda inbyggda sorteringsfunktioner.
 \item Kunna använda inbyggda sökfunktioner.
 \item Känna till hur strängar ordnas.
 \item Kunna läsa text i tabellform från fil och webbaddress.
@@ -20,31 +20,7 @@
 \item \DoExercise{\ExeWeekTEN}{10}
 \item \ReadTheLab
 \item Fyll i denna enkät: \url{https://goo.gl/forms/hC6JK2UQXVpbGECc2}  \\
-I enkäten ska du i sju olika kategorier besvara frågan: \textit{Vilket är ditt favoritalternativ?} \\
-Kategorierna är:
-\begin{itemize}[nolistsep,noitemsep]
-\item Program - LTH-program
-\item Indent - Spaces vs Tabs.
-\item UI - GUI vs Terminal.
-\item Lang - Programmeringsspråk.
-\item OS - Operativsystem
-\item Browser - Webbläsare
-\item DE - Development Environment, editorer och IDEer.
-\end{itemize}
-%gällande följande områden och svarsalternativen:
-%\begin{itemize}[nolistsep,noitemsep]
-%\item \textbf{Program} (D, W, C, E, F, I, Bio, K, L, M, Bme, Nano, V), 
-%\item \textbf{OS} (Win7, Win10, macOS X, Linux, Android, IOS, ChromeOS), 
-%\item \textbf{editor} (gedit, vim, emacs, vi, notepad++, sublime text, atom)
-%\item \textbf{ide} (Eclipse, IntelliJ/AndroidStudio, VisualStudio, xcode), 
-%\item \textbf{socialnät} (facebook, snapchat, linkedin, instagram, github), 
-%\item \textbf{webbläsare} (firefox, chrome, safari, edge, vivaldi, opera)
-%\item \textbf{sorteringsalgoritm} (insättningssortering, urvalssortering)
-%\item \textbf{språk} (Java, Python, PHP, C\#, Javascript, C++, C, Objective-C, R, Swift, Matlab, Ruby, %Visual Basic, VBA, Scala, Perl, lua, Delphi)  \\
-%Listan enligt \url{http://pypl.github.io/PYPL.html} i Aug 2016
-% Alternativet är TIOBE, men den är längre...:
-%(Java, C, C++, C\#, Python, PHP, Javascript, Visual Basic, Perl, Pascal, Ruby, Swift, Groovy, R, Matlab, SQL, Go, Dart, Fortram, Lua, Ada, Lisp, Scala, Prolog, Haskell, Erlang, Rust)
-%\end{itemize}
+I enkäten ska du i sju kategorier besvara frågan: \textit{Vilket är ditt favoritalternativ?}
 \end{Preparations}
 
 
@@ -52,7 +28,7 @@ Kategorierna är:
 
 I den här veckans laboration ska du utveckla ett program som analyserar svar på enkäter med flervalsfrågor. Indata utgörs av text i form av \textbf{kolumnseparerade värden}, där varje persons svar finns på en egen rad och varje svarsrad innehåller svarsalternativ separerade med en \textbf{kolumnseparator} som till exempel kan vara ``\code{\t}'' eller ``\code{,}''. Första raden i textfilen anger kolumnernas namn.
 
-Exempelindata finns i filen \code{favorit.csv} i mappen resources, såhär ser den ut:
+Exempelindata finns i filen \code{favorit.csv} i mappen resources. Såhär ser den ut:
 \lstinputlisting[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w10_survey/src/main/resources/favorit.csv}
 
 Ditt program ska bestå av följande delar:
@@ -64,7 +40,7 @@ Ditt program ska bestå av följande delar:
 \end{itemize}
 
 \subsection{Given kod}
-\ScalaSpecInputListing{Main}{../workspace/w10_survey/src/main/scala/stats/Main.scala}
+\scalainputlisting{../workspace/w10_survey/src/main/scala/stats/Main.scala}
 
 
 
@@ -74,9 +50,10 @@ Ditt program ska bestå av följande delar:
 
 \ScalaSpecInputListing{Table}{../workspace/w10_survey/src/main/scala/stats/Table.scala}
 
-\Subtask Börja med att implementera alla funktioner förutom \code{register} i klassen \code{Table}. I \code{sort} och \code{filter} ska inbyggda funktioner för sortering och filtrering användas. Eftersom \code{Table} är omuterbar måste nya instanser eller kopior skapas av \code{Table} vid varje filtrering eller sortering.
+\Subtask Börja med att implementera klassen \code{Table} men vänta med \code{register} till nästa uppgift. I \code{sort} och \code{filter} ska inbyggda funktioner för sortering och filtrering användas. Eftersom \code{Table} är omuterbar måste nya instanser eller kopior skapas av \code{Table} vid varje filtrering eller sortering.
 
-\Subtask Implementera \code{register}. Returdatan är av typen \code{Vector[(String, Int)]} där första elementet är kolumnrubriken tillsammans med det totala antalet registrerade uppkomster. Funktionen kommer senare användas för att skapa diagram som presenterar den registrerade datan. Använd gärna funktionen \code{groupBy} för att enkelt gruppera en vektor med kolumnvärden:
+\Subtask Implementera \code{register} som senare kommer användas för att skapa diagram som presenterar den registrerade datan. För att registrera antalet förekomster av varje unikt värde kan funktionerna \code{groupBy} och \code{mapValues} användas. Typomvandlingen går från \code{Vector[String]} till \code{Map[String, Vector[String]]} med \code{groupBy} och efter det till \code{Map[String, Int]} med \code{mapValues}.
+Exempel på \code{groupBy}:
 \begin{REPLnonum}
 scala> Vector("ICA", "COOP", "Konsum", "ICA", "ICA", "COOP").groupBy(v => v)
 
@@ -84,10 +61,8 @@ res0: Map[String,Vector[String]] = Map(COOP -> Vector(COOP, COOP),
                                        Konsum -> Vector(Konsum),
                                        ICA -> Vector(ICA, ICA, ICA))
 \end{REPLnonum}
-Omvandla sedan \code{Map[String, Vector[String]]} till \code{Map[String, Int]} där \code{Int}-värdet är vektorns storlek. Och sedan till \code{Vector[(String, Int)]} i nästa steg. Innan datan returneras ska den sorteras så det alternativ med flest uppkomster är andra elementet och det med minst är sista elementet i vektorn.
-\TODO är den här uppgiften för klurig?
 
-\Subtask Implementera funktionen \code{fromFile} i objektet \code{Table}. Den ska kunna ta emot antingen en webbadress eller en lokal sökväg. I ditt program räcker det med att undersöka fallet då \code{uri} börjar på ``\code{http}''.
+\Subtask Implementera funktionen \code{fromFile} i objektet \code{Table}. Parametern \code{uri} är antingen en webbadress eller en lokal sökväg. Det räcker med att anta att en webbadress börjar på ``\code{http}''.
 
 En fil som innehåller tre rader med 3 kolumner på varje rad läses in till vektorn såhär:
 \begin{CodeSmall}[language=, ]
@@ -100,11 +75,12 @@ Vector(Vector(rad1kolumn1,rad1kolumn2,rad1kolumn3),
 
 \Subtask Testa \code{Table} genom att köra \code{main}-funktionen. Om allt står rätt till finns det nu en fil \code{out.csv} i mappen resources och i konsollen lyder utskriften:
 \begin{REPLnonum}
-(DevEnv,5)
+(DE,5)
 (Vim,2)
+(Eclipse,1)
 (Emacs,1)
 (Gedit,1)
-(Eclipse,1)
+
 \end{REPLnonum}
 
 
@@ -113,11 +89,15 @@ Vector(Vector(rad1kolumn1,rad1kolumn2,rad1kolumn3),
 
 \ScalaSpecInputListing{Command}{../workspace/w10_survey/src/main/scala/stats/Command.scala}
 
-Observera att i objektet \code{Command} definieras typen \code{Command}: en instans av typen \code{Command} är helt enkelt en funktion som tar emot en instans av \code{Table}, gör något med det och returnerar tillbaka en instans av \code{Table}. På så vis kan flera kommandon exekveras som en kedja där varje kommandos indata är det föregående kommandots utdata.
+Observera att i objektet \code{Command} definieras typen \code{Command}. En instans av typen \code{Command} är det som \textit{kommando} hädanefter kommer åsyfta. Det är helt enkelt en funktion som tar emot en instans av \code{Table}, gör något med det och returnerar tillbaka en instans av \code{Table}. På så vis kan flera kommandon exekveras som en kedja där nästa kommandos indata är det föregående kommandots utdata. Exempel på ett kommando som lägger till ett utropstecken på kolumnrubrikerna:
+\begin{CodeSmall}[language=, ]
+t: Table => t.copy(headings = t.headings.map(_ + "!"))
+\end{CodeSmall}
+Metoderna \code{Command.parseOne} och \code{Command.parseAll} omvandlar argument till kommandon.
 
-\Subtask Implementera \code{parseOne}. Observera att likt \code{parseAll} är parametertypen \code{Vector[String]}, men skillnaden är att \code{parseOne} ska matcha och returnera exakt ett kommando. I annat fall kastas ett generellt undantag: \code{throw new Exception("meddelande")}. Till exempel ``\code{-sort 4}'' funkar men ``\code{-sort 4 asdf}'' funkar inte. Kommandona som ska kunna tas emot finns i värdet \code{list}.
+\Subtask Implementera \code{parseOne}. Lägg märke till att likt \code{parseAll} är parametertypen \code{Vector[String]}, men skillnaden är att \code{parseOne} ska matcha och returnera exakt ett kommando. I annat fall kastas ett generellt undantag: \code{throw new Exception("meddelande")}. Till exempel ``\code{-sort 4}'' funkar men ``\code{-sprt 4}'' och ``\code{-sort 4 asdf}'' funkar inte. De giltiga argumenten som ska kunna tas emot finns i \code{Command.list}. Undantaget som kastas då något annat än ett strängheltal ska göras om till en \code{Int} tas hand om i \code{Main} och behöver inte hanteras.
 
-Exempel på kommando: ``\code{-printchart 7}''-kommandot tar emot en instans \code{t: Table}, anropar \code{t.register(7)} och skriver ut datan. Om kommandot anropas med datan från \code{favorit.csv} ska följande utskrift produceras:
+Om ``\code{-printchart 6}'' körs på datan från \code{favorit.csv} ska följande diagram produceras:
 \begin{REPLnonum}
 Column: DE (17)
 notepad++: 4 occurrences
@@ -134,22 +114,23 @@ Visual Studio: 2 occurrences
 **
 
 \end{REPLnonum}
+Om flera kolumner efterfrågas, till exempel ``\code{-printchart 3 5 6}'', skrivs diagrammen ut direkt efter varandra.
 
 \Subtask Implementera \code{parseAll} som en rekursiv funktion. Använd minustecknet som markerar starten för ett nytt kommando för att dela upp argumenten \code{args} i delar som sedan var för sig skickas med i anrop till \code{parseOne}. Kanske funktionen \code{span} kan vara till nytta:
 \begin{REPLnonum}
 scala> Vector("myra", "panda", "", "ekorre").span(_.nonEmpty)
 
-res1: (Vector[String], Vector[String]) = (Vector(myra, panda),Vector("", ekorre))
+res1: (Vector[String], Vector[String]) = (Vector(myra, panda),
+                                         Vector("", ekorre))
 \end{REPLnonum}
-\TODO behövs pseudokod här eller ska parseAll rent av vara given?
-
 
 \Subtask Implementera \code{runAllWith}. Eftersom kommandona ska exekveras i en kedja passar det väldigt bra att även göra den här funktionen rekursiv.
 
 \Subtask Testa ditt program med \code{Main}-filen och \code{favorit.csv}.
 \begin{REPLnonum}
->scala stats.Main favorit.csv , -filter 2 Terminal -sort 3 -sep "|" -print -printchart 6
-Loading "favorit.csv" with separator "," ...
+>scala stats.Main favorit.csv , -filter 2 Terminal -sort 3 -sep | -print
+-printchart 5
+Loading "favorit.csv" "," to table ...
 
 Done. Size: 17x7.
 
@@ -179,8 +160,7 @@ Safari: 1 occurrence
 
 \end{REPLnonum}
 
-\Task Avslutningsvis kan du testa ditt program med enkätsvaren på länken 
-\url{https://goo.gl/qPcuAO}.
+\Task Avslutningsvis, testa att programmet fungerar med länken till enkätsvaren: \url{https://goo.gl/qPcuAO}.
 
 \subsection{Frivilliga extrauppgifter}
     
