@@ -99,7 +99,7 @@ def timed[T](code: => T): (T, Long) = {
   val now = System.nanoTime
   val result = code
   val elapsed = System.nanoTime - now
-  println(s"\ntime: ${elapsed / 1e6} ms") 
+  println(s"\ntime: ${elapsed / 1e6}$ ms") 
   (result, elapsed)
 }
 \end{Code}
@@ -122,7 +122,7 @@ scala> timed{ s.contains(1) }
 
 \Subtask \emph{Sökning med inbyggd binärsökning.} Om en samling är sorterad kan man utnyttja detta för att göra snabbare sökning. Vid \textbf{binärsökning} \Eng{binary search}\footnote{\label{footnote:binarysearch}\href{https://en.wikipedia.org/wiki/Binary_search_algorithm}{en.wikipedia.org/wiki/Binary\_search\_algorithm}} börjar man på mitten och kollar vilken halva att  söka vidare i; sedan delar man upp denna halva på mitten och kollar vilken fjärdedel att söka vidare i, etc. 
 
-I objektet \code{scala.collection.Searching}\footnote{\href{http://www.scala-lang.org/api/current/\#scala.collection.Searching$}{http://www.scala-lang.org/api/current/\#scala.collection.Searching\$}} finns en metod \code{search} som, om den importeras, erbjuder binärsökning för alla sorterade sekvenssamlingar. Om samlingen är sorterad ger den ett objekt av case-klassen \code{Found} som innehåller indexet för platsen där elementet först hittats; alternativt om det som eftersöks ej finns, ges ett objekt av case-klassen \code{InsertionPoint} som innehåller indexet där elementet borde ha varit placerad om det funnits i samlingen. Observera att om samlingen inte är sorterad är resultatet ''odefinierat'', d.v.s. något returneras men det är \emph{inte} att lita på; man måste alltså först sortera samlingen eller vara helt säker på att den är sorterad. 
+I objektet \code{scala.collection.Searching}\footnote{\href{http://www.scala-lang.org/api/current/\#scala.collection.Searching\$}{http://www.scala-lang.org/api/current/\#scala.collection.Searching\$}} finns en metod \code{search} som, om den importeras, erbjuder binärsökning för alla sorterade sekvenssamlingar. Om samlingen är sorterad ger den ett objekt av case-klassen \code{Found} som innehåller indexet för platsen där elementet först hittats; alternativt om det som eftersöks ej finns, ges ett objekt av case-klassen \code{InsertionPoint} som innehåller indexet där elementet borde ha varit placerad om det funnits i samlingen. Observera att om samlingen inte är sorterad är resultatet ''odefinierat'', d.v.s. något returneras men det är \emph{inte} att lita på; man måste alltså först sortera samlingen eller vara helt säker på att den är sorterad. 
 
 Undersök hur \code{search} fungerar genom att förklara vad som händer nedan. Vilken är snabbast av \code{lin} och \code{bin} nedan? Använd \code{timed} från uppgift \ref{task:timed}.
 
@@ -322,23 +322,23 @@ def selectionSortInPlace(xs: Array[String]): Unit = {
 \begin{REPL}
 scala> def isSorted(xs: Vector[Int]): Boolean = xs == xs.sorted
 \end{REPL}
+
+
+\Subtask\Pen  Om \code{xs} har $10^6$ element, hur många jämförelser kommer i värsta fall att ske med \code{isSorted} enligt ovan. Metoden \code{sorted} använder algoritmen Timsort\footnote{\href{http://stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}{stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}}. Sök upp antalet jämförelser i värstafallet på wikipedia.%
+=======
 Denna lösning är dock relativt långsam för stora samlingar. Man behöver ju inte först sortera  för att avgöra om det är sorterat (om man inte ändå hade tänkt sortera av andra skäl), det räcker att kolla att elementen är i växande ordning.
 
-\Subtask\Pen  Om \code{xs} har $n$ element, ungefär hur många jämförelser kommer i värsta fall att ske med \code{isStorted} ovan om man alltså först ska sortera och sedan jämföra den osorterade och den sorterade samlingen element för element? Metoden \code{sorted} använder algoritmen Timsort\footnote{\href{http://stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}{stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}}. Sök upp värstafallsprestandan för Timsort på wikipedia.%
-% som i värsta fall gör $n * log(n)$ jämförelser
+\Subtask\Pen  Om \code{xs} har $n$ element, ungefär hur många jämförelser kommer i värsta fall att ske med \code{isStorted} ovan om man alltså först ska sortera och sedan jämföra den osorterade och den sorterade samlingen element för element? Metoden \code{sorted} använder algoritmen Timsort\footnote{\href{http://stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}{stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}}. Sök upp värstafallsprestandan för Timsort på wikipedia.
 \footnote{\href{https://en.wikipedia.org/wiki/Timsort}{en.wikipedia.org/wiki/Timsort}}
 
 \Subtask\label{subtask:issorted} Implementera en effektivare variant av \code{isSorted} som använder en \code{while}-sats och kollar att elementen är i växande ordning.
 
 \Subtask\Pen Vad blir antalet jämförelser i värstafallet med metoden i deluppgift \ref{subtask:issorted} om du har $n$ element?
 
-\Subtask \label{subtask:isSorted-zip} Man kan kolla om en sekvens är sorterad med det listiga tricket att först zippa sekvensen med sin egen svans och sedan kolla om alla element-par uppfyller sorteringskriteriet, alltså \code{xs.zip(xs.tail).forall(???)} där ??? byts ut mot lämpligt predikat. Vilken typ har 2-tupeln \code{xs.zip(xs.tail))} om \code{xs} är av typen \code{Vector[Int]}? Implementera \code{isSorted} med detta listiga trick. (I fördjupningsuppgift \ref{task:implicit-ordering} görs denna variant av \code{isSorted} generellt användbar för olika typer och olika ordningsdefinitioner.)
-\begin{Code}
-// kod till facit
-def isSorted(xs: Vector[Int]): Boolean = 
-  xs.zip(xs.tail).forall(x => x._1 <= x._2) 
-\end{Code}
 
+\Subtask \label{subtask:isSorted-zip} Man kan kolla om en sekvens är sorterad med det listiga tricket att först zippa sekvensen med sin egen svans och sedan kolla om alla element-par uppfyller sorteringskriteriet, alltså \code{xs.zip(xs.tail).forall(???)} där ??? byts ut mot lämpligt predikat. Vilken typ har 2-tupeln \code{xs.zip(xs.tail))} om \code{xs} är av typen \code{Vector[Int]}? Implementera \code{isSorted} med detta listiga trick. (Senare, i fördjupningsuppgift \ref{task:implicit-ordering}, ska vi göra \code{isSorted} generellt användbar för olika typer och olika ordningsdefinitioner.)
+=======
+\Subtask \label{subtask:isSorted-zip} Man kan kolla om en sekvens är sorterad med det listiga tricket att först zippa sekvensen med sin egen svans och sedan kolla om alla element-par uppfyller sorteringskriteriet, alltså \code{xs.zip(xs.tail).forall(???)} där ??? byts ut mot lämpligt predikat. Vilken typ har 2-tupeln \code{xs.zip(xs.tail))} om \code{xs} är av typen \code{Vector[Int]}? Implementera \code{isSorted} med detta listiga trick. (I fördjupningsuppgift \ref{task:implicit-ordering} görs denna variant av \code{isSorted} generellt användbar för olika typer och olika ordningsdefinitioner.)
 
 
 \Task Implementera och testa sortering på plats i en array med heltal med \emph{instickssortering}\footnote{\href{https://en.wikipedia.org/wiki/Insertion_sort}{en.wikipedia.org/wiki/Insertion\_sort}}. 
@@ -417,6 +417,23 @@ Om vi i stället använder
 \begin{Code}
 def isSorted(xs: Seq[Int]): Boolean = xs == xs.sorted 
 \end{Code}
+
+
+\Subtask Men vi vill gärna att \code{isSorted} ska fungera för godtyckliga typer T som har en ordningsdefinition. Detta kan göras med nedan funktion eftersom metoden \code{sorted} är definierad för alla samlingar där typen \code{T} har en implicit ordning. Speciellt gäller detta för alla de grundtyperna \code{Int}, \code{Double}, \code{String}, etc.
+\begin{Code}
+def isSorted[T](xs: Seq[T]): Boolean = xs == xs.sorted 
+\end{Code}
+Testa metoden ovan i REPL enligt nedan.
+\begin{REPL}
+scala> isSorted(Vector(1,2,3))
+scala> isSorted(Array(1,2,3,1))
+scala> isSorted(Vector("A","B","C"))
+scala> isSorted(List("A","B","C","A"))
+scala> case class Person(firstName: String, familyName: String)
+scala> val persons = Vector(Person("Zeb", "Robson"), Person("Robin","Zebson")) 
+scala> isSorted(persons)
+\end{REPL}
+Vad ger sista raden för felmeddelande? Varför?
 
 
 \Subtask Vi vill gärna kunna jämföra element av godtycklig typ \code{T}, så att vi till exempel ska kunna implementera en generisk \code{isSorted} med \code{while} eller vårt \code{zip}-trick från uppgift \ref{task:isSorted}\ref{subtask:isSorted-zip}. Men det blir problem enligt nedan. Hur lyder felmeddelandet? Vad saknas?
@@ -537,18 +554,12 @@ scala> -(2.compare(1))
 scala> Team("fnatic",1499) < Team("gurka", 2) 
 \end{REPL}
 
-\begin{CodeSmall}
-// kod till facit
-case class  Team(name: String, rank: Int) extends Ordered[Team]{
-  override def compare(that: Team): Int = -rank.compare(that.rank)
-} 
-\end{CodeSmall}
 
 \Task \emph{Jämförelsestöd i Java.} 
 Java har motsvarigheter till \code{Ordering} och \code{Ordered}, som heter \code{java.util.Comparator} och \code{java.lang.Comparable}. I själva verket så är Scalas \code{Ordering} en subtyp till Javas \code{Comparator}, medan Scalas \code{Ordered} är en subtyp till Javas \code{Comparable}. 
 \begin{itemize}[nolistsep, noitemsep]
 \item Javas \code{Comparator} och Scalas \code{Ordering} används för att skapa fristående ordningar som kan jämföra \emph{två olika} objekt. I Scala kan dessa göras implicit tillgängliga. I Javas samlingsbibliotek skickas instanser av \code{Comparator} med som explicita argument.
-\item Javas \code{Comparable} och Scalas \code{Ordered} används som sypertyp för klasser som vill kunna jämföra ''sig själv'' med andra objekt och har \emph{en} naturlig ordningsdefinition.
+\item Javas \code{Comparable} och Scalas \code{Ordered} används som supertyp för klasser som vill kunna jämföra ''sig själv'' med andra objekt och har \emph{en} naturlig ordningsdefinition.
 \end{itemize}
 
 \Subtask\Pen Sök upp dokumentationen för \code{java.util.Comparator}. Vilken abstrakt metod måste implementeras och vad gör den? 
