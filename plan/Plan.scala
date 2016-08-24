@@ -127,7 +127,7 @@ trait Plan {
 
     Module("Scala och Java", 
       id = "scalajava", exercise = "scalajava", lab = "lthopoly-team", contents = """
-      | översikt av syntaxskillnader mellan Scala och Java, 
+      | syntaxskillnader mellan Scala och Java, 
       | klasser i Scala vs Java, 
       | referensvariabler vs enkla värden i Java,
       | referenstilldelning vs värdetilldelning i Java,
@@ -139,14 +139,14 @@ trait Plan {
       | namnkonventioner för konstanter,
       """.stripTrim),
 
-    Module("Webb, trådar",  
+    Module("Trådar, webb",  
       id = "threads", exercise = "threads", lab = "life", contents = """
-      | översikt webbprogrammering, kort om html+css+javascript+scala.js,
       | tråd, jämlöpande exekvering,  
       | icke-blockerande anrop, callback,
       | java.lang.Thread, 
       | java.util.concurrent.atomic.AtomicInteger,
       | scala.concurrent.Future, 
+      | kort om html+css+javascript+scala.js och webbprogrammering,
       """.stripTrim),
 
     Module("Design, api", 
