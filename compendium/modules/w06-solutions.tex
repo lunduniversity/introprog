@@ -1,5 +1,5 @@
 %!TEX encoding = UTF-8 Unicode
-%!TEX root = ../compendium.tex
+%!TEX root = ../solutions.tex
 
 \ExerciseSolution{\ExeWeekSIX}
 
@@ -339,6 +339,88 @@ while (noCollision) {
 print(counter)
 \end{CodeSmall}
 
+
+\clearpage
+
 \ExtraTasks %%%%%%%%%%%%
 
+\Task 
+
+\vspace{1em} %tweak pagination
+
+\begin{CodeSmall}
+/** A mutable and expensive Square. */
+class Square private (val initX: Int, val initY: Int, val initSide: Int) {
+  
+  private var nMoves = 0;
+  private var sumCost = 0.0;
+  private var _x = initX;
+  private var _y = initY;
+  private var _side = initSide;
+  
+  private def addCost: Unit = { 
+   sumCost += math.hypot(x - initX, y - initY) * side
+  }
+  
+  /** The current position on the x axis */
+  def x: Int = _x
+
+  /** The current position on the y axis */
+  def y: Int = _y
+
+  /** The size of the side */
+  def side = _side
+
+  /** Scales the size of this square and rounds it to nearest integer */
+  def scale(factor: Double): Unit = { _side = (_side * factor).round.toInt }
+
+  /** Moves this square to position (x + xd, y + dy) */
+  def move(dx: Int, dy: Int): Unit = { 
+    _x += dx; _y += dy; 
+    nMoves += 1
+    addCost
+  }
+
+  /** Moves this square to position (x, y) */
+  def moveTo(x: Int, y: Int): Unit = { 
+    _x = x; _y = y; 
+    nMoves += 1
+    addCost
+  }
+  
+  /** The accumulated cost of this Square */
+  def cost: Double = sumCost
+
+  /** Reset the cost of this Square */
+  def pay: Unit = {sumCost = 0}
+  
+  /** A string representation of this Square */
+  override def toString: String = 
+    s"Square[($x, $y), side: $side, #moves: $nMoves times, cost: $sumCost]"
+}
+
+object Square {
+  private var created = Vector[Square]()
+ 
+  /** Constructs a new Square object at (x, y) with size side */
+  def apply(x: Int, y: Int, side: Int): Square = {
+    require(side >= 0, s"side must be positive: $side")
+    val sq = (new Square(x, y, side))
+    created :+= sq
+    sq
+  }
+
+  /** Constructs a new Square object at (0, 0) with side 1 */
+  def apply(): Square = apply(0, 0, 1)
+
+  /** The total number of moves that have been made for all squares. */
+  def totalNumberOfMoves: Int = created.map(_.nMoves).sum
+  
+  /** The total cost of all squares. */  
+  def totalCost: Double = created.map(_.cost).sum
+} 
+\end{CodeSmall}
+
 \AdvancedTasks %%%%%%%%%
+
+\TODO
