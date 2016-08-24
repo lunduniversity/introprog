@@ -39,7 +39,7 @@ object Main extends App {
   
   // *** Generate chapter heads with topics of each module
   val minConceptsForTwoCol = 28
-  def conceptBegin(n: Int) = "Begrepp du ska lära dig denna vecka:\n" +
+  def conceptBegin(n: Int) = "Begrepp som ingår i denna veckas studier:\n" +
     (if (n > minConceptsForTwoCol) """\begin{multicols}{2}""" else "") + 
     """\begin{itemize}[noitemsep,label={$\square$},leftmargin=*]""" + "\n"
   def conceptEnd(n: Int)   = """\end{itemize}""" +
