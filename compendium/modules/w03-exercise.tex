@@ -1,7 +1,7 @@
 %!TEX encoding = UTF-8 Unicode
 %!TEX root = ../compendium.tex
 
-\Exercise{\ExeWeekTHREE}
+\Exercise{\ExeWeekTHREE}\label{exe:W03}
 
 \begin{Goals}
 \item Kunna skapa och använda funktioner med en eller flera parametrar, default-argument, namngivna argument, och uppdelad parameterlista.
@@ -23,7 +23,7 @@
 \end{Goals}
 
 \begin{Preparations}
-\item Studera teorin i kapitel~\ref{chapter:W03}.
+\item \StudyTheory{03}
 \end{Preparations}
 
 \BasicTasks %%%%%%%%%%%%%%%%
@@ -212,11 +212,11 @@ scala> Vector(12, 3, 41, -8).map(f)
 \Subtask Förklara vad som händer nedan. Vad får \code{d} och \code{h} för värde?
 
 \begin{REPL}
-scala> def räkna(x: Int, f: Int => Int) = f(x)
+scala> def applicera(x: Int, f: Int => Int) = f(x)
 scala> def dubbla(x: Int) = 2 * x
 scala> def halva(x: Int) = x / 2
-scala> val d = räkna(42, dubbla)
-scala> val h = räkna(42, halva)
+scala> val d = applicera(42, dubbla)
+scala> val h = applicera(42, halva)
 \end{REPL}
 
 \Task\emph{Stegade funktioner (''Curry-funktioner'').} Förklara vad som händer nedan.
@@ -293,7 +293,7 @@ object inSearchOfPurity {
   var x = 0
   val y = x
   def inc(i: Int) = i + 1
-  def oink(i: Int) = {x = x + i; "Pig says oink " + x}
+  def oink(i: Int) = {x = x + i; "Pig says " + "oink " * x}
   def addX(i: Int): Int = x + i
   def addY(i: Int): Int = y + i
   def isPalindrome(s: String): Boolean = s == s.reverse
@@ -326,7 +326,7 @@ scala> val inc = add.curried(1)
 scala> inc(42)
 \end{REPL}
 
-\Subtask Definiera i REPL ett objekt som heter \code{Slumptal} som har en \code{apply}-metod som tar två heltalsparametrar \code{a} och \code{b} och som med hjälp av \code{math.random} returnerar ett slumpal i intervallet $[a, b]$. Anropa objektets \code{apply}-metod med \code{(1 to 100).foreach(println(???))}, där \code{???} ersätts först med punktnotation och sedan med funktionsappliceringssyntax. 
+\Subtask Definiera i REPL ett objekt som heter \code{slumptal} som har en \code{apply}-metod som tar två heltalsparametrar \code{a} och \code{b} och som med hjälp av \code{math.random} returnerar ett slumpmässigt heltal i intervallet $[a, b]$. Anropa objektets \code{apply}-metod med \code{(1 to 100).foreach(i => print(??? + " "))} för att skriva ut $100$ slumptal mellan 1 och 6. Prova både att explicit anropa \code{apply} med punktnotation och att använda funktionsappliceringssyntax. 
 
 
 
@@ -496,7 +496,18 @@ scala> add(0, Int.MaxValue)
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task Visa anropsstacken genom att kasta undantag.
+\Task Skriv och testa en funktion \code{avg} som räknar ut medelvärdet mellan två heltal och returnerar en \code{Double}.
+
+\Task Skriv och testa nedan två varianter av beräkning av avståndet mellan två punkter:
+\begin{REPL}
+scala> def dist(x1: Int, y1: Int, x2: Int, y2: Int): Double = ???
+scala> def dist(p1: (Int, Int), p2: (Int, Int)): Double = ???
+\end{REPL}
+
+\noindent\TODO Fler förslag på extrauppgifter om funktioner välkomna, speciellt på det som man kan behöva öva mer på för att lättare förstå!
+
+
+
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
@@ -536,7 +547,7 @@ scala> :javap countdown
 scala> :javap countdown2
 \end{REPL}
 
-\Task \emph{\code{@tailrec}-annotering.} Du kan be kompilatorn att ge felmeddelande om den inte kan optimera koden till en loop och därmed öka prestanda och unvika en överfull anropssstack \Eng{stack overflow}. Prova nedan rader i REPL och förklara vad som händer. 
+\Task \emph{\code{@tailrec}-annotering.} Du kan be kompilatorn att ge felmeddelande om den inte kan optimera koden till motsvarande en while-loop. Om den inte kan det hämmas prestanda och det finns risk för en överfull anropssstack \Eng{stack overflow}. Prova nedan rader i REPL och förklara vad som händer. 
 \begin{REPL}
 scala> def countNoTailrec(n: Long): Unit = 
          if (n <= 0L) println("Klar! " + n) else {countNoTailrec(n-1L); ()}
