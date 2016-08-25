@@ -2,7 +2,7 @@
 
 %!TEX root = ../compendium.tex
 
-\Exercise{\ExeWeekSEVEN}
+\Exercise{\ExeWeekSEVEN}\label{exe:W07}
 
 \begin{Goals}
 \item Förstå följande begrepp: 
@@ -23,7 +23,7 @@
 \end{Goals}
 
 \begin{Preparations}
-\item Studera teorin i kapitel \ref{chapter:W07}.
+\item \StudyTheory{07}
 \end{Preparations}
 
 \BasicTasks %%%%%%%%%%%%%%%%
@@ -57,7 +57,7 @@ val gurkor = Vector(new Gurka(100), new Gurka(200))
 val grönsaker = Vector(new Gurka(300), new Tomat(42))
 \end{REPL}
 
-\Subtask Vad blir det nu för typ på värdet av \code{grönsaker} ovan? 
+\Subtask Vad blir det nu för typ på variabeln \code{grönsaker} ovan? 
 
 \Subtask Fungerar det nu att räkna ut summan av vikterna i \code{grönsaker} med \code{grönsaker.map(_.vikt).sum}?
 
@@ -123,7 +123,7 @@ case class Circle(pos: Point, radius: Double) extends Shape {
 
 \Subtask Instansiera några cirklar och rektanglar och gör några relativa förflyttningar av dina instanser genom att anropa \code{move}. 
 
-\Subtask Lägg till metoden \code{moveTo} i \code{Point}, \code{Shape}, \code{Rectangle} och \code{Circle} som gör en absoult förflyttning till kordinaterna \code{x} och \code{y}. Klistra in i REPL och testa på några instanser av \code{Rectangle} och \code{Circle}.
+\Subtask Lägg till metoden \code{moveTo} i \code{Point}, \code{Shape}, \code{Rectangle} och \code{Circle} som gör en absolut förflyttning till koordinaterna \code{x} och \code{y}. Klistra in i REPL och testa på några instanser av \code{Rectangle} och \code{Circle}.
 
 \Subtask Lägg till metoden \code{distanceTo(that: Point): Double } i case-klassen \code{Point} som räknar ut avståndet till en annan punkt med hjälp av \code{math.hypot}. Klistra in i REPL och testa på några instanser av \code{Point}.
 
@@ -164,7 +164,8 @@ class Ånka extends Fyle with KanSimma with KanKanskeFlyga {
 } 
 \end{Code}
 
-\Subtask En flitig ornitolog hittar 42 fåglar i en skog där alla fågelsorter är lika sannolika, representerat av vektorn \code{fyle} nedan. Skriv i REPL ett uttryck som undersöker hur många av dessa som är flygkunniga Ånkor, genom att använda metoderna \code{filter}, \code{isInstanceOf}, \code{ärFlygkunnig} och \code{size}.   
+\Subtask En flitig ornitolog hittar 42 fåglar i en perfekt skog där alla fågelsorter är lika sannolika, representerat av vektorn \code{fyle} nedan. Skriv i REPL ett uttryck som undersöker hur många av dessa som är flygkunniga Ånkor, genom att använda metoderna \code{filter}, \code{isInstanceOf}, \code{ärFlygkunnig} och \code{size}.  
+ 
 \begin{REPL}
 scala> val fyle = 
          Vector.fill(42)(if (math.random > 0.5) new Kråga else new Ånka)
@@ -172,22 +173,11 @@ scala> fyle.foreach(_.väsnas)
 scala> val antalFlygånkor: Int = ??? 
 \end{REPL}
 
-\begin{Code}
-// kod till facit
-fyle.filter(f => f.isInstanceOf[Ånka] && f.ärFlygkunnig).size
-\end{Code}
-
-\Subtask Om alla de fåglar som ornitologen hittade skulle väsnas exakt en gång var, hur många krax och hur många kvack skulle då höras? Använd metoderna \code{filter} och \code{size}, samt predikatet \code{ärSimKunnig} för att beräkna antalet krax respektive kvack.
+\Subtask \label{subtask:fyle:sound} Om alla de fåglar som ornitologen hittade skulle väsnas exakt en gång var, hur många krax och hur många kvack skulle då höras? Använd metoderna \code{filter} och \code{size}, samt predikatet \code{ärSimKunnig} för att beräkna antalet krax respektive kvack.
 \begin{REPL}
 scala> val antalKrax: Int = ???
 scala> val antalKvack: Int = ??? 
 \end{REPL}
-
-\begin{Code}
-// kod till facit
-val antalKrax: Int = fyle.filter(f => !f.ärSimkunnig).size * 2
-val antalKvack: Int = fyle.filter(f => f.ärSimkunnig).size * 4
-\end{Code}
 
 \Task \emph{Finala klasser.} Om man vill förhindra att man kan göra \code{extends} på en klass kan man göra den final genom att placera nyckelordet \code{final} före nyckelordet \code{class}.
 
@@ -209,7 +199,7 @@ class Sub extends Super {
 }
 \end{REPL} 
   
-\Subtask Vad blir felmeddelandet när klassen \code{Sub} försöker accessa \code{minHemlis}?
+\Subtask Vad blir felmeddelandet när klassen \code{Sub} försöker komma åt \code{minHemlis}?
 
 \Subtask Deklarera \code{Sub} på nytt, men nu utan den förbjudna metoden \code{avslöja}. Vad blir felmeddelandet om du försöker komma åt \code{vårHemlis} via en instans av klassen \code{Sub}? Prova till exempel med \code{(new Sub).vårHemlis}
 
@@ -299,11 +289,11 @@ class Sub15 extends Super14 { def a = 43; override var b = 43; val c = "?" }
 
 Utbildningsdepartementet vill i sitt system hålla koll på vissa personer och skapar därför en klasshierarki enligt nedan. Skriv in koden i en editor och klipp sedan in den i REPL.
 \begin{Code}
-class Person(namn: String)
+class Person(val namn: String)
 
 class Akademiker(
   namn: String,   
-  universitet: String) extends Person(namn)
+  val universitet: String) extends Person(namn)
 
 class Student(
   namn: String, 
@@ -317,16 +307,24 @@ class Forskare(
 \end{Code} 
 
 
-\Subtask Deklarera 4 olika \code{val}-värden med lämpliga namn som refererar till olika instanser av alla olika klasser ovan och ge attributen valfria initialvärden genom olika parametrar till konstruktorerna.
+\Subtask Deklarera fyra olika \code{val}-variabler med lämpliga namn som refererar till olika instanser av alla olika klasser ovan och ge attributen valfria initialvärden genom olika parametrar till konstruktorerna.
 
 \Subtask Skriv två satser: en som först stoppar in instanserna i en \code{Vector} och en som sedan loopar igenom vektorn och skriv ut alla instansers \code{toString} och \code{namn}. 
 
 
-\Subtask Utbildningsdepartementet bestämmer sig för att bara hålla koll på studenter och forskare och man vill då att det inte ska gå att instansiera objekt av typerna \code{Person} och \code{Akademiker}. Det kan åstadkommas genom att placera nyckelordet \code{abstract} före \code{class}. Uppdatera koden i enlighet med detta. Vilket blir felmeddelande om man försöker instansiera en \code{abstract class}?
+\Subtask Utbildningsdepartementet vill att det inte ska gå att instansiera objekt av typerna \code{Person} och \code{Akademiker}. Det kan åstadkommas genom att placera nyckelordet \code{abstract} före \code{class}. Uppdatera koden i enlighet med detta. Vilket blir felmeddelande om man försöker instansiera en \code{abstract class}?
 
-\Subtask Utbildningsdeparetementets utvecklare vill slippa implementera \code{toString} och slippa skriva \code{new} vid instansiering och gör därför om typerna \code{Student} och \code{Forskare} till case-klasser. Skapa instanser av case-klasserna \code{Student} och \code{Forskare} och skriv ut deras \code{toString}. Hur ser utskriften ut?
+\Subtask Utbildningsdeparetementet vill slippa implementera \code{toString} och slippa skriva \code{new} vid instansiering. Gör därför om typerna \code{Student} och \code{Forskare} till case-klasser. \emph{Tips:} För att undkomma ett kompileringsfel (vilket?) behöver du använda \code{override val} på lämpligt ställe. 
 
-\Subtask Eftersom utbildningsdepartementet numera deklarerar \code{Person} och \code{Akademiker} som abstrakta, väljer man att göra om dessa typer till traits istället för klasser. Man inför också en case-klass \code{IckeAkademiker} som man tänker använda i olika statistiska medborgarundersökningar. Dessutom förser man alla personer med ett personnummer representerat som en \code{Int}. Hur ser utvecklarnas kod ut? Skriv ett testprogram som skapar några instanser och skriver ut deras attribut. 
+Skapa instanser av de nya case-klasserna \code{Student} och \code{Forskare} och skriv ut deras \code{toString}. Hur ser utskriften ut?
+
+\Subtask Eftersom \code{Person} och \code{Akademiker} nu är abstrakta, vill utbildningsdepartementet att du gör om dessa typer till traits med abstrakta attribut istället för klasser. Du kan då undvika \code{override val} i klassparametrarna till de konkreta case-klasserna. 
+
+Man inför också en case-klass \code{IckeAkademiker} som man tänker använda i olika statistiska medborgarundersökningar. 
+
+Dessutom förser man alla personer med ett personnummer representerat som en \code{Int}. 
+
+Hur ser utbildningsdepartementets kod ut nu, efter alla ändringar? Skriv ett testprogram som skapar några instanser och skriver ut deras attribut. 
 
 \Subtask\Pen I vilka sammanhang är det nödvändigt att använda en \code{trait} respektive en \code{class}.
 
@@ -360,9 +358,9 @@ Nackdelen är att kompilatorn vid kompileringstid inte kollar om variablerna av 
 
 Istället kan man använda case-objekt enligt nedan deluppgifter och få hjälp av kompilatorn att hitta eventuella fel vid kompileringstid.  Ett case-objekt är som ett vanligt singelton-objekt men det får automatiskt en toString samma som namnet och kan användas i matchningar etc. (mer om match i kaptitel \ref{chapter:W08}). 
 
-\Subtask Deklarera följande uppräknade värden som singelton objekt med gemensam bastyp i en editor och klistra in i REPL med kommandot \code{:paste}. 
+\Subtask Deklarera följande uppräknade värden som singelton objekt med gemensam bastyp i en editor och klistra in i REPL med kommandot \code{:paste}. Med nyckelordet \code{sealed} så ''förseglas'' klassen och inga andra direkta subtyper tillåts förutom de som finns i samma kod-fil eller block. I detta exempel  med kortfärger vet vi ju att det inte finns fler än dessa fyra färger.
 \begin{Code}
-trait Färg
+sealed trait Färg
 case object Spader extends Färg
 case object Hjärter extends Färg
 case object Ruter extends Färg
@@ -377,7 +375,7 @@ Skapa därefter några exempelinstanser av klassen \code{Kort}. Vad är fördele
 \Subtask Om man vill kunna iterera över alla värden är det bra om de finns i en samling med alla värden. Vi kan lägga en sådan i ett kompanjonsobjekt till bastypen. Uppdatera koden enligt nedan och klistra in på nytt i REPL med kommandot \code{:paste}. Skriv ut alla färgvärden med en \code{for}-sats.
 
 \begin{Code}
-trait Färg
+sealed trait Färg
 object Färg { 
   val values = Vector(Spader, Hjärter, Ruter, Klöver)
 }
@@ -392,27 +390,16 @@ scala> val kortlek: Vector[Kort] = ???
 scala> val blandad = scala.util.Random.shuffle(kortlek)
 \end{REPL}
 
-\begin{Code}
-// kod till facit
-for (f <- Färg.values; v <- 1 to 13) yield Kort(f,v)
-\end{Code}
-
 \Subtask Skriv en funktion \code{ def blandadKortlek: Vector[Kort] = ???} som ger en ny blandad kortlek varje gång den anropas med metoden i föregående uppgift.
-\begin{Code}
-// kod till facit
-def blandadKortlek: Vector[Kort] = {
-  val kortlek = 
-    for (f <- Färg.values; v <- 1 to 13) yield Kort(f,v)
-  scala.util.Random.shuffle(kortlek)
-}
-\end{Code}
+
+%%%%%%%%%%%%%%%%%%% FEEEEEELLL \end{Code}
 
 
 
 \Subtask Om man även vill ha en heltalsrepresentation med en medlem \code{toInt} för alla värden, kan man ge bastypen en parameter och i stället för en trait (som inte kan ha några parametrar) använda en abstrakt klass.
 
 \begin{Code}
-abstract class Färg(val toInt: Int)
+sealed abstract class Färg(final val toInt: Int)
 object Färg { 
   val values = Vector(Spader, Hjärter, Ruter, Klöver)
 }
@@ -428,78 +415,48 @@ scala> def färgPoäng(xs: Vector[Kort]): Int = ???
 scala> färgPoäng(blandadKortlek.take(5))
 \end{REPL}
 
-\begin{Code}
-// kod till facit
-def färgPoäng(xs: Vector[Kort]): Int = xs.map(_.färg.toInt).sum
-\end{Code}
-
-
-
-
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task Det visar sig att vår flitige ornitolog från uppgift \ref{task:fyle} sov på en av föreläsningarna i zoologi när hen var nolla på Natfak, och därför helt missat fylekategorin \code{Pjodd}. Hjälp vår stackars ornitolog så att fylehierarkin nu även omfattar Pjoddar. En Pjodd kan flyga som en Kråga men den \code{ärLiten} medan en Kråga \code{ärStor}. En Pjodd och kvittrar dubbelt så många gånger som en Ånka kvackar. En Pjodd \code{KanKanskeSimma} där simkunnighetssannolikheten är $0.2$. Låt ornitologen ånyo finna 42 slumpmässiga fåglar i skogen och filtrera fram lämpliga arter och undersök hur dessa väsnas.
+\Task Det visar sig att vår flitige ornitolog från uppgift \ref{task:fyle} på sidan \pageref{task:fyle} sov på en av föreläsningarna i zoologi när hen var nolla på Natfak, och därför helt missat fylekategorin \code{Pjodd}. Hjälp vår stackars ornitolog så att fylehierarkin nu även omfattar Pjoddar. En Pjodd kan flyga som en Kråga men den \code{ÄrLiten} medan en Kråga \code{ÄrStor}. En Pjodd kvittrar dubbelt så många gånger som en Ånka kvackar. En Pjodd \code{KanKanskeSimma} där simkunnighetssannolikheten är $0.2$. Låt ornitologen ånyo finna 42 slumpmässiga fåglar i skogen och filtrera fram lämpliga arter. Undersök sedan hur dessa väsnas, i likhet med deluppgift \ref{task:fyle}\ref{subtask:fyle:sound}.
 
-\Task Polynom ??? INte färdigt; är det lönt att byga vidare på detta exempel??? Hur kommer undantag in här?
 
-\begin{CodeSmall}
-//kod till facit  TODO: INTE ALLS FÄRDIGT
-
-sealed trait Term {
-  def const: BigDecimal
-  protected def silentConst: String = 
-    if (const == BigDecimal(1)) "" else const.toString
-  def *(that: Term): Term
-  def ^(e: Int): Term
-}
-
-case class Const(const: BigDecimal) extends Term {
-  override def toString = const.toString
-  def *(that: Term): Term = that match {
-    case Const(c)     => Const(c * const)
-    case Var(c, n, e) => Var(c * const, n, e)
-    case Prod(c, vs)  => ??? 
-  }
-}
-
-case class Var(const: BigDecimal, name: Char, exp: BigInt) extends Term {
-  private def silentExp: String = 
-    if (exp == BigInt(1)) "" else "^"+exp.toString
-  def ^(e: Int) = Var(const.pow(e), name, e * exp) 
-  def *(c: BigDecimal) = Var(const * c, name, exp)
-  def /(c: BigDecimal) = Var(const / c, name, exp)
-  def constUnit: Var = Var(1.0, name, exp)
-  def *(that: Var): Term = {
-    Prod(const * that.const, Vector(this.constUnit, that.constUnit))
-  }
-  override def toString = s"$silentConst$name$silentExp" 
-}
-
-object Var{
-  def apply(name: Char) = new Var(1, name, 1)
-  def apply(const: Double, name: Char) = new Var(const, name, 1)
-}
-
-case class Prod(const: BigDecimal, vars: Vector[Var]) extends Term  {
-  override def toString = silentConst + vars.mkString
-}
-
-case class Poly(xs: Vector[Term]) {  // etc etc
-}
-
-\end{CodeSmall}
-
+\clearpage
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task TODO: Gör en fördjupningsuppgift inspirerat av denna \url{http://stackoverflow.com/questions/16173477/usages-of-null-nothing-unit-in-scala}    
+\Task Hitta på en egen fördjupningsuppgift inspirerat av denna artikel på Stackoverflow: \url{http://stackoverflow.com/questions/16173477/usages-of-null-nothing-unit-in-scala}    
     
-\Task \label{unapply} TODO: Gör en fördjupningsuppgift om extraherare \Eng{extractors} och implementera \code{unapply}.    
-    
-    
-\Task Plynomdivision ???
+\Task Studera den djupa arvshierarkin i paketet \code{numbers} nedan som modellerar olika sorters tal i matematiken. Du kan även ladda ner koden här: \\
+\href{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/numbers.scala}{github.com/lunduniversity/introprog/blob/master/compendium/examples/numbers.scala}
+\\ Notera metoden \code{reduce} som reducerar ett tal till sin enklaste form och dess implementation överskuggas på lämpliga ställen med relevant reduktion.
 
-\Task Numbers  TODO: Fundera på om detta är lönt eller blir exemplet för krångligt ??? Vad har detta med \code{match} och undantag att göra ??? Hitta på ngt bättre...
+\Subtask Skriv kod som använder de olika konkreta klasserna i \code{package numbers}. Om du kompilerar koden i samma bibliotek som du kör igång REPL är det bara att använda paketet direkt: 
+\begin{REPL}
+$ scalac numbers.scala
+$ scala
+scala> numbers.  // Tryck Tab
+AbstractComplex   AbstractNatural    AbstractReal   Frac    Nat      Polar   
+AbstractInteger   AbstractRational   Complex        Integ   Number   Real    
 
-\scalainputlisting[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]{examples/numbers.scala}   
+scala> numbers.Integ(12)
+res0: numbers.Integ = Integ(12)
+
+scala> import numbers.Syntax._
+import numbers.Syntax._
+
+scala> 42.j
+res1: numbers.Complex = Complex(Real(0),Real(42))
+
+scala> 42.42.j
+res2: numbers.Complex = Complex(Real(0),Real(42.42))
+
+\end{REPL}
+
+\Subtask Andra på metoden \code{+} i \code{trait Number} så att den blir abstrakt och implementera den i alla konkreta klasser.
+
+\Subtask Implementera fler räknesätt och bygg vidare på koden så som du finner intressant. 
+
+\Subtask Gör så att metoden \code{reduce} i klassen \code{AbstractRational} använder algoritmen Greatest Common Divisor (GCD)\footnote{\href{https://sv.wikipedia.org/wiki/St\%C3\%B6rsta_gemensamma_delare}{https://sv.wikipedia.org/wiki/St\%C3\%B6rsta\_gemensamma\_delare}} så som beskrivs här: \\ \href{http://www.artima.com/pins1ed/functional-objects.html#6.8}{www.artima.com/pins1ed/functional-objects.html\#6.8} \\ så att täljare och nämnare blir så små som möjligt.
+
+\scalainputlisting[numbers=left, basicstyle=\ttfamily\fontsize{9}{11}\selectfont]{examples/numbers.scala}   

@@ -2,7 +2,7 @@
 
 %!TEX root = ../compendium.tex
 
-\Exercise{\ExeWeekSIX}
+\Exercise{\ExeWeekSIX}\label{exe:W06}
 
 \begin{Goals}
 \item Kunna deklarera klasser med klassparametrar.
@@ -21,7 +21,7 @@
 \end{Goals}
 
 \begin{Preparations}
-\item Studera teorin i kapitel \ref{chapter:W06}.
+\item \StudyTheory{06}
 \end{Preparations}
 
 \BasicTasks %%%%%%%%%%%%%%%%
@@ -50,7 +50,7 @@ scala> :pa
 class Arm(val ärTillVänster: Boolean)  
 class Ben(val ärTillVänster: Boolean)
 class Huvud(val harHår: Boolean)
-class RymdVarelse {
+class Rymdvarelse {
   var arm1 = new Arm(true)
   var arm2 = new Arm(false)
   var ben1 = new Ben(true)
@@ -139,7 +139,7 @@ scala> g.vikt -= 1000
 
 \Subtask\Pen Vad är fördelen med möjligheten att skapa egendefienerade setters?
 
-\Task \label{task:Square} \emph{En oföränderlig kvadrat.} 
+\Task \label{task:Square} \emph{En oföränderlig kvadrat med alternativ fabriksmetod.} 
 
 \Subtask Implementera klassen \code{Square} enligt nedan specifikation. Gör  implementationen i en kodeditor, så som \code{gedit}, och klistra in klassen i Scala REPL efter kommandot \code{:pa} (förkortning av \code{:paste}). På så sätt blir \code{object Square} ett kompanjonsobjekt till \code{class Square}.
 
@@ -177,17 +177,14 @@ object Square {
 \Subtask Testa din kvadrat enligt nedan. Förklara vad som händer.
 
 \begin{REPL}
-scala> val (s1, s2) = (Square(0,0,2), Square(1, 10, 2))
+scala> val (s1, s2) = (Square(), Square(1, 10, 1))
 scala> val s3 = s1.move(1,-5)
 scala> s1 isEqualSizeAs s3
 scala> s2 isEqualSizeAs s1
+scala> s1 isEqualSizeAs Square.unit
 scala> s2.scale(math.Pi) isEqualSizeAs s2
 scala> s2.scale(math.Pi) isEqualSizeAs s2.scale(math.Pi)
 \end{REPL}
-
-
-
-
 
 \Task \emph{Referenslikhet versus strukturlikhet.} Metoden \code{==} på case-klasser ger \textbf{strukturlikhet} (även kallad innehållslikhet) så att \emph{innehållet} i klassens klassparametrar jämförs om de har lika värde, medan för vanliga klasser ger metoden \code{==} \textbf{referenslikhet} där olika objekt är olika även om de har samma innehåll (om man inte överskuggar metoden \code{equals} som anropas av \code{==} vilket vi ska titta närmare på i kapitel \ref{chapter:W08}).
 
@@ -205,8 +202,6 @@ scala> c == d
 \Subtask Förklara vad som händer ovan.
 
 \Subtask Istället för \code{==}, prova metoden \code{eq} på objekten ovan. Metoden \code{eq} ger alltid referenslikhet (även om byter ut metoden \code{equals}).
-
-
 
 \Task \label{task:Point} \emph{Klassen \code{Point} med case-klass.} 
 
@@ -241,23 +236,7 @@ scala> p1 eq p2
 
 \Subtask\Pen Vad är det för skillnad på strukturlikhet och referenslikhet?
 
-\begin{CodeSmall}
-// kod till facit
-case class Point(x: Int, y: Int) {
-  def distanceTo(that: Point): Double = math.hypot(that.x - x, that.y -y)
-  
-  def distanceTo(x: Int, y: Int): Double = distanceTo(Point(x, y)) 
-  
-  def move(dx: Int, dy: Int): Point = Point(x + dx, y + dy)
-}
-
-object Point {
-  val origin: Point = new Point(0, 0)
-}
-\end{CodeSmall}
-
-
-\Task Ändra representationen av positionen i klassen \code{Square} från deluppgift \ref{task:Square} till att vara en \code{Point} från deluppgift \ref{task:Point}.
+\Task \label{task:PointSquare}Ändra representationen av positionen i klassen \code{Square} från deluppgift \ref{task:Square} till att vara en \code{Point} från deluppgift \ref{task:Point}.
 
 
 \Task \label{task:PointTuple} \emph{Case-klassen \code{Point} med 2-tupel.} I ett utvecklingsprojekt vill man ändra representationen av positionen i den gamla klassen  \\ \code{case class Point(x: Int, y: Int)} så att positionen istället i den uppdaterade klassen representeras av en 2-tupel. Man kan då vid konstruktion utnyttja att n-tupler som parameter även kan skrivas som en parameterlista med n argument, varför både \code{Point(1,2)} och \code{Point((1,2))} fungerar fint. Samtidigt vill man att befintlig kod som fortfarande använder \code{x} och \code{y} ska fungera utan ändringar.  Implementera den nya \code{Point} enligt specifikationen nedan. 
@@ -286,28 +265,7 @@ object Point {
 }
 \end{ScalaSpec}
 
-\begin{CodeSmall}
-// kod till facit
-case class Point(p:(Int,Int)) {
-  val x: Int = p._1
-  
-  val y: Int = p._2
-  
-  def distanceTo(that: Point): Double = 
-    math.hypot(that.x - x, that.y -y)
-  
-  def distanceTo(that: (Int, Int)): Double = 
-    distanceTo(Point(that)) 
-  
-  def move(dx: Int, dy: Int): Point = Point(x + dx, y + dy)
-}
-
-object Point {
-  val origin: Point = new Point(0, 0)
-}
-\end{CodeSmall}
-
-\Task\Pen Vad behöver du ändra i klassen \code{Square} från uppgift \ref{task:Square} för att den ska fungera med en \code{Point} med 2-tupel från uppgift \ref{task:PointTuple}?
+\Task\Pen Vad behöver du ändra i klassen \code{Square} från uppgift \ref{task:PointSquare} för att den ska fungera med en \code{Point} med 2-tupel från uppgift \ref{task:PointTuple}?
 
 \Task \emph{Objekt med föränderligt tillstång \Eng{mutable state}.} Du ska implementera en modell av en hoppande groda som uppfyller följande krav: 
 \begin{enumerate}[nolistsep, noitemsep]
@@ -351,8 +309,9 @@ object Frog {
 
 \Subtask Inför setters för attributen som håller reda på x- och y-postitionen. Förändringar av positionen i x- eller y-led ska räknas som ett hopp och alltså registreras i det attribut som håller reda på det ackumulerade hoppavståndet.
 
-\Subtask Simulera ett massivt grodhoppande med krockdetektering genom att skapa 1000 grodor som till att börja med är placerade på x-axeln med avståndet $1.0$ längdenheter mellan sig. Låt grodorna i en \code{while}-sats hoppa slumpmässigt tills någon groda befinner sig närmare än $0.5$ längdenheter som är definitionen på att de har krockat. Räkna hur många looprundor som behövs innan något grodpar krockar och skriv ut antalet. \\ \emph{Tips:} Börja med pseudokod på papper. Använd en grodvektor. \\ \emph{TODO!!! Kolla så att det är lagom med 1000 stycken och 1.0 i uppgiften ovan.}
+\Subtask Simulera ett massivt grodhoppande med krockdetektering genom att skapa 100 grodor som till att börja med är placerade på x-axeln med avståndet $8$ längdenheter mellan sig. Låt grodorna i en \code{while}-sats hoppa slumpmässigt tills någon groda befinner sig närmare än $0.5$ längdenheter som är definitionen på att de har krockat. Räkna hur många looprundor som behövs innan något grodpar krockar och skriv ut antalet. \\ \emph{Tips:} Börja med pseudokod på papper. Använd en grodvektor.
 
+\clearpage
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
@@ -439,81 +398,21 @@ m: Int = 10
 c: Double = 36.055512754639885
 \end{REPL}
 
-\begin{CodeSmall}
-// Kod till facit
-/** A mutable and expensive Square. */
-class Square private (val initX: Int, val initY: Int, val initSide: Int) {
-  
-  private var nMoves = 0;
-  private var sumCost = 0.0;
-  private var _x = initX;
-  private var _y = initY;
-  private var _side = initSide;
-  
-  private def addCost: Unit = { 
-   sumCost += math.hypot(x - initX, y - initY) * side
-  }
-  
-  /** The current position on the x axis */
-  def x: Int = _x
 
-  /** The current position on the y axis */
-  def y: Int = _y
-
-  /** The size of the side */
-  def side = _side
-
-  /** Scales the size of this square and rounds it to nearest integer */
-  def scale(factor: Double): Unit = { _side = (_side * factor).round.toInt }
-
-  /** Moves this square to position (x + xd, y + dy) */
-  def move(dx: Int, dy: Int): Unit = { 
-    _x += dx; _y += dy; 
-    nMoves += 1
-    addCost
-  }
-
-  /** Moves this square to position (x, y) */
-  def moveTo(x: Int, y: Int): Unit = { 
-    _x = x; _y = y; 
-    nMoves += 1
-    addCost
-  }
-  
-  /** The accumulated cost of this Square */
-  def cost: Double = sumCost
-
-  /** Reset the cost of this Square */
-  def pay: Unit = {sumCost = 0}
-  
-  /** A string representation of this Square */
-  override def toString: String = 
-    s"Square[($x, $y), side: $side, #moves: $nMoves times, cost: $sumCost]"
-}
-
-object Square {
-  private var created = Vector[Square]()
- 
-  /** Constructs a new Square object at (x, y) with size side */
-  def apply(x: Int, y: Int, side: Int): Square = {
-    require(side >= 0, s"side must be positive: $side")
-    val sq = (new Square(x, y, side))
-    created :+= sq
-    sq
-  }
-
-  /** Constructs a new Square object at (0, 0) with side 1 */
-  def apply(): Square = apply(0, 0, 1)
-
-  /** The total number of moves that have been made for all squares. */
-  def totalNumberOfMoves: Int = created.map(_.nMoves).sum
-  
-  /** The total cost of all squares. */  
-  def totalCost: Double = created.map(_.cost).sum
-} 
-\end{CodeSmall}
+\clearpage
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task \code{class Rational private (numerator: BigInt, denominator: BigInt)}  TODO: Ungefär som Rational i pins1ed med GCD
+
+\Task \label{task:aux-constructor} \emph{Hjälpkonstruktor.} I uppgift \ref{task:Square} erbjöds ett alternativt sätt att skapa \code{Square} med en extra fabriksmetod med namnet \code{apply} i kompanjonsobjektet. Ett annat sätt att göras detta på, som i Scala är mindre vanligt (men i Java är desto vanligare), är att definiera flera konstruktorer innuti klassen. I Scala kallas en sådan extra konstruktor för \textbf{hjälpkonstruktor} \Eng{auxiliary constructor}. 
+
+En hjälpkonstruktor skapar man i Scala genom att definiera en metod som har det speciella namnet \code{this}, alltså en deklaration \code{def this(...) = ...} Hjälponstruktorer måste börja med att anropa en annan konstruktor, antingen den primära konstruktorn eller en tidigare definierad  hjälpkonstruktor.  
+
+\Subtask Läs mer om hjälpkonstruktorer här: \\ \href{http://www.artima.com/pins1ed/functional-objects.html#6.7}{www.artima.com/pins1ed/functional-objects.html\#6.7}
+
+\Subtask Hitta på en egen uppgift med hjälpkonstruktorer, baserat på någon av klasserna i tidigare övningar.
+
+
+%\Task \TODO \\ \code{class Rational private (numerator: BigInt, denominator: BigInt)} \\
+%Inspirerat av Rational i pins1ed med GCD
     

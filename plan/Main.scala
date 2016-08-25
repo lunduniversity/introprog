@@ -32,21 +32,27 @@ object Main extends App {
   weekPlan.  toLatex   .prepend(texUtf).save(currentDir + "week-plan-generated.tex")
   modulePlan.toMarkdown.save(currentDir + "module-plan-generated.md")
   modulePlan.toHtml    .save(currentDir + "module-plan-generated.html")
+  modulePlan.latexTableBody.save(currentDir + "module-plan-generated.tex")
   overview  .toLatex   .prepend(texUtf).save(currentDir + "overview-generated.tex")
   
   val weeks = (0 to 6) ++ (8 to 14) //exlude exam weeks
   
   // *** Generate chapter heads with topics of each module
-  val conceptBegin = "Begrepp du ska lära dig denna vecka:\n" +
-    """\begin{multicols}{2}\begin{itemize}[nosep,label={$\square$},leftmargin=*]""" + "\n"
-  val conceptEnd   = """\end{itemize}\end{multicols}""" + "\n"
+  val minConceptsForTwoCol = 28
+  def conceptBegin(n: Int) = "Begrepp som ingår i denna veckas studier:\n" +
+    (if (n > minConceptsForTwoCol) """\begin{multicols}{2}""" else "") + 
+    """\begin{itemize}[noitemsep,label={$\square$},leftmargin=*]""" + "\n"
+  def conceptEnd(n: Int)   = """\end{itemize}""" +
+    (if (n > minConceptsForTwoCol) """\end{multicols}""" else "") + "\n"
   for (w <- weeks) {
     def toLatexItem(s: String) = s"\\item ${s.trim}\n"
     val label      = "\\label{chapter:" + modulePlan.column("W")(w) + "}"
     val chapter    = "\\chapter{" + modulePlan.column("Modul")(w) + s"}$label\n"
-    val concepts   = modulePlan.column("Innehåll")(w).split(',').toVector
+    val concepts   = modulePlan.column("Innehåll")(w).split(',').toVector.filterNot(_.isEmpty)
     val items      = concepts.map(toLatexItem).mkString.trim 
-    val result     = chapter + conceptBegin + items + conceptEnd
+    val result     = chapter + (if (items.size == 0) "" else {
+      conceptBegin(concepts.size) + items + conceptEnd(concepts.size)
+    })
     val weekName   = modulePlan.column("W")(w).toLowerCase
     val fileName   = s"../compendium/generated/$weekName-chaphead-generated.tex"
     result.latexEscape.prepend(texUtf).save(currentDir+fileName)
