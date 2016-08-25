@@ -7,8 +7,8 @@ object Match {
       case 'g' => "gurka är gott!"
       case 't' => "tomat är gott!" 
       case 'b' => "broccoli är gott!"
-      case _   =>  favorite + " är äckligt!"
+      case  _  =>  s"$favorite är mindre gott..."
     }
-    println("Jag tycker " + meThink)
+    println(s"Jag tycker att $meThink")
   }
 }
