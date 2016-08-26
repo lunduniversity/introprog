@@ -197,6 +197,10 @@
     \lstset{basicstyle=\ttfamily\fontsize{7}{9}\selectfont,#1}%
 }{}
 
+\lstnewenvironment{CodeSmall}[1][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{6}{7}\selectfont,#1}%
+}{}
+
 \lstnewenvironment{REPL}[1][]{%
     \lstset{
       basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
