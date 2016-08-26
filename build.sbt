@@ -69,7 +69,10 @@ pdf := {
   runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))         
   
   println(" ******* compiling exercises to pdf *******") 
-  runPdfLatexCmd(texFile = file("exercises.tex"), workDir = file("compendium"))     
+  runPdfLatexCmd(texFile = file("exercises.tex"), workDir = file("compendium")) 
+  
+  println(" ******* compiling solutions to pdf *******") 
+  runPdfLatexCmd(texFile = file("solutions.tex"), workDir = file("compendium"))     
 } 
 
 lazy val root = (project in file(".")).
