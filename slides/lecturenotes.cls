@@ -31,8 +31,12 @@
 
 \usepackage[normalem]{ulem}  % for strikethrough: \sout{Hello World}
 
+\usepackage{hyphenat}
+\hyphenation{intro-duktion}
+
 \usepackage{multicol} \setlength{\columnsep}{5mm}
 \usepackage{listings}
+\usepackage{upquote} %http://tex.stackexchange.com/questions/145416/how-to-have-straight-single-quotes-in-lstlistings
 \usepackage{xspace} %http://www.math.tamu.edu/~harold.boas/courses/math696/why-macros.html
 \usepackage{hyperref}
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
@@ -191,6 +195,10 @@
 
 \lstnewenvironment{Code}[1][]{%
     \lstset{basicstyle=\ttfamily\fontsize{7}{9}\selectfont,#1}%
+}{}
+
+\lstnewenvironment{CodeSmall}[1][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{6}{7}\selectfont,#1}%
 }{}
 
 \lstnewenvironment{REPL}[1][]{%

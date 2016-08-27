@@ -20,7 +20,8 @@
 
 %\usepackage{bera}
 %\usepackage{lmodern} %latin modern
-%\usepackage{tgheros} % times
+%\usepackage{tgheros} % clone of Helvetica
+%\usepackage{tgtermes}% clone of times
 %\usepackage{bookman} 
 %\usepackage[sc]{mathpazo} %palatino
 %\usepackage{tgheros} %helvetica
@@ -57,6 +58,7 @@
 
 \usepackage[linesnumbered,lined,boxed]{algorithm2e} % for writing pseudo-code
 
+\usepackage{array}
 \usepackage{longtable}
 \usepackage{booktabs}
 \usepackage{titlesec}
@@ -64,12 +66,22 @@
 
 \usepackage[normalem]{ulem}  % for strikethrough: \sout{Hello World}
 
+\usepackage{hyphenat}
+\hyphenation{sekvens-algoritmer}
+
 \usepackage{multicol} \setlength{\columnsep}{5mm}
 \usepackage{listings}
+\usepackage{upquote} %http://tex.stackexchange.com/questions/145416/how-to-have-straight-single-quotes-in-lstlistings
 \usepackage{xspace} %http://www.math.tamu.edu/~harold.boas/courses/math696/why-macros.html
 \usepackage[pdfpagelayout=TwoPageRight]{hyperref}
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
-\hypersetup{colorlinks=true,linkcolor=, linkbordercolor=, urlbordercolor=mylinkcolor, urlcolor=mylinkcolor, pdfborderstyle={/S/U/W 1}}
+\hypersetup{colorlinks=true, allcolors=mylinkcolor, 
+%linkcolor=, linkbordercolor=, urlbordercolor=mylinkcolor,
+ urlcolor=mylinkcolor, pdfborderstyle={/S/U/W 1}}
+
+\usepackage{pdfpages} % To include quickref booklet in appendix
+
+\usepackage[labelfont=bf]{caption}  % to get bold faced table and figure captions
 
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning}
@@ -83,6 +95,11 @@
 \tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3cm, rectangle split, rectangle split parts = 3]
 \tikzstyle{umlarrow}=[->, >=open triangle 90, thick]
 
+\newcommand{\TODO}{\colorbox{blue!30}{TODO!!!}~}
+\newcommand{\StudyTheory}[1]{Studera begreppen i kapitel \ref{chapter:W#1}.}
+\newcommand{\DoExercise}[2]{Gör övning {\tt #1} i avsnitt \ref{exe:W#2}.}
+\newcommand{\ReadTheLab}{Läs igenom och begrunda hela laborationsinstruktionen.}
+
 \newcommand{\Emph}[1]{\textcolor{myemphcolor}{\textbf{#1}}}
 \newcommand{\Alert}[1]{\textcolor{myalertcolor}{\textbf{#1}}}
 \newcommand{\Eng}[1]{(eng. {\textit{#1}})}
@@ -92,14 +109,21 @@
 
 \newcommand{\ChapterUnnum}[1]{\chapter*{#1}\addcontentsline{toc}{chapter}{#1}}
 \newcommand{\SectionUnnum}[1]{\section*{#1}\addcontentsline{toc}{section}{#1}}
-\newcommand{\Exercise}[1]{\newpage\section{Övning: {\tt #1}}}
-\newcommand{\ExerciseSolution}[1]{\newpage\section{{\tt #1}}}
-\newcommand{\Lab}[1]{\newpage\section{Laboration: {\tt #1}}}
-\newcommand{\Assignment}[1]{\newpage\section{Projektuppgift: {\tt #1}}}
+\newcommand{\Exercise}[1]{\newpage\section{Övning: {\tt #1}}\label{section:exe:#1}}
+\newcommand{\ExerciseSolution}[1]{\newpage\section{Lösningar till övning {\tt #1}}}
+\newcommand{\Lab}[1]{\newpage\section{Laboration: {\tt #1}}\label{section:lab:#1}}
+\newcommand{\Teamlab}[1]{\newpage\section{Grupplaboration: {\tt #1}}\label{section:lab:#1}}
+\newcommand{\Assignment}[1]{\newpage\section{Projektuppgift: {\tt #1}}\label{section:proj:#1}}
 \newcommand{\BasicTasks}{\subsection{Grunduppgifter}}
-\newcommand{\ExtraTasks}{\subsection{Extrauppgifter: öva mer på grunderna}}
-\newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter: avancerad nivå}}
+\newcommand{\ExtraTasks}{\subsection{Extrauppgifter}}
+\newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter}}
 \newcommand{\TaskSection}[1]{\subsubsection*{#1}}
+
+\newcommand\Menu[1]{\textit{#1}}
+\newcommand\MenuArrow[1]{\Menu{#1}~$\rightarrow$~}
+\newcommand\FramedCheckmark[1]{~\frame{\checkmark}~~\textbf{#1}}
+\newcommand\FramedUnchecked[1]{$\Box$~\textbf{#1}}
+\newcommand\Button[1]{\fbox{\textbf{#1}}}
 
 \newcounter{TaskCounter}[section]
 \newcommand{\Task}{%
@@ -173,9 +197,9 @@
     commentstyle=\color{mygreen},
     numberstyle={\footnotesize},
     numbers=none,
-    backgroundcolor=\color{gray!10},
+    backgroundcolor=\color{gray!15},
     frame=single,
-    rulecolor=\color{black!20},
+    rulecolor=\color{black!25},
     %title={\footnotesize\lstname},
     breaklines=false,
     breakatwhitespace=false,
@@ -219,11 +243,18 @@
     \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
             backgroundcolor=\color{white},,
             title={\hskip-0.38em\colorbox{black!70}{\parbox{\dimexpr\textwidth+1\fboxsep-2\fboxrule\relax}{\fontsize{10}{12}\selectfont\color{white}{\textit{Specification} \texttt{\textbf{#2}}}}}},%
-            identifierstyle=\color{black!80},%
+            identifierstyle=\color{black},%
             rulecolor=\color{black!60},frame=tRbL,framerule=1.2pt,%
             language=Scala,#1}%
 }{}
 
+\newcommand{\ScalaSpecInputListing}[3][]{\lstinputlisting[%
+basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
+            backgroundcolor=\color{white},
+            title={\hskip-0.38em\colorbox{black!70}{\parbox{\dimexpr\textwidth+1\fboxsep-2\fboxrule\relax}{\fontsize{10}{12}\selectfont\color{white}{\textit{Specification} \texttt{\textbf{#2}}}}}},%
+            identifierstyle=\color{black},%
+            rulecolor=\color{black!60},frame=tRbL,framerule=1.2pt,%
+            language=Scala,#1]{#3}}
 
 \lstnewenvironment{Code}[1][]{%
     \lstset{#1}%

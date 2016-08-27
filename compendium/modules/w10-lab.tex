@@ -5,26 +5,169 @@
 \Lab{\LabWeekTEN}
 
 \begin{Goals}
-\item Att lära sig.
+\item Kunna använda inbyggda sorteringsfunktioner.
+\item Kunna använda inbyggda sökfunktioner.
+\item Känna till hur strängar ordnas.
+\item Kunna läsa text i tabellform från fil och webbaddress.
+\item Kunna använda registrering (frekvensräkning) för enkla statistikberäkningar.
+\item Kunna skriva till fil.
+\item Kunna omvandla startargument till kommandon.
+\item Kunna skriva rekursiva funktioner.
 \end{Goals}
 
 \begin{Preparations}
-\item Att göra.
+\item \StudyTheory{10}
+\item \DoExercise{\ExeWeekTEN}{10}
+\item \ReadTheLab
+\item Fyll i denna enkät: \url{https://goo.gl/forms/hC6JK2UQXVpbGECc2}  \\
+I enkäten ska du för olika flervalsalternativlistor besvara frågan: \\ \textit{Vilket är ditt favoritalternativ?}
 \end{Preparations}
+
+
+\subsection{Bakgrund}
+
+I den här veckans laboration ska du utveckla ett program som analyserar svar på enkäter med flervalsfrågor. Indata utgörs av text i form av \textbf{kolumnseparerade värden}, där varje persons svar finns på en egen rad och varje svarsrad innehåller svarsalternativ separerade med en \textbf{kolumnseparator} som till exempel kan vara ``\code{\t}'' eller ``\code{,}''. Första raden i textfilen anger kolumnernas namn.
+Exempelindata finns i filen \code{favorit.csv} i mappen resources:
+\lstinputlisting[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w10_survey/src/main/resources/favorit.csv}
+
+\noindent Ditt program ska bestå av följande delar:
+\begin{itemize}
+\item En case-klass för strängmatriser som heter \code{Table} med funktioner för inläsning av tabellformatterad text, sortering, filtrering och registrering med avseende på en viss kolumn.
+\item Ett objekt för argumentparsning och kommandoexekvering som heter \code{Command}.
+\item En given Main-fil som ska kunna köra det slutgiltiga programmet.
+\item Funktion för att presentera statistik från enkätdata med hjälp av registrering.
+\end{itemize}
+
+\subsection{Given kod}
+
+Given kod finns här: \\
+\href{https://github.com/lunduniversity/introprog/tree/master/workspace/w10_survey/src/main}{https://github.com/lunduniversity/introprog/tree/master/\\workspace/w10\_survey/src/main}
+
+\noindent Så här ser huvudprogrammet ut:
+\scalainputlisting{../workspace/w10_survey/src/main/scala/stats/Main.scala}
+
+
 
 \subsection{Obligatoriska uppgifter}
 
-\Task En labbuppgiftsbeskrivning.
+\Task Implementera \code{Table} enligt specifikation:
 
-\Subtask En underuppgift.
+\ScalaSpecInputListing{Table}{../workspace/w10_survey/src/main/scala/stats/Table.scala}
 
-\Subtask En underuppgift.
+\Subtask Börja med att implementera klassen \code{Table} men vänta med \code{register} till nästa uppgift. I \code{sort} och \code{filter} ska inbyggda funktioner för sortering och filtrering användas. Eftersom \code{Table} är omuterbar måste nya instanser eller kopior skapas av \code{Table} vid varje filtrering eller sortering.
+
+\Subtask Implementera \code{register} som senare kommer användas för att skapa diagram som presenterar den registrerade datan. För att registrera antalet förekomster av varje unikt värde kan funktionerna \code{groupBy} och \code{mapValues} användas. 
+
+Omvandlingen går från \code{Vector[String]} till \code{Map[String, Vector[String]]} med \code{groupBy} och efter det till \code{Map[String, Int]} med \code{mapValues}.
+Exempel med \code{groupBy}:
+\begin{REPLnonum}
+scala> Vector("ICA", "COOP", "Konsum", "ICA", "ICA", "COOP").groupBy(v => v)
+
+res0: Map[String,Vector[String]] = Map(COOP -> Vector(COOP, COOP),
+                                       Konsum -> Vector(Konsum),
+                                       ICA -> Vector(ICA, ICA, ICA))
+\end{REPLnonum}
+
+\Subtask Implementera funktionen \code{fromFile} i objektet \code{Table}. Parametern \code{uri} är antingen en webbadress eller en lokal sökväg. Det räcker med att anta att en webbadress börjar på ``\code{http}''.
+
+En fil som innehåller tre rader med 3 kolumner på varje rad läses in till vektorn såhär:
+\begin{CodeSmall}[language=, ]
+Vector(Vector(rad1kolumn1,rad1kolumn2,rad1kolumn3),
+       Vector(rad2kolumn1,rad2kolumn2,rad2kolumn3),
+       Vector(rad3kolumn1,rad3kolumn2,rad3kolumn3))
+\end{CodeSmall}
+
+\Subtask Implementera \code{toFile} med valfri metod för att skriva till fil.
+
+\Subtask Testa \code{Table} genom att köra \code{main}-funktionen. Om allt står rätt till finns det nu en fil \code{out.csv} i mappen resources och i konsollen lyder utskriften:
+\begin{REPLnonum}
+(DE,5)
+(Vim,2)
+(Eclipse,1)
+(Emacs,1)
+(Gedit,1)
+
+\end{REPLnonum}
+
+\clearpage %Hack to fix pagination
+
+\Task Komplettera \code{Command} enligt specifikation:
+
+\ScalaSpecInputListing{Command}{../workspace/w10_survey/src/main/scala/stats/Command.scala}
+
+Observera att i objektet \code{Command} definieras typen \code{Command}. En instans av typen \code{Command} är det som \textit{kommando} hädanefter kommer åsyfta. Det är helt enkelt en funktion som tar emot en instans av \code{Table}, gör något med det och returnerar tillbaka en instans av \code{Table}. På så vis kan flera kommandon exekveras som en kedja där nästa kommandos indata är det föregående kommandots utdata. Exempel på ett kommando som lägger till ett utropstecken på kolumnrubrikerna:
+\begin{CodeSmall}[language=, ]
+t: Table => t.copy(headings = t.headings.map(_ + "!"))
+\end{CodeSmall}
+Metoderna \code{Command.parseOne} och \code{Command.parseAll} omvandlar argument till kommandon.
+
+\Subtask Implementera \code{parseOne}. Lägg märke till att likt \code{parseAll} är parametertypen \code{Vector[String]}, men skillnaden är att \code{parseOne} ska matcha och returnera exakt ett kommando. I annat fall kastas ett generellt undantag: \code{throw new Exception("meddelande")}. Till exempel ``\code{-sort 4}'' funkar men ``\code{-sprt 4}'' och ``\code{-sort 4 asdf}'' funkar inte. De giltiga argumenten som ska kunna tas emot finns i \code{Command.list}. Undantaget som kastas då något annat än ett strängheltal ska göras om till en \code{Int} tas hand om i \code{Main} och behöver inte hanteras.
+
+Om ``\code{-printchart 6}'' körs på datan från \code{favorit.csv} ska följande diagram produceras:
+\begin{REPLnonum}
+Column: DE (17)
+notepad++: 4 occurrences
+****
+Eclipse: 3 occurrences
+***
+Emacs: 3 occurrences
+***
+Vim: 3 occurrences
+***
+Gedit: 2 occurrences
+**
+Visual Studio: 2 occurrences
+**
+
+\end{REPLnonum}
+Om flera kolumner efterfrågas, till exempel ``\code{-printchart 3 5 6}'', skrivs diagrammen ut direkt efter varandra.
+
+\Subtask Implementera \code{parseAll} som en rekursiv funktion. Använd minustecknet som markerar starten för ett nytt kommando för att dela upp argumenten \code{args} i delar som sedan var för sig skickas med i anrop till \code{parseOne}. Kanske funktionen \code{span} kan vara till nytta:
+\begin{REPLnonum}
+scala> Vector("myra", "panda", "", "ekorre").span(_.nonEmpty)
+
+res1: (Vector[String], Vector[String]) = (Vector(myra, panda),
+                                         Vector("", ekorre))
+\end{REPLnonum}
+
+\Subtask Implementera \code{runAllWith}. Eftersom kommandona ska exekveras i en kedja passar det väldigt bra att även göra den här funktionen rekursiv.
+
+\Subtask Testa ditt program med \code{Main}-filen och \code{favorit.csv}.
+\begin{REPLnonum}
+>scala stats.Main favorit.csv , -filter 2 Terminal -sort 3 -sep | -print
+-printchart 5
+Loading "favorit.csv" "," to table ...
+
+Done. Size: 17x7.
+
+Program|Indent|UI|Lang|OS|Browser|DE
+D|Spaces|Terminal|C|BSD|Firefox|Emacs
+F|Spaces|Terminal|C|Linux|Chrome|Emacs
+F|Spaces|Terminal|C|Linux|Firefox|Vim
+C|Tabs|Terminal|C#|Windows 10|Edge|Visual Studio
+D|Spaces|Terminal|Java|Windows 8|Edge|Eclipse
+E|Spaces|Terminal|Java|Linux|Chromium|Eclipse
+C|Spaces|Terminal|Javascript|Windows 7|Chrome|Notepad++
+Nano|Tabs|Terminal|Javascript|macOS|Safari|Vim
+I|Tabs|Terminal|PHP|Windows 10|Edge|Notepad++
+I|Tabs|Terminal|Python|Windows 10|Chrome|Notepad++
+
+Column: Browser (10)
+Chrome: 3 occurrences
+***
+Edge: 3 occurrences
+***
+Firefox: 2 occurrences
+**
+Chromium: 1 occurrence
+*
+Safari: 1 occurrence
+*
+
+\end{REPLnonum}
+
+\Task Avslutningsvis, testa att programmet fungerar med länken till enkätsvaren: \url{https://goo.gl/qPcuAO}.
 
 \subsection{Frivilliga extrauppgifter}
-
-\Task En labbuppgiftsbeskrivning.
-
-\Subtask En underuppgift.
-
-\Subtask En underuppgift.
     
+\Task Inför lämpliga argument till programmet som medför att fina tårtdiagram och/eller stapeldiagram i SimpleWindow med automatiska färger ritas ut som illustrationer till frekvenserna i de olika kolumnerna.
