@@ -17,7 +17,7 @@ trait Plan {
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, REPL,  
       | literal, värde, uttryck, identifierare, variabel, typ, tilldelning, namn, val, var, def,  
-      | inbyggda typer, Int, Long, Short, Double, Float, Byte, Char, String,
+      | inbyggda grundtyper, Int, Long, Short, Double, Float, Byte, Char, String,
       | println, typen Unit, enhetsvärdet (), stränginterpolatorn s,
       | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random,
       | logiska uttryck, de Morgans lagar, while-sats, for-sats, 
