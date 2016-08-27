@@ -83,6 +83,30 @@ object Main extends App {
     nameDefRow(w, weekPlan.column("Lab")(w), weekPlan.column("Övn")(w))
   val nameDefs = (for (w <- weeks) yield namesOfWeek(w)).mkString("\n")
   nameDefs.prepend(texUtf).save(currentDir + "../compendium/generated/names-generated.tex")
+  
+  
+  //*** Generate overview slides per week ***
+  def overviewTemplate(module: String, exe: String, lab: String, body: String, cols: Int = 3) = 
+    s"""
+Modul \\Emph{$module}: Övn \\Alert{\\texttt{$exe}} $$\\rightarrow$$ Labb \\Alert{\\texttt{$lab}}
+\\begin{multicols}{$cols}\\SlideFontTiny
+$body     
+\\end{multicols}
+"""
+    for (w <- weeks) {
+      val concepts   = modulePlan.column("Innehåll")(w).split(',').toVector.filterNot(_.isEmpty)
+      def toLatexItem(s: String) = s"$$\\square$$ ${s.trim} \\\\\n"
+      val items = if (w < 14) concepts.map(toLatexItem).mkString.trim else "Repetera begrepp"
+      val output = overviewTemplate(
+        module = overview.column("Modul")(w),
+        exe    = overview.column("Övn")(w),
+        lab    = overview.column("Lab")(w),
+        body   = items
+      )
+      val weekName   = modulePlan.column("W")(w).toLowerCase
+      output.prepend(texUtf).save(
+        currentDir + s"../slides/generated/$weekName-overview-generated.tex")
+  }  
  
 }
 
