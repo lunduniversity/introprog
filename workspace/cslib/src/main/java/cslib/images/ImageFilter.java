@@ -4,19 +4,26 @@ import java.awt.Color;
 
 /**
  * Superklassen till alla filterklasser.
+ * @version 1.2 (2016-07-17) nbrOfArgs attribut har lagts till 
+ * samt en getNumberOfArguments-metod (Casper Schreiter, Björn Regnell)
  */
 public abstract class ImageFilter {
-	private String name; // filtrets namn
+	private String name; 		// filtrets namn
+	private int nbrOfArgs; 		// antal argument
 
 	/**
-	 * Skapar ett filterobjekt med ett givet namn.
+	 * Skapar ett filterobjekt med ett givet namn och antalet argument filtret behöver.
 	 * 
 	 * @param name
 	 *            filtrets namn
+	 * @param nbrOfArgs
+	 *            antal argument
 	 */
-	protected ImageFilter(String name) {
+	protected ImageFilter(String name, int nbrOfArgs) {
 		this.name = name;
+		this.nbrOfArgs = nbrOfArgs;		
 	}
+	
 
 	/**
 	 * Tar reda på filtrets namn.
@@ -28,17 +35,26 @@ public abstract class ImageFilter {
 	}
 
 	/**
+	 * Tar reda på antalet argument filtret behöver.
+	 *  
+	 * @return antalet argument som behövs till apply-metoden.
+	 */
+	public int getNumberOfArguments() {
+		return nbrOfArgs;
+	}
+
+	/**
 	 * Filtrerar bilden i matrisen inPixels och returnerar resultatet i en ny
-	 * matris. Utnyttjar eventuellt värdet av paramValue
+	 * matris. Utnyttjar eventuellt värdena i args
 	 * 
 	 * @param inPixels
 	 *            den ursprungliga bilden
-	 * @param paramValue
-	 *            parametervärde
+	 * @param args
+	 *            argument
 	 * @return den filtrerade bilden
 	 */
-	public abstract Color[][] apply(Color[][] inPixels, double paramValue);
-
+	public abstract Color[][] apply(Color[][] inPixels, double[] args);
+	
 	/**
 	 * Beräknar intensiteten hos alla pixlarna i pixels, returnerar resultatet i
 	 * en ny matris.

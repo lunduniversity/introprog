@@ -2,21 +2,21 @@
 
 %!TEX root = ../compendium.tex
 
-\Exercise{\ExeWeekTWELVE}
+\Exercise{\ExeWeekTWELVE}\label{exe:W12}
 
 \begin{Goals}
 \item Känna till vad en tråd är och kunna förklara begreppet jämlöpande exekvering.
 \item Känna till vad metoderna \code{run} och \code{start} gör i klassen \code{Thread}.
-\item Kunna skapa och starta en tråd med ölverskuggad \code{run}-metod.
+\item Kunna skapa och starta en tråd med överskuggad \code{run}-metod.
 \item Kunna skapa ett enkelt program som från två trådar tävlar om att uppdatera en variabel och förklara varför beteendet kan bli oförutsägbart.
 \item Kunna använda en \code{Future} för att köra igång flera parallella beräkningar.
 \item Kunna registrera en callback på en \code{Future} med metoden \code{onComplete}.
-\item Känna till att webbsidor beskrivs av HTML-kod och kunna skapa en minimal webbsida.
-\item Kunna ladda ner en webbsida med \code{scala.io.Source.fromURL}.
+%\item Känna till att webbsidor beskrivs av HTML-kod och kunna skapa en minimal webbsida.
+%\item Kunna ladda ner en webbsida med \code{scala.io.Source.fromURL}.
 \end{Goals}
 
 \begin{Preparations}
-\item Studera teorin i kapitel \ref{chapter:W12}.
+\item \StudyTheory{12} 
 \end{Preparations}
 
 \BasicTasks %%%%%%%%%%%%%%%%
@@ -48,7 +48,8 @@ g.run; t.run
 g.start; t.start
 \end{REPL}
 
-\Subtask Använd \code{Thread.sleep} enligt nedan. Är beteendet helt förutsägbart (deterministiskt)? Förklara vad som händer.
+\Subtask Använd \code{Thread.sleep} enligt nedan. Är beteendet helt förutsägbart (deterministiskt)? Förklara vad som händer. Du kan (om du kör Linux) avbryta REPL med Ctrl+C%
+\footnote{\href{http://stackoverflow.com/questions/6248884/can-i-stop-the-execution-of-an-infinite-loop-in-scala-repl}{stackoverflow.com/questions/6248884/can-i-stop-the-execution-of-an-infinite-loop-in-scala-repl}}.
 \begin{REPL}
 def ibland(block: => Unit) = new Thread {
   override def run = while(true) { block; Thread.sleep(600) }
@@ -72,7 +73,7 @@ class Kund(bank: Bank) {
 }
 \end{Code}
 
-\Subtask Använd funktionen \code{ibland} från föregående uppgift. Förklara vad som händer nedan.
+\Subtask Använd funktionen \code{ibland} från föregående uppgift och kör nedan rader i REPL. Resultatet av jämlöpande variabeluppdatering blir här heltokigt och leder till mycket upprörda bankkunder och -ägare. Förklara vad som händer.
 
 \begin{REPL}
 val bank = new Bank
@@ -85,8 +86,8 @@ bank.visaSaldo
 val bamse = new Kund(bank)
 val skutt = new Kund(bank)
 
-bamse.sparaSlösa
-skutt.sparaSlösa
+bamse.slösaSpara
+skutt.slösaSpara
 bank.visaSaldo
 
 def ofta(block: => Unit) = new Thread {
@@ -99,13 +100,78 @@ ibland(bank.visaSaldo)
 \end{REPL}
 
 
-\Task \emph{Jämlöpande exekvering med \code{scala.concurrent.Future}.} Att hålla reda på trådar kan bli ganska knepigt. Med hjälp av \code{scala.concurrent.Future} kan man sätta igång beräkningar i nya trådar och sedan köra vidare med annat. 
+\Task \emph{Trådsäkra \code{AtomicInteger}.} Det finns stöd i JVM för att åstadkomma uppdateringar som inte kan avbrytas av andra trådar under pågånde minnesskrivning. En operation som inte kan avbrytas kallas \textbf{atomär} \Eng{atomic}. Studera dokumentationen för \code{AtomicInteger}\footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html}{docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html}} och prova nedan kod. Förklara vad som händer.
+
+Använd funktionerna \code{ofta} och \code{ibland} från tidigare uppgifter.
+\begin{Code}
+class SäkerBank { 
+  import java.util.concurrent.atomic.AtomicInteger
+  private var saldo = new AtomicInteger
+  def visaSaldo: Unit = println(s"saldo: ${saldo.get}")
+  def sättIn: Unit = { saldo.incrementAndGet } 
+  def taUt: Unit   = { saldo.decrementAndGet }
+}
+
+class SäkerKund(bank: SäkerBank) {
+  def slösaSpara = {bank.taUt; Thread.sleep(1); bank.sättIn}
+}
+\end{Code}
+\begin{REPL}
+val säkerBank = new SäkerBank
+val farmor = new SäkerKund(säkerBank) 
+val vargen = new SäkerKund(säkerBank) 
+
+ofta(farmor.slösaSpara); ofta(vargen.slösaSpara)
+
+ibland(säkerBank.visaSaldo)
+\end{REPL}
+
+
+
+
+
+\Task \label{task:future} \emph{Jämlöpande exekvering med \code{scala.concurrent.Future}.} Att skapa och hålla reda på trådar kan bli ganska omständligt och knepigt att få rätt på. 
+Med hjälp av \code{scala.concurrent.Future} kan man på ett enklare sätta skapa jämlöpande exekvering. 
 
 \begin{Background}
-Med en \code{Future} skapas jämlöpande exekvering som ''under huven'' använder ett avancerat ramverk som heter Akka\footnote{\url{http://akka.io/}}, skrivet i Scala och Java. Akka erbjuder automatisk  multitrådning med s.k. trådpooler och möjliggör avancerad parallellprogrammering på en hög  abstraktionsnivån, där man själv slipper att skapa instanser av klassen \code{Thread}. 
+Med en \code{Future} skapas jämlöpande exekvering som ''under huven'' använder ett ramverk som heter Akka\footnote{\url{http://akka.io/}}, skrivet i Scala och Java. Akka erbjuder automatisk  multitrådning med s.k. trådpooler och möjliggör avancerad parallellprogrammering på en hög  abstraktionsnivån, där man själv slipper skapa instanser av klassen \code{Thread}. I stället kan man helt enkelt placera sin kod inramat med \code|Future{ "körs parallellt" }| efter att man importerat det som behövs.
 \end{Background}
 
-I denna uppgift ska du ladda ner webbsidor parallellt med hjälp \code{Future} så att en nedladdning kan avslutas under tiden en annan dröjer.  
+\Subtask För att skapa jämlöpande exekvering med \code{Future} behöver man först göra import enligt nedan; då skapas ett exekveringssammanhang med trådpooler redo för användning. Starta om REPL och studera felmeddelandet efter rad 1 nedan. Importera därefter enligt nedan. Vad har \code{f} för typ? 
+\begin{REPL}
+scala> concurrent.Future { Thread.sleep(1000); println("En sekund senare!") }
+scala> import scala.concurrent._ 
+scala> import ExecutionContext.Implicits.global
+scala> val f = Future { Thread.sleep(1000); println("En sekund senare!") }
+\end{REPL}
+
+\Subtask Skapa en procedur \code{printLater} enligt nedan som skriver ut argumentet efter slumpmässigt tid. Förklara vad som händer nedan.
+\begin{REPL}
+scala> def printLater(a: Any): Unit =  
+         Future { Thread.sleep((math.random * 10000).toInt); print(a + " ") }
+scala> (1 to 42).foreach(i => printLater(i)); println("alla är igång!")
+\end{REPL}
+
+\Subtask Skapa enligt nedan en \code{Future} som räknar ut hur många siffror det är i ett väldigt stort tal. Med \code{onComplete} kan man ange vad som ska göras när den tunga beräkningen är färdig; detta kallas att ''registrera en callback''. Vilken returtyp har \code{big}? Hur många siffror har det stora talet? Vad har \code{r} för typ? Justera argumentet till \code{big} om du inte orkar vänta på resultatet...
+
+\begin{REPL}
+scala> BigInt(10).pow(100)
+scala> BigInt(10).pow(100).toString.size
+scala> def big(n: Int) = Future { BigInt(n).pow(n).toString.size }
+scala> big(1234567).onComplete{r => println(r + " siffror") }
+\end{REPL} 
+
+\Subtask Den stora vinsten med \code{Future} är att man kan köra vidare under tiden, varför anropet av \code{Future} kallas \textbf{icke-blockerande} \Eng{non-blocking}. Det händer ibland att man ändå vill blockera exekveringen i väntan på ett resultat. Man kan då använda objektet \code{scala.concurrent.Await} och dess metod \code{result} enligt nedan. Använd \code{big} från föregående uppgift och gör en blockerande väntan på resultatet enligt nedan. Vad händer? Vad händer om du väntar för kort tid?
+
+\begin{REPL}
+scala> import scala.concurrent.duration._
+scala> Await.result(big(1234567), 20.seconds)
+\end{REPL} 
+
+
+
+\Task \emph{Använda \code{Future} för att göra flera saker samtidigt.}
+I denna uppgift ska du ladda ner webbsidor parallellt med hjälp av \code{Future}, så att en nedladdning kan avslutas under tiden en annan dröjer.  
 
 \Subtask Koden för en minimal webbsida ser ut som nedan. Du kan beskåda sidan här: \url{http://fileadmin.cs.lth.se/pgk/mini.html} eller skriva in nedan kod i en fil som heter något som slutar på \texttt{.html} och öppna filen i din webbläsare.
 
@@ -121,7 +187,7 @@ HELLO WORLD!
 \Subtask För att simulera slöa webbservrar kan man ladda ner en sida via sajten \texttt{http://deelay.me/}. Ladda ner ovan sida med 2 sekunders fördröjning:\\
 \url{http://deelay.me/2000/http://fileadmin.cs.lth.se/pgk/mini.html}
 
-\Subtask Man kan ladda ner webbsidor med \code{scala.io.Source}. Vad händer nedan? Hur lång tid måste du i medeltal, bästa fall respektive värsta fall vänta innan du kan se första webbsidan i vektorn \code{laddningar} nedan?
+\Subtask Man kan ladda ner webbsidor med \code{scala.io.Source}. Vad händer nedan? Försök, med ledning av hur \code{delay} beräknas, uppskatta hur lång tid du måste vänta i medeltal, i bästa fall, respektive värsta fall, innan du kan se första webbsidan i vektorn \code{laddningar} nedan?
 
 \begin{REPL}
 scala> def ladda(url: String) = scala.io.Source.fromURL(url).getLines.toVector
@@ -136,7 +202,7 @@ scala> val laddningar = Vector.fill(10)(seg)
 scala> laddningar(0)
 \end{REPL}
 
-\Subtask Innan vi kan köra igång en \code{Future} så måste vi importera den underliggande exekveringsmiljön som är redo att parallelisera ditt program i trådar utan att du själv måste skapa dem. Detta görs med nedan import-satser. Förklara vad som händer nedan.
+\Subtask Innan vi kan köra igång en \code{Future} så måste vi, som visats i uppgift \ref{task:future} importera den underliggande exekveringsmiljön som är redo att parallelisera ditt program i trådar utan att du själv måste skapa dem. Vad händer nedan?
 \begin{REPL}
 scala> import scala.concurrent._ 
 scala> import ExecutionContext.Implicits.global
@@ -152,7 +218,7 @@ scala> nonblock   // kolla igen senare om ej klar
 scala> nonblock  
 \end{REPL}
 
-\Subtask Ladda indata separat i olika parallella trådar. Förklara vad som händer nedan.
+\Subtask Ladda indata separat i olika parallella trådar. Förklara vad som händer nedan. Kör uttrycket på rad 3 nedan upprepade gånger i snabb följd efter varandra med pil-upp+Enter i REPL.
 \begin{REPL}
 scala> val para = Vector.fill(10)(Future{ seg })
 scala> para
@@ -161,7 +227,7 @@ scala> para.map(_.isCompleted) // studera hur de blir färdiga en efter en
 scala> para(0)
 \end{REPL}
 
-\Subtask Registrera en s.k. \emph{callback} med metoden \code{onComplete}. Förklara vad som händer nedan.
+\Subtask Registrera en callback med metoden \code{onComplete}. Förklara vad som händer nedan.
 
 \begin{REPL}
 scala> val action = Vector.fill(10)(Future{ seg })
@@ -169,7 +235,7 @@ scala> action(0).onComplete(xs => println(s"ready:$xs"))
 scala> // vänta tills laddning på plats 0 är klar
 \end{REPL}
 
-\Subtask Registrera en s.k. \emph{callback} för felhantering i händelse av undantag med metoden \code{onFailure}. Förklara vad som händer nedan.
+\Subtask Registrera en callback för felhantering i händelse av undantag med metoden \code{onFailure}. Förklara vad som händer nedan.
 \begin{REPL}
 scala> def lycka  = { Thread.sleep(3000); println(":)") }
 scala> def olycka = { Thread.sleep(3000); 42 / 0; lycka }
@@ -179,8 +245,43 @@ scala> Future{ olycka }.onFailure{ case e => println(s":( $e") }
 
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
-  
-\Task TODO  Fråga Patrik Persson om ideer till enkla ''more-of-the-same'' som gör att man fattar vad en Future är och vad jämlöpande exekvering är om man nu tyckte grunduppgifterna var svåra. Kanske några enkla teorifrågor som skulle kunna komma på en tenta del 1? Typ: Vad är en tråd? Vad är en Future och vad är fördelen med att använda Future jämfört med att använda trådar direkt? Vilka svårigheter kan uppstå vid jämlöpande exekvering? Vad betyder ''trådsäker''? %%%%%%%%%%%%%%%%%%%
+
+
+\Task Räkna ut stora primtal parallellt genom att använda nedan funktioner. Implementera \code{isPrime} enligt pseudokod från den engelska wikipediasidan om primtalstest\footnote{\href{https://en.wikipedia.org/wiki/Primality_test}{en.wikipedia.org/wiki/Primality\_test}} med den s.k. ''naiva algoritmen''.  Räkna ut 10 st slumpvisa primtal med 16 siffror vardera. Gör beräkningarna parallellt med hjälp av \code{Future}.
+
+\begin{Code}
+def isPrime(n: BigInt): Boolean = ???
+
+def nextPrime(start: BigInt): BigInt = {
+  var i = start
+  while (!isPrime(i)) { i += 1 }
+  i
+}
+
+def randomBigInt(nDigits: Int): BigInt = {
+   def rndChar = ('0' + (math.random * 10).toInt).toChar
+   val str = Array.fill(nDigits)(rndChar).mkString
+   BigInt(str)
+}
+\end{Code}
+
+\Task\Pen \emph{Svara på teorifrågor.}
+
+\Subtask Vad är en tråd?
+
+\Subtask Hur skapar man en tråd med klassen \code{Thread}?
+
+\Subtask Hur startar man en tråd?
+
+\Subtask Vilka problem kan man råka ut för om man uppdaterar samma resurs i flera olika trådar? 
+
+\Subtask Vad innbär det att kod är \emph{trådsäker}?
+
+\Subtask Nämn några fördelar med att använda Future jämfört med att använda trådar direkt.
+
+
+\Task Läs om och testa klasserna AtomicBoolean, AtomicDouble och AtomicReferens för atomär uppdatering i paketet \code{java.util.concurrent.atomic}. Använd några av dessa tillsammans med \code{scala.concurrent.Future}. 
+
 
 
 \newpage
@@ -190,12 +291,12 @@ scala> Future{ olycka }.onFailure{ case e => println(s":( $e") }
 
 \Task \emph{Skapa din egen multitrådade webbserver.} 
 
-\Subtask Skriv in nedan kod i en editor och spara i en fil med namn \texttt{webserver.scala} och kompilera och kör och beskriv vad som händer när du med din webbläsare surfar till adressen: \url{http://localhost:8089/abbasillen}
+\Subtask Skriv in\footnote{Eller ladda ner här: \href{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/simple-web-server/webserver.scala}{github.com/lunduniversity/introprog/blob/master/compendium/examples/simple-web-server/webserver.scala}} nedan kod i en editor och spara i en fil med namn \texttt{webserver.scala} och kompilera och kör med \texttt{scala webserver.start} och beskriv vad som händer när du med din webbläsare surfar till adressen: \\ \url{http://localhost:8089/abbasillen}
 
 \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/simple-web-server/webserver.scala}
 
 \Subtask Du ska nu skapa en webbserver som gör något lite mer intressant. Den ska svara om du surfar till \url{http://localhost:8089/fib/13} med det 13:e Fibbonnaci-talet\footnote{\href{https://sv.wikipedia.org/wiki/Fibonaccital}{https://sv.wikipedia.org/wiki/Fibonaccital}}. 
-Spara din webserver från föregående deluppgift under det nya namnet \texttt{fibserver.scala} och använd koden nedan och lägg till och ändra så att din server kan svara med Fibonaccital. 
+Spara din webserver från föregående deluppgift under det nya namnet \texttt{fibserver.scala} och använd koden nedan och lägg till och ändra så att din server kan svara med Fibonaccital. Vi börjar med att räkna ut Fibonaccital i funktionen \code{compute.fib} nedan på ett onödigt processorkrävande sätt med exponentiell tidskomplexitet så att webbservern verkligen får jobba, för att i senare deluppgifter implementera \code{compute.fib} med linjär tidskomplexitet och därmed undvika onödig planetuppvärmning.
 \begin{CodeSmall}
   object compute {
     def fib(n: BigInt): BigInt = {
@@ -286,7 +387,7 @@ object compute {
 }
 \end{Code}
  
-\Subtask Använd ovan \code{fib}-objekt i en ny version av din webserver. Spara den i en ny kodfil med namnet \texttt{fibserver-memcached.scala}. Undersök hur snabbt det nu går med stora Fibonaccital med den nya varianten. Hur stora tal kan du räkna ut? Kan servern fortsätta efter överflödad stack? Förklara varför.
+\Subtask Använd ovan \code{fib}-objekt i en ny version av din webserver. Spara den i en ny kodfil med namnet \texttt{fibserver-memcached.scala}. Undersök hur snabbt det går med stora Fibonaccital med den nya varianten. Hur stora tal kan du räkna ut? Kan servern fortsätta efter överflödad stack? Förklara varför.
 
 \Subtask Nu när vi kan få väldigt stora Fibonacci-tal kan det vara användbart att stoppa in radbrytningar på webbsidan. Html-taggen \texttt{</br>} ger en radbrytning. 
 \begin{Code}
@@ -295,25 +396,40 @@ object compute {
     else s.take(n) + "</br>" + insertBreak(s.drop(n),n)
   }
 \end{Code}
-Använd ovan rekursiva funktion för att pilla in radbrytningstaggar på var $n$:te position i långa strängar. Testa hur det ser ut på webbsidan med ovan funktion när din server svara med väldigt stora tal.
+Använd den rekursiva funktionen ovan för att pilla in radbrytningstaggar på var $n$:te position i långa strängar. Testa hur det ser ut på webbsidan med ovan funktion när din server svarar med väldigt stora tal.
 
-\Subtask Vi ska nu använda det större heap-minnet i stälet för stack-minnet och därmed inte begränsas av stackens max-storlek. Skriv om \code{fastFib} så att den använder en \code{while}-sats i stället för ett rekursivt anrop. Denna uppgift är ganska klurig, men om du kör fast kan du ju snegla i lösningarna i Appendix för inspiration. 
+\Subtask Vi ska nu använda det större heap-minnet i stälet för stack-minnet och därmed inte begränsas av stackens max-storlek. Skriv om \code{fastFib} så att den använder en \code{while}-sats i stället för ett rekursivt anrop. Denna uppgift är ganska klurig, men om du kör fast kan du snegla i lösningarna i Appendix för inspiration. 
 
-Hur stora tal klarar din server nu? Vad händer med servern när minnet tar slut? Hur kan du skydda servern så att den inte går att få att hänga?
+Hur stora tal klarar din server nu? Vad händer med servern när minnet tar slut? Hur kan du skydda servern så att den inte kan hänga sig?
 
-\textbf{KOD TILL FACIT:}
-\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/simple-web-server/fibserver-threaded-memcached-while.scala}
-
-\Task Utöka din server med fler beräkningsintensiva funktioner, till exempel primtalsberäkningar eller beräkningar av valfritt antal decimaler av $\pi$ eller $e$. Utnyttja gärna det du lär dig i  matematiken om summor och serieutvecklingar.
-
-\Task Lär dig mer om HTML här: \url{http://www.w3schools.com/html/}
-
-\Task Scala.JS???
-
+\Task Utöka din server med fler beräkningsintensiva funktioner. Exempelvis primtalsberäkningar eller beräkningar av valfritt antal decimaler av $\pi$ eller $e$. Utnyttja gärna det du lärt dig i  matematiken om summor och serieutvecklingar.
 
 \Task Läs mer om \code{Future} och jämlöpande exekvering i Scala här:\\
 \href{http://alvinalexander.com/scala/future-example-scala-cookbook-oncomplete-callback}{alvinalexander.com/scala/future-example-scala-cookbook-oncomplete-callback}
 
 \Task Läs mer om jämlöpande exekvering och multitrådade program i Java här: \href{http://www.tutorialspoint.com/java/java_multithreading.htm}{www.tutorialspoint.com/java/java\_multithreading.htm}  \\
 \noindent När man skriver program med jämlöpande exekvering finns det många fallgropar; det kan bli kapplöpning \Eng{race conditions} om gemensamma resurser och dödläge \Eng{deadlock} där inget händer för att trådar väntar på varandra. Mer om detta i senare kurser. 
+
+
+\Task\Pen \emph{Studera dokumentationen i \code{scala.concurrent}.} 
+
+\Subtask Studera dokumentationen för \code{scala.concurrent.Future}\footnote{\href{http://www.scala-lang.org/files/archive/api/current/\#scala.concurrent.Future}{http://www.scala-lang.org/files/archive/api/current/\#scala.concurrent.Future}}. Hur samverkar \code{Future} med \code{Try} och \code{Option}? Vilka vanliga samlingsmetoder känner du igen?
+
+\Subtask Studera dokumentationen för \code{scala.concurrent.duration.Duration}\footnote{\href{http://www.scala-lang.org/api/current/\#scala.concurrent.duration.Duration}{www.scala-lang.org/api/current/\#scala.concurrent.duration.Duration}}. Vilka tidsenheter kan användas? 
+
+\Subtask Vid import av \code{scala.concurrent.duration._ } dekoreras de numeriska klasserna med metoder för att skapa instanser av klassen \code{Duration}. Detta möjligörs med hjälp av klassen \code{scala.concurrent.duration.DurationConversions}. Studera dess dokumentation och testa att i REPL skapa några tidsperioder med metoderna på \code{Int}.
+
+
+
+\Task Fördjupa dig inom webbteknologi. 
+    
+\Subtask Lär dig om HTML här: \url{http://www.w3schools.com/html/}
+
+\Subtask Lär dig om Javascript här: \url{http://www.w3schools.com/js/}
+
+\Subtask Lär dig om CSS här: \url{http://www.w3schools.com/css/}
+
+\Subtask Lär dig om Scala.JS här: \url{http://www.scala-js.org/}
+
+
 

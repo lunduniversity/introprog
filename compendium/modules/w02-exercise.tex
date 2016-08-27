@@ -1,7 +1,7 @@
 %!TEX encoding = UTF-8 Unicode
 %!TEX root = ../compendium.tex
 
-\Exercise{\ExeWeekTWO}
+\Exercise{\ExeWeekTWO}\label{exe:W02}
 
 \begin{Goals}
 \item Kunna skapa samlingarna Range, Array och Vector med heltals- och strängvärden.
@@ -24,7 +24,7 @@
 \end{Goals}
 
 \begin{Preparations}
-\item Studera teorin i kapitel~\ref{chapter:W02}.
+\item \StudyTheory{02}
 \item Bekanta dig med grundläggande terminalkommandon, se appendix~\ref{appendix:terminal}.
 \item Bekanta dig med den editor du vill använda, se appendix~\ref{appendix:edit}.
 \end{Preparations}
@@ -100,6 +100,13 @@
 
 \Subtask \code{zs.sum}
 
+\Subtask\Pen Datastrukturen \code{Range} håller reda på start- och slutvärde, samt stegstorleken för en uppräkning, men alla talen i uppräkningen genereras inte förrän så behövs. En \code{Int} tar 4 bytes i minnet. Ungefär hur mycket plats i minnet tar de objekt som variablerna \code{r} respektive \code{a} refererar till nedan? 
+\begin{REPL}
+scala> val r = (1 to Int.MaxValue by 2)
+scala> val a = r.toArray
+\end{REPL}
+\emph{Tips:} Använd uttrycket \code{ BigInt(Int.MaxValue) * 2 } i dina beräkningar.
+
 \Task \emph{Datastrukturen \code+Vector+.} Kör nedan kodrader i Scala REPL. Beskriv vad som händer.
 
 \Subtask \code{val words = Vector("hej","på","dej", "!")}
@@ -173,7 +180,8 @@
 
 \Subtask \code{(1 to 10).foreach(println)}
 
-\Subtask \code{Vector.fill(10000)(math.random).foreach(r => if (r > 0.99) print("pling!"))}
+\Subtask \code{Vector.fill(10000)(math.random).foreach(r => }\\ 
+           \code{      if (r > 0.99) print("pling!"))}
 
 
 \Task \emph{Algoritm: SWAP.}
@@ -197,7 +205,7 @@ x är 43, y är 42
 
 
 
-\Task \emph{Skript.} Skapa med hjälp av en editor en fil med namn \texttt{hello-script.scala} som innehåller denna enda rad:
+\Task \emph{Skript.} Skapa en fil med namn \texttt{hello-script.scala} med hjälp av en editor som innehåller denna enda rad:
 \begin{Code}
 println("hej skript")
 \end{Code}
@@ -289,7 +297,7 @@ Skriv dessa rader i filen:
  skriv ut $sum$
 \end{algorithm}
 
-\Subtask\Pen Kör algoritmen steg för steg med penna och papper, där du skriver upp hur värdena för respektive variabel ändras. Det finns en bugg i algoritmen. Vilken? Rätta buggen.
+\Subtask\Pen Kör algoritmen steg för steg med penna och papper, där du skriver upp hur värdena för respektive variabel ändras. Det finns två buggar i algoritmen. Vilka? Rätta buggarna och test igen genom att ''köra'' algoritmen med penna på papper och kontrollera så att algoritmen fungerar för $n=0$, $n=1$, och $n=5$. Vad händer om $n=-1$?
 
 \Subtask Skapa med hjälp av en editor filen \code{sumn.scala}. Implementera algoritmen SUM enligt den rättade pseudokoden och placera implementationen i en main-metod i ett objekt med namnet \code{sumn}. Du kan skapa indata \code{n} till algoritmen med denna deklaration i början av din main-metod: \\ \code{val n = args(0).toInt} \\ Vad ger applikationen för utskrift om du kör den med argumentet 8888?
 
@@ -517,18 +525,59 @@ scala> :q
 > firefox index.html
 \end{REPL}
 
+\newpage
+
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
+\Task \label{task:minindex} Implementera algoritmen MININDEX som söker index för minsta heltalet i en sekvens. Pseudokod för algoritmen MININDEX:
 
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Utdata}
+
+ \Input{Sekvens $xs$ med $n$ st heltal.}
+ \Output{Index för det minsta talet eller $-1$ om $xs$ är tom.  }
+ $minPos \leftarrow 0 $\\
+ $i \leftarrow 1$ \\
+ \While{$i < n$}{
+   \If{xs(i) < $xs(minPos)$}{$minPos \leftarrow i$}
+   $i \leftarrow i + 1$
+ }
+ \eIf{$n > 0$}{\Return{$minPos$}}{\Return{$-1$}}
+\end{algorithm}
+
+\Subtask Prova algoritmen med penna och papper på sekvensen $(1, 2, -1, 4)$ och rita minnessituationen efter varje runda i loopen. Vad blir skillnaden i exekveringsförloppet om loopvariablen $i$  initialiserats till $0$ i stället för $1$?
+
+\Subtask Implementera algoritmen MININDEX i Scala i en funktion med denna signatur:
+\begin{Code}
+def indexOfMin(xs: Array[Int]): Int = ???
+\end{Code}
+Testa för olika fall: tom sekvens; sekvens med endast ett tal; lång sekvens med det minsta talet först, någonstans mitt i, samt sist.
+
+\begin{Code}
+// kod till facit
+def indexOfMin(xs: Array[Int]): Int = {
+  var minPos = 0
+  var i = 1
+  while (i < xs.size) {
+    if (xs(i) < xs(minPos)) minPos = i
+    i += 1
+  }
+  if (xs.size > 0) minPos else -1
+}
+
+
+\end{Code}
+
+\newpage
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
 
-\Task ArrayBuffer vs Vector vs Array och metoden append
+\Task Läs om krullparenteser och vanliga parenteser på stack overflow: \\ \href{http://stackoverflow.com/questions/4386127/what-is-the-formal-difference-in-scala-between-braces-and-parentheses-and-when}{stackoverflow.com/questions/4386127/what-is-the-formal-difference-in-scala-between-braces-and-parentheses-and-when} och prova själv i REPL hur du kan blanda dessa olika slags parenteser på olika vis. 
 
-\Task Läs om krullparenteser och vanliga parenteser på stack overflow: \\ \href{http://stackoverflow.com/questions/4386127/what-is-the-formal-difference-in-scala-between-braces-and-parentheses-and-when}{what-is-the-formal-difference-in-scala-between-braces-and-parentheses-and-when}
+\Task Gör jämförande studier av Scalas api-dokumentation för \code{ArrayBuffer}, \code{Array} och \code{Vector}. Ge exempel på metoder som finns på objekt av typen \code{Array} och \code{ArrayBuffer} men inte på objekt av typen \code{Vector}. \emph{Tips:} Kolla efter metoder som returnerar \code{Unit}. Prova några muterande metoder på \code{Array} och \code{ArrayBuffer} i REPL.
 
-\Task Bygg vidare på koden nedan och gör ett Sten-Sax-Påse-spel\footnote{\href{https://sv.wikipedia.org/wiki/Sten,\_sax,\_p\%C3\%A5se}{sv.wikipedia.org/wiki/Sten,\_sax,\_p\%C3\%A5se}} som även meddelar vem som vinner. Koden fungerar att köra som den är, men funktionen \code{winnerMsg} är ej klar. \emph{Tips:} Du kan använda modulo-räkning med \%-operatorn för att avgöra vem som vinner.
+\Task Bygg vidare på koden nedan och gör ett Sten-Sax-Påse-spel\footnote{\href{https://sv.wikipedia.org/wiki/Sten,\_sax,\_p\%C3\%A5se}{sv.wikipedia.org/wiki/Sten,\_sax,\_p\%C3\%A5se}} som även meddelar vem som vinner. Koden fungerar att köra som den är, men funktionen \code{winnerMsg} är ej klar. \emph{Tips:} Du kan använda modulo-räkning med \code{%}-operatorn för att avgöra vem som vinner.
 
 \begin{Code}[basicstyle=\ttfamily\footnotesize\selectfont]]
 object Rock {

@@ -19,7 +19,8 @@ lazy val commonSettings = Seq(
 lazy val plan = (project in file("plan")).
   settings(commonSettings: _*).
   settings(
-    name := "plan"
+    name := "plan",
+    EclipseKeys.skipProject := true
   ) 
 
 lazy val workspace = (project in file("workspace")).
@@ -46,6 +47,8 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
   // val bibtexCmd = Process(Seq("bibtex", texFile.getName.replace(".tex", ".aux")), workDir)
   val exitValue = cmd.#>(cmdOutputFile).#&&(cmd).#>(cmdOutputFile).run.exitValue  
   if (exitValue != 0) {
+    println("*** ############ ERROR LOG STARTS HERE ############### ***")
+    Process(Seq("cat", cmdOutputFile.getName), workDir).run
     error(s"\n*** ERROR: pdflatex exit code: $exitValue\nSee pdflatex output in: $cmdOutputFile")
   } else println(s"     Log file: $cmdOutputFile")
 }
@@ -66,7 +69,10 @@ pdf := {
   runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))         
   
   println(" ******* compiling exercises to pdf *******") 
-  runPdfLatexCmd(texFile = file("exercises.tex"), workDir = file("compendium"))     
+  runPdfLatexCmd(texFile = file("exercises.tex"), workDir = file("compendium")) 
+  
+  println(" ******* compiling solutions to pdf *******") 
+  runPdfLatexCmd(texFile = file("solutions.tex"), workDir = file("compendium"))     
 } 
 
 lazy val root = (project in file(".")).
