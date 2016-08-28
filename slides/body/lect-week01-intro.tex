@@ -3,6 +3,8 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\newcommand{\codespaced}[1]{\vspace{1em}\code{#1}\\\vspace{1em}}
+
 \Subsection{Att lära denna läsvecka \texttt{w01}}
 
 \ifkompendium\else  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -483,7 +485,56 @@ val msg = s"Dubbla värdet av $x är ${x * 2}."
 \end{itemize}
 \end{Slide}
 
-\newcommand{\codespaced}[1]{\vspace{1em}\code{#1}\\\vspace{1em}}
+\begin{Slide}{Heltalsaritmetik}\SlideFontSmall
+\begin{itemize}
+\item De fyra räknesätten skrivs som i matematiken (vanlig \href{https://en.wikipedia.org/wiki/Order_of_operations}{precedens}):
+\begin{REPL}
+scala> 3 + 5 * 2 - 1
+res0: Int = 12
+\end{REPL}
+\item \Emph{Parenteser} styr \Alert{evalueringsordningen}:
+\begin{REPL}
+scala> (3 + 5) * (2 - 1)
+res1: Int = 8
+\end{REPL}
+\item \Emph{Heltalsdivision} sker med \Alert{decimaler avkortade}:
+\begin{REPL}
+scala> 41 / 2
+res2: Int = 20
+\end{REPL}
+\item \href{https://en.wikipedia.org/wiki/Modulo_operation}{\Emph{Moduloräkning}} med restoperatorn \code{%}
+\begin{REPL}
+scala> 41 % 2
+res3: Int = 1
+\end{REPL}
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Flyttalsaritmetik}\SlideFontSmall
+\begin{itemize}
+\item Decimaltal representeras med s.k. \href{https://sv.wikipedia.org/wiki/Flyttal}{\Emph{flyttal}} av typen \code{Double}:
+\begin{REPL}
+scala> math.Pi
+res4: Double = 3.141592653589793
+\end{REPL}
+
+\item Stora tal så som $\pi*10^{12}$ skrivs:
+\begin{REPL}
+scala> math.Pi * 1E12
+res5: Double = 3.141592653589793E12
+\end{REPL}
+\item Det finns \Alert{inte} oändligt antal decimaler vilket ger problem med \Alert{avvrundingsfel}:
+\begin{REPL}
+scala> 0.0000000000001
+res6: Double = 1.0E-13
+
+scala> 1E10 + 0.0000000000001
+res7: Double = 1.0E10
+\end{REPL}
+\end{itemize}
+\end{Slide}
+
 
 \Subsection{Funktioner}
 
@@ -513,20 +564,27 @@ d.v.s. varje gång namnet används på annat ställe i koden. \\\codespaced{gurk
 \end{Slide}
 
 
-\begin{Slide}{Aritmetik}
+
+
+
+
+\begin{Slide}{Färdiga matte-funktioner i paketet \texttt{scala.math}}
 \begin{itemize}
-\item De fyra räknesätten skrivs som i matematiken:
-\item Parenteser styr evalueringsordningen:
-\item Heltalsdivision sker med decimaler \Alert{avkortade}:
-\item \href{https://en.wikipedia.org/wiki/Modulo_operation}{\Emph{Moduloräkning}} med restoperatorn \code{%}
-\end{itemize}
-\end{Slide}
+\item I paketet \texttt{\Emph{scala.math}} finns många användbara funktioner: 
+\begin{REPL}
+scala> val x = math.random
+x: Double = 0.27749191749889635
 
+scala> val length = 42.0 * math.sin(math.Pi / 3.0)
+length: Double = 36.373066958946424
+\end{REPL}
 
+\item Studera dokumentationen här: \\{\SlideFontTiny
+\url{http://www.scala-lang.org/api/current/#scala.math.package}}
 
-\begin{Slide}{Paketet \texttt{scala.math}}
-\begin{itemize}
-\item math.random
+\item Paketet \code{scala.math} delegerar ofta till Java-klassen \texttt{\Emph{java.lang.Math}} som är dokumenterad här: \\{\SlideFontTiny
+\url{https://docs.oracle.com/javase/8/docs/api/java/lang/Math.html}}
+
 \end{itemize}
 \end{Slide}
 
@@ -603,16 +661,16 @@ Observera att \code{y} här inte påverkas av att x ändrade värde.
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{Tilldelningssatser är inte matematisk likhet}\SlideFontSmall
+\begin{Slide}{Tilldelningssatser är \emph{inte} matematisk likhet}\SlideFontSmall
 
 \begin{itemize}
 
-\item Likhetstecknet används alltså för att \textit{tilldela} variabler nya värden och det är \Alert{inte} samma sak som matematisk likhet. Vad händer här?
+\item Likhetstecknet används alltså för att \Emph{tilldela} variabler nya värden och det är \Alert{inte} samma sak som matematisk likhet. Vad händer här?
 \begin{lstlisting} 
 x = x + 1   
 \end{lstlisting}
 
-\item Denna syntax är ett arv från de gamla spårken C, Fortran mfl. 
+\item Denna syntax är ett arv från de gamla språken C, Fortran mfl. 
 
 \item I \href{https://en.wikipedia.org/wiki/Assignment_\%28computer_science\%29}{andra språk} används  t.ex.  \\\vspace{1em} 
 \texttt{x := x + 1}  \hspace{2em} eller  \hspace{2em} \texttt{x <- x + 1} \\\vspace{0.5em}
@@ -631,10 +689,33 @@ x = x + 1
 
 \begin{Slide}{Förkortade tilldelningssatser}
 \begin{itemize}
-\item
-\end{itemize}
-Förkortade tilldelningssatser
+\item Det är vanligt att man vill applicera en \Emph{tilldelningsoperator} på variabeln själv, så som i \\\code{x = x + 1}
 
+\item Därför finns \Emph{förkortade tilldelningssatser} som gör så att man sparar några tecken och det blir tydligare (?) vad som sker (när man vant sig vid detta skrivsätt): \\\codespaced{x += 1}
+
+\item Ovan expanderas av kompilatorn till \code{x = x + 1}
+\end{itemize}
+
+
+\end{Slide}
+
+
+\begin{Slide}{Exempel på förkortade tilldelningssatser}
+\begin{REPL}
+scala> var x = 42
+x: Int = 42
+
+scala> x *= 2
+
+scala> x
+res0: Int = 84
+
+
+scala> x /= 3
+
+scala> x
+res2: Int = 28
+\end{REPL}
 \end{Slide}
 
 
@@ -690,49 +771,63 @@ z& \mybox{? } &  \mybox{}   &   \mybox{}   & \mybox{} & \mybox{}  & \mybox{} \\
 
 
 \begin{Slide}{Kontrollstrukturer}
-Används för att kontrollera (förändra) sekvensen.
+Används för att kontrollera (förändra) sekvensen och skapa \Emph{alternativa} vägar genom koden. Vägen  väljs vid körtid.
 \begin{itemize}
-\item if-sats
-\item while-sats
-\item for-sats
+\item if-sats:
+\begin{Code}
+if (math.random < 0.8) println("gurka") else println("tomat")
+\end{Code}
+\item while-sats:
+\begin{Code}
+while (math.random < 0.8) println("gurka") 
+\end{Code}
+
+\item for-sats:
+\begin{Code}
+for (i <- 1 to 10) println(s"gurka nr $i") 
+\end{Code}
+
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{if-sats}
-\begin{itemize}
-\item
-\end{itemize}
-\end{Slide}
-
-\begin{Slide}{while-sats}
-\begin{itemize}
-\item
-\end{itemize}
-\end{Slide}
-
-\begin{Slide}{for-sats}
-\begin{itemize}
-\item
-\end{itemize}
-\end{Slide}
+%%%% GE mer detaljer eller överlåta till övning???
+%\begin{Slide}{if-sats}
+%\begin{itemize}
+%\item
+%\end{itemize}
+%\end{Slide}
+%
+%\begin{Slide}{while-sats}
+%\begin{itemize}
+%\item
+%\end{itemize}
+%\end{Slide}
+%
+%\begin{Slide}{for-sats}
+%\begin{itemize}
+%\item
+%\end{itemize}
+%\end{Slide}
 
 \begin{Slide}{Procedurer}
-println
 \begin{itemize}
-\item
+\item En \Emph{procedur} är en funktion som \Alert{gör} något intressant, men som inte lämnar något intressant returvärde.
+\item Exempel på befintlig procedur: \code{println("hej")}
 \end{itemize}
 \end{Slide}
 
 
-\begin{Slide}{Om veckans övning: \code{expressions}}
+\begin{Slide}{Om veckans övning: \code{expressions}}\SlideFontSmall
+
 \begin{itemize}
-\item
+\input{../compendium/modules/w01-exercise-goals.tex}
 \end{itemize}
+
 \end{Slide}
 
 \begin{Slide}{Om veckans labb: \code{kojo}}
 \begin{itemize}
-\item
+\input{../compendium/modules/w01-lab-goals.tex}
 \end{itemize}
 \end{Slide}
 
