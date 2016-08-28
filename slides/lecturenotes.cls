@@ -65,7 +65,7 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 \newenvironment{SlideSimple}[2][]
   {\begin{frame}[fragile,plain, environment=SlideSimple,#1]{#2}}
   {\end{frame}}  
-
+  
 %\usepackage[framemethod=default]{mdframed}
 %\mdfdefinestyle{exampledefault}{%
 %rightline=true,innerleftmargin=10,innerrightmargin=10,
@@ -205,7 +205,7 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 
 \lstnewenvironment{REPL}[1][]{%
     \lstset{
-      basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
+      basicstyle=\color{white}\ttfamily\fontsize{9}{11}\selectfont,      
       language=,otherkeywords={},%
       tabsize=2,
       backgroundcolor=\color{black!80},

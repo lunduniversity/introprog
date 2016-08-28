@@ -8,8 +8,9 @@ import views.LifeGuiView
 // A setup with the colorful cyclic cellular automata.
 object cyclic {
   def main(args: Array[String]): Unit = {
-    val states = 16
-    var matrix: Matrix2D = ArrayMatrix2D(150, 150, states)
+    // Try changing the number of states to 8, 12, 16 or 20!
+    val states = 14
+    val matrix: Matrix2D = ArrayMatrix2D(150, 150, states)
     matrix.randomize()
 
     // Generate the colors to use for the states
