@@ -18,13 +18,13 @@ import models.{ArrayMatrix2D, Matrix2D}
 import rules.{Rule, LifeRule}
 
 
-object LifeGuiView extends CellularView2D {
+object CellularGuiView extends CellularView2D {
 
   private var modelMatrix: Matrix2D = null
   private var modelChanged: Boolean = true
 
   protected var rule: Rule = LifeRule
-  var lifeGuiApp: LifeGuiView = null
+  var lifeGuiApp: CellularGuiView = null
   var started = false
   var drawEdges = true
   var quit = false
@@ -43,7 +43,7 @@ object LifeGuiView extends CellularView2D {
     new Thread(new Runnable() {
       override def run() {
         started = true
-        Application.launch(classOf[LifeGuiView])
+        Application.launch(classOf[CellularGuiView])
         quit = true
       }
     }).start()
@@ -102,7 +102,7 @@ object LifeGuiView extends CellularView2D {
 }
 
 // TODO: Switch to using Canvas instead of StackPanes
-protected class LifeGuiView extends Application {
+protected class CellularGuiView extends Application {
   var root: VBox = new VBox
   var canvas: Canvas = null
   var primaryStage: Stage = null
@@ -121,7 +121,7 @@ protected class LifeGuiView extends Application {
     val rendertimer: Timeline = new Timeline(new KeyFrame(
       Duration.millis(1000/60), new EventHandler[ActionEvent] {
         override def handle(event: ActionEvent): Unit = {
-          if(LifeGuiView.changedSinceLastCall()) {
+          if(CellularGuiView.changedSinceLastCall()) {
             renderBoard()
           }
         }
@@ -140,7 +140,7 @@ protected class LifeGuiView extends Application {
     playtimer.setCycleCount(Animation.INDEFINITE)
     playtimer.play()
 
-    LifeGuiView.lifeGuiApp = this
+    CellularGuiView.lifeGuiApp = this
   }
 
   val generationLabel = new Label("Generation: " + this.gen)
@@ -150,19 +150,19 @@ protected class LifeGuiView extends Application {
   }
 
   def nextGen() {
-    LifeGuiView.display(LifeGuiView.modelMatrix.applyRule(LifeGuiView.rule))
+    CellularGuiView.display(CellularGuiView.modelMatrix.applyRule(CellularGuiView.rule))
     setGeneration(gen + 1)
   }
 
   def clear() {
-    LifeGuiView.currentMatrix().clear()
-    LifeGuiView.display(LifeGuiView.currentMatrix())
+    CellularGuiView.currentMatrix().clear()
+    CellularGuiView.display(CellularGuiView.currentMatrix())
     setGeneration(0)
   }
 
   def randomize() {
-    LifeGuiView.currentMatrix().randomize()
-    LifeGuiView.setMatrixChanged()
+    CellularGuiView.currentMatrix().randomize()
+    CellularGuiView.setMatrixChanged()
     setGeneration(0)
   }
 
@@ -173,7 +173,7 @@ protected class LifeGuiView extends Application {
     if (file != null) {
       try {
         val bw = new BufferedWriter(new FileWriter(file))
-        bw.write(LifeGuiView.currentMatrix().toFileFormat)
+        bw.write(CellularGuiView.currentMatrix().toFileFormat)
         bw.close()
       } catch {
         case ioe: IOException =>
@@ -189,7 +189,7 @@ protected class LifeGuiView extends Application {
     val br = new BufferedReader(new FileReader(file))
     val lines = br.lines().toArray.mkString("\n")
     val matrix = ArrayMatrix2D.fromFileFormat(lines)
-    LifeGuiView.display(matrix)
+    CellularGuiView.display(matrix)
   }
 
   def createCanvasBoard(): Canvas = {
@@ -199,7 +199,7 @@ protected class LifeGuiView extends Application {
     canvas = new Canvas(width, height)
     canvas.setOnMousePressed(new EventHandler[MouseEvent] {
         override def handle(e: MouseEvent) {
-          val matrix: Matrix2D = LifeGuiView.currentMatrix()
+          val matrix: Matrix2D = CellularGuiView.currentMatrix()
 
           val cellWidth = canvas.getWidth/matrix.cols
           val cellHeight = canvas.getHeight/matrix.rows
@@ -208,7 +208,7 @@ protected class LifeGuiView extends Application {
           val row = (e.getY/cellHeight).toInt
 
           matrix.set(row, col, (matrix(row)(col) + 1) % matrix.states)
-          LifeGuiView.display(matrix)
+          CellularGuiView.display(matrix)
         }
       })
 
@@ -216,7 +216,7 @@ protected class LifeGuiView extends Application {
   }
 
   def renderBoard(): Unit = {
-    val matrix = LifeGuiView.currentMatrix()
+    val matrix = CellularGuiView.currentMatrix()
 
     val rows = matrix.rows
     val cols = matrix.cols
@@ -224,20 +224,20 @@ protected class LifeGuiView extends Application {
     val edgeOffset = 0.2
 
     val ctx = canvas.getGraphicsContext2D
-    ctx.setFill(if(LifeGuiView.drawEdges) Color.gray(0.5) else Color.WHITE)
+    ctx.setFill(if(CellularGuiView.drawEdges) Color.gray(0.5) else Color.WHITE)
     ctx.fillRect(0, 0, canvas.getWidth, canvas.getHeight)
     val cellWidth = canvas.getWidth/cols
     val cellHeight = canvas.getHeight/rows
     for(row <- 0 until rows; col <- 0 until cols) {
-      ctx.setFill(LifeGuiView.colors(matrix(row)(col)))
+      ctx.setFill(CellularGuiView.colors(matrix(row)(col)))
 
-      if(LifeGuiView.drawEdges) {
+      if(CellularGuiView.drawEdges) {
         ctx.fillRect(edgeOffset+col*cellWidth, edgeOffset+row*cellHeight, cellWidth-(2*edgeOffset), cellHeight-(2*edgeOffset))
       } else {
         ctx.fillRect(col*cellWidth, row*cellHeight, cellWidth, cellHeight)
       }
 
-      if(LifeGuiView.renderCellText) {
+      if(CellularGuiView.renderCellText) {
         //ctx.setFill(LifeGuiView.colors((matrix(row)(col)+1) % LifeGuiView.colors.length))
         ctx.setFill(Color.BLACK)
         ctx.fillText(matrix(row)(col).toString, col * cellWidth, (row + 1) * cellHeight)
