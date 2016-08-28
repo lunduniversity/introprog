@@ -7,7 +7,7 @@ import views.LifeGuiView
 object glidercrash {
   def main(args: Array[String]): Unit = {
     val boardSize = 50
-    var matrix: Matrix2D = ArrayMatrix2D(boardSize, boardSize)
+    val matrix: Matrix2D = ArrayMatrix2D(boardSize, boardSize)
 
     // 4 gliders will be created and rotated such that they are on a trajectory towards the center of the board
     // if t is a whole number it will cause a quick elimination
@@ -24,8 +24,6 @@ object glidercrash {
       vOffset = -hOffset
       hOffset = tmp
       glider = glider.rotateRight()
-      matrix.vonNeumannNeighborsStates(row, col, 1)
-      matrix.vonNeumannNeighborsStates(row, col, 2)
     }
 
     LifeGuiView.useRule(LifeRule)
