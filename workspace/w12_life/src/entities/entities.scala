@@ -10,10 +10,5 @@ package object entities {
     m.set(2, 2, 1)
     m
   }
-
-  def makeEntity(s: String): Matrix2D = s.toLowerCase() match {
-    case "glider" => glider
-    case _ => println("Error: Invalid Entity."); null
-  }
 }
 
