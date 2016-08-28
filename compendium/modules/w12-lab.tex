@@ -156,7 +156,7 @@ matrix.place(entities.glider, 3, 1)
 
     \Task{Implementera Life-regeln med hjälp av traitet Rule.}
     
-    Nu har vi vår datastruktur för brädet på plats så nu är det dags att faktiskt implementera reglerna för Life. För att göra detta ska vi implementera objektet \code{LifeRule} som ärver traitet \code{Rule} vilket är ett interface som cellulära automaters regler kan implementera.
+    Nu har vi vår datastruktur för brädet på plats så nu är det dags att faktiskt implementera reglerna för Life. För att göra detta ska vi implementera objektet \code{LifeRule} som ärver traitet \code{Rule} vilket är ett interface som cellulära automaters regler kan implementera. Men först ska vi implementera några hjälpsamma funktioner, så att våran kod i \code{LifeRule} senare blir mer lättläst.
     
         \Subtask{Implementera \code{mooreNeighborsPositions} samt \code{mooreNeighborsStates} i \code{Matrix2D}.}
         
@@ -201,7 +201,13 @@ def apply(m: ArrayMatrix2D, row: Int, col: Int): Int
 val wrapped_row = row % rows
 \end{Code}
 
-		Men denna lösning tar inte hänsyn till negativa tal, vilket kan uppkomma när man t.ex. försöker hämta grannarna för cellen i det övre vänstra hörnet på brädet, dvs. position (0, 0). För att enkelt lösa detta kan man förskjuta hela \code{row} med \code{rows} så att man istället får \code{(rows + row) \% rows}. Vi använda oss av denna kunskap för att i metoderna \code{get} samt \code{set} se till att operationerna wrappar.
+		Men denna lösning tar inte hänsyn till negativa tal, vilket kan uppkomma när man t.ex. försöker hämta grannarna för cellen i det övre vänstra hörnet på brädet, dvs. position (0, 0). För att enkelt lösa detta kan man förskjuta hela \code{row} med \code{rows} så att man istället får följande
+		
+\begin{Code}
+val wrapped_row = (rows + row) % rows
+\end{Code}
+
+Vi kan använda oss av denna kunskap för att i metoderna \code{get} samt \code{set} se till att operationerna wrappar. Testa sedan din implementation genom att låta en glider glida in i en vägg.
 
 
 \subsection{Frivilliga extrauppgifter}
@@ -211,7 +217,7 @@ Inom cellulära automata finns det många intressanta ting att utforska, för de
 
 \Task{Implementera spara och ladda}
 
-	När man leker runt med cellulära automater vill man ofta spara sina bräden så att man senare enkelt kan ladda in dem igen. För att göra detta ska vi i denna extrauppgift definiera ett dataformat som ska kunna representera våran \code{ArrayMatrix2D}.
+	När man leker runt med cellulära automater vill man ofta spara sina bräden så att man senare enkelt kan ladda in dem igen. För att göra detta ska vi i denna extrauppgift definiera ett dataformat som ska innehålla all data som behövs för att återskapa vår \code{ArrayMatrix2D}.
 
     \Subtask{Spara brädets tillstånd.}
         Tillståndet ska sparas till ett format som både är lätt att spara/exportera och ladda/importera. Det vi behöver spara är följande:
@@ -219,10 +225,10 @@ Inom cellulära automata finns det många intressanta ting att utforska, för de
         \begin{itemize}
         		\item Brädets storlek, dvs antalet rader och kolumner
         		\item Hur många olika värden en cell på brädet kan anta
-        		\item Matrisen i sig som innehåller brädets celler
+        		\item Matrisen i sig, dvs alla cellers värden
         	\end{itemize}
         
-        Vi föreslår att ni börjar filen med en rad innehållande de två värdena i punkt ett samt värdet i punkt två, separera dem med mellanslag eller komma. Därefter är det enklaste att skriva ut matrisen rad för rad där varje cell skrivs ut som en etta eller nolla. Man kan göra detta utan separator för bräden där celler bara antar värden i intervallet 0-9, men det fungerar inte längre om en cell kan anta andra värden (såsom i uppgiften med cykliska cellulära automater nedan) då man inte längre kan lita på att en siffra motsvarar en cell. För att lösa denna begränsning kan man separera sina värden med något tecken precis som för första raden, t.ex. ett mellanslag eller ett komma.
+        Vi föreslår att ni börjar filen med en rad innehållande de två värdena i punkt ett, samt värdet i punkt två. Separera dem med mellanslag, komma, eller en emoji (på egen risk). Därefter är den enklaste vägen att skriva ut matrisen rad för rad där varje cell skrivs ut som en etta eller nolla. Man kan göra detta utan separator för bräden där celler bara antar värden i intervallet 0-9, men det fungerar inte längre om en cell kan anta andra värden (såsom i uppgiften med cykliska cellulära automater nedan) då man inte längre kan lita på att en siffra motsvarar en cell. För att lösa denna begränsning kan man separera sina värden med något tecken precis som för första raden.
         
     \Subtask{Ladda in det exporterade tillståndet.}
         Implementera en metod för att läsa in det sparade tillståndet.
