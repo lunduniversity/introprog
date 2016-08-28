@@ -581,13 +581,14 @@ d.v.s. varje gång namnet används på annat ställe i koden. \\\codespaced{gurk
 
 
 
-\begin{Slide}{Färdiga matte-funktioner i paketet \texttt{scala.math}}
+\begin{Slide}{Färdiga matte-funktioner i paketet \texttt{scala.math}}\SlideFontSmall
 \begin{itemize}
-\item I paketet \texttt{\Emph{scala.math}} finns många användbara funktioner: 
+\item I paketet \texttt{\Emph{scala.math}} finns många användbara funktioner: t.ex.\\
+\code{math.random} ger slumptal mellan \code{0.0} och \code{0.99999999999999999}
 \begin{REPL}
 scala> val x = math.random
 x: Double = 0.27749191749889635
-
+ 
 scala> val length = 42.0 * math.sin(math.Pi / 3.0)
 length: Double = 36.373066958946424
 \end{REPL}
@@ -605,22 +606,86 @@ length: Double = 36.373066958946424
 
 \Subsection{Logik}
 
+\begin{Slide}{Logiska uttryck}\SlideFontSmall
+\begin{minipage}{.8\textwidth}
+\begin{itemize}
+\item Datorn kan ''räkna'' med sanning och falskhet: \\ 
+s.k. \href{https://en.wikipedia.org/wiki/Boolean_algebra}{booelsk algebra} efter \href{https://en.wikipedia.org/wiki/George_Boole}{George Boole}
+
+\item Enkla logiska uttryck: (finns bara två stycken)
+\begin{itemize}
+\item[] \code{true}
+\item[] \code{false}
+\end{itemize}
+\end{itemize}
+\end{minipage}%
+\begin{minipage}{.2\textwidth}
+\centering\includegraphics[width=0.9\columnwidth]{../img/boole}
+\end{minipage}%
+\begin{itemize}
+
+
+\item Sammansatta logiska uttryck med logiska operatorer:\\
+\code{&&} och, \texttt{||} eller'', \texttt{!} icke, \code{==} likhet, \code{!=} olikhet,
+relationer: \code{> < >= <=}  
+
+\item Exempel:
+\begin{itemize}
+\item[] \code{true && true}
+\item[] \code{false || true}
+\item[] \code{!false}
+\item[] \code{42 == 43}
+\item[] \code{42 != 43}
+\item[] \code{(42 >= 43) || (1 + 1 == 2)}
+\end{itemize}
+
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{De Morgans lagar}
+
+\href{https://en.wikipedia.org/wiki/Augustus_De_Morgan}{\Emph{De Morgans lagar}} beskriver vad som händer om man \Alert{negerar} ett logiskt uttryck. Kan användas för att göra \Emph{förenklingar}. 
+
+%$p$ och $q$ är logiska uttryck, $\neg$ står för ''icke'', $\wedge$ för ''och'', $\vee$ för ''eller'':
+%\begin{eqnarray*}
+%\neg (p \wedge q) & \Longleftrightarrow & (\neg p) \vee (\neg q)\\
+%\neg (p \vee q) & \Longleftrightarrow & (\neg p) \wedge (\neg q)\\
+%\end{eqnarray*}
+
+\begin{itemize}
+\item I all deluttryck sammanbundna med \code{&&} eller \code{||}, \\ ändra alla \code{&&} till \code{||} och omvänt.
+\item Negera alla ingående deluttryck. En relation negeras genom att man byter \texttt{==} mot \texttt{!=}, \texttt{<} mot \texttt{>=}, etc.
+\end{itemize}
+
+Exempel på förenkling där de Morgans lagar används upprepat:
+
+\begin{Code}[escapechar=X,backgroundcolor=,frame=none,basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
+! (a < b || (a == 1 && b == 1))             X$\iff$X
+! (a < b) && ! (a == 1 && b == 1)           X$\iff$X
+! (a < b) && (! (a == 1) || ! (b == 1))     X$\iff$X
+a >= b && (a != 1 || b != 1)
+\end{Code}
+\end{Slide}
+
 \begin{Slide}{Alternativ med if-uttryck}
 \begin{itemize}
-\item
-\end{itemize}
-\end{Slide}
+\item Ett if-uttryck börjar med nyckelordet \code{if}, följt av ett logiskt uttryck inom parentes och två grenar.
+\begin{Code}
+def slumpgrönsak = if (math.random < 0.8) "gurka" else "tomat" 
+\end{Code}
+\item Den ena grenen evalueras om uttrycket är \code{true}
+\item Den andra \code{else}-grenen evalueras om uttrycket är \code{false}
+\begin{REPL}
+scala> slumpgrönsak
+res13: String = gurka
 
+scala> slumpgrönsak
+res14: String = gurka
 
-\begin{Slide}{Logiska uttryck}
-\begin{itemize}
-\item
-\end{itemize}
-\end{Slide}
+scala> slumpgrönsak
+res15: String = tomat
 
-\begin{Slide}{de Morgans lagar}
-\begin{itemize}
-\item
+\end{REPL}
 \end{itemize}
 \end{Slide}
 
@@ -783,19 +848,23 @@ z& \mybox{? } &  \mybox{}   &   \mybox{}   & \mybox{} & \mybox{}  & \mybox{} \\
 
 
 
-\begin{Slide}{Kontrollstrukturer}
-Används för att kontrollera (förändra) sekvensen och skapa \Emph{alternativa} vägar genom koden. Vägen  väljs vid körtid.
+\begin{Slide}{Kontrollstrukturer: alternativ och repetition}\SlideFontSmall
+Används för att kontrollera (förändra) sekvensen och skapa \Emph{alternativa} vägar genom koden. Vägen  bestäms vid körtid.
 \begin{itemize}
 \item if-sats:
 \begin{Code}
 if (math.random < 0.8) println("gurka") else println("tomat")
 \end{Code}
-\item while-sats:
+\end{itemize}
+
+Olika sorters \Emph{loopar} för att repetera satser. Antalet repetitioner ges vid körtid.
+\begin{itemize}
+\item \code{while}-sats: bra när man \Alert{inte vet hur många gånger} det kan bli.
 \begin{Code}
 while (math.random < 0.8) println("gurka") 
 \end{Code}
 
-\item for-sats:
+\item \code{for}-sats: bra när man \Alert{vill ange antalet repetitioner}:
 \begin{Code}
 for (i <- 1 to 10) println(s"gurka nr $i") 
 \end{Code}
