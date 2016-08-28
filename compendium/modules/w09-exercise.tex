@@ -381,7 +381,7 @@ ArrayMatrix test
 
 
 
-
+\clearpage
 
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
@@ -416,12 +416,13 @@ object YatzyRows {
 \Subtask Bygg ett förenklat yatzy-spel i terminalen där användaren kan bestämma vilka tärningar som ska slås om. Använd \code{Scanner} för att läsa indata från användaren. Börja med något riktigt enkelt och bygg sedan vidare på ditt spel genom att införa fler och fler funktioner.
 
 
+\clearpage
+
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\TODO
 
-\Task \label{task:generic-matrix} \emph{Skapa en generisk, oföränderlig matrisklass.} (\TODO  Denna uppgift är inte färdig men tanken är att göra ngt kul med Matrix, kanske en SpriteEditor och ett enkelt SpriteGame där man har ett bräde med pjäser eller ngt) Med hjälp av en typparameter kan vi skapa en matrisklass som kan innehålla vilka element som helst. Implementera nedan specifikation. Testa din matrisklass i REPL för olika typer av element.
+\Task \label{task:generic-matrix} \emph{Skapa en generisk, oföränderlig matrisklass.} Med hjälp av en typparameter kan vi skapa en matrisklass som kan innehålla vilka element som helst. Implementera nedan specifikation. Testa din matrisklass i REPL för olika typer av element.
 
 \begin{ScalaSpec}{Matrix[T]}
 case class Matrix[T](data: Vector[Vector[T]]){
@@ -457,7 +458,7 @@ object Matrix {
 }
 \end{ScalaSpec}
 
-\Subtask Använd ovan matrisklass för att göra en SpriteEditor med JColorChoser enligt nedan skiss.
+\Task Använd matrisklassen från uppgift \ref{task:generic-matrix} för att göra en SpriteEditor med JColorChoser enligt nedan skiss.
 
 \begin{Code}
 object ColorChooser {
@@ -476,12 +477,12 @@ object ColorChooser {
   }
 }
 
-class Sprite(
+class Sprite(// en bild med många lager av pixlar i olika färger
   val id: String,
   val size: (Int, Int),
-  val pixels: Matrix[Option[Int]], // None if transparent otherwise color number in colors
-  var scale: Int, 
-  var colors: Vector[java.awt.Color], 
+  val pixels: Matrix[Option[Int]],//Some(color),None=genomskinlig
+  var scale: Int, //uppskalning av storlek i pixlar
+  var colors: Vector[java.awt.Color], //tillgängliga färger
   var pos: (Int, Int, Int)  // (row, col, layer)
 ){
   def row = pos._1
@@ -489,7 +490,9 @@ class Sprite(
   def layer = pos._3
 }
 
-class SpriteEditor(rows: Int = 64, cols: Int = 64, scale: Int = 16, nColors: Int = 16) {
+class SpriteEditor(
+    rows: Int = 64, cols: Int = 64, 
+    scale: Int = 16, nColors: Int = 16) {
   private val w = new SimpleWindow(???)
   def edit: Unit = ???
 }
@@ -498,23 +501,21 @@ class SpriteEditor(rows: Int = 64, cols: Int = 64, scale: Int = 16, nColors: Int
 
 
 
-\Task \TODO \emph{Klasser för täta och glesa matematiska matriser med flyttal.}  FUNDERA PÅ: om detta är för svårt när man inte läst linalg...
+\Task \emph{Klasser för täta och glesa matematiska matriser med flyttal.}  Läs om matrisräkning här: \href{https://sv.wikipedia.org/wiki/Matris}{sv.wikipedia.org/wiki/Matris}
 
-\Subtask Skapa en oföränderlig, final klass \code{DenseMatrix} för matematiska matriser med dubbelprecisionsflyttal. \code{DenseMatrix} ska internt lagra elementen i en privat \emph{endimensionell} array av flyttal av typen \code{Array[Double]}. Klassen ska inte vara en case-klass. Det ska gå att skapa matriser med uttrycket DenseMatrix.ofDim(3,7)(1.0,42,3.2,1.0,2.2,3) tack vare ett kompanjonsobjekt med lämplig fabriksmetod som anropar den privata konstruktorn.  Om antalet element är för litet i förhållande till den angivna dimensionen så fyll på med nollor. Om det är för många tal i förhållande till dimensionen så kasta ett undantag \TODO tror jag??
+\Subtask Skapa en oföränderlig, final klass \code{DenseMatrix} för matematiska matriser med dubbelprecisionsflyttal. \code{DenseMatrix} ska internt lagra elementen i en privat \emph{endimensionell} array av flyttal av typen \code{Array[Double]}. Klassen ska inte vara en case-klass. Det ska gå att skapa matriser med uttrycket DenseMatrix.ofDim(3,7)(1.0,42,3.2,1.0,2.2,3) tack vare ett kompanjonsobjekt med lämplig fabriksmetod som anropar den privata konstruktorn.  Om antalet element är för litet i förhållande till den angivna dimensionen så fyll på med nollor. 
 
 \Subtask Överskugga metoderna equals och hashcode och ge \code{DenseMatrix} innehållslikhet i stället för referenslikhet.
 
-\Subtask Implementera egna innehålllikhetsmetoder med namnet \code{===} på \code{DenseMatrix} som är typsäker, d.v.s. bara tillåter jämförelse mellan matriser.
+\Subtask Implementera egna innehålllikhetsmetoder med namnet \code{===} på \code{DenseMatrix} som är typsäker, d.v.s. bara tillåter innehållsjämförelse mellan täta matriser.
 
-\Subtask \emph{SparseMatrix med private mutable.Map[(Int, Int), Double]} som bara lagrar index som inte är noll.
+\Subtask Läs om glesa matriser här: \href{https://sv.wikipedia.org/wiki/Gles_matris}{https://sv.wikipedia.org/wiki/Gles\_matris} och implementera \code{SparseMatrix} med ett privat attribut av typen \\ \code{mutable.Map[(Int, Int), Double]} som bara lagrar index som inte är noll.
 
-\Subtask Implementera addition, subtraktion och multiplikation av matriser.
+\Subtask Skapa ett \code{trait Matrix} som både \code{DenseMatrix} och \code{SparseMatrix} ärver, med lämpliga abstrakta och konkreta medlemmar. Implementera addition, subtraktion och multiplikation av täta och glesa matriser.
 
-\Subtask Skapa ett trait Matrix som både DenseMatrix och SparseMatrix ärver, med lämpliga abstrakta och konkreta medlemmar.
-
-\Task \emph{Matriser med \jcode{ArrayList} i Java.} Om man i Java inte vet antalet element i matrisen från början kan man använda en lista av typen \jcode{ArrayList}, där varje element i sin tur innehåller en lista av typen\jcode{ArrayList}. Javas \jcode{ArrayList} är en generisk samling som motsvaras av Scalas \code{ArrayBuffer}. Generiska samlingar i Java kan endast innehålla referenstyper; vill man ha en primitiv typ, t.ex. \jcode{int}, behöver man packa in denna i en s.k. wrapper-klass, t.ex.  klassen \jcode{Integer}. Det finns en wrapper-klass för varje primitiv typ i Java. Matristypen för en heltalstyp i Java skrivs \jcode{ArrayList<ArrayList<Integer>>} där alltså \code{<T>} motsvarar Scalas hakparenteser \code{[T]} för typparametern T.
-
-
-\Subtask \TODO Hitta på deluppgifter med \jcode{ArrayList<ArrayList<Integer>>} som illustrerar ovan. Peka framåt till scalajava-veckan.
+%\Task \emph{Matriser med \jcode{ArrayList} i Java.} Om man i Java inte vet antalet element i matrisen från början kan man använda en lista av typen \jcode{ArrayList}, där varje element i sin tur innehåller en lista av typen\jcode{ArrayList}. Javas \jcode{ArrayList} är en generisk samling som motsvaras av Scalas \code{ArrayBuffer}. Generiska samlingar i Java kan endast innehålla referenstyper; vill man ha en primitiv typ, t.ex. \jcode{int}, behöver man packa in denna i en s.k. wrapper-klass, t.ex.  klassen \jcode{Integer}. Det finns en wrapper-klass för varje primitiv typ i Java. Matristypen för en heltalstyp i Java skrivs \jcode{ArrayList<ArrayList<Integer>>} där alltså \code{<T>} motsvarar Scalas hakparenteser \code{[T]} för typparametern T.
+%
+%
+%\Subtask \TODO Hitta på deluppgifter med \jcode{ArrayList<ArrayList<Integer>>} som illustrerar ovan. Peka framåt till scalajava-veckan.
 
     

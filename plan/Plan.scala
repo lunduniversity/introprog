@@ -17,7 +17,7 @@ trait Plan {
       | programmeringsparadigmer, editera-kompilera-exekvera, datorns delar, 
       | virtuell maskin, REPL,  
       | literal, värde, uttryck, identifierare, variabel, typ, tilldelning, namn, val, var, def,  
-      | inbyggda typer, Int, Long, Short, Double, Float, Byte, Char, String,
+      | inbyggda grundtyper, Int, Long, Short, Double, Float, Byte, Char, String,
       | println, typen Unit, enhetsvärdet (), stränginterpolatorn s,
       | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random,
       | logiska uttryck, de Morgans lagar, while-sats, for-sats, 
@@ -43,8 +43,7 @@ trait Plan {
       | funktionsvärde, funktionstyp, äkta funktion, stegad funktion, apply, lazy val, 
       | lokala funktioner,    
       | anonyma funktioner, lambda,
-      | aktiveringspost, rekursion, basfall, anropsstacken, objektheapen, 
-      | algoritm: GCD (största gemensamma delare),
+      | aktiveringspost, anropsstacken, objektheapen, rekursion 
       | cslib.window.SimpleWindow, 
       """.stripTrim),
 
@@ -52,7 +51,7 @@ trait Plan {
       id = "datastruct", exercise = "data", lab = "pirates", contents = """
       | attribut (fält), medlem, metod, 
       | tupel, klass, Any, isInstanceOf, toString, 
-      | case-klass, räkna med bråk och klassen Frac,
+      | case-klass, 
       | samling, scala.collection, 
       | föränderlighet vs oföränderlighet, 
       | List, Vector, Set, Map, 
@@ -99,18 +98,18 @@ trait Plan {
 
     Module("Mönster, undantag", 
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
-      | mönstermatchning, match, Option, try, catch, finally ???, Try, unapply, sealed, 
-      | switch-sats i Java,
+      | mönstermatchning, match, Option, throw, try, catch, Try, unapply, sealed, 
       | flatten, flatMap, partiella funktioner, collect, 
-      | implementera equals utan arv för Complex,  
-      | implementera equals med arv för Shape ???,  
+      | speciella matchningar: wildcard pattern; variable binding; sequence wildcard; back-ticks, 
+      | equals, hashcode, exempel: equals för klassen Complex, 
+      | switch-sats i Java,
       """.stripTrim),
 
     Module("Matriser, typparametrar", 
       id = "matrix", exercise = "matrices", lab = "maze", contents = """
-      | matris, nästlade for-satser, designexempel: Tre-i-rad, 
-      | generisk funktion, generisk klass,  
-      | matriser i Java vs Scala, 
+      | matris, nästlad samling, nästlad for-sats,  
+      | typparameter, generisk funktion, generisk klass, fri vs bunden typparameter, 
+      | matriser i Java vs Scala, allokering av nästlade arrayer i Scala och Java,
       """.stripTrim),
 
     Module("Sökning, sortering", 
@@ -128,7 +127,7 @@ trait Plan {
 
     Module("Scala och Java", 
       id = "scalajava", exercise = "scalajava", lab = "lthopoly-team", contents = """
-      | översikt av syntaxskillnader mellan Scala och Java, 
+      | syntaxskillnader mellan Scala och Java, 
       | klasser i Scala vs Java, 
       | referensvariabler vs enkla värden i Java,
       | referenstilldelning vs värdetilldelning i Java,
@@ -137,28 +136,24 @@ trait Plan {
       | java.util.ArrayList, 
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
       | samlingar i Java vs Scala, scala.collection.JavaConverters,
-      | översiktligt om relationen mellan trait och interface,
       | namnkonventioner för konstanter,
-      | enum i java ???,
-      | mer om filer ???, serialisering ???,
       """.stripTrim),
 
-    Module("Webb, trådar",  
+    Module("Trådar, webb",  
       id = "threads", exercise = "threads", lab = "life", contents = """
-      | översikt webbprogrammering, kort om html+css+javascript+scala.js,
       | tråd, jämlöpande exekvering,  
       | icke-blockerande anrop, callback,
       | java.lang.Thread, 
       | java.util.concurrent.atomic.AtomicInteger,
       | scala.concurrent.Future, 
+      | kort om html+css+javascript+scala.js och webbprogrammering,
       """.stripTrim),
 
     Module("Design, api", 
       id = "design", exercise = "design", lab = "", contents = """
-      | designexempel,
-      | the expression problem,
       | utvecklingsprocessen, krav-design-implementation-test,
-      | översiktligt om trait som gränssnitt, programmeringsgränssnitt (api)
+      | gränssnitt, trait vs interface, programmeringsgränssnitt (api),
+      | designexempel,
       """.stripTrim),
 
     Module("Tentaträning", id = "exam", exercise = "", lab = "", contents = ""),

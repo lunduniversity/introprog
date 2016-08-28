@@ -1,8 +1,10 @@
 %!TEX encoding = UTF-8 Unicode
 
-%!TEX root = ../compendium.tex
+%!TEX root = ../solutions.tex
 
 \ExerciseSolution{\ExeWeekSEVEN}
+
+\BasicTasks %%%%%%%%%%%
 
 \Task 
 
@@ -202,3 +204,65 @@ def blandadKortlek: Vector[Kort] = {
 \end{Code}
 
 \Subtask \code{def färgPoäng(xs: Vector[Kort]): Int = xs.map(_.färg.toInt).sum}
+
+\ExtraTasks %%%%%%%%%%%%
+
+\Task 
+
+\begin{Code}
+trait Fyle {
+  val läte: String
+  def väsnas: Unit = { print(läte * 2); räknaLäte += 2 }
+  protected var räknaLäte: Int = 0
+  val ärSimkunnig: Boolean
+  val ärFlygkunnig: Boolean
+  val ärStor : Boolean
+  def antalLäten: Int = räknaLäte
+}
+trait KanSimma { val ärSimkunnig = true }
+trait KanInteSimma { val ärSimkunnig = false }
+trait KanFlyga { val ärFlygkunnig = true }
+trait KanKanskeFlyga { val ärFlygkunnig = math.random < 0.8 }
+trait KanKanskeSimma { val ärSimkunnig = math.random < 0.2 }
+trait ÄrStor { val ärStor = true }
+trait ÄrLiten { val ärStor = false }
+
+final class Kråga 
+  extends Fyle 
+  with KanFlyga 
+  with KanInteSimma 
+  with ÄrStor{
+  val läte = "krax"
+}
+
+final class Ånka 
+  extends Fyle 
+  with KanSimma 
+  with KanKanskeFlyga 
+  with ÄrStor{
+  val läte = "kvack"
+  override def väsnas = { print(läte * 4); räknaLäte += 4 }
+}
+
+final class Pjodd 
+  extends Fyle 
+  with KanFlyga 
+  with KanKanskeSimma 
+  with ÄrLiten{
+  val läte = "kvitter"
+  override def väsnas = { print(läte * 8); räknaLäte += 8 }
+}
+\end{Code}
+
+I REPL: 
+\begin{REPL}
+val fyle = Vector.fill(42)(
+  if(math.random < 0.33) new Kråga else 
+  if (math.random < 0.5) new Ånka else 
+  new Pjodd)
+fyle.filter(f => f.isInstanceOf[Kråga]).size*2
+fyle.filter(f => f.isInstanceOf[Ånka]).size*4
+fyle.filter(f => f.isInstanceOf[Pjodd]).size*8
+\end{REPL}
+
+\AdvancedTasks %%%%%%%%%

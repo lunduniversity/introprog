@@ -12,7 +12,7 @@
 | W09 | 7/11-11/11  | Lp2V2 | Matriser, typparametrar | F17 F18 | matrices    | maze            |
 | W10 | 14/11-18/11 | Lp2V3 | Sökning, sortering      | F19 F20 | sorting     | survey          |
 | W11 | 21/11-25/11 | Lp2V4 | Scala och Java          | F21 F22 | scalajava   | lthopoly-team   |
-| W12 | 28/11-2/12  | Lp2V5 | Webb, trådar            | F23 F24 | threads     | life            |
+| W12 | 28/11-2/12  | Lp2V5 | Trådar, webb            | F23 F24 | threads     | life            |
 | W13 | 5/12-9/12   | Lp2V6 | Design, api             | F25 F26 | Uppsamling  | Projekt         |
 | W14 | 12/12-16/12 | Lp2V7 | Tentaträning            | F27 F28 | Extenta     | --              |
 | T   | 9/1         | TP2   | TENTAMEN                | --      | --          | --              |
