@@ -7,7 +7,7 @@ import javafx.event.{ActionEvent, EventHandler}
 import javafx.geometry.{Insets, Pos}
 import javafx.scene.Scene
 import javafx.scene.canvas.Canvas
-import javafx.scene.control.{Button, Label}
+import javafx.scene.control._
 import javafx.scene.input.{KeyCode, KeyEvent, MouseEvent}
 import javafx.scene.layout._
 import javafx.scene.paint.Color
@@ -173,7 +173,7 @@ protected class LifeGuiView extends Application {
     if (file != null) {
       try {
         val bw = new BufferedWriter(new FileWriter(file))
-        bw.write(LifeGuiView.currentMatrix().toFileFormat())
+        bw.write(LifeGuiView.currentMatrix().toFileFormat)
         bw.close()
       } catch {
         case ioe: IOException =>

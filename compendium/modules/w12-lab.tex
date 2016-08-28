@@ -87,7 +87,6 @@ Läs igenom de två filerna i `models' paketet noga, det är där ni kommer spen
 	% 6) Skriv metod(er) som räknar upp generationer.
 	% 7) Testa nedanstående startfigurer (inkludera bilder på t ex en slider). Beter det sig som förväntat?
 
-    % Gör denna tasken till en preparation?
 
     \Task{Skapa en modell som kan visas i vyer som implementerar \code{LifeView2D}.}
     
@@ -99,7 +98,7 @@ Läs igenom de två filerna i `models' paketet noga, det är där ni kommer spen
 
         För att skapa en matris ska vi använda oss av Scalas inbyggda datastruktur \code{Array}. Denna datastruktur har en användbar konstruktur \code{ofDim[T](n1: Int, n2: Int)} som vi ska använda för att skapa $rows$ arrayer av storlek $cols$ inuti en annan array, detta är vad vi kommer använda för att lagra vår matris-data.
         
-        Ett exempel av resultatet från \code{Array.ofDim[Int](3, 3)} är följande ekvivalent kod:
+        Ett exempel av resultatet från \code{Array.ofDim[Int](3, 3)} är följande ekvivalenta kod:
 
 \begin{Code}
 Array(
@@ -109,17 +108,15 @@ Array(
 )
 \end{Code}
 
-        Här nedan ser vi en sådan array utskriven i en komma-separerad lista. Detta är ett vanligt och enkelt dataformat som kallas CSV.\footnote{Förkortningen CSV står för Comma Separated Values}
+%        Här nedan ser vi en sådan array utskriven i en komma-separerad lista. Detta är ett vanligt och enkelt dataformat som kallas CSV.\footnote{Förkortningen CSV står för Comma Separated Values}
 
-\begin{Code}
-0,0,0
-0,0,0
-0,0,0
-\end{Code}
+%\begin{Code}
+%0,0,0
+%0,0,0
+%0,0,0
+%\end{Code}
 
-		Fortsätt nu med att implementera de övriga metoderna i ArrayMatrix2D.
-
-        % TODO: Fortsätt förklara vad som behövs implementeras i ArrayMatrix2D
+		Fortsätt nu med att implementera de övriga metoderna i ArrayMatrix2D. Läs igenom traitet \code{Matrix2D} för kommentarer om vad som ska göras.
 
 
         \Subtask{Testa implementationen.}
@@ -145,6 +142,13 @@ LifeConsoleView.display(matrix)
 // i positionen (3, 1), dvs på rad 2 och kolumn 4 (då vi noll-indexerar)
 matrix.place(entities.glider, 4, 2)
 \end{Code}
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=0.3\textwidth]{../img/w12-lab/glider.png}
+  \end{center}
+  \caption{En \textit{glider}. Vanligt varelse att se i Life.}
+\end{figure}
 
         Testa nu att rita ut brädet igen (utan randomize denna gången) för att se till att glidern hamnade rätt både med avseende på orientering och position.
 
@@ -175,18 +179,18 @@ def apply(m: ArrayMatrix2D, i: Int, j: Int): Int
     \Task{Skapa en ny modell som `wrappar' i kanterna.}
     Just nu har vi ett udda beteende i modellen, nämligen att alla celler utanför brädet i praktiken räknas som döda. För att få ett lite mer intressant beteende så vill vi nu göra så att om exempelvis en glider åker in i höger vägg ska den komma ut ur vänster vägg. Detta kan göras med några små modifikationer till \code{ArrayMatrix2D}.
 
-        \Subtask{Skugga \code{isWithinMatrix} så att alla positioner är giltiga.}
-        % TODO: Skriv.    
-        Då funktionen \code{mooreNeighborsStates} i \code{Matrix2D} använder sig av funktionen \code{isWithinMatrix} för att avgöra vilka celler som är inom brädet så måste vi se till att \code{isWithinMatrix} inte hindrar grann-funktionen från att hämta celler `utanför' brädet, detta kan vi enkelt göra genom att kommentera ut hela den tidigare koden och istället alltid returnera true. Om vi nu försöker köra programmet kommer vi nu se att vi får \code{ArrayIndexOutOfBoundsException}, detta då vi ännu inte gjort så att hämtningar eller tilldelningar `utanför' brädet wrappar, vilket vi nu ska göra.
+        \Subtask{Ändra metoden \code{isWithinMatrix} så att alla positioner är giltiga.}
 
-        \Subtask{Skugga \code{get} samt \code{set} så att hämtningar respektive tilldelningar utanför brädet wrappar.}
-        För att åstadkomma wrappning så måste vi göra att alla hämtningar utanför brädet går runt. Detta kan enklast göras med hjälp av modulo-operatorn.
+        Då funktionen \code{mooreNeighborsStates} i \code{Matrix2D} använder sig av funktionen \code{isWithinMatrix} för att avgöra vilka celler som är inom brädet så måste vi se till att \code{isWithinMatrix} inte hindrar grann-funktionen från att hämta celler `utanför' brädet, detta kan vi enkelt göra genom att kommentera ut hela den tidigare koden och istället alltid returnera \code{true}. Om vi nu försöker köra programmet kommer vi nu se att vi får \code{ArrayIndexOutOfBoundsException}, detta då vi ännu inte gjort så att hämtningar eller tilldelningar `utanför' brädet wrappar, vilket vi nu ska göra.
+
+        \Subtask{Ändra metoderna \code{get} samt \code{set} så att hämtningar respektive tilldelningar utanför brädet wrappar.}
+        För att åstadkomma wrappning så måste vi göra att alla hämtningar och tilldelningar utanför brädet går `runt'. Detta kan enklast göras med hjälp av modulo-operatorn.
         
 \begin{Code}
 val wrapped_row = row \% rows
 \end{Code}
 
-	Men denna lösning tar inte hänsyn till negativa tal, vilket kan uppkomma när man t.ex. försöker hämta grannarna för cellen i det övre vänstra hörnet på brädet, dvs. position (0, 0). För att enkelt lösa detta kan man förskjuta hela \code{row} med \code{rows} så att man istället får \code{(rows + row) \% rows}. Nu kan vi använda oss av denna kunskap för att i metoderna \code{get} samt \code{set} se till att operationerna wrappar.
+	Men denna lösning tar inte hänsyn till negativa tal, vilket kan uppkomma när man t.ex. försöker hämta grannarna för cellen i det övre vänstra hörnet på brädet, dvs. position (0, 0). För att enkelt lösa detta kan man förskjuta hela \code{row} med \code{rows} så att man istället får \code{(rows + row) \% rows}. Vi använda oss av denna kunskap för att i metoderna \code{get} samt \code{set} se till att operationerna wrappar.
 
 
 \subsection{Frivilliga extrauppgifter}
