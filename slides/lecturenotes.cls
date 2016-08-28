@@ -65,7 +65,7 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 \newenvironment{SlideSimple}[2][]
   {\begin{frame}[fragile,plain, environment=SlideSimple,#1]{#2}}
   {\end{frame}}  
-
+  
 %\usepackage[framemethod=default]{mdframed}
 %\mdfdefinestyle{exampledefault}{%
 %rightline=true,innerleftmargin=10,innerrightmargin=10,
