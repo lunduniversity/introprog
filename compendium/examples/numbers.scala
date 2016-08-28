@@ -1,12 +1,12 @@
-// INTE FÄRDIGT
 package numbers
 
 trait Number {
-  def reduce: Number = this  // reduce if possible to a simpler number
+  def reduce: Number = this  
   def isZero: Boolean 
   def isOne: Boolean 
-  def +(that: Number): Number = ???  // should be abstract
+  def +(that: Number): Number = ???  
 }
+
 object Number {
   def Zero = Nat(0)
   def One  = Nat(1)
@@ -15,8 +15,6 @@ object Number {
   def j                  = Complex(Real(0), Real(1))
   def Re(re: BigDecimal) = Complex(Real(re), Real(0))
   def Re(re: Real)       = Complex(re, Real(0))
-  implicit class IntDecorator(i: Int){ def j = Im(i) }
-  implicit class DoubleDecorator(d: Double){ def j = Im(d) }
 }
 
 trait AbstractComplex extends Number {
@@ -30,15 +28,20 @@ trait AbstractComplex extends Number {
 }
 
 case class Complex(re: Real, im: Real) extends AbstractComplex
-case object Complex {
+
+object Complex {
   def apply(re: BigDecimal, im: BigDecimal) = new Complex(Real(re), Real(im))
 }
 
-case class Polar(override val abs: Real, override val fi: Real) extends AbstractComplex {
+case class Polar(
+    override val abs: Real, 
+    override val fi: Real
+  ) extends AbstractComplex {
   override def re = Real(abs.decimal.toDouble * math.cos(fi.decimal.toDouble))  
   override def im = Real(abs.decimal.toDouble * math.sin(fi.decimal.toDouble))
 }
-case object Polar {
+
+object Polar {
   def apply(abs: BigDecimal, fi: BigDecimal) = new Polar(Real(abs), Real(fi))
 }
  
@@ -61,13 +64,14 @@ trait AbstractRational extends AbstractReal {
   override def decimal = BigDecimal(numerator.integ)
   override def isOne = numerator.integ == denominator.integ
   override def reduce: AbstractRational = 
-    if (denominator.isOne) numerator.reduce else this // should use gcd
+    if (denominator.isOne) numerator.reduce else this // should use GCD
 }
 
 case class Frac(numerator: Integ, denominator: Integ) extends AbstractRational {
   require(denominator.integ != 0, "denominator must be non-zero")
 }
-case object Frac {
+
+object Frac {
   def apply(n: BigInt, d: BigInt) = new Frac(Integ(n), Integ(d))
 }
 
@@ -88,4 +92,9 @@ trait AbstractNatural extends AbstractInteger
 
 case class Nat(integ: BigInt) extends AbstractNatural{
   require(integ >= 0, "natural numnbers must be non-negative")
+}
+
+object Syntax {
+  implicit class IntDecorator(i: Int){ def j = Number.Im(i) }
+  implicit class DoubleDecorator(d: Double){ def j = Number.Im(d) }
 }

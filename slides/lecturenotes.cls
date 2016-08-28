@@ -14,7 +14,7 @@
 \definecolor{mygreen}{rgb}{0,0.5,0}
 \definecolor{mylinkcolor}{rgb}{0,0,0.6}
 \definecolor{myemphcolor}{rgb}{0,0.5,0.1}
-\definecolor{myalertcolor}{rgb}{0.5,0,0.1}
+\definecolor{myalertcolor}{rgb}{0.7,0,0.1}
 \definecolor{eclipsepurple}{rgb}{0.5,0,0.25}
 \definecolor{eclipseblue}{rgb}{0.16,0,1.0}
 \definecolor{eclipsegreen}{rgb}{0,0.5,0}
@@ -195,6 +195,10 @@
 
 \lstnewenvironment{Code}[1][]{%
     \lstset{basicstyle=\ttfamily\fontsize{7}{9}\selectfont,#1}%
+}{}
+
+\lstnewenvironment{CodeSmall}[1][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{6}{7}\selectfont,#1}%
 }{}
 
 \lstnewenvironment{REPL}[1][]{%
