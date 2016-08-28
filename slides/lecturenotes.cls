@@ -40,7 +40,8 @@
 \usepackage{xspace} %http://www.math.tamu.edu/~harold.boas/courses/math696/why-macros.html
 \usepackage{hyperref}
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
-\hypersetup{colorlinks=true,linkcolor=, linkbordercolor=, urlbordercolor=mylinkcolor, urlcolor=mylinkcolor, pdfborderstyle={/S/U/W 1}}
+\hypersetup{pdfborderstyle={/S/U/W 1}, %colorlinks=true,
+linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=mylinkcolor, }
 
 \usepackage[%linesnumbered,%lined, %boxed
 ]{algorithm2e} % for writing pseudo-code
@@ -143,6 +144,7 @@
     framextopmargin=2pt,
     framexbottommargin=2pt,
     showstringspaces=false,
+    columns=fullflexible,keepspaces
 }
 
 \lstset{literate=%
