@@ -2,8 +2,6 @@
 
 %!TEX root = ../compendium.tex
 
-% TODO: Sjukt cool grej, bör nämnas eller läggas som "För mer..." resurs:
-%       https://en.wikipedia.org/wiki/Codd's_cellular_automaton
 
 \Lab{\LabWeekTWELVE}
 
@@ -15,10 +13,11 @@
     %\item Känna till trådar, en grundläggande metod för att köra flera metoder \emph{samtidigt}.
 \end{Goals}
 
-% TODO: Some more preparations needed
+
 \begin{Preparations}
     \item Läs igenom laborationen.
     \item Bekanta dig med kodskelettet.
+    \item Börja skriva konstruktorn för \code{ArrayMatrix2D} som handleds i uppgift 1a.
     % TODO: The following are just "fun" preparations, which will give the student more insight into the field but aren't
     %       actually required to complete the lab. They are optionals really.
     %\item Läs om Life på Wikipedia.
@@ -94,7 +93,7 @@ Läs igenom de två filerna i `models' paketet noga, det är där ni kommer spen
 
 	Varje cell i matrisen kan vid varje tidpunkt (i varje generation) ha ett av två tillstånd: levande eller död. Dessa kommer vi för enkelhetens skull att representera som 1 eller 0, respektive. Detta för att göra det enklare att räkna ihop hur många levande grannar en cell har.
 
-        \Subtask{Implementera metoderna i ArrayMatrix2D.}
+        \Subtask{Implementera konstruktorn i kompanjonsobjektet för ArrayMatrix2D.}
 
         För att skapa en matris ska vi använda oss av Scalas inbyggda datastruktur \code{Array}. Denna datastruktur har en användbar konstruktur \code{ofDim[T](n1: Int, n2: Int)} som vi ska använda för att skapa $rows$ arrayer av storlek $cols$ inuti en annan array, detta är vad vi kommer använda för att lagra vår matris-data.
         
@@ -115,6 +114,8 @@ Array(
 %0,0,0
 %0,0,0
 %\end{Code}
+
+	    \Subtask{Implementera metoderna i ArrayMatrix2D.}
 
 		Fortsätt nu med att implementera de övriga metoderna i ArrayMatrix2D. Läs igenom traitet \code{Matrix2D} för kommentarer om vad som ska göras.
 
@@ -187,7 +188,7 @@ def apply(m: ArrayMatrix2D, i: Int, j: Int): Int
         För att åstadkomma wrappning så måste vi göra att alla hämtningar och tilldelningar utanför brädet går `runt'. Detta kan enklast göras med hjälp av modulo-operatorn.
         
 \begin{Code}
-val wrapped_row = row \% rows
+val wrapped_row = row % rows
 \end{Code}
 
 	Men denna lösning tar inte hänsyn till negativa tal, vilket kan uppkomma när man t.ex. försöker hämta grannarna för cellen i det övre vänstra hörnet på brädet, dvs. position (0, 0). För att enkelt lösa detta kan man förskjuta hela \code{row} med \code{rows} så att man istället får \code{(rows + row) \% rows}. Vi använda oss av denna kunskap för att i metoderna \code{get} samt \code{set} se till att operationerna wrappar.
@@ -199,16 +200,19 @@ Inom cellulära automata finns det många intressanta fenomen och beteenden, fö
 
 
 \Task{Implementera spara och ladda}
-	% TODO: Hur ska spara/ladda triggas? Knappar bör läggas till i GUI:t.
-	% TODO: Skriv en metod i kodskelettet där koden ska implementeras.
 
 	När man leker runt med cellulära automater vill man ofta spara sina bräden så att man senare enkelt kan ladda in dem igen. För att göra detta ska vi i denna extrauppgift definiera ett dataformat som ska kunna representera våran \code{ArrayMatrix2D}.
 
     \Subtask{Spara brädets tillstånd.}
-        Tillståndet ska sparas till ett format som både är lätt att spara/exportera och ladda/importera.
+        Tillståndet ska sparas till ett format som både är lätt att spara/exportera och ladda/importera. Det vi behöver spara är följande:
         
-        Det enklaste är att skriva ut matrisen rad för rad där varje cell skrivs ut som en etta eller nolla. Detta fungerar väl för bräden där celler bara antar värden i intervallet 0-9, men fungerar inte längre om en cell kan anta andra värden (såsom i uppgiften med cyklisk cellulär automata nedan). 
-        Vi uppmanar att göra den enkla lösningen, men för de som inte vill så föreslår vi att vi att ni läser om det enkla filformatet CSV där man separerar cellernas värden med komman.
+        \begin{itemize}
+        		\item Brädets storlek, dvs antalet rader och kolumner
+        		\item Hur många olika värden en cell på brädet kan anta
+        		\item Matrisen i sig som innehåller brädets celler
+        	\end{itemize}
+        
+        Vi föreslår att ni börjar filen med en rad innehållande de två värdena i punkt ett samt värdet i punkt två, separera dem med mellanslag eller komma. Därefter är det enklaste att skriva ut matrisen rad för rad där varje cell skrivs ut som en etta eller nolla. Man kan göra detta utan separator för bräden där celler bara antar värden i intervallet 0-9, men det fungerar inte längre om en cell kan anta andra värden (såsom i uppgiften med cykliska cellulära automater nedan) då man inte längre kan lita på att en siffra motsvarar en cell. För att lösa denna begränsning kan man separera sina värden med något tecken precis som för första raden, t.ex. ett mellanslag eller ett komma.
         
     \Subtask{Ladda in det exporterade tillståndet.}
         Implementera en metod för att läsa in det sparade tillståndet.
@@ -258,6 +262,7 @@ Intressanta mönster:
 \begin{enumerate}
     \item \url{https://en.wikipedia.org/wiki/Spacefiller}
     \item \url{https://en.wikipedia.org/wiki/Spaceship_\%28cellular_automaton\%29}
+	\item \url{https://en.wikipedia.org/wiki/Codd's_cellular_automaton}
 \end{enumerate}
 
 Intressanta resurser:
