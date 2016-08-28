@@ -1,5 +1,6 @@
 package views
 
+import java.io._
 import javafx.animation.{Animation, KeyFrame, Timeline}
 import javafx.application.Application
 import javafx.event.{ActionEvent, EventHandler}
@@ -10,11 +11,12 @@ import javafx.scene.control.{Button, Label}
 import javafx.scene.input.{KeyCode, KeyEvent, MouseEvent}
 import javafx.scene.layout._
 import javafx.scene.paint.Color
-import javafx.stage.Stage
+import javafx.stage.{FileChooser, Stage}
 import javafx.util.Duration
 
 import models.{ArrayMatrix2D, Matrix2D}
 import rules.{Rule, LifeRule}
+
 
 object LifeGuiView extends CellularView2D {
 
@@ -103,6 +105,7 @@ object LifeGuiView extends CellularView2D {
 protected class LifeGuiView extends Application {
   var root: VBox = new VBox
   var canvas: Canvas = null
+  var primaryStage: Stage = null
 
   var playing = false
 
@@ -110,9 +113,10 @@ protected class LifeGuiView extends Application {
   private var gen = 1
 
   override def start(primaryStage: Stage) {
+    this.primaryStage = primaryStage
     primaryStage.setTitle("Game of Life")
 
-    createGui(primaryStage)
+    createGui()
 
     val rendertimer: Timeline = new Timeline(new KeyFrame(
       Duration.millis(1000/60), new EventHandler[ActionEvent] {
@@ -156,7 +160,39 @@ protected class LifeGuiView extends Application {
     setGeneration(0)
   }
 
-  def createCanvasBoard(): Unit = {
+  def randomize() {
+    LifeGuiView.currentMatrix().randomize()
+    LifeGuiView.setMatrixChanged()
+    setGeneration(0)
+  }
+
+  def saveToFile(): Unit = {
+    val fileChooser = new FileChooser()
+    fileChooser.setTitle("Save Board")
+    val file = fileChooser.showSaveDialog(primaryStage)
+    if (file != null) {
+      try {
+        val bw = new BufferedWriter(new FileWriter(file))
+        bw.write(LifeGuiView.currentMatrix().toFileFormat())
+        bw.close()
+      } catch {
+        case ioe: IOException =>
+          println(ioe.getMessage())
+      }
+    }
+  }
+
+  def loadFromFile(): Unit = {
+    val fileChooser = new FileChooser()
+    fileChooser.setTitle("Open Board")
+    val file = fileChooser.showOpenDialog(primaryStage)
+    val br = new BufferedReader(new FileReader(file))
+    val lines = br.lines().toArray.mkString("\n")
+    val matrix = ArrayMatrix2D.fromFileFormat(lines)
+    LifeGuiView.display(matrix)
+  }
+
+  def createCanvasBoard(): Canvas = {
     val height = 600
     val width = 600
 
@@ -171,12 +207,12 @@ protected class LifeGuiView extends Application {
           val col = (e.getX/cellWidth).toInt
           val row = (e.getY/cellHeight).toInt
 
-          matrix.set(row, col, if(matrix(row)(col) == 0) 1 else 0)
+          matrix.set(row, col, (matrix(row)(col) + 1) % matrix.states)
           LifeGuiView.display(matrix)
         }
       })
 
-    root.getChildren.add(0, canvas)
+    return canvas
   }
 
   def renderBoard(): Unit = {
@@ -211,8 +247,9 @@ protected class LifeGuiView extends Application {
   }
 
 
-  def createToolbar() {
+  def createToolbar(): VBox = {
     val toolbar = new VBox
+    toolbar.setSpacing(10)
     toolbar.setPadding(new Insets(10, 10, 10, 10))
 
     val buttonbox = new HBox(10)
@@ -238,25 +275,46 @@ protected class LifeGuiView extends Application {
     val randomizeBtn = new Button("Randomize (R)")
     randomizeBtn.setOnAction(new EventHandler[ActionEvent] {
       override def handle(e: ActionEvent) {
-        LifeGuiView.currentMatrix().randomize()
-        LifeGuiView.setMatrixChanged()
+        randomize()
       }
     })
     buttonbox.getChildren.addAll(playBtn, nextBtn, clearBtn, randomizeBtn)
 
     val infobox = new HBox(70)
     infobox.getChildren.addAll(generationLabel)
-
     toolbar.getChildren.addAll(buttonbox, infobox)
 
-    root.getChildren.add(1, toolbar)
+    return toolbar
   }
 
-  def createGui(primaryStage: Stage): Unit = {
-    createCanvasBoard()
-    createToolbar()
+  def createMenuBar(): MenuBar = {
+    val menuFile = new Menu("File")
 
-    val scene = new Scene(root, 600, 680)
+    val save = new MenuItem("Save...")
+    save.setOnAction(new EventHandler[ActionEvent] {
+      override def handle(e: ActionEvent): Unit = {
+        saveToFile()
+      }
+    })
+    val load = new MenuItem("Load...")
+    load.setOnAction(new EventHandler[ActionEvent] {
+      override def handle(e: ActionEvent): Unit = {
+        loadFromFile()
+      }
+    })
+    val exit = new MenuItem("Exit")
+    exit.setOnAction(new EventHandler[ActionEvent] {
+      override def handle(e: ActionEvent): Unit = {
+          System.exit(0)
+      }
+    })
+
+    menuFile.getItems.addAll(save, load, new SeparatorMenuItem(), exit)
+    return new MenuBar(menuFile)
+  }
+
+  def createGui(): Unit = {
+    val scene = new Scene(root, 600, 700)
     // Maps 'C' key to clear button and 'N' key to next button
     scene.setOnKeyPressed(new EventHandler[KeyEvent] {
       override def handle(e: KeyEvent) {
@@ -265,8 +323,7 @@ protected class LifeGuiView extends Application {
         } else if (e.getCode == KeyCode.N) {
           nextGen()
         } else if (e.getCode == KeyCode.R) {
-          LifeGuiView.currentMatrix().randomize()
-          LifeGuiView.setMatrixChanged()
+          randomize()
         } else if (e.getCode == KeyCode.C) {
           clear()
         }
@@ -274,5 +331,11 @@ protected class LifeGuiView extends Application {
     })
     primaryStage.setScene(scene)
     primaryStage.show
+
+    val menuBar = createMenuBar()
+    val canvasBoard = createCanvasBoard()
+    val toolbar = createToolbar()
+
+    root.getChildren.addAll(menuBar, canvasBoard, toolbar)
   }
 }
