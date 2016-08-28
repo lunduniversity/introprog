@@ -37,7 +37,6 @@ I extrauppgifterna kommer det även finnas möjlighet att utforska två andra ex
 
 \vspace{5mm}
 
-
 För mer om Game of Life, se Wikipedia:
 
 \begin{itemize}[noitemsep,topsep=0pt]
@@ -117,8 +116,8 @@ Array(
 
 	    \Subtask{Implementera metoderna i ArrayMatrix2D.}
 
-		Fortsätt nu med att implementera de övriga metoderna i ArrayMatrix2D. Läs igenom traitet \code{Matrix2D} för kommentarer om vad som ska göras.
-
+		Fortsätt nu med att implementera de övriga metoderna i ArrayMatrix2D. Läs igenom kommentarerna för de oimplementerade metoderna i traitet \code{Matrix2D} för kommentarer om vad som ska göras.
+		
 
         \Subtask{Testa implementationen.}
 
@@ -148,14 +147,24 @@ matrix.place(entities.glider, 4, 2)
   \begin{center}
     \includegraphics[width=0.3\textwidth]{../img/w12-lab/glider.png}
   \end{center}
-  \caption{En \textit{glider}. Vanligt varelse att se i Life.}
+  \caption{En såkallad \textit{glider}. Vanligt förekommande varelse i Life.}
 \end{figure}
 
         Testa nu att rita ut brädet igen (utan randomize denna gången) för att se till att glidern hamnade rätt både med avseende på orientering och position.
 
 
     \Task{Implementera Life-regeln med hjälp av traitet Rule.}
+    
     Nu har vi vår datastruktur för brädet på plats så nu är det dags att faktiskt implementera reglerna för Life. För att göra detta ska vi implementera traitet \code{Rule} som är en generalisering för hur cellulära automaters regler kan implementeras.
+    
+        \Subtask{Implementera \code{mooreNeighborsPositions} samt \code{mooreNeighborsStates} i \code{Matrix2D}.}
+        
+        Då Life-regeln förlitar sig på Moore-grannskapet som tidigare nämnts så behöver vi ett smidigt sätt att få ut grannarna för en viss cell, detta är vad funktionerna \code{mooreNeighborsPositions} samt \code{mooreNeighborsStates} ska göra.
+        
+        När \code{mooreNeighborsStates} implementeras är det viktigt att ta hänsyn till om grannarna faktiskt finns (då vårat bräde är av begränsad storlek).
+        För detta bör man använda \code{isWithinMatrix} metoden som tidigare implementerades i \code{ArrayMatrix2D}.
+        
+        Börja med att implementera \code{mooreNeighborsPositions} och använd sedan den för att implementera \code{mooreNeighborsStates}.
 
         \Subtask{Implementera \code{apply} i ett nytt objekt \code{LifeRule} som implementerar \code{Rule}.}
         Här nedan finnes specifikationen för traitet Rule, den innehåller endast en metod \code{apply} vars uppgift är att ta ett bräde samt en position på brädet och returnera vad denna position ska innehålla för värde i nästa generation.
@@ -168,16 +177,15 @@ matrix.place(entities.glider, 4, 2)
 def apply(m: ArrayMatrix2D, i: Int, j: Int): Int
 \end{ScalaSpec}
 
-        När denna implementeras är det viktigt att ta hänsyn till om grannarna faktiskt finns (då vårat bräde är av begränsad storlek).
-        För detta bör man använda \code{isWithinMatrix} metoden som tidigare implementerades i \code{ArrayMatrix2D}.
-
         \Subtask{Testa implementationen.}
+        
         För att nu i praktiken applicera våran regel på brädet ska vi använda oss av metoden \code{applyRule} som återfinns i \code{ArrayMatrix2D}.
 
         Om man har problem med att sin regel inte beter sig som förväntat så man returnera antalet grannar istället för cellens levande/död tillstånd. Efter att applicera hela s.k. \code{NeighborsRule} kan man visa upp resultatet med \code{LifeConsoleView} för att se om programmet räknar grannar korrekt.
 
 
     \Task{Skapa en ny modell som `wrappar' i kanterna.}
+    
     Just nu har vi ett udda beteende i modellen, nämligen att alla celler utanför brädet i praktiken räknas som döda. För att få ett lite mer intressant beteende så vill vi nu göra så att om exempelvis en glider åker in i höger vägg ska den komma ut ur vänster vägg. Detta kan göras med några små modifikationer till \code{ArrayMatrix2D}.
 
         \Subtask{Ändra metoden \code{isWithinMatrix} så att alla positioner är giltiga.}
@@ -185,13 +193,14 @@ def apply(m: ArrayMatrix2D, i: Int, j: Int): Int
         Då funktionen \code{mooreNeighborsStates} i \code{Matrix2D} använder sig av funktionen \code{isWithinMatrix} för att avgöra vilka celler som är inom brädet så måste vi se till att \code{isWithinMatrix} inte hindrar grann-funktionen från att hämta celler `utanför' brädet, detta kan vi enkelt göra genom att kommentera ut hela den tidigare koden och istället alltid returnera \code{true}. Om vi nu försöker köra programmet kommer vi nu se att vi får \code{ArrayIndexOutOfBoundsException}, detta då vi ännu inte gjort så att hämtningar eller tilldelningar `utanför' brädet wrappar, vilket vi nu ska göra.
 
         \Subtask{Ändra metoderna \code{get} samt \code{set} så att hämtningar respektive tilldelningar utanför brädet wrappar.}
+        
         För att åstadkomma wrappning så måste vi göra att alla hämtningar och tilldelningar utanför brädet går `runt'. Detta kan enklast göras med hjälp av modulo-operatorn.
         
 \begin{Code}
 val wrapped_row = row % rows
 \end{Code}
 
-	Men denna lösning tar inte hänsyn till negativa tal, vilket kan uppkomma när man t.ex. försöker hämta grannarna för cellen i det övre vänstra hörnet på brädet, dvs. position (0, 0). För att enkelt lösa detta kan man förskjuta hela \code{row} med \code{rows} så att man istället får \code{(rows + row) \% rows}. Vi använda oss av denna kunskap för att i metoderna \code{get} samt \code{set} se till att operationerna wrappar.
+		Men denna lösning tar inte hänsyn till negativa tal, vilket kan uppkomma när man t.ex. försöker hämta grannarna för cellen i det övre vänstra hörnet på brädet, dvs. position (0, 0). För att enkelt lösa detta kan man förskjuta hela \code{row} med \code{rows} så att man istället får \code{(rows + row) \% rows}. Vi använda oss av denna kunskap för att i metoderna \code{get} samt \code{set} se till att operationerna wrappar.
 
 
 \subsection{Frivilliga extrauppgifter}
@@ -257,19 +266,25 @@ Inom cellulära automata finns det många intressanta fenomen och beteenden, fö
 
 \subsection{Extra läsning}
 
-Intressanta mönster:
+\subsubsection{Intressanta mönster i Life}
 
-\begin{enumerate}
+\begin{itemize}[noitemsep,topsep=0pt]
     \item \url{https://en.wikipedia.org/wiki/Spacefiller}
     \item \url{https://en.wikipedia.org/wiki/Spaceship_\%28cellular_automaton\%29}
+\end{itemize}
+
+\subsubsection{Intressanta automater}
+
+\begin{itemize}[noitemsep,topsep=0pt]
 	\item \url{https://en.wikipedia.org/wiki/Codd's_cellular_automaton}
-\end{enumerate}
+	\item \url{https://en.wikipedia.org/wiki/Von_Neumann_universal_constructor}
+\end{itemize}
 
-Intressanta resurser:
+\subsubsection{Intressanta resurser}
 
-\begin{enumerate}
+\begin{itemize}[noitemsep,topsep=0pt]
     \item Eric Weisstein's treasure trove of The Game Of Life: \url{http://www.ericweisstein.com/encyclopedias/life/topics/}
-\end{enumerate}
+\end{itemize}
 
 
 
