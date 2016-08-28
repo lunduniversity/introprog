@@ -32,13 +32,14 @@ object Main extends App {
   weekPlan.  toLatex   .prepend(texUtf).save(currentDir + "week-plan-generated.tex")
   modulePlan.toMarkdown.save(currentDir + "module-plan-generated.md")
   modulePlan.toHtml    .save(currentDir + "module-plan-generated.html")
+  modulePlan.latexTableBody.save(currentDir + "module-plan-generated.tex")
   overview  .toLatex   .prepend(texUtf).save(currentDir + "overview-generated.tex")
   
   val weeks = (0 to 6) ++ (8 to 14) //exlude exam weeks
   
   // *** Generate chapter heads with topics of each module
   val minConceptsForTwoCol = 28
-  def conceptBegin(n: Int) = "Begrepp du ska lära dig denna vecka:\n" +
+  def conceptBegin(n: Int) = "Begrepp som ingår i denna veckas studier:\n" +
     (if (n > minConceptsForTwoCol) """\begin{multicols}{2}""" else "") + 
     """\begin{itemize}[noitemsep,label={$\square$},leftmargin=*]""" + "\n"
   def conceptEnd(n: Int)   = """\end{itemize}""" +
@@ -47,9 +48,11 @@ object Main extends App {
     def toLatexItem(s: String) = s"\\item ${s.trim}\n"
     val label      = "\\label{chapter:" + modulePlan.column("W")(w) + "}"
     val chapter    = "\\chapter{" + modulePlan.column("Modul")(w) + s"}$label\n"
-    val concepts   = modulePlan.column("Innehåll")(w).split(',').toVector
+    val concepts   = modulePlan.column("Innehåll")(w).split(',').toVector.filterNot(_.isEmpty)
     val items      = concepts.map(toLatexItem).mkString.trim 
-    val result     = chapter + conceptBegin(concepts.size) + items + conceptEnd(concepts.size)
+    val result     = chapter + (if (items.size == 0) "" else {
+      conceptBegin(concepts.size) + items + conceptEnd(concepts.size)
+    })
     val weekName   = modulePlan.column("W")(w).toLowerCase
     val fileName   = s"../compendium/generated/$weekName-chaphead-generated.tex"
     result.latexEscape.prepend(texUtf).save(currentDir+fileName)
@@ -80,6 +83,30 @@ object Main extends App {
     nameDefRow(w, weekPlan.column("Lab")(w), weekPlan.column("Övn")(w))
   val nameDefs = (for (w <- weeks) yield namesOfWeek(w)).mkString("\n")
   nameDefs.prepend(texUtf).save(currentDir + "../compendium/generated/names-generated.tex")
+  
+  
+  //*** Generate overview slides per week ***
+  def overviewTemplate(module: String, exe: String, lab: String, body: String, cols: Int = 3) = 
+    s"""
+Modul \\Emph{$module}: Övn \\Alert{\\texttt{$exe}} $$\\rightarrow$$ Labb \\Alert{\\texttt{$lab}}
+\\begin{multicols}{$cols}\\SlideFontTiny
+$body     
+\\end{multicols}
+"""
+    for (w <- weeks) {
+      val concepts   = modulePlan.column("Innehåll")(w).split(',').toVector.filterNot(_.isEmpty)
+      def toLatexItem(s: String) = s"$$\\square$$ ${s.trim} \\\\\n"
+      val items = if (w < 14) concepts.map(toLatexItem).mkString.trim else "Repetera begrepp"
+      val output = overviewTemplate(
+        module = overview.column("Modul")(w),
+        exe    = overview.column("Övn")(w),
+        lab    = overview.column("Lab")(w),
+        body   = items
+      )
+      val weekName   = modulePlan.column("W")(w).toLowerCase
+      output.prepend(texUtf).save(
+        currentDir + s"../slides/generated/$weekName-overview-generated.tex")
+  }  
  
 }
 

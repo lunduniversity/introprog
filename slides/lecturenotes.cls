@@ -14,7 +14,7 @@
 \definecolor{mygreen}{rgb}{0,0.5,0}
 \definecolor{mylinkcolor}{rgb}{0,0,0.6}
 \definecolor{myemphcolor}{rgb}{0,0.5,0.1}
-\definecolor{myalertcolor}{rgb}{0.5,0,0.1}
+\definecolor{myalertcolor}{rgb}{0.7,0,0.1}
 \definecolor{eclipsepurple}{rgb}{0.5,0,0.25}
 \definecolor{eclipseblue}{rgb}{0.16,0,1.0}
 \definecolor{eclipsegreen}{rgb}{0,0.5,0}
@@ -31,13 +31,17 @@
 
 \usepackage[normalem]{ulem}  % for strikethrough: \sout{Hello World}
 
+\usepackage{hyphenat}
+\hyphenation{intro-duktion}
+
 \usepackage{multicol} \setlength{\columnsep}{5mm}
 \usepackage{listings}
 \usepackage{upquote} %http://tex.stackexchange.com/questions/145416/how-to-have-straight-single-quotes-in-lstlistings
 \usepackage{xspace} %http://www.math.tamu.edu/~harold.boas/courses/math696/why-macros.html
 \usepackage{hyperref}
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
-\hypersetup{colorlinks=true,linkcolor=, linkbordercolor=, urlbordercolor=mylinkcolor, urlcolor=mylinkcolor, pdfborderstyle={/S/U/W 1}}
+\hypersetup{pdfborderstyle={/S/U/W 1}, %colorlinks=true,
+linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=mylinkcolor, }
 
 \usepackage[%linesnumbered,%lined, %boxed
 ]{algorithm2e} % for writing pseudo-code
@@ -61,7 +65,7 @@
 \newenvironment{SlideSimple}[2][]
   {\begin{frame}[fragile,plain, environment=SlideSimple,#1]{#2}}
   {\end{frame}}  
-
+  
 %\usepackage[framemethod=default]{mdframed}
 %\mdfdefinestyle{exampledefault}{%
 %rightline=true,innerleftmargin=10,innerrightmargin=10,
@@ -140,6 +144,7 @@
     framextopmargin=2pt,
     framexbottommargin=2pt,
     showstringspaces=false,
+    columns=fullflexible,keepspaces
 }
 
 \lstset{literate=%
@@ -192,6 +197,10 @@
 
 \lstnewenvironment{Code}[1][]{%
     \lstset{basicstyle=\ttfamily\fontsize{7}{9}\selectfont,#1}%
+}{}
+
+\lstnewenvironment{CodeSmall}[1][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{6}{7}\selectfont,#1}%
 }{}
 
 \lstnewenvironment{REPL}[1][]{%

@@ -6,7 +6,7 @@ public class Switch {
         }
         System.out.println("Din favoritgrönsak: " + favorite);
         char firstChar = Character.toLowerCase(favorite.charAt(0));
-        System.out.print("Jag tycker ");
+        System.out.print("Jag tycker att ");
         switch (firstChar) {
         case 'g': 
             System.out.println("gurka är gott!");
@@ -18,7 +18,7 @@ public class Switch {
             System.out.println("broccoli är gott!");
             break;
         default:
-            System.out.println(favorite + " är äckligt!");
+            System.out.println(favorite + " är mindre gott...");
             break;
         }
     }

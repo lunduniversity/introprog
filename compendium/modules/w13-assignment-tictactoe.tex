@@ -14,9 +14,8 @@
 \subsection{Bakgrund}
 I detta projektet ska du implementera din egen version av spelet tic-tac-toe (eller som vi på svenska kallar det, tre i rad)! Du kommer börja med att implementera en version där du kan spela mot en kursare och sen gå vidare till att implementera en datorspelare som lägger sin pjäs slumpmässigt och till slut en som inte kan förlora!
 
-
 \subsection{Regler}
-Om du känner dig säker på hur reglerna i tic-tac-toe funkar kan du skippa detta. 
+Om du känner dig säker på hur reglerna i tic-tac-toe funkar kan du skippa detta. \footnote{\href{https://en.wikipedia.org/wiki/Tic-tac-toe }{en.wikipedia.org/wiki/Tic-tac-toe}}
 \begin{itemize}
 	\item Spelplanen består av ett rutnät av storlek 3x3.
 	\item Det finns två spelare: \texttt{x} och \texttt{o}.
@@ -28,21 +27,100 @@ Om du känner dig säker på hur reglerna i tic-tac-toe funkar kan du skippa det
 \subsection{Teori}
 
 Representationen är vald till en endimensionell vektor av typen Int av storlek 9 där element $[0,2]$ \footnote{Med beteckningen [x,y] menas alla heltal från x till y, dvs: x, x+1, x+2, ... , y-1, y. [0,2] = {0,1,2}} representerar den första raden $[3,5]$ andra och $[6,8]$ den tredje. Anledningen till detta är att vi vill ha en representation så att spelaren kan svara vilket drag den vill göra med ett heltal.
-Varje element i vektorn ska kunna representera en tom plats, en plats allokerad av \texttt{x} och en plats allokerad av \texttt{o}. Detta innebär att en vektor av typen Boolean inte räcker till. Istället väjs den (kanske lite minnesöverflödiga) typen Int. Vi har valt representationen där 0 representerar tom plats, 1 representerar \texttt{x} och -1 representerar \texttt{o}. Denna representation är dels smidig för vår framtida OptimalP och även för att avgöra om spelare \texttt{x} eller \texttt{o} har vunnit. Man kan exempelvis summera en rad och kolla om radens summa är 3, då har \texttt{x} vunnit eller -3, då har \texttt{o} vunnit.
+Varje element i vektorn ska kunna representera en tom plats, en plats allokerad av \texttt{x} och en plats allokerad av \texttt{o}. Detta innebär att en vektor av typen Boolean inte räcker till. Istället väjs den (kanske lite minnesöverflödiga) typen Int. Vi har valt representationen där 0 representerar tom plats, 1 representerar \texttt{x} och -1 representerar \texttt{o}. Denna representation är dels smidig för vår framtida OptimalPlayer och även för att avgöra om spelare \texttt{x} eller \texttt{o} har vunnit. Man kan exempelvis summera en rad och kolla om radens summa är 3, då har \texttt{x} vunnit eller -3, då har \texttt{o} vunnit.
+
+\subsection{Design}
+Den här uppgiften kommer innehålla lite färre klasser och mindre objektorienterade utmaningar, men istället lite klurigare algoritmiska utmaningar. Vi skall dessutom använda rekursion till vår fördel, vilket för den ovane brukar vara krångligt, därför hamnar huvudfokus här. Programmet har följande klasstruktur:
+Game - i sin mainmetod frågar den användaren hur spelen skall gå till och med vilka spelare.
+När detta är specificerat anropas den rekursiva metoden play.
+play spelar ett spel mellan två spelare tills någon vinner eller det blir oavgjort.
+Kodsklettet för Game ser ut på följande vis:
+\begin{ScalaSpec}{Game}
+/** 
+ * Asks the user what kind of players should play against each other.
+ * Creates the players that the user chooses via System.in 
+ * Asks the user if the board should be drawn.
+ * If the board should not be drawn, ask the user for n,
+ * the amount of games that should be played between the two players.
+ * Else n = 1.
+ * Call play n times with the two players, an empty board, depth = 0,
+ * and drawing true/false dependent on if the board should be printed or not. 
+ * Save the resuts from play. 
+ * Present the results after n games have been played. 
+ */
+def main(args: Array[String]): Unit = ???
+
+/**
+ * p1,p2 are the players that should play the game
+ * depth models amount of moves done by both players
+ * drawing is true if draw should be called before each move.
+ *(1) If drawing: call draw(game)
+ *(2) If game is won by any of the players, or depth == 9, 
+ * return 1 if p1 wins, -1 if p2 wins and 0 if there is a draw.
+ *(3) Else: Asks player 1 for its move if depth%2 == 0, else ask player 2.
+ *(4) update game according to the move p1 or p2 does.
+ *(5) return play(p1,p2,game,depth+1,drawing) 
+ *(if someone wins with the current move, 
+ * it will be detected by (2) in this call of play)
+ */
+def play(p1: Player, p2: Player, game: Array[Int], 
+		depth: Int, drawing:Boolean): Int = ???
+	
+/**
+ * Given an Array[Int] game of size 9, 
+ * print the 3x3-board that the array represents. 
+ * [0,2] is the 1st, [3,5] is the 2nd and [6,8] is the 3rd row.
+ * -1 should be represented by 'o', 0 with '.' and 1 with 'x'.
+ * in particular [0,1,-1,0,0,1,0,1,-1] should print:
+ * .xo
+ * ..x
+ * .xo
+ */
+def draw(game:Array[Int]):Unit = ???
+\end{ScalaSpec}
+
+Player - är en abstrakt klass kommer innehålla gemensam logik för players. För att inte göra våra players beroende av Game har vi valt att lägga en metod \code{gameWon} i Player. Valet av placering av denna metod kan definitivt diskuteras, man skulle kunna tänka sig att denna metod borde ligga i ett util-objekt eller liknande, men för tillfället är det bara denna metod som man skulle vilja ha i ett sådant objekt vilket gör det klumpigt. Anledningen till att den istället hamnat hos Player är att både klassen OptimalPlayer och FastOptimalPlayer, som extendar Player kommer vilja ha tillgång till denna metod.
+
+Players viktiga funktion är dess \code{move}-metod, det är denna metod som kommer skilja sig för olika players. I den första uppgiftern skall ett tal (draget) läsas in i HumanPlayers \code{move}-metod, medan i nästkommande uppgift skall ett random drag väljas i RandomPlayers \code{move}-metod.
+Kodsklettet för Player ser ut på följande sätt:
+\begin{ScalaSpec}{Player}
+abstract class Player(name: String) {
+	
+	/**
+	 * abstract method, should not be implemented here, 
+	 * but requierd by extentions of Player.
+	 * returns an int p in the interval [0,8] where game(p) == 0,
+	 * the index of the move this player does. 
+	 */
+	def move(game: Array[Int], depth: Int): Int;
+	
+	/**
+	 * returns true if there exists a row, collumn or diagonal,
+	 * where all the elements are equal to who.
+	 */
+	def gameWon(game: Array[Int],who:Int): Boolean =  ???
+	
+	// returns a String with information about the player.
+	override def toString(): String = ???
+}
+\end{ScalaSpec}
+
  
 \subsection{Obligatoriska uppgifter}
 
-\Task Implementera ett fungerande spel genom att utöka kodskeletten i klasserna Player, HumanP och Game.
+\Task Implementera ett fungerande spel genom att utöka kodskeletten i klasserna Player, HumanPlayer och Game.
 
-\Subtask Implementera funktionen \code{gameWon} i klassen Player som testar huruvida spelaren \code{who} vunnit spelet.
+\Subtask Implementera metoden \code{gameWon} i klassen Player som testar huruvida spelaren \code{who} vunnit spelet.
 
-\Subtask Implementera HumanPs \code{move}-funktion.
+\Subtask Implementera HumanPlayers \code{toString}-metod
 
-\Subtask Implementera en version av Game. Börja med att alltid spela ett spel och alltid rita spelplanen. \code{main}, \code{draw} och \code{play} behöver implementeras. All funktionalitet i main behöver ännu inte finnas.\footnote{Notera att man behöver invertera spelplanen om den ska skickas till spelare två (alternativt låta spelaren hålla reda på om den är \texttt{x} eller \texttt{o}). Förslagsvis löses detta med en extra funktion invGame som skapar en ny array med omvända tecken till orginalarrayen.}
+\Subtask Implementera HumanPlayers \code{move}-metod.
 
-\Task Randomized player
+\Subtask Implementera en version av Game. Börja med att alltid spela ett spel och alltid rita spelplanen. \code{main}, \code{draw} och \code{play} behöver implementeras. All funktionalitet i main behöver ännu inte finnas.\footnote{Notera att man behöver invertera spelplanen om den ska skickas till spelare två (alternativt låta spelaren hålla reda på om den är \texttt{x} eller \texttt{o}). Förslagsvis löses detta med en extra metod invGame som skapar en ny array med omvända tecken till orginalarrayen.}
 
-\Subtask Skapa en ny utökning av Player (kopiera HumanP, och byt namn till RandP) där move istället för att läsa från System.in väljer ett random giltigt drag.
+\Task RandomPlayer
+
+\Subtask Skapa en ny utökning av Player (kopiera HumanPlayer, och byt namn till RandomPlayer) där move istället för att läsa från System.in väljer ett random giltigt drag.
 
 \Subtask Ändra Game så att användaren tillåts stänga av ritfunktionen och i så fall tillåts välja antalet spel.
 
@@ -57,66 +135,81 @@ Hamnar man i närheten av dessa resultat tror vi på er RandP.
 
 \Subtask Varför är det större sannolikhet för \texttt{x} att vinna än \texttt{o}?
 
-\Task Optimal player
+\Task OptimalPlayer
 
 Betrakta den givna funktionen \texttt{eval}
 \begin{Code}
-/* returns 1 if there is a guaranteed strategy for who to win 
+/**
+ * returns 1 if there is a guaranteed strategy for who to win 
  * returns 0 if there is a guaranteed strategy for who to draw 
  * returns -1 if the opponent can force a win,
  * no matter what who does.
  * This is done by min,max-evaluation. 
- * Find the move that gives the oppoent the worst possible
- * position and return -min, this is our max.
+ * Find the move that gives the opponent the worst possible
+ * position (min) and return -min, this is our max.
+ * depth is the amount of empty cells in game.
+ * who is 1 if it's this players turn to make a move,
+ * -1 if it's the opponents turn to make a move. 
+ * From move, eval should be called with who = -1.
  */
 def eval(game: Array[Int], depth: Int, who: Int): Int = {
-	if(gameWon(game,-who)) return -1;
-	if(depth == 9) return 0;
-	var min = 1;
+	if(gameWon(game,-who)) return -1
+	if(depth == 9) return 0
+	var min = 1
 	for(i <- 0 until 9) {
 		if(game(i) == 0) {
-			game(i) = who;
-			val score = eval(game,depth+1,-who);
+			game(i) = who
+			val score = eval(game,depth+1,-who)
 			if(score<min){
-				min = score;
+				min = score
 			}
-			game(i) = 0;
+			game(i) = 0
 		}
 	}
-	-min;
+	-min
 }
 \end{Code}
 
-\texttt{eval} avgör om du är i en vinnande, förlorande eller oavgjord situation, givet att båda spelare spelar optimalt. Det som nog är svårast att förstå är varför vi retunerar \texttt{-min} på slutet. \texttt{min} sparar det sämsta värdet som vår motståndare kan få givet våra möjliga drag. Vi observerar att vi är i precis omvänd situation jämfört med vår motståndare. Om vår moståndare definitivt vinner förlorar vi definitivt, om det blir oavgjort för vår motståndare blir det också oavgjort för oss, och om vår motståndare definitivt förlorar, då vinner vi. Vi representerade ju vinst med 1, oavgjort med 0 och förlust med -1. Det är alltså härifrån minustecknet kommer ifrån. Vill man läsa mer om detta kan man kolla in wikipedias artikel https://en.wikipedia.org/wiki/Minimax om minmax-evaluering. Vi tar helt enkelt det draget som är sämst för vår motståndare.
+\code{eval} avgör om du är i en vinnande, förlorande eller oavgjord situation, givet att båda spelare spelar optimalt. Det som nog är svårast att förstå är varför vi retunerar \texttt{-min} på slutet. \texttt{min} sparar det sämsta värdet som vår motståndare kan få givet våra möjliga drag. Vi observerar att vi är i precis omvänd situation jämfört med vår motståndare. Om vår moståndare definitivt vinner förlorar vi definitivt, om det blir oavgjort för vår motståndare blir det också oavgjort för oss, och om vår motståndare definitivt förlorar, då vinner vi. Vi representerade ju vinst med 1, oavgjort med 0 och förlust med -1. Det är alltså härifrån minustecknet kommer ifrån. Vill man läsa mer om detta kan man kolla in wikipedias artikel \footnote{\url{https://en.wikipedia.org/wiki/Minimax}} om minmax-evaluering. Vi tar helt enkelt det draget som är sämst för vår motståndare.
 
-\Subtask Implementera move-funktionen till OptimalP.
+\Subtask Implementera move-metoden till OptimalPlayer genom att kalla på eval.
 
-\Subtask Låt två OptimalP spela mot varandra några gånger (10-typ). Det skall alltid bli oavgjort.
+\Subtask Låt två OptimalPlayer spela mot varandra. Det skall alltid bli oavgjort.
 
-\Subtask Testa att spela mot din OptimalP med en HumanP. Kan du spela lika? Kan du vinna?
+\Subtask Testa att spela mot din OptimalPlayer med en HumanPlayer. Kan du spela lika? Kan du vinna?
 
-\Subtask Vad händer om du sätter en RandP mot OptimalP? Blir det någonsin oavgjort, hur ofta? Bilr det någon skillad man byter vem som får spela först.
+\Subtask Vad händer om du sätter en RandomPlayer mot OptimalPlayer? Blir det någonsin oavgjort, hur ofta? Bilr det någon skillad man byter vem som får spela först?
 
-\Task Säkerhet
+\Task Utöka säkerheten och isoleringen av ditt program
 
-I nuläget finns det förmodligen ett problem med din nuvarande implemntation, och det är att du skickar iväg en mutable datastruktur till en Player som utifrån den mutable datan skall göra ett drag. Tänk om en elak programmerare bestämmer sig för att ändra på spelplanen i sin egna players move-metod. Då skulle man i princip kunna fuska. För att lösa detta kan man skicka en kopia till spelaren från Game.
+I nuläget finns det förmodligen ett problem med din nuvarande implemntation, och det är att du skickar iväg en mutable datastruktur till en Player som utifrån den mutable datan skall göra ett drag. Tänk om en elak programmerare bestämmer sig för att ändra på spelplanen i sin egna players move-metod. Då skulle man i princip kunna fuska. För att lösa detta kan man från Game istället för att ge ifrån sig den egna representationen av spelplanen göra en kopia och ge kopian till Playern.
 
-\subsection{Frivilliga extrauppgifter}
+\Task Snabbare OptimalPlayer.
 
-\Task Hashning.
+Om du låter en OptimalPlayer spela mot en RandomPlayer 1000 gånger lär det ta ganska lång tid. Det behöver det inte göra. När OptimalPlayer bestämmer vilket drag den skall göra första gången går den ju igenom alla andra möjliga drag man kan komma till. Det visar sig att det inte finns så många unika spelbräden. Färre än $3^9 < 20000$. 
 
-Om du låter en OptimalP spela mot en RandP 1000 gånger lär det ta ganska lång tid. Det behöver det inte göra. När OptimalP bestämmer vilket drag den skall göra första gången går den ju igenom alla andra möjliga drag man kan komma till. Det visar sig att det inte finns så många unika spelbräden. Färre än $3^9 < 20000$. Sparar man ett värde till varje sådant spelbräde i en HashMap kan man bara fråga HashMapen vilket drag som är bäst givet ett spelbräde. Detta går väldigt snabbt, jämfört med ungefär $9! > 300000$ funktionsanrop för ett drag på ett tomt spelbräde. Således behöver vi bara gå igenom våra evauleringsmetoder en gång för att bygga hashmapen, sedan går det jättesnabbt för vår HashOptimalP att spela tictactoe. 
+Skapar vi istället ett uppslagsverk (Map) som innehåller ett värde för varje spelbräde kommer vi kunna spela mycket snabbare när väl vår Map är genererad. Skillnaden i snabbhet för vårt program blir alltså att vi behöver göra ett uppslag i en Map, jämfört med ungefär $9! > 300000$ funktionsanrop för ett drag på ett tomt spelbräde. 
 
-Man får dock vara lite klurig, en Array[Int] går inte att använda som key i en hashMap, då den inte har en implementerad hashCode-funktion. Enklast är att göra om vår array till en sträng, genom att lägga värdena i arrayen efter varandra i strängen. Vi kan göra en privat funktion \texttt{hash(Array[Int]):String} som konkatenerar värdena i arrayen. hash([0,0,0,1,1,0,-1,-1,0]) skall alltså retunera "000110-1-10".
+Det räcker med att modifirea evalueringsmetoden något för att bygga mapen. Sedan anropa denna med ett tomt bräde och så har vi vår HashMap och vår optimala spelare är nu supersnabb!
 
-\Subtask Skapa en ny subklass HashOptimalP.
+Man får dock vara lite klurig, en Array[Int] går inte att använda som nyckel i en Map i java, då den inte har en implementerad hashCode-metod. I scala är det tillåtet, men mapningen kommer att vara på objektlikhet och inte innehållslikhet, vilket vi i det här fallet inte vill. Enklast, som säker fungerar i både java och scala är att göra om vår array till en sträng, genom att lägga värdena i arrayen efter varandra i strängen. Vi kan göra en privat metod \texttt{hash(Array[Int]):String} som konkatenerar värdena i arrayen. hash([0,0,0,1,1,0,-1,-1,0]) skall alltså retunera "000110-1-10".
+
+\Subtask Skapa en ny subklass till Player: FastOptimalPlayer.
 
 \Subtask Skapa och implementera en privat metod \texttt{hash(Array[Int]):String}
 
-\Subtask Implementera en konstruktor som skapar och genererar en HashMap.
+\Subtask Implementera en konstruktor som skapar och genererar en Map.
 
-Här kan du använda koden som används i evalfunktionen, men du måste komma ihåg att innan du retunerar måste ett key-value-par läggas in i din hashmap.
+Mapen kan initieras på följande vis: \\\texttt{val boardCache = scala.collection.mutable.Map.empty[String,Int]}.
 
-\Subtask Låt move-funktion göra en hashlookup med hjälp av hash-funktionen och din HashMap.
+För att sedan generera Mapen krävs en motsvarande metod som \code{eval}-metoden i OptimalPlayer. Denna kan tas rakt av, men med två små modifikationer:
+\begin{itemize}
+\item Vid start: Om det redan finns ett key-value-par i Mapen: returnera värdet från Mapen. 
+\item Vid slut: Innan du retunerar måste ett key-value-par läggas in i Mapen som vi genererar.
+\end{itemize}
+Denna metod bör sedan anropas i slutet av konstruktor med ett tomt board.
 
-\Subtask Testa att låta två HashOptimalP spela mot varandra. Du märker nog att skapandet av en sådan spelare kommer ta lite tid, typ en halv sekund. Sedan skall det dock gå jättesnabbt när spelarna spelar. 100000 spel skall gå utan problem på någon sekund, vilket borde gå på tiotals minuter för den gamla OptimalP.
+
+\Subtask Låt move-metoden göra en Map-lookup med hjälp av \texttt{hash}-metoden och din Map.
+
+\Subtask Testa att låta en FastOptimalPlayer spela mot en RandomPlayer. Du märker nog att skapandet av en FastOptimalPlayer kommer ta lite tid, typ en halv sekund. Sedan skall det dock gå jättesnabbt när spelarna spelar. 100000 spel skall gå utan problem på någon sekund, vilket borde gå på tiotals minuter för den gamla OptimalPlayer.

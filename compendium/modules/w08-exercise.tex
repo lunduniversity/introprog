@@ -2,7 +2,7 @@
 
 %!TEX root = ../compendium.tex
 
-\Exercise{\ExeWeekEIGHT}
+\Exercise{\ExeWeekEIGHT}\label{exe:W08}
 
 \begin{Goals}
 \item Kunna skapa och använda \code{match}-uttryck med konstanta värden, garder och mönstermatchning med case-klasser.
@@ -22,7 +22,7 @@
 \end{Goals}
 
 \begin{Preparations}
-\item Studera innebörden veckans begrepp. 
+\item \StudyTheory{08} 
 \end{Preparations}
 
 \BasicTasks %%%%%%%%%%%%%%%%
@@ -44,7 +44,7 @@
 
 \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/Match.scala}
 
-\Subtask Vad blir det för felmeddelande om du tar bort case-grenen för defaultvärden och indata väljs så att inga case-grenar matchar? Är det ett körtidsfel eller ett kompileringsfel?
+\Subtask Vad blir det för felmeddelande om du tar bort case-grenen för defaultvärden och indata väljs så att inga case-grenar matchar? Är det ett exekveringsfel eller ett kompileringsfel?
 
 
 \Subtask\Pen Beskriv några skillnader i syntax och semantik mellan Javas flervalssats \jcode{switch} och Scalas flervalsuttryck \code{match}.
@@ -97,7 +97,7 @@ Vi ska i senare uppgifter undersöka hur typerna \code{Option} och \code{Some} f
 \item Ändra i huvudprogrammet i enlighet med ovan ändringar så att \code{ärÄtvärd} anropas som en metod på de skördade grönsaksobjekten när de ätvärda ska filtreras ut.
 \end{itemize} 
 
-\Subtask Lägg till en ny grönsak \code{case class Broccoli} och definiera dess ätbarhet. Ändra i slump-funktionerna så att broccoli blir ännu ovanligare än gurka.
+\Subtask Lägg till en ny grönsak \code{case class Broccoli} och definiera dess ätbarhet. Ändra i slump-funktionerna så att broccoli blir ovanligare än gurka.
 
 \Subtask\Pen Jämför lösningen med \code{match} i uppgift \ref{task:match-caseclass} och lösningen ovan med polymorfism. Vilka är för- och nackdelarna med respektive lösning. Diskutera två olika situationer på ett hypotetiskt företag som utvecklar mjukvara för jordbrukssektorn: 1) att uppsättningen grönsaker inte ändras särskilt ofta medan definitionerna av ätbarhet ändras väldigt ofta och 2) att uppsättningen grönsaker ändras väldigt ofta men att ätbarhetsdefinitionerna inte ändras särskilt ofta.
 
@@ -121,16 +121,6 @@ scala> parafärg(Spader)
 scala> val xs = Vector.fill(5)(Färg.values((math.random * 4).toInt))  
 scala> xs.map(parafärg)
 \end{REPL}
-
-\begin{Code}
-// kod till facit
-def parafärg(f: Färg): Färg = f match {
-  case Spader  => Klöver
-  case Hjärter => Ruter
-  case Ruter   => Hjärter
-  case Klöver  => Spader
-}
-\end{Code}
 
 \Subtask Vi ska nu undersöka vad som händer om man glömmer en av case-grenarna i matchningen i \code{parafärg}? ''Glöm'' alltså avsiktligt en av case-grenarna och klistra in den nya \code{parafärg} med den ofullständiga matchningen. Hur lyder varningen? Kommer varningen vid körtid eller vid kompilering? 
 
@@ -189,7 +179,9 @@ scala> def ökaOmFinns(opt: Option[Int]): Option[Int] = opt match {
          case Some(i) => Some(i + 1)
          case None    => None
        }
-scala> kanske.map(öka)       
+scala> val annanKanske = ökaOmFinns(kanske)
+scala> def öka(i: Int) = i + 1       
+scala> val merKanske = kanske.map(öka)       
 \end{REPL}
 
 \Subtask Mönstermatchingen ovan är minst lika knölig som en \code{if}-sats, men tack vare att en \code{Option} är en slags (liten) samling finns det smidigare sätt. Förklara vad som händer nedan.
@@ -226,12 +218,6 @@ e.find(_ > 42).foreach(_ => println("HITTAT!"))
 \end{REPL}
 
 \Subtask\Pen Vilka är fördelerna med \code{Option} jämfört med \code{null} eller \code{-1} om man i sin kod glömmer hantera saknade värden?
-\\ {\color{red}{TODO: Till facit: något i stil med: kompileringsfel vs körtidsfel + dokumentation av returvärden i funktioner direkt i kod istf i kommentarer. Vad menas med ''typsäker''?}}
-
-\Subtask\Pen Studera dokumentationen för \code{Option} här och se om du känner igen några av metoderna som också finns på samlingen \code{Vector}:\\ \href{http://www.scala-lang.org/api/current/index.html#scala.Option}{www.scala-lang.org/api/current/index.html\#scala.Option} 
-\\Förklara hur metoden \code{contains} på en \code{Option} fungerar med hjälp av dokumentationens exempel.
-
-
 
 \Task \emph{Kasta undantag.} Om man vill signalera att ett fel eller en onormal situtation uppstått så kan man \textbf{kasta} \Eng{throw} ett \textbf{undantag} \Eng{exception}. Då avbryts programmet direkt med ett felmeddelande, om man inte väljer att \textbf{fånga} \Eng{catch} undantaget. 
 
@@ -268,7 +254,7 @@ $ java TryCatch
 
 
 
-\Task \emph{Fånga undantantag i Scala med \code{scala.util.Try}.} I paketet \code{scala.util} finns typen \code{Try} med stort T som är som en slags samling som kan innehålla antingen ett ''lyckat'' eller ''misslyckat'' värde. Om beräkningen av värdet lyckades och inga undantag kastas blir värdet wrappat i en \code{Success}, annars blir undantaget wrappat i en \code{Failure}. Man kan extrahera värdet, respektive undantaget, med mönstermatchning, men det är oftast smidigare att använda samlingsmetoderna \code{map} och \code{foreach}, i likhet med hur \code{Option} används. Det finns även en smidig metod \code{recover} på objekt av typen \code{Try} där man kan skicka med kod som körs om det uppstår en undantagssituation. 
+\Task \emph{Fånga undantantag i Scala med \code{scala.util.Try}.} I paketet \code{scala.util} finns typen \code{Try} med stort T som är som en slags samling som kan innehålla antingen ett ''lyckat'' eller ''misslyckat'' värde. Om beräkningen av värdet lyckades och inga undantag kastas blir värdet inkapslat i en \code{Success}, annars blir undantaget inkapslat i en \code{Failure}. Man kan extrahera värdet, respektive undantaget, med mönstermatchning, men det är oftast smidigare att använda samlingsmetoderna \code{map} och \code{foreach}, i likhet med hur \code{Option} används. Det finns även en smidig metod \code{recover} på objekt av typen \code{Try} där man kan skicka med kod som körs om det uppstår en undantagssituation. 
 
 \Subtask Förklara vad som händer nedan.
 \begin{REPL}
@@ -306,12 +292,6 @@ scala> xs.map(_.toOption).flatten.size
 
 \Subtask\Pen Varför får funktionen \code{kanskePang} den härledda returtypen \code{String}?
 
-\Task \emph{TODO flatten och flatMap med Option och Try} TODO Ska detta vara fördjupning???
-
-
-\Task \emph{TODO partiella funktioner och metoderna collect och collectFirst på samlingar} TODO Ska detta vara fördjupning???
-
-
 \Task \emph{Metoden \code{equals}.}  Om man överskuggar den befintliga metoden \code{equals} så kommer metoden \code{==} att fungera annorlunda. Man kan då själv åstadkomma innehållslikhet i stället för referenslikhet. Vi börjar att studera den befintliga equals med referenslikhet.
 
 \Subtask \label{subtask:refequals} Vad händer nedan? Om du trycker TAB \emph{två} gånger efter ett metodnamn får du se metodens signatur. Vilken signatur har metoden \code{equals}?
@@ -345,7 +325,7 @@ final class Gurka(val vikt: Int, ärÄtbar: Boolean) {
   override def hashCode: Int = (vikt, ärÄtbar).## //förklaras sen
 }
 \end{Code}
-\Subtask Vad händer nedan?
+\Subtask Vad händer nu nedan, där \code{Gurka} nu har en överskuggad \code{equals} med innehållslikhet?
 \begin{REPL}
 scala> val g1 = new Gurka(42, true)
 scala> val g2 = g1
@@ -353,39 +333,112 @@ scala> val g3 = new Gurka(42, true)
 scala> g1 == g2
 scala> g1 == g3
 \end{REPL}
-\Subtask\Pen Hur märker man ovan att den överskuggade \code{equals} medför att \code{==} nu ger innehållslikhet? Jämför minnessituationen efter rad 3 med uppgift \ref{subtask:refequals}. 
+\Subtask\Pen Hur märker man ovan att den överskuggade \code{equals} medför att \code{==} nu ger innehållslikhet? Jämför med deluppgift \ref{subtask:refequals}. 
+
+I uppgift \ref{task:equals:Complex} får du prova på att följa det fullständiga receptet i 8 steg för att överskugga en \code{equals} enligt konstens alla regler. I efterföljande kurs kommer mer träning i att hantera innehållslikhet och hash-koder. I Scala får man ett objekts hash-kod med metoden \code{##}.\footnote{Om du är nyfiken på hash-koder, läs mer här:
+\href{https://en.wikipedia.org/wiki/Java_hashCode()}{en.wikipedia.org/wiki/Java\_hashCode()}.}
 
 
-\Subtask \emph{Klassen \code{Complex} och metoden \code{equals}.} Implementera klassen \code{Complex} som representerar ett komplext tal med realdel och imaginärdel. I stället för att, som man ofta gör i Scala, använda en case-klass och en \code{equals}-metod som automatiskt ger innehållslikhet, ska du träna på att implementera en egen \code{equals}.
 
+\clearpage 
+\ExtraTasks %%%%%%%%%%%%%%%%%%%
+
+\Task \label{task:plynomial} \emph{Polynom}. Med hjälp av koden nedan, kan man göra följande:
+\begin{REPL}
+scala> :pa polynomial.scala
+
+scala> import polynomial._
+
+scala> Const(1) * x
+res0: polynomial.Term = x
+
+scala> (x*5)^2
+res1: polynomial.Prod = 25x^2
+
+scala> Poly(x*(-5), y^4, (z^2)*3) 
+res2: polynomial.Poly = -5x + y^4 + 3z^2
+
+\end{REPL}
+
+\Subtask\Pen Förklara vad som händer ovan genom att studera koden för \code{object polynomial} nedan i filen \code{polynomial.scala}.\footnote{Koden finns även här:\\ \href{https://github.com/lunduniversity/introprog/tree/master/compendium/examples/polynomial}{github.com/lunduniversity/introprog/tree/master/compendium/examples/polynomial}}
+
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{examples/polynomial/polynomial.scala}
+
+\Subtask Bygg vidare på \code{object polynomial} och implementera addition mellan olika termer.
+
+
+\Task\Pen Studera dokumentationen för \code{Option} här och se om du känner igen några av metoderna som också finns på samlingen \code{Vector}:\\ \href{http://www.scala-lang.org/api/current/index.html#scala.Option}{www.scala-lang.org/api/current/index.html\#scala.Option} 
+\\Förklara hur metoden \code{contains} på en \code{Option} fungerar med hjälp av dokumentationens exempel.
+
+
+
+\Task Gör motsvarande program i Scala som visas i uppgift \ref{task:javatry}, men utnyttja att Scalas \code{try}-\code{catch} är ett uttryck. Kompilera och kör och testa så att de ur användarens synvinkel fungerar precis på samma sätt. Notera de viktigaste skillnaderna mellan de båda programmen.
+
+
+
+
+\clearpage
+
+\AdvancedTasks %%%%%%%%%%%%%%%%%
+
+\Task Bygg vidare på \code{object polynomial} i uppgift \ref{task:plynomial} på sidan \pageref{task:plynomial} och implementera metoden \code{def reduce: Poly} i case-klassen \code{Poly} som förenklar polynom om flera \code{Prod}-termer kan adderas.
+
+\Task\Pen Läs om hash-koder här: \href{https://en.wikipedia.org/wiki/Java_hashCode()}{en.wikipedia.org/wiki/Java\_hashCode()} \\
+Vad ger metoden \code{##} i scala.Any för resultat? Läs dokumentationen här: \\ \href{http://www.scala-lang.org/api/current/#scala.Any}{www.scala-lang.org/api/current/\#scala.Any}
+
+\Task \emph{Typsäker innehållstest med metoden \code{===}.} Metoderna \code{equals} och \code{==} tillåter jämförelse med vad som helst. Ibland vill man ha en typsäker innehållsjämförelse som bara tillåter jämförelse av objekt av en mer specifik typ och ger kompileringsfel annars. Man brukar då definiera en metod \code{===} som har en parameter \code{that} som har en så specifik typ som önskas. Inför nedan abstrakta metod \code{===} i traiten \code{polynomial.Term} i uppgift \ref{task:plynomial} på sidan \pageref{task:plynomial} och överskugga den sedan i alla subklasser till Term. Testa så att du får kompileringsfel om du försöker jämföra en \code{Term} med något helt annat, t.ex. en \code{String} eller \code{Vector}.
 \begin{Code}
-class Complex(re: Double, im: Double) extends Number {
+  def ===(that: Term): Boolean
+\end{Code}
+
+
+\Task \label{task:equals:Complex} \emph{Överskugga \code{equals} med innehållslikhet även för icke-finala klasser.} Nedan visas delar av klassen \code{Complex} som representerar ett komplext tal med realdel och imaginärdel. I stället för att, som man ofta gör i Scala, använda en case-klass och en \code{equals}-metod som automatiskt ger innehållslikhet, ska du träna på att implementera en egen \code{equals}. 
+\begin{Code}
+class Complex(re: Double, im: Double) {
   def abs: Double = math.hypot(re, im)
   override def toString = s"Complex($re, $im)"
+  def canEqual(other: Any): Boolean = ???
+  override def hashCode: Int  = ??? 
   override def equals(other: Any): Boolean = ???
-  override def hashCode: Int  = ???
 }
 case object Complex {
   def apply(re: Double, im: Double): Complex = new Complex(re, im)
 }
 \end{Code}
+Följ detta \textbf{recept}\footnote{Detta recept bygger på \url{http://www.artima.com/pins1ed/object-equality.html}} i 8 steg för att överskugga \code{equals} med innehållslikhet som fungerar även för klasser som inte är \code{final}:
 
-\Task \emph{Implementera en egen, typsäker innehållstest med metoden \code{===}.} TODO ??? Ska detta vara med ???
+\begin{enumerate}[leftmargin=*]
+\item Inför denna metod: \code{ def canEqual(other: Any): Boolean}\\Observera att typen på parametern ska vara \code{Any}. Om detta görs i en subklass till en klass som redan implementerat \code{canEqual}, behövs även \code{override}.
 
-\ExtraTasks %%%%%%%%%%%%%%%%%%%
+\item Metoden \code{canEqual} ska ge \code{true} om \code{other} är av samma typ som \code{this}, alltså till exempel: \\
+\code{def canEqual(other: Any): Boolean = other.isInstanceOf[Complex]}
 
-\Task Gör motsvarande program i Scala som visas i uppgift \ref{task:javatry}, men utnyttja att Scalas \code{try}-\code{catch} är ett uttryck. Kompilera och kör och testa så att de ur användarens synvinkel fungerar precis på samma sätt. Notera de viktigaste skillnaderna mellan de båda programmen.
+\item Inför metoden \code{equals} och var noga med att parametern har typen \code{Any}: \\ \code{override def equals(other: Any): Boolean}
 
-\AdvancedTasks %%%%%%%%%%%%%%%%%
+\item Implementera metoden \code{equals} med ett match-uttryck som börjar så här: 
+\code|other match { ... } |
 
-\Task Speciella matchningar.  @ och \_*
+\item Match-uttrycket ska ha två grenar. Den första grenen ska ha ett typat mönster för den klass som ska jämföras: \\ \code{  case that: Complex =>}
 
-\Task \label{task:extractor} Skapa din egen extraktor med metoden \code{unapply}.
+\item Om du implementerar \code{equals} i den klass som inför \code{canEqual}, börja uttrycket med: \\ \code{(that canEqual this) &&} \\ 
+och skapa därefter en fortsättning som baseras på innehållet i klassen, till exempel: \code{this.re == that.re && this.im == that.im} \\
+Om du överskuggar en \textit{annan} equals än den standard-equals som finns i \code{AnyRef}, vill du förmodligen börja det logiska uttrycket med att anropa superklassens equals-metod: 
+ \code{super.equals(that) && } men du får fundera noga på vad likhet av underklasser egentligen ska innebära i ditt speciella fall. 
+ 
+\item Den andra grenen i matchningen ska vara: 
+\code{case _ => false}
 
-\Task Överskugga equals vid arv. Ska detta vara fördjupning???     
+\item Överskugga \code{hashCode}, till exempel genom att göra en tupel av innehållet i klassen och anropa metoden \code{##} på tupeln så får du i en bra hashcode: \\
+\code{override def hashCode: Int  = (re, im).## }
 
+\end{enumerate}
+
+
+\Task Bygg vidare på exemplet nedan och överskugga equals vid arv, genom att följa receptet i uppgift \ref{task:equals:Complex}. 
 \begin{Code}
-trait Number
+trait Number {
+  override def equals(other: Any): Boolean = ???
+}
 class Complex(re: Double, im: Double) extends Number {
   override def equals(other: Any): Boolean = ???
 }
@@ -394,3 +447,28 @@ class Rational(numerator: Int, denominator: Int) extends Number {
 }
 \end{Code}
     
+
+\Task Läs om olika speciella matchningar här: \\
+\href{http://www.artima.com/pins1ed/case-classes-and-pattern-matching.html}{www.artima.com/pins1ed/case-classes-and-pattern-matching.html}
+
+\Subtask Prova variabelbinding med \texttt{@} i en matchning i REPL. 
+
+\Subtask Prova sekvensmönster med \texttt{\_} och \texttt{\_*} i en matching i REPL.
+
+\Task \label{task:extractor} Läs mer om extraktorer här: \\ \href{http://www.artima.com/pins1ed/extractors.html}{www.artima.com/pins1ed/extractors.html} \\ 
+Skapa ditt eget extraktor-objekt för http-addresser som i t.ex.: \\
+\texttt{http://my.host.domain/path/to/this} \\ extraherar \texttt{my.host.domain} och \texttt{path/to/this} med metoden \code{unapply} och testa i en matchning.
+
+%\Task \TODO \emph{flatten och flatMap med Option och Try} 
+%Ska detta vara ordinarie uppgift eller fördjupning???
+
+
+%\Task \TODO \emph{partiella funktioner och metoderna collect och collectFirst på samlingar} 
+%Ska detta vara ordinarie uppgift eller fördjupning???
+
+\Task En rejäl utmaning: Implementera polynomdivision på lämpligt sätt genom att bygga vidare på  \code{object polynomial} i  uppgift \ref{task:plynomial} på sidan \pageref{task:plynomial}.  \\ Läs mer om polynomdivision här: \href{https://sv.wikipedia.org/wiki/Polynomdivision}{sv.wikipedia.org/wiki/Polynomdivision}
+
+
+
+
+
