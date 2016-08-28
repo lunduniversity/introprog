@@ -55,7 +55,7 @@ address & innehåll \\ \hline
 \draw [arrow] (mem) -- (cpu);
 
 \node(memtext) [below of=mem, text width=7.0cm, scale=0.8, yshift=-1.5cm, xshift=0.5cm ] 
-{Minnet innehåller endast \Alert{heltal} som \newline representerar \Emph{data} och \Emph{instruktioner}.};
+{Minnet innehåller endast \Alert{heltal} som \newline representerar \Emph{data} \Alert{och} \Emph{instruktioner}.};
 
 %\node(memtext) [right of=input, text width=2cm, scale=0.8,xshift=1.0cm]{För\\människor};
 %\node(output) [right of=output, text width=2cm, scale=0.8,xshift=1.0cm]{För\\maskiner};
@@ -116,7 +116,7 @@ Grace Hopper uppfann första kompilatorn 1952.\\
 \begin{Slide}{Virtuell maskin (VM) == abstrakt hårdvara}
 \begin{multicols}{2}
 
-En VM är en dator implementerad i mjukvara som kan tolka en generell ''maskinkod'' som \Emph{översätts under körning} till den verkliga maskinens kod. \\
+En VM är en ''dator'' implementerad i mjukvara som kan tolka en generell ''maskinkod'' som \Emph{översätts under körning} till den verkliga maskinens kod. \\
 \vspace{1em}
 Med en VM blir källkoden \Emph{plattformsoberoende} och fungerar på många olika maskiner. \\
 \vspace{1em}
@@ -318,6 +318,21 @@ Hur blir ditt framtida yrkesliv som systemutvecklare?
 \end{itemize}
 \end{Slide}
 
+\begin{Slide}{Exempel på inbyggda datatyper i Scala}
+\begin{itemize}
+\item Alla värden, uttryck och variabler har en \href{https://sv.wikipedia.org/wiki/Datatyp}{datatyp}, t.ex.: 
+\begin{itemize}\footnotesize
+\item \code{Int} för heltal 
+\item \code{Long} för \textit{extra} stora heltal (tar mer minne)
+\item \code{Double} för decimaltal, så kallade flyttal med flytande decimalpunkt
+\item \code{String} för strängar
+\end{itemize}
+\item Kompilatorn håller reda på att uttryck kombineras på ett \Emph{typsäkert} sätt. Annars blir det kompileringsfel.
+\item Scala och Java är s.k. \href{https://sv.wikipedia.org/wiki/Typsystem}{statiskt typade} språk, vilket innebär att all typinformation måste finnas redan vid kompileringsdags \Eng{compile time}\footnote{Andra språk, t.ex. Python och Javascript är dynamiskt typade och där skjuts typkontrollen upp till körningsdags \Eng{run time} \\ Vilka är för- och nackdelarna med statisk vs. dynamisk typning?}. 
+\end{itemize}
+\end{Slide}
+
+
 \begin{Slide}{Grundtyper i Scala}\SlideFontSmall
 Dessa \Emph{grundtyper} \Eng{basic types} finns färdiga i Scala:
 
@@ -425,9 +440,120 @@ Får \Alert{inte} vara ett \Emph{reserverat ord}, se snabbreferensen för alla r
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{Variabler som kan tilldelas värden flera gånger}
+
+%%%
+\begin{Slide}{Vad är egentligen en variabel?}\scriptsize
 \begin{itemize}
-\item
+\item En variabel har ett \Emph{namn} och kan lagra ett \Emph{värde} av en viss \Emph{typ}
+\item Variabler måste  \Emph{deklareras} och då får kompilatorn reda på vilket namnet är och vilken typ av värden som variabeln kan lagra: \\ \lstinline{int x; }
+\item När variabler deklareras är det oftast bäst att direkt ge dem ett initialvärde:  \\ \lstinline{int x = 42; }
+\item En variabeldeklaration medför att plats i datorns minne reserveras. \\Vi ritar detta såhär: \\ 
+\begin{tikzpicture}[]
+\matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=3em}}]
+{
+x   & 42 \\
+};
+\end{tikzpicture}
+\end{itemize}
+
+\begin{columns}
+\begin{column}{0.3\textwidth}
+Dessa deklarationer...
+\begin{lstlisting}
+int x = 42;    
+int y = x + 1;   
+\end{lstlisting}
+\end{column}
+\begin{column}{0.5\textwidth}
+... ger detta innehåll någonstans i minnet:
+
+%http://tex.stackexchange.com/questions/18521/tikz-matrix-as-a-replacement-for-tabular
+\begin{tikzpicture}[]
+\matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=3em}}]
+{
+x   & 42 \\
+y   & 43 \\
+};
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\end{Slide}
+
+\begin{Slide}{Syntaxregler för namn i Java}\footnotesize
+När kompilatorn ''läser''  \footnote{man säger ofta ''parsa'' i stället för ''läsa'' när kompilatorn tolkar koden} koden och och försöker hitta variabelnamn, antar den att du följer de entydiga syntaktiska reglerna för språket.  \\ \vskip1em För namn i Java gäller följande regler: %https://docs.oracle.com/javase/tutorial/java/nutsandbolts/variables.html
+\begin{itemize}
+\item Namn får inte vara \href{https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html}{reserverade ord}
+\item Stora och små bokstäver spelar roll \Eng{case sensistive} \\ \lstinline{int highScore;} och \lstinline{int highscore;} ger alltså två \textit{olika} variabler
+\item Namnet måste börja med en bokstav, ett understreck \_ eller ett dollartecken \$
+\item Namn får \textit{inte} innehålla blanktecken
+\item Namn får innehålla bokstäver, siffror, understreck \_ och dollartecken \$, men \textit{inte} andra specialtecken (alltså inte \lstinline~%&@!{(})/+-*~ etc.) 
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Vad händer egentligen vid en tilldelning?}\footnotesize
+\begin{itemize}
+\item Med en \Emph{tilldelningssats} kan vi ge en tidigare deklarerad variabel ett nytt värde: 
+\begin{lstlisting} 
+x = 1;
+\end{lstlisting}
+\item Det gamla värdet försvinner för alltid och det nya värdet lagras istället:
+\begin{tikzpicture}[]
+\matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=3em}}]
+{
+x   & 1 \\
+};
+\end{tikzpicture}
+\item Likhetstecknet används alltså för att \textit{ändra} variablers värden och det är ju \textit{inte} samma sak som matematisk likhet \footnote{\scriptsize Arv från C, Fortran mfl. I \href{https://en.wikipedia.org/wiki/Assignment_\%28computer_science\%29}{andra språk} används  t.ex. \lstinline{x := 42} eller \lstinline{x <- 42}}. Vi kan till exempel skriva denna tilldelningssats:
+\begin{lstlisting} 
+x = x + 1;   //Vad händer här?
+\end{lstlisting}
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Övning: Tilldelningar i sekvens}\footnotesize
+\begin{columns}
+\begin{column}{0.33\textwidth}
+Rita hur minnet ser ut efter varje rad nedan:
+\vskip1em
+\begin{lstlisting}[ numbers=left,]
+int u, x, y, z;
+x = 10;
+y = 2 * x + 1;
+z = (y + x) + (y - x);
+x = x + 1;
+\end{lstlisting}
+\end{column}
+\begin{column}{0.6\textwidth}
+
+\scriptsize En variabel som ännu inte initierats har ett odefinierat värde, anges nedan med frågetecken.
+\begin{table}[] 
+\centering\scriptsize
+%http://tex.stackexchange.com/questions/83930/what-are-the-different-kinds-of-boxes-in-latex
+\newcommand{\mybox}[1]{\raisebox{-0.5mm}{\framebox(21,14){#1}}\vspace{0.5mm}}
+\begin{tabular}{cccccc}
+ & rad 1 & rad 2 & rad 3 & rad 4  & rad 5\\ 
+u& \mybox{? } &  \mybox{}   &   \mybox{}   & \mybox{} & \mybox{} \\
+x& \mybox{? } &  \mybox{}   &   \mybox{}   & \mybox{} & \mybox{} \\
+y& \mybox{? } &  \mybox{}   &   \mybox{}   & \mybox{} & \mybox{} \\
+z& \mybox{? } &  \mybox{}   &   \mybox{}   & \mybox{} & \mybox{} \\
+\end{tabular}
+\end{table}
+
+\end{column}
+\end{columns}
+\end{Slide}
+
+
+
+\begin{Slide}{Variabler som ändrar värden kan vara knepiga}
+\begin{itemize}
+\item Variabler som \Alert{förändras} över tid kan vara svåra att resonera kring.
+
+\item Många buggar beror på att variabler förändras på felaktiga och oanade sätt.
+
+\item Föränderliga värden blir speciellt svåra i kod som körs jämlöpande (parallelt). 
+
+\item I produktionskod används därför \code{val} överallt där det går och \code{var} bara om det verkligen behövs.
 \end{itemize}
 \end{Slide}
 
