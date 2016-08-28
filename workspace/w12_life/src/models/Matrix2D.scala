@@ -13,17 +13,24 @@ trait Matrix2D {
   def get(row: Int, col: Int): Int
   def set(row: Int, col: Int, state: Int)
 
-  // Checks it the given position exist in the matrix
+  // Checks it the given position exist in the matrix.
   def isWithinMatrix(row: Int, col: Int): Boolean
 
-  // Returns a list with the positions of all cells
+  // Returns a list with the positions of all cells.
   def indices: Seq[(Int, Int)]
 
-  // Creates a clone of the matrix
+  // Creates a clone of the matrix.
   def cloneMatrix(): Matrix2D
 
-  // Applies a rule to the entire matrix
+  // Applies a rule to the entire matrix and returns a new one with the resulting matrix.
+  // Use the indices method to get all positions.
+  // Make sure to create a copy to put the result in using cloneMatrix,
+  // the current matrix should *not* be changed.
   def applyRule(rule: Rule): Matrix2D
+
+  // Returns a string-representation of the board that can be used for saving to file.
+  // Part of an optional task, implementation not required to pass lab.
+  def toFileFormat: String
 
   // Enables the `m(x)(y)` notation
   def apply(row: Int)(col: Int): Int = {
@@ -48,16 +55,19 @@ trait Matrix2D {
     }
   }
 
-  // TODO: To be implemented by students?
   // Returns an array with the positions of all Moore neighbors
-  // surrounding the passed in cell position with distance *r*.
+  // surrounding the passed in cell position with manhattan distance r.
   // Should not check if a neighboring cell is within the matrix.
+  // You only have to handle the case where r=1 to pass the lab.
   //  - https://en.wikipedia.org/wiki/Moore_neighborhood
   def mooreNeighborsPositions(row: Int, col: Int, r: Int = 1): Array[(Int, Int)] = ???
 
-  // TODO: To be implemented by students?
-  // Returns the Moore neighbors of a specific cell as an array
-  // The cell states can be stored in any order in the array
+  // Returns an array with the cell values of all Moore neighbors
+  // surrounding the passed in cell position with manhattan distance r.
+  // The cell states can be stored in any order in the array.
+  // Checks for if a certain position is within the matrix 
+  // should be done by calling isWithinMatrix.
+  // You only have to handle the case where r=1 to pass the lab.
   //  - https://en.wikipedia.org/wiki/Moore_neighborhood
   def mooreNeighborsStates(row: Int, col: Int, r: Int = 1): Array[Int] = ???
 
