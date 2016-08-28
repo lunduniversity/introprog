@@ -27,7 +27,7 @@
 \subsection{Bakgrund}
 
 % Hur mycket bakgrund, vilken typ av bakgrund är lämplig/intressant/relevant?
-Spelet Life (även kallat \emph{Conway's Game of Life} efter skaparen och matematikern John Horton Conway) simulerar en koloni av encelliga organismer som lever, förökar sig och dör på ett rutnät (även kallat bräde). Varje enskild cells överlevnad beror på dess omgivning, vilket kan beskrivas med några enkla regler. Detta är gemensamt för all form av \emph{cellulär automation}. Spelet går ut på att simulera flera generationer av någon uppsättning av levande och döda celler, en såkallad cellkoloni, startkonfiguration eller sådd. Många sådana cellkolonier kan i Life verka bete sig `levande' och spelet har därifrån fått sitt namn.\footnote{Detta är ett exempel på s.k. `emergence' och `self-organization'} Spelet har inga medvetna spelare (ett så kallat `zero-player game') och om reglerna följs så kommer slutresultatet fullständigt bero på startkonfigurationen.
+Spelet Life (även kallat \emph{Conway's Game of Life} efter skaparen och matematikern John Horton Conway) simulerar en koloni av encelliga organismer som lever, förökar sig och dör på ett rutnät (även kallat bräde). Varje enskild cells överlevnad beror på dess omgivning, vilket kan beskrivas med några enkla regler. Detta är gemensamt för alla cellulära automater. Spelet går ut på att simulera flera generationer av någon uppsättning celler, en såkallad cellkoloni, startkonfiguration eller frö (eng. \textit{seed}). Många sådana cellkolonier kan i Life verka bete sig `levande' och spelet har därifrån fått sitt namn.\footnote{Detta är ett exempel på s.k. `emergence' och `self-organization'} Spelet har inga medvetna spelare (ett så kallat `zero-player game') och om reglerna följs så kommer slutresultatet fullständigt bero på startkonfigurationen.
 
 \vspace{5mm}
 
@@ -68,9 +68,9 @@ Med grannar menas i Life de s.k. Moore grannarna, detta är helt enkelt de närm
 
 \subsection{Beskrivning av Workspace}
 
-I workspacet finner ni bl.a. paketen \code{models}, \code{rules} och \code{views}. I labben kommer ni främst ändra i \code{models} paketet men ni kommer även implementera reglerna för Life i \code{rules/LifeRule.scala}. Paketet \code{views} kommer med färdigimplementerad kod för två vyer \code{LifeConsoleView} samt \code{LifeGuiView}.
+I workspacet finner ni bl.a. paketen \code{models}, \code{rules} och \code{views}. I labben kommer ni främst ändra i \code{models} paketet men ni kommer även implementera reglerna för Life i \code{rules/LifeRule.scala}. Paketet \code{views} kommer med färdigimplementerad kod för två vyer \code{CellularConsoleView} samt \code{CellularGuiView}.
 
-Utöver paketen finner ni 4 körbara Scala-filer som kan användas för att starta upp ett användargränssnitt för att rita upp brädet och `spela' spelet. Den första av dessa filerna ni ska titta i och senare köra är \code{life.scala}.
+Utöver paketen finner ni i samma mapp några körbara Scala-filer som kan användas för att starta upp ett användargränssnitt som ritar upp brädet och låter användaren `spela' spelet. Den första av dessa filerna ni ska titta i och senare köra är \code{life.scala}.
 
 Läs igenom de två filerna i `models' paketet noga, det är där ni kommer spendera den mesta av tiden.
 
@@ -86,7 +86,7 @@ Läs igenom de två filerna i `models' paketet noga, det är där ni kommer spen
 	% 7) Testa nedanstående startfigurer (inkludera bilder på t ex en slider). Beter det sig som förväntat?
 
 
-    \Task{Skapa en modell som kan visas i vyer som implementerar \code{LifeView2D}.}
+    \Task{Skapa en modell som kan visas i vyer som implementerar \code{CellularView2D}.}
     
 	Spelbrädet består av en matris med $n$ rader och $m$ kolumner ($n$ och $m$ brukar ibland modelleras som $\infty$, men vi kommer begränsa oss för enkelhetens skull)
 
@@ -94,7 +94,7 @@ Läs igenom de två filerna i `models' paketet noga, det är där ni kommer spen
 
         \Subtask{Implementera konstruktorn i kompanjonsobjektet för ArrayMatrix2D.}
 
-        För att skapa en matris ska vi använda oss av Scalas inbyggda datastruktur \code{Array}. Denna datastruktur har en användbar konstruktur \code{ofDim[T](n1: Int, n2: Int)} som vi ska använda för att skapa $rows$ arrayer av storlek $cols$ inuti en annan array, detta är vad vi kommer använda för att lagra vår matris-data.
+        För att skapa en matris ska vi använda oss av Scalas inbyggda datastruktur \code{Array}. Denna datastruktur har en användbar konstruktur \code{ofDim[T](n1: Int, n2: Int)} som vi ska använda för att skapa $rows$ stycken arrayer av storlek $cols$ inuti en annan array, detta är vad vi kommer använda för att lagra datan i vår matris.
         
         Ett exempel av resultatet från \code{Array.ofDim[Int](3, 3)} är följande ekvivalenta kod:
 
@@ -128,34 +128,35 @@ Array(
 matrix.randomize(2)
 \end{Code}
 
-        För att nu se till att allt har blivit rätt kan vi nu visa upp matrisen i terminalen med hjälp av \code{LifeConsoleView}.
+        För att nu se till att allt har blivit rätt kan vi nu visa upp matrisen i terminalen med hjälp av \code{CellularConsoleView}. Ett exempel på detta finnes i \code{life_console.scala}.
 
 \begin{Code}
 // Skriver ut brädet i konsolen
-LifeConsoleView.display(matrix)
+CellularConsoleView.display(matrix)
 \end{Code}
 
-        Men detta testar inte för alla möjliga fel, så för säkerhets skull kan vi även testa att placera ut en s.k. glider i brädet med hjälp av en metod \code{place} som vi också får gratis på våran matris genom att ärva traitet \code{Matrix2D}.
+        Men detta testar inte för alla möjliga fel, så för säkerhets skull kan vi även testa att placera ut en s.k. glider i brädet med hjälp av metoden \code{place} som finns implementerad i det ärvda traitet \code{Matrix2D}.
 
 \begin{Code}
 // Placerar ut en glider med sitt övre vänstra hörn
-// i positionen (3, 1), dvs på rad 2 och kolumn 4 (då vi noll-indexerar)
-matrix.place(entities.glider, 4, 2)
+// i positionen (3, 1), dvs på rad 4 och kolumn 2 (då vi noll-indexerar)
+matrix.place(entities.glider, 3, 1)
 \end{Code}
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=0.3\textwidth]{../img/w12-lab/glider.png}
+    % Reflectbox here since glider in entities package is a reflection of the image.
+    \reflectbox{\includegraphics[width=0.3\textwidth]{../img/w12-lab/glider.png}}
   \end{center}
   \caption{En såkallad \textit{glider}. Vanligt förekommande varelse i Life.}
 \end{figure}
 
-        Testa nu att rita ut brädet igen (utan randomize denna gången) för att se till att glidern hamnade rätt både med avseende på orientering och position.
+        Testa nu att rita ut brädet igen (utan randomize denna gången) för att se till att glidern hamnade rätt både med avseende på orientering och position, den ska vara roterad precis som på bilden.
 
 
     \Task{Implementera Life-regeln med hjälp av traitet Rule.}
     
-    Nu har vi vår datastruktur för brädet på plats så nu är det dags att faktiskt implementera reglerna för Life. För att göra detta ska vi implementera traitet \code{Rule} som är en generalisering för hur cellulära automaters regler kan implementeras.
+    Nu har vi vår datastruktur för brädet på plats så nu är det dags att faktiskt implementera reglerna för Life. För att göra detta ska vi implementera objektet \code{LifeRule} som ärver traitet \code{Rule} vilket är ett interface som cellulära automaters regler kan implementera.
     
         \Subtask{Implementera \code{mooreNeighborsPositions} samt \code{mooreNeighborsStates} i \code{Matrix2D}.}
         
@@ -168,20 +169,20 @@ matrix.place(entities.glider, 4, 2)
 
         \Subtask{Implementera \code{apply} i ett nytt objekt \code{LifeRule} som implementerar \code{Rule}.}
         Här nedan finnes specifikationen för traitet Rule, den innehåller endast en metod \code{apply} vars uppgift är att ta ett bräde samt en position på brädet och returnera vad denna position ska innehålla för värde i nästa generation.
-        
-        Reglerna för Life finner ni ovan i avsnitt \ref{subsec:life-rules}.
 
 \begin{ScalaSpec}{Rule}
-// apply tar en matris samt en position i matrisen (i, j)
+// apply tar en matris samt en position i matrisen (row, col)
 // och applicerar regeln på den positionen
-def apply(m: ArrayMatrix2D, i: Int, j: Int): Int
+def apply(m: ArrayMatrix2D, row: Int, col: Int): Int
 \end{ScalaSpec}
+        
+        Reglerna för Life finner ni ovan i avsnitt \ref{subsec:life-rules}.
 
         \Subtask{Testa implementationen.}
         
         För att nu i praktiken applicera våran regel på brädet ska vi använda oss av metoden \code{applyRule} som återfinns i \code{ArrayMatrix2D}.
 
-        Om man har problem med att sin regel inte beter sig som förväntat så man returnera antalet grannar istället för cellens levande/död tillstånd. Efter att applicera hela s.k. \code{NeighborsRule} kan man visa upp resultatet med \code{LifeConsoleView} för att se om programmet räknar grannar korrekt.
+        Om man har problem med att sin regel inte beter sig som förväntat så man returnera antalet grannar istället för cellens levande/död tillstånd. Efter att applicera hela s.k. \code{NeighborsRule} kan man visa upp resultatet med \code{CellularConsoleView} för att se om programmet räknar grannar korrekt.
 
 
     \Task{Skapa en ny modell som `wrappar' i kanterna.}
