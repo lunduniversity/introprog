@@ -48,7 +48,7 @@ trait Matrix2D {
   }
 
   // Places another matrix at a position on this matrix
-  // with the upper-left corner at (i, j)
+  // with the upper-left corner at (row, col)
   def place(m2: Matrix2D, row: Int, col: Int) {
     for ((row2, col2) <- m2.indices) {
       this.set(row + row2, col + col2, m2(row2)(col2))

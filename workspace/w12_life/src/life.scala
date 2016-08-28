@@ -1,6 +1,6 @@
 import models.{ArrayMatrix2D, Matrix2D}
 import rules.LifeRule
-import views.LifeGuiView
+import views.CellularGuiView
 
 
 // A setup with the standard Game of Life rule.
@@ -10,7 +10,7 @@ object life {
     val matrix: Matrix2D = ArrayMatrix2D(boardSize, boardSize)
     matrix.randomize()
 
-    LifeGuiView.useRule(LifeRule)
-    LifeGuiView.display(matrix)
+    CellularGuiView.useRule(LifeRule)
+    CellularGuiView.display(matrix)
   }
 }
