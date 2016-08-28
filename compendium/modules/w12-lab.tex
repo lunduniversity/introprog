@@ -27,7 +27,7 @@
 \subsection{Bakgrund}
 
 % Hur mycket bakgrund, vilken typ av bakgrund är lämplig/intressant/relevant?
-Spelet Life (även kallat \emph{Conway's Game of Life} efter skaparen och matematikern John Horton Conway) simulerar en koloni av encelliga organismer som lever, förökar sig och dör på ett rutnät (även kallat bräde). Varje enskild cells överlevnad beror på dess omgivning, vilket kan beskrivas med några enkla regler. Detta är gemensamt för all form av \emph{cellulär automation}. Spelet går ut på att simulera flera generationer av någon uppsättning av levande och döda celler, en såkallad cellkoloni, startkonfiguration eller sådd. Många sådana cellkolonier kan i Life verka bete sig `levande' och spelet har därifrån fått sitt namn.\footnote{Detta är ett exempel på s.k. `emergence' och `self-organization'} Spelet har inga medvetna spelare (ett så kallat `zero-player game') och om reglerna följs så kommer slutresultatet fullständigt bero på startkonfigurationen.
+Spelet Life (även kallat \emph{Conway's Game of Life} efter skaparen och matematikern John Horton Conway) simulerar en koloni av encelliga organismer som lever, förökar sig och dör på ett rutnät (även kallat bräde). Varje enskild cells överlevnad beror på dess omgivning, vilket kan beskrivas med några enkla regler. Detta är gemensamt för alla cellulära automater. Spelet går ut på att simulera flera generationer av någon uppsättning celler, en såkallad cellkoloni, startkonfiguration eller frö (eng. \textit{seed}). Många sådana cellkolonier kan i Life verka bete sig `levande' och spelet har därifrån fått sitt namn.\footnote{Detta är ett exempel på s.k. `emergence' och `self-organization'} Spelet har inga medvetna spelare (ett så kallat `zero-player game') och om reglerna följs så kommer slutresultatet fullständigt bero på startkonfigurationen.
 
 \vspace{5mm}
 
@@ -68,9 +68,9 @@ Med grannar menas i Life de s.k. Moore grannarna, detta är helt enkelt de närm
 
 \subsection{Beskrivning av Workspace}
 
-I workspacet finner ni bl.a. paketen \code{models}, \code{rules} och \code{views}. I labben kommer ni främst ändra i \code{models} paketet men ni kommer även implementera reglerna för Life i \code{rules/LifeRule.scala}. Paketet \code{views} kommer med färdigimplementerad kod för två vyer \code{LifeConsoleView} samt \code{LifeGuiView}.
+I workspacet finner ni bl.a. paketen \code{models}, \code{rules} och \code{views}. I labben kommer ni främst ändra i \code{models} paketet men ni kommer även implementera reglerna för Life i \code{rules/LifeRule.scala}. Paketet \code{views} kommer med färdigimplementerad kod för två vyer \code{CellularConsoleView} samt \code{CellularGuiView}.
 
-Utöver paketen finner ni 4 körbara Scala-filer som kan användas för att starta upp ett användargränssnitt för att rita upp brädet och `spela' spelet. Den första av dessa filerna ni ska titta i och senare köra är \code{life.scala}.
+Utöver paketen finner ni i samma mapp några körbara Scala-filer som kan användas för att starta upp ett användargränssnitt som ritar upp brädet och låter användaren `spela' spelet. Den första av dessa filerna ni ska titta i och senare köra är \code{life.scala}.
 
 Läs igenom de två filerna i `models' paketet noga, det är där ni kommer spendera den mesta av tiden.
 
@@ -86,7 +86,7 @@ Läs igenom de två filerna i `models' paketet noga, det är där ni kommer spen
 	% 7) Testa nedanstående startfigurer (inkludera bilder på t ex en slider). Beter det sig som förväntat?
 
 
-    \Task{Skapa en modell som kan visas i vyer som implementerar \code{LifeView2D}.}
+    \Task{Skapa en modell som kan visas i vyer som implementerar \code{CellularView2D}.}
     
 	Spelbrädet består av en matris med $n$ rader och $m$ kolumner ($n$ och $m$ brukar ibland modelleras som $\infty$, men vi kommer begränsa oss för enkelhetens skull)
 
@@ -94,7 +94,7 @@ Läs igenom de två filerna i `models' paketet noga, det är där ni kommer spen
 
         \Subtask{Implementera konstruktorn i kompanjonsobjektet för ArrayMatrix2D.}
 
-        För att skapa en matris ska vi använda oss av Scalas inbyggda datastruktur \code{Array}. Denna datastruktur har en användbar konstruktur \code{ofDim[T](n1: Int, n2: Int)} som vi ska använda för att skapa $rows$ arrayer av storlek $cols$ inuti en annan array, detta är vad vi kommer använda för att lagra vår matris-data.
+        För att skapa en matris ska vi använda oss av Scalas inbyggda datastruktur \code{Array}. Denna datastruktur har en användbar konstruktur \code{ofDim[T](n1: Int, n2: Int)} som vi ska använda för att skapa $rows$ stycken arrayer av storlek $cols$ inuti en annan array, detta är vad vi kommer använda för att lagra datan i vår matris.
         
         Ett exempel av resultatet från \code{Array.ofDim[Int](3, 3)} är följande ekvivalenta kod:
 
@@ -128,34 +128,35 @@ Array(
 matrix.randomize(2)
 \end{Code}
 
-        För att nu se till att allt har blivit rätt kan vi nu visa upp matrisen i terminalen med hjälp av \code{LifeConsoleView}.
+        För att nu se till att allt har blivit rätt kan vi nu visa upp matrisen i terminalen med hjälp av \code{CellularConsoleView}. Ett exempel på detta finnes i \code{life_console.scala}.
 
 \begin{Code}
 // Skriver ut brädet i konsolen
-LifeConsoleView.display(matrix)
+CellularConsoleView.display(matrix)
 \end{Code}
 
-        Men detta testar inte för alla möjliga fel, så för säkerhets skull kan vi även testa att placera ut en s.k. glider i brädet med hjälp av en metod \code{place} som vi också får gratis på våran matris genom att ärva traitet \code{Matrix2D}.
+        Men detta testar inte för alla möjliga fel, så för säkerhets skull kan vi även testa att placera ut en s.k. glider i brädet med hjälp av metoden \code{place} som finns implementerad i det ärvda traitet \code{Matrix2D}.
 
 \begin{Code}
 // Placerar ut en glider med sitt övre vänstra hörn
-// i positionen (3, 1), dvs på rad 2 och kolumn 4 (då vi noll-indexerar)
-matrix.place(entities.glider, 4, 2)
+// i positionen (3, 1), dvs på rad 4 och kolumn 2 (då vi noll-indexerar)
+matrix.place(entities.glider, 3, 1)
 \end{Code}
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=0.3\textwidth]{../img/w12-lab/glider.png}
+    % Reflectbox here since glider in entities package is a reflection of the image.
+    \reflectbox{\includegraphics[width=0.3\textwidth]{../img/w12-lab/glider.png}}
   \end{center}
   \caption{En såkallad \textit{glider}. Vanligt förekommande varelse i Life.}
 \end{figure}
 
-        Testa nu att rita ut brädet igen (utan randomize denna gången) för att se till att glidern hamnade rätt både med avseende på orientering och position.
+        Testa nu att rita ut brädet igen (utan randomize denna gången) för att se till att glidern hamnade rätt både med avseende på orientering och position, den ska vara roterad precis som på bilden.
 
 
     \Task{Implementera Life-regeln med hjälp av traitet Rule.}
     
-    Nu har vi vår datastruktur för brädet på plats så nu är det dags att faktiskt implementera reglerna för Life. För att göra detta ska vi implementera traitet \code{Rule} som är en generalisering för hur cellulära automaters regler kan implementeras.
+    Nu har vi vår datastruktur för brädet på plats så nu är det dags att faktiskt implementera reglerna för Life. För att göra detta ska vi implementera objektet \code{LifeRule} som ärver traitet \code{Rule} vilket är ett interface som cellulära automaters regler kan implementera. Men först ska vi implementera några hjälpsamma funktioner, så att våran kod i \code{LifeRule} senare blir mer lättläst.
     
         \Subtask{Implementera \code{mooreNeighborsPositions} samt \code{mooreNeighborsStates} i \code{Matrix2D}.}
         
@@ -168,20 +169,20 @@ matrix.place(entities.glider, 4, 2)
 
         \Subtask{Implementera \code{apply} i ett nytt objekt \code{LifeRule} som implementerar \code{Rule}.}
         Här nedan finnes specifikationen för traitet Rule, den innehåller endast en metod \code{apply} vars uppgift är att ta ett bräde samt en position på brädet och returnera vad denna position ska innehålla för värde i nästa generation.
-        
-        Reglerna för Life finner ni ovan i avsnitt \ref{subsec:life-rules}.
 
 \begin{ScalaSpec}{Rule}
-// apply tar en matris samt en position i matrisen (i, j)
+// apply tar en matris samt en position i matrisen (row, col)
 // och applicerar regeln på den positionen
-def apply(m: ArrayMatrix2D, i: Int, j: Int): Int
+def apply(m: ArrayMatrix2D, row: Int, col: Int): Int
 \end{ScalaSpec}
+        
+        Reglerna för Life finner ni ovan i avsnitt \ref{subsec:life-rules}.
 
         \Subtask{Testa implementationen.}
         
         För att nu i praktiken applicera våran regel på brädet ska vi använda oss av metoden \code{applyRule} som återfinns i \code{ArrayMatrix2D}.
 
-        Om man har problem med att sin regel inte beter sig som förväntat så man returnera antalet grannar istället för cellens levande/död tillstånd. Efter att applicera hela s.k. \code{NeighborsRule} kan man visa upp resultatet med \code{LifeConsoleView} för att se om programmet räknar grannar korrekt.
+        Om man har problem med att sin regel inte beter sig som förväntat så man returnera antalet grannar istället för cellens levande/död tillstånd. Efter att applicera hela s.k. \code{NeighborsRule} kan man visa upp resultatet med \code{CellularConsoleView} för att se om programmet räknar grannar korrekt.
 
 
     \Task{Skapa en ny modell som `wrappar' i kanterna.}
@@ -200,7 +201,13 @@ def apply(m: ArrayMatrix2D, i: Int, j: Int): Int
 val wrapped_row = row % rows
 \end{Code}
 
-		Men denna lösning tar inte hänsyn till negativa tal, vilket kan uppkomma när man t.ex. försöker hämta grannarna för cellen i det övre vänstra hörnet på brädet, dvs. position (0, 0). För att enkelt lösa detta kan man förskjuta hela \code{row} med \code{rows} så att man istället får \code{(rows + row) \% rows}. Vi använda oss av denna kunskap för att i metoderna \code{get} samt \code{set} se till att operationerna wrappar.
+		Men denna lösning tar inte hänsyn till negativa tal, vilket kan uppkomma när man t.ex. försöker hämta grannarna för cellen i det övre vänstra hörnet på brädet, dvs. position (0, 0). För att enkelt lösa detta kan man förskjuta hela \code{row} med \code{rows} så att man istället får följande
+		
+\begin{Code}
+val wrapped_row = (rows + row) % rows
+\end{Code}
+
+Vi kan använda oss av denna kunskap för att i metoderna \code{get} samt \code{set} se till att operationerna wrappar. Testa sedan din implementation genom att låta en glider glida in i en vägg.
 
 
 \subsection{Frivilliga extrauppgifter}
@@ -210,7 +217,7 @@ Inom cellulära automata finns det många intressanta ting att utforska, för de
 
 \Task{Implementera spara och ladda}
 
-	När man leker runt med cellulära automater vill man ofta spara sina bräden så att man senare enkelt kan ladda in dem igen. För att göra detta ska vi i denna extrauppgift definiera ett dataformat som ska kunna representera våran \code{ArrayMatrix2D}.
+	När man leker runt med cellulära automater vill man ofta spara sina bräden så att man senare enkelt kan ladda in dem igen. För att göra detta ska vi i denna extrauppgift definiera ett dataformat som ska innehålla all data som behövs för att återskapa vår \code{ArrayMatrix2D}.
 
     \Subtask{Spara brädets tillstånd.}
         Tillståndet ska sparas till ett format som både är lätt att spara/exportera och ladda/importera. Det vi behöver spara är följande:
@@ -218,13 +225,20 @@ Inom cellulära automata finns det många intressanta ting att utforska, för de
         \begin{itemize}
         		\item Brädets storlek, dvs antalet rader och kolumner
         		\item Hur många olika värden en cell på brädet kan anta
-        		\item Matrisen i sig som innehåller brädets celler
+        		\item Matrisen i sig, dvs alla cellers värden
         	\end{itemize}
+        	
+        	Det är metoden \code{ArrayMatrix2D.toFileFormat} som ska implementeras.
         
-        Vi föreslår att ni börjar filen med en rad innehållande de två värdena i punkt ett samt värdet i punkt två, separera dem med mellanslag eller komma. Därefter är det enklaste att skriva ut matrisen rad för rad där varje cell skrivs ut som en etta eller nolla. Man kan göra detta utan separator för bräden där celler bara antar värden i intervallet 0-9, men det fungerar inte längre om en cell kan anta andra värden (såsom i uppgiften med cykliska cellulära automater nedan) då man inte längre kan lita på att en siffra motsvarar en cell. För att lösa denna begränsning kan man separera sina värden med något tecken precis som för första raden, t.ex. ett mellanslag eller ett komma.
+        Vi föreslår att ni börjar filen med en rad innehållande de två värdena i punkt ett, samt värdet i punkt två. Separera dem med mellanslag, komma, eller en emoji (på egen risk). Därefter är den enklaste vägen att skriva ut matrisen rad för rad där varje cell skrivs ut som en etta eller nolla. Man kan göra detta utan separator för bräden där celler bara antar värden i intervallet 0-9, men det fungerar inte längre om en cell kan anta andra värden (såsom i uppgiften med cykliska cellulära automater nedan) då man inte längre kan lita på att en siffra motsvarar en cell. För att lösa denna begränsning kan man separera sina värden med något tecken precis som för första raden.
         
-    \Subtask{Ladda in det exporterade tillståndet.}
-        Implementera en metod för att läsa in det sparade tillståndet.
+        Testa att spara genom att gå in i menyn i användargränssnittet och klicka "Save...". Öppna den sparade filen med en texteditor för att verifiera att innehållet ser korrekt ut.
+        
+    \Subtask{Ladda in det sparade tillståndet.}
+    
+        Implementera metoden \code{ArrayMatrix2D.fromFileFormat} för att läsa in det sparade tillståndet.
+        
+        Testa sedan att ladda genom att gå in i menyn i användargränssnittet och klicka "Load...". Brädet ska nu se ut precis som det gjorde när det sparades.
 
 \Task{Implementera andra regler för cellulära automata.}
 
