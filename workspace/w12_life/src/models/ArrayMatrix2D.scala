@@ -19,7 +19,7 @@ case class ArrayMatrix2D(cols: Int, rows: Int, states: Int, protected val array:
   override def cloneMatrix(): Matrix2D = ???
 
   // Part of an optional task, implementation not required to pass lab.
-  override def toFileFormat(): String = ???
+  override def toFileFormat: String = ???
 }
 
 object ArrayMatrix2D {
