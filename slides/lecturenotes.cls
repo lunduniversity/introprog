@@ -205,7 +205,9 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 
 \lstnewenvironment{REPL}[1][]{%
     \lstset{
-      basicstyle=\color{white}\ttfamily\fontsize{9}{11}\selectfont,      
+      numberstyle=\color{black!80}\ttfamily\fontsize{6}{8}\selectfont,
+      numbers=left,
+      basicstyle=\color{white}\ttfamily\fontsize{7}{9}\selectfont,      
       language=,otherkeywords={},%
       tabsize=2,
       backgroundcolor=\color{black!80},
@@ -216,7 +218,7 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 
 \lstnewenvironment{REPLnonum}[1][]{%
     \lstset{
-      basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
+      basicstyle=\color{white}\ttfamily\fontsize{9}{11}\selectfont,      
       language=,otherkeywords={},%
       tabsize=2,
       backgroundcolor=\color{black!80},
