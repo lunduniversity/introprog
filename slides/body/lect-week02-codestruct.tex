@@ -59,6 +59,9 @@ Utelämnar du \code{.apply} så gör kompilatorn anrop av \code{apply} ändå om
 
 \begin{REPLnonum}
 scala> val heltal = Vector(42, 13, -1, 0 , 1)
+
+scala> heltal(0)
+res0: Int = 42
 \end{REPLnonum}
 
 \begin{tikzpicture}[font=\ttfamily]
@@ -79,7 +82,7 @@ heltal   &  \makebox(16,12){ }\\
  \draw [arrow] (ref) -- (vec);
 \end{tikzpicture}
 
-\vspace{1em} Elementen ligger på rad någonstans i minnet.
+%\vspace{1em} Elementen ligger på rad någonstans i minnet.
 \end{Slide}
 
 
@@ -105,6 +108,56 @@ xs: scala.collection.immutable.Vector[Any] = Vector(42, gurka, true, 42.0)
 
 \end{REPL}
 
+\end{Slide}
+
+\begin{Slide}{Vad är en kontrollstruktur?}
+\begin{itemize}
+\item En \Emph{kontrollstruktur} påverkar \Alert{sekvensen}.
+\begin{itemize}
+\item[] Exempel på inbyggda kontrollstrukturer: 
+\\\vspace{0.5em}\code{for}-sats, \code{while}-sats
+\end{itemize}
+
+\item[]
+
+\item I Scala kan man definiera \Emph{egna} kontrollstrukturer.
+\begin{itemize}
+\item[] Exempel: \code{upprepa} som du använt i Kojo
+\\\vspace{0.5em}\code|upprepa(4){fram; höger}|
+\end{itemize}
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Mitt första program: en oändlig loop på ABC80}
+\begin{columns}
+\begin{column}{0.8\textwidth}
+\begin{verbatim}
+10 print "hej"
+20 goto 10
+\end{verbatim}
+\includegraphics[width=0.8\textwidth]{../img/abc80.jpg}
+\end{column}
+\begin{column}{0.3\textwidth}
+\pause
+\begin{verbatim}
+hej
+hej
+hej
+hej
+hej
+hej
+hej
+hej
+hej
+hej
+hej
+hej
+<Ctrl+C>
+\end{verbatim}
+
+\end{column}
+\end{columns}
 \end{Slide}
 
 
@@ -248,17 +301,60 @@ heltal   &  \makebox(16,12){ }\\
 \end{tikzpicture}
 \end{Slide}
 
+\begin{Slide}{Några likheter \& skillnader mellan \texttt{Vector} och \texttt{Array}}\SlideFontSmall
+\begin{multicols}{2}
+\begin{REPL}[numbers=none]
+scala> val xs = Vector(1,2,3)
+\end{REPL}
+
+\columnbreak
+
+\begin{REPL}[numbers=none]
+scala> val xs = Array(1,2,3)
+\end{REPL}
+\end{multicols}
+
+
+Några likheter mellan \texttt{Vector} och \texttt{Array}
+\begin{itemize}
+\item Båda är samlingar som kan innehålla många element.
+
+\item Med båda kan man snabbt accessa vilket element som helst: \code{xs(2)}
+
+\item Båda har en fix storlek efter allokering.
+\end{itemize}
+
+Några viktiga skillnader:
+\begin{multicols}{2}
+\Emph{Vector}
+\begin{itemize}
+\item Är \Emph{oföränderlig}: du kan lita på att elementreferenserna aldrig någonsin kommer att ändras.
+
+\item Är \Emph{snabb på att skapa en delvis förändrad kopia}, t.ex. tillägg/borttagning/uppdatering mitt i sekvensen.
+
+\end{itemize}
+
+
+\columnbreak
+
+\Alert{Array}
+\begin{itemize}
+\item Är \Alert{föränderlig}: \code{xs(2) = 42}
+
+\item Är \Alert{snabb} om man bara vill läsa eller skriva på befintliga platser.
+
+\item Är \Alert{långsam} om man vill lägga till eller ta bort element mitt i sekvensen.
+
+\end{itemize}
+\end{multicols}
+\end{Slide}
+
 
 
 \Subsection{Huvudprogram med \texttt{main} i Scala och Java}
 
-\begin{Slide}{Ett minimalt program i Scala och Java}
-
-\begin{REPLnonum}
-scala> println("Hello World!")
-Hello World!
-\end{REPLnonum}
-
+\begin{Slide}{Ett minimalt fristående program i Scala och Java}
+Nedan Scala-kod skrivs i en editor, spara med valfritt filnamn:
 \begin{Code}
 // this is Scala 
 
@@ -269,6 +365,9 @@ object Hello {
 }
 \end{Code}
 
+\pause
+\vspace{1em}
+Nedan Java-kod skrivs i en editor, filen \Alert{måste} heta \texttt{Hi.java}:
 
 \begin{Code}[language=Java]
 // this is Java 
@@ -284,40 +383,261 @@ public class Hi {
 
 
 \begin{Slide}{Loopa genom en samling med en \texttt{while}-sats}
+\begin{REPLnonum}
+scala> val xs = Vector("Hej","på","dej","!!!")
+xs: scala.collection.immutable.Vector[String] = 
+  Vector(Hej, på, dej, !!!)
+
+scala> xs.size
+res0: Int = 4
+
+scala> var i = 0
+i: Int = 0
+
+scala> while (i < xs.size) { println(xs(i)); i = i + 1 }
+Hej
+på
+dej
+!!!
+\end{REPLnonum}
 \end{Slide}
 
 
 \begin{Slide}{Loopa genom argumenten i ett Scala-huvudprogram}
+Skriv denna kod och spara i filen \texttt{helloargs.scala}
+\begin{REPL}[numbers=none]
+$ gedit helloargs.scala
+\end{REPL}
+\begin{Code}
+object HelloScalaArgs {
+  def main(args: Array[String]): Unit = {
+    var i = 0
+    while (i < args.size) { 
+      println(args(i))
+      i = i + 1
+    }
+  }
+}
+\end{Code}
+Kompilera och kör:
+\begin{REPL}
+$ scalac helloargs.scala
+$ scala HelloScalaArgs hej gurka tomat 
+hej
+gurka
+tomat
+\end{REPL}
 \end{Slide}
 
 
 \begin{Slide}{Loopa genom argumenten i ett Java-huvudprogram}
+\begin{REPL}[numbers=none]
+$ gedit HelloJavaArgs.java
+\end{REPL}
+\begin{Code}
+// this is Java 
+
+public class HelloJavaArgs {
+    public static void main(String[] args) {
+    int i = 0;
+    while (i < args.length) { 
+      System.out.println(args[i]);
+      i = i + 1;
+    }
+  }
+}
+\end{Code}
+Kompilera och kör:
+\begin{REPL}
+$ javac HelloJavaArgs.scala
+$ java HelloJavaArgs hej gurka tomat 
+hej
+gurka
+tomat
+\end{REPL}
+
 \end{Slide}
 
 
 
-\Subsection{Algoritmer}
+\Subsection{Algoritmer: stegvisa lösningar}
 
 \begin{Slide}{Vad är en algoritm?}
 En \href{https://sv.wikipedia.org/wiki/Algoritm}{algoritm} är en sekvens av instruktioner\\ som beskriver hur man löser ett problem \\
-\vspace{2em}
-Exempel: \\ ~matrecept \\ \pause ~uppdatera highscore i ett spel \\ ~...
+\vspace{1em}
+\Emph{Exempel}: 
+\begin{itemize}
+\item	 baka en kaka 
+\pause\item räkna ut din pensionsprognos 
+\pause\item köra bil 
+\pause\item uppdatera highscore i ett spel 
+\item ...
+\end{itemize}
+
 \begin{tikzpicture}[overlay]
-\node[xshift=0.8\textwidth, scale=1.6] at (0,0) {XX};%\includegraphics[width=0.25\textwidth]{img/highscore}};
+\node[xshift=0.85\textwidth, scale=2.0] at (0,1.3) { \includegraphics[width=0.25\textwidth]{../img/highscore}};
 \end{tikzpicture}
 \end{Slide}
 
-\begin{Slide}{Algoritmexempel: PRODUKTEN AV $n$ TAL}
+
+
+\begin{Slide}{Algoritm-exempel: HIGHSCORE}
+\Emph{Problem}: Uppdatera high-score i ett spel \\ \vspace{1em}
+
+\Emph{Varför?} \pause Så att de som spelar uppmuntras att spela mer :) \\ \vspace{1em}
+
+\Emph{Algoritm:}\pause
+\begin{enumerate}
+\item $points$ $\leftarrow$ poängen efter senaste spelet
+\item $highscore$ $\leftarrow$ bästa resultatet innan senaste spelet
+\item \Key{om} $points$ är större än $highscore$ 
+\begin{enumerate}[ ~~]
+\item  Skriv ''Försök igen!''
+\end{enumerate}
+\Key{annars}
+\begin{enumerate}[ ~~]
+\item  Skriv ''Grattis!''
+\end{enumerate}
+\end{enumerate}
+\pause
+\scriptsize \Alert{Hittar du buggen?}
 \end{Slide}
 
 
-\Subsection{Funktioner och procedurer skapar struktur}
+\begin{Slide}{HIGHSCORE implementerad i Scala}
+\begin{Code}
+import scala.io.StdIn.readLine
 
-\begin{Slide}{Block}\SlideFontSmall
-Kapslar in många satser.
+object HighScore {
+  def main(args: Array[String]): Unit = {
+    val points = readLine("Hur mång poäng fick du?")
+    val highscore = readLine("Vad var highscore före senaste spelet?")
+    val msg = if (points > highscore) "GRATTIS!" else "Försök igen!"
+    println(msg) 
+  }
+}
+\end{Code}
+\pause
+Är det en bugg eller en feature att det står\\ \texttt{points > highscore} \\ och inte \\ \texttt{points >= highscore} \\ ?
+% Buggen är att man inte får GRATTIS om poäng == highscore vilket är tråkigt :)
+\end{Slide}
 
-Vad är ett block?
-I Scala (till skillnad från många andra språk) har ett block har ett värde 
+
+
+\begin{Slide}{Algoritmexempel: N-FAKULTET}
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+
+ \Input{heltalet $n$}
+ \Output{utskrift av produkten av de första $n$ heltalen }
+ ~\\
+ $prod \leftarrow 1$ \\
+ $i \leftarrow 2$  \\
+ \While{$i \leq n$}{
+  $prod \leftarrow prod * i$\\
+  $i \leftarrow i + 1$
+ }
+ skriv ut $prod$
+\end{algorithm}
+\pause\vspace{1em}
+\begin{itemize}\SlideFontSmall
+\item Vad händer om $n$ är noll?
+\item Vad händer om $n$ är ett?
+\item Vad händer om $n$ är två?
+\item Vad händer om $n$ är tre?
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Algoritmexempel: MIN}
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+
+ \Input{Array $args$ med strängar som alla innehåller heltal}
+ \Output{utskrift av minsta heltalet }
+ ~\\
+ $min \leftarrow$ det största heltalet som kan uppkomma  \\
+ $n \leftarrow $ antalet heltal \\
+ $i \leftarrow 0$ \\
+ \While{$i < n$}{
+   $x \leftarrow args(i).toInt$ \\
+   \If{( x < $min$)}{$min \leftarrow x$}
+   $i \leftarrow i + 1$
+ }
+ skriv ut $min$
+\end{algorithm}
+\end{Slide}
+
+
+\Subsection{Funktioner skapar struktur}
+
+\begin{Slide}{Mall för funktionsdefinitioner}
+
+\code{def} funktionsnamn(parameterdeklarationer): returtyp = block
+
+\pause\vspace{0.5em}\Emph{Exempel}:
+
+\begin{Code}[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]
+def öka(i: Int): Int = { i + 1 }
+\end{Code}
+\pause Om ett enda uttryck: behövs inga \code|{}|. Returtypen kan härledas.
+\begin{Code}[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]
+def öka(i: Int) = i + 1  
+\end{Code}
+\pause Om flera parametrar, separera dem med kommatecken: 
+\begin{Code}[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]
+def isHighscore(points: Int, high: Int): Boolean = {
+  val highscore: Boolean = points > high
+  if (highscore) println(":)") else print(":(")
+  highscore
+}
+\end{Code}
+\pause Ovan funktion har \Alert{sidoeffekten} att skriva ut en smiley.
+\end{Slide}
+
+\begin{Slide}{Bättre många små abstraktioner som gör en sak var}
+
+\begin{Code}[basicstyle=\ttfamily\fontsize{8}{11}\selectfont]
+def isHighscore(points: Int, high: Int): Boolean = points > high
+
+def printSmiley(isHappy: Boolean): Unit = 
+  if (isHappy) println(":)") else print(":(")
+\end{Code}
+
+\pause\vspace{2em}
+\begin{REPLnonum}
+  printSmiley(isHighscore(113,99))
+\end{REPLnonum}
+
+\pause\vspace{2em} \code{isHigscore} är en \Emph{äkta funktion} som alltid ger samma svar för samma inparametrar och saknar sidoeffekter.
+
+\end{Slide}
+
+
+
+\begin{Slide}{Vad är ett block?}
+
+\begin{itemize}
+\item Ett block \Emph{kapslar in} flera satser/uttryck och ser ''utifrån'' ut som en enda sats/uttryck.
+
+\item Ett block skapas med hjälp av klammerparenteser (''krullparenteser'')
+
+\item [] {\fontsize{14}{18}\selectfont \code|{ uttryck1; uttryck2; ... uttryckN }|}\\~
+
+\pause
+
+\item I Scala (till skillnad från många andra språk) har ett block ett \Emph{värde} och är alltså ett \Emph{uttryck}. 
+
+\item Värdet ges av \Emph{sista uttrycket}.
+
+\begin{REPLnonum}
+scala> val x = { println(1 + 1); println(2 + 2); 3 + 3 } 
+2
+4
+x: Int = 6
+\end{REPLnonum}
+
+
+\end{itemize}
 
 \end{Slide}
 
@@ -355,12 +675,25 @@ x: Unit = ()
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{Ingenting är faktiskt någonting i Scala}
-I många språk (Java, C, C) är funktioner som saknar värden speciella. I Java finns nyckelordet  \jcode{void} men inte i Scala. I Scala är procedurer inte speciell efter som de faktisk returnerar ett värde som representerar ingenting, nämligen () som är av typen Unit. På så sätt blir procedurer inget undantag utan följer vanliga regler för syntax och semantik som för alla andra funktioner.
+\begin{Slide}{''Ingenting'' \emph{är} faktiskt någonting i Scala}
+\begin{itemize}
+\item I många språk (Java, C, C) är funktioner som saknar värden speciella.
+ Java m.fl. har speciell syntax för procedurer med nyckelordet \jcode{void}, men \Alert{inte} Scala. 
 
+\item I Scala är procedurer inte specialfall; de är vanliga funktioner som returnerar ett värde som \Emph{representerar} ingenting, nämligen () som är av typen Unit. 
+
+\item På så sätt blir procedurer inget undantag utan följer vanlig syntax och semantik precis som för alla andra funktioner.
+
+\item Detta är typiskt för Scala: generalisera koncepten och vi slipper besvärliga undantag! \\(Men vi måste förstå generaliseringen...)
+
+
+\item [] {\SlideFontSmall 
 \url{https://en.wikipedia.org/wiki/Void_type}
-
 \url{https://en.wikipedia.org/wiki/Unit_type}
+}
+
+\end{itemize}
+
 \end{Slide}
 
 \begin{Slide}{Abstraktion: Problemlösning genom nedbrytning i enkla funktioner och procedurer som kombineras}\SlideFontSmall
@@ -383,6 +716,8 @@ $<<$kvadrat, stapel, rutnät i kojo$>>$
 \end{Slide}
 
 
+\Subsection{Kodfilernas katalogstruktur}
+
 \begin{Slide}{Paket}
 $<<$paket skapar katalogstruktur för kodfiler$>>$ 
 \end{Slide}
@@ -397,10 +732,11 @@ $<<$liknar zip-filer; packar ihop bytekod i en enda fil för enkel distribution$
 %%%
 \frame{\frametitle{Att göra i Vecka \vecka: Förstå grundläggande kodstrukturer}
 \begin{enumerate}
-\item Laborationer är \Alert{obligatoriska}.\\ Ev. sjukdom måste anmälas \Alert{före} till kursansvarig!
+\item Laborationer är \Alert{obligatoriska}.\\ Ev. sjukdom måste anmälas \Alert{före} via mejl till kursansvarig!
 \item Gör övning \texttt{programs}
 \item OBS! Ingen lab denna vecka w02. Använd tiden att komma ikapp om du ligger efter!
 \item Träffas i samarbetsgrupper och hjälp varandra att förstå.
+\item Vi har nosat på flera koncept som vi kommer tillbaka till senare: du måste inte fatta alla detaljer redan nu.
 \item Om ni inte redan gjort det: Gör klart \href{https://github.com/bjornregnell/lth-eda016-2015/tree/master/assignments}{samarbetskontrakt} och visa för handledare på resurstid.
 \item \Alert{Koda på resurstiderna} och få hjälp och tips! 
 \end{enumerate}
