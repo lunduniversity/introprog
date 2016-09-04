@@ -486,7 +486,7 @@ $ scala myscript.scala
 \Subsection{Algoritmer: stegvisa lösningar}
 
 \begin{Slide}{Vad är en algoritm?}
-En \href{https://sv.wikipedia.org/wiki/Algoritm}{algoritm} är en sekvens av instruktioner\\ som beskriver hur man löser ett problem \\
+En \href{https://sv.wikipedia.org/wiki/Algoritm}{algoritm} är en sekvens av instruktioner som beskriver \\hur man löser ett problem.\\
 \vspace{1em}
 \Emph{Exempel}: 
 \begin{itemize}
@@ -533,8 +533,8 @@ import scala.io.StdIn.readLine
 
 object HighScore {
   def main(args: Array[String]): Unit = {
-    val points = readLine("Hur mång poäng fick du?")
-    val highscore = readLine("Vad var highscore före senaste spelet?")
+    val points = readLine("Hur mång poäng fick du?").toInt
+    val highscore = readLine("Vad var highscore före senaste spelet?").toInt
     val msg = if (points > highscore) "GRATTIS!" else "Försök igen!"
     println(msg) 
   }
@@ -545,6 +545,27 @@ object HighScore {
 % Buggen är att man inte får GRATTIS om poäng == highscore vilket är tråkigt :)
 \end{Slide}
 
+
+\begin{Slide}{HIGHSCORE implementerad i Java}
+\begin{Code}[language=Java]
+import java.util.Scanner;
+
+public class HighScore {
+    public static void main(String[] args){
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Hur många poäng fick du?");
+        int points =  scan.nextInt();
+        System.out.println("Vad var higscore före senaste spelet?");
+        int highscore = scan.nextInt();
+        if (points > highscore) {
+            System.out.println("GRATTIS!");
+        } else {
+            System.out.println("Försök igen!");
+        }
+    }
+}
+\end{Code}
+\end{Slide}
 
 
 \begin{Slide}{Algoritmexempel: N-FAKULTET}
@@ -664,12 +685,62 @@ x: Int = 6
 
 \end{Slide}
 
-\begin{Slide}{Block kan ha lokala variabler}\SlideFontSmall
-Synlighetsregler etc
+\begin{Slide}{Namn i block blir \textbf{lokala}}
+Synlighetsregler: 
+\begin{enumerate}
+\item Identifierare deklarerade inuti ett block blir \Emph{lokala}.
+
+\item Lokala namn \Alert{överskuggar} namn i yttre block om samma.
+
+
+\item Namn syns i nästlade underblock.
+
+\end{enumerate}
+
+\begin{REPL}
+scala> { val lokaltNamn = 42; println(lokaltNamn) }
+42
+
+scala> println(lokaltNamn)
+<console>:12: error: not found: value lokaltNamn
+       println(lokaltNamn)
+
+scala> { val x = 42; { val x = 76; println(x) }; println(x) }
+76
+42
+
+scala> { val x = 42; { val y = x + 1; println(y) } }
+43
+\end{REPL}
+
 \end{Slide}
 
 
-\begin{Slide}{Parameter och argument}\SlideFontSmall
+\begin{Slide}{Parameter och argument}
+
+Skilj på parameter och argument!
+\begin{itemize}
+\item En \Alert{parameter} är det deklarerade namnet som används \Alert{lokalt} i en funktion för att referera till...
+
+\item \Emph{argumentet} som är värdet som skickas med \Emph{vid anrop} och binds till det lokala parameternamnet.
+
+\end{itemize}
+
+
+\begin{REPLnonum}
+scala> val ettArgument = 42
+
+scala> def öka(minParameter: Int) = minParameter + 1
+
+scala> öka(ettArgument)
+\end{REPLnonum}
+
+
+Speciell syntax: anrop med s.k. \Emph{namngiven parameter}
+\begin{REPLnonum}
+scala> öka(minParameter = ettArgument) 
+\end{REPLnonum}
+
 \end{Slide}
 
 \begin{Slide}{Procedurer}\SlideFontSmall
@@ -731,26 +802,137 @@ x: Unit = ()
 
 \end{Slide}
 
-\begin{Slide}{Exempel på funktionell nedbrytning}
-$<<$kvadrat, stapel, rutnät i kojo$>>$ 
+
+
+\begin{Slide}{Exempel på \textbf{funktionell nedbrytning}}
+
+Kojo-labben gav exempel på \Emph{funktionell nedbrytning} där ett antal abstraktioner skapas och återanvänds.
+
+\begin{Code}
+// skapa abstraktioner som bygger på varandra
+
+def kvadrat = upprepa(4){fram; höger}
+
+def stapel = {
+  upprepa(10){kvadrat; hoppa}
+  hoppa(-10*25)
+}
+
+def rutnät = upprepa(10){stapel; höger; fram; vänster}
+
+// huvudprogram 
+
+sudda; sakta(200)
+rutnät
+\end{Code}
 \end{Slide}
 
 
-\Subsection{Kodfilernas katalogstruktur}
+\begin{Slide}{Varför abstraktion?}
+\begin{itemize}
+\item Stora program behöver delas upp annars blir det mycket svårt att förstå och bygga vidare på programmet.
+\item Vi behöver kunna välja namn på saker i koden \textit{lokalt}, utan att det krockar med samma namn i andra delar av koden.
+\item Abstraktioner hjälper till att hantera och kapsla in komplexa delar så att de blir enklare att använda om och om igen. 
 
-\begin{Slide}{Paket}
-$<<$paket skapar katalogstruktur för kodfiler$>>$ 
+\item Exempel på \Emph{abstraktionsmekanismer} i Scala och Java:
+\begin{itemize}
+
+\item \href{https://sv.wikipedia.org/wiki/Klass_\%28programmering\%29}{Klasser} är ''byggblock'' med kod som används för att skapa \href{https://sv.wikipedia.org/wiki/Objektorienterad_programmering\#Objekt}{objekt}, innehållande delar som hör ihop. \\ Nyckelord: \code{class} och \code{object} 
+
+\item \href{https://en.wikipedia.org/wiki/Method_\%28computer_programming\%29}{Metoder} är funktioner som finns i klasser/objekt och används för att lösa specifika uppgifter.  Nyckelord: \code{def}
+
+\item \href{https://en.wikipedia.org/wiki/Java_package}{Paket} används för att organisera kodfiler i en hierarkisk katalogstruktur och skapa namnrymder. \\Nyckelord: \Key{package}
+
+\end{itemize}
+
+\end{itemize}
 \end{Slide}
+
+
+\Subsection{Katalogstruktur för kodfiler med paket}
+
+
+
+\begin{Slide}{Källkodsfiler och klassfiler}
+\begin{tikzpicture}[node distance=1.5cm]
+\node (input) [startstop] {\texttt{Hello.scala}};
+\node(inptext) [right of=input, text width=5cm, scale=1.2,xshift=3.5cm]{Källkodsfil};
+\node (compile) [process, below of=input] {\texttt{scalac}};
+\node (output) [startstop, below of=compile] {\texttt{Hello.class}};
+\node(outtext) [right of=output, text width=5cm, scale=1.2,xshift=3.5cm]{\texttt{.class}-fil med byte-kod};
+\node (jvm) [process, below of=output] {JVM};
+\node(jvmtext) [right of=jvm, text width=5.5cm, scale=0.8,xshift=4.5cm]{\textit{Java Virtual Machine}\\Översätter till maskinkod\\ som passar din specifika CPU\\medan programmet kör};
+\draw [arrow] (input) -- (compile);
+\draw [arrow] (compile) -- (output);
+\draw [arrow] (output) -- (jvm);
+\end{tikzpicture}
+\end{Slide}
+
+\begin{Slide}{Paket}\SlideFontSmall
+\begin{itemize}
+\item Paket skapa struktur på kodfilerna. Bra om man har många kodfiler.
+
+\item Byte-koden placeras av kompilatorn i kataloger enligt paketstrukturen.
+
+
+\end{itemize}
+
+\vspace{1em}
+\begin{tikzpicture}[node distance=1.5cm,scale=0.8, every node/.style={transform shape}]
+\node (input) [startstop] {\texttt{greeting/Hello.scala}};
+\node(inptext) [right of=input, text width=4cm, scale=1.2,xshift=4.5cm]{\lstinline{package greeting}\\\lstinline{object Hello { ... }};
+\node (compile) [process, below of=input] {\texttt{scalac  greeting/Hello.java}};
+\node (output) [startstop, below of=compile] {\texttt{greeting/Hello.class}};
+\node(outtext) [right of=output, text width=4cm, scale=1.2,xshift=4.5cm]{Paketens bytekod hamnar i katalog med samma namn som paketnamnet};
+\node (jvm) [process, below of=output] {\texttt{scala greeting.Hello}};
+\draw [arrow] (input) -- (compile);
+\draw [arrow] (compile) -- (output);
+\draw [arrow] (output) -- (jvm);
+\end{tikzpicture}
+
+{\SlideFontTiny\vspace{1em} Katalogstrukturen för källkoden måste i Java motsvara paketstrukturen, \\men inte i Scala. Dock kräver många IDE att så görs även för Scala.}
+\end{Slide}
+
+\begin{Slide}{Import}
+Med hjälp av punktnotation kommer man åt innehåll i ett paket.\\
+\begin{Code}
+val age = scala.io.StdIn.readLine("Ange din ålder:")
+\end{Code}
+
+En \code{import}-sats...
+ 
+\begin{Code}
+import scala.io.StdIn.readLine
+\end{Code}
+
+...gör så att kompilatorn ''ser'' namnet, och man slipper skriva hela sökvägen till namnet:
+\begin{Code}
+val age = readLine("Ange din ålder:")
+\end{Code}
+
+Man säger att det importerade namnet hamnar \Emph{\textit{in scope}}.
+\end{Slide}
+
+
+
+
 
 \begin{Slide}{Jar-filer}
-$<<$liknar zip-filer; packar ihop bytekod i en enda fil för enkel distribution$>>$ 
+TODO $<<$liknar zip-filer; packar ihop bytekod i en enda fil för enkel distribution$>>$ 
+\end{Slide}
+
+\Subsection{Dokumentation}
+
+\begin{Slide}{scaladoc}
+$<<$TODO$>>$ 
 \end{Slide}
 
 \subsection{Att göra denna vecka}
 
 
 %%%
-\frame{\frametitle{Att göra i Vecka \vecka: Förstå grundläggande kodstrukturer}
+\begin{Slide}{Att göra i Vecka \vecka: Förstå grundläggande kodstrukturer}
+
 \begin{enumerate}
 \item Laborationer är \Alert{obligatoriska}.\\ Ev. sjukdom måste anmälas \Alert{före} via mejl till kursansvarig!
 \item Gör övning \texttt{programs}
@@ -760,7 +942,18 @@ $<<$liknar zip-filer; packar ihop bytekod i en enda fil för enkel distribution$
 \item Om ni inte redan gjort det: Gör klart \href{https://github.com/bjornregnell/lth-eda016-2015/tree/master/assignments}{samarbetskontrakt} och visa för handledare på resurstid.
 \item \Alert{Koda på resurstiderna} och få hjälp och tips! 
 \end{enumerate}
-}
+\end{Slide}
+
+\begin{Slide}{Veckans övning: \code{w02-programs}}\SlideFontTiny
+\vspace{-0.5em}
+\setlength{\leftmargini}{0pt}
+\begin{itemize}
+\input{../compendium/modules/w02-exercise-goals.tex}
+\end{itemize}
+\end{Slide}
+
+
+
 
 
 
