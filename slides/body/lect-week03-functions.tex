@@ -7,16 +7,55 @@
 
 
 \begin{Slide}{Deklarera funktioner}
-Exempel på deklaration av två olika funktioner:
 \begin{itemize}
 \item En parameter, och sedan två parametrar:
-\begin{REPLnonum}
-scala> def öka(a: Int): Int = a + 1
-scala> def öka(a: Int, b: Int) = a + b
-\end{REPLnonum}
-\item Båda ovan funktioner kan finnas samtidigt: De är \Alert{olika} funktioner, om det finns en skillnad i paramterlistan. Trots att de har samma namn är det två olika funktioner, och kompilatorn kan skilja dem åt med hjälp av parameterlistorna.
+\begin{REPL}
+scala> :paste
+  def öka(a: Int): Int = a + 1
+  def öka(a: Int, b: Int) = a + b
+  
+scala> öka(1)
+res0: Int = 2
+
+scala> öka(1,1)
+res1: Int = 2
+
+\end{REPL}
+\item Båda funktionerna ovan kan finnas samtidigt! Trots att de har samma namn är de \Alert{olika} funktioner; kompilatorn kan skilja dem åt med hjälp av de olika parameterlistorna.
 
 \item Detta kallas \Emph{överlagring} \Eng{overloading} av funktioner.
+
+\end{itemize}
+\end{Slide} 
+
+
+\begin{Slide}{Tom parameterlista och inga parametrar}\SlideFontSmall
+\begin{itemize}
+\item Om en funktion deklareras med tom parameterlista \code{()} kan den anropas på två sätt: med och utan tomma parenteser.
+\begin{REPL}
+scala> def tomParameterLista() = 42
+
+scala> tomParameterLista()
+res2: Int = 42
+
+scala> tomParameterLista
+res3: Int = 42
+\end{REPL}
+
+\item Men om parameterlista saknas får man \Alert{inte} använda \code{()} vid anrop:
+
+\begin{REPL}
+
+scala> def ingenParameterLista = 42
+
+scala> ingenParameterLista
+res4: Int = 42
+
+scala> ingenParameterLista()
+<console>:13: error: Int does not take parameters
+       ingenParameterLista()
+\end{REPL}
+
 \end{itemize}
 \end{Slide} 
 
@@ -44,7 +83,45 @@ res2: Int = 43
 \end{Slide} 
 
 
-\begin{Slide}{Aktiveringspost}
+\begin{Slide}{Stackminne och Heapminne}\SlideFontSmall
+Minnet är uppdelat i två delar:
+\begin{itemize}
+\item \Emph{Stackminne}: På stacken läggs en \Emph{aktiveringspost} \Eng{stack frame\footnote{\href{https://en.wikipedia.org/wiki/Call_stack}{en.wikipedia.org/wiki/Call\_stack}}, activation record} för varje funktionsanrop med plats för parametrar och lokala variabler. Aktiveringsposten raderas när returvärdet har levererats. Stacken växer vid nästlade funktionsanrop, då en funktion i sin tur anropar en annan funktion. 
+
+\item \Emph{Heapminne}: I heapminnet\footnote{\href{https://en.wikipedia.org/wiki/Memory_management}{en.wikipedia.org/wiki/Memory\_management}}$^{,}$\footnote{Ej att förväxlas med datastrukturen heap  \href{https://sv.wikipedia.org/wiki/Heap}{sv.wikipedia.org/wiki/Heap}} sparas alla objekt (data) som allokeras under körning. Heapminnet städas vid tillfälle av skräpsamlaren \Eng{garbage collector}, och minne som inte används längre frigörs. \\\vspace{0.5em}
+\href{http://stackoverflow.com/questions/1565388/increase-heap-size-in-java}{stackoverflow.com/questions/1565388/increase-heap-size-in-java}
+\end{itemize}
+\end{Slide} 
+
+
+\begin{Slide}{Aktiveringspost}\SlideFontSmall
+Nästlade anrop ger växande stackminne.
+\begin{REPL}
+scala> :paste
+def f(): Unit = { val n = 5; g(n, 2 * n) }
+def g(a: Int, b: Int): Unit = { val x = 1; h(x + 1, a + b) }
+def h(x: Int, y: Int): Unit = { val z = x + y; println(z) }
+
+scala> f()
+
+\end{REPL}
+
+\Alert{Stacken}
+
+\begin{tabular}{|r | l | l |} \hline
+
+variabel & värde & Vilken aktiveringspost? \\ \hline \hline
+\pause
+ n & 5 & f \\ \hline
+ \pause 
+ a & 5 & g \\
+ b & 10 &  \\
+ x & 1  &  \\  \hline
+ \pause 
+ x & 2  & h \\
+ y & 15 &  \\
+ z & 17 & \\ 
+\end{tabular}
 \end{Slide} 
 
 
