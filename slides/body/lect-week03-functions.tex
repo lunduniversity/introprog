@@ -6,7 +6,7 @@
 
 
 
-\begin{Slide}{Deklarera funktioner}
+\begin{Slide}{Deklarera funktioner, överlagring}
 \begin{itemize}
 \item En parameter, och sedan två parametrar:
 \begin{REPL}
@@ -42,10 +42,10 @@ scala> tomParameterLista
 res3: Int = 42
 \end{REPL}
 
-\item Men om parameterlista saknas får man \Alert{inte} använda \code{()} vid anrop:
+Denna flexibilitet är grunden för \Emph{enhetlig access}: namnet kan användas enhetligt oavsett om det är en funktion eller en variabel.
+\item Om parameterlista saknas får man \Alert{inte} använda \code{()} vid anrop:
 
 \begin{REPL}
-
 scala> def ingenParameterLista = 42
 
 scala> ingenParameterLista
@@ -60,10 +60,10 @@ scala> ingenParameterLista()
 \end{Slide} 
 
 
-\begin{Slide}{Funktioner med default-argument}\SlideFontSmall
+\begin{Slide}{Funktioner med defaultargument}\SlideFontSmall
 
 \begin{itemize}
-\item Vi kan ofta åstadkomma något som liknar överlagring, men med en enda funktion, om vi i stället använder \Emph{default-argument}:
+\item Vi kan ofta åstadkomma något som liknar överlagring, men med en enda funktion, om vi i stället använder \Emph{defaultargument}:
 \begin{REPLnonum}
 scala> def inc(a: Int, b: Int = 1) = a + b
 inc: (a: Int, b: Int)Int
@@ -78,24 +78,43 @@ scala> inc(42)
 res2: Int = 43
 
 \end{REPLnonum}
-\item Om argumentet utelämnas och det finns ett default-argumentet, så är det default-argumentet som appliceras på parametern.
+\item Om argumentet utelämnas och det finns ett defaultargumentet, så är det defaultargumentet som appliceras.
 \end{itemize}
 \end{Slide} 
 
 
-\begin{Slide}{Stackminne och Heapminne}\SlideFontSmall
+\begin{Slide}{Funktioner med namngivna argument}
+\begin{itemize}
+\item Genom att använda \Emph{namngivna argument} behöver man inte hålla reda på ordningen på parametrarna, bara man känner till parameternamnen. 
+\item Namngivna argument går fint att \Alert{kombinera} med defaultargument.
+\begin{REPL}
+scala> def namn(förnamn: String, 
+                efternamn: String, 
+                förnamnFörst: Boolean = true,
+                ledtext: String = ""): String = 
+         if (förnamnFörst) s"$ledtext: $förnamn $efternamn" 
+         else s"$ledtext: $efternamn, $förnamn"
+
+scala> namn(ledtext = "Name", efternamn = "Coder", förnamn = "Kim")
+res0: String = Name: Kim Coder
+\end{REPL}
+\end{itemize}
+\end{Slide} 
+
+
+\begin{Slide}{Anropsstacken och objektheapen}\SlideFontSmall
 Minnet är uppdelat i två delar:
 \begin{itemize}
-\item \Emph{Stackminne}: På stacken läggs en \Emph{aktiveringspost} \Eng{stack frame\footnote{\href{https://en.wikipedia.org/wiki/Call_stack}{en.wikipedia.org/wiki/Call\_stack}}, activation record} för varje funktionsanrop med plats för parametrar och lokala variabler. Aktiveringsposten raderas när returvärdet har levererats. Stacken växer vid nästlade funktionsanrop, då en funktion i sin tur anropar en annan funktion. 
+\item \Emph{Anropsstacken}: På stackminnet läggs en \Emph{aktiveringspost} \Eng{stack frame\footnote{\href{https://en.wikipedia.org/wiki/Call_stack}{en.wikipedia.org/wiki/Call\_stack}}, activation record} för varje funktionsanrop med plats för parametrar och lokala variabler. Aktiveringsposten raderas när returvärdet har levererats. Stacken växer vid nästlade funktionsanrop, då en funktion i sin tur anropar en annan funktion. 
 
-\item \Emph{Heapminne}: I heapminnet\footnote{\href{https://en.wikipedia.org/wiki/Memory_management}{en.wikipedia.org/wiki/Memory\_management}}$^{,}$\footnote{Ej att förväxlas med datastrukturen heap  \href{https://sv.wikipedia.org/wiki/Heap}{sv.wikipedia.org/wiki/Heap}} sparas alla objekt (data) som allokeras under körning. Heapminnet städas vid tillfälle av skräpsamlaren \Eng{garbage collector}, och minne som inte används längre frigörs. \\\vspace{0.5em}
+\item \Emph{Objektheapen}: I heapminnet\footnote{\href{https://en.wikipedia.org/wiki/Memory_management}{en.wikipedia.org/wiki/Memory\_management}}$^{,}$\footnote{Ej att förväxlas med datastrukturen heap  \href{https://sv.wikipedia.org/wiki/Heap}{sv.wikipedia.org/wiki/Heap}} sparas alla objekt (data) som allokeras under körning. Heapen städas vid tillfälle av skräpsamlaren \Eng{garbage collector}, och minne som inte används längre frigörs. \\\vspace{0.5em}
 \href{http://stackoverflow.com/questions/1565388/increase-heap-size-in-java}{stackoverflow.com/questions/1565388/increase-heap-size-in-java}
 \end{itemize}
 \end{Slide} 
 
 
 \begin{Slide}{Aktiveringspost}\SlideFontSmall
-Nästlade anrop ger växande stackminne.
+Nästlade anrop ger växande anropsstack.
 \begin{REPL}
 scala> :paste
 def f(): Unit = { val n = 5; g(n, 2 * n) }
@@ -106,6 +125,7 @@ scala> f()
 
 \end{REPL}
 
+\pause
 \Alert{Stacken}
 
 \begin{tabular}{|r | l | l |} \hline
@@ -125,53 +145,182 @@ variabel & värde & Vilken aktiveringspost? \\ \hline \hline
 \end{Slide} 
 
 
-\begin{Slide}{Lokala funktioner}
+\begin{Slide}{Lokala funktioner}\SlideFontSmall
+Med lokala funktioner kan delproblem lösas med nästlade abstraktioner. 
+
+\begin{Code}
+def gissaTalet(max: Int): Unit = {
+  def gissat = scala.io.StdIn.readLine(s"Gissa tal mellan [1, $max]: ").toInt 
+  val hemlis = (math.random * övreGräns + 1).toInt
+  def skrivLedtrådOmEjRätt(gissning: Int): Unit = 
+    if (gissning > hemlis) println("För stort :(") 
+    else if (gissning < hemlis) println("För litet :(")
+  def inteRätt(gissning: Int): Boolean = { 
+    skrivLedtrådOmEjRätt(gissning)
+    gissning != hemlis
+  }
+  def loop: Int = { var i = 1; while(inteRätt(gissat)){ i += 1 }; i }
+
+  println(s"Du hittade talet $hemlis på $loop gissningar :)")
+}
+\end{Code}
+
+Lokala, nästlade funktionsdeklarationer är tyvärr inte tillåtna i Java.\footnote{\href{http://stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}{\SlideFontSize{8}{9}stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}} 
+
 \end{Slide} 
 
 
 
-\begin{Slide}{Värdeanrop och namnanrop}
+\begin{Slide}{Värdeanrop och namnanrop}\SlideFontSmall
 \begin{itemize}
-\item 
+\item Det vi sett hittills är \Emph{värdeanrop}: argumentet evalueras \Alert{först} innan dess \Alert{värde} \emph{sedan} appliceras:
+\begin{REPL}
+scala> def byValue(n: Int): Unit = for (i <- 1 to n) print(" " + n)
+
+scala> byValue(21 + 21)
+ 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42
+
+scala> byValue({print(" hej"); 21 + 21})
+ hej 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42
+\end{REPL}
+\item Men man kan med \code{=>} före parametertypen åstadkomma \Emph{namnanrop}: argumentet \Alert{''klistras in''} i stället för \Alert{namnet} och evalueras \Alert{varje gång} (kallas även \Emph{fördröjd evaluering}):
+\begin{REPL}
+scala> def byName(n: => Int): Unit = for (i <- 1 to n) print(" " + n)
+
+scala> byName({print(" hej"); 21 + 21})
+ hej hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42
+\end{REPL}
+
 \end{itemize}
 \end{Slide} 
 
+\begin{Slide}{Klammerparenteser vid ensam parameter}
+Så här har vi sett nyss att man man göra:
+\begin{REPL}
+scala> def loop(n: => Int): Unit = for (i <- 1 to n) print(" " + n)
 
+scala> loop(21 + 21)
+
+scala> loop({print(" hej"); 21 + 21})
+\end{REPL}
+
+Men...\\För alla funktioner \code{f} gäller att: \\ det är helt ok att byta ut vanliga parenteser: \hfill\code{f(uttryck)} \\ mot krullparenteser: \hfill\code|f{uttryck}| \\ \Alert{om} parameterlistan har \Alert{exakt en} parameter.  
+
+\vspace{0.5em}Men man kan alltså göra så här också:
+\begin{REPLnonum}
+scala> loop{ 21 + 21 }
+
+scala> loop{ print(" hej"); 21 + 21 }
+\end{REPLnonum}
+
+
+\end{Slide} 
 
 \begin{Slide}{Uppdelad parameterlista}
 \begin{itemize}
-\item 
+\item Vi har tidigare sett att man kan ha mer än en parameter:
+\begin{REPLnonum}
+scala> def add(a: Int, b: Int) = a + b
+
+scala> add(21, 21)
+res0: Int = 42
+\end{REPLnonum}
+
+\item Man kan även ha \Alert{mer än en} parameterlista:
+\begin{REPLnonum}
+
+scala> def add(a: Int)(b: Int) = a + b
+
+scala> add(21)(21)
+res1: Int = 42
+\end{REPLnonum}
+\item Detta kallas även \Emph{multipla parameterlistor} \Eng{multiple parameter lists}
 \end{itemize}
+\href{http://docs.scala-lang.org/style/declarations.html#multiple-parameter-lists}{\SlideFontTiny docs.scala-lang.org/style/declarations.html\#multiple-parameter-lists}
 \end{Slide} 
 
 
 \begin{Slide}{Skapa din egen kontrollstruktur}
 \begin{itemize}
-\item 
+\item Genom att \Alert{kombinera} \Emph{uppdelad parameterlista} med \Emph{namnanrop} med \Emph{klammerparentes vid ensam parameter} kan vi skapa vår egen kontrollstruktur:
+\begin{REPLnonum}
+scala> def upprepa(n: Int)(block: => Unit) = { 
+         var i = 0
+         while (i < n) { block; i += 1 }
+       }
+
+scala> upprepa(42){ 
+         if (math.random < 0.5) {
+           print(" gurka")
+         } else {
+           print(" tomat")
+         }
+       }
+ gurka gurka gurka tomat tomat gurka gurka gurka gurka tomat tomat tomat tomat tomat gurka tomat tomat tomat tomat tomat tomat tomat tomat tomat gurka gurka gurka tomat tomat gurka gurka gurka tomat tomat gurka tomat gurka gurka gurka gurka tomat tomat
+\end{REPLnonum}
 \end{itemize}
 \end{Slide} 
 
 
-\begin{Slide}{Funktioner med namngivna argument}
+\begin{Slide}{Funktioner är äkta värden i Scala}\SlideFontSmall
 \begin{itemize}
-\item 
+\item En funktioner är ett äkta värde.
+\item Vi kan till exempel tilldela en variabel ett funktionsvärde. 
+\item Med hjälp av blank+understreck efter funktionsnamnet får vi funktionen som ett \Alert{värde} (inga argument appliceras än):
+\begin{REPLnonum}
+scala> def add(a: Int, b: Int) = a + b
+
+scala> val f = add _
+
+scala> f
+f: (Int, Int) => Int = <function2>
+
+scala> f(21, 21)
+res0: Int = 42
+\end{REPLnonum}
+
+\item Ett funktionsvärde har en \Alert{typ} precis som alla värden: \\ 
+\code{f: (Int, Int) => Int}
 \end{itemize}
 \end{Slide} 
 
-
-
-\begin{Slide}{Funktioner är äkta värden i Scala}
+\begin{Slide}{Funktionsvärden kan vara argument}
 \begin{itemize}
-\item En funktioner är ett äkta värde; vi kan till exempel tilldela en variabel ett funktionsvärde:
-\item Funktioner har en typ precis som alla värden:
-\end{itemize}
-\end{Slide} 
+\item En funktion kan ha en annan funktion som parameter:
+\begin{REPL}
+scala> def räkna(x: Int, y: Int, f: (Int, Int) => Int) = f(x , y)
 
+scala> def add(a: Int, b: Int) = a + b
+
+scala> def sub(a: Int, b: Int) = a - b
+
+scala> räkna(21, 21, add _)
+res1: Int = 42
+
+scala> räkna(21, 21, sub _)
+res1: Int = 0
+\end{REPL}
+
+\item Om argumentets funktionstyp \Alert{kan härledas} av kompilatorn och \Alert{passar} med parametertypen så behövs ej understreck: \\ 
+\begin{REPL}
+scala> räkna(21, 21, add)
+res1: Int = 42
+\end{REPL}\end{itemize}
+\end{Slide}
 
 
 \begin{Slide}{Anonyma funktioner}
 \begin{itemize}
-\item 
+\item  Man behöver inte sätta namn på funktioner. De kan i stället skapas med hjälp av \Emph{funktionsliteraler}.\footnote{Även kallade ''lambda-värden'' efter den s.k. lambdakalkylen.}
+
+\item En funktionsliteral har inget namn, men ...
+\begin{enumerate}
+\item en parameterlista, \item sedan den reserverade krummeluren \code{=>} \item och sedan ett uttryck (eller ett block).
+\end{enumerate}
+\item Exempel:
+\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
+(x: Int, y: Int) => x + y
+\end{Code}
 \end{itemize}
 \end{Slide}
 
@@ -194,6 +343,30 @@ variabel & värde & Vilken aktiveringspost? \\ \hline \hline
 \end{Slide} 
 
 
+\begin{Slide}{Begränsningar i Java}\SlideFontSmall
+\begin{itemize}
+\item Av dessa funktionskoncept...
+\begin{itemize}\SlideFontSmall
+\item överlagring
+\item utelämna tom parameterlista (principen om enhetlig access)
+\item defaultargument
+\item namngivna argument
+\item lokala funktioner
+\item namnanrop (fördröjd evaluering)
+\item klammerparentes vid ensam paramenter
+\item uppdelad parameterlista
+\item egendefinierade kontrollstrukturer
+\item funktioner som äkta värden
+\item anonyma funktioner
+\item stegade funktioner (''Curry-funktioner'')
+\end{itemize}
+\item ...kan man endast göra \Emph{överlagring} men inget annat i Java 7, 
+\item medan även \Emph{anonyma funktioner} (''lambda'') går att göra (med vissa begränsningar) i Java 8.
+\item En av de saker jag saknar mest i Java: \Alert{lokala funktioner}!
+\end{itemize}
+Det är \Alert{kombinationen} av alla koncept som \Alert{skapar uttryckskraften} i Scala.
+
+\end{Slide} 
 
 
 
@@ -207,7 +380,7 @@ variabel & värde & Vilken aktiveringspost? \\ \hline \hline
 \item  \code{val} \item \code{var} \item \code{def} 
 \end{itemize}
 \item Ett sådant objekt kallas även för \Emph{modul}.\footnote{
-Även paket som skapas med \code{package} har en egen namnrymd och är därmed också en slags modul. Objekt kan alltså i Scala användas som ett alternativ till paket; en skillnad är att objekt kan ha tillstånd och att objekt inte skapar underkataloger vid kompilering.  \href{https://en.wikipedia.org/wiki/Modular_programming}{en.wikipedia.org/wiki/Modular\_programming}}
+Även paket som skapas med \code{package} har en egen namnrymd och är därmed också en slags modul. Objekt kan alltså i Scala användas som ett alternativ till paket; en skillnad är att objekt kan ha tillstånd och att objekt inte skapar underkataloger vid kompilering (det finns iofs s.k. \code{package object}) \href{https://en.wikipedia.org/wiki/Modular_programming}{en.wikipedia.org/wiki/Modular\_programming}}
 
 \end{itemize}
 
