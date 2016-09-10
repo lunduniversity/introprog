@@ -150,17 +150,17 @@ Med lokala funktioner kan delproblem lösas med nästlade abstraktioner.
 
 \begin{Code}
 def gissaTalet(max: Int): Unit = {
-  def gissat = scala.io.StdIn.readLine(s"Gissa tal mellan [1, $max]: ").toInt 
-  val hemlis = (math.random * övreGräns + 1).toInt
+  def gissat = io.StdIn.readLine(s"Gissa talet mellan [1, $max]: ").toInt 
+  val hemlis = (math.random * max + 1).toInt
   def skrivLedtrådOmEjRätt(gissning: Int): Unit = 
-    if (gissning > hemlis) println("För stort :(") 
-    else if (gissning < hemlis) println("För litet :(")
+    if (gissning > hemlis) println(s"$gissning är för stort :(") 
+    else if (gissning < hemlis) println(s"$gissning är för litet :(")
   def inteRätt(gissning: Int): Boolean = { 
     skrivLedtrådOmEjRätt(gissning)
     gissning != hemlis
   }
   def loop: Int = { var i = 1; while(inteRätt(gissat)){ i += 1 }; i }
-
+  
   println(s"Du hittade talet $hemlis på $loop gissningar :)")
 }
 \end{Code}
@@ -288,65 +288,174 @@ res0: Int = 42
 \begin{itemize}
 \item En funktion kan ha en annan funktion som parameter:
 \begin{REPL}
-scala> def räkna(x: Int, y: Int, f: (Int, Int) => Int) = f(x , y)
+scala> def tvåGånger(x: Int, f: Int => Int) = f(f(x))
 
-scala> def add(a: Int, b: Int) = a + b
+scala> def öka(x: Int) = x + 1
 
-scala> def sub(a: Int, b: Int) = a - b
+scala> def minska(x: Int) = x - 1
 
-scala> räkna(21, 21, add _)
-res1: Int = 42
+scala> tvåGånger(42, öka _)
+res1: Int = 43
 
-scala> räkna(21, 21, sub _)
-res1: Int = 0
+scala> tvåGånger(42, minska _)
+res1: Int = 41
 \end{REPL}
 
 \item Om argumentets funktionstyp \Alert{kan härledas} av kompilatorn och \Alert{passar} med parametertypen så behövs ej understreck: \\ 
 \begin{REPL}
-scala> räkna(21, 21, add)
-res1: Int = 42
+scala> tvåGånger(42, öka)
+res1: Int = 43
 \end{REPL}\end{itemize}
 \end{Slide}
 
 
+
+\begin{Slide}{Applicera funktioner på element i samlingar}\SlideFontSmall
+\begin{REPL}
+scala> def öka(x: Int) = x + 1
+
+scala> def minska(x: Int) = x - 1
+
+scala> val xs = Vector(1, 2, 3)
+
+scala> xs.map(öka)
+res0: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
+
+scala> xs.map(minska)
+res1: scala.collection.immutable.Vector[Int] = Vector(0, 1, 2)
+
+scala> xs map öka
+res2: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
+
+scala> xs map minska
+res3: scala.collection.immutable.Vector[Int] = Vector(0, 1, 2)
+\end{REPL}
+Funktioner som tar en funktion som parameter \Emph{högre ordningens funktion}. 
+Funktionerna \code{två} från tidigare och \code{map} ovan är alltså av högre ordningen.
+\end{Slide} 
+
+
+
+
 \begin{Slide}{Anonyma funktioner}
 \begin{itemize}
-\item  Man behöver inte sätta namn på funktioner. De kan i stället skapas med hjälp av \Emph{funktionsliteraler}.\footnote{Även kallade ''lambda-värden'' efter den s.k. lambdakalkylen.}
+\item  Man behöver inte ge funktioner namn. De kan i stället skapas med hjälp av \Emph{funktionsliteraler}.\footnote{Även kallat ''lambda-värde'' eller bara ''lamda'' efter den s.k. lambdakalkylen. \href{https://en.wikipedia.org/wiki/Anonymous_function}{en.wikipedia.org/wiki/Anonymous\_function}}
 
-\item En funktionsliteral har inget namn, men ...
+\item En funktionsliteral har ...
 \begin{enumerate}
-\item en parameterlista, \item sedan den reserverade krummeluren \code{=>} \item och sedan ett uttryck (eller ett block).
+\item en parameterlista (utan funktionsnamn) och ev. returtyp, \item sedan den reserverade teckenkombinationen \code{=>} \item och sedan ett uttryck (eller ett block).
 \end{enumerate}
 \item Exempel:
 \begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
-(x: Int, y: Int) => x + y
+(x: Int, y: Int): Int => x + y
 \end{Code}
+\pause
+\item Om kompilatorn kan gissa typerna från sammanhanget så behöver typerna inte anges i själva  funktionsliteralen:
+\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
+val f: (Int, Int) => Int = (x, y) => x + y
+\end{Code}
+
 \end{itemize}
 \end{Slide}
 
 
-
-
-\begin{Slide}{Applicera funktioner på element i samlingar}
+\begin{Slide}{Applicera anonyma funktioner på element i samlingar}\SlideFontSmall
 \begin{itemize}
-\item 
+\item Anonym funktion skapad med funktionsliteral direkt i anropet:
+\begin{REPL}
+scala> val xs = Vector(1, 2, 3)
+
+scala> xs.map((x: Int): Int => x + 1)
+res0: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
+\end{REPL}
+\item Eftersom kompilatorn här kan härleda typerna så behövs de inte:
+\begin{REPL}
+scala> xs.map(x => x - 1)
+res1: scala.collection.immutable.Vector[Int] = Vector(0, 1, 2)
+
+scala> xs map (x => x - 1)
+res2: scala.collection.immutable.Vector[Int] = Vector(0, 1, 2)
+
+\end{REPL}
+\item Om man bara använder parametern en enda gång i funktionen så kan man byta ut parameternamnet mot ett understreck.
+
+\begin{REPL}
+scala> xs.map(_ + 1)
+res3: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
+\end{REPL}
 \end{itemize}
 \end{Slide} 
 
 
+
+\begin{Slide}{Platshållarsyntax för anonyma funktioner}\SlideFontSmall
+\begin{itemize}
+\item Understreck i funktionsliteraler kallas \Emph{platshållare} \Eng{placeholder} och medger ett förkortat skrivsätt \Alert{om} den parameter som understrecket representerar används \Alert{endast en gång}.
+
+\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
+_ + 1
+\end{Code}
+Ovan expanderas av kompilatorn till följande funktionsliteral \\(där namnet på parametern är godtyckligt):
+\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
+x => x + 1
+\end{Code}
+\pause
+\item Det kan förekomma flera understreck; det första avser första parametern, det andra avser andra parametern etc.
+\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
+_ + _
+\end{Code}
+... expanderas till:
+\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
+(x, y) => x + y 
+\end{Code}
+
+\end{itemize}
+\end{Slide} 
+
+
+\begin{Slide}{Exempel på platshållarsyntax med samlingsmetoden \texttt{reduceLeft}}\SlideFontSmall
+Metoden \code{reduceLeft} applerar en funktion på de två första elementen och tar sedan på resultatet som första argument och nästa element som andra argument och upprepar detta genom hela samlingen. 
+\begin{REPL}
+scala> def summa(x: Int, y: Int) = x + y
+
+scala> val xs = Vector(1, 2, 3, 4, 5)
+
+scala> xs.reduceLeft(summa)
+res20: Int = 15
+
+scala> xs.reduceLeft((x, y) => x + y)
+res21: Int = 15
+
+scala> xs.reduceLeft(_ + _)
+res22: Int = 15
+
+scala> xs.reduceLeft(_ * _)
+res23: Int = 120
+\end{REPL}
+\end{Slide} 
 
 
 \begin{Slide}{Stegade funktioner, ''Curry-funktioner''}
-\begin{itemize}
-\item 
-\end{itemize}
+Om en funktion har en uppdelad parameterlista kan man skapa \Emph{stegade funktioner}, även kallat \Emph{partiellt applicerade} funktioner \Eng{partially applied functions} eller \Emph{''Curry''-funktioner}.
+\begin{REPLnonum}
+scala> def add(x: Int)(y: Int) = x + y  
+
+scala> val öka = add(1) _
+öka: Int => Int = <function1>
+
+scala> Vector(1,2,3).map(öka)
+res0:scala.collection.immutable.Vector[Int]= Vector(2, 3, 4)
+
+scala> Vector(1,2,3).map(add(2))
+res1:scala.collection.immutable.Vector[Int]= Vector(3, 4, 5)
+\end{REPLnonum}
 \end{Slide} 
 
 
-\begin{Slide}{Begränsningar i Java}\SlideFontSmall
+\begin{Slide}{Begränsningar i Java}\SlideFontTiny
 \begin{itemize}
-\item Av dessa funktionskoncept...
-\begin{itemize}\SlideFontSmall
+\item Av alla dessa funktionskoncept...
+\begin{itemize}\SlideFontTiny
 \item överlagring
 \item utelämna tom parameterlista (principen om enhetlig access)
 \item defaultargument
@@ -360,9 +469,9 @@ res1: Int = 42
 \item anonyma funktioner
 \item stegade funktioner (''Curry-funktioner'')
 \end{itemize}
-\item ...kan man endast göra \Emph{överlagring} men inget annat i Java 7, 
-\item medan även \Emph{anonyma funktioner} (''lambda'') går att göra (med vissa begränsningar) i Java 8.
-\item En av de saker jag saknar mest i Java: \Alert{lokala funktioner}!
+\item ...kan man endast göra \Emph{överlagring} i Java 7, 
+\item medan även \Emph{anonyma funktioner} (''lambda'') går att göra (med vissa begränsningar) i Java 8. \href{https://en.wikipedia.org/wiki/Anonymous_function\#Java_Limitations}{en.wikipedia.org/wiki/Anonymous\_function\#Java\_Limitations}
+\item \vspace{0.5em} En av de saker jag saknar mest i Java: \Alert{lokala funktioner}!
 \end{itemize}
 Det är \Alert{kombinationen} av alla koncept som \Alert{skapar uttryckskraften} i Scala.
 
@@ -406,7 +515,7 @@ En funktion som finns inuti ett objekt är en \Emph{metod}.
 
 
 \begin{Slide}{Funktioner är äkta objekt i Scala}
-Scala visar hur man kan \Alert{förena} \Eng{unify} objekt-orientering och funktionsprogrammering på ett elegant \& pragmatiskt sätt: \\\vspace{2em}
+Scala visar hur man kan \Alert{förena} \Eng{unify} \\ \Emph{objekt-orientering} och \Emph{funktionsprogrammering}: \\\vspace{2em}
 
 \Emph{\Large En funktion är ett objekt \\ som har en \code{apply}-metod.}
 
@@ -417,6 +526,26 @@ Scala visar hur man kan \Alert{förena} \Eng{unify} objekt-orientering och funkt
 \Subsection{Rekursion}
 \begin{Slide}{Rekursiva funktioner}
 \end{Slide} 
+
+\begin{Slide}{Loopa med rekursion}
+\begin{Code}
+def gissaTalet(max: Int): Unit = {
+  def gissat = io.StdIn.readLine(s"Gissa talet mellan [1, $max]: ").toInt 
+  val hemlis = (math.random * max + 1).toInt
+  def skrivLedtrådOmEjRätt(gissning: Int): Unit = 
+    if (gissning > hemlis) println(s"$gissning är för stort :(") 
+    else if (gissning < hemlis) println(s"$gissning är för litet :(")
+  def ärRätt(gissning: Int): Boolean = { 
+    skrivLedtrådOmEjRätt(gissning)
+    gissning == hemlis
+  }
+  def loop(n: Int = 1): Int = if (ärRätt(gissat)) n else loop(n + 1)
+  
+  println(s"Du hittade talet $hemlis på ${loop()} gissningar :)")
+}
+\end{Code}
+\end{Slide} 
+
 
 \begin{Slide}{Rekursiva datastrukturer}
 \end{Slide} 
