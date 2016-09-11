@@ -482,7 +482,7 @@ Det är \Alert{kombinationen} av alla koncept som \Alert{skapar uttryckskraften}
 
 \begin{Slide}{Objekt som modul}
 \begin{itemize}
-\item Ett \code{object} användas ofta för att samla \Emph{medlemmar} som hör ihop och ge dem en egen \Emph{namnrymd}. 
+\item Ett \code{object} användas ofta för att samla \Emph{medlemmar} \Eng{members} som \Alert{hör ihop} och ge dem en egen \Emph{namnrymd} \Eng{name space}. 
 \item Medlemmarna kan vara t.ex.: 
 \begin{itemize}
 \item  \code{val} \item \code{var} \item \code{def} 
@@ -494,22 +494,141 @@ Det är \Alert{kombinationen} av alla koncept som \Alert{skapar uttryckskraften}
 
 \end{Slide}
 
+\begin{Slide}{Singelobjekt och metod} \SlideFontSmall
+Ett Scala-\code{object} är ett s.k. \Emph{singelobjekt} \Eng{singleton object} och finns bara i \Alert{en} enda upplaga. \\ Minne för objektets variabler allokeras första gången objektet refereras. \\ En funktion som finns i ett objekt kallas en \Emph{metod} \Eng{method}.
+\begin{Code}[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]
+object mittBankkonto {
+  val kontonr: Long        = 1234567L
+  var saldo: Int           = 1000
+  def ärSkuldsatt: Boolean = saldo < 0
+}
+\end{Code}
+\begin{REPLnonum}
+scala> mittBankkonto.saldo -= 25000
+
+scala> mittBankkonto.ärSkuldsatt
+res0: Boolean = true
+\end{REPLnonum}
+
+(Vi ska i nästa vecka se hur man med s.k. klasser kan skapa många upplagor av samma  typ av objekt, så att vi kan ha flera olika bankkonto.)
+\end{Slide} 
+
+
 
 \begin{Slide}{Vad är ett tillstånd?} 
+Ett objekts \Emph{tillstånd} är den samlade uppsättningen av värden av alla de variabler som finns i objektet.
+\begin{Code}[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]
+object mittBankkonto {
+  val kontonr: Long        = 1234567L
+  var saldo: Int           = 1000
+  def ärSkuldsatt: Boolean = saldo < 0
+}
+\end{Code}
+\begin{tikzpicture}[font=\large\sffamily]
+\matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=0.8cm}}] (mat) 
+{
+\texttt{mittBankkonto}   &  \makebox(10,10){ }\\
+%\texttt{g2}   &  \makebox(16,12){ }\\
+};
+\node[cloud, cloud puffs=13.0, cloud ignores aspect, minimum width=2cm, minimum height=3.8cm,
+ align=center, draw] (x) at (5.8cm, -1.5cm) {
+ \begin{tabular}{r l}
+ \texttt{kontonr} & \fbox{1234567L} \\
+ \texttt{saldo} & \fbox{1000}\\
+ \end{tabular}
+ };
+\filldraw[black] (1.7cm,0.0cm) circle (3pt) node[] (ref) {};
+ \draw [arrow, line width=0.7mm] (ref) -- (x);
+% \node[cloud, cloud puffs=15.7, cloud ignores aspect, %minimum width=5cm, minimum height=2cm,
+% align=center, draw] (g2) at (5cm, -2cm) {Gurka-\\objekt};
+% \filldraw[black] (0.4cm,-0.4cm) circle (3pt) node[] (g2ref) {};
+% \draw [arrow] (g2ref) -- (g2);
+\end{tikzpicture}
+\end{Slide} 
+
+
+\begin{Slide}{Tillståndsändring} 
+
+När en variabel tilldelas ett nytt värde sker en \Emph{tillståndsändring}. Ett \Emph{förändringsbart objekt} \Eng{mutable object} har ett \Emph{förändringsbart tillstånd} \Eng{mutable state}. 
+
+\begin{REPLnonum}
+scala> mittBankkonto.saldo -= 25000
+
+scala> bankKonto.saldo
+res1: Int = -24000
+\end{REPLnonum}
+\begin{tikzpicture}[font=\large\sffamily]
+\matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=0.8cm}}] (mat) 
+{
+\texttt{mittBankkonto}   &  \makebox(10,10){ }\\
+%\texttt{g2}   &  \makebox(16,12){ }\\
+};
+\node[cloud, cloud puffs=13.0, cloud ignores aspect, minimum width=2cm, minimum height=3.8cm,
+ align=center, draw] (x) at (5.8cm, -1.5cm) {
+ \begin{tabular}{r l}
+ \texttt{kontonr} & \fbox{1234567L} \\
+ \texttt{saldo} & \fbox{-24000}\\
+ \end{tabular}
+ };
+\filldraw[black] (1.7cm,0.0cm) circle (3pt) node[] (ref) {};
+ \draw [arrow, line width=0.7mm] (ref) -- (x);
+% \node[cloud, cloud puffs=15.7, cloud ignores aspect, %minimum width=5cm, minimum height=2cm,
+% align=center, draw] (g2) at (5cm, -2cm) {Gurka-\\objekt};
+% \filldraw[black] (0.4cm,-0.4cm) circle (3pt) node[] (g2ref) {};
+% \draw [arrow] (g2ref) -- (g2);
+\end{tikzpicture}
+\end{Slide} 
+
+\begin{Slide}{Vad rymmer sköldpaddan i Kojo i sitt tillstånd?} 
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{../img/kojo}
+\end{figure}
+\pause position, rikting, pennfärg, pennbredd, penna uppe/nere, fyllfärg
 \end{Slide} 
 
 \begin{Slide}{Lata variabler och fördröjd evaluering} 
+Med nyckelordet \code{lazy} före \code{val} skapas en s.k. ''lat'' \Eng{lazy} variabel.
+\begin{REPL}
+scala> val striktVektor = Vector.fill(1000000)(math.random)
+striktVektor: scala.collection.immutable.Vector[Double] = 
+ Vector(0.7583305221813246, 0.9016192590993339, 0.770022134260162, 0.15667718184929746, ...
+ 
+scala> lazy val latVektor = Vector.fill(1000000)(math.random)
+latVektor: scala.collection.immutable.Vector[Double] = <lazy>
+
+scala> latVektor
+res0: scala.collection.immutable.Vector[Double] = 
+  Vector(0.5391685014341797, 0.14759775960530275, 0.722606095900537, 0.9025572787055386, ... 
+\end{REPL}
+
+En \code {lazy val} initialiseras \Alert{inte} vid deklarationen utan när den \Alert{refereras första gången}. Yttrycket som anges i deklarationen evalueras med s.k. \Emph{fördröjd evaluering} (även ''lat'' evaluering). 
 \end{Slide} 
 
-\begin{Slide}{Vad är egentligen skillnaden mellan \texttt{val}, \texttt{lazy val}, \texttt{var}, \texttt{def}?} 
-
-En funktion som finns inuti ett objekt är en \Emph{metod}.
+\begin{Slide}{Vad är egentligen skillnaden mellan \texttt{val}, \texttt{var}, \texttt{def} och \texttt{lazy val}?} 
+\begin{Code}[basicstyle=\ttfamily\fontsize{8}{11}\selectfont]
+object slump {
+  val förAlltidSammaReferens  = math.random
+  var kanÄndrasMedTilldelning = math.random
+  def evaluerasVidVarjeAnrop  = math.random
+  lazy val fördröjdInit       = Vector.fill(1000000)(math.random)
+}
+\end{Code}
+\vspace{1em}\pause
+Lat evaluering är en viktig princip inom funktionsprogrammering som möjliggör effektiva, oföränderliga datastrukturer där element allokeras först när de behövs. \\
+\href{https://en.wikipedia.org/wiki/Lazy_evaluation}{en.wikipedia.org/wiki/Lazy\_evaluation}
 \end{Slide} 
 
 
 \Subsection{Funktioner är objekt}
 
 \begin{Slide}{Programmeringsparadigm}
+\href{https://en.wikipedia.org/wiki/Programming_paradigm}{en.wikipedia.org/wiki/Programming\_paradigm}:
+\begin{itemize}
+\item \Emph{Imperativ programmering}: programmet är uppbyggt av sekvenser av olika satser som läser och \Alert{ändrar} tillstånd
+\item \Emph{Objektorienterad programmering}: en sorts imperativ programmering där programmet består av objekt som kapslar in tillstånd och erbjuder operationer som läser och \Alert{ändrar} tillstånd.
+\item \Emph{Funktionsprogrammering}: programmet är uppbyggt av samverkande (matematiska) funktioner som \Alert{undviker} föränderlig data och tillståndsändringar. Oföränderliga datastrukturer skapar effektiva program i kombination med lat evaluering och rekursion. 
+\end{itemize}
 \end{Slide} 
 
 
