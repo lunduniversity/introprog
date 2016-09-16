@@ -5,12 +5,203 @@
 
 \Subsection{Klasser}
 
-\begin{Slide}{Vad är en klass?}
+\begin{Slide}{Vad är en klass?}\SlideFontSmall
+Vi har tidigare deklarerat \Emph{singelobjekt} som bara finns i \Alert{en} \Emph{instans}:
+\begin{REPLnonum}
+scala> object Björn { var ålder = 49; val längd = 178 }
+\end{REPLnonum}
+
+Med en \Emph{klass} kan man skapa \Alert{godtyckligt många} \Emph{instanser av klassen} med hjälp av nyckelordet \code{new} följt av klassens namn:
+
+\begin{REPLnonum}
+scala> class Person { var ålder = 0; var längd = 0 }
+
+scala> val björn = new Person
+björn: Person = Person@7ae75ba6
+
+scala> björn.ålder = 49
+
+scala> björn.längd = 178
+\end{REPLnonum}
+
+\begin{itemize}
+
+\item En klass kan ha \Emph{medlemmar} (i likhet med singelobjekt). 
+
+\item Funktioner som är medlemmar kallas \Emph{metoder}.
+
+\item Variabler som är medlemmar kallas \Emph{attribut}.
+
+
+\end{itemize}
+
 \end{Slide}
+
+
+
+
+\begin{Slide}{En klass kan ha parametrar som initialiserar attribut}
+\begin{itemize}
+\item Med en parameterlista efter klassnamnet får man en så kallad \Emph{primärkonstruktor} för initialisering av attribut. 
+\item Argumenten för initialiseringen ges vid \code{new}.
+\begin{REPLnonum}
+scala> class Person(var ålder: Int, var längd: Int)
+
+scala> val björn = new Person(49, 178)
+björn: Person = Person@354baab2
+
+scala> println(s"Björn är ${björn.ålder} år gammal.")
+Björn är 49 år gammal.
+
+scala> björn.ålder = 18
+
+scala> println(s"Björn är ${björn.ålder} år gammal.")
+Björn är 18 år gammal.
+\end{REPLnonum}
+\end{itemize}
+\end{Slide}
+
+
+
+
+\begin{Slide}{En klass kan ha privata medlemmar}
+Med nyckelordet \code{private} blir medlemmen privat och syns inte.
+
+\vspace{0.1em}
+\begin{REPL}
+scala> class Person(private var minÅlder: Int, private var minLängd: Int){
+         def ålder = minÅlder
+       }
+
+scala> val björn = new Person(42, 178)
+björn: Person = Person@4b682e71
+
+scala> println(s"Björn är ${björn.ålder} år gammal.")
+Björn är 42 år gammal.
+
+scala> björn.ålder = 18
+<console>: error: value ålder_= is not a member of Person
+       björn.ålder = 18
+
+scala> björn.längd
+<console>: error: value längd is not a member of Person
+       björn.längd
+\end{REPL}
+Med \code{private} kan man förhindra tokiga förändringar.
+\end{Slide}
+
+
+\begin{Slide}{Default synlighet för klassparametrar: \texttt{private val}}
+\end{Slide}
+
+
+\begin{Slide}{Privata förändringsbara attribut och publika metoder}
+\begin{Code}
+class Människa(val födelseLängd: Double, val födelseVikt: Double){
+  private var minLängd = födelseLängd
+  private var minVikt  = födelseVikt
+  private var ålder    = 0
+    
+  def längd = minLängd  // en sådan här metod kallas "getter"
+  def vikt  = minVikt   // vi förhindrar attributändring "utanför" klassen
+    
+  val slutaVäxaÅlder      = 18
+  val tillväxtfaktorLängd = 0.00001
+  val tillväxtfaktorVikt  = 0.0002
+
+  def ät(mat: Double): Unit = {
+    if (ålder < slutaVäxaÅlder) minLängd += tillväxtfaktorLängd * mat
+    minVikt += tillväxtfaktorVikt * mat
+  }
+  
+  def fyllÅr: Unit = ålder += 1
+  
+  def tillstånd = s"Tillstånd: $minVikt kg, $minLängd cm, $ålder år"
+}
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Tillstånd förändras indirekt genom metodanrop}
+\begin{REPL}
+scala> val björn = new Människa(födelseVikt=3.5, födelseLängd=52.1)
+björn: Människa = Människa3e52
+
+scala> björn.tillstånd
+res0: String = Tillstånd: 3.5 kg, 52.1 cm, 0 år
+
+scala> for (i <- 1 to 42) björn.fyllÅr
+
+scala> björn.tillstånd
+res2: String = Tillstånd: 3.5 kg, 52.1 cm, 42 år
+
+scala> björn.ät(mat=5000)
+
+scala> björn.tillstånd
+res3: String = Tillstånd: 4.5 kg, 52.1 cm, 42 år
+\end{REPL}
+\end{Slide}
+
+\begin{Slide}{Metoden \texttt{isInstanceOf} och topptypen \texttt{Any}}
+Any har metoden toString
+\end{Slide}
+
+\begin{Slide}{Överskugga \texttt{toString}}
+\end{Slide}
+
+\begin{Slide}{Objektfabrik i kompanjonsobjekt}
+\end{Slide}
+
+
+\begin{Slide}{Förändringsbara och oföränderliga objekt}
+\begin{Code}
+class Point(val x: Int, val y: Int) {
+  def move(dx: Int, dy: Int): Point = new Point(x += dx, y += dy)
+  
+  override def toString: String = s"Point($x, $y)"
+}
+
+class MutablePoint(private var x: Int, private var y: Int) {
+  def move(dx: Int, dy: Int): Unit = {x += dx; y += dy}
+  
+  override def toString: String = s"MutablePoint($x, $y)"
+}
+
+\end{Code}
+\end{Slide}
+
 
 \Subsection{Case-klasser}
 
-\begin{Slide}{Vad är en case-klass?}
+\begin{Slide}{Vad är en case-klass?}\SlideFontSmall
+\setlength{\leftmargini}{0pt}
+\begin{itemize}
+\item En \code{case}-klass är ett smidigt sätt att skapa \Emph{oföränderliga objekt}.
+\item Kompilatorn ger dig \Alert{en massa ''godis''} på köpet (ca 50-100 rader kod), inkl.:
+\begin{itemize}\SlideFontTiny
+\item klassparametrar blir automatiskt \code{val}-attribut, alltså \Emph{publika} och \Emph{oföränderliga},
+\item en automatisk \Emph{\texttt{toString}} som visar klassparametrarnas värde, 
+\item ett automatiskt \Emph{kompanjonsobjekt} med \Emph{fabriksmetod} så du slipper skriva \code{new},
+\item automatiska metoden \Emph{\texttt{copy}} för att skapa kopior med andra attributvärden, m.m...
+\item[] (Mer om detta i w11, men är du nyfiken kolla på uppgift 2d) på sid 261.)
+\end{itemize}
+
+\item Det \Alert{enda} du behöver göra är att lägga till nyckelordet \code{case} före \code{class}...
+\end{itemize}
+
+\vspace{-0.5em}\begin{REPLnonum}
+scala> case class Point(x: Int, y: Int)
+
+scala> val p = Point(3, 5)
+p: Point = Point(3,5)
+
+scala> p.  // tryck TAB och se lite av allt case-klass-godis
+scala> Point.  // tryck TAB och se ännu mer godis
+
+scala> val p2 = p.copy(y=30)
+p2: Point = Point(3,30)
+\end{REPLnonum}
+
+
 \end{Slide}
 
 
