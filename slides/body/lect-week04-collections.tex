@@ -8,15 +8,37 @@
 En \Emph{samling} \Eng{collection} är en datastruktur som kan innehålla många element av \Alert{samma typ}.
 
 \pause 
-\vspace{2em}\emph{Exempel:} \\Heltalsvektor: \hfill\code{val xs = Vector(-1, 2, 3, 42, 0)}
+\vspace{2em}\emph{Exempel:} \\Heltalsvektor: \hfill\code{val xs = Vector(2, -1, 3, 42, 0)}
 
 \pause 
 {\SlideFontSmall\vspace{2em}Samlingar implementeras med hjälp av klasser. \\ I standardbiblioteken \code{scala.collection} och \code{java.util} finns \Alert{många} \Emph{färdiga samlingar}, så man behöver sällan implementera egna. 
 
-\pause\vspace{0.5em}\emph{Om} man behöver en egen, speciell datastruktur är det oftast bäst att skapa en klass som \emph{innehåller} en \emph{färdig} samling och utgå från färdiga metoder.
+\pause\vspace{0.5em}\emph{Om} man behöver en egen, speciell datastruktur är det ofta lämpligt att skapa en klass som \emph{innehåller} en \emph{färdig} samling och utgå från dess färdiga metoder.
 
 }
 
+\end{Slide}
+
+
+\begin{Slide}{Typparameter möjliggör generiska samlingar}\SlideFontSmall
+Funktioner och klasser kan, förutom vanliga parametrar, även ha \Emph{typparametrar} som skrivs i en egen parameterlista med \Alert{hakparenteser}. En typparameter gör så att funktioner och datastrukturer blir \Emph{generiska} och kan hantera element av \Alert{godtycklig} typ på ett typsäkert sätt. (Mer om detta i w09.)
+
+\begin{REPLnonum}
+scala> def strängLängd[T](x: T): Int = x.toString.length
+strängLängd: [T](x: T)Int
+
+scala> strängLängd[Double](42.0)  //Double är typargument
+res0: Int = 4
+
+scala> strängLängd(42.0) //Kompilatorn härleder T=Double
+res1: Int = 4
+
+scala> Vector.empty[Int] //Här kan den ej härleda typen...
+res2: scala.collection.immutable.Vector[Int] = Vector()
+
+scala> strängLängd[Vector[Int]](Vector.empty) //...men här
+res3: Int = 8
+\end{REPLnonum}
 \end{Slide}
 
 \fi
@@ -104,8 +126,10 @@ java.util.NoSuchElementException: reached iterator end
   & \code|xs.take(n)| & ny samling med de första n elementet \\
   & \code|xs.drop(n)| & ny samling utan de första n elementet \\
   & \code|xs.foreach(f)| & gör \code|f| på alla element, returtyp \code|Unit|\\
-  & \code|xs.map(f)| & gör \code|f| på alla element, ger \Alert{ny} samling \\
-  
+  & \code|xs.map(f)| & gör \code|f| på alla element, ger ny samling \\
+  & \code|xs.filter(p)| & ny samling med bara de element där p är sant\\
+  & \code|xs.mkString(",")| & en kommaseparerad sträng med alla element\\
+    
 \texttt{\Emph{Iterable}} & & \\
   & \code|xs.zip(ys)| & ny samling med par (x, y); ''zippa ihop'' xs och ys \\
   & \code|xs.zipWithIndex| & ny samling med par (x, index för x) \\
@@ -119,10 +143,10 @@ java.util.NoSuchElementException: reached iterator end
 \end{tabular}
 
 \pause
-\vspace{1em}\Emph{Minnesregel} för \code{+:} och \code{:+  } \Alert{Colon on the collection side}
+\vspace{0.5em}\Emph{Minnesregel} för \code{+:} och \code{:+  } \Alert{Colon on the collection side}
 
 \pause
-\vspace{1em} Prova fler samlingsmetoder ur snabbreferensen: ~~\url{http://cs.lth.se/quickref}
+Prova fler samlingsmetoder ur snabbreferensen: ~~\url{http://cs.lth.se/quickref}
 \end{Slide}
 
 \begin{Slide}{Mer specifik samlingstyper i \texttt{scala.collection}}
@@ -182,8 +206,20 @@ Studera samlingars egenskaper här: \href{http://docs.scala-lang.org/overviews/c
 \includegraphics[width=0.33\textwidth]{../img/collection/collection-legend}
 \end{Slide}
 
+
 \begin{Slide}{scala.collection.mutable}
 \includegraphics[width=1.05\textwidth]{../img/collection/collection-mutable}
+\end{Slide}
+
+
+\begin{Slide}{Strängar är implicit en \texttt{IndexedSeq[Char]}}\SlideFontSmall
+Det finns en så kallad \Emph{implicit konvertering} mellan \code{String} och \code{IndexedSeq[Char]} vilket gör att \Alert{alla samlingsmetoder på \texttt{Seq} funkar även på strängar} och även flera andra smidiga strängmetoder erbjuds \Alert{utöver} de som finns i \href{http://docs.oracle.com/javase/8/docs/api/java/lang/String.html}{\code{java.lang.String}} genom klassen \href{http://www.scala-lang.org/api/current/#scala.collection.immutable.StringOps}{\code{StringOps}}.
+
+\vspace{0.5em}
+\begin{REPLnonum}
+scala> "hej".  //tryck på TAB och se alla strängmetoder
+\end{REPLnonum}
+Detta är en stor fördel med Scala jämfört med många andra språk, som har strängar som inte kan allt som andra sekvenssamlingar kan.
 \end{Slide}
 
 
@@ -203,17 +239,127 @@ Studera samlingars egenskaper här: \href{http://docs.scala-lang.org/overviews/c
 Mer om tids- och minneskomplexitet i fördjupningskursen och senare kurser.
 \end{Slide}
 
-\begin{Slide}{Speciella metoder på förändringsbara samlingar}
+
+
+\begin{Slide}{Mängd: snabb innehållstest, garanterat dubblettfri}\SlideFontSmall
+En \Emph{mängd} \Eng{set} är en samling som \Alert{inte} kan innehålla \Alert{dubbletter} och som är snabb på att avgöra om ett element \Alert{finns eller inte} i mängden.
+
+\begin{REPL}
+scala> var veg = Set.empty[String]
+veg: scala.collection.immutable.Set[String] = Set()
+
+scala> veg = veg + "Gurka"
+veg: scala.collection.immutable.Set[String] = Set(Gurka)
+
+scala> veg = veg ++ Set("Broccoli", "Tomat", "Gurka")
+veg: scala.collection.immutable.Set[String] = Set(Gurka, Broccoli, Tomat)
+
+scala> veg.contains("Gurka")
+res0: Boolean = true
+
+scala> veg.apply("Gurka")   // samma som contains
+res1: Boolean = true
+
+scala> veg("Morot")
+res2: Boolean = false
+\end{REPL}
+
+\end{Slide}
+
+\begin{Slide}{Den fantastiska nyckel-värde-tabellen \texttt{Map}}\SlideFontSmall
+\begin{itemize}
+\item En \Emph{nyckel-värde-tabell} \Eng{key-value table} är en slags generaliserad vektor där man kan ''indexera'' med godtycklig typ. 
+
+\item Kallas öven \href{https://sv.wikipedia.org/wiki/Hashtabell}{\Emph{hashtabell}} \Eng{hash table}, \Emph{lexikon} \Eng{dictionary} eller kort och gott \Emph{mapp} \Eng{map},
+
+\item En hashtabell är en \Emph{mängd av par}, där varje par består av en \Emph{nyckel} och ett \Emph{värde}. 
+
+\item Om man vet nyckeln kan man få fram värdet \Alert{snabbt}, på liknande sätt som indexering sker i en vektor om man vet heltalsindex. 
+
+\item Denna datastruktur är \Alert{mycket användbar} och liknar en enkel databas.
+\end{itemize}
+\begin{REPL}
+scala> val födelse = Map("C" -> 1972,  "C++" -> 1983, "C#" -> 2000, 
+  "Scala" -> 2014, "Java" -> 1995, "Javascript" -> 1995, "Python" -> 1991)
+
+födelse: scala.collection.immutable.Map[String,Int] = Map(Scala -> 2014, C# -> 2000, Python -> 1991, Javascript -> 1995, C -> 1972, C++ -> 1983, Java -> 1995)
+  
+scala> födelse.apply("Scala")
+res0: Int = 2014
+
+scala> födelse("Java")
+res1: Int = 1995
+
+\end{REPL}
 \end{Slide}
 
 
-\begin{Slide}{Mängd: snabb innehållstest, garanterat dubblettfri}
+
+\begin{Slide}{Speciella metoder på förändringsbara samlingar}\SlideFontSmall
+Både \code{Set} och \code{Map} finns i \Alert{förändringsbara} varianter med extra metoder för uppdatering av innehållet ''på plats'' utan att nya samlingar skapas.
+\begin{REPL}
+scala> import scala.collection.mutable
+
+scala> val ms = mutable.Set.empty[Int]
+ms: scala.collection.mutable.Set[Int] = Set()
+
+scala> ms += 42
+res0: ms.type = Set(42)
+
+scala> ms += (1, 2, 3, 1, 2, 3); ms -= 1
+res1: ms.type = Set(2, 42, 3)
+
+scala> ms.mkString("Mängd: ", ", ", s" Antal: ${ms.size}")
+res2: String = Mängd: 1, 2, 42, 3 Antal: 4
+
+scala> val ordpar = mutable.Map.empty[String, String]
+scala> ordpar += ("hej" -> "svejs", "abra" -> "kadabra", "ada" -> "lovelace")
+scala> println(ordpar("abra"))
+kadabra
+\end{REPL}
 \end{Slide}
 
-\begin{Slide}{Den fantastiska nyckel-värde-tabellen \texttt{Map}}
+\begin{Slide}{Fler användbara samlingsmetoder}
+Exempel: räkna bokstäver i ord.  \\
+Undersök vad som händer i REPL:
+\begin{Code}[basicstyle=\SlideFontSize{9}{13}\ttfamily]
+val ord = "sex laxar i en laxask sju sjösjuka sjömän" 
+val uppdelad = ord.split(' ').toVector
+val ordlängd = uppdelad.map(_.length)
+val ordlängMap = uppdelad.map(s => (s, s.size)).toMap
+val grupperaEfterFörstaBokstav = uppdelad.groupBy(s => s(0))
+val bokstäver = ord.toVector.filter(_ != ' ')
+val antalX = bokstäver.count(_ == 'x')
+val grupperade = bokstäver.groupBy(ch => ch)
+val antal = grupperade.map(kv => (kv._1, kv._2.size))
+val sorterat = antal.toVector.sortBy(_._2)
+val vanligast = antal.maxBy(_._2)
+\end{Code}
 \end{Slide}
 
 
+\begin{Slide}{Jobba med föränderlig samling lokalt; \\ returnera oföränderlig samling när du är klar}
+\SlideFontSmall
+Om du vill implementera en imperativ algoritm med en föränderlig samling:\\ 
+Gör gärna detta \Alert{lokalt} i en \Alert{förändringsbar} samling och returnera sedan en \Emph{oföränderlig} samling, genom att köra t.ex. \code{toSet} på en mängd, eller \code{toMap} på en hashtabell, eller \code{toVector} på en \code{ArrayBuffer} eller \code{Array}.
+
+\begin{REPL}
+scala> :paste
+def kastaTärningTillsAllaUtfallUtomEtt(sidor: Int = 6) = {
+  val s = scala.collection.mutable.Set.empty[Int]
+  var n = 0
+  while (s.size < sidor - 1) {
+    s += (math.random * sidor + 1).toInt
+    n += 1
+  }
+  (n, s.toSet)
+}
+scala> kastaTärningTillsAllaUtfallUtomEtt()
+res0: (Int, scala.collection.immutable.Set[Int]) = (13,Set(5, 1, 6, 2, 3))
+
+\end{REPL}
+
+\end{Slide}
 \fi
 
 
