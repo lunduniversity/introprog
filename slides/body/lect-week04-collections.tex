@@ -118,8 +118,8 @@ java.util.NoSuchElementException: reached iterator end
 \end{Slide}
 
 \begin{Slide}{Några användbara metoder på samlingar}\SlideFontTiny
-\begin{tabular}{r r l}
-\texttt{\Emph{Traversable}} & & \\
+\begin{tabular}{r r l}\hline
+\texttt{\Emph{Traversable}} 
   & \code|xs.size| & antal elementet \\
   & \code|xs.head| & första elementet \\
   & \code|xs.last| & sista elementet \\
@@ -128,17 +128,18 @@ java.util.NoSuchElementException: reached iterator end
   & \code|xs.foreach(f)| & gör \code|f| på alla element, returtyp \code|Unit|\\
   & \code|xs.map(f)| & gör \code|f| på alla element, ger ny samling \\
   & \code|xs.filter(p)| & ny samling med bara de element där p är sant\\
-  & \code|xs.mkString(",")| & en kommaseparerad sträng med alla element\\
+  & \code|xs.groupBy(f)| & ger en \code|Map| som grupperar värdena enligt f\\ 
+  & \code|xs.mkString(",")| & en kommaseparerad sträng med alla element\\ \hline
     
-\texttt{\Emph{Iterable}} & & \\
+\texttt{\Emph{Iterable}} 
   & \code|xs.zip(ys)| & ny samling med par (x, y); ''zippa ihop'' xs och ys \\
-  & \code|xs.zipWithIndex| & ny samling med par (x, index för x) \\
-  & \code|xs.sliding(n)| & ny samling av samlingar genom glidande ''fönster''\\
+  & \code|xs.zipWithIndex| & ger en \code|Map| med par (x, index för x) \\
+  & \code|xs.sliding(n)| & ny samling av samlingar genom glidande ''fönster''\\ \hline
 
-\texttt{\Emph{Seq}} & & \\
+\texttt{\Emph{Seq}} 
   & \code|xs.length| & samma som \code|xs.size| \\
   & \code|xs :+ x| & ny samling med x sist efter xs \\
-  & \code|x +: xs| & ny samling med x före xs \\
+  & \code|x +: xs| & ny samling med x före xs \\ \hline
   
 \end{tabular}
 
@@ -148,6 +149,33 @@ java.util.NoSuchElementException: reached iterator end
 \pause
 Prova fler samlingsmetoder ur snabbreferensen: ~~\url{http://cs.lth.se/quickref}
 \end{Slide}
+
+
+
+\begin{Slide}{Använda samlingsmetoder}
+\begin{REPL}
+scala> val tal = Vector(1,4,7,9,42)
+tal: scala.collection.immutable.Vector[Int] = Vector(1, 4, 7, 9, 42)
+
+scala> val jämna = tal.filter(_ % 2 == 0)
+jämna: scala.collection.immutable.Vector[Int] = Vector(4, 42)
+
+scala> val xs = Vector(("Kim","Smith"), ("Kim", "Jones"), ("Robin", "Smith"))
+xs: scala.collection.immutable.Vector[(String, String)] = Vector((Kim,Smith), (Kim,Jones), (Robin,Smith))
+
+scala> val grupperaEfterFörnamn = xs.groupBy(_._1)
+grupperaEfterFörnamn: Map[String,Vector[(String, String)]] = 
+Map(Kim -> Vector((Kim,Smith), (Kim,Jones)), Robin -> Vector((Robin,Smith)))
+
+scala> val grupperaEfterEfternamn = xs.groupBy(_._2)
+grupperaEfterEfternamn: Map[String,Vector[(String, String)]] = 
+Map(Jones -> Vector((Kim,Jones)), Smith -> Vector((Kim,Smith), (Robin,Smith)))
+
+\end{REPL}
+\end{Slide}
+
+
+
 
 \begin{Slide}{Mer specifik samlingstyper i \texttt{scala.collection}}
 Det finns \Alert{mer specifika} \Emph{subtyper} av \code{Seq}, \code{Set} och \code{Map}:
@@ -272,7 +300,7 @@ res2: Boolean = false
 
 \item Kallas öven \href{https://sv.wikipedia.org/wiki/Hashtabell}{\Emph{hashtabell}} \Eng{hash table}, \Emph{lexikon} \Eng{dictionary} eller kort och gott \Emph{mapp} \Eng{map},
 
-\item En hashtabell är en \Emph{mängd av par}, där varje par består av en \Emph{nyckel} och ett \Emph{värde}. 
+\item En hashtabell är en \Emph{samling av par}, där varje par består av en \Alert{unik} \Emph{nyckel} och ett \Emph{värde}. 
 
 \item Om man vet nyckeln kan man få fram värdet \Alert{snabbt}, på liknande sätt som indexering sker i en vektor om man vet heltalsindex. 
 
@@ -280,12 +308,12 @@ res2: Boolean = false
 \end{itemize}
 \begin{REPL}
 scala> val födelse = Map("C" -> 1972,  "C++" -> 1983, "C#" -> 2000, 
-  "Scala" -> 2014, "Java" -> 1995, "Javascript" -> 1995, "Python" -> 1991)
+  "Scala" -> 2004, "Java" -> 1995, "Javascript" -> 1995, "Python" -> 1991)
 
-födelse: scala.collection.immutable.Map[String,Int] = Map(Scala -> 2014, C# -> 2000, Python -> 1991, Javascript -> 1995, C -> 1972, C++ -> 1983, Java -> 1995)
+födelse: scala.collection.immutable.Map[String,Int] = Map(Scala -> 2004, C# -> 2000, Python -> 1991, Javascript -> 1995, C -> 1972, C++ -> 1983, Java -> 1995)
   
 scala> födelse.apply("Scala")
-res0: Int = 2014
+res0: Int = 2004
 
 scala> födelse("Java")
 res1: Int = 1995
@@ -293,20 +321,57 @@ res1: Int = 1995
 \end{REPL}
 \end{Slide}
 
-\begin{Slide}{Speciella metoder på nyckel-värde-tabeller}
-\begin{REPLnonum}
-scala> val vegofärg =  Map(
-               "gurka"     -> "grön", 
-               "tomat"     -> "röd", 
-               "aubergine" -> "lila"
-            )
-\end{REPLnonum}
+\begin{Slide}{Exempel nyckel-värde-tabell}
+\begin{REPL}
+scala> val färg = Map("gurka" -> "grön", "tomat"->"röd", "aubergine"->"lila")
+färg: scala.collection.immutable.Map[String,String] = 
+  Map(gurka -> grön, tomat -> röd, aubergine -> lila)
+
+scala> färg("gurka")
+res0: String = grön
+
+scala> färg.keySet
+res1: scala.collection.immutable.Set[String] = Set(gurka, tomat, aubergine)
+
+scala> val ärGrönSak = färg.map(elem => (elem._1, elem._2 == "grön"))
+ärGrönSak: Map[String,Boolean] = Map(gurka -> true, tomat -> false, aubergine -> false)
+
+scala> val baklängesFärg = färg.mapValues(s => s.reverse)
+baklängesFärg: Map[String,String] = Map(gurka -> nörg, tomat -> dör, aubergine -> alil)
+
+\end{REPL}
 \begin{itemize}
 \item \code{xs.keySet} ger en mängd av alla nycklar
 \item \code{xs.map(f)} mappar funktionen f på alla par av (key, value)
-\item \code{xs.mapValues(f)} mappar funktionen map på alla värden 
+\item \code{xs.mapValues(f)} mappar funktionen f på alla värden 
 \end{itemize}
 
+\end{Slide}
+
+\begin{Slide}{Metoderna zipWithIndex, groupBy och mapValues}
+\begin{REPL}
+scala> val högaKort = Vector("Knekt", "Dam", "Kung", "Äss")
+
+scala> val kortIndex = högaKort.zipWithIndex.toMap
+kortIndex: Map[String,Int] = Map(Knekt -> 0, Dam -> 1, Kung -> 2, Äss -> 3)
+
+scala> kortIndex("Kung") > kortIndex("Knekt") 
+res0: Boolean = true
+
+scala> val xs = Vector(("Kim","Smith"), ("Kim", "Jones"), ("Robin", "Smith"))
+xs: Vector[(String, String)] = Vector((Kim,Smith), (Kim,Jones), (Robin,Smith))
+
+scala> val grupperaEfterFörnamn = xs.groupBy(_._1)
+grupperaEfterFörnamn: Map[String,Vector[(String, String)]] = 
+Map(Kim -> Vector((Kim,Smith), (Kim,Jones)), Robin -> Vector((Robin,Smith)))
+
+scala> val grupperaEfterEfternamn = xs.groupBy(_._2)
+grupperaEfterEfternamn: Map[String,Vector[(String, String)]] = 
+Map(Jones -> Vector((Kim,Jones)), Smith -> Vector((Kim,Smith), (Robin,Smith)))
+
+scala> val frekvens = xs.groupBy(_._1).mapValues(_.size)
+frekvens: Map[String,Int] = Map(Kim -> 2, Robin -> 1)
+\end{REPL}
 \end{Slide}
 
 
@@ -334,7 +399,7 @@ kadabra
 \end{REPL}
 \end{Slide}
 
-\begin{Slide}{Fler användbara samlingsmetoder}
+\begin{Slide}{Fler exempel på samlingsmetoder}
 Exempel: räkna bokstäver i ord.  \\
 Undersök vad som händer i REPL:
 \begin{Code}[basicstyle=\SlideFontSize{9}{13}\ttfamily]
