@@ -36,6 +36,8 @@ res0: Double = 32.98514817307935
 
 \Task %Uppgift 3
 
+\Subtask  \includegraphics[scale=0.5]{../img/w04-solutions/uppgift-3a}
+
 \Subtask  
 Tilldelningen på rad 8 \code{k1.nummer = 12345L} ger felmeddelande eftersom variablen är oförändlig.
 
@@ -45,9 +47,13 @@ Tilldelningen på rad 8 \code{k1.nummer = 12345L} ger felmeddelande eftersom var
 
 \Subtask  Ja.
 
-\Subtask
+\Subtask  
+\begin{REPLnonum}
+scala> k.saldo = 42
+scala> k2.saldo = 67
+\end{REPLnonum}
 
-\Subtask  Felmeddeland, eftersom variablen är oförändlig.
+\Subtask  Eftersom variablen är oförändlig ges ett felmeddelande.
 
 \Subtask  En fördel med klass är att man kan specificera att variablen ska kunna vara förändlig. En till är att man kan inkludera metoder i klassen som man vill kunna använda på värdena.
 
@@ -56,28 +62,50 @@ Tilldelningen på rad 8 \code{k1.nummer = 12345L} ger felmeddelande eftersom var
 \Subtask 
 Det går bra att ändra på variablen saldo i instansen av Konto1 men inte av Konto2 där man får ett error på raden ''k2.saldo += 1000''
 
-\Subtask 
-Som i deluppgift a ger båda exemplena samma error meddelande.
+\Subtask -
 
 \Subtask 
-\begin{REPLnonum}
-def ut(belopp: Int): (Int, Int) = \{
-	if(saldo >= belopp) \{
+''println(k.saldo)'' och ''k.saldo += 1000'' ger båda error, pga privat attribut.
+
+\Subtask 
+\begin{Code}
+def ut(belopp: Int): (Int, Int) = {
+	if(saldo >= belopp) {
 		saldo -= belopp
 		(belopp, saldo)
-	\} else \{
+	} else {
 		val temp = saldo
 		saldo = 0
 		(temp, 0)
-	\}
-\}
-\end{REPLnonum}
+	}
+}
+\end{Code}
 
 \Subtask 
-Lägg till if(belopp > 0) i båda funktionerna och låt if-satsen omsluta all den gamla koden.
+Lägg till en if-sats i båda funktionerna som omsluter den gamla koden.
+\begin{Code}
+def ut(belopp: Int): (Int, Int) = {
+  if(belopp >= 0) {
+    if(saldo >= belopp) {
+      saldo -= belopp
+      (belopp, saldo)
+    } else {
+      val temp = saldo
+      saldo = 0
+      (temp, 0)
+    }
+  }
+}
+
+def in(belopp: Int): Unit = {
+  if(belopp >= 0) {
+    saldo += belopp 
+  }
+}
+\end{Code}
 
 \Subtask 
-Minskar risken till att det kan bli fel genom ändrar värdena på fel sätt. Genom att endast ha metoder som du speciferar kan du kontrollera hur användare av koden får ändra på värdena.
+Genom att göra attributet privat och gör egna metoder kan man se till att attriuten endast ändras på säkra sätt. Så inte fel uppstår.
 
 \Task %Uppgift 6
 
@@ -89,34 +117,30 @@ Eftersom typen Int ej är kompatibel med ett värde av typen Double.
 Eftersom typen Double ej är kompatibel med ett värde av typen Punkt.
 
 ''val p = new Punkt(5.0, 5.0): Double'' error: type mismatch;
-Samma som förra.
+Eftersom typen Double ej är kompatibel med ett värde av typen Punkt.
 
 \Subtask 
-true, false, false, true, false
+Rad 3 till 7 i respektive ordning: true, false, false, true och false.
 
 \Task %Uppgift 7
-
-\Subtask 
-En variabel med namn pt skapas med typen Punkt.
-true
-true
-String = 1.0
-skriver ut: 1.0
-error: not found: value a
-String = 2.0
-error: not found: value a
+\\En variabel med namn pt skapas med typen Punkt.\
+\\true
+\\true
+\\String = 1.0
+\\skriver ut: 1.0
+\\error: not found: value a
+\\String = 2.0
+\\error: not found: value a
 
 \Task %Uppgift 8
 
 \Subtask 
-''println(pt)'' kallar på pt.toString, och eftersom metoden är överskriven kallas vår version.
+''println(pt)'' kallar på pt.toString, och eftersom metoden är överskriven kallas den nya version.
+
+\Subtask  \code{override def toString: String = ''Punkt('' + x + '', '' + y + '').''}
 
 \Subtask 
-override def toString: String = ''Punkt('' + x + '', '' + y + '').''
-
-\Subtask 
-får ett error meddelande.
-error: overriding method toString in class OBject of type ()String;
+error: overriding method toString in class Object of type ()String;
 
 \Task %Uppgift 9
 
@@ -126,13 +150,13 @@ scala> val pt = Pt(1.0, 2.0)
 pt: Pt = Pt(x=1.0,y=2.0)
 
 scala> Pt(4.0, 2.0)
-res45: Pt = Pt(x=4.0,y=2.0)
+res0: Pt = Pt(x=4.0,y=2.0)
 
 scala> Pt(6.0, 3.0)
-res46: Pt = Pt(x=6.0,y=3.0)
+res1: Pt = Pt(x=6.0,y=3.0)
 
 scala> Pt(666.0, 1337.0)
-res47: Pt = Pt(x=666.0,y=1337.0)
+res2: Pt = Pt(x=666.0,y=1337.0)
 \end{REPL}
 
 \Subtask \code{def apply(): Pt = new Pt(0, 0)}
@@ -160,7 +184,10 @@ scala> Rational(666, 1337)
 \Task %Uppgift 11
 
 \Subtask 
-5 är avståndet.
+\begin{REPLnonum}
+scala> Point(3, 4).distToOrigin
+res0: Double = 5.0
+\end{REPLnonum}
 
 \Subtask 
 p3.x = 8
@@ -169,9 +196,67 @@ p3.y = 10
 \Task %Uppgift 12
 
 \Subtask 
-Operatornotation:	4, 6, 10, 12
-Punktnotation:		3, 5, 8, 9, 11, 13
-FelMeddelande:		9
+\\Operatornotation:	4, 6, 10, 12
+\\Punktnotation:		3, 5, 8, 9, 11, 13
+\\Felmeddelande:		9
+
+\Subtask
+\begin{Code}
+case class Point(x: Double, y: Double) {
+  def distToOrigin: Double = math.hypot(x, y)
+  def add(p: Point): Point = Point(x + p.x, y + p.y)
+  def +(p: Point): Point = add(p)
+  def sub(p: Point): Point = Point(x - p.x, y - p.y)
+  def -(p: Point): Point = sub(p)
+}
+\end{Code}
+\begin{REPL}
+scala> val p1: Point = Point(1, 9)
+scala> val p2: Point = Point(9, 6)
+scala> p1.sub(p2)
+scala> p1.-(p2)
+scala> p2 sub p1
+scala> p2 - p2
+scala> p1.add(p2.sub(p1))
+scala> p1 + (p2 - p1)
+\end{REPL}
+
+\Subtask
+\begin{Code}
+case class Point(x: Double, y: Double) {
+  def distToOrigin: Double = math.hypot(x, y)
+  def add(p: Point): Point = Point(x + p.x, y + p.y)
+  def +(p: Point): Point = add(p)
+  def sub(p: Point): Point = Point(x - p.x, y - p.y)
+  def -(p: Point): Point = sub(p)
+  def scale(a: Double, b: Double) = Point(x * a, y * b)
+}
+\end{Code}
+\begin{REPL}
+scala> val p: Point(13,  37)
+scala> p.scale(4, 2)
+scala> p scale (3, 7)
+\end{REPL}
+
+\Task %Uppgift 13
+
+\Subtask  \includegraphics[scale=0.5]{../img/w04-solutions/uppgift-13a}
+
+\Subtask  
+\begin{enumerate}
+\item \includegraphics[scale=0.5]{../img/w04-solutions/uppgift-13b-1}
+\item \includegraphics[scale=0.5]{../img/w04-solutions/uppgift-13b-2}
+\item \includegraphics[scale=0.5]{../img/w04-solutions/uppgift-13b-3}
+\end{enumerate}
+
+\Subtask  
+\begin{enumerate}
+\item \includegraphics[scale=0.5]{../img/w04-solutions/uppgift-13c-1}
+\item \includegraphics[scale=0.5]{../img/w04-solutions/uppgift-13c-2}
+\item \includegraphics[scale=0.5]{../img/w04-solutions/uppgift-13c-3}
+\end{enumerate}
+
+\Subtask  En stor fördel är att vi till exempel kan skicka med en immutable som argument till en metod och vara säkra på att metoden inte ändrar på värdet.
 
 \Task %Uppgift 14
 
@@ -182,14 +267,14 @@ FelMeddelande:		9
 \Task %Uppgift 15
 
 \Subtask 
-Instansierar en tom vektor med element av typen int.
-Error eftersom ''xs :+ ''42''' ger en Vector[Any] när Vector[Int] krävs.
-Vecktorn utökas.
-Vektorn skrivs ut.
-ger ett resultat av vektorn plus talet 42.
-Error: type mismatch
-skapa tom vektor
-ge variablen en lista som värde.
+\\1. Instansierar en tom vektor med element av typen int och tilldelar värdet till en variabel xs.
+\\2. Error eftersom \code{xs :+ ''42''} ger en Vector[Any] när Vector[Int] krävs.
+\\3. xs tilldelas ett nytt värde av Vector(43, 64, 46)
+\\4. xs skrivs ut.
+\\5. Lägger till talet 42 i xs.
+\\6. Error: type mismatch
+\\7. Skapar en tom Vector i variablen ingenting
+\\8. ingenting får värdet Vector(1, 2, 3)
 
 \Subtask 
 Tre metoder skapas, första för att få första elementet i en lista, och eftersom den defineras med special typen T går den att använda med alla Vektorer oavsätt typen av variable i vektorn. Den andra får fram sista elementet och sista hämtar båda två.
@@ -311,11 +396,13 @@ Sist kör vi en for-loop där vi 100 gånger kör testet, samtidigt räknas hur 
 
 Vårt resultat är en siffra på hur många gånger xs var samma som en blandad version av sig själv, eftersom det finns 6 permutationer med 3 variabler så borde det vara ungefär 1/6 chans.
 
+\Subtask -
+
 \Subtask 
-\code{map(\_.trim)} tar bort alla onödiga mellanrum i början och slutet på varje rad
-\code{filterNot(\_.startsWith(''<''))} filtrerar bort alla rader som börjar med strängen ''<''
-\code{filterNot(\_.isEmpty)} filtrerar bort alla tomma rader.
-\code{foreach(println)} skriver ut alla rader.
+\\ \code{map(\_.trim)} tar bort alla onödiga mellanrum i början och slutet på varje rad
+\\ \code{filterNot(\_.startsWith(''<''))} filtrerar bort alla rader som börjar med strängen ''<''
+\\ \code{filterNot(\_.isEmpty)} filtrerar bort alla tomma rader.
+\\ \code{foreach(println)} skriver ut alla rader.
 
 \Task %Uppgift 19
 
@@ -445,7 +532,7 @@ java.util.NoSuchElementException: key not found: 'Kim
 
 scala> telnr.get(''Kim'')
 res2: Option[Long] = None
-\end{REPLnunom}
+\end{REPLnonum}
 
 \Subtask 
 \begin{REPLnonum} 
@@ -469,7 +556,7 @@ Använd metoden toMap och apply.
 
 \Task %Uppgift 23
 
-\Subtask  Metoden maxBy hämtar det element som är ''störst'', där storhet är baserat först på första värdet i 2-tuplarna och sedan på det andra värdet.
+\Subtask  Metoden maxBy hämtar det element som är ''störst'', på rad två gör \code{x => x._1} att första värdet i tuplerna används för att bestämma vilken som är störst. Likt gör \code{x => x._2} på rad tre att istället det andra värdet används.
 
 \Subtask  
 \begin{REPLnonum}
@@ -483,3 +570,7 @@ scala> xs.minBy(_._1)
 scala> xs.minBy(_._2)
 \end{REPLnonum}
 
+
+\Task %Uppgift 24
+
+Metoden \code{sliding(i: Int).toVector} skapar en ny vector med alla möjliga permutationer av elementen i en vektor med storleken i.
