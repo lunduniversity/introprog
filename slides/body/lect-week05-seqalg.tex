@@ -3,6 +3,8 @@
 
 %%%
 
+\Subsection{Vad är en sekvensalgoritm?}
+
 \begin{Slide}{Vad är en sekvensalgoritm?}
 \begin{itemize} 
 \item En algoritm är en stegvis beskrivning av hur man löser ett problem. 
@@ -13,107 +15,67 @@
 \item Två olika principer:
 \begin{itemize} 
 \item Skapa \Emph{ny sekvens} utan att förändra indatasekvensen
-\item Ändra \Emph{på plats} \Eng{in place} i den \Alert{föränderliga} indatasekvensen
+\item Ändra \Emph{på plats} \Eng{in place} i den \Alert{förändringsbara} indatasekvensen
 \end{itemize}
 \end{itemize}
 
 \end{Slide}
 
 
-\begin{Slide}{Några indexerbara samlingar}
-\begin{itemize}
-\item Oföränderliga:  
-  \begin{itemize} 
-  \item Kan \Alert{ej} ändra elementreferenserna: \\ 
-    Scala: \Emph{Vector}, \Emph{List}
-  \end{itemize}
-
-\item Föränderliga: kan \Alert{ändra} elemententreferenserna
-  \begin{itemize} 
-  \item Kan \Alert{ej ändra storlek} efter allokering: \\ Scala+Java: \Emph{Array} 
-  \item Kan ändra storlek efter allokering: \\ Scala: \Emph{ArrayBuffer} \\ Java: \Emph{ArrayList}
-  \end{itemize}
-\end{itemize}
-\end{Slide}
+\Subsection{SEQ-COPY}
 
 \begin{Slide}{Algoritm: SEQ-COPY}
+\Emph{Pseudokod} för algoritmen SEQ-COPY som kopierar en sekvens, här en Array med heltal:\\
+\noindent\hrulefill
 \begin{algorithm}[H]
  \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
  \Input{Heltalsarray $xs$} 
  \Output{En ny heltalsarray som är en kopia av $xs$. \\ \vspace{1em}}
- $n \leftarrow$ antalet element i $xs$ \\
- $ys \leftarrow$ en ny array med plats för $n$ element\\
+ $result \leftarrow$ en ny array med plats för $xs.length$ element\\
  $i \leftarrow 0$  \\
- \While{$i < n$}{
-  $ys(i) \leftarrow xs(i)$\\
+ \While{$i < xs.length$}{
+  $result(i) \leftarrow xs(i)$\\
   $i \leftarrow i + 1$\\
  }
- \Return $ys$
+ \Return $result$
 \end{algorithm}
+\noindent\hrulefill
+\end{Slide}
+
+\ifkompendium\else
+
+\begin{Slide}{Implementation av SEQ-COPY med \texttt{while}}
+\lstinputlisting[numbers=left]{../compendium/examples/workspace/w05-seqalg/src/seqCopy.scala}
+\end{Slide}
+
+\begin{Slide}{Implementation av SEQ-COPY med \texttt{for}}
+\lstinputlisting[numbers=left]{../compendium/examples/workspace/w05-seqalg/src/seqCopyFor.scala}
+\end{Slide}
+
+\begin{Slide}{Implementation av SEQ-COPY med \texttt{for-yield}}
+\lstinputlisting[numbers=left]{../compendium/examples/workspace/w05-seqalg/src/seqCopyForYield.scala}
+\end{Slide}
+
+\begin{Slide}{Implementation av SEQ-COPY i Java med \texttt{for}-sats}
+\vspace{-0.6em}
+\javainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/seqCopyForJava.java}
 \end{Slide}
 
 
+\Subsection{SEQ-INSERT-COPY}
 
-\begin{Slide}{Egenskaper hos några sekvenssamlingar}
-\begin{itemize}\SlideFontSmall
+\Subsection{SEQ-INSERT-IN-PLACE}
 
-\item \code{Vector} 
-  \begin{itemize}\SlideFontSmall
-  \item \Emph{Oföränderlig}
-  \item \Emph{Bra till det mesta} och hyffsat \Emph{snabb}
-  \end{itemize}
 
-\item \code{List}   
-  \begin{itemize}\SlideFontSmall
-  \item \Emph{Oföränderlig}
-  \item Snabb vid bearbetning \Emph{i början} 
-  \item Smidig \& snabb vid \Emph{rekursiva} algoritmer
-  \item Långsam vid godtycklig \Alert{indexering} och bearbetning \Alert{i slutet}
-  \end{itemize}
+\Subsection{StringBuilder}
+%Nannanannan Batman
 
-\item \code{Array} 
-  \begin{itemize}\SlideFontSmall
-  \item \Alert{Föränderlig}: \Emph{snabb indexering \& uppdatering}
-  \item Kan \Alert{ej ändra storlek}; storlek anges vid allokering
-  \item Har särställning i JVM: ger maskinkod med snabb minnesaccess  
-  \end{itemize}
 
-\item \code{ArrayBuffer}  
-  \begin{itemize}\SlideFontSmall
-  \item \Alert{Föränderlig}: \Emph{snabb indexering \& uppdatering}
-  \item Kan \Emph{ändra storlek} efter allokering
-  \end{itemize}
-
-\item Om prestandakritiskt: undersök om \code{Array} är snabbare  
-
-\end{itemize}
-\end{Slide}
+\Subsection{Registrering}
 
 
 
-
-\begin{Slide}{Vilken sekvenssamling ska jag välja?}
-\begin{itemize}
-
-\item \code{Vector} 
-  \begin{itemize}\SlideFontSmall
-  \item Om du vill ha oföränderlighet: \code{val xs = Vector[MyType](...)}
-  \item Om du behöver ändra men ej prestandakritiskt:\\ \code{var xs = Vector.empty[MyType]}
-  \item Om du ännu inte vet vilken som är bäst. (Du kan alltid ändra efter att du mätt prestanda och kollat flaskhalsar.)
-  \end{itemize}
-
-\item \code{Array} 
-  \begin{itemize}\SlideFontSmall
-  \item Om det \Alert{verkligen behövs} av prestandaskäl och du kan bestämma en lämplig storlek vid allokering:\\ \code{val xs = Array.fill(initSize)(initValue)}
-  \end{itemize}
-
-\item \code{ArrayBuffer}  
-  \begin{itemize}\SlideFontSmall
-  \item det \Alert{verkligen behövs} av prestandaskäl och du behöver kunna ändra storlek efter allokering:\\ \code{val xs = ArrayBuffer.empty[MyType]} 
-  \end{itemize}
-
-\end{itemize}
-\end{Slide}
+\fi
 
 
 
