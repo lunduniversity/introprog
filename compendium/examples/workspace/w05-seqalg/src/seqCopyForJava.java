@@ -1,7 +1,25 @@
-package PACKAGE_NAME;
-
-/**
- * Created by bjornr on 2016-09-22.
- */
 public class seqCopyForJava {
+
+    public static int[] arrayCopy(int[] xs){
+        int[] result = new int[xs.length];
+        for (int i = 0; i < xs.length; i++){
+            result[i] = xs[i];
+        }
+        return result;
+    }
+
+    public static String test(){
+        int[] xs = new int[]{1, 2, 3, 4, 42};
+        int[] ys = arrayCopy(xs);
+        for (int i = 0; i < xs.length; i++){
+            if (xs[i] != ys[i]) {
+                return "FAILED!";
+            }
+        }
+        return "OK!";
+    }
+
+    public static void main(String[] args) {
+        System.out.println(test());
+    }
 }
