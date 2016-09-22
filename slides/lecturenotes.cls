@@ -226,6 +226,14 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
       #1}%
 }{}
 
+\newcommand{\scalainputlisting}[2][]{\lstinputlisting[%
+language=Scala,%
+tabsize=2,#1]{#2}}
+
+\newcommand{\javainputlisting}[2][]{\lstinputlisting[%
+language=Java,%
+tabsize=4,#1]{#2}}
+
 \newif\ifkompendium
 \kompendiumfalse
 
