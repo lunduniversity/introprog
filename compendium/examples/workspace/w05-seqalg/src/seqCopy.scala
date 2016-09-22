@@ -1,21 +1,20 @@
 object seqCopy {
+
   def arrayCopy(xs: Array[Int]): Array[Int] = {
-    val result = new Array[Int](xs.size)
+    val result = new Array[Int](xs.length)
     var i = 0
-    while (i < xs.size) {
+    while (i < xs.length) {
       result(i) = xs(i)
       i += 1
     }
     result
   }
 
-  def test(copy: Array[Int] => Array[Int]): String = {
+  def test: String = {
     val xs = Array(1,2,3,4,42)
-    val ys = copy(xs)
-    if (xs.sameElements(ys)) "OK!" else "ERROR!"
+    val ys = arrayCopy(xs)
+    if (xs sameElements ys) "OK!" else "ERROR!"
   }
 
-  def main(args: Array[String]): Unit = {
-    println(test(arrayCopy))
-  }
+  def main(args: Array[String]): Unit = println(test)
 }
