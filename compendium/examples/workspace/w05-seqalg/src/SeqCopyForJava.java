@@ -1,4 +1,4 @@
-public class seqCopyForJava {
+public class SeqCopyForJava {
 
     public static int[] arrayCopy(int[] xs){
         int[] result = new int[xs.length];
@@ -9,7 +9,7 @@ public class seqCopyForJava {
     }
 
     public static String test(){
-        int[] xs = new int[]{1, 2, 3, 4, 42};
+        int[] xs = {1, 2, 3, 4, 42};
         int[] ys = arrayCopy(xs);
         for (int i = 0; i < xs.length; i++){
             if (xs[i] != ys[i]) {

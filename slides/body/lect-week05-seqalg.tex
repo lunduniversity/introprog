@@ -21,6 +21,15 @@
 
 \end{Slide}
 
+\begin{Slide}{Skapa ny sekvenssamling eller ändra på plats?}
+\begin{itemize}
+\item Ofta är det \Emph{lättast att skapa ny samling} och kopiera över elementen medan man loopar.
+\item Om man har mycket stora samlingar kan man behöva ändra på plats för att spara tid/minne.
+\item Det är bra att själv kunna implementera sekvensalgortimer även om många av dem finns färdiga, för att bättre förstå vad som händer ''under huven'', och för att i enstaka fall kunna optimera om det verkligen behövs.
+\item Vi illustrerar därför hur man kan implementera några sekvensalgoritmer med primitiva arrayer även om man sällan gör så i praktiken (i Scala).
+\end{itemize}
+\end{Slide}
+
 
 \Subsection{SEQ-COPY}
 
@@ -56,15 +65,160 @@
 \lstinputlisting[numbers=left]{../compendium/examples/workspace/w05-seqalg/src/seqCopyForYield.scala}
 \end{Slide}
 
+\begin{Slide}{For-sats och arrayer i Java}
+En for-sats i Java har följande struktur:
+\begin{Code}[language=Java, basicstyle=\fontsize{10}{12}\ttfamily\selectfont]
+for (initialisering; slutvillkor; inkrementering) {
+    sats1;
+    sats2;
+    ...
+}
+\end{Code}
+En primitiv heltals-array deklareras så här i Java:
+\begin{Code}[language=Java, basicstyle=\fontsize{10}{12}\ttfamily\selectfont]
+int[] xs = new int[42];  // 42 st heltal, init 0:or
+int[] ys = {1, 2, 3};    // init 3 st heltal  
+\end{Code}
+Exempel: fyll en array med 1:or 
+\begin{Code}[language=Java, basicstyle=\fontsize{9}{11}\ttfamily\selectfont]
+for (int i = 0; i < xs.length; i = i + 1){ // vanligare: i++
+  xs[i] = 1;    // indexering sker med hakparenteser
+}
+\end{Code}
+
+\end{Slide}
+
 \begin{Slide}{Implementation av SEQ-COPY i Java med \texttt{for}-sats}
-\vspace{-0.6em}
-\javainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/seqCopyForJava.java}
+\begin{minipage}{0.55\textwidth}
+\vspace{-0.5em}
+\javainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/SeqCopyForJava.java}
+\end{minipage}
+\begin{minipage}{0.44\textwidth}\SlideFontTiny\vspace{-1.5em}
+~~~Lite syntax och semantik för Java:
+\begin{itemize}
+\item En Java-klass med enbart statiska medlemmar motsvarar ett singelobjekt i Scala. 
+
+\item Typen kommer \Alert{före} namnet.
+
+\item Man \Alert{måste} skriva \code{return}.
+
+\item Man \Alert{måste} ha semikolon efter varje sats.
+
+\item Metodnamn \Alert{måste} följas av parenteser; om inga parametrar finns används \code{()}
+
+\item En array i Java är inget vanligt objekt, men har ett ''attribut'' \code{length} som ger antal element.
+
+\item \Emph{Övning}: skriv om med \code{while}-sats i stället; har samma syntax i Scala \& Java.
+
+\end{itemize}
+\end{minipage}
+
 \end{Slide}
 
 
-\Subsection{SEQ-INSERT-COPY}
+\Subsection{SEQ-INSERT/REMOVE}
+\begin{Slide}{Insättning/borttagning till ny kopia}
+\vspace{-0.6em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/pointSeqUtils.scala}
+\end{Slide}
 
-\Subsection{SEQ-INSERT-IN-PLACE}
+\begin{Slide}{Exempel: PolygonWindow}
+\vspace{-0.6em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/PolygonWindow.scala}
+\pause
+\vspace{1em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/polygonTest1.scala}
+\end{Slide}
+
+\begin{Slide}{Typ-alias för att abstrahera typnamn}\SlideFontSmall
+Med hjälp av nyckelordet \code{type} kan man deklarera ett \Emph{typ-alias} för att ge ett \Alert{alternativt} namn till en viss typ. Exempel:
+\begin{REPL}
+scala> type Pt = (Int, Int)
+
+scala> def distToOrigo(pt: Pt): Int = math.hypot(pt._1, pt._2)
+
+scala> type Pts = Vector[Pt]
+
+scala> def firstPt(pts: Pts): Pt = pts.head
+
+scala> val xs: Pts = Vector((1,1),(2,2),(3,3))
+
+scala> firstPt(xs)
+res0: Pt = (1,1)
+\end{REPL}
+
+Detta är bra om:
+\begin{itemize}
+\item man har en lång och krånglig typ och vill använda ett kortare namn,
+
+\item om man vill abstrahera en typ och öppna för möjligheten att byta implementation senare (t.ex. till en egen klass), medan man ändå kan fortsätta att använda befintligt namn.
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Exempel: SEQ-INSERT/REMOVE-COPY}
+Nu ska vi ''uppfinna hjulet'' och som träning implementera \Emph{insättning} och \Emph{borttagning} till en \Alert{ny} sekvens: 
+\begin{Code}
+object pointSeqUtils {
+  type Pt = (Int, Int)  // a type alias to make the code more concise
+
+  def primitiveInsertCopy(pts: Array[Pt], pos: Int, pt: Pt): Array[Pt] = ???
+
+  def primitiveRemoveCopy(pts: Array[Pt], pos: Int): Array[Pt] = ???
+}
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Pseudo-kod för SEQ-INSERT-COPY}\SlideFontSmall
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+ 
+ \Input{\texttt{pts: Array[Pt],}\\\texttt{pt: Pt,}\\\texttt{pos: Int}} ~\\
+ \Output{En ny sekvens av typen \texttt{Array[Pt]} som är en kopia av $pts$ men där $pt$ är infogat på plats $pos$} 
+ 
+ \noindent\hrulefill\\
+ $result \leftarrow$ en ny \texttt{Array[Pt]} med plats för $pts.length + 1$ element \\
+ \For{$i \leftarrow 0$ \KwTo $pos - 1$}{
+  $result(i) \leftarrow pts(i)$
+ }
+ $result(pos) \leftarrow pt$ \\
+ \For{$i \leftarrow pos + 1$ \KwTo $xs.length$}{
+  $result(i) \leftarrow xs(i - 1)$
+ }
+ 
+ \Return $result$
+ 
+  \noindent\hrulefill\\ 
+\end{algorithm}
+\pause\vspace{0.5em}\Emph{Övning}: Skriv pseudo-kod för SEQ-REMOVE-COPY
+\end{Slide}
+
+\begin{Slide}{Exempel: SEQ-INSERT/REMOVE}
+Man gör mycket lätt \Alert{fel} på gränser/specialfall (t.ex. tom sekv.):
+\vspace{-0.0em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6}{7.2}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/pointSeqUtils.scala}
+\end{Slide}
+
+\begin{Slide}{Exempel: Test av SEQ-INSERT/REMOVE-COPY}
+\vspace{-0.6em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/polygonTest2.scala}
+\end{Slide}
+
+\begin{Slide}{Exempel: Göra insättning med take/drop}\SlideFontSmall
+Om vi inte vill ''uppfinna hjulet'' och inte använda \code{patch} kan vi göra så här: \\Använd \code{take} och \code{drop} tillsammans med \code{:+} och \code{++} och göra sedan insättningen generiskt användbar för alla sekvenser:
+\begin{REPLnonum}
+scala> val xs = Vector(1,2,3)
+xs: scala.collection.immutable.Vector[Int] = 
+  Vector(1, 2, 3)
+
+scala> val ys = (xs.take(2) :+ 42) ++ xs.drop(2)
+ys: scala.collection.immutable.Vector[Int] = 
+  Vector(1, 2, 42, 3)
+  
+scala> def insertCopy[T](xs: Seq[T], elem: T, pos: Int) = 
+        (xs.take(pos) :+ elem) ++ xs.drop(pos)
+
+scala> insertCopy(xs, 42, 2)
+res0: Seq[Int] = Vector(1, 2, 42, 3)
+  
+\end{REPLnonum}
+\Emph{Övning}: Implementera \code{insertCopy[T]} med \code{patch} istället.
+\end{Slide}
 
 
 \Subsection{StringBuilder}
