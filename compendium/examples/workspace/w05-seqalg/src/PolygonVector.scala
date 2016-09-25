@@ -3,7 +3,7 @@ class PolygonVector {
   private var points = Vector.empty[Pt]  // note var declaration to allow mutation
   def size = points.size
 
-  def draw(w: PolygonWindow): Unit = w.draw(points.take(size).toArray)
+  def draw(w: PolygonWindow): Unit = w.draw(points.take(size))
 
   def append(pts: Pt*): Unit = {
     points ++= pts.toVector

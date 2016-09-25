@@ -5,14 +5,14 @@ object polygonTest5 {
 
     poly = poly.append((50,50), (100,100), (50,100), (30,50))
     println(poly)
-    poly.draw(pw)
+    pw.draw(poly.points)
 
     poly = poly.insert(2, (100,150))
     println(poly)
-    poly.draw(pw)
+    pw.draw(poly.points)
 
     poly = poly.remove(0)
     println(poly)
-    poly.draw(pw)
+    pw.draw(poly.points)
   }
 }

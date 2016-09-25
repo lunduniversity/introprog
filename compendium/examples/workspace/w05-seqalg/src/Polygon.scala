@@ -9,8 +9,6 @@ import Polygon.{Pt, Pts}
 case class Polygon(points: Pts) {
   def size = points.size // for convenience but not strictly necessary (why?)
 
-  def draw(w: PolygonWindow): Unit = w.draw(points.take(size).toArray)
-
   def append(pts: Pt*) = copy(points ++ pts.toVector)
 
   def insert(pos: Int, pts: Pt*) = copy(points.patch(pos, pts, 0))
