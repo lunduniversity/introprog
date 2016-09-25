@@ -3,6 +3,7 @@ object FixSleepyBrain {
   val rnd = new java.util.Random(seed)
   val names = scala.io.Source.fromFile("src/names.txt").getLines.toSet
   def delay = Thread.sleep(3000)
+
   def main(args: Array[String]): Unit = {
     println("*** FIX YOUR SLEEPY BRAIN ***\n\nWHEN YOUR NAME STARTS WITH...")
     while (true) {
