@@ -52,7 +52,7 @@ object PokerProbability {
     val n = scala.io.StdIn.readInt()
     val res = test(n)
     for (hand <- everyHand)
-      if (res(hand) > 0) {
+      if (res.contains(hand) && res(hand) > 0) {
         val percent = res(hand).toDouble / n * 100
         println(f"$hand: $percent%.4f%%")
       }
