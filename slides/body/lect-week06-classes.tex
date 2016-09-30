@@ -39,12 +39,61 @@ Metafor: En klass liknar en \Emph{stämpel}
 \end{Slide}
 
 
-\begin{Slide}{Syntax för klassdeklarationer}
-Klassens ''anatomi''
+\begin{Slide}{Klassdeklarationer och instansiering}\SlideFontSmall
+\setlength{\leftmargini}{0pt}
+\begin{itemize}
+\item Syntax för deklaration av klass: \\ \vspace{0.5em}{\SlideFontSize{13}{16}\code|class Klassnamn(parametrar){ medlemmar }|}\vspace{0.5em}
+
+
+
+\item Exempel \Emph{deklaration}:
+\begin{Code}
+class Klassnamn(val attribut1: Int, attribut2: String){  
+  val attribut3: Double = 42.0              //publikt oföränderligt attribut
+  private var attribut3: Boolean = false    //privat medlem syns inte utåt
+  def metod(parameter: Int) = parameter + 1 //funktion i klass kallas metod
+  lazy val attr4 = Vector.fill(100000)(42.0)     //fördröjd initialisering 
+}
+\end{Code}
+
+\item Parametrar initialiseras med de argument som ges vid \code{new}. 
+\item Exempel \Emph{instansiering}:
+\begin{Code}
+val instansReferens = new Klassnamn(42, "hej")
+\end{Code}
+
+\item Attribut blir \Emph{publika} (alltså synliga utåt) om inte modifieraren \code{private} anges.
+\item Parametrar som inte föregås av modifierare (t.ex. private val, val, var) blir attribut som är: \code{ private[this] val } och bara synliga i \Alert{denna} instans.
+
+\end{itemize}
 \end{Slide}
 
 
-\begin{Slide}{Exempel: Klassen Complex}\small
+\begin{Slide}{Exempel: Klassen Complex i Scala}\SlideFontSmall
+\begin{Code}
+class Complex(val re: Double, val im: Double){
+  def r  = math.hypot(re, im)
+  def fi = math.atan2(re, im)
+  def +(other: Complex) = new Complex(re + other.re, im + other.im)
+  var imSymbol = 'i'
+  override def toString = s"$re + $im$imSymbol"
+}
+\end{Code}
+
+\begin{REPL}
+scala> val c1 = new Complex(3, 4)
+c1: Complex = 3.0 + 4.0i
+
+scala> val polarForm = (c1.r, c1.fi)
+polarForm: (Double, Double) = (5.0,0.6435011087932844)
+
+scala> val c2 = new Complex(1, 2)
+c2: Complex = 1.0 + 2.0i
+
+scala> c1 + c2
+res0: Complex = 4.0 + 6.0i
+\end{REPL}
+
 %TODO:
 %  \begin{itemize} 
 %  \item Bygg upp \code{case class Complex(re: Double, im: Double)} steg för steg inspirerat av Pins3ed kap 6 i likhet med hur de gör med Rational
@@ -54,10 +103,71 @@ Klassens ''anatomi''
 %  \end{itemize}
 \end{Slide}
 
+\begin{Slide}{Exempel: Principen om enhetlig access}\SlideFontSmall
+\begin{Code}
+class Complex(val re: Double, val im: Double){
+  val r  = math.hypot(re, im)
+  val fi = math.atan2(re, im)
+  def +(other: Complex) = new Complex(re + other.re, im + other.im)
+  var imSymbol = 'i'
+  override def toString = s"$re + $im$imSymbol"
+}
+\end{Code}
+\pause
+\begin{itemize}
+\item Efter som attributen \code{re} och \code{im} är oföränderliga, kan vi lika gärna ändra i klass-implementationen och göra om metoderna \code{r} och \code{fi} till \code{val}-variabler utan att klientkoden påverkas. 
+
+\item Då anropas \code{math.hypot} och \code{math.atan2} bara en gång vid initialisering (och inte varje gång som med \code{def}).
+
+\item Vi skulle även kunna använda \code{lazy val} och då bara räkna ut \code{r} och \code{fi} om och när de verkligen refereras av klientkoden, annars inte.
+
+\item Eftersom klientkoden inte ser skillnad på metoder och variabler, kallas detta \Emph{principen om enhetlig access}. (Många andra språk har \Alert{inte} denna möjlighet, tex Java.)
+
+\end{itemize}
+
+\end{Slide}
+
+
+\begin{Slide}{Exempel: Motsvarande klass JComplex i Java}\SlideFontSmall
+\javainputlisting[basicstyle=\SlideFontSize{5}{6}\ttfamily\selectfont]{../compendium/examples/JComplex.java}
+\end{Slide}
+
+\begin{Slide}{Exempel: Använda JComplex från Scala}
+\begin{REPL}
+$ javac JComplex.java 
+$ scala
+Welcome to Scala 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_66).
+Type in expressions for evaluation. Or try :help.
+
+scala> val jc1 = new JComplex(3, 4)
+jc1: JComplex = 3.0 + 4.0i
+
+scala> val polarForm = (jc1.getR, jc1.getFi)
+polarForm: (Double, Double) = (5.0,0.6435011087932844)
+
+scala> val jc2 = new JComplex(1, 2)
+jc2: JComplex = 1.0 + 2.0i
+
+scala> jc1 add jc2
+res0: JComplex = 4.0 + 6.0i
+\end{REPL}
+\end{Slide}
+
+
+\begin{Slide}{Exempel: Test av JComplex i Java}
+\javainputlisting[basicstyle=\SlideFontSize{9}{11}\ttfamily\selectfont]{../compendium/examples/JComplexTest.java}
+\begin{itemize}
+\item Tupler finns inte i Java, så det går inte på ett enkelt sätt att i Java skapa par av värden somi Scala.
+
+\item Operatornotation för metoder finns inte i Java, så man måste i Java använda punktnotation och skriva: \code{jc1.add(jc2)}
+\end{itemize}
+\end{Slide}
+
 
 \Subsection{Instansiering: \texttt{new}}
 
 \begin{Slide}{Instansiering med \texttt{new}}
+Rita molbild med instanser av klassen Complex
 \end{Slide}
 
 \begin{Slide}{Instansiering med fabriksmetod}
