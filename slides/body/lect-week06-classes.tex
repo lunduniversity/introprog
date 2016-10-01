@@ -3,6 +3,14 @@
 
 %%%
 
+%TODO:
+%  \begin{itemize} 
+%  \item Bygg upp \code{case class Complex(re: Double, im: Double)} steg för steg inspirerat av Pins3ed kap 6 i likhet med hur de gör med Rational
+%  \item Illustrera följande begrepp: this (behövs i max(that)), method overloading behövs för att plussa med både Complex och Double
+%  \item Till fördjupningsövning: dekorera Double med metoderna im och re samt (Double, Double) med metoden ir (för irrational) med implicit klass
+%  \item Till extrauppgift: implementera klassen Polar(r, fi) med polära koordinater \url{https://sv.wikipedia.org/wiki/Pol%C3%A4ra_koordinater}
+%  \end{itemize}
+
 \Subsection{Vad är en klass?}
 
 \begin{Slide}{Vad är en klass?}
@@ -57,13 +65,13 @@ class Klassnamn(val attribut1: Int, attribut2: String){
 \end{Code}
 
 \item Parametrar initialiseras med de argument som ges vid \code{new}. 
-\item Exempel \Emph{instansiering}:
+\item Exempel \Emph{instansiering} med argument för initialisering av klassparametrar:
 \begin{Code}
 val instansReferens = new Klassnamn(42, "hej")
 \end{Code}
 
 \item Attribut blir \Emph{publika} (alltså synliga utåt) om inte modifieraren \code{private} anges.
-\item Parametrar som inte föregås av modifierare (t.ex. private val, val, var) blir attribut som är: \code{ private[this] val } och bara synliga i \Alert{denna} instans.
+\item Parametrar som inte föregås av modifierare (t.ex. private val, val, var) blir \Emph{attribut} som är: \code{ private[this] val } och bara synliga i \Alert{denna} instans.
 
 \end{itemize}
 \end{Slide}
@@ -93,15 +101,9 @@ c2: Complex = 1.0 + 2.0i
 scala> c1 + c2
 res0: Complex = 4.0 + 6.0i
 \end{REPL}
-
-%TODO:
-%  \begin{itemize} 
-%  \item Bygg upp \code{case class Complex(re: Double, im: Double)} steg för steg inspirerat av Pins3ed kap 6 i likhet med hur de gör med Rational
-%  \item Illustrera följande begrepp: this (behövs i max(that)), method overloading behövs för att plussa med både Complex och Double
-%  \item Till fördjupningsövning: dekorera Double med metoderna im och re samt (Double, Double) med metoden ir (för irrational) med implicit klass
-%  \item Till extrauppgift: implementera klassen Polar(r, fi) med polära koordinater \url{https://sv.wikipedia.org/wiki/Pol%C3%A4ra_koordinater}
-%  \end{itemize}
 \end{Slide}
+
+
 
 \begin{Slide}{Exempel: Principen om enhetlig access}\SlideFontSmall
 \begin{Code}
@@ -122,17 +124,20 @@ class Complex(val re: Double, val im: Double){
 \item Vi skulle även kunna använda \code{lazy val} och då bara räkna ut \code{r} och \code{fi} om och när de verkligen refereras av klientkoden, annars inte.
 
 \item Eftersom klientkoden inte ser skillnad på metoder och variabler, kallas detta \Emph{principen om enhetlig access}. (Många andra språk har \Alert{inte} denna möjlighet, tex Java.)
-
 \end{itemize}
-
 \end{Slide}
+
+
 
 
 \begin{Slide}{Exempel: Motsvarande klass JComplex i Java}\SlideFontSmall
 \javainputlisting[basicstyle=\SlideFontSize{5}{6}\ttfamily\selectfont]{../compendium/examples/JComplex.java}
 \end{Slide}
 
-\begin{Slide}{Exempel: Använda JComplex från Scala}
+
+
+
+\begin{Slide}{Exempel: Använda JComplex i Scala-kod}
 \begin{REPL}
 $ javac JComplex.java 
 $ scala
@@ -151,35 +156,219 @@ jc2: JComplex = 1.0 + 2.0i
 scala> jc1 add jc2
 res0: JComplex = 4.0 + 6.0i
 \end{REPL}
+\begin{itemize}
+\item Metoder kan inte heta + i Java så vi döper metoden till add.
+\end{itemize}
 \end{Slide}
 
 
-\begin{Slide}{Exempel: Test av JComplex i Java}
-\javainputlisting[basicstyle=\SlideFontSize{9}{11}\ttfamily\selectfont]{../compendium/examples/JComplexTest.java}
+
+
+\begin{Slide}{Exempel: Använda JComplex i Java-kod}\SlideFontSmall
+\javainputlisting[basicstyle=\SlideFontSize{8}{10}\ttfamily\selectfont]{../compendium/examples/JComplexTest.java}
 \begin{itemize}
-\item Tupler finns inte i Java, så det går inte på ett enkelt sätt att i Java skapa par av värden somi Scala.
+\item Tupler finns inte i Java, så det går inte på ett enkelt sätt att i Java skapa par av värden som i Scala; ovan görs polär form till en sträng för utskrift.
 
 \item Operatornotation för metoder finns inte i Java, så man måste i Java använda punktnotation och skriva: \code{jc1.add(jc2)}
 \end{itemize}
 \end{Slide}
 
 
-\Subsection{Instansiering: \texttt{new}}
 
-\begin{Slide}{Instansiering med \texttt{new}}
-Rita molbild med instanser av klassen Complex
+\Subsection{Olika sätt att skapa instanser}
+
+\begin{Slide}{Instansiering med direkt användning av \texttt{new}}
+
+Instansiering genom \Emph{direkt användning} av \code{new}\\
+{\SlideFontSmall (här första varianten av Complex med \code{r} och \code{fi} som metoder)} 
+\begin{REPLnonum}
+scala> val c1 = new Complex(3, 4)
+\end{REPLnonum}
+\begin{tikzpicture}[font=\SlideFontSmall\sffamily]
+\matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=0.8cm}}] (mat) 
+{
+\texttt{c1}   &  \makebox(10,10){ }\\
+};
+
+\node[cloud, cloud puffs=15.0, cloud ignores aspect, minimum width=2cm, minimum height=3.8cm,
+ align=center, draw] (instance1) at (5.8cm, -1.5cm) {
+ \begin{tabular}{r l l}
+ \texttt{re:} & \texttt{Double} & \fbox{3.0} \\
+ \texttt{im:} & \texttt{Double} & \fbox{4.0}\\
+ \texttt{imSymbol:} & \texttt{Char} & \fbox{i}\\
+ \end{tabular}
+ };
+ 
+\filldraw[black] ($ (mat-1-2) + (0.0cm,0.0cm) $) circle (3pt) node[] (ref1)  {};
+
+\draw [arrow, line width=0.7mm] (ref1) -- (instance1);
+\end{tikzpicture}
+\pause
+Ofta vill man göra \Alert{indirekt} instansiering så att vi senare har friheten att ändra hur instansiering sker.
 \end{Slide}
 
-\begin{Slide}{Instansiering med fabriksmetod}
+
+
+\begin{Slide}{Indirekt instansiering med fabriksmetoder}\SlideFontSmall
+En \Emph{fabriksmetod} är en metod som används för att instansiera objekt.
+\begin{Code}[basicstyle=\SlideFontSize{8}{12}\ttfamily\selectfont]
+object MyFactory {
+  def createComplex(re: Double, im: Double) = new Complex(re, im)
+  def createReal(re: Double)                = new Complex(re, 0)
+  def createImaginary(im: Double)           = new Complex(0, im)
+}
+\end{Code}
+\pause
+Instansiera \Alert{inte direkt}, utan \Emph{indirekt} genom användning av \Emph{fabriksmetoder}:
+\begin{REPL}
+scala> import MyFactory._
+
+scala> createComplex(3, 4)
+res0: Complex = 3.0 + 4.0i
+
+scala> createReal(42)
+res1: Complex = 42.0 + 0.0i
+
+scala> createImaginary(-1)
+res2: Complex = 0.0 + -1.0i
+\end{REPL}
 \end{Slide}
 
-\begin{Slide}{Instansiering med default-argument}
+\begin{Slide}{Hur förhindra direkt instansiering?}
+Om vi vill \Emph{förhindra direkt instansiering} kan vi göra primärkonstruktorn \Alert{privat}:
+\begin{Code}
+class Complex private (val re: Double, val im: Double){
+  def r  = math.hypot(re, im)
+  def fi = math.atan2(re, im)
+  def +(other: Complex) = new Complex(re + other.re, im + other.im)
+  var imSymbol = 'i'
+  override def toString = s"$re + $im$imSymbol"
+}
+\end{Code}
+Men då går det ju \Alert{inte} längre att instansiera något alls!  \code{   :(}
+\begin{REPLnonum}
+scala> new Complex(3,4)
+error: 
+     constructor Complex in class Complex cannot be accessed in object $iw
+\end{REPLnonum}
 \end{Slide}
 
-\begin{Slide}{Instansiering med alternativa fabriksmetoder}
+\begin{Slide}{Kompanjonsobjekt kan förhindra direkt instansiering}
+\begin{itemize}
+\item Ett \Emph{kompanjonsobjekt} är ett objekt som ligger i samma kodfil som en klass och har samma namn som klassen. 
+
+\item Medlemmar i ett kompanjonsobjekt \Alert{får accessa privata} medlemmar i kompanjonsklassen (och vice versa). 
+
+
+\end{itemize}
+\begin{Code}
+class Complex private (val re: Double, val im: Double){
+  def r  = math.hypot(re, im)
+  def fi = math.atan2(re, im)
+  def +(other: Complex) = new Complex(re + other.re, im + other.im)
+  var imSymbol = 'i'
+  override def toString = s"$re + $im$imSymbol"
+}
+object Complex {
+  def apply(re: Double: im: Double) = new Complex(re, im)
+  def real(re: Double)              = new Complex(re, 0)
+  def imag(im: Double)              = new Complex(0, im)
+}
+\end{Code}
 \end{Slide}
 
-\begin{Slide}{Förändringsbar eller oföränderlig?}
+\begin{Slide}{Kompanjonsobjekt som fabriksmetod}
+Nu \Emph{kan vi instansiera} indirekt!  \code{   :)}
+\begin{REPLnonum}
+scala> Complex.real(42.0)
+
+scala> Complex.imag(-1)
+
+scala> Complex.apply(3,4)
+
+scala> Complex(3,4)
+\end{REPLnonum}
+\end{Slide}
+
+
+\begin{Slide}{Alternativa direktinstansieringar med default-argument}\SlideFontSmall
+Med \Emph{default-argument} kan vi erbjuda \Emph{alternativa} sätt att direktinstansiera.
+\begin{Code}
+class Complex(val re: Double = 0, val im: Double = 0){
+  def r  = math.hypot(re, im)
+  def fi = math.atan2(re, im)
+  def +(other: Complex) = new Complex(re + other.re, im + other.im)
+  var imSymbol = 'i'
+  override def toString = s"$re + $im$imSymbol"
+}
+\end{Code}
+\begin{REPL}
+scala> new Complex()
+res0: Complex = 0.0 + 0.0i
+
+scala> new Complex(re = 42)  //anrop med namngivet argument
+res1: Complex = 42.0 + 0.0i
+
+scala> new Complex(im = -1)
+res2: Complex = 0.0 + -1.0i
+
+scala> new Complex(1)
+res3: Complex = 1.0 + 0.0i
+\end{REPL}
+\end{Slide}
+
+\begin{Slide}{Alternativa sätt att instansiera med fabriksmetod}
+Vi kan också erbjuda \Emph{alternativa} sätt att instansiera \Emph{indirekt} med fabriksmetoden \code{apply} i ett kompanjonsobjekt genom default-argument:
+\begin{Code}
+class Complex private (val re: Double, val im: Double){
+  def r  = math.hypot(re, im)
+  def fi = math.atan2(re, im)
+  def +(other: Complex) = new Complex(re + other.re, im + other.im)
+  var imSymbol = 'i'
+  override def toString = s"$re + $im$imSymbol"
+}
+object Complex {
+  def apply(re: Double = 0: im: Double = 0) = new Complex(re, im)
+  def real(r: Double) = apply(re=a)
+  def imag(i: Double) = apply(im=b)
+  val zero = apply()
+}
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Medlemmar som bara finns i en upplaga}
+Medlemmen \code{imSymbol} passar bättre att ha i kompanjonsobjektet, eftersom det räcker att ha en enda upplaga av denna medlem.  
+\begin{Code}
+class Complex private (val re: Double, val im: Double){
+  def r  = math.hypot(re, im)
+  def fi = math.atan2(re, im)
+  def +(other: Complex) = new Complex(re + other.re, im + other.im)
+  override def toString = s"$re + $im$imSymbol"
+}
+object Complex {
+  var imSymbol = 'i'
+  def apply(re: Double = 0: im: Double = 0) = new Complex(re, im)
+  def real(r: Double) = apply(re=a)
+  def imag(i: Double) = apply(im=b)
+  val zero = apply()
+}
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Konstruktor}
+\begin{itemize}
+\item En \Emph{konstruktor} är den kod som exekveras när objekt skapas med \code{new}. 
+
+\item I Scala \Alert{genererar} kompilatorn en \Emph{primärkonstruktor} med maskinkod som initialiserar alla attribut baserat på klassparamtetrar och \code{val}- och \code{var}-deklarationer. 
+
+\item I Java \Alert{måste} man \Alert{själv} skriva alla konstruktorer och med speciell syntax. Man kan ha många olika alternativa konstruktorer.
+
+\item I Scala \Emph{kan} man skriva egna (alternativa) konstrukturer med speciell syntax, men det är inte vanligt, eftersom man har möjligheten med fabriksmetoder i kompanjonsobjekt och default-argument (vilka saknas i Java). 
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Skräpsamling}
+Destruktor
 \end{Slide}
 
 
@@ -189,12 +378,6 @@ Rita molbild med instanser av klassen Complex
 \end{Slide}
 
 
-\begin{Slide}{Konstruktor}
-\end{Slide}
-
-\begin{Slide}{Skräpsamling}
-Destruktor
-\end{Slide}
 
 \Subsection{Synlighet}
 
@@ -202,9 +385,6 @@ Destruktor
 definiera/förklara:
 private
 private[this]
-\end{Slide}
-
-\begin{Slide}{Kompanjonsobjekt}
 \end{Slide}
 
 
@@ -239,6 +419,20 @@ case class InteHemlig(seMenInteRöra: Int) { // blir automatiskt val
 \begin{Slide}{Klasser i Java}
 \end{Slide}
 
+\begin{Slide}{Typisk utformning av Java-klass}
+Typisk ''anatomi'' av en Java-klass:
+\begin{Code}[language=Java]
+class Klassnamn {
+    attribut, normalt privata
+    konstruktorer, normalt publika
+    metoder: publika getters, och vid förändringsbara objekt även setters
+    metoder: privata abstraktioner för internt bruk
+    metoder: publika abstraktioner tänkta att användas av klientkoden 
+}
+\end{Code}
+\href{http://www.oracle.com/technetwork/java/codeconventions-141855.html#1852}{\SlideFontSize{9}{8}www.oracle.com/technetwork/java/codeconventions-141855.html\#1852}
+\end{Slide}
+
 \begin{Slide}{Statiska medlemmar}
 \end{Slide}
 
@@ -252,6 +446,8 @@ case class InteHemlig(seMenInteRöra: Int) { // blir automatiskt val
 \end{Slide}
 
 \begin{Slide}{Ändra attributrepresentation utan att påverka existerande kod}
+Antag att vi vill ädnra representation av vårt komplexa tal till att ha ett attribut Polar som är en  punkt med polära koordinater.
+ 
 Complex som polära koordinater i Java med privat attribut
 Complex som polära koordinater med publika attribut om man har enhetlig access
 \end{Slide}
