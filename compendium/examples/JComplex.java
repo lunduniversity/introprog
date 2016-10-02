@@ -12,17 +12,17 @@ public class JComplex {            // man kan ej deklarera klassparametrar i Jav
         return re;
     }
 
-    public double getIm(){ return im; }  // ej bruklig formattering i Java
+    public double getIm(){ return im; }  // ej bruklig formattering i Java, så metoder blir minst 3 rader
 
     public double getR(){
-        return Math.hypot(re, im);
+        return Math.hypot(re, im);       // Math med stort M i Java
     }
 
     public double getFi(){ 
         return Math.atan2(re, im);
     }
     
-    public JComplex add(JComplex other){
+    public JComplex add(JComplex other){ // Javametodnamn får ej ha operatortecken t.ex. +, därav namnet add 
         return new JComplex(re + other.getRe(), im + other.getIm());
     }
 
