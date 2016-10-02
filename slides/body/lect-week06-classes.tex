@@ -47,6 +47,130 @@ Metafor: En klass liknar en \Emph{stämpel}
 \end{Slide}
 
 
+
+
+
+\begin{Slide}[t]{Klass och instans}
+\vspace{-0.65em}
+\begin{REPLnonum}
+scala> class C { var attr = 42 }
+
+scala> val objRef1 = new C
+\end{REPLnonum}
+\vspace{3.7em}
+\begin{tikzpicture}[font=\SlideFontSmall\sffamily]
+\matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=0.8cm}}] (mat) 
+{
+\texttt{objRef1}   &  \makebox(10,10){ }\\
+};
+
+\node[cloud, cloud puffs=15.0, cloud ignores aspect, minimum width=2cm, minimum height=2cm,
+ align=center, draw] (instance1) at (3.8cm, 0.0cm) {
+ \begin{tabular}{r l}
+ \texttt{attr} & \fbox{42} \\
+ \end{tabular}
+ };
+ 
+
+\filldraw[black] ($ (mat-1-2) + (0.0cm,0.0cm) $) circle (3pt) node[] (ref1)  {};
+\draw [arrow, line width=0.7mm] (ref1) -- (instance1);
+\end{tikzpicture}
+\end{Slide}
+
+
+
+
+\begin{Slide}[t]{Klass och instans}
+\vspace{-0.5em}
+\begin{REPLnonum}
+scala> class C { var attr = 42 }
+
+scala> val objRef1 = new C
+
+scala> val objRef2 = new C
+\end{REPLnonum}
+\vspace{2em}
+\begin{tikzpicture}[font=\SlideFontSmall\sffamily]
+\matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=0.8cm}}] (mat) 
+{
+\texttt{objRef1}   &  \makebox(10,10){ }\\
+\texttt{objRef2}   &  \makebox(10,10){ }\\
+};
+
+\node[cloud, cloud puffs=15.0, cloud ignores aspect, minimum width=2cm, minimum height=2cm,
+ align=center, draw] (instance1) at (3.8cm, 0.35cm) {
+ \begin{tabular}{r l}
+ \texttt{attr} & \fbox{42} \\
+ \end{tabular}
+ };
+ 
+\node[cloud, cloud puffs=15.0, cloud ignores aspect, minimum width=2cm, minimum height=2cm,
+ align=center, draw] (instance2) at (5.8cm, -1.5cm) {
+ \begin{tabular}{r l}
+ \texttt{attr} & \fbox{42} \\
+ \end{tabular}
+ };
+ 
+
+\filldraw[black] ($ (mat-1-2) + (0.0cm,0.0cm) $) circle (3pt) node[] (ref1)  {};
+\draw [arrow, line width=0.7mm] (ref1) -- (instance1);
+
+\filldraw[black] ($ (mat-2-2) + (0.0cm,0.0cm) $) circle (3pt) node[] (ref2)  {};
+\draw [arrow, line width=0.7mm] (ref2) -- (instance2);
+\end{tikzpicture}
+\end{Slide}
+
+
+
+
+\begin{Slide}[t]{Klass och instans}
+\vspace{-0.5em}
+\begin{REPLnonum}
+scala> class C { var attr = 42 }
+
+scala> val objRef1 = new C
+
+scala> val objRef2 = new C
+
+scala> objRef2.attr = 43
+\end{REPLnonum}
+\begin{tikzpicture}[font=\SlideFontSmall\sffamily]
+\matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=0.8cm}}] (mat) 
+{
+\texttt{objRef1}   &  \makebox(10,10){ }\\
+\texttt{objRef2}   &  \makebox(10,10){ }\\
+};
+
+\node[cloud, cloud puffs=15.0, cloud ignores aspect, minimum width=2cm, minimum height=2cm,
+ align=center, draw] (instance1) at (3.8cm, 0.35cm) {
+ \begin{tabular}{r l}
+ \texttt{attr} & \fbox{42} \\
+ \end{tabular}
+ };
+ 
+\node[cloud, cloud puffs=15.0, cloud ignores aspect, minimum width=2cm, minimum height=2cm,
+ align=center, draw] (instance2) at (5.8cm, -1.5cm) {
+ \begin{tabular}{r l}
+ \texttt{attr} & \fbox{43} \\
+ \end{tabular}
+ };
+ 
+
+\filldraw[black] ($ (mat-1-2) + (0.0cm,0.0cm) $) circle (3pt) node[] (ref1)  {};
+\draw [arrow, line width=0.7mm] (ref1) -- (instance1);
+
+\filldraw[black] ($ (mat-2-2) + (0.0cm,0.0cm) $) circle (3pt) node[] (ref2)  {};
+\draw [arrow, line width=0.7mm] (ref2) -- (instance2);
+\end{tikzpicture}
+\end{Slide}
+
+
+
+
+
+
+
+
 \begin{Slide}{Klassdeklarationer och instansiering}\SlideFontSmall
 \setlength{\leftmargini}{0pt}
 \begin{itemize}
@@ -123,55 +247,12 @@ class Complex(val re: Double, val im: Double){
 
 \item Vi skulle även kunna använda \code{lazy val} och då bara räkna ut \code{r} och \code{fi} om och när de verkligen refereras av klientkoden, annars inte.
 
-\item Eftersom klientkoden inte ser skillnad på metoder och variabler, kallas detta \Emph{principen om enhetlig access}. (Många andra språk har \Alert{inte} denna möjlighet, tex Java.)
+\item Eftersom klientkoden inte ser skillnad på metoder och variabler, kallas detta \Emph{principen om enhetlig access}. (Många andra språk har \Alert{inte} denna möjlighet, tex Java där metoder \emph{måste} ha parenteser.)
 \end{itemize}
 \end{Slide}
 
 
 
-
-\begin{Slide}{Exempel: Motsvarande klass JComplex i Java}\SlideFontSmall
-\javainputlisting[basicstyle=\SlideFontSize{5}{6}\ttfamily\selectfont]{../compendium/examples/JComplex.java}
-\end{Slide}
-
-
-
-
-\begin{Slide}{Exempel: Använda JComplex i Scala-kod}
-\begin{REPL}
-$ javac JComplex.java 
-$ scala
-Welcome to Scala 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_66).
-Type in expressions for evaluation. Or try :help.
-
-scala> val jc1 = new JComplex(3, 4)
-jc1: JComplex = 3.0 + 4.0i
-
-scala> val polarForm = (jc1.getR, jc1.getFi)
-polarForm: (Double, Double) = (5.0,0.6435011087932844)
-
-scala> val jc2 = new JComplex(1, 2)
-jc2: JComplex = 1.0 + 2.0i
-
-scala> jc1 add jc2
-res0: JComplex = 4.0 + 6.0i
-\end{REPL}
-\begin{itemize}
-\item Metoder kan inte heta + i Java så vi döper metoden till add.
-\end{itemize}
-\end{Slide}
-
-
-
-
-\begin{Slide}{Exempel: Använda JComplex i Java-kod}\SlideFontSmall
-\javainputlisting[basicstyle=\SlideFontSize{8}{10}\ttfamily\selectfont]{../compendium/examples/JComplexTest.java}
-\begin{itemize}
-\item Tupler finns inte i Java, så det går inte på ett enkelt sätt att i Java skapa par av värden som i Scala; ovan görs polär form till en sträng för utskrift.
-
-\item Operatornotation för metoder finns inte i Java, så man måste i Java använda punktnotation och skriva: \code{jc1.add(jc2)}
-\end{itemize}
-\end{Slide}
 
 
 
@@ -245,7 +326,7 @@ class Complex private (val re: Double, val im: Double){
   override def toString = s"$re + $im$imSymbol"
 }
 \end{Code}
-Men då går det ju \Alert{inte} längre att instansiera något alls!  \code{   :(}
+MEN... då går det ju \Alert{inte} längre att instansiera något alls!  \code{   :(}
 \begin{REPLnonum}
 scala> new Complex(3,4)
 error: 
@@ -253,14 +334,15 @@ error:
 \end{REPLnonum}
 \end{Slide}
 
-\begin{Slide}{Kompanjonsobjekt kan förhindra direkt instansiering}
+
+
+
+\begin{Slide}{Kompanjonsobjekt kan förhindra direkt instansiering}\SlideFontSmall
+\setlength{\leftmargini}{0pt}
 \begin{itemize}
 \item Ett \Emph{kompanjonsobjekt} är ett objekt som ligger i samma kodfil som en klass och har samma namn som klassen. 
 
-\item Medlemmar i ett kompanjonsobjekt \Alert{får accessa privata} medlemmar i kompanjonsklassen (och vice versa). 
-
-
-\end{itemize}
+\item Medlemmar i ett kompanjonsobjekt \Alert{får accessa privata} medlemmar i kompanjonsklassen (och vice versa) och kompanjonsobjektet får därför accessa privat konstruktor och kan göra \code{new}.
 \begin{Code}
 class Complex private (val re: Double, val im: Double){
   def r  = math.hypot(re, im)
@@ -270,23 +352,33 @@ class Complex private (val re: Double, val im: Double){
   override def toString = s"$re + $im$imSymbol"
 }
 object Complex {
-  def apply(re: Double: im: Double) = new Complex(re, im)
+  def apply(re: Double, im: Double) = new Complex(re, im)
   def real(re: Double)              = new Complex(re, 0)
   def imag(im: Double)              = new Complex(0, im)
 }
 \end{Code}
+\item Fabriksmetoder i kompanjonsobjektet ovan och privat kontstruktor gör att vi \Alert{enbart} tillåter \Emph{indirekt instansiering}.
+\end{itemize}
 \end{Slide}
 
-\begin{Slide}{Kompanjonsobjekt som fabriksmetod}
-Nu \Emph{kan vi instansiera} indirekt!  \code{   :)}
+\begin{Slide}{Användning av kompanjonsobjekt med fabriksmetoder för indirekt instansiering}
+Nu kan vi \Alert{bara} instansiera \Emph{indirekt}!  \code{   :)}
 \begin{REPLnonum}
 scala> Complex.real(42.0)
+res0: Complex = 42.0 + 0.0i
 
 scala> Complex.imag(-1)
+res1: Complex = 0.0 + -1.0i
 
 scala> Complex.apply(3,4)
+res2: Complex = 3.0 + 4.0i
 
 scala> Complex(3,4)
+res3: Complex = 3.0 + 4.0i
+
+scala> new Complex(3, 4)
+error: 
+     constructor Complex in class Complex cannot be accessed in object $iw
 \end{REPLnonum}
 \end{Slide}
 
@@ -328,96 +420,244 @@ class Complex private (val re: Double, val im: Double){
   override def toString = s"$re + $im$imSymbol"
 }
 object Complex {
-  def apply(re: Double = 0: im: Double = 0) = new Complex(re, im)
-  def real(r: Double) = apply(re=a)
-  def imag(i: Double) = apply(im=b)
+  def apply(re: Double = 0, im: Double = 0) = new Complex(re, im)
+  def real(r: Double) = apply(re=r)
+  def imag(i: Double) = apply(im=i)
   val zero = apply()
 }
 \end{Code}
 \end{Slide}
 
-\begin{Slide}{Medlemmar som bara finns i en upplaga}
-Medlemmen \code{imSymbol} passar bättre att ha i kompanjonsobjektet, eftersom det räcker att ha en enda upplaga av denna medlem.  
+\begin{Slide}{Medlemmar som bara behövs i en enda upplaga}
+Attributet \code{imSymbol} passar bättre att ha i \Emph{kompanjonsobjektet}, eftersom det räcker att ha \Alert{en enda upplaga}, som kan vara gemensam för alla objekt:  
 \begin{Code}
 class Complex private (val re: Double, val im: Double){
   def r  = math.hypot(re, im)
   def fi = math.atan2(re, im)
   def +(other: Complex) = new Complex(re + other.re, im + other.im)
-  override def toString = s"$re + $im$imSymbol"
+  override def toString = s"$re + $im${Complex.imSymbol}"
 }
 object Complex {
   var imSymbol = 'i'
-  def apply(re: Double = 0: im: Double = 0) = new Complex(re, im)
-  def real(r: Double) = apply(re=a)
-  def imag(i: Double) = apply(im=b)
+  def apply(re: Double = 0, im: Double = 0) = new Complex(re, im)
+  def real(r: Double) = apply(re=r)
+  def imag(i: Double) = apply(im=i)
   val zero = apply()
 }
 \end{Code}
 \end{Slide}
 
-\begin{Slide}{Konstruktor}
+
+
+\begin{Slide}{Medlemmar i singelobjekt är statiskt allokerade}\SlideFontTiny
+
+Minnesplatsen för \Emph{attribut i singelobjekt} allokeras automatiskt en gång för alla, och kallas därför \Emph{statiskt} allokerad. Singelobjektets namn \code{Complex} utgör en statisk referens till den enda instansen och är av typen \texttt{Complex.type}.
+
+\begin{tikzpicture}[font=\SlideFontSmall\sffamily]
+\matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=0.8cm}}] (mat) 
+{
+\texttt{Complex}   &  \makebox(10,10){ }\\
+};
+
+\node[cloud, cloud puffs=15.0, cloud ignores aspect, minimum width=1cm, minimum height=2cm,
+ align=center, draw] (instance1) at (5.8cm, 0.0cm) {
+ \begin{tabular}{r l l}
+ \texttt{imSymbol:} & \texttt{Char} & \fbox{i}\\
+ \end{tabular}
+ };
+ 
+\filldraw[black] ($ (mat-1-2) + (0.0cm,0.0cm) $) circle (3pt) node[] (ref1)  {};
+
+\draw [arrow, line width=0.7mm] (ref1) -- (instance1);
+\end{tikzpicture}
+
+Nu bereder vi inte plats för \code{imSymbol} i varenda \Emph{dynamiskt} allokerad instans:
+\begin{REPL}[numbers=none]
+scala> val c1 = Complex(3, 4)   // dynamisk allokering på heapen som växer
+\end{REPL}
+
+\begin{tikzpicture}[font=\SlideFontSmall\sffamily]
+\matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=0.8cm}}] (mat) 
+{
+\texttt{c1}   &  \makebox(10,10){ }\\
+};
+
+\node[cloud, cloud puffs=15.0, cloud ignores aspect, minimum width=2cm, minimum height=2cm,
+ align=center, draw] (instance1) at (5.8cm, -0.0cm) {
+ \begin{tabular}{r l l}
+ \texttt{re:} & \texttt{Double} & \fbox{3.0} \\
+ \texttt{im:} & \texttt{Double} & \fbox{4.0}\\
+ \end{tabular}
+ };
+ 
+\filldraw[black] ($ (mat-1-2) + (0.0cm,0.0cm) $) circle (3pt) node[] (ref1)  {};
+
+\draw [arrow, line width=0.7mm] (ref1) -- (instance1);
+\end{tikzpicture}
+
+
+\end{Slide}
+
+
+
+
+\begin{Slide}{Attribut i kompanjonsobjekt användas för sådant som är gemensamt för alla instanser}
+
+Om vi ändrar på statiska \code{imSymbol} så ändras \code{toString} för \Alert{alla} dynamiskt allokerade instanser.
+\begin{REPLnonum}
+scala> val c1 = Complex(3, 4)
+c1: Complex = 3.0 + 4.0i
+
+scala> Complex.imSymbol = 'j'
+Complex.imSymbol: Char = j
+
+scala> val c2 = Complex(5, 6)
+c2: Complex = 5.0 + 6.0j
+
+scala> c1
+res0: Complex = 3.0 + 4.0j
+\end{REPLnonum}
+\end{Slide}
+
+
+
+
+
+\Subsection{Minneshantering}
+
+
+\begin{Slide}{Vad är en konstruktor?}
 \begin{itemize}
-\item En \Emph{konstruktor} är den kod som exekveras när objekt skapas med \code{new}. 
+\item En \Emph{konstruktor} är den kod som exekveras när klasser instansieras med \code{new}.
+
+\item Konstruktorn skapar nya objekt i minnet under körning när den anropas. 
 
 \item I Scala \Alert{genererar} kompilatorn en \Emph{primärkonstruktor} med maskinkod som initialiserar alla attribut baserat på klassparamtetrar och \code{val}- och \code{var}-deklarationer. 
 
-\item I Java \Alert{måste} man \Alert{själv} skriva alla konstruktorer och med speciell syntax. Man kan ha många olika alternativa konstruktorer.
+\item I Java \Alert{måste} man \Alert{själv} skriva alla konstruktorer med speciell syntax och göra alla initialiseringar själv. Man kan ha många olika alternativa konstruktorer i Java.
 
-\item I Scala \Emph{kan} man skriva egna (alternativa) konstrukturer med speciell syntax, men det är inte vanligt, eftersom man har möjligheten med fabriksmetoder i kompanjonsobjekt och default-argument (vilka saknas i Java). 
+\item I Scala \Emph{kan} man också skriva egna \Emph{alternativa konstrukturer} med speciell syntax, men det är \Alert{ovanligt}, eftersom man har möjligheten med fabriksmetoder i kompanjonsobjekt och default-argument (saknas i Java). 
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{Skräpsamling}
-Destruktor
+
+\begin{Slide}{Hjälpkonstruktorer i Scala}%\SlideFontSmall
+Fördjupning för kännedom:
+\begin{itemize}
+\item I Scala kan man skapa ett alternativ till primärkonstruktorn, en så kallad \Emph{hjälpkonstruktor} \Eng{auxilliary constructor} genom att deklarera en metod med det speciella namnet \code{this}.
+
+
+\item Hjälpkonstruktorer \Alert{måste} börja med att anropa en \Alert{annan} konstruktor som står \Alert{före} i koden, till exempel primärkonstruktorn.
+\end{itemize}
+
+\begin{Code}
+class Point(val x: Int, val y: Int, z: Int){
+  def this(x: Int, y: Int) = this(x, y, 0)   //anrop av primärkonstruktorn
+  def this(x: Int) = this(x, 0)              //anrop av hjälpkonstruktor
+  override def toString = 
+    if (z == 0) s"Point($x,$y)" else s"Point($x,$y,$z)"
+}
+\end{Code}
+
+{\SlideFontSmall Genom att känna till hur hjälpkonstruktorer fungerar i Scala, blir det lättare att begripa konstruktorer i Java.}
+
+\end{Slide}
+
+\begin{Slide}{Användning av hjälpkonstruktor}
+\begin{REPL}
+scala> val p1 = new Point(1)
+p1: Point = Point(1,0)
+
+scala> val p2 = new Point(1, 2)
+p2: Point = Point(1,2)
+
+scala> val p3 = new Point(1, 2, 3)
+p3: Point = Point(1,2,3)
+\end{REPL}
+
+Men man gör \Alert{mycket oftare} så här i Scala:
+\begin{Code}
+class Point(x: Int, y: Int = 0, z: Int = 0){
+  override def toString = 
+    if (z == 0) s"Point($x,$y)" else s"Point($x,$y,$z)"
+}
+
+\end{Code}
+Eller använder en fabriksmetod i kompanjonsobjekt. \\
+Eller ännu hellre en case-klass...
+\end{Slide}
+
+
+
+\begin{Slide}{Vad gör skräpsamlaren?}\SlideFontSmall
+\begin{itemize}
+\item Scala och Java är båda programmeringsspråk som förutsätter en körmiljö med \Alert{automatisk}  \Emph{skräpsamling} \Eng{garbage collection}.
+
+\item \Emph{Skräpsamlaren} \Eng{the garbage colector} är ett program som automatiskt körs i bakgrunden då och då och \Emph{städar minnet} genom att frigöra den plats som upptas av \Alert{objekt som inte längre används}.
+
+\item JVM:en bestämmer själv när skräpsamlaren ska jobba och programmeraren har ingen kontroll över detta.
+
+\item Den stora \Emph{fördelen} med automatisk skärpsamling är att man slipper bry sig om det svåra och felbenägna arbetet att \Alert{avallokera} minne.
+
+\item \Alert{Nackdelen} är att man inte kan styra exakt hur och när skräpsamlingen ska ske och man kan därmed inte bestämma när processorn ska belastas med minneshanteringen. Detta är normalt inget problem, utom i vissa tidskritiska realtidssystem med hårda minnesbegränsningar och svarstidskrav.
+
+\item I språk utan automatisk skräpsamling, t.ex. C++, måste man ta hand om destruktion av objekt och skriva egna s.k. \Emph{destruktorer}. 
+\end{itemize}
 \end{Slide}
 
 
 \Subsection{Referens saknas: \texttt{null}}
 
 \begin{Slide}{Referens saknas: \texttt{null}}
+\begin{itemize}
+\item I Java och många andra språk använder man ofta literalen \code{null} för att representera att ett \Alert{värde saknas}.
+
+\item En referens som är \code{null} refererar inte till någon instans.
+
+\item Om du försöker referera till instansmedlemmar med punktnotation genom en referens som är \code{null} kastas ett \Alert{undantag} \code{NullPointerException}.
+
+\item Oförsiktig användning av \code{null} är en vanlig källa till \Alert{buggar}, som kan vara svåra att hitta och fixa.
+
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Exempel: \texttt{null}}
+\begin{REPL}
+scala> class Gurka(val vikt: Int)
+defined class Gurka
+
+scala> var g: Gurka = null        // ingen instans allokerad än
+g: Gurka = null
+
+scala> g.vikt
+java.lang.NullPointerException
+
+scala> g = new Gurka(42)          // instansen allokeras
+g: Gurka = Gurka@1ec7d8b3
+
+scala> g.vikt
+res0: Int = 42
+
+scala> g = null         // instansen kommer att destrueras av skräpsamlaren
+\end{REPL}
+
+\begin{itemize} \SlideFontSmall
+\item Scala har \code{null} av kompabilitetsskäl, men det är brukligt att \Alert{endast} använda \code{null} om man anropar Java-kod.
+
+\item Scala erbjuder smidiga \code{Option}, \code{Some} och \code{None} för säker hantering av saknade värden; mer om detta i vecka 8.
+
+
+
+\end{itemize}
 \end{Slide}
 
 
 
-\Subsection{Synlighet}
 
-\begin{Slide}{Synlighet}
-definiera/förklara:
-private
-private[this]
-\end{Slide}
-
-
-\begin{Slide}{Synlighet av klassparametrar i klasser \& case-klasser}\SlideFontSmall
-\code{private[this]} är \Alert{ännu} mer privat än \code{private} 
-\begin{Code}
-class Hemlis(private val hemlis: Int) {
-  def ärSammaSom(annan: Hemlis) = hemlis == annan.hemlis   // Funkar!
-}
-
-class Hemligare(private[this] val hemlis: Int) {
-  def ärSammaSom(annan: Hemligare) = hemlis == annan.hemlis //KOMPILERINGSFEL
-}
-\end{Code}
-Vad händer om man inte skriver något? Olika för klass och case-klass:
-\begin{Code}
-class Hemligare(hemlis: Int) { // motsvarar private[this] val
-  def ärSammaSom(annan: Hemligare) = hemlis == annan.hemlis //KOMPILERINGSFEL
-}
-
-case class InteHemlig(seMenInteRöra: Int) { // blir automatiskt val 
-  def ärSammaSom(annan: InteHemlig): Boolean = 
-    seMenInteRöra == annan.seMenInteRöra 
-}
-
-\end{Code}
-\end{Slide}
 
 
 \Subsection{Klasser i Java}
-
-\begin{Slide}{Klasser i Java}
-\end{Slide}
 
 \begin{Slide}{Typisk utformning av Java-klass}
 Typisk ''anatomi'' av en Java-klass:
@@ -433,30 +673,241 @@ class Klassnamn {
 \href{http://www.oracle.com/technetwork/java/codeconventions-141855.html#1852}{\SlideFontSize{9}{8}www.oracle.com/technetwork/java/codeconventions-141855.html\#1852}
 \end{Slide}
 
-\begin{Slide}{Statiska medlemmar}
+
+
+
+\begin{Slide}{Java-exempel: Klassen JComplex}\SlideFontSmall
+\javainputlisting[basicstyle=\SlideFontSize{5}{6}\ttfamily\selectfont]{../compendium/examples/JComplex.java}
 \end{Slide}
+
+
+
+
+\begin{Slide}{Exempel: Använda JComplex i Scala-kod}
+\begin{REPL}
+$ javac JComplex.java 
+$ scala
+Welcome to Scala 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_66).
+Type in expressions for evaluation. Or try :help.
+
+scala> val jc1 = new JComplex(3, 4)
+jc1: JComplex = 3.0 + 4.0i
+
+scala> val polarForm = (jc1.getR, jc1.getFi)
+polarForm: (Double, Double) = (5.0,0.6435011087932844)
+
+scala> val jc2 = new JComplex(1, 2)
+jc2: JComplex = 1.0 + 2.0i
+
+scala> jc1 add jc2
+res0: JComplex = 4.0 + 6.0i
+\end{REPL}
+\end{Slide}
+
+
+
+
+\begin{Slide}{Exempel: Använda JComplex i Java-kod}\SlideFontSmall
+\javainputlisting[basicstyle=\SlideFontSize{8}{10}\ttfamily\selectfont]{../compendium/examples/JComplexTest.java}
+\begin{itemize}
+\item I Java måste man skriva \Alert{tomma parentes-par} efter metodnamnet vid \Alert{anrop av parameterlösa metoder}.
+
+\item \Alert{Tupler finns inte} i Java, så det går inte på ett enkelt sätt att skapa par av värden som i Scala; ovan görs polär form till en sträng för utskrift.
+
+\item \Alert{Operatornotation för metoder finns inte} i Java, så man måste i Java använda punktnotation och skriva: \code{jc1.add(jc2)}
+\end{itemize}
+\end{Slide}
+
+
+
+
+
+
+
+
+
+
+\begin{Slide}{Statiska medlemmar i Java}
+\begin{itemize}
+\item Man kan \Alert{inte} deklarera explicita singelobjekt i Java och det finns inget nyckelord \code{object}.
+
+\item I stället kan man deklarera \Emph{statiska medlemmar} i en klass med Java-nyckelordet \jcode{static}.
+
+\item Exempel på hur vi kan göra detta inuti klassen \code{JComplex}:
+
+\begin{Code}[language=Java,basicstyle=\SlideFontSize{10}{12}\ttfamily\selectfont]
+    public static char imSymbol = 'i';
+\end{Code}
+
+\item Effekten blir den samma som ett singelobjekt i Scala: 
+\begin{itemize}
+\item Alla statiska medlemmar i en Java-klass allokeras automatisk och hamnar i en egen singulär ''klassinstans'' som existerar oberoende av de dynamiska instanserna.
+\item De statiska medlemmarna accessas med punktnotation genom klassnamnet:
+\begin{Code}[language=Java,basicstyle=\SlideFontSize{11}{13}\ttfamily\selectfont]
+    JComplex.imSymbol = 'j';
+\end{Code}
+
+\end{itemize}
+
+
+\end{itemize}
+\end{Slide}
+
+
+
+\Subsection{Referensen \texttt{this}}
+\begin{Slide}{Referensen \texttt{this}}\SlideFontSmall
+\begin{itemize}
+\item Nyckelordet \code{this} ger en referens till den aktuella instansen.
+\begin{REPLnonum}
+scala> class Gurka(var vikt: Int){def jagSjälv = this}
+defined class Gurka
+
+scala> val g = new Gurka(42)
+g: Gurka = Gurka@5ae9a829
+
+scala> g.jagSjälv
+res0: Gurka = Gurka@5ae9a829
+
+scala> g.jagSjälv.vikt
+res1: Int = 42
+
+scala> g.jagSjälv.jagSjälv.vikt
+res2: Int = 42
+\end{REPLnonum}
+\item Referensen \code{this} används ofta för att komma runt ''namnkrockar'' där en variabler med samma namn gör så att den ena variabeln inte syns.
+\end{itemize}
+\end{Slide}
+
 
 
 \Subsection{Getters och setters}
 
-\begin{Slide}{Getters och setters i Java}
+\begin{Slide}{Getters och setters i Java}\SlideFontSmall
+\begin{itemize}
+\item I Java finns inget motsvarande nyckelord \code{val} som garanterar oföränderliga referenser. 
+
+\item Därför gör man i Java nästan alltid attribut \Alert{privata} för att förhindra att de ändras på ett okontrollerat sätt.
+
+\item Java följer inte principen om enhetlig access: åtkomst av metoder och variabler sker med olika syntax. 
+
+\item Därför är det normala i Java att införa metoder som kallas \Emph{getters} och \Emph{setters}, som används för att \Alert{indirekt} läsa och uppdatera \Emph{attribut}.
+
+\item Dessa metoder känns igen genom konventionen att de heter något som börjar med \Emph{get} respektive\Emph{set}.
+
+\item Med indirekt access av attribut kan man i Java åstadkomma \Emph{flexibilitet}, så att klassimplementationen kan ändras utan ändra klientkoden: 
+\begin{itemize}\SlideFontSmall
+\item man kan t.ex. i efterhand ändra representation av de privata attributen eftersom all access sker genom getters och setters.
+\end{itemize}
+
+\item Om klassen inte erbjuder en setter för privata attribut kan man åstadkomma oföränderliga datastrukturer där attributen inte förändras efter allokering.
+\end{itemize}
 \end{Slide}
 
-\begin{Slide}{Getters och setters i Scala}
+
+
+\begin{Slide}{Java-exempel: Klassen JPerson}\SlideFontSmall
+\Emph{Indirekt} access av \Alert{privata} attribut:
+\vspace{-1em}\begin{multicols}{2}
+\javainputlisting[basicstyle=\SlideFontSize{7}{8}\ttfamily\selectfont]{../compendium/examples/JPerson.java}
+
+\columnbreak
+
+\begin{REPL}[numbers=none]
+$ javac JPerson.java 
+$ scala
+Welcome to Scala 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_66).
+Type in expressions for evaluation. Or try :help.
+
+scala> val p = new JPerson("Björn")
+p: JPerson = JPerson@7e774085
+
+scala> p.getAge
+res0: Int = 0
+
+scala> p.setAge(42)
+
+scala> p.getAge
+res1: Int = 42
+
+scala> p.age
+error: 
+value age is not a member of JPerson
+\end{REPL}
+\end{multicols}
 \end{Slide}
 
-\begin{Slide}{Ändra attributrepresentation utan att påverka existerande kod}
-Antag att vi vill ädnra representation av vårt komplexa tal till att ha ett attribut Polar som är en  punkt med polära koordinater.
+
+\begin{Slide}{Motsvarande JPerson men i Scala}
+Så här brukar man åstadkomma motsvarande i Scala: \\~
+\begin{Code}[basicstyle=\SlideFontSize{13}{15}\ttfamily\selectfont]
+class Person(val name: String) {
+  var age = 0
+}
+\end{Code}
+~\\
+Notera att alla attribut här är \Emph{publika}.
+\end{Slide}
+
+
+\begin{Slide}{Förhindra felaktiga attributvärden med setters}\SlideFontSmall
+Med hjälp av \Emph{setters} kan vi förhindra \Alert{felaktig} uppdatering av attributvärden, till exempel \Alert{negativ ålder} i klassen \code{JPerson} i Java:
+\begin{Code}[language=Java]
+    public void setAge(int age){   
+        if (age >= 0) {
+            this.age = age;
+        else {
+            this.age = 0;
+        }   
+    }
+\end{Code}
+Hur kan vi åstadkomma \Emph{motsvarande i Scala}? \\
+\pause 
+Antag att vi började med nedan variant, men \Alert{ångrar} oss och sedan vill införa funktionalitet som förhindrat negativ ålder \Emph{utan att ändra i klientkod}: 
+\begin{Code}
+class Person(val name: String) {
+  var age = 0
+}
+\end{Code}
+Om vi inför en ny metod \code{setAge} och gör attributet \code{age} privat så funkar det \Alert{inte} längre att skriva  \code{ p.age = 42 } och vi ''kvaddar'' klientkoden! \code{  :(}
+\end{Slide}
+
+
+
+\begin{Slide}{Getters och setters i Scala}\SlideFontSmall
+\setlength{\leftmargini}{0pt}
+\begin{itemize}
+\item Principen om \Emph{enhetlig access} tillsammans med \Alert{specialsyntax} för \Emph{setters} kommer till vår räddning!
+
+\item 
+En \Emph{setter} i Scala är en \textbf{procedur som har ett namn som slutar med} \texttt{\_=}
+\pause
+\item I Scala kan man utan att kvadda klientkod införa getter+setter så här:
+\end{itemize}
+\begin{Code}
+class Person(val name: String) { // ändrad implementation men samma access
+  private var myPrivateAge = 0
+  def age = myPrivateAge         // getter
+  def age_=(a: Int): Unit =      // setter
+    if (a >= 0) myPrivateAge = a else myPrivateAge = 0
+}
+\end{Code}
+\pause\vspace{-0.5em}
+\begin{REPL}
+scala> val p = new Person("Björn")
+p: Person = Person@28ac3dc3
+
+scala> p.age = 42      // najs syntax om getter parad med setter enl ovan
+p.age: Int = 42
  
-Complex som polära koordinater i Java med privat attribut
-Complex som polära koordinater med publika attribut om man har enhetlig access
+scala> p.age = -1      // nu förhindras negativ ålder
+p.age: Int = 0
+\end{REPL}
 \end{Slide}
 
 
-\Subsection{Implementation saknas: ???}
 
-\begin{Slide}{Implementation saknas: ???}
-\end{Slide}
+
 
 
 \fi
