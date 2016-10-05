@@ -20,7 +20,7 @@ The main directories are:
 * `compendium` with the course teaching material including lecture notes, exercises, labs, etc.
   * `modules` with lectures exercises and labs for each week
   * `generated` with output from execution of `plan/Main.scala` included in the compendium
-* `slides` with lecture notes in project friendly format
+* `slides` with lecture notes in projector-friendly format
 * `workspace` with student workspace including lab code skeletons, examples, code libs etc. 
 * `plan` with module contents and concepts per week
 * `img` images used in compendium and slides
