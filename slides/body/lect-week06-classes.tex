@@ -182,7 +182,7 @@ scala> objRef2.attr = 43
 \begin{Code}
 class Klassnamn(val attribut1: Int, attribut2: String){  
   val attribut3: Double = 42.0              //publikt oföränderligt attribut
-  private var attribut3: Boolean = false    //privat medlem syns inte utåt
+  private var attribut4: Boolean = false    //privat medlem syns inte utåt
   def metod(parameter: Int) = parameter + 1 //funktion i klass kallas metod
   lazy val attr4 = Vector.fill(100000)(42.0)     //fördröjd initialisering 
 }
@@ -551,7 +551,7 @@ Fördjupning för kännedom:
 \end{itemize}
 
 \begin{Code}
-class Point(val x: Int, val y: Int, z: Int){
+class Point(val x: Int, val y: Int, val z: Int){
   def this(x: Int, y: Int) = this(x, y, 0)   //anrop av primärkonstruktorn
   def this(x: Int) = this(x, 0)              //anrop av hjälpkonstruktor
   override def toString = 
@@ -577,7 +577,7 @@ p3: Point = Point(1,2,3)
 
 Men man gör \Alert{mycket oftare} så här i Scala:
 \begin{Code}
-class Point(x: Int, y: Int = 0, z: Int = 0){
+class Point(val x: Int, val y: Int = 0, val z: Int = 0){
   override def toString = 
     if (z == 0) s"Point($x,$y)" else s"Point($x,$y,$z)"
 }
@@ -785,7 +785,7 @@ res2: Int = 42
 
 \begin{Slide}{Getters och setters i Java}\SlideFontSmall
 \begin{itemize}
-\item I Java finns inget motsvarande nyckelord \code{val} som garanterar oföränderliga referenser. 
+\item I Java finns inget motsvarande nyckelord \code{val} som garanterar oföränderliga attributreferenser.\footnote{Det finns visserligen \jcode{final} men det är annorlunda som vi ska se senare.}
 
 \item Därför gör man i Java nästan alltid attribut \Alert{privata} för att förhindra att de ändras på ett okontrollerat sätt.
 
@@ -793,14 +793,14 @@ res2: Int = 42
 
 \item Därför är det normala i Java att införa metoder som kallas \Emph{getters} och \Emph{setters}, som används för att \Alert{indirekt} läsa och uppdatera \Emph{attribut}.
 
-\item Dessa metoder känns igen genom konventionen att de heter något som börjar med \Emph{get} respektive\Emph{set}.
+\item Dessa metoder känns igen genom Java-konventionen att de heter något som börjar med \Emph{get} respektive \Emph{set}.
 
-\item Med indirekt access av attribut kan man i Java åstadkomma \Emph{flexibilitet}, så att klassimplementationen kan ändras utan ändra klientkoden: 
+\item Med indirekt access av attribut kan man i Java åstadkomma \Emph{flexibilitet}, så att klassimplementationen kan ändras utan att ändra i klientkoden: 
 \begin{itemize}\SlideFontSmall
 \item man kan t.ex. i efterhand ändra representation av de privata attributen eftersom all access sker genom getters och setters.
 \end{itemize}
 
-\item Om klassen inte erbjuder en setter för privata attribut kan man åstadkomma oföränderliga datastrukturer där attributen inte förändras efter allokering.
+\item Om klassen \Alert{inte} erbjuder en \Alert{setter} för privata attribut kan man åstadkomma \Emph{oföränderliga} datastrukturer där attributreferenserna inte förändras efter allokering.
 \end{itemize}
 \end{Slide}
 
@@ -839,7 +839,7 @@ value age is not a member of JPerson
 
 
 \begin{Slide}{Motsvarande JPerson men i Scala}
-Så här brukar man åstadkomma motsvarande i Scala: \\~
+Så här brukar man åstadkomma ungefär motsvarande i Scala: \\~
 \begin{Code}[basicstyle=\SlideFontSize{13}{15}\ttfamily\selectfont]
 class Person(val name: String) {
   var age = 0
