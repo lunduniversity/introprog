@@ -49,7 +49,7 @@ $X$ \Emph{är en} $Y$
 \end{Slide}
 
 
-\begin{Slide}{Behovet av gemensam bastyp}
+\begin{Slide}{Behovet av gemensam bastyp}\SlideFontSmall
 \begin{REPL}
 scala> class Gurka(val vikt: Int)
 
@@ -70,20 +70,318 @@ scala> grönsaker.map(_.vikt)
 <console>:15: error: value vikt is not a member of Object
        grönsaker.map(_.vikt)
 \end{REPL}
-Kan vi inte ordna en mer specifik typ än \code{Object}?
+Hur ordna en mer specifik typ än \code{Vector[Object]}? \pause$\rightarrow$ Skapa en \Emph{bastyp}!
 \end{Slide}
 
 
-\begin{Slide}{Scalas typhierarki}
-Any, AnyVal, AnyRef, Object
-\end{Slide}
 
 
 \begin{Slide}{Skapa en gemensam bastyp}
+Typen \textit{\textbf{\texttt{Grönsak}}} är en \Emph{bastyp} i nedan arvshierarki:
+
+\vspace{1em}
+\begin{center}
+\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+\tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=2cm, rectangle split, rectangle split parts = 3]
+\begin{tikzpicture}[inner sep=0.5em]
+\node [umlclass, rectangle split parts = 1, xshift=0cm] (BaseType)  {
+            \textit{\textbf{\centerline{\TextBox{\code{Grönsak}}}}}
+            %\nodepart[]{second}\TextBox{\code{val vikt: Int}}
+        };
+        
+\node [umlclass, rectangle split parts = 1]  at (2cm,-2cm) (SubType1) {
+            \textbf{\centerline{\TextBox{\code{Gurka}}}}
+            %\nodepart[]{second} \TextBox{~}
+        };  
+                
+\node [umlclass, rectangle split parts = 1] at (-2cm,-2cm) (SubType2)  {
+            \textbf{\centerline{\TextBox{\code{Tomat}}}}
+            %\nodepart[]{second} \TextBox{talk(): void}
+        };        
+\draw[umlarrow] (SubType1.north) -- ++(0,0.5) -| (BaseType.south);    
+\draw[umlarrow] (SubType2.north) -- ++(0,0.5) -| (BaseType.south);            
+\end{tikzpicture}
+
+\pause
+\vspace{2em} Pilen ~ \tikz\draw[umlarrow] (0,0) -- (0,0.5); ~ betecknar \Emph{arv} och utläses ''\Alert{är en}''
+
+\pause
+{\vspace{1em}\SlideFontSmall Typerna \code{Tomat} och \code{Gurka} är \Emph{subtyper} till den \Emph{abstrakta} typen \code{Grönsak}.}
+\end{center}
 \end{Slide}
 
-\begin{Slide}{Behovet av gemensamma delar}
+
+
+
+
+
+
+\begin{Slide}{Skapa en gemensam bastyp med \texttt{trait} och \texttt{extends}}\SlideFontSmall
+Med \code{trait Grönsak} kan klasserna \code{Gurka} och \code{Tomat} få en gemensam \Emph{bastyp} genom att båda \Emph{subtyperna} gör \code{extends Grönsak}:
+\begin{REPL}
+scala> trait Grönsak
+
+scala> class Gurka(val vikt: Int) extends Grönsak
+
+scala> class Tomat(val vikt: Int) extends Grönsak
+
+scala> val grönsaker = Vector(new Gurka(200), new Tomat(42))
+grönsaker: scala.collection.immutable.Vector[Grönsak] = 
+  Vector(Gurka@3dc4ed6f, Tomat@2823b7c5)
+
+
+\end{REPL}
+\pause
+Men det är fortfarande inte som vi vill ha det:
+\begin{REPLnonum}
+scala> grönsaker.map(_.vikt)
+<console>:15: error: value vikt is not a member of Grönsak
+       grönsaker.map(_.vikt)
+\end{REPLnonum}
 \end{Slide}
+
+
+
+\begin{Slide}{En gemensam bastyp med gemensamma delar}\SlideFontSmall
+Placera gemensamma medlemmar i bastypen:
+
+\vspace{1em}
+\begin{center}
+\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+\tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3cm, rectangle split, rectangle split parts = 3]
+\begin{tikzpicture}[inner sep=0.5em]
+\node [umlclass, rectangle split parts = 2, xshift=0cm] (BaseType)  {
+            \textit{\textbf{\centerline{\TextBox{\code{Grönsak}}}}}
+            \nodepart[]{second}\TextBox{\code{val vikt: Int}}
+        };
+        
+\node [umlclass, rectangle split parts = 1]  at (2cm,-3cm) (SubType1) {
+            \textbf{\centerline{\TextBox{\code{Gurka}}}}
+            %\nodepart[]{second} \TextBox{~}
+        };  
+                
+\node [umlclass, rectangle split parts = 1] at (-2cm,-3cm) (SubType2)  {
+            \textbf{\centerline{\TextBox{\code{Tomat}}}}
+            %\nodepart[]{second} \TextBox{talk(): void}
+        };        
+\draw[umlarrow] (SubType1.north) -- ++(0,0.5) -| (BaseType.south);    
+\draw[umlarrow] (SubType2.north) -- ++(0,0.5) -| (BaseType.south);            
+\end{tikzpicture}
+\end{center}
+\vspace{2em} 
+\begin{itemize}
+\item Alla grönsaker har attributet \code{val vikt}. 
+\item Det specifika värdet på vikten definieras \Alert{inte} i bastypen. 
+\item Medlemen \code{vikt} kallas  \Emph{abstrakt} eftersom den \Alert{saknar implementation}.
+\end{itemize}
+\end{Slide}
+
+
+
+
+
+\begin{Slide}{Placera gemensamma delar i bastypen}
+
+Vi inkluderar det gemensamma attributet \code{val vikt} som en \Emph{abstrakt medlem} i bastypen:
+
+\begin{Code}
+trait Grönsak { val vikt: Int }
+class Gurka(val vikt: Int) extends Grönsak
+class Tomat(val vikt: Int) extends Grönsak
+\end{Code}
+Nu vet kompilatorn att alla grönsaker har en vikt: 
+\begin{REPL}
+scala> val grönsaker = Vector(new Gurka(200), new Tomat(42))
+grönsaker: scala.collection.immutable.Vector[Grönsak] = 
+  Vector(Gurka@3dc4ed6f, Tomat@2823b7c5)
+
+scala> grönsaker.map(_.vikt)
+res0: scala.collection.immutable.Vector[Int] = Vector(200, 42)
+\end{REPL}
+
+\end{Slide}
+
+
+
+
+
+\begin{Slide}{Scalas typhierarki och typen \texttt{Object}}
+Den översta delen av typhierarkin i Scala: 
+\vspace{1em}
+\begin{center}
+\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+\tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=2.5cm, rectangle split, rectangle split parts = 3]
+\begin{tikzpicture}[inner sep=0.5em]
+\node [umlclass, rectangle split parts = 1, xshift=0cm] (BaseType)  {
+            \textit{\textbf{\centerline{\TextBox{\code{Any}}}}}
+            %\nodepart[]{second}\TextBox{\code{def toString: String}}
+        };
+        
+\node [umlclass, rectangle split parts = 1]  at (2cm,-2cm) (SubType1) {
+            \textit{\textbf{\centerline{\TextBox{\code{AnyRef}}}}}
+            %\nodepart[]{second} \TextBox{~}
+        };  
+                
+\node [umlclass, rectangle split parts = 1] at (-2cm,-2cm) (SubType2)  {
+            \textit{\textbf{\centerline{\TextBox{\code{AnyVal}}}}}
+            %\nodepart[]{second} \TextBox{talk(): void}
+        };        
+\draw[umlarrow] (SubType1.north) -- ++(0,0.5) -| (BaseType.south);    
+\draw[umlarrow] (SubType2.north) -- ++(0,0.5) -| (BaseType.south);            
+\end{tikzpicture}
+\end{center}
+\begin{itemize}\SlideFontSmall
+\item De numeriska typerna \code{Int}, \code{Double}, etc är subtyper till \Emph{\code{AnyVal}} och kallas \Emph{värdetyper} och lagras på ett speciellt, effektivt sätt i minnet.  
+\item Alla dina egna klasser är subtyper till \Emph{\texttt{AnyRef}} och kallas \Emph{referenstyper} och kräver (direkt eller indirekt) konstruktion med \code{new}.
+\item \texttt{AnyRef} motsvaras av \Alert{\code{java.lang.Object}} i JVM.
+\end{itemize}
+\end{Slide}
+
+
+
+\begin{Slide}{Implicita supertyper till dina egna klasser}
+Alla dina egna typer ingår underförstått i Scalas typhierarki:
+
+\vspace{1em}
+\begin{center}
+\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+\tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=2cm, rectangle split, rectangle split parts = 3]
+\begin{tikzpicture}[inner sep=0.5em, scale=0.8, every node/.style={scale=0.8}]
+\node [umlclass, rectangle split parts = 1, xshift=0cm] at (0,-0.3cm)(BaseType)  {
+            \textit{\textbf{\centerline{\TextBox{\code{Any}}}}}
+            %\nodepart[]{second}\TextBox{\code{def toString: String}}
+        };
+        
+\node [umlclass, rectangle split parts = 1]  at (2cm,-2cm) (SubType1) {
+            \textit{\textbf{\centerline{\TextBox{\code{AnyRef}}}}}
+            %\nodepart[]{second} \TextBox{~}
+        };  
+                
+\node [umlclass, rectangle split parts = 1] at (-2cm,-2cm) (SubType2)  {
+            \textit{\textbf{\centerline{\TextBox{\code{AnyVal}}}}}
+            %\nodepart[]{second} \TextBox{talk(): void}
+        };        
+        
+        
+\node [umlclass, rectangle split parts = 1] at (2cm,-3.5cm) (SubSubType)  {
+            \textit{\textbf{\centerline{\TextBox{\code{Grönsak}}}}}
+            %\nodepart[]{second} \TextBox{talk(): void}
+        }; 
+        
+\node [umlclass, rectangle split parts = 1] at (3.5cm,-5.25cm) (SubSubSubType1)  {
+            \textbf{\centerline{\TextBox{\code{Gurka}}}}
+            %\nodepart[]{second} \TextBox{talk(): void}
+        }; 
+                
+\node [umlclass, rectangle split parts = 1] at (0.5cm,-5.25cm) (SubSubSubType2)  {
+            \textbf{\centerline{\TextBox{\code{Tomat}}}}
+            %\nodepart[]{second} \TextBox{talk(): void}
+        }; 
+
+                
+\draw[umlarrow] (SubType1.north) -- ++(0,0.3) -| (BaseType.south);    
+\draw[umlarrow] (SubType2.north) -- ++(0,0.3) -| (BaseType.south);   
+\draw[umlarrow] (SubSubType.north) -- (SubType1.south);    
+\draw[umlarrow] (SubSubSubType1.north) -- ++(0,0.3) -| (SubSubType.south);    
+\draw[umlarrow] (SubSubSubType2.north) -- ++(0,0.3) -| (SubSubType.south);                   
+\end{tikzpicture}
+\end{center}
+\end{Slide}
+
+
+\begin{Slide}{Terminologi}\SlideFontTiny
+
+\begin{tabular}{r  l}
+\Emph{subtyp}           & en typ som ärver en supertyp\\
+\Emph{supertyp}         & en typ som ärvs av en subtyp\\
+\Emph{bastyp}           & en typ som är rot i ett arvsträd\\
+\Emph{abstrakt medlem}  & en medlem som saknar implementation\\
+\Emph{konkret medlem}   & en medlem som ej saknar implementation\\
+\Emph{abstrakt typ}     & en typ kan ha abstrakta medlemmar; kan ej instansieras\\
+\Emph{konkret typ}      & en typ som ej har abstrakta medlemmar; kan instansieras\\
+\code|class|            & en klass är en konkret typ som \Alert{ej kan ha abstrakta medlemmar}\\
+\code|abstract class|   & en klass är en abstrakt typ som \Emph{kan ha parametrar}\\
+\code|trait|            & är en abstrakt typ som \Alert{ej kan ha parametrar} men \Emph{kan mixas in}\\
+\code|extends|          & står före en supertyp, indikerar arv\\
+\code|override|         & en medlem överskuggar (byter ut) en medlem i en superttyp\\
+\code|protected|        & gör en medlem synlig i subtyper till denna typ (jmf \code|private|)\\
+\code|final gurka|      & gör medlemen gurka final (förhindrar överskuggning)\\
+\code|final class|      & deklarerar en final klass, förhindrar arv\\
+\code|super.gurka|      & refererar till supertypens medlem \code|gurka| (jfm \code|this|)\\
+\end{tabular}
+
+\pause
+\begin{tikzpicture}[overlay]
+     \node at (10.7,0.6) {\includegraphics[scale=0.36]{../img/ttsuper}};
+\end{tikzpicture}
+
+
+\end{Slide}
+
+
+\begin{Slide}{Abstrakta och konkreta medlemmar}
+\vspace{-0.0em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6}{7.5}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/vego.scala}
+\end{Slide}
+
+
+
+
+%\begin{Slide}{Exempel: Robot}
+%\begin{center}
+%\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+%\begin{tikzpicture}[inner sep=0.5em]
+%\node [umlclass, rectangle split parts = 2, xshift=0cm] (AbstractRobot)  {
+%            \textit{\textbf{\centerline{\TextBox{AbstractRobot}}}}
+%            \nodepart[]{second}\TextBox{work(): void}
+%        };
+%        
+%\node [umlclass, rectangle split parts = 2]  at (2cm,-3cm) (MuteRobot) {
+%            \textbf{\centerline{\TextBox{MuteRobot}}}
+%            \nodepart[]{second} \TextBox{~}
+%        };  
+%                
+%\node [umlclass, rectangle split parts = 2] at (-2cm,-3cm) (TalkingRobot)  {
+%            \textbf{\centerline{\TextBox{TalkingRobot}}}
+%            \nodepart[]{second} \TextBox{talk(): void}
+%        };        
+%\draw[umlarrow] (TalkingRobot.north) -- ++(0,0.5) -| (AbstractRobot.south);    
+%\draw[umlarrow] (MuteRobot.north) -- ++(0,0.5) -| (AbstractRobot.south);            
+%\end{tikzpicture}
+%\end{center}
+%\end{Slide}
+
+
+
+
+\begin{Slide}{Attribut och metoder i UML-diagram}
+\begin{center}
+\begin{tikzpicture}
+\node (Class) [umlclass, rectangle split parts = 3, xshift = -2cm, yshift=-1.5cm, text width = 4.2cm, scale=0.8]  {
+            \textbf{\centerline{Name}}
+            \nodepart[]{second}attr1: Type \newline attr2: Type
+            \nodepart[]{third}method1(a: Type): Type \newline  method2(b: Type): Type
+       };
+\node (explain1)[above of = Class, yshift=1cm, text width=4.9cm]{En klass i ett \Emph{UML}-diagram kan ha 3 delar:};
+\node (explain2)[below of = Class, yshift=-1cm]{Ibland utelämnar man typerna.};
+
+
+
+\node [umlclass, rectangle split parts = 3]  at (4,0) (Robot) {
+            \textbf{\centerline{Robot}}
+            \nodepart[]{second}name: String
+            \nodepart[]{third}work(): Unit
+       };
+\node [umlclass, rectangle split parts = 3]  at (4, -3) (TalkingRobot)  {
+            \textbf{\centerline{TalkingRobot}}
+            \nodepart[]{second} phrase: String           
+            \nodepart[]{third}talk(): Unit
+        };        
+\draw[umlarrow] (TalkingRobot.north) -- ++(0,0.8) -| (Robot.south);        
+\end{tikzpicture}
+\end{center}
+\hskip2em\href{https://en.wikipedia.org/wiki/Class_diagram}{\SlideFontTiny en.wikipedia.org/wiki/Class\_diagram}
+\end{Slide}
+
 
 
 
