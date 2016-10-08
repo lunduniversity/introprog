@@ -88,7 +88,7 @@ trait Plan {
       | klasshierarkin i Scala: Any AnyRef Object AnyVal Null Nothing,
       | referenstyper vs värdetyper, 
       | klasshierarkin i scala.collection,
-      | Shape som bastyp till Point och Rectangle, 
+      | Shape som bastyp till Point och Circle, 
       | accessregler vid arv, protected, final,
       | klass vs trait, abstract class,
       | case-object, typer med uppräknade värden,  
