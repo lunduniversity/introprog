@@ -13,7 +13,7 @@
 
 \ifkompendium\else
 
-\Subsection{Arv och nyckelordet \texttt{extends}}
+\Subsection{Vad är arv?}
 
 \begin{Slide}{Vad är arv?}
 
@@ -186,7 +186,9 @@ Vi inkluderar det gemensamma attributet \code{val vikt} som en \Emph{abstrakt me
 
 \begin{Code}
 trait Grönsak { val vikt: Int }
+
 class Gurka(val vikt: Int) extends Grönsak
+
 class Tomat(val vikt: Int) extends Grönsak
 \end{Code}
 Nu vet kompilatorn att alla grönsaker har en vikt: 
@@ -289,7 +291,84 @@ Alla dina egna typer ingår underförstått i Scalas typhierarki:
 \end{Slide}
 
 
-\begin{Slide}{Terminologi}\SlideFontTiny
+\begin{Slide}{Vad är en trait?}
+\begin{itemize}
+\item Trait betyder \Emph{egenskap} på engelska.
+
+\item En trait liknar en klass, \Alert{men} speciella regler gäller:  
+
+\begin{itemize}
+
+\item den \Emph{kan} innehålla delar som \Emph{saknar implementation}
+
+\item den \Emph{kan mixas} med flera andra traits så att olika koddelar kan återanvändas på flexibla sätt. 
+
+\item den \Alert{kan inte} instansieras direkt som den är; den måste återanvändas genom arv.
+
+\item den \Alert{kan inte} ha klassparametrar eller konstruktorer
+\end{itemize}
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Vad används en trait till?}
+En \code{trait} används för att skapa en bastyp som kan vara hemvist för gemensamma delar hos subtyper:
+\begin{Code}
+trait Bastyp { val x = 42 }                 // Bastyp har medlemmen x
+class Subtyp1 extends Bastyp { val y = 43 } // Subtyp1 ärver x, har även y
+class Subtyp2 extends Bastyp { val z = 44 } // Subtyp2 ärver x, har även z
+\end{Code}
+\pause\vspace{-0.5em}
+\begin{REPL}
+scala> val a = new Subtyp1
+a: Subtyp1 = Subtyp1@51016012
+
+scala> a.x
+res0: Int = 42
+
+scala> a.y
+res1: Int = 43
+
+scala> a.z
+<console>:15: error: value z is not a member of Subtyp1
+
+scala> new Bastyp
+<console>:13: error: trait Bastyp is abstract; cannot be instantiated
+\end{REPL}
+
+\end{Slide}
+
+
+\begin{Slide}{En trait kan ha abstrakta medlemmar}
+\begin{Code}
+trait X { val x: Int }   // x är abstrakt, d.v.s. saknar implementation
+class A extends X { val x = 42 }   // x ges en implementation
+class B extends X { val x = 43 }   // x ges en annan implementation
+\end{Code}
+\pause\vspace{-0.5em}
+\begin{REPL}
+scala> val a = new A
+a: A = A@5faeada1
+
+scala> val b = new B
+b: B = B@cb51256
+
+scala> val xs = Vector(a,b)
+xs: scala.collection.immutable.Vector[X] = Vector(A@5faeada1, B@cb51256)
+
+scala> xs.map(_.x)
+res0: scala.collection.immutable.Vector[Int] = Vector(42, 43)
+
+scala> class Y { val y: Int }
+  error: class Y needs to be abstract, since value y is not defined
+  
+scala> trait Z(x: Int)
+  error: traits or objects may not have parameters
+
+\end{REPL}
+\end{Slide}
+
+
+\begin{Slide}{Terminologi och nyckelord}\SlideFontTiny
 
 \begin{tabular}{r  l}
 \Emph{subtyp}           & en typ som ärver en supertyp\\
@@ -305,9 +384,9 @@ Alla dina egna typer ingår underförstått i Scalas typhierarki:
 \code|extends|          & står före en supertyp, indikerar arv\\
 \code|override|         & en medlem överskuggar (byter ut) en medlem i en superttyp\\
 \code|protected|        & gör en medlem synlig i subtyper till denna typ (jmf \code|private|)\\
-\code|final gurka|      & gör medlemen gurka final (förhindrar överskuggning)\\
-\code|final class|      & deklarerar en final klass, förhindrar arv\\
-\code|super.gurka|      & refererar till supertypens medlem \code|gurka| (jfm \code|this|)\\
+\code|final gurka|      & gör medlemen gurka final: förhindrar överskuggning\\
+\code|final class|      & gör klassen final: förhindrar vidare subtypning\\
+\code|super.gurka|      & refererar till supertypens medlem \code|gurka| (jmf \code|this|)\\
 \end{tabular}
 
 \pause
@@ -320,7 +399,65 @@ Alla dina egna typer ingår underförstått i Scalas typhierarki:
 
 
 \begin{Slide}{Abstrakta och konkreta medlemmar}
-\vspace{-0.0em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6}{7.5}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/vego.scala}
+\vspace{-0.5em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6}{7}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/vego1.scala}
+\end{Slide}
+
+
+\begin{Slide}{Undvika kodduplicering med hjälp av arv}
+\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6}{7.3}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/vego2.scala}
+\end{Slide}
+
+\begin{Slide}{Överskuggning}
+\vspace{-0.5em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6}{7.3}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/vego3.scala}
+\end{Slide}
+
+
+\begin{Slide}{Varför kan kodduplicering orsaka problem?}
+\begin{itemize}
+\item Mer att skriva (inte jättestort problem)
+\pause
+\item Fler kodrader att läsa och förstå
+\pause
+\item Fler kodrader som påverkas vid tillägg
+\pause
+
+\item Fler kodrader att underhålla: 
+\begin{itemize}
+\item Om man rättar en bug på ett ställe måste man komma ihåg att göra \Alert{exakt samma ändring} på alla de ställen där kodduplicering förekommer $\rightarrow$ \Alert{risk för nya buggar}
+\end{itemize}	
+
+\pause
+
+\item Principen på engelska: \code{ DRY == "Don't Repeat Yourself!"}
+
+\pause
+
+\item {Men det kan finnas tillfällen när kodduplicering faktiskt är att föredra: t.ex. om man vill att olika delar av koden ska vara helt oberoende av varandra.}
+\end{itemize}	
+\end{Slide}
+
+
+
+\begin{Slide}{Filnamnsregler och -konventioner}
+\begin{itemize}
+\item Java
+\begin{itemize}
+\item I Java får man bara ha \Alert{en enda} publik klass per kodfil.
+\item I Java måste kodfilen ha \Alert{samma namn} som den publika klassen, t.ex. \code{KlassensNamn.java}
+\end{itemize}
+\item Scala
+\begin{itemize}
+\item I Scala får man ha \Emph{många} klasser/traits/singelobjekt i samma kodfil.
+\item I Scala får man döpa kodfilerna \Emph{oberoende} av deras innehåll. \pause Dessa \Emph{konventioner} används:
+\begin{itemize}
+\item Om en kodfil bara innehåller \Emph{en enda} klass/trait/singelobjekt ge filen samma namn som innehållet, t.ex. \code{KlassensNamn.scala} 
+\item Om en kodfil innehåller \Emph{flera} saker, döp filen till något som återspeglar hela innehållet och använd \Emph{liten begynnelsebokstav}, t.ex. \code{bastypensNamn.scala}
+\end{itemize}
+
+
+\end{itemize}
+
+\end{itemize}
 \end{Slide}
 
 
@@ -374,7 +511,7 @@ Alla dina egna typer ingår underförstått i Scalas typhierarki:
 \node [umlclass, rectangle split parts = 3]  at (4, -3) (TalkingRobot)  {
             \textbf{\centerline{TalkingRobot}}
             \nodepart[]{second} phrase: String           
-            \nodepart[]{third}talk(): Unit
+            \nodepart[]{third}speak(): Unit
         };        
 \draw[umlarrow] (TalkingRobot.north) -- ++(0,0.8) -| (Robot.south);        
 \end{tikzpicture}
