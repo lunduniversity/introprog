@@ -1,8 +1,8 @@
-object exempelVego3 {
+object exempelVego4 {
 
   trait Grönsak {
     val skalningsmetod: String
-    val skalfaktor = 0.99
+    final val skalfaktor = 0.99              // en final medlem kan ej överskuggas
     def skala(): Unit = if (!ärSkalad) {
       println(skalningsmetod)
       vikt = skalfaktor * vikt
@@ -20,9 +20,8 @@ object exempelVego3 {
   }
 
   class Tomat(var vikt: Double) extends Grönsak {
-    val namn = "tomat" //nyckelordet override behövs ej vid abstrakt medlem, men tillåtet:
-    override val skalningsmetod = "Skållas."
-//  override val skalningmetod = "Skållas." //kompilatorn hittar felet (stavfel, s saknas)
-    override val skalfaktor = 0.95  //överskuggning: override måste anges vid ny impl.
+    val namn = "tomat"
+    val skalningsmetod = "Skållas."
+//  override val skalfaktor = 0.95 // KOMPILERINGSFEL: "cannot override final member"
   }
 }

@@ -16,11 +16,11 @@ object exempelVego2 {
 
   class Gurka(var vikt: Double) extends Grönsak { // bara det som är speciellt för gurkor
     val namn = "gurka"
-    val skalningsmetod = "Gurkan skalas med skalare."
+    val skalningsmetod = "Skalas med skalare."
   }
 
   class Tomat(var vikt: Double) extends Grönsak { // bara det som är speciellt för tomater
     val namn = "tomat"
-    val skalningsmetod = "Tomaten skalas genom skållning."
+    val skalningsmetod = "Skållas."
   }
 }
