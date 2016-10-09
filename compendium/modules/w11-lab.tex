@@ -8,14 +8,15 @@
 \item Förstå hur autoboxing fungerar i Java
 \item Förstå vad statiska metoder och attribut innebär
 \item Förstå skillnad mellan primitiva typer och objekt i listor
-\item Kunna byta mellan ArrayLists och Array
-\item Kunna hur man läser in från fil
-\item Kunna for-sats i Java
+\item Känna till hur en byter mellan ArrayLists och Array
+\item Känna till hur en läser in från fil
+\item Känna till syntaxen för en for-sats  i Java
+\item Förstå hur en skickar information mellan scala och Java
 \end{Goals}
 
 \begin{Preparations}
 \item \DoExercise{\ExeWeekELEVEN}{11}
-\item Läs igenom Bakgrunden, Kodstrukturen och alla kommentarer i kodskelettet.
+\item Läs igenom Bakgrunden, kodstrukturen och alla kommentarer i kodskelettet.
 \input{team-lab-prep-items.tex}
 \end{Preparations}
 
@@ -25,16 +26,15 @@ I början av en runda slår den aktiva spelaren en tärning och deras pjäs flyt
 Beroende på vilken av de tre möjliga ruttyperna spelaren hamnar på sker olika saker:
 
 \begin{itemize}
-\item MoveSpace: Om en spelare hamnar på denna ruta får den dra ett MoveCard, varpå spelaren förflyttas antingen framåt eller bakåt ett antal steg som kortet anger.
-\item MoneySpace: Om en spelare hamnar på denna ruta får den dra ett MoneyCard, varpå spelaren antingen förlorar eller vinner pengar enl. det som står på kortet.
-\item HouseSpace: Dessa rutor kan ägas utav spelare. Om en spelare landar på denna ruta utan att någon äger den så får den möjligheten att köpa den. Äger en annan spelare rutan blir den aktiva spelaren tvungen att betala hyra. Hyran är samma som inköpspriset.
+\item MoveSpace: Om en spelare hamnar på denna ruta får den dra ett MoveCard, varpå spelaren förflyttas antingen framåt eller bakåt det antal steg som kortet anger.
+\item MoneySpace: Om en spelare hamnar på denna ruta får den dra ett MoneyCard, varpå spelaren antingen förlorar eller vinner pengar enligt beskrivningen på kortet.
+\item HouseSpace: Dessa rutor kan ägas utav spelare. Om en spelare förflyttas till denna rutan och ingen annan spelare äger den ges möjligheten att köpa den. Äger en annan spelare rutan blir den nuvarande spelaren tvungen att betala hyra. Hyran är samma som inköpspriset.
 \end{itemize}
 
 Spelet ska uppfylla följande krav:
-
 \begin{itemize}
-
-\item Varje spelare måste alltid börja sin runda med att slå en tärning innan den gör någon annan spelhandling, d.v.s. någon annan handling som påverkar spelets tillstånd (exempelvis kan man alltid visa spelplanen eller avsluta spelet).
+\setlength\itemsep{2em}
+\item Varje spelare måste alltid börja sin runda med att slå en tärning innan den utför någon annan spelhandling, d.v.s. någon annan handling som påverkar spelets tillstånd (exempelvis kan en alltid visa spelplanen eller avsluta spelet).
 \item Om någon spelare har mindre än 0 SEK kvar skall spelet sluta.
 \item Om någon spelare hamnar på en husruta som ägs av en annan spelare måste denne betala ägaren husets hyra i SEK. Om ingen äger huset ges spelaren möjlighet att köpa det för ett belopp motsvarande en hyra (förutsatt att den har råd).
 \item Om en spelare hamnar på en MoveSpace eller ett MoneySpace får spelaren möjligheten att dra ett kort. För MoveCard innebär detta en förflyttning (bakåt eller framåt) medan för MoneyCard en minskning eller ökning av pengar.
@@ -50,11 +50,11 @@ Nedan visas ett förenklat flödesdiagram för en spelrunda.
 \label{fig:scalajava:lthopoly-team:flowchart}
 \end{figure}
 
-Spelet avslutas när någon spelare får slut på pengar och spelaren med mest pengar vinner.
+Spelet avslutas när någon spelare får slut på pengar och då vinner spelaren med mest pengar.
 
 \subsection{Kodstruktur}
 
-Klassen Player representerar en spelare. Varje spelare måste veta om sitt saldo och sin position på brädet.
+Klassen Player representerar en spelare. Varje spelare måste känna till sitt saldo och sin position på brädet.
 
 \begin{JavaSpec}{class Player}
 	/** Creates a new player*/
@@ -77,7 +77,7 @@ Klassen Player representerar en spelare. Varje spelare måste veta om sitt saldo
 
 \end{JavaSpec}
 
-MoneyCard och MoveCard är två liknande klasser som representerar kort som spelaren kan dra. MoneyCard ska spara information om hur mycket pengar som ska läggas eller tas bort, och MoveCard ska spara information om hur mycket en spelare skall förflytta sig när kortet dras. Båda ska även inehålla en beskrivning utav varför detta händer. Informationen för dessa kort läses in från textfilerna moneycards.txt och movecards.txt.
+MoneyCard och MoveCard är två liknande klasser som representerar de kort som spelare kan dra. MoneyCard ska spara information om hur mycket pengar som ska tillföras respektive borttagas. MoveCard ska spara information om hur långt en spelare skall förflytta sig när kortet dras. Båda korten skall även inehålla en beskrivning utav varför detta händer. Informationen för dessa kort läses in från textfilerna moneycards.txt och movecards.txt.
 
 \begin{JavaSpec}{class MoneyCard}
     /**Creates a new MoneyCard*/
@@ -224,8 +224,8 @@ Olika sorters spelarhandlingar representeras av statiska int-variabler i klassen
 Den visuella representationen av spelet sker via konsolfönstret med hjälp av klassen \code{TextUI}. \code{TextUI} är en färdigskriven klass med metoder som gör det enkelt att skriva ut spelplanen och en logg av spelhistoriken i konsolfönstret.
  När addToLog() anropas sparar den sitt argument i en lista och hela listan skrivs ut varje gång konsolen uppdateras via updateConsole-metoden.
 Utöver loggen skriver updateConsole även ut ett statusfönster med kortfattad information om varje spelare. 
-Om spelaren väljer att visa spelplanen ska metoden printBoard istället anropas.
-Alla utskrifter under spelets gång ska gå via \code{TextUI}.
+Om spelaren väljer att visa spelplanen ska metoden printBoard() istället anropas.
+Alla utskrifter som sker under spelets gång ska gå via \code{TextUI}.
 \newline
 
 \begin{figure}[H]
@@ -333,7 +333,7 @@ Simuleringen av spelet sker i main-metoden i klassen Main, och skall implementer
 
 \Task All information om olika kort och om spelplanens upplägg finns i textfiler som måste läsas in med hjälp av metoderna i klassen DocumentParser. 
 Textfilerna moneycards.txt och movecards.txt innehåller information om de olika korten som finns.
-Varje rad innehåller en förklaring för kortet följt av ett värde separerat med semikolon. Dessa sparas i en vektor och när en spelare hamnar på en MoveSpace eller MoneySpace dras ett slumpmässigt kort från vektorn. Vektorn måste alltså skickas med till motsvarande ruta när rut-objektet skapas.
+Varje rad innehåller en beskrivning för kortet följt av ett värde separerat med semikolon. Dessa sparas i en vektor vid inläsning och när en spelare hamnar på en MoveSpace eller MoneySpace dras ett slumpmässigt kort från vektorn. Vektorn av kort måste alltså skickas med till motsvarande ruta när rut-objektet skapas .
 Filen board.txt innehåller spelplanen, men behandlas först i uppgift 3.
 
 För att skapa ett File-objekt med informationen från filerna kan följande kod användas:
