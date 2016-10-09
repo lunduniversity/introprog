@@ -24,7 +24,7 @@ class Turtle(window: SimpleWindow,
   def y: Int = ???
 
   /** Moves the turtle to a new position without drawing a line. */
-  def jumpTo(newPosition: Point) = ???
+  def jumpTo(newPosition: Point): Unit = ???
 
   /** Moves the turtle forward in its current direction, drawing a line if
     * the pen is down.
