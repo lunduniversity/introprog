@@ -457,19 +457,28 @@ scala> trait Z(x: Int)
 
 
 \begin{Slide}{Protected ger synlighet begränsad till subtyper}
-Se övning traits uppgift 6:
 \begin{REPL}
-scala> :paste
-trait Super { 
-  private val minHemlis = 42
-  protected val vårHemlis = 42
-}
+scala> trait Super { 
+         private val minHemlis = 42
+         protected val vårHemlis = 42
+       }
 
-scala> :paste
-class Sub extends Super { 
-  def avslöja = minHemlis
-  def kryptisk = vårHemlis * math.Pi
-} 
+scala> class Sub extends Super { def avslöjad = minHemlis } 
+error: not found: value minHemlis
+
+scala> class Sub extends Super { def avslöjad = vårHemlis } 
+       
+scala> val s = new Sub
+s: Sub = Sub@2eee9593
+
+scala> s.avslöjad
+res0: Int = 42
+
+scala> s.minHemlis
+error: value minHemlis is not a member of Sub       
+
+scala> s.vårHemlis
+error: Access to protected value vårHemlis not permitted 
 \end{REPL}
 \end{Slide}
 
@@ -487,7 +496,7 @@ class Sub extends Super {
 \item I Scala får man döpa kodfilerna \Emph{oberoende} av deras innehåll. \pause Dessa \Emph{konventioner} används:
 \begin{itemize}
 \item Om en kodfil bara innehåller \Emph{en enda} klass/trait/singelobjekt ge filen samma namn som innehållet, t.ex. \code{KlassensNamn.scala} 
-\item Om en kodfil innehåller \Emph{flera} saker, döp filen till något som återspeglar hela innehållet och använd \Emph{liten begynnelsebokstav}, t.ex. \code{bastypensNamn.scala}
+\item Om en kodfil innehåller \Emph{flera} saker, döp filen till något som återspeglar hela innehållet och använd \Emph{liten begynnelsebokstav}, t.ex. \code{drawing.scala} eller \code{bastypensNamn.scala} 
 \end{itemize}
 
 
@@ -497,12 +506,205 @@ class Sub extends Super {
 \end{Slide}
 
 
+\begin{Slide}{Klasser, arv och klassparametrar}\SlideFontTiny
+Klasser kan ärva klasser. Om superklassen har klassparametrar måste primärkonstruktor ges argument efter \code{extends}.
 
+\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.4}{7.7}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/personExample1.scala}
+
+\end{Slide}
+
+
+\begin{Slide}{Inmixning}\SlideFontTiny
+Man kan ärva flera traits. Detta kallas inmixning \Eng{mix-in} och görs med \code{with}.
+\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.4}{7.7}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/personExample2.scala}
+\end{Slide}
+
+
+\begin{Slide}{Statisk och dynamisk typ}\SlideFontSmall
+\begin{Code}
+    var p: Person = new Forskare("Robin Smith", "Lund", "Professor Dr")
+\end{Code}
+\begin{itemize}
+\item Den \Emph{statiska typen} för \code{p} är \code{Person} vilket gör att vi sedan kan låta \code{p} referera till andra instanser som är av typen Person.
+\begin{Code}
+p = new Student("Kim Robinson", "Lund", "Data")
+\end{Code}
+
+\pause
+
+\item Med ''statisk typ'' menas den typinformation som kompilatorn känner till vid kompileringstid.
+
+\pause
+\item Den \Emph{dynamiska typen}, även kallad \Emph{körtidstypen}, som gäller under körning är här mer specifik och mångfaceterad: \code{p} är efter tilldelning nu Student, Person och Akademiker (men inte Examinerad). 
+
+\pause
+
+\item Man kan undersöka om den dynamiska typen för \code{p} är \code{EnVissTyp} med  \code{p.isInstanceOf[EnVissTyp]}
+
+\pause
+
+\item Man kan säga åt kompilatorn: \emph{''jag garanterar att p är av typen \code{EnVissTyp} så du kan omforma den till \code{EnVissTyp}''} med  \code{p.asInstanceOf[EnVissTyp]} \\ \pause (detta är inte så vanligt i normal Scala-kod) 
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{\texttt{isInstanceOf} och \texttt{asInstanceOf}}\SlideFontTiny
+Testa körtidstyp med \code{isInstanceOf[Typ]}. Lova kompilatorn (och ta själv ansvar för) att det är en viss körtidstyp med \code{asInstanceOf[Typ]}.
+\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.2}{7.5}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/personExample3.scala}
+\end{Slide}
+
+
+
+\begin{Slide}{Polymorfism och dynamisk bindning}\SlideFontTiny
+\begin{Code}[basicstyle=\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
+trait Robot { def work(): Unit }
+
+case class CleaningRobot(name: String) extends Robot {
+  override def work(): Unit = println(" Städa Städa")
+}
+
+case class TalkingRobot(name: String) extends Robot {
+  override def work(): Unit = println(" Prata Prata")
+}
+\end{Code}
+\Emph{Polymorfism} betyder ''många former''. Referenserna r och rob nedan kan ha olika ''former'', d.v.s de kan referera till olika sorters robotar. \\ \Emph{Dynamisk bindning} innebär att körtidstypen avgör vilken metod som körs.
+\begin{REPL}[basicstyle=\color{white}\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
+scala> def robotDoWork(rob: Robot) = { print(rob); rob.work }
+
+scala> var r: Robot = new CleaningRobot("Wall-E")
+
+scala> robotDoWork(r)
+CleaningRobot(Wall-E) Städa Städa
+
+scala> r = new TalkingRobot("C3PO")
+
+scala> robotDoWork(r)
+TalkingRobot(C3PO) Prata Prata
+\end{REPL}
+\end{Slide}
+
+\Subsection{Uppräknade värden}
+
+
+\begin{Slide}{Uppräknade värden med heltal}\SlideFontSmall
+Vi kan använda heltalskonstanter för att representera olika färger.
+\begin{Code}
+object Färg {
+  val Spader = 1
+  val Hjärter = 2
+  val Ruter = 3
+  val Klöver = 4
+}
+\end{Code}
+\begin{Code}[language=,keywords={case,class}]
+case class Kort(färg: Int, valör: Int)
+\end{Code}
+
+Vi kan nu använda våra uppräknade färgvärden så här:
+\begin{REPL}
+scala> import Färg._
+scala> Kort(Ruter, 7)
+\end{REPL}
+\pause Men kompilatorn \Alert{kan inte hindra} denna bugg:
+\begin{REPL}
+scala> Kort(42, 7)
+\end{REPL}
+
+\end{Slide}
+
+
+\begin{Slide}{Uppräknade värden med case-objekt}\SlideFontSmall
+Vi kan använda case-objekt för att representera olika färger.
+\begin{Code}[language=,keywords={sealed,trait,object,case,class,extends}]
+sealed trait Färg
+case object Spader  extends Färg
+case object Hjärter extends Färg
+case object Ruter   extends Färg
+case object Klöver  extends Färg
+
+case class Kort(färg: Färg, valör: Int)
+\end{Code}
+
+Vi kan nu använda våra uppräknade färgvärden så här:
+\begin{REPL}
+scala> Kort(Ruter, 7)
+
+scala> Kort(Spader, 1)
+\end{REPL}
+\begin{itemize}
+\item Kompilatorn \Emph{garanterar} att vi bara använder exakt dessa färger.
+
+\item Nyckelordet \code{sealed} förhindrar fler subtyper förutom de som finns här.
+
+\item \code{case} före \code{object} ger en najs \code{toString} och möjliggör matchning \\
+(mer om matchning i w08).
+
+\end{itemize}
+
+\end{Slide}
+
+\begin{Slide}{Uppräknade värden i samling}\SlideFontSmall
+Vi kan placera case-objekten i en samling som kan användas i loopar. \\ Ett lämpligt ställe för en sådan samling är i kompanjonsobjektet till Färg.
+\begin{Code}
+sealed trait Färg
+object Färg { 
+  val values = Vector(Spader, Hjärter, Ruter, Klöver)
+}
+case object Spader extends Färg
+case object Hjärter extends Färg
+case object Ruter extends Färg
+case object Klöver extends Färg
+\end{Code}
+
+\begin{REPL}
+scala> val allaEss = for (f <- Färg.values) yield Kort(f, 1)
+\end{REPL}
+\end{Slide}
+
+
+\begin{Slide}{Uppräknade värden med heltalsomvandling}\SlideFontSmall
+Med en \code{sealed abstract class} och ett heltalsattrribut \code{toInt} som klassparameter kan vi erbjuda omvandling till heltal.
+\begin{Code}
+sealed abstract class Färg(final val toInt: Int)
+object Färg { 
+  val values = Vector(Spader, Hjärter, Ruter, Klöver)
+}
+case object Spader  extends Färg(0)
+case object Hjärter extends Färg(1)
+case object Ruter   extends Färg(2)
+case object Klöver  extends Färg(3)
+\end{Code}
+
+\begin{REPL}
+scala> Kort(Ruter, 1).färg.toInt
+res0: Int = 2
+\end{REPL}
+Nyckelordet \code{abstract} förhindrar instansiering av \code{Färg}. \\
+Nyckelordet \code{final} förhindrar överskuggning av attributet \code{toInt}. \\
+Nyckelordet \code{sealed} förhindrar vidare subtypning av \code{Färg}.
+\end{Slide}
+
+
+
+\Subsection{Exempel: Shape}
 
 
 \begin{Slide}{Exempel: shapes1.scala}
 Typisk scala-kod: En trait som bastyp åt flera case-klasser.
 \scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.4}{7.7}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/shapes1.scala}
+\end{Slide}
+
+\begin{Slide}{Exempel: shapesTest1.scala}
+Test av konkreta subklasser till bastypen \code{Shape}.
+\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.4}{7.7}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/shapesTest1.scala}
+
+\begin{REPL}
+Rectangle((100.0,100.0),(75.0,120.0))
+Rectangle((141.0,183.0),(75.0,120.0))
+Triangle((0.0,0.0),(4.0,0.0),(4.0,3.0))
+Triangle((1.0,1.0),(4.0,0.0),(4.0,3.0))
+Triangle((0.0,0.0),(4.0,0.0),(4.0,3.0))
+\end{REPL}
 \end{Slide}
 
 
