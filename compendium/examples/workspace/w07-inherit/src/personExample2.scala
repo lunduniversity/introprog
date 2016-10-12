@@ -16,7 +16,7 @@ object personExample2 {
 
   def main(args: Array[String]): Unit = {
     var p: Person = new Forskare("Robin Smith", "Lund", "Professor Dr")
-    println(s"${robin.namn} ${robin.universitet} ${robin.titel}")
+    println(s"${p.namn}")  // staiska typen Person har inget universitet el. titel
     if (p.isInstanceOf[Akademiker]) println(p.namn)
   }
 }
