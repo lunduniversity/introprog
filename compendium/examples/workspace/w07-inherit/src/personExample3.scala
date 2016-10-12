@@ -16,8 +16,7 @@ object personExample3 {
 
   def main(args: Array[String]): Unit = {
     var p: Person = new Forskare("Robin Smith", "Lund", "Professor Dr")
-    println(s"${robin.namn} ${robin.universitet} ${robin.titel}")
-    if (p.isInstanceOf[Akademiker]) println(p.namn)
+    if (p.isInstanceOf[Akademiker]) println(p.namn + " är akademiker")
     p = new Student("Kim Robinson", "Lund", "Data")
     if (p.isInstanceOf[Student]) println(p.asInstanceOf[Student].program)
   }
