@@ -5,15 +5,13 @@
 \Exercise{\ExeWeekTEN}\label{exe:W10}
 
 \begin{Goals}
-\item Förstå hur sorteringsordningen är definierad för strängar.
-\item Förstå skillnaderna mellan strängjämförelser i Scala och Java, samt kunna jämföra strängar med jämförelsoperatorer i Scala och med \code{compareTo} i Java.
-\item Kunna sortera sekvenssamlingar innehållande objekt av grundtyper med hjälp av inbyggda och egendefinierade sorteringsordningar med metoderna \code{sorted}, \code{sortBy} och \code{sortWidth}.
-\item Kunna använda inbyggda linjärsöknings- och binärsökningsmetoder. 
-\item Kunna implementera en egen sökalgoritm med linjärsökning och binärsökning.
-\item Förstå när binärsökning är lämplig och möjlig.
-\item Kunna implementera en enkel sorteringsalgoritm, t.ex. insättningssortering eller urvalssortering, både till ny samling och på plats.   
-\item Känna till hur implicita sorteringsordningar används för grundtyperna och egendefinierade typer.
-\item Känna till existensen av, funktionen hos, och relationen mellan klasserna \code{Ordering} och \code{Comparator}, samt  \code{Ordered} och \code{Comparable}.
+\item Kunna skapa och använda matriser med nästlade strukturer av \code{Vector}.
+\item Kunna iterera över elementen i en matris med nästlade \code{for}-satser och \code{for}-\code{yield}-uttryck, samt nästlad applicering av \code{map} respektive \code{foreach}.
+\item Kunna skapa och använda funktioner som tar matriser som parametrar.
+\item Känna till generiska funktioner.
+\item Känna till generiska klasser.
+\item Kunna skapa och använda matriser med hjälp inbyggda arrayer i Java.
+\item Kunna anända nästlade \code{for}-satser i Java för att iterera över elementen i en matris.
 \end{Goals}
 
 \begin{Preparations}
@@ -22,641 +20,502 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task \label{task:string-order-operators}\emph{Jämföra strängar i Scala.} I Scala kan strängar jämföras med operatorerna \code{==}, \code{!=}, \code{<}, \code{<=}, \code{>}, \code{>=},  där likhet/olikhet avgörs av om alla tecken i strängen är lika eller inte, medan större/mindre avgörs av sorteringsordningen i enlighet med varje teckens Unicode\footnote{\href{https://sv.wikipedia.org/wiki/Unicode}{sv.wikipedia.org/wiki/Unicode}}-värde. 
+\Task \emph{Skapa matriser med hjälp av nästlade samlingar.} Man kan i ett datorprogram, med hjälp av samlingar som innehåller samlingar, skapa nästlade strukturer som kan indexeras i två dimensioner och på så sätt representera en matematisk \textbf{matris}.\footnote{\href{https://sv.wikipedia.org/wiki/Matris}{sv.wikipedia.org/wiki/Matris}} 
+\begin{Background}
+En \textbf{matris} inom matematiken innehåller ett antal rader och kolumner (även kallade kolonner). I en matematisk matris har alla rader lika många element och även alla kolumner har lika många element. En matris av dimension $m\times{}n$ har $m \cdot n$ stycken element, där $m$ är antalet rader och $n$ är antalet kolumner. En matris $A_{m,n}$ av dimension $m\times{}n$ ritas ofta så här:
 
-\Subtask Vad ger följande jämförelser för värde?
+\[
+A_{m,n} = 
+ \begin{pmatrix}
+  a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
+  a_{2,1} & a_{2,2} & \cdots & a_{2,n} \\
+  \vdots  & \vdots  & \ddots & \vdots  \\
+  a_{m,1} & a_{m,2} & \cdots & a_{m,n} 
+ \end{pmatrix}
+\]
+
+\noindent Exempel: En heltalsmatris $M_{2,5}$ av dimension $2\times{}5$ där element $m_{2,5}=7$:
+
+\[
+M=
+  \begin{pmatrix}
+    5 & 2 & 42 & 4 & 5 \\
+    3 & 4 & 18 & 6 & 7
+  \end{pmatrix}
+\]
+\end{Background}
+
+\Subtask\Pen Rita minnessituationen efter tilldelningen på rad 1 nedan. Vad har \code{m} för typ och värde? Vad har \code{m} för dimensioner? Hur sker indexeringen i ett datorprogram jämfört med i matematiken?
+
 \begin{REPL}
-scala> 'a' < 'b'
-scala> "aaa" < "aaaa"
-scala> "aaa" < "bbb"
-scala> "AAA" < "aaa"
-scala> "ÄÄÄ" < "ÖÖÖ"
-scala> "ÅÅÅ" < "ÄÄÄ"
+scala> val m = Vector((1 to 5).toVector, (3 to 7).toVector)
+scala> m.apply(0).apply(1)
+scala> m(1)
+scala> m(1)(4)
 \end{REPL}
-Tyvärr så följer ordningen av ÄÅÖ inte svenska regler, men det ignorerar vi i fortsättningen för enkelhets skull; om du är intresserad av hur man kan fixa  detta, gör uppgift \ref{task:swedish-letter-ordering}. 
 
-\Subtask\Pen Vilken av strängarna $s1$ och $s2$ kommer först (d.v.s. är ''mindre'') om $s1$ utgör början av $s2$ och $s2$ innehåller fler tecken än $s1$? 
+\Subtask Vad ger uttrycken på raderna 2, 3 och 4 ovan för värden och typ? 
 
-
-\Task \emph{Jämföra strängar i Java.} I Java kan man \textbf{inte} jämföra strängar med operatorerna \code{<}, \code{<=}, \code{>}, och \code{>=}. Dessutom ger operatorerna \code{==} och \code{!=} inte innehålls(o)likhet utan referens(o)likhet. Istället får man använda metoderna \code{equals} och \code{compareTo}, vilka också fungerar i Scala eftersom strängar i Scala och Java är av samma typ, nämligen \code{java.lang.String}.
-
-
-\Subtask Vad ger följande uttryck för värde?
+\Subtask Man kan i ett datorprogram mycket väl skapa tvådimensionella, nästlade strukturer där raderna \emph{inte} innehåller samma antal element. Det blir då ingen äkta matris i strikt matematisk mening, men man kallar ofta ändå en sådan struktur för en ''matris''. Vilken typ har variablerna \code{m2}, \code{m3}, \code{m4} och \code{m5} nedan? 
 
 \begin{REPL}
-scala> "hej".getClass.getTypeName
-scala> "hej".equals("hej")
-scala> "hej".compareTo("hej")
+scala> val m2 = Vector(Vector(1,2,3),Vector(4,5),Vector(42))
+scala> val m3 = Vector(Vector(1,2), Vector(1.0, 2.0, 3.0))
+scala> m3(1)
+scala> val m4 = m3(1) +: Vector("a") +: m3
+scala> val m5 = Vector.fill(42){ m2(1).map(e => (e * math.random).toInt) }
+\end{REPL}
+
+\Subtask\Pen Rita minnessituationen efter tilldelingen av \code{m2} på rad 1 ovan.
+
+\Subtask\Pen Vilken av variablerna \code{m2}, \code{m3}, \code{m4} och \code{m5} ovan representerar en äkta matris i matematisk mening? Vilken är dess dimensioner?
+
+
+
+\Task \emph{Skapa och itererar över matriser.} Vi ska skapa matriser där varje rad representerar 5 kast med en tärning spelet Yatzy.\footnote{\href{https://sv.wikipedia.org/wiki/Yatzy}{sv.wikipedia.org/wiki/Yatzy}}
+
+
+\Subtask Definiera i REPL en funktion \code{def throwDie: Int = ???} som returnerar ett slumptal mellan 1 och 6.
+
+
+\Subtask Skapa nedan heltalsmatris i REPL. Vilken dimension får matrisen?
+\begin{REPL}
+val ds1 = for (i <- 1 to 1000) yield { 
+            for (j <- 1 to 5) yield throwDie 
+          }
+\end{REPL}
+
+\Subtask\Pen Man kan också använda nedan varianter för att skapa en heltalsmatris. Vilken av varianterna \code{ds1} ... \code{ds5} tycker du är lättast att läsa och förstå? Prova respektive variant i REPL och ange vilken typ på \code{ds1} ... \code{ds5} som härleds av kompilatorn.
+\begin{REPL}
+val ds2 = (1 to 1000).map(i => (1 to 5).map(j => throwDie))  
+val ds3 = (1 to 1000).map(i => Vector.fill(5)(throwDie)) 
+val ds4 = for (i <- 1 to 1000) yield Vector.fill(5)(throwDie) 
+val ds5 = Vector.fill(1000)(Vector.fill(5)(throwDie))
 \end{REPL}
 
 
-\Subtask Studera dokumentationen för metoden \code{compareTo} i \code{java.lang.String}\footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/lang/String.html\#compareTo-java.lang.String-}{docs.oracle.com/javase/8/docs/api/java/lang/String.html\#compareTo-java.lang.String-}} och skriv minst 3 olika uttryck i Scala REPL som testar hur metoden fungerar i olika fall. 
-
-\Subtask Studera dokumentationen \code{compareToIgnoreCase} \footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/lang/String.html\#compareToIgnoreCase-java.lang.String-}{docs.oracle.com/javase/8/docs/api/java/lang/String.html\#compareToIgnoreCase-java.lang.String-}} och skriv minst 3 olika stränguttryck i Scala REPL som testar hur metoden fungerar i olika fall. 
-
-\Subtask Vad skriver följande Java-program ut?
-\javainputlisting{examples/StringEqTest.java}
+\Subtask Definiera en funktion \\ \code{def roll(n: Int): Vector[Int] = ???}\\ som ger en heltalsvektor med $n$ stycken slumpvisa tärningskast. Kasten ska vara sorterade i växande ordning; använd för detta ändamål samlingsmetoden \code{sorted}.
 
 
-\Task \emph{Sortering med inbyggda sorteringsmetoder.} För grundtyperna (\code{Int}, \code{Double}, \code{String}, etc.) finns en fördefinierad ordning som gör så att färdiga sorteringsmetoder fungerar på alla samlingar i \code{scala.collection}. Även jämförelseoperatorerna i uppgift \ref{task:string-order-operators} fungerar enligt den fördefinierade ordningsdefinitionen för alla grundtyper. Denna ordningsdefinition är \textit{implicit tillgänglig} vilket betyder att kompilatorn hittar ordningsdefinitionen utan att vi explicit måste ange den. Detta fungerar i Scala även med primitiva \code{Array}.
 
-\Subtask Testa metoden \code{sorted} på några olika samlingar. Förklara vad som händer. Hur lyder felmeddelande på sista raden? Varför blir det fel?
+\Subtask Definera i REPL en funktion \code{isYatzy(xs: Vector[Int]): Boolean = ???} som testar om alla elementen i en heltalsvektor är samma. Använd samlingsmetoden \code{forall}. 
 
+
+\Subtask Implementera \code{isYatzy} igen med ett imperativt angreppssätt som använder en \code{while}-sats (alltså utan att använda funktionella  \code{forall}). Ta hjälp av en variabel \code{i} som håller reda på index och en variabel \code{foundDiff} som håller reda på om ett avvikande värde upptäcks. Funktionen blir ca 10 rader, så det kan vara lämpligt att öppna en editor att skriva i medan du klurar ut lösningen. Börja med att skriva pseudokod, gärna med penna på papper. Prova genom att klistra in i REPL. 
+
+
+
+\Subtask Skapa en funktion  \\ \code{def diceMatrix(m: Int, n: Int): Vector[Vector[Int]] = ???} \\ som med hjälp av funktionen \code{roll} skapar en matris med \code{m} st vektorer med vardera \code{n} slumpvisa tärningskast.
+
+
+\Subtask Skapa en funktion som returnerar en utskriftsvänlig sträng \\ \code{def diceMatrixToString(xss: Vector[Vector[Int]]): String = ???} \\med hjälp av \code{map} och \code{mkString}, som fungerar enligt nedan. 
 \begin{REPL}
-scala> Vector(1.1, 4.2, 2.4, 42.0, 9.9).sorted
-scala> val xs = (100000 to 1 by -1).toArray
-scala> xs.sorted
-scala> xs.map(_.toString).sorted
-scala> xs.map(_.toByte).sorted.distinct
-scala> case class Person(firstName: String, familyName: String)
-scala> val ps = Vector(Person("Robin", "Finkodare"), Person("Kim","Fulhack")) 
-scala> ps.sorted
-\end{REPL}	
+scala> println(diceMatrixToString(diceMatrix(10, 5)))
+4 5 5 3 3
+1 4 1 3 1
+1 3 1 5 5
+6 4 4 5 5
+2 1 5 6 5
+1 2 2 3 6
+1 3 2 4 5
+2 2 3 2 2
+2 6 3 4 6
+4 5 5 2 3
 
-\Subtask Om man har en samling med egendefinierade klasser eller man vill ha en annan sorteringsordning får man definiera ordningen själv. Ett helt generellt sätt att göra detta på  illustreras i uppgift \ref{task:custom-ordering}, men de båda hjälpmetoderna \code{sortWith} och \code{sortBy} räcker i de flesta fall. Hur de används illustreras nedan. Metoden \code{sortBy} kan användas om man tar fram ett värde av grundtyp och är nöjd med den inbyggda sorteringsordningen. 
-
-Metoden \code{sortWith} används om man vill skicka med ett eget jämförelsepredikat som ordnar två element; funktionen ska returnera \code{true} om det första elementet ska vara först, annars \code{false}.
-
-\begin{REPL}
-scala> case class Person(firstName: String, familyName: String)
-scala> val ps = Vector(Person("Robin", "Finkodare"), Person("Kim","Fulhack")) 
-scala> ps.sortBy(_.firstName)
-scala> ps.sortBy(_.familyName)
-scala> ps.sortBy  // tryck TAB två gånger för att se signaturen
-scala> ps.sortWith((p1, p2) => p1.firstName > p2.firstName) 
-scala> ps.sortWith  // tryck TAB två gånger för att se signaturen
-scala> Vector(9,5,2,6,9).sortWith((x1, x2) => x1 % 2 > x2 % 2)
 \end{REPL}
-Vad har metoderna \code{sortWith} och \code{sortBy} för signaturer? 
-
-\Subtask Lägg till attributet \code{age: Int} i case-klassen \code{Person} ovan och lägg till fler personer med olika namn och ålder i en vektor och sortera den med \code{sortBy} och \code{sortWith} för olika attribut. Välj själv några olika sätt att sortera på. 
 
 
 
-\Task \label{task:timed}\emph{Tidmätning.} I kommande uppgifter kommer du att ha nytta av funktionen \code{timed} enligt nedan. 
+\Subtask\Pen Ett imperativt sätt\footnote{Imperativa anreppssätt är nödvändiga att kunna när du stöter på samlingar och/eller språk som saknar funktionsprogrammeringsmöjligheter med \code{map}, \code{mkString} etc.} att göra detta på visas nedan. Förklara hur nedan kod fungerar. Vad händer om \code{xss} är tom? Vad händer om \code{xss} bara innehåller tomma vektorer? Nämn en fördel och en nackdel med att använda \code{val sb: StringBuilder} och \code{append}, jämfört med en vanlig \code{var s: String} och \code{+} för tillägg i slutet.
 \begin{Code}
-def timed[T](code: => T): (T, Long) = {
-  val now = System.nanoTime
-  val result = code
-  val elapsed = System.nanoTime - now
-  println(s"\ntime: ${elapsed / 1e6}$ ms") 
-  (result, elapsed)
+def diceMatrixToString(xss: Vector[Vector[Int]]): String = {
+  val sb = new StringBuilder()
+  for(m <- 0 until xss.size) {
+    for(n <- 0 until xss(m).size) { 
+      sb.append(xss(m)(n))
+      if (n < xss(m).size - 1) sb.append(" ") 
+      else if (m < xss.size - 1) sb.append("\n")
+    }
+  }
+  sb.toString
 }
 \end{Code}
-\Subtask Klistra in \code{timed} i REPL och testa så att den fungerar, genom att mäta hur lång tid nedan uttryck tar att exekvera. 
+
+\Subtask Implementera funktionen \\ \code{def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]]} \\ som filtrerar fram alla yatzy-rader i matrisen \code{xss} enligt nedan. Använd din funktion \code{isYatzy} och samlingsmetoden \code{filter}. 
 \begin{REPL}
-scala> val (v, t1) = timed{ (1 to 1000000).toVector.reverse }
-scala> val (s, t2) = timed{ v.toSet } 
-scala> timed{ v.find(_ == 1) } 
-scala> timed{ s.find(_ == 1) } 
-scala> timed{ s.contains(1) } 
-\end{REPL} 
-\Subtask\Pen Försök förklara skillnaderna i exekveringstid mellan de olika sätten att söka reda på  talet $1$ i samlingen. Ungefär hur många gånger behöver man använda \code{contains} på heltalsmängden \code{s} för att det ska löna sig att skapa \code{s} i stället för att linjärsöka i \code{v} med \code{find} i ovan exempel?
+scala> println(diceMatrixToString(filterYatzy(diceMatrix(10000, 5))))
+2 2 2 2 2
+3 3 3 3 3
+1 1 1 1 1
+3 3 3 3 3
+4 4 4 4 4
+6 6 6 6 6
+2 2 2 2 2
+3 3 3 3 3
+2 2 2 2 2
+6 6 6 6 6
+4 4 4 4 4
+2 2 2 2 2
+4 4 4 4 4
 
-
-\Task \emph{Sökning med inbyggda sökmetoder.} 
-
-\Subtask \emph{Linjärsökning framifrån med \code{indexOfSlice}}. Studera dokumentationen för Scalas samlingsmetod \code{indexOfSlice}\footnote{\href{http://docs.scala-lang.org/overviews/collections/seqs.html}{docs.scala-lang.org/overviews/collections/seqs.html}} och skriv 8 olika uttryck i REPL som, både med en sträng och med en vektor med heltal, provar 4 olika fall: (1) finns i börja, (2) finns någonstans i mitten, (3) finns i slutet, samt (4) finns ej.
-
-\Subtask \emph{Linjärsökning bakifrån med \code{lastIndexOfSlice}}. Studera dokumentationen för Scalas samlingsmetod \code{lastIndexOfSlice}\footnote{\href{http://docs.scala-lang.org/overviews/collections/seqs.html}{docs.scala-lang.org/overviews/collections/seqs.html}} och skriv 8 olika uttryck i REPL som, både med en sträng och med en vektor med heltal, provar 4 olika fall: (1) finns i börja, (2) finns någonstans i mitten, (3) finns i slutet, samt (4) finns ej.
-
-\Subtask \emph{Sökning med inbyggd binärsökning.} Om en samling är sorterad kan man utnyttja detta för att göra snabbare sökning. Vid \textbf{binärsökning} \Eng{binary search}\footnote{\label{footnote:binarysearch}\href{https://en.wikipedia.org/wiki/Binary_search_algorithm}{en.wikipedia.org/wiki/Binary\_search\_algorithm}} börjar man på mitten och kollar vilken halva att  söka vidare i; sedan delar man upp denna halva på mitten och kollar vilken fjärdedel att söka vidare i, etc. 
-
-I objektet \code{scala.collection.Searching}\footnote{\href{http://www.scala-lang.org/api/current/\#scala.collection.Searching\$}{http://www.scala-lang.org/api/current/\#scala.collection.Searching\$}} finns en metod \code{search} som, om den importeras, erbjuder binärsökning för alla sorterade sekvenssamlingar. Om samlingen är sorterad ger den ett objekt av case-klassen \code{Found} som innehåller indexet för platsen där elementet först hittats; alternativt om det som eftersöks ej finns, ges ett objekt av case-klassen \code{InsertionPoint} som innehåller indexet där elementet borde ha varit placerad om det funnits i samlingen. Observera att om samlingen inte är sorterad är resultatet ''odefinierat'', d.v.s. något returneras men det är \emph{inte} att lita på; man måste alltså först sortera samlingen eller vara helt säker på att den är sorterad. 
-
-Undersök hur \code{search} fungerar genom att förklara vad som händer nedan. Vilken är snabbast av \code{lin} och \code{bin} nedan? Använd \code{timed} från uppgift \ref{task:timed}.
-
-\begin{REPL}
-scala> val udda = (1 to 1000000 by 2).toVector
-scala> import scala.collection.Searching._
-scala> udda.search(udda.last)
-scala> udda.search(udda.last + 1)
-scala> udda.reverse.search(udda(0))  
-scala> def lin(x: Int, xs: Seq[Int]) = xs.indexOf(x)
-scala> def bin(x: Int, xs: Seq[Int]) = xs.search(x) match {
-         case Found(i) => i
-         case InsertionPoint(i) => -i
-       }
-scala> timed{ lin(udda.last, udda) }
-scala> timed{ bin(udda.last, udda) }
 \end{REPL}
 
-\Subtask\Pen Om en samling innehåller $n$ element, hur många jämförelser behövs då vid binärsökning i värsta fall? \emph{Tips:} Läs om algoritmen på wikipedia\textsuperscript{\ref{footnote:binarysearch}}.
+
+
+\Subtask Gör som träning en imperativ implementation av \code{filterYatzy} med en \code{for}-sats (alltså utan att använda \code{filter}, och utan att använda \code{yield}). 
+
+
+\Subtask\Pen Tycker du din imperativa lösning är lättare eller svårare att läsa och förstå jämfört nedan funktionella lösning med ett \code{for}-uttryck och \code{yield}?
+\begin{CodeSmall}
+def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] = {
+  for (i <- 0 until xss.size if isYatzy(xss(i))) yield xss(i)
+}.toVector  
+\end{CodeSmall}
+
+\Subtask Implementera funktionen \\ 
+\code{def yatzyPips(xss: Vector[Vector[Int]]): Vector[Int]} \\ som ger en vektor med tärningsvärdena för de kast i matrisen \code{xss} som gav yatzy enligt nedan. Använd din funktion \code{isYatzy} och samlingsmetoden \code{filter}. 
+\begin{REPL}
+scala> yatzyPips(diceMatrix(10000, 5))
+res42: Vector[Int] = Vector(3, 5, 6, 6, 3, 3, 2, 6, 1, 3)
+\end{REPL}
+
+
+
+
+\Task \emph{Strängtabell med rubrikrad.} Denna övning utgör en början på det du ska göra under veckans laboration.
+
+\Subtask Implementera case-klassen \code{Table} enligt nedan specifikation. Du kan förutsätta att alla rader har lika många kolumner som antalet element i \code{headings}, samt att alla rubrikerna i \code{headings} är unika. Detta förutsätts också gälla för indatafiler som läses in med \code{fromFile}. 
+\\ \noindent \emph{Tips:} 
+\begin{itemize}[nolistsep,noitemsep]
+\item Värdet \code{indexOfHeading} kan skapas med hjälp av metoden \code{zipWithIndex} som fungerar på alla sekvenssamlingar, samt metoden \code{toMap} som fungerar på sekvenser av 2-tupler. Undersök först hur metoderna fungerar i REPL och sök upp deras dokumentation.
+\item Skapa en indatafil som du kan använda för att testa att \code{Table} fungerar. 
+\end{itemize}
+
+\begin{ScalaSpec}{Table}
+case class Table(
+  data: Vector[Vector[String]], 
+  headings: Vector[String], 
+  sep: String){
+  /** A 2-tuple with (number of rows, number of columns) in data */
+  val dim: (Int, Int) = ???
+
+  /** The element in row r an column c of data, counting from 0 */
+  def apply(r: Int, c: Int): String = ???
+
+  /** The row-vector r in data, counting from 0 */
+  def row(r: Int): Vector[String]= ???
+
+  /** The column-vector c in data, counting from 0 */
+  def col(c: Int): Vector[String] = ???
+
+  /** A map from heading to index counting from 0 */
+  lazy val indexOfHeading: Map[String, Int] = ???
+
+  /** The column-vector with heading h in data */
+  def col(h: String): Vector[String] = ???
+
+  /** A vector with the distinct, sorted values of col with heading h */ 
+  def values(h: String): Vector[String] = ???
+
+  /** Headings and data with columns separated by sep */
+  override lazy val toString: String = ???
+}
+object Table {
+  /** Creates a new Table from fileName with columns split by sep */
+  def fromFile(fileName: String, separator: Char = ';'): Table = ???
+}
+\end{ScalaSpec}
+
+
+
+
+\Subtask Skapa med hjälp av \code{Table} ett program som kan köras från terminalen med \texttt{scala regtable infile.csv ';'} som ger en utskrift av antalet förekomster av olika värden i respektive kolumn (alltså en variant av registrering).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Task \emph{Generiska funkioner.} En generisk funktion har (minst) en typparameter inom klammerparenteser efter namnet, till exempel \code{[T]}. Denna typ förekommer sedan som typ på (någon av) parametrarna i parameterlistan. Kompilatorn härleder en konkret typ vid kompileringstid och ersätter typparametern med denna konkreta typ. På så sätt kan en funktion fungera för många olika typer. 
+
+\Subtask Förklara för varje rad nedan vad som händer.
+
+\begin{REPL}
+scala> def tnirp[T](x: T): Unit = println(x.toString.reverse)
+scala> tnirp(42)
+scala> tnirp("hej")
+scala> case class Gurka(vikt: Int)
+scala> tnirp(Gurka(42))
+scala> tnirp[String](42)
+scala> tnirp[Double](42)
+\end{REPL}
+
+\Subtask Man kan kombinera generiska funktioner med funktioner som tar funktioner som parametrar. Det är så \code{map} och \code{foreach} är implementerade. Förklara för varje rad nedan vad som händer.
+
+\begin{REPL}
+scala> def compose[A, B, C](f: A => B, g: B => C)(x: A): C = g(f(x))
+scala> def inc(x: Int): Int = x + 1
+scala> def half(x: Int): Double = x / 2.0
+scala> compose(inc, half)(42)
+scala> compose(half, inc)(42)
+\end{REPL}
+
+\Subtask Hur lyder felmeddelandet på sista raden ovan? Ändra \code{inc} och/eller \code{half} så att typerna passar.
+
+
+\Task \emph{Generiska klasser.} Även klasser kan vara generiska. En generisk klass har (minst) en typparameter inom klammerparenteser efter klassens namn. 
+
+\Subtask Testa nedan generiska klass \code{Cell[T]} i REPL. Skapa instanser av klassen \code{Cell[T]} där typparametern \code{T} binds till olika konkreta typer och förklara vad som händer.
+
+\begin{REPL}
+scala> class Cell[T](var value: T){
+         override def toString = "Cell(" + value + ")"
+       }
+scala> new Cell(42)
+scala> new Cell("hej")
+scala> new Cell(new Cell(math.Pi))
+scala> new Cell[String](42)
+scala> new Cell[Double](42)
+\end{REPL}
+
+\Subtask Lägg till metoden \code{def concat[U](that: Cell[U]):Cell[String]} i klassen \code{Cell} som konkatenerar strängrepresentationerna av de båda cellvärdena.
+
+\begin{REPL}
+scala> val a = new Cell("hej")
+scala> val b = new Cell(42)
+scala> a concat b
+\end{REPL}
+
+
+
+\Subtask\Pen Vilken sorts celler kan du konkatenera om du tar bort typparameternamnet \code{U} i \code{concat} samtidigt som du använder \code{Cell[T]} som typ på värdeparametern \code{that}? Vad ger det för konsekvenser för celler av annan typ än \code{Cell[String]}?
+
+\Subtask\Pen Denna uppgift illustrerar grunderna för att hur generiska samlingar är konstruerade, men vi går inte djupare här (det kommer mer i fördjupningskursen). Fundera om du vill på hur en generisk Matris-klass skulle kunna se ut och om du är intresserad av att fördjupa dig så gör fördjupningsuppgift \ref{task:generic-matrix}. 
 
 
 
 
 
-\Task \label{task:linsearch-lth}\emph{Sök bland LTH:s kurser med linjärsökning.} 
+\Task \label{task:arraymatrix-java} \emph{Matriser med array i Java.} Om man redan vid allokering vet hur många element en matris ska ha, använder man i Java gärna en array av arrayer. En heltalsmatris (en array av array av heltal) skrivs i Java med dubbla hakparentespar \jcode{int[][]} direkt efter typen. Vid allokering använder man nyckelordet \code{new} och antalet element i respektive dimension anges inom hakparenteserna; t.ex. så ger \jcode{new int[42][21]} en matris med 42 rader och 21 kolumner, vilket motsvarar att man i Scala skriver\footnote{Ett annat längre, men kanske tydligare, sätt att skriva detta i Scala där initialvärdet framgår explicit: \code{Array.fill(42)(Array.fill(21)(0))}}  \code{Array.ofDim[Int](42,21)}. Alla element får defaultvärdet för typen, som är \code{0} för typen \code{Int} i Scala, motsvarande \jcode{int} i Java.
 
-\Subtask Surfa till denna URL:\\ {\nolinebreak[4]\footnotesize\url{http://kurser.lth.se/lot/?lasar=16_17&soek_text=&sort=kod&val=kurs&soek=t}}
-\\
-och inspektera html-koden i din webbläsare genom att trycka \emph{Ctrl+U} (fungerar i Firefox och Chrome). Rulla ner till rad 171 och framåt. Var finns antalet poäng för resp kurs i html-koden?
+\Subtask Skriv nedan program i en editor och spara koden i filen \texttt{ArrayMatrix.java} och kompilera med \texttt{javac ArrayMatrix.java} och kör i terminalen med \texttt{java ArrayMatrix} och undersök utskriften. Förklara vad som händer. Notera några skillnader i hur matriser används i Scala och Java.
 
-\Subtask \label{subtask:download-lthcourses} Klistra in objektet \code{courses} med kommandot \code{:paste} i REPL.\footnote{Du kan ladda ner koden från: \\ \href{https://raw.githubusercontent.com/lunduniversity/introprog/master/compendium/examples/lth-courses/courses.scala}{github.com/lunduniversity/introprog/tree/master/compendium/examples/lth-courses/courses.scala}} Vad gör koden? Hur många kurser innehåller \code{lth2016}?
-
-\scalainputlisting[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{examples/lth-courses/courses.scala}
-
-\Subtask \emph{Linjärsökning med find.} Teknologen Oddput Clementina vill gå första bästa datavetenskapskurs som är på G2-nivå. Hjälp Oddput med att söka upp första bästa kurs genom linjärsökning med samlingsmetoden \code{find}. Kurskoder vid datavetenskap börjar på EDA eller ETS\footnote{Detta är en förenklad bild av LTH:s kurskodnamnsystem. Några kurser från EIT-institutionen  kommer att slinka med, men det bortser vi ifrån i denna uppgift.}. \emph{Tips:} Du har nytta av att definiera predikatet \code{def isCS(s: String): Boolean} som i sin tur lämpligen nyttjar strängmetoden \code{startsWith}.
-
-\Subtask \emph{Implementera linjärsökning.} Som träning ska du nu implementera en egen linjärsökningsfunktion med signaturen: \\ \code{def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = ???}
-\\ Funktionen ska ta en sekvenssamling \code{xs} och ett predikat \code{p} som är en funktion som tar ett element och returnerar ett booleskt värde. Funktionen \code{p} ska ge true om parametern är ett eftersökt element. Funktionen \code{linearSearch} ska returnera index för första hittade elementet i \code{xs} där \code{p} gäller. Om det inte finns något element som uppfyller predikatet ska -1 returneras. Skriv först pseudokod för funktionen med penna och papper. Använd \code{while}. 
-
-Typen \code{Seq} är supertyp till alla sekvenssamlingar, så om vi använder den som parametertyp för parametern \code{xs} så fungerar funktionen för \code{Vector}, \code{Array}, \code{List}, etc. Genom typparametern \code{T} blir funktionen generisk och fungerar för godtycklig typ. 
-
-
-
-\Subtask \label{subtask:linsearch-rndCode} Skriv i en editor en funktion \code{def rndCode: String} som genererar slumpmässiga kurskoder som består av 6 tecken enligt dessa regler: de första tre tecknen är bokstäver mellan A och Z, de sista två är siffror mellan 0 och 9, medan det fjärde tecknet kan vara antingen en siffra mellan 0 och 9 eller ett av dessa tecken: \code{ACFGLMNP}. \emph{Tips:} Använd REPL  för att stegvis bygga upp hjälpfunktioner som du, när de fungerar som de ska, klistrar in i ett editorfönster som lokala funktioner där du utvecklar den slutliga koden för en lättläst, concis och fungerande \code{rndCode}.
-
-
-\Subtask Använd \code{rndCode} från föregående deluppgift för att fylla en vektor kallad \code{xs} med en halv miljon slumpmässiga kurskoder. För varje slumpkod i \code{xs} sök med din funktion \code{linearSearch} efter index i vektorn \code{courses.lth2016} från deluppgift \ref{subtask:download-lthcourses}. Mät totala tiden för de $500000$ linjärsökningarna med hjälp av funktionen \code{timed} från uppgift \ref{task:timed}. Hur många av de slumpmässiga kurskoderna hittades bland de verkliga kurskoderna på LTH?
-
-
-
-\Subtask\Pen Hur kan du implementera \code{linearSearch} med den inbyggda samlingsmetoden \code{indexWhere}?
-
-
-
-\Task \emph{Sök bland LTH:s kurser med binärsökning.} \\Sökningsalgoritmen BINSEARCH kan formuleras med nedan pseudokod:
-
-\begin{algorithm}[H]
- \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
-
- \Input{En växande sorterad sekvens $xs$ med $n$ heltal och \\ ett eftersökt heltal $key$}
- \Output{Ett heltal $i \geq 0$ som anger platsen där $x$ finns, eller ett negativt tal $i$ där $-i$ motsvarar platsen där $x$ ska sättas in i sorterad ordning om $x$ ej finns i samlingen.}
- sätt intervallet ($low$, $high$) till ($0$, $n - 1$) \\
- $found \leftarrow \bf{false}$ \\
- $mid \leftarrow -1$\\
- \While{$low \leq high$~$\bf{and}~\bf{not}$ $found$}{
-   $mid \leftarrow $ platsen mitt emellan $low$ och $high$\\
-   \eIf{$xs(mid)$ == $key$}{$found \leftarrow \bf{true}$}{
-     \eIf{$xs(mid) < key$}{$low \leftarrow mid + 1$}{$high \leftarrow mid - 1$}
-    }
- }
- \eIf{$found$}{\Return $mid$}{\Return $-(low + 1)$} 
-\end{algorithm}
-
-\Subtask Prova algoritmen ovan med penna och papper på en sorterade sekvens med mindre än 10 heltal. Prova om algoritmen fungerar med ett jämt antal tal, ett udda antal tal, en sekvens med ett heltal och en tom sekvens. Prova både om talet du letar efter finns och om det inte finns.
-
-\Subtask Implementera binärsökning i en funktion med signaturen\\
-\code{def binarySearch(xs: Seq[String], key: String): Int = ??? }\\
-och testa i REPL för olika fall. Vad händer om sekvensen inte är sorterad?
-
-\Subtask Använd \code{binarySearch} för att leta efter LTH-kurser enligt nedan. Använd \code{rndCode}, \code{timed} och \code{courses} från tidigare uppgifter.
-\begin{Code}
-def binarySearch(xs: Seq[String], key: String): Int = ??? 
-
-val lthCodesSorted = courses.lth2016.map(_.code).sorted
-val xs = Vector.fill(500000)(rndCode)
-val (_, elapsedBin) = 
-  timed{xs.map(x => binarySearch(lthCodesSorted, x))}
-val (_, elapsedLin) = 
-  timed{xs.map(x => linearSearch(lthCodesSorted)(_ == x))}
-println(elapsedLin / elapsedBin)
-\end{Code}
-
-
-\Subtask Hur mycket snabbare blev binärsökningen jämfört med linjärsökningen?\footnote{Vid en körning på en i7-4970K med 4.0GHz tog \code{elapsedLin} cirka $3000~ms$ och \code{elapsedBin} cirka $60~ms$. Binärsökning var alltså i detta fall ungefär $50$ gånger snabbare än linjärsökning.}
-
-
-
-\Task \emph{Linjärsökning i Java.} Denna uppgift bygger vidare på uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W09}. Du ska göra en variant på linjärsökning som innebär att leta upp första yatzy-raden i en matris där varje rad innehåller utfallet av 5 tärningskast. 
-
-\Subtask Du ska lägga till metoderna \code{isYatzy} och \code{findFirstYatzyRow} i klassen \code{ArrayMatrix} i uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W09} enligt nedan skiss. Vi börjar med metoden  \code{isYatzy} i denna deluppgift (nästa deluppgift handlar om \code{findFirstYatzyRow}). OBS! Det finns en bug i \code{isYatzy} -- rätta bugen och testa så att den fungerar. 
 
 \begin{Code}[language=Java]
-    public static boolean isYatzy(int[] dice){ /* has one bug! */
-        int col = 1;
-        boolean allSimilar = true;
-        while (col < dice.length && allSimilar) {
-          allSimilar = dice[0] == dice[col];
+// ArrayMatrix.java
+
+public class ArrayMatrix {
+
+    public static void showMatrix(int[][] m){
+        System.out.println("\n--- showMatrix ---");
+        for (int row = 0; row < m.length; row++){
+            for (int col = 0; col < m[row].length; col++) {
+                System.out.print("[" + row + "]");
+                System.out.print("[" + col + "] = ");
+                System.out.print(m[row][col] + "; ");
+            }
+            System.out.println();
         }
-        return allSimilar;
     }
     
-    /** Finds first yatzy row in m; returns -1 if not found */
-    public static int findFirstYatzyRow(int[][] m){
-        int row = 0;
-        int result = -1;
-        while (???) {
-             /* linear search  */ 
-        }
-        return result;
+    public static void main(String[] args) {
+        System.out.println("ArrayMatrix test");
+        int[][] xss = new int[10][5];
+        showMatrix(xss);
     }
+}
 \end{Code}
 
-
-\Subtask Implementera \code{findFirstYatzyRow}. Skapa först pseudo-kod för länjärsökningsalgoritmen innan du skriver implementationen i Java. 
-Testa ditt program genom att lägga till följande rader i huvudprogrammet. 
-Metoden \code{fillRnd} ingår i uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W09}.
+\Subtask Implementera nedan metod \code{fillRnd} inuti klassen \code{ArrayMatrix}. Skriv kod som fyller matrisen \code{m} med slumptal mellan \code{1} och \code{n}.
 \begin{Code}[language=Java]
-        int[][] yss = new int[2500][5];
-        fillRnd(yss, 6);
-        int i = findFirstYatzyRow(yss);
-        System.out.println("First Yatzy Index: " + i);
-\end{Code}
-
-
-
-
-\Task Implementera sortering av en heltalssekvens till en \emph{ny} sekvens med \textbf{insättningssortering} \Eng{insertion sort} i en funktion med följande signatur:
-\begin{Code}
-def insertionSort(xs: Seq[Int]): Seq[Int] = ??? 
-\end{Code}
-
-\emph{Lösningsidé:} Skapa en ny, tom sekvens som ska bli vårt sorterade resultat. För varje element i den osorterade sekvensen: Sätt in det på rätt plats i den nya sorterade sekvensen.   
-
-\Subtask \emph{Pseduokod:} Kör nedan pseudokod med papper och penna t.ex. på sekvensen 5 1 4 3 2 1. Rita minnessituationen efter varje runda i loopen. Här använder vi internt i funktionen föränderliga \code{ArrayBuffer} som är snabb på insättning och avslutar med \code{toVector} så att vi lämnar ifrån oss en oföränderlig sekvens.
-
-\begin{algorithm}[H]
-    $result \leftarrow$ en ny, tom ArrayBuffer \\
-    \ForEach{element $e$ \bf{in} $xs$}{ 
-      $pos \leftarrow$  leta upp rätt position i $result$ \\
-      stoppa in $e$ på plats $pos$ i $result$
+    public static void fillRnd(int[][] m, int n){
+        /* ??? */
     }
-    $result$.toVector
-\end{algorithm}
+\end{Code}
+\noindent \emph{Tips:} med detta uttryck skapas ett slumptal mellan 1 och 42 i Java:\\
+\jcode{(int) (Math.random() * 42 + 1)} \\
+där typkonverteringen \jcode{(int)} ger samma effekt som ett anrop av metoden \code{toInt} i Scala; alltså att dubbelprecisionsflyttal omvandlas till heltal genom avkortning av alla eventuella decimaler.
 
 
-\Subtask Implementera \code{insertionSort}. Använd en \code{while}-loop för att implementera rad 3 i pseduokoden. Sök upp dokumentationen för metoden \code{insert} på \code{ArrayBuffer}. Testa  \code{insert} på \code{ArrayBuffer} i REPL och verifiera att den kan användas för att stoppa in på slutet på den ''oanvända'' positionen som är precis efter sista positionen. Vad händer om man gör \code{insert} på positionen \code{size + 2}? 
+Ändra huvudprogrammet till:
+\begin{Code}[language=Java]
+    public static void main(String[] args) {
+        System.out.println("ArrayMatrix test");
+        int[][] xss = new int[10][5];
+        showMatrix(xss);
+        fillRnd(xss, 6);
+        showMatrix(xss);
+    }
+\end{Code}
 
-Klistra in din implementation av \code{insertionSort} i REPL och testa så att allt fungerar:
+Programmet ska ge en utskrift som liknar följande:
 \begin{REPL}
-scala> insertionSort(Vector())
-res0: Seq[Int] = Vector()
+$ javac ArrayMatrix.java 
+$ java ArrayMatrix 
+ArrayMatrix test
 
-scala> insertionSort(Vector(42))
-res1: Seq[Int] = Vector(42)
+--- showMatrix ---
+[0][0] = 0; [0][1] = 0; [0][2] = 0; [0][3] = 0; [0][4] = 0; 
+[1][0] = 0; [1][1] = 0; [1][2] = 0; [1][3] = 0; [1][4] = 0; 
+[2][0] = 0; [2][1] = 0; [2][2] = 0; [2][3] = 0; [2][4] = 0; 
+[3][0] = 0; [3][1] = 0; [3][2] = 0; [3][3] = 0; [3][4] = 0; 
+[4][0] = 0; [4][1] = 0; [4][2] = 0; [4][3] = 0; [4][4] = 0; 
+[5][0] = 0; [5][1] = 0; [5][2] = 0; [5][3] = 0; [5][4] = 0; 
+[6][0] = 0; [6][1] = 0; [6][2] = 0; [6][3] = 0; [6][4] = 0; 
+[7][0] = 0; [7][1] = 0; [7][2] = 0; [7][3] = 0; [7][4] = 0; 
+[8][0] = 0; [8][1] = 0; [8][2] = 0; [8][3] = 0; [8][4] = 0; 
+[9][0] = 0; [9][1] = 0; [9][2] = 0; [9][3] = 0; [9][4] = 0; 
 
-scala> insertionSort(Vector(1,2,3))
-res2: Seq[Int] = Vector(1, 2, 3)
+--- showMatrix ---
+[0][0] = 6; [0][1] = 2; [0][2] = 6; [0][3] = 3; [0][4] = 5; 
+[1][0] = 2; [1][1] = 4; [1][2] = 6; [1][3] = 1; [1][4] = 1; 
+[2][0] = 5; [2][1] = 4; [2][2] = 4; [2][3] = 1; [2][4] = 5; 
+[3][0] = 4; [3][1] = 6; [3][2] = 6; [3][3] = 1; [3][4] = 3; 
+[4][0] = 4; [4][1] = 6; [4][2] = 2; [4][3] = 3; [4][4] = 2; 
+[5][0] = 2; [5][1] = 4; [5][2] = 5; [5][3] = 5; [5][4] = 3; 
+[6][0] = 6; [6][1] = 5; [6][2] = 2; [6][3] = 4; [6][4] = 3; 
+[7][0] = 1; [7][1] = 6; [7][2] = 1; [7][3] = 6; [7][4] = 2; 
+[8][0] = 1; [8][1] = 1; [8][2] = 5; [8][3] = 3; [8][4] = 2; 
+[9][0] = 1; [9][1] = 1; [9][2] = 1; [9][3] = 5; [9][4] = 4; 
 
-scala> insertionSort(Vector(5,1,4,3,2,1))
-res3: Seq[Int] = Vector(1, 1, 2, 3, 4, 5)
 \end{REPL}
 
+ 
 
 
 
-
-
-\Task Implementera sortering på plats \Eng{in-place} i en \code{Array[String]} med urvalssortering \Eng{selection sort} 
-
-\emph{Lösningsidé:} För alla index $i$: sök $minIndex$ för ''minsta'' strängen från plats $i$ till sista plats och byt plats mellan strängarna på plats $i$ och plats $minIndex$. Se även animering här: \href{https://sv.wikipedia.org/wiki/Urvalssortering}{sv.wikipedia.org/wiki/Urvalssortering}
-
-Implementera enligt nedan skiss.  \emph{Tips:} Du har nytta av en modifierad variant av lösningen till uppgift \ref{task:minindex} i kapitel \ref{chapter:W02}.
-\begin{Code}
-def selectionSortInPlace(xs: Array[String]): Unit = {
-  def indexOfMin(startFrom: Int): Int = ??? 
-  def swapIndex(i1: Int, i2: Int): Unit = ???
-  for (i <- 0 to xs.size - 1) swapIndex(i, indexOfMin(i))
-}
-\end{Code} 
-
-
+\clearpage
 
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task \label{task:isSorted} \emph{Undersök om en sekvens är sorterad.} Ett enkelt och lättläst sätt att undersöka om en sekvens är sorterad visas nedan. 
-\begin{REPL}
-scala> def isSorted(xs: Vector[Int]): Boolean = xs == xs.sorted
-\end{REPL}
+\Task \emph{Skapa ett yatzy-spel för användning i terminalen.}
 
+\Subtask Skapa med en editor en klass enligt nedan specifikation. Läs om hur de olika predikaten för att kolla olika giltiga kombinationer i Yatzy ska fungera här: \href{https://en.wikipedia.org/wiki/Yahtzee}{en.wikipedia.org/wiki/Yahtzee}. Bygg ett huvudprogram som testar dina funktioner. Kompilera och testa i terminalen allteftersom du lägger till nya funktioner.
 
-\Subtask\Pen  Om \code{xs} har $10^6$ element, hur många jämförelser kommer i värsta fall att ske med \code{isSorted} enligt ovan. Metoden \code{sorted} använder algoritmen Timsort\footnote{\href{http://stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}{stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}}. Sök upp antalet jämförelser i värstafallet på wikipedia.%
-=======
-Denna lösning är dock relativt långsam för stora samlingar. Man behöver ju inte först sortera  för att avgöra om det är sorterat (om man inte ändå hade tänkt sortera av andra skäl), det räcker att kolla att elementen är i växande ordning.
+\begin{ScalaSpec}{YatzyRows}
+/** En skiss på en klass som kan användas till ett förenklat yatzy-spel */
+case class YatzyRows(val rows: Vector[Vector[Int]]) {
+  /** A new YatzyRows with a new row of 5 dice rolls appended to rows  */
+  def roll: YatzyRows = ???
 
-\Subtask\Pen  Om \code{xs} har $n$ element, ungefär hur många jämförelser kommer i värsta fall att ske med \code{isStorted} ovan om man alltså först ska sortera och sedan jämföra den osorterade och den sorterade samlingen element för element? Metoden \code{sorted} använder algoritmen Timsort\footnote{\href{http://stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}{stackoverflow.com/questions/14146990/what-algorithm-is-used-by-the-scala-library-method-vector-sorted}}. Sök upp värstafallsprestandan för Timsort på wikipedia.
-\footnote{\href{https://en.wikipedia.org/wiki/Timsort}{en.wikipedia.org/wiki/Timsort}}
-
-\Subtask\label{subtask:issorted} Implementera en effektivare variant av \code{isSorted} som använder en \code{while}-sats och kollar att elementen är i växande ordning.
-
-\Subtask\Pen Vad blir antalet jämförelser i värstafallet med metoden i deluppgift \ref{subtask:issorted} om du har $n$ element?
-
-
-\Subtask \label{subtask:isSorted-zip} Man kan kolla om en sekvens är sorterad med det listiga tricket att först zippa sekvensen med sin egen svans och sedan kolla om alla element-par uppfyller sorteringskriteriet, alltså \code{xs.zip(xs.tail).forall(???)} där ??? byts ut mot lämpligt predikat. Vilken typ har 2-tupeln \code{xs.zip(xs.tail))} om \code{xs} är av typen \code{Vector[Int]}? Implementera \code{isSorted} med detta listiga trick. (Senare, i fördjupningsuppgift \ref{task:implicit-ordering}, ska vi göra \code{isSorted} generellt användbar för olika typer och olika ordningsdefinitioner.)
-=======
-\Subtask \label{subtask:isSorted-zip} Man kan kolla om en sekvens är sorterad med det listiga tricket att först zippa sekvensen med sin egen svans och sedan kolla om alla element-par uppfyller sorteringskriteriet, alltså \code{xs.zip(xs.tail).forall(???)} där ??? byts ut mot lämpligt predikat. Vilken typ har 2-tupeln \code{xs.zip(xs.tail))} om \code{xs} är av typen \code{Vector[Int]}? Implementera \code{isSorted} med detta listiga trick. (I fördjupningsuppgift \ref{task:implicit-ordering} görs denna variant av \code{isSorted} generellt användbar för olika typer och olika ordningsdefinitioner.)
-
-
-\Task Implementera och testa sortering på plats i en array med heltal med \emph{instickssortering}\footnote{\href{https://en.wikipedia.org/wiki/Insertion_sort}{en.wikipedia.org/wiki/Insertion\_sort}}. 
-
-\Subtask Implementera och testa funktionen nedan i Scala med följande signatur:
-\begin{Code}
-  def insertionSort(xs: Array[Int]): Unit 
-\end{Code}
-Placera metoden i ett objekt med lämpligt namn, samt skapa ett huvudprogram med testkod. Kompilera och kör från terminalen. Börja med att skriva sorteringsalgoritmen i pseudokod.
-
-\Subtask Implementera och testa metoden nedan i Java med följande signatur:
-\begin{Code}[language=Java]
-  public static void insertionSort(int[] xs) 
-\end{Code}
-Placera metoden i en klass med lämpligt namn, samt skapa ett huvudprogram med testkod. Börja med att skriva sorteringsalgoritmen i pseudokod.
-
-\Task Implementera och testa sortering till ny sekvens med urvalssortering\footnote{\href{https://en.wikipedia.org/wiki/Selection_sort}{en.wikipedia.org/wiki/Selection\_sort}} i Scala, enligt nedan skiss. \emph{Tips:} Du har nytta av lösningen till uppgift \ref{task:minindex} i kapitel \ref{chapter:W02}.
-\begin{Code}
-def selectionSort(xs: Seq[String]): Seq[String] = {
-  def indexOfMin(xs: Seq[String]): Int = ??? 
-  val unsorted = xs.toBuffer
-  val result = scala.collection.mutable.ArrayBuffer.empty[String]
-  /* 
-  så länge unsorted inte är tom {
-    minPos = indexOfMin(unsorted)
-    elem   = unsorted.remove(minPos)
-    result.append(elem)
-  }
-  */
-  result.toVector
+  /** A new YatzyRows with some indices of the last row re-rolled  */
+  def reroll(indices: Vector[Int]): YatzyRows = ???
 }
-\end{Code} 
+
+object YatzyRows {
+  def isYatzy(xs: Vector[Int]): Boolean = ???
+  def isThreeOfAKind(xs: Vector[Int]): Boolean = ???
+  def isFourOfAKind(xs: Vector[Int]): Boolean = ???
+  def isFullHouse(xs: Vector[Int]): Boolean = ???
+  def isSmallStraight(xs: Vector[Int]): Boolean = ???
+  def isLargeStraight(xs: Vector[Int]): Boolean = ???
+}
+\end{ScalaSpec}
+
+
+\Subtask Använd \code{YatzyRows} för att med hjälp av många tärningskast beräkna sannolikheter för några olika giltiga kombinationer. Använd, om du vill, möjligheten som reglerna ger att slå om tärningar i två ytterliggare kast, där de tärningar som slås om väljs slumpmässigt.
+
+\Subtask Bygg ett förenklat yatzy-spel i terminalen där användaren kan bestämma vilka tärningar som ska slås om. Använd \code{Scanner} för att läsa indata från användaren. Börja med något riktigt enkelt och bygg sedan vidare på ditt spel genom att införa fler och fler funktioner.
+
+
+\clearpage
 
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task \emph{Typklasser och implicita parametrar.} I Scala finns möjligheter till avancerad funktionsprogrammering med s.k. \textbf{typklasser}, som definierar generella beteenden som fungerar för befintliga typer utan att implementationen av dessa befintliga typer behöver ändras. Vi nosar i denna uppgift på hur implicita argument kan användas för att skapa typklasser, illustrerat med hjälp av implicita ordningarna, som är en typisk och användbar tillämpning av konceptet typklasser. 
 
-\Subtask \emph{Implicit parameter och implicit värde.} Med nyckelordet \code{implicit} framför en parameter öppnar man för möjligheten att låta kompilatorn ge argumentet ''automatiskt'' om den kan hitta ett värde med passande typ som också är deklarerat med \code{implicit}, så som visas nedan. 
-\begin{REPL}
-scala> def add(x: Int)(implicit y: Int) = x + y
-scala> add(1)(2)
-scala> add(1)
-scala> implicit val ngtNamn = 42   
-scala> add(1)
-\end{REPL}
-Vad blir felmeddelandet på rad 3 ovan? Varför fungerar det på rad 5 utan fel?
+\Task \label{task:generic-matrix} \emph{Skapa en generisk, oföränderlig matrisklass.} Med hjälp av en typparameter kan vi skapa en matrisklass som kan innehålla vilka element som helst. Implementera nedan specifikation. Testa din matrisklass i REPL för olika typer av element.
 
-\Subtask \emph{Typklasser.} Genom att kombinera koncepten implicita värden, generiska klasser och implicita parametrar får man möjligheten att göra typklasser, så som \code{CanCompare} nedan, som vi kan få att fungera för befintliga typer utan att de behöver ändras. 
+\begin{ScalaSpec}{Matrix[T]}
+case class Matrix[T](data: Vector[Vector[T]]){
 
-Vad händer nedan? Vilka rader ger felmeddelande? Varför? 
+  def map[U](f: T => U): Matrix[U] = Matrix(data.map(_.map(f)))
 
-\begin{REPL}
-scala> trait CanCompare[T] { def compare(a: T, b: T): Int }
-scala> def sort2[T](a: T, b: T)(implicit cc: CanCompare[T]): (T, T) = 
-         if (cc.compare(a, b) > 0) (b, a) else (a, b)  
-scala> sort2(42, 41)
-scala> implicit object intComparator extends CanCompare[Int]{
-         override def compare(a: Int, b: Int): Int = a - b
-       } 
-scala> sort2(42, 41)
-scala> sort2(42.0, 41.0)
-\end{REPL}
+  def foreachRowCol[U](f: (Int, Int, T) => Unit): Unit = 
+    for (r <- 0 until data.size) {
+      for (c <- 0 until data(r).size) {
+        f(r, c, data(r)(c))
+      }
+    }
 
-\Subtask Definiera ett implicit objekt som gör så att \code{sort2} fungerar för värden av typen \code{Double}.
+  /** The element at row r and column c */
+  def apply(r: Int, c: Int): T = ???
 
-\Subtask Definiera ett implicit objekt som gör så att \code{sort2} fungerar för värden av typen \code{String}.
+  /** Gives Some[T](element) at row r and column c 
+   *  if r and c are within index bounds, else None */
+  def get(r: Int, c: Int): Option[T] = ???
 
+  /** The row vector of row r */ 
+  def row(r: Int): Vector[T] = ???
 
-\Task \label{task:implicit-ordering}\emph{Användning av implicit ordning.} Vi ska nu göra \code{isSorted} från uppgift \ref{task:isSorted} mer generellt användbar genom att möjliggöra att implicita ordningsfunktioner finns tillgängliga för olika typer.
+  /** The column vector of column c */ 
+  def col(c: Int): Vector[T] = ???
 
-\Subtask  Med signaturen  \code{isSorted(xs: Vector[Int]): Boolean} så 
-fungerar sorteringstestet bara för samlingar av typen \code{Vector[Int]}. 
-Om vi i stället använder 
-\code{isSorted(xs: Seq[Int]): Boolean } fungerar den för alla samlingar med heltal, även \code{Array} och \code{List}. Testa nedan funktion i REPL med heltalssekvenser av olika typ.
-\begin{Code}
-def isSorted(xs: Seq[Int]): Boolean = xs == xs.sorted 
-\end{Code}
-
-
-\Subtask Men vi vill gärna att \code{isSorted} ska fungera för godtyckliga typer T som har en ordningsdefinition. Detta kan göras med nedan funktion eftersom metoden \code{sorted} är definierad för alla samlingar där typen \code{T} har en implicit ordning. Speciellt gäller detta för alla de grundtyperna \code{Int}, \code{Double}, \code{String}, etc.
-\begin{Code}
-def isSorted[T](xs: Seq[T]): Boolean = xs == xs.sorted 
-\end{Code}
-Testa metoden ovan i REPL enligt nedan.
-\begin{REPL}
-scala> isSorted(Vector(1,2,3))
-scala> isSorted(Array(1,2,3,1))
-scala> isSorted(Vector("A","B","C"))
-scala> isSorted(List("A","B","C","A"))
-scala> case class Person(firstName: String, familyName: String)
-scala> val persons = Vector(Person("Kim", "Finkodare"), Person("Robin","Fulhack")) 
-scala> isSorted(persons)
-\end{REPL}
-Vad ger sista raden för felmeddelande? Varför?
-
-
-\Subtask Vi vill gärna kunna jämföra element av godtycklig typ \code{T}, så att vi till exempel ska kunna implementera en generisk \code{isSorted} med \code{while} eller vårt \code{zip}-trick från uppgift \ref{task:isSorted}\ref{subtask:isSorted-zip}. Men det blir problem enligt nedan. Hur lyder felmeddelandet? Vad saknas?
-
-\begin{REPL}
-scala> def isSorted[T](xs: Seq[T]): Boolean =  
-         xs.zip(xs.tail).forall(x => x._1 <= x._2)
-\end{REPL}
-
-\Subtask Det blir även problem med denna implementation. Hur lyder felmeddelandet? Vad saknas?
-\begin{REPLnonum}
-scala> def isSorted[T](xs: Seq[T]): Boolean = xs == xs.sorted          
-\end{REPLnonum}
-       
-
-\Subtask \emph{Implicita ordningar.} Man kan berätta för kompilatorn att den ska leta efter implicita ordningar av typen  \code{T}. Detta kan göras genom att utöka signaturen för \code{isSorted} med en andra parameterlista, som tar en implicit parameter enligt följande:
-
-\begin{CodeSmall}
-def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean =  
-  xs.zip(xs.tail).forall(x => ord.lteq(x._1, x._2))
-\end{CodeSmall}
-
-Det finns fördefinierade implicita objekt \code{Ordering[T]} för alla grundtyper, alltså t.ex. \code{Ordering[Int]}, \code{Ordering[String]}, etc. Objekt av typen \code{Ordering} har jämförelsemetoder som t.ex. \code{lteq} (förk. \emph{less than or equal}) och \code{gt} (förk. \emph{greater than}).
-Testa så att kompilatorn hittar ordningen för samlingar med värden av några grundtyper. Kontrollera även enligt nedan att det fortfarande blir problem för egendefinierade klasser, t.ex. \code{Person} enligt tidigare (detta ska vi råda bot på i uppgift \ref{task:custom-ordering}).
-\begin{REPL}
-scala> isSorted(Vector(1,2,3))
-scala> isSorted(Array(1,2,3,1))
-scala> isSorted(Vector("A","B","C"))
-scala> isSorted(List("A","B","C","A"))
-scala> class Person(firsName: String, familyName: String)
-scala> val persons = Vector(Person("Kim", "Finkodare"), Person("Robin","Fulhack")) 
-scala> isSorted(persons)
-\end{REPL}
-
-\Subtask \emph{Importera implicita ordningsoperatorer från en \code{Ordering}.} Om man gör import på ett \code{Ordering}-objekt får man tillgång till implicita konverteringar som gör att jämförelseoperatorerna fungerar. Testa nedan variant av \code{isSorted} på olika sekvenstyper och verifiera att \code{<=}, \code{>}, etc., nu fungerar enligt nedan.
-\begin{CodeSmall}
-def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean = {  
-  import ord._
-  xs.zip(xs.tail).forall(x => x._1 <= x._2)
+  /** A new Matrix with element at row r and col c updated */
+  def updated(r: Int, c: Int, value: T): Matrix[T] = ???
 }
-\end{CodeSmall}
+object Matrix {
+  def fill[T](rowSize: Int, colSize: Int)(init: T): Matrix[T] = 
+    new Matrix(Vector.fill(rowSize)(Vector.fill(colSize)(init)))  
+}
+\end{ScalaSpec}
 
+\Task Använd matrisklassen från uppgift \ref{task:generic-matrix} för att göra en SpriteEditor med JColorChoser enligt nedan skiss.
 
-\Task  \label{task:custom-ordering} \emph{Skapa egen implicit ordning med \code{Ordering}.}  
-
-\Subtask Ett sätt att skapa en egen, specialanpassad ordning är att mappa dina objekt till typer som redan har en implicit ordning. Med hjälp av metoden \code{by} i objektet \code{scala.math.Ordering} kan man skapa ordningar genom bifoga en funktion \code{T => S} där \code{T} är typen för de objekt du vill ordna och \code{S} är någon annan typ, t.ex. \code{String} eller \code{Int}, där det redan finns en implicit ordning.
-\begin{REPL}
-scala> case class Team(name: String, rank: Int)
-scala> val xs = 
-         Vector(Team("fnatic", 1499), Team("nip", 1473), Team("lumi", 1601))
-scala> xs.sorted  // Hur lyder felmeddelandet? Varför blir det fel?
-scala> val teamNameOrdering = Ordering.by((t: Team) => t.name)
-scala> xs.sorted(teamNameOrdering)   //explicit ordning
-scala> implicit val teamRankOrdering = Ordering.by((t: Team) => t.rank)
-scala> xs.sorted   // Varför funkar det nu?
-\end{REPL}
-
-\Subtask Vill man sortera i omvänd ordning kan man använda 
-\code{Ordering.fromLessThan} som tar en funktion \code{(T, T) => Boolean} vilken ska ge \code{true} om första parametern ska komma före, annars \code{false}. Om vi vill sortera efter \code{rank} i omvänd ordning kan vi göra så här:
-\begin{REPL}
-scala> val highestRankFirst = 
-         Ordering.fromLessThan[Team]((t1, t2) => t1.rank > t2.rank)
-scala> xs.sorted(highestRankFirst)
-\end{REPL}
-
-\Subtask Om du har en case-klass med flera fält och vill ha en fördefinierad implicit sorteringsordning samt även erbjuda en alternativ sorteringsordning kan du placera olika ordningsdefinitioner i ett kompanjonsobjekt; detta är nämligen ett av de ställen där kompilatorn söker efter eventuella implicita värden innan den ger upp att leta. 
 \begin{Code}
-case class  Team(name: String, rank: Int)
-object Team {
-  implicit val highestRankFirst = Ordering.fromLessThan[Team]{
-    (t1, t2) => t1.rank > t2.rank
+object ColorChooser {
+  import java.awt.Color
+  import javax.swing.JColorChooser
+  
+  var title = "Pick Color"
+  private val chooser = new JColorChooser(Color.BLACK)
+  private val dialog = JColorChooser.
+    createDialog(null, title, true, jcs, null, null)
+  
+  def getColor(initColor: Color = Color.BLACK): Color = {
+    chooser.setColor(initColor)
+    dialog.setVisible(true)
+    chooser.getColor
   }
-  val nameOrdering = Ordering.by((t: Team) => t.name)
 }
-\end{Code}
-\begin{REPL}
-scala> :pa
-// Exiting paste mode, now interpreting.
-case class  Team(name: String, rank: Int)
-object Team {
-  implicit val highestRankFirst = 
-    Ordering.fromLessThan[Team]{(t1, t2) => t1.rank > t2.rank}
-  val nameOrdering = Ordering.by((t: Team) => t.name)
+
+class Sprite(// en bild med många lager av pixlar i olika färger
+  val id: String,
+  val size: (Int, Int),
+  val pixels: Matrix[Option[Int]],//Some(color),None=genomskinlig
+  var scale: Int, //uppskalning av storlek i pixlar
+  var colors: Vector[java.awt.Color], //tillgängliga färger
+  var pos: (Int, Int, Int)  // (row, col, layer)
+){
+  def row = pos._1
+  def col = pos._2
+  def layer = pos._3
 }
-scala> val xs = 
-         Vector(Team("fnatic", 1499), Team("nip", 1473), Team("lumi", 1601))
-scala> xs.sorted
-scala> xs.sorted(Team.nameOrdering)
-\end{REPL}
 
-
-
-\Subtask Det går också med kompanjonsobjektet ovan att få jämförelseoperatorer att fungera med din case-klass, genom att importera medlemmarna i lämpligt ordningsobjekt. Verifiera att så är fallet enligt nedan:
-\begin{REPL}
-scala> Team("fnatic",1499) < Team("gurka", 2)  // Vilket fel? Varför?
-scala> import Team.highestRankFirst._
-scala> Team("fnatic",1499) < Team("gurka", 2)  // Inget fel? Varför?
-\end{REPL}
-
-
-\Task \emph{Specialanpassad ordning genom att ärva från \code{Ordered}.} Om det finns \emph{en} väldefinierad, specifik ordning som man vill ska gälla för sina case-klass-instanser kan man göra den ordnad genom att låta case-klassen mixa in traiten \code{Ordered} och implementera den abstrakta metoden \code{compare}. 
-
-\begin{Background}
-En trait som används på detta sätt kallas \textbf{gränssnitt} \Eng{interface}, och om man \emph{implementerar} ett gränssnitt så uppfyller man ett ''kontrakt'', som i detta fall innebär att man implementerar det som krävs av ordnade objekt, nämligen att de har en konkret \code{compare}-metod. Du lär dig mer om gränssnitt i kommande kurser. 
-\end{Background}
-
-\Subtask Implementera case-klassen \code{Team} så att den är en subtyp till \code{Ordered} enligt nedan skiss. Högre rankade lag ska komma före lägre rankade lag. Metoden \code{compare} ska ge ett heltal som är negativt om \code{this} kommer före \code{that}, noll om de ordnas lika, annars positivt. 
-
-\begin{Code}
-case class Team(name: String, rank: Int) extends Ordered[Team]{
-  override def compare(that: Team): Int = ???
-} 
-\end{Code}
-\emph{Tips:} Du kan anropa metoden \code{compare} på alla grundtyper, t.ex. \code{Int}, eftersom de är implicit ordnade. Genom att negera uttrycket blir ordningen den omvända.
-\begin{REPL}
-scala> -(2.compare(1))  
-\end{REPL}
-
-\Subtask Testa att  din case-klass nu uppfyller det som krävs för att vara ordnad. 
-\begin{REPL}
-scala> Team("fnatic",1499) < Team("gurka", 2) 
-\end{REPL}
-
-
-\Task \emph{Jämförelsestöd i Java.} 
-Java har motsvarigheter till \code{Ordering} och \code{Ordered}, som heter \code{java.util.Comparator} och \code{java.lang.Comparable}. I själva verket så är Scalas \code{Ordering} en subtyp till Javas \code{Comparator}, medan Scalas \code{Ordered} är en subtyp till Javas \code{Comparable}. 
-\begin{itemize}[nolistsep, noitemsep]
-\item Javas \code{Comparator} och Scalas \code{Ordering} används för att skapa fristående ordningar som kan jämföra \emph{två olika} objekt. I Scala kan dessa göras implicit tillgängliga. I Javas samlingsbibliotek skickas instanser av \code{Comparator} med som explicita argument.
-\item Javas \code{Comparable} och Scalas \code{Ordered} används som supertyp för klasser som vill kunna jämföra ''sig själv'' med andra objekt och har \emph{en} naturlig ordningsdefinition.
-\end{itemize}
-
-\Subtask\Pen Sök upp dokumentationen för \code{java.util.Comparator}. Vilken abstrakt metod måste implementeras och vad gör den? 
-
-\Subtask  I paketet \code{java.util.Arrays} finns en metod \code{sort} som tar en \code{Array[T]} och en \code{Comparable[T]}. Testa att använda dessa i REPL enligt nedan skiss. Starta om REPL så att ev. tidigare implicita ordningar för \code{Team} inte finns kvar.
-\begin{REPL}
-scala> import java.util.Comparator
-scala> val teamComparator = new Comparator[Team]{
-         def compare(o1: Team, o2: Team) = ???
-       }
-scala> val xs = 
-         Array(Team("fnatic", 1499), Team("nip", 1473), Team("lumi", 1601))
-scala> java.util.Arrays.sort(xs.toArray, teamComparator)
-scala> xs
-\end{REPL}
-%\begin{Code}
-%// kod till facit
-%val teamComparator = new Comparator[Team]{
-%  def compare(o1: Team, o2: Team) = o2.rank - o1.rank
-%}
-%\end{Code}
-
-\Subtask I Scala finns en behändig metod \code{Ordering.comparatorToOrdering} som skapar en implicit tillgänglig ordning om man har en \code{java.util.Comparator}. Testa detta enligt nedan i REPL, med deklarationerna från föregående deluppgift.
-\begin{REPL}
-scala> implicit val teamOrd = Ordering.comparatorToOrdering(teamComparator)
-scala> xs.sorted
-\end{REPL}
-
-
-
-\Subtask\Pen Sök upp dokumentationen för \code{java.lang.Comparable}. Vilken abstrakt metod måste implementeras och vad gör den? 
-
-\Subtask Gör så att klassen \code{Point} är \code{Comparable} och att punkter närmare origo sorteras före punkter som är längre ifrån origo enligt nedan skiss. I Scala är typer som är \code{Comparable} implicit även \code{Ordered}, varför sorteringen nedan funkar. Verfiera detta i REPL när du klurat ut hur implementera \code{compareTo}. 
-
-\begin{Code}
-case class Point(x: Int, y: Int) extends Comparable[Point] {
-  def distanceFromOrigin: Double = ???
-  def compareTo(that: Point): Int = ???
+class SpriteEditor(
+    rows: Int = 64, cols: Int = 64, 
+    scale: Int = 16, nColors: Int = 16) {
+  private val w = new SimpleWindow(???)
+  def edit: Unit = ???
 }
+
 \end{Code}
-\begin{REPL}
-scala> val xs = Seq(Point(10,10), Point(2,1), Point(5,3), Point(0,0))
-scala> xs.sorted
-\end{REPL}
-%\begin{Code}
-%// kod till facit
-%case class Point(x: Int, y: Int) extends Comparable[Point] {
-%  def distanceFromOrigin: Double = math.hypot(x, y)
-%  def compareTo(that: Point): Int = 
-%    (distanceFromOrigin - that.distanceFromOrigin).round.toInt
-%}
-%\end{Code}
-
-
-\Task \label{task:swedish-letter-ordering} \emph{Fixa svensk sorteringsordning av ÄÅÖ.} Svenska bokstäver kommer i, för svenskar, konstig ordning om man inte vidtar speciella åtgärder. Med hjälp av klassen \code{java.text.Collator} kan man få en \code{Comparator} för strängar som följer lokala regler för en massa språk på planeten jorden. 
-
-\Subtask Verifiera att sorteringsordningen blir rätt i REPL enligt nedan. 
-
-\begin{REPL}
-scala> val fel = Vector("ö","å","ä","z").sorted
-scala> val svColl = java.text.Collator.getInstance(new java.util.Locale("sv"))
-scala> val svOrd = Ordering.comparatorToOrdering(svColl)
-scala> val rätt = Vector("ö","å","ä","z").sorted(svOrd)
-\end{REPL}
-\Subtask Använd metoden ovan för att skriva ett program som skriver ut raderna i en textfil i korrekt svensk sorteringsordning. Programmet ska kunna köras med kommandot:\\\texttt{scala sorted -sv textfil.txt}
-
-\Subtask Läs mer här: \\
-\noindent{\href{http://stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}{\small stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}}
 
 
 
-\Task I klassen \code{java.util.Arrays}\footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html}{docs.oracle.com/javase/8/docs/api/java/util/Arrays.html}} finns en statisk metod \code{binarySearch} som kan användas enligt nedan.
-\begin{REPL}
-scala> val xs = Array(5,1,3,42,-1)
-scala> java.util.Arrays.sort(xs)
-scala> xs
-scala> java.util.Arrays.binarySearch(xs, 42)
-scala> java.util.Arrays.binarySearch(xs, 43)
-\end{REPL}
-Skriv ett valfritt Javaprogram som testar \code{java.util.Arrays.binarySearch}. Använd en array av typen \code{int[]} med några heltal som först sorteras med \code{java.util.Arrays.sort}.  Skriv ut det som returneras från  \code{java.util.Arrays.binarySearch}  i olika fall genom att asöka efter tal som finns först, mitt i, sist och tal som saknas. 
-\emph{Tips:} Man kan deklarera en array, allokera den och fylla den med värden så här i Java: \\ 
-\jcode|int[] xs = new int[]{5, 1, 3, 42, -1};|
+\Task \emph{Klasser för täta och glesa matematiska matriser med flyttal.}  Läs om matrisräkning här: \href{https://sv.wikipedia.org/wiki/Matris}{sv.wikipedia.org/wiki/Matris}
 
+\Subtask Skapa en oföränderlig, final klass \code{DenseMatrix} för matematiska matriser med dubbelprecisionsflyttal. \code{DenseMatrix} ska internt lagra elementen i en privat \emph{endimensionell} array av flyttal av typen \code{Array[Double]}. Klassen ska inte vara en case-klass. Det ska gå att skapa matriser med uttrycket DenseMatrix.ofDim(3,7)(1.0,42,3.2,1.0,2.2,3) tack vare ett kompanjonsobjekt med lämplig fabriksmetod som anropar den privata konstruktorn.  Om antalet element är för litet i förhållande till den angivna dimensionen så fyll på med nollor. 
 
-\Task Fördjupa dig inom webbteknologi. 
-    
-\Subtask Lär dig om HTML här: \url{http://www.w3schools.com/html/}
+\Subtask Överskugga metoderna equals och hashcode och ge \code{DenseMatrix} innehållslikhet i stället för referenslikhet.
 
-\Subtask Lär dig om Javascript här: \url{http://www.w3schools.com/js/}
+\Subtask Implementera egna innehålllikhetsmetoder med namnet \code{===} på \code{DenseMatrix} som är typsäker, d.v.s. bara tillåter innehållsjämförelse mellan täta matriser.
 
-\Subtask Lär dig om CSS här: \url{http://www.w3schools.com/css/}
+\Subtask Läs om glesa matriser här: \href{https://sv.wikipedia.org/wiki/Gles_matris}{https://sv.wikipedia.org/wiki/Gles\_matris} och implementera \code{SparseMatrix} med ett privat attribut av typen \\ \code{mutable.Map[(Int, Int), Double]} som bara lagrar index som inte är noll.
 
-\Subtask Lär dig om Scala.JS här: \url{http://www.scala-js.org/}
+\Subtask Skapa ett \code{trait Matrix} som både \code{DenseMatrix} och \code{SparseMatrix} ärver, med lämpliga abstrakta och konkreta medlemmar. Implementera addition, subtraktion och multiplikation av täta och glesa matriser.
 
-
+%\Task \emph{Matriser med \jcode{ArrayList} i Java.} Om man i Java inte vet antalet element i matrisen från början kan man använda en lista av typen \jcode{ArrayList}, där varje element i sin tur innehåller en lista av typen\jcode{ArrayList}. Javas \jcode{ArrayList} är en generisk samling som motsvaras av Scalas \code{ArrayBuffer}. Generiska samlingar i Java kan endast innehålla referenstyper; vill man ha en primitiv typ, t.ex. \jcode{int}, behöver man packa in denna i en s.k. wrapper-klass, t.ex.  klassen \jcode{Integer}. Det finns en wrapper-klass för varje primitiv typ i Java. Matristypen för en heltalstyp i Java skrivs \jcode{ArrayList<ArrayList<Integer>>} där alltså \code{<T>} motsvarar Scalas hakparenteser \code{[T]} för typparametern T.
+%
+%
+%\Subtask \TODO Hitta på deluppgifter med \jcode{ArrayList<ArrayList<Integer>>} som illustrerar ovan. Peka framåt till scalajava-veckan.
 
     

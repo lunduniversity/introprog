@@ -5,13 +5,20 @@
 \Exercise{\ExeWeekNINE}\label{exe:W09}
 
 \begin{Goals}
-\item Kunna skapa och använda matriser med nästlade strukturer av \code{Vector}.
-\item Kunna iterera över elementen i en matris med nästlade \code{for}-satser och \code{for}-\code{yield}-uttryck, samt nästlad applicering av \code{map} respektive \code{foreach}.
-\item Kunna skapa och använda funktioner som tar matriser som parametrar.
-\item Känna till generiska funktioner.
-\item Känna till generiska klasser.
-\item Kunna skapa och använda matriser med hjälp inbyggda arrayer i Java.
-\item Kunna anända nästlade \code{for}-satser i Java för att iterera över elementen i en matris.
+\item Kunna skapa och använda \code{match}-uttryck med konstanta värden, garder och mönstermatchning med case-klasser.
+\item Kunna skapa och använda case-objekt för matchningar på uppräknade värden.
+\item Känna till betydelsen av små och stora begynnelsebokstäver i case-grenar i en matchning, samt förstå hur namn binds till värden in en case-gren.
+\item Kunna hantera saknade värden med hjälp av typen \code{Option} och mänstermatchning på \code{Some} och \code{None}. 
+\item Känna till hur metoden \code{unapply} används vid mönstermatchning.
+\item Känna till nyckelordet \code{sealed} och förstå nyttan med förseglade typer.
+\item Känna till \jcode{switch}-satser i Java.
+\item Känna till \code{null}.
+\item Kunna fånga undantag med \code{try}-\code{catch} och \code{scala.util.Try}.
+\item Känna till skillnaderna mellan \code{try}-\code{catch} i Scala och java.
+\item Kunna implementera \code{equals} med hjälp av en \code{match}-sats, som fungerar för finala klasser utan arv.
+\item Känna till relationen mellan \code{hashcode} och \code{equals}.
+\item Kunna använda \code{flatMap} tillsammans med \code{Option} och \code{Try}. ???
+\item Kunna skapa partiella funktioner med case-uttryck. ???
 \end{Goals}
 
 \begin{Preparations}
@@ -20,502 +27,448 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task \emph{Skapa matriser med hjälp av nästlade samlingar.} Man kan i ett datorprogram, med hjälp av samlingar som innehåller samlingar, skapa nästlade strukturer som kan indexeras i två dimensioner och på så sätt representera en matematisk \textbf{matris}.\footnote{\href{https://sv.wikipedia.org/wiki/Matris}{sv.wikipedia.org/wiki/Matris}} 
+\Task \label{task:switch} \emph{Hur fungerar en \jcode{switch}-sats i Java (och flera andra språk)?} Det händer ofta att man vill testa om ett värde är ett av många olika alternativ. Då kan man använda en sekvens av många \code{if}-\code{else}, ett för varje alternativ. Men det finns ett annat sätt i Java och många andra språk: man kan använda \jcode{switch} som kollar flera alternativ i en och samma sats, se t.ex. \href{https://en.wikipedia.org/wiki/Switch_statement}{en.wikipedia.org/wiki/Switch\_statement}.
+
+\Subtask Skriv in nedan kod i en kodeditor. Spara med namnet \texttt{Switch.java} och kompilera filen med kommandot \texttt{javac Switch.java}. Kör den med \texttt{java Switch} och ange din favoritgrönsak som argument till programmet. Vad händer? Förklara hur \jcode{switch}-satsen fungerar.
+
+\javainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/Switch.java}
+
+\Subtask \label{subtask:break} Vad händer om du tar bort \jcode{break}-satsen på rad 16?
+
+
+
+
+\Task \label{task:vegomatch} \emph{Matcha på konstanta värden.} I Scala finns ingen \jcode{switch}-sats. I stället har Scala ett \code{match}-uttryck som är mer kraftfullt. Dock saknar Scala nyckelordet \jcode{break} och Scalas \code{match}-uttryck kan inte ''falla igenom'' som skedde i uppgift \ref{task:switch}\ref{subtask:break}.
+
+\Subtask \label{subtask:vegomatch} Skriv nedan program med en kodeditor och spara i filen \texttt{Match.scala}. Kompilera med \texttt{scalac Match.scala}. Kör med \texttt{scala Match} och ge som argument din favoritgrönsak. Vad händer? Förklara hur ett \code{match}-uttryck fungerar.
+
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/Match.scala}
+
+\Subtask Vad blir det för felmeddelande om du tar bort case-grenen för defaultvärden och indata väljs så att inga case-grenar matchar? Är det ett exekveringsfel eller ett kompileringsfel?
+
+
+\Subtask\Pen Beskriv några skillnader i syntax och semantik mellan Javas flervalssats \jcode{switch} och Scalas flervalsuttryck \code{match}.
+
+
+
+
+\Task \emph{Gard i case-grenar.} Med hjälp en gard \Eng{guard} i en case-gren kan man begränsa med ett villkor om grenen ska väljas. 
+
+Utgå från koden i uppgift \ref{task:vegomatch}\ref{subtask:vegomatch} och byt ut case-grenen för \code{'g'}-matchning till nedan variant med en gard med nyckelordet \code{if} (notera att det inte behövs parenteser runt villkoret):
+\begin{Code}
+    case 'g' if math.random > 0.5 => "gurka är gott ibland..."
+\end{Code}
+Kompilera om och kör programmet upprepade gånger med olika indata tills alla grenar i \code{match}-uttrycket har exekverats. Förklara vad som händer.
+
+\Task \label{task:match-caseclass} \emph{Mönstermatcha på attributen i case-klasser.} Scalas \code{match}-uttryck är extra kraftfulla om de används tillsammans med \code{case}-klasser: då kan attribut extraheras automatiskt och bindas till lokala variabler direkt i case-grenen som nedan exempel visar (notera att \code{v} och \code{rutten} inte behöver deklareras explicit). Detta kallas för \textbf{mönstermatchning}.  
+
+\Subtask \label{subtask:autobinding-match} Vad skrivs ut nedan? Varför? Prova att byta namn på \code{v} och \code{rutten}.
+\begin{REPL}
+scala> case class Gurka(vikt: Int, ärRutten: Boolean)
+scala> val g = Gurka(100, true)
+scala> g match { case Gurka(v,rutten) => println("G" + v + rutten) }
+\end{REPL}
+
+\Subtask Skriv sedan nedan i REPL och tryck TAB två gånger efter punkten. Vad har \code{unapply}-metoden för resultattyp?  
+\begin{REPL}
+scala> Gurka.unapply   // Tryck TAB två gånger
+\end{REPL}
 \begin{Background}
-En \textbf{matris} inom matematiken innehåller ett antal rader och kolumner (även kallade kolonner). I en matematisk matris har alla rader lika många element och även alla kolumner har lika många element. En matris av dimension $m\times{}n$ har $m \cdot n$ stycken element, där $m$ är antalet rader och $n$ är antalet kolumner. En matris $A_{m,n}$ av dimension $m\times{}n$ ritas ofta så här:
-
-\[
-A_{m,n} = 
- \begin{pmatrix}
-  a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
-  a_{2,1} & a_{2,2} & \cdots & a_{2,n} \\
-  \vdots  & \vdots  & \ddots & \vdots  \\
-  a_{m,1} & a_{m,2} & \cdots & a_{m,n} 
- \end{pmatrix}
-\]
-
-\noindent Exempel: En heltalsmatris $M_{2,5}$ av dimension $2\times{}5$ där element $m_{2,5}=7$:
-
-\[
-M=
-  \begin{pmatrix}
-    5 & 2 & 42 & 4 & 5 \\
-    3 & 4 & 18 & 6 & 7
-  \end{pmatrix}
-\]
+Case-klasser får av kompilatorn automatiskt ett kompanjonsobjekt \Eng{companion object}, i detta fallet \code{object Gurka}. Det objektet får av kompilatorn automatiskt en \code{unapply}-metod. Det är \code{unapply} som anropas ''under huven'' när case-klassernas attribut extraheras vid mönstermatchning, men detta sker alltså automatiskt och man behöver inte explicit nyttja \code{unapply} om man inte själv vill implementera s.k. extraherare \Eng{extractors}; om du är nyfiken på detta, se fördjupningsuppgift \ref{task:extractor}.
 \end{Background}
 
-\Subtask\Pen Rita minnessituationen efter tilldelningen på rad 1 nedan. Vad har \code{m} för typ och värde? Vad har \code{m} för dimensioner? Hur sker indexeringen i ett datorprogram jämfört med i matematiken?
-
+\Subtask Anropa \code{unapply}-metoden enligt nedan. Vad blir resultatet?
 \begin{REPL}
-scala> val m = Vector((1 to 5).toVector, (3 to 7).toVector)
-scala> m.apply(0).apply(1)
-scala> m(1)
-scala> m(1)(4)
+scala> Gurka.unapply(g)   
 \end{REPL}
+Vi ska i senare uppgifter undersöka hur typerna \code{Option} och \code{Some} fungerar och hur man kan ha nytta av dessa i andra sammanhang.
 
-\Subtask Vad ger uttrycken på raderna 2, 3 och 4 ovan för värden och typ? 
-
-\Subtask Man kan i ett datorprogram mycket väl skapa tvådimensionella, nästlade strukturer där raderna \emph{inte} innehåller samma antal element. Det blir då ingen äkta matris i strikt matematisk mening, men man kallar ofta ändå en sådan struktur för en ''matris''. Vilken typ har variablerna \code{m2}, \code{m3}, \code{m4} och \code{m5} nedan? 
-
-\begin{REPL}
-scala> val m2 = Vector(Vector(1,2,3),Vector(4,5),Vector(42))
-scala> val m3 = Vector(Vector(1,2), Vector(1.0, 2.0, 3.0))
-scala> m3(1)
-scala> val m4 = m3(1) +: Vector("a") +: m3
-scala> val m5 = Vector.fill(42){ m2(1).map(e => (e * math.random).toInt) }
-\end{REPL}
-
-\Subtask\Pen Rita minnessituationen efter tilldelingen av \code{m2} på rad 1 ovan.
-
-\Subtask\Pen Vilken av variablerna \code{m2}, \code{m3}, \code{m4} och \code{m5} ovan representerar en äkta matris i matematisk mening? Vilken är dess dimensioner?
+\Subtask Spara programmet nedan i filen \texttt{vegomatch.scala} och kompilera med \code{scalac vegomatch.scala} och kör med \code{scala vegomatch.Main 1000} i terminalen. Förklara hur predikatet \code{ärÄtvärd} fungerar. 
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/vegomatch.scala}
 
 
 
-\Task \emph{Skapa och itererar över matriser.} Vi ska skapa matriser där varje rad representerar 5 kast med en tärning spelet Yatzy.\footnote{\href{https://sv.wikipedia.org/wiki/Yatzy}{sv.wikipedia.org/wiki/Yatzy}}
+\Task Man kan åstadkomma urskiljningen av de ätbara grönsakerna i uppgift \ref{task:match-caseclass} med polymorfism i stället för \code{match}. 
 
+\Subtask Gör en ny variant av ditt program enligt nedan riktlinjer och spara den modifierade koden i filen \texttt{vegopoly.scala} och kompilera och kör.
+\begin{itemize}[noitemsep]
+\item Ta bort predikatet \code{ärÄtvärd} i objektet \code{Main} och inför i stället en abstrakt metod \code{def ärÄtbar: Boolean} i traiten \code{Grönsak}.
+\item Inför konkreta \code{val}-medlemmar i respektive grönsak som definierar ätbarheten.
+\item Ändra i huvudprogrammet i enlighet med ovan ändringar så att \code{ärÄtvärd} anropas som en metod på de skördade grönsaksobjekten när de ätvärda ska filtreras ut.
+\end{itemize} 
 
-\Subtask Definiera i REPL en funktion \code{def throwDie: Int = ???} som returnerar ett slumptal mellan 1 och 6.
+\Subtask Lägg till en ny grönsak \code{case class Broccoli} och definiera dess ätbarhet. Ändra i slump-funktionerna så att broccoli blir ovanligare än gurka.
 
-
-\Subtask Skapa nedan heltalsmatris i REPL. Vilken dimension får matrisen?
-\begin{REPL}
-val ds1 = for (i <- 1 to 1000) yield { 
-            for (j <- 1 to 5) yield throwDie 
-          }
-\end{REPL}
-
-\Subtask\Pen Man kan också använda nedan varianter för att skapa en heltalsmatris. Vilken av varianterna \code{ds1} ... \code{ds5} tycker du är lättast att läsa och förstå? Prova respektive variant i REPL och ange vilken typ på \code{ds1} ... \code{ds5} som härleds av kompilatorn.
-\begin{REPL}
-val ds2 = (1 to 1000).map(i => (1 to 5).map(j => throwDie))  
-val ds3 = (1 to 1000).map(i => Vector.fill(5)(throwDie)) 
-val ds4 = for (i <- 1 to 1000) yield Vector.fill(5)(throwDie) 
-val ds5 = Vector.fill(1000)(Vector.fill(5)(throwDie))
-\end{REPL}
-
-
-\Subtask Definiera en funktion \\ \code{def roll(n: Int): Vector[Int] = ???}\\ som ger en heltalsvektor med $n$ stycken slumpvisa tärningskast. Kasten ska vara sorterade i växande ordning; använd för detta ändamål samlingsmetoden \code{sorted}.
+\Subtask\Pen Jämför lösningen med \code{match} i uppgift \ref{task:match-caseclass} och lösningen ovan med polymorfism. Vilka är för- och nackdelarna med respektive lösning. Diskutera två olika situationer på ett hypotetiskt företag som utvecklar mjukvara för jordbrukssektorn: 1) att uppsättningen grönsaker inte ändras särskilt ofta medan definitionerna av ätbarhet ändras väldigt ofta och 2) att uppsättningen grönsaker ändras väldigt ofta men att ätbarhetsdefinitionerna inte ändras särskilt ofta.
 
 
 
-\Subtask Definera i REPL en funktion \code{isYatzy(xs: Vector[Int]): Boolean = ???} som testar om alla elementen i en heltalsvektor är samma. Använd samlingsmetoden \code{forall}. 
-
-
-\Subtask Implementera \code{isYatzy} igen med ett imperativt angreppssätt som använder en \code{while}-sats (alltså utan att använda funktionella  \code{forall}). Ta hjälp av en variabel \code{i} som håller reda på index och en variabel \code{foundDiff} som håller reda på om ett avvikande värde upptäcks. Funktionen blir ca 10 rader, så det kan vara lämpligt att öppna en editor att skriva i medan du klurar ut lösningen. Börja med att skriva pseudokod, gärna med penna på papper. Prova genom att klistra in i REPL. 
-
-
-
-\Subtask Skapa en funktion  \\ \code{def diceMatrix(m: Int, n: Int): Vector[Vector[Int]] = ???} \\ som med hjälp av funktionen \code{roll} skapar en matris med \code{m} st vektorer med vardera \code{n} slumpvisa tärningskast.
-
-
-\Subtask Skapa en funktion som returnerar en utskriftsvänlig sträng \\ \code{def diceMatrixToString(xss: Vector[Vector[Int]]): String = ???} \\med hjälp av \code{map} och \code{mkString}, som fungerar enligt nedan. 
-\begin{REPL}
-scala> println(diceMatrixToString(diceMatrix(10, 5)))
-4 5 5 3 3
-1 4 1 3 1
-1 3 1 5 5
-6 4 4 5 5
-2 1 5 6 5
-1 2 2 3 6
-1 3 2 4 5
-2 2 3 2 2
-2 6 3 4 6
-4 5 5 2 3
-
-\end{REPL}
-
-
-
-\Subtask\Pen Ett imperativt sätt\footnote{Imperativa anreppssätt är nödvändiga att kunna när du stöter på samlingar och/eller språk som saknar funktionsprogrammeringsmöjligheter med \code{map}, \code{mkString} etc.} att göra detta på visas nedan. Förklara hur nedan kod fungerar. Vad händer om \code{xss} är tom? Vad händer om \code{xss} bara innehåller tomma vektorer? Nämn en fördel och en nackdel med att använda \code{val sb: StringBuilder} och \code{append}, jämfört med en vanlig \code{var s: String} och \code{+} för tillägg i slutet.
+\Task \emph{Matcha på case-objekt och nyttan med \code{sealed}.} Skapa nedan kod i en editor, och klistra in i REPL med kommandot \code{:pa}. Notera nyckelordet \code{sealed} som används för att försegla en typ. En \textbf{förseglad typ} måste ha alla sina subtyper i en och samma kodfil.
 \begin{Code}
-def diceMatrixToString(xss: Vector[Vector[Int]]): String = {
-  val sb = new StringBuilder()
-  for(m <- 0 until xss.size) {
-    for(n <- 0 until xss(m).size) { 
-      sb.append(xss(m)(n))
-      if (n < xss(m).size - 1) sb.append(" ") 
-      else if (m < xss.size - 1) sb.append("\n")
-    }
-  }
-  sb.toString
+sealed trait Färg
+object Färg { 
+  val values = Vector(Spader, Hjärter, Ruter, Klöver) 
 }
+case object Spader  extends Färg
+case object Hjärter extends Färg
+case object Ruter   extends Färg
+case object Klöver  extends Färg
 \end{Code}
 
-\Subtask Implementera funktionen \\ \code{def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]]} \\ som filtrerar fram alla yatzy-rader i matrisen \code{xss} enligt nedan. Använd din funktion \code{isYatzy} och samlingsmetoden \code{filter}. 
+\Subtask Skapa en funktion \code{def parafärg(f: Färg): Färg} i en editor, som med hjälp av ett match-uttryck returnerar parallellfärgen till en färg. Parallellfärgen till \code{Hjärter} är \code{Ruter} och vice versa, medan parallellfärgen till \code{Klöver} är \code{Spader} och vice versa. Klistra in funktionen i REPL.
 \begin{REPL}
-scala> println(diceMatrixToString(filterYatzy(diceMatrix(10000, 5))))
-2 2 2 2 2
-3 3 3 3 3
-1 1 1 1 1
-3 3 3 3 3
-4 4 4 4 4
-6 6 6 6 6
-2 2 2 2 2
-3 3 3 3 3
-2 2 2 2 2
-6 6 6 6 6
-4 4 4 4 4
-2 2 2 2 2
-4 4 4 4 4
-
+scala> parafärg(Spader)
+scala> val xs = Vector.fill(5)(Färg.values((math.random * 4).toInt))  
+scala> xs.map(parafärg)
 \end{REPL}
 
+\Subtask Vi ska nu undersöka vad som händer om man glömmer en av case-grenarna i matchningen i \code{parafärg}? ''Glöm'' alltså avsiktligt en av case-grenarna och klistra in den nya \code{parafärg} med den ofullständiga matchningen. Hur lyder varningen? Kommer varningen vid körtid eller vid kompilering? 
+
+\Subtask Anropa \code{parafärg} med den ''glömda'' färgen. Hur lyder felmeddelandet? Är det ett kompileringsfel eller ett körtidsfel?
+
+\Subtask\Pen Förklara vad nyckelordet \code{sealed} innebär och vilken nytta man kan ha av att \textbf{försegla} en supertyp.
 
 
-\Subtask Gör som träning en imperativ implementation av \code{filterYatzy} med en \code{for}-sats (alltså utan att använda \code{filter}, och utan att använda \code{yield}). 
+\Task \emph{Betydelsen av små och stora begynnelsebokstäver vid matchning.} För att åstadkomma att namn kan bindas till variabler vid matchning utan att de behöver deklareras i förväg (som vi såg i uppgift \ref{task:match-caseclass}\ref{subtask:autobinding-match}) så har identifierare med liten begynnelsebokstav fått speciell betydelse: den tolkas av kompilatorn som att du vill att en variabel  binds till ett värde vid matchningen. En identifierare med stor begynnelsebokstav tolkas däremot som ett konstant värde (t.ex. ett case-objekt eller ett case-klass-mönster).
 
-
-\Subtask\Pen Tycker du din imperativa lösning är lättare eller svårare att läsa och förstå jämfört nedan funktionella lösning med ett \code{for}-uttryck och \code{yield}?
-\begin{CodeSmall}
-def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] = {
-  for (i <- 0 until xss.size if isYatzy(xss(i))) yield xss(i)
-}.toVector  
-\end{CodeSmall}
-
-\Subtask Implementera funktionen \\ 
-\code{def yatzyPips(xss: Vector[Vector[Int]]): Vector[Int]} \\ som ger en vektor med tärningsvärdena för de kast i matrisen \code{xss} som gav yatzy enligt nedan. Använd din funktion \code{isYatzy} och samlingsmetoden \code{filter}. 
+\Subtask \emph{En case-gren som fångar allt}. En case-gren med en identifierare med liten begynnelsebokstav som saknar gard kommer att matcha allt. Prova nedan i REPL, men försök lista ut i förväg vad som kommer att hända. Vad händer?
 \begin{REPL}
-scala> yatzyPips(diceMatrix(10000, 5))
-res42: Vector[Int] = Vector(3, 5, 6, 6, 3, 3, 2, 6, 1, 3)
-\end{REPL}
-
-
-
-
-\Task \emph{Strängtabell med rubrikrad.} Denna övning utgör en början på det du ska göra under veckans laboration.
-
-\Subtask Implementera case-klassen \code{Table} enligt nedan specifikation. Du kan förutsätta att alla rader har lika många kolumner som antalet element i \code{headings}, samt att alla rubrikerna i \code{headings} är unika. Detta förutsätts också gälla för indatafiler som läses in med \code{fromFile}. 
-\\ \noindent \emph{Tips:} 
-\begin{itemize}[nolistsep,noitemsep]
-\item Värdet \code{indexOfHeading} kan skapas med hjälp av metoden \code{zipWithIndex} som fungerar på alla sekvenssamlingar, samt metoden \code{toMap} som fungerar på sekvenser av 2-tupler. Undersök först hur metoderna fungerar i REPL och sök upp deras dokumentation.
-\item Skapa en indatafil som du kan använda för att testa att \code{Table} fungerar. 
-\end{itemize}
-
-\begin{ScalaSpec}{Table}
-case class Table(
-  data: Vector[Vector[String]], 
-  headings: Vector[String], 
-  sep: String){
-  /** A 2-tuple with (number of rows, number of columns) in data */
-  val dim: (Int, Int) = ???
-
-  /** The element in row r an column c of data, counting from 0 */
-  def apply(r: Int, c: Int): String = ???
-
-  /** The row-vector r in data, counting from 0 */
-  def row(r: Int): Vector[String]= ???
-
-  /** The column-vector c in data, counting from 0 */
-  def col(c: Int): Vector[String] = ???
-
-  /** A map from heading to index counting from 0 */
-  lazy val indexOfHeading: Map[String, Int] = ???
-
-  /** The column-vector with heading h in data */
-  def col(h: String): Vector[String] = ???
-
-  /** A vector with the distinct, sorted values of col with heading h */ 
-  def values(h: String): Vector[String] = ???
-
-  /** Headings and data with columns separated by sep */
-  override lazy val toString: String = ???
-}
-object Table {
-  /** Creates a new Table from fileName with columns split by sep */
-  def fromFile(fileName: String, separator: Char = ';'): Table = ???
-}
-\end{ScalaSpec}
-
-
-
-
-\Subtask Skapa med hjälp av \code{Table} ett program som kan köras från terminalen med \texttt{scala regtable infile.csv ';'} som ger en utskrift av antalet förekomster av olika värden i respektive kolumn (alltså en variant av registrering).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\Task \emph{Generiska funkioner.} En generisk funktion har (minst) en typparameter inom klammerparenteser efter namnet, till exempel \code{[T]}. Denna typ förekommer sedan som typ på (någon av) parametrarna i parameterlistan. Kompilatorn härleder en konkret typ vid kompileringstid och ersätter typparametern med denna konkreta typ. På så sätt kan en funktion fungera för många olika typer. 
-
-\Subtask Förklara för varje rad nedan vad som händer.
-
-\begin{REPL}
-scala> def tnirp[T](x: T): Unit = println(x.toString.reverse)
-scala> tnirp(42)
-scala> tnirp("hej")
-scala> case class Gurka(vikt: Int)
-scala> tnirp(Gurka(42))
-scala> tnirp[String](42)
-scala> tnirp[Double](42)
-\end{REPL}
-
-\Subtask Man kan kombinera generiska funktioner med funktioner som tar funktioner som parametrar. Det är så \code{map} och \code{foreach} är implementerade. Förklara för varje rad nedan vad som händer.
-
-\begin{REPL}
-scala> def compose[A, B, C](f: A => B, g: B => C)(x: A): C = g(f(x))
-scala> def inc(x: Int): Int = x + 1
-scala> def half(x: Int): Double = x / 2.0
-scala> compose(inc, half)(42)
-scala> compose(half, inc)(42)
-\end{REPL}
-
-\Subtask Hur lyder felmeddelandet på sista raden ovan? Ändra \code{inc} och/eller \code{half} så att typerna passar.
-
-
-\Task \emph{Generiska klasser.} Även klasser kan vara generiska. En generisk klass har (minst) en typparameter inom klammerparenteser efter klassens namn. 
-
-\Subtask Testa nedan generiska klass \code{Cell[T]} i REPL. Skapa instanser av klassen \code{Cell[T]} där typparametern \code{T} binds till olika konkreta typer och förklara vad som händer.
-
-\begin{REPL}
-scala> class Cell[T](var value: T){
-         override def toString = "Cell(" + value + ")"
+scala> val x = "urka"
+scala> x match {
+         case str if str.startsWith("g") => println("kanske gurka")
+         case vadsomhelst => println("ej gurka: " + vadsomhelst) 
        }
-scala> new Cell(42)
-scala> new Cell("hej")
-scala> new Cell(new Cell(math.Pi))
-scala> new Cell[String](42)
-scala> new Cell[Double](42)
+scala> val g = "gurka"
+scala> g match {
+         case str if str.startsWith("g") => println("kanske gurka")
+         case vadsomhelst => println("ej gurka: " + vadsomhelst) 
+       }
 \end{REPL}
 
-\Subtask Lägg till metoden \code{def concat[U](that: Cell[U]):Cell[String]} i klassen \code{Cell} som konkatenerar strängrepresentationerna av de båda cellvärdena.
+\Subtask \emph{Fallgrop med små begynnelsbokstäver.} Innan du provar nedan i REPL, försök gissa vad som kommer att hända. Vad händer? Hur lyder varningarna och vad innebär de?
+\begin{REPL}       
+scala> val any: Any = "gurka"
+scala> case object Gurka
+scala> case object tomat
+scala> any match {
+         case Gurka => println("gurka") 
+         case tomat => println("tomat")
+         case _ => println("allt annat")
+       }
+\end{REPL}
 
+\Subtask \emph{Använd backticks för att tvinga fram match på konstant värde.} Det finns en utväg om man inte vill att kompilatorn ska skapa en ny lokal variabel: använd specialtecknet \emph{backtick}, som skrivs \`{} och kräver speciella tangentbordstryck.\footnote{Fråga någon om du inte hittar hur man gör backtick \`{} på ditt tangentbord.}  Gör om föregående uppgift men omgärda nu identifieraren \code{tomat} i tomat-case-grenen med backticks, så här: \code{  case `tomat` => ...}
+
+
+
+\Task \emph{Använda \code{Option} och matcha på värden som kanske saknas.} Man behöver ofta skriva kod för att hantera värden som eventuellt saknas, t.ex. saknade telefonnummer i en persondatabas. Denna situation är så pass vanlig att många språk har speciellt stöd för saknande värden. 
+
+I Java\footnote{Scala har också \code{null} men det behövs bara vid samverkan med Java-kod.} används värdet \code{null} för att indikera att en referens saknar värde. Man får då komma ihåg att testa om värdet saknas varje gång sådana värden ska behandlas, , t.ex. med  \code+if (ref != null) { ...} else { ... }+. Ett annat vanligt trick är att låta \code{-1} indikera saknade positiva heltal, till exempel saknade index, som får behandlas med \code+if (i != -1) { ...} else { ... }+. 
+
+I Scala finns en speciell typ \code{Option} som möjliggör smidig och typsäker hantering av saknade värden. Om ett kanske saknat värde packas in i en \code{Option} \Eng{wrapped in an Option}, finns det i en speciell slags samling som bara kan innehålla \emph{inget} eller \emph{något} värde, och alltså har antingen storleken \code{0} eller \code{1}.    
+
+\Subtask Förklara vad som händer nedan.
 \begin{REPL}
-scala> val a = new Cell("hej")
-scala> val b = new Cell(42)
-scala> a concat b
+scala> var kanske: Option[Int] = None
+scala> kanske.size
+scala> kanske = Some(42)
+scala> kanske.size
+scala> kanske.isEmpty
+scala> kanske.isDefined
+scala> def ökaOmFinns(opt: Option[Int]): Option[Int] = opt match {
+         case Some(i) => Some(i + 1)
+         case None    => None
+       }
+scala> val annanKanske = ökaOmFinns(kanske)
+scala> def öka(i: Int) = i + 1       
+scala> val merKanske = kanske.map(öka)       
+\end{REPL}
+
+\Subtask Mönstermatchingen ovan är minst lika knölig som en \code{if}-sats, men tack vare att en \code{Option} är en slags (liten) samling finns det smidigare sätt. Förklara vad som händer nedan.
+\begin{REPL}
+val meningen = Some(42)
+val ejMeningen = Option.empty[Int]
+meningen.map(_ + 1)
+ejMeningen.map(_ + 1)
+ejMeningen.map(_ + 1).orElse(Some("saknas")).foreach(println)
+meningen.map(_ + 1).orElse(Some("saknas")).foreach(println)
+\end{REPL}
+
+\Subtask \emph{Samlingsmetoder som ger en \code{Option}.} Förklara för varje rad nedan vad som händer. En av raderna ger ett felmeddelande; vilken rad och vilket felmeddelande?
+\begin{REPL}
+val xs = (42 to 84 by 5).toVector
+val e = Vector.empty[Int]
+xs.headOption
+xs.headOption.get
+xs.headOption.getOrElse(0)
+xs.headOption.orElse(Some(0))
+e.headOption
+e.headOption.get
+e.headOption.getOrElse(0)
+e.headOption.orElse(Some(0))
+Vector(xs, e, e, e)
+Vector(xs, e, e, e).map(_.lastOption)
+Vector(xs, e, e, e).map(_.lastOption).flatten
+xs.lift(0)
+xs.lift(1000)
+e.lift(1000).getOrElse(0)
+xs.find(_ > 50)
+xs.find(_ < 42)
+e.find(_ > 42).foreach(_ => println("HITTAT!"))
+\end{REPL}
+
+\Subtask\Pen Vilka är fördelerna med \code{Option} jämfört med \code{null} eller \code{-1} om man i sin kod glömmer hantera saknade värden?
+
+\Task \emph{Kasta undantag.} Om man vill signalera att ett fel eller en onormal situtation uppstått så kan man \textbf{kasta} \Eng{throw} ett \textbf{undantag} \Eng{exception}. Då avbryts programmet direkt med ett felmeddelande, om man inte väljer att \textbf{fånga} \Eng{catch} undantaget. 
+
+\Subtask Vad händer nedan?
+\begin{REPL}
+scala> throw new Exception("PANG!")
+scala> java.lang.   // Tryck TAB efter punkten
+scala> throw new IllegalArgumentException("fel fel fel")
+scala> val carola = try { 
+         throw new Exception("stormvind!") 
+         42
+       } catch { case e: Throwable => println("Fångad av en " + e); -1 } 
+\end{REPL}
+\Subtask\Pen Nämn ett par undantag som finns i paketet \code{java.lang} som du kan gissa vad de innebär och i vilka situationer de kastas.
+
+\Subtask\Pen Vilken typ har variabeln \code{carola} ovan? Vad hade typen blivit om catch-grenen hade returnerat en sträng i stället?
+
+\Task \label{task:javatry} \emph{Fånga undantantag i Java med en \jcode{try}-\jcode{catch}-sats.} Det finns som vi såg i förra uppgiften inbyggt stöd i JVM för att hantera när program avbryts på oväntade sätt, t.ex. på grund av division med noll eller ej förväntade indata från användaren. Skriv in nedan Java-program i en editor och spara i en fil med namnet \texttt{TryCatch.java} och kompilera med \texttt{javac TryCatch.java} i terminalen. 
+
+\javainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/TryCatch.java}
+
+\Subtask Förklara vad som händer när du kör programmet med olika indata:
+\begin{REPL}
+$ java TryCatch 42
+$ java TryCatch 0 
+$ java TryCatch safe 42
+$ java TryCatch safe 0
+$ java TryCatch
+\end{REPL}
+
+\Subtask Vad händer om du ''glömmer bort'' raden 15 och därmed missar att initialisera input? Hur lyder felmeddelandet? Är det ett körtidsfel eller kompileringsfel?
+
+\Subtask\Pen Beskriv några skillnader och likheter i syntax och semantik mellan \code{try}-\code{catch} i Java respektive Scala.
+
+
+
+\Task \emph{Fånga undantantag i Scala med \code{scala.util.Try}.} I paketet \code{scala.util} finns typen \code{Try} med stort T som är som en slags samling som kan innehålla antingen ett ''lyckat'' eller ''misslyckat'' värde. Om beräkningen av värdet lyckades och inga undantag kastas blir värdet inkapslat i en \code{Success}, annars blir undantaget inkapslat i en \code{Failure}. Man kan extrahera värdet, respektive undantaget, med mönstermatchning, men det är oftast smidigare att använda samlingsmetoderna \code{map} och \code{foreach}, i likhet med hur \code{Option} används. Det finns även en smidig metod \code{recover} på objekt av typen \code{Try} där man kan skicka med kod som körs om det uppstår en undantagssituation. 
+
+\Subtask Förklara vad som händer nedan.
+\begin{REPL}
+scala> def pang = throw new Exception("PANG!")
+scala> import scala.util.{Try, Success, Failure}
+scala> Try{pang}
+scala> Try{pang}.recover{case e: Throwable => s"desarmerad bomb: $e"}
+scala> Try{"tyst"}.recover{case e: Throwable => s"desarmerad bomb: $e"}
+scala> def kanskePang = if (math.random > 0.5) "tyst" else pang
+scala> def kanskeOk = Try{ kanskePang}
+scala> val xs = Vector.fill(100)(kanskeOk)
+scala> xs(13) match {
+         case Success(x) => ":)"
+         case Failure(e) => ":( " + e
+       }
+scala> x(13).isSuccess
+scala> x(13).isFailure
+scala> xs.count(_.isFailure)
+scala> xs.find(_.isFailure)
+scala> val badOpt = xs.find(_.isFailure)
+scala> val goodOpt = xs.find(_.isSuccess)
+scala> badOpt
+scala> badOpt.get
+scala> badOpt.get.get
+scala> badOpt.map(_.getOrElse("bomben desarmerad!")).get
+scala> goodOpt.map(_.getOrElse("bomben desarmerad!")).get
+scala> xs.map(_.getOrElse("bomben desarmerad!")).foreach(println)
+scala> xs.map(_.toOption)
+scala> xs.map(_.toOption).flatten
+scala> xs.map(_.toOption).flatten.size
 \end{REPL}
 
 
+\Subtask Vad har funktionen \code{pang} för returtyp?
 
-\Subtask\Pen Vilken sorts celler kan du konkatenera om du tar bort typparameternamnet \code{U} i \code{concat} samtidigt som du använder \code{Cell[T]} som typ på värdeparametern \code{that}? Vad ger det för konsekvenser för celler av annan typ än \code{Cell[String]}?
+\Subtask\Pen Varför får funktionen \code{kanskePang} den härledda returtypen \code{String}?
 
-\Subtask\Pen Denna uppgift illustrerar grunderna för att hur generiska samlingar är konstruerade, men vi går inte djupare här (det kommer mer i fördjupningskursen). Fundera om du vill på hur en generisk Matris-klass skulle kunna se ut och om du är intresserad av att fördjupa dig så gör fördjupningsuppgift \ref{task:generic-matrix}. 
+\Task \emph{Metoden \code{equals}.}  Om man överskuggar den befintliga metoden \code{equals} så kommer metoden \code{==} att fungera annorlunda. Man kan då själv åstadkomma innehållslikhet i stället för referenslikhet. Vi börjar att studera den befintliga equals med referenslikhet.
 
+\Subtask \label{subtask:refequals} Vad händer nedan? Om du trycker TAB \emph{två} gånger efter ett metodnamn får du se metodens signatur. Vilken signatur har metoden \code{equals}?
+\begin{REPL}
+scala> class Gurka(val vikt: Int, ärÄtbar: Boolean)
+scala> val g1 = new Gurka(42, true)
+scala> val g2 = g1
+scala> val g3 = new Gurka(42, true)
+scala> g1 == g2
+scala> g1 == g3
+scala> g1.equals  // tryck TAB två gånger
+\end{REPL}
 
+\Subtask\Pen Rita minnessituationen efter rad 4.
 
+\Subtask \emph{Överskugga metoderna \code{equals} och \code{hashCode}.} 
 
+\begin{Background}
+Det visar sig förvånande komplicerat att implementera innehållslikhet med metoden \code{equals} så att den ger bra resultat under alla speciella omständigheter. Till exempel måste man även överskugga en metod vid namn \code{haschCode} om man överskuggar \code{equals}, eftersom dessa båda används gemensamt av effektivitetsskäl för att skapa den interna lagringen av objekten i vissa samlingar. Om man missar det kan objekt bli ''osynliga'' i \code{hashCode}-baserade samlingar -- men mer om detta i senare kurser. Om objekten ingår i en öppen arvshierarki blir det också mer komplicerat; det är enklare om man har att göra med finala klasser. Dessutom krävs speciella hänsyn om klassen har en typparameter.
+\end{Background}
 
-\Task \label{task:arraymatrix-java} \emph{Matriser med array i Java.} Om man redan vid allokering vet hur många element en matris ska ha, använder man i Java gärna en array av arrayer. En heltalsmatris (en array av array av heltal) skrivs i Java med dubbla hakparentespar \jcode{int[][]} direkt efter typen. Vid allokering använder man nyckelordet \code{new} och antalet element i respektive dimension anges inom hakparenteserna; t.ex. så ger \jcode{new int[42][21]} en matris med 42 rader och 21 kolumner, vilket motsvarar att man i Scala skriver\footnote{Ett annat längre, men kanske tydligare, sätt att skriva detta i Scala där initialvärdet framgår explicit: \code{Array.fill(42)(Array.fill(21)(0))}}  \code{Array.ofDim[Int](42,21)}. Alla element får defaultvärdet för typen, som är \code{0} för typen \code{Int} i Scala, motsvarande \jcode{int} i Java.
+\noindent Definera klassen nedan i REPL med överskuggade \code{equals} och \code{hashCode}; den ärver inte något och är final.
 
-\Subtask Skriv nedan program i en editor och spara koden i filen \texttt{ArrayMatrix.java} och kompilera med \texttt{javac ArrayMatrix.java} och kör i terminalen med \texttt{java ArrayMatrix} och undersök utskriften. Förklara vad som händer. Notera några skillnader i hur matriser används i Scala och Java.
-
-
-\begin{Code}[language=Java]
-// ArrayMatrix.java
-
-public class ArrayMatrix {
-
-    public static void showMatrix(int[][] m){
-        System.out.println("\n--- showMatrix ---");
-        for (int row = 0; row < m.length; row++){
-            for (int col = 0; col < m[row].length; col++) {
-                System.out.print("[" + row + "]");
-                System.out.print("[" + col + "] = ");
-                System.out.print(m[row][col] + "; ");
-            }
-            System.out.println();
-        }
-    }
-    
-    public static void main(String[] args) {
-        System.out.println("ArrayMatrix test");
-        int[][] xss = new int[10][5];
-        showMatrix(xss);
-    }
+\begin{Code}
+// fungerar fint om klassen är final och inte ärver något
+final class Gurka(val vikt: Int, ärÄtbar: Boolean) { 
+  override def equals(other: Any): Boolean = other match {
+    case that: Gurka => this.vikt == that.vikt
+    case _ => false     
+  }
+  override def hashCode: Int = (vikt, ärÄtbar).## //förklaras sen
 }
 \end{Code}
-
-\Subtask Implementera nedan metod \code{fillRnd} inuti klassen \code{ArrayMatrix}. Skriv kod som fyller matrisen \code{m} med slumptal mellan \code{1} och \code{n}.
-\begin{Code}[language=Java]
-    public static void fillRnd(int[][] m, int n){
-        /* ??? */
-    }
-\end{Code}
-\noindent \emph{Tips:} med detta uttryck skapas ett slumptal mellan 1 och 42 i Java:\\
-\jcode{(int) (Math.random() * 42 + 1)} \\
-där typkonverteringen \jcode{(int)} ger samma effekt som ett anrop av metoden \code{toInt} i Scala; alltså att dubbelprecisionsflyttal omvandlas till heltal genom avkortning av alla eventuella decimaler.
-
-
-Ändra huvudprogrammet till:
-\begin{Code}[language=Java]
-    public static void main(String[] args) {
-        System.out.println("ArrayMatrix test");
-        int[][] xss = new int[10][5];
-        showMatrix(xss);
-        fillRnd(xss, 6);
-        showMatrix(xss);
-    }
-\end{Code}
-
-Programmet ska ge en utskrift som liknar följande:
+\Subtask Vad händer nu nedan, där \code{Gurka} nu har en överskuggad \code{equals} med innehållslikhet?
 \begin{REPL}
-$ javac ArrayMatrix.java 
-$ java ArrayMatrix 
-ArrayMatrix test
-
---- showMatrix ---
-[0][0] = 0; [0][1] = 0; [0][2] = 0; [0][3] = 0; [0][4] = 0; 
-[1][0] = 0; [1][1] = 0; [1][2] = 0; [1][3] = 0; [1][4] = 0; 
-[2][0] = 0; [2][1] = 0; [2][2] = 0; [2][3] = 0; [2][4] = 0; 
-[3][0] = 0; [3][1] = 0; [3][2] = 0; [3][3] = 0; [3][4] = 0; 
-[4][0] = 0; [4][1] = 0; [4][2] = 0; [4][3] = 0; [4][4] = 0; 
-[5][0] = 0; [5][1] = 0; [5][2] = 0; [5][3] = 0; [5][4] = 0; 
-[6][0] = 0; [6][1] = 0; [6][2] = 0; [6][3] = 0; [6][4] = 0; 
-[7][0] = 0; [7][1] = 0; [7][2] = 0; [7][3] = 0; [7][4] = 0; 
-[8][0] = 0; [8][1] = 0; [8][2] = 0; [8][3] = 0; [8][4] = 0; 
-[9][0] = 0; [9][1] = 0; [9][2] = 0; [9][3] = 0; [9][4] = 0; 
-
---- showMatrix ---
-[0][0] = 6; [0][1] = 2; [0][2] = 6; [0][3] = 3; [0][4] = 5; 
-[1][0] = 2; [1][1] = 4; [1][2] = 6; [1][3] = 1; [1][4] = 1; 
-[2][0] = 5; [2][1] = 4; [2][2] = 4; [2][3] = 1; [2][4] = 5; 
-[3][0] = 4; [3][1] = 6; [3][2] = 6; [3][3] = 1; [3][4] = 3; 
-[4][0] = 4; [4][1] = 6; [4][2] = 2; [4][3] = 3; [4][4] = 2; 
-[5][0] = 2; [5][1] = 4; [5][2] = 5; [5][3] = 5; [5][4] = 3; 
-[6][0] = 6; [6][1] = 5; [6][2] = 2; [6][3] = 4; [6][4] = 3; 
-[7][0] = 1; [7][1] = 6; [7][2] = 1; [7][3] = 6; [7][4] = 2; 
-[8][0] = 1; [8][1] = 1; [8][2] = 5; [8][3] = 3; [8][4] = 2; 
-[9][0] = 1; [9][1] = 1; [9][2] = 1; [9][3] = 5; [9][4] = 4; 
-
+scala> val g1 = new Gurka(42, true)
+scala> val g2 = g1
+scala> val g3 = new Gurka(42, true)
+scala> g1 == g2
+scala> g1 == g3
 \end{REPL}
+\Subtask\Pen Hur märker man ovan att den överskuggade \code{equals} medför att \code{==} nu ger innehållslikhet? Jämför med deluppgift \ref{subtask:refequals}. 
 
- 
-
-
-
-\clearpage
+I uppgift \ref{task:equals:Complex} får du prova på att följa det fullständiga receptet i 8 steg för att överskugga en \code{equals} enligt konstens alla regler. I efterföljande kurs kommer mer träning i att hantera innehållslikhet och hash-koder. I Scala får man ett objekts hash-kod med metoden \code{##}.\footnote{Om du är nyfiken på hash-koder, läs mer här:
+\href{https://en.wikipedia.org/wiki/Java_hashCode()}{en.wikipedia.org/wiki/Java\_hashCode()}.}
 
 
+
+\clearpage 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task \emph{Skapa ett yatzy-spel för användning i terminalen.}
+\Task \label{task:plynomial} \emph{Polynom}. Med hjälp av koden nedan, kan man göra följande:
+\begin{REPL}
+scala> :pa polynomial.scala
 
-\Subtask Skapa med en editor en klass enligt nedan specifikation. Läs om hur de olika predikaten för att kolla olika giltiga kombinationer i Yatzy ska fungera här: \href{https://en.wikipedia.org/wiki/Yahtzee}{en.wikipedia.org/wiki/Yahtzee}. Bygg ett huvudprogram som testar dina funktioner. Kompilera och testa i terminalen allteftersom du lägger till nya funktioner.
+scala> import polynomial._
 
-\begin{ScalaSpec}{YatzyRows}
-/** En skiss på en klass som kan användas till ett förenklat yatzy-spel */
-case class YatzyRows(val rows: Vector[Vector[Int]]) {
-  /** A new YatzyRows with a new row of 5 dice rolls appended to rows  */
-  def roll: YatzyRows = ???
+scala> Const(1) * x
+res0: polynomial.Term = x
 
-  /** A new YatzyRows with some indices of the last row re-rolled  */
-  def reroll(indices: Vector[Int]): YatzyRows = ???
-}
+scala> (x*5)^2
+res1: polynomial.Prod = 25x^2
 
-object YatzyRows {
-  def isYatzy(xs: Vector[Int]): Boolean = ???
-  def isThreeOfAKind(xs: Vector[Int]): Boolean = ???
-  def isFourOfAKind(xs: Vector[Int]): Boolean = ???
-  def isFullHouse(xs: Vector[Int]): Boolean = ???
-  def isSmallStraight(xs: Vector[Int]): Boolean = ???
-  def isLargeStraight(xs: Vector[Int]): Boolean = ???
-}
-\end{ScalaSpec}
+scala> Poly(x*(-5), y^4, (z^2)*3) 
+res2: polynomial.Poly = -5x + y^4 + 3z^2
+
+\end{REPL}
+
+\Subtask\Pen Förklara vad som händer ovan genom att studera koden för \code{object polynomial} nedan i filen \code{polynomial.scala}.\footnote{Koden finns även här:\\ \href{https://github.com/lunduniversity/introprog/tree/master/compendium/examples/polynomial}{github.com/lunduniversity/introprog/tree/master/compendium/examples/polynomial}}
+
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{examples/polynomial/polynomial.scala}
+
+\Subtask Bygg vidare på \code{object polynomial} och implementera addition mellan olika termer.
 
 
-\Subtask Använd \code{YatzyRows} för att med hjälp av många tärningskast beräkna sannolikheter för några olika giltiga kombinationer. Använd, om du vill, möjligheten som reglerna ger att slå om tärningar i två ytterliggare kast, där de tärningar som slås om väljs slumpmässigt.
+\Task\Pen Studera dokumentationen för \code{Option} här och se om du känner igen några av metoderna som också finns på samlingen \code{Vector}:\\ \href{http://www.scala-lang.org/api/current/index.html#scala.Option}{www.scala-lang.org/api/current/index.html\#scala.Option} 
+\\Förklara hur metoden \code{contains} på en \code{Option} fungerar med hjälp av dokumentationens exempel.
 
-\Subtask Bygg ett förenklat yatzy-spel i terminalen där användaren kan bestämma vilka tärningar som ska slås om. Använd \code{Scanner} för att läsa indata från användaren. Börja med något riktigt enkelt och bygg sedan vidare på ditt spel genom att införa fler och fler funktioner.
+
+
+\Task Gör motsvarande program i Scala som visas i uppgift \ref{task:javatry}, men utnyttja att Scalas \code{try}-\code{catch} är ett uttryck. Kompilera och kör och testa så att de ur användarens synvinkel fungerar precis på samma sätt. Notera de viktigaste skillnaderna mellan de båda programmen.
+
+
 
 
 \clearpage
-
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
+\Task Bygg vidare på \code{object polynomial} i uppgift \ref{task:plynomial} på sidan \pageref{task:plynomial} och implementera metoden \code{def reduce: Poly} i case-klassen \code{Poly} som förenklar polynom om flera \code{Prod}-termer kan adderas.
 
-\Task \label{task:generic-matrix} \emph{Skapa en generisk, oföränderlig matrisklass.} Med hjälp av en typparameter kan vi skapa en matrisklass som kan innehålla vilka element som helst. Implementera nedan specifikation. Testa din matrisklass i REPL för olika typer av element.
+\Task\Pen Läs om hash-koder här: \href{https://en.wikipedia.org/wiki/Java_hashCode()}{en.wikipedia.org/wiki/Java\_hashCode()} \\
+Vad ger metoden \code{##} i scala.Any för resultat? Läs dokumentationen här: \\ \href{http://www.scala-lang.org/api/current/#scala.Any}{www.scala-lang.org/api/current/\#scala.Any}
 
-\begin{ScalaSpec}{Matrix[T]}
-case class Matrix[T](data: Vector[Vector[T]]){
-
-  def map[U](f: T => U): Matrix[U] = Matrix(data.map(_.map(f)))
-
-  def foreachRowCol[U](f: (Int, Int, T) => Unit): Unit = 
-    for (r <- 0 until data.size) {
-      for (c <- 0 until data(r).size) {
-        f(r, c, data(r)(c))
-      }
-    }
-
-  /** The element at row r and column c */
-  def apply(r: Int, c: Int): T = ???
-
-  /** Gives Some[T](element) at row r and column c 
-   *  if r and c are within index bounds, else None */
-  def get(r: Int, c: Int): Option[T] = ???
-
-  /** The row vector of row r */ 
-  def row(r: Int): Vector[T] = ???
-
-  /** The column vector of column c */ 
-  def col(c: Int): Vector[T] = ???
-
-  /** A new Matrix with element at row r and col c updated */
-  def updated(r: Int, c: Int, value: T): Matrix[T] = ???
-}
-object Matrix {
-  def fill[T](rowSize: Int, colSize: Int)(init: T): Matrix[T] = 
-    new Matrix(Vector.fill(rowSize)(Vector.fill(colSize)(init)))  
-}
-\end{ScalaSpec}
-
-\Task Använd matrisklassen från uppgift \ref{task:generic-matrix} för att göra en SpriteEditor med JColorChoser enligt nedan skiss.
-
+\Task \emph{Typsäker innehållstest med metoden \code{===}.} Metoderna \code{equals} och \code{==} tillåter jämförelse med vad som helst. Ibland vill man ha en typsäker innehållsjämförelse som bara tillåter jämförelse av objekt av en mer specifik typ och ger kompileringsfel annars. Man brukar då definiera en metod \code{===} som har en parameter \code{that} som har en så specifik typ som önskas. Inför nedan abstrakta metod \code{===} i traiten \code{polynomial.Term} i uppgift \ref{task:plynomial} på sidan \pageref{task:plynomial} och överskugga den sedan i alla subklasser till Term. Testa så att du får kompileringsfel om du försöker jämföra en \code{Term} med något helt annat, t.ex. en \code{String} eller \code{Vector}.
 \begin{Code}
-object ColorChooser {
-  import java.awt.Color
-  import javax.swing.JColorChooser
-  
-  var title = "Pick Color"
-  private val chooser = new JColorChooser(Color.BLACK)
-  private val dialog = JColorChooser.
-    createDialog(null, title, true, jcs, null, null)
-  
-  def getColor(initColor: Color = Color.BLACK): Color = {
-    chooser.setColor(initColor)
-    dialog.setVisible(true)
-    chooser.getColor
-  }
-}
-
-class Sprite(// en bild med många lager av pixlar i olika färger
-  val id: String,
-  val size: (Int, Int),
-  val pixels: Matrix[Option[Int]],//Some(color),None=genomskinlig
-  var scale: Int, //uppskalning av storlek i pixlar
-  var colors: Vector[java.awt.Color], //tillgängliga färger
-  var pos: (Int, Int, Int)  // (row, col, layer)
-){
-  def row = pos._1
-  def col = pos._2
-  def layer = pos._3
-}
-
-class SpriteEditor(
-    rows: Int = 64, cols: Int = 64, 
-    scale: Int = 16, nColors: Int = 16) {
-  private val w = new SimpleWindow(???)
-  def edit: Unit = ???
-}
-
+  def ===(that: Term): Boolean
 \end{Code}
 
 
+\Task \label{task:equals:Complex} \emph{Överskugga \code{equals} med innehållslikhet även för icke-finala klasser.} Nedan visas delar av klassen \code{Complex} som representerar ett komplext tal med realdel och imaginärdel. I stället för att, som man ofta gör i Scala, använda en case-klass och en \code{equals}-metod som automatiskt ger innehållslikhet, ska du träna på att implementera en egen \code{equals}. 
+\begin{Code}
+class Complex(re: Double, im: Double) {
+  def abs: Double = math.hypot(re, im)
+  override def toString = s"Complex($re, $im)"
+  def canEqual(other: Any): Boolean = ???
+  override def hashCode: Int  = ??? 
+  override def equals(other: Any): Boolean = ???
+}
+case object Complex {
+  def apply(re: Double, im: Double): Complex = new Complex(re, im)
+}
+\end{Code}
+Följ detta \textbf{recept}\footnote{Detta recept bygger på \url{http://www.artima.com/pins1ed/object-equality.html}} i 8 steg för att överskugga \code{equals} med innehållslikhet som fungerar även för klasser som inte är \code{final}:
 
-\Task \emph{Klasser för täta och glesa matematiska matriser med flyttal.}  Läs om matrisräkning här: \href{https://sv.wikipedia.org/wiki/Matris}{sv.wikipedia.org/wiki/Matris}
+\begin{enumerate}[leftmargin=*]
+\item Inför denna metod: \code{ def canEqual(other: Any): Boolean}\\Observera att typen på parametern ska vara \code{Any}. Om detta görs i en subklass till en klass som redan implementerat \code{canEqual}, behövs även \code{override}.
 
-\Subtask Skapa en oföränderlig, final klass \code{DenseMatrix} för matematiska matriser med dubbelprecisionsflyttal. \code{DenseMatrix} ska internt lagra elementen i en privat \emph{endimensionell} array av flyttal av typen \code{Array[Double]}. Klassen ska inte vara en case-klass. Det ska gå att skapa matriser med uttrycket DenseMatrix.ofDim(3,7)(1.0,42,3.2,1.0,2.2,3) tack vare ett kompanjonsobjekt med lämplig fabriksmetod som anropar den privata konstruktorn.  Om antalet element är för litet i förhållande till den angivna dimensionen så fyll på med nollor. 
+\item Metoden \code{canEqual} ska ge \code{true} om \code{other} är av samma typ som \code{this}, alltså till exempel: \\
+\code{def canEqual(other: Any): Boolean = other.isInstanceOf[Complex]}
 
-\Subtask Överskugga metoderna equals och hashcode och ge \code{DenseMatrix} innehållslikhet i stället för referenslikhet.
+\item Inför metoden \code{equals} och var noga med att parametern har typen \code{Any}: \\ \code{override def equals(other: Any): Boolean}
 
-\Subtask Implementera egna innehålllikhetsmetoder med namnet \code{===} på \code{DenseMatrix} som är typsäker, d.v.s. bara tillåter innehållsjämförelse mellan täta matriser.
+\item Implementera metoden \code{equals} med ett match-uttryck som börjar så här: 
+\code|other match { ... } |
 
-\Subtask Läs om glesa matriser här: \href{https://sv.wikipedia.org/wiki/Gles_matris}{https://sv.wikipedia.org/wiki/Gles\_matris} och implementera \code{SparseMatrix} med ett privat attribut av typen \\ \code{mutable.Map[(Int, Int), Double]} som bara lagrar index som inte är noll.
+\item Match-uttrycket ska ha två grenar. Den första grenen ska ha ett typat mönster för den klass som ska jämföras: \\ \code{  case that: Complex =>}
 
-\Subtask Skapa ett \code{trait Matrix} som både \code{DenseMatrix} och \code{SparseMatrix} ärver, med lämpliga abstrakta och konkreta medlemmar. Implementera addition, subtraktion och multiplikation av täta och glesa matriser.
+\item Om du implementerar \code{equals} i den klass som inför \code{canEqual}, börja uttrycket med: \\ \code{(that canEqual this) &&} \\ 
+och skapa därefter en fortsättning som baseras på innehållet i klassen, till exempel: \code{this.re == that.re && this.im == that.im} \\
+Om du överskuggar en \textit{annan} equals än den standard-equals som finns i \code{AnyRef}, vill du förmodligen börja det logiska uttrycket med att anropa superklassens equals-metod: 
+ \code{super.equals(that) && } men du får fundera noga på vad likhet av underklasser egentligen ska innebära i ditt speciella fall. 
+ 
+\item Den andra grenen i matchningen ska vara: 
+\code{case _ => false}
 
-%\Task \emph{Matriser med \jcode{ArrayList} i Java.} Om man i Java inte vet antalet element i matrisen från början kan man använda en lista av typen \jcode{ArrayList}, där varje element i sin tur innehåller en lista av typen\jcode{ArrayList}. Javas \jcode{ArrayList} är en generisk samling som motsvaras av Scalas \code{ArrayBuffer}. Generiska samlingar i Java kan endast innehålla referenstyper; vill man ha en primitiv typ, t.ex. \jcode{int}, behöver man packa in denna i en s.k. wrapper-klass, t.ex.  klassen \jcode{Integer}. Det finns en wrapper-klass för varje primitiv typ i Java. Matristypen för en heltalstyp i Java skrivs \jcode{ArrayList<ArrayList<Integer>>} där alltså \code{<T>} motsvarar Scalas hakparenteser \code{[T]} för typparametern T.
-%
-%
-%\Subtask \TODO Hitta på deluppgifter med \jcode{ArrayList<ArrayList<Integer>>} som illustrerar ovan. Peka framåt till scalajava-veckan.
+\item Överskugga \code{hashCode}, till exempel genom att göra en tupel av innehållet i klassen och anropa metoden \code{##} på tupeln så får du i en bra hashcode: \\
+\code{override def hashCode: Int  = (re, im).## }
 
+\end{enumerate}
+
+
+\Task Bygg vidare på exemplet nedan och överskugga equals vid arv, genom att följa receptet i uppgift \ref{task:equals:Complex}. 
+\begin{Code}
+trait Number {
+  override def equals(other: Any): Boolean = ???
+}
+class Complex(re: Double, im: Double) extends Number {
+  override def equals(other: Any): Boolean = ???
+}
+class Rational(numerator: Int, denominator: Int) extends Number {
+  override def equals(other: Any): Boolean = ???
+}
+\end{Code}
     
+
+\Task Läs om olika speciella matchningar här: \\
+\href{http://www.artima.com/pins1ed/case-classes-and-pattern-matching.html}{www.artima.com/pins1ed/case-classes-and-pattern-matching.html}
+
+\Subtask Prova variabelbinding med \texttt{@} i en matchning i REPL. 
+
+\Subtask Prova sekvensmönster med \texttt{\_} och \texttt{\_*} i en matching i REPL.
+
+\Task \label{task:extractor} Läs mer om extraktorer här: \\ \href{http://www.artima.com/pins1ed/extractors.html}{www.artima.com/pins1ed/extractors.html} \\ 
+Skapa ditt eget extraktor-objekt för http-addresser som i t.ex.: \\
+\texttt{http://my.host.domain/path/to/this} \\ extraherar \texttt{my.host.domain} och \texttt{path/to/this} med metoden \code{unapply} och testa i en matchning.
+
+%\Task \TODO \emph{flatten och flatMap med Option och Try} 
+%Ska detta vara ordinarie uppgift eller fördjupning???
+
+
+%\Task \TODO \emph{partiella funktioner och metoderna collect och collectFirst på samlingar} 
+%Ska detta vara ordinarie uppgift eller fördjupning???
+
+\Task En rejäl utmaning: Implementera polynomdivision på lämpligt sätt genom att bygga vidare på  \code{object polynomial} i  uppgift \ref{task:plynomial} på sidan \pageref{task:plynomial}.  \\ Läs mer om polynomdivision här: \href{https://sv.wikipedia.org/wiki/Polynomdivision}{sv.wikipedia.org/wiki/Polynomdivision}
+
+
+
+
+

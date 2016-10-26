@@ -2,464 +2,176 @@
 
 %!TEX root = ../compendium.tex
 
-\Teamlab{\LabWeekELEVEN}
+\Lab{\LabWeekELEVEN}
 
 \begin{Goals}
-\item Förstå hur autoboxing fungerar i Java
-\item Förstå vad statiska metoder och attribut innebär
-\item Förstå skillnad mellan primitiva typer och objekt i listor
-\item Känna till hur en byter mellan ArrayLists och Array
-\item Känna till hur en läser in från fil
-\item Känna till syntaxen för en for-sats  i Java
-\item Förstå hur en skickar information mellan scala och Java
+\item Kunna använda inbyggda sorteringsfunktioner.
+\item Kunna använda inbyggda sökfunktioner.
+\item Känna till hur strängar ordnas.
+\item Kunna läsa text i tabellform från fil och webbaddress.
+\item Kunna använda registrering (frekvensräkning) för enkla statistikberäkningar.
+\item Kunna skriva till fil.
+\item Kunna omvandla startargument till kommandon.
+\item Kunna skriva rekursiva funktioner.
 \end{Goals}
 
 \begin{Preparations}
+\item \StudyTheory{10}
 \item \DoExercise{\ExeWeekELEVEN}{11}
-\item Läs igenom Bakgrunden, kodstrukturen och alla kommentarer i kodskelettet.
-\input{team-lab-prep-items.tex}
+\item \ReadTheLab
+\item Fyll i denna enkät: \url{https://goo.gl/forms/hC6JK2UQXVpbGECc2}  \\
+I enkäten ska du för olika flervalsalternativlistor besvara frågan: \\ \textit{Vilket är ditt favoritalternativ?}
 \end{Preparations}
 
+
 \subsection{Bakgrund}
-I denna labb skall ni tillverka ett spel kallat lthopoly, en variant av det välkända brädspelet Monopol med några simplifieringar. Varje spelare börjar med en summa pengar och förflyttar sig längs spelplanen.
-I början av en runda slår den aktiva spelaren en tärning och deras pjäs flyttas det antal steg som tärningen visar. 
-Beroende på vilken av de tre möjliga ruttyperna spelaren hamnar på sker olika saker:
 
+I den här veckans laboration ska du utveckla ett program som analyserar svar på enkäter med flervalsfrågor. Indata utgörs av text i form av \textbf{kolumnseparerade värden}, där varje persons svar finns på en egen rad och varje svarsrad innehåller svarsalternativ separerade med en \textbf{kolumnseparator} som till exempel kan vara ``\code{\t}'' eller ``\code{,}''. Första raden i textfilen anger kolumnernas namn.
+Exempelindata finns i filen \code{favorit.csv} i mappen resources:
+\lstinputlisting[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w10_survey/src/main/resources/favorit.csv}
+
+\noindent Ditt program ska bestå av följande delar:
 \begin{itemize}
-\item MoveSpace: Om en spelare hamnar på denna ruta får den dra ett MoveCard, varpå spelaren förflyttas antingen framåt eller bakåt det antal steg som kortet anger.
-\item MoneySpace: Om en spelare hamnar på denna ruta får den dra ett MoneyCard, varpå spelaren antingen förlorar eller vinner pengar enligt beskrivningen på kortet.
-\item HouseSpace: Dessa rutor kan ägas utav spelare. Om en spelare förflyttas till denna rutan och ingen annan spelare äger den ges möjligheten att köpa den. Äger en annan spelare rutan blir den nuvarande spelaren tvungen att betala hyra. Hyran är samma som inköpspriset.
+\item En case-klass för strängmatriser som heter \code{Table} med funktioner för inläsning av tabellformatterad text, sortering, filtrering och registrering med avseende på en viss kolumn.
+\item Ett objekt för argumentparsning och kommandoexekvering som heter \code{Command}.
+\item En given Main-fil som ska kunna köra det slutgiltiga programmet.
+\item Funktion för att presentera statistik från enkätdata med hjälp av registrering.
 \end{itemize}
 
-Spelet ska uppfylla följande krav:
-\begin{itemize}
-\setlength\itemsep{2em}
-\item Varje spelare måste alltid börja sin runda med att slå en tärning innan den utför någon annan spelhandling, d.v.s. någon annan handling som påverkar spelets tillstånd (exempelvis kan en alltid visa spelplanen eller avsluta spelet).
-\item Om någon spelare har mindre än 0 SEK kvar skall spelet sluta.
-\item Om någon spelare hamnar på en husruta som ägs av en annan spelare måste denne betala ägaren husets hyra i SEK. Om ingen äger huset ges spelaren möjlighet att köpa det för ett belopp motsvarande en hyra (förutsatt att den har råd).
-\item Om en spelare hamnar på en MoveSpace eller ett MoneySpace får spelaren möjligheten att dra ett kort. För MoveCard innebär detta en förflyttning (bakåt eller framåt) medan för MoneyCard en minskning eller ökning av pengar.
-\item Spelplanen skall vara cyklisk, d.v.s. att rutan direkt efter sista rutan är den första rutan på spelplanen.
-\end{itemize}
+\subsection{Given kod}
 
-Nedan visas ett förenklat flödesdiagram för en spelrunda.
+Given kod finns här: \\
+\href{https://github.com/lunduniversity/introprog/tree/master/workspace/w10_survey/src/main}{https://github.com/lunduniversity/introprog/tree/master/\\workspace/w10\_survey/src/main}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{../img/w11-lab/lthopoly.png}
-\caption { Flödesdiagram för en spelrunda}
-\label{fig:scalajava:lthopoly-team:flowchart}
-\end{figure}
+\noindent Så här ser huvudprogrammet ut:
+\scalainputlisting{../workspace/w10_survey/src/main/scala/stats/Main.scala}
 
-Spelet avslutas när någon spelare får slut på pengar och då vinner spelaren med mest pengar.
 
-\subsection{Kodstruktur}
-
-Klassen Player representerar en spelare. Varje spelare måste känna till sitt saldo och sin position på brädet.
-
-\begin{JavaSpec}{class Player}
-	/** Creates a new player*/
-	public Player(String name, int money, int pos);
-
-	/** Returns the players money*/
-	public int getMoney() ;
-
-	/** Adjusts the players money*/
-	public void adjustMoney(int money);
-
-	/** Returns the players position*/
-	public int getPosition();
-
-	/** Returns a string representation of the player*/
-	public String toString();
-
-	/** Sets the players position*/
-	public void setPosition(int pos) ;
-
-\end{JavaSpec}
-
-MoneyCard och MoveCard är två liknande klasser som representerar de kort som spelare kan dra. MoneyCard ska spara information om hur mycket pengar som ska tillföras respektive borttagas. MoveCard ska spara information om hur långt en spelare skall förflytta sig när kortet dras. Båda korten skall även inehålla en beskrivning utav varför detta händer. Informationen för dessa kort läses in från textfilerna moneycards.txt och movecards.txt.
-
-\begin{JavaSpec}{class MoneyCard}
-    /**Creates a new MoneyCard*/
-    public MoneyCard( String description, int money);
-
-    /**Returns the cards money adjustment value*/
-    public int getMoney();
-
-    /**Returns the description of why the money is adjusted*/ 
-    public String getDescription();
-\end{JavaSpec}
-
-\begin{JavaSpec}{class MoveCard}
-    /**Creates a new MoveCard*/
-    public MoveCard( String description, int positionAdjustment) ;
-
-    /**Returns the position adjustment*/
-    public int getPositionAdjustment();
-
-    /**Returns the description of why the position is adjusted*/
-    public String getDescription();
-
-\end{JavaSpec}
-
-Klasserna MoneySpace och MoveSpace ska ärva från den abstarka klassen boardspace. MoneySpace och MoveSpace ska andvända sig av en array med respektive Cards.
-
-\begin{JavaSpec}{class BoardSpace}
-    /** Returns a array of int describing possible
-      * game actions available while on this space*/
-    public abstract int[] getPossibleActions(GameBoard board);
-
-    /** Executes a game action available while on this space*/
-    public abstract void action(GameBoard board, int action);
-
-    /** Returns a string representation of this BoardSpace*/
-    public abstract String toString();
-\end{JavaSpec}
-
-\begin{JavaSpec}{class MoneySpace}
- 
-    /** Returns an array of possible game actions permitted by this space */
-    public int[] getPossibleActions(GameBoard board);
-
-    /** Performs a MoneySpace-related action. */
-    public void action(GameBoard board, int action);
-
-    /** Returns a string representation of the MoneySpace */
-   public String toString();
-
-\end{JavaSpec}
-
-\begin{JavaSpec}{class MoveSpace}
- 
-    /** Returns an array of possible game actions permitted by this space */
-    public int[] getPossibleActions(GameBoard board);
-
-    /** Performs a MoveSpace-related action. */
-    public void action(GameBoard board, int action);
-
-    /** Returns a string representation of the MoveSpace */
-   public String toString();
-
-\end{JavaSpec}
-
-\begin{JavaSpec}{class HouseSpace}
- 
-    /** Returns an array of possible game actions permitted by this space */
-    public int[] getPossibleActions(GameBoard board);
-
-    /** Performs a HouseSpace-related action. */
-    public void action(GameBoard board, int action);
-
-    /** Returns a string representation of the HouseSpace with
-      * the format "HouseName [Owner] (Rent)" */
-   public String toString();
-
-\end{JavaSpec}
-
-Spelbrädets utseende bestäms av textfilen board.txt. Denna textfil specifierar både i vilken ordning de olika sorters rutorna kommer men även namn och hyra på HouseSpace. Klassen DocumentParser hanterar inläsning från fil och ska kunna läsa in MoneyCards, MoveCards samt hela spelplanen. 
-
-\begin{JavaSpec}{class DocumentParser}
-	/**Returns a ArrayList of Boardspaces loaded from a file*/
-	public static ArrayList<BoardSpace> getBoard();
-
-	/**Returns a array of MoneyCards loaded from file*/
-	public static MoneyCard[] getMoneyCards();
-
-	/**Returns a array of MoveCards loaded from file*/
-	public static MoveCard[] getMoveCards();
-\end{JavaSpec}
-
-
-Klassen GameBoard håller koll på spelets tillstånd.
-GameBoard kombinerar ovannämnda klasser för att bygga upp spelet. GameBoard har en metod getPossibleActions() som returnerar en lista över alla möjliga spelarhandlingar för den nuvarande spelaren. Denna används av main-metoden för att be användaren välja nästa handling. 
-Olika sorters spelarhandlingar representeras av statiska int-variabler i klassen GameBoard. Vid val av handling matar användaren in handlingens siffervärde i konsolen. Varje handling motsvaras då alltid av samma inmatningsvärde för användaren.
-
-
-\begin{JavaSpec}{class GameBoard}
-    /** Creates a new board ready to play */
-    public GameBoard(List<Player> players);
-
-    /**Returns an int array containing possible game actions.
-     * A game action can be any of the static constants in
-     * GameBoard*/
-    public int[] getPossibleActions() ;
-    
-    /** Checks whether the game is over or not */
-    public boolean isGameOver();
-    
-    /** Returns the player with the most money */
-    public Player getRichestPlayer();
-
-    /** Returns a list of all players */
-    public List<Player> getPlayers();
-
-    /** Returns a list of all BoardSpaces */
-    public List<BoardSpace> getBoardSpaces();
-
-    /** Performs an action for the current player */
-    public void doAction(int action);
- 
-    /** Returns the currently active player */
-    public Player getCurrentPlayer();
-
-    /** Returns the boardspace corresponding to the position 
-      * of the current player. */
-    public BoardSpace getCurrentBoardSpace();
-
-    /** Moves the currently active player adjustments spaces forward.
-      * Negative adjustment moves the player backwards*/
-    public void moveCurrentPlayer(int adjustment);
-    
-    /** Returns an ArrayList<Integer> where each element contains the total
-      * sum of all players' money at the end of a round.
-      * E.g. list.get(0) is the total amount of money in the game after the 
-      * first round. */
-    public ArrayList<Integer> getStatistics();
-
-    /** String Representation of the GameBoard */
-    public String toString() ;
-\end{JavaSpec}
-
-
-Den visuella representationen av spelet sker via konsolfönstret med hjälp av klassen \code{TextUI}. \code{TextUI} är en färdigskriven klass med metoder som gör det enkelt att skriva ut spelplanen och en logg av spelhistoriken i konsolfönstret.
- När addToLog() anropas sparar den sitt argument i en lista och hela listan skrivs ut varje gång konsolen uppdateras via updateConsole-metoden.
-Utöver loggen skriver updateConsole även ut ett statusfönster med kortfattad information om varje spelare. 
-Om spelaren väljer att visa spelplanen ska metoden printBoard() istället anropas.
-Alla utskrifter som sker under spelets gång ska gå via \code{TextUI}.
-\newline
-
-\begin{figure}[H]
-\centering
-
-\begin{REPL}
-============================================================
-
-Oskar slog en 2:a!
-Oskar drog ett kort: Jädrans! Studiebidraget har sänkts. Förlora 40 SEK
-Oskar har avslutat sin runda.
-Nästa spelare: Jonas
-Jonas slog en 3:a!
-Jonas drog ett kort: Det lönade sig att leva på nudlar! Inkassera 50 SEK
-Jonas har avslutat sin runda.
-Nästa spelare: Valthor
-Valthor slog en 5:a!
-Grattis, Valthor är nu den stolta ägaren av V-Huset
-Valthor har avslutat sin runda.
-Nästa spelare: Oskar
-Oskar slog en 2:a!
-Namn----------------Position----------------------Pengar----
-Oskar*              Moroten och piskan(40)        260       
-Jonas               ChansRuta                     350       
-Valthor             V-Huset [Valthor](45)         255       
-------------------------------------------------------------
-Välj ett alternativ:
-
-	3. Köp ett hus                   
-	5. Avsluta din runda             
-	8. Visa standardvyn              
-	9. Visa spelplanen               
-	0. Avsluta Lthopoly              
-
-============================================================
-
-\end{REPL}
-\caption {Utskrift av standardvyn}
-\label{fig:scalajava:lthopoly-team:defaultview}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-
-\begin{REPL}
-Rutans Namn [Ägare] (Pris/Hyra) (Spelare, Pengar)*
----------------------------------------------------------------
-Studiecentrum(20)
-A-huset(25) 
-ChansRuta 
-ChansRuta (Jonas,350)
-Moroten och piskan(40) (Oskar,260)
-V-Huset [Valthor](45) (Valthor,255)
-RiskRuta 
-ChansRuta 
-LED-Cafe(70) 
-F-Huset(75) 
-ChansRuta 
-RiskRuta 
-Ideet(80) 
-ChansRuta 
-E-huset(100) 
-RiskRuta 
-\end{REPL}
-
-\caption {Utskrift av spelplanen}
-\label{fig:scalajava:lthopoly-team:boardview}
-\end{figure}
-
-\begin{ScalaSpec}{TextUI}
-   /** Prints an ASCII plot of the total amount 
-	of money in the game as a function of the turn index*/
-  def plotStatistics(x: Buffer[Int]): Unit
-
-  /** Appends the String s to the end of the UI's event log */
-  def addToLog(s: String): Unit 
-
-  /** Reprints the current state of the UI using the given
-	GameBoard to print the status bar*/
-  def updateConsole(board: GameBoard): Unit 
-
- 
-  /** Asks the user to select an option from a list of options
-    *
-    * @param options an Array of tuples of the form (choice, description)
-    *                where choice is the number the user should enter to select 
-    *                the choice represented by description,
-    *                e.g. (0,  "End Game") allows the user to input 0 to end 
-    *                the game.
-    * @return        the selected choice
-    */
-  def promptForInput(options: Array[(Int, String)]): Int 
-
-  /** Prints the entire GameBoard */
-  def printBoard(board: GameBoard): Unit 
-
- 
-\end{ScalaSpec}
-
-Simuleringen av spelet sker i main-metoden i klassen Main, och skall implementeras i Scala (i uppgift 6).
-
-\ScalaSpecInputListing{Main}{../workspace/w11_lthopoly_team/src/main/scala/lthopoly/Main.scala}
 
 \subsection{Obligatoriska uppgifter}
 
-\Task All information om olika kort och om spelplanens upplägg finns i textfiler som måste läsas in med hjälp av metoderna i klassen DocumentParser. 
-Textfilerna moneycards.txt och movecards.txt innehåller information om de olika korten som finns.
-Varje rad innehåller en beskrivning för kortet följt av ett värde separerat med semikolon. Dessa sparas i en vektor vid inläsning och när en spelare hamnar på en MoveSpace eller MoneySpace dras ett slumpmässigt kort från vektorn. Vektorn av kort måste alltså skickas med till motsvarande ruta när rut-objektet skapas .
-Filen board.txt innehåller spelplanen, men behandlas först i uppgift 3.
+\Task Implementera \code{Table} enligt specifikation:
 
-För att skapa ett File-objekt med informationen från filerna kan följande kod användas:
-\newline
-\newline
-\begin{Code}
-File f = new File(DocumentParser.class.
-        getResource("/moneycards.txt").getFile());
-\end{Code}
+\ScalaSpecInputListing{Table}{../workspace/w10_survey/src/main/scala/stats/Table.scala}
 
-Därefter kan ni använda er av ett scanner-objekt som får tillgång till Filen för att läsa in en rad i taget.
-Se textfilerna moneycards.txt, movecards.txt och board.txt i mappen resources för förståelse för hur inläsningen bör gå till för korten. \newline Ni kan nyttja metoden \code{String.split(String delimiter)} för att dela en sträng i en array av fält, där \code{delimiter} är den avgränsade strängen som används vid uppdelningen.
+\Subtask Börja med att implementera klassen \code{Table} men vänta med \code{register} till nästa uppgift. I \code{sort} och \code{filter} ska inbyggda funktioner för sortering och filtrering användas. Eftersom \code{Table} är omuterbar måste nya instanser eller kopior skapas av \code{Table} vid varje filtrering eller sortering.
 
-\Subtask Implementera klassen MoveCard.
+\Subtask Implementera \code{register} som senare kommer användas för att skapa diagram som presenterar den registrerade datan. För att registrera antalet förekomster av varje unikt värde kan funktionerna \code{groupBy} och \code{mapValues} användas. 
 
-\Subtask Implementera klassen MoneyCard.
+Omvandlingen går från \code{Vector[String]} till \code{Map[String, Vector[String]]} med \code{groupBy} och efter det till \code{Map[String, Int]} med \code{mapValues}.
+Exempel med \code{groupBy}:
+\begin{REPLnonum}
+scala> Vector("ICA", "COOP", "Konsum", "ICA", "ICA", "COOP").groupBy(v => v)
 
-\Subtask Implementera metoderna getMoneyCards() och getMoveCards() i DocumentParser. Metoderna ska klara av att läsa in ett variabelt antal kort.
+res0: Map[String,Vector[String]] = Map(COOP -> Vector(COOP, COOP),
+                                       Konsum -> Vector(Konsum),
+                                       ICA -> Vector(ICA, ICA, ICA))
+\end{REPLnonum}
 
-\Subtask Implementera klassen Player.
-\newline
-\newline
-\textbf{Tips:}
-För att konvertera mellan ArrayLists och arrays kan ArrayLists .toArray-metod användas enligt följande:
+\Subtask Implementera funktionen \code{fromFile} i objektet \code{Table}. Parametern \code{uri} är antingen en webbadress eller en lokal sökväg. Det räcker med att anta att en webbadress börjar på ``\code{http}''.
 
-\begin{Code}
-ArrayList<MyClass> list = new ArrayList<MyClass>();
-MyClass[] arr = list.toArray(new MyClass[]{});
-\end{Code}
+En fil som innehåller tre rader med 3 kolumner på varje rad läses in till vektorn såhär:
+\begin{CodeSmall}[language=, ]
+Vector(Vector(rad1kolumn1,rad1kolumn2,rad1kolumn3),
+       Vector(rad2kolumn1,rad2kolumn2,rad2kolumn3),
+       Vector(rad3kolumn1,rad3kolumn2,rad3kolumn3))
+\end{CodeSmall}
 
-\Task I denna uppgift skall de tre olika subklasserna till BoardSpace implementeras. Tänk på att MoveSpace och MoneySpace behöver tillgång till respektive kortlekar.
-För att skriva metoderna action och getPossibleActions kommer ni behöva nyttja att klassen \code{GameBoard} har statiska konstanterna som representerar de olika spelarvalen.
+\Subtask Implementera \code{toFile} med valfri metod för att skriva till fil.
 
+\Subtask Testa \code{Table} genom att köra \code{main}-funktionen. Om allt står rätt till finns det nu en fil \code{out.csv} i mappen resources och i konsollen lyder utskriften:
+\begin{REPLnonum}
+(DE,5)
+(Vim,2)
+(Eclipse,1)
+(Emacs,1)
+(Gedit,1)
 
-\Subtask Implementera en klass för varje typ av spelruta. 
-\newline
-\newline
-\noindent
-\textbf{Obs!} Än så länge kommer logiken inte fungera då inga metoder är implementerade i BoardGame, det går trots detta bra att anropa metoderna utan kompileringsfel (i väntan på att de implementeras).
+\end{REPLnonum}
 
+\clearpage %Hack to fix pagination
 
+\Task Komplettera \code{Command} enligt specifikation:
 
-\Task Nu är det dags att implementera getBoard() i klassen \code{DocumentParser}. I denna metod skall ni läsa in från filen board.txt och nyttja de metoder ni redan skrivit för att nu kunna skapa MoveSpaces och MoneySpaces. Radernas ordning i filen bestämmer deras ordning på spelplanen. Varje rad börjar antingen med orden ''Move'', ''Money'' eller ''House''. House-rader följs dessutom av husets hyra och dess namn separerat av semikolon. Baserat på radens första ord skall ett motsvarande objekt konstrueras och läggas till i en ArrayList<BoardSpace> som slutligen returneras.
+\ScalaSpecInputListing{Command}{../workspace/w10_survey/src/main/scala/stats/Command.scala}
 
+Observera att i objektet \code{Command} definieras typen \code{Command}. En instans av typen \code{Command} är det som \textit{kommando} hädanefter kommer åsyfta. Det är helt enkelt en funktion som tar emot en instans av \code{Table}, gör något med det och returnerar tillbaka en instans av \code{Table}. På så vis kan flera kommandon exekveras som en kedja där nästa kommandos indata är det föregående kommandots utdata. Exempel på ett kommando som lägger till ett utropstecken på kolumnrubrikerna:
+\begin{CodeSmall}[language=, ]
+t: Table => t.copy(headings = t.headings.map(_ + "!"))
+\end{CodeSmall}
+Metoderna \code{Command.parseOne} och \code{Command.parseAll} omvandlar argument till kommandon.
 
+\Subtask Implementera \code{parseOne}. Lägg märke till att likt \code{parseAll} är parametertypen \code{Vector[String]}, men skillnaden är att \code{parseOne} ska matcha och returnera exakt ett kommando. I annat fall kastas ett generellt undantag: \code{throw new Exception("meddelande")}. Till exempel ``\code{-sort 4}'' funkar men ``\code{-sprt 4}'' och ``\code{-sort 4 asdf}'' funkar inte. De giltiga argumenten som ska kunna tas emot finns i \code{Command.list}. Undantaget som kastas då något annat än ett strängheltal ska göras om till en \code{Int} tas hand om i \code{Main} och behöver inte hanteras.
 
-\Subtask Implementera getBoard().
-\newline
-\newline
-\textbf{Fundera på}
-\begin{itemize}
-\item Behöver flera objekt skapas av varje ruttyp?
-\end{itemize}
+Om ``\code{-printchart 6}'' körs på datan från \code{favorit.csv} ska följande diagram produceras:
+\begin{REPLnonum}
+Column: DE (17)
+Notepad++: 4 occurrences
+****
+Eclipse: 3 occurrences
+***
+Emacs: 3 occurrences
+***
+Vim: 3 occurrences
+***
+Gedit: 2 occurrences
+**
+Visual Studio: 2 occurrences
+**
 
-\Task Implementera alla metoder utom getStatistics() i GameBoard (se specifikationen).
-\newline
-\newline
-\textbf{Tips:}
+\end{REPLnonum}
+Om flera kolumner efterfrågas, till exempel ``\code{-printchart 3 5 6}'', skrivs diagrammen ut direkt efter varandra.
 
-\begin{itemize}
-\item Ni kan använda privata hjälpmetoder för att underlätta implementeringen.
-\item Metoden printStatistics i klassen \code{TextUI} tar en vektor av int-värden som inparameter, vilket är opassande då det underlättar att lagra pengahistoriken i en ArrayList (eftersom dess storlek inte är bestämd). Det är därför lämpligt att skriva en metod som flyttar över samtliga Integer-objekt från ArrayList<Integers> till en vektor av primitiva int-värden. Detta fungerar trots att de har olika typer p.g.a. autoboxing. 
-\item Tänk på att spelarna skall kunna gå runt spelplanen ett obegränsat antal gånger.
-\item Glöm inte att alla utskrifter skall gå via  \code{TextUI}.
-\item Se flödesdiagrammet för att få en överblick för vilka actions som är tillåtna vid en given tidpunkt.
-\end{itemize}
+\Subtask Implementera \code{parseAll} som en rekursiv funktion. Använd minustecknet som markerar starten för ett nytt kommando för att dela upp argumenten \code{args} i delar som sedan var för sig skickas med i anrop till \code{parseOne}. Kanske funktionen \code{span} kan vara till nytta:
+\begin{REPLnonum}
+scala> Vector("myra", "panda", "", "ekorre").span(_.nonEmpty)
 
-\textbf{Fundera på}
-\begin{itemize}
-\item Varför tar konstruktorn i GameBoard emot en List<Player> istället för en ArrayList<Player>?
-\end{itemize}
+res1: (Vector[String], Vector[String]) = (Vector(myra, panda),
+                                         Vector("", ekorre))
+\end{REPLnonum}
 
-\Task Med spelplanen implementerad behövs en main-metod för att kunna starta spelet. I main-metoden skapas GameBoard samt alla Spelare. Spelet körs sedan som en loop där GameBoard tillfrågas vilka spelarhandlingar som är tillåtna för den nuvarande spelaren, erbjuder spelaren möjligheten att välja något av dessa alternativ, och matar sedan in spelarens val tillbaka till GameBoard som hanterar valet. GameBoard ska alltså hantera all spellogik internt.  Spel-loopen skall köras tills dess att spelet är över enligt GameBoard.isGameOver.
+\Subtask Implementera \code{runAllWith}. Eftersom kommandona ska exekveras i en kedja passar det väldigt bra att även göra den här funktionen rekursiv.
 
-\Subtask Implementera getAction i Scala. Metoden ska anropa TextUI.promptForInput med en lämplig lista av tupler för att begära input från användarna. Metoden skall nyttja de statiska variablerna från GameBoard för att ge en lämplig utskrift.
+\Subtask Testa ditt program med \code{Main}-filen och \code{favorit.csv}.
+\begin{REPLnonum}
+>scala stats.Main favorit.csv , -filter 2 Terminal -sort 3 -sep "|" -print
+-printchart 5
+Loading "favorit.csv" "," to table ...
 
-\Subtask Implementera main-metoden i Scala.
+Done. Size: 17x7.
 
-\Task Vi skall nu lägga till möjligheten att se statistik över spelets monetära tillstånd. Metoden getStatistics() i GameBoard  ska returnera en lista innehållande den totala summan av pengar i spelet i slutet av varje runda. Denna lista kan skickas vidare till metoden TextUI.printStatistics där den sedan skrivs ut i en vacker plot (se utskrift nedan).
+Program|Indent|UI|Lang|OS|Browser|DE
+D|Spaces|Terminal|C|BSD|Firefox|Emacs
+F|Spaces|Terminal|C|Linux|Chrome|Emacs
+F|Spaces|Terminal|C|Linux|Firefox|Vim
+C|Tabs|Terminal|C#|Windows 10|Edge|Visual Studio
+D|Spaces|Terminal|Java|Windows 8|Edge|Eclipse
+E|Spaces|Terminal|Java|Linux|Chromium|Eclipse
+C|Spaces|Terminal|Javascript|Windows 7|Chrome|Notepad++
+Nano|Tabs|Terminal|Javascript|macOS|Safari|Vim
+I|Tabs|Terminal|PHP|Windows 10|Edge|Notepad++
+I|Tabs|Terminal|Python|Windows 10|Chrome|Notepad++
 
-\Subtask Implementera metoden getStatistics() i GameBoard.
+Column: Browser (10)
+Chrome: 3 occurrences
+***
+Edge: 3 occurrences
+***
+Firefox: 2 occurrences
+**
+Chromium: 1 occurrence
+*
+Safari: 1 occurrence
+*
 
-\Subtask Utöka mainmetoden så att grafen skrivs ut efter spelets slut. 
-Själva uppritningen sker med hjälp av den färdigskrivna metoden plotStatistics i TextUI som kräver en Buffer[Int] innehållande varje rundas totalsumma. 
-Ett tips är att nyttja scala.collection.JavaConverters för att konvertera Javas datatyper till Scala.
+\end{REPLnonum}
 
-
-\begin{figure}[H]
-\centering
-
-\begin{REPL}
-Relativ graf över total mängd pengar under spelets gång:
-880  *                                                                         
-846     *                                                                      
-813                                                                            
-780        *                                                                   
-747                                                                            
-713           *                                                                
-680                                                                            
-647              *  *  *                                                       
-614                       *  *                                                 
-580                                                                            
-547                             *                                              
-514                                                                            
-481                                                                            
-447                                *                                           
-414                                                                            
-381                                   *  *                                     
-348                                         *  *  *                            
-314                                                  *  *  *  *  *             
-281                                                                 *  *       
-248                                                                            
-215                                                                       *    
-     1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 
-\end{REPL}
-\caption {Graf över spelets total mängd pengar som funktion av rundornas index}
-\label{fig:scalajava:lthopoly-team:statistics}
-\end{figure}
+\Task Avslutningsvis, testa att programmet fungerar tillsammans med länken till enkätsvaren: \url{https://goo.gl/qPcuAO}.
 
 \subsection{Frivilliga extrauppgifter}
 
-\Task Utöka spelet med ny spelmekanik.
+\Task Gör en variant av register med \code{foldLeft} istället för \code{groupBy} och \code{mapValues}.
 
-\Subtask Implementera funktionalitet för att varje spelare ska få extra pengar då den passerar första spelrutan.
-
-\Subtask Implementera funktionalitet för att varje spelare som hamnar på en ruta de äger sedan tidigare har möjlighet att öka hyran för rutan ifall någon annan spelare skulle hamna på den.
-
-\Subtask Implementera funktionalitet så att ägaren av ett hus måste betala en andel av dess värde varje gång de passerat första spelrutan.. 
+\Subtask Implementera funktionen och testa att den fungerar. Överväg fördelarna hos respektive implementation.
     
+\Task Inför lämpliga argument till programmet som medför att fina tårtdiagram och/eller stapeldiagram i SimpleWindow med automatiska färger ritas ut som illustrationer till frekvenserna i de olika kolumnerna.

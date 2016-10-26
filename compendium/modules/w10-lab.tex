@@ -1,177 +1,264 @@
 %!TEX encoding = UTF-8 Unicode
-
 %!TEX root = ../compendium.tex
 
 \Lab{\LabWeekTEN}
 
 \begin{Goals}
-\item Kunna använda inbyggda sorteringsfunktioner.
-\item Kunna använda inbyggda sökfunktioner.
-\item Känna till hur strängar ordnas.
-\item Kunna läsa text i tabellform från fil och webbaddress.
-\item Kunna använda registrering (frekvensräkning) för enkla statistikberäkningar.
-\item Kunna skriva till fil.
-\item Kunna omvandla startargument till kommandon.
-\item Kunna skriva rekursiva funktioner.
+\item Kunna skapa och använda matriser.
+\item Kunna iterera över matriser med nästlade for-loopar.
+\item Kunna använda sig av och förstå arv.
+\item Förstå och träna på olika villkor med if-satser.
+\item Känna till algoritmer för att lösa problem så som att ta sig igenom en labyrint eller slumpmässigt skapa en labyrint.
 \end{Goals}
 
 \begin{Preparations}
-\item \StudyTheory{10}
-\item \DoExercise{\ExeWeekTEN}{10}
-\item \ReadTheLab
-\item Fyll i denna enkät: \url{https://goo.gl/forms/hC6JK2UQXVpbGECc2}  \\
-I enkäten ska du för olika flervalsalternativlistor besvara frågan: \\ \textit{Vilket är ditt favoritalternativ?}
+\item Gör veckans övningsuppgifter.
+\item Läs om matriser i Scala-boken på sida (??).
+\item Läs om arv i Scala-boken på sida (??).
+\item Läs om olika algoritmer för att ta sig igenom en labyrint: \url{https://en.wikipedia.org/wiki/Maze\_solving\_algorithm}
+\item (Frivillig) Läs om olika algoritmer för att skapa en slumpmässig labyrint: \url{https://en.wikipedia.org/wiki/Maze\_generation\_algorithm}.
 \end{Preparations}
-
 
 \subsection{Bakgrund}
 
-I den här veckans laboration ska du utveckla ett program som analyserar svar på enkäter med flervalsfrågor. Indata utgörs av text i form av \textbf{kolumnseparerade värden}, där varje persons svar finns på en egen rad och varje svarsrad innehåller svarsalternativ separerade med en \textbf{kolumnseparator} som till exempel kan vara ``\code{\t}'' eller ``\code{,}''. Första raden i textfilen anger kolumnernas namn.
-Exempelindata finns i filen \code{favorit.csv} i mappen resources:
-\lstinputlisting[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w10_survey/src/main/resources/favorit.csv}
+I denna laboration ska du rita labyrinter och sedan implementera en algoritm för att ta dig igenom dessa. En labyrint är ett rum som har en ingång och en utgång. Ingången är i denna laboration alltid längst ner i labyrinten, och utgången alltid högst upp. Alla väggar är också parallella med antingen x-axeln eller y-axeln. Men kan beskriva en sådan labyrint i kod med hjälp av en matris av booelska element. Varje element i matrisen motsvarar då en ruta i labyrinten. Värdet \texttt{true} i matrisen representerar att det finns en vägg på motsvarande ruta i labyrinten och \texttt{false} representerar att där istället är en väg att gå på.
 
-\noindent Ditt program ska bestå av följande delar:
-\begin{itemize}
-\item En case-klass för strängmatriser som heter \code{Table} med funktioner för inläsning av tabellformatterad text, sortering, filtrering och registrering med avseende på en viss kolumn.
-\item Ett objekt för argumentparsning och kommandoexekvering som heter \code{Command}.
-\item En given Main-fil som ska kunna köra det slutgiltiga programmet.
-\item Funktion för att presentera statistik från enkätdata med hjälp av registrering.
-\end{itemize}
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.7\textwidth]{../img/w09-lab/MazeAndMatrix.jpg}
+	\end{center}
+	\caption{Exempel på en matris-representation av en labyrint.}
+\end{figure}
 
-\subsection{Given kod}
+Det finns många olika sätt att ta sig igenom en labyrint. Ett tänkbart sätt att hitta utgången, som kanske inte följer närmsta vägen, är att hålla vänster hand i vänster vägg och följa väggen med handen tills man når öppningen. Detta fungerar för alla labyrinter där väggarna från ingången till utgången är sammankopplade.
 
-Given kod finns här: \\
-\href{https://github.com/lunduniversity/introprog/tree/master/workspace/w10_survey/src/main}{https://github.com/lunduniversity/introprog/tree/master/\\workspace/w10\_survey/src/main}
+När man går igenom labyrinten finns det fyra olika riktningar att välja mellan som alla kan beskrivas i antal grader räknat från x-axeln, där höger motsvaras av 0 grader, uppåt motsvaras av 90 grader, vänster av 180 grader och nedåt av 270 grader.
 
-\noindent Så här ser huvudprogrammet ut:
-\scalainputlisting{../workspace/w10_survey/src/main/scala/stats/Main.scala}
+I denna laboration ska du använda en färdig klass \texttt{Maze} som representerar en labyrint med hjälp av en booelsk matris implementerad som en \code{Vector[Vector[Boolean]}. 
+Klassen har följande specifikation:
 
+\begin{ScalaSpec}{Maze}
+/**
+ *  A class representing a maze.
+ */
+case class Maze(data: Vector[Vector[Boolean]]) {
+  
+  /**
+   *  Returns a corresponding char from a boolean.
+   *  @param b	The boolean which to convert to a char
+   */
+  def boolToChar(b: Boolean): Char
+
+  /**
+   *  Returns a String representation of the maze.
+   */
+  override def toString: Unit
+
+  /**
+   *  Checks if the coordinates x, y is inside the maze and if 
+   so returns true, otherwise false.
+   *  @param x		The x coordinate
+   *  @param y		The y coordinate
+   */
+  private def insideMaze(x: Int, y: Int): Boolean
+
+  /**
+   *  Returns the x coordinate of the entry of the maze.
+   */
+  def getXEntry(): Int
+
+  /**
+   * Returns the y coordinate of the entry of the maze.
+   */
+  def getYEntry(): Int
+
+  /**
+   *  Checks if there is a wall left of the coordinates x, y at 
+   given direction and if so returns true, otherwise false.
+   *  @param direction	The direction of the turtle
+   *  @param x					The x coordinate
+   *  @param y					The y coordinate
+   */
+  def wallAtLeft(direction: Int, x: Int, y: Int): Boolean
+
+  /**
+   *  Checks if there is a wall in front of the coordinates x, y at 
+   given direction and if so returns true, otherwise false.
+   *  @param direction	The direction of the turtle
+   *  @param x					The x coordinate
+   *  @param y					The y coordinate
+   */
+  def wallInFront(direction: Int, x: Int, y: Int): Boolean
+
+  /**
+   *  Checks it the coordinates x, y is at the exit of the maze.
+   *  @param x					The x coordinate
+   *  @param y					The y coordinate
+   */
+  def atExit(x: Int, y: Int): Boolean
+
+  /**
+   *  Goes through the the maze and for every spot that is a wall 
+   draws a brick of size blockSize in SimpleWindow.
+   *  @param w		The window in which to draw the maze
+   */
+  def draw(w: SimpleWindow): Unit = ???
+}
+
+/**
+ *  An object representing a maze.
+ */
+object Maze {
+
+  /**
+   *  Returns a Maze from a vector of Strings.
+   *  @param xs	The vector of Strings that represent the maze
+   */
+  def fromStrings(xs: Vector[String]): Maze
+
+  /**
+   *  Returns a Maze from a specified file.
+   *  @param fileName	   The name of the file that represent the maze
+   */
+  def fromFile(fileName: String): Maze
+
+  /**
+   *  Returns a Maze from a sequence of Strings.
+   *  @param rows	The sequence of Strings that represent the maze
+   */
+  def apply(rows: String*): Maze
+
+  /**
+   *  Creates and returns a random maze.
+   *  @param rows		The number of rows for the maze
+   *  @param cols		The number of columns for the maze
+   */
+  def random(rows: Int, cols: Int): Maze = ???
+}
+
+\end{ScalaSpec}
+
+\subsubsection{Den frivilliga uppgiften}
+
+I den frivilliga uppgiften ska en slumpmässig labyrint genereras. Det finns flera olika algoritmer för att göra detta. Vi kommer här använda en slumpmässig variant av den s.k. \emph{Prims algoritm}. Du kan läsa mer om Prims algoritm här: \href{https://en.wikipedia.org/wiki/Maze_generation_algorithm}{en.wikipedia.org/wiki/Maze\_generation\_algorithm} (De representerar en labyrint på ett annat sätt än vi gör här, vilket innebär att algoritmen blir lite annorlunda).
 
 
 \subsection{Obligatoriska uppgifter}
 
-\Task Implementera \code{Table} enligt specifikation:
+\Task I den här uppgiften ska du implementera en metod som ritar upp en labyrint i \texttt{SimpleWindow}. Studera kodfilerna som ges inför denna laboration här: 
+\href{https://github.com/lunduniversity/introprog/tree/master/workspace/w09_maze/src/main/scala/maze}{github.com/lunduniversity/introprog/tree/master/workspace/\\w09\_maze/src/main/scala/maze}
 
-\ScalaSpecInputListing{Table}{../workspace/w10_survey/src/main/scala/stats/Table.scala}
+Läs igenom case-klassen \texttt{Maze} och dess kompanjonsobjekt och se till att du förstår det mesta, annars fråga. Objektet \texttt{Maze} tar in rader med strängar, antingen direkt som argument eller genom att läsa in från en fil. Utifrån detta skapar den sedan en booelsk matris som representation av labyrinten, där tecknet '\#' i en sträng representerar en bit av en vägg medan blanksteg representerar en bit av en gång.
 
-\Subtask Börja med att implementera klassen \code{Table} men vänta med \code{register} till nästa uppgift. I \code{sort} och \code{filter} ska inbyggda funktioner för sortering och filtrering användas. Eftersom \code{Table} är omuterbar måste nya instanser eller kopior skapas av \code{Table} vid varje filtrering eller sortering.
+\Subtask Du ska nu implementera metoden \texttt{draw} i klassen \texttt{Maze} ska rita upp labyrinten i \texttt{SimpleWindow}. För att göra detta behöver du gå igenom matrisen \texttt{data} och undersöka elementen på varje plats. Om elementet på en viss plats är \texttt{true} ska det ritas upp en bit av en vägg på motsvarande plats i \texttt{SimpleWindow}. Detta kan du göra med hjälp av den färdigskrivna metoden \texttt{brickInTheWall}. Om elementet på en viss plats är \texttt{false} ska ingenting ritas upp.
 
-\Subtask Implementera \code{register} som senare kommer användas för att skapa diagram som presenterar den registrerade datan. För att registrera antalet förekomster av varje unikt värde kan funktionerna \code{groupBy} och \code{mapValues} användas. 
 
-Omvandlingen går från \code{Vector[String]} till \code{Map[String, Vector[String]]} med \code{groupBy} och efter det till \code{Map[String, Int]} med \code{mapValues}.
-Exempel med \code{groupBy}:
-\begin{REPLnonum}
-scala> Vector("ICA", "COOP", "Konsum", "ICA", "ICA", "COOP").groupBy(v => v)
+\Task I den här uppgiften ska du skapa en klass med en main-metod som anropar din metod för att rita upp en labyrint.
 
-res0: Map[String,Vector[String]] = Map(COOP -> Vector(COOP, COOP),
-                                       Konsum -> Vector(Konsum),
-                                       ICA -> Vector(ICA, ICA, ICA))
-\end{REPLnonum}
+\Subtask Skapa en ny klass \texttt{AMazeIngRace}. I denna klass ska du skriva en main-metod där du skapar ett objekt av \texttt{Maze} genom att läsa in från en fil (börja exempelvis med filen \texttt{maze1.txt} som ligger i \texttt{w09\_maze/src/main/resources/}). Du måste även skapa ett objekt av \texttt{SimpleWindow} som ska skickas med när du anropar metoden \texttt{draw}. Anropa  metoden \texttt{draw} på \texttt{Maze}-objektet och kontrollera att labyrinten ritas upp som den ska. Gör samma sak för resterande av filerna \texttt{maze2.txt} -- \texttt{maze4.txt}; alla ska kunna ritas upp korrekt.
 
-\Subtask Implementera funktionen \code{fromFile} i objektet \code{Table}. Parametern \code{uri} är antingen en webbadress eller en lokal sökväg. Det räcker med att anta att en webbadress börjar på ``\code{http}''.
+\Subtask Testa att rita en egen labyrint genom att skapa en textfil \texttt{maze5.txt} och lägg i samma mapp som övriga maze-filer. Kontrollera så att även denna labyrint ritas upp som den ska, och fixa annars till metoden \texttt{draw} så att den fungerar som tänkt. Din labyrint inte alls behöver vara avancerad; det är inte meningen att den här uppgiften ska ta lång tid.
 
-En fil som innehåller tre rader med 3 kolumner på varje rad läses in till vektorn såhär:
-\begin{CodeSmall}[language=, ]
-Vector(Vector(rad1kolumn1,rad1kolumn2,rad1kolumn3),
-       Vector(rad2kolumn1,rad2kolumn2,rad2kolumn3),
-       Vector(rad3kolumn1,rad3kolumn2,rad3kolumn3))
-\end{CodeSmall}
 
-\Subtask Implementera \code{toFile} med valfri metod för att skriva till fil.
+\Task I den här uppgiften ska du implementera en algoritm för att få en sköldpadda att ta sig genom en labyrint genom att alltid hålla i väggen med vänster hand (eller kanske fot i det här fallet). För detta ska du skapa en ny klass \texttt{MazeTurtle} som ska ha följande specifikation:
 
-\Subtask Testa \code{Table} genom att köra \code{main}-funktionen. Om allt står rätt till finns det nu en fil \code{out.csv} i mappen resources och i konsollen lyder utskriften:
-\begin{REPLnonum}
-(DE,5)
-(Vim,2)
-(Eclipse,1)
-(Emacs,1)
-(Gedit,1)
+\begin{ScalaSpec}{MazeTurtle}
+/**
+ * A Turtle that can walk through a maze with a specified color.
+ * @param window    The window the turtle should be placed in.
+ * @param position  A Point representing the turtle's starting coordinates.
+ * @param angle     The angle between the turtle direction and the X-axis 
+ *                  measured in degrees.
+ * @param isPenDown A boolean representing the turtle's pen position. 
+ *                  True if the pen is down.
+ * @param color     The color with which the turtle will walk.
+ * @param maze      The maze in which the turtle will walk.
+ */
+class MazeTurtle(
+    window: SimpleWindow, 
+    private var position: Point,
+    private var angle: Double, 
+    private var isPenDown: Boolean,
+    color: Color, 
+    maze: Maze
+  ) extends ColorTurtle(window, position, angle, isPenDown, color) {
+  /**
+   * Lets the turtle walk through the maze from entry to exit 
+   * by following the wall to left side of the turtle.
+   */
+  def walk(): Unit = ???
+}
 
-\end{REPLnonum}
+\end{ScalaSpec}
 
-\clearpage %Hack to fix pagination
+\Subtask Skapa en ny klass \texttt{MazeTurtle} som ärver från klassen \texttt{ColorTurtle}. \texttt{MazeTurtle} ska ta in ett extra argument, nämligen ett av typen \texttt{Maze} som representerar den labyrint som sköldpaddan ska gå i. Observera att du här behöver importera klasserna \texttt{Turtle} och \texttt{ColorTurtle} från en tidigare laboration. Detta gör du genom att högerklicka på projektet, välj Build Path -> Configure Build Path, välj fliken Projects, klicka på Add... och markera rätt laboration och klicka slutligen på OK.
 
-\Task Komplettera \code{Command} enligt specifikation:
+\Subtask Lägg till och implementera metoden \texttt{walk} i \texttt{MazeTurtle}. I metoden ska sköldpaddan, med hjälp av tekniken att alltid hålla vänster extremitet i väggen, ta sig genom labyrinten \texttt{Maze}, från början till slut. Varje steg motsvarar att flytta sig från en ruta till en annan i \code{Boolean}-matrisen i \texttt{Maze}. Sköldpaddan kommer alltså ta sig fram i labyrinten genom att undersöka för varje steg om den borde svänga vänster, gå rakt fram eller svänga höger, beroende på hur den står i förhållande till vänster vägg. För att avgöra hur sköldpaddan ska gå kan den använda sig av metoderna \texttt{wallInFront} och \texttt{wallAtLeft} som finns i \texttt{Maze}.
 
-\ScalaSpecInputListing{Command}{../workspace/w10_survey/src/main/scala/stats/Command.scala}
+\Subtask Lägg till kod i \texttt{AMazeIngRace} som skapar en sköldpadda av typ \texttt{MazeTurtle} och sedan låter denna gå igenom en labyrint med metoden \texttt{walk}. Testa att din \texttt{MazeTurtle} fungerar som den ska. Sköldpaddan ska klara att ta sig igenom alla labyrinter i filerna \texttt{maze1.txt}-\texttt{maze4.txt} samt labyrinten som du skapat själv.
 
-Observera att i objektet \code{Command} definieras typen \code{Command}. En instans av typen \code{Command} är det som \textit{kommando} hädanefter kommer åsyfta. Det är helt enkelt en funktion som tar emot en instans av \code{Table}, gör något med det och returnerar tillbaka en instans av \code{Table}. På så vis kan flera kommandon exekveras som en kedja där nästa kommandos indata är det föregående kommandots utdata. Exempel på ett kommando som lägger till ett utropstecken på kolumnrubrikerna:
-\begin{CodeSmall}[language=, ]
-t: Table => t.copy(headings = t.headings.map(_ + "!"))
-\end{CodeSmall}
-Metoderna \code{Command.parseOne} och \code{Command.parseAll} omvandlar argument till kommandon.
 
-\Subtask Implementera \code{parseOne}. Lägg märke till att likt \code{parseAll} är parametertypen \code{Vector[String]}, men skillnaden är att \code{parseOne} ska matcha och returnera exakt ett kommando. I annat fall kastas ett generellt undantag: \code{throw new Exception("meddelande")}. Till exempel ``\code{-sort 4}'' funkar men ``\code{-sprt 4}'' och ``\code{-sort 4 asdf}'' funkar inte. De giltiga argumenten som ska kunna tas emot finns i \code{Command.list}. Undantaget som kastas då något annat än ett strängheltal ska göras om till en \code{Int} tas hand om i \code{Main} och behöver inte hanteras.
+\subsection{Frivillig extrauppgift}
 
-Om ``\code{-printchart 6}'' körs på datan från \code{favorit.csv} ska följande diagram produceras:
-\begin{REPLnonum}
-Column: DE (17)
-Notepad++: 4 occurrences
-****
-Eclipse: 3 occurrences
-***
-Emacs: 3 occurrences
-***
-Vim: 3 occurrences
-***
-Gedit: 2 occurrences
-**
-Visual Studio: 2 occurrences
-**
+Prims algoritm används för att koppla ihop alla punkter i en graf med så få antal kopplingar som möjligt. Tänk dig att varje punkt i en graf representerar en ruta i en labyrint och att en koppling motsvarar ställen där du kan gå i labyrinten, det vill säga två öppna rutor (rutor där det inte finns någon vägg och som du därmed kan gå på) intill varandra.
 
-\end{REPLnonum}
-Om flera kolumner efterfrågas, till exempel ``\code{-printchart 3 5 6}'', skrivs diagrammen ut direkt efter varandra.
+I algoritmen väljs en slumpmässig ruta intill en redan öppen ruta och sedan undersöks om det finns någon annan öppen ruta intill. Om så är fallet låter man rutan förbli en vägg, annars öppnas den rutan (det vill säga rutan görs om från en vägg till en gång). Detta upprepas tills dess att alla rutor har undersökts.
 
-\Subtask Implementera \code{parseAll} som en rekursiv funktion. Använd minustecknet som markerar starten för ett nytt kommando för att dela upp argumenten \code{args} i delar som sedan var för sig skickas med i anrop till \code{parseOne}. Kanske funktionen \code{span} kan vara till nytta:
-\begin{REPLnonum}
-scala> Vector("myra", "panda", "", "ekorre").span(_.nonEmpty)
+Eftersom det i vårt fall endast ska finnas en enda ingång och en enda utgång i labyrinten, måste detta hanteras speciellt.
 
-res1: (Vector[String], Vector[String]) = (Vector(myra, panda),
-                                         Vector("", ekorre))
-\end{REPLnonum}
+Nedan följer en grov beskrivning av algoritmen. Pseudokod med mer detaljer återfinns i figur \ref{lab:maze:prims-algo}.
 
-\Subtask Implementera \code{runAllWith}. Eftersom kommandona ska exekveras i en kedja passar det väldigt bra att även göra den här funktionen rekursiv.
+\begin{enumerate}
+	\item Börja med att slumpmässigt välja en av rutorna i nedersta raden och öppna den rutan samt rutan ovanför. Detta motsvarar ingången till labyrinten.
+	\item Applicera väggöppningsalgoritmen som visualiseras i figur \ref{lab:maze:prims-algo-viz} på sida \pageref{lab:maze:prims-algo-viz}. Observera att matrisens ytterkantsväggar inte ska öppnas (förutom ingången och utgången).
+	\item Slutligen letar vi efter en slumpmässig ruta på näst översta raden som är öppen och öppnar rutan ovanför denna, vilket kommer bli utgången för labyrinten.
+\end{enumerate}
 
-\Subtask Testa ditt program med \code{Main}-filen och \code{favorit.csv}.
-\begin{REPLnonum}
->scala stats.Main favorit.csv , -filter 2 Terminal -sort 3 -sep "|" -print
--printchart 5
-Loading "favorit.csv" "," to table ...
+\begin{figure}[H]
+\begin{Code}
+def random(rows, cols): Maze = {
+	labyrint = matris(rows, cols) med inga öppna rutor
+	buffer = lista(koordinater till rutor)
+	Välj en slumpmässig ruta i nedersta raden och öppna den.
+	Öppna rutan ovanför.
+	Lägg till rutorna runt om till buffer.
+	while (buffer inte är tom)
+		element = slumpmässigt element i buffer
+		if (element har tre väggar intill sig)
+			Öppna rutan för de koordinater som element innehåller.
+			Lägg till rutorna runt om element till buffer.
+		Ta bort element från buffer.
+	Hitta en ruta som är öppen i näst översta raden.
+	Öppna rutan ovanför.
+	Returnera: labyrint 
+}
+\end{Code}
+	\caption{Pseudokod för generering av slumpmässig labyrint.}
+	\label{lab:maze:prims-algo}
+\end{figure}
 
-Done. Size: 17x7.
 
-Program|Indent|UI|Lang|OS|Browser|DE
-D|Spaces|Terminal|C|BSD|Firefox|Emacs
-F|Spaces|Terminal|C|Linux|Chrome|Emacs
-F|Spaces|Terminal|C|Linux|Firefox|Vim
-C|Tabs|Terminal|C#|Windows 10|Edge|Visual Studio
-D|Spaces|Terminal|Java|Windows 8|Edge|Eclipse
-E|Spaces|Terminal|Java|Linux|Chromium|Eclipse
-C|Spaces|Terminal|Javascript|Windows 7|Chrome|Notepad++
-Nano|Tabs|Terminal|Javascript|macOS|Safari|Vim
-I|Tabs|Terminal|PHP|Windows 10|Edge|Notepad++
-I|Tabs|Terminal|Python|Windows 10|Chrome|Notepad++
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.45\textwidth]{../img/w09-lab/AlgorithmVisualized.png}
+	\end{center}
+	\caption{Visualisering av algoritmen när den genererar en labyrint av storleken 5x5.}
+	\label{lab:maze:prims-algo-viz}
+\end{figure}
 
-Column: Browser (10)
-Chrome: 3 occurrences
-***
-Edge: 3 occurrences
-***
-Firefox: 2 occurrences
-**
-Chromium: 1 occurrence
-*
-Safari: 1 occurrence
-*
 
-\end{REPLnonum}
+\Task I den här uppgiften ska du göra färdigt den påbörjade algoritmen som skapar en slumpmässig labyrint.
 
-\Task Avslutningsvis, testa att programmet fungerar tillsammans med länken till enkätsvaren: \url{https://goo.gl/qPcuAO}.
+\Subtask Inspektera ovanstående pseudokod och försök förstå den. Fråga om något är oklart. Läs även de färdigskrivna metoderna \texttt{addWallToList} och \texttt{threeWallsAround} och studera den halvfärdiga metoden \texttt{random} i \texttt{Maze} i ditt workspace och se om du kan förstå vad de gör.
 
-\subsection{Frivilliga extrauppgifter}
+\Subtask Implementera metoden \texttt{random} i \texttt{Maze} som skapar och returnerar en slumpmässigt utformad labyrint med hjälp av pseudokoden ovan (eller på egen hand för den modiga/nyfikna). Ta hjälp av metoderna \texttt{addWallToList} och \texttt{threeWallsAround}.
 
-\Task Gör en variant av register med \code{foldLeft} istället för \code{groupBy} och \code{mapValues}.
+\Subtask Skapa en ny slumpmässig labyrint i \texttt{AMazeIngRace} genom att anropa metoden \texttt{random}. Ett bra värde att använda när du anropar metoden är något tal mellan 50 och 100. Det vill säga anropa metoden genom att exempelvis skriva \texttt{random(50, 50)}. När du har slumpat fram en labyrint, testa att låta din sköldpadda gå igenom labyrinten och se om den lyckas!
 
-\Subtask Implementera funktionen och testa att den fungerar. Överväg fördelarna hos respektive implementation.
-    
-\Task Inför lämpliga argument till programmet som medför att fina tårtdiagram och/eller stapeldiagram i SimpleWindow med automatiska färger ritas ut som illustrationer till frekvenserna i de olika kolumnerna.
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.3\textwidth]{../img/w09-lab/RandomMaze.jpg}
+	\end{center}
+	\caption{Ett exempel på hur en slumpmässigt utformad labyrint kan se ut.}
+\end{figure}
+

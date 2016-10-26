@@ -59,11 +59,19 @@ object Main extends App {
   }
   
   // *** Generate table body rows of progress protocoll in compendium prechapters
+  def isFirstUpper(s: String) = s.headOption.
+    map(ch => ch.toString ==  ch.toString.toUpperCase).getOrElse(false)
+
   def exerciseRow(s: String) = s"""\\ExeRow{$s}""" 
   def labRow(s: String) = s"""\\LabRow{$s}""" 
-  def row(col: String) = weeks.map(weekPlan.column(col)(_)).filterNot(_ == "--")
+  def row(col: String) = weeks.
+    map(weekPlan.column(col)(_)).
+    filterNot(_ == "--").
+    filterNot(isFirstUpper)
+      
   val labs = row("Lab").map(labRow).mkString("\n")
   labs.prepend(texUtf).save(currentDir+"../compendium/generated/labs-generated.tex")
+  
   val exercises = 
         row("Övn").
         filterNot(Set("Uppsamling","Extenta").
