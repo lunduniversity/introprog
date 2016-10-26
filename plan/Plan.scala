@@ -96,6 +96,9 @@ trait Plan {
 
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
+    Module("Repetition, specialundervisning",  
+      id = "special", exercise = "Repetera", lab = "Kom-i-kapp", contents = "repetera, identifiera kunskapsluckor, kom-i-kapp med övningar och labbar, specialundervisning med hårdträning för behövande"),
+
     Module("Mönster, undantag", 
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
       | mönstermatchning, match, Option, throw, try, catch, Try, unapply, sealed, 
@@ -139,8 +142,11 @@ trait Plan {
       | namnkonventioner för konstanter,
       """.stripTrim),
 
-    Module("Trådar, webb",  
-      id = "threads", exercise = "threads", lab = "life", contents = """
+    Module("Extra: design, api, trådar, webb", 
+      id = "design", exercise = "threads", lab = "", contents = """
+      | utvecklingsprocessen, krav-design-implementation-test,
+      | gränssnitt, trait vs interface, programmeringsgränssnitt (api),
+      | designexempel,
       | tråd, jämlöpande exekvering,  
       | icke-blockerande anrop, callback,
       | java.lang.Thread, 
@@ -149,14 +155,7 @@ trait Plan {
       | kort om html+css+javascript+scala.js och webbprogrammering,
       """.stripTrim),
 
-    Module("Design, api", 
-      id = "design", exercise = "design", lab = "", contents = """
-      | utvecklingsprocessen, krav-design-implementation-test,
-      | gränssnitt, trait vs interface, programmeringsgränssnitt (api),
-      | designexempel,
-      """.stripTrim),
-
-    Module("Tentaträning", id = "exam", exercise = "", lab = "", contents = ""),
+    Module("Tentaträning", id = "exam", exercise = "Extenta", lab = "", contents = ""),
 
     Module(name = "TENTAMEN", id = "", exercise = "", lab = "", contents = "")
   )
@@ -180,7 +179,7 @@ trait Plan {
 
   lazy val exerciseNumOfWeek = 
     ("Övn01,Övn02,Övn03,Övn04,Övn05,Övn06,Övn07,--," + 
-     "Övn08,Övn09,Övn10,Övn11,Övn12,Uppsamling,Extenta,--,--").split(',').toVector
+     "Övn08,Övn09,Övn10,Övn11,Övn12,Övn13,Extenta,--,--").split(',').toVector
           
   lazy val exerciseOfWeek = for (w <- 0 until exerciseNumOfWeek.size) yield {
     if (exerciseNumOfWeek(w).startsWith("Ö") && modules(w).exercise != "")  

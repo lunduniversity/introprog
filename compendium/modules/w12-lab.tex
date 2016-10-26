@@ -2,349 +2,464 @@
 
 %!TEX root = ../compendium.tex
 
-
-\Lab{\LabWeekTWELVE}
+\Teamlab{\LabWeekTWELVE}
 
 \begin{Goals}
-    \item Kunna använda matriser som en datastruktur.
-    \item Kunna separera modell från vy med hjälp av \emph{Model-View} uppdelning.
-    \item Känna till grundläggande cellulära automata. % \eng{cellular automata}.
-    % Följande rad är kanske inte aktuell, trådar tas upp i övningarna och hör inte riktigt hemma här då det är svårt att få in på ett smakligt sätt då Scala-kompilatorn och JVMen redan lyckas optimera koden så att den blir parallell.
-    %\item Känna till trådar, en grundläggande metod för att köra flera metoder \emph{samtidigt}.
+\item Förstå hur autoboxing fungerar i Java
+\item Förstå vad statiska metoder och attribut innebär
+\item Förstå skillnad mellan primitiva typer och objekt i listor
+\item Känna till hur en byter mellan ArrayLists och Array
+\item Känna till hur en läser in från fil
+\item Känna till syntaxen för en for-sats  i Java
+\item Förstå hur en skickar information mellan scala och Java
 \end{Goals}
 
-
 \begin{Preparations}
-    \item Läs igenom laborationen.
-    \item Bekanta dig med kodskelettet.
-    \item Börja skriva konstruktorn för \code{ArrayMatrix2D} som handleds i uppgift 1a.
-    % TODO: The following are just "fun" preparations, which will give the student more insight into the field but aren't
-    %       actually required to complete the lab. They are optionals really.
-    %\item Läs om Life på Wikipedia.
-    %\item Läs om Cellulära automata på Wikipedia.
+\item \DoExercise{\ExeWeekTWELVE}{12}
+\item Läs igenom Bakgrunden, kodstrukturen och alla kommentarer i kodskelettet.
+\input{team-lab-prep-items.tex}
 \end{Preparations}
 
 \subsection{Bakgrund}
+I denna labb skall ni tillverka ett spel kallat lthopoly, en variant av det välkända brädspelet Monopol med några simplifieringar. Varje spelare börjar med en summa pengar och förflyttar sig längs spelplanen.
+I början av en runda slår den aktiva spelaren en tärning och deras pjäs flyttas det antal steg som tärningen visar. 
+Beroende på vilken av de tre möjliga ruttyperna spelaren hamnar på sker olika saker:
 
-% Hur mycket bakgrund, vilken typ av bakgrund är lämplig/intressant/relevant?
-Spelet Life (även kallat \emph{Conway's Game of Life} efter skaparen och matematikern John Horton Conway) simulerar en koloni av encelliga organismer som lever, förökar sig och dör på ett rutnät (även kallat bräde). Varje enskild cells överlevnad beror på dess omgivning, vilket kan beskrivas med några enkla regler. Detta är gemensamt för alla cellulära automater. Spelet går ut på att simulera flera generationer av någon uppsättning celler, en såkallad cellkoloni, startkonfiguration eller frö (eng. \textit{seed}). Många sådana cellkolonier kan i Life verka bete sig `levande' och spelet har därifrån fått sitt namn.\footnote{Detta är ett exempel på s.k. `emergence' och `self-organization'} Spelet har inga medvetna spelare (ett så kallat `zero-player game') och om reglerna följs så kommer slutresultatet fullständigt bero på startkonfigurationen.
-
-\vspace{5mm}
-
-I denna laboration ska vi implementera en datastruktur för brädet samt reglerna för Life.
-
-I extrauppgifterna kommer det även finnas möjlighet att utforska två andra exempel på cellulära automater.
-
-\vspace{5mm}
-
-För mer om Game of Life, se Wikipedia:
-
-\begin{itemize}[noitemsep,topsep=0pt]
-    	\item Engelska: \url{https://en.wikipedia.org/wiki/Conway's_Game_of_Life}
-    	\item Svenska: \url{https://sv.wikipedia.org/wiki/Game_of_Life}
+\begin{itemize}
+\item MoveSpace: Om en spelare hamnar på denna ruta får den dra ett MoveCard, varpå spelaren förflyttas antingen framåt eller bakåt det antal steg som kortet anger.
+\item MoneySpace: Om en spelare hamnar på denna ruta får den dra ett MoneyCard, varpå spelaren antingen förlorar eller vinner pengar enligt beskrivningen på kortet.
+\item HouseSpace: Dessa rutor kan ägas utav spelare. Om en spelare förflyttas till denna rutan och ingen annan spelare äger den ges möjligheten att köpa den. Äger en annan spelare rutan blir den nuvarande spelaren tvungen att betala hyra. Hyran är samma som inköpspriset.
 \end{itemize}
 
+Spelet ska uppfylla följande krav:
+\begin{itemize}
+\setlength\itemsep{2em}
+\item Varje spelare måste alltid börja sin runda med att slå en tärning innan den utför någon annan spelhandling, d.v.s. någon annan handling som påverkar spelets tillstånd (exempelvis kan en alltid visa spelplanen eller avsluta spelet).
+\item Om någon spelare har mindre än 0 SEK kvar skall spelet sluta.
+\item Om någon spelare hamnar på en husruta som ägs av en annan spelare måste denne betala ägaren husets hyra i SEK. Om ingen äger huset ges spelaren möjlighet att köpa det för ett belopp motsvarande en hyra (förutsatt att den har råd).
+\item Om en spelare hamnar på en MoveSpace eller ett MoneySpace får spelaren möjligheten att dra ett kort. För MoveCard innebär detta en förflyttning (bakåt eller framåt) medan för MoneyCard en minskning eller ökning av pengar.
+\item Spelplanen skall vara cyklisk, d.v.s. att rutan direkt efter sista rutan är den första rutan på spelplanen.
+\end{itemize}
 
-\subsection{Reglerna i Life}
-\label{subsec:life-rules}
+Nedan visas ett förenklat flödesdiagram för en spelrunda.
 
-Varje cells tillstånd i nästa generation bestäms av följande regler:
-\begin{enumerate}
-    \item Om en levande cell och har två eller tre grannar så lever den vidare.
-    \item Om en levande cell har mindre än två eller mer än tre grannar dör den (av underpopulation respektive överpopulation).
-    \item Om cellen är död och har exakt tre grannar så föds den och dess tillstånd ändras till levande, annars fortsätter den vara död.
-\end{enumerate}
-
-Med grannar menas i Life de s.k. Moore grannarna, detta är helt enkelt de närmsta omgivande cellerna vertikalt, horizontalt och diagonalt.
-
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[width=0.5\textwidth]{../img/w12-lab/moore_neighborhood.png}
-  \end{center}
-  \caption{Moore grannskapet består av nio celler: mittcellen samt de åtta omringande cellerna.\protect\footnotemark}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{../img/w11-lab/lthopoly.png}
+\caption { Flödesdiagram för en spelrunda}
+\label{fig:scalajava:lthopoly-team:flowchart}
 \end{figure}
-\footnotetext{Källa: \url{https://commons.wikimedia.org/wiki/File:Moore_neighborhood_with_cardinal_directions.svg}}
+
+Spelet avslutas när någon spelare får slut på pengar och då vinner spelaren med mest pengar.
+
+\subsection{Kodstruktur}
+
+Klassen Player representerar en spelare. Varje spelare måste känna till sitt saldo och sin position på brädet.
+
+\begin{JavaSpec}{class Player}
+	/** Creates a new player*/
+	public Player(String name, int money, int pos);
+
+	/** Returns the players money*/
+	public int getMoney() ;
+
+	/** Adjusts the players money*/
+	public void adjustMoney(int money);
+
+	/** Returns the players position*/
+	public int getPosition();
+
+	/** Returns a string representation of the player*/
+	public String toString();
+
+	/** Sets the players position*/
+	public void setPosition(int pos) ;
+
+\end{JavaSpec}
+
+MoneyCard och MoveCard är två liknande klasser som representerar de kort som spelare kan dra. MoneyCard ska spara information om hur mycket pengar som ska tillföras respektive borttagas. MoveCard ska spara information om hur långt en spelare skall förflytta sig när kortet dras. Båda korten skall även inehålla en beskrivning utav varför detta händer. Informationen för dessa kort läses in från textfilerna moneycards.txt och movecards.txt.
+
+\begin{JavaSpec}{class MoneyCard}
+    /**Creates a new MoneyCard*/
+    public MoneyCard( String description, int money);
+
+    /**Returns the cards money adjustment value*/
+    public int getMoney();
+
+    /**Returns the description of why the money is adjusted*/ 
+    public String getDescription();
+\end{JavaSpec}
+
+\begin{JavaSpec}{class MoveCard}
+    /**Creates a new MoveCard*/
+    public MoveCard( String description, int positionAdjustment) ;
+
+    /**Returns the position adjustment*/
+    public int getPositionAdjustment();
+
+    /**Returns the description of why the position is adjusted*/
+    public String getDescription();
+
+\end{JavaSpec}
+
+Klasserna MoneySpace och MoveSpace ska ärva från den abstarka klassen boardspace. MoneySpace och MoveSpace ska andvända sig av en array med respektive Cards.
+
+\begin{JavaSpec}{class BoardSpace}
+    /** Returns a array of int describing possible
+      * game actions available while on this space*/
+    public abstract int[] getPossibleActions(GameBoard board);
+
+    /** Executes a game action available while on this space*/
+    public abstract void action(GameBoard board, int action);
+
+    /** Returns a string representation of this BoardSpace*/
+    public abstract String toString();
+\end{JavaSpec}
+
+\begin{JavaSpec}{class MoneySpace}
+ 
+    /** Returns an array of possible game actions permitted by this space */
+    public int[] getPossibleActions(GameBoard board);
+
+    /** Performs a MoneySpace-related action. */
+    public void action(GameBoard board, int action);
+
+    /** Returns a string representation of the MoneySpace */
+   public String toString();
+
+\end{JavaSpec}
+
+\begin{JavaSpec}{class MoveSpace}
+ 
+    /** Returns an array of possible game actions permitted by this space */
+    public int[] getPossibleActions(GameBoard board);
+
+    /** Performs a MoveSpace-related action. */
+    public void action(GameBoard board, int action);
+
+    /** Returns a string representation of the MoveSpace */
+   public String toString();
+
+\end{JavaSpec}
+
+\begin{JavaSpec}{class HouseSpace}
+ 
+    /** Returns an array of possible game actions permitted by this space */
+    public int[] getPossibleActions(GameBoard board);
+
+    /** Performs a HouseSpace-related action. */
+    public void action(GameBoard board, int action);
+
+    /** Returns a string representation of the HouseSpace with
+      * the format "HouseName [Owner] (Rent)" */
+   public String toString();
+
+\end{JavaSpec}
+
+Spelbrädets utseende bestäms av textfilen board.txt. Denna textfil specifierar både i vilken ordning de olika sorters rutorna kommer men även namn och hyra på HouseSpace. Klassen DocumentParser hanterar inläsning från fil och ska kunna läsa in MoneyCards, MoveCards samt hela spelplanen. 
+
+\begin{JavaSpec}{class DocumentParser}
+	/**Returns a ArrayList of Boardspaces loaded from a file*/
+	public static ArrayList<BoardSpace> getBoard();
+
+	/**Returns a array of MoneyCards loaded from file*/
+	public static MoneyCard[] getMoneyCards();
+
+	/**Returns a array of MoveCards loaded from file*/
+	public static MoveCard[] getMoveCards();
+\end{JavaSpec}
 
 
-\subsection{Beskrivning av Workspace}
+Klassen GameBoard håller koll på spelets tillstånd.
+GameBoard kombinerar ovannämnda klasser för att bygga upp spelet. GameBoard har en metod getPossibleActions() som returnerar en lista över alla möjliga spelarhandlingar för den nuvarande spelaren. Denna används av main-metoden för att be användaren välja nästa handling. 
+Olika sorters spelarhandlingar representeras av statiska int-variabler i klassen GameBoard. Vid val av handling matar användaren in handlingens siffervärde i konsolen. Varje handling motsvaras då alltid av samma inmatningsvärde för användaren.
 
-I workspacet finner ni bl.a. paketen \code{models}, \code{rules} och \code{views}. I labben kommer ni främst ändra i \code{models} paketet men ni kommer även implementera reglerna för Life i \code{rules/LifeRule.scala}. Paketet \code{views} kommer med färdigimplementerad kod för två vyer \code{CellularConsoleView} samt \code{CellularGuiView}.
 
-Utöver paketen finner ni i samma mapp några körbara Scala-filer som kan användas för att starta upp ett användargränssnitt som ritar upp brädet och låter användaren `spela' spelet. Den första av dessa filerna ni ska titta i och senare köra är \code{life.scala}.
+\begin{JavaSpec}{class GameBoard}
+    /** Creates a new board ready to play */
+    public GameBoard(List<Player> players);
 
-Läs igenom de två filerna i `models' paketet noga, det är där ni kommer spendera den mesta av tiden.
+    /**Returns an int array containing possible game actions.
+     * A game action can be any of the static constants in
+     * GameBoard*/
+    public int[] getPossibleActions() ;
+    
+    /** Checks whether the game is over or not */
+    public boolean isGameOver();
+    
+    /** Returns the player with the most money */
+    public Player getRichestPlayer();
 
+    /** Returns a list of all players */
+    public List<Player> getPlayers();
+
+    /** Returns a list of all BoardSpaces */
+    public List<BoardSpace> getBoardSpaces();
+
+    /** Performs an action for the current player */
+    public void doAction(int action);
+ 
+    /** Returns the currently active player */
+    public Player getCurrentPlayer();
+
+    /** Returns the boardspace corresponding to the position 
+      * of the current player. */
+    public BoardSpace getCurrentBoardSpace();
+
+    /** Moves the currently active player adjustments spaces forward.
+      * Negative adjustment moves the player backwards*/
+    public void moveCurrentPlayer(int adjustment);
+    
+    /** Returns an ArrayList<Integer> where each element contains the total
+      * sum of all players' money at the end of a round.
+      * E.g. list.get(0) is the total amount of money in the game after the 
+      * first round. */
+    public ArrayList<Integer> getStatistics();
+
+    /** String Representation of the GameBoard */
+    public String toString() ;
+\end{JavaSpec}
+
+
+Den visuella representationen av spelet sker via konsolfönstret med hjälp av klassen \code{TextUI}. \code{TextUI} är en färdigskriven klass med metoder som gör det enkelt att skriva ut spelplanen och en logg av spelhistoriken i konsolfönstret.
+ När addToLog() anropas sparar den sitt argument i en lista och hela listan skrivs ut varje gång konsolen uppdateras via updateConsole-metoden.
+Utöver loggen skriver updateConsole även ut ett statusfönster med kortfattad information om varje spelare. 
+Om spelaren väljer att visa spelplanen ska metoden printBoard() istället anropas.
+Alla utskrifter som sker under spelets gång ska gå via \code{TextUI}.
+\newline
+
+\begin{figure}[H]
+\centering
+
+\begin{REPL}
+============================================================
+
+Oskar slog en 2:a!
+Oskar drog ett kort: Jädrans! Studiebidraget har sänkts. Förlora 40 SEK
+Oskar har avslutat sin runda.
+Nästa spelare: Jonas
+Jonas slog en 3:a!
+Jonas drog ett kort: Det lönade sig att leva på nudlar! Inkassera 50 SEK
+Jonas har avslutat sin runda.
+Nästa spelare: Valthor
+Valthor slog en 5:a!
+Grattis, Valthor är nu den stolta ägaren av V-Huset
+Valthor har avslutat sin runda.
+Nästa spelare: Oskar
+Oskar slog en 2:a!
+Namn----------------Position----------------------Pengar----
+Oskar*              Moroten och piskan(40)        260       
+Jonas               ChansRuta                     350       
+Valthor             V-Huset [Valthor](45)         255       
+------------------------------------------------------------
+Välj ett alternativ:
+
+	3. Köp ett hus                   
+	5. Avsluta din runda             
+	8. Visa standardvyn              
+	9. Visa spelplanen               
+	0. Avsluta Lthopoly              
+
+============================================================
+
+\end{REPL}
+\caption {Utskrift av standardvyn}
+\label{fig:scalajava:lthopoly-team:defaultview}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+
+\begin{REPL}
+Rutans Namn [Ägare] (Pris/Hyra) (Spelare, Pengar)*
+---------------------------------------------------------------
+Studiecentrum(20)
+A-huset(25) 
+ChansRuta 
+ChansRuta (Jonas,350)
+Moroten och piskan(40) (Oskar,260)
+V-Huset [Valthor](45) (Valthor,255)
+RiskRuta 
+ChansRuta 
+LED-Cafe(70) 
+F-Huset(75) 
+ChansRuta 
+RiskRuta 
+Ideet(80) 
+ChansRuta 
+E-huset(100) 
+RiskRuta 
+\end{REPL}
+
+\caption {Utskrift av spelplanen}
+\label{fig:scalajava:lthopoly-team:boardview}
+\end{figure}
+
+\begin{ScalaSpec}{TextUI}
+   /** Prints an ASCII plot of the total amount 
+	of money in the game as a function of the turn index*/
+  def plotStatistics(x: Buffer[Int]): Unit
+
+  /** Appends the String s to the end of the UI's event log */
+  def addToLog(s: String): Unit 
+
+  /** Reprints the current state of the UI using the given
+	GameBoard to print the status bar*/
+  def updateConsole(board: GameBoard): Unit 
+
+ 
+  /** Asks the user to select an option from a list of options
+    *
+    * @param options an Array of tuples of the form (choice, description)
+    *                where choice is the number the user should enter to select 
+    *                the choice represented by description,
+    *                e.g. (0,  "End Game") allows the user to input 0 to end 
+    *                the game.
+    * @return        the selected choice
+    */
+  def promptForInput(options: Array[(Int, String)]): Int 
+
+  /** Prints the entire GameBoard */
+  def printBoard(board: GameBoard): Unit 
+
+ 
+\end{ScalaSpec}
+
+Simuleringen av spelet sker i main-metoden i klassen Main, och skall implementeras i Scala (i uppgift 6).
+
+\ScalaSpecInputListing{Main}{../workspace/w11_lthopoly_team/src/main/scala/lthopoly/Main.scala}
 
 \subsection{Obligatoriska uppgifter}
-	% Förslag på hur de kan bygga upp programmet:
-    % 1) skapa en main-klass som öppnar ett fönster som visar ett x gånger y stort fönster.
-    % 2) [Kommer inte göras] skapa en klass Cell som har attributet levande eller död. Gör en metod där man kan ändra tillståndet på cellen.
-    % 3) skapa en matris av celler som alla initieras som döda.
-	% 4) koppla ihop modellen och vyn så att om man genom att klicka i vyn kan ändra cellens tillstånd. Testa att det fungerar. Gör så att vyn uppdateras efter cellerna i modellen när man klickar på "next generation".
-	% 5) Studera traitet Rule i filen blahblah. Implementera reglerna (ge lite förklarande kodexempel för traitet Rule eller var det finns)
-	% 6) Skriv metod(er) som räknar upp generationer.
-	% 7) Testa nedanstående startfigurer (inkludera bilder på t ex en slider). Beter det sig som förväntat?
 
+\Task All information om olika kort och om spelplanens upplägg finns i textfiler som måste läsas in med hjälp av metoderna i klassen DocumentParser. 
+Textfilerna moneycards.txt och movecards.txt innehåller information om de olika korten som finns.
+Varje rad innehåller en beskrivning för kortet följt av ett värde separerat med semikolon. Dessa sparas i en vektor vid inläsning och när en spelare hamnar på en MoveSpace eller MoneySpace dras ett slumpmässigt kort från vektorn. Vektorn av kort måste alltså skickas med till motsvarande ruta när rut-objektet skapas .
+Filen board.txt innehåller spelplanen, men behandlas först i uppgift 3.
 
-    \Task{Skapa en modell som kan visas i vyer som implementerar \code{CellularView2D}.}
-    
-	Spelbrädet består av en matris med $n$ rader och $m$ kolumner ($n$ och $m$ brukar ibland modelleras som $\infty$, men vi kommer begränsa oss för enkelhetens skull)
-
-	Varje cell i matrisen kan vid varje tidpunkt (i varje generation) ha ett av två tillstånd: levande eller död. Dessa kommer vi för enkelhetens skull att representera som 1 eller 0, respektive. Detta för att göra det enklare att räkna ihop hur många levande grannar en cell har.
-
-        \Subtask{Implementera konstruktorn i kompanjonsobjektet för ArrayMatrix2D.}
-
-        För att skapa en matris ska vi använda oss av Scalas inbyggda datastruktur \code{Array}. Denna datastruktur har en användbar konstruktur \code{ofDim[T](n1: Int, n2: Int)} som vi ska använda för att skapa $rows$ stycken arrayer av storlek $cols$ inuti en annan array, detta är vad vi kommer använda för att lagra datan i vår matris.
-        
-        Ett exempel av resultatet från \code{Array.ofDim[Int](3, 3)} är följande ekvivalenta kod:
-
+För att skapa ett File-objekt med informationen från filerna kan följande kod användas:
+\newline
+\newline
 \begin{Code}
-Array(
-	Array(0,0,0),
-	Array(0,0,0),
-	Array(0,0,0)	
-)
+File f = new File(DocumentParser.class.
+        getResource("/moneycards.txt").getFile());
 \end{Code}
 
-%        Här nedan ser vi en sådan array utskriven i en komma-separerad lista. Detta är ett vanligt och enkelt dataformat som kallas CSV.\footnote{Förkortningen CSV står för Comma Separated Values}
+Därefter kan ni använda er av ett scanner-objekt som får tillgång till Filen för att läsa in en rad i taget.
+Se textfilerna moneycards.txt, movecards.txt och board.txt i mappen resources för förståelse för hur inläsningen bör gå till för korten. \newline Ni kan nyttja metoden \code{String.split(String delimiter)} för att dela en sträng i en array av fält, där \code{delimiter} är den avgränsade strängen som används vid uppdelningen.
 
-%\begin{Code}
-%0,0,0
-%0,0,0
-%0,0,0
-%\end{Code}
+\Subtask Implementera klassen MoveCard.
 
-	    \Subtask{Implementera metoderna i ArrayMatrix2D.}
+\Subtask Implementera klassen MoneyCard.
 
-		Fortsätt nu med att implementera de övriga metoderna i ArrayMatrix2D. Läs igenom kommentarerna för de oimplementerade metoderna i traitet \code{Matrix2D} för kommentarer om vad som ska göras.
-		
+\Subtask Implementera metoderna getMoneyCards() och getMoveCards() i DocumentParser. Metoderna ska klara av att läsa in ett variabelt antal kort.
 
-        \Subtask{Testa implementationen.}
-
-        För att nu testa implementationen kan man slumpa tillstånden på brädet med hjälp av metoden randomize som finns på alla objekt som ärver traitet \code{Matrix2D}, med den kan man enkelt göra följande:
+\Subtask Implementera klassen Player.
+\newline
+\newline
+\textbf{Tips:}
+För att konvertera mellan ArrayLists och arrays kan ArrayLists .toArray-metod användas enligt följande:
 
 \begin{Code}
-// Slumpar varje cell i matrisen 'matrix' till antingen 0 eller 1
-matrix.randomize(2)
+ArrayList<MyClass> list = new ArrayList<MyClass>();
+MyClass[] arr = list.toArray(new MyClass[]{});
 \end{Code}
 
-        För att nu se till att allt har blivit rätt kan vi nu visa upp matrisen i terminalen med hjälp av \code{CellularConsoleView}. Ett exempel på detta finnes i \code{life_console.scala}.
+\Task I denna uppgift skall de tre olika subklasserna till BoardSpace implementeras. Tänk på att MoveSpace och MoneySpace behöver tillgång till respektive kortlekar.
+För att skriva metoderna action och getPossibleActions kommer ni behöva nyttja att klassen \code{GameBoard} har statiska konstanterna som representerar de olika spelarvalen.
 
-\begin{Code}
-// Skriver ut brädet i konsolen
-CellularConsoleView.display(matrix)
-\end{Code}
 
-        Men detta testar inte för alla möjliga fel, så för säkerhets skull kan vi även testa att placera ut en s.k. glider i brädet med hjälp av metoden \code{place} som finns implementerad i det ärvda traitet \code{Matrix2D}.
+\Subtask Implementera en klass för varje typ av spelruta. 
+\newline
+\newline
+\noindent
+\textbf{Obs!} Än så länge kommer logiken inte fungera då inga metoder är implementerade i BoardGame, det går trots detta bra att anropa metoderna utan kompileringsfel (i väntan på att de implementeras).
 
-\begin{Code}
-// Placerar ut en glider med sitt övre vänstra hörn
-// i positionen (3, 1), dvs på rad 4 och kolumn 2 (då vi noll-indexerar)
-matrix.place(entities.glider, 3, 1)
-\end{Code}
 
-\begin{figure}[h]
-  \begin{center}
-    % Reflectbox here since glider in entities package is a reflection of the image.
-    \reflectbox{\includegraphics[width=0.3\textwidth]{../img/w12-lab/glider.png}}
-  \end{center}
-  \caption{En såkallad \textit{glider}. Vanligt förekommande varelse i Life.}
+
+\Task Nu är det dags att implementera getBoard() i klassen \code{DocumentParser}. I denna metod skall ni läsa in från filen board.txt och nyttja de metoder ni redan skrivit för att nu kunna skapa MoveSpaces och MoneySpaces. Radernas ordning i filen bestämmer deras ordning på spelplanen. Varje rad börjar antingen med orden ''Move'', ''Money'' eller ''House''. House-rader följs dessutom av husets hyra och dess namn separerat av semikolon. Baserat på radens första ord skall ett motsvarande objekt konstrueras och läggas till i en ArrayList<BoardSpace> som slutligen returneras.
+
+
+
+\Subtask Implementera getBoard().
+\newline
+\newline
+\textbf{Fundera på}
+\begin{itemize}
+\item Behöver flera objekt skapas av varje ruttyp?
+\end{itemize}
+
+\Task Implementera alla metoder utom getStatistics() i GameBoard (se specifikationen).
+\newline
+\newline
+\textbf{Tips:}
+
+\begin{itemize}
+\item Ni kan använda privata hjälpmetoder för att underlätta implementeringen.
+\item Metoden printStatistics i klassen \code{TextUI} tar en vektor av int-värden som inparameter, vilket är opassande då det underlättar att lagra pengahistoriken i en ArrayList (eftersom dess storlek inte är bestämd). Det är därför lämpligt att skriva en metod som flyttar över samtliga Integer-objekt från ArrayList<Integers> till en vektor av primitiva int-värden. Detta fungerar trots att de har olika typer p.g.a. autoboxing. 
+\item Tänk på att spelarna skall kunna gå runt spelplanen ett obegränsat antal gånger.
+\item Glöm inte att alla utskrifter skall gå via  \code{TextUI}.
+\item Se flödesdiagrammet för att få en överblick för vilka actions som är tillåtna vid en given tidpunkt.
+\end{itemize}
+
+\textbf{Fundera på}
+\begin{itemize}
+\item Varför tar konstruktorn i GameBoard emot en List<Player> istället för en ArrayList<Player>?
+\end{itemize}
+
+\Task Med spelplanen implementerad behövs en main-metod för att kunna starta spelet. I main-metoden skapas GameBoard samt alla Spelare. Spelet körs sedan som en loop där GameBoard tillfrågas vilka spelarhandlingar som är tillåtna för den nuvarande spelaren, erbjuder spelaren möjligheten att välja något av dessa alternativ, och matar sedan in spelarens val tillbaka till GameBoard som hanterar valet. GameBoard ska alltså hantera all spellogik internt.  Spel-loopen skall köras tills dess att spelet är över enligt GameBoard.isGameOver.
+
+\Subtask Implementera getAction i Scala. Metoden ska anropa TextUI.promptForInput med en lämplig lista av tupler för att begära input från användarna. Metoden skall nyttja de statiska variablerna från GameBoard för att ge en lämplig utskrift.
+
+\Subtask Implementera main-metoden i Scala.
+
+\Task Vi skall nu lägga till möjligheten att se statistik över spelets monetära tillstånd. Metoden getStatistics() i GameBoard  ska returnera en lista innehållande den totala summan av pengar i spelet i slutet av varje runda. Denna lista kan skickas vidare till metoden TextUI.printStatistics där den sedan skrivs ut i en vacker plot (se utskrift nedan).
+
+\Subtask Implementera metoden getStatistics() i GameBoard.
+
+\Subtask Utöka mainmetoden så att grafen skrivs ut efter spelets slut. 
+Själva uppritningen sker med hjälp av den färdigskrivna metoden plotStatistics i TextUI som kräver en Buffer[Int] innehållande varje rundas totalsumma. 
+Ett tips är att nyttja scala.collection.JavaConverters för att konvertera Javas datatyper till Scala.
+
+
+\begin{figure}[H]
+\centering
+
+\begin{REPL}
+Relativ graf över total mängd pengar under spelets gång:
+880  *                                                                         
+846     *                                                                      
+813                                                                            
+780        *                                                                   
+747                                                                            
+713           *                                                                
+680                                                                            
+647              *  *  *                                                       
+614                       *  *                                                 
+580                                                                            
+547                             *                                              
+514                                                                            
+481                                                                            
+447                                *                                           
+414                                                                            
+381                                   *  *                                     
+348                                         *  *  *                            
+314                                                  *  *  *  *  *             
+281                                                                 *  *       
+248                                                                            
+215                                                                       *    
+     1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 
+\end{REPL}
+\caption {Graf över spelets total mängd pengar som funktion av rundornas index}
+\label{fig:scalajava:lthopoly-team:statistics}
 \end{figure}
-
-        Testa nu att rita ut brädet igen (utan randomize denna gången) för att se till att glidern hamnade rätt både med avseende på orientering och position, den ska vara roterad precis som på bilden.
-
-
-    \Task{Implementera Life-regeln med hjälp av traitet Rule.}
-    
-    Nu har vi vår datastruktur för brädet på plats så nu är det dags att faktiskt implementera reglerna för Life. För att göra detta ska vi implementera objektet \code{LifeRule} som ärver traitet \code{Rule} vilket är ett interface som cellulära automaters regler kan implementera. Men först ska vi implementera några hjälpsamma funktioner, så att våran kod i \code{LifeRule} senare blir mer lättläst.
-    
-        \Subtask{Implementera \code{mooreNeighborsPositions} samt \code{mooreNeighborsStates} i \code{Matrix2D}.}
-        
-        Då Life-regeln förlitar sig på Moore-grannskapet som tidigare nämnts så behöver vi ett smidigt sätt att få ut grannarna för en viss cell, detta är vad funktionerna \code{mooreNeighborsPositions} samt \code{mooreNeighborsStates} ska göra.
-        
-        När \code{mooreNeighborsStates} implementeras är det viktigt att ta hänsyn till om grannarna faktiskt finns (då vårat bräde är av begränsad storlek).
-        För detta bör man använda \code{isWithinMatrix} metoden som tidigare implementerades i \code{ArrayMatrix2D}.
-        
-        Börja med att implementera \code{mooreNeighborsPositions} och använd sedan den för att implementera \code{mooreNeighborsStates}.
-
-        \Subtask{Implementera \code{apply} i ett nytt objekt \code{LifeRule} som implementerar \code{Rule}.}
-        Här nedan finnes specifikationen för traitet Rule, den innehåller endast en metod \code{apply} vars uppgift är att ta ett bräde samt en position på brädet och returnera vad denna position ska innehålla för värde i nästa generation.
-
-\begin{ScalaSpec}{Rule}
-// apply tar en matris samt en position i matrisen (row, col)
-// och applicerar regeln på den positionen
-def apply(m: ArrayMatrix2D, row: Int, col: Int): Int
-\end{ScalaSpec}
-        
-        Reglerna för Life finner ni ovan i avsnitt \ref{subsec:life-rules}.
-
-        \Subtask{Testa implementationen.}
-        
-        För att nu i praktiken applicera våran regel på brädet ska vi använda oss av metoden \code{applyRule} som återfinns i \code{ArrayMatrix2D}.
-
-        Om man har problem med att sin regel inte beter sig som förväntat så man returnera antalet grannar istället för cellens levande/död tillstånd. Efter att applicera hela s.k. \code{NeighborsRule} kan man visa upp resultatet med \code{CellularConsoleView} för att se om programmet räknar grannar korrekt.
-
-
-    \Task{Skapa en ny modell som `wrappar' i kanterna.}
-    
-    Just nu har vi ett udda beteende i modellen, nämligen att alla celler utanför brädet i praktiken räknas som döda. För att få ett lite mer intressant beteende så vill vi nu göra så att om exempelvis en glider åker in i höger vägg ska den komma ut ur vänster vägg. Detta kan göras med några små modifikationer till \code{ArrayMatrix2D}.
-
-        \Subtask{Ändra metoden \code{isWithinMatrix} så att alla positioner är giltiga.}
-
-        Då funktionen \code{mooreNeighborsStates} i \code{Matrix2D} använder sig av funktionen \code{isWithinMatrix} för att avgöra vilka celler som är inom brädet så måste vi se till att \code{isWithinMatrix} inte hindrar grann-funktionen från att hämta celler `utanför' brädet, detta kan vi enkelt göra genom att kommentera ut hela den tidigare koden och istället alltid returnera \code{true}. Om vi nu försöker köra programmet kommer vi nu se att vi får \code{ArrayIndexOutOfBoundsException}, detta då vi ännu inte gjort så att hämtningar eller tilldelningar `utanför' brädet wrappar, vilket vi nu ska göra.
-
-        \Subtask{Ändra metoderna \code{get} samt \code{set} så att hämtningar respektive tilldelningar utanför brädet wrappar.}
-        
-        För att åstadkomma wrappning så måste vi göra att alla hämtningar och tilldelningar utanför brädet går `runt'. Detta kan enklast göras med hjälp av modulo-operatorn.
-        
-\begin{Code}
-val wrapped_row = row % rows
-\end{Code}
-
-		Men denna lösning tar inte hänsyn till negativa tal, vilket kan uppkomma när man t.ex. försöker hämta grannarna för cellen i det övre vänstra hörnet på brädet, dvs. position (0, 0). För att enkelt lösa detta kan man förskjuta hela \code{row} med \code{rows} så att man istället får följande
-		
-\begin{Code}
-val wrapped_row = (rows + row) % rows
-\end{Code}
-
-Vi kan använda oss av denna kunskap för att i metoderna \code{get} samt \code{set} se till att operationerna wrappar. Testa sedan din implementation genom att låta en glider glida in i en vägg.
-
 
 \subsection{Frivilliga extrauppgifter}
 
-Inom cellulära automata finns det många intressanta ting att utforska, för de nyfikna så finns det här nedan några extrauppgifter som den intresserade läsaren uppmanas implementera då resultaten kan vara djupt tillfredställande. De kan göras i valfri ordning.
+\Task Utöka spelet med ny spelmekanik.
 
+\Subtask Implementera funktionalitet för att varje spelare ska få extra pengar då den passerar första spelrutan.
 
-\Task{Implementera spara och ladda}
+\Subtask Implementera funktionalitet för att varje spelare som hamnar på en ruta de äger sedan tidigare har möjlighet att öka hyran för rutan ifall någon annan spelare skulle hamna på den.
 
-	När man leker runt med cellulära automater vill man ofta spara sina bräden så att man senare enkelt kan ladda in dem igen. För att göra detta ska vi i denna extrauppgift definiera ett dataformat som ska innehålla all data som behövs för att återskapa vår \code{ArrayMatrix2D}.
-
-    \Subtask{Spara brädets tillstånd.}
-        Tillståndet ska sparas till ett format som både är lätt att spara/exportera och ladda/importera. Det vi behöver spara är följande:
-        
-        \begin{itemize}
-        		\item Brädets storlek, dvs antalet rader och kolumner
-        		\item Hur många olika värden en cell på brädet kan anta
-        		\item Matrisen i sig, dvs alla cellers värden
-        	\end{itemize}
-        	
-        	Det är metoden \code{ArrayMatrix2D.toFileFormat} som ska implementeras.
-        
-        Vi föreslår att ni börjar filen med en rad innehållande de två värdena i punkt ett, samt värdet i punkt två. Separera dem med mellanslag, komma, eller en emoji (på egen risk). Därefter är den enklaste vägen att skriva ut matrisen rad för rad där varje cell skrivs ut som en etta eller nolla. Man kan göra detta utan separator för bräden där celler bara antar värden i intervallet 0-9, men det fungerar inte längre om en cell kan anta andra värden (såsom i uppgiften med cykliska cellulära automater nedan) då man inte längre kan lita på att en siffra motsvarar en cell. För att lösa denna begränsning kan man separera sina värden med något tecken precis som för första raden.
-        
-        Testa att spara genom att gå in i menyn i användargränssnittet och klicka "Save...". Öppna den sparade filen med en texteditor för att verifiera att innehållet ser korrekt ut.
-        
-    \Subtask{Ladda in det sparade tillståndet.}
+\Subtask Implementera funktionalitet så att ägaren av ett hus måste betala en andel av dess värde varje gång de passerat första spelrutan.. 
     
-        Implementera metoden \code{ArrayMatrix2D.fromFileFormat} för att läsa in det sparade tillståndet.
-        
-        Testa sedan att ladda genom att gå in i menyn i användargränssnittet och klicka "Load...". Brädet ska nu se ut precis som det gjorde när det sparades.
-
-\Task{Implementera andra regler för cellulära automata.}
-
-    Det finns massor med regler för cellulära automata med sina egna intressanta beteenden och tillstånd.
-    Gör den eller de du tycker verkar mest intressant!
-
-    Fler regler finnes här: \url{https://en.wikipedia.org/wiki/Category:Cellular_automaton_rules}
-
-    Nedan följer några roliga exempel som valts ut och anses lämpliga.
-
-    \Subtask{Implementera regeln för cykliska cellulära automater.}
-
-        Denna typ av automata kallar cyklisk just för att det finns $N$ möjliga tillstånd och när tillståndet $N-1$ nås så är `nästa' tillstånd $0$.
-        Detta beteendet kan beskrivas med modulo-operatorn: $T_{nästa} = (T_{nuvarande} + 1) \% N$
-
-        Regeln för att en cell byter tillstånd ges av att om en granne till den aktuella cellen har tillståndet exakt ett över cellens tillstånd så får cellen sin grannes tillstånd. Det vill säga om en granne har tillståndet $T_nästa$ så får även mittcellen det värdet.
-
-        För att få intressant beteende brukar man initialisera hela brädet så att varje cell får ett slumpvalt tillstånd.
-
-        En bra förberedelse för att implementera denna cellulära automat är att läsa Wikipedia-artikeln: \url{https://en.wikipedia.org/wiki/Cyclic_cellular_automaton}
-
-    \Subtask{Implementera regeln för Wireworld.}
-
-        Wireworld är annorlunda från andra cellulära automata då man i Wireworld designar `kretsar' inte helt olika de som finns i moderna datorer.
-        På grund av detta är majoriteten av celler vanligtvis fast i ett dött tillstånd (isolatorer).
-
-        I Wireworld kan man skapa komponenter såsom dioder och transistorer. Med dessa bygga logiska grindar och därmed hela datorer (som dock blir väldigt långsamma i jämförelse med datorerna de körs på).
-
-        En bra förberedelse för att implementera Wireworld är att läsa Wikipedia-artikeln: \url{https://en.wikipedia.org/wiki/Wireworld}
-
-        \begin{figure}[h]
-            \begin{center}
-                \includegraphics[width=0.8\textwidth]{../img/w12-lab/wireworld_computer.png}
-            \end{center}
-            \caption{En enkel dator implementerad i Wireworld\protect\footnotemark}
-        \end{figure}
-        \footnotetext{Källa: \url{http://www.quinapalus.com/wi-index.html}}
-
-
-\subsection{Extra läsning}
-
-\subsubsection{Intressanta mönster i Life}
-
-\begin{itemize}[noitemsep,topsep=0pt]
-    \item \url{https://en.wikipedia.org/wiki/Spacefiller}
-    \item \url{https://en.wikipedia.org/wiki/Spaceship_\%28cellular_automaton\%29}
-\end{itemize}
-
-\subsubsection{Intressanta automater}
-
-\begin{itemize}[noitemsep,topsep=0pt]
-	\item \url{https://en.wikipedia.org/wiki/Codd's_cellular_automaton}
-	\item \url{https://en.wikipedia.org/wiki/Von_Neumann_universal_constructor}
-\end{itemize}
-
-\subsubsection{Intressanta resurser}
-
-\begin{itemize}[noitemsep,topsep=0pt]
-    \item Eric Weisstein's treasure trove of The Game Of Life: \url{http://www.ericweisstein.com/encyclopedias/life/topics/}
-\end{itemize}
-
-
-
-% Kanske för nästa år
-%\Task{Alternativ vy: Kör programmet i webbläsaren med Scala.js}
-
-
-% Detta kan kräva speciell IDE (android-studio) och eventuellt en Android-emulator som inte kan köras på skolans datorer.
-%\Task{Alternativ vy: Kör programmet på Android}
-
-
-% Detta kommer antagligen inte ske då det lägger till signifikant komplexitet
-% En bättre extrauppgift är att representera brädet som ett quadtree då det leder en in på Hashlife
-%\Task{Implementera brädet som en sparse-matris}
-
-%I den tidigare lösningen har vi allokerat en hel matris där bara en del av brädet vanligtvis är levande, en sådan matris kallas för en sparse matris (en matris där majoriteten av värdena är 0).
-%    \Subtask{???}
-
-
-%\Task{Implementera den supersnabba Hashlife}
-%    Detta är en utmaning som kräver en viss kunskap om algoritmer och hashning som läsare av denna labben inte ännu förväntas inneha.
-%    Den verkligt intresserade läsaren kan dock se denna uppgift som ett långtids-läromål och återkomma till uppgiften senare i sin utbildning när
-%    hen känner sig redo.
-%
-%    En utförlig beskrivning om hashlife och quadtrees finnes på Wikipedia:
-%    \begin{enumerate}
-%        \item https://en.wikipedia.org/wiki/Hashlife
-%        \item https://en.wikipedia.org/wiki/Quadtree
-%    \end{enumerate}
-%
-%    \Subtask{Implementera QuadtreeMatrix2D}
-%        Hashlife använder sig inte av en matris-representation för brädet utan använder sig istället av en datastruktur som heter Quadtrees.
-%        Dessa fungerar som vanliga träd fast varje nod kan antingen ha exakt 4 brancher eller vara ett löv. Varje branchning delar upp en kvadrat
-%        i 4 mindre kvadrater och varje löv representerar värdet för en kvadrat.
-%
-%        Quadtrees möjliggör att man kan beräkna tomma områden på brädet på konstant tid då man vet att ett helt område kommer förbli opåverkat utan
-%        att behöva titta igenom varje cell.
-%
-%        \begin{figure}[h]
-%            \begin{center}
-%                \includegraphics[width=0.7\textwidth]{../img/w12-lab/quadtree_bitmap.png}
-%            \end{center}
-%            \caption{Ett exempel på hur ett Quadtree använts för att representera en bitmap likt den som återfinns i Life}
-%            % Källa: Wikipedia (https://commons.wikimedia.org/wiki/File:Quad_tree_bitmap.svg)
-%        \end{figure}
-%
-%    \Subtask{Implementera hashlife}
-%
-%        Här kan vi inte handleda er, då det anses vara allt för långt utanför kursmålen. Men för den ambitiösa studenten refererar vi glatt till Wikipedia och önskar er lycka till!
