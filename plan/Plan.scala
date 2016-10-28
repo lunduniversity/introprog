@@ -97,7 +97,7 @@ trait Plan {
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
     Module("Repetition, specialundervisning",  
-      id = "special", exercise = "Repetera", lab = "Kom-i-kapp", contents = "repetera, identifiera kunskapsluckor, kom-i-kapp med övningar och labbar, specialundervisning med hårdträning för behövande"),
+      id = "rebootcamp", exercise = "Repetera", lab = "Kom-i-kapp", contents = "REBOOT CAMP: repetera, identifiera kunskapsluckor, kom-i-kapp med övningar och labbar, specialundervisning med hårdträning för behövande"),
 
     Module("Mönster, undantag", 
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
