@@ -8,7 +8,7 @@
 | W06 | 3/10-7/10   | Lp1V6 | Klasser                          | F11 F12 | classes     | turtlegraphics  |
 | W07 | 10/10-14/10 | Lp1V7 | Arv                              | F13 F14 | traits      | turtlerace-team |
 | KS  | 25/10       | TP1   | KONTROLLSKRIVN.                  | --      | --          | --              |
-| W08 | 31/10-4/11  | Lp2V1 | Repetition, specialundervisning  | F15 F16 | Repetera    | Kom-i-kapp      |
+| W08 | 31/10-4/11  | Lp2V1 | Repetition, trösklar, luckor     | F15 F16 | Repetera    | Kom-i-kapp      |
 | W09 | 7/11-11/11  | Lp2V2 | Mönster, undantag                | F17 F18 | matching    | chords-team     |
 | W10 | 14/11-18/11 | Lp2V3 | Matriser, typparametrar          | F19 F20 | matrices    | maze            |
 | W11 | 21/11-25/11 | Lp2V4 | Sökning, sortering               | F21 F22 | sorting     | survey          |
