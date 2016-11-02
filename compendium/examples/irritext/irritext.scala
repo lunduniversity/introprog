@@ -11,11 +11,11 @@ object irritext {
     println("Du står framför en vägg med två dörrar.")
     println("Du hör morrande och rytande.")
     val msg = "Vilken dörr? V=vänster H=Höger\n"
-    val door = readLine(msg)
     var dead = false
     var ready = false
     var points = 0
     while (!dead && !ready) {
+      val door = readLine(msg)
       if (door.toLowerCase.startsWith("v")) {
         println("Du klarade det!")
         ready = true
