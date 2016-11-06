@@ -97,7 +97,7 @@ trait Plan {
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
     Module("Repetition, trösklar, luckor",  
-      id = "rebootcamp", exercise = "Repetera", lab = "Kom-i-kapp", contents = "REBOOT CAMP: identifiera lärandetrösklar och kunskapsluckor, kom-i-kapp med övningar och labbar, repetera, fördjupning för de som är redo, specialträning för behövande"),
+      id = "rebootcamp", exercise = "reboot-init", lab = "reboot-check", contents = "REBOOT CAMP: identifiera dina egna lärandetrösklar och kunskapsluckor, kom-i-kapp med övningar och labbar, repetera, fördjupning för de som är redo, specialträning för behövande"),
 
     Module("Mönster, undantag", 
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
