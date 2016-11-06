@@ -17,43 +17,247 @@
 %\end{Slide}
 
 
-\begin{Slide}{Javas switch-sats}
+\ifkompendium\else
 
-\begin{CodeSmall}[language=Java]
-public class Switch {
-    public static void main(String[] args) {
-        String favorite = "selleri";
-        if (args.length > 0) {
-            favorite = args[0];
-        }
-        System.out.println("Din favoritgrönsak: " + favorite);
-        char firstChar = Character.toLowerCase(favorite.charAt(0));
-        System.out.print("Jag tycker ");
-        switch (firstChar) {
-        case 'g': 
-            System.out.println("gurka är gott!");
-            break;
-        case 't': 
-            System.out.println("tomat är gott!");
-            break;
-        case 'b': 
-            System.out.println("brocolli är gott!");
-            break;
-        default:
-            System.out.println(favorite + " är mindre gott...");
-            break;
-        }
-    }
-}
-\end{CodeSmall}
+\Subsection{Nyhet: Scala 2.12.0}
+\begin{Slide}{Nyhet: Scala 2.12.0 släpptes 3:e Nov 2016}
+\begin{itemize}
+\item Nytt i Scala 2.12:
+\begin{itemize}\SlideFontSmall
+\item \Emph{Optimeringar} ''under huven'' som \Alert{kräver Java 8}
+\item \Emph{Snabbare, klarar sig med mindre minne, kortare bytekod, ...} 
+\item Väsentligt förbättrad \Emph{Scaladoc}: \url{http://www.scala-lang.org/api}
+\item Du hittar gamla Scaladoc för 2.11.8 här: \\ \url{http://www.scala-lang.org/api/2.11.8/}
+
+\end{itemize}
+\item I denna kursomgång och på LTH:s datorer kommer vi att stanna kvar vid \Emph{2.11.8} (nästa kursomgång kör vi 2.12) 
+\item Observera att 2.12 \Alert{inte är bytekodskompatibel} med 2.11 så du måste kompilera om all gammal kod om den ska funka med nykompilerad kod om du installerar 2.12.
+\item Med \code{sbt} (se appendix G) är det enkelt att ha många olika versioner av Scala-kompilatorn igång på samma maskin.
+\end{itemize}
+{\SlideFontTiny För den intresserade, läs mer här: \url{http://www.scala-lang.org/news/2.12.0}}
 \end{Slide}
 
 
+\Subsection{Veckans lab: \texttt{chords-team}}
+\begin{Slide}{Veckans lab: \texttt{chords-team}}\SlideFontSmall
+Övergripande syfte:
+\begin{itemize}
+\item Träna på case-klasser, matchning, undantag
+\item Jobba med ett större program med flera klasser i olika filer
+\item Jobba flera personer på samma program
+\end{itemize}
+Innehåll:
+\begin{itemize}
+\item Skapa och spara ackord på gitarr (6 strängar) och ukulele (4 strängar) 
+\item Spela upp ackord med Javas inbyggda midispelare inkapslad i \code{SimpleNotePlayer}
+\item Rita ackord med \code{SimpleWindow} 
+\end{itemize}
+Hur mycket ni gör beror på hur många ni är i gruppen och hur stora ambitioner ni har. Diskutera detta med handledare på resurstid.
+\end{Slide}
+
+\begin{Slide}{Toner, oktaver och ackord}\SlideFontSmall
+\begin{itemize}
+\item Det finns 12 toner som har speciella namn: \\ C, C\#, D, D\#, etc. (uttalas: c, ciss, d, diss, etc.)
+\item Jämför vita och svarta tangenter på ett piano: \\ avståndet mellan varje tangent är ett s.k. \emph{halvt tonsteg}. 
+\item Toner återkommer i oktaver, modulo 12.
+\item Tonen som representeras av strängen \code{"D2"} är tonen D i andra oktaven.
+\item Tonen \code{"D2"} motsvarar heltalet \code{26} på labben.
+\item Ett ackord består av flera toner.
+\end{itemize}
+\begin{REPL}[basicstyle=\color{white}\ttfamily\SlideFontSize{6}{7}\selectfont]
+scala> val notes = Vector("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
+
+scala> notes.size
+res0: Int = 12
+
+scala> notes(26 % 12)
+res1: String = D
+
+\end{REPL}
+\end{Slide}
+
+\begin{Slide}{Toner på ett stränginstrument}
+\begin{minipage}{0.5\textwidth}
+\begin{itemize}\SlideFontSmall
+\item Gitarr och ukulele har 6 resp. 4 strängar och en greppbräda med s.k. band.
+
+\item Om man trycker ned ett finger på första bandet höjs tonen ett halvt tonsteg. 
+
+\item Exempel: om en sträng är stämd i D3 blir tonen om man trycker ned fingret på fjärde bandet F\#3.
+
+\item \href{http://www.gitarr.org}{www.gitarr.org}
+
+\item \href{http://www.stefansukulele.com}{www.stefansukulele.com}
+
+\end{itemize}
+\end{minipage}
+\begin{minipage}{0.45\textwidth}
+\includegraphics[width=1.0\textwidth]{../img/chords/ChordDraw}
+\end{minipage}
+
+\end{Slide}
+
+\begin{Slide}{Modell av gitarr och ukulele}
+\begin{Code}
+object model {
+  type Tuning = Vector[String]
+  type Grip = Vector[Int]
+
+  trait Chord {
+    def name: String
+    def tuning: Tuning
+    def grip: Grip
+  }
+  
+  case class Guitar(name: String, grip: Grip) extends Chord {
+    val tuning = Vector("E2", "A2", "D3", "G3", "B3", "E4")
+  }
+  
+  case class Ukulele(name: String, grip: Grip) extends Chord {
+    val tuning = Vector("G4", "C4", "E4", "A4")
+  }
+
+}
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{En gemensam bastyp för olika ackord}\SlideFontSmall
+\vspace{-0.5em}\begin{center}
+\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+\tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3cm, rectangle split, rectangle split parts = 3]
+\begin{tikzpicture}[inner sep=0.5em]
+\node [umlclass, rectangle split parts = 2, xshift=0cm, text width=5cm] (BaseType)  {
+            \textit{\textbf{\centerline{\TextBox{\code{Chord}}}}}
+            \nodepart[]{second}
+            \TextBox{\code{val name: String}}\vspace{-0.25em}\newline
+            \TextBox{\code{val tuning: Vector[String]}}\vspace{-0.25em}\newline
+            \TextBox{\code{val grip: Vector[Int]}}\vspace{-0.25em}\newline
+
+        };
+        
+\node [umlclass, rectangle split parts = 1]  at (2.5cm,-3.7cm) (SubType1) {
+            \textbf{\centerline{\TextBox{\code{Guitar}}}}
+            %\nodepart[]{second} \TextBox{~}
+        };  
+                
+\node [umlclass, rectangle split parts = 1] at (-2.5cm,-3.7cm) (SubType2)  {
+            \textbf{\centerline{\TextBox{\code{Ukulele}}}}
+            %\nodepart[]{second} \TextBox{talk(): void}
+        };        
+\draw[umlarrow] (SubType1.north) -- ++(0,0.5) -| (BaseType.south);    
+\draw[umlarrow] (SubType2.north) -- ++(0,0.5) -| (BaseType.south);            
+\end{tikzpicture}
+\end{center}
+\pause\vspace{-0.7em}
+\begin{REPL}
+scala> import model._
+
+scala> val uc = Ukulele("C", Vector(0, 0, 0, 3))
+uc: model.Ukulele = Ukulele(C,Vector(0, 0, 0, 3))
+
+scala> val ge = Guitar("E", Vector(0, 2, 2, 1, 0, 0))
+ge: model.Guitar = Guitar(E,Vector(0, 2, 2, 1, 0, 0))
+\end{REPL}
+\end{Slide}
 
 
+\begin{Slide}{Grupparbete}\SlideFontSmall
+\begin{itemize}
+\item Förslag på arbetssätt:
+\begin{itemize}\SlideFontSmall
+\item Träffas nu på rasten och boka nästa gruppmöte
+\item Förberedelser inför första gruppmötet: individuella studier av labbinstruktioner och koden som är given i workspace
+\item Träffas gärna i ett studierum med whiteboard
+\item På mötet: gå igenom uppgift och given kod så att alla fattar vad det går ut på; bestäm omfattning och ansvarsuppdelning
+\item När ni träffas, skissa upp din kod på whiteboard och få feedback
+\item På varje gruppmöte, bestäm tid för nästa möte och vad var och en ska försöka hinna tills dess
+\end{itemize}
 
 
+\item Ni får \Emph{lov att ändra på omfattningen} efter antalet gruppmedlemmar, ambition och förmåga: diskutera detta med handledare på resurstid
 
+\item \Alert{Minimikrav}: att med textkommando kunna skapa/spara/ladda gitarr- och ukulele-ackord och att ni tränar på matchning
+
+\end{itemize}
+\end{Slide}
+
+
+\Subsection{Matchning}
+\begin{Slide}{Vad är matchning?}
+Matchning gör man då man vill jämföra ett värde mot andra värden och hitta överensstämmelse \Eng{match}.
+
+\pause
+
+\vspace{1em}Detta kan man t.ex. göra med nästlade if-else-satser:
+
+\begin{Code}
+val g = scala.io.StdIn.readLine("grönsak:")
+
+if (g == "gurka") println("gott!")
+else if (g == "tomat") println("gott!")
+else if (g == "broccoli") println("ganska gott...")
+else println("inte gott :(")
+\end{Code}
+\end{Slide}
+\fi
+
+\begin{Slide}{Javas switch-sats}\SlideFontSmall
+De flesta C-liknande språk (men inte Scala) har en \jcode{switch}-sats som man kan använda istället för (vissa) nästlade if-else-satser: 
+\javainputlisting[basicstyle=\ttfamily\SlideFontSize{6}{7}\selectfont]{../compendium/examples/match/SwitchNoBreak.java}
+Funkar bara för primitiva typer och några till (t.ex. String).
+\end{Slide}
+
+\ifkompendium\else
+\begin{Slide}{Javas switch-sats utan break}\SlideFontSmall
+Saknad \jcode{break}-sats ''faller igenom'' till efterföljande gren: 
+
+\javainputlisting[basicstyle=\ttfamily\SlideFontSize{6}{7}\selectfont]{../compendium/examples/match/SwitchNoBreak.java}
+En glömd \jcode{break} kan ge svårhittad bugg... 
+\end{Slide}
+
+\begin{Slide}{Javas switch-sats med glömd break}\SlideFontSmall
+
+\vspace{-0.5em}\javainputlisting[basicstyle=\ttfamily\SlideFontSize{5.5}{6.8}\selectfont]{../compendium/examples/match/SwitchForgotBreak.java}
+
+\vspace{-0.7em}\pause
+\begin{REPL}
+$ java SwitchForgotBreak 
+Skriv grönsak:
+gurka
+gott!
+gott!
+\end{REPL}
+
+\end{Slide}
+
+
+\begin{Slide}{Scalas \texttt{match}-uttryck}
+Scala har ingen \code{switch}-sats men erbjuder i stället ett \code{match}-\Emph{uttryck} som är mångsidig och kraftfull och ger ett värde.
+
+\begin{Code}
+val g = scala.io.StdIn.readLine("grönsak:")
+val msg = g match {
+  case "gurka" => "gott!"
+  case "tomat" => "jättegott!"
+  case "broccoli" => "ganska gott..."
+  case _ => "mindre gott..."
+}
+\end{Code}
+Och den ''faller inte igenom'' som Javas \code{switch}-sats! \\
+Default-grenen skrivs så här: \code{case _ => }
+\end{Slide}
+
+\begin{Slide}{Matchning med gard}
+\end{Slide}
+
+\begin{Slide}{Matchning efter typ}
+\end{Slide}
+
+\begin{Slide}{Stora/små begynnelsebokstäver vid matchning}
+\end{Slide}
+
+
+\fi
 
 
 
