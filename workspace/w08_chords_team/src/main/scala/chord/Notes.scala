@@ -28,7 +28,7 @@ object Notes {
   val toNumber: Map[String, Int] = ???
   
   /**
-   * Tries to convert a string into a number, 
+   * Tries to convert a note string with octave to a number, 
    * Examples: E2 gives Some(16), "C#3" gives Some(25), "X" gives None 
    */
   def unapply(s: String): Option[Int] = ???
