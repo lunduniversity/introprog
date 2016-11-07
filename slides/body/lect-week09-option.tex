@@ -7,9 +7,20 @@
 
 
 \Subsection{Option}
-\begin{Slide}{Option för hantering av ev. saknade värden}
-\end{Slide}
 
+
+\begin{Slide}{Hur hantera saknade värden?}\SlideFontSmall
+Olika sätt att hantera saknade värden:
+\begin{itemize}
+\item Hitta på ett specialvärde: exempel -1 för icke nedtryckt sträng
+\item \code{null} om \code{AnyRef}/\code{Object} (vanligt i Java, mkt ovanligt i Scala) 
+\item Använd en samling och låt tom samling representera saknad värde: \\
+\code{val grip = Vector(Vector(2), Vector(7), Vector(), Vector(3))}
+
+\item \code{Option[T]} gemensam bastyp för: \\
+  \code{None} som representerar \Alert{saknat värde}, och \\ \code{Some[T]} som representerar att \Emph{värde finns}
+\end{itemize}
+\end{Slide}
 
 \begin{Slide}{En gemensam bastyp för ett värde som kanske saknas}\SlideFontSmall
 \vspace{-0.5em}\begin{center}
@@ -38,15 +49,53 @@
 \end{center}
 \end{Slide}
 
+
+\begin{Slide}{Option för hantering av ev. saknade värden}\SlideFontSmall
+Alla vill inte berätta för Facebook vad de har för kön. \\ Förbättra Facebooks kod med ett litet Scala-program:
+\begin{Code}
+trait Gender
+case object Male   extends Gender
+case object Female extends Gender
+
+case class Person(name: String, gender: Option[Gender])
+\end{Code}
+\begin{REPL}
+scala> val p1 = Person("Björn",  Some(Male))
+scala> val p2 = Person("Sandra", Some(Female))
+scala> val p3 = Person("Andro",  None)
+scala> val g2 = p2.gender
+scala> def show(g: Option[Gender]): String = g match {
+         case Some(x) => x.toString
+         case None    => "unknown"
+       }
+scala> show(g2)
+scala> show(p3.gender)
+scala> val ps = Vector(p1,p2,p3)
+scala> ps.map(_.gender).map(show)
+\end{REPL}
+\end{Slide}
+
+\begin{Slide}{Några smidiga metoder på \code{Option}}
+getOrElse
+
+map
+
+foreach
+
+isEmpty
+\end{Slide}
+
+
+\begin{Slide}{Några samlingsmetoder som ger en \code{Option}}
+get på Map
+
+headOption på Vector
+
+find på Seq
+\end{Slide}
+
+
+
 \fi
-
-
-
-
-
-
-
-
-
 
 
