@@ -34,13 +34,38 @@ Undantag representerar ett fel eller ett onormalt tillstånd som upptäcks under
 
 \end{Slide}
 
+\begin{Slide}{''Kasta'' dina egna undantag med \texttt{throw}}\SlideFontSmall
+Man kan själv generera ett undantag med \code{throw}, vilket kallas att \Emph{kasta} ett undantag som (om det inte \Emph{fångas}), gör att exekveringen \Alert{avbryts}.
 
-\begin{Slide}{Fånga undantag med \texttt{try}-\texttt{catch}-uttryck}
+
+\begin{REPL}
+scala> def pang = throw new Exception("PANG!")
+pang: Nothing
+
+scala> pang
+java.lang.Exception: PANG!
+  at .pang(<console>:11)
+  ...
+  
+\end{REPL}
+\pause
+Olika sätt att hantera undantag: 
+\begin{itemize}
+\item Scala: Man kan använda ett \code{try ... catch}-uttryck och ge ett \Emph{värde} i händelse av undantag.
+\item Java: Man kan använda en \code{try ... catch}-sats och \Alert{göra något} i händelse av undantag.
+ 
+\item Scala: Man kan \Emph{kapsla in} ett undantag med \Emph{\texttt{scala.util.Try}} och förhindra att exekveringen avbryts. (Finns ej i Java; att föredra i Scala.)
+\end{itemize}
 \end{Slide}
+
 
 \Subsection{\texttt{scala.util.Try}}
 
 \begin{Slide}{En gemensam bastyp för något som kan misslyckas}\SlideFontSmall
+\begin{Code}
+import scala.util.{Try, Success, Failure}
+\end{Code}
+
 \vspace{-0.5em}\begin{center}
 \newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
 \tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3.0cm, rectangle split, rectangle split parts = 3]
@@ -67,6 +92,58 @@ Undantag representerar ett fel eller ett onormalt tillstånd som upptäcks under
 \end{tikzpicture}
 \end{center}
 \end{Slide}
+
+\begin{Slide}{Hantera undantag med \texttt{Try}}
+\vspace{-0.5em}\begin{REPL}
+scala> def pang = throw new Exception("PANG!")
+
+scala> def kanskePang = if (math.random < 0.5) 42 else pang
+
+scala> import scala.util.{Try, Success, Failure}
+
+scala> def försök = Try { kanskePang }
+
+scala> val xs = Vector.fill(15){försök}
+
+scala> val trettonde = xs(13) match {
+         case Success(value) => value
+         case Failure(e) => println(e); -1
+       }
+
+scala> (xs(13).isSuccess, xs(13).isFailure)
+
+scala> försök.foreach(println)
+
+scala> försök.map(_ + 1)
+
+scala> for (Success(x) <- xs) yield x
+\end{REPL}
+\end{Slide}
+
+\begin{Slide}{Fördjupning: \texttt{try}-\texttt{catch}-uttryck}\SlideFontSmall
+Man kan fånga undantag med ett \code{try ... catch}-uttryck:
+\begin{Code}
+def carola = try {
+  if (math.random > 0.5) throw new Exception("stormvind")
+  42
+} catch { 
+  case e: Exception =>
+    println("Fångad av en " + e.getMessage)
+    -1
+}  
+\end{Code}
+\pause
+\begin{REPL}
+scala> Vector.fill(5)(carola)
+Fångad av en stormvind
+Fångad av en stormvind
+Fångad av en stormvind
+res0: scala.collection.immutable.Vector[Int] = Vector(-1, 42, 42, -1, -1)
+\end{REPL}
+\pause
+\emph{Fördjupning:} \\ Gör övning 9-10 som visar hur man fångar undantag i Scala och Java. \\Mer om undantag i fortsättningskursen.
+\end{Slide}
+
 
 \fi
 
