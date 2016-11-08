@@ -23,7 +23,7 @@ Olika sätt att hantera saknade värden:
 \end{Slide}
 
 \begin{Slide}{En gemensam bastyp för ett värde som kanske saknas}\SlideFontSmall
-\vspace{-0.5em}\begin{center}
+\vspace{-0.0em}\begin{center}
 \newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
 \tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3cm, rectangle split, rectangle split parts = 3]
 \begin{tikzpicture}[inner sep=0.5em]
@@ -35,18 +35,30 @@ Olika sätt att hantera saknade värden:
 
         };
         
-\node [umlclass, rectangle split parts = 1]  at (-2.5cm,-3.7cm) (SubType1) {
+\node [umlclass, rectangle split parts = 1]  at (-2.5cm,-3.0cm) (SubType1) {
             \textbf{\centerline{\TextBox{\code{Some[A]}}}}
             % \nodepart[]{second} \TextBox{\code{val x: A}}
         };  
                 
-\node [umlclass, rectangle split parts = 1] at (2.5cm,-3.7cm) (SubType2)  {
+\node [umlclass, rectangle split parts = 1] at (2.5cm,-3.0cm) (SubType2)  {
             \textbf{\centerline{\TextBox{\code{None}}}}
         };        
 \draw[umlarrow] (SubType1.north) -- ++(0,0.5) -| (BaseType.south);    
 \draw[umlarrow] (SubType2.north) -- ++(0,0.5) -| (BaseType.south);            
 \end{tikzpicture}
 \end{center}
+\pause
+\vspace{-0.5em}\begin{REPL}
+scala> var x: Option[Int] = Some(42)
+
+scala> x.isEmpty
+res0: Boolean = false
+
+scala> x = None
+
+scala> x.isEmpty
+res1: Boolean = true
+\end{REPL}
 \end{Slide}
 
 
@@ -76,25 +88,81 @@ scala> ps.map(_.gender).map(show)
 \end{REPL}
 \end{Slide}
 
-\begin{Slide}{Några smidiga metoder på \code{Option}}
-getOrElse
+\begin{Slide}{Några smidiga metoder på \code{Option}}\SlideFontSmall
+Metoden \code{getOrElse} gör att man ofta kan undvika matchning.
+\begin{Code}
+var opt: Option[Int] = None
 
-map
+val x = opt.getOrElse(42)      // get the value or give a default if missing
+\end{Code}
 
-foreach
+Flera av de vanliga samlingsmetoderna funkar, t.ex. \code{foreach} och \code{map}.
+\begin{Code}
+opt.foreach{x => println(x)}    // only done if value exists
 
-isEmpty
+opt.map{x => x + 1}             // only done if value exists
+
+opt = Some(42)                  // change opt to now have some value
+
+opt.foreach{x => println(x)}    // done as value now exists
+
+opt.map{x => x + 1}             // done as value now exists
+
+\end{Code}
 \end{Slide}
 
 
 \begin{Slide}{Några samlingsmetoder som ger en \code{Option}}
-get på Map
+\begin{REPL}
+scala> val (xs, ys) = (Vector(1,2,3), Vector())
 
-headOption på Vector
+scala> xs.headOption
+res0: ???
 
-find på Seq
+scala> ys.headOption
+res1: ???
+
+scala> xs.find(_ > 1)
+res2: ???
+
+scala> xs.find(_ > 5)
+res3: ???
+
+scala> val huvudstad = Map("Sverige" -> "Sthlm", "Skåne" -> "Malmö")
+
+scala> huvudstad.get("Skåne")
+res4: ???
+
+scala> huvudstad.get("Danmark")
+res5: ???
+\end{REPL}
 \end{Slide}
 
+\begin{Slide}{Några samlingsmetoder som ger en \code{Option}}
+\begin{REPL}
+scala> val (xs, ys) = (Vector(1,2,3), Vector())
+
+scala> xs.headOption
+res0: Option[Int] = Some(1)
+
+scala> ys.headOption
+res1: Option[Nothing] = None
+
+scala> xs.find(_ > 1)
+res2: Option[Int] = Some(2)
+
+scala> xs.find(_ > 5)
+res3: Option[Int] = None
+
+scala> val huvudstad = Map("Sverige" -> "Sthlm", "Skåne" -> "Malmö")
+
+scala> huvudstad.get("Skåne")
+res4: Option[String] = Some(Malmö)
+
+scala> huvudstad.get("Danmark")
+res5: Option[String] = None
+\end{REPL}
+\end{Slide}
 
 
 \fi
