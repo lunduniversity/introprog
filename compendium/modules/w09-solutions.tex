@@ -88,8 +88,10 @@ object Main{
 \Subtask
 Följande \code{case class} läggs till:
 \begin{Code}
-case class Broccoli(vikt: Int, ärRutten: Boolean) extends
-	Grönsak { val ärÄtbar: Boolean = (!ärRutten && vikt > 50)}
+case class Broccoli(vikt: Int, ärRutten: Boolean) 
+    extends Grönsak { 
+  val ärÄtbar: Boolean = (!ärRutten && vikt > 80)
+}
 \end{Code}
 ~\\
 Därefter läggs följande till i \code{object Main} innan \code{def slumpgrönsak}:
@@ -101,9 +103,12 @@ def slumpbroccoli: Broccoli = Broccoli(slumpvikt, slumprutten)
 Slutligen ändras \code{def slumpgrönsak} till följande:
 
 \begin{Code}
-def slumpgrönsak: Grönsak = if (math.random > 0.2) slumpgurka 
-		else{
-			if (math.random > 0.2) slumptomat else slumpbroccoli}
+def slumpgrönsak: Grönsak = {    // välj t.ex. denna fördelning:
+  val rnd = math.random
+  if (rnd > 0.5) slumpgurka      // 50% sannolikhet för gurka
+  else if (rnd > 0.2) slumptomat // 30% sannolikhet för tomat
+  else slumpbroccoli             // 20% sannolikhet för broccoli
+}
 \end{Code}
 
 \Subtask Fördelarna med \code{match}-versionen, och mönstermatchning i sig, är att det är väldigt lätt att göra ändringar på hur matchningen sker. Detta innebär att det skulle vara väldigt lätt att ändra definitionen för ätbarheten. Skulle dock dessa inte ändras ofta utan snarare grönsaksutbudet så kan det polyformistiska alternativet vara att föredra. Detta eftersom det skulle implementeras och ändras lättare än mönstermatchningen vid byte av grönsaker.
