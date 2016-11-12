@@ -12,11 +12,7 @@
 \end{Goals}
 
 \begin{Preparations}
-\item Gör veckans övningsuppgifter.
-\item Läs om matriser i Scala-boken på sida (??).
-\item Läs om arv i Scala-boken på sida (??).
-\item Läs om olika algoritmer för att ta sig igenom en labyrint: \url{https://en.wikipedia.org/wiki/Maze\_solving\_algorithm}
-\item (Frivillig) Läs om olika algoritmer för att skapa en slumpmässig labyrint: \url{https://en.wikipedia.org/wiki/Maze\_generation\_algorithm}.
+\item Gör övning {\tt \ExeWeekTEN} i kapitel \ref{chapter:W10}.
 \end{Preparations}
 
 \subsection{Bakgrund}
@@ -30,7 +26,7 @@ I denna laboration ska du rita labyrinter och sedan implementera en algoritm fö
 	\caption{Exempel på en matris-representation av en labyrint.}
 \end{figure}
 
-Det finns många olika sätt att ta sig igenom en labyrint. Ett tänkbart sätt att hitta utgången, som kanske inte följer närmsta vägen, är att hålla vänster hand i vänster vägg och följa väggen med handen tills man når öppningen. Detta fungerar för alla labyrinter där väggarna från ingången till utgången är sammankopplade.
+Det finns många olika sätt att ta sig igenom en labyrint.\footnote{Om du är intresserad, läs om olika algoritmer för att ta sig igenom en labyrint här: \url{https://en.wikipedia.org/wiki/Maze\_solving\_algorithm}} Ett tänkbart sätt att hitta utgången, som kanske inte följer närmsta vägen, är att hålla vänster hand i vänster vägg och följa väggen med handen tills man når öppningen. Detta fungerar för alla labyrinter där väggarna från ingången till utgången är sammankopplade.
 
 När man går igenom labyrinten finns det fyra olika riktningar att välja mellan som alla kan beskrivas i antal grader räknat från x-axeln, där höger motsvaras av 0 grader, uppåt motsvaras av 90 grader, vänster av 180 grader och nedåt av 270 grader.
 
@@ -138,10 +134,6 @@ object Maze {
 
 \end{ScalaSpec}
 
-\subsubsection{Den frivilliga uppgiften}
-
-I den frivilliga uppgiften ska en slumpmässig labyrint genereras. Det finns flera olika algoritmer för att göra detta. Vi kommer här använda en slumpmässig variant av den s.k. \emph{Prims algoritm}. Du kan läsa mer om Prims algoritm här: \href{https://en.wikipedia.org/wiki/Maze_generation_algorithm}{en.wikipedia.org/wiki/Maze\_generation\_algorithm} (De representerar en labyrint på ett annat sätt än vi gör här, vilket innebär att algoritmen blir lite annorlunda).
-
 
 \subsection{Obligatoriska uppgifter}
 
@@ -197,45 +189,45 @@ class MazeTurtle(
 
 \Subtask Lägg till kod i \texttt{AMazeIngRace} som skapar en sköldpadda av typ \texttt{MazeTurtle} och sedan låter denna gå igenom en labyrint med metoden \texttt{walk}. Testa att din \texttt{MazeTurtle} fungerar som den ska. Sköldpaddan ska klara att ta sig igenom alla labyrinter i filerna \texttt{maze1.txt}-\texttt{maze4.txt} samt labyrinten som du skapat själv.
 
+\newpage
 
 \subsection{Frivillig extrauppgift}
 
-Prims algoritm används för att koppla ihop alla punkter i en graf med så få antal kopplingar som möjligt. Tänk dig att varje punkt i en graf representerar en ruta i en labyrint och att en koppling motsvarar ställen där du kan gå i labyrinten, det vill säga två öppna rutor (rutor där det inte finns någon vägg och som du därmed kan gå på) intill varandra.
+I denna frivilliga extrauppgift ska du generera en slumpmässig labyrint. Du ska använda en förenklad variant av Prims algoritm.\footnote{Om du vill, läs mer om Prims algoritm här: \href{https://en.wikipedia.org/wiki/Prim\%27s_algorithm}{en.wikipedia.org/wiki/Prim\%27s\_algorithm}}
 
-I algoritmen väljs en slumpmässig ruta intill en redan öppen ruta och sedan undersöks om det finns någon annan öppen ruta intill. Om så är fallet låter man rutan förbli en vägg, annars öppnas den rutan (det vill säga rutan görs om från en vägg till en gång). Detta upprepas tills dess att alla rutor har undersökts.
-
+I pseudokoden för vår algoritm, som återfinns nedan, kallas en ruta som inte är en vägg för en \emph{öppen ruta}. Att \emph{öppna en ruta} innebär att en ruta görs om från en vägg till en öppen ruta (om den inte redan är öppen). 
+ 
 Eftersom det i vårt fall endast ska finnas en enda ingång och en enda utgång i labyrinten, måste detta hanteras speciellt.
 
-Nedan följer en grov beskrivning av algoritmen. Pseudokod med mer detaljer återfinns i figur \ref{lab:maze:prims-algo}.
+Först följer en översiktlig beskrivning av algoritmen, sedan pseudokod med mer detaljer.
 
 \begin{enumerate}
-	\item Börja med att slumpmässigt välja en av rutorna i nedersta raden och öppna den rutan samt rutan ovanför. Detta motsvarar ingången till labyrinten.
+    \item Skapa en matris helt fylld med väggar.
+	\item Börja med att slumpmässigt välja en av rutorna i nedersta raden och öppna den rutan, samt rutan ovanför. Detta blir ingången till labyrinten.
 	\item Applicera väggöppningsalgoritmen som visualiseras i figur \ref{lab:maze:prims-algo-viz} på sida \pageref{lab:maze:prims-algo-viz}. Observera att matrisens ytterkantsväggar inte ska öppnas (förutom ingången och utgången).
-	\item Slutligen letar vi efter en slumpmässig ruta på näst översta raden som är öppen och öppnar rutan ovanför denna, vilket kommer bli utgången för labyrinten.
+	\item Slutligen letar vi efter en slumpmässig ruta på näst översta raden som är öppen och öppnar rutan ovanför denna, vilket blir utgången.
 \end{enumerate}
 
-\begin{figure}[H]
 \begin{Code}
 def random(rows, cols): Maze = {
-	labyrint = matris(rows, cols) med inga öppna rutor
-	buffer = lista(koordinater till rutor)
-	Välj en slumpmässig ruta i nedersta raden och öppna den.
-	Öppna rutan ovanför.
-	Lägg till rutorna runt om till buffer.
-	while (buffer inte är tom)
-		element = slumpmässigt element i buffer
-		if (element har tre väggar intill sig)
-			Öppna rutan för de koordinater som element innehåller.
-			Lägg till rutorna runt om element till buffer.
-		Ta bort element från buffer.
-	Hitta en ruta som är öppen i näst översta raden.
-	Öppna rutan ovanför.
-	Returnera: labyrint 
+  val labyrint: Array[Array[Boolean]] = 
+    en matris av dimension (rows, cols) med bara väggar
+  buffer = lista med koordinater (x, y) till alla matrisens rutor
+  Välj en slumpmässig ruta i nedersta raden och öppna den.
+  Öppna rutan ovanför.
+  Lägg till rutorna runt om till buffer.
+  while (buffer inte är tom){
+    element = slumpmässigt element i buffer
+    if (element har tre väggar intill sig)
+        Öppna rutan för de koordinater som element innehåller.
+        Lägg till rutorna runt om element till buffer.
+    Ta bort element från buffer.
+  }
+  Hitta en ruta som är öppen i näst översta raden.
+  Öppna rutan ovanför.
+  Returnera labyrint 
 }
 \end{Code}
-	\caption{Pseudokod för generering av slumpmässig labyrint.}
-	\label{lab:maze:prims-algo}
-\end{figure}
 
 
 \begin{figure}[H]
