@@ -6,32 +6,42 @@
 \begin{Goals}
 \item Kunna skapa och använda matriser.
 \item Kunna iterera över matriser med nästlade for-loopar.
-\item Kunna använda sig av och förstå arv.
-\item Förstå och träna på olika villkor med if-satser.
-\item Känna till algoritmer för att lösa problem så som att ta sig igenom en labyrint eller slumpmässigt skapa en labyrint.
+\item Kunna använda arv.
+\item Träna på att konstruera algoritmer.
 \end{Goals}
 
 \begin{Preparations}
 \item Gör övning {\tt \ExeWeekTEN} i kapitel \ref{chapter:W10}.
+
+\item Läs igenom hela laborationen och studera den befintliga koden i \code{workspace}.
+
+\item Skriv pseudokod för metoderna \code{draw} och {walk}, som beskrivs nedan.
 \end{Preparations}
 
 \subsection{Bakgrund}
 
-I denna laboration ska du rita labyrinter och sedan implementera en algoritm för att ta dig igenom dessa. En labyrint är ett rum som har en ingång och en utgång. Ingången är i denna laboration alltid längst ner i labyrinten, och utgången alltid högst upp. Alla väggar är också parallella med antingen x-axeln eller y-axeln. Men kan beskriva en sådan labyrint i kod med hjälp av en matris av booelska element. Varje element i matrisen motsvarar då en ruta i labyrinten. Värdet \texttt{true} i matrisen representerar att det finns en vägg på motsvarande ruta i labyrinten och \texttt{false} representerar att där istället är en väg att gå på.
+En labyrint är ett rum som har en ingång och en utgång.  I denna laboration ska du rita labyrinter och sedan implementera en algoritm för att hitta ut ur labyrinter.  
+
+För våra labyrinter gäller följande begränsningar: Ingången är alltid längst ner i labyrinten, och utgången alltid högst upp. Dessutom är alla väggar parallella med antingen x-axeln eller y-axeln. 
+
+Man kan representera en sådan labyrint med hjälp av en booelsk matris, så som visas i figur \ref{maze:figboolmatrix}. Varje element i matrisen motsvarar en ruta i labyrinten. Värdet \code{true} i matrisen representerar att det finns en vägg på motsvarande ruta i labyrinten och \code{false} representerar en öppen ruta där man kan gå.
 
 \begin{figure}[h]
 	\begin{center}
 		\includegraphics[width=0.7\textwidth]{../img/w09-lab/MazeAndMatrix.jpg}
 	\end{center}
-	\caption{Exempel på en matris-representation av en labyrint.}
+	\caption{Exempel på en matrisrepresentation av en enkel labyrint.}
+	\label{maze:figboolmatrix}
 \end{figure}
 
-Det finns många olika sätt att ta sig igenom en labyrint.\footnote{Om du är intresserad, läs om olika algoritmer för att ta sig igenom en labyrint här: \url{https://en.wikipedia.org/wiki/Maze\_solving\_algorithm}} Ett tänkbart sätt att hitta utgången, som kanske inte följer närmsta vägen, är att hålla vänster hand i vänster vägg och följa väggen med handen tills man når öppningen. Detta fungerar för alla labyrinter där väggarna från ingången till utgången är sammankopplade.
+Det finns många olika sätt att ta sig igenom en labyrint.\footnote{Om du är intresserad, läs om olika algoritmer för att ta sig igenom en labyrint här: \url{https://en.wikipedia.org/wiki/Maze\_solving\_algorithm}} Ett enkelt sätt att hitta utgången, som kanske inte följer närmsta vägen, är att hålla vänster hand i vänster vägg och följa väggen med handen tills man når öppningen. Detta fungerar för alla labyrinter där väggarna från ingången till utgången är sammankopplade.
 
 När man går igenom labyrinten finns det fyra olika riktningar att välja mellan som alla kan beskrivas i antal grader räknat från x-axeln, där höger motsvaras av 0 grader, uppåt motsvaras av 90 grader, vänster av 180 grader och nedåt av 270 grader.
 
-I denna laboration ska du använda en färdig klass \texttt{Maze} som representerar en labyrint med hjälp av en booelsk matris implementerad som en \code{Vector[Vector[Boolean]}. 
-Klassen har följande specifikation:
+I denna laboration ska du använda den nästan färdiga case-klassen \code{Maze} som representerar en labyrint med hjälp av en booelsk matris implementerad som en \code{Vector[Vector[Boolean]}. Du ska implementera metoden \code{draw} som ritar ut matrisen i ett fönster. I den frivilliga extrauppgiften implementerar du metoden \code{random} i kompanjonsobjektet \code{Maze}.
+
+
+Klassen \code{Maze} har följande specifikation:
 
 \begin{ScalaSpec}{Maze}
 /**
@@ -102,7 +112,7 @@ case class Maze(data: Vector[Vector[Boolean]]) {
 }
 
 /**
- *  An object representing a maze.
+ *  A companion object with factory methods for creating maze instances.
  */
 object Maze {
 
@@ -137,22 +147,46 @@ object Maze {
 
 \subsection{Obligatoriska uppgifter}
 
-\Task I den här uppgiften ska du implementera en metod som ritar upp en labyrint i \texttt{SimpleWindow}. Studera kodfilerna som ges inför denna laboration här: 
-\href{https://github.com/lunduniversity/introprog/tree/master/workspace/w09_maze/src/main/scala/maze}{github.com/lunduniversity/introprog/tree/master/workspace/\\w09\_maze/src/main/scala/maze}
+I de obligatoriska uppgifterna ska du implementera följande:
+\begin{itemize}
+\item Metoden \code{draw} i klassen \code{Maze}.
 
-Läs igenom case-klassen \texttt{Maze} och dess kompanjonsobjekt och se till att du förstår det mesta, annars fråga. Objektet \texttt{Maze} tar in rader med strängar, antingen direkt som argument eller genom att läsa in från en fil. Utifrån detta skapar den sedan en booelsk matris som representation av labyrinten, där tecknet '\#' i en sträng representerar en bit av en vägg medan blanksteg representerar en bit av en gång.
+\item Klassen \code{MazeTurtle} enligt specifikation nedan och dess metod \code{walk}, som ritar ut var sköldpaddan går medan den finner vägen ut ur en labyrint. \code{MazeTurtle} ska vara en subtyp till befintliga \code{ColorTurtle} som i sin tur är en subtyp till befintliga \code{Turtle}.
 
-\Subtask Du ska nu implementera metoden \texttt{draw} i klassen \texttt{Maze} ska rita upp labyrinten i \texttt{SimpleWindow}. För att göra detta behöver du gå igenom matrisen \texttt{data} och undersöka elementen på varje plats. Om elementet på en viss plats är \texttt{true} ska det ritas upp en bit av en vägg på motsvarande plats i \texttt{SimpleWindow}. Detta kan du göra med hjälp av den färdigskrivna metoden \texttt{brickInTheWall}. Om elementet på en viss plats är \texttt{false} ska ingenting ritas upp.
-
-
-\Task I den här uppgiften ska du skapa en klass med en main-metod som anropar din metod för att rita upp en labyrint.
-
-\Subtask Skapa en ny klass \texttt{AMazeIngRace}. I denna klass ska du skriva en main-metod där du skapar ett objekt av \texttt{Maze} genom att läsa in från en fil (börja exempelvis med filen \texttt{maze1.txt} som ligger i \texttt{w09\_maze/src/main/resources/}). Du måste även skapa ett objekt av \texttt{SimpleWindow} som ska skickas med när du anropar metoden \texttt{draw}. Anropa  metoden \texttt{draw} på \texttt{Maze}-objektet och kontrollera att labyrinten ritas upp som den ska. Gör samma sak för resterande av filerna \texttt{maze2.txt} -- \texttt{maze4.txt}; alla ska kunna ritas upp korrekt.
-
-\Subtask Testa att rita en egen labyrint genom att skapa en textfil \texttt{maze5.txt} och lägg i samma mapp som övriga maze-filer. Kontrollera så att även denna labyrint ritas upp som den ska, och fixa annars till metoden \texttt{draw} så att den fungerar som tänkt. Din labyrint inte alls behöver vara avancerad; det är inte meningen att den här uppgiften ska ta lång tid.
+\end{itemize}
 
 
-\Task I den här uppgiften ska du implementera en algoritm för att få en sköldpadda att ta sig genom en labyrint genom att alltid hålla i väggen med vänster hand (eller kanske fot i det här fallet). För detta ska du skapa en ny klass \texttt{MazeTurtle} som ska ha följande specifikation:
+\noindent Innan du börjar med uppgifterna nedan, studera noga dessa givna filer:
+\begin{itemize}
+\item
+\href{https://github.com/lunduniversity/introprog/tree/master/workspace/w09_maze/src/main/scala/maze/Maze.scala}{workspace/w09\_maze/src/main/scala/maze/Maze.scala} \\
+Kompanjonsobjektet \texttt{Maze} innehåller fabriksmetoder som skapar nya labyrintinstanser. Fabriksmetoderna  skapar booelska matriser utifrån strängar, där tecknet '\#' i en sträng representerar en väggruta medan blanksteg representerar en gångruta.
+
+\item 
+\href{https://github.com/lunduniversity/introprog/tree/master/workspace/w09_maze/src/main/scala/maze/Turtle.scala}{workspace/w09\_maze/src/main/scala/maze/Turtle.scala}
+
+\item 
+\href{https://github.com/lunduniversity/introprog/tree/master/workspace/w09_maze/src/main/scala/maze/ColorTurtle.scala}{workspace/w09\_maze/src/main/scala/maze/ColorTurtle.scala}
+
+\item Huvudprogrammet \code{main} i klassen \code{Main} i filen \code{AMazeIngRace.scala}:
+\href{https://github.com/lunduniversity/introprog/tree/master/workspace/w09_maze/src/main/scala/maze/AMazeIngRace.scala}{workspace/w09\_maze/src/main/scala/maze/AMazeIngRace.scala}
+
+\item Labyrinterna i mappen \code{resources}:\\
+\href{https://github.com/lunduniversity/introprog/tree/master/workspace/w09_maze/src/main/resources}{workspace/w09\_maze/src/main/resources}
+
+\end{itemize}
+
+\Task Kör igång huvudprogrammet i filen \code{AMazeIngRace.scala} och säkerställ att ditt projekt hittar \code{SimpleWindow} i \code{cslib}, samt att labyrintfilerna i mappen \code{src/resources} hittas av huvudprogrammet och skrivs ut.
+
+\Task Implementera metoden \code{draw} i klassen \code{Maze} så att den ritar upp en labyrint i \texttt{SimpleWindow}. 
+För att göra detta behöver du gå igenom matrisen \texttt{data} och undersöka elementen på varje plats. Om elementet på en viss plats är \texttt{true} ska det ritas upp en bit av en vägg på motsvarande plats i \texttt{SimpleWindow}. Till din hjälp har du den färdigskrivna metoden \texttt{brickInTheWall}. Om elementet på en viss plats är \texttt{false} ska ingenting ritas upp.
+Börja, som förberedelse, att skissa på pseudokod för uppgiften. Du använder lämpligen en nästlad for-sats.
+
+
+\Task Skapa din egen labyrint i en textfil kallad \texttt{maze5.txt} i mappen \code{resources}. Kontrollera så att även denna labyrint ritas upp som den ska, och fixa annars till metoden \texttt{draw} så att den fungerar som tänkt. Din labyrint behöver inte alls behöver vara avancerad; det är inte meningen att den här uppgiften ska ta lång tid.
+
+
+\Task I denna uppgift ska du implementera en algoritm som får en sköldpadda att ta sig genom en labyrint. Algoritmen ska baseras på idén att alltid hålla vänster hand i väggen (eller sköldpaddsfot i det här fallet). För detta ändamål ska du skapa en ny klass \texttt{MazeTurtle} enligt följande specifikation:
 
 \begin{ScalaSpec}{MazeTurtle}
 /**
@@ -183,13 +217,23 @@ class MazeTurtle(
 
 \end{ScalaSpec}
 
-\Subtask Skapa en ny klass \texttt{MazeTurtle} som ärver från klassen \texttt{ColorTurtle}. \texttt{MazeTurtle} ska ta in ett extra argument, nämligen ett av typen \texttt{Maze} som representerar den labyrint som sköldpaddan ska gå i. Observera att du här behöver importera klasserna \texttt{Turtle} och \texttt{ColorTurtle} från en tidigare laboration. Detta gör du genom att högerklicka på projektet, välj Build Path -> Configure Build Path, välj fliken Projects, klicka på Add... och markera rätt laboration och klicka slutligen på OK.
+\begin{itemize}
+\item Klassen \texttt{MazeTurtle} ska ärva klassen \texttt{ColorTurtle} och ha en extra parameter, nämligen den labyrint som sköldpaddan ska gå i. 
 
-\Subtask Lägg till och implementera metoden \texttt{walk} i \texttt{MazeTurtle}. I metoden ska sköldpaddan, med hjälp av tekniken att alltid hålla vänster extremitet i väggen, ta sig genom labyrinten \texttt{Maze}, från början till slut. Varje steg motsvarar att flytta sig från en ruta till en annan i \code{Boolean}-matrisen i \texttt{Maze}. Sköldpaddan kommer alltså ta sig fram i labyrinten genom att undersöka för varje steg om den borde svänga vänster, gå rakt fram eller svänga höger, beroende på hur den står i förhållande till vänster vägg. För att avgöra hur sköldpaddan ska gå kan den använda sig av metoderna \texttt{wallInFront} och \texttt{wallAtLeft} som finns i \texttt{Maze}.
+\item Implementera metoden \texttt{walk} i \texttt{MazeTurtle}, med hjälp av tekniken att alltid hålla vänster extremitet i väggen, så att sköldpaddan tar sig genom labyrinten från början till slut. Varje steg motsvarar att flytta sig från en ruta till en annan i \code{Boolean}-matrisen i \texttt{Maze}. 
 
-\Subtask Lägg till kod i \texttt{AMazeIngRace} som skapar en sköldpadda av typ \texttt{MazeTurtle} och sedan låter denna gå igenom en labyrint med metoden \texttt{walk}. Testa att din \texttt{MazeTurtle} fungerar som den ska. Sköldpaddan ska klara att ta sig igenom alla labyrinter i filerna \texttt{maze1.txt}-\texttt{maze4.txt} samt labyrinten som du skapat själv.
+\item Sköldpaddan kommer alltså att ta sig fram i labyrinten genom att undersöka för varje steg om den borde svänga vänster, gå rakt fram eller svänga höger, beroende på hur den står i förhållande till vänster vägg. 
 
-\newpage
+\item För att avgöra hur sköldpaddan ska gå du använda dig av metoderna \texttt{wallInFront} och \texttt{wallAtLeft} som finns färdiga i \texttt{Maze}. 
+
+\item En speciell utmaning är att förstå skillnaden mellan fönstrets koordinater och positionen i den booelska labyrintmatrisen, samt hur översättningen mellan dessa går till.
+
+\item Börja, som förberedele, att skriva pseudokod för algoritmen.
+
+\end{itemize}
+
+
+\clearpage
 
 \subsection{Frivillig extrauppgift}
 
@@ -201,33 +245,44 @@ Eftersom det i vårt fall endast ska finnas en enda ingång och en enda utgång 
 
 Först följer en översiktlig beskrivning av algoritmen, sedan pseudokod med mer detaljer.
 
-\begin{enumerate}
+\begin{enumerate}[noitemsep]
     \item Skapa en matris helt fylld med väggar.
 	\item Börja med att slumpmässigt välja en av rutorna i nedersta raden och öppna den rutan, samt rutan ovanför. Detta blir ingången till labyrinten.
 	\item Applicera väggöppningsalgoritmen som visualiseras i figur \ref{lab:maze:prims-algo-viz} på sida \pageref{lab:maze:prims-algo-viz}. Observera att matrisens ytterkantsväggar inte ska öppnas (förutom ingången och utgången).
 	\item Slutligen letar vi efter en slumpmässig ruta på näst översta raden som är öppen och öppnar rutan ovanför denna, vilket blir utgången.
 \end{enumerate}
 
-\begin{Code}
-def random(rows, cols): Maze = {
-  val labyrint: Array[Array[Boolean]] = 
-    en matris av dimension (rows, cols) med bara väggar
-  buffer = lista med koordinater (x, y) till alla matrisens rutor
-  Välj en slumpmässig ruta i nedersta raden och öppna den.
-  Öppna rutan ovanför.
-  Lägg till rutorna runt om till buffer.
-  while (buffer inte är tom){
-    element = slumpmässigt element i buffer
-    if (element har tre väggar intill sig)
-        Öppna rutan för de koordinater som element innehåller.
-        Lägg till rutorna runt om element till buffer.
-    Ta bort element från buffer.
+\begin{CodeSmall}
+  def random(rows: Int, cols: Int): Maze = {
+    val maze: Array[Array[Boolean]] = /*initialt en matris med bara väggar*/
+    val wallCandidates: ArrayBuffer[(Int, Int)] = /*initialt inga positioner*/
+
+    // Lägger till omkringliggande vägar runt (row, col) i wallCandidates
+    def addSurroundingWalls(row: Int, col: Int): Unit = /* finns färdig */
+
+    // Ger true om det finns exakt tre väggar runt (row, col)
+    def isThreeWallsAround(row: Int, col: Int): Boolean = /* finns färdig */
+
+    val (startCol, startRow) = (/* slumpmässigt kolumn */, /* sista raden */)
+
+    /* Skapa öppningen */
+    /* Skapa första öppna rutan ovanför öppningen */
+    /* Lägg de väggar som omgärdar första öppna rutan i wallCandidates */ 
+
+    while (/* finns fler kandidater */) {
+      val rndIndex = /* slumpmässigt index för ngn väggkandidat */
+      val (row, col) = /* position för väggkandidat på plats rndIndex */
+      if (/* exakt tre väggar runt (row,col)*/) {
+        /* öppna denna position */
+        /* lägg till omgärdande väggar i wallCandidates */
+      }
+      /* ta bort väggkandidaten på plats rndIndex ur wallCandidate */
+    }
+
+    /* hitta utgång och öppna den */
+    /* skapa Maze och returnera */
   }
-  Hitta en ruta som är öppen i näst översta raden.
-  Öppna rutan ovanför.
-  Returnera labyrint 
-}
-\end{Code}
+\end{CodeSmall}
 
 
 \begin{figure}[H]
@@ -239,17 +294,19 @@ def random(rows, cols): Maze = {
 \end{figure}
 
 
-\Task I den här uppgiften ska du göra färdigt den påbörjade algoritmen som skapar en slumpmässig labyrint.
+\Task Gör färdigt den påbörjade algoritmen som skapar en slumpmässig labyrint enligt nedan.
 
 \Subtask Inspektera ovanstående pseudokod och försök förstå den. Fråga om något är oklart. Läs även de färdigskrivna metoderna \texttt{addWallToList} och \texttt{threeWallsAround} och studera den halvfärdiga metoden \texttt{random} i \texttt{Maze} i ditt workspace och se om du kan förstå vad de gör.
 
 \Subtask Implementera metoden \texttt{random} i \texttt{Maze} som skapar och returnerar en slumpmässigt utformad labyrint med hjälp av pseudokoden ovan (eller på egen hand för den modiga/nyfikna). Ta hjälp av metoderna \texttt{addWallToList} och \texttt{threeWallsAround}.
 
-\Subtask Skapa en ny slumpmässig labyrint i \texttt{AMazeIngRace} genom att anropa metoden \texttt{random}. Ett bra värde att använda när du anropar metoden är något tal mellan 50 och 100. Det vill säga anropa metoden genom att exempelvis skriva \texttt{random(50, 50)}. När du har slumpat fram en labyrint, testa att låta din sköldpadda gå igenom labyrinten och se om den lyckas!
+\Subtask Skapa en slumpmässig labyrint i ditt huvudprogram genom att anropa metoden \texttt{random}. Ett bra värde att använda när du anropar metoden är något tal mellan 20 och 100. Det vill säga anropa metoden genom att exempelvis skriva \texttt{random(50, 50)}. När du har slumpat fram en labyrint, testa att låta din sköldpadda gå igenom labyrinten och se om den lyckas!
+
+\Subtask Om din algoritm har buggar, använd \code{println} för att instrumentera din kod, enligt tipsen som ges i appendix \ref{appendix:debug}, i arbetet med att åtgärda buggarna.
 
 \begin{figure}[h]
 	\begin{center}
-		\includegraphics[width=0.3\textwidth]{../img/w09-lab/RandomMaze.jpg}
+		\includegraphics[width=1.0\textwidth]{../img/w09-lab/RandomMaze.jpg}
 	\end{center}
 	\caption{Ett exempel på hur en slumpmässigt utformad labyrint kan se ut.}
 \end{figure}
