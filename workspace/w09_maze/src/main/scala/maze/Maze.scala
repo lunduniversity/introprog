@@ -27,7 +27,8 @@ case class Maze(data: Vector[Vector[Boolean]]) {
    *  @param x		The x coordinate
    *  @param y		The y coordinate
    */
-  private def insideMaze(x: Int, y: Int): Boolean = (x >= 0 && y >= 0 && x < data(0).length * blockSize && y < data.length * blockSize)
+  private def insideMaze(x: Int, y: Int): Boolean =
+    (x >= 0 && y >= 0 && x < data(0).length * blockSize && y < data.length * blockSize)
 
   /**
    *  Returns the x coordinate of the entry of the maze.
@@ -89,14 +90,7 @@ case class Maze(data: Vector[Vector[Boolean]]) {
    *  @param w		The window in which to draw the maze
    */
   def draw(w: SimpleWindow): Unit = {
-    
-    //Insert code here!
-
-    /**
-     *  Builds a brick in the wall at coordinates x, y of size blockSize.
-     *  @param x					The x coordinate at which to build the brick
-     *  @param y					The y coordinate at which to build the brick
-     */
+    // Local function that builds a brick in the wall at coordinates x, y of size blockSize:
     def brickInTheWall(x: Int, y: Int): Unit = {
       w.setLineWidth(1)
       for (j <- 1 until blockSize - 1) {
@@ -106,6 +100,10 @@ case class Maze(data: Vector[Vector[Boolean]]) {
         }
       }
     }
+
+    /* *** REPLACE THE CODE BELOW WITH YOUR DRAWING ALGORITHM *** */
+    w.writeText("Draw the maze!")
+
   }
 }
 
@@ -148,13 +146,10 @@ object Maze {
     import scala.collection.mutable.ArrayBuffer
     val rand = scala.util.Random
     val maze: ArrayBuffer[ArrayBuffer[Boolean]] = ArrayBuffer.fill(rows, cols)(true)
-    var counter = 0
     val buffer: ArrayBuffer[List[Int]] = ArrayBuffer()
 
-    /**
-     *  Adds all surrounding walls of a specified coordinate to the buffer of possible walls to choose from unless they are already added or outside of the maze with a margin of one element.
-     *  @param row		The row index of the coordinate
-     *  @param col		The column index of the coordinate
+    /** Adds all surrounding walls of a specified coordinate to the buffer of possible walls
+     *  to choose from unless they are already added or outside of the maze with a margin of one element.
      */
     def addSurroundingWallsToBuffer(row: Int, col: Int): Unit = {
       if (col < cols - 2 && maze(row)(col + 1)) {
@@ -179,10 +174,8 @@ object Maze {
       }
     }
     
-    /**
-     *  Checks whether there are three filled walls around the specified coordinate, returns true if that is the case, otherwise false.
-     *  @param row		The row index of the coordinate
-     *  @param col		The column index of the coordinate
+    /** Checks whether there are three filled walls around the specified coordinate,
+     *  returns true if that is the case, otherwise false.
      */
     def threeWallsAround(row: Int, col: Int): Boolean = {
       var counter = 0
@@ -193,72 +186,9 @@ object Maze {
       (counter == 3)
     }
     
-    //Insert code here!
+    /******** INSERT YOUR CODE HERE THAT BASED ON GIVEN ALGORITHM *******/
 
     new Maze(maze.map(_.toVector).toVector)
   }
 
-}
-
-/** A Boolean Matrix */
-class BoolMatrix private (data: Vector[Vector[Boolean]]) {
-  val rows: Int = data.size
-  val cols: Int = if (rows > 0) data(0).size else 0
-  val size: (Int, Int) = (rows, cols)
-
-  def apply(row: Int, col: Int): Boolean = data(row)(col)
-
-  def updated(row: Int, col: Int, elem: Boolean) = {
-    val copyUpdate =
-      for (r <- 0 until rows) yield if (row != r) data(r) else data(r).updated(col, elem)
-    new BoolMatrix(copyUpdate.toVector)
-  }
-
-  override def toString =
-    data.map(_.mkString("\n  Vector(", ", ", ")")).mkString("BoolMatrix(", ",", ")")
-}
-
-object BoolMatrix {
-
-  def ofDim[T](rows: Int, cols: Int)(init: Boolean): BoolMatrix =
-    new BoolMatrix(Vector.fill(rows)(Vector.fill(cols)(init)))
-
-  def apply(data: Vector[Boolean]*): BoolMatrix = {
-    val maxRowColSize = (0 +: data.map(_.size)).max
-    val dataPadded = data.map(_.padTo(maxRowColSize, false))
-    new BoolMatrix(dataPadded.toVector)
-  }
-}
-
-/*** A generic Matrix ***/
-class Matrix[T] private (data: Vector[Vector[T]]) {
-  val rows: Int = data.size
-  val cols: Int = if (rows > 0) data(0).size else 0
-  val size: (Int, Int) = (rows, cols)
-
-  def apply(row: Int, col: Int): T = {
-    if (row < rows && col < cols) { data(row)(col) } else { println("ogiltig indexering!!"); return data(0)(0) }
-  }
-
-  def updated(row: Int, col: Int, elem: T) = {
-    val copyUpdate =
-      for (r <- 0 until rows) yield if (row != r) data(r) else data(r).updated(col, elem)
-    new Matrix(copyUpdate.toVector)
-  }
-
-  override def toString =
-    data.map(_.mkString("\n  Vector(", ", ", ")")).mkString("Matrix(", ",", ")")
-}
-
-object Matrix {
-
-  def ofDim[T](rows: Int, cols: Int)(init: T): Matrix[T] =
-    new Matrix(Vector.fill(rows)(Vector.fill(cols)(init)))
-
-  def apply[T](data: Vector[T]*): Matrix[T] = {
-    val firstRowColSize = if (data.size > 0) data(0).size else 0
-    val isAllRowsEqualColSize = data.map(_.size).forall(_ == firstRowColSize)
-    assert(isAllRowsEqualColSize, "all rows must have equal column size")
-    new Matrix(data.toVector)
-  }
 }
