@@ -168,7 +168,7 @@ Kompanjonsobjektet \texttt{Maze} innehåller fabriksmetoder som skapar nya labyr
 \item 
 \href{https://github.com/lunduniversity/introprog/tree/master/workspace/w09_maze/src/main/scala/maze/ColorTurtle.scala}{workspace/w09\_maze/src/main/scala/maze/ColorTurtle.scala}
 
-\item Huvudprogrammet \code{main} i klassen \code{Main} i filen \code{AMazeIngRace.scala}:
+\item Huvudprogrammet \code{main} finns i filen \code{AMazeIngRace.scala}:\\
 \href{https://github.com/lunduniversity/introprog/tree/master/workspace/w09_maze/src/main/scala/maze/AMazeIngRace.scala}{workspace/w09\_maze/src/main/scala/maze/AMazeIngRace.scala}
 
 \item Labyrinterna i mappen \code{resources}:\\
@@ -178,41 +178,48 @@ Kompanjonsobjektet \texttt{Maze} innehåller fabriksmetoder som skapar nya labyr
 
 \Task Kör igång huvudprogrammet i filen \code{AMazeIngRace.scala} och säkerställ att ditt projekt hittar \code{SimpleWindow} i \code{cslib}, samt att labyrintfilerna i mappen \code{src/resources} hittas av huvudprogrammet och skrivs ut.
 
-\Task Implementera metoden \code{draw} i klassen \code{Maze} så att den ritar upp en labyrint i \texttt{SimpleWindow}. 
-För att göra detta behöver du gå igenom matrisen \texttt{data} och undersöka elementen på varje plats. Om elementet på en viss plats är \texttt{true} ska det ritas upp en bit av en vägg på motsvarande plats i \texttt{SimpleWindow}. Till din hjälp har du den färdigskrivna metoden \texttt{brickInTheWall}. Om elementet på en viss plats är \texttt{false} ska ingenting ritas upp.
-Börja, som förberedelse, att skissa på pseudokod för uppgiften. Du använder lämpligen en nästlad for-sats.
+\Task Implementera metoden \code{draw} i klassen \code{Maze} så att den ritar upp en labyrint i \texttt{SimpleWindow}, enligt nedan tips:
+
+\begin{itemize}
+\item Du behöver gå igenom matrisen \texttt{data} och undersöka elementen på varje plats. Om elementet på en viss plats är \texttt{true} ska det ritas upp en bit av en vägg på motsvarande plats i \texttt{SimpleWindow}. 
+Till din hjälp har du den färdigskrivna metoden \texttt{brickInTheWall}. 
+
+\item Om elementet på en viss plats är \texttt{false} ska ingenting ritas upp.
+
+\item Börja, som förberedelse, att skissa på pseudokod för uppgiften. Du använder lämpligen en nästlad for-sats.
+
+\item En speciell utmaning är att förstå skillnaden mellan fönstrets koordinater och positionen i den booelska labyrintmatrisen, samt hur översättningen mellan dessa går till. Rita gärna en skiss med exempel på papper för att reda ut detta.
+\end{itemize} 
 
 
-\Task Skapa din egen labyrint i en textfil kallad \texttt{maze5.txt} i mappen \code{resources}. Kontrollera så att även denna labyrint ritas upp som den ska, och fixa annars till metoden \texttt{draw} så att den fungerar som tänkt. Din labyrint behöver inte alls behöver vara avancerad; det är inte meningen att den här uppgiften ska ta lång tid.
+\Task Skapa din egen labyrint i en textfil kallad \texttt{maze5.txt} i mappen \code{resources}. Kontrollera så att även denna labyrint ritas upp som den ska, och fixa annars till metoden \texttt{draw} så att den fungerar som tänkt. Din labyrint behöver inte alls vara avancerad; det är inte meningen att den här uppgiften ska ta lång tid.
 
 
 \Task I denna uppgift ska du implementera en algoritm som får en sköldpadda att ta sig genom en labyrint. Algoritmen ska baseras på idén att alltid hålla vänster hand i väggen (eller sköldpaddsfot i det här fallet). För detta ändamål ska du skapa en ny klass \texttt{MazeTurtle} enligt följande specifikation:
 
 \begin{ScalaSpec}{MazeTurtle}
 /**
- * A Turtle that can walk through a maze with a specified color.
- * @param window    The window the turtle should be placed in.
- * @param position  A Point representing the turtle's starting coordinates.
- * @param angle     The angle between the turtle direction and the X-axis 
- *                  measured in degrees.
- * @param isPenDown A boolean representing the turtle's pen position. 
- *                  True if the pen is down.
- * @param color     The color with which the turtle will walk.
- * @param maze      The maze in which the turtle will walk.
- */
-class MazeTurtle(
-    window: SimpleWindow, 
-    private var position: Point,
-    private var angle: Double, 
-    private var isPenDown: Boolean,
-    color: Color, 
-    maze: Maze
-  ) extends ColorTurtle(window, position, angle, isPenDown, color) {
+  * A Turtle that can walk through a maze with a specified color.
+  *
+  * @param window The window the turtle should be placed in.
+  * @param maze   The maze in which the turtle will walk.
+  * @param color  The color with which the turtle will walk.
+  */
+class MazeTurtle(window: SimpleWindow,
+                 maze: Maze,
+                 color: Color)
+  extends ColorTurtle(
+    window,
+    initPosition = Point(maze.getXEntry, maze.getYEntry),
+    initColor = color
+  ) {
+
   /**
-   * Lets the turtle walk through the maze from entry to exit 
-   * by following the wall to left side of the turtle.
-   */
+    * Lets the turtle walk through the maze from entry to exit by 
+    * following the wall to left side of the turtle.
+    */
   def walk(): Unit = ???
+
 }
 
 \end{ScalaSpec}
@@ -220,18 +227,19 @@ class MazeTurtle(
 \begin{itemize}
 \item Klassen \texttt{MazeTurtle} ska ärva klassen \texttt{ColorTurtle} och ha en extra parameter, nämligen den labyrint som sköldpaddan ska gå i. 
 
+\item Börja, som förberedelse, att skriva pseudokod för algoritmen, enligt tipsen i följande punkter.
+
 \item Implementera metoden \texttt{walk} i \texttt{MazeTurtle}, med hjälp av tekniken att alltid hålla vänster extremitet i väggen, så att sköldpaddan tar sig genom labyrinten från början till slut. Varje steg motsvarar att flytta sig från en ruta till en annan i \code{Boolean}-matrisen i \texttt{Maze}. 
 
 \item Sköldpaddan kommer alltså att ta sig fram i labyrinten genom att undersöka för varje steg om den borde svänga vänster, gå rakt fram eller svänga höger, beroende på hur den står i förhållande till vänster vägg. 
 
-\item För att avgöra hur sköldpaddan ska gå du använda dig av metoderna \texttt{wallInFront} och \texttt{wallAtLeft} som finns färdiga i \texttt{Maze}. 
+\item För att avgöra hur sköldpaddan ska gå, ska du använda dig av metoderna \texttt{wallInFront} och \texttt{wallAtLeft} som finns färdiga i \texttt{Maze}. 
 
-\item En speciell utmaning är att förstå skillnaden mellan fönstrets koordinater och positionen i den booelska labyrintmatrisen, samt hur översättningen mellan dessa går till.
+\item Använd gärna en fördröjning i din algoritm, t.ex. \code{SimpleWindow.delay(10)}, så att du hinner följa hur din labyrintsköldpadda går i labyrinten.
 
-\item Börja, som förberedelse, att skriva pseudokod för algoritmen.
+\item Om din algoritm visar sig ha buggar, använd \code{println} för att instrumentera din kod, enligt tipsen som ges i appendix \ref{appendix:debug}.
 
 \end{itemize}
-
 
 \clearpage
 
