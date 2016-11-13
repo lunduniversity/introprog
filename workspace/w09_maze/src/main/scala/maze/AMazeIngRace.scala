@@ -3,6 +3,7 @@ package maze
 import cslib.window.SimpleWindow
 import java.awt.Color
 import java.io.File
+import java.nio.file.Paths
 
 object AMazeIngRace {
   def printMazesFromDir(filepath: String): Unit = {
@@ -54,8 +55,10 @@ object AMazeIngRace {
     }
   }
 
+  def getMazeDirectoryPath : String = Paths.get(getClass().getResource("/maze1.txt").toURI).toFile.getParent+File.separator
+
   def main(args: Array[String]): Unit = {
-    val path = (new File(".")).getCanonicalPath + "/src/main/resources/"
+    val path = getMazeDirectoryPath
     val w = new SimpleWindow(800, 800, "A-Maze-Ing Race")
     printMazesFromDir(path)
     w.moveTo(10, 100)
