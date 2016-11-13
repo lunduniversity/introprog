@@ -6,24 +6,24 @@ import java.io.File
 import java.nio.file.Paths
 
 object AMazeIngRace {
-  def printMazesFromDir(filepath: String): Unit = {
+  def printMazesFromDir(path: String): Unit = {
     for (mazeNbr <- 1 to 4) {
       val filename = s"maze$mazeNbr.txt"
-      val maze = Maze.fromFile(filepath + filename)
+      val maze = Maze.fromFile(path + filename)
       println(maze)
     }
   }
 
-  def drawMazesInDir(filepath: String, window: SimpleWindow): Unit = {
+  def drawMazesInDir(path: String, window: SimpleWindow): Unit = {
     for (mazeNbr <- 1 to 4) {
       val filename = s"maze$mazeNbr.txt"
       window.moveTo(10, 100)
-      window.writeText(s"Click to draw $filename")
+      window.writeText(s"Click to draw $path$filename")
       window.waitForMouseClick()
       window.clear()
       /*
       //Run this code when draw in Maze and walk in MazeTurtle are implemented
-      val maze = Maze.fromFile(filepath + filename)
+      val maze = Maze.fromFile(path + filename)
       maze.draw(window)
       val turtle = new MazeTurtle(window, maze, Color.MAGENTA)
       window.moveTo(10, 50)
@@ -55,17 +55,18 @@ object AMazeIngRace {
     }
   }
 
-  def getMazeDirectoryPath : String = Paths.get(getClass().getResource("/maze1.txt").toURI).toFile.getParent+File.separator
+  def getResourcePath : String = getClass.getResource("/").getPath  // should work on both win/linux Idea/Eclipse??
 
   def main(args: Array[String]): Unit = {
-    val path = getMazeDirectoryPath
+    val path = getResourcePath
+    println(s"Resource path detected: $path")
     val w = new SimpleWindow(800, 800, "A-Maze-Ing Race")
     printMazesFromDir(path)
     w.moveTo(10, 100)
     w.writeText(s"Printed mazes in $path")
     w.moveTo(10, 200); w.writeText("CLICK TO CONTINUE!")
-    w.waitForMouseClick
-    w.clear
+    w.waitForMouseClick()
+    w.clear()
     drawMazesInDir(path, w)
     createAndDrawRandomMaze(50, 50, w) //recommended sizes is between 20-100
     w.moveTo(10, 20); w.writeText("GOODBYE! File -> Quit or Ctrl+Q to exit.")
