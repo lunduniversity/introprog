@@ -5,19 +5,312 @@
 
 \Subsection{Typparametrar}
 
-\begin{Slide}{Vad är en typparameter?}
-\begin{multicols}{2}
-...
-\columnbreak
-
+\begin{Slide}{Vad är en typparameter?}\SlideFontSmall
 \begin{itemize}
-\pause
-\item ...
-
+\item En \Emph{typparameter} gör det möjligt att ge ett \Emph{typargument}
+\item En \Emph{fri} typparameter kan bindas till vilken typ som helst 
+\item Bindingen sker vid \Alert{kompileringstid}
+\item En typparameter är \Emph{fri} om den \Alert{inte} fått något värde i omslutande deklarationer, annars \Emph{bunden}.
 \end{itemize}
-\end{multicols}
+Exempel: \Emph{generisk} metod:
+\begin{Code}
+def tnirp[A](x: A):Unit = println(x.toString.reverse)
+\end{Code}
+\pause
+Exempel: \Emph{generisk} klass:
+\begin{Code}
+class Cell[A](var value: A){
+  override def toString = s"Cell($value)"
+  def concat(x: A): Cell[String] = new Cell(value.toString + x)   // A bunden
+  def tnirp[B](x: B): Unit = println(x.toString.reverse)          // B fri
+} 
+\end{Code}
+\pause
+\begin{itemize}
+\item \Alert{Skuggning kan förekomma}: Om \code{tnirp} i \code{Cell} hade använt namnet A på sin typparameter hade den \Emph{skuggat} klassens typparameter och blivit en ny fri typparameter.
+\end{itemize}
+
 \end{Slide}
 
+\begin{Slide}{Exempel: Generisk funktion}
+Vad händer här?
+\begin{REPL}
+
+scala> def skrikBaklänges(x: T): String = x.toString.toUpperCase.reverse
+???
+
+
+
+scala> def skrikBaklänges[T](x: T): String = x.toString.toUpperCase.reverse
+
+scala> skrikBaklänges("gurka är gott")
+res0: ???
+
+\end{REPL}
+\end{Slide}
+
+\begin{Slide}{Exempel: Generisk funktion}
+Vad händer här?
+\begin{REPL}
+
+scala> def skrikBaklänges(x: T): String = x.toString.toUpperCase.reverse
+<console>:11: error: not found: type T
+       def skrikBaklänges(x: T): String = x.toString.toUpperCase.reverse
+                             ^
+
+scala> def skrikBaklänges[T](x: T): String = x.toString.toUpperCase.reverse
+
+scala> skrikBaklänges("gurka är gott")
+res0: ???
+\end{REPL}
+\end{Slide}
+
+\begin{Slide}{Exempel: Generisk funktion}
+Vad händer här?
+\begin{REPL}
+
+scala> def skrikBaklänges(x: T): String = x.toString.toUpperCase.reverse
+<console>:11: error: not found: type T
+       def skrikBaklänges(x: T): String = x.toString.toUpperCase.reverse
+                             ^
+
+scala> def skrikBaklänges[T](x: T): String = x.toString.toUpperCase.reverse
+
+scala> skrikBaklänges("gurka är gott")
+res0: String = TTOG RÄ AKRUG
+\end{REPL}
+\end{Slide}
+
+
+\begin{Slide}{Exempel: Generisk case-klass}
+\vspace{-0.5em}\begin{REPL}
+scala> def skrikBaklänges[T](x: T): String = x.toString.toUpperCase.reverse
+
+scala> case class Grönsak(whatever: A)
+???
+ 
+ 
+scala> case class Grönsak[A](whatever: A)
+
+scala> Grönsak("gurka")
+res1: ???
+
+scala> skrikBaklänges(Grönsak(42))
+res2: ???
+
+scala> Grönsak[Int](42)
+res3: ???
+
+scala> Grönsak[String](42)
+???
+
+
+
+                       ^
+\end{REPL}
+\end{Slide}
+
+\begin{Slide}{Exempel: Generisk case-klass}
+\vspace{-0.5em}\begin{REPL}
+scala> def skrikBaklänges[T](x: T): String = x.toString.toUpperCase.reverse
+
+scala> case class Grönsak(whatever: A)
+<console>:11: error: not found: type A
+       case class Grönsak(whatever: A)
+                                    ^
+scala> case class Grönsak[A](whatever: A)
+
+scala> Grönsak("gurka")
+res1: Grönsak[String] = Grönsak(gurka)
+
+scala> skrikBaklänges(Grönsak(42))
+res2: String = )24(KASNÖRG
+
+scala> Grönsak[Int](42)
+res3: Grönsak[Int] = Grönsak(42)
+
+scala> Grönsak[String](42)
+<console>:14: error: type mismatch;
+ found   : Int(42)
+ required: String
+       Grönsak[String](42)
+                       ^
+\end{REPL}
+\end{Slide}
+
+\begin{Slide}{Fallgrop: likhet av array}
+\begin{REPL}
+scala> Vector.fill(5)(42) == Vector.fill(5)(42)
+res0: ???
+
+scala> Array.fill(5)(42) == Array.fill(5)(42)
+res1: ???
+\end{REPL}
+\end{Slide}
+
+
+\begin{Slide}{Fallgrop: likhet av array}
+\begin{REPL}
+scala> Vector.fill(5)(42) == Vector.fill(5)(42)
+res0: Boolean = true
+
+scala> Array.fill(5)(42) == Array.fill(5)(42)
+res1: Boolean = false  // AAAARRGH!!! :(
+\end{REPL}
+Primitiva arrayer har en equals-metod som ger referenslikhet, \Alert{inte} innehållslikhet.
+\end{Slide}
+
+\begin{Slide}{Kolla likhet av array-matris med nästlad while}
+\begin{REPL}
+scala> def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = {
+         var i = 0
+         var allEqual = true
+         while (???) {
+           var j = 0
+           while (???) {
+             if (xss(i)(j) != yss(i)(j)) ???
+             j += 1
+           }
+           i += 1
+         }
+         allEqual
+       }
+
+scala> val (xss, yss) = (Array.fill(5,2)(42), Array.fill(5,2)(42))
+
+scala> isEqual(xss, yss)
+
+scala> yss(4)(1) = 0
+
+scala> isEqual(xss, yss)
+\end{REPL}
+\end{Slide}
+
+
+
+\begin{Slide}{Kolla likhet av array-matris med nästlad while}
+\begin{REPL}
+scala> def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = {
+         var i = 0
+         var allEqual = true
+         while (i < xss.length && allEqual) {
+           var j = 0
+           while (j < xss(i).length && allEqual) {
+             if (xss(i)(j) != yss(i)(j)) allEqual = false
+             j += 1
+           }
+           i += 1
+         }
+         allEqual
+       }
+
+scala> val (xss, yss) = (Array.fill(5,2)(42), Array.fill(5,2)(42))
+
+scala> isEqual(xss, yss)
+
+scala> yss(4)(1) = 0
+
+scala> isEqual(xss, yss)
+\end{REPL}
+\end{Slide}
+
+
+\begin{Slide}{Fördjupning: Fallgrop typradering \Eng{type erasure}}\SlideFontSmall
+Informationen om typerna i typparametrar raderas innan kodgenerering av prestandaskäl och \Alert{typinformationen finns ej vid runtime}.
+\vspace{-0.25em}\begin{REPL}
+scala> val xs = Vector(1,2,3)
+xs: scala.collection.immutable.Vector[Int] = Vector(1, 2, 3)
+
+scala> val ys = xs.map(_.toDouble)
+ys: scala.collection.immutable.Vector[Double] = Vector(1.0, 2.0, 3.0)
+
+scala> def hasDoubles[T](xs: Vector[T]): Boolean = xs match {
+         case _: Vector[Int] => false
+         case _: Vector[Double] => true
+       }
+
+<console>:13: warning: ???
+
+
+                        ^
+<console>:14: warning: ???
+
+
+                        ^
+<console>:14: warning: ???
+\end{REPL}
+\end{Slide}
+
+
+\begin{Slide}{Fördjupning: Fallgrop typradering \Eng{type erasure}}\SlideFontSmall
+Informationen om typerna i typparametrar raderas innan kodgenerering av prestandaskäl och \Alert{typinformationen finns ej vid runtime}.
+\vspace{-0.25em}\begin{REPL}
+scala> val xs = Vector(1,2,3)
+xs: scala.collection.immutable.Vector[Int] = Vector(1, 2, 3)
+
+scala> val ys = xs.map(_.toDouble)
+ys: scala.collection.immutable.Vector[Double] = Vector(1.0, 2.0, 3.0)
+
+scala> def hasDoubles[T](xs: Vector[T]): Boolean = xs match {
+         case _: Vector[Int] => false
+         case _: Vector[Double] => true
+       }
+
+<console>:13: warning: non-variable type argument Int in type pattern scala.collection.immutable.Vector[Int]
+is unchecked since it is eliminated by erasure
+                case _: Vector[Int] => false
+                        ^
+<console>:14: warning: non-variable type argument Double in type pattern scala.collection.immutable.Vector[Int]
+is unchecked since it is eliminated by erasure
+                case _: Vector[Double] => true
+                        ^
+<console>:14: warning: unreachable code: case _: Vector[Double] => true
+\end{REPL}
+\end{Slide}
+
+\begin{Slide}{Fördjupning: Dynamisk typtest vid typradering}\SlideFontSmall
+Typtest vid körtid med nästlad matchning:
+\begin{REPL}
+scala> def hasDoubles2[T](xs: Vector[T]): Boolean = xs match {
+         case x +: xs => x match { 
+           case _: Double => true
+           case _ => false
+         }  
+         case _ => false
+       }
+
+scala> hasDoubles2(Vector(1.0))    // funkar!
+\end{REPL}
+
+Typtest vid körtid med match och gard med \code{isInstanceOf}:
+\begin{REPL}
+       
+scala> def hasDoubles3[T](xs: Vector[T]): Boolean = xs match {
+         case x +: xs if x.isInstanceOf[Double] => true
+         case _ => false
+       }
+
+scala> hasDoubles3(Vector(1.0))    // funkar!
+       
+       
+\end{REPL}
+\end{Slide}
+
+
+\begin{Slide}{Typparametrar på tentan?}
+\begin{itemize}
+\item Det ingår att kunna använda färdiga generiska strukturer med specifik typer, t.ex. \code{Vector[Int]}
+
+\item Det ingår att kunna skapa strukturer med specifika typparametrar, t.ex. en case-klass som tar en vektor med en specifik typ:\\
+\code{case class X(x: Vector[Int])}
+
+
+
+\item Det ingår \Alert{inte} på tentan att kunna skapa generiska metoder eller klasser, t.ex.: \\
+\code{def f[T](x: Vector[T]): Vector[T] = ???} \\
+Mer om generiska strukturer fortsättningskursen!
+\end{itemize}
+\end{Slide}
 
 \fi
 
