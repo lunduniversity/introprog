@@ -1,5 +1,11 @@
 package stats
 
+import java.net.MalformedURLException
+import java.nio.file.{Files, Path, Paths}
+
+import scala.io.Source
+import scala.util.Try
+
 /**
  * A representation of text data in matrix form.
  *
@@ -41,6 +47,9 @@ case class Table(matrix: Vector[Vector[String]],
 }
 
 object Table {
+  def getResourcePath(resource: String): Path = {
+    Paths.get(getClass.getResource("/" + resource).toURI)
+  }
 
   /**
     * Reads column separated data from either a file or a URL into a Table.
@@ -49,32 +58,46 @@ object Table {
     * @param sep The character that separates the columns.
     */
   def fromFile(uri: String, sep: String): Table = {
-    val source = uri match {
-      case url if url.startsWith("http") => scala.io.Source.fromURL(url)
-      case path => scala.io.Source.fromFile(path)
+    val source = Try {
+      Source.fromURL(uri)
+    }.recover {
+      case _: MalformedURLException =>
+        Source.fromFile(getResourcePath("").resolve(uri).toFile)
     }
+    fromFile(source.get, sep)
+  }
+
+  /**
+    * Reads column separated text data from a Source into a Table.
+    *
+    * @param source The data to load.
+    * @param sep The character that separates the columns.
+    */
+  def fromFile(source: Source, sep: String): Table = {
     val lines = source.getLines.toVector
     val rows = lines.map(_.split(sep).toVector)
     Table(rows.tail, rows.head, sep)
   }
 
-  /** Write Table to disk. */
+  /** Write a Table to disk. */
   def save(path: String, table: Table): Unit = {
-    import java.nio.file.{ Paths, Files }
+    save(Paths.get(path), table)
+  }
+
+  /** Write a Table to disk. */
+  def save(path: Path, table: Table): Unit = {
     import java.nio.charset.StandardCharsets
-    val fullPath = Paths.get(path).toAbsolutePath
-    println(s"Saving table to file: $fullPath")
-    Files.write(fullPath, table.toString.getBytes(StandardCharsets.UTF_8))
+    println(s"Saving table to file: ${path.toAbsolutePath}")
+    Files.write(path, table.toString.getBytes(StandardCharsets.UTF_8))
   }
 
   /** Some tests of Table */
   def main(args: Array[String]): Unit = {
-    def getResourcePath : String = getClass.getResource("/").getPath
-    val (path, filename) = (getResourcePath, "favorit.csv")
-    println(s"***TESTING Table***\nInput: $path$filename")
-    val table = Table.fromFile(path + filename, ",")
+    val path = getResourcePath("favorit.csv")
+    println(s"***TESTING Table***\nInput: $path")
+    val table = Table.fromFile(Source.fromFile(path.toFile), ",")
     val tableFiltered = table.filter(4, Vector("Linux")).sort(6)
     println(tableFiltered.register(6).mkString("\n"))
-    save("src/main/resources/out.csv", tableFiltered)
+    save(getResourcePath("out.csv"), tableFiltered)
   }
 }
