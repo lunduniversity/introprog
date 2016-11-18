@@ -1,24 +1,21 @@
 %!TEX encoding = UTF-8 Unicode
-
 %!TEX root = ../compendium.tex
 
 \Lab{\LabWeekELEVEN}
 
 \begin{Goals}
-\item Kunna använda inbyggda sorteringsfunktioner.
-\item Kunna använda inbyggda sökfunktioner.
+\item Kunna använda inbyggda sorteringsfunktioner \code{sortBy} och \code{sortWith}.
+\item Kunna implementera insättningssortering till ny sekvens.
 \item Känna till hur strängar ordnas.
-\item Kunna läsa text i tabellform från fil och webbaddress.
-\item Kunna använda registrering (frekvensräkning) för enkla statistikberäkningar.
-\item Kunna skriva till fil.
-\item Kunna omvandla startargument till kommandon.
-\item Kunna skriva rekursiva funktioner.
+\item Kunna använda registrering (frekvensräkning). 
+\item Kunna använda matriser med strängar.
 \end{Goals}
 
 \begin{Preparations}
 \item \StudyTheory{10}
-\item \DoExercise{\ExeWeekELEVEN}{11}
-\item \ReadTheLab
+\item \DoExercise{\ExeWeekELEVEN}{11} Träna speciellt på insättningssortering till ny sekvens.
+\item \ReadTheLab 
+\item Studera den givna koden i workspace för labben \code{survey2} \textbf{Obs. 2:an!} 
 \item Fyll i denna enkät: \url{https://goo.gl/forms/hC6JK2UQXVpbGECc2}  \\
 I enkäten ska du för olika flervalsalternativlistor besvara frågan: \\ \textit{Vilket är ditt favoritalternativ?}
 \end{Preparations}
@@ -26,152 +23,192 @@ I enkäten ska du för olika flervalsalternativlistor besvara frågan: \\ \texti
 
 \subsection{Bakgrund}
 
-I den här veckans laboration ska du utveckla ett program som analyserar svar på enkäter med flervalsfrågor. Indata utgörs av text i form av \textbf{kolumnseparerade värden}, där varje persons svar finns på en egen rad och varje svarsrad innehåller svarsalternativ separerade med en \textbf{kolumnseparator} som till exempel kan vara ``\code{\t}'' eller ``\code{,}''. Första raden i textfilen anger kolumnernas namn.
+I den här veckans laboration ska du utveckla ett program som analyserar svar på enkäter med flervalsfrågor. Indata utgörs av text i form av \textbf{kolumnseparerade värden}, där varje persons svar finns på en egen rad och varje svarsrad innehåller svarsalternativ. 
 Exempelindata finns i filen \code{favorit.csv} i mappen resources:
 \lstinputlisting[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w10_survey/src/main/resources/favorit.csv}
-
-\noindent Ditt program ska bestå av följande delar:
-\begin{itemize}
-\item En case-klass för strängmatriser som heter \code{Table} med funktioner för inläsning av tabellformatterad text, sortering, filtrering och registrering med avseende på en viss kolumn.
-\item Ett objekt för argumentparsning och kommandoexekvering som heter \code{Command}.
-\item En given Main-fil som ska kunna köra det slutgiltiga programmet.
-\item Funktion för att presentera statistik från enkätdata med hjälp av registrering.
-\end{itemize}
-
-\subsection{Given kod}
-
-Given kod finns här: \\
-\href{https://github.com/lunduniversity/introprog/tree/master/workspace/w10_survey/src/main}{https://github.com/lunduniversity/introprog/tree/master/\\workspace/w10\_survey/src/main}
-
-\noindent Så här ser huvudprogrammet ut:
-\scalainputlisting{../workspace/w10_survey/src/main/scala/stats/Main.scala}
-
+Kolumnerna är separerade med en \textbf{kolumnseparator} som t.ex. kan vara \code{"\t"} eller \code{","}. Första raden i textfilen anger kolumnernas namn.
 
 
 \subsection{Obligatoriska uppgifter}
 
-\Task Implementera \code{Table} enligt specifikation:
+\Task Implementera case-klassen \code{Table} för sortering, filtrering, registrering av strängmatriser med titelrad, enligt nedan specifikationen.
 
-\ScalaSpecInputListing{Table}{../workspace/w10_survey/src/main/scala/stats/Table.scala}
+\begin{ScalaSpec}{Table}
+case class Table(matrix: Vector[Vector[String]],
+                 headings: Vector[String],
+                 separator: String) {
 
-\Subtask Börja med att implementera klassen \code{Table} men vänta med \code{register} till nästa uppgift. I \code{sort} och \code{filter} ska inbyggda funktioner för sortering och filtrering användas. Eftersom \code{Table} är omuterbar måste nya instanser eller kopior skapas av \code{Table} vid varje filtrering eller sortering.
+  /** Returns the number of (rows, columns) of the matrix data. */
+  val dim: (Int, Int) = ???
 
-\Subtask Implementera \code{register} som senare kommer användas för att skapa diagram som presenterar den registrerade datan. För att registrera antalet förekomster av varje unikt värde kan funktionerna \code{groupBy} och \code{mapValues} användas. 
+  /** Returns the values from a specified column. */
+  def col(c: Int): Vector[String] = ???
 
-Omvandlingen går från \code{Vector[String]} till \code{Map[String, Vector[String]]} med \code{groupBy} och efter det till \code{Map[String, Int]} med \code{mapValues}.
-Exempel med \code{groupBy}:
+  /** Returns the matrix in string format using separator between columns*/
+  override lazy val toString: String = ???
+
+  /** A new Table with rows sorted on column c (implemented using sortBy). */
+  def sort(c: Int): Table = ???
+
+  /** A new Table with rows sorted on column c (implemented from scratch). */
+  def mySort(c: Int): Table = ???
+
+  /**
+   * A new Table filtered so that column c only contains the wanted values.
+   */
+  def filter(c: Int, wanted: Vector[String]): Table = ???
+
+  /**
+   * Returns the distinct values for the given column coupled with the number
+   * of occurrences for that value. The pairs are sorted descending on the
+   * number of occurrences. The first element is the column header together
+   * with the total number of occurrences for all values.
+   */
+  def register(c: Int): Vector[(String, Int)] = ???
+}
+\end{ScalaSpec}
+
+
+Till din hjälp finns följande kod given i workspace: 
+\begin{itemize}
+\item \code{Main} sätter igång användarinteraktionen och hanterar undantag.
+
+\item \code{Command} sköter läs-evaluera-skriv-loopen i programmet.
+
+\item \code{Chart} ritar diagram i \code{SimpleWindow}.
+
+\item Kompanjonsobjektet \code{Table} har den färdig fabriksmetoden \code{fromFile} för inläsning av kolumnseparerad data och konstruktion av \code{Table}-instanser, och kan även spara tabeller i filer med den färdiga metoden \code{save}.
+\end{itemize}
+
+\noindent Du hittar koden här:
+\href{https://github.com/lunduniversity/introprog/tree/master/workspace/w10_survey2/src/main}{https://github.com/lunduniversity/introprog/tree/master/\\workspace/w10\_survey2/src/main}
+
+
+
+
+\Task Testa systematiskt alla kommandon med olika parametrar och kontrollera så att alla delar av \code{Table} fungerar korrekt. Nedan exempelkörning visar hur testandet kan gå till.
+
 \begin{REPLnonum}
-scala> Vector("ICA", "COOP", "Konsum", "ICA", "ICA", "COOP").groupBy(v => v)
+*** Welcome to stats for table data ***
 
-res0: Map[String,Vector[String]] = Map(COOP -> Vector(COOP, COOP),
-                                       Konsum -> Vector(Konsum),
-                                       ICA -> Vector(ICA, ICA, ICA))
-\end{REPLnonum}
-
-\Subtask Implementera funktionen \code{fromFile} i objektet \code{Table}. Parametern \code{uri} är antingen en webbadress eller en lokal sökväg. Det räcker med att anta att en webbadress börjar på ``\code{http}''.
-
-En fil som innehåller tre rader med 3 kolumner på varje rad läses in till vektorn såhär:
-\begin{CodeSmall}[language=, ]
-Vector(Vector(rad1kolumn1,rad1kolumn2,rad1kolumn3),
-       Vector(rad2kolumn1,rad2kolumn2,rad2kolumn3),
-       Vector(rad3kolumn1,rad3kolumn2,rad3kolumn3))
-\end{CodeSmall}
-
-\Subtask Implementera \code{toFile} med valfri metod för att skriva till fil.
-
-\Subtask Testa \code{Table} genom att köra \code{main}-funktionen. Om allt står rätt till finns det nu en fil \code{out.csv} i mappen resources och i konsollen lyder utskriften:
-\begin{REPLnonum}
-(DE,5)
-(Vim,2)
-(Eclipse,1)
-(Emacs,1)
-(Gedit,1)
-
-\end{REPLnonum}
-
-\clearpage %Hack to fix pagination
-
-\Task Komplettera \code{Command} enligt specifikation:
-
-\ScalaSpecInputListing{Command}{../workspace/w10_survey/src/main/scala/stats/Command.scala}
-
-Observera att i objektet \code{Command} definieras typen \code{Command}. En instans av typen \code{Command} är det som \textit{kommando} hädanefter kommer åsyfta. Det är helt enkelt en funktion som tar emot en instans av \code{Table}, gör något med det och returnerar tillbaka en instans av \code{Table}. På så vis kan flera kommandon exekveras som en kedja där nästa kommandos indata är det föregående kommandots utdata. Exempel på ett kommando som lägger till ett utropstecken på kolumnrubrikerna:
-\begin{CodeSmall}[language=, ]
-t: Table => t.copy(headings = t.headings.map(_ + "!"))
-\end{CodeSmall}
-Metoderna \code{Command.parseOne} och \code{Command.parseAll} omvandlar argument till kommandon.
-
-\Subtask Implementera \code{parseOne}. Lägg märke till att likt \code{parseAll} är parametertypen \code{Vector[String]}, men skillnaden är att \code{parseOne} ska matcha och returnera exakt ett kommando. I annat fall kastas ett generellt undantag: \code{throw new Exception("meddelande")}. Till exempel ``\code{-sort 4}'' funkar men ``\code{-sprt 4}'' och ``\code{-sort 4 asdf}'' funkar inte. De giltiga argumenten som ska kunna tas emot finns i \code{Command.list}. Undantaget som kastas då något annat än ett strängheltal ska göras om till en \code{Int} tas hand om i \code{Main} och behöver inte hanteras.
-
-Om ``\code{-printchart 6}'' körs på datan från \code{favorit.csv} ska följande diagram produceras:
-\begin{REPLnonum}
-Column: DE (17)
-Notepad++: 4 occurrences
-****
-Eclipse: 3 occurrences
-***
-Emacs: 3 occurrences
-***
-Vim: 3 occurrences
-***
-Gedit: 2 occurrences
-**
-Visual Studio: 2 occurrences
-**
-
-\end{REPLnonum}
-Om flera kolumner efterfrågas, till exempel ``\code{-printchart 3 5 6}'', skrivs diagrammen ut direkt efter varandra.
-
-\Subtask Implementera \code{parseAll} som en rekursiv funktion. Använd minustecknet som markerar starten för ett nytt kommando för att dela upp argumenten \code{args} i delar som sedan var för sig skickas med i anrop till \code{parseOne}. Kanske funktionen \code{span} kan vara till nytta:
-\begin{REPLnonum}
-scala> Vector("myra", "panda", "", "ekorre").span(_.nonEmpty)
-
-res1: (Vector[String], Vector[String]) = (Vector(myra, panda),
-                                         Vector("", ekorre))
-\end{REPLnonum}
-
-\Subtask Implementera \code{runAllWith}. Eftersom kommandona ska exekveras i en kedja passar det väldigt bra att även göra den här funktionen rekursiv.
-
-\Subtask Testa ditt program med \code{Main}-filen och \code{favorit.csv}.
-\begin{REPLnonum}
->scala stats.Main favorit.csv , -filter 2 Terminal -sort 3 -sep "|" -print
--printchart 5
-Loading "favorit.csv" "," to table ...
+Current dir: /home/bjornr/lthgitlab/pgk/solution-workspace/w10_survey_v2/bin/
+Type 'help' for list of commands.
+> help
+Commands: help
+             Prints this list of commands.
+          load <location>
+             Loads a table from <location> using , as separator
+          load <location> <separator>
+             Loads a table from <location> using <separator>
+          save <filepath>
+             Saves the table to <filepath>
+          sep <separator>
+             Changes the separator of the table
+          filter <column> <values: a b c>
+             Filters the table so <column> only contains <values>
+          sort <column>
+             Sorts the table on <column>
+          mysort <column>
+             Sorts the table on <column> using my own sort implementation
+          print
+             Prints the table to the console
+          printchart <column>
+             Prints a barchart of <column> to the console
+          pie <column>
+             Draws a pie chart of current table in a SimpleWindow
+          bar <column>
+             Draws a bar chart of current table in a SimpleWindow
+          quit
+             Terminates the program
+> load favorit.csv
+Loading favorit.csv with separator ',' to table ...
 
 Done. Size: 17x7.
 
-Program|Indent|UI|Lang|OS|Browser|DE
-D|Spaces|Terminal|C|BSD|Firefox|Emacs
-F|Spaces|Terminal|C|Linux|Chrome|Emacs
-F|Spaces|Terminal|C|Linux|Firefox|Vim
-C|Tabs|Terminal|C#|Windows 10|Edge|Visual Studio
-D|Spaces|Terminal|Java|Windows 8|Edge|Eclipse
-E|Spaces|Terminal|Java|Linux|Chromium|Eclipse
-C|Spaces|Terminal|Javascript|Windows 7|Chrome|Notepad++
-Nano|Tabs|Terminal|Javascript|macOS|Safari|Vim
-I|Tabs|Terminal|PHP|Windows 10|Edge|Notepad++
-I|Tabs|Terminal|Python|Windows 10|Chrome|Notepad++
-
-Column: Browser (10)
-Chrome: 3 occurrences
-***
-Edge: 3 occurrences
-***
-Firefox: 2 occurrences
-**
-Chromium: 1 occurrence
-*
-Safari: 1 occurrence
-*
-
+> print
+Program,Indent,UI,Lang,OS,Browser,DE
+D,Spaces,Terminal,C,BSD,Firefox,Emacs
+C,Spaces,Terminal,Javascript,Windows 7,Chrome,Notepad++
+D,Spaces,GUI,Java,macOS,Safari,Gedit
+I,Tabs,Terminal,PHP,Windows 10,Edge,Notepad++
+C,Spaces,GUI,Java,Windows 8,Firefox,Eclipse
+D,Spaces,Terminal,Java,Windows 8,Edge,Eclipse
+F,Spaces,Terminal,C,Linux,Chrome,Emacs
+D,Spaces,GUI,C,Linux,Firefox,Vim
+Nano,Tabs,Terminal,Javascript,macOS,Safari,Vim
+C,Tabs,Terminal,C#,Windows 10,Edge,Visual Studio
+D,Tabs,GUI,Javascript,macOS,Chrome,Emacs
+D,Spaces,GUI,Python,Windows 7,Chrome,Notepad++
+E,Spaces,Terminal,Java,Linux,Chromium,Eclipse
+I,Tabs,Terminal,Python,Windows 10,Chrome,Notepad++
+K,Tabs,GUI,C#,Windows 7,Firefox,Visual Studio
+F,Spaces,Terminal,C,Linux,Firefox,Vim
+D,Tabs,GUI,C,Linux,Chrome,Gedit
+> filter 0 D
+> print
+Program,Indent,UI,Lang,OS,Browser,DE
+D,Spaces,Terminal,C,BSD,Firefox,Emacs
+D,Spaces,GUI,Java,macOS,Safari,Gedit
+D,Spaces,Terminal,Java,Windows 8,Edge,Eclipse
+D,Spaces,GUI,C,Linux,Firefox,Vim
+D,Tabs,GUI,Javascript,macOS,Chrome,Emacs
+D,Spaces,GUI,Python,Windows 7,Chrome,Notepad++
+D,Tabs,GUI,C,Linux,Chrome,Gedit
+> sep ;
+> print
+Program;Indent;UI;Lang;OS;Browser;DE
+D;Spaces;Terminal;C;BSD;Firefox;Emacs
+D;Spaces;GUI;Java;macOS;Safari;Gedit
+D;Spaces;Terminal;Java;Windows 8;Edge;Eclipse
+D;Spaces;GUI;C;Linux;Firefox;Vim
+D;Tabs;GUI;Javascript;macOS;Chrome;Emacs
+D;Spaces;GUI;Python;Windows 7;Chrome;Notepad++
+D;Tabs;GUI;C;Linux;Chrome;Gedit
+> sort 1
+> print
+Program;Indent;UI;Lang;OS;Browser;DE
+D;Spaces;Terminal;C;BSD;Firefox;Emacs
+D;Spaces;GUI;Java;macOS;Safari;Gedit
+D;Spaces;Terminal;Java;Windows 8;Edge;Eclipse
+D;Spaces;GUI;C;Linux;Firefox;Vim
+D;Spaces;GUI;Python;Windows 7;Chrome;Notepad++
+D;Tabs;GUI;Javascript;macOS;Chrome;Emacs
+D;Tabs;GUI;C;Linux;Chrome;Gedit
+> mysort 2
+> print
+Program;Indent;UI;Lang;OS;Browser;DE
+D;Spaces;GUI;Java;macOS;Safari;Gedit
+D;Spaces;GUI;C;Linux;Firefox;Vim
+D;Spaces;GUI;Python;Windows 7;Chrome;Notepad++
+D;Tabs;GUI;Javascript;macOS;Chrome;Emacs
+D;Tabs;GUI;C;Linux;Chrome;Gedit
+D;Spaces;Terminal;C;BSD;Firefox;Emacs
+D;Spaces;Terminal;Java;Windows 8;Edge;Eclipse
 \end{REPLnonum}
 
-\Task Avslutningsvis, testa att programmet fungerar tillsammans med länken till enkätsvaren: \url{https://goo.gl/qPcuAO}.
+\Task Testa att programmet fungerar tillsammans med länken till enkätsvaren: \url{https://goo.gl/qPcuAO}.
 
-\subsection{Frivilliga extrauppgifter}
+\clearpage
 
-\Task Gör en variant av register med \code{foldLeft} istället för \code{groupBy} och \code{mapValues}.
+\subsection{Frivilliga extrauppgift}
 
-\Subtask Implementera funktionen och testa att den fungerar. Överväg fördelarna hos respektive implementation.
-    
-\Task Inför lämpliga argument till programmet som medför att fina tårtdiagram och/eller stapeldiagram i SimpleWindow med automatiska färger ritas ut som illustrationer till frekvenserna i de olika kolumnerna.
+I den frivilliga extrauppgiften ska du implementera metoden \code{bar} i singelobjektet \code{Chart} som kan rita ut stapeldiagram enligt figuren nedan. Du har nytta av att studera koden i den befintliga metoden \code{pie}.
+\begin{REPLnonum}
+*** Welcome to stats for table data ***
+
+Current dir: /home/bjornr/lthgitlab/pgk/solution-workspace/w10_survey_v2/bin/
+Type 'help' for list of commands.
+> load favorit.csv
+Loading favorit.csv 
+  with separator ',' to table ...
+
+Done. Size: 17x7.
+
+> pie 0
+> bar 0
+\end{REPLnonum}
+
+\includegraphics[width=0.5\textwidth]{../img/survey/pie.png}
+
+\includegraphics[width=0.7\textwidth]{../img/survey/bar.png}
+
