@@ -55,7 +55,7 @@ object AMazeIngRace {
     }
   }
 
-  def getResourcePath : String = getClass.getResource("/").getPath  // should work on both win/linux Idea/Eclipse??
+  def getResourcePath : String = Paths.get(getClass.getResource("/").toURI).toString + "/"
 
   def main(args: Array[String]): Unit = {
     val path = getResourcePath
