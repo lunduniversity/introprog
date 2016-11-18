@@ -7,7 +7,9 @@ package stats
  * @param headings Column headings.
  * @param separator      The String character that separates the columns.
  */
-case class Table(matrix: Vector[Vector[String]], headings: Vector[String], separator: String) {
+case class Table(matrix: Vector[Vector[String]],
+                 headings: Vector[String],
+                 separator: String) {
 
   /** Returns the number of (rows, columns) of the matrix data. */
   val dim: (Int, Int) = ???
@@ -15,17 +17,17 @@ case class Table(matrix: Vector[Vector[String]], headings: Vector[String], separ
   /** Returns the values from a specified column. */
   def col(c: Int): Vector[String] = ???
 
-  /** Returns the matrix in text format */
+  /** Returns the matrix in string format using separator between columns*/
   override lazy val toString: String = ???
 
-  /** Returns a new Table with the rows sorted on column c (implemented using sortBy). */
+  /** A new Table with rows sorted on column c (implemented using sortBy). */
   def sort(c: Int): Table = ???
 
-  /** Returns a new Table with the rows sorted on column c (implemented from scratch). */
+  /** A new Table with rows sorted on column c (implemented from scratch). */
   def mySort(c: Int): Table = ???
 
   /**
-   * Returns a new Table filtered so that column c only contains the wanted values.
+   * A new Table filtered so that column c only contains the wanted values.
    */
   def filter(c: Int, wanted: Vector[String]): Table = ???
 
@@ -41,18 +43,15 @@ case class Table(matrix: Vector[Vector[String]], headings: Vector[String], separ
 object Table {
 
   /**
-    * Reads column separated text data from either a file or a URL into a Table.
+    * Reads column separated data from either a file or a URL into a Table.
     *
     * @param uri The location of the data.
     * @param sep The character that separates the columns.
     */
   def fromFile(uri: String, sep: String): Table = {
-
     val source = uri match {
       case url if url.startsWith("http") => scala.io.Source.fromURL(url)
-      case path =>
-        val fullPath = java.nio.file.Paths.get(path).toAbsolutePath.toString
-        scala.io.Source.fromFile(fullPath)
+      case path => scala.io.Source.fromFile(path)
     }
     val lines = source.getLines.toVector
     val rows = lines.map(_.split(sep).toVector)

@@ -24,7 +24,7 @@ object Main {
         case _ => println(s"""Unkown args: ${args.mkString(" ")}$usage""")
       }
     }.recover {
-      case e: Exception =>
+      case e: Throwable =>
         println("EXCEPTION THROWN! Printing stack trace:")
         e.printStackTrace(System.out)
         println("RECOVERING: Table is empty. Restarting command loop...")
