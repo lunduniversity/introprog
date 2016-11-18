@@ -9,7 +9,7 @@ object Main {
 
   def main(args: Array[String]): Unit = {
     Try {
-      val path = getClass.getResource("/").getPath
+      val path = Table.getResourcePath("")
       println(welcome)
       println(s"Current dir: $path")
       println(Command.helpMsg)
@@ -21,7 +21,7 @@ object Main {
           val table = Command.load(uri, sep)
           Command.loop(tableOpt=Some(table))
 
-        case _ => println(s"""Unkown args: ${args.mkString(" ")}$usage""")
+        case _ => println(s"""Unknown args: ${args.mkString(" ")}$usage""")
       }
     }.recover {
       case e: Throwable =>
