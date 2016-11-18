@@ -39,10 +39,8 @@ object Command {
       |             Terminates the program""".stripMargin
 
   def load(uri: String, sep: String): Table = {
-    lazy val path = getClass.getResource("/").getPath
-    val location = if (uri.startsWith("http")) uri else s"$path$uri"
-    println(s"""Loading $location with separator '$sep' to table ...\n""")
-    val t =  Table.fromFile(location, sep)
+    println(s"""Loading $uri with separator '$sep' to table ...\n""")
+    val t = Table.fromFile(uri, sep)
     println(s"Done. Size: ${t.dim._1}x${t.dim._2}.\n")
     t
   }
