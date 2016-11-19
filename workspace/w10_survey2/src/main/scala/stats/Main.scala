@@ -17,9 +17,13 @@ object Main {
       args.toVector match {
         case Vector() => Command.loop()
 
+        case Vector(uri) =>
+          val table = Command.load(uri)
+          Command.loop(tableOpt = Some(table))
+
         case Vector(uri, sep) =>
           val table = Command.load(uri, sep)
-          Command.loop(tableOpt=Some(table))
+          Command.loop(tableOpt = Some(table))
 
         case _ => println(s"""Unknown args: ${args.mkString(" ")}$usage""")
       }
