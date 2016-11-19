@@ -173,7 +173,7 @@ object Maze {
     }
     
     // Returns true if there are three filled walls around the specified position
-    def threeWallsAround(row: Int, col: Int): Boolean = {
+    def isThreeWallsAround(row: Int, col: Int): Boolean = {
       var counter = 0
       if (maze(row)(col + 1)) counter += 1
       if (maze(row)(col - 1)) counter += 1
