@@ -38,7 +38,7 @@ object Command {
       |          quit
       |             Terminates the program""".stripMargin
 
-  def load(uri: String, sep: String): Table = {
+  def load(uri: String, sep: String = defaultSep): Table = {
     println(s"""Loading $uri with separator '$sep' to table ...\n""")
     val t = Table.fromFile(uri, sep)
     println(s"Done. Size: ${t.dim._1}x${t.dim._2}.\n")
@@ -61,8 +61,8 @@ object Command {
       case xs if xs.forall(_.trim.isEmpty) => tableOpt
 
       case Vector("help")              => println(commandList); tableOpt
-      case Vector("load", uri)         => Some(load(uri, defaultSep))
-      case Vector("load", uri, sep)    => Some(load(uri,sep))
+      case Vector("load", uri)         => Some(load(uri))
+      case Vector("load", uri, sep)    => Some(load(uri, sep))
       case _ if tableOpt.isEmpty       => println(emptyMsg); tableOpt
       case Vector("print")             => tableOpt.foreach(println); tableOpt
       case Vector("save", path)        => tableOpt.foreach(t => Table.save(path, t)); tableOpt
