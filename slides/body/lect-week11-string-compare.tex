@@ -47,8 +47,7 @@ t.ex. så här: \code{s1(i) == s2(i)}. Antag också att vi inte har tillgång ti
 \end{enumerate}
 \end{Slide}
 
-\begin{Slide}{Algoritmexempel: stränglikhet}
-Pseudokod:
+\begin{Slide}{Algoritmexempel: stränglikhet, pseudokod}
 \begin{Code}[H]
 def isEqual(s1: String, s2: String): Boolean = {
   if (/* lika längder */) {
@@ -62,9 +61,12 @@ def isEqual(s1: String, s2: String): Boolean = {
   } else false
 }
 \end{Code}
+
+\pause Detta är en variant av s.k. \Emph{linjärsökning} där vi söker från början i en sekvens till vi hittar det vi söker efter (här söker vi efter tecken som skiljer sig åt). 
+\\\pause\vspace{2.5em} Hur ser implementationen i exekverbar Scala ut?
 \end{Slide}
 
-\begin{Slide}{Algoritmexempel: stränglikhet}\SlideFontSmall
+\begin{Slide}{Algoritmexempel: stränglikhet, implementation}\SlideFontSmall
 \begin{Code}[H]
 def isEqual(s1: String, s2: String): Boolean = {
   if (s1.length == s2.length) {
@@ -82,7 +84,7 @@ def isEqual(s1: String, s2: String): Boolean = {
 {\SlideFontTiny Fördjupning: jämför ovan med implementationen av \code{String.equals} här:
 \href{http://hg.openjdk.java.net/jdk8u/jdk8u60/jdk/file/935758609767/src/share/classes/java/lang/String.java#l976}{hg.openjdk.java.net/jdk8u/jdk8u60/jdk/file/935758609767/src/share/classes/java} \\ och använd \code{timed} nedan och jämför prestanda med \code{isEqual} ovan.\\
 Obs! Mät många gånger så att JVM:en optimerar din kod.}
-\begin{Code}
+\vspace{-0.25em}\begin{Code}
 def timed[T](block: => T): (Double, T) = { 
   val (t, res) = (System.nanoTime, block)
   ((System.nanoTime - t) / 1e9, res) 
@@ -99,10 +101,10 @@ scala> val s = Array.fill(enMiljon)('x').mkString
 
 scala> val t = s.updated(enMiljon - 1, 'y')
 
-scala> timed{s == t}
+scala> timed { s == t }
 res42: (Double, Boolean) = (3.76459E-4,false)
 
-scala> timed{isEqual(s,t)}
+scala> timed { isEqual(s,t) } 
 res43: (Double, Boolean) = (3.31597E-4,false)
 \end{REPL}
 Ovan är kört efter ''uppvärmning'' på i7-4790K CPU @ 4.00GHz \\
@@ -153,7 +155,8 @@ def isLessThan(s1: String, s2: String): Boolean = {
     var foundDiff = false
     var i = 0
     while (!foundDiff && i < minLength) 
-      if (s1(i) != s2(i)) foundDiff = true else i += 1
+      if (s1(i) != s2(i)) foundDiff = true 
+      else i += 1
     i
   }
 

@@ -7,15 +7,320 @@
 
 \Subsection{Sökning}
 \begin{Slide}{Sökning}\SlideFontSmall
+
 \begin{itemize}
-\item 
+\item \Emph{Sökning} återkommer i många skepnader: \\ i en datastruktur, vilken det än må vara, vill man ofta kunna \\ \Emph{hitta ett element med en viss egenskap}. 
+
+\begin{REPL}
+scala> Vector("gurka","tomat","broccoli").indexOf("tomat")
+res0: Int = 1
+
+scala> Vector("gurka","tomat","broccoli").indexWhere(_.contains("o"))
+res1: Int = 1
+
+scala> Vector("gurka","tomat","broccoli").find(_.contains("o"))
+res2: Option[String] = Some(tomat)
+\end{REPL}
+
+\pause
+\item Sökning efter ett visst index i en sekvens:
+
+\begin{itemize}\SlideFontTiny
+\item Indata: en sekvens och ett \Emph{sökkriterium}
+\item Utdata: index för första eftersökta element, annars -1 
 \end{itemize}
 
+\pause
+\item Två typiska varianter av sökning i en sekvens:
+\begin{itemize}\SlideFontTiny
+\item Linjärsökning: börja från början och sök tills ett eftersökt element är funnet
+\item Binärsökning: antag sorterad sekvensen; börja i mitten, välj rätt halva ...
+\end{itemize}
+\end{itemize}
+\end{Slide}
+
+\Subsection{Linjärsökning}
+
+\begin{Slide}{Linjärsökning: hitta index för elementet 42}
+Skriv pseudokod för:\\ \code{def indexOf42(xs: Vector[Int]): Int = ???}
+\pause
+\begin{Code}
+def indexOf42(xs: Vector[Int]): Int = {
+  var i = /* index för första elementet */
+  var found = false
+  while (!found && /* index inom indexgräns */) {
+    if (/* element på plats i är 42 */) found = true 
+    else i = /* nästa index */
+  }
+  if (/* hittat */) i else -1
+} 
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Linjärsökning: hitta index för elementet 42}
+Implementera:\\ \code{def indexOf42(xs: Vector[Int]): Int = ???}
+\pause
+\begin{Code}
+def indexOf42(xs: Vector[Int]): Int = {
+  var i = 0
+  var found = false
+  while (!found && i < xs.length) {
+    if (xs(i) == 42) found = true 
+    else i += 1
+  }
+  if (found) i else -1
+} 
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Linjärsökning: hitta index för elementet x}
+Implementera:\\ \code{def indexOf(xs: Vector[Int], x: Int): Int = ???}
+\pause
+\begin{Code}
+def indexOf(xs: Vector[Int], x: Int): Int = {
+  var i = 0
+  var found = false
+  while (!found && i < xs.length) {
+    if (xs(i) == x) found = true 
+    else i += 1
+  }
+  if (found) i else -1
+} 
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Linjärsökning: hitta index för elementet p(x)}\SlideFontSmall
+Implementera:\\ \code{def indexWhere(xs: Vector[Int], p: Int => Boolean): Int = ???}
+\pause
+\begin{Code}
+def indexWhere(xs: Vector[Int], p: Int => Boolean): Int = {
+  var i = 0
+  var found = false
+  while (!found && i < xs.length) {
+    if (p(xs(i))) found = true 
+    else i += 1
+  }
+  if (found) i else -1
+} 
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Linjärsökning: generalisera till godtycklig typ}\SlideFontSmall
+Implementera:\\ \code{def indexWhere[T](xs: Vector[T], p: T => Boolean): Int = ???}
+\pause
+\begin{Code}
+def indexWhere[T](xs: Vector[T], p: T => Boolean): Int = {
+  var i = 0
+  var found = false
+  while (!found && i < xs.length) {
+    if (p(xs(i))) found = true 
+    else i += 1
+  }
+  if (found) i else -1
+} 
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Linjärsökning: generalisera till godtycklig typ}\SlideFontSmall
+Typinferensen fungerar bättre om stegad funktion:\\ 
+\code{def indexWhere[T](xs: Vector[T])(p: T => Boolean): Int}
+\begin{Code}
+def indexWhere[T](xs: Vector[T])(p: T => Boolean): Int = {
+  var i = 0
+  var found = false
+  while (!found && i < xs.length) {
+    if (p(xs(i))) found = true 
+    else i += 1
+  }
+  if (found) i else -1
+} 
+\end{Code}
 \end{Slide}
 
 
-\fi
+\begin{Slide}{Linjärsökning: generalisera till godtycklig sekvens}\SlideFontSmall
+Implementera:\\ \code{def indexWhere[T](xs: Seq[T])(p: T => Boolean): Int = ???}
+\pause
+\begin{Code}
+def indexWhere[T](xs: Seq[T])(p: T => Boolean): Int = {
+  var i = 0
+  var found = false
+  while (!found && i < xs.length) {
+    if (p(xs(i))) found = true 
+    else i += 1
+  }
+  if (found) i else -1
+} 
+\end{Code}
+\end{Slide}
 
+\begin{Slide}{Linjärsökning: generalisera till godtycklig sekvens}\SlideFontSmall
+Implementera:\\ \code{def find[T](xs: Seq[T])(p: T => Boolean): Option[T] = ???}
+\pause
+\begin{Code}
+def find[T](xs: Seq[T])(p: T => Boolean): Option[T] = {
+  var i = 0
+  var found = false
+  while (!found && i < xs.length) {
+    if (p(xs(i))) found = true 
+    else i += 1
+  }
+  if (found) Some(xs(i)) else None
+} 
+\end{Code}
+\end{Slide}
+
+\Subsection{Binärsökning}
+
+\begin{Slide}{Binärsökning: snabbare men kräver sorterad sekvens}
+\begin{REPL}[basicstyle=\color{white}\ttfamily\SlideFontSize{6.5}{8}]
+scala> val enMiljon = 1000000
+
+scala> val xs = Array.tabulate(enMiljon)(i => i + 1)   // sorterad
+
+scala> xs(enMiljon - 1)
+res0: Int = 1000000
+
+scala> timed { xs.indexOf(enMiljon) }        // linjärsökning
+res42: (Double, Int) = (0.016622994,999999)
+
+scala> import scala.collection.Searching._  // ger tillgång till metoden search
+import scala.collection.Searching._
+
+scala> timed { xs.search(enMiljon) }        // binärsökning
+res54: (Double, collection.Searching.SearchResult) = (2.45691E-4,Found(999999))
+
+\end{REPL}
+\pause
+Citat från scaladoc för \code{search}:\\
+''The sequence \Alert{should be sorted} before calling; otherwise, the results are \Alert{undefined.}''
+\end{Slide}
+
+\begin{Slide}{Binärsökning: lösningsidé}
+\Emph{Problemlösningsidé}: Om sekvensen är sorterad kan vi utnyttja detta för en mer effektiv sökning, genom att jämföra med mittersta värdet och se om det vi söker finns före eller efter detta, och upprepa med ''halverad'' sekvens tills funnet.
+\pause
+\begin{itemize}\SlideFontSmall
+\item \Emph{Indata}: sorterad sekvens av heltal och det eftersökta elementet
+\item \Emph{Utdata}: \code{Found(index)} för det eftersökta elementet
+\\ om saknas: \code{InsertionPoint(index)}
+\pause
+\begin{Code}
+sealed trait SearchResult {
+  def insertionPoint: Int
+}
+
+case class Found(foundIndex: Int) extends SearchResult {
+  override def insertionPoint = foundIndex
+}
+  
+case class InsertionPoint(insertionPoint: Int) extends SearchResult
+\end{Code}
+\end{itemize} 
+\end{Slide}
+
+\begin{Slide}{Binärsökning: pseudokod, iterativ lösning}
+\Emph{Pseudo-kod}: iterativ lösning
+\begin{Code}
+def binarySearch(xs: Vector[Int])(elem: Int): SearchResult = {
+  var found = false
+  var (low, high) = (/* lägsta index */, /* högsta index */)
+  var mid = /* lämpligt startvärde */ 
+  while (!found && /* finns fler element kvar */) {
+    mid = /* mittpunkten i intervallet (low, high) */
+    if (xs(mid == elem) found = true
+    else if (xs(mid) < elem) /* flytta intervallets undre gräns */
+    else /* flytta intervallets övre gräns" */
+  }
+  if (found) Found(mid)
+  else InsertionPoint(low)
+}
+\end{Code}
+\end{Slide}
+
+
+
+\begin{Slide}{Binärsökning: implementation, iterativ lösning}
+\Emph{Implementation}: iterativ lösning
+\begin{Code}
+def binarySearch(xs: Vector[Int])(elem: Int): SearchResult = {
+  var found = false
+  var (low, high) = (0, xs.length - 1)
+  var mid = -1 
+  while (!found && low <= high) {
+    mid = (low + high) / 2
+    if (xs(mid) == elem) found = true
+    else if (xs(mid) < elem) low = mid + 1
+    else high = mid - 1 
+  }
+  if (found) Found(mid)
+  else InsertionPoint(low)
+}
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Binärsökning: rekursiv lösning}
+\Emph{Fördjupning}: rekursiv lösning
+\begin{Code}
+def binarySearch(xs: Vector[Int])(elem: Int): SearchResult = {
+  def loop(low: Int, high: Int): SearchResult = 
+    if (low > high) InsertionPoint(low) 
+    else (low + high) / 2 match {
+      case mid if xs(mid) == elem => Found(mid)
+      case mid if xs(mid) < elem => loop(mid + 1, high)
+      case mid => loop(low, mid - 1)
+    }
+  if (xs.nonEmpty) loop(0, xs.length - 1) else InsertionPoint(0) 
+}
+\end{Code}
+\end{Slide}
+
+
+\begin{Slide}{Binärsökning: generisk rekursiv lösning}
+\Emph{Fördjupning}: iterativ generisk lösning med implicit ordning
+\begin{CodeSmall}
+def binarySearch[T](xs: Seq[T])(elem: T)(implicit ord: Ordering[T]): SearchResult = {
+  import ord._
+  def loop(low: Int, high: Int): SearchResult = 
+    if (low > high) InsertionPoint(low) 
+    else (low + high) / 2 match {
+      case mid if xs(mid) == elem => Found(mid)
+      case mid if xs(mid) < elem => loop(mid + 1, high)
+      case mid => loop(low, mid - 1)
+    }
+  if (xs.nonEmpty) loop(0, xs.length - 1) else InsertionPoint(0) 
+}
+\end{CodeSmall}
+För den intresserade:\\Se fördjupningsuppgifter i veckans övning.
+\end{Slide}
+
+\begin{Slide}{Tidskomplexitet, sökning}\SlideFontSmall
+
+\Emph{Fördjupning:}\\Algoritmteoretisk analys av sökalgoritmerna ger:
+\begin{itemize}
+\item Linjärsökning: tiden är proportionell mot $n$, skrivs: $O(n)$ 
+\item Binärsökning:  tiden är proportionell mot $\log_2 n$, skrivs: $O(\log n)$
+\end{itemize}
+\vspace{1em}\pause
+Empirisk analys: Vi har en vektor med 1000 element. Vi har mätt tiden för att söka upp ett element många gånger och funnit att det tar ungefär 1 $\mu$s både med linjärsökning och binärsökning. 
+\\\vspace{1em}Hur lång tid tar det om vi har fler element i vektorn?\\
+\vspace{1em}
+\begin{tabular}{rccccc}
+       & 1000 & 10 000 & 100000 & 1 000 000 & 10 000 000 \\ \hline
+linjärsökning & 1     & 10     & 100     & 1000     & 10 000 \\
+binärsökning  & 1     & 1.33   & 1.67    & 2.00     & 2.33
+\end{tabular}
+\vspace{1em} 
+
+{\SlideFontTiny 
+
+Kurserna: \\
+''\Emph{Utvärdering av programvarusystem}'', obl. för D1, studerar detta \Alert{empiriskt}\\
+''\Emph{Algoritmer, datastrukturer och komplexitet}'', obl. för D2, studerar detta \Alert{analytiskt}
+}
+\end{Slide} 
+
+
+\fi
 
 
 
