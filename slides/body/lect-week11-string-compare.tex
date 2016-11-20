@@ -6,9 +6,36 @@
 \ifkompendium\else
 
 \Subsection{Jämföra strängar}
+
+\begin{Slide}{Att jämföra strängar lexikografiskt}\SlideFontSmall
+\begin{REPLnonum}
+scala> Array("hej","Hej","gurka").sorted
+\end{REPLnonum}
+\pause\vspace{-1.2em}
+\begin{REPLnonum}
+res0: Array[String] = Array(Hej, gurka, hej)\end{REPLnonum}
+\pause
+\begin{itemize}
+\item Antag att vi vill lösa detta problem ''från scratch'': \\ \Emph{att sortera en sekvens med strängar} 
+\item För att göra detta behöver vi lösa dessa delproblemen: 
+\begin{itemize}
+\item \Emph{att} \Alert{jämföra strängar}
+\item \Emph{sökning i sekvenser}
+\item \Emph{SWAP} (om på-plats-sortering i förändringsbar sekvens)
+\end{itemize}
+\item Vad betyder det att två strängar är ''lika''?
+
+\item Vad betyder det att en sträng är ''mindre'' än en annan?
+\end{itemize}
+\pause {\SlideFontTiny Vi använder här strängjämförelse, sökning och sortering för att illustrera typiska \Emph{imperativa algoritmer}. \Alert{Normalt} använder man \Emph{färdiga lösningar} på dessa problem!}
+
+\end{Slide}
+
 \begin{Slide}{Jämföra strängar: likhet}\SlideFontSmall
 Antag att vi inte kan göra \code{s1 == s2} utan bara kan jämföra strängar tecken för tecken, 
-t.ex. så här: \code{s1(42) == s2(42)}. Antag också att vi inte har tillgång till annat än metoderna \code{length} och \code{apply} på strängar, samt  \code{while} och variabler av grundtyp. Lös problemet att \emph{avgöra om två strängar är lika}.\\
+t.ex. så här: \code{s1(i) == s2(i)}. Antag också att vi inte har tillgång till annat än metoderna \code{length} och \code{apply} på strängar, samt  \code{while} och variabler av grundtyp. \Emph{Lös problemet att \emph{avgöra om två strängar är lika}.}
+
+\pause
 \begin{itemize}
 \item Indata: två strängar
 \item Utdata: \code{true} om lika annars \code{false}
@@ -18,7 +45,167 @@ t.ex. så här: \code{s1(42) == s2(42)}. Antag också att vi inte har tillgång 
 \item Formulera algoritmen i pseudokod
 \item Implementera algoritmen i Scala: \code{def isEqual(s1: String, s2: String): Boolean} = ???
 \end{enumerate}
+\end{Slide}
 
+\begin{Slide}{Algoritmexempel: stränglikhet}
+Pseudokod:
+\begin{Code}[H]
+def isEqual(s1: String, s2: String): Boolean = {
+  if (/* lika längder */) {
+    var foundDiff = false
+    var i = /* första index */
+    while (!foundDiff && /* i inom indexgräns */) {
+      if (/* tecken på plats i är olika */) foundDiff = true
+      else i = /* nästa index */
+    }
+    !foundDiff
+  } else false
+}
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Algoritmexempel: stränglikhet}\SlideFontSmall
+\begin{Code}[H]
+def isEqual(s1: String, s2: String): Boolean = {
+  if (s1.length == s2.length) {
+    var foundDiff = false
+    var i = 0
+    while (!foundDiff && i < s1.length) {
+      if (s1(i) != s2(i)) foundDiff = true
+      else i += 1
+    }
+    !foundDiff
+  } else false
+}
+\end{Code}
+\pause 
+{\SlideFontTiny Fördjupning: jämför ovan med implementationen av \code{String.equals} här:
+\href{http://hg.openjdk.java.net/jdk8u/jdk8u60/jdk/file/935758609767/src/share/classes/java/lang/String.java#l976}{hg.openjdk.java.net/jdk8u/jdk8u60/jdk/file/935758609767/src/share/classes/java} \\ och använd \code{timed} nedan och jämför prestanda med \code{isEqual} ovan.\\
+Obs! Mät många gånger så att JVM:en optimerar din kod.}
+\begin{Code}
+def timed[T](block: => T): (Double, T) = { 
+  val (t, res) = (System.nanoTime, block)
+  ((System.nanoTime - t) / 1e9, res) 
+}
+\end{Code}
+
+\end{Slide}
+
+\begin{Slide}{Algoritmexempel: stränglikhet, prestanda}
+\begin{REPL}
+scala> val enMiljon = 1000000
+
+scala> val s = Array.fill(enMiljon)('x').mkString
+
+scala> val t = s.updated(enMiljon - 1, 'y')
+
+scala> timed{s == t}
+res42: (Double, Boolean) = (3.76459E-4,false)
+
+scala> timed{isEqual(s,t)}
+res43: (Double, Boolean) = (3.31597E-4,false)
+\end{REPL}
+Ovan är kört efter ''uppvärmning'' på i7-4790K CPU @ 4.00GHz \\
+Skillnaden inom mätfelmarginalen!
+\end{Slide}
+
+
+
+\begin{Slide}{Jämföra strängar: ''mindre än''}\SlideFontSmall
+Med \code{s1 < s2} menar vi att strängen s1 ska sorteras före strängen s2 enligt hur de enskilda tecknen är ordnade med uttrycket \code{s1(i) < s2(i)}. \\
+Antag också att vi inte har tillgång till annat än metoderna \code{length} och \code{apply} på strängar, samt  \code{while} och variabler av grundtyp, samt \code{math.min}
+\\\Emph{Lös problemet att \emph{avgöra om en sträng är ''mindre'' än en annan}.}\\
+\begin{itemize}
+\item Indata: två strängar, s1, s2
+\item Utdata: \code{true} om s1 ska sorteras före s2 annars \code{false}
+\end{itemize}
+\begin{enumerate}
+\item Klura ut din lösningsidé
+\item Formulera algoritmen i pseudokod
+\item Implementera algoritmen i Scala: \code{def isLessThan(s1: String, s2: String): Boolean} = ???
+\end{enumerate}
+\end{Slide}
+
+\begin{Slide}{Jämföra strängar: ''mindre än''}\SlideFontSmall
+Pseudokod:
+\begin{Code}[H]
+def isLessThan(s1: String, s2: String): Boolean = {
+  
+  val minLength = /* minimum av längderna på s1 och s2 */
+  
+  def firstDiff(s1: String, s2: String): Int = 
+    /* index för första skillnaden (om de börjar lika: minLength) */
+
+  val diffIndex = firstDiff(s1, s2)
+  if (diffIndex == minLength) /* s1 är kortare än s2 */
+  else /* tecknet s1(diffIndex) är mindre än tecknet s2(diffIndex) */ 
+}
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Jämföra strängar: ''mindre än''}\SlideFontSmall
+\begin{Code}[H]
+def isLessThan(s1: String, s2: String): Boolean = {
+
+  val minLength = math.min(s1.length, s2.length)
+
+  def firstDiff(s1: String, s2: String): Int = {
+    var foundDiff = false
+    var i = 0
+    while (!foundDiff && i < minLength) 
+      if (s1(i) != s2(i)) foundDiff = true else i += 1
+    i
+  }
+
+  val diffIndex = firstDiff(s1, s2)
+  if (diffIndex == minLength) s1.length < s2.length
+  else s1(diffIndex) < s2(diffIndex)
+}
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Jämföra strängar i Java}\SlideFontTiny
+\begin{itemize}
+\item I Java kan man \Alert{inte} jämföra strängar med operatorerna \code{<}, \code{<=}, \code{>}, och \code{>=}
+
+\item Dessutom ger operatorerna \code{==} och \code{!= } \emph{inte} innehålls(o)likhet utan \Alert{referens(o)likhet} \code{:(}
+
+\item Istället \Alert{måste} man i Java använda metoderna \code{equals} och \code{compareTo} 
+\\Dessa fungerar även i Scala eftersom strängar i Scala och Java är av samma typ, nämligen \code{java.lang.String}.
+\pause
+\item \code{s1.compareTo(s2)} ger ett heltal som är:
+\begin{itemize}\SlideFontTiny
+\item \code{0} om s1 och s2 har samma innehåll
+\item \Alert{negativt} om s1 < s2 i lexikografiks mening, alltså s1 ska sorteras \Alert{före}
+\item \Emph{positivt} om s1 > s2 i lexikografiks mening, alltså s1 ska sorteras \Emph{efter}
+\end{itemize}
+
+\pause
+\item Undersök följande:
+\begin{REPL}
+scala> new String("hej") eq new String("hej") // motsvarar == i Java
+scala> "hej".equals("hej")                    // samma som == i Scala
+scala> "hej".compareTo("hej")
+scala> "hej".compareTo("HEJ")         // alla stora är 'före' alla små
+scala> "HEJ".compareTo("hej")
+\end{REPL}
+\end{itemize}
+
+\href{http://docs.oracle.com/javase/8/docs/api/java/lang/String.html#compareTo-java.lang.String-}{docs.oracle.com/javase/8/docs/api/java/lang/String.html\#compareTo-java.lang.String-}
+\end{Slide}
+
+
+\begin{Slide}{Jämföra strängar i Java: exempel}\SlideFontSmall
+Vad skriver detta Java-program ut?
+\javainputlisting{../compendium/examples/StringEqTest.java}
+\pause
+\begin{REPL}
+$ javac StringEqTest.java 
+$ java StringEqTest 
+false
+true
+0
+\end{REPL}
 \end{Slide}
 
 
