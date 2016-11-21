@@ -11,6 +11,9 @@
 \begin{itemize}
 \item \Emph{Sökning} återkommer i många skepnader: \\ i en datastruktur, vilken det än må vara, vill man ofta kunna \\ \Emph{hitta ett element med en viss egenskap}. 
 
+\pause
+Några färdiga linjärsökningar i Scalas standardbibliotek:
+
 \begin{REPL}
 scala> Vector("gurka","tomat","broccoli").indexOf("tomat")
 res0: Int = 1
@@ -252,10 +255,46 @@ def binarySearch(xs: Vector[Int])(elem: Int): SearchResult = {
     else if (xs(mid) < elem) low = mid + 1
     else high = mid - 1 
   }
-  if (found) Found(mid)
+  if (found) Found(mid) 
   else InsertionPoint(low)
 }
 \end{Code}
+\end{Slide}
+
+\begin{Slide}{Binärsökning: instrumentering av iterativ lösning}
+\vspace{-0.5em}
+\begin{CodeSmall}
+def waitForEnter: Unit = scala.io.StdIn.readLine("")
+def show(msg: String): Unit = {println(msg); waitForEnter}
+
+def binarySearch(xs: Vector[Int])(elem: Int): SearchResult = {
+  var found = false                         ; show(s"found = $found")
+  var (low, high) = (0, xs.length - 1)      ; show(s"(low, high) = ($low, $high)")
+  var mid = -1                              ; show(s"mid = $mid")
+  while (!found && low <= high) {           ; show(s"while ${!found && low <= high}")
+    mid = (low + high) / 2                  ; show(s"mid = $mid")
+    if (xs(mid) == elem) {found = true      ; show(s"found = $found")}
+    else if (xs(mid) < elem) {low = mid + 1 ; show(s"low = $low")}
+    else {high = mid - 1                    ; show(s"high = $high")}
+  }
+  if (found) Found(mid) 
+  else InsertionPoint(low)
+}
+\end{CodeSmall}
+\vspace{-0.5em}
+\begin{REPL}[basicstyle=\color{white}\ttfamily\SlideFontSize{6}{7}]
+scala> binarySearch(Vector(0,1,2,3,42,5))(42)
+found = false
+(low, high) = (0, 5)
+mid = -1
+while true
+mid = 2
+low = 3
+while true
+mid = 4
+found = true
+res0: collection.Searching.SearchResult = Found(4)
+\end{REPL}
 \end{Slide}
 
 \begin{Slide}{Binärsökning: rekursiv lösning}
@@ -266,10 +305,11 @@ def binarySearch(xs: Vector[Int])(elem: Int): SearchResult = {
     if (low > high) InsertionPoint(low) 
     else (low + high) / 2 match {
       case mid if xs(mid) == elem => Found(mid)
-      case mid if xs(mid) < elem => loop(mid + 1, high)
-      case mid => loop(low, mid - 1)
+      case mid if xs(mid) < elem  => loop(mid + 1, high)
+      case mid                    => loop(low, mid - 1)
     }
-  if (xs.nonEmpty) loop(0, xs.length - 1) else InsertionPoint(0) 
+    
+  loop(0, xs.length - 1) 
 }
 \end{Code}
 \end{Slide}
@@ -284,13 +324,14 @@ def binarySearch[T](xs: Seq[T])(elem: T)(implicit ord: Ordering[T]): SearchResul
     if (low > high) InsertionPoint(low) 
     else (low + high) / 2 match {
       case mid if xs(mid) == elem => Found(mid)
-      case mid if xs(mid) < elem => loop(mid + 1, high)
-      case mid => loop(low, mid - 1)
+      case mid if xs(mid) < elem  => loop(mid + 1, high)
+      case mid                    => loop(low, mid - 1)
     }
-  if (xs.nonEmpty) loop(0, xs.length - 1) else InsertionPoint(0) 
+    
+  loop(0, xs.length - 1) 
 }
 \end{CodeSmall}
-För den intresserade:\\Se fördjupningsuppgifter i veckans övning.
+{\SlideFontSmall För den intresserade:\\Se fördjupningsuppgifter om implicita ordningar i veckans övning.}
 \end{Slide}
 
 \begin{Slide}{Tidskomplexitet, sökning}\SlideFontSmall

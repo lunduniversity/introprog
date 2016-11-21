@@ -6,13 +6,357 @@
 \ifkompendium\else
 
 \Subsection{Sortering}
-\begin{Slide}{Sortering}\SlideFontSmall
+
+
+\begin{Slide}{Sorteringsproblemet}
+\Emph{Problem}: Vi har en osorterad sekvens med heltal. Vi vill ordna denna osorterade sekvens i en sorterad sekvens från minst till störst.
+\pause
+
+\vspace{2em}
+En \emph{generalisering} av problement: \\ \vspace{1em} Vi har många element och en \Emph{ordningsrelation} som säger vad vi menar med att ett element är \emph{mindre än} eller \emph{större än} eller \emph{lika med} ett annat element. \\ \vspace{1em}
+Vi vill lösa problemet att ordna elementen i sekvens så att för varje element på plats $i$ så är efterföljande element på plats $i + 1$ större eller lika med elementet på plats $i$.
+
+\end{Slide} 
+
+\begin{Slide}{Två enkla sporteringsalgoritmer: \\ Insättningssortering \& Urvalssortering}
 \begin{itemize}
-\item 
+\item Insättningssortering \Emph{lösningsidé}: Ta ett element i taget från den osorterade listan och \Alert{sätt in} det på \Alert{rätt plats} i den sorterade listan och upprepa till det inte finns fler osorterade element. 
+\pause
+\item Urvalsssortering \Emph{lösningsidé}: \Alert{Välj ut} det minsta kvarvarande elementet i den osorterade listan och placera det \Alert{sist} i den sorterade listan och upprepa till det inte finns fler osorterade element. 
 \end{itemize}
+\end{Slide} 
+
+
+\begin{Slide}{Sortera till ny vektor med insättningssortering: pseudo-kod}
+
+{\footnotesize Det kan vara lättare att förstå idén med insertion sort om man först implementerar den genom att kopiera elementen till en ny vektor. \\ Vi ska sedan se hur man sorterar ''på plats'' \Eng{in place} i en  array.\\} \vspace{1em}
+\Emph{Indata}: en osorterad vektor med heltal \\
+\Emph{Utdata}: en sorterad vektor med heltal
+\begin{Code}
+def insertionSort(xs: Vector[Int]): Vector[Int] = {
+  val sorted = /* tom ArrayBuffer */
+  for (/* alla element i xs */) {
+     /* linjärsök rätt position i sorted */
+     /* sätt in element på rätt plats i sorted */ 
+  }
+  sorted.toVector
+}
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Sortera till ny vektor med insättningssortering: implementation i Scala}
+\begin{Code}
+def insertionSort(xs: Vector[Int]): Vector[Int] = {
+  val sorted = scala.collection.mutable.ArrayBuffer.empty[Int] 
+  for (elem <- xs) {
+     // linjärsök rätt position i sorted: 
+     var pos = 0
+     while (pos < sorted.length && sorted(pos) < elem) {
+       pos += 1
+     }     
+     // sätt in element på rätt plats i sorted:
+     sorted.insert(pos, elem) 
+  }
+  sorted.toVector
+}
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Sortera till ny vektor med insättningssortering: implementation i Java med foreach-sats}
+\SlideFontTiny\vspace{-0.5em}
+\begin{Code}[language=Java]
+import java.util.ArrayList;
+
+public class JSort {
+    public static ArrayList<Integer> insertionSort(ArrayList<Integer> xs) {
+        ArrayList<Integer> sorted = new ArrayList<Integer>();
+        for (int elem : xs) {
+            // linjärsök rätt position i sorted: 
+            int pos = 0;  
+            while (pos < sorted.size() && sorted.get(pos) < elem) {
+                pos++;
+            }
+            // sätt in element på rätt plats i sorted:
+            sorted.add(pos, elem);
+        }
+        return sorted;
+    }
+}
+\end{Code}
+\vspace{-0.3em}
+\href{http://stackoverflow.com/questions/85190/how-does-the-java-for-each-loop-work}{ stackoverflow.com/questions/85190/how-does-the-java-for-each-loop-work}
+
+Javasamlingar måste ''wrappa'' primitiva \jcode{int} i klassen \code{Integer} (mer om detta senare)
+\end{Slide}
+
+\begin{Slide}{Sortera till ny vektor med urvalssortering: pseudo-kod}
+
+{\SlideFontSmall Det kan vara lättare att förstå idén med selection sort om man först implementerar den genom att flytta elementen till en ny vektor. \\ (Vi ska senare se hur man sorterar ''på plats'' \Eng{in place} i en vecktor.)} 
+
+\vspace{1em}
+\Emph{Indata}: en osorterad vektor med heltal \\
+\Emph{Utdata}: en sorterad vektor med heltal
+\begin{Code}
+def selectionSort(xs: Vector[Int]): Vector[Int] = {
+  val unsorted = xs.toBuffer
+  val sorted = scala.collection.mutable.ArrayBuffer.empty[Int] 
+  while (/* unsorted inte är tom */) {
+    var indexOfMin = /* index för minsta element i unsorted */
+    /* flytta elementet unsorted(indexOfMin) till sist i sorted */ 
+  }
+}
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Sortera till ny vektor med urvalssortering: implementation i Scala}
+\SlideFontTiny\vspace{-0.5em}
+\begin{Code}
+def selectionSort(xs: Vector[Int]): Vector[Int] = {
+  val unsorted = xs.toBuffer
+  val sorted = scala.collection.mutable.ArrayBuffer.empty[Int] 
+  while (unsorted.nonEmpty) {
+    var indexOfMin = 0
+    // index för minsta element i unsorted:
+    for (i <- 1 until unsorted.length) {
+      if (unsorted(i) < unsorted(indexOfMin)) indexOfMin = i
+    } 
+    val elem = unsorted.remove(indexOfMin)  // ta bort ur unsorted
+    sorted.append(elem)  // lägg sist i sekvensen med sorterade
+  }
+  sorted.toVector
+}
+\end{Code}
+\pause
+\begin{itemize}
+\item Funkar tom sekvens?
+\item Funkar en sekvens med ett element?
+\item Funkar det för osorterad sekvens med (minst) två element?
+\item Vad händer om sekvensen är sorterad?
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Sortera till ny vektor med urvalssortering: implementation i Java}
+\begin{Code}[language=Java]
+public static ArrayList<Integer> selectionSort(ArrayList<Integer> unsorted) {
+    ArrayList<Integer> sorted = new ArrayList<Integer>();
+    while (unsorted.size() > 0) {
+        int indexOfMin = 0;
+        // index för minsta element i unsorted:
+        for (int i = 1; i < unsorted.size(); i++) { 
+            if (unsorted.get(i) < unsorted.get(indexOfMin)) {
+                indexOfMin = i;
+            }
+        }
+        int elem = unsorted.remove(indexOfMin);  // ta bort ur unsorted
+        sorted.add(elem);  // lägg sist i sekvensen med sorterade
+    }
+    return sorted;
+}
+\end{Code}
+OBS! Ovan algoritm ''\Alert{förstör}'' innehållet i inparametern! \\ Hur förhindra det?
+\end{Slide}
+
+\begin{Slide}{Sortera till ny vektor med urvalssortering: implementation i Java}
+\begin{Code}[language=Java]
+public static ArrayList<Integer> selectionSort(ArrayList<Integer> xs) {
+    ArrayList<Integer> unsorted = new ArrayList<Integer>(xs); //ref copy
+    ArrayList<Integer> sorted = new ArrayList<Integer>();
+    while (unsorted.size() > 0) {
+        int indexOfMin = 0;
+        // index för minsta element i unsorted:
+        for (int i = 1; i < unsorted.size(); i++) { 
+            if (unsorted.get(i) < unsorted.get(indexOfMin)) {
+                indexOfMin = i;
+            }
+        }
+        int x = unsorted.remove(indexOfMin);  // ta bort ur unsorted
+        sorted.add(x);  // lägg sist i sekvensen med sorterade
+    }
+    return sorted;
+}
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Urvalssortering på plats -- pseudo-kod}
+\begin{Code}
+Indata: int[] xs
+
+for (int i : från första till NÄST sista index) { 
+     minIndex = index för MINSTA talet från platserna i till SISTA plats
+     byt plats mellan xs[i] och xs[minIndex]       
+}
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Selection sort, in place, Java}
+\begin{Code}[language=Java]
+public void selectionSortInPlace(int[] xs) {
+    for (int i = 0; i < xs.length - 1; i++) { 
+        int min = Integer.MAX_VALUE;
+        int minIndex = -1;
+        // sök minsta bland ännu ej sorterade
+        for (int k = i; k < xs.length; k++) {  
+            if (xs[k] < min) {
+                min = xs[k];
+                minIndex = k;
+            }
+        }
+        // byt plats mellan xs[i] och xs[minIndex] 
+        xs[minIndex] = xs[i]; 
+        xs[i] = min;          
+    }
+}
+\end{Code}
+\footnotesize
+\pause
+Övning: Kör denna implementation med \code+xs = {8,5,2,6,9,3,1,4,0,7}+
+
+\pause
+Se animering här: \href{https://sv.wikipedia.org/wiki/Urvalssortering}{Urvalssortering på Wikipedia}
+
+\pause Det finns ett specialfall som kommer krascha denna implementation. \href{https://github.com/bjornregnell/lth-eda016-2015/blob/master/lectures/examples/eclipse-ws/lecture-examples/src/week12/sorting/SortUtilTest.java#L30}{Vilket?}
+\end{Slide}
+
+\begin{Slide}{Insättningssortering på plats -- pseudo-kod}
+\begin{Code}[language=Java]
+Indata: int[] xs
+
+for (int i = 1; i < xs.length; i++) {  //från ANDRA till sista
+     j = i
+     while (j > 0 && xs[j - 1] > xs[j]) {
+        "byt plats på x[j] och x[j - 1]"
+         j = j - 1;  // stega bakåt
+     }
+}
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Insertion sort, in place, with swap, Java}
+\begin{Code}[language=Java]
+private void swap(int[] xs, int a, int b) {
+    int temp = xs[a];
+    xs[a] = xs[b];
+    xs[b] = temp;
+}
+
+public void insertionSortInPlaceSwap(int[] xs) {
+    for (int i = 1; i < xs.length; i++) {
+        int j = i;
+        while (j > 0 && xs[j - 1] > xs[j]) {
+            swap(xs, j, j - 1);
+            j = j - 1;
+        }
+    }
+}
+\end{Code}
+Funkar denna implementation för alla specialfall?
+\end{Slide}
+
+\begin{Slide}{Insertion sort, in place, Java}
+\begin{Code}[language=Java]
+    public void insertionSortInPlace(int[] xs) {
+        for (int i = 1; i < xs.length; i++) {
+            int current = xs[i];
+            int j = i;
+            while (j > 0 && xs[j - 1] > current) {
+                xs[j] = xs[j - 1];
+                j--;
+            }
+            xs[j] = current;
+        }
+    }
+\end{Code}
+Se animering här: \href{https://sv.wikipedia.org/wiki/Ins\%C3\%A4ttningssortering}{Insättningssortering på wikipedia}
+\end{Slide}
+
+\begin{Slide}{Läs mer om insättnings- och urvalssortering}
+\Emph{Insertion sort}
+\begin{itemize}
+\item Wikipedia: \href{https://sv.wikipedia.org/wiki/Ins\%C3\%A4ttningssortering}{svenska} och 
+\href{https://en.wikipedia.org/wiki/Insertion_sort}{engelska: Insertion sort} 
+
+\item AlgoRythmics \href{https://www.youtube.com/watch?v=ROalU379l3U}{Insert-sort with Romanian folk dance  }
+\end{itemize}
+
+\vspace{2em}
+\Emph{Selection sort}
+
+\begin{itemize}
+\item Wikipedia: \href{https://sv.wikipedia.org/wiki/Urvalssortering}{svenska} och 
+\href{https://en.wikipedia.org/wiki/Selection_sort}{engelska: Selection sort} 
+
+\item AlgoRythmics \href{https://www.youtube.com/watch?v=Ns4TPTC8whw}{Select-sort with Gypsy folk dance }
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Det finns många olika sorteringsalgoritmer}
+\begin{itemize}
+\item \href{https://www.youtube.com/watch?v=kPRA0W1kECg}{Visualisering av 15 olika sorteringsalgoritmer på 6 min}
+\item Olika sorteringsalgoritmer har olika komplexitet: \\ i bästa fall, i värsta fall, i medeltal, för nästan sorterad. \\
+\href{https://en.wikipedia.org/wiki/Sorting_algorithm}{Olika sorteringsalgoritmers egenskaper enl. wikipedia}
+\item Olika sorteringsalgoritmer lämpar sig olika väl för parallellisering på många kärnor.
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Tidskomplexitet, sortering, medeltal}
+\begin{tabular}{ll}
+Urvalssortering, insättningssortering: & $O(n^2)$ \\
+''Bra'' metoder, tex Quicksort, Timsort:  & $O(n\log n)$
+\end{tabular}
+
+\vspace{1em}\footnotesize
+Vi har en vektor med 1000 element. Vi har mätt tiden för att sortera elementen många gånger och funnit att det tar ungefär 1 ms både med urvalssortering (eller någon annan ''dålig'' metod) och en ''bra'' metod. Hur lång tid tar det om vi har fler element i vektorn?
+
+\vspace{1em}
+\begin{tabular}{rccccc}
+       & 1,000 & 10,000 & 100,000 & 1,000,000 & 10,000,000 \\ \hline
+dålig  & 1     & 100    & $10^4$  & $10^6$   & $10^8$ \\
+bra    & 1     & 13.3   & 167     & 2000     & 23000
+\end{tabular}
+\end{Slide}
+
+\begin{Slide}{Bogo sort}
+\begin{Code}
+def bogoSort(xs: Vector[Int]) = {
+  var result = xs
+  while(result != result.sorted) {
+    result = scala.util.Random.shuffle(result)
+  }
+  result
+}
+\end{Code}
+När blir denna färdig? \pause \\
+\url{https://en.wikipedia.org/wiki/Bogosort}\\
+Förväntat antal jämförelser: $ O(n!) $
+\end{Slide}
+
+\begin{Slide}{Sortera samlingar med element av godtycklig typ}
+
+case class Gurka(...) extends Grönsak
+
+sortBy
+
+sortWith
 
 \end{Slide}
 
+\begin{Slide}{Vad kommer (inte) på tentan?}
+Detta \Emph{kan} komma på tentan:
+\begin{itemize}
+\item Använda färdiga söknings- och sorteringsfunktioner på samlingar av specifik typ
+\item Implementera egen linjärsökning i samlingar av specifik typ
+\item Implementera egen binärsökning i samlingar av specifik typ
+\item Implementera egen sortering till ny samling av specifik typ (du får själv välja algoritm, lämpligen insättnings- eller urvalssortering)
+
+\end{itemize}
+Detta kommer \Alert{inte} på tentan:
+\begin{itemize}
+\item Implementera generisk linjärsökning 
+\item Implementera generisk sortering
+\item Implementera sortering ''på plats''
+\end{itemize}
+\end{Slide}
 
 \fi
 
