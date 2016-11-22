@@ -384,18 +384,121 @@ def bogoSort(xs: Vector[Int]) = {
 \end{Code}
 När blir denna färdig? \pause \\
 \url{https://en.wikipedia.org/wiki/Bogosort}\\
-Förväntat antal jämförelser: $ O(n!) $
+Antal jämförelser i medeltal vid många mätningar: $ O(n \cdot n!) $
 \end{Slide}
 
-\begin{Slide}{Sortera samlingar med element av godtycklig typ}
 
-case class Gurka(...) extends Grönsak
 
-sortBy
 
-sortWith
+\begin{Slide}{Sortera samlingar med godtyckligt ordningspredikat}
+\begin{Code}
+def sortWith(xs: Vector[Int])(lt: (Int, Int) => Boolean ): Vector[Int] = {
+  val sorted = scala.collection.mutable.ArrayBuffer.empty[Int] 
+  for (elem <- xs) {  // insertion sort using lt as "less than"
+     var pos = 0
+     while (pos < sorted.length && lt(sorted(pos), elem)) {
+       pos += 1
+     }     
+     sorted.insert(pos, elem) 
+  }
+  sorted.toVector
+}
+\end{Code}
+\pause
+\begin{REPL}
+scala> val xs = Vector(1,2,1,2,12,42,1)
+xs: scala.collection.immutable.Vector[Int] = Vector(1, 2, 1, 2, 12, 42, 1)
 
+scala> sortWith(xs)(_ < _)
+res0: Vector[Int] = Vector(1, 1, 1, 2, 2, 12, 42)
+
+scala> sortWith(xs)(_ > _)
+res1: Vector[Int] = Vector(42, 12, 2, 2, 1, 1, 1)
+\end{REPL}
 \end{Slide}
+
+
+\begin{Slide}{Fördjupning: Sortera samlingar av godtycklig typ}
+\vspace{-0.25em}
+\begin{Code}
+def sortWith[T](xs: Vector[T])(lt: (T, T) => Boolean ): Vector[T] = {
+  val sorted = scala.collection.mutable.ArrayBuffer.empty[T] 
+  for (elem <- xs) {  
+     var pos = 0
+     while (pos < sorted.length && lt(sorted(pos), elem)) {
+       pos += 1
+     }     
+     sorted.insert(pos, elem) 
+  }
+  sorted.toVector
+}
+\end{Code}
+\pause\vspace{-0.25em}
+\begin{REPL}
+scala> case class Gurka(namn: String, vikt: Int)
+
+scala> val xs = Vector(Gurka("a", 100), Gurka("b", 50), Gurka("c", 100))
+
+scala> sortWith(xs)(_.vikt > _.vikt)
+res0: Vector[Gurka] = Vector(Gurka(c,100), Gurka(a,100), Gurka(b,50))
+
+scala> sortWith(xs)(_.vikt >= _.vikt)
+res1: Vector[Gurka] = Vector(Gurka(a,100), Gurka(c,100), Gurka(b,50))
+\end{REPL}
+\end{Slide}
+
+
+\begin{Slide}{Vad menas med att en sorteringsalgoritm är stabil?}
+En sorteringsalgoritm är \Emph{stabil} om \Alert{ordningen} mellan element som anses \Emph{lika} enligt sorteringsordningsrelationen \Alert{bevaras}.\\\vspace{1em}
+Fördjupning: 
+\href{https://en.wikipedia.org/wiki/Sorting_algorithm#Stability}
+{en.wikipedia.org/wiki/Sorting\_algorithm\#Stability}
+\end{Slide}
+
+\begin{Slide}{Sortera samlingar med inbyggda sortBy och sortWith}
+\begin{REPL}
+scala> case class Gurka(namn: String, vikt: Int)
+defined class Gurka
+
+scala> val xs = Vector(Gurka("a", 100), Gurka("b", 50), Gurka("c", 100))
+
+scala> xs.sortBy(_.vikt)
+res0: scala.collection.immutable.Vector[Gurka] = 
+        Vector(Gurka(b,50), Gurka(a,100), Gurka(c,100))
+
+scala> xs sortWith (_.vikt > _.vikt)
+res1: scala.collection.immutable.Vector[Gurka] = 
+        Vector(Gurka(a,100), Gurka(c,100), Gurka(b,50))
+
+\end{REPL}
+\end{Slide}
+
+        
+\begin{Slide}{Fördjupning: sortera samlingar implicit ordning}
+\begin{REPL}
+scala> case class Gurka(namn: String, vikt: Int)
+defined class Gurka
+
+scala> val xs = Vector(Gurka("a", 100), Gurka("b", 50), Gurka("c", 100))
+
+scala> xs.sorted
+<console>:15: error: No implicit Ordering defined for Gurka.
+       xs.sorted
+          ^
+
+scala> implicit object minGurkOrdning extends Ordering[Gurka] {
+         def compare(x: Gurka, y: Gurka): Int = 
+           if (x == y) 0 
+           else if (x.vikt < y.vikt) -1
+           else 1
+       }
+
+scala> xs.sorted
+res0: scala.collection.immutable.Vector[Gurka] = 
+        Vector(Gurka(b,50), Gurka(a,100), Gurka(c,100))
+\end{REPL}
+\end{Slide}
+
 
 \begin{Slide}{Vad kommer (inte) på tentan?}
 Detta \Emph{kan} komma på tentan:
@@ -408,7 +511,7 @@ Detta \Emph{kan} komma på tentan:
 \end{itemize}
 Detta kommer \Alert{inte} på tentan:
 \begin{itemize}
-\item Implementera generisk linjärsökning 
+\item Implementera generisk sökning 
 \item Implementera generisk sortering
 \item Implementera sortering ''på plats''
 \item Bogo sort
