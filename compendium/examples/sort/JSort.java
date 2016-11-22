@@ -31,5 +31,22 @@ public class JSort {
         }
         return sorted;
     }
+    
+    public static void selectionSortInPlace(int[] xs) {
+        for (int i = 0; i < xs.length - 1; i++) { 
+            int min = Integer.MAX_VALUE;
+            int minIndex = -1;
+            // sök minsta bland ännu ej sorterade
+            for (int k = i; k < xs.length; k++) {  
+                if (xs[k] < min) {
+                    min = xs[k];
+                    minIndex = k;
+                }
+            }
+            // byt plats mellan xs[i] och xs[minIndex] 
+            xs[minIndex] = xs[i]; 
+            xs[i] = min;          
+        }
+    }
 }
 
