@@ -13,7 +13,7 @@
 \pause
 
 \vspace{2em}
-En \emph{generalisering} av problement: \\ \vspace{1em} Vi har många element och en \Emph{ordningsrelation} som säger vad vi menar med att ett element är \emph{mindre än} eller \emph{större än} eller \emph{lika med} ett annat element. \\ \vspace{1em}
+En \emph{generalisering} av problement: \\ \vspace{1em} Vi har många element av godtycklig typ och en \Emph{ordningsrelation} som säger vad vi menar med att ett element är \emph{mindre än} eller \emph{större än eller lika med} ett annat element. \\ \vspace{1em}
 Vi vill lösa problemet att ordna elementen i sekvens så att för varje element på plats $i$ så är efterföljande element på plats $i + 1$ större eller lika med elementet på plats $i$.
 
 \end{Slide} 
@@ -29,9 +29,9 @@ Vi vill lösa problemet att ordna elementen i sekvens så att för varje element
 
 \begin{Slide}{Sortera till ny vektor med insättningssortering: pseudo-kod}
 
-{\footnotesize Det kan vara lättare att förstå idén med insertion sort om man först implementerar den genom att kopiera elementen till en ny vektor. \\ Vi ska sedan se hur man sorterar ''på plats'' \Eng{in place} i en  array.\\} \vspace{1em}
+{\SlideFontSmall Det är nog lättare att förstå \Emph{insertion sort} om man sorterar till en ny vektor. \\ Vi ska sedan se hur man sorterar ''på plats'' \Eng{in place} i en  array.\\} \vspace{1em}
 \Emph{Indata}: en osorterad vektor med heltal \\
-\Emph{Utdata}: en sorterad vektor med heltal
+\Emph{Utdata}: en ny, sorterad vektor med heltal
 \begin{Code}
 def insertionSort(xs: Vector[Int]): Vector[Int] = {
   val sorted = /* tom ArrayBuffer */
@@ -91,9 +91,7 @@ Javasamlingar måste ''wrappa'' primitiva \jcode{int} i klassen \code{Integer} (
 
 \begin{Slide}{Sortera till ny vektor med urvalssortering: pseudo-kod}
 
-{\SlideFontSmall Det kan vara lättare att förstå idén med selection sort om man först implementerar den genom att flytta elementen till en ny vektor. \\ (Vi ska senare se hur man sorterar ''på plats'' \Eng{in place} i en vecktor.)} 
-
-\vspace{1em}
+{\SlideFontSmall Det är nog lättare att förstå \Emph{selection sort} om man sorterar till en ny vektor. \\ Vi ska sedan se hur man sorterar ''på plats'' \Eng{in place} i en  array.\\} \vspace{1em}
 \Emph{Indata}: en osorterad vektor med heltal \\
 \Emph{Utdata}: en sorterad vektor med heltal
 \begin{Code}
@@ -177,61 +175,119 @@ public static ArrayList<Integer> selectionSort(ArrayList<Integer> xs) {
 \end{Code}
 \end{Slide}
 
-\begin{Slide}{Urvalssortering på plats -- pseudo-kod}
-\begin{Code}
-Indata: int[] xs
+\begin{Slide}{Urvalssortering på plats: pseudo-kod}
+\Emph{Indata:} en array med heltal\\
+\Emph{Utdata:} samma array, men nu sorterad\\
 
-for (int i : från första till NÄST sista index) { 
-     minIndex = index för MINSTA talet från platserna i till SISTA plats
-     byt plats mellan xs[i] och xs[minIndex]       
+\begin{Code}
+def selectionSortInPlace(xs: Array[Int]): Unit = {
+  def minIndex(fromIndex: Int): Int = {
+    /* index för minsta element från fromIndex  */
+  }
+  
+  for (i <- /* från första till NÄST sista index */) { 
+    /* byt plats mellan xs[i] och xs[minIndex(i)] */      
+  }
+}
+\end{Code}
+\pause
+Se animering här: \href{https://sv.wikipedia.org/wiki/Urvalssortering}{Urvalssortering på Wikipedia}
+\end{Slide}
+
+\begin{Slide}{Urvalssortering på plats: implementation i Scala}\SlideFontSmall
+\vspace{-0.25em}
+\Emph{Indata:} en array med heltal\\
+\Emph{Utdata:} samma array, men nu sorterad\\
+
+\begin{Code}[numberstyle=\ttfamily\SlideFontSize{6}{7.5},numbers=left]
+def selectionSortInPlace(xs: Array[Int]): Unit = {
+  def minIndex(fromIndex: Int): Int = {
+    var result = fromIndex
+    for (i <- fromIndex + 1 until xs.length) {
+      if (xs(i) < xs(result)) result = i
+    }
+    result
+  }
+  
+  def swap(i: Int, j: Int): Unit = {
+    val temp = xs(i)
+    xs(i) = xs(j)
+    xs(j) = temp
+  }
+  
+  for (i <- 0 until xs.length - 1) { // till NÄST sista
+    swap(i, minIndex(i))      
+  }
 }
 \end{Code}
 \end{Slide}
 
-\begin{Slide}{Selection sort, in place, Java}
-\begin{Code}[language=Java]
-public void selectionSortInPlace(int[] xs) {
+\begin{Slide}{Selection sort, in place, Java}\SlideFontTiny
+Om man ''slår ihop'' del-lösningarna minIndex och swap så kan man skriva detta lite kortare och utnyttja att variablen min nedan kan användas i stället för temp.  \\
+OBS! Det är viktigare att koden är lättläst än att den är kort och koden optimeras åt oss av kompilatorn och/eller JVM så extra variabler och funktionsarop är sällan problem.
+\begin{Code}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{7.5},numberstyle=\ttfamily\SlideFontSize{6}{8}, numbers=left]
+public static void selectionSortInPlace(int[] xs) {
     for (int i = 0; i < xs.length - 1; i++) { 
         int min = Integer.MAX_VALUE;
         int minIndex = -1;
-        // sök minsta bland ännu ej sorterade
         for (int k = i; k < xs.length; k++) {  
             if (xs[k] < min) {
                 min = xs[k];
                 minIndex = k;
             }
         }
-        // byt plats mellan xs[i] och xs[minIndex] 
         xs[minIndex] = xs[i]; 
         xs[i] = min;          
     }
 }
 \end{Code}
-\footnotesize
-\pause
-Övning: Kör denna implementation med \code+xs = {8,5,2,6,9,3,1,4,0,7}+
 
-\pause
-Se animering här: \href{https://sv.wikipedia.org/wiki/Urvalssortering}{Urvalssortering på Wikipedia}
 
-\pause Det finns ett specialfall som kommer krascha denna implementation. \href{https://github.com/bjornregnell/lth-eda016-2015/blob/master/lectures/examples/eclipse-ws/lecture-examples/src/week12/sorting/SortUtilTest.java#L30}{Vilket?}
+\pause Det finns ett specialfall som kommer krascha denna implementation. Vilket?
+\pause\\\jcode|new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE}|
 \end{Slide}
 
 \begin{Slide}{Insättningssortering på plats -- pseudo-kod}
-\begin{Code}[language=Java]
-Indata: int[] xs
+\Emph{Indata:} en array med heltal\\
+\Emph{Utdata:} samma array, men nu sorterad\\
+\begin{Code}
+def insertionSortInPlace(xs: Array[Int]): Unit = {
+  for (i <- 1 until xs.length) {  //från ANDRA till sista
+    var j = i
+    while (j > 0 && xs(j - 1) > xs(j)) {
+      /* byt plats på xs(j) och xs(j - 1) */
+      j -= 1;  // stega bakåt
+    }
+  }
+}
+\end{Code}
+\pause
+Se animering här: \href{https://sv.wikipedia.org/wiki/Ins\%C3\%A4ttningssortering}{Insättningssortering på wikipedia}\\
+Gå igenom alla specialfall och kolla så att detta fungerar!
+\end{Slide}
 
-for (int i = 1; i < xs.length; i++) {  //från ANDRA till sista
-     j = i
-     while (j > 0 && xs[j - 1] > xs[j]) {
-        "byt plats på x[j] och x[j - 1]"
-         j = j - 1;  // stega bakåt
-     }
+\begin{Slide}{Insertion sort, in place, Scala}
+\begin{Code}
+def insertionSortInPlaceSwap(xs: Array[Int]): Unit = {
+  def swap(i: Int, j: Int): Unit = {
+    val temp = xs(i)
+    xs(i) = xs(j)
+    xs(j) = temp
+  }
+  for (i <- 1 until xs.length) {  //från ANDRA till sista
+    var j = i
+    while (j > 0 && xs(j - 1) > xs(j)) {
+      swap(j, j - 1)
+      j -= 1;  // stega bakåt
+    }
+  }
 }
 \end{Code}
 \end{Slide}
 
+
 \begin{Slide}{Insertion sort, in place, with swap, Java}
+Vi kan tyvärr inte ha lokala funktioner i Java.
 \begin{Code}[language=Java]
 private void swap(int[] xs, int a, int b) {
     int temp = xs[a];
@@ -249,10 +305,10 @@ public void insertionSortInPlaceSwap(int[] xs) {
     }
 }
 \end{Code}
-Funkar denna implementation för alla specialfall?
 \end{Slide}
 
-\begin{Slide}{Insertion sort, in place, Java}
+\begin{Slide}{Insertion sort, in place, kortare implementation}
+Kortare! Men inte mer lättläst?
 \begin{Code}[language=Java]
     public void insertionSortInPlace(int[] xs) {
         for (int i = 1; i < xs.length; i++) {
@@ -266,7 +322,7 @@ Funkar denna implementation för alla specialfall?
         }
     }
 \end{Code}
-Se animering här: \href{https://sv.wikipedia.org/wiki/Ins\%C3\%A4ttningssortering}{Insättningssortering på wikipedia}
+
 \end{Slide}
 
 \begin{Slide}{Läs mer om insättnings- och urvalssortering}
