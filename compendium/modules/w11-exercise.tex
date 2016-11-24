@@ -99,7 +99,7 @@ def timed[T](code: => T): (T, Long) = {
   val now = System.nanoTime
   val result = code
   val elapsed = System.nanoTime - now
-  println(s"\ntime: ${elapsed / 1e6}$ ms") 
+  println(s"\ntime: ${elapsed / 1e6} ms")
   (result, elapsed)
 }
 \end{Code}
@@ -418,10 +418,14 @@ Om vi i stället använder
 def isSorted(xs: Seq[Int]): Boolean = xs == xs.sorted 
 \end{Code}
 
+\Subtask Det blir problem med nedan försök att göra \code{isSorted} generisk. Hur lyder felmeddelandet? Vad saknas enligt felmeddelandet?
+\begin{REPLnonum}
+scala> def isSorted[T](xs: Seq[T]): Boolean = xs == xs.sorted          
+\end{REPLnonum}
 
-\Subtask Men vi vill gärna att \code{isSorted} ska fungera för godtyckliga typer T som har en ordningsdefinition. Detta kan göras med nedan funktion eftersom metoden \code{sorted} är definierad för alla samlingar där typen \code{T} har en implicit ordning. Speciellt gäller detta för alla de grundtyperna \code{Int}, \code{Double}, \code{String}, etc.
+\Subtask Vi vill gärna att \code{isSorted} ska fungera för godtyckliga typer T som har en ordningsdefinition. Detta kan göras med nedan funktion där typparametern \code{[T:Ordering]} betyder att \code{isSorted} är definierad för alla samlingar där typen \code{T} har en implicit ordning \code{Ordering[T]}. Speciellt gäller detta för alla grundtyperna \code{Int}, \code{Double}, \code{String}, etc., som alla har implicit tillgänglig \code{Ordering[Int]} etc.
 \begin{Code}
-def isSorted[T](xs: Seq[T]): Boolean = xs == xs.sorted 
+def isSorted[T:Ordering](xs: Seq[T]): Boolean = xs == xs.sorted 
 \end{Code}
 Testa metoden ovan i REPL enligt nedan.
 \begin{REPL}
@@ -436,28 +440,17 @@ scala> isSorted(persons)
 Vad ger sista raden för felmeddelande? Varför?
 
 
-\Subtask Vi vill gärna kunna jämföra element av godtycklig typ \code{T}, så att vi till exempel ska kunna implementera en generisk \code{isSorted} med \code{while} eller vårt \code{zip}-trick från uppgift \ref{task:isSorted}\ref{subtask:isSorted-zip}. Men det blir problem enligt nedan. Hur lyder felmeddelandet? Vad saknas?
-
-\begin{REPL}
-scala> def isSorted[T](xs: Seq[T]): Boolean =  
-         xs.zip(xs.tail).forall(x => x._1 <= x._2)
-\end{REPL}
-
-\Subtask Det blir även problem med denna implementation. Hur lyder felmeddelandet? Vad saknas?
-\begin{REPLnonum}
-scala> def isSorted[T](xs: Seq[T]): Boolean = xs == xs.sorted          
-\end{REPLnonum}
-       
-
-\Subtask \emph{Implicita ordningar.} Man kan berätta för kompilatorn att den ska leta efter implicita ordningar av typen  \code{T}. Detta kan göras genom att utöka signaturen för \code{isSorted} med en andra parameterlista, som tar en implicit parameter enligt följande:
+\Subtask \emph{Implicita ordningar.} En typparameter på formen \code{[T:Ordering]} kallas kontextgräns \Eng{context bound} och föranleder kompilatorn att expandera funktionshuvudet för \code{isSorted} med en extra parameterlista som har en implicit parameter. I stället för att använda \code{[T:Ordering]} kan vi själva lägga till den implicita parametern som motsvarar kontextgränsen. Då får vi också tillgång till ett namn på den implicita ordningen och kan använda det namnet i funktionskroppen och anropa metoder som är medlemmar av typen \code{Ordering}. 
 
 \begin{CodeSmall}
 def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean =  
   xs.zip(xs.tail).forall(x => ord.lteq(x._1, x._2))
 \end{CodeSmall}
 
-Det finns fördefinierade implicita objekt \code{Ordering[T]} för alla grundtyper, alltså t.ex. \code{Ordering[Int]}, \code{Ordering[String]}, etc. Objekt av typen \code{Ordering} har jämförelsemetoder som t.ex. \code{lteq} (förk. \emph{less than or equal}) och \code{gt} (förk. \emph{greater than}).
-Testa så att kompilatorn hittar ordningen för samlingar med värden av några grundtyper. Kontrollera även enligt nedan att det fortfarande blir problem för egendefinierade klasser, t.ex. \code{Person} enligt tidigare (detta ska vi råda bot på i uppgift \ref{task:custom-ordering}).
+Objekt av typen \code{Ordering} har jämförelsemetoder som t.ex. \code{lteq} (förk. \emph{less than or equal}) och \code{gt} (förk. \emph{greater than}).
+
+Det finns fördefinierade implicita objekt \code{Ordering[T]} för alla grundtyper, alltså t.ex. \code{Ordering[Int]}, \code{Ordering[String]}, etc. 
+Testa så att kompilatorn hittar ordningen för samlingar med värden av några grundtyper. Kontrollera även enligt nedan att det fortfarande blir problem för egendefinierade klasser, t.ex. \code{Person}  (detta ska vi råda bot på i uppgift \ref{task:custom-ordering}).
 \begin{REPL}
 scala> isSorted(Vector(1,2,3))
 scala> isSorted(Array(1,2,3,1))
