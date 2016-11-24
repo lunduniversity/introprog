@@ -21,10 +21,15 @@ object AMazeIngRace {
       window.writeText(s"Click to draw $filename")
       window.waitForMouseClick()
       window.clear()
+      
       /*
-      //Run this code when draw in Maze and walk in MazeTurtle are implemented
+      //Run this code when draw in Maze is implemented (remove block comment)
       val maze = Maze.fromFile(getResourcePath(filename))
       maze.draw(window)
+      */
+      
+      /*
+      //Run this code when walk in MazeTurtle is implemented (remove block comment)
       val turtle = new MazeTurtle(window, maze, Color.MAGENTA)
       window.moveTo(10, 50)
       window.writeText(s"Click to walk!")
@@ -38,10 +43,10 @@ object AMazeIngRace {
     if (rows < 20 || cols < 20) {
       println("Please choose a larger value for rows and cols!")
     } else {
-      window.clear()
       window.moveTo(10, 40)
       window.writeText(s"Click to draw random maze of size ($rows,$cols)")
       window.waitForMouseClick()
+      window.clear()
       /*
       //Run this code when random in Maze is implemented
       val maze = Maze.random(rows, cols)
