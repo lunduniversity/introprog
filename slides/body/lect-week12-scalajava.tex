@@ -1,0 +1,390 @@
+%!TEX encoding = UTF-8 Unicode
+%!TEX root = ../lect-week12.tex
+
+%%%
+
+\ifkompendium\else
+
+\Subsection{Jämförelse Scala och Java}
+\begin{Slide}{Grundläggande likheter och skillnader}\SlideFontSmall
+\Emph{Några likheter:}
+\begin{itemize}\SlideFontTiny
+\item Kompilerar till bytekod som kör på JVM på många olika plattformar
+\item Statiskt typning: snabb maskinkod och kompilatorn hittar buggar vid kompilering
+\end{itemize}
+
+\Emph{Liknande men} \Alert{viss skillnad:}\vspace{-1em}
+\begin{multicols}{2}
+\Emph{Java}
+\begin{itemize}\SlideFontTiny
+\item \Emph{Objektorientering}, men inte ''äkta'' \Eng{pure} eftersom alla värden inte är objekt
+
+\item Primitivatyper är inte objekt; representeras effektivt, normalt \Emph{utan boxning}
+
+\item Visst stöd för \Emph{funktionsprogrammering}
+
+\item Typer måste alltid anges, ibland två gånger (variabeldeklaration + instansiering)
+\end{itemize}
+
+\columnbreak
+
+\Emph{Scala}
+\begin{itemize}\SlideFontTiny
+\item \Emph{Äkta objektorienterat} eftersom alla värden är objekt, även funktioner
+
+\item \code{AnyVal}-instanser är äkta objekt men representeras ändå effektivt, normalt \Emph{utan boxning} 
+
+\item Omfattande stöd för \Emph{funktionsprogrammering}
+
+\item Typinfo ska finnas vid kompileringstid men kan ofta härledas av kompilatorn
+\end{itemize}
+
+\end{multicols}
+\end{Slide}
+
+\begin{Slide}{Några saker som finns i Scala men inte i Java}\SlideFontSmall
+\vspace{-1em}\begin{multicols}{2}
+\begin{itemize}\SlideFontSize{7}{8}
+\item \code{case}-klasser
+
+\item Lokala funktioner
+
+\item Metoder som operatorer 
+
+\item Infix operatornotation
+
+\item Defultargument
+
+\item Namngivna argument
+
+\item Engångsinitialisering: \code{val}
+
+\item Fördröjd initialisering: \code{lazy val}
+
+\item Enhetlig access för \code{def}, \code{val}, \code{var}
+
+\item Egna setters med \code{def namn_=}
+
+\item Namnanrop, fördröjd evaluering
+
+\item Matchning, mönster och garder
+
+\item Klassparametrar, primärkonstruktor
+
+\item Singelobjekt: \code{object}
+
+\item Kompanjonsobjekt
+
+\item Inmixning: \code{trait} 
+
+\item \code{for}-\code{yield}-uttryck
+
+\item Block är uttryck; slipper \code{return}
+
+\item Tomma värdet () av typen \code{Unit}
+
+\item Option, Some, None
+
+\item Try, Success, Failure
+
+\item Samlingarna i Scalas standardbibliotek, oföränderliga samlingarna \code{Vector}, \code{Map}, etc.
+
+\item Enhetlig användning av samlingar inkl. Array
+
+\item Innehållslikhet med \code{==} för oföränderliga strukturer, inkl. \code{< <= > >= } på strängar
+
+\item Implicita värden och klasser
+
+\item Mer precis synlighetsreglering, \code{private[this]}, \code{private[mypackage]}
+
+\item Flexibilitet och namnändring vid \code{import} 
+
+\item Flexibel filstruktur och filnamngivning
+
+\item Flexibel nästling av klasser, objekt, traits
+
+\item Typ-alias och abstrakta typer med \code{type}
+
+\item Implicita värden och klasser
+
+\item ...
+\end{itemize}
+\end{multicols}
+\end{Slide}
+
+
+\begin{Slide}{Några saker som finns i Java men inte i Scala}\SlideFontSmall
+\vspace{-0.7em}\begin{multicols}{2}
+\begin{itemize}\SlideFontSize{7.5}{8.5}
+\item Variabledeklaration utan initialisering
+
+\item Förändringsbara paramterar
+
+\item C-liknande prefix och postfix inkrementering och dekrementering: \code{i++ ++i i-- --i}
+
+\item C-liknande \code{for}-sats
+
+\item Semikolon efter alla satser
+
+\item Parenteser efter alla metoder
+
+\item Specialsyntax för indexering av array \code{[]} ej som i andra samlingar
+
+\item Uppräknade typer med {\texttt{\bfseries{\color{eclipsepurple}{enum}}}}
+
+\item Hoppa ut ur loop med \jcode{break} \\ \href{https://docs.oracle.com/javase/tutorial/java/nutsandbolts/branch.html}{\SlideFontSize{5.2}{8.5}docs.oracle.com/javase/tutorial/java/nutsandbolts/branch.html}
+
+\item \jcode{switch} ''faller igenom'' utan \jcode{break}
+
+\item Nästan alltid snabbare kompilering
+
+\item Mer omfattande IDE-stöd
+\end{itemize}
+
+\end{multicols}
+\end{Slide}
+
+
+
+\begin{Slide}{Exempel: typisk oföränderlig klass i Scala och Java}\SlideFontTiny
+\vspace{-1em}
+\begin{multicols}{2}
+%\Emph{Scala:}
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{5.7}{6.7}]
+class Person(val name: String, val age: Int){
+  def isAdult = age >= Person.AdultAge
+}
+
+object Person {
+  val AdultAge = 18
+}
+\end{CodeSmall}
+
+\columnbreak
+
+\pause
+%\Emph{Java:}
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{5.7}{6.7}]
+public class JPerson {
+    private String name;
+    private int age;
+    static final int ADULT_AGE = 18;
+      
+    public JPerson(String name, int age){
+      this.name = name;
+      this.age = age;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public int getAge(){
+        return age;
+    }
+    
+    public boolean isAdult(){
+        return age >= ADULT_AGE;
+    }
+}
+\end{CodeSmall}
+Lär dig detta mönster utantill!
+\end{multicols}
+\pause\vspace{-10em} \Alert{Övning:}\\Gör \code{Person} och \code{JPerson} förändringsbar:
+\begin{itemize}
+\item Namnet ska ges vid konstruktion.
+\item Åldern ska alltid börja på 0.
+\item Namn och ålder ska gå att ändra.
+\item Åldern ska aldrig kunna bli negativ.
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Exempel: typisk förändringsbar klass i Scala och Java}\SlideFontTiny
+\vspace{-1.75em}
+\begin{multicols}{2}
+
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{5}{6}]
+class MutablePerson(var name: String){
+  private var _age = 0
+ 
+  def age: Int = _age
+  
+  def age_=(newAge: Int): Unit = 
+    if (newAge >= 0) _age = newAge 
+    else throw new Exception(s"Bad age: $newAge")
+  
+  def isAdult: Boolean = age >= Person.AdultAge
+}
+
+object MutablePerson {
+  val AdultAge = 18
+}
+\end{CodeSmall}
+
+\columnbreak
+
+\pause
+
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{5}{6}]
+public class JMutablePerson {
+    private String name;
+    private int age = 0;
+    static final int ADULT_AGE = 18;
+      
+    public JMutablePerson(String name){
+      this.name = name;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public int getAge(){
+        return age;
+    }
+    
+    public void setAge(int age){
+        if (age >= 0) {
+          this.age = age;
+        } else {
+          throw new Exception(s"Bad age: $newAge");
+        }
+    }
+    
+    public boolean isAdult(){
+        return age >= ADULT_AGE;
+    }
+}
+\end{CodeSmall}
+\end{multicols}
+\end{Slide}
+
+
+\begin{Slide}{Övning: Implementera dessa specifikationer}
+\begin{multicols}{2}
+
+{\hskip-0.31em\colorbox{black!70}{\parbox{\dimexpr0.44\textwidth-20\fboxsep-1.9\fboxrule\relax}{\fontsize{7}{8}\selectfont\color{white}{\textit{Specification} \textbf{Grönsak}}}}}
+
+\vspace{-2em}
+\begin{CodeSmall}
+/** Representerar en grönsak 
+ *  med namn och vikt som från början är 0 
+ */
+class Vegitable(val name: String) {
+
+  /** Returnerar nuvarande vikt i gram */
+  def weight: Int = ???
+  
+  /** Ändrar vikten till w gram
+   *  w ska vara positiv annars undantag */
+  def weight_=(w: Int): Unit = ???
+}
+\end{CodeSmall}
+
+\columnbreak
+
+\begin{JavaSpec}{class JVegitable}
+/** Skapar en grönsak med namnet name och 
+*   vikten weigth som är 0 från början.
+*/
+JVegitable(String name);
+
+/** Returnerar namnet */
+String getName();
+
+/** Returnerar nuvarande vikt i gram */
+int getWeight();
+
+/** Ändrar vikten till weight gram
+*   som ska vara positiv annars undantag */    
+void setWeight(int weight);
+\end{JavaSpec}
+
+
+\end{multicols}
+\end{Slide}
+
+
+
+
+\begin{Slide}{Oföränderlig datatyp i Scala och Java}\SlideFontTiny
+\vspace{-0.5em}
+\begin{multicols}{2}
+
+En oföränderlig datatyp implementeras i \Emph{Scala} helst som en \pause\code{case}-klass:
+
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{5.7}{6.7}]
+case class Person(name: String, age: Int){
+  def isAdult = age >= Person.AdultAge
+}
+
+object Person {
+  val AdultAge = 18
+}
+\end{CodeSmall}
+
+\columnbreak
+
+En oföränderlig datatyp i \Emph{Java} med \Alert{motsvarande} funktionalitet kräver egen implementation av dessa metoder: 
+\vspace{-0.25em}
+\begin{itemize}
+\item en getter för varje attribut
+\item \code{equals}
+\item \code{hashcode} (förklaras i forts.kurs)
+\item \code{apply} \\ (men man kallar nog den \code{create} el. likn.; namnet måste ju skrivas)
+\item \code{toString}
+\item \code{copy} \\ (men det finns ju inte namngivna parametrar och defaultargument så denna blir osmidig)
+\item \code{unapply} \\ (men det finns ju inte mönstermatchning så denna struntar man nog i)
+\end{itemize}
+
+\end{multicols}
+
+\end{Slide}
+
+\begin{Slide}{Syntax för variabeldeklaration i Scala och Java}
+\end{Slide}
+
+
+\begin{Slide}{Syntax för Array i Scala och Java}
+\end{Slide}
+
+\begin{Slide}{For-sats i Scala och Java}
+\end{Slide}
+
+
+\begin{Slide}{Huvudprogram i Scala och Java}
+\end{Slide}
+
+\begin{Slide}{Förändringsbar samling i Scala och Java}
+\end{Slide}
+
+\begin{Slide}{Autoboxing}
+\end{Slide}
+
+\begin{Slide}{Iterera över samling i Scala och Java}
+\end{Slide}
+
+\begin{Slide}{Fördjupning: Skapa generisk Array av viss typ}
+\end{Slide}
+
+\Subsection{Grumligt- och Nyfiken-på-lådan}
+\begin{Slide}{Grumligt- och Nyfiken-på-lådan}
+\end{Slide}
+
+
+\fi
+
+
+
+
+
+
+
+
+
+
