@@ -100,8 +100,6 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
   \beamer@tocsectionnumber=\numexpr#1-1\relax\space}
 \makeatother
 
-
-
 \newcommand{\Emph}[1]{\textcolor{myemphcolor}{\textbf{#1}}}
 \newcommand{\Alert}[1]{\textcolor{myalertcolor}{\textbf{#1}}}
 \newcommand{\Eng}[1]{(eng. {\textit{#1}})}
