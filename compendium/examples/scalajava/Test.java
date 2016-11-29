@@ -37,7 +37,8 @@ public class Test {
         }
 
         int[] xs = {42, 43, 44};
-
+        int[] xs2 = new int[]{42, 43, 44};
+        
         String[] strings = new String[10];
 
         strings[0] = "first";
