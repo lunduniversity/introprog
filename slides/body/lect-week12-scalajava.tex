@@ -333,7 +333,7 @@ for (char ch: s.toCharArray()) {
 
 
 
-\begin{Slide}{Exempel: typisk oföränderlig klass i Scala och Java}\SlideFontTiny
+\begin{Slide}{Exempel: oföränderlig klass i Scala och Java}\SlideFontTiny
 \vspace{-1em}
 \begin{multicols}{2}
 %\Emph{Scala:}
@@ -387,7 +387,7 @@ Lär dig detta mönster utantill så du snabbt får grejerna på plats!
 \end{Slide}
 
 
-\begin{Slide}{Exempel: typisk förändringsbar klass i Scala och Java}\SlideFontTiny
+\begin{Slide}{Exempel: förändringsbar klass i Scala och Java}\SlideFontTiny
 \vspace{-1.75em}
 \begin{multicols}{2}
 
@@ -533,7 +533,31 @@ En oföränderlig datatyp i \Emph{Java} med \Alert{motsvarande} funktionalitet k
 
 
 
+
 \Subsection{Array}
+
+\begin{Slide}{Repetition: Primitiva Array i JVM}
+\begin{itemize}
+\item Primitiva arrayer (\code{Array} i Scala, \code{[]} i Java) har \Emph{fördelar}:%
+\footnote{\href{http://stackoverflow.com/questions/2843928/benefits-of-arrays}{stackoverflow.com/questions/2843928/benefits-of-arrays}} 
+\begin{itemize}\footnotesize
+\item Det är den snabbaste indexerbara datastrukturen i JVM: att läsa och uppdatera ett element på en viss plats är mycket effektiv om man vet platsens index. 
+\item Fungerar lika bra med både primitiva värden och objektreferenser
+\end{itemize}
+\item ... men också \Alert{nackdelar}:
+\begin{itemize}\footnotesize
+\item Man måste bestämma sig för antalet element som ska allokeras när man gör \code{new}. 
+\item Man kan ta i lite extra när man allokerar om man behöver plats för fler senare, men då måste man hålla reda på hur många platser man använder och veta var nästa lediga plats finns.
+\item Det är krångligt att stoppa in \Eng{insert} och ta bort \Eng{delete} element.
+\item Vill man ha fler platser måste man allokera en helt ny, större vektor och kopiera över alla befintliga element.
+\end{itemize}
+
+\end{itemize}
+\end{Slide}
+
+
+
+
 \begin{Slide}{Syntax för Array i Scala och Java}
 \begin{multicols}{2}
 \Emph{Scala}
@@ -546,7 +570,7 @@ var xs = Array(42, 43, 44)
 
 val n = xs.length
 
-var strings = new Array(10)
+var strings = new Array[String](42)
 
 strings(0) = "first"
 
@@ -565,7 +589,7 @@ int[] xs2 = {42, 43, 44};
 
 int n = xs.length;  //OBS! EJ length()
 
-String[] strings = new String[10];
+String[] strings = new String[42];
 
 strings[0] = "first";
 
@@ -575,118 +599,8 @@ strings[1] = "second";
 \end{multicols}
 \end{Slide}
 
-\begin{Slide}{Fördjupning: Villkorsuttryck i Java}\SlideFontSmall
-Det går att använda villkorsuttryck i Java, men med syntax från språket C:
-\begin{multicols}{2}
-\Emph{Scala}
-\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8}]
-var r = math.random
-var answer = if (r > 0.5) 42 else 0
-\end{CodeSmall}
-
-\columnbreak
-
-\Emph{Java}
-\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{8}]
-double r = Math.random();
-int answer = (r > 0.5) ? 42 : 0;
-\end{CodeSmall}
-\end{multicols}
-
-\end{Slide}
 
 
-\begin{Slide}{Fördjupning: Typtest och typkonvertering}
-
-\begin{multicols}{2}
-\Emph{Scala}
-\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8}]
-var x = "hej"
-
-var isString = x.isInstanceOf[String]
-
-var y = 42
-
-var z = y.asInstanceOf[Double]
-
-\end{CodeSmall}
-
-\columnbreak
-
-\Emph{Java}
-\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{8}]
-String x = "hej";
-
-boolean isString = x instanceof String;
-
-int y = 42;
-
-double z = (double) y;
-\end{CodeSmall}
-\end{multicols}
-
-
-\end{Slide}
-
-
-\begin{Slide}{Fördjupning: Fånga undantag i Scala och Java}
-Typisk skillnad mellan Scala och Java:\\konstruktioner som är \Emph{uttryck} i Scala är ofta \Alert{satser} i Java.
-\begin{multicols}{2}
-\Emph{Scala}
-\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8}]
-val a = try { 2 / 0 } catch { 
-  case e: ArithmeticException => 0 
-}
-
-val b = try { 4 / 2 } catch { 
-  case e: ArithmeticException => 0 
-}
-\end{CodeSmall}
-
-\columnbreak
-
-\Emph{Java}
-\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{8}]
-int a;
-try {
-    a = 2 / 0
-} catch (ArithmeticException e) {
-    a = 0;
-}
-
-int b;
-try {
-    b = 4 / 2
-} catch (ArithmeticException e) {
-    b = 0;
-}
-
-\end{CodeSmall}
-\end{multicols}
-
-Mer om undantag \Eng{exceptions} i fortsättningskursen.
-\end{Slide}
-
-
-
-\begin{Slide}{Repetition: Primitiva Array i JVM}
-\begin{itemize}
-\item Primitiva arrayer (\code{Array} i Scala, \code{[]} i Java) har \Emph{fördelar}:%
-\footnote{\href{http://stackoverflow.com/questions/2843928/benefits-of-arrays}{stackoverflow.com/questions/2843928/benefits-of-arrays}} 
-\begin{itemize}\footnotesize
-\item Det är den snabbaste indexerbara datastrukturen i JVM: att läsa och uppdatera ett element på en viss plats är mycket effektiv om man vet platsens index. 
-\item Fungerar lika bra med både primitiva värden och objektreferenser
-\end{itemize}
-\item ... men också \Alert{nackdelar}:
-\begin{itemize}\footnotesize
-\item Man måste bestämma sig för antalet element vid \code{new}. 
-\item Man kan ta i lite extra när man allokerar om man behöver plats för fler senare, men då måste man hålla reda på hur många platser man använder och veta var nästa lediga plats finns.
-\item Det är krångligt att stoppa in \Eng{insert} och ta bort \Eng{delete} element.
-\item Vill man ha fler platser måste man allokera en helt ny, större vektor och kopiera över alla befintliga element.
-\end{itemize}
-
-\end{itemize}
-\end{Slide}
 
 
 
@@ -1074,8 +988,8 @@ Samma gäller mellan alla primitiva typer och dess wrapper-klasser:
 \end{itemize}
 \end{Slide}
 
-\Subsection{Equals}\SlideFontSmall
-\begin{Slide}{Fallgrop med samlingar: \\ metoden contains kräver implementation av equals}
+\Subsection{Equals}
+\begin{Slide}{Fallgrop med samlingar: \\ metoden contains kräver implementation av equals}\SlideFontSmall
 Antag att vi vill implementerar  \code{hasVertex()} i klassen \code{Polygon} genom att använda metoden \code{contains} på en lista. Hur gör vi då?
 \pause
 \begin{Code}[numberstyle=,language=Java]
@@ -1106,18 +1020,205 @@ Läs receptet för att implementera equals i \Emph{Scala} här: \\
 \end{Slide}
 
 
-\begin{Slide}{Fördjupning: scala.collection.JavaConverters}
+\Subsection{Fördjupning diverse}
+
+
+
+
+\begin{Slide}{Fördjupning: Villkorsuttryck i Java}\SlideFontSmall
+Det går att använda villkorsuttryck i Java, men med syntax från språket C:
+\begin{multicols}{2}
+\Emph{Scala}
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8}]
+var r = math.random
+var answer = if (r > 0.5) 42 else 0
+\end{CodeSmall}
+
+\columnbreak
+
+\Emph{Java}
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{8}]
+double r = Math.random();
+int answer = (r > 0.5) ? 42 : 0;
+\end{CodeSmall}
+\end{multicols}
+
 \end{Slide}
 
-\begin{Slide}{Fördjupning: Gränssnittet List i Java}
+
+
+
+\begin{Slide}{Fördjupning: Typtest och typkonvertering}
+
+\begin{multicols}{2}
+\Emph{Scala}
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8}]
+var x = "hej"
+
+var isString = x.isInstanceOf[String]
+
+var y = 42
+
+var z = y.asInstanceOf[Double]
+
+\end{CodeSmall}
+
+\columnbreak
+
+\Emph{Java}
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{8}]
+String x = "hej";
+
+boolean isString = x instanceof String;
+
+int y = 42;
+
+double z = (double) y;
+\end{CodeSmall}
+\end{multicols}
+
+
 \end{Slide}
 
-\begin{Slide}{Fördjupning: Skapa generisk Array}
-TypeTag
+
+\begin{Slide}{Fördjupning: Fånga undantag i Scala och Java}
+Typisk skillnad mellan Scala och Java:\\konstruktioner som är \Emph{uttryck} i Scala är ofta \Alert{satser} i Java.
+\begin{multicols}{2}
+\Emph{Scala}
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8}]
+val a = try { 2 / 0 } catch { 
+  case e: ArithmeticException => 0 
+}
+
+val b = try { 4 / 2 } catch { 
+  case e: ArithmeticException => 0 
+}
+\end{CodeSmall}
+
+\columnbreak
+
+\Emph{Java}
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{8}]
+int a;
+try {
+    a = 2 / 0
+} catch (ArithmeticException e) {
+    a = 0;
+}
+
+int b;
+try {
+    b = 4 / 2
+} catch (ArithmeticException e) {
+    b = 0;
+}
+
+\end{CodeSmall}
+\end{multicols}
+
+Mer om undantag \Eng{exceptions} i fortsättningskursen.
 \end{Slide}
 
-\Subsection{Grumligt- och Nyfiken-på-lådan}
-\begin{Slide}{Grumligt- och Nyfiken-på-lådan}
+
+
+\begin{Slide}{Fördjupning: scala.collection.JavaConverters}\SlideFontSmall
+Med hjälp av \code{import scala.collection.JavaConverters._} \\
+får man smidig \Emph{interoperabilitet} med Java och dess standardbibliotek, \\ 
+speciellt metoderna \Alert{\code{asJava}} och \Alert{\code{asScala}}:
+\begin{REPL}
+scala> import scala.collection.JavaConverters._
+
+scala> Vector(1,2,3).asJava
+res0: java.util.List[Int] = [1, 2, 3]
+
+scala> val xs = new java.util.ArrayList[String]()
+xs: java.util.ArrayList[String] = []
+
+scala> xs.add("hej")
+res1: Boolean = true
+
+scala> xs.asScala
+res2: scala.collection.mutable.Buffer[String] = Buffer(hej)
+\end{REPL}
+
+Läs mer här: \url{http://docs.scala-lang.org/overviews/collections/conversions-between-java-and-scala-collections}
+
+\end{Slide}
+
+\begin{Slide}{Fördjupning: Gränssnittet \texttt{List} i Java}\SlideFontSmall
+\begin{itemize}
+\item I Java finns inte \code{trait} och inmixning.
+
+\item I stället finns \jcode{interface} som liknar \code{trait} men är mer begränsad vad gäller vilka medlemmar som får finnas.
+
+\item Man kan bara göra \code{extends} på exakt en annan klass, men man kan i Java göra \jcode{implements} på flera \jcode{interface}.\\(Jämför Scalas \code{with} på \code{trait}s)
+
+\item Exempel: 
+\begin{Code}[language=Java]
+public class ArrayList<E> extends AbstractList<E>
+    implements List<E>, RandomAccess, Cloneable, java.io.Serializable
+\end{Code}
+
+\item Att implementera ett gränssnitt innebär att uppfylla ett kontrakt som utlovar att vissa speciella metoder finns tillgängliga.
+
+\item Gränssninttet \code{List} uppfylls av en av dess implementationer \code{ArrayList} \\
+
+på liknande sätt i Scala där gränssnittet \code{Seq} uppfylls av \code{Vector} etc.
+
+\item[] \jcode{List<String> xs = new ArrayList<String>();}
+
+\item I Hangman-övningen: 
+
+\item[]\jcode{Set<Character> found = new HashSet<Character>();}
+
+\item Mer om gränssnitt i fördjupningskursen.
+
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Fördjupning: Skapa generisk Array}\SlideFontTiny
+\begin{itemize}
+\item I Java kan man \Alert{inte} skapa en primitiv array av godtycklig typ enligt generisk typparameter: \sout{\code{T[] xs = new T[42]}}
+
+\item Man måste istället skapa en array av den mest generella referenstypen: \\
+\code{Object[] xs = new Object[42]} \\
+och sedan typtesta och typkonvertera under körtid; se t.ex. implementationen av \code{ArrayList}: \href{http://hg.openjdk.java.net/jdk7/jdk7/jdk/file/00cd9dc3c2b5/src/share/classes/java/util/ArrayList.java#l111}{hg.openjdk.java.net/.../ArrayList.java}
+
+\item[]
+\pause
+\item Detta går faktiskt att göra i Scala med hjälp av \code{ClassTag} så här: \\
+\begin{REPLnonum}[basicstyle=\ttfamily\SlideFontSize{6}{8}\color{white}]
+scala> def fyrtiotvå[T](x: T): Array[T] = Array.fill(42)(x)
+<console>:11: error: No ClassTag available for T
+
+scala> import scala.reflect.ClassTag
+
+scala> def fyrtiotvå[T: ClassTag](x: T): Array[T] = Array.fill(42)(x)
+fyrtiotvå: [T](x: T)(implicit evidence$1: scala.reflect.ClassTag[T])Array[T]
+
+scala> fyrtiotvå("hej")
+res2: Array[String] = Array(hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej)
+
+scala> fyrtiotvå(1)
+res3: Array[Int] = Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+
+\end{REPLnonum}
+
+
+\end{itemize}
+
+
+\end{Slide}
+
+\Subsection{Grumligt-lådan och Nyfiken-på-lådan}
+\begin{Slide}{Grumligt-lådan och Nyfiken-på-lådan}
+\begin{itemize}
+\item Skriv lapp i \Alert{GRUMLIGT}-lådan om du har något \Alert{grundläggande begrepp} i kursen som du fortfarande tycker är \Alert{svårt att begripa}.
+
+\item[]
+
+\item Skriv lapp i \Emph{NYFIKEN-PÅ}-lådan om du vill veta mer om något ämne inom programmering och som går \Emph{bortom grunderna}.
+\end{itemize}
 \end{Slide}
 
 \fi
