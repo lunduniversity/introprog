@@ -23,7 +23,7 @@ public class Hangman {
                 result.append("\n");
             }
         }
-        return result.toString;
+        return result.toString();
     }
     
     private static String hideSecret(String secret, 
