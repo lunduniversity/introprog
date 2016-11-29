@@ -1,8 +1,8 @@
 package cardSimulation
 
 case class Card(suit: Int, value: Int) {
-  assume(value >= 1 && value <= 13)
-  assume(suit >= 1 && suit <= 4)
+  require(value >= 1 && value <= 13, "value must be between 1 and 13")
+  require(suit >= 1 && suit <= 4, "suit must be between 1 and 4")
 
   def valStr = value match {
     case 1  => "A"
