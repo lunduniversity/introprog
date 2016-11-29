@@ -1,5 +1,4 @@
-package week10.list;
-import se.lth.cs.pt.window.SimpleWindow;
+import cslib.window.SimpleWindow;
 
 public class PolygonTest {
 	public static void main(String[] args) {
