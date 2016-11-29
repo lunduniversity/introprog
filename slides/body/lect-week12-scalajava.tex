@@ -1,0 +1,1133 @@
+%!TEX encoding = UTF-8 Unicode
+%!TEX root = ../lect-week12.tex
+
+%%%
+
+\ifkompendium\else
+
+\Subsection{Jämförelse Scala och Java}
+\begin{Slide}{Grundläggande likheter och skillnader}\SlideFontSmall
+\Emph{Några likheter:}
+\begin{itemize}\SlideFontTiny
+\item Kompilerar till bytekod som kör på JVM på många olika plattformar
+\item Statiskt typning: snabb maskinkod och kompilatorn hittar buggar vid kompilering
+\end{itemize}
+
+\Emph{Liknande men} \Alert{viss skillnad:}\vspace{-1em}
+\begin{multicols}{2}
+\Emph{Java}
+\begin{itemize}\SlideFontTiny
+\item \Emph{Objektorientering}, men inte ''äkta'' \Eng{pure} eftersom alla värden inte är objekt
+
+\item Primitivatyper är inte objekt; representeras effektivt, normalt \Emph{utan boxning}
+
+\item Visst stöd för \Emph{funktionsprogrammering}
+
+\item Typer måste alltid anges, ibland två gånger (variabeldeklaration + instansiering)
+\end{itemize}
+
+\columnbreak
+
+\Emph{Scala}
+\begin{itemize}\SlideFontTiny
+\item \Emph{Äkta objektorienterat} eftersom alla värden är objekt, även funktioner
+
+\item \code{AnyVal}-instanser är äkta objekt men representeras ändå effektivt, normalt \Emph{utan boxning} 
+
+\item Omfattande stöd för \Emph{funktionsprogrammering}
+
+\item Typinfo ska finnas vid kompileringstid men kan ofta härledas av kompilatorn
+\end{itemize}
+
+\end{multicols}
+\end{Slide}
+
+\begin{Slide}{Några saker som finns i Scala men inte i Java}\SlideFontSmall
+\vspace{-1em}\begin{multicols}{2}
+\begin{itemize}\SlideFontSize{7}{8}
+\item \code{case}-klasser
+
+\item Lokala funktioner
+
+\item Metoder som operatorer 
+
+\item Infix operatornotation
+
+\item Defultargument
+
+\item Namngivna argument
+
+\item Engångsinitialisering: \code{val}
+
+\item Fördröjd initialisering: \code{lazy val}
+
+\item Enhetlig access för \code{def}, \code{val}, \code{var}
+
+\item Egna setters med \code{def namn_=}
+
+\item Namnanrop, fördröjd evaluering
+
+\item Matchning, mönster och garder
+
+\item Klassparametrar, primärkonstruktor
+
+\item Singelobjekt: \code{object}
+
+\item Kompanjonsobjekt
+
+\item Inmixning: \code{trait} 
+
+\item \code{for}-\code{yield}-uttryck
+
+\item Block är uttryck; slipper \code{return}
+
+\item Tomma värdet () av typen \code{Unit}
+
+\item Option, Some, None
+
+\item Try, Success, Failure
+
+\item Samlingarna i Scalas standardbibliotek, speciellt de \Emph{oföränderliga} samlingarna \code{Vector}, \code{Map}, \code{Set}, \code{List}, etc.
+
+\item Enhetlig användning av samlingar inkl. Array
+
+\item Innehållslikhet med \code{==} för oföränderliga strukturer, inkl. \code{< <= > >= } på strängar
+
+\item Implicita värden och klasser
+
+\item Mer precis synlighetsreglering, \code{private[this]}, \code{private[mypackage]}
+
+\item Flexibilitet och namnändring vid \code{import} 
+
+\item Flexibel filstruktur och filnamngivning
+
+\item Flexibel nästling av klasser, objekt, traits
+
+\item Typ-alias och abstrakta typer med \code{type}
+
+\item Implicita värden och klasser
+
+\item ...
+\end{itemize}
+\end{multicols}
+\end{Slide}
+
+
+\begin{Slide}{Några saker som finns i Java men inte i Scala}\SlideFontSmall
+\vspace{-0.7em}\begin{multicols}{2}
+\begin{itemize}\SlideFontSize{7.5}{8.5}
+\item Variabledeklaration utan initialisering
+
+\item Förändringsbara paramterar
+
+\item C-liknande prefix och postfix inkrementering och dekrementering: \code{i++ ++i i-- --i}
+
+\item C-liknande \code{for}-sats
+
+\item Semikolon efter alla satser
+
+\item Parenteser efter alla metoder
+
+\item Specialsyntax för indexering av array \code{[]} ej som i andra samlingar
+
+\item Uppräknade typer med {\texttt{\bfseries{\color{eclipsepurple}{enum}}}}
+
+\item Hoppa ut ur loop med \jcode{break} \\ \href{https://docs.oracle.com/javase/tutorial/java/nutsandbolts/branch.html}{\SlideFontSize{5.2}{8.5}docs.oracle.com/javase/tutorial/java/nutsandbolts/branch.html}
+
+\item \jcode{switch} ''faller igenom'' utan \jcode{break}
+
+\item Nästan alltid snabbare kompilering
+
+\item Mer omfattande IDE-stöd
+
+\item Kontrollerade undantag \Eng{checked exceptions} och \jcode{throws}
+
+\item ...
+\end{itemize}
+
+\end{multicols}
+\end{Slide}
+
+
+
+
+
+\begin{Slide}{Huvudprogram i Scala och Java}
+\begin{multicols}{2}
+\Emph{Scala}
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8}]
+object Main {
+  def main(args: Array[String]): Unit = {
+    println("Hello!")
+  }
+}
+\end{CodeSmall}
+
+\columnbreak
+
+\Emph{Java}
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{8}]
+public class JMain {
+  public static void main(String[] args){
+    System.out.println("Hello!");
+  }
+}
+\end{CodeSmall}
+\end{multicols}
+\end{Slide}
+
+
+
+\begin{Slide}{Syntax för variabeldeklaration i Scala och Java}\SlideFontSmall
+Exempel på variabeldeklarationer i
+\begin{multicols}{2}
+\Emph{Scala}
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{8}{10}]
+  var i1: Int = 0
+  var i2 = 0
+  var i3 = 0: Int
+  var p = new Point(0, 0)
+  var (x, y) = (0, 0)        
+  val a = 0
+  final val Constant = 42
+\end{CodeSmall}
+\begin{itemize}\SlideFontTiny
+\item i2 härledd typ; går ej i Java
+
+\item i3 typ i uttryck; går ej i Java
+
+\item (x, y) mönster i init; går ej i Java
+
+\item \code{val} ger ''engångsinit''; ingen exakt motsvarighet i Java men \code{final} kan ofta användas i stället
+\end{itemize}
+
+\columnbreak
+
+\Emph{Java}
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{8}{10}]
+  int i1 = 0;
+  int i4;
+  Point p = new Point(0, 0);
+  final int CONSTANT = 42;
+\end{CodeSmall}
+\begin{itemize}\SlideFontTiny
+\item i4 ej explicit init; går ej i Scala
+\end{itemize}
+\end{multicols}
+
+\end{Slide}
+
+
+\begin{Slide}{For-sats i Scala och Java}
+\begin{multicols}{2}
+\Emph{Scala}
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8}]
+val s = "Abbasillen"
+
+//Loopa över index framlänges:
+  
+for (i <- 0 until s.length) {
+  println(s(i))
+}
+  
+//Loopa över index baklänges:
+ 
+for (i <- s.length-1 to 0 by -1) {
+  println(s(i))
+}  
+\end{CodeSmall}
+
+\columnbreak
+
+\Emph{Java}
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{8}]
+String s = "Abbasillen";
+
+//Loopa över index framlänges:
+
+for (int i = 0; i < s.length(); i++){
+    System.out.println(s.charAt(i));
+}
+
+//Loopa över index baklänges:
+ 
+for (int i = s.length()-1; i >= 0; i--){
+    System.out.println(s.charAt(i));
+}
+\end{CodeSmall}
+\end{multicols}
+\end{Slide}
+
+\begin{Slide}{For-sats i Scala och Java}
+\begin{multicols}{2}
+\Emph{Scala}
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8}]
+val s = "Abbasillen"
+
+//Loopa över index framlänges:
+  
+for (i <- s.indices) {
+  println(s(i))
+}
+  
+//Loopa över index baklänges:
+ 
+for (i <- s.indices.reverse) {
+  println(s(i))
+}
+\end{CodeSmall}
+
+\columnbreak
+
+\Emph{Java}
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{8}]
+String s = "Abbasillen";
+
+//Loopa över index framlänges:
+
+for (int i = 0; i < s.length(); i++){
+    System.out.println(s.charAt(i));
+}
+
+//Loopa över index baklänges:
+ 
+for (int i = s.length()-1; i >= 0; i--){
+    System.out.println(s.charAt(i));
+}
+\end{CodeSmall}
+\end{multicols}
+\end{Slide}
+
+
+\begin{Slide}{For-each-sats i Scala och Java}
+\begin{multicols}{2}
+\Emph{Scala}
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8}]
+val s = "Abbasillen"
+
+//Loopa över alla tecken:
+
+for (ch <- s) {
+  println(ch)
+}
+\end{CodeSmall}
+
+\columnbreak
+
+\Emph{Java}
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{8}]
+String s = "Abbasillen";
+
+//Loopa över alla tecken:
+
+for (char ch: s.toCharArray()) {
+  System.out.println(ch);
+}
+\end{CodeSmall}
+\end{multicols}
+
+\pause\code{s.foreach(println)       } går ej i Java
+\end{Slide}
+
+
+
+
+
+\begin{Slide}{Exempel: typisk oföränderlig klass i Scala och Java}\SlideFontTiny
+\vspace{-1em}
+\begin{multicols}{2}
+%\Emph{Scala:}
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{5.7}{6.7}]
+class Person(val name: String, val age: Int){
+  def isAdult = age >= Person.AdultAge
+}
+
+object Person {
+  val AdultAge = 18
+}
+\end{CodeSmall}
+
+\columnbreak
+
+\pause
+%\Emph{Java:}
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{5.7}{6.7}]
+public class JPerson {
+    private String name;
+    private int age;
+    static final int ADULT_AGE = 18;
+      
+    public JPerson(String name, int age){
+      this.name = name;
+      this.age = age;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public int getAge(){
+        return age;
+    }
+    
+    public boolean isAdult(){
+        return age >= ADULT_AGE;
+    }
+}
+\end{CodeSmall}
+Lär dig detta mönster utantill så du snabbt får grejerna på plats!
+\end{multicols}
+\pause\vspace{-11em} 
+\Alert{Övning:}\\Gör \code{Person} + \code{JPerson} \Alert{förändringsbara}\\så att namnet och åldern går att uppdatera\\och följande krav uppfylls:
+\begin{itemize}
+\item namnet ska ges vid konstruktion,
+\item åldern ska initieras till 0 vid konstr.,
+\item åldern ska aldrig kunna bli negativ.
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Exempel: typisk förändringsbar klass i Scala och Java}\SlideFontTiny
+\vspace{-1.75em}
+\begin{multicols}{2}
+
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{5}{6}]
+class MutablePerson(var name: String){
+  private var _age = 0
+ 
+  def age: Int = _age
+  
+  def age_=(a: Int): Unit = 
+    if (a >= 0) _age = a else _age = 0  //undantag?
+  
+  def isAdult: Boolean = age >= Person.AdultAge
+}
+
+object MutablePerson {
+  val AdultAge = 18
+}
+\end{CodeSmall}
+
+\columnbreak
+
+\pause
+
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{5}{6}]
+public class JMutablePerson {
+    private String name;
+    private int age = 0;
+    static final int ADULT_AGE = 18;
+      
+    public JMutablePerson(String name){
+      this.name = name;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public int getAge(){
+        return age;
+    }
+    
+    public void setAge(int age){
+        if (age >= 0) {
+          this.age = age;
+        } else {
+          this.age = 0;
+        }
+    }
+    
+    public boolean isAdult(){
+        return age >= ADULT_AGE;
+    }
+}
+\end{CodeSmall}
+\end{multicols}
+
+\end{Slide}
+
+
+\begin{Slide}{Övning: Implementera dessa specifikationer}
+\begin{multicols}{2}
+
+{\hskip-0.31em\colorbox{black!70}{\parbox{\dimexpr0.44\textwidth-20\fboxsep-1.9\fboxrule\relax}{\fontsize{7}{8}\selectfont\color{white}{\textit{Specification} \textbf{Vegitable}}}}}
+
+\vspace{-2em}
+\begin{CodeSmall}
+/** Representerar en grönsak. */
+class Vegitable(val name: String) {
+
+  /** Returnerar nuvarande vikt i gram. */
+  def weight: Int = ???
+  
+  /** Ändrar vikten till w gram.
+   *  w ska vara positiv, blir annars 0 */
+  def weight_=(w: Int): Unit = ???
+}
+\end{CodeSmall}
+
+\columnbreak
+
+\begin{JavaSpec}{class JVegitable}
+/** Skapar en grönsak. */
+JVegitable(String name);
+
+/** Returnerar namnet. */
+String getName();
+
+/** Returnerar nuvarande vikt i gram. */
+int getWeight();
+
+/** Ändrar vikten till weight gram.
+ *  w ska vara positiv, blir annars 0 */    
+void setWeight(int weight);
+\end{JavaSpec}
+\end{multicols}
+\pause\SlideFontTiny
+Fördjupning:\\ Kasta undantaget \code{IllegalArgumentException} vid försök till negativ vikt.\\
+Läs om undantag i Java här: \href{https://docs.oracle.com/javase/tutorial/essential/exceptions/index.html}{docs.oracle.com/javase/tutorial/essential/exceptions/}
+
+\end{Slide}
+
+
+
+
+\begin{Slide}{Oföränderlig datatyp i Scala och Java}\SlideFontTiny
+\vspace{-0.5em}
+\begin{multicols}{2}
+
+En oföränderlig datatyp implementeras i \Emph{Scala} helst som en \pause\code{case}-klass:
+
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{5.7}{6.7}]
+case class Person(name: String, age: Int){
+  def isAdult = age >= Person.AdultAge
+}
+
+object Person {
+  val AdultAge = 18
+}
+\end{CodeSmall}
+
+\columnbreak
+
+En oföränderlig datatyp i \Emph{Java} med \Alert{motsvarande} funktionalitet kräver egen implementation av dessa metoder: 
+\vspace{-0.25em}
+\begin{itemize}
+\item en getter för varje attribut
+\item \code{equals}
+\item \code{hashcode} (förklaras i forts.kurs)
+\item \code{apply} \\ (men man kallar nog den \code{create} el. likn.; namnet måste ju skrivas)
+\item \code{toString}
+\item \code{copy} \\ (men det finns ju inte namngivna parametrar och defaultargument så denna blir osmidig)
+\item \code{unapply} \\ (men det finns ju inte mönstermatchning så denna struntar man nog i)
+\end{itemize}
+
+\end{multicols}
+
+\end{Slide}
+
+
+
+\Subsection{Array}
+\begin{Slide}{Syntax för Array i Scala och Java}
+\begin{multicols}{2}
+\Emph{Scala}
+
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8}]
+var xs = Array(42, 43, 44)
+
+
+
+
+val n = xs.length
+
+var strings = new Array(10)
+
+strings(0) = "first"
+
+strings(1) = "second"
+\end{CodeSmall}
+
+\columnbreak
+
+\Emph{Java}
+
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{8}]
+int[] xs = new int[]{42, 43, 44};
+
+//samma som ovan, men kortare:
+int[] xs2 = {42, 43, 44}; 
+
+int n = xs.length;  //OBS! EJ length()
+
+String[] strings = new String[10];
+
+strings[0] = "first";
+
+strings[1] = "second";
+\end{CodeSmall}
+
+\end{multicols}
+\end{Slide}
+
+\begin{Slide}{Fördjupning: Villkorsuttryck i Java}\SlideFontSmall
+Det går att använda villkorsuttryck i Java, men med syntax från språket C:
+\begin{multicols}{2}
+\Emph{Scala}
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8}]
+var r = math.random
+var answer = if (r > 0.5) 42 else 0
+\end{CodeSmall}
+
+\columnbreak
+
+\Emph{Java}
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{8}]
+double r = Math.random();
+int answer = (r > 0.5) ? 42 : 0;
+\end{CodeSmall}
+\end{multicols}
+
+\end{Slide}
+
+
+\begin{Slide}{Fördjupning: Typtest och typkonvertering}
+
+\begin{multicols}{2}
+\Emph{Scala}
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8}]
+var x = "hej"
+
+var isString = x.isInstanceOf[String]
+
+var y = 42
+
+var z = y.asInstanceOf[Double]
+
+\end{CodeSmall}
+
+\columnbreak
+
+\Emph{Java}
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{8}]
+String x = "hej";
+
+boolean isString = x instanceof String;
+
+int y = 42;
+
+double z = (double) y;
+\end{CodeSmall}
+\end{multicols}
+
+
+\end{Slide}
+
+
+\begin{Slide}{Fördjupning: Fånga undantag i Scala och Java}
+Typisk skillnad mellan Scala och Java:\\konstruktioner som är \Emph{uttryck} i Scala är ofta \Alert{satser} i Java.
+\begin{multicols}{2}
+\Emph{Scala}
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8}]
+val a = try { 2 / 0 } catch { 
+  case e: ArithmeticException => 0 
+}
+
+val b = try { 4 / 2 } catch { 
+  case e: ArithmeticException => 0 
+}
+\end{CodeSmall}
+
+\columnbreak
+
+\Emph{Java}
+\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{8}]
+int a;
+try {
+    a = 2 / 0
+} catch (ArithmeticException e) {
+    a = 0;
+}
+
+int b;
+try {
+    b = 4 / 2
+} catch (ArithmeticException e) {
+    b = 0;
+}
+
+\end{CodeSmall}
+\end{multicols}
+
+Mer om undantag \Eng{exceptions} i fortsättningskursen.
+\end{Slide}
+
+
+
+\begin{Slide}{Repetition: Primitiva Array i JVM}
+\begin{itemize}
+\item Primitiva arrayer (\code{Array} i Scala, \code{[]} i Java) har \Emph{fördelar}:%
+\footnote{\href{http://stackoverflow.com/questions/2843928/benefits-of-arrays}{stackoverflow.com/questions/2843928/benefits-of-arrays}} 
+\begin{itemize}\footnotesize
+\item Det är den snabbaste indexerbara datastrukturen i JVM: att läsa och uppdatera ett element på en viss plats är mycket effektiv om man vet platsens index. 
+\item Fungerar lika bra med både primitiva värden och objektreferenser
+\end{itemize}
+\item ... men också \Alert{nackdelar}:
+\begin{itemize}\footnotesize
+\item Man måste bestämma sig för antalet element vid \code{new}. 
+\item Man kan ta i lite extra när man allokerar om man behöver plats för fler senare, men då måste man hålla reda på hur många platser man använder och veta var nästa lediga plats finns.
+\item Det är krångligt att stoppa in \Eng{insert} och ta bort \Eng{delete} element.
+\item Vill man ha fler platser måste man allokera en helt ny, större vektor och kopiera över alla befintliga element.
+\end{itemize}
+
+\end{itemize}
+\end{Slide}
+
+
+
+\begin{Slide}{Exempel: Polygon med primitiv array i Java}
+\begin{Code}[numberstyle=,numbers=left,language=Java]
+public class Polygon {
+    private Point[] vertices; // vektor med hörnpunkter
+    private int n;            // antalet hörnpunkter
+    
+    /** Skapar en polygon */
+    public Polygon() {
+        vertices = new Point[1];
+        n = 0;
+    }
+    
+    ...
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Polygon med primitiv array i Java: \\stoppa in sist och vid behov skapa mer plats}\SlideFontSmall
+Implementera:\\
+\jcode{private void extend()                // dubbla storleken}\\
+\jcode{public void addVertex(int x, int y)  // lägg till hörnpunkt}
+\pause
+\begin{Code}[numberstyle=,numbers=left,language=Java]
+    private void extend(){
+        Point[] oldVertices = vertices;
+        vertices = new Point[2 * vertices.length]; // skapa dubbel plats
+        for (int i = 0; i < oldVertices.length; i++) {  // kopiera
+            vertices[i] = oldVertices[i];
+        }        
+    }
+
+    public void addVertex(int x, int y) {
+        if (n == vertices.length) extend();
+        vertices[n] = new Point(x, y);
+        n++;
+    }
+\end{Code}
+\end{Slide}
+
+
+\begin{Slide}{Polygon med primitiv array i Java: \\stoppa in mitt i på angiven plats }\SlideFontSmall
+Implementera:\\
+\jcode{/** Sätt in hörnpunkt på plats pos */}\\
+\jcode{public void insertVertex(int pos, int x, int y)}
+\pause
+\begin{Code}[numberstyle=,numbers=left,language=Java]
+    public void insertVertex(int pos, int x, int y) {
+        if (n == vertices.length) extend();   // utöka vid behov
+        for (int i = n; i > pos; i--) {       // flytta element bakifrån
+            vertices[i] = vertices[i - 1];
+        }
+        vertices[pos] = new Point(x, y);
+        n++;
+    }
+\end{Code}
+\end{Slide}
+
+
+
+\Subsection{ArrayList}
+
+\begin{Slide}{Generiska samlingar i Java}
+\begin{itemize}
+\item Från och med version 5 av Java (2004) så introducerades \Emph{generics} vilket möjliggör skapandet av klasser som kan erbjuda generell behandling av olika typer av objekt. 
+
+\item Generiska klasser i Java känns igen med syntaxen \code{Klassnamn<Typ>}, till exempel  \code{ArrayList<Point>}  
+
+\item Fördjupning: \href{https://docs.oracle.com/javase/tutorial/extra/generics/intro.html}{docs.oracle.com/javase/tutorial/extra/generics/intro.html}, mer om detta i fördjupningskursen.
+
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Om ArrayList i Java}\SlideFontSmall
+\code{java.util.ArrayList} liknar \code{scala.collection.mutable.ArrayBuffer} som båda har dessa fördelar:
+\begin{itemize}
+\item Lagrar sina element internt i snabbindexerade primitiv arrayer.
+\item Fungerar för alla typer av objekt.
+\item Utökar samlinges storlek av sig själv vid behov.
+\end{itemize}
+Det finns dock vissa nackdelar med \code{ArrayList} i Java\\(som inte gäller för \code{ArrayBuffer} i Scala):
+\begin{itemize}
+\item Fungerar \Alert{inte} rakt av med primitiva typer \code{int}, \code{double}, \code{char}, ... \\ (men det finns sätt komma runt detta, tack vare s.k. wrapper-klasser och autoboxing; mer om detta snart)
+
+\item Namnet \code{ArrayList} är inte helt lyckat, eftersom ordet ''lista'' normalt används för länkade snarare än vektor-liknande strukturer.
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Polygon med ArrayList i Java}\SlideFontSmall
+Klassen \code{Polygon}, nu med ett attribut av typen \code{ArrayList<Point>}:
+\begin{Code}[numberstyle=,language=Java]
+public class Polygon {
+    private ArrayList<Point> vertices; // lista med hörnpunkter
+    
+    /** Skapar en polygon */
+    public Polygon() {
+        vertices = new ArrayList<Point>();
+    }
+    
+    ...
+\end{Code}
+Det behövs inget attribut \code{n} eftersom vi inte själva behöver hålla reda på antalet allokerade platser: allokering, insättning, och utökning av antalet platser sköts helt automatiskt av \code{ArrayList}-klassen vid behov. 
+\end{Slide}
+
+\begin{Slide}{Viktiga operationer på ArrayList (Urval)}
+\begin{JavaSpec}{class ArrayList}
+/** Skapar en ny lista */
+ArrayList<E>();
+
+/** Tar reda på elementet på plats pos */
+E get(int pos);
+
+/** Lägger in objektet obj sist */
+void add(E obj);
+
+/** Lägger in obj på plats pos; efterföljande flyttas */
+void add(int pos, E obj);
+
+/** Tar bort elementet på plats pos och returnerar det */
+E remove(int pos);
+
+/** Tar reda på antalet element i listan */
+int size();
+\end{JavaSpec}
+Lär dig vad som finns om ArrayList i snabbreferensen för Java\\
+\SlideFontSmall Överkurs för den nyfikne: kolla implementation av ArrayList \href{http://www.docjar.com/html/api/java/util/ArrayList.java.html}{här}.
+\end{Slide}
+
+
+\begin{Slide}{Övning ArrayList: new och add}
+Skriv Java-kod som skapar en lista med element av typen \code{Point} och lägger in tre punkter i listan med koordinaterna:\\ (50, 50), (50,10) och (30, 40).
+\pause
+\\\vspace{1em} Lösning: \\\vspace{1em} 
+\begin{Code}[numberstyle=,language=Java]
+ArrayList<Point> vertices = new ArrayList<Point>(); 
+vertices.add(new Point(50, 50));
+vertices.add(new Point(50, 10)); 
+vertices.add(new Point(30, 40)); 
+\end{Code}
+\end{Slide}
+
+
+\begin{Slide}{For-each-sats i Java:}\SlideFontSmall
+\begin{itemize}
+\item  Antag att vi vill gå igenom alla element i en lista. 
+\begin{Code}[numberstyle=,language=Java]
+        ArrayList<String> words = new ArrayList<String>();
+\end{Code}
+\item Det finns två olika typer av \jcode{for}-satser i Java som kan göra detta:
+\begin{itemize}\footnotesize
+\item[]  Vanlig \jcode{for}-sats:
+\begin{Code}[numberstyle=,language=Java]
+for (int i = 0; i < words.size(); i++) {
+    System.out.println(i + ": " + words.get(i));
+}
+\end{Code}
+
+\item[]  Så kallad \Emph{for-each-sats} med denna syntax:\\
+\jcode+for (Elementtyp loopvariabel: samling) { ... }+ \\
+\vspace{1em}Exempel:
+\begin{Code}[numberstyle=,language=Java]
+for (String s: words) {
+    System.out.println(s);
+}
+\end{Code}
+Men vi får ingen indexvariabel då...
+\end{itemize}
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Polygon med ArrayList: metoderna blir enklare}
+\begin{Code}[numberstyle=,language=Java]
+    public void addVertex(int x, int y) {  
+        vertices.add(new Point(x, y));
+    }
+    
+    public void move(int dx, int dy) {
+        for (Point p: vertices){
+            p.move(dx, dy);
+        }
+    }
+    
+    public void insertVertex(int pos, int x, int y) {
+        vertices.add(pos, new Point(x, y));
+    }
+    
+    public void removeVertex(int pos) {
+        vertices.remove(pos);
+    }
+\end{Code}
+
+Se hela lösningen här:
+\href{https://github.com/lunduniversity/introprog/tree/master/compendium/examples/scalajava/list/Polygon.java}{compendium/examples/scalajava/list/Polygon.java}
+\end{Slide}
+
+\begin{Slide}{Polygon med ArrayList: \\iterera över alla hörnpunkter i draw med indexering}
+\begin{Code}[numberstyle=,language=Java]
+    public void draw(SimpleWindow w) {
+        if (vertices.size() == 0) {
+            return;
+        }
+        Point start = vertices.get(0);
+        w.moveTo(start.getX(), start.getY());
+        for (int i = 1; i < vertices.size(); i++) {
+            w.lineTo(vertices.get(i).getX(), 
+                     vertices.get(i).getY());
+        }
+        w.lineTo(start.getX(), start.getY());
+    }
+\end{Code}
+
+Övning: Skriv om med for-each-sats.
+\end{Slide}
+
+\begin{Slide}{Polygon med ArrayList: \\iterera över alla hörnpunkter i draw med foreach-sats}
+\begin{Code}[numberstyle=,language=Java]
+    public void draw(SimpleWindow w) {
+        if (vertices.size() == 0) {
+            return;
+        }
+        Point start = vertices.get(0);
+        w.moveTo(start.getX(), start.getY());
+        for (Point p: vertices){
+            w.lineTo(p.getX(), p.getY());
+        }
+        w.lineTo(start.getX(), start.getY());
+    }
+\end{Code}
+
+Se hela lösningen här:
+\href{https://github.com/lunduniversity/introprog/tree/master/compendium/examples/scalajava/list/Polygon.java}{compendium/examples/scalajava/list/Polygon.java}
+\end{Slide}
+
+\begin{Slide}{Övning ArrayList: implementera metoden hasVertex}
+Skriv kod som implementerar denna metod i klassen \code{Polygon}:
+\begin{Code}[numberstyle=,language=Java]
+/** Undersöker om polygonen har någon hörnpunkt med koordinaterna x, y. */ 
+public boolean hasVertex(int x, int y) {
+    ???
+} 
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Övning ArrayList: implementera metoden hasVertex}
+\begin{Code}[numberstyle=,language=Java]
+    public boolean hasVertex(int x, int y){
+        for (Point p: vertices){
+            if (p.getX() == x && p.getY() == y){
+                return true;
+            }
+        }
+        return false;
+    }
+\end{Code}
+\end{Slide}
+
+
+\begin{Slide}{For-each-sats med array}
+For-each-sats fungerar även med primitiv array:
+\begin{Code}[numberstyle=,language=Java]
+        String[] stringArray = {"hej", "på", "dej"};
+        for (String s: stringArray){
+            System.out.println(s);
+        }
+\end{Code}
+\end{Slide}
+
+
+\Subsection{Autoboxing}
+\begin{Slide}{Generiska klasser (t.ex. ArrayList) med primitiva typer}
+\begin{itemize}\footnotesize
+\item Men vad gör man om man vill ha element av primitiva typer, \\ så som \jcode{int} och \jcode{double}? 
+Detta går alltså \Alert{INTE} i Java: \\
+\sout{\texttt{ArrayList<int> list = new ArrayList<int>();}}
+
+\vspace{2em}
+\item Javas lösning på problemet består av två delar:
+\begin{itemize}\footnotesize
+\item Klasser som packar in primitiva typer, \Eng{wrapper classes}
+\item Speciella regler för implicita konverteringar, s.k. ''auto-boxing'' \Eng{Boxing / Unboxing conversions}
+\end{itemize}
+\end{itemize}
+\scriptsize\vspace{1em}
+Detta kan bli ganska komplicerat och det finns fallgropar.\\
+(Om du är nyfiken på alla intrikata detaljer, se
+\href{https://docs.oracle.com/javase/tutorial/java/data/autoboxing.html}{java tutorial} och   \href{https://docs.oracle.com/javase/specs/jls/se8/html/jls-5.html#jls-5.1.7}{javaspecifikationen}.)
+\end{Slide}
+
+\begin{Slide}{Wrapper-klassen \code{Integer}}\footnotesize
+En skiss av klassen \code{Integer} \\ (ligger i paketet \href{http://docs.oracle.com/javase/8/docs/api/java/lang/package-summary.html}{\code{java.lang}} och importeras därmed implicit):
+
+\begin{minipage}{0.65\textwidth}
+\begin{Code}[numberstyle=,language=Java]
+public class Integer {
+    private int value;
+    
+    public static final MIN_VALUE = -2147483648;
+    public static final MAX_VALUE = 2147483647;
+    
+    public Integer(int value) {
+        this.value = value;
+    }
+    
+    public int intValue() {
+        return value;
+    }
+    ...
+}
+\end{Code}
+\end{minipage}
+\begin{minipage}{0.33\textwidth}
+\centering\includegraphics[width=0.95\textwidth]{../img/box}
+\end{minipage}
+Javadoc för klasen \code{Integer} finns här: \\
+\scriptsize\url{http://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html}
+\end{Slide}
+
+\begin{Slide}{Wrapper-klasser i \code{java.lang}}\footnotesize
+\begin{tabular}{l | l}
+\Emph{Primitiv typ}                  & \Emph{Inpackad typ}                 \\ \hline
+
+ boolean & Boolean\\
+ byte & Byte\\
+ short& Short\\
+ char & Character\\
+ int & Integer\\
+ long & Long\\
+ float & Float\\
+ double & Double\\
+\end{tabular}
+\end{Slide}
+
+
+\begin{Slide}{Övning: primitiva versus inpackade typer}
+Med papper och penna:
+\begin{itemize}
+\item Deklarera en variabel med namnet  \code{gurka} av den primitiva heltalstypen och initiera den till värdet 42.
+\item Deklarera en referensvariabel med namnet  \code{tomat} av den inpackade (''wrappade'') heltalstypen och initiera den till värdet 43.
+\item Rita hur det ser ut i minnet.
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Exempel: Lista med heltal}
+\lstinputlisting[language=Java, basicstyle=\ttfamily\SlideFontSize{6}{8}, numberstyle=, numbers=left,]{../compendium/examples/scalajava/generics/TestIntegerList.java}
+\scriptsize Koden finns här: \href{https://github.com/lunduniversity/introprog/tree/master/compendium/examples/scalajava/generics/TestIntegerList.java}{compendium/examples/scalajava/TestIntegerList.java}
+\end{Slide}
+
+\begin{Slide}{Specialregler för wrapper-klasser}\footnotesize
+\begin{itemize}
+\item Om ett \code{int}-värde förekommer där det behövs ett \code{Integer}-objekt, så lägger kompilatorn automatiskt ut kod som skapare ett \code{Integer}-objekt som packar in värdet.
+\item Om ett \code{Integer}-objekt förekommer där det behövs ett \code{int}-värde, lägger kompilatorn automatiskt ut kod som anropar metoden \code{intValue()}.
+\end{itemize}
+Samma gäller mellan alla primitiva typer och dess wrapper-klasser: 
+\begin{table}
+\center
+\begin{tabular}{r c l}
+ {\lstinline!boolean!} &$\Leftrightarrow$& {\lstinline!Boolean!} \\
+ {\lstinline!byte!} &$\Leftrightarrow$& {\lstinline!Byte!}\\
+ {\lstinline!short!}&$\Leftrightarrow$& {\lstinline!Short!}\\
+ {\lstinline!char!} &$\Leftrightarrow$& {\lstinline!Character!}\\
+ {\lstinline!int!} &$\Leftrightarrow$& {\lstinline!Integer!}\\
+ {\lstinline!long!} &$\Leftrightarrow$& {\lstinline!Long!}\\
+ {\lstinline!float!} &$\Leftrightarrow$& {\lstinline!Float!}\\
+ {\lstinline!double!} &$\Leftrightarrow$&{\lstinline!Double!}\\
+\end{tabular}
+\end{table}
+\end{Slide}
+
+\begin{Slide}{Exempel: Lista med heltal och autoboxing}
+\lstinputlisting[language=Java, basicstyle=\ttfamily\SlideFontSize{6}{8}, numberstyle=, numbers=left,]{../compendium/examples/scalajava/generics/TestIntegerListAutoboxing.java}
+\scriptsize Koden finns här: \href{https://github.com/lunduniversity/introprog/tree/master/compendium/examples/scalajava/generics/TestIntegerList.java}{scalajava/generics/TestIntegerListAutoboxing.java}
+\end{Slide}
+
+\begin{Slide}{Fallgropar vid autoboxing}
+\begin{itemize}
+\item Jämförelser med \code{==} och \code{!=} \\
+\href{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/scalajava/generics/TestPitfall1.java}
+{\SlideFontSmall  compendium/examples/scalajava/generics/TestPitfall1.java}
+\item[]
+\item Kompilatorn hittar inte förväxlad parameterording, t.ex. \code{add(pos, item)} i fel ordning: \sout{\code{add(item, pos)}}\\
+\href{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/scalajava/generics/TestPitfall2.java}
+{\SlideFontSmall compendium/examples/scalajava/generics/TestPitfall2.java}
+\end{itemize}
+\end{Slide}
+
+\Subsection{Equals}\SlideFontSmall
+\begin{Slide}{Fallgrop med samlingar: \\ metoden contains kräver implementation av equals}
+Antag att vi vill implementerar  \code{hasVertex()} i klassen \code{Polygon} genom att använda metoden \code{contains} på en lista. Hur gör vi då?
+\pause
+\begin{Code}[numberstyle=,language=Java]
+public boolean hasVertex(int x, int y){  
+    return vertices.contains(new Point(x, y)); // FUNKAR INTE om ...
+    // ... inte Point har en equals som kollar innehållslikhet
+}
+\end{Code}
+Vi behöver implementera metoden \code{equals(Object obj)} i klassen \code{Point} som kollar innehållslikhet och ersätter den \code{equals} som finns i \code{Object} som kollar referenslikhet, eftersom metoden \code{contains} i klassen \code{ArrayList} anropar \code{equals} när den letar igenom listan efter lika objekt. \\
+Se exempel här: \href{https://github.com/lunduniversity/introprog/tree/master/compendium/examples/scalajava/generics/TestPitfall3.java}{compendium/examples/scalajava/generics/TestPitfall3.java} \\
+
+
+\vspace{1em}{\SlideFontTiny Det krävs ofta även att man även ersätter  \href{http://stackoverflow.com/questions/27581/what-issues-should-be-considered-when-overriding-equals-and-hashcode-in-java}{hashcode}, mer om det i forts.kursen}
+\end{Slide}
+
+
+\begin{Slide}{Fördjupning: Fullständigt recept för \texttt{equals}}
+För den nyfikne inför fortsättningskursen efter jul: \\
+
+\vspace{2em}
+Läs om fallgropar för att implementera equals i \Emph{Java} här: \\
+\href{http://www.artima.com/lejava/articles/equality.html}{www.artima.com/lejava/articles/equality.html}
+
+
+\vspace{2em}
+Läs receptet för att implementera equals i \Emph{Scala} här: \\
+\href{http://www.artima.com/pins1ed/object-equality.html#28.4}{www.artima.com/pins1ed/object-equality.html\#28.4}
+\end{Slide}
+
+
+\begin{Slide}{Fördjupning: scala.collection.JavaConverters}
+\end{Slide}
+
+\begin{Slide}{Fördjupning: Gränssnittet List i Java}
+\end{Slide}
+
+\begin{Slide}{Fördjupning: Skapa generisk Array}
+TypeTag
+\end{Slide}
+
+\Subsection{Grumligt- och Nyfiken-på-lådan}
+\begin{Slide}{Grumligt- och Nyfiken-på-lådan}
+\end{Slide}
+
+\fi
+
+
+
+
+
+
+
+
+
+
