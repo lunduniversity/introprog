@@ -1,8 +1,8 @@
 package cardSimulation
 
 class TestingDeck extends CardDeck {
-  override lazy val cards = (for (i <- 11 to 13) yield Card(1, i)).toArray
-  val origin = cards.clone
+  val origin = (for (i <- 11 to 13) yield Card(1, i)).toVector
+  override lazy val cards = origin.toArray
   def reset = for (i <- 0 to (cards.length - 1)) cards(i) = origin(i)
 }
 
