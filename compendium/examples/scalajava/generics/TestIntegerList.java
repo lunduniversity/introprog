@@ -1,5 +1,3 @@
-package week10.generics;
-
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -7,7 +5,7 @@ public class TestIntegerList {
     public static void main(String[] args) {
         ArrayList<Integer> list = new ArrayList<Integer>();
         Scanner scan = new Scanner(System.in);
-        System.out.println("Skriv heltal med blank emellan. Avsluta med <CTRL+D>:");
+        System.out.println("Skriv heltal med blank emellan. Avsluta med <CTRL+D>");
         while (scan.hasNextInt()) {
             int nbr = scan.nextInt();
             Integer obj = new Integer(nbr);
@@ -19,6 +17,5 @@ public class TestIntegerList {
             int nbr = obj.intValue();
             System.out.println(nbr);
         }
-        scan.close();
     }
 }

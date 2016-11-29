@@ -1,7 +1,4 @@
-package week10.generics;
-
 import java.util.ArrayList;
-import week10.list.Point;
 
 public class TestPitfall3 {
 

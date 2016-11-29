@@ -1,8 +1,4 @@
-package week10.generics;
-
 import java.util.ArrayList;
-import se.lth.cs.pt.window.SimpleWindow;
-import week10.list.Point;
 
 public class PolygonCanContains {
     protected ArrayList<PointCanEquals> vertices; // lista med hörnpunkter
@@ -24,20 +20,6 @@ public class PolygonCanContains {
         }
     }
     
-    /** Ritar polygonen i fönstret w */
-    public void draw(SimpleWindow w) {
-        if (vertices.size() == 0) {
-            return;
-        }
-        PointCanEquals start = vertices.get(0);
-        w.moveTo(start.getX(), start.getY());
-        for (int i = 1; i < vertices.size(); i++) {
-            w.lineTo(vertices.get(i).getX(), 
-                     vertices.get(i).getY());
-        }
-        w.lineTo(start.getX(), start.getY());
-    }
-
     /** Lägger in en ny punkt med koordinaterna x,y
         på plats pos. Efterföljande element flyttas */
     public void insertVertex(int pos, int x, int y) {

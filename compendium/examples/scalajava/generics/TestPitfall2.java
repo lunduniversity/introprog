@@ -1,5 +1,3 @@
-package week10.generics;
-
 import java.util.ArrayList;
 
 public class TestPitfall2 {

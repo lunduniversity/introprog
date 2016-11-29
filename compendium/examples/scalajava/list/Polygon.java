@@ -1,7 +1,5 @@
-package week10.list;
-
 import java.util.ArrayList;
-import se.lth.cs.pt.window.SimpleWindow;
+import cslib.window.SimpleWindow;
 
 public class Polygon {
     protected ArrayList<Point> vertices; // lista med hörnpunkter
@@ -18,8 +16,8 @@ public class Polygon {
     
     /** Flyttar polygonen avståndet dx i x-led, dy i y-led */
     public void move(int dx, int dy) {
-        for (int i = 0; i < vertices.size(); i++) {
-        	vertices.get(i).move(dx, dy);
+        for (Point p: vertices){
+        	p.move(dx, dy);
         }
     }
     
@@ -30,9 +28,8 @@ public class Polygon {
         }
         Point start = vertices.get(0);
         w.moveTo(start.getX(), start.getY());
-        for (int i = 1; i < vertices.size(); i++) {
-            w.lineTo(vertices.get(i).getX(), 
-                     vertices.get(i).getY());
+        for (Point p: vertices){
+            w.lineTo(p.getX(), p.getY());
         }
         w.lineTo(start.getX(), start.getY());
     }
@@ -58,8 +55,8 @@ public class Polygon {
     }
     
     public boolean hasVertex(int x, int y){
-        for (int i =0; i < vertices.size(); i++){
-            if (vertices.get(i).getX() == x && vertices.get(i).getY() == y){
+        for (Point p: vertices){
+            if (p.getX() == x && p.getY() == y){
                 return true;
             }
         }

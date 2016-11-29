@@ -1,5 +1,3 @@
-package week10.generics;
-
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -7,7 +5,7 @@ public class TestIntegerListAutoboxing {
     public static void main(String[] args) {
         ArrayList<Integer> list = new ArrayList<Integer>();
         Scanner scan = new Scanner(System.in);
-        System.out.println("Skriv heltal med blank emellan. Avsluta med <CTRL+D>:");
+        System.out.println("Skriv heltal med blank emellan. Avsluta med <CTRL+D>");
         while (scan.hasNextInt()) {
             int nbr = scan.nextInt();
             list.add(nbr);   // motsvarar: list.add(new Integer(nbr));
@@ -17,6 +15,5 @@ public class TestIntegerListAutoboxing {
             int nbr = list.get(i);  // motsvarar: int nbr = list.get(i).intValue();
             System.out.println(nbr);
         }
-        scan.close();
     }
 }

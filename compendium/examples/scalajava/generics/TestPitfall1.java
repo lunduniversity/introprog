@@ -1,5 +1,3 @@
-package week10.generics;
-
 public class TestPitfall1 {
 
 	public static void main(String[] args) {
