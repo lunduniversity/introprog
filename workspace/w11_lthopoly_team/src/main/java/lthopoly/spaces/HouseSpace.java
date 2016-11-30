@@ -9,7 +9,7 @@ import lthopoly.GameBoard;
 public class HouseSpace extends BoardSpace {
 
     /**
-     * Creates a new housespace with rent and a description
+     * Creates a new HouseSpace with rent and a description
      */
     public HouseSpace(int rent, String description) {
     }
@@ -23,14 +23,14 @@ public class HouseSpace extends BoardSpace {
     }
 
     /**
-     * Performs a HouseSpace-related action.
+     * Performs a game action available while on this space
      */
     @Override
     public void action(GameBoard board, int action) {
     }
 
     /**
-     * Returns a string representation of the HouseSpace with the format "HouseName [Owner] (Rent)"
+     * Returns a string representation of this HouseSpace with the format "HouseName [Owner] (Rent)"
      */
     @Override
     public String toString() {

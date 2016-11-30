@@ -23,13 +23,13 @@ public class MoneySpace extends BoardSpace {
     }
 
     /**
-     * Performs a MoneySpace-related action.
+     * Performs a game action available while on this space
      */
     public void action(GameBoard board, int action) {
     }
 
     /**
-     * Returns a string representation of the MoneySpace
+     * Returns a string representation of this MoneySpace
      */
     @Override
     public String toString() {
