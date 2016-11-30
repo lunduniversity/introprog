@@ -38,8 +38,7 @@ public class GameBoard {
 
     /**
      * Returns an int array containing possible game actions.
-     * A game action can be any of the static constants in
-     * GameBoard
+     * A game action can be any of the static constants in GameBoard
      */
     public int[] getPossibleActions() {
         return null;
@@ -87,21 +86,22 @@ public class GameBoard {
     }
 
     /**
-     * Returns the boardspace corresponding to the position of the current player.
+     * Returns the BoardSpace corresponding to the position of the current player.
      */
     public BoardSpace getCurrentBoardSpace() {
         return null;
     }
 
     /**
-     * Moves the currently active player adjustments spaces forward. Negative adjustment moves the player backwards
+     * Moves the currently active player adjustments spaces forward.
+     * Negative adjustment moves the player backwards.
      */
     public void moveCurrentPlayer(int adjustment) {
     }
 
     /**
-     * Returns an ArrayList<Integer> where each element contains the total sum of all players' money
-     * at the end of a round.
+     * Returns an ArrayList<Integer> where each element contains
+     * the total sum of all players' money at the end of a round.
      * E.g. list.get(0) is the total amount of money in the game after the first round.
      */
     public ArrayList<Integer> getStatistics() {
@@ -109,7 +109,7 @@ public class GameBoard {
     }
 
     /**
-     * String Representation of the GameBoard
+     * Returns a string representation of this GameBoard
      */
     public String toString() {
         StringBuilder out = new StringBuilder();

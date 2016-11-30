@@ -23,14 +23,14 @@ public class MoveSpace extends BoardSpace {
     }
 
     /**
-     * Performs a MoveSpace-related action.
+     * Performs a game action available while on this space
      */
     @Override
     public void action(GameBoard board, int action) {
     }
 
     /**
-     * Returns a string representation of the MoveSpace
+     * Returns a string representation of this MoveSpace
      */
     @Override
     public String toString() {

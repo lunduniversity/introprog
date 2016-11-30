@@ -1,45 +1,48 @@
 package lthopoly
 
-
 import scala.collection.mutable.{ArrayBuffer, Buffer}
 import scala.collection.JavaConverters._
 
 object TextUI {
   private val log = new ArrayBuffer[String]
 
-  /**Creates a string form provided statistics suitable for printing*/
+  /**
+   * Prints an ASCII plot of the total amount
+   * of money in the game as a function of the turn index
+   */
   def plotStatistics(x: Buffer[Int]): String = {
-    if(x.length > 0){
-    val min = x.min
-    val max = x.max
+    if (x.length > 0) {
+      val min = x.min
+      val max = x.max
 
-    val dy: Double = max - min
-    val height = 20.0
-    val normalized = x.map(_ - min).map(i => ((i / dy) * height).toInt)
-    val map = invertRows(normalized)
-    val indent = " " * (max.toInt.toString.length + 1)
-    var sb = new StringBuilder
-    var o = 20
-    while (o >= 0) {
+      val dy: Double = max - min
+      val height = 20.0
+      val normalized = x.map(_ - min).map(i => ((i / dy) * height).toInt)
+      val map = invertRows(normalized)
+      val indent = " " * (max.toInt.toString.length + 1)
+      var sb = new StringBuilder
+      var o = 20
+      while (o >= 0) {
+        val row = (max + dy * (o - 20) / 20).toInt + indent + " " * x.length * 3
+        val xs =
+          map.getOrElse(o, Vector())
+        var sb2 = new StringBuilder(row)
+        for (k <- xs) sb2.setCharAt(indent.length + 1 + k * 3, '*')
+        sb.append(sb2.toString() + '\n')
+        o -= 1
+      }
 
-      val row = (max + dy * (o - 20) / 20).toInt + indent + " " * x.length * 3
-      val xs =
-        map.getOrElse(o, Vector())
-      var sb2 = new StringBuilder(row)
-      for (k <- xs) sb2.setCharAt(indent.length + 1 + k * 3, '*')
-      sb.append(sb2.toString() + '\n')
-      o -= 1
-    }
-
-    var xaxis = ""
-    for (i <- 1 to x.length) xaxis = xaxis + i + " " * (3 - (i + "").length)
-    sb.append(indent + " " + xaxis)
-    "Relativ graf över total mängd pengar under spelets gång:" + '\n' +
-    sb.toString
-    }else "Spelet måste vara åtminstone en runda lång för att en graf skall ritas upp."
+      var xaxis = ""
+      for (i <- 1 to x.length) xaxis = xaxis + i + " " * (3 - (i + "").length)
+      sb.append(indent + " " + xaxis)
+      "Relativ graf över total mängd pengar under spelets gång:" + '\n' +
+      sb.toString
+    } else "Spelet måste vara åtminstone en runda lång för att en graf skall ritas upp."
   }
 
-  /**Inverts provided rows*/
+  /**
+   * Inverts provided rows
+   */
   def invertRows(x: Buffer[Int]): Map[Int, Vector[Int]] = {
     val map = scala.collection.mutable.Map[Int, Vector[Int]]()
     for (i <- 0 until x.length) {
@@ -50,17 +53,26 @@ object TextUI {
     map.toMap
   }
 
-  /**Appends to log*/
+  /**
+   * Appends the String s to the end of the UI's event log
+   */
   def addToLog(s: String): Unit = {
     log.append(s)
   }
 
-  
+  /**
+   * Reprints the current state of the UI using the given
+   * GameBoard to print the status bar
+   */
   def updateConsole(board: GameBoard): Unit = {
     lineBreak
     log.foreach(println(_))
     printStatus(board)
   }
+
+  /**
+   * Prints a GameBoard's Players and their statuses
+   */
   def printStatus(board: GameBoard): Unit = {
     val format = "%-19s %-29s %-10s\n"
     print(format.format("Namn", "Position", "Pengar").replaceAll(" ", "-"))
@@ -70,11 +82,20 @@ object TextUI {
     print(format.format("", "", "").replaceAll(" ", "-"))
   }
 
+  /** Asks the user to select an option from a list of options
+   *
+   * @param options An Array of tuples of the form (choice, description)
+   *                where choice is the number the user must enter
+   *                to select the choice represented by description. E.g.
+   *                (0, "End Game") lets the user input 0 to end the game.
+   *
+   * @return The selected choice
+   */
   def promptForInput(options: Array[(Int, String)]): Int = {
     println("Välj ett alternativ:\n")
 
     options.foreach {
-      case (command, description) => printf("\t%s. %-30s\n", command,description)
+      case (command, description) => printf("\t%s. %-30s\n", command, description)
     }
     lineBreak
 
@@ -91,12 +112,18 @@ object TextUI {
     choice
   }
 
-  def printBoard(board: GameBoard)={
+  /**
+   * Prints the entire GameBoard
+   */
+  def printBoard(board: GameBoard) = {
     lineBreak
     println(board.toString)
   }
   
-  def lineBreak()={
+  /**
+   * Prints a line separator
+   */
+  def lineBreak() = {
     print("\n")
     println("=" * 60)
     print("\n")

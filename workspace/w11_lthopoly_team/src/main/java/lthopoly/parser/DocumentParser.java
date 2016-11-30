@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class DocumentParser {
 
     /**
-     * Returns a ArrayList of Boardspaces loaded from a file
+     * Returns an ArrayList of BoardSpaces loaded from a file
      */
     public static ArrayList<BoardSpace> getBoard() {
         return null;
@@ -20,14 +20,14 @@ public class DocumentParser {
 
 
     /**
-     * Returns a array of MoneyCards loaded from file
+     * Returns an array of MoneyCards loaded from a file
      */
     public static MoneyCard[] getMoneyCards() {
         return null;
     }
 
     /**
-     * Returns a array of MoveCards loaded from file
+     * Returns an array of MoveCards loaded from a file
      */
     public static MoveCard[] getMoveCards() {
         return null;

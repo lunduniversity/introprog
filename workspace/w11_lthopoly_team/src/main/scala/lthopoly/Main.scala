@@ -10,8 +10,8 @@ object Main {
   }
 
   /**
-    * Retrieves all possible actions from GameBoard and joins them with
-    * a corresponding description String into tuples.
+    * Retrieves all possible actions from a GameBoard and joins
+    * them with corresponding description Strings into tuples.
     * The tuples are then sent to the promptForInput method in TextUI.
     *
     * @return the user's choice as given by promptForInput.
