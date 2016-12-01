@@ -373,6 +373,11 @@ För att skriva metoderna action och getPossibleActions kommer ni behöva nyttja
 \newline
 \noindent
 \textbf{Obs!} Än så länge kommer logiken inte fungera då inga metoder är implementerade i BoardGame, det går trots detta bra att anropa metoderna utan kompileringsfel (i väntan på att de implementeras).
+\newline
+\newline
+\noindent
+\textbf{Obs!} Metoderna getPossibleActions tar som argument ett GameBoard-objekt. Detta är bara användbart för HouseSpaces eftersom de är de enda rutor som behöver känna till spelets tillstånd. Anledningen till att de övriga klassernas getPossibleActions-metoder kräver samma argument är för att de ärver från den abstrakta klassen BoardSpace, som definierar metoden med ett GameBoard som argument. Detta öppnar upp för fler tillåtna actions som beror på spelets tillstånd om ni väljer att vidareutveckla spelet.
+
 
 
 
@@ -395,7 +400,7 @@ För att skriva metoderna action och getPossibleActions kommer ni behöva nyttja
 
 \begin{itemize}
 \item Ni kan använda privata hjälpmetoder för att underlätta implementeringen.
-\item Metoden printStatistics i klassen \code{TextUI} tar en vektor av int-värden som inparameter, vilket är opassande då det underlättar att lagra pengahistoriken i en ArrayList (eftersom dess storlek inte är bestämd). Det är därför lämpligt att skriva en metod som flyttar över samtliga Integer-objekt från ArrayList<Integers> till en vektor av primitiva int-värden. Detta fungerar trots att de har olika typer p.g.a. autoboxing. 
+\item Metoden plotStatistics i klassen \code{TextUI} tar en vektor av int-värden som inparameter, vilket är opassande då det underlättar att lagra pengahistoriken i en ArrayList (eftersom dess storlek inte är bestämd). Det är därför lämpligt att skriva en metod som flyttar över samtliga Integer-objekt från ArrayList<Integers> till en vektor av primitiva int-värden. Detta fungerar trots att de har olika typer p.g.a. autoboxing. 
 \item Tänk på att spelarna skall kunna gå runt spelplanen ett obegränsat antal gånger.
 \item Glöm inte att alla utskrifter skall gå via  \code{TextUI}.
 \item Se flödesdiagrammet för att få en överblick för vilka actions som är tillåtna vid en given tidpunkt.
@@ -406,13 +411,13 @@ För att skriva metoderna action och getPossibleActions kommer ni behöva nyttja
 \item Varför tar konstruktorn i GameBoard emot en List<Player> istället för en ArrayList<Player>?
 \end{itemize}
 
-\Task Med spelplanen implementerad behövs en main-metod för att kunna starta spelet. I main-metoden skapas GameBoard samt alla Spelare. Spelet körs sedan som en loop där GameBoard tillfrågas vilka spelarhandlingar som är tillåtna för den nuvarande spelaren, erbjuder spelaren möjligheten att välja något av dessa alternativ, och matar sedan in spelarens val tillbaka till GameBoard som hanterar valet. GameBoard ska alltså hantera all spellogik internt.  Spel-loopen skall köras tills dess att spelet är över enligt GameBoard.isGameOver.
+\Task Med spelplanen implementerad behövs en main-metod för att kunna starta spelet. I main-metoden skapas GameBoard samt alla Spelare. Spelet körs sedan som en loop där GameBoard tillfrågas vilka spelarhandlingar som är tillåtna för den nuvarande spelaren, erbjuder spelaren möjligheten att välja något av dessa alternativ, och matar sedan in spelarens val tillbaka till GameBoard som hanterar valet. GameBoard ska alltså hantera all spellogik internt.  Spel-loopen skall köras tills dess att spelet är över enligt GameBoard.isGameOver. 
 
-\Subtask Implementera getAction i Scala. Metoden ska anropa TextUI.promptForInput med en lämplig lista av tupler för att begära input från användarna. Metoden skall nyttja de statiska variablerna från GameBoard för att ge en lämplig utskrift.
+\Subtask Implementera getAction i Scala. Metoden ska anropa TextUI.promptForInput med en lämplig lista av tupler för att begära input från användarna. Metoden getAction skall nyttja de statiska variablerna från GameBoard för att ge en lämplig utskrift.
 
 \Subtask Implementera main-metoden i Scala.
 
-\Task Vi skall nu lägga till möjligheten att se statistik över spelets monetära tillstånd. Metoden getStatistics() i GameBoard  ska returnera en lista innehållande den totala summan av pengar i spelet i slutet av varje runda. Denna lista kan skickas vidare till metoden TextUI.printStatistics där den sedan skrivs ut i en vacker plot (se utskrift nedan).
+\Task Vi skall nu lägga till möjligheten att se statistik över spelets monetära tillstånd. Metoden getStatistics() i GameBoard  ska returnera en lista innehållande den totala summan av pengar i spelet i slutet av varje runda. Denna lista kan skickas vidare till metoden TextUI.plotStatistics där den sedan skrivs ut i en vacker plot (se utskrift nedan). 
 
 \Subtask Implementera metoden getStatistics() i GameBoard.
 
@@ -420,6 +425,15 @@ För att skriva metoderna action och getPossibleActions kommer ni behöva nyttja
 Själva uppritningen sker med hjälp av den färdigskrivna metoden plotStatistics i TextUI som kräver en Buffer[Int] innehållande varje rundas totalsumma. 
 Ett tips är att nyttja scala.collection.JavaConverters för att konvertera Javas datatyper till Scala.
 
+\textbf{Tips:}
+
+\begin{itemize}
+\item  För getAction är syftet att metoden skall hämta alla tillåtna actions från det GameBoard-objekt som skickas med som argument. Dessa ska sedan skickas vidare till TextUI.promptForInput varpå de möjliga valen skrivs ut. Här definierar ni själva hur ni vill att texten för de olika valen skall se ut, det viktiga är att promptForInput får en tuple som länkar ihop ett sifferval med en sträng. Slutligaen returnerar metoden siffer-val som användaren har gjort så att det går att ta logiska beslut utifrån denna siffra på andra ställen i koden.
+
+\item  För att hantera den historik som krävs för att generera statistiken, måste ni själva implementera den logik som krävs. Hur ni väljer att implementera detta är upp till er, så länge getStatistics returnerar det som anges i specifikationen.
+\item Kom ihåg att när updateConsole anropas så skrivs statusfältet ut automatiskt. Därefter kan ni anropa metoden TextUI.promptForInput för att återge standardvyn ovanför.
+
+\end{itemize}
 
 \begin{figure}[H]
 \centering
