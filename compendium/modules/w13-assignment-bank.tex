@@ -53,14 +53,14 @@ Kraven för bankapplikationen återfinns här nedan. För att bli godkänd på d
 \end{itemize}
 \item Då bankens tillstånd förändras ska detta skrivas till fil.
 \item Då banken startas upp ska händelsehistoriken läsas in så att banken laddar senaste sparade tillståndet.
-\item Inga utskrifter eller inläsningar får göras i klasserna Customer, BankAccount, Bank, State eller BankEvent. Allt som berör användargränssnittet ska ske i BankApplication. Det är tillåtet att använda valfritt antal hjälpmetoder och hjälpklasser i BankApplication.
+\item Inga utskrifter eller inläsningar får göras i klasserna \code{Customer}, \code{BankAccount}, \code{Bank}, \code{State} eller \code{BankEvent}. Allt som berör användargränssnittet ska ske i \code{BankApplication}. Det är tillåtet att använda valfritt antal hjälpmetoder och hjälpklasser i \code{BankApplication}.
 \item Alla metoder och attribut ska ha lämpliga åtkomsträttigheter.
-\item Valet av val/var och immutable/mutable måste vara lämpliga.
-\item Din indata måste ge samma resultat som i exemplen (som kommer komma i framtiden) i bilagan.
+\item Valen av val/var och immutable/mutable måste vara lämpliga.
+\item Din indata måste ge samma resultat som i exemplen i bilagan.
 \item Rimlig felhantering ska finnas, det är alltså önskvärt att programmet inte kraschar då man matar in felaktig input, utan istället säger till användaren att input är ogiltlig.
 \item Programdesignen ska följa de specifikationer som är angivna nedan.
-\item Det räcker med att banken ska kunna hantera heltal, men dessa ska ske med klassen \texttt{BigInt}.
-\item Kontonummer ska genereras i klassen \texttt{BankAccount}, dessa ska vara unika för varje konto. Vid en tillståndförändringar ska dessa återställas, detta betyder att om en återställning tar bort ett konto så ska detta kontonummer återigen bli tillgängligt.
+\item Det räcker med att banken ska kunna hantera heltal, men dessa ska ske med klassen \code{BigInt}.
+\item Kontonummer ska genereras i klassen \code{BankAccount}, dessa ska vara unika för varje konto. Vid en tillståndförändringar ska dessa återställas, detta betyder att om en återställning tar bort ett konto så ska detta kontonummer återigen bli tillgängligt.
 \end{itemize}
 
 \subsection{Design}
@@ -82,24 +82,24 @@ class Customer(val name: String, val id: Int) = {
 /**
  * Creates a new bank account for the customer provided.
  * The account is given a unique account number and initially
- * got a balance of 0 kr.
+ * has a balance of 0 kr.
  */
 class BankAccount(val holder: Customer) = {
 
- /**
-   * Deposits provided amount on this account.
+  /**
+   * Deposits the provided amount in this account.
    */
   def deposit(amount: Int): Unit = ???
 
-/**
+  /**
    * Returns the balance of this account.
    */
   def getBalance: Int = ???
 
-/**
-   * Withdraws provided amount from this acccount, if there
-   * is enough money on the account. Returns true if the 
-   * transaction was successful, otherwise false. 
+  /**
+   * Withdraws the provided amount from this account,
+   * if there is enough money in the account. Returns true
+   * if the transaction was successful, otherwise false. 
    */
   def withdraw(amount: Int): Boolean = ???
 
@@ -130,38 +130,38 @@ class Bank() = {
 
   /**
    * Adds a new account in the bank.
-   * The account number generates for the account is returned.
+   * The account number generated for the account is returned.
    */
   def addAccount(name: String, id: Int): Int = ???
 
  /**
-   * Removes the bank account with provided account number,
-   * returns true if successfull, otherwise false is returned.
+   * Removes the bank account with provided account number.
+   * Returns true if successful, otherwise false is returned.
    */
   def removeAccount(accountNbr: Int): Boolean = ???
 
  /**
-   * Returns a list with every bank account in the bank.
+   * Returns a list of every bank account in the bank.
    * The returned list is sorted in alphabetical order based
    * on customer name.
    */
   def getAllAccounts(): ArrayBuffer[BankAccount] = ???
 
   /**
-   * Returns the account holding provided account number.
-   * If no such account exists null is returned.
+   * Returns the account holding the provided account number.
+   * If no such account exists, null is returned.
    */
   def findByNumber(accountNbr: Int): BankAccount = ???
 
-/**
-   * Returns a list with every account belonging to the customer
-   * with provided id.
+  /**
+   * Returns a list of every account belonging to
+   * the customer with the provided id.
    */
   def findAccountsForHolder(id: Int): ArrayBuffer[BankAccount] = ???
 
-/**
-   * Returns a list with all customers which names matches
-   * with provided name pattern.
+  /**
+   * Returns a list of all customers whose names match
+   * the provided name pattern.
    */
   def findByName(namePattern: String): ArrayBuffer[Customer] = ???
 
@@ -174,9 +174,9 @@ class Bank() = {
 
   /**
    * Resets the bank to the state with time-stamp corresponding to the
-   * provided date. If the date provided doesn't correspond exactly to 
-   * any time-stamp then the nearest time-stamp with a date previous 
-   *  to the provided date is used instead.
+   * provided date. If the date provided doesn't correspond exactly to
+   * any time-stamp then the nearest time-stamp with a date previous
+   * to the provided date is used instead.
    * Returns a string describing whether the event was 
    * successful or failed.
    */
@@ -189,53 +189,52 @@ class Bank() = {
 \begin{ScalaSpec}{State}
 
 /**
- * Describes a bankstate.
- * The queue log consists of a lists with all BankEvents
- * made paired together with all dates corresponding to
- * those events.
+ * Describes a bank state.
+ * The queue log consists of a lists of all executed
+ * BankEvents paired with the date each event was executed.
  */
 class State(val log: Queue[(BankEvent, Date)]) 
 
 \end{ScalaSpec}
 
 
-För att använda tidsstämplar ska klassen Date som finns bifogat i kursens workspace användas. Detta är en enkel wrapper av Java.time.
+För att använda tidsstämplar ska klassen \code{Date} som finns bifogat i kursens workspace användas. Detta är en enkel wrapper av \code{Java.time}.
 
 
 \subsection{Tips} 
 
 \begin{itemize}
-\item För att representera tillstånden är det viktigt att alla händelser som förändrar tillståndet representeras av ett \texttt{BankEvent}.
+\item För att representera tillstånden är det viktigt att alla händelser som förändrar tillståndet representeras av ett \code{BankEvent}.
 
-\item För att skriva till fil på ett enkelt sätt kan man t.ex. använda sig av statiska metoder i klassen \texttt{Files} som finns tillgänglig i \texttt{java.nio.file}. För att undvika portabilitetsproblem kan man då använda sig av ett bestämt \texttt{Charset}, t.ex. \texttt{UTF\_8}, som finns tillgänglig i {java.nio.charset.StandardCharsets.UTF\_8}.
+\item För att skriva till fil på ett enkelt sätt kan man t.ex. använda sig av statiska metoder i klassen \code{Files} som finns tillgänglig i \code{java.nio.file}. För att undvika portabilitetsproblem kan man då använda sig av ett bestämt \code{Charset}, t.ex. \code{UTF_8}, som finns tillgänglig i \newline\code{java.nio.charset.StandardCharsets.UTF_8}.
 
-\item För att läsa ifrån en fil kan man t.ex. använda sig av \texttt{Source} som finns tillgänglig i \texttt{scala.io.Source}. 
+\item För att läsa ifrån en fil kan man t.ex. använda sig av \code{Source} som finns tillgänglig i \code{scala.io.Source}. 
 
-\item Var nogrann med att testerna klarar alla tänkbara fall, och tänk på att fler fall än dem som givits i exempel kan förekomma vid rättning.
+\item Var noggrann med att testerna klarar alla tänkbara fall, och tänk på att fler fall än dem som givits i exempel kan förekomma vid rättning.
 \end{itemize}
 
 \subsection{Obligatoriska uppgifter}
 
-\Task Implementera klassen \texttt{Customer}.
+\Task Implementera klassen \code{Customer}.
 
-\Task Implementera klassen \texttt{BankAccount}.
+\Task Implementera klassen \code{BankAccount}.
 
-\Task Implementera den \texttt{BankEvent} klass som skapar ett nytt konto.
+\Task Implementera den \code{BankEvent}-klass som skapar ett nytt konto.
 
-\Task Skapa en ny klass \texttt{BankApplication}.
+\Task Skapa en ny klass \code{BankApplication}.
 
-\Subtask Objektet \texttt{BankApplication} ska innehålla main-metoden. Det kan vara bra att innan man fortsätter se till att denna klass skriver ut menyn korrekt och kan ta input från tangentbordet som motsvarar de menyval som finns.
+\Subtask Objektet \code{BankApplication} ska innehålla \code{main}-metoden. Det kan vara bra att innan man fortsätter se till att denna klass skriver ut menyn korrekt och kan ta input från tangentbordet som motsvarar de menyval som finns.
 
-\Task Implementera klassen \texttt{Bank}.
+\Task Implementera klassen \code{Bank}.
 
 \Subtask Implementera menyval 6 och 8. Testa noga.
 
-\Subtask Implementera tillståndsfunktionaliteten. Varje nytt \texttt{BankEvent} ska ge upphov till ett nytt tillstånd och gamla tillstånd ska sparas som historik till det nya tillståndet.
+\Subtask Implementera tillståndsfunktionaliteten. Varje nytt \code{BankEvent} ska ge upphov till ett nytt tillstånd och gamla tillstånd ska sparas som historik till det nya tillståndet.
 
-\Subtask Implementera alla andra menyval, förutom menyval 9. Implementera även de klasser som förlänger \texttt{BankEvent} utefter att de behövs för nya menyval.
+\Subtask Implementera alla andra menyval, förutom menyval 9. Implementera även de klasser som förlänger \code{BankEvent} utefter att de behövs för nya menyval.
 Testa de nya menyvalen noga efterhand som du implementerar dem, i synnerhet så att tillståndsförändringarna fungerar korrekt. Gör de utökningar du anser behövs. 
 
-\Task Implementera menyval 9. När man försöker återställa banken till ett datum ska den senaste \texttt{BankEvent} genomförd före detta datum hämtas, med andra ord ska alla \texttt{BankEvent} med tidsstämpel efter återställningsdatumet kasseras permanent. Testa noga. Det är viktigt att denna funktionalitet fungerar bra innan man går vidare.
+\Task Implementera menyval 9. När man försöker återställa banken till ett datum ska den senaste \code{BankEvent} genomförd före detta datum hämtas, med andra ord ska alla \code{BankEvent} med tidsstämpel efter återställningsdatumet kasseras permanent. Testa noga. Det är viktigt att denna funktionalitet fungerar bra innan man går vidare.
 
 \Task Implementera säkerhetskopiering av tillstånden.
 
@@ -255,14 +254,14 @@ I repositoriet för denna projekt uppgift finns en sparfil bifogad, för bekväm
 Formen är alltså:\\~\\
 \textbf{År  Månad  Dag  Timme  Minut  BankEventTag  Parametrar}
 \\~\\
-De olika klasserna av \texttt{BankEvent} representeras med följande bokstav:
+De olika klasserna av \code{BankEvent} representeras med följande bokstav:
 
 \begin{itemize}
-\item D - \texttt{Deposit}
-\item W - \texttt{Withdraw}
-\item T - \texttt{Transfer}
-\item N - \texttt{NewAccount}
-\item E - \texttt{DeletedAccount}
+\item D - \code{Deposit}
+\item W - \code{Withdraw}
+\item T - \code{Transfer}
+\item N - \code{NewAccount}
+\item E - \code{DeleteAccount}
 \end{itemize}
 
 \Subtask Implementera inläsningen från fil då banken startas.
@@ -273,7 +272,7 @@ De olika klasserna av \texttt{BankEvent} representeras med följande bokstav:
 Gör först klart projektets obligatoriska delar. Därefter kan du, om du vill, utöka ditt
 program enligt följande.
 
-\Task Skriv en eller flera av klasserna \texttt{Customer}, \texttt{BankAccount} och \texttt{State} i Java istället och använd dig av dessa i din Scala-kod.
+\Task Skriv en eller flera av klasserna \code{Customer}, \code{BankAccount} och \code{State} i Java istället och använd dig av dessa i din Scala-kod.
 
 \Task	Implementera ett nytt menyalternativ som skriver ut all kontohistorik för en given person. I historiken ska finnas typ av händelse med tillhörande parametrar, dåvarande saldo vid händelsen, såväl som datumet för händelsen.
 
@@ -297,7 +296,7 @@ Listan över val, som är markerad i kursiv stil i det första exemplet, är int
 7.   Radera existerande konto\\*
 8.   Skriv ut alla konton i banken\\*
 9.   Återställ banken till ett tidigare datum\\*
-10. Avsluta\\*
+10.  Avsluta\\*
 }
 Val: \textbf{6}\\*
 Namn: \textbf{Adam Asson}\\*
@@ -307,7 +306,7 @@ Nytt konto skapat med kontonummer: 1000\\*
 - - - - - - - - - - - - - - - - - - - - - - - - - - -\\*
 Val: \textbf{1}\\*
 Id: \textbf{6707071234}\\*
-Adam Asson, id 6707071234\\*
+Konto 1000 (Adam Asson, id 6707071234) 0 kr\\*
 10:04:0 CET 14 / 5 - 2016\\
 - - - - - - - - - - - - - - - - - - - - - - - - - - -\\*
 Val: \textbf{6}\\*
