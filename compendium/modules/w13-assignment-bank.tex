@@ -17,7 +17,7 @@
 \subsection{Bakgrund}
 
 I detta projekt ska du skriva ett program som håller reda på bankkonton och kunder i en bank. Programmet ska även hålla reda på bankens nuvarande tillstånd, såväl som föregående.
-Tillstånden ska vid varje tillståndsförändring skrivas till fil så att utifall banken skulle krascha finns alla transaktioner som genomförts sparade,  banken kan således återställas.
+Tillstånden ska vid varje tillståndsförändring skrivas till fil så att ifall banken skulle krascha finns alla händelser som genomförts sparade, och banken kan således återställas.
 
 Programmet ska vara helt textbaserat, man ska alltså interagera med programmet via konsollen där en meny skrivs ut och input görs via tangentbordet.
 
@@ -39,7 +39,7 @@ Kraven för bankapplikationen återfinns här nedan. För att bli godkänd på d
 \item 6. Skapa ett nytt konto.
 \item 7. Ta bort ett befintligt konto.
 \item 8. Skriv ut bankens alla konton, sorterade i bokstavsordning efter innehavare.
-\item 9. Återställa banken till ett tidigare tillstånd för ett givet datum. För simplictet får alla transaktioner genomförda efter det datum banken återställts till permanent kasseras. 
+\item 9. Återställa banken till ett tidigare tillstånd för ett givet datum. För enkelhetens skull får alla händelser genomförda efter det datum banken återställts till permanent kasseras. 
 \item 10. Avsluta.
 \end{itemize}
 
@@ -52,8 +52,8 @@ Kraven för bankapplikationen återfinns här nedan. För att bli godkänd på d
 \item Ett konto tas bort.
 \end{itemize}
 \item Då bankens tillstånd förändras ska detta skrivas till fil.
-\item Då banken startas upp ska transaktionshistoriken läsas in så att banken laddar senaste sparade tillståndet.
-\item Inga utskrifter eller inläsningar får göras i klasserna Customer, BankAccount, Bank, State eller Transaction. Allt som berör användargränssnittet ska ske i BankApplication. Det är tillåtet att använda valfritt antalat hjälpmetoder och hjälpklasser i klassen BankApplication.
+\item Då banken startas upp ska händelsehistoriken läsas in så att banken laddar senaste sparade tillståndet.
+\item Inga utskrifter eller inläsningar får göras i klasserna Customer, BankAccount, Bank, State eller BankEvent. Allt som berör användargränssnittet ska ske i BankApplication. Det är tillåtet att använda valfritt antal hjälpmetoder och hjälpklasser i BankApplication.
 \item Alla metoder och attribut ska ha lämpliga åtkomsträttigheter.
 \item Valet av val/var och immutable/mutable måste vara lämpliga.
 \item Din indata måste ge samma resultat som i exemplen (som kommer komma i framtiden) i bilagan.
@@ -99,7 +99,7 @@ class BankAccount(val holder: Customer) = {
 /**
    * Withdraws provided amount from this acccount, if there
    * is enough money on the account. Returns true if the 
-   * transaction was successfull, otherwise false. 
+   * transaction was successful, otherwise false. 
    */
   def withdraw(amount: Int): Boolean = ???
 
@@ -109,11 +109,11 @@ class BankAccount(val holder: Customer) = {
 
 \begin{ScalaSpec}{BankEvent}
 /**
- * Describes an event happening in the bank.
+ * Abstract class describing an event happening in the bank.
  */
 abstract class BankEvent {   
   /**
-   * Output format for the transaction.
+   * Output format for the event.
    */
   def write: String
 }
@@ -166,18 +166,18 @@ class Bank() = {
   def findByName(namePattern: String): ArrayBuffer[Customer] = ???
 
  /**
-   * Executes a transaction in the bank.
-   * Returns a string with information whether the
-   * transaction was successful or failed.
+   * Executes an event in the bank.
+   * Returns a string describing whether the
+   * event was successful or failed.
    */
-  def doEvent(transaction: Transaction): String = ???
+  def doEvent(event: BankEvent): String = ???
 
   /**
    * Resets the bank to the state with time-stamp corresponding to the
    * provided date. If the date provided doesn't correspond exactly to 
    * any time-stamp then the nearest time-stamp with a date previous 
    *  to the provided date is used instead.
-   * Returns a string with information whether the transaction was 
+   * Returns a string describing whether the event was 
    * successful or failed.
    */
   def returnToState(returnDate: Date): String = ???
@@ -190,11 +190,11 @@ class Bank() = {
 
 /**
  * Describes a bankstate.
- * The queue log consists of a lists with all transactions
+ * The queue log consists of a lists with all BankEvents
  * made paired together with all dates corresponding to
- * thoose transactions.
+ * those events.
  */
-class State(val log: Queue[(Transaction, Date)]) 
+class State(val log: Queue[(BankEvent, Date)]) 
 
 \end{ScalaSpec}
 
@@ -207,9 +207,9 @@ För att använda tidsstämplar ska klassen Date som finns bifogat i kursens wor
 \begin{itemize}
 \item För att representera tillstånden är det viktigt att alla händelser som förändrar tillståndet representeras av ett \texttt{BankEvent}.
 
-\item För att skriva till fil på ett enkelt sätt kan man t.ex. använda sig av klassen \texttt{Files} som finns tillgänglig i \texttt{java.nio.file}. För att undvika portabilitetsproblem kan man då använda sig av ett bestämt \texttt{Charset}, t.ex. \texttt{UTF\_8}, som finns tillgänglig i {java.nio.charset.StandardCharsets.UTF\_8}.
+\item För att skriva till fil på ett enkelt sätt kan man t.ex. använda sig av statiska metoder i klassen \texttt{Files} som finns tillgänglig i \texttt{java.nio.file}. För att undvika portabilitetsproblem kan man då använda sig av ett bestämt \texttt{Charset}, t.ex. \texttt{UTF\_8}, som finns tillgänglig i {java.nio.charset.StandardCharsets.UTF\_8}.
 
-\item För att läsa ifrån en fil kan man t.ex. använda sig av klassen \texttt{Source} som finns tillgänglig i \texttt{scala.io.Source}. 
+\item För att läsa ifrån en fil kan man t.ex. använda sig av \texttt{Source} som finns tillgänglig i \texttt{scala.io.Source}. 
 
 \item Var nogrann med att testerna klarar alla tänkbara fall, och tänk på att fler fall än dem som givits i exempel kan förekomma vid rättning.
 \end{itemize}
@@ -224,7 +224,7 @@ För att använda tidsstämplar ska klassen Date som finns bifogat i kursens wor
 
 \Task Skapa en ny klass \texttt{BankApplication}.
 
-\Subtask Klassen \texttt{BankApplication} ska innehålla main-metoden. Det kan vara bra att innan man fortsätter se till att denna klass skriver ut menyn korrekt och kan ta input från tangentbordet som motsvarar de menyval som finns.
+\Subtask Objektet \texttt{BankApplication} ska innehålla main-metoden. Det kan vara bra att innan man fortsätter se till att denna klass skriver ut menyn korrekt och kan ta input från tangentbordet som motsvarar de menyval som finns.
 
 \Task Implementera klassen \texttt{Bank}.
 
@@ -232,7 +232,7 @@ För att använda tidsstämplar ska klassen Date som finns bifogat i kursens wor
 
 \Subtask Implementera tillståndsfunktionaliteten. Varje nytt \texttt{BankEvent} ska ge upphov till ett nytt tillstånd och gamla tillstånd ska sparas som historik till det nya tillståndet.
 
-\Subtask Implementera alla andra menyval, förutom menyval 9. Implementera även de klasser som förlängar \texttt{BankEvent} utefter att de behövs för nya menyval.
+\Subtask Implementera alla andra menyval, förutom menyval 9. Implementera även de klasser som förlänger \texttt{BankEvent} utefter att de behövs för nya menyval.
 Testa de nya menyvalen noga efterhand som du implementerar dem, i synnerhet så att tillståndsförändringarna fungerar korrekt. Gör de utökningar du anser behövs. 
 
 \Task Implementera menyval 9. När man försöker återställa banken till ett datum ska den senaste \texttt{BankEvent} genomförd före detta datum hämtas, med andra ord ska alla \texttt{BankEvent} med tidsstämpel efter återställningsdatumet kasseras permanent. Testa noga. Det är viktigt att denna funktionalitet fungerar bra innan man går vidare.
@@ -273,9 +273,9 @@ De olika klasserna av \texttt{BankEvent} representeras med följande bokstav:
 Gör först klart projektets obligatoriska delar. Därefter kan du, om du vill, utöka ditt
 program enligt följande.
 
-\Task Skriv en eller flera av klasserna \texttt{Customer}, \texttt{BankAccount} och \texttt{State} i Java istället och använd istället för din Scala versionen.
+\Task Skriv en eller flera av klasserna \texttt{Customer}, \texttt{BankAccount} och \texttt{State} i Java istället och använd dig av dessa i din Scala-kod.
 
-\Task	Implementera ett nytt menyalternativ som skriver ut all kontohistorik för en given person. I historiken ska typ av transaktion med tillhörande parametrar, dåvarande saldo vid transaktionen synas såväl som datumet för transaktionen synas.
+\Task	Implementera ett nytt menyalternativ som skriver ut all kontohistorik för en given person. I historiken ska finnas typ av händelse med tillhörande parametrar, dåvarande saldo vid händelsen, såväl som datumet för händelsen.
 
 \subsection{Exempel på körning av programmet}
 
