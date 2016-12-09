@@ -3,7 +3,6 @@ package lthopoly
 import lthopoly._
 import scala.collection.JavaConverters._
 
-
 object Main {
   def main(args: Array[String]): Unit = {
 

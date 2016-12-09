@@ -31,6 +31,13 @@ Beroende på vilken av de tre möjliga ruttyperna spelaren hamnar på sker olika
 \item \code{HouseSpace}: Dessa rutor kan ägas utav spelare. Om en spelare förflyttas till denna rutan och ingen annan spelare äger den ges möjligheten att köpa den. Äger en annan spelare rutan blir den nuvarande spelaren tvungen att betala hyra. Hyran är samma som inköpspriset.
 \end{itemize}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{../img/w11-lab/lthopoly.png}
+\caption {Flödesdiagram för en spelrunda}
+\label{fig:scalajava:lthopoly-team:flowchart}
+\end{figure}
+
 Spelet ska uppfylla följande krav:
 \begin{itemize}
 \item Varje spelare måste alltid börja sin runda med att slå en tärning innan den utför någon annan spelhandling, d.v.s. någon annan handling som påverkar spelets tillstånd (exempelvis kan en alltid visa spelplanen eller avsluta spelet).
@@ -39,15 +46,6 @@ Spelet ska uppfylla följande krav:
 \item Om en spelare hamnar på ett \code{MoveSpace} eller ett \code{MoneySpace} får spelaren möjligheten att dra ett kort. För \code{MoveCard} innebär detta en förflyttning (bakåt eller framåt) medan för \code{MoneyCard} en minskning eller ökning av pengar.
 \item Spelplanen skall vara cyklisk, d.v.s. att rutan direkt efter sista rutan är den första rutan på spelplanen.
 \end{itemize}
-
-Nedan visas ett förenklat flödesdiagram för en spelrunda.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{../img/w11-lab/lthopoly.png}
-\caption { Flödesdiagram för en spelrunda}
-\label{fig:scalajava:lthopoly-team:flowchart}
-\end{figure}
 
 Spelet avslutas när någon spelare får slut på pengar och då vinner spelaren med mest pengar.
 
@@ -213,7 +211,7 @@ Olika sorters spelarhandlingar representeras av statiska int-variabler i klassen
 
 
 Den visuella representationen av spelet sker via konsolfönstret med hjälp av klassen \code{TextUI}. \code{TextUI} är en färdigskriven klass med metoder som gör det enkelt att skriva ut spelplanen och en logg av spelhistoriken i konsolfönstret.
- När \code{addToLog()} anropas sparar den sitt argument i en lista. Hela listan skrivs ut varje gång konsolen uppdateras via \code{updateConsole}-metoden.
+ När \code{addToLog()} anropas sparar den sitt argument i en lista. Hela listan skrivs ut varje gång \code{updateConsole} anropas.
 Utöver loggen skriver \code{updateConsole} även ut ett statusfönster med kortfattad information om varje spelare. 
 Om spelaren väljer att visa spelplanen ska metoden \code{printBoard()} istället anropas.
 Alla utskrifter som sker under spelets gång ska gå via \code{TextUI}.
@@ -223,8 +221,6 @@ Alla utskrifter som sker under spelets gång ska gå via \code{TextUI}.
 \centering
 
 \begin{REPL}
-============================================================
-
 Oskar slog en 2:a!
 Oskar drog ett kort: Jädrans! Studiebidraget har sänkts. Förlora 40 SEK
 Oskar har avslutat sin runda.
@@ -360,7 +356,7 @@ MyClass[] arr = list.toArray(new MyClass[]{});
 \end{Code}
 
 \item För att skapa ett \code{File}-objekt med informationen från filerna kan följande kod användas:
-\newline
+
 \begin{Code}
 File f = new File(DocumentParser.class.
         getResource("/moneycards.txt").getFile());
@@ -425,25 +421,6 @@ För att skriva metoderna \code{action} och \code{getPossibleActions} kommer ni 
 
 \Subtask Implementera \code{main}-metoden i Scala.
 
-\Task Vi skall nu lägga till möjligheten att se statistik över spelets monetära tillstånd. Metoden \code{getStatistics()} i \code{GameBoard} ska returnera en lista innehållande den totala summan av pengar i spelet i slutet av varje runda. Denna lista kan skickas vidare till metoden \code{TextUI.plotStatistics} där den sedan skrivs ut i en vacker plot (se utskrift nedan).
-
-\Subtask Implementera metoden \code{getStatistics()} i \code{GameBoard}.
-
-\Subtask Utöka \code{main}-metoden så att grafen skrivs ut efter spelets slut. 
-Själva uppritningen sker med hjälp av den färdigskrivna metoden \code{plotStatistics} i \code{TextUI} som kräver en \code{Buffer[Int]} innehållande varje rundas totalsumma. 
-Ett tips är att nyttja \code{scala.collection.JavaConverters} för att konvertera Javas datatyper till Scalas motsvarigheter.
-
-\textbf{Tips:}
-
-\begin{itemize}
-\item  För \code{getAction} är syftet att metoden skall hämta alla tillåtna actions från det \code{GameBoard}-objekt som skickas med som argument. Dessa ska sedan skickas vidare till \code{TextUI.promptForInput} varpå de möjliga valen skrivs ut. I \code{getAction} definierar ni själva hur ni vill att texten för de olika valen skall se ut. Det viktiga är att \code{promptForInput} får en tuple som länkar ihop ett sifferval med en sträng. Slutligen returnerar metoden siffervalet som användaren har gjort så att det går att ta logiska beslut utifrån denna siffra på andra ställen i koden.
-
-\item  För att hantera den historik som krävs för att generera statistiken, måste ni själva implementera den logik som krävs. Hur ni väljer att implementera detta är upp till er, så länge \code{getStatistics} returnerar det som anges i specifikationen. Det är dock lämpligt att använda egna privata metoder för att implementera detta, och det är också lämpligt att implementera ihopräkning av pengar för en runda i slutet av metoden \code{doAction}, när en spelare faktiskt avslutar sin runda.
-\item Kom ihåg att när \code{updateConsole} anropas så skrivs statusfältet och loggen ut automatiskt. Därefter kan ni anropa metoden \code{TextUI.promptForInput} för att återge standardvyn på samma format som visas i figur \ref{fig:scalajava:lthopoly-team:defaultview} på sida \pageref{fig:scalajava:lthopoly-team:defaultview}.
-Anropet till \code{TextUI.promptForInput} bör alltid ske efter ett utskriftsanrop, detta så att det skall gå att mata in ett nytt val efter att föregående val har utförts.
-
-\end{itemize}
-
 \begin{figure}[H]
 \centering
 
@@ -475,6 +452,26 @@ Relativ graf över total mängd pengar under spelets gång:
 \caption {Graf över spelets totala mängd pengar som funktion av rundornas index.}
 \label{fig:scalajava:lthopoly-team:statistics}
 \end{figure}
+
+\Task Vi skall nu lägga till möjligheten att se statistik över spelets monetära tillstånd. Metoden \code{getStatistics()} i \code{GameBoard} ska returnera en lista innehållande den totala summan av pengar i spelet i slutet av varje runda. Denna lista kan skickas vidare till metoden \code{TextUI.plotStatistics} där den sedan skrivs ut i en vacker plot (se utskrift ovan).
+
+\Subtask Implementera metoden \code{getStatistics()} i \code{GameBoard}.
+
+\Subtask Utöka \code{main}-metoden så att grafen skrivs ut efter spelets slut. 
+Själva uppritningen sker med hjälp av den färdigskrivna metoden \code{plotStatistics} i \code{TextUI} som kräver en \code{Buffer[Int]} innehållande varje rundas totalsumma. 
+Ett tips är att nyttja \code{scala.collection.JavaConverters} för att konvertera Javas datatyper till Scalas motsvarigheter.
+\newline
+\newline
+\textbf{Tips:}
+
+\begin{itemize}
+\item  För \code{getAction} är syftet att metoden skall hämta alla tillåtna actions från det \code{GameBoard}-objekt som skickas med som argument. Dessa ska sedan skickas vidare till \code{TextUI.promptForInput} varpå de möjliga valen skrivs ut. I \code{getAction} definierar ni själva hur ni vill att texten för de olika valen skall se ut. Det viktiga är att \code{promptForInput} får en tuple som länkar ihop ett sifferval med en sträng. Slutligen returnerar metoden siffervalet som användaren har gjort så att det går att ta logiska beslut utifrån denna siffra på andra ställen i koden.
+
+\item  För att hantera den historik som krävs för att generera statistiken, måste ni själva implementera den logik som krävs. Hur ni väljer att implementera detta är upp till er, så länge \code{getStatistics} returnerar det som anges i specifikationen. Det är dock lämpligt att använda egna privata metoder för att implementera detta, och det är också lämpligt att implementera ihopräkning av pengar för en runda i slutet av metoden \code{doAction}, när en spelare faktiskt avslutar sin runda.
+\item Kom ihåg att när \code{updateConsole} anropas så skrivs statusfältet och loggen ut automatiskt. Därefter kan ni anropa metoden \code{TextUI.promptForInput} för att återge standardvyn på samma format som visas i figur \ref{fig:scalajava:lthopoly-team:defaultview} på sida \pageref{fig:scalajava:lthopoly-team:defaultview}.
+Anropet till \code{TextUI.promptForInput} bör alltid ske efter ett utskriftsanrop, detta så att det skall gå att mata in ett nytt val efter att föregående val har utförts.
+
+\end{itemize}
 
 \subsection{Frivilliga extrauppgifter}
 
