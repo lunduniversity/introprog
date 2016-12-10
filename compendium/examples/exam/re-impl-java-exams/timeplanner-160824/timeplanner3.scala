@@ -8,23 +8,24 @@ case class WorkPeriod(task: String, hour: Int, length: Int){
   override def toString = s"$task $start-$finish"
 }
 
-class Worker(val name: String, val times: Seq[WorkPeriod]) {
-  private val scheduled = scala.collection.mutable.Set.empty[Int]
-  
-  def schedule(nbr: Int): Unit = scheduled += nbr   
-  
-  def isScheduled(nbr: Int): Boolean = scheduled.contains(nbr)
-  
-  def canWork(nbr: Int): Boolean = {
-    def clash(i: Int) = isScheduled(i) && times(i).collidesWith(times(nbr)) && i != nbr
-    !times.indices.exists(clash) 
-  }
-}
-
 class TimePlanner(val times: Seq[WorkPeriod]){ 
+
   private val worker = scala.collection.mutable.Map.empty[String, Worker]
-  
-  def addWorker(name: String): Unit = worker += (name -> new Worker(name, times))
+
+  private class Worker(val name: String) { 
+    private val scheduled = scala.collection.mutable.Set.empty[Int]
+    
+    def schedule(nbr: Int): Unit = scheduled += nbr   
+    
+    def isScheduled(nbr: Int): Boolean = scheduled.contains(nbr)
+    
+    def canWork(nbr: Int): Boolean = {
+      def clash(i: Int) = isScheduled(i) && times(i).collidesWith(times(nbr)) && i != nbr
+      !times.indices.exists(clash) 
+    }
+  }
+
+  def addWorker(name: String): Unit = worker += (name -> new Worker(name))
   
   def scheduleWorker(name: String, nbr: Int): Unit = 
     worker.get(name).foreach{ w => 
