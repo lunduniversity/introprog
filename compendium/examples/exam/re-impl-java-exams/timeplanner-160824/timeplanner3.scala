@@ -16,14 +16,9 @@ class Worker(val name: String, val times: Seq[WorkPeriod]) {
   def isScheduled(nbr: Int): Boolean = scheduled.contains(nbr)
   
   def canWork(nbr: Int): Boolean = {
-    var (i, foundCollision) = (0, false)
-    while (!foundCollision && i < times.size) {
-      if (isScheduled(i) && times(i).collidesWith(times(nbr)) && i != nbr) 
-        foundCollision = true
-      else i += 1
-    }
-    !foundCollision
-  }    
+    def clash(i: Int) = isScheduled(i) && times(i).collidesWith(times(nbr)) && i != nbr
+    !times.indices.exists(clash) 
+  }
 }
 
 class TimePlanner(val times: Seq[WorkPeriod]){ 
