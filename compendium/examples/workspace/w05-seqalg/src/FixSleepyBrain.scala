@@ -9,7 +9,7 @@ object FixSleepyBrain {
     while (true) {
       val letter = (rnd.nextInt('Z' - 'A') + 'A').toChar
       val theChosenOnes = names.filter(_.contains(letter))
-      val action = if (theChosenOnes.isEmpty) "EVERY BODY SIT!!!" else "STAND UP"
+      val action = if (theChosenOnes.isEmpty) "EVERYBODY SIT!!!" else "STAND UP"
       delay
       println(s"\n$letter : $action $theChosenOnes")
     }

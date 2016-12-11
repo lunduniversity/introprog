@@ -13,7 +13,7 @@ object FixSleepyBrainRegisterChosen {
       n += 1
       val letter = (rnd.nextInt('Z' - 'A') + 'A').toChar
       val theChosenOnes = names.filter(_.toUpperCase.contains(letter))
-      val action = if (theChosenOnes.isEmpty) "EVERY BODY SIT!!!" else "STAND or SIT"
+      val action = if (theChosenOnes.isEmpty) "EVERYBODY SIT!!!" else "STAND or SIT"
       delay
       println(s"\n$n: $letter : $action $theChosenOnes")
       for (name <- theChosenOnes) countChosen(name) += 1
