@@ -10,12 +10,12 @@ import lthopoly.GameBoard;
 public abstract class BoardSpace {
 
     /**
-     * Returns a array of int describing possible game actions available while on this space
+     * Returns an array of possible game actions permitted by this space
      */
     public abstract int[] getPossibleActions(GameBoard board);
 
     /**
-     * Executes a game action available while on this space
+     * Performs a game action available while on this space
      */
     public abstract void action(GameBoard board, int action);
 
