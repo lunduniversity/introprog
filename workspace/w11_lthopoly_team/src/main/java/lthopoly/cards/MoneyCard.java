@@ -12,7 +12,7 @@ public class MoneyCard {
     }
 
     /**
-     * Returns the cards money adjustment value
+     * Returns this card's money adjustment value
      */
     public int getMoney() {
         return 0;

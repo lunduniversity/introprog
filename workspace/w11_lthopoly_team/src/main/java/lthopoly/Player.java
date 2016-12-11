@@ -12,27 +12,27 @@ public class Player {
     }
 
     /**
-     * Returns the players money
+     * Returns this player's money
      */
     public int getMoney() {
         return 0;
     }
 
     /**
-     * Adjusts the players money
+     * Adjusts this player's money
      */
     public void adjustMoney(int money) {
     }
 
     /**
-     * Returns the players position
+     * Returns this player's position
      */
     public int getPosition() {
         return 0;
     }
 
     /**
-     * Returns a string representation of the player
+     * Returns a string representation of this player
      */
     @Override
     public String toString() {
@@ -40,7 +40,7 @@ public class Player {
     }
 
     /**
-     * Sets the players position
+     * Sets this player's position
      */
     public void setPosition(int pos) {
     }
