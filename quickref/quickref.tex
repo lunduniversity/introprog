@@ -281,8 +281,8 @@ Class
 
 \begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
 Trait
-& \code|trait T { defsAndDecl }| & \hspace{-0.9em}\Comment{A trait is an abstract class without parameters. Can be used as an interface.}\\ 
-& \code|class C extends D with T| & \hspace{-0.9em}\Comment{A class can only \textbf{extend} one normal class but mix in many traits using \textbf{with}.}\\
+& \code|trait T { defsAndDecl }| & \hspace{-1.1em}\Comment{A trait is like an abstract class, but can be mixed in; can't have parameters.}\\ 
+& \code|class C extends D with T| & \hspace{-0.9em}\Comment{A class can only \textbf{extend} one class but mix in many traits using \textbf{with}.}\\
 \end{tabular}
 
 \begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
@@ -630,7 +630,7 @@ def save(fileName: String, data: String): Path =
 \texttt{immutable.} & \texttt{mutable.} & methods with good performance: \\
 \hline
 \texttt{Vector} & \texttt{ArrayBuffer} & \texttt{head tail apply~~+: :+}\\
-\texttt{List} &  \texttt{ListBuffer} &  \texttt{head~~+:}  \\
+\texttt{List} &  \texttt{ListBuffer} &  \texttt{head~~+:~~::}  \\
 \texttt{Set} & \texttt{Set} & \texttt{contains~~+~~-}\\
 \texttt{Map} & \texttt{Map} & \texttt{apply~~+~~-} \\
 \end{tabular}
@@ -818,7 +818,26 @@ By:  & \texttt{xs sortBy f} \newline \texttt{xs maxBy f} \texttt{~~xs minBy f}  
 }  
 
 %\Newline
-\vspace*{-1.5em}\head{Methods in trait \texttt{Set[A]}}\Newline
+\vspace*{-0.5em}\head{Mutation methods in trait \texttt{mutable.Buffer[A]}, \texttt{ArrayBuffer[A]}, \texttt{ListBuffer[A]}    }\Newline
+{\small\renewcommand{\arraystretch}{1.125}
+\begin{tabular}{@{}p{5cm}  p{6.6cm}}
+\texttt{xs(i) = x~~~~~xs.update(i, x)} & Replace element at index i with x. Return type Unit.\\   \cline{1-2}
+
+\texttt{xs.insert(i, x)~~xs.remove(i)} & Insert x at index \texttt{i}. Remove element at i. Return type Unit.\\   \cline{1-2}
+
+\texttt{xs.append(x)~~~~~xs~+=~x} & Insert x at end.  Return type Unit.\\   \cline{1-2}
+
+\texttt{xs.prepend(x)~~~~x~+=:~xs} & Insert x in front.  Return type Unit.\\   \cline{1-2}
+
+\texttt{xs -= x} & Remove first occurance of x (if exists). Returns xs itself. \\\cline{1-2}
+
+\texttt{xs ++= ys} & Appends all elements in ys to xs and returns xs itself. \\\cline{1-2}
+
+\end{tabular}
+}
+
+\Newline
+\vspace*{-0.5em}\head{Methods in trait \texttt{Set[A]}}\Newline
 
 {\small\renewcommand{\arraystretch}{1.125}
 \begin{tabular}{@{}p{5cm}  p{6.6cm}}
@@ -839,27 +858,25 @@ By:  & \texttt{xs sortBy f} \newline \texttt{xs maxBy f} \texttt{~~xs minBy f}  
 }  
 
 \Newline
-\vspace*{-0.25em}\head{Additional mutation methods in trait \texttt{mutable.Set[A]}}\Newline
+\vspace*{-0.5em}\head{Additional mutation methods in trait \texttt{mutable.Set[A]}}\Newline
 {\small\renewcommand{\arraystretch}{1.125}
 \begin{tabular}{@{}p{5cm}  p{6.6cm}}
 
-\texttt{xs~+=~x~~~~~~~~~~xs~-=~x} \newline \texttt{xs~+=~(x,~y,~z)~~xs~-=~(x,~y,~z)}& Returns the same set with included/excluded elements. \newline Addition/subtraction can be applied to many arguments.\\   \cline{1-2}
+\texttt{xs~+=~x~~~~~~~~~~xs~-=~x} & Returns the same set with included/excluded elements. \\   \cline{1-2}
 
 \texttt{xs ++= ys} & Adds all elements in ys to set xs and returns xs itself. \\\cline{1-2}
 
-\texttt{xs add x} & Adds element x to xs and returns true if x was in xs, else false. \\\cline{1-2}
-\texttt{xs remove x} & Removes x from xs and returns true if x was in xs, else false. \\\cline{1-2}
+\texttt{xs add x~~~xs remove x} & Adds/removes x to xs and returns true if x was in xs, else false. \\\cline{1-2}
 
-\texttt{xs retain p} & Keeps only those elements in xs that satisfy predicate p.\\   \cline{1-2}
-\texttt{xs.clear} &  	Removes all elements from xs. Return type Unit.\\   \cline{1-2}
+%\texttt{xs retain p~~~xs.clear} & Keeps only elements that satisfy predicate p. Remove all.\\   \cline{1-2}
 \texttt{xs(x) = b ~~~ xs.update(x, b)} & If b is true, adds x to xs, else removes x. Return type Unit.\\   \cline{1-2}
-\texttt{xs.clone} & Returns a new mutable set with the same elements as xs.\\   \cline{1-2}
+%\texttt{xs.clone} & Returns a new mutable set with the same elements as xs.\\   \cline{1-2}
         
 \end{tabular}
 }  
 
 \Newline
-\head{Methods in trait \texttt{Map[K, V]}}\Newline
+\vspace*{-0.5em}\head{Methods in trait \texttt{Map[K, V]}}\Newline
 
 {\small\renewcommand{\arraystretch}{1.125}
 \begin{tabular}{@{}p{5.0cm}  p{6.6cm}}
@@ -881,14 +898,14 @@ By:  & \texttt{xs sortBy f} \newline \texttt{xs maxBy f} \texttt{~~xs minBy f}  
 
 \texttt{ms.keys~~ms.values~~ms.keySet} & An Iterable/Set containing each key/value in ms.\\   \cline{1-2}
 
-\texttt{ms.mapValues} & A new Map obtained by applying f to values.\\   \cline{1-2}
+\texttt{ms mapValues f} & A new Map obtained by applying f to values.\\   \cline{1-2}
         
 \end{tabular}
 }  
 
 
 \Newline
-\vspace*{-0.25em}\head{Additional mutation methods in trait \texttt{mutable.Map[K, V]}}\Newline
+\vspace*{-0.5em}\head{Additional mutation methods in trait \texttt{mutable.Map[K, V]}}\Newline
 
 {\small\renewcommand{\arraystretch}{1.125}
 \begin{tabular}{@{}p{5.0cm}  p{6.8cm}}
@@ -897,15 +914,13 @@ By:  & \texttt{xs sortBy f} \newline \texttt{xs maxBy f} \texttt{~~xs minBy f}  
 
 \texttt{ms += (k -> v) ~~~~ ms -= k} & Adds/Removes mappings. Also vid several arguments.\\   \cline{1-2}
 
-\texttt{ms put (k, v) ~~~ ms remove k}& Adds/removes mapping; returns previous value of k as an option.\\   \cline{1-2}
+\texttt{ms put (k, v) ~~ms remove k}& Adds/removes mapping; returns previous value of k as an option.\\   \cline{1-2}
 
-\texttt{ms retain p} & Keeps only mappings that have a key satisfying predicate p.\\   \cline{1-2}
-
-\texttt{ms.clear} & Removes all mappings from ms.\\   \cline{1-2}
+%\texttt{ms retain p~~~ms.clear} & Keeps mappings with a key satisfying predicate p. Remove all.\\   \cline{1-2}
 
 \texttt{ms transform f} & Transforms all associated values in map ms with function f.\\   \cline{1-2}
 
-\code|ms.clone| & Returns a new mutable map with the same mappings as ms.\\   \cline{1-2}
+%\code|ms.clone| & Returns a new mutable map with the same mappings as ms.\\   \cline{1-2}
         
 \end{tabular}
 }  
