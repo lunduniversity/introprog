@@ -14,7 +14,7 @@ class OptimalPlayer(name: String) extends Player(name: String) {
 	 * This is done by min,max-evaluation. 
 	 * Find the move that gives the opponent the worst possible
 	 * position (min) and return -min, this is our max.
-	 * depth is the amount of empty cells in game.
+	 * depth is the amount of placed cells (!=0) in game.
 	 * who is 1 if it's this players turn to make a move,
 	 * -1 if it's the opponents turn to make a move. 
 	 * From move, eval should be called with who = -1.
