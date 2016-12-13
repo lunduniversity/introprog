@@ -2,7 +2,9 @@
 
 import scala.collection.mutable.ArrayBuffer // import krävs ej på tentan
  
-case class WorkPeriod(start: Int, finish: Int, task: String){
+case class WorkPeriod(task: String, hour: Int, length: Int){
+  val (start, finish) = (hour, hour + length)
+  
   def collidesWith(wp: WorkPeriod): Boolean = wp.start < finish && wp.finish > start 
     
   def compareTo(wp: WorkPeriod): Int = {
@@ -10,9 +12,6 @@ case class WorkPeriod(start: Int, finish: Int, task: String){
     if (timeResult == 0) task.compareTo(wp.task) else timeResult
   }
   override def toString = s"$task $start-$finish"
-}
-object WorkPeriod {
-  def apply(task: String, hour: Int, length: Int) = new WorkPeriod(hour, hour + length, task)  
 }
 
 class WorkPeriodList {
