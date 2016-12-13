@@ -2,12 +2,10 @@
 
 import scala.collection.mutable.ArrayBuffer // import krävs ej på tentan
  
-class WorkPeriod(private val start: Int, 
-                 private val finish: Int, 
-                 private val task: String){
-  
-  def this(task: String, hour: Int, length: Int) = this(hour, hour + length, task)           
-  
+class WorkPeriod(private val task: String, private val hour: Int, length: Int) {
+  private val start: Int = hour
+  private val finish: Int = hour + length
+
   def collidesWith(wp: WorkPeriod): Boolean = wp.start < finish && wp.finish > start 
     
   def compareTo(wp: WorkPeriod): Int = {
