@@ -4,6 +4,7 @@ class WorkPeriod(private val task: String, private val hour: Int, length: Int) {
   def collidesWith(wp: WorkPeriod): Boolean = ???
     
   def compareTo(wp: WorkPeriod): Int =  ???
+  
   override def toString = ???
 }
 
