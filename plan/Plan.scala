@@ -117,9 +117,9 @@ trait Plan {
 
     Module("Sökning, sortering", 
       id = "searchsort", exercise = "sorting", lab = "survey", contents = """
-      | strängjämförelse, compareTo, imlicit ordning, 
+      | strängjämförelse, compareTo, implicit ordning, 
       | linjärsökning, binärsökning, 
-      | algoritm: LINEAR-SEARCH, algortim: BINARY-SEARCH, 
+      | algoritm: LINEAR-SEARCH, algoritm: BINARY-SEARCH, 
       | algoritmisk komplexitet, 
       | sortering till ny vektor, sortering på plats, 
       | insättningssortering, urvalssortering, 
@@ -135,7 +135,7 @@ trait Plan {
       | referensvariabler vs enkla värden i Java,
       | referenstilldelning vs värdetilldelning i Java,
       | alternativ konstruktor i Scala och Java, 
-      | for-sats i Java, java for-each i Java, 
+      | for-sats i Java, for-each-sats i Java, 
       | java.util.ArrayList, 
       | autoboxing i Java, primitiva typer i Java, wrapperklasser i Java, 
       | samlingar i Java vs Scala, scala.collection.JavaConverters,
