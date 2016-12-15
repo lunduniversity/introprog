@@ -3,7 +3,7 @@ package models
 import rules.Rule
 
 
-case class ArrayMatrix2D(cols: Int, rows: Int, states: Int, protected val array: Array[Array[Int]])
+case class ArrayMatrix2D(rows: Int, cols: Int, states: Int, protected val array: Array[Array[Int]])
   extends Matrix2D {
 
   override def get(row: Int, col: Int): Int = ???
@@ -16,6 +16,9 @@ case class ArrayMatrix2D(cols: Int, rows: Int, states: Int, protected val array:
 
   override def applyRule(rule: Rule): Matrix2D = ???
 
+  // Note that you cannot use array.clone() since that will only 
+  // copy the references to the rows, not the rows themselves.
+  // Use get and set instead.
   override def cloneMatrix(): Matrix2D = ???
 
   // Part of an optional task, implementation not required to pass lab.
@@ -23,7 +26,7 @@ case class ArrayMatrix2D(cols: Int, rows: Int, states: Int, protected val array:
 }
 
 object ArrayMatrix2D {
-  def apply(cols: Int, rows: Int, states: Int = 2): ArrayMatrix2D = ???
+  def apply(rows: Int, cols: Int, states: Int = 2): ArrayMatrix2D = ???
 
   // Part of an optional task, implementation not required to pass lab.
   def fromFileFormat(s: String): ArrayMatrix2D = ???
