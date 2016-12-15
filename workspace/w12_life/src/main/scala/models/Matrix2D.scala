@@ -5,8 +5,8 @@ import rules.Rule
 import scala.util.Random
 
 trait Matrix2D {
-  val cols: Int
   val rows: Int
+  val cols: Int
 
   val states: Int
 
