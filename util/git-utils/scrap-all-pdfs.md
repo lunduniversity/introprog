@@ -2,4 +2,6 @@
 
 ## Checkout this and try it when you dare:
 
-http://stackoverflow.com/questions/14284370/remove-old-binary-revisions-from-git-and-reduce-size-of-git-repository
+* https://help.github.com/articles/removing-files-from-a-repository-s-history/
+
+* http://stackoverflow.com/questions/14284370/remove-old-binary-revisions-from-git-and-reduce-size-of-git-repository
