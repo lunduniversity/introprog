@@ -21,7 +21,7 @@ lazy val plan = (project in file("plan")).
   settings(
     name := "plan",
     EclipseKeys.skipProject := true
-  ) 
+  )
 
 lazy val workspace = (project in file("workspace")).
   settings(commonSettings: _*).
@@ -40,12 +40,12 @@ gen := (run in Compile in plan).toTask("").value
 
 def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-console.log"): Unit = {
   val cmd = Process(
-    Seq("pdflatex","-halt-on-error", texFile.getName), 
+    Seq("pdflatex","-halt-on-error", texFile.getName),
     workDir
   )
-  val cmdOutputFile =  workDir / texFile.getName.replace(".tex", stdOutSuffix) 
+  val cmdOutputFile =  workDir / texFile.getName.replace(".tex", stdOutSuffix)
   // val bibtexCmd = Process(Seq("bibtex", texFile.getName.replace(".tex", ".aux")), workDir)
-  val exitValue = cmd.#>(cmdOutputFile).#&&(cmd).#>(cmdOutputFile).run.exitValue  
+  val exitValue = cmd.#>(cmdOutputFile).#&&(cmd).#>(cmdOutputFile).run.exitValue
   if (exitValue != 0) {
     println("*** ############ ERROR LOG STARTS HERE ############### ***")
     Process(Seq("cat", cmdOutputFile.getName), workDir).run
@@ -53,27 +53,30 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
   } else println(s"     Log file: $cmdOutputFile")
 }
 
-// ************** 
+// **************
 
 lazy val pdf = taskKey[Unit]("Compile slides and compendium using pdflatex")
 
-pdf := { 
-  println(" ******* compiling slides to pdf *******") 
+pdf := {
+  println(" ******* compiling slides to pdf *******")
   val workDir = file("slides")
   val texFiles = (workDir * "*.tex").get
   for (texFile <- texFiles) {
     println(s" *** pdflatex $texFile")
-    runPdfLatexCmd(texFile, workDir)         
-  } 
-  println(" ******* compiling compendium to pdf *******") 
-  runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))         
-  
-  println(" ******* compiling exercises to pdf *******") 
-  runPdfLatexCmd(texFile = file("exercises.tex"), workDir = file("compendium")) 
-  
-  println(" ******* compiling solutions to pdf *******") 
-  runPdfLatexCmd(texFile = file("solutions.tex"), workDir = file("compendium"))     
-} 
+    runPdfLatexCmd(texFile, workDir)
+  }
+  println(" ******* compiling compendium1 to pdf *******")
+  runPdfLatexCmd(texFile = file("compendium1.tex"), workDir = file("compendium"))
+
+  println(" ******* compiling compendium2 to pdf *******")
+  runPdfLatexCmd(texFile = file("compendium2.tex"), workDir = file("compendium"))
+
+//  println(" ******* compiling exercises to pdf *******")
+//  runPdfLatexCmd(texFile = file("exercises.tex"), workDir = file("compendium"))
+
+//  println(" ******* compiling solutions to pdf *******")
+//  runPdfLatexCmd(texFile = file("solutions.tex"), workDir = file("compendium"))
+}
 
 lazy val root = (project in file(".")).
   aggregate(workspace, plan).
@@ -81,12 +84,10 @@ lazy val root = (project in file(".")).
   settings(
     name := "introprog",
     build := Def.sequential(
-      hello, 
+      hello,
       (run in Compile in plan).toTask(""),
       pdf
-    ).value 
-  ) 
+    ).value
+  )
 
 // ***********************************************************
-
-
