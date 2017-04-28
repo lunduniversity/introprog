@@ -158,6 +158,7 @@
 {\end{adjustwidth}}
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% changes to make slide stuff look good in compendium
 
