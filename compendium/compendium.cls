@@ -2,7 +2,7 @@
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{compendium}[2016/01/20 Document class lecturenotes based on book]
-\LoadClass[12pt]{book}
+\LoadClass[11pt]{book}
 
 \usepackage{geometry} % to change margins:
 \geometry{hmargin={4.5cm,2.5cm}}
@@ -50,7 +50,7 @@
 
 \usepackage{enumitem}
 
-\linespread{1.0} 
+\linespread{0.98} 
 
 
 \usepackage{lipsum} % to create dummy text with \lipsum
@@ -103,7 +103,7 @@
 \newcommand{\Emph}[1]{\textcolor{myemphcolor}{\textbf{#1}}}
 \newcommand{\Alert}[1]{\textcolor{myalertcolor}{\textbf{#1}}}
 \newcommand{\Eng}[1]{(eng. {\textit{#1}})}
-\newcommand{\key}[1]{\textcolor{eclipsepurple}{\textbf{\texttt{#1}}}}
+\newcommand{\Key}[1]{\textcolor{eclipsepurple}{\textbf{\texttt{#1}}}}
 \newcommand{\code}{\lstinline[basicstyle=\ttfamily]}
 \newcommand{\jcode}{\lstinline[basicstyle=\ttfamily,language=Java]}
 
@@ -157,7 +157,7 @@
 {\begin{adjustwidth}{\parindent}{}\small \emph{Bakgrund för kännedom:}}%
 {\end{adjustwidth}}
 
-
+\newcommand{\vecka}{1}%renew this command in chapter.tex files
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% changes to make slide stuff look good in compendium
