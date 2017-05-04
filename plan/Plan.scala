@@ -24,7 +24,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Kodstrukturer",
-      id = "codestruct", exercise = "programs", lab = "", contents = """
+      id = "programs", exercise = "programs", lab = "", contents = """
       | iterering, for-uttryck, map, foreach, Range, Array, Vector,
       | algoritm vs implementation, pseudokod,
       | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX, algoritm: MININDEX,
@@ -54,7 +54,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Klasser",
-      id = "class", exercise = "classes", lab = "turtle", contents = """
+      id = "classes", exercise = "classes", lab = "turtle", contents = """
       | objektorientering, klass, Point, Square, Complex,
       | new, null, this,
       | inkapsling, accessregler, private, private[this], kompanjonsobjekt,
@@ -65,7 +65,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Sekvensalgoritmer",
-      id = "seqalg", exercise = "sequences", lab = "shuffle", contents = """
+      id = "sequences", exercise = "sequences", lab = "shuffle", contents = """
       | sekvensalgoritm,  algoritm: SEQ-COPY,
       | in-place vs copy, algoritm: SEQ-REVERSE, algoritm: SEQ-REGISTER,
       | sekvenser i Java vs Scala, for-sats i Java,
@@ -75,7 +75,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Datastrukturer",
-      id = "datastruct", exercise = "data", lab = "pirates", contents = """
+      id = "data", exercise = "data", lab = "pirates", contents = """
       | attribut (fält), medlem, metod,
       | tupel, klass, Any, isInstanceOf, toString,
       | case-klass,
@@ -93,14 +93,14 @@ trait Plan {
       id = "rebootcamp", exercise = "reboot-init", lab = "reboot-check", contents = "REBOOT CAMP: identifiera dina egna lärandetrösklar och kunskapsluckor, kom-i-kapp med övningar och labbar, repetera, fördjupning för de som är redo, specialträning för behövande"), */
 
     Module("Matriser, typparametrar",
-      id = "matrix", exercise = "matrices", lab = "maze", contents = """
+      id = "matrices", exercise = "matrices", lab = "maze", contents = """
       | matris, nästlad samling, nästlad for-sats,
       | typparameter, generisk funktion, generisk klass, fri vs bunden typparameter,
       | matriser i Java vs Scala, allokering av nästlade arrayer i Scala och Java,
       """.stripTrim),
 
    Module("Arv",
-      id = "polymorf", exercise = "traits", lab = "turtlerace-team", contents = """
+      id = "inheritance", exercise = "inheritance", lab = "turtlerace-team", contents = """
       | arv, polymorfism, trait, extends, asInstanceOf, with, inmixning,
       | supertyp, subtyp, bastyp, override,
       | klasshierarkin i Scala: Any AnyRef Object AnyVal Null Nothing,
@@ -113,8 +113,8 @@ trait Plan {
       | gränssnitt, trait vs interface, programmeringsgränssnitt (api),
       """.stripTrim),
 
-    Module("Mönster, undantag",
-      id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
+    Module("Mönster, undantag, likhet",
+      id = "patterns", exercise = "patterns", lab = "chords-team", contents = """
       | mönstermatchning, match, Option, throw, try, catch, Try, unapply, sealed,
       | flatten, flatMap, partiella funktioner, collect,
       | speciella matchningar: wildcard pattern; variable binding; sequence wildcard; back-ticks,
@@ -136,8 +136,8 @@ trait Plan {
       | namnkonventioner för konstanter,
       """.stripTrim),
 
-    Module("Sökning, sortering",
-        id = "searchsort", exercise = "sorting", lab = "survey", contents = """
+    Module("Sökning, sortering, ordning",
+        id = "sorting", exercise = "sorting", lab = "survey", contents = """
         | strängjämförelse, compareTo, implicit ordning,
         | linjärsökning, binärsökning,
         | algoritm: LINEAR-SEARCH, algoritm: BINARY-SEARCH,
