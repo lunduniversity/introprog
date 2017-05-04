@@ -30,4 +30,16 @@ def renameFiles(
     }
   }
 
+  def edit(
+    path: String,
+    file: String,
+    before: String,
+    after: String
+  ): Int = {
+      val cmd = Seq("sed","-i",s"s/$before/$after/g",s"$path/$file")
+      cmd.!
+  }
+
 // renameFiles(here, list(here,"w42"), "w42-intro", "w24-intro", isPrintOnly=true)
+
+// qwerty
