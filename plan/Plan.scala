@@ -33,18 +33,45 @@ trait Plan {
       | main i Java vs Scala, java.lang.System.out.println,
       """.stripTrim),
 
-    Module("Funktioner, objekt",
-      id = "funobj", exercise = "functions", lab = "blockmole", contents = """
+    Module("Funktioner",
+      id = "functions", exercise = "functions", lab = "irritext", contents = """
       | definera funktion, anropa funktion,
       | parameter, returtyp, värdeandrop, namnanrop, default-argument, namngivna argument,
       | applicera funktion på alla element i en samling, procedur,
       | värdeanrop vs namnanrop, uppdelad parameterlista, skapa egen kontrollstruktur,
-      | objekt, modul, punktnotation, tillstånd, metod, medlem,
       | funktionsvärde, funktionstyp, äkta funktion, stegad funktion, apply, lazy val,
       | lokala funktioner,
       | anonyma funktioner, lambda,
-      | aktiveringspost, anropsstacken, objektheapen, rekursion, 
+      | aktiveringspost, anropsstacken, objektheapen, rekursion,
       | cslib.window.SimpleWindow,
+      """.stripTrim),
+
+    Module("Objekt",
+      id = "objects", exercise = "objects", lab = "blockmole", contents = """
+      | objekt, modul, punktnotation, tillstånd, metod, medlem,
+      | funktioner är objekt,
+      | cslib.window.SimpleWindow,
+      """.stripTrim),
+
+    Module("Klasser",
+      id = "class", exercise = "classes", lab = "turtle", contents = """
+      | objektorientering, klass, Point, Square, Complex,
+      | new, null, this,
+      | inkapsling, accessregler, private, private[this], kompanjonsobjekt,
+      | getters och setters,
+      | klassparameter, primär konstruktor, objektfabriksmetod,
+      | överlagring av metoder,
+      | referenslikhet vs strukturlikhet, eq vs ==,
+      """.stripTrim),
+
+    Module("Sekvensalgoritmer",
+      id = "seqalg", exercise = "sequences", lab = "shuffle", contents = """
+      | sekvensalgoritm,  algoritm: SEQ-COPY,
+      | in-place vs copy, algoritm: SEQ-REVERSE, algoritm: SEQ-REGISTER,
+      | sekvenser i Java vs Scala, for-sats i Java,
+      | java.util.Scanner, scala.collection.mutable.ArrayBuffer,
+      | StringBuilder,
+      | java.util.Random, slumptalsfrö,
       """.stripTrim),
 
     Module("Datastrukturer",
@@ -60,28 +87,19 @@ trait Plan {
       | översikt strängmetoder, läsa/skriva textfiler, Source.fromFile, java.nio.file,
       """.stripTrim),
 
-    Module("Sekvensalgoritmer",
-      id = "seqalg", exercise = "sequences", lab = "shuffle", contents = """
-      | sekvensalgoritm,  algoritm: SEQ-COPY,
-      | in-place vs copy, algoritm: SEQ-REVERSE, algoritm: SEQ-REGISTER,
-      | sekvenser i Java vs Scala, for-sats i Java,
-      | java.util.Scanner, scala.collection.mutable.ArrayBuffer,
-      | StringBuilder,
-      | java.util.Random, slumptalsfrö,
+    Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
+
+/*    Module("Repetition, trösklar, luckor",
+      id = "rebootcamp", exercise = "reboot-init", lab = "reboot-check", contents = "REBOOT CAMP: identifiera dina egna lärandetrösklar och kunskapsluckor, kom-i-kapp med övningar och labbar, repetera, fördjupning för de som är redo, specialträning för behövande"), */
+
+    Module("Matriser, typparametrar",
+      id = "matrix", exercise = "matrices", lab = "maze", contents = """
+      | matris, nästlad samling, nästlad for-sats,
+      | typparameter, generisk funktion, generisk klass, fri vs bunden typparameter,
+      | matriser i Java vs Scala, allokering av nästlade arrayer i Scala och Java,
       """.stripTrim),
 
-    Module("Klasser",
-      id = "class", exercise = "classes", lab = "turtlegraphics", contents = """
-      | objektorientering, klass, Point, Square, Complex,
-      | new, null, this,
-      | inkapsling, accessregler, private, private[this], kompanjonsobjekt,
-      | getters och setters,
-      | klassparameter, primär konstruktor, objektfabriksmetod,
-      | överlagring av metoder,
-      | referenslikhet vs strukturlikhet, eq vs ==,
-      """.stripTrim),
-
-    Module("Arv",
+   Module("Arv",
       id = "polymorf", exercise = "traits", lab = "turtlerace-team", contents = """
       | arv, polymorfism, trait, extends, asInstanceOf, with, inmixning,
       | supertyp, subtyp, bastyp, override,
@@ -92,12 +110,8 @@ trait Plan {
       | accessregler vid arv, protected, final,
       | klass vs trait, abstract class,
       | case-object, typer med uppräknade värden,
+      | gränssnitt, trait vs interface, programmeringsgränssnitt (api),
       """.stripTrim),
-
-    Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
-
-    Module("Repetition, trösklar, luckor",
-      id = "rebootcamp", exercise = "reboot-init", lab = "reboot-check", contents = "REBOOT CAMP: identifiera dina egna lärandetrösklar och kunskapsluckor, kom-i-kapp med övningar och labbar, repetera, fördjupning för de som är redo, specialträning för behövande"),
 
     Module("Mönster, undantag",
       id = "matchpat", exercise = "matching", lab = "chords-team", contents = """
@@ -107,26 +121,6 @@ trait Plan {
       | equals, hashcode, exempel: equals för klassen Complex,
       | switch-sats i Java,
       """.stripTrim),
-
-    Module("Matriser, typparametrar",
-      id = "matrix", exercise = "matrices", lab = "maze", contents = """
-      | matris, nästlad samling, nästlad for-sats,
-      | typparameter, generisk funktion, generisk klass, fri vs bunden typparameter,
-      | matriser i Java vs Scala, allokering av nästlade arrayer i Scala och Java,
-      """.stripTrim),
-
-    Module("Sökning, sortering",
-      id = "searchsort", exercise = "sorting", lab = "survey", contents = """
-      | strängjämförelse, compareTo, implicit ordning,
-      | linjärsökning, binärsökning,
-      | algoritm: LINEAR-SEARCH, algoritm: BINARY-SEARCH,
-      | algoritmisk komplexitet,
-      | sortering till ny vektor, sortering på plats,
-      | insättningssortering, urvalssortering,
-      | algoritm: INSERTION-SORT, algoritm: SELECTION-SORT,
-      | Ordering[T], Ordered[T], Comparator[T], Comparable[T],
-      """.stripTrim),
-      //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
     Module("Scala och Java",
       id = "scalajava", exercise = "scalajava", lab = "lthopoly-team", contents = """
@@ -142,11 +136,23 @@ trait Plan {
       | namnkonventioner för konstanter,
       """.stripTrim),
 
-    Module("Extra: design, api, trådar, webb",
-      id = "design", exercise = "threads", lab = "", contents = """
-      | utvecklingsprocessen, krav-design-implementation-test,
-      | gränssnitt, trait vs interface, programmeringsgränssnitt (api),
-      | designexempel,
+    Module("Sökning, sortering",
+        id = "searchsort", exercise = "sorting", lab = "survey", contents = """
+        | strängjämförelse, compareTo, implicit ordning,
+        | linjärsökning, binärsökning,
+        | algoritm: LINEAR-SEARCH, algoritm: BINARY-SEARCH,
+        | algoritmisk komplexitet,
+        | sortering till ny vektor, sortering på plats,
+        | insättningssortering, urvalssortering,
+        | algoritm: INSERTION-SORT, algoritm: SELECTION-SORT,
+        | Ordering[T], Ordered[T], Comparator[T], Comparable[T],
+        """.stripTrim),
+        //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
+
+    Module("Repetition, tentaträning", id = "exam", exercise = "Extenta", lab = "", contents = ""),
+
+    Module("Extra: jämlöpande exekvering",
+      id = "concurrency", exercise = "threads", lab = "", contents = """
       | tråd, jämlöpande exekvering,
       | icke-blockerande anrop, callback,
       | java.lang.Thread,
@@ -154,8 +160,6 @@ trait Plan {
       | scala.concurrent.Future,
       | kort om html+css+javascript+scala.js och webbprogrammering,
       """.stripTrim),
-
-    Module("Tentaträning", id = "exam", exercise = "Extenta", lab = "", contents = ""),
 
     Module(name = "TENTAMEN", id = "", exercise = "", lab = "", contents = "")
   )
