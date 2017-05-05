@@ -10,7 +10,7 @@ This is work in progress; the first instance of the course starts this fall seme
 
 ## How to use this repo
 
-* Download the latest version of the [compendium](https://github.com/lunduniversity/introprog/raw/master/compendium/compendium.pdf).
+* Download the latest version of the compendium via [LaTeX.Online](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium.tex&command=pdflatex).
 
 * Download the [workspace](https://github.com/lunduniversity/introprog/blob/master/lib/workspace.zip) to be used with your favorite code editor and IDE. See instructions in appendices in the compendium.
 
