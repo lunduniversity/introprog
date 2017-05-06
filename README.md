@@ -18,7 +18,7 @@ This is work in progress; the first instance of the course starts this fall seme
 
   - [compendium1.pdf with lectures and apendices](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium1.tex&command=pdflatex)
 
-  - [compendium2.pdf with assignments and solutions](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium1.tex&command=pdflatex)
+  - [compendium2.pdf with assignments and solutions](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium2.tex&command=pdflatex)
 
   - [compendium.pdf with both above parts merged into one pdf optimized for screen readability](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium.tex&command=pdflatex)
 
