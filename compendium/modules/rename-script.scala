@@ -18,18 +18,19 @@ def renameFiles(
   initFrom: String,
   initTo: String,
   isPrintOnly: Boolean = true
-): Unit =
-  files.foreach{ fileName =>
-    if (fileName.startsWith(initFrom)) {
-      val newFileName = initTo + fileName.stripPrefix(initFrom)
-      val action = if (isPrintOnly) "Would have renamed" else "Rename"
-      println(s"$action from $fileName -> $newFileName")
-      if (!isPrintOnly) rename(path, fileName, newFileName)
-    } else {
-      println(s"Not renamed: $fileName")
+): Unit = {
+    val files = list(path, initFrom)
+    files.foreach{ fileName =>
+      if (fileName.startsWith(initFrom)) {
+        val newFileName = initTo + fileName.stripPrefix(initFrom)
+        val action = if (isPrintOnly) "Would have renamed" else "Rename"
+        println(s"$action from $fileName -> $newFileName")
+        if (!isPrintOnly) rename(path, fileName, newFileName)
+      } else {
+        println(s"Not renamed: $fileName")
+      }
     }
   }
-
   def edit(
     path: String,
     file: String,
@@ -40,6 +41,6 @@ def renameFiles(
       cmd.!
   }
 
-// renameFiles(here, list(here,"w42"), "w42-intro", "w24-intro", isPrintOnly=true)
+// renameFiles(here, "w42-intro", "w24-intro", isPrintOnly=true)
 
 // qwerty
