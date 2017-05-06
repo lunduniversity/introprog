@@ -4,13 +4,25 @@
 
 This is the repo of a course given by Lund University called "Introduction to Programming" using Scala and Java. The repo contains course material in Swedish and some English along with code examples and libraries used in exercises and labs.
 
-Course homepage (in Swedish): http://cs.lth.se/pgk/ 
+Course homepage (in Swedish): http://cs.lth.se/pgk/
 
 This is work in progress; the first instance of the course starts this fall semester, August 29, 2016 at LTH in Lund.
 
 ## How to use this repo
 
-* Download the latest version of the compendium via [LaTeX.Online](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium.tex&command=pdflatex).
+* Download a stable, but old, release of the course material on the [release page](https://github.com/lunduniversity/introprog/releases)
+
+* Download the updated course material from the [course homepage at Lund University](http://cs.lth.se/pgk/litteratur/)
+
+* Download the very latest snapshot version of the most recent build of the course material via LaTeX.Online:
+
+  - [compendium1.pdf with lectures and apendices](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium1.tex&command=pdflatex)
+
+  - [compendium2.pdf with assignments and solutions](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium1.tex&command=pdflatex)
+
+  - [compendium.pdf with both above parts merged into one pdf optimized for screen readability](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium.tex&command=pdflatex)
+
+  - Thanks to [LaTeX.Online](https://latexonline.cc) for their cloud service!
 
 * Download the [workspace](https://github.com/lunduniversity/introprog/blob/master/lib/workspace.zip) to be used with your favorite code editor and IDE. See instructions in appendices in the compendium.
 
@@ -21,7 +33,7 @@ The main directories are:
   * `modules` with lectures exercises and labs for each week
   * `generated` with output from execution of `plan/Main.scala` included in the compendium
 * `slides` with lecture notes in projector-friendly format
-* `workspace` with student workspace including lab code skeletons, examples, code libs etc. 
+* `workspace` with student workspace including lab code skeletons, examples, code libs etc.
 * `plan` with module contents and concepts per week
 * `img` images used in compendium and slides
 * `refs` extra readings, background material
@@ -40,8 +52,8 @@ If you like to use the [scala build tool, sbt](http://www.scala-sbt.org) it is e
 * Unpack the zip in some suitable directory named introprog.
 
 * run these sbt commands in a terminal window in the introprog directory:
-  * `sbt compile` to compile all sources 
-  * `sbt eclipse` to make eclipse project files 
+  * `sbt compile` to compile all sources
+  * `sbt eclipse` to make eclipse project files
   * `sbt gen` to generate the planning files, alias for `sbt plan/run`
   * `sbt pdf` to make slides and compendium using pdflatex
   * `sbt build` run both the commands `gen` and `pdf` in sequence
@@ -60,21 +72,21 @@ If you like to use the [scala build tool, sbt](http://www.scala-sbt.org) it is e
 
 ### Fork and clone
 
-* Learn the basics about git, especially the "Getting Started" and "Git Basics" sections in this book: https://git-scm.com/book/en/v2 
+* Learn the basics about git, especially the "Getting Started" and "Git Basics" sections in this book: https://git-scm.com/book/en/v2
 
 * Get an account at github if you don't have one already. Recommended user name if in doubt: `firstnamefamilyname` with no capital letters and no hyphens.
 
 * Install git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 
-* Make a **fork** of lunduniversity/introprog in GitHub to your own GitHub account: https://help.github.com/articles/fork-a-repo/ 
+* Make a **fork** of lunduniversity/introprog in GitHub to your own GitHub account: https://help.github.com/articles/fork-a-repo/
 
-* **Clone** your fork to your local computer: https://help.github.com/articles/cloning-a-repository/ 
+* **Clone** your fork to your local computer: https://help.github.com/articles/cloning-a-repository/
 
 ### Keeping your fork in synch
 
 * If you install the GitHub client (avaliable for Win and Mac but not Linux) called "GitHub desktop" https://desktop.github.com/ you can keep your fork in synch with the upstream repo by a single click in the GUI.
 
-* Otherwise, this is how to pull changes from upstream to your fork with git commands: https://help.github.com/articles/syncing-a-fork/ 
+* Otherwise, this is how to pull changes from upstream to your fork with git commands: https://help.github.com/articles/syncing-a-fork/
 
 ### Making contributions
 
@@ -95,7 +107,7 @@ If you like to use the [scala build tool, sbt](http://www.scala-sbt.org) it is e
 
 ### Writing commit messages
 
-* Write concise and informative [commit messages](http://chris.beams.io/posts/git-commit/) that explains why the commit was made. 
+* Write concise and informative [commit messages](http://chris.beams.io/posts/git-commit/) that explains why the commit was made.
 * Start each commit message with a direct verb, preferably one of the following:
   * `add` when you have created new stuff that was not there before
   * `update` when you have changed existing stuff
@@ -110,14 +122,14 @@ If you like to use the [scala build tool, sbt](http://www.scala-sbt.org) it is e
 * Make sure your change compiles before committing. Do *not* push code that does not compile!
 
 
-### Coding style 
+### Coding style
 
-When learning how to program it is more important to write *something* and start experimenting in a playful way, than to forcefully adhere to a particular coding standard; but students should also (eventually) understand the benefits of having a coding standard. 
+When learning how to program it is more important to write *something* and start experimenting in a playful way, than to forcefully adhere to a particular coding standard; but students should also (eventually) understand the benefits of having a coding standard.
 
-In this course we pragmatically follow these style guides: 
+In this course we pragmatically follow these style guides:
 
 * Scala style:
-  * The Scala style guide: http://docs.scala-lang.org/style/ 
+  * The Scala style guide: http://docs.scala-lang.org/style/
   * A Scala best practice guide: https://github.com/alexandru/scala-best-practices
 * Java style:
   * http://www.oracle.com/technetwork/java/codeconventions-150003.pdf
@@ -131,10 +143,10 @@ Here are some other inspiring style guides that illustrate the variety in what d
   * https://github.com/paypal/scala-style-guide
 * Java:
   * https://google.github.io/styleguide/javaguide.html
-  * https://wiki.eclipse.org/Coding_Conventions 
+  * https://wiki.eclipse.org/Coding_Conventions
   * https://www.securecoding.cert.org/confluence/display/java/Java+Coding+Guidelines
 
-### Latex guide 
+### Latex guide
 
 * Make sure you have your TeX editor set to UTF-8 encoding. If you get strange errors in relation to Swedish characters, this is likely due to problems relating to non-UTF-8 encodings on Mac or Windows. Linux usually works out-of-the-box.
 
@@ -147,13 +159,13 @@ Here are some other inspiring style guides that illustrate the variety in what d
   * [compendium.cls](https://github.com/lunduniversity/introprog/blob/master/compendium/compendium.cls)
   * [lecturenotes.cls](https://github.com/lunduniversity/introprog/blob/master/slides/lecturenotes.cls)
 
-* Check out some similar, already written `.tex` document and compare with the compiled `.pdf` to see the commands and conventions we use. 
+* Check out some similar, already written `.tex` document and compare with the compiled `.pdf` to see the commands and conventions we use.
 
-* Some custom latex commands in our .cls files: 
-  * `\begin{Code}` ... `\end{Code}` and `\scalainputlisting{examples/hello-app.scala}` are used for Scala code 
+* Some custom latex commands in our .cls files:
+  * `\begin{Code}` ... `\end{Code}` and `\scalainputlisting{examples/hello-app.scala}` are used for Scala code
   * `\begin{Code}[language=Java]` ... `\end{Code}` and `\javainputlisting{examples/Hi.java}` are used for Java code
   * `\begin{Slide}` and `\end{Slide}` defined in `slides/lecture-notes.cls` and in `compendium/compendium.cls` is used to generate beamer slides and to generate framed text in compendium chapters together with lecture notes that appear after each slide.
-  
+
 #### How to make figures in the compendium
 
 Here is an example of our convention for figures (using the float-package):
@@ -168,7 +180,7 @@ Here is an example of our convention for figures (using the float-package):
 Adapt the size of the figure width to make it look good by changing 0.7 above to something appropriate depending on the proportion of height/width of your figure.
 
 Labels are named with the convention `\label{chap:subchap:subsubchap:somegoodname}`
- 
+
 # License
 
 Copyright &copy; 2015-2016. Dept. of Computer Science at Lund University, Lund, Sweden.
@@ -193,4 +205,3 @@ Under the following terms:
 
 
 See http://creativecommons.org/licenses/by-sa/4.0/
-
