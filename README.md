@@ -10,21 +10,21 @@ This is work in progress; the first instance of the course starts this fall seme
 
 ## How to use this repo
 
-* Download a stable, but old, release of the course material on the [release page](https://github.com/lunduniversity/introprog/releases)
+* Download a stable, but possibly old, released version of the course material on the [release page](https://github.com/lunduniversity/introprog/releases)
 
-* Download the updated course material from the [course homepage at Lund University](http://cs.lth.se/pgk/litteratur/)
+* Download the current course material from the [course homepage at Lund University](http://cs.lth.se/pgk/litteratur/)
 
-* Download the very latest snapshot version of the most recent build of the course material via LaTeX.Online:
+* Download the very latest snapshot version, possibly in an inconsistent state under update, of the most recent build of the course material via LaTeX.Online:
 
-  - [compendium1.pdf with lectures and apendices](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium1.tex&command=pdflatex)
+  - [compendium1.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium1.tex&command=pdflatex)  with lectures and appendices optimized for print
 
-  - [compendium2.pdf with assignments and solutions](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium2.tex&command=pdflatex)
+  - [compendium2.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium2.tex&command=pdflatex)  with assignments and solutions optimized for print
 
-  - [compendium.pdf with both above parts merged into one pdf optimized for screen readability](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium.tex&command=pdflatex)
+  - [compendium.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium.tex&command=pdflatex)  with both parts above in one pdf optimized for screen readability
 
   - Thanks to [LaTeX.Online](https://latexonline.cc) for their cloud service!
 
-* Download the [workspace](https://github.com/lunduniversity/introprog/blob/master/lib/workspace.zip) to be used with your favorite code editor and IDE. See instructions in appendices in the compendium.
+* Download the [workspace](https://github.com/lunduniversity/introprog/blob/master/lib/workspace.zip) to be used with your favorite code editor and IDE. See instructions in appendices in `compendium1.pdf` above.
 
 ## Contents of this repo
 
