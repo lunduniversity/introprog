@@ -14,7 +14,6 @@ def rename(path: String, f1: String, f2: String): Unit =
 
 def renameFiles(
   path: String,
-  files: Vector[String],
   initFrom: String,
   initTo: String,
   isPrintOnly: Boolean = true
@@ -31,6 +30,7 @@ def renameFiles(
       }
     }
   }
+
   def edit(
     path: String,
     file: String,
@@ -41,6 +41,6 @@ def renameFiles(
       cmd.!
   }
 
-// renameFiles(here, "w42-intro", "w24-intro", isPrintOnly=true)
+// renameFiles(here, "w42", "w24-intro", isPrintOnly=true)
 
 // qwerty
