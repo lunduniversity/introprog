@@ -54,7 +54,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Klasser",
-      id = "classes", exercise = "classes", lab = "turtle", contents = """
+      id = "classes", exercise = "classes", lab = "turtlegraphics", contents = """
       | objektorientering, klass, Point, Square, Complex,
       | new, null, this,
       | inkapsling, accessregler, private, private[this], kompanjonsobjekt,
@@ -149,7 +149,7 @@ trait Plan {
         """.stripTrim),
         //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
-    Module("Repetition, tentaträning", id = "examprep", exercise = "Extenta", lab = "", contents = ""),
+    Module("Repetition, tentaträning, projekt", id = "examprep", exercise = "Extenta", lab = "", contents = ""),
 
     Module("Extra: jämlöpande exekvering",
       id = "extra", exercise = "threads", lab = "", contents = """
@@ -183,7 +183,7 @@ trait Plan {
 
   lazy val exerciseNumOfWeek =
     ("Övn01,Övn02,Övn03,Övn04,Övn05,Övn06,Övn07,--," +
-     "Övn08,Övn09,Övn10,Övn11,Övn12,Övn13,Extenta,--,--").split(',').toVector
+     "Övn08,Övn09,Övn10,Övn11,Övn12,--,Övn14,--,--").split(',').toVector
 
   lazy val exerciseOfWeek = for (w <- 0 until exerciseNumOfWeek.size) yield {
     if (exerciseNumOfWeek(w).startsWith("Ö") && modules(w).exercise != "")
