@@ -16,19 +16,22 @@ def renameFiles(
   path: String,
   initFrom: String,
   initTo: String,
+  notStartsWith: String = "",
   isPrintOnly: Boolean = true
 ): Unit = {
     val files = list(path, initFrom)
-    files.foreach{ fileName =>
-      if (fileName.startsWith(initFrom)) {
-        val newFileName = initTo + fileName.stripPrefix(initFrom)
-        val action = if (isPrintOnly) "Would have renamed" else "Rename"
-        println(s"$action from $fileName -> $newFileName")
-        if (!isPrintOnly) rename(path, fileName, newFileName)
-      } else {
-        println(s"Not renamed: $fileName")
+    files
+      .filterNot(f => notStartsWith.nonEmpty && f.startsWith(notStartsWith))
+      .foreach{ fileName =>
+        if (fileName.startsWith(initFrom)) {
+          val newFileName = initTo + fileName.stripPrefix(initFrom)
+          val action = if (isPrintOnly) "Would have renamed" else "Rename"
+          println(s"$action from $fileName -> $newFileName")
+          if (!isPrintOnly) rename(path, fileName, newFileName)
+        } else {
+          println(s"Not renamed: $fileName")
+        }
       }
-    }
   }
 
   def edit(
