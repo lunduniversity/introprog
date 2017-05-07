@@ -71,6 +71,9 @@ pdf := {
   println(" ******* compiling compendium2 to pdf *******")
   runPdfLatexCmd(texFile = file("compendium2.tex"), workDir = file("compendium"))
 
+  println(" ******* compiling compendium to pdf *******")
+  runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))
+
 //  println(" ******* compiling exercises to pdf *******")
 //  runPdfLatexCmd(texFile = file("exercises.tex"), workDir = file("compendium"))
 
