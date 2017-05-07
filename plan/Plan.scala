@@ -149,10 +149,10 @@ trait Plan {
         """.stripTrim),
         //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
-    Module("Repetition, tentaträning", id = "exam", exercise = "Extenta", lab = "", contents = ""),
+    Module("Repetition, tentaträning", id = "examprep", exercise = "Extenta", lab = "", contents = ""),
 
     Module("Extra: jämlöpande exekvering",
-      id = "concurrency", exercise = "threads", lab = "", contents = """
+      id = "extra", exercise = "threads", lab = "", contents = """
       | tråd, jämlöpande exekvering,
       | icke-blockerande anrop, callback,
       | java.lang.Thread,
