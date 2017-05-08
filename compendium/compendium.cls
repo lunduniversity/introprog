@@ -22,7 +22,7 @@
 %\usepackage{lmodern} %latin modern
 %\usepackage{tgheros} % clone of Helvetica
 %\usepackage{tgtermes}% clone of times
-%\usepackage{bookman} 
+%\usepackage{bookman}
 %\usepackage[sc]{mathpazo} %palatino
 %\usepackage{tgheros} %helvetica
 %\usepackage{libris} %Libris adf
@@ -50,7 +50,7 @@
 
 \usepackage{enumitem}
 
-\linespread{0.98} 
+\linespread{0.98}
 
 
 \usepackage{lipsum} % to create dummy text with \lipsum
@@ -75,7 +75,7 @@
 \usepackage{xspace} %http://www.math.tamu.edu/~harold.boas/courses/math696/why-macros.html
 \usepackage[pdfpagelayout=TwoPageRight]{hyperref}
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
-\hypersetup{colorlinks=true, allcolors=mylinkcolor, 
+\hypersetup{colorlinks=true, allcolors=mylinkcolor,
 %linkcolor=, linkbordercolor=, urlbordercolor=mylinkcolor,
  urlcolor=mylinkcolor, pdfborderstyle={/S/U/W 1}}
 
@@ -127,7 +127,7 @@
 
 \newcounter{TaskCounter}[section]
 \newcommand{\Task}{%
-\refstepcounter{TaskCounter}% 
+\refstepcounter{TaskCounter}%
 \ifnum\value{TaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
 \pagebreak[1]\noindent{\Emph{Uppgift~\arabic{TaskCounter}.}~}%
 }
@@ -136,7 +136,7 @@
 \newcommand\Checkpoint{\reversemarginpar\marginnote{\small\Alert{\checkmark \eye}}[0cm]}
 
 \newcounter{SubtaskCounter}[TaskCounter]
-\newcommand{\Subtask}{\refstepcounter{SubtaskCounter}% 
+\newcommand{\Subtask}{\refstepcounter{SubtaskCounter}%
 %\vspace{1em}%
 \ifnum\value{SubtaskCounter}>1\vspace{0.25em}\else\vspace{0.5em}\fi%
 {\pagebreak[0]\noindent%%
@@ -198,7 +198,7 @@
     commentstyle=\color{mygreen},
     numberstyle={\footnotesize},
     numbers=none,
-    backgroundcolor=\color{gray!15},
+    backgroundcolor=\color{gray!5},
     frame=single,
     rulecolor=\color{black!25},
     %title={\footnotesize\lstname},
@@ -267,7 +267,7 @@ basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
 
 \lstnewenvironment{REPL}[1][]{%
     \lstset{
-      basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
+      basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,
       language=,otherkeywords={},%
       tabsize=2,
       backgroundcolor=\color{black!80},
@@ -278,7 +278,7 @@ basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
 
 \lstnewenvironment{REPLnonum}[1][]{%
     \lstset{
-      basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,      
+      basicstyle=\color{white}\ttfamily\fontsize{10}{12}\selectfont,
       language=,otherkeywords={},%
       tabsize=2,
       backgroundcolor=\color{black!80},
@@ -294,4 +294,3 @@ tabsize=2,#1]{#2}}
 \newcommand{\javainputlisting}[2][]{\lstinputlisting[%
 language=Java,%
 tabsize=4,#1]{#2}}
-
