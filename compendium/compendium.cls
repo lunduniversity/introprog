@@ -272,7 +272,8 @@ basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
       tabsize=2,
       backgroundcolor=\color{black!80},
       frame=single,
-      numbers=left, numberstyle=\color{black}\ttfamily\scriptsize\selectfont
+      numbers=left,
+      numberstyle=\color{black}\ttfamily\scriptsize\selectfont,
       #1}%
 }{}
 
