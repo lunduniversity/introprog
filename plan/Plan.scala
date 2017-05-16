@@ -48,7 +48,7 @@ trait Plan {
 
     Module("Objekt",
       id = "objects", exercise = "objects", lab = "blockmole", contents = """
-      | objekt, modul, punktnotation, tillstånd, metod, medlem,
+      | objekt, modul, paket, punktnotation, tillstånd, metod, medlem,
       | funktioner är objekt,
       | cslib.window.SimpleWindow,
       """.stripTrim),
