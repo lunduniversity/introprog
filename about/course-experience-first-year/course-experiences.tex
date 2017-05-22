@@ -1,0 +1,375 @@
+%!TEX encoding = UTF-8 Unicode
+\documentclass{lecturenotes}
+
+\setbeamertemplate{footline}[frame number]
+\title[Scala introduktion]{Introduction to programming using Scala}
+\subtitle{-- Experiences from 1st year of new course for CSE students}
+\author{Björn Regnell}
+\institute{Dept. of Computer Science, LTH \\ Lund University, Sweden}
+\date{2016 April 20}
+
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+\usepackage{pgfplotstable}
+
+\usepackage{filecontents}
+
+%http://tex.stackexchange.com/questions/135393/how-to-draw-bar-pie-chart
+\definecolor{c1}{RGB}{220,57,18}
+\definecolor{c2}{RGB}{255,153,0}
+\definecolor{c3}{RGB}{102,140,217}
+\definecolor{c4}{RGB}{16,150,24}
+\definecolor{c5}{RGB}{153,0,153}
+
+\makeatletter
+
+\tikzstyle{chart}=[
+    legend label/.style={font={\scriptsize},anchor=west,align=left},
+    legend box/.style={rectangle, draw, minimum size=5pt},
+    axis/.style={black,semithick,->},
+    axis label/.style={anchor=east,font={\tiny}},
+]
+
+\tikzstyle{bar chart}=[
+    chart,
+    bar width/.code={
+        \pgfmathparse{##1/2}
+        \global\let\bar@w\pgfmathresult
+    },
+    bar/.style={very thick, draw=white},
+    bar label/.style={font={\bf\small},anchor=north},
+    bar value/.style={font={\footnotesize}},
+    bar width=.75,
+]
+
+\tikzstyle{pie chart}=[
+    chart,
+    slice/.style={line cap=round, line join=round, very thick,draw=white},
+    pie title/.style={font={\bf}},
+    slice type/.style 2 args={
+        ##1/.style={fill=##2},
+        values of ##1/.style={}
+    }
+]
+
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+
+\newcommand{\pie}[3][]{
+    \begin{scope}[#1]
+    \pgfmathsetmacro{\curA}{90}
+    \pgfmathsetmacro{\r}{1}
+    \def\c{(0,0)}
+    \node[pie title] at (90:1.3) {#2};
+    \foreach \v/\s in{#3}{
+        \pgfmathsetmacro{\deltaA}{\v/100*360}
+        \pgfmathsetmacro{\nextA}{\curA + \deltaA}
+        \pgfmathsetmacro{\midA}{(\curA+\nextA)/2}
+
+        \path[slice,\s] \c
+            -- +(\curA:\r)
+            arc (\curA:\nextA:\r)
+            -- cycle;
+        \pgfmathsetmacro{\d}{max((\deltaA * -(.5/50) + 1) , .5)}
+
+        \begin{pgfonlayer}{foreground}
+        \path \c -- node[pos=\d,pie values,values of \s]{$\v\%$} +(\midA:\r);
+        \end{pgfonlayer}
+
+        \global\let\curA\nextA
+    }
+    \end{scope}
+}
+
+\newcommand{\legend}[2][]{
+    \begin{scope}[#1]
+    \path
+        \foreach \n/\s in {#2}
+            {
+                  ++(0,-10pt) node[\s,legend box] {} +(5pt,0) node[legend label] {\n}
+            }
+    ;
+    \end{scope}
+}
+
+
+
+\begin{document}
+
+\frame{\titlepage}
+\frame{\Emph{Agenda}\tableofcontents}
+
+%%% EXPERIENCES
+
+\section{Background}
+\subsection{Why a new course?}
+
+
+\begin{Slide}{Course intro survey 2015, CSE (Datateknik)\\EDA016 Programming, first course (Java)}
+\begin{multicols}{2}
+Have programmed before? \vspace{1em}
+
+\includegraphics[width=0.55\textwidth]{img/survey-2015}
+\columnbreak
+
+\raggedleft What language?  \vspace{1em}
+
+\includegraphics[width=0.55\textwidth]{img/lang-2015}
+\end{multicols}
+\end{Slide}
+
+
+\begin{Slide}{Course results 2015, CSE (Datateknik)\\EDA016 Programming, first course (Java)}
+\begin{multicols}{2}
+
+\Emph{Grades D-program 2015}  \vspace{1em}
+
+\includegraphics[width=0.55\textwidth]{img/grades-2015}
+
+\columnbreak
+
+\raggedleft \Emph{Goal of 2016} \\
+To \Alert{increase} the \\ \Alert{challenge level} \& \\  \Alert{learning outcome} \\ significantly.
+\end{multicols}
+\end{Slide}
+
+
+
+\subsection{Why Scala?}
+
+\begin{Slide}{Why Scala?}
+Easy for beginners and interesting for non-beginners:
+\begin{itemize}
+\item Regular semantics; e.g. value types are real objects
+\item Concise, expressive syntax
+\item Interactive learning in the Scala REPL
+\item Multi-paradigm, pragmatic: \\ imperative, object-oriented, functional
+\item Rich semantics: can demonstrate many cs concepts
+\item Modern, evolving language: exciting for new students
+\item Free, open source language and tools
+\end{itemize}
+%Potential \Alert{risks}:
+%\begin{itemize}\fontsize{9}{10}\selectfont
+%\item Tools not becoming mature fast enough?  
+%\item Lack of beginner-oriented teaching material?
+%\item Future industrial relevance? 
+%\item Critical mass of community?
+%\end{itemize}
+\end{Slide}
+
+
+%%
+\begin{Slide}{What is Scala?}
+\begin{itemize}
+\item Aims to be a scalable, pragmatic, real-world language
+\item Multi-paradigm:  
+\begin{itemize}
+\item object-oriented 
+\item functional 
+\item imperative 
+\item concurrent
+\end{itemize}
+\item Typing: static, strong, inferred, structural
+
+\item Designed by: Martin Odersky
+\item Developer: EPFL, Lightbend, OSS Community
+\item First appeared:  January 20, 2004
+\item Platform: JVM, JavaScript
+\item License: BSD 3-clause
+\item Official site: \url{https://www.scala-lang.org/}
+\end{itemize}
+
+
+\end{Slide}
+
+
+\section{Overview of new course at LTH: EDAA45}
+
+\begin{Slide}{Overview of new LTH Course EDAA45}
+Home: \textbf{\url{http://cs.lth.se/pgk}} \\ \vspace{1em}
+
+\noindent\resizebox{0.8\columnwidth}{!}{\fontsize{8}{10}\selectfont
+\input{../../plan/overview-generated.tex}
+}
+\end{Slide}
+
+\begin{Slide}{Students participation in teaching development through open sourcing of teaching material for Scala}
+
+\textbf{\url{https://github.com/lunduniversity/introprog}}
+
+\begin{multicols}{3}\footnotesize
+Anders Buhl, \\Anna Palmqvist Sjövall, \\Anton Andersson, \\Casper Schreiter, \\Cecilia Lindskog, \\Christine Boghammar, \\Emil Wihlander, \\Emma Asklund, \\Erik Bjäreholt, \\Erik Grampp, \\Erik Söderbarg, \\Filip Stjernström, \\Fredrik Danebjer, \\Gustav Cedersjö, \\Henrik Olsson, \\Jacob Bohlin, \\Jakob Hök, \\Johan Ravnborg, \\Jonas Danebjer, \\Maj Stenmark, \\Maximilian Rundgren, \\Måns Magnusson, \\Oscar Sigurdsson, \\Oskar Berg, \\Oskar Widmark, \\Povel Larsson, \\Sebastian Hegardt, \\Stefan Jonsson, \\Tom Postema, \\Valthor Halldorsson, \\Viktor Claesson
+\end{multicols}
+
+\end{Slide}
+
+
+
+\section{Experiences of new course at LTH: EDAA45}
+
+\begin{Slide}{Betygsfördelning, D-are, totalt 86 st}
+\pgfplotstableread{
+betyg antal
+0 17
+3 12
+4 29
+5 28
+}{\mydata}
+\vspace*{1cm}
+\begin{minipage}{0.5\textwidth}
+\hspace*{-0.0cm}
+\begin{tikzpicture}[scale=0.9, every node/.style={scale=0.9}]
+    \begin{axis}[
+            ybar,
+            bar width=.5cm,
+            width=\textwidth,
+            height=0.9\textwidth,
+            symbolic x coords={0,3,4,5},
+            xtick=data,
+            nodes near coords,
+            nodes near coords align={vertical},
+            ymin=0,ymax=36,
+            ylabel={Antal},
+            xlabel={Betyg},
+        ]
+        \addplot table[x=betyg,y=antal]{\mydata};
+    \end{axis}
+\end{tikzpicture}
+\end{minipage}%
+\begin{minipage}{0.35\textwidth}
+\vspace*{-1cm}\hspace*{0.5cm}
+\begin{tikzpicture}
+[
+    pie chart,
+    slice type={NOLL}{c1},
+    slice type={TRE}{c4},
+    slice type={FYRA}{c2},
+    slice type={FEM}{c3},
+    pie values/.style={font={\small}},
+    scale=1.3, every node/.style={scale=0.9}
+]
+    \pie{}{20/NOLL,14/TRE,34/FYRA,33/FEM}
+    \legend[shift={(1.5cm,1cm)}]{{0}/NOLL,{3}/TRE, {4}/FYRA, {5}/FEM}
+\end{tikzpicture}
+\end{minipage}%
+\end{Slide}
+
+
+
+\begin{Slide}{Grade progress 2015:\\EDA016 Java => EDAA01 Java}
+\includegraphics[width=1.05\textwidth]{img/2015}
+\end{Slide}
+
+\begin{Slide}{Grade progress 2016:\\EDAA45 Scala => EDAA01 Java}
+\includegraphics[width=1.05\textwidth]{img/2016}
+\end{Slide}
+
+
+
+\section{A brief intro to Scala}
+
+\begin{Slide}{A brief intro to Scala}
+\begin{multicols}{2}
+\includegraphics[width=0.5\textwidth]{../../img/scala-icon}
+
+\columnbreak
+
+\hfill\url{www.scala-lang.org}
+
+\end{multicols}
+\end{Slide}
+
+%%
+\begin{Slide}{Scala -- the simple parts}
+\fontsize{9}{11}\selectfont
+Lecture by \Emph{Martin Odersky}: \href{https://www.youtube.com/watch?v=ecekSCX3B4Q}{www.youtube.com/watch?v=ecekSCX3B4Q}
+
+\begin{multicols}{2}
+\fontsize{9}{11}\selectfont
+Scala for every-day dev actions:
+
+\begin{enumerate}
+\item \Emph{Compose:} everything is a composable \Alert{expression}
+\item \Emph{Match:} decompose data with \Alert{pattern}-matching
+\item \Emph{Group:} everything can be grouped and \Alert{nested}
+\item \Emph{Recurse:} compose at any depth, loop with tail recursion
+\item \Emph{Abstract:} functions are objects
+\item \Emph{Aggregate:} collections aggregate \& \Alert{transform} data
+\item \Emph{Mutate:} local, private mutability to optimize perf.
+\end{enumerate}
+
+\columnbreak
+
+\includegraphics[width=0.62\textwidth]{img/odersky}
+
+\end{multicols}
+\end{Slide}
+
+\begin{Slide}{Some similarities between Scala and Java}
+\begin{itemize}
+\item Both are object-oriented and imperative
+\item Both are statically typed (\code{~} 100 times faster than Python)
+\item Both have C-like block syntax \code+{ }+
+\item Both have lambdas (Java 8)  
+\item Both run on the JVM
+\item Both can execute each other's byte code
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Some differences between Scala and Java}\footnotesize
+\begin{itemize}
+\item Scala is a more ''pure'' OO language: \\ instances of \Emph{\code{Int, Double, Char}}, etc. are \Alert{real objects} 
+\item Scala is a more advanced functional language: \\ easy to transform immutable data in functional collections
+\item Scala unifies OO and functional programming: \\ functions are objects with an \code{apply}-method
+\item singelton \code{object} instead of Java's \code{static}
+
+\item Some syntax differences: \pause
+\begin{itemize}\fontsize{8}{9}\selectfont
+\item semicolons are inferred; newline btw statements is enough
+\item no need for \code{return} as blocks are values
+\item Type \emph{after} names and colon: \code{val name: String = "Kim"}
+\item generic types in \code{[T]} instead of \code{<T>}
+\item Five types of members: \code{def, val, lazy val, var, type}
+\\ Methods: \code{def isChild: Boolean = age < 18} 
+\\ Immutable fields: \code{val gender = "Female"} 
+\\  Delayed init: \code{lazy val r = List.fill(1000)(math.random)} 
+\\  Mutable fields: \code{var age: Int = 42} 
+\\  Type alias: \code{type Matrix = Map[Int, Map[Int, String]]}
+\end{itemize}
+
+
+\end{itemize}
+
+\end{Slide}
+
+\begin{Slide}{Classes in Java and Scala}
+\vspace{-1.5em}
+\begin{multicols}{2}
+
+\javainputlisting{code/JPerson.java}
+
+\columnbreak
+
+\pause
+
+\scalainputlisting{code/SPerson.scala}
+
+\pause
+
+\scalainputlisting{code/Person.scala}
+
+\end{multicols}
+
+\end{Slide}
+
+
+
+
+
+
+\end{document}
