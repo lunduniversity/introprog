@@ -73,6 +73,7 @@
 \usepackage{listings}
 \usepackage{upquote} %http://tex.stackexchange.com/questions/145416/how-to-have-straight-single-quotes-in-lstlistings
 \usepackage{xspace} %http://www.math.tamu.edu/~harold.boas/courses/math696/why-macros.html
+\usepackage{xr} %to allow xref btw docs %https://tex.stackexchange.com/questions/248491/cross-reference-with-xr-fails-sharelatex
 \usepackage[pdfpagelayout=TwoPageRight]{hyperref}
 %http://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
 \hypersetup{colorlinks=true, allcolors=mylinkcolor,
@@ -82,6 +83,9 @@
 \usepackage{pdfpages} % To include quickref booklet in appendix
 
 \usepackage[labelfont=bf]{caption}  % to get bold faced table and figure captions
+
+
+
 
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning, calc}
@@ -114,9 +118,9 @@
 \newcommand{\Lab}[1]{\newpage\section{Laboration: {\tt #1}}\label{section:lab:#1}}
 \newcommand{\Teamlab}[1]{\newpage\section{Grupplaboration: {\tt #1}}\label{section:lab:#1}}
 \newcommand{\Assignment}[1]{\newpage\section{Projektuppgift: {\tt #1}}\label{section:proj:#1}}
-\newcommand{\BasicTasks}{\subsection{Grunduppgifter}}
-\newcommand{\ExtraTasks}{\subsection{Extrauppgifter}}
-\newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter}}
+\newcommand{\BasicTasks}{\subsection{Grunduppgifter; förberedelse inför laboration}}
+\newcommand{\ExtraTasks}{\subsection{Extrauppgifter; träna mer}}
+\newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter; utmaningar}}
 \newcommand{\TaskSection}[1]{\subsubsection*{#1}}
 
 \newcommand\Menu[1]{\textit{#1}}
