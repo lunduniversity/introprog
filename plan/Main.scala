@@ -10,6 +10,7 @@ object Main extends App {
   lazy val currentDir = if (isPlanParent) "plan/" else ""
 
   lazy val texUtf = "%!TEX encoding = UTF-8 Unicode\n"
+  def texRoot(fileName: String): String = s"%!TEX root = ../$fileName.tex\n"
 
   println("*** plan generation started in: " + here)
 
@@ -73,7 +74,10 @@ object Main extends App {
     filterNot(isFirstUpper)
 
   val labs = row("Lab").map(labRow).mkString("\n")
-  labs.prepend(texUtf).save(currentDir+"../compendium/generated/labs-generated.tex")
+  labs
+    .prepend(texRoot("compendium2"))
+    .prepend(texUtf)
+    .save(currentDir+"../compendium/generated/labs-generated.tex")
 
   val exercises =
         row("Övn").
