@@ -193,7 +193,6 @@
   morestring=[b]"""
 }
 
-
 \lstset{
     language=Scala,
     tabsize=2,
@@ -213,6 +212,7 @@
     showstringspaces=false,
     columns=fullflexible,keepspaces
 }
+
 \lstset{literate=%
 {Å}{{\AA}}1
 {Ä}{{\"A}}1
@@ -232,6 +232,10 @@
 {└}{{|}}1
 {├}{{|}}1
 {│}{{|}}1
+{♠}{{$\spadesuit$}}1
+{♥}{{$\heartsuit$}}1
+{♣}{{$\clubsuit$}}1
+{♦}{{$\diamondsuit$}}1
 }
 
 \lstnewenvironment{JavaSpec}[2][]{%
