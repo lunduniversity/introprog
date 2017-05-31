@@ -13,7 +13,7 @@
 \item Läs igenom hela laborationenen och säkerställ att du förstår hur SHUFFLE-algoritmen nedan fungerar.
 \end{Preparations}
 
-\subsection{Bakgrund}
+\subsection{Bakgrund}\label{knuth-shuffle}
 
 Denna labb handlar om kortblandning. Att blanda kort så att varje möjlig permutation (ordning som korten ligger i) är lika sannolik är icke-trivialt; en osystematisk blandning leder till en skev fördelning.
 
@@ -25,9 +25,10 @@ Givet en bra slumpgenerator går det att blanda en kortlek genom att lägga alla
  $len \leftarrow$ antalet element i $xs$ \\
  \For{$i \leftarrow (len - 1)$ \KwTo $0$}{
   $r \leftarrow$ slumptal mellan $0$ och $i$ \\
-  $temp \leftarrow xs(i)$ \\
-  $xs(i) \leftarrow xs(r)$ \\
-  $xs(r) \leftarrow temp$ \\
+  byt plats på $x(i)$ och $x(r)$ 
+%  $temp \leftarrow xs(i)$ \\
+%  $xs(i) \leftarrow xs(r)$ \\
+%  $xs(r) \leftarrow temp$ \\
  }
 \end{algorithm}
 
@@ -40,7 +41,12 @@ Det finns ytterligare en hand, s.k. ''royal (straight) flush'' som betcknar en f
 Under laborationen ska du börja med att göra klar den ofärdiga klassen \code{CardDeck} som visas nedan, och återfinns i laborationens workspace som du kan ladda ner från \url{http://cs.lth.se/pgk/ws} och importera i en IDE enligt instruktioner i appendix \ref{appendix:ide}.
 
 \begin{figure}
+
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w05_shuffle/src/main/scala/cardSimulation/Card.scala}
+
+
 \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w05_shuffle/src/main/scala/cardSimulation/CardDeck.scala}
+
 \end{figure}
 
 Labbinstruktionerna i avsnitt \ref{subsection:lab:shuffle:tasks} ger tips om hur du ska ersätta \code{???} i givna kodskellett med med dina lösningar.
@@ -57,28 +63,28 @@ De givna kodfilerna är:\footnote{Du kan bläddra bland klasserna i paketet card
 \item \code{Card.scala} innehåller en \code{case class Card(suit: Int, value: Int)} som representerar ett kort och har en koncis \code{toString} med färg \Eng{suit} och valör.
 \item \code{Hand.scala} innehåller en \code{case class Hand(cards: Vector[Card])} som representerar en pokerhand och har metoder för att avgöra vilken hand det är. I kompanjonsobjektet finns en fabriksmetod som kan skapa en hand genom att dra fem kort från en kortlek.
 \item \code{PokerProbability.scala} har en main-metod som testar pokersannolikheter, samt ett par metoder som hjälper denna.
-\item \code{TestingDeck.scala} är en nedskalad subklass till \code{CardDeck} som endast innehåller tre kort. Main-metoden i dess kompanjonsobjekt testar implementationen av \code{shuffle} och redovisar resultatet i ASCII-grafik.
-\item \code{AsciiBarGraph.scala} innehåller enbart en metod som skapar ett stapeldiagram åt \code{TestingDeck}
+\item \code{TestCardDeck.scala} testar klassen \code{CardDeck} och implementationen av \code{shuffle} med en kortlek som endast innehåller tre kort. Upprepade blandningar görs och förekomsten av varje möjlig permutation  registreras.
+%\item \code{AsciiBarGraph.scala} innehåller enbart en metod som skapar ett stapeldiagram åt \code{TestingDeck}
 \end{itemize}
 
-\ifkompendium
-\clearpage
-\fi
+%\ifkompendium
+%\clearpage
+%\fi
 
 
 \subsection{Obligatoriska uppgifter}\label{subsection:lab:shuffle:tasks}
 
 \Task Implementera algoritmen SHUFFLE.
 
-\Subtask Implementera metoden \code{shuffle} i klassen \code{CardDeck}. Följ algoritmen noga, och använd \code{cards.length} för att få fram längden på kortleken.
+\Subtask Skapa din egen implementation av metoden \code{shuffle} i klassen \code{CardDeck}. Följ den givna algoritmen i stycke \ref{knuth-shuffle} noga. Du kan använd \code{cards.length} för att få fram längden på kortleken, men du gärna instället loopa med hjälp av \code{cards.indices.reverse}.
 
-\Subtask Kör \code{TestingDeck} för att testa att blandningen är jämnt fördelad. \code{TestingDeck} blandar en kortlek med tre kort och räknar hur ofta olika permutationer dyker upp. Du bör få en utskrift med sex ($3!$) ungefär lika långa staplar.
+\Subtask Kör mainmetoden i \code{TestCardDeck} och kontrollera att blandningen är jämnt fördelad. Metoden \code{testShuffle} blandar en kortlek med tre kort och räknar hur ofta varje möjlig permutation dyker upp. Du bör få en utskrift med sex ($3!$) procentsatser som ska vara nästan lika.
 
-\Task Fyll i de ofärdiga delarna av klassen \code{CardDeck}.
+\Task Fyll i de ofärdiga delarna av kompanjonsobjektet till \code{CardDeck}.
 
-\Subtask Skriv kod för att skapa en array innehållande en 52-korts standardlek. Använd konstanterna i \code{Card}. Tänk på att en \code{for}/\code{yield}-sats inte nödvändigtvis ger en \code{Array}, men att alla samlingar kan omvandlas till en sådan med \code{toArray}.
+\Subtask Implementera metoden \code{full} som skapar en 52-korts standardlek ordnad efter färg och valör. Använd konstanterna i \code{Card}. %Tänk på att en \code{for}/\code{yield}-sats inte nödvändigtvis ger en \code{Array}, men att alla samlingar kan omvandlas till en sådan med \code{toArray}.
 
-\Subtask Kör \code{CardDeck} och kontrollera så att du får kort av alla fyra färger, och både ess och kungar.
+\Subtask Kör \code{testCreate} i \code{TestCardDeck} och kontrollera så att du får kort av alla fyra färger, och både ess och kungar.
 
 \Task Använd den färdiga \code{CardDeck}-klassen för att ta fram sannolikheterna för att  ''straight flush'', ''straight'' eller ''flush'' dyker upp.
 

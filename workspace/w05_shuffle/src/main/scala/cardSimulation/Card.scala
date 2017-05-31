@@ -1,23 +1,20 @@
 package cardSimulation
 
-case class Card(suit: Int, value: Int) {
-  require(value >= 1 && value <= 13, "value must be between 1 and 13")
-  require(suit >= 1 && suit <= 4, "suit must be between 1 and 4")
+case class Card(rank: Int, suit: Int) {
+  import Card._
 
-  def valStr = value match {
-    case 1  => "A"
-    case 11 => "J"
-    case 12 => "Q"
-    case 13 => "K"
-    case _  => value
-  }
-  
-  def suitStr = suit match {
-    case 1 => "♠"
-    case 2 => "♥"
-    case 3 => "♣"
-    case 4 => "♦"
-  }
+  require(rankRange.contains(rank), s"rank=$rank, must be in $rankRange")
+  require(suitRange.contains(suit), s"suit=$suit, must be in $suitRange")
 
-  override def toString() = suitStr + valStr
+  val rankString: String = ranks(rank - 1)
+  val suitChar:   Char   = suits(suit - 1)
+
+  override def toString() = s"$rankString$suitChar "
+}
+object Card {
+  val suitRange: Range = 1 to 4
+  val rankRange: Range = 1 to 13
+  val suits: Vector[Char] = "♠♥♣♦".toVector
+  val ranks: Vector[String] =
+    "A" +: ((2 to 10).map(_.toString).toVector ++ Vector("J", "Q", "K"))
 }

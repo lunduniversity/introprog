@@ -1,27 +1,22 @@
 package cardSimulation
 
 case class Hand(cards: Vector[Card]) {
-  def isFlush: Boolean = cards.forall(_.suit == cards.head.suit)
+  def isFlush: Boolean = cards.forall(_.suit == cards(0).suit)
 
   def isStraight: Boolean = {
-    val sortedVals = cards.toVector.map(_.value).sorted
-    def sequential(v: Vector[Int]) =
-      (0 until v.length - 1).forall(i => sortedVals(i) + 1 == sortedVals(i + 1))
-    if (sortedVals(0) != 1) {
-      sequential(sortedVals)
-    } else {
-      sequential(sortedVals) ||
-        sequential(sortedVals.drop(1).:+(14))
-    }
+    def isInSeq(xs: Vector[Int]): Boolean = xs.indices.forall(i => xs(i) == xs(i + 1) - 1)
+    val ranksSorted = cards.map(_.rank).sorted
+    if (ranksSorted(0) != 1) isInSeq(ranksSorted)
+    else // special case with ace interpreted as either 1 or 14
+      isInSeq(ranksSorted) || isInSeq(ranksSorted.drop(1).:+(14))
   }
-
 
   /**
    * Yields a vector of length 14, with positions 1-13 containing
-   * the number of cards of that value
+   * the number of cards of that value. Position 0 is not used.
    */
   def tally: Vector[Int] = ???
 }
 object Hand {
-  def drawFrom(deck: CardDeck) = Hand(deck.cards.take(5).toVector)
+  def drawFrom(deck: CardDeck): Hand = Hand(deck.peek(5))
 }
