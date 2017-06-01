@@ -1,6 +1,6 @@
 package cardSimulation
 
-class CardDeck private (val initCards: Vector[Card]){
+class Deck private (val initCards: Vector[Card]){
   private val rand = new scala.util.Random
   private var cards: Array[Card] = initCards.toArray
 
@@ -25,11 +25,11 @@ class CardDeck private (val initCards: Vector[Card]){
     cards = scala.util.Random.shuffle(cards.toSeq).toArray
 }
 
-object CardDeck {
-  def empty: CardDeck = new CardDeck(Vector())
-  def full(): CardDeck = {
+object Deck {
+  def empty: Deck = new Deck(Vector())
+  def full(): Deck = {
     val xs = for (s <- Card.suitRange; r <- Card.rankRange) yield Card(r,s)
-    new CardDeck(xs.toVector)
+    new Deck(xs.toVector)
   }//???
-  def apply(cards: Seq[Card]): CardDeck = new CardDeck(cards.toVector)
+  def apply(cards: Seq[Card]): Deck = new Deck(cards.toVector)
 }
