@@ -1,7 +1,6 @@
 package cardSimulation
 
 class Deck private (val initCards: Vector[Card]){
-  private val rand = new scala.util.Random
   private var cards: Array[Card] = initCards.toArray
 
   def reset(): Unit = cards = initCards.toArray
@@ -19,17 +18,16 @@ class Deck private (val initCards: Vector[Card]){
 
   def prepend(moreCards: Card*): Unit = cards = moreCards.toArray ++ cards
 
-  def swap(i1: Int, i2: Int): Unit = ???
+  /** Swaps cards at position a and b. */
+  def swap(a: Int, b: Int): Unit = ???
 
-  def shuffle(): Unit = //??? Byt ut nedan mot din egen impl. av Knuth Shuffle
-    cards = scala.util.Random.shuffle(cards.toSeq).toArray
+  /** Randomly reorders the cards in this deck. */
+  def shuffle(): Unit = ???
 }
-
 object Deck {
   def empty: Deck = new Deck(Vector())
-  def full(): Deck = {
-    val xs = for (s <- Card.suitRange; r <- Card.rankRange) yield Card(r,s)
-    new Deck(xs.toVector)
-  }//???
   def apply(cards: Seq[Card]): Deck = new Deck(cards.toVector)
+
+  /** Creates a new full Deck with 52 cards in rank and suit order. */
+  def full(): Deck = ???
 }

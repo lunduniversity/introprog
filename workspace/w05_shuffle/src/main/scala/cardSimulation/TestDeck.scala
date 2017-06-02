@@ -1,7 +1,5 @@
 package cardSimulation
 
-import scala.collection.mutable
-
 object TestDeck {
   def testCreate(): Unit = {
     println("\n*** TestDeck.testCreate:")
@@ -29,7 +27,7 @@ object TestDeck {
   }
 
   def main(args: Array[String]): Unit = {
-    testCreate()
+    //testCreate()
     testShuffle()
   }
 }

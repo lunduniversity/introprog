@@ -15,7 +15,7 @@
 
 \subsection{Bakgrund}\label{knuth-shuffle}
 
-Denna labb handlar om kortblandning. Att blanda kort så att varje möjlig permutation (ordning som korten ligger i) är lika sannolik är icke-trivialt; en osystematisk blandning leder till en skev fördelning.
+Denna uppgift handlar om kortblandning. Att blanda kort så att varje möjlig permutation (ordning som korten ligger i) är lika sannolik är icke-trivialt; en osystematisk blandning leder till en skev fördelning.
 
 Givet en bra slumpgenerator går det att blanda en kortlek genom att lägga alla kort i en hög och sedan ta ett slumpvist kort från högen och lägga det överst i leken, tills alla kort ligger i leken. Fisher-Yates-algoritmen\footnote{\href{https://en.wikipedia.org/wiki/Fisher\%E2\%80\%93Yates_shuffle}{https://en.wikipedia.org/wiki/Fisher\%E2\%80\%93Yates\_shuffle}} (även kallad Knuth-shuffle), fungerar på det sättet. Här benämner vi denna algoritm SHUFFLE. Den återfinns i pseudokod nedan:
 
@@ -32,72 +32,93 @@ Givet en bra slumpgenerator går det att blanda en kortlek genom att lägga alla
  }
 \end{algorithm}
 
-Kortspelet poker handlar om att dra kort och få upp vissa kombinationer av kort, s.k. ''händer''\footnote{\href{https://sv.wikipedia.org/wiki/Pokerhand}{https://sv.wikipedia.org/wiki/Pokerhand}}. Dessa är ordnade från bättre till sämre; den spelare vinner som fått bäst hand.
+En kortlek \Eng{deck} har 52 kort, vart och ett med olika valör \Eng{rank} och färg (eng. \emph{suit}, på svenska även svit). Kortspelet poker handlar om att dra kort och få upp vissa kombinationer av kort, s.k. ''händer''\footnote{\href{https://sv.wikipedia.org/wiki/Pokerhand}{https://sv.wikipedia.org/wiki/Pokerhand}}. Dessa är ordnade från bättre till sämre; den spelare vinner som fått bäst hand.
 Det är därför intressant att veta med vilken sannolikhet en viss hand dyker upp vid dragning från en blandad kortlek.
 
 De vanliga pokerhänderna är, i fallande värde, färgstege (straight flush), fyrtal, kåk (full house), färg (flush), stege (straight), triss, tvåpar och par. Dessa finns illustrerade i avsnitt \ref{shuffle:hands}.
-Det finns ytterligare en hand, s.k. ''royal (straight) flush'' som betcknar en färgstege med ess som högsta kort, men dess sannolikhet är för låg för att man vid simulering kan förväntas påträffa den inom rimlig tid.
+Det finns ytterligare en hand, s.k. ''royal (straight) flush'' som betecknar en färgstege med ess som högsta kort, men dess sannolikhet är för låg för att man vid simulering kan förväntas påträffa den inom rimlig tid.
 
-Under laborationen ska du börja med att göra klar den ofärdiga klassen \code{CardDeck} som visas nedan, och återfinns i laborationens workspace som du kan ladda ner från \url{http://cs.lth.se/pgk/ws} och importera i en IDE enligt instruktioner i appendix \ref{appendix:ide}.
-
-\begin{figure}
-
-\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w05_shuffle/src/main/scala/cardSimulation/Card.scala}
+Under laborationen ska du börja med att göra klar den ofärdiga klassen \code{Deck} som visas nedan, och återfinns i laborationens workspace som du kan ladda ner från \url{http://cs.lth.se/pgk/ws} och importera i en IDE enligt instruktioner i appendix \ref{appendix:ide}.
 
 
-\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w05_shuffle/src/main/scala/cardSimulation/CardDeck.scala}
-
-\end{figure}
 
 Labbinstruktionerna i avsnitt \ref{subsection:lab:shuffle:tasks} ger tips om hur du ska ersätta \code{???} i givna kodskellett med med dina lösningar.
+Med hjälp av klasserna \code{TestHand} och \code{TestDeck} kan du testa så att dina implementationer fungerar.
 
-Efter att du testat så att din implementation av \code{CardDeck} fungerar, ska du använda \code{CardDeck} tillsammans med andra klasser som beskrivs nedan för att ta reda på sannolikheter för att olika pokerhänder uppkommer när man delar ut 5 kort ur en bra  blandad kortlek.
+\begin{figure}
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w05_shuffle/src/main/scala/cardSimulation/Card.scala}
+\caption{Den färdigimplementerade, oföränderliga case-klassen \code{Card}.}
+\label{shuffle:fig-card}
+\end{figure}
 
-Till din hjälp har du ett antal färdiga kodfiler och en del ofärdig kod som du ska färdigställa. Alla klasserna ligger i ett paket med namnet \code{CardSimulation}.
 
-De givna kodfilerna är:\footnote{Du kan bläddra bland klasserna i paketet cardSimulation här: \\
+
+
+När dina implementationer av metoderna \code{full} och \code{shuffle} fungerar, ska du använda \code{Deck} i singelobjektet \code{PokerProbability}, för att ta reda på sannolikheter för att olika pokerhänder uppkommer när man delar ut 5 kort ur en bra blandad kortlek.
+
+Till din hjälp har du nedan kodfiler, där några har ofärdig kod som du ska färdigställa. All kod  ligger i ett paket med namnet \code{cardSimulation}.\footnote{Du kan bläddra bland klasserna i paketet cardSimulation här: \\
 \href{https://github.com/lunduniversity/introprog/tree/master/workspace/w05_shuffle/src/main/scala/cardSimulation}{\mbox{\fontsize{9}{11}\selectfont  https://github.com/lunduniversity/introprog/tree/master/workspace/w05\_shuffle/src/main/scala/cardSimulation}}}
 
 \begin{itemize}
-\item \code{CardDeck.scala} innehåller en klass som har en kortlek som kan blandas. Kompanjonsobjektet har en main-metod som skapar en kortlek, skriver ut, blandar och skriver ut.
-\item \code{Card.scala} innehåller en \code{case class Card(suit: Int, value: Int)} som representerar ett kort och har en koncis \code{toString} med färg \Eng{suit} och valör.
-\item \code{Hand.scala} innehåller en \code{case class Hand(cards: Vector[Card])} som representerar en pokerhand och har metoder för att avgöra vilken hand det är. I kompanjonsobjektet finns en fabriksmetod som kan skapa en hand genom att dra fem kort från en kortlek.
-\item \code{PokerProbability.scala} har en main-metod som testar pokersannolikheter, samt ett par metoder som hjälper denna.
-\item \code{TestCardDeck.scala} testar klassen \code{CardDeck} och implementationen av \code{shuffle} med en kortlek som endast innehåller tre kort. Upprepade blandningar görs och förekomsten av varje möjlig permutation  registreras.
+\item \code{Card.scala} i fig. \ref{shuffle:fig-card} innehåller case-klassen \code{Card} som representerar ett kort och har en koncis \code{toString} med valör och svit (färg). 
+
+\item \code{Deck.scala} i fig. \ref{shuffle:fig-deck} innehåller den förändringsbara klassen \code{Deck}, där du ska implementera kortblandning i metoden \code{shuffle}. Kompanjonsobjektet har metoder för att skapa kortlekar. Du ska implementera metoden \code{full} som skapar en fullständig kortlek med de 52 korten ordnade efter valör och färg.
+
+\item \code{Hand.scala} i fig. \ref{shuffle:fig-hand} innehåller en case-klass \code{Hand} som representerar en pokerhand och har metoder för att avgöra vilken hand det är. I kompanjonsobjektet finns fabriksmetoder kan skapa en ny hand från enskilda kort eller genom att dra kort ur en kortlek. Du ska implementera \code{tally} som registrerar antalet kort av en viss valör. 
+
+\item \code{PokerProbability.scala} i fig. \ref{shuffle:fig-pokerprob}  har en main-metod räknar ut pokersannolikheter, samt hjälpmetoden \code{register} som du ska implementera.
+
+\item \code{TestDeck.scala} ska du använda för att testa din implementation av \code{shuffle} med en kortlek som endast innehåller tre kort. Upprepade blandningar görs och förekomsten av varje möjlig permutation  registreras.
+
+\item \code{TestHand.scala} har en \code{main}-metod som testar klassen \code{Hand}.
+
 %\item \code{AsciiBarGraph.scala} innehåller enbart en metod som skapar ett stapeldiagram åt \code{TestingDeck}
 \end{itemize}
 
-%\ifkompendium
-%\clearpage
-%\fi
+\begin{figure}
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w05_shuffle/src/main/scala/cardSimulation/Deck.scala}
+\caption{Den ofärdiga klassen \code{Deck} med förändringsbar kortlek.}
+\label{shuffle:fig-deck}
+\end{figure}
+
+\begin{figure}
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{9}{10.5}\selectfont]{../workspace/w05_shuffle/src/main/scala/cardSimulation/Hand.scala}
+\caption{Den ofärdiga, oföränderliga klassen \code{Hand} som representerar en pokerhand.}
+\label{shuffle:fig-hand}
+\end{figure}
+
+\begin{figure}
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w05_shuffle/src/main/scala/cardSimulation/PokerProbability.scala}
+\caption{Det ofärdiga singelobjektet \code{PokerProbability} som tar reda på sannolikheter för olika pokerhänder.}
+\label{shuffle:fig-pokerprob}
+\end{figure}
 
 
 \subsection{Obligatoriska uppgifter}\label{subsection:lab:shuffle:tasks}
 
 \Task Implementera algoritmen SHUFFLE.
 
-\Subtask Skapa din egen implementation av metoden \code{shuffle} i klassen \code{CardDeck}. Följ den givna algoritmen i stycke \ref{knuth-shuffle} noga. Du kan använd \code{cards.length} för att få fram längden på kortleken, men du gärna instället loopa med hjälp av \code{cards.indices.reverse}.
+\Subtask Skapa din egen implementation av metoden \code{shuffle} i klassen \code{Deck}. Följ den givna algoritmen i stycke \ref{knuth-shuffle} noga. Du kan använd \code{cards.length} för att få fram längden på kortleken, men du kan gärna istället använda \code{cards.indices.reverse}. Implementera och använd metoden  \code{swap}.
 
-\Subtask Kör mainmetoden i \code{TestCardDeck} och kontrollera att blandningen är jämnt fördelad. Metoden \code{testShuffle} blandar en kortlek med tre kort och räknar hur ofta varje möjlig permutation dyker upp. Du bör få en utskrift med sex ($3!$) procentsatser som ska vara nästan lika.
+\Subtask Kör \code{testShuffle} i \code{TestCardDeck} som kontrollerar att blandningen är jämnt fördelad genom att blanda en kortlek med tre kort och räkna hur ofta varje möjlig permutation dyker upp. Du bör få en utskrift med sex ($3!$) procentsatser som ska vara nästan lika.
 
-\Task Fyll i de ofärdiga delarna av kompanjonsobjektet till \code{CardDeck}.
+\Task Skapa en fullständig, ordnad kortlek.
 
-\Subtask Implementera metoden \code{full} som skapar en 52-korts standardlek ordnad efter färg och valör. Använd konstanterna i \code{Card}. %Tänk på att en \code{for}/\code{yield}-sats inte nödvändigtvis ger en \code{Array}, men att alla samlingar kan omvandlas till en sådan med \code{toArray}.
+\Subtask Implementera metoden \code{full} som skapar en 52-korts standardlek ordnad efter färg och valör. Använd \code{Range}-värdena i kompanjonsobjektet \code{Card}. 
 
-\Subtask Kör \code{testCreate} i \code{TestCardDeck} och kontrollera så att du får kort av alla fyra färger, och både ess och kungar.
+\Subtask Kör \code{testCreate} i \code{TestCardDeck} och kontrollera så att du får kort av alla fyra färger, samt både ess och kungar.
 
-\Task Använd den färdiga \code{CardDeck}-klassen för att ta fram sannolikheterna för att  ''straight flush'', ''straight'' eller ''flush'' dyker upp.
+\Task Ta fram sannolikheterna för ''straight flush'', ''straight'' eller ''flush''.
 
-\Subtask Implementera funktionen \code{test} i \code{PokerProbability}. Använd de färdiga funktionerna \code{Hand.drawFrom} och \code{testHand} för att dra och klassificera en hand från en kortlek. Lagra frekvenserna i en muterbar \code{Map} (\code{collection.mutable.Map} finns redan importerad).
+\Subtask Implementera metoden \code{register} i \code{PokerProbability}. Använd \code{from} och \code{category} i \code{Hand} för att skapa och kategorisera en hand från en kortlek. Lagra frekvenserna i en lokal array som du, när resultatet är färdigt, gör om till en vektor med \code{toVector}.
 
-\Subtask Kör \code{PokerProbability}, förslagsvis med 1 000 000 iterationer. Du bör få ungefär dessa sannolikheter:
+\Subtask Kör \code{PokerProbability}, förslagsvis med 1 000 000 iterationer. Du bör få ungefär dessa sannolikheter\footnote{\url{http://www.forum.gpcdata.se/pdf/poker.pdf}}:
 \begin{figure}[H]\centering
 \begin{tabular}{r|l}
 \emph{hand} & $\emph{sannolikhet}$ \\ \hline
 Straight flush & 0.00154\%  \\
 Flush          & 0.197\%    \\
 Straight       & 0.39\%     \\
-High card      & 99.41\%
 \end{tabular}
 \end{figure}
 
@@ -108,7 +129,6 @@ High card      & 99.41\%
 
 
 \Task Implementera ett interaktivt kortspel, t.ex. någon enkel pokervariant. Börja med något mycket enkelt och bygg vidare med sådant som du tycker verkar roligt.
-
 
 
 \subsection{Bilder med exempel på olika pokerhänder}\label{shuffle:hands}
