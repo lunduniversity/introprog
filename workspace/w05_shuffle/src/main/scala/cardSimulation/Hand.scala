@@ -50,7 +50,7 @@ object Hand {
     val TwoPair = 7
     val OnePair = 8
     val HighCard = 9
-    val indices = RoyalFlush to HighCard
+    val values = RoyalFlush to HighCard
 
     object Name {
       val english = Vector("royal flush", "straight flush", "four of a kind", "full house",
