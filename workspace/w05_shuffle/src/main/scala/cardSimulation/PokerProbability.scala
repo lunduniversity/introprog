@@ -15,7 +15,7 @@ object PokerProbability {
     for (i <- Hand.Category.values) {
         val name = Hand.Category.Name.english(i).capitalize
         val percentages = frequencies(i).toDouble / n * 100
-        println(f"$name%-15s $percentages%10.6f%%")
+        println(f"$name%16s $percentages%10.6f%%")
     }
   }
 }
