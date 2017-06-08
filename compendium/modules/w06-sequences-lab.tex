@@ -21,9 +21,10 @@ Givet en bra slumpgenerator går det att blanda en kortlek genom att lägga alla
 
 \begin{algorithm}[H]
  \SetKwInOut{Input}{Indata}
- \Input{Array $xs$ som ska blandas}
- $len \leftarrow$ antalet element i $xs$ \\
- \For{$i \leftarrow (len - 1)$ \KwTo $0$}{
+ \SetKwInOut{Output}{Utdata}
+ \Input{Array $xs$ med $n$ st värden som ska blandas ''på plats''}
+ \Output{$xs$ med sina värden omflyttade i slumpmässig ordning} 
+ \For{$i \leftarrow (n - 1)$ \KwTo $0$}{
   $r \leftarrow$ slumptal mellan $0$ och $i$ \\
   byt plats på $x(i)$ och $x(r)$ 
 %  $temp \leftarrow xs(i)$ \\
@@ -60,13 +61,13 @@ Till din hjälp har du nedan kodfiler, där några har ofärdig kod som du ska f
 \href{https://github.com/lunduniversity/introprog/tree/master/workspace/w05_shuffle/src/main/scala/cardSimulation}{\mbox{\fontsize{9}{11}\selectfont  https://github.com/lunduniversity/introprog/tree/master/workspace/w05\_shuffle/src/main/scala/cardSimulation}}}
 
 \begin{itemize}
-\item \code{Card.scala} i fig. \ref{shuffle:fig-card} innehåller case-klassen \code{Card} som representerar ett kort och har en koncis \code{toString} med valör och svit (färg). 
+\item \code{Card.scala} i fig. \ref{shuffle:fig-card} innehåller den färdigimplementerade case-klassen \code{Card} som representerar ett kort och har en koncis \code{toString} med valör och svit (färg). 
 
 \item \code{Deck.scala} i fig. \ref{shuffle:fig-deck} innehåller den förändringsbara klassen \code{Deck}, där du ska implementera kortblandning i metoden \code{shuffle}. Kompanjonsobjektet har metoder för att skapa kortlekar. Du ska implementera metoden \code{full} som skapar en fullständig kortlek med de 52 korten ordnade efter valör och färg.
 
 \item \code{Hand.scala} i fig. \ref{shuffle:fig-hand} innehåller en case-klass \code{Hand} som representerar en pokerhand och har metoder för att avgöra vilken hand det är. I kompanjonsobjektet finns fabriksmetoder som kan skapa en ny hand från enskilda kort eller genom att dra kort ur en kortlek. Du ska implementera \code{tally} som registrerar antalet kort av en viss valör. 
 
-\item \code{PokerProbability.scala} i fig. \ref{shuffle:fig-pokerprob}  har en main-metod räknar ut pokersannolikheter, samt hjälpmetoden \code{register} som du ska implementera.
+\item \code{PokerProbability.scala} i fig. \ref{shuffle:fig-pokerprob}  har en main-metod som räknar ut pokersannolikheter, samt hjälpmetoden \code{register} som du ska implementera.
 
 \item \code{TestDeck.scala} ska du använda för att testa din implementation av \code{shuffle} med en kortlek som endast innehåller tre kort. Upprepade blandningar görs och förekomsten av varje möjlig permutation  registreras.
 
@@ -80,6 +81,8 @@ Till din hjälp har du nedan kodfiler, där några har ofärdig kod som du ska f
 \caption{Den ofärdiga klassen \code{Deck} med förändringsbar kortlek.}
 \label{shuffle:fig-deck}
 \end{figure}
+
+
 
 \begin{figure}
 \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{9}{10.5}\selectfont]{../workspace/w05_shuffle/src/main/scala/cardSimulation/Hand.scala}
@@ -108,11 +111,11 @@ Till din hjälp har du nedan kodfiler, där några har ofärdig kod som du ska f
 
 \Subtask Kör \code{testCreate} i \code{TestCardDeck} och kontrollera så att du får kort av alla fyra färger, samt både ess och kungar.
 
-\Task Ta fram sannolikheterna för ''straight flush'', ''straight'' eller ''flush''.
+\Task Ta fram sannolikheterna för ''straight flush'', ''straight'' och ''flush''.
 
 \Subtask Implementera metoden \code{register} i \code{PokerProbability}. Använd \code{from} och \code{category} i \code{Hand} för att skapa och kategorisera en hand från en kortlek. Lagra frekvenserna i en lokal array som du, när resultatet är färdigt, gör om till en vektor med \code{toVector}.
 
-\Subtask Kör \code{PokerProbability}, förslagsvis med 1 000 000 iterationer. Du bör få ungefär dessa sannolikheter\footnote{\url{http://www.forum.gpcdata.se/pdf/poker.pdf}}:
+\Subtask Kör \code{PokerProbability}, förslagsvis med en miljon iterationer. Du bör få ungefär dessa sannolikheter\footnote{\url{http://www.forum.gpcdata.se/pdf/poker.pdf}}:
 \begin{figure}[H]\centering
 \begin{tabular}{r|l}
 \emph{hand} & $\emph{sannolikhet}$ \\ \hline
@@ -125,96 +128,104 @@ Straight       & 0.39\%     \\
 
 \subsection{Frivilliga extrauppgifter}
 
-\Task Implementera metoden \code{tally} i klassen \code{Hand} så att simuleringen även kan registrera kortkombinationerna fyrtal, kåk, triss, tvåpar och par. Kör sedan \code{PokerProbability} igen.
+\Task Förbättra programmet så att simuleringen registrerar alla handkategorier utom Royal Flush. Kör sedan \code{PokerProbability} igen och notera sannolikheterna.
+
+\Task Gör om alla metoder i case-klassen \code{Hand} till \code{lazy val} och undersök hur det påverkar exekveringstiden. Varför förändras prestanda med denna åtgärd? Hade denna optimering varit lämplig om klassen \code{Hand} vore förändringsbar? Varför?
+
+\Task Gör så att även sannolikheten för Royal Flush kan simuleras. Det krävs i storleksordningen $10^8$ iterationer för en noggrannhet på 2 värdesiffror. Detta kan ta ca 5 minuter på en någorlunda snabb dator, så det kan vid behov vara läge före en paus under simuleringen... 
+
+\Task Implementera ett interaktivt kortspel, t.ex. någon enkel pokervariant. Börja med något mycket enkelt, till exempel högst-kort-vinner, och bygg vidare med sådant som du tycker verkar roligt. 
+
+Du kan t.ex. skapa en metod \code{def compareTo(other: Hand): Int} i case-klassen \code{Hand} som ger -1 om \code{other} är sämre, 0 om händerna är lika bra, och +1 om \code{other} är bättre. Du kan steg för steg göra så att det går att jämföra fler och fler händer enligt de specialregler som gäller för när olika händer anses bättre eller lika. Läs om reglerna här: \url{https://en.wikipedia.org/wiki/List_of_poker_hands}
 
 
-\Task Implementera ett interaktivt kortspel, t.ex. någon enkel pokervariant. Börja med något mycket enkelt och bygg vidare med sådant som du tycker verkar roligt.
-
-\Task Gör så att även sannolikheten för Royal Flush kan simuleras. Det krävs i storleksordningen $10^8$ iterationer för en noggrannhet på 2 värdesiffror. Detta tar uppåt 10 minuter på en någorlunda snabb dator, så du kan ta en paus under simuleringen... 
 
 \subsection{Bilder med exempel på olika pokerhänder}\label{shuffle:hands}
 
 Figurerna \ref{lab:shuffle:first-picture} -- \ref{lab:shuffle:last-picture} visar bilder på olika korthänder i poker.
 
+\newcommand{\CardWidth}{0.62\textwidth}
+\newcommand{\CardCaptionWidth}{0.3\textwidth}
+
 \begin{figure}[H]
- \begin{minipage}[c]{0.5\textwidth}
+ \begin{minipage}[c]{\CardWidth}
   \includegraphics[width=\textwidth]{../img/w05-hands/pair.png}
  \end{minipage}
- \begin{minipage}[c]{0.3\textwidth}
-  \caption{Par - två kort har samma valör}
+ \begin{minipage}[c]{\CardCaptionWidth}
+  \caption{Par: två kort har samma valör.}
    \label{lab:shuffle:first-picture}
  \end{minipage}
 \end{figure}
 
 \begin{figure}[H]
- \begin{minipage}[c]{0.5\textwidth}
+ \begin{minipage}[c]{\CardWidth}
   \includegraphics[width=\textwidth]{../img/w05-hands/twopair.png}
  \end{minipage}
- \begin{minipage}[c]{0.3\textwidth}
-  \caption{Tvåpar - två olika par}
+ \begin{minipage}[c]{\CardCaptionWidth}
+  \caption{Två par: handen har två \emph{olika} par.}
  \end{minipage}
 \end{figure}
 
 \begin{figure}[H]
- \begin{minipage}[c]{0.5\textwidth}
+ \begin{minipage}[c]{\CardWidth}
   \includegraphics[width=\textwidth]{../img/w05-hands/trips.png}
  \end{minipage}
- \begin{minipage}[c]{0.3\textwidth}
-  \caption{Triss - tre kort har samma valör}
+ \begin{minipage}[c]{\CardCaptionWidth}
+  \caption{Triss: tre kort har samma valör.}
  \end{minipage}
 \end{figure}
 
 \begin{figure}[H]
- \begin{minipage}[c]{0.5\textwidth}
+ \begin{minipage}[c]{\CardWidth}
   \includegraphics[width=\textwidth]{../img/w05-hands/straight.png}
  \end{minipage}
- \begin{minipage}[c]{0.3\textwidth}
-  \caption{Stege - kortens valörer bildar en följd, ess kan vara antingen 1 eller 14}
+ \begin{minipage}[c]{\CardCaptionWidth}
+  \caption{Stege: kortens valörer bildar en följd, ess kan vara antingen 1 eller 14.}
  \end{minipage}
 \end{figure}
 
 \begin{figure}[H]
- \begin{minipage}[c]{0.5\textwidth}
+ \begin{minipage}[c]{\CardWidth}
   \includegraphics[width=\textwidth]{../img/w05-hands/flush.png}
  \end{minipage}
- \begin{minipage}[c]{0.3\textwidth}
-  \caption{Färg - alla kort har samma färg}
+ \begin{minipage}[c]{\CardCaptionWidth}
+  \caption{Färg: alla kort har samma färg.}
  \end{minipage}
 \end{figure}
 
 \begin{figure}[H]
- \begin{minipage}[c]{0.5\textwidth}
+ \begin{minipage}[c]{\CardWidth}
   \includegraphics[width=\textwidth]{../img/w05-hands/fullhouse.png}
  \end{minipage}
- \begin{minipage}[c]{0.3\textwidth}
-  \caption{Kåk - både triss och par}
+ \begin{minipage}[c]{\CardCaptionWidth}
+  \caption{Kåk: både triss och par.}
  \end{minipage}
 \end{figure}
 
 \begin{figure}[H]
- \begin{minipage}[c]{0.5\textwidth}
+ \begin{minipage}[c]{\CardWidth}
   \includegraphics[width=\textwidth]{../img/w05-hands/fours.png}
  \end{minipage}
- \begin{minipage}[c]{0.3\textwidth}
-  \caption{Fyrtal - fyra kort har samma valör}
+ \begin{minipage}[c]{\CardCaptionWidth}
+  \caption{Fyrtal: fyra kort har samma valör.}
  \end{minipage}
 \end{figure}
 
 \begin{figure}[H]
- \begin{minipage}[c]{0.5\textwidth}
+ \begin{minipage}[c]{\CardWidth}
   \includegraphics[width=\textwidth]{../img/w05-hands/straightflush.png}
  \end{minipage}
- \begin{minipage}[c]{0.3\textwidth}
-  \caption{Färgstege - både stege och färg}
+ \begin{minipage}[c]{\CardCaptionWidth}
+  \caption{Färgstege: både stege och färg.}
  \end{minipage}
 \end{figure}
 
 \begin{figure}[H]
- \begin{minipage}[c]{0.5\textwidth}
+ \begin{minipage}[c]{\CardWidth}
   \includegraphics[width=\textwidth]{../img/w05-hands/none.png}
  \end{minipage}
- \begin{minipage}[c]{0.3\textwidth}
-  \caption{Högt kort - inget mönster finns}
+ \begin{minipage}[c]{\CardCaptionWidth}
+  \caption{Högt kort: inget mönster finns.}
  \label{lab:shuffle:last-picture}
   \end{minipage}
 \end{figure}
