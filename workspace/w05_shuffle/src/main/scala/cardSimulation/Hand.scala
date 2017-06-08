@@ -7,18 +7,18 @@ case class Hand(cards: Vector[Card]) {
    * A vector of length 14 with positions 1-13 containing the number of
    * cards of that rank. Position 0 contains 0.
    */
-  lazy val tally: Vector[Int] = ???
+  def tally: Vector[Int] = ???
 
-  lazy val ranksSorted: Vector[Int] = cards.map(_.rank).sorted.toVector
+  def ranksSorted: Vector[Int] = cards.map(_.rank).sorted.toVector
 
   def isFlush: Boolean = cards.length > 0 && cards.forall(_.suit == cards(0).suit)
 
   def isStraight: Boolean = {
     def isInSeq(xs: Vector[Int]): Boolean =
       xs.length > 1 && (0 to xs.length - 2).forall(i => xs(i) == xs(i + 1) - 1)
-    if (ranksSorted(0) != 1) isInSeq(ranksSorted)
-    else // special case with ace interpreted as either 1 or 14
-      isInSeq(ranksSorted) || isInSeq(ranksSorted.drop(1).:+(14))
+
+    isInSeq(ranksSorted) ||  // special case with ace interpreted as 14:
+      (ranksSorted(0) == 1) && isInSeq(ranksSorted.drop(1) :+ 14)
   }
 
   def isStraightFlush: Boolean = isStraight && isFlush
