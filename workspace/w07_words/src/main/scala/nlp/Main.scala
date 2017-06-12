@@ -4,7 +4,7 @@ object Main {
   val defaultUrl = "https://fileadmin.cs.lth.se/pgk/skattkammaron.txt"
   val defaultN = 10
 
-  def top(n: Int, counts: Map[String, Int]): Vector[(String, Int)] = ???
+  def top(n: Int, freqMap: Map[String, Int]): Vector[(String, Int)] = ???
 
   def report(text: Text, from: String, n: Int): String = s"""
     |Källa: $from
