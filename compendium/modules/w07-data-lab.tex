@@ -30,7 +30,7 @@ Denna uppgift handlar om analys av naurligt språk \Eng{Natural Language Process
 \item Hur kan man generera slumpmässiga ordsekvenser som liknar ordföljden i en given text?
 \end{itemize}
 
-\noindent\TODO{beskriv n-gram, bigram, frekvenstabell \code{Map[String, Int]}
+\noindent För att kunna svara på sådana frågor ska du skapa så kallade \emph{n-gram}; sekvenser av $n$ ord som förekommer i följd i en text. Exempel på några 2-gram (kallas även \emph{bigram}) som finns i föregående mening: (du, ska), (ska, även), (även, skapa), (skapa, så), (så, kallade), och så vidare.\footnote{Du kan undersöka olika n-gram i en stor mängd böcker med hjälp av Googles n-gram-viewer: \url{https://books.google.com/ngrams/}}
 
 \subsection{Obligatoriska uppgifter}
 
@@ -44,7 +44,7 @@ Klassen \code{FreqMapBuilder} ska ligga i ett paket som heter \code{nlp}.
 %\label{data:fig-freqmap}
 \end{figure}
 
-Det ska gå att använda \code{FreqMapBuilder} så här:
+\noindent Testa noga så att din \code{FreqMapBuilder} fungerar korrekt. Exempel på test i REPL:
 \begin{REPL}
 scala> val fmb = FreqMapBuilder("hej", "på", "dej")
 fmb: nlp.FreqMapBuilder = nlp.FreqMapBuilder@458f85ef
@@ -53,12 +53,20 @@ scala> fmb.add("hej")
 
 scala> fmb.toMap
 res0: Map[String,Int] = Map(på -> 1, hej -> 2, dej -> 1)
+
+scala> (1 to Short.MaxValue).foreach(i => fmb.add(i.toString))
+
+scala> fmb.toMap.size
+res1: Int = 32770
+
+scala> fmb.toMap
+res2: Map[String,Int] = Map(10292 -> 1, 19125 -> 1, 26985 -> 1, 29301 -> 1, 5451 -> 1, 4018 -> 1, 31211 -> 1, 17319 -> 1, 20778 -> 1, 25285 -> 1, 17079 -> 1, 9936 -> 1, 13172 -
 \end{REPL}
 
-\noindent I kommande uppgifter ska du steg för steg implementera den ofärdiga klassen \code{Text}:%figur \ref{data:fig-text}.
+\noindent I kommande uppgifter ska du steg för steg skapa och testa case-klassen \code{Text} nedan:%figur \ref{data:fig-text}.
 
 \begin{figure}[H]
-\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{10.5}{12.5}\selectfont]{../workspace/w07_words/src/main/scala/nlp/Text.scala}
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{10.4}{12.5}\selectfont]{../workspace/w07_words/src/main/scala/nlp/Text.scala}
 %\caption{Den ofärdiga klassen \code{Text}.}
 %\label{data:fig-text}
 \end{figure}
@@ -66,15 +74,15 @@ res0: Map[String,Int] = Map(på -> 1, hej -> 2, dej -> 1)
 \Task \emph{Dela upp en sträng i ord}. Medlemmen \code{words} ska innehålla en vektor med alla ord i \code{source}, utan andra tecken än bokstäver. 
 Dela upp strängen \code{source} genom att i tur och ordnig göra följande:
 \begin{enumerate}[nolistsep, noitemsep]
-\item byta ut alla tecken för vilka \code{isWhitespace} är sant mot \code{' '}
-\item byta ut alla tecken för vilka \code{isLetter} är falskt mot \code{' '} 
-\item dela upp strängen i en array av strängar med \code{split(' ')}
+\item byta ut alla tecken i \code{source} för vilka \code{isWhitespace} är sant mot \code{' '}
+\item byta sedan ut alla tecken för vilka \code{isLetter} är falskt mot \code{' '} 
+\item dela upp strängen från föregånde steg i en array av strängar med \code{split(' ')}
 \item filtrera bort alla tomma strängar
 \item gör om alla bokstäver i alla strängar till små bokstäver 
 \item gör om arrayen till en sekvens av typen \code{Vector[String]}.
 \end{enumerate}
 
-Testa så att \code{words}, och de värden som anänder \code{words}, fungerar i REPL:
+\noindent Testa så att \code{words}, och de värden som anänder \code{words}, fungerar i REPL:
 \begin{REPL}
 scala> val t = Text("Gurka är ingen tomat, men gurka är en grönsak.")
 
@@ -94,29 +102,82 @@ res4: Set[String] = Set(gurka, ingen, tomat)
 
 \end{REPL}
 
-\Task Implementera \code{wordFreq} med hjälp av \code{FreqMapBuilder}.
+\Task Implementera \code{wordFreq} med hjälp av \code{FreqMapBuilder}. Testa \code{wordFreq} genom att ladda ner boken ''Skattkammarön'' skriven av Robert Louis Stevenson\footnote{Copyright för denna äventyrsbok om pirater har gått ut, så du behöver inte piratkopiera den.} och undersök frekvensen för olika vanliga ord. Vilket ord är vanligast? Näst vanligast?  
+
+\begin{REPL}[basicstyle=\color{white}\ttfamily\fontsize{9}{11}\selectfont]
+scala> val piratbok = Text.fromURL("https://fileadmin.cs.lth.se/pgk/skattkammaron.txt")
+piratbok: nlp.Text = Text(Herr Trelawney, doktor Livesey och de övriga herrarna har bett mig att skriva ner alla omständigheter kring Skattkammarön, ...
+
+scala> piratbok.words.size
+res0: Int = 69438
+
+scala> piratbok.wordFreq("pirat")
+res1: Int = 7
+\end{REPL}
+Länkar till böcker i UTF-8-format som du kan använda i dina tester:
+\begin{itemize}%[nolistsep,noitemsep]
+\item ''Skattkammarön'' av R. L. Stevenson: \\\url{https://fileadmin.cs.lth.se/pgk/skattkammaron.txt}
+\item ''Inferno'' av August Stringberg: \\\url{https://fileadmin.cs.lth.se/pgk/inferno.txt}
+\item ''Pride and Prejudice'' av Jane Austen: \\\url{https://fileadmin.cs.lth.se/pgk/prideandprejudice.txt}
+\item Projekt Gutenberg med många fritt tillgängliga böcker i textformat: \\\url{https://www.gutenberg.org/}
+\end{itemize}
+ 
 
 
-\Task \emph{n-gram.} 
+\Task Implementera metoden \code{ngrams}. \emph{Tips:} Undersök i REPL hur metoden \code{sliding} fungerar. Gör \code{toVector} på resultatet från \code{sliding}. Testa så att \code{ngrams} och \code{bigrams} fungerar.
+\begin{REPL}
+scala> piratbok.ngrams(3).take(2)
+res1: scala.collection.immutable.Vector[Vector[String]] = 
+Vector(Vector(herr, trelawney, doktor), Vector(trelawney, doktor, livesey))
 
-\Subtask Implementera metoden \code{ngrams}. Tips: Undersök i REPL hur metoden \code{sliding} fungerar. Gör \code{toVector} på resultatet från \code{sliding}. 
+scala> piratbok.bigrams.take(2)
+res2: scala.collection.immutable.Vector[(String, String)] = 
+Vector((herr,trelawney), (trelawney,doktor))
+\end{REPL}
 
-\Subtask Implementera metoden \code{followFreq}. Utgå från nedan pseudokod: 
+\Task Implementera \code{followFreq}, som ska innehålla en nyckel-värde-tabell där värdet i sin tur är en frekvenstabell över de ord som kommer efter nyckeln. Utgå från nedan pseudokod: 
 \begin{Code}
 val result = scala.collection.mutable.Map.empty[String, FreqMapBuilder]
-for ((key, next) <- bigrams) { 
+for ((key, value) <- bigrams) { 
   if (/* key finns redan definierad i result */)
-    /* på "platsen" result(key): lägg till next i frekvenstabellen */
+    /* på "platsen" result(key): lägg till value i frekvenstabellen */
   else 
-    /* lägg till (key -> ny frekvenstabell med next) i result*/ 
+    /* lägg till (key -> ny frekvenstabell med value) i result*/ 
 }
-result.mapValues(_.toMap).toMap
+result.mapValues(_.toMap).toMap // returnerar oföränderligt objekt
 \end{Code}
-\Subtask \TODO{Obligatorisk eller frivillig???}\\ Lägg till metoden \code{mostCommonSeq} i klassen \code{Text} enligt: 
-\begin{Code}
-def mostCommonSeq(firstWord: String, n: Int): Vector[String] = ???
-\end{Code}
-Resultet ska var en sekvens med \code{n} ord. Sekvensen ska börja med \code{firstWord} och därefter följas av det ord som är vanligaste efterföljande ordet efter \code{firstWord}, och därpå det vanligaste efterföljande ordet efter det, etc.
+\Subtask Vilka ord brukar följa efter \emph{han} respektive \emph{hon} i Stevensons ''Skattkammarön''?
+
+\Subtask Vilka ord brukar följa efter \emph{han} respektive \emph{hon} i Stringbergs ''Inferno''?
+
+\Subtask Vilka ord brukar följa efter \emph{he} respektive \emph{she} i Austens ''Pride and Prejudice''?
+
+
+\Task Skrivet ett huvudprogram som rapporterar intressanta mått om orden i en text. Huvudprogrammet ska ta källan till texten som parameter, ett filnamn eller en webbadress. Skriv huvudprogrammet i filen \code{Main.scala} i ett singelobjekt med namnet \code{Main}. Exempel på en bokrapport som ditt huvudprogram kan generera finns nedan. Programmet tar även ett heltal som argument som styr top-listorna som rapporteras.
+\begin{REPL}
+$ scala nlp.Main https://fileadmin.cs.lth.se/pgk/skattkammaron.txt 13
+
+Källa: https://fileadmin.cs.lth.se/pgk/skattkammaron.txt
+
+*** Antal ord: 69438
+
+*** De 13 vanligaste orden och deras frekvens:
+(och,3089), (jag,2007), (att,1594), (det,1382), (en,1262), 
+(i,1244), (som,1132), (på,1068), (han,1063), (var,990), 
+(med,854), (den,774), (av,740)
+
+*** De 13 längsta orden och deras längd:
+(besättningsmedlemmarnas,23), (befästningsanordningar,22), 
+(temperamentsuppvisning,22), (undsättningsexpedition,22), 
+(besättningsmedlemmarna,22), (försiktighetsåtgärder,21), 
+(undsättningsfartyget,20), (sjukdomsframkallande,20), 
+(husföreståndarinnans,20), (sjömansterminologin,19), 
+(parlamentärsflaggan,19), (bregravningsplatsen,19), 
+(tidvattenströmmarna,19)
+
+\end{REPL}
+
+
 
 
 \subsection{Kontrollfrågor}
@@ -132,15 +193,21 @@ Resultet ska var en sekvens med \code{n} ord. Sekvensen ska börja med \code{fir
 
 \item Är värdena i en nyckel-värde-tabell unika?
 
-\item Oddput vill summera alla längderna på strängarna i en mängd och skriver:
+\item LTH-teknologen Oddput Clementin vill summera alla längderna på strängarna i en mängd och skriver:
 \begin{REPL}
 scala> Set("hej", "på", "dej").map(_.length).sum
 res0: Int = 5
 \end{REPL}
-Varför blir det fel? Hur kan problemet åtgärdas?
+Varför blir det fel? Hur kan Oddput åtgärda problemet?
 \end{enumerate}
 
-\subsection{Frivilliga uppgifter}
+\subsection{Frivilliga uppgifter} \TODO{Skriv klart}
+
+\Task \TODO{Obligatorisk eller frivillig???}\\ Lägg till metoden \code{mostCommonSeq} i klassen \code{Text} enligt: 
+\begin{Code}
+def mostCommonSeq(firstWord: String, n: Int): Vector[String] = ???
+\end{Code}
+Resultet ska var en sekvens med \code{n} ord. Sekvensen ska börja med \code{firstWord} och därefter följas av det ord som är vanligaste efterföljande ordet efter \code{firstWord}, och därpå det vanligaste efterföljande ordet efter det, etc.
 
 \Task
 \begin{Code}
