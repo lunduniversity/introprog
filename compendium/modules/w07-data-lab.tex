@@ -27,7 +27,7 @@ Denna uppgift handlar om analys av naurligt språk \Eng{Natural Language Process
 \begin{itemize} 
 \item Hur vanligt är ett visst ord i en given text?
 \item Vilket är det vanligaste ordet som följer efter ett visst ord?
-\item Hur kan man generera slumpmässiga ordsekvenser som liknar ordföljden i en given text?
+\item Hur kan man generera ordsekvenser som liknar ordföljden i en given text?
 \end{itemize}
 
 \noindent För att kunna svara på sådana frågor ska du skapa frekvenstabeller och även så kallade \emph{n-gram}; sekvenser av $n$ ord som förekommer i följd i en text. Exempel på några 2-gram (kallas även \emph{bigram}) som finns i föregående mening: (för, att), (att, kunna), (kunna, svara), (svara, på), (på, sådana), och så vidare.\footnote{Du kan undersöka olika n-gram i en stor mängd böcker med hjälp av Googles n-gram-viewer: \url{https://books.google.com/ngrams/}}
@@ -76,7 +76,7 @@ Dela upp strängen \code{source} genom att i tur och ordnig göra följande:
 \begin{enumerate}[nolistsep, noitemsep]
 \item byta ut alla tecken i \code{source} för vilka \code{isWhitespace} är sant mot \code{' '}
 \item byta sedan ut alla tecken för vilka \code{isLetter} är falskt mot \code{' '} 
-\item dela upp strängen från föregånde steg i en array av strängar med \code{split(' ')}
+\item dela upp strängen från föregående steg i en array av strängar med \code{split(' ')}
 \item filtrera bort alla tomma strängar
 \item gör om alla bokstäver i alla strängar till små bokstäver 
 \item gör om arrayen till en sekvens av typen \code{Vector[String]}.
@@ -102,7 +102,7 @@ res4: Set[String] = Set(gurka, ingen, tomat)
 
 \end{REPL}
 
-\Task Implementera \code{wordFreq} med hjälp av \code{FreqMapBuilder}. Testa \code{wordFreq} genom att ladda ner boken ''Skattkammarön'' skriven av Robert Louis Stevenson\footnote{Copyright för denna äventyrsbok om pirater har gått ut, så du behöver inte piratkopiera den.} och undersök frekvensen för olika vanliga ord. Vilket ord är vanligast? Näst vanligast?  
+\Task Implementera \code{wordFreq} med hjälp av \code{FreqMapBuilder}. Testa \code{wordFreq} genom att ladda ner boken ''Skattkammarön'' skriven av Robert Louis Stevenson\footnote{Copyright för denna bok har gått ut, så du gör dig inte skyldig till piratkopiering (i juridisk mening).} och undersök frekvensen för olika vanliga ord. Vilket ord är vanligast? Näst vanligast?  
 
 \begin{REPL}[basicstyle=\color{white}\ttfamily\fontsize{9}{11}\selectfont]
 scala> val piratbok = Text.fromURL("https://fileadmin.cs.lth.se/pgk/skattkammaron.txt")
@@ -153,7 +153,7 @@ result.mapValues(_.toMap).toMap // returnerar oföränderligt objekt
 \Subtask Vilka ord brukar följa efter \emph{he} respektive \emph{she} i Austens ''Pride and Prejudice''?
 
 
-\Task Skriv ett huvudprogram som rapporterar intressanta mått om orden i en text. Huvudprogrammet ska ta källan till texten som parameter, ett filnamn eller en webbadress. Skriv huvudprogrammet i filen \code{Main.scala} i ett singelobjekt med namnet \code{Main}. Exempel på en bokrapport som ditt huvudprogram kan generera finns nedan. Programmet tar även ett heltal som argument som styr top-listorna som rapporteras.
+\Task Skapa ett huvudprogram som rapporterar valfria, intressanta mått om orden i en text. Programmet ska ta textens källa som argument, givet som en URL eller ett filnamn. Skriv huvudprogrammet i filen \code{Main.scala} i ett singelobjekt med namnet \code{Main}. Exempel på en rapport som ditt huvudprogram kan generera finns nedan. Här ges även ett heltal som argument som styr topplistornas längd.
 \begin{REPL}
 $ scala nlp.Main https://fileadmin.cs.lth.se/pgk/skattkammaron.txt 13
 
@@ -183,17 +183,17 @@ Källa: https://fileadmin.cs.lth.se/pgk/skattkammaron.txt
 \subsection{Kontrollfrågor}
 
 \begin{enumerate}
-\item I vilken ordning hamnar elementen om man anropoar \code{distinct} på en sekvens?
+\item I vilken ordning hamnar elementen om man anropar \code{distinct} på en sekvens?
 
-\item Om man itererar över en mängd, i vilken ordning kommer elementen? 
+\item Om man itererar över en mängd, i vilken ordning behandlas elementen? 
 
 \item Ge exempel på när är det lämpligt att använda en mängd i stället för en sekvens av distinkta värden?
 
-\item Är nycklarna i en nyckel-värde-tabell unika?
+\item Är mängden av alla nycklar i en nyckel-värde-tabell garanterat unika?
 
-\item Är värdena i en nyckel-värde-tabell unika?
+\item Är mängden av alla värden i en nyckel-värde-tabell garanterat unika?
 
-\item LTH-teknologen Oddput Clementin vill summera alla längderna på strängarna i en mängd och skriver:
+\item LTH-teknologen Oddput Clementin vill summera längden på varje sträng i en mängd och skriver:
 \begin{REPL}
 scala> Set("hej", "på", "dej").map(_.length).sum
 res0: Int = 5
@@ -201,29 +201,33 @@ res0: Int = 5
 Varför blir det fel? Hur kan Oddput åtgärda problemet?
 \end{enumerate}
 
-\subsection{Frivilliga uppgifter} \TODO{Skriv klart}
+\subsection{Frivilliga uppgifter} 
 
-\Task \TODO{Obligatorisk eller frivillig???}\\ Lägg till metoden \code{mostCommonSeq} i klassen \code{Text} enligt: 
-\begin{Code}
-def mostCommonSeq(firstWord: String, n: Int): Vector[String] = ???
-\end{Code}
-Resultet ska var en sekvens med \code{n} ord. Sekvensen ska börja med \code{firstWord} och därefter följas av det ord som är vanligaste efterföljande ordet efter \code{firstWord}, och därpå det vanligaste efterföljande ordet efter det, etc.
-
-\Task
+\Task Implementera nedan metod som ska ge ett slumpmässigt ord ur \code{wordSet}. Varje ord ska förekomma med lika stor sannolikhet.
 \begin{Code}
 def randomWord: String = ???
 \end{Code}
 
-\Task
+\Task \label{task:words:randomSeq} Implementera nedan metod som ska ge en slumpmässig sekvens av $n$ ord där varje efterföljande ord väljs ur nyckelmängden för \code{followFreq} med lika stor sannolikhet.
 \begin{Code}
 def randomSeq(firstWord: String, n: Int): Vector[String] = ???
 \end{Code}
+\emph{Tips:} Metoden \code{scala.util.Random.shuffle} tar en sekvens som argument och genererar en ny sekvens av samma typ, men med elementen ordnade i slumpmässig ordning, där varje möjlig ordning är lika sannolik.
+
+\Task \label{task:words:mostCommonSeq} Lägg till metoden \code{mostCommonSeq} i klassen \code{Text} enligt nedan: 
+\begin{Code}
+def mostCommonSeq(firstWord: String, n: Int): Vector[String] = ???
+\end{Code}
+\Subtask Implementera metoden så att resultatet blir en sekvens med \code{n} ord. Sekvensen ska börja med \code{firstWord} och därefter följas av det ord som är det vanligaste efterföljande ordet efter \code{firstWord}, och därpå det vanligaste efterföljande ordet efter det, etc. \emph{Tips:} Använd en lokal variabel \code{val result} som är en ArrayBuffer till vilken du i en \code{while}-loop lägger de efterföljande orden. 
+
+\Subtask Jämför de slumpmässiga sekvenserna med sekvenser genererade med \code{randomSeq} i uppgift \ref{task:words:randomSeq}. Vilka sekvenser liknar mest ''riktiga'' meningar?
+
 
 \Task Byt ut \code{FreqMapBuilder} mot befintliga samlingsmetoder enligt nedan.
 
 \Subtask I metoden \code{wordFreq}, i stället för \code{FreqMapBuilder}, använd \code{groupBy} och \code{mapValues}. Undersök i REPL hur metoden \code{groupBy(x => x)} på en sekvens fungerar.
 
-\Subtask I metoden \code{followsFreq}, använd \code{groupBy} och \code{mapValues}. Denna uppgift är ganksa knepig. Experimentera dig fram i REPL, och bygg upp en lösning stegvis. \emph{Tips:}
+\Subtask I metoden \code{followsFreq}, använd \code{groupBy} och \code{mapValues}. Denna uppgift är ganska knepig. Experimentera dig fram i REPL, och bygg upp en lösning stegvis. \emph{Tips:}
 \begin{Code}
 bigrams
   .groupBy(???)
@@ -234,7 +238,13 @@ bigrams
 
 
 
-\Task Gör FreqMapBuilder generisk.
+\Task \emph{Gör \code{FreqMapBuilder} generisk.} I kommande vecka ska vi se hur man kan skapa s.k. generiska strukturer med hjälp av typparametrar. Denna uppgift går händelserna i förväg och tjuvkikar på hur en generisk klass kan se ut. 
+
+\Subtask Studera \code{FreqMapBuilder} och identifiera allt i den klassen som är specifikt för typen \code{String}. 
+
+\Subtask Inför en typparameter \code{A} inom hakparenteser efter klassnamnet och använd sedan \code{A} i stället för \code{String} i alla metoder. 
+
+\Subtask Testa så att din generiska frekvenstabellbyggare fungerar på sekvenser som innehåller annat än strängar.
 
 
 
