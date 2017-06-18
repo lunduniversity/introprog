@@ -48,10 +48,13 @@ trait Plan {
 
     Module("Objekt",
       id = "objects", exercise = "objects", lab = "blockmole", contents = """
-      | objekt, modul, paket, punktnotation, tillstånd, metod, medlem,
-      | funktioner är objekt,
+      | objekt, modul, paket, punktnotation, tillstånd, medlem, attribut, metod,
+      | funktioner är objekt med apply-metod,
+      | namnrymd, skuggning,
+      | synlighet, private,
+      | import, selektiv import, namnbyte vid import,
       | cslib.window.SimpleWindow,
-      | java.util.Random, slumptalsfrö,
+      | scala.util.Random, slumptalsfrö,
       """.stripTrim),
 
     Module("Klasser",
@@ -67,6 +70,7 @@ trait Plan {
       | överlagring av metoder,
       | referenslikhet vs strukturlikhet, eq vs ==,
       | föränderlighet vs oföränderlighet,
+      | java.util.Random,
       """.stripTrim),
 
     Module("Sekvenser",
@@ -80,12 +84,13 @@ trait Plan {
       | sekvenser i Java vs Scala, for-sats i Java,
       | java.util.Scanner,
       | översikt strängmetoder, StringBuilder,
+      | ordning, inbyggda sorteringsmetoder, sorted, sortWith, sortBy,
       """.stripTrim),
 
     Module("Mängder, tabeller",
       id = "sets-maps", exercise = "sets-maps", lab = "words", contents = """
       | Set, Map, mutable.Set, mutable.Map,
-      | ordning, inbyggda sorteringsmetoder,
+      | hash code,
       | java.util.HashMap, java.util.HashSet,
       | läsa/skriva textfiler, Source.fromFile, java.nio.file,
       | repetition inför kontrollskrivning,
