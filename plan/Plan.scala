@@ -28,14 +28,14 @@ trait Plan {
       | iterering, for-uttryck, map, foreach, Range, Array, Vector,
       | algoritm vs implementation, pseudokod,
       | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX, algoritm: MININDEX,
-      | block, namnsynlighet, namnöverskuggning, lokala variabler,
+      | block, synlighet, skuggning, lokala variabler,
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK,
       | main i Java vs Scala, java.lang.System.out.println,
       """.stripTrim),
 
     Module("Funktioner",
       id = "functions", exercise = "functions", lab = "irritext", contents = """
-      | definera funktion, anropa funktion,
+      | definera funktion, anropa funktion, funktionshuvud, funktionskropp,
       | parameter, returtyp, värdeandrop, namnanrop, default-argument, namngivna argument,
       | applicera funktion på alla element i en samling, procedur,
       | värdeanrop vs namnanrop, uppdelad parameterlista, skapa egen kontrollstruktur,
@@ -50,8 +50,7 @@ trait Plan {
       id = "objects", exercise = "objects", lab = "blockmole", contents = """
       | objekt, modul, paket, punktnotation, tillstånd, medlem, attribut, metod,
       | funktioner är objekt med apply-metod,
-      | namnrymd, skuggning,
-      | synlighet, private,
+      | namnrymd, privata medlemmar, 
       | import, selektiv import, namnbyte vid import,
       | cslib.window.SimpleWindow,
       | scala.util.Random, slumptalsfrö,
