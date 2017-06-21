@@ -4,7 +4,7 @@
 | W02 | 5/9-9/9     | Lp1V2 | Kodstrukturer                     | F03 F04 | programs    | --              |
 | W03 | 12/9-16/9   | Lp1V3 | Funktioner                        | F05 F06 | functions   | irritext        |
 | W04 | 19/9-23/9   | Lp1V4 | Objekt                            | F07 F08 | objects     | blockmole       |
-| W05 | 26/9-30/9   | Lp1V5 | Klasser                           | F09 F10 | classes     | turtlegraphics  |
+| W05 | 26/9-30/9   | Lp1V5 | Klasser                           | F09 F10 | classes     | turtle          |
 | W06 | 3/10-7/10   | Lp1V6 | Sekvenser                         | F11 F12 | sequences   | shuffle         |
 | W07 | 10/10-14/10 | Lp1V7 | Mängder, tabeller                 | F13 F14 | sets-maps   | words           |
 | KS  | 25/10       | TP1   | KONTROLLSKRIVN.                   | --      | --          | --              |

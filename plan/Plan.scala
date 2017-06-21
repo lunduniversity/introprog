@@ -50,14 +50,14 @@ trait Plan {
       id = "objects", exercise = "objects", lab = "blockmole", contents = """
       | objekt, modul, paket, punktnotation, tillstånd, medlem, attribut, metod,
       | funktioner är objekt med apply-metod,
-      | namnrymd, privata medlemmar, 
+      | namnrymd, privata medlemmar,
       | import, selektiv import, namnbyte vid import,
       | cslib.window.SimpleWindow,
       | scala.util.Random, slumptalsfrö,
       """.stripTrim),
 
     Module("Klasser",
-      id = "classes", exercise = "classes", lab = "turtlegraphics", contents = """
+      id = "classes", exercise = "classes", lab = "turtle", contents = """
       | objektorientering, klass, Point, Square, Complex,
       | attribut (fält),
       | tupel, klass, Any, isInstanceOf, toString,
