@@ -7,10 +7,10 @@ class Turtle(val window: SimpleWindow,
              val initDirection: Double = 0.0,
              val initIsPenDown: Boolean = true) {
 
-  /** The current pixel position on the x axis rounded to nearest integer. */
+  /** The current x axis position rounded to nearest integer. */
   def x: Int = ???
 
-  /** The current pixel position on the y axis rounded to nearest integer. */
+  /** The current y axis position rounded to nearest integer. */
   def y: Int = ???
 
   /** The current direction in degrees. */
