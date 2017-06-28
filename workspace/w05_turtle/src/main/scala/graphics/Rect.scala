@@ -5,7 +5,7 @@ case class Rect(pos:    Point,
                 height: Double,
                 angle:  Double = 0.0) {
 
-  /** Draws this rectangle starting from position. */
+  /** Draws this rectangle starting from pos. */
   def draw(turtle: Turtle): Rect = ???
 
   /** A new rectangle rotated to the left. */
