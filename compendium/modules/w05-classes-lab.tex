@@ -160,7 +160,7 @@ Om man skriver mycket kod blir det lättare att hitta olika delar om man har dem
 \item Notera att klassens attribut är av typen \code{Double} och inte \code{Int}, trots att vi senare ska använda punkten för att beskriva en diskret pixelposition. Anledningen till detta är att det kan uppstå avrundningsfel vid numeriska beräkningar. Detta blir särskilt märkbart vid upprepad räkning med små värden, t.ex. när man ritar en approximerad cirkel med många linjesegment.
 \end{itemize}
 
-\noindent Du ska kunna använda din punkt enligt följande exempel. Starta REPL och klistra in din case-klass med sitt kompanjonsobjekt efter kommandot \code{:paste} (eller kortare \code{:pa}). Du ska inte ta med paketdeklarationen då \code{package} inte fungerar i REPL.
+\noindent Du ska kunna använda din punkt enligt följande exempel. Starta REPL och klistra först in din case-klass med sitt kompanjonsobjekt efter kommandot \code{:paste} (eller kortare \code{:pa}). (Du ska inte ta med paketdeklarationen, då \code{package} inte fungerar i REPL.) När koden för \code{Point} är tolkad av REPL utan kompileringsfel, testa detta:
 \begin{REPLnonum}
 scala> Point(1,1).theta.toDegrees
 res0: Double = 45.0
@@ -186,7 +186,7 @@ $ wget -O lib/cslib.jar http://cs.lth.se/pgk/cslib
 \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{13}\selectfont]%
 {../workspace/w05_turtle/src/main/scala/graphics/Main.scala}
 
-\noindent När många kodfiler beror av varandra behöver kompilatorn ha tillgång till alla kodfiler samtidigt.  Detta kan åstadkommas genom att ge \code{*.scala} som argument till \code{scalac} enligt nedan. Dessutom blir det en hel del \code{.class}-filer som utdata från kompilatorn, så man brukar lägga dem i en katalog med namnet \code{bin} (eller ibland \code{target}) för att separera dem från övriga filer. Använd följande linuxkommando\footnote{I Windows, byt ut kolon mot semikolon.} för att skapa \code{bin}-katalog, samkompilera alla filer och köra \code{main}-metoden:
+\noindent När många kodfiler beror av varandra behöver kompilatorn ha tillgång till alla kodfiler samtidigt.  Detta kan åstadkommas genom att ge argumentet \code{*.scala} till \code{scalac} enligt nedan. Dessutom blir det en hel del \code{.class}-filer som utdata från kompilatorn, så man brukar lägga dem i en katalog med namnet \code{bin} (eller ibland \code{target}) för att separera dem från övriga filer. Använd följande linuxkommando\footnote{I Windows, byt ut kolon mot semikolon.} för att skapa \code{bin}-katalog, samkompilera alla filer och köra \code{main}-metoden:
 \begin{REPLnonum}
 $ mkdir bin
 $ scalac -cp lib/cslib.jar -d bin src/main/scala/graphics/*.scala
@@ -220,7 +220,7 @@ $ scala -cp "lib/cslib.jar:bin" graphics.Main
 \begin{itemize}
 \item Allteftersom du implementerar de saknade delarna, utöka din \code{main}-metod i \code{Main.scala} med fler tester och kolla så att dina implementationer funkar som det är tänkt. Testa på nytt efter varje litet tillägg så att du hela tiden har något som fungerar. Det är mycket lättare att felsöka efter en liten ändring än efter många och stora ändringar.
 
-\item Du får namnge de privata variablerna som representerar det förändringsbara tillståndet så som du själv anser lämpligt. Tänk på att det i Scala kan bli namnkrock mellan metoder och privata attribut. I dessa fall brukar man namnge det privata attributet med ett understreck före för att skilja dem åt, t.ex.: \\
+\item Du får namnge de privata variablerna som representerar det förändringsbara tillståndet så som du själv anser lämpligt. Tänk på att det i Scala kan bli namnkrock mellan metoder och privata attribut. I dessa fall brukar man namnge det privata attributet med ett understreck i början för att skilja dem åt, t.ex.: \\
 \code{private var _direction: Double  = ???}
 
 \item I metoden \code{forward} har du nytta av metoden \code{Point.polar}, metoden \code{.toRadians} som kan konvertera en \code{Double} i grader till radianer, samt metoden \code{negY}. Tänk på att vinkelberäkningar på radianer förutsätter kartesiskt koordinatsystem, så negeringen av Y-axeln ska ske efter sådana beräkningar, men innan uppdatering av positionen sker. 
@@ -232,14 +232,21 @@ $ scala -cp "lib/cslib.jar:bin" graphics.Main
 \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{10.5}{12}\selectfont]%
 {../workspace/w05_turtle/src/main/scala/graphics/Rect.scala}
 
-\noindent Metoderna ovan har \code{Rect} som returtyp; en referens till den egna instansen ska returneras för att möjliggöra upprepad punktnotation, t.ex.:\\
-\code{r.rotatedLeft(15).translated(0, 2).scaled(1.5)}
+\noindent Metoderna har \code{Rect} som returtyp, vilket möjliggör upprepad punktnotation, t.ex.:\\
+\code{r.rotatedLeft(15).draw(t).scaled(1.5).translated(5, 5).draw(t)}\\
+\emph{Tips:} Du har vid implementationen av flera av metoderna i \code{Rect} nytta av att använda metoden \code{copy}, som erbjuds automatiskt i alla case-klasser. Nedan finns ett exempel på användning av \code{copy} vid skapande av ny variant av ett oföränderligt objekt där bara ett attribut har ett annat värde:
+\begin{REPLnonum}
+scala> case class Pt(x: Int, y: Int, z: Int)
+
+scala> Pt(2,3,4).copy(x = 5)
+res0: Pt = Pt(5,3,4)
+\end{REPLnonum}
 
 \clearpage
 
-\Task\Checkpoint När \code{Turtle} och \code{Rect} är färdigimplementerade så ska du testa klasserna gemensamt genom att köra \code{main}-metoden i singelobjektet \code{Demo} nedan. Koden finns i kursens workspace. 
+\Task\Checkpoint När \code{Point}, \code{Turtle} och \code{Rect} är färdigimplementerade ska du testa klasserna i samverkan genom att köra \code{main}-metoden i singelobjektet \code{Demo} nedan. Koden finns i kursens workspace. 
 
-Den första bilden ska visa två lika stora rektanglar i samma höjd. Efter musklick kommer en animering av tre färgglada rektanglar. När det finns en handledare ledig, redovisa vad du åstadkommit. Vid väntetid, fortsätt med efterföljande uppgifter.
+Den första bilden ska visa två lika stora kvadrater i samma höjd. Efter musklick kommer en animering av tre färgglada rektanglar. När det finns en handledare ledig, redovisa vad du åstadkommit. Vid väntetid, fortsätt med efterföljande uppgifter.
 
 \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{14}\selectfont]%
 {../workspace/w05_turtle/src/main/scala/graphics/Demo.scala}
@@ -276,7 +283,7 @@ Nedan uppgifter kan göras i valfri ordning.
 %\caption Rotation av rektangel med koden nedan.
 %\label{fig:classes:graphics:rollingrectangle}
 \end{figure}
-\noindent Bilden ovan kan skapas med hjälp av denna kod:
+\noindent Bilden ovan ska skapas med denna kod:
 \begin{Code}
   def rectSeqExample(t: Turtle): Unit  = {
     val rect = Rect(pos = Point(200, 200), width = 50, height = 30)
@@ -284,7 +291,7 @@ Nedan uppgifter kan göras i valfri ordning.
   }
 \end{Code}
 
-\noindent Nedan kod ritar bilden i fig. \ref{fig:classes:graphics:rectanglesequence} på sidan \pageref{fig:classes:graphics:rectanglesequence}. Använd gärna \code{setLineColor} i \code{SimpleWindow} för att göra en färggladare stjärna. Slumpvisa transformationer är också kul. 
+\noindent Nedan kod ritar bilden i fig. \ref{fig:classes:graphics:rectanglesequence} på sidan \pageref{fig:classes:graphics:rectanglesequence}. Använd gärna \code{setLineColor} i \code{SimpleWindow} för att göra en färggladare stjärna. Slumpvisa transformationer är också kul.  
 
 \begin{Code}
 val w = new SimpleWindow(500, 500, "Shapes")
@@ -303,13 +310,13 @@ for (i <- 0 to 360 by 20) roll.rotatedLeft(i).draw(t)
 \end{figure}
 
 \noindent Nedan finns ett kodskellett som du kan utgå ifrån. Dokummentationskommentarerna innehåller fler detaljer om hur det är tänkt att klassen ska fungera. %De metoder som returnerar \code{RectSeq} ska returnera en referens till den egna instansen så att upprepad punktnotation möjliggörs.
+ \emph{Tips:} Alla metoder utom två implementeras lättast med metoden \code{copy} som finns i alla case-klasser.
 
 \begin{figure}[H]
-\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{9.9}{12}\selectfont]%
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{9.8}{11.8}\selectfont]%
 {../workspace/w05_turtle/src/main/scala/graphics/RectSeq.scala}
 \label{code:classes:graphics:rectanglesequence}
 \end{figure}
-
 
 
 %\Task En riktig utmaning, för den som har lust: Implementera spelet ''Masken'' som beskrivs här: \url{https://sv.wikipedia.org/wiki/Snake}.
