@@ -1,15 +1,12 @@
 package graphics
 
-case class Rect(position: Point,
-                width: Double,
+case class Rect(pos:    Point,
+                width:  Double,
                 height: Double,
-                angle: Double) {
+                angle:  Double = 0.0) {
 
   /** Draws this rectangle starting from position. */
-  def draw(turtle: Turtle): Unit = ???
-
-  /** Draw this rectangle centered around the position. */
-  def drawCentered(turtle: Turtle): Unit = ???
+  def draw(turtle: Turtle): Rect = ???
 
   /** A new rectangle rotated to the left. */
   def rotatedLeft(degrees: Double): Rect = ???

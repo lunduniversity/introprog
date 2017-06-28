@@ -1,23 +1,21 @@
 package graphics
 
-/** A sequence of stepwise translated, rotated, and scaled down rectangles.
+/** A sequence of stepwise transformed rectangles.
   *
-  * @param rect        the start rectangle used as base for the drawing
-  * @param count       the number of rectangles to draw
-  * @param angle       the rectangle start angle (counter clockwise from X-axis)
-  * @param deltaMove   the distance to move in each step in the direction of angle
-  * @param deltaAngle  the number of degrees to rotate in each step
-  * @param scaleFactor the scale factor to use when re-scaling in each step
+  * @param rect   start rectangle used as base for the drawing
+  * @param n      number of rect transformation steps when calling draw
+  * @param dist   distance to move rect in each step in direction of rect.angle
+  * @param rot    degrees to left rotate rect in each step
+  * @param scale  scale factor used in each step when re-scaling rect
   */
-case class RectSeq(rect: Rect,
-                   count: Int,
-                   angle: Double,
-                   deltaMove: Double,
-                   deltaAngle: Double,
-                   scaleFactor: Double) {
+case class RectSeq(rect:  Rect,
+                   n:     Int,
+                   dist:  Double = 0.0,
+                   rot:   Double = 0.0,
+                   scale: Double = 1.0) {
 
   /** Draws an image of this rectangle sequence using a given turtle. */
-  def draw(turtle: Turtle): RectSeq = ???
+  def draw(turtle: Turtle): RectSeq =  ???
 
   /** A new rectangle sequence scaled with a size factor. */
   def scaled(factor: Double): RectSeq = ???

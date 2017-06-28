@@ -13,10 +13,10 @@ object Demo {
   }
 
   def animateRectangles(t: Turtle): Unit = {
-    val start = Point(t.window.getWidth / 2, t.window.getHeight / 2)
-    var r1 = Rect(start, 100, 50, 0)
-    var r2 = Rect(start, 80, 40, 0)
-    var r3 = Rect(start, 90, 30, 0)
+    val pos = Point(t.window.getWidth / 2, t.window.getHeight / 2)
+    var r1 = Rect(pos, width = 100, height = 50)
+    var r2 = Rect(pos, width = 80,  height = 40)
+    var r3 = Rect(pos, width = 90,  height = 30)
 
     for (i <- 1 to 100) {
       t.window.clear(); t.window.setLineColor(new Color(255, 0, 0))
