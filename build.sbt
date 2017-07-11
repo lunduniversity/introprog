@@ -6,7 +6,8 @@ import Keys._
 lazy val hello = taskKey[Unit]("Prints welcome message")
 
 hello := {
-  println("===== WELCOME TO lunduniversity/introprog =====")
+  println("===== WELCOME to the sbt build of lunduniversity/introprog =====")
+  println("\nHAVE PATIENCE: build times can be > 280 sec on a fast machine... \n ")
 }
 
 lazy val commonSettings = Seq(
@@ -39,18 +40,21 @@ gen := (run in Compile in plan).toTask("").value
 // ************** cmd util functions
 
 def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-console.log"): Unit = {
+  println(s"\n ******* Compiling $texFile to pdf *******")
   val cmd = Process(
     Seq("pdflatex","-halt-on-error", texFile.getName),
     workDir
   )
   val cmdOutputFile =  workDir / texFile.getName.replace(".tex", stdOutSuffix)
   // val bibtexCmd = Process(Seq("bibtex", texFile.getName.replace(".tex", ".aux")), workDir)
+
+  // run pdflatex command TWICE in sequence to generate toc from .aux etc:
   val exitValue = cmd.#>(cmdOutputFile).#&&(cmd).#>(cmdOutputFile).run.exitValue
   if (exitValue != 0) {
     println("*** ############ ERROR LOG STARTS HERE ############### ***")
     Process(Seq("cat", cmdOutputFile.getName), workDir).run
     error(s"\n*** ERROR: pdflatex exit code: $exitValue\nSee pdflatex output in: $cmdOutputFile")
-  } else println(s"     Log file: $cmdOutputFile")
+  } else println(s"         Log file: $cmdOutputFile")
 }
 
 // **************
@@ -58,27 +62,32 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
 lazy val pdf = taskKey[Unit]("Compile slides and compendium using pdflatex")
 
 pdf := {
-  println(" ******* compiling slides to pdf *******")
+  println("\n=== Compiling slides to pdf")
   val workDir = file("slides")
   val texFiles = (workDir * "*.tex").get
   for (texFile <- texFiles) {
-    println(s" *** pdflatex $texFile")
     runPdfLatexCmd(texFile, workDir)
   }
 
- println(" ******* compiling compendium to pdf *******")
- runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))
+  println("\n=== The main doc with all stuff in one pdf optimized for screen:")
+  runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))
 
-  println(" ******* compiling compendium1 to pdf *******")
+  println("\n=== Docs optimized for print, two times for xref aux info:")
   runPdfLatexCmd(texFile = file("compendium1.tex"), workDir = file("compendium"))
-
-  println(" ******* compiling compendium2 to pdf *******")
   runPdfLatexCmd(texFile = file("compendium2.tex"), workDir = file("compendium"))
 
-  println(" ******* compiling exercises to pdf *******")
-  runPdfLatexCmd(texFile = file("exercises.tex"), workDir = file("compendium"))
+  runPdfLatexCmd(texFile = file("compendium1.tex"), workDir = file("compendium"))
+  runPdfLatexCmd(texFile = file("compendium2.tex"), workDir = file("compendium"))
 
-  println(" ******* compiling solutions to pdf *******")
+  runPdfLatexCmd(texFile = file("lectures.tex"),  workDir = file("compendium"))
+  runPdfLatexCmd(texFile = file("exercises.tex"), workDir = file("compendium"))
+  runPdfLatexCmd(texFile = file("labs.tex"),      workDir = file("compendium"))
+
+  runPdfLatexCmd(texFile = file("lectures.tex"),  workDir = file("compendium"))
+  runPdfLatexCmd(texFile = file("exercises.tex"), workDir = file("compendium"))
+  runPdfLatexCmd(texFile = file("labs.tex"),      workDir = file("compendium"))
+
+  runPdfLatexCmd(texFile = file("assignments.tex"), workDir = file("compendium"))
   runPdfLatexCmd(texFile = file("solutions.tex"), workDir = file("compendium"))
 }
 
