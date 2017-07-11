@@ -16,7 +16,6 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.11.8"
 )
 
-
 lazy val plan = (project in file("plan")).
   settings(commonSettings: _*).
   settings(
