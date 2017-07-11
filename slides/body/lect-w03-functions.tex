@@ -1,5 +1,5 @@
 %!TEX encoding = UTF-8 Unicode
-%!TEX root = ../lect-week03.tex
+%!TEX root = ../lect-w03.tex
 
 
 \Subsection{Funktioner}
@@ -191,26 +191,26 @@ scala> byName({print(" hej"); 21 + 21})
  hej hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42
 \end{REPL}
 
+Kluring: Varför skrivs ''hej'' ut en extra gång i början???
+
 \end{itemize}
 \end{Slide} 
 
 \begin{Slide}{Klammerparenteser vid ensam parameter}
 Så här har vi sett nyss att man man göra:
 \begin{REPL}
-scala> def loop(n: => Int): Unit = for (i <- 1 to n) print(" " + n)
+scala> def actTwice(action: => Unit): Unit = { action; action }
 
-scala> loop(21 + 21)
-
-scala> loop({print(" hej"); 21 + 21})
+scala> actTwice( { print("hej"); print("san ") } )
+hejsan hejsan 
 \end{REPL}
 
-Men...\\För alla funktioner \code{f} gäller att: \\ det är helt ok att byta ut vanliga parenteser: \hfill\code{f(uttryck)} \\ mot krullparenteser: \hfill\code|f{uttryck}| \\ \Alert{om} parameterlistan har \Alert{exakt en} parameter.  
+Det ser rätt klyddigt ut med \code+{(+  och \code+)}+ eller vad tycker du? \pause Men...
+För alla funktioner \code{f} gäller att: \\ det är helt ok att byta ut vanliga parenteser: \hfill\code{f(uttryck)} \\ mot krullparenteser: \hfill\code|f{uttryck}| \\ \Alert{om} parameterlistan har \Alert{exakt en} parameter.  
 
-\vspace{0.5em}Men man kan alltså göra så här också:
+\vspace{0.5em}Man kan alltså skippa det yttre parentesparet för bättre läsbarhet:
 \begin{REPLnonum}
-scala> loop{ 21 + 21 }
-
-scala> loop{ print(" hej"); 21 + 21 }
+scala> actTwice { print("hej"); print("san") }
 \end{REPLnonum}
 
 
@@ -226,7 +226,7 @@ scala> add(21, 21)
 res0: Int = 42
 \end{REPLnonum}
 
-\item Man kan även ha \Alert{mer än en} parameterlista:
+\item Man kan även ha \Alert{mer än en} \Emph{parameterlista}:
 \begin{REPLnonum}
 
 scala> def add(a: Int)(b: Int) = a + b
@@ -242,7 +242,7 @@ res1: Int = 42
 
 \begin{Slide}{Skapa din egen kontrollstruktur}
 \begin{itemize}
-\item Genom att \Alert{kombinera} \Emph{uppdelad parameterlista} med \Emph{namnanrop} med \Emph{klammerparentes vid ensam parameter} kan vi skapa vår egen kontrollstruktur:
+\item Genom att \Alert{kombinera} \Emph{multipla parameterlistor} med \Emph{namnanrop} med \Emph{klammerparentes vid ensam parameter} kan vi skapa vår egen kontrollstruktur:
 \begin{REPLnonum}
 scala> def upprepa(n: Int)(block: => Unit) = { 
          var i = 0
