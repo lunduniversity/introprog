@@ -129,15 +129,21 @@
 \newcommand\FramedUnchecked[1]{$\Box$~\textbf{#1}}
 \newcommand\Button[1]{\fbox{\textbf{#1}}}
 
+
 \newcounter{TaskCounter}[section]
 \newcommand{\Task}{%
 \refstepcounter{TaskCounter}%
 \ifnum\value{TaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
 \pagebreak[1]\noindent{\Emph{Uppgift~\arabic{TaskCounter}.}~}%
 }
-%\newcommand\TaskPen{\Task{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}}
-\newcommand\Pen{\reversemarginpar\marginnote{\footnotesize\Emph{\smallpencil}}[0cm]}
-\newcommand\Checkpoint{\reversemarginpar\marginnote{\small\Alert{\checkmark \eye}}[0cm]}
+
+\newcounter{SolutionTaskCounter}[section]
+\newcommand{\TaskSolved}{%
+\refstepcounter{SolutionTaskCounter}%
+\ifnum\value{SolutionTaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
+\pagebreak[1]\noindent{\Emph{Lösn. uppg.~\arabic{SolutionTaskCounter}.}~}%
+}
+
 
 \newcounter{SubtaskCounter}[TaskCounter]
 \newcommand{\Subtask}{\refstepcounter{SubtaskCounter}%
@@ -148,6 +154,28 @@
 }
 
 \renewcommand{\theSubtaskCounter}{\alph{SubtaskCounter}}
+
+\newcounter{SolutionSubtaskCounter}[SolutionTaskCounter]
+\newcommand{\SubtaskSolved}{\refstepcounter{SolutionSubtaskCounter}%
+%\vspace{1em}%
+\ifnum\value{SolutionSubtaskCounter}>1\vspace{0.25em}\else\vspace{0.5em}\fi%
+{\pagebreak[0]\noindent%%
+\makebox[2em][l]{\alph{SolutionSubtaskCounter})}}%
+}
+
+\renewcommand{\theSolutionSubtaskCounter}{\alph{SolutionSubtaskCounter}}
+
+\newenvironment{ConceptConnections}[1][0.25\textwidth]%
+{\begingroup\renewcommand{\arraystretch}{1.5}\begin{longtable}{@{}l c p{#1} c p{0.75\textwidth}}}%
+{\end{longtable}\endgroup}
+
+\newcommand{\Connect}[2]{#1  &  $\bullet$  &   &  $\bullet$  &  #2 \\}
+\newcommand{\ConnectSolved}[2]{#1  &     &  {\Large$\leadsto$~~} &     &  #2 \\}
+
+%\newcommand\TaskPen{\Task{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}}
+\newcommand\Pen{\reversemarginpar\marginnote{\footnotesize\Emph{\smallpencil}}[0cm]}
+\newcommand\Checkpoint{\reversemarginpar\marginnote{\small\Alert{\checkmark \eye}}[0cm]}
+
 
 \newenvironment{Goals}%
 {\subsubsection{Mål}\begin{itemize}[nosep, label={$\square$},]}%
