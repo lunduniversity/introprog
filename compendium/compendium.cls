@@ -166,7 +166,7 @@
 \renewcommand{\theSolutionSubtaskCounter}{\alph{SolutionSubtaskCounter}}
 
 \newenvironment{ConceptConnections}[1][0.25\textwidth]%
-{\begingroup\renewcommand{\arraystretch}{1.5}\begin{longtable}{@{}l c p{#1} c p{0.75\textwidth}}}%
+{\begingroup\renewcommand{\arraystretch}{1.25}\begin{longtable}{@{}l c p{#1} c p{0.75\textwidth}}}%
 {\end{longtable}\endgroup}
 
 \newcommand{\Connect}[2]{#1  &  $\bullet$  &   &  $\bullet$  &  #2 \\}
@@ -190,6 +190,8 @@
 {\end{adjustwidth}}
 
 \newcommand{\vecka}{1}%renew this command in chapter.tex files
+
+\newcommand{\Scaladoc}{\url{http://www.scala-lang.org/api/current/}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% changes to make slide stuff look good in compendium
