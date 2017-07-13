@@ -131,17 +131,20 @@
 
 
 \newcounter{TaskCounter}[section]
+
 \newcommand{\Task}{%
 \refstepcounter{TaskCounter}%
 \ifnum\value{TaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
-\pagebreak[1]\noindent{\Emph{Uppgift~\arabic{TaskCounter}.}~}%
+\pagebreak[2]
+\noindent{\Emph{Uppgift~\arabic{TaskCounter}.}~}%
 }
 
 \newcounter{SolutionTaskCounter}[section]
+
 \newcommand{\TaskSolved}{%
 \refstepcounter{SolutionTaskCounter}%
 \ifnum\value{SolutionTaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
-\pagebreak[1]\noindent{\Emph{Lösn. uppg.~\arabic{SolutionTaskCounter}.}~}%
+\pagebreak[2]\noindent{\Emph{Lösn. uppg.~\arabic{SolutionTaskCounter}.}~}%
 }
 
 
@@ -149,7 +152,7 @@
 \newcommand{\Subtask}{\refstepcounter{SubtaskCounter}%
 %\vspace{1em}%
 \ifnum\value{SubtaskCounter}>1\vspace{0.25em}\else\vspace{0.5em}\fi%
-{\pagebreak[0]\noindent%%
+{\pagebreak[1]\noindent%%
 \makebox[2em][l]{\alph{SubtaskCounter})}}%
 }
 
@@ -159,15 +162,15 @@
 \newcommand{\SubtaskSolved}{\refstepcounter{SolutionSubtaskCounter}%
 %\vspace{1em}%
 \ifnum\value{SolutionSubtaskCounter}>1\vspace{0.25em}\else\vspace{0.5em}\fi%
-{\pagebreak[0]\noindent%%
+{\pagebreak[1]\noindent%%
 \makebox[2em][l]{\alph{SolutionSubtaskCounter})}}%
 }
 
 \renewcommand{\theSolutionSubtaskCounter}{\alph{SolutionSubtaskCounter}}
 
 \newenvironment{ConceptConnections}[1][0.25\textwidth]%
-{\begingroup\renewcommand{\arraystretch}{1.25}\begin{longtable}{@{}l c p{#1} c p{0.75\textwidth}}}%
-{\end{longtable}\endgroup}
+{\begingroup\renewcommand{\arraystretch}{1.25}\vspace{0.5em}\begin{tabular}{@{}l c p{#1} c p{0.75\textwidth}}}%
+{\end{tabular}\vspace{1em}\endgroup}
 
 \newcommand{\Connect}[2]{#1  &  $\bullet$  &   &  $\bullet$  &  #2 \\}
 \newcommand{\ConnectSolved}[2]{#1  &     &  {\Large$\leadsto$~~} &     &  #2 \\}
@@ -175,6 +178,16 @@
 %\newcommand\TaskPen{\Task{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}}
 \newcommand\Pen{\reversemarginpar\marginnote{\footnotesize\Emph{\smallpencil}}[0cm]}
 \newcommand\Checkpoint{\reversemarginpar\marginnote{\small\Alert{\checkmark \eye}}[0cm]}
+
+\newcommand{\MEM}[3]{\vspace{0.5em}
+\begin{tikzpicture}[font=\ttfamily]
+\matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=4em}}] (mat)
+{
+#1: #2 \pgfmatrixnextcell \makebox(16,12){#3}\\
+};
+\end{tikzpicture}
+%https://tex.stackexchange.com/questions/1111/problem-with-defining-shortcuts-for-tikz-matrices
+}
 
 
 \newenvironment{Goals}%
