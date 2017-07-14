@@ -124,5 +124,4 @@ object Main extends App {
     output.prepend(texUtf).save(
       currentDir + s"../slides/generated/$weekName-overview-generated.tex")
   }
-
 }

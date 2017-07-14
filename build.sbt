@@ -23,6 +23,13 @@ lazy val plan = (project in file("plan")).
     EclipseKeys.skipProject := true
   )
 
+lazy val quiz = (project in file("quiz")).
+  settings(commonSettings: _*).
+  settings(
+    name := "quiz",
+    EclipseKeys.skipProject := true
+  )
+
 lazy val workspace = (project in file("workspace")).
   settings(commonSettings: _*).
   settings(
@@ -33,8 +40,10 @@ lazy val workspace = (project in file("workspace")).
 lazy val build = taskKey[Unit]("plan/run before pdf")
 
 lazy val gen = taskKey[Unit]("alias for plan/run")
-
 gen := (run in Compile in plan).toTask("").value
+
+lazy val genquiz = taskKey[Unit]("alias for quiz/run")
+genquiz := (run in Compile in quiz).toTask("").value
 
 // ************** cmd util functions
 
@@ -98,6 +107,7 @@ lazy val root = (project in file(".")).
     build := Def.sequential(
       hello,
       (run in Compile in plan).toTask(""),
+//      (run in Compile in quiz).toTask(""),  //decomment if you want re-scrambled quizes
       pdf
     ).value
   )
