@@ -37,8 +37,8 @@ object ConceptQuiz {  // to generate tables for a concept connection quiz
       "\\code|()   |" -> "\\code|Unit   |"
     ),
     "quiz-w01-values" -> Vector(
-      "\\code|1.0 + 18          |"    ->   "\\code|19: Double      | ",
-      "\\code|(41 + 1).toDouble |"    ->   "\\code|42: Double      | ",
+      "\\code|1.0 + 18          |"    ->   "\\code|19.0: Double    | ",
+      "\\code|(41 + 1).toDouble |"    ->   "\\code|42.0: Double    | ",
       "\\code|1.042e42 + 1      |"    ->   "\\code|1.042E42: Double| ",
       "\\code|12E6.toLong       |"    ->   "\\code|12000000: Long  | ",
       "\\code|32.toChar.toString|"    ->   "\\code|\" \": String   | ",
