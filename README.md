@@ -16,15 +16,15 @@ This is work in progress; the first instance of the course starts this fall seme
 
 * Download the very latest snapshot version, possibly in an inconsistent state under update, of the most recent build of the course material via LaTeX.Online:
 
-  - [compendium1.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium1.tex&command=pdflatex)  with lectures and appendices optimized for print
+  - [compendium1.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium1.tex&command=pdflatex)  with lectures and assigmnets for the first half of the course, formatted for print
 
-  - [compendium2.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium2.tex&command=pdflatex)  with assignments and solutions optimized for print
-
-  - [compendium.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium.tex&command=pdflatex)  with both parts above in one pdf optimized for screen readability
+  - [compendium2.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium2.tex&command=pdflatex)  with lectures and assigmnets for the second half of the course, formatted for print
+  
+  - [compendium.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium.tex&command=pdflatex)  with both parts above in one pdf formatted for easy screen readability
 
   - Thanks to [LaTeX.Online](https://latexonline.cc) for their cloud service!
 
-* Download the [workspace](https://github.com/lunduniversity/introprog/blob/master/lib/workspace.zip) to be used with your favorite code editor and IDE. See instructions in appendices in `compendium1.pdf` above.
+* Download the [workspace](https://github.com/lunduniversity/introprog/blob/master/lib/workspace.zip) to be used with your favorite code editor and IDE. See instructions in appendices in `compendium.pdf` above.
 
 ## Contents of this repo
 
