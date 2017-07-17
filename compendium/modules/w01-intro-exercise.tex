@@ -442,7 +442,7 @@ Testa ovan i REPL. Skriv sedan en \code{while}-sats som kastar 100 tärningar oc
 
 
 
-\def\what{\emph{Sekvens, sats och procedur.}}
+\def\what{\emph{Sekvens, sats och block.}}
 
 \QUESTBEGIN
 
@@ -463,7 +463,7 @@ hejsan!
 hejsan!
 \end{REPLnonum}
 
-\Subtask Hur tolkar kompilatorn klammerparenteser och semikolon?
+\Subtask Hur tolkar kompilatorn klammerparenteser och semikolon? Vad är ett block?
 
 \SOLUTION
 
@@ -612,7 +612,7 @@ scala> if (monster) println("akta dig!!!")
 
 \QUESTBEGIN
 
-\Task \what~På veckans laboration ska du använda Kojo för att verifiera att du kan använda sekvens, alternativ, repetition och abstraktion. Med Kojo kan du rita färgglada figurer med hjälp av ett lättanvänt Scala-bibliotek för \emph{turtle graphics}\footnote{\url{https://en.wikipedia.org/wiki/Turtle_graphics}}. 
+\Task \what~På veckans laboration ska du använda Kojo för att verifiera att du kan använda sekvens, alternativ, repetition och abstraktion. Med Kojo ska du skapa Scala-program som ritar färgglada figurer med hjälp av ett lättanvänt Scala-bibliotek för \emph{turtle graphics}\footnote{\url{https://en.wikipedia.org/wiki/Turtle_graphics}}. 
 
 Starta Kojo (se appendix \ref{appendix:kojo}). Om du inte redan har svenska menyer: välj svenska i språkmenyn och starta om Kojo.  Skriv in nedan program och tryck på den \emph{gröna} play-knappen. Notera kopplingen mellan satssekvensen och vad som händer i ritfönstret.
 
@@ -878,6 +878,48 @@ scala> println(println("hej"))
 
 
 
+\def\what{\emph{Flyttalsaritmetik.}}
+
+\QUESTBEGIN
+
+\Task \what
+
+\Subtask Vilket är det minsta positiva värdet av typen \code{Double}?
+
+\Subtask Vad är värdet av detta uttryck? Varför blir det så?
+\begin{REPL}
+scala> Double.MaxValue + Double.MinPositiveValue == Double.MaxValue
+\end{REPL}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved 
+
+\begin{REPL}
+scala> Double.MinPositiveValue
+res0: Double = 4.9E-324
+\end{REPL}
+
+\SubtaskSolved 
+
+\begin{REPL}
+scala> Double.MaxValue + Double.MinPositiveValue == Double.MaxValue
+res2: Boolean = true
+\end{REPL}
+
+\QUESTEND
+
+
+
+
+
+
+
+
+
+
 \def\what{\emph{\code{if}\textit{-sats}.}}
 
 \QUESTBEGIN
@@ -952,22 +994,182 @@ res3: Any = 42
 
 
 
-
-\def\what{\emph{QUESTTEMPLATE}}
+\def\what{\emph{Modulo-operatorn {\tt \%} och Booleska värden.}}
 
 \QUESTBEGIN
 
 \Task \what
 
-\Subtask
+\Subtask Deklarera en funktion \code{def isEven(n: Int): Boolean = ???} som ger \code{true} om talet \code{n} är jämnt, annars \code{false}.
+
+\Subtask Deklarera en funktion \code{def isOdd(n: Int): Boolean = ???} som ger \code{false} om talet \code{n} är jämnt, annars \code{true}.
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+\SubtaskSolved 
+\begin{REPL}
+scala> def isEven(n: Int): Boolean = n % 2 == 0
+
+scala> isEven(42)
+res0: Boolean = true
+
+scala> isEven(43)
+res1: Boolean = false
+
+\end{REPL}
+
+
+\SubtaskSolved 
+\begin{REPL}
+scala> def isOdd(n: Int): Boolean = !isEven(n)
+
+scala> isOdd(42)
+res2: Boolean = false
+
+scala> isOdd(43)
+res3: Boolean = true
+\end{REPL}
+
+
+\QUESTEND
+
+
+
+
+
+\def\what{\emph{Skillnader mellan \code{var}, \code{val}, \code{def}.}}
+
+\QUESTBEGIN
+
+\Task \what~ 
+
+\Subtask 
+ Evaluera varje rad en i taget i tur och ordning i Scala REPL. För varje rad nedan: förklara för vad som händer och notera värde och ev fel. % Uppgift 15
+\begin{REPL}
+scala> var x = 30
+scala> x + 1
+scala> x = x + 1
+scala> x == x + 1
+scala> val y = 20
+scala> y = y + 1
+scala> var z = {println("gurka"); 10}
+scala> def w = {println("tomat"); 10}
+scala> z
+scala> z
+scala> z = z + 1
+scala> w
+scala> w
+scala> w = w + 1
+\end{REPL}
+
+
+\Subtask Vad är det för skillnad på \code{var}, \code{val} och \code{def}?
+
+
 
 \SOLUTION
 
 \TaskSolved \what
 
+\SubtaskSolved
+\begin{REPL}
+scala> var x = 30
+x: Int = 30
+
+scala> x + 1
+res0: Int = 31
+
+scala> x = x + 1
+x: Int = 31
+
+scala> x == x + 1
+res1: Boolean = false
+
+scala> val y = 20
+y: Int = 20
+
+scala> y = y + 1
+<console>:12: error: reassignment to val
+       y = y + 1
+         ^
+
+scala> var z = {println("gurka"); 10}
+gurka
+z: Int = 10
+
+scala> def w = {println("tomat"); 10}
+w: Int
+
+scala> z
+res2: Int = 10
+
+scala> z
+res3: Int = 10
+
+scala> z = z + 1
+z: Int = 11
+
+scala> w
+tomat
+res4: Int = 10
+
+scala> w
+tomat
+res5: Int = 10
+
+scala> w = w + 1
+<console>:12: error: value w_= is not a member of object $iw
+       w = w + 1
+\end{REPL}
+
+
 \SubtaskSolved 
+\begin{itemize}
+\item \code{var namn = uttryck} används för att deklarera en förändringsbar variabel. Namnet kan med hjälp av en tilldelningssats referera till nya värden.
+
+\item \code{val namn = uttryck} används för att deklarera en oföränderlig variabel som efter initialisering inte kan förändras med tilldelningssatser. Vid försök ges kompileringsfel.
+\item \code{def namn = uttryck} används för att deklarera en funktion vars uttryck evalueras varje gång den anropas. 
+\end{itemize}
 
 \QUESTEND
+
+
+
+
+\def\what{\emph{Skillnaden mellan \code{if} och \code{while}.}}
+
+\QUESTBEGIN
+
+\Task \what~Vad blir resultatet av rad 3 och 4?
+
+\begin{REPL}
+scala> def lotto1 = if (math.random > 0.5) print("vinst :) ")
+scala> def lotto2 = while (math.random > 0.5) print("vinst :) ")
+scala> lotto1
+scala> lotto2
+\end{REPL}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\begin{itemize}
+\item Rad 3: Har du tur (50\% chans) får du vinst en gång.
+
+\item Rad 4: Har du tur får du många vinster i rad. Sannolikheten för $n$ vinster i rad är $(\frac{1}{2})^n$.
+\end{itemize}
+\QUESTEND
+
+
+
+
+
+
+
+
 
 
 
@@ -975,6 +1177,55 @@ res3: Any = 42
 \clearpage
 
 \AdvancedTasks   %%%%%%%%%%%%%%%%%%% FÖRDJUPNINGSUPPGIFTER
+
+
+
+
+
+\def\what{\emph{Logik och De Morgans Lagar.}}
+
+\QUESTBEGIN
+
+\Task \what~Förenkla följande uttryck. Antag att \code{poäng} och \code{highscore} är heltalsvariabler medan \code{klar} är av typen \code{Boolean}.
+  % Uppgift 24
+
+\Subtask \code{poäng > 100 && poäng > 1000}
+
+\Subtask \code{poäng > 100 || poäng > 1000}
+
+\Subtask \code{!(poäng > highscore)}
+
+\Subtask \code{!(poäng > 0 && poäng < highscore) }
+
+\Subtask \code{!(poäng < 0 || poäng > highscore) }
+
+\Subtask \code{klar == true}
+
+\Subtask \code{klar == false}
+
+\SOLUTION
+
+\TaskSolved \what
+
+
+\SubtaskSolved \code{poäng > 1000}
+
+\SubtaskSolved code{poäng > 100}
+
+\SubtaskSolved \code{poäng <= highscore}
+
+\SubtaskSolved code{poäng < 0 || poäng > highscore }
+
+\SubtaskSolved \code{poäng > 0 \&\& poäng < highscore}
+
+\SubtaskSolved \code{klar}
+
+\SubtaskSolved \code{!klar}
+
+
+\QUESTEND
+
+
 
 
 
@@ -1021,40 +1272,37 @@ println(s"$e har  ${e.size} bokstäver.")
 
 
 
-
-
-\def\what{\emph{Flyttalsaritmetik}}
+\def\what{\emph{Tilldelningsoperatorer.}}
 
 \QUESTBEGIN
 
-\Task \what
+\Task \what~Man kan förkorta en tilldelningssats som förändrar en variabel, t.ex. \code{x = x + 1}, genom att använda så kallade tilldelningsoperatorer och skriva \code{x += 1} som betyder samma sak. Rita en ny bild av datorns minne efter varje rad nedan. Bilderna ska visa variablers namn, typ och värde.  
 
-\Subtask Vilket är det minsta positiva värdet av typen \code{Double}?
-
-\Subtask Vad är värdet av detta uttryck? Varför blir det så?
 \begin{REPL}
-scala> Double.MaxValue + Double.MinPositiveValue == Double.MaxValue
+scala> var a = 40
+scala> var b = a + 40
+scala> a += 10
+scala> b -= 10
+scala> a *= 2
+scala> b /= 2
 \end{REPL}
 
 \SOLUTION
 
 \TaskSolved \what
 
-\SubtaskSolved 
-
-\begin{REPL}
-scala> Double.MinPositiveValue
-res0: Double = 4.9E-324
-\end{REPL}
-
-\SubtaskSolved 
-
-\begin{REPL}
-scala> Double.MaxValue + Double.MinPositiveValue == Double.MaxValue
-res2: Boolean = true
-\end{REPL}
+\begin{tabular}{l l}
+\MEM{{\it Efter rad1:~~~~} a}{Int}{40}\\
+\MEM{{\it Efter rad2:~~~~} a}{Int}{40} & \MEM{b}{Int}{80}\\
+\MEM{{\it Efter rad3:~~~~} a}{Int}{50} & \MEM{b}{Int}{80}\\
+\MEM{{\it Efter rad4:~~~~} a}{Int}{50} & \MEM{b}{Int}{70} \\
+\MEM{{\it Efter rad5:~~~~} a}{Int}{100} & \MEM{b}{Int}{70} \\
+\MEM{{\it Efter rad6:~~~~} a}{Int}{100} & \MEM{b}{Int}{35} \\
+\end{tabular}
 
 \QUESTEND
+
+
 
 
 
@@ -1117,77 +1365,51 @@ res0: scala.math.BigInt = 18446744073709551616
 
 
 
-
-
-
-\def\what{\emph{QUESTTEMPLATE}}
+\def\what{\emph{Dokumentation av paket i Java och Scala.}}
 
 \QUESTBEGIN
 
-\Task \what
-
-\Subtask
-
-\SOLUTION
-
-\TaskSolved \what
-
-\SubtaskSolved 
-
-\QUESTEND
+\Task \what 
 
 
-
-
-\subsection{TODO}
-
-\TODO{SAKERNA NEDAN SKA FLYTTAS/UPPDATERAS/TAS BORT???} 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-\ifPreSolution  %%% TODO remove \fi at end of file and break sultions into pieces
-
-
-
-
-
-\Task Klassen \code{java.lang.Math} och paketobjektet \code{scala.math}. % Uppgift 11
-Genom att trycka på tab tagenten kan man se vad som finns i olika paket.
-
-\begin{REPL}
-scala> java.    //tryck TAB efter punkten
-applet   awt   beans   io   lang   math   net   nio   rmi   security   sql
-
-scala>
-\end{REPL}
-
-\Subtask Undersök genom att trycka på Tab-tangenten, vilka funktioner som finns i \code{Math} och \code{math}. Vad heter konstanten $\pi$ i java.lang.Math respektive scala.math?
+\Subtask Genom att trycka på tab tangenten kan man se vad som finns i olika paket. Vad heter konstanten $\pi$  i \code{java.lang.Math} (notera stort M) respektive \code{scala.math.}?
 
 \begin{REPL}
 scala> java.lang.Math.    //tryck TAB efter punkten
 scala> scala.math.        //tryck TAB efter punkten
 \end{REPL}
 
-\Subtask Undersök dokumentationen för klassen \code{java.lang.Math} här: \\ \url{https://docs.oracle.com/javase/8/docs/api/java/lang/Math.html} \\
-Vad gör \code{java.lang.Math.hypot}?
+\Subtask Jämför dokumentationen för klassen \code{java.lang.Math} här: \\ \url{https://docs.oracle.com/javase/8/docs/api/} \\
+med dokumentationen för paketet \code{scala.math} här: \\
+\url{http://www.scala-lang.org/api} \\
+Ge exempel på vad man kan göra på webbsidan med Scala-dokumentationen som man \emph{inte} kan göra i motsvarande webbsida Java-dokumentation.
 
-\Subtask Undersök dokumentationen för paketobjektet \code{scala.math} här: \\
-\url{http://www.scala-lang.org/api/current/#scala.math.package} \\
-Ge exempel på någon funktion i \code{java.lang.Math} som inte finns i \code{scala.math}.
+\Subtask Vad gör metoden \code{hypot}? Vad är det som är bra med att använda \code{hypot} i stället för att själv implementera beräkningen med hjälp av kvadratrot, multiplikation och addition?
 
-%\TaskSection{Noggrannhet och undantag i aritmetiska uttryck}
+\SOLUTION
 
-\Task Vad händer här? Notera undantag \Eng{exceptions} och noggrannhetsproblem. % Uppgift 12
+\TaskSolved \what
 
-\Subtask \code{Int.MaxValue} + 1
+\SubtaskSolved Scala: \code{Pi}, Java: \code{PI}
+
+\SubtaskSolved Filtrera fram alla förekomster av en viss teckenkombination.
+
+\SubtaskSolved Räknar ut hypotenusan (Pythagoras sats) utan risk för avrundningsproblem i mellanberäkningar.
+
+
+\QUESTEND
+
+
+
+
+
+\def\what{\emph{Noggrannhet och undantag i aritmetiska uttryck.}}
+
+\QUESTBEGIN
+
+\Task \what~Vad blir resultatet av uttrycken nedan? Notera undantag \Eng{exceptions} och noggrannhetsproblem.
+
+\Subtask \code{Int.MaxValue + 1}
 
 \Subtask \code{1 / 0}
 
@@ -1207,279 +1429,116 @@ Ge exempel på någon funktion i \code{java.lang.Math} som inte finns i \code{sc
 
 \Subtask \code{throw new Exception("PANG!!!")}
 
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved \code{-2147483648} vilket motsvarar \code{Int.MinValue}.
+
+\SubtaskSolved Ett undantag kastas: \code{java.lang.ArithmeticException: / by zero}
+
+\SubtaskSolved \code{1.0000000000000001E8} (som förväntat)
+
+\SubtaskSolved Avrundas till \code{1E9} (flyttalsaritmetik med noggrannhetsproblem: ett stort flyttal plus ett (alltför) litet flyttal kan ge samma tal. Det lilla talet ''försvinner'').
+
+
+\SubtaskSolved \code{45.00000000000001} (flyttalsaritmetik med noggrannhetsproblem: enligt ''normal'' aritmetik ska det bli exakt 45.)
+
+\SubtaskSolved \code{Infinity} (som även ges av \code{Double.PositiveInfinity} och som representerar den positiva oändligheten).
+
+\SubtaskSolved \code{2147483647} vilket motsvarar \code{Int.MaxValue}.
+
+\SubtaskSolved \code{NaN} vilket betyder ''Not a Number''.
+
+\SubtaskSolved \code{NaN} vilket betyder ''Not a Number''.
+
+\SubtaskSolved Ett undantag kastas: \code{java.lang.Exception: PANG!!!}
+
+\QUESTEND
 
 
 
+\def\what{\emph{Modulo-räkning med negativa tal.}}
 
-\Task \textit{Deklarationer: \code{var}, \code{val}, \code{def}}. Evaluera varje rad nedan i tur och ordning i Scala REPL.  % Uppgift 15
-\begin{REPL}[numbers=left, numberstyle=\color{black}\ttfamily\scriptsize\selectfont]
-scala> var x = 30
-scala> x + 1
-scala> x
-scala> x = x + 1
-scala> x
-scala> x == x + 1
-scala> val y = 20
-scala> y = y + 1
-scala> var z = {println("gurka"); 10}
-scala> def w = {println("gurka"); 10}
-scala> z
-scala> z
-scala> z = z + 1
-scala> w
-scala> w
-scala> w = w + 1
-\end{REPL}
+\QUESTBEGIN
 
-\Subtask För varje rad ovan: förklara för vad som händer.
-
-\Subtask Vilka rader ger kompileringsfel och i så fall vilket och varför?
-
-\Subtask\Pen Vad är det för skillnad på \code{var}, \code{val} och \code{def}?
-
-\Subtask\Pen Tilldela variabeln \code{val even } värdet av ett uttryck som med modulo-operatorn \code{%}
-och likhetsoperatorn \code{==} testar om ett tal \code{n} är jämnt.
-
-\Subtask\Pen Tilldela variabeln \code{val odd } värdet av ett uttryck som med modulo-operatorn \code{%}
-och olikhetsoperatorn \code{!=} testar om ett tal \code{n} är udda.
+\Task \what~Läs om moduloräkning här: \\
+ \href{https://en.wikipedia.org/wiki/Modulo\_operation}{en.wikipedia.org/wiki/Modulo\_operation} \\
+ och undersök hur det blir med olika tecken (positivt resp. negativt) på modoluräkning med $dividend \% divisor$ i Scala.
 
 
-\Task\Pen \emph{Tilldelningsoperatorer.} Man kan förkorta en tilldelningssats som förändrar en variabel, t.ex. \code{x = x + 1}, genom att använda så kallade tilldelningsoperatorer och skriva \code{x += 1} som betyder samma sak. Rita en ny bild av datorns minne efter varje evaluerad rad nedan. Bilderna ska visa variablers namn, typ och värde.  % Uppgift 16
+\SOLUTION
 
+\TaskSolved \what~I Scala har resultatet samma tecken som dividenden.
 \begin{REPL}
-scala> var a = 40
-scala> var b = a + 40
-scala> a += 10
-scala> b -= 10
-scala> a *= 2
-scala> b /= 2
+scala> 1 % 2
+res0: Int = 1
+
+scala> -1 % 2
+res1: Int = -1
+
+scala> -1 % -2
+res2: Int = -1
+
+scala> 1 % -2
+res3: Int = 1
+
 \end{REPL}
 
+\QUESTEND
 
 
-\Task \emph{Stränginterpolatorn \code{s}.} Man behöver ofta skapa strängar som innehåller variabelvärden. Med ett \code{s} framför en strängliteral får man hjälp av kompilatorn att, på ett typsäkert sätt, infoga variabelvärden i en sträng. Variablernas namn ska föregås med ett dollartecken, t.ex. \code{s"Hej $namn"}.  Om man vill evaluera ett uttryck placeras detta inom klammer direkt efter dollartecknet, t.ex.
-\code/s"Dubbla längden: ${namn.size * 2}"/  % Uppgift 17
 
-\begin{REPL}
-scala> val f = "Kim"
-scala> val e = "Finkodare"
-scala> val tot = f.size + e.size
-scala> println(s"Namnet '$f $e' har $tot bokstäver.")
-scala> println(s"Efternamnet '$e' har ${e.size} bokstäver.")
-\end{REPL}
 
-\Subtask Vad skrivs ut ovan?
+\def\what{\emph{Bokstavliga identifierare.}}
 
-\Subtask Skapa följande utskrifter med hjälp av stränginterpolatorn \code{s} och lämpliga variabler.
-\begin{REPL}
-Namnet 'Kim' har 3 bokstäver.
-Namnet 'Finkodare' har 9 bokstäver.
-\end{REPL}
+\QUESTBEGIN
 
-
-
-\Task \code{if}\textit{-sats}.För varje rad nedan; förklara vad som händer.  % Uppgift 18
-\begin{REPL}
-scala> if (true) println("sant") else println("falskt")
-scala> if (false) println("sant") else println("falskt")
-scala> if (!true) println("sant") else println("falskt")
-scala> if (!false) println("sant") else println("falskt")
-scala> def singlaSlant =
-scala> 	 if (math.random > 0.5) print(" krona") else print(" klave")
-scala> singlaSlant; singlaSlant; singlaSlant
-\end{REPL}
-
-
-\Task \code{if}\textit{-uttryck}. Deklarera följande variabler med nedan initialvärden:  % Uppgift 19
-
-\begin{REPLnonum}
-scala> var grönsak = "gurka"
-scala> var frukt = "banan"
-\end{REPLnonum}
-
-Vad har följande uttryck för värden och typ?
-
-\Subtask \code{if (grönsak == "tomat") "gott" else "inte gott" }
-
-\Subtask \code{if (frukt == "banan") "gott" else "inte gott" }
-
-\Subtask \code{if (frukt.size == grönsak.size) "lika stora" else "olika stora" }
-
-\Subtask \code{if (true) grönsak else frukt }
-
-\Subtask \code{if (false) grönsak else frukt }
-
-
-\Task \code{for}\textit{-sats}.  Med bakåtpilen \texttt{<-} kan man i en \code{for}-sats ange vilka värden som ska gås igenom i sekvens. Vid varje runda i loopen får en lokal variabel ett nytt värde i sekvensen. % Uppgift 20
-
-\Subtask Vad ger nedan \code{for}-satser för utskrift?
-
-\begin{REPL}
-scala> for (i <- 1 to 10) print(i + ", ")
-scala> for (i <- 1 until 10) print(i + ", ")
-scala> for (i <- 1 to 5) print((i * 2) + ", ")
-scala> for (i <- 1 to 92 by 10) print(i + ", ")
-scala> for (i <- 10 to 1 by -1) print(i + ", ")
-\end{REPL}
-
-\Subtask Skriv en \code{for}-sats som ger följande utskrift:
-\begin{REPLnonum}
-A1, A4, A7, A10, A13, A16, A19, A22, A25, A28, A31, A34, A37, A40, A43,
-\end{REPLnonum}
-
-\Task Repetition med metoden \code{foreach}. Efter framåtpilen \texttt{=>} (se nedan) anges vad som ska hända för varje element som gås igenom sekventiellt. Vid varje runda i loopen får en lokal variabel ett nytt värde i sekvensen.   % Uppgift 21
-
-\Subtask Vad ger nedan satser för utskrifter?
-
-\begin{REPL}
-scala> (9 to 19).foreach{i => print(i + ", ")}
-scala> (1 until 20).foreach{i => print(i + ", ")}
-scala> (0 to 33 by 3).foreach{i => print(i + ", ")}
-\end{REPL}
-
-\Subtask Använd \code{foreach} och skriv ut följande:
-\begin{REPLnonum}
-B33, B30, B27, B24, B21, B18, B15, B12, B9, B6, B3, B0,
-\end{REPLnonum}
-
-\Task \code{while}\textit{-sats}. En sats eller ett block med satser upprepas så länge ett villkor är sant.  % Uppgift 22
-
-\Subtask Vad ger nedan satser för utskrifter?
-\begin{REPL}
-scala> var i = 0
-scala> while (i < 10) { println(i); i = i + 1 }
-scala> var j = 0; while (j <= 10) { println(j); j = j + 2 }; println(j)
-\end{REPL}
-
-\Subtask Skriv en \code{while}-sats som ger följande utskrift. Använd en variabel \code{k} som initialiseras till 1.
-\begin{REPLnonum}
-A1, A4, A7, A10, A13, A16, A19, A22, A25, A28, A31, A34, A37, A40, A43,
-\end{REPLnonum}
-
-\Subtask\Pen Vilken av \code{for}, \code{while} och \code{foreach} är kortast att skriva om man vill repetera mer än en sats 100 gånger? Vilken tycker du är lättast att läsa?
-
-\Task \textit{Slumptal}. Undersök vad dokumentationen säger om funktionen \code{scala.math.random}:\\  % Uppgift 23
-\url{http://www.scala-lang.org/api/current/#scala.math.package}
-
-\Subtask\Pen Vilken typ har värdet som returneras av funktionen \code{random}?
-
-\Subtask\Pen Vilket är det minsta respektive största värde som kan returneras?
-
-\Subtask\Pen Är \code{random} en \textit{äkta} funktion \Eng{pure function} i matematisk mening?
-
-\Subtask Anropa funktionen \code{math.random} upprepade gånger och notera vad som händer. Använd pil-upp-tangenten.
-\begin{REPLnonum}
-scala> math.random
-\end{REPLnonum}
-
-
-\Subtask Vad händer? Använd \textit{pil-upp} och kör nedan \code{for}-sats flera gånger. Förklara vad som sker.
-
-\begin{REPLnonum}
-scala> for (i <- 1 to 20) println((math.random * 3 + 1).toInt)
-\end{REPLnonum}
-
-\Subtask Skriv en \code{for}-sats som skriver ut 100 slumpmässiga heltal från 0 till och med 9 på var sin rad.
-
-\begin{REPLnonum}
-scala> for (i <- 1 to 100) println(???)
-\end{REPLnonum}
-
-\Subtask Skriv en \code{for}-sats som skriver ut 100 slumpmässiga heltal från 1 till och med 6 på samma rad.
-
-\begin{REPLnonum}
-scala> for (i <- 1 to 100) print(???)
-\end{REPLnonum}
-
-
-\Subtask Använd \textit{pil-upp} och kör nedan \code{while}-sats flera gånger. Förklara vad som sker.
-
-\begin{REPLnonum}
-scala> while (math.random > 0.2) println("gurka")
-\end{REPLnonum}
-
-\Subtask Ändra i \code{while}-satsen ovan så att sannolikheten ökar att riktigt många strängar ska skrivas ut.
-
-\Subtask Förklara vad som händer nedan.
-\begin{REPL}
-scala> var slumptal = math.random
-scala> while (slumptal > 0.2) { println(slumptal); slumptal = math.random }
-\end{REPL}
-
-\Task\Pen \textit{Logik och De Morgans Lagar}. Förenkla följande uttryck. Antag att \code{poäng} och \code{highscore} är heltalsvariabler medan \code{klar} är av typen \code{Boolean}.
-  % Uppgift 24
-
-\Subtask \code{poäng > 100 && poäng > 1000}
-
-\Subtask \code{poäng > 100 || poäng > 1000}
-
-\Subtask \code{!(poäng > highscore)}
-
-\Subtask \code{!(poäng > 0 && poäng < highscore) }
-
-\Subtask \code{!(poäng < 0 || poäng > highscore) }
-
-\Subtask \code{klar == true}
-
-\Subtask \code{klar == false}
-
-
-\clearpage
-
-\ExtraTasks
-
-\Task \textit{Slumptal}.
-
-\Subtask Ersätt \code{???} nedan med literaler så att \code{tärning} returnerar ett slumpmässigt heltal mellan 1 och 6.
-\begin{REPLnonum}
-scala> def tärning = (math.random * ??? + ???).toInt
-\end{REPLnonum}
-
-\Subtask Ersätt \code{???} med literaler så att \code{rnd} blir ett decimaltal med max en decimal mellan 0.0 och 1.0.
-\begin{REPLnonum}
-scala> def rnd = math.round(math.random * ???) / ???
-\end{REPLnonum}
-
-\Subtask Vad blir det för skillnad om \code{math.round} ersätts med \code{math.floor} ovan? (Se dokumentationen av \code{java.lang.Math.round} och \code{java.lang.Math.floor}.)
-
-\Task Undersök vad som finns i paketet \code{scala.math} genom att studera dess dokumentation: \href{http://www.scala-lang.org/api/current/#scala.math.package}{www.scala-lang.org/api/current/\#scala.math.package} och gör några matematiska beräkningar i REPL som använder olika funktioner i \code{math}-paketet.
-
-\Task\Pen Antag att du byter plats mellan satsen efter villkoret och satsen efter \code{else} i \code{if}-satsen nedan. Hur kan du ändra i villkoret så att det ändå skrivs ut samma sak som före bytet?
-\begin{Code}
-if (x == 42) println("the meaning of it all") else println(":(")
-\end{Code}
-
-\Task\Pen Rita en ny bild av datorns minne efter varje evaluerad rad nedan. Bilderna ska visa variablers namn, typ och värde.
-\begin{REPL}
-scala> var x = 42
-scala> var y = x + 1
-scala> x += -1
-scala> y -= 1
-\end{REPL}
-
-\Task Skapa med hjälp av \code{while} några olika oändliga loopar som skriver ut olika saker vid varje loop-runda.
-
-\Task Hitta på några egna övningar för att träna mer på De Morgans lagar.
-
-
-
-\clearpage
-
-\AdvancedTasks
-
-\Task Läs om moduloräkning här \href{https://en.wikipedia.org/wiki/Modulo\_operation}{en.wikipedia.org/wiki/Modulo\_operation} och undersök hur det blir med olika tecken (positivt resp. negativt) på divisor och dividend.
-
-
-
-\Task Läs om identifierare i Scala och speciellt \emph{literal identifiers} här: \url{http://www.artima.com/pins1ed/functional-objects.html#6.10}.
+\Task \what~Läs om identifierare i Scala och speciellt \emph{literal identifiers} här: \url{http://www.artima.com/pins1ed/functional-objects.html#6.10}.
 
 \Subtask Förklara vad som händer nedan:
 \begin{REPLnonum}
-scala> val `konstig val` = 42
-scala> println(`konstig val`)
+scala> val `bokstavlig val` = 42
+scala> println(`bokstavlig val`)
 \end{REPLnonum}
 
 \Subtask Scala och Java har olika uppsättningar med reserverade ord. På vilket sätt kan ''backticks'' vara använbart med anledning av detta?
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved Variabeln får namnet 'bokstavlig val', bakåt-apostrofer \Eng{backticks} gör att man kan namnge variabler till annars otillåtna namn, t.ex. med mellanrum eller nyckelord i sig.
+
+\SubtaskSolved Backticks i Scala möjliggör alla möjliga tecken i namn. Exempel på användning: I java finns en metod som heter \jcode{java.lang.Thread.yield} men i Scala är yield ett nyckelord; för att komma runt det går det att i Scala skriva \jcode{java.lang.Thread.`yield`} 
+
+\QUESTEND
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\clearpage
+
+
+\subsection{TODO}
+
+\TODO{SAKERNA NEDAN SKA FLYTTAS/UPPDATERAS/TAS BORT???} 
+
+
+\ifPreSolution  %%% TODO remove \fi at end of file and break sultions into pieces
+
+
+
 
 
 \Task Sök upp dokumentationen för \code{java.lang.Integer}.
@@ -1491,27 +1550,16 @@ scala> println(`konstig val`)
 \Task Typannoteringar skapas genom att i ett uttryck placera ett kolon följt av en typ, vid behov  omslutet av en parentes. Skapa ett större uttryck med typannoteringar och försök få kompilatorn att kontrollera typen på intressanta ställen. Märk att typannoteringar också ibland kan användas för att konvertera mellan numeriska typer.
 
 
-\Task Förklara vad som händer nedan:
-\begin{REPL}
-scala> var i = 42
-scala> i += 1
-scala> i *= 2
-scala> i /= 3
-\end{REPL}
-
-
 \Task Läs om BigInt och BigDecimal här: \href{http://alvinalexander.com/scala/how-to-use-large-integer-decimal-numbers-in-scala-bigint-bigdecimal}{alvinalexander.com/scala/how-to-use-large-integer-decimal-numbers-in-scala-bigint-bigdecimal} och prova att skapa riktigt stora tal med hjälp av metoden \code{pow} på BigInt och tal med riktigt många decimaler med BigDecimal dess metod \code{pow}.
 
 \Task Sök upp dokumentationtionen för \code{java.lang.Math.multiplyExact} och läs om vad den metoden gör.
 
 \Subtask Vad händer här?
 \begin{REPLnonum}
-scala> Math.multiplyExact(2, 42)
-scala> Math.multiplyExact(Int.MaxValue, Int.MaxValue)
+scala> Math.multiplyExact(Int.MaxValue, 2)
 \end{REPLnonum}
 
 \Subtask\Pen Varför kan man vilja använda \code{java.lang.Math.multiplyExact} i stället för ''vanlig'' multiplikation?
-
 
 
 \Subtask\Pen Sök med Ctrl+F i webbläsaren och efter förekomster av texten \textit{''overflow''} i javadoc för klassen \code{java.lang.Math} i JDK 8. Vad är ''overflow''? Vilka metoder finns i \code{java.lang.Math} som hjälper dig att upptäcka om det blir overflow?
