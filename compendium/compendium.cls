@@ -130,6 +130,9 @@
 \newcommand\Button[1]{\fbox{\textbf{#1}}}
 
 
+\newcommand\WHAT[1]{\def\what{\emph{#1}}}
+
+
 \newcounter{TaskCounter}[section]
 
 \newcommand{\Task}{%
