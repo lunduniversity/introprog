@@ -16,7 +16,6 @@ object mio {
   def listFiles(dir: String): Vector[Path] =
     Files.list(Paths.get(dir)).toArray.map(_.asInstanceOf[Path]).toVector
 
-
   def ls: Unit = listFiles("").foreach(println)
 
   def ls(dir: String): Unit = listFiles(dir).foreach(println)
