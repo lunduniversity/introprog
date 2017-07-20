@@ -1,5 +1,7 @@
-/*
-   This utility merges exercises and solutions in to one file using the new format:
+/* NOTE: This util is not needed anymore, but kept for future inspiration of similar tasks.
+         The most interesting parts are general file utils and also a latex cmd parser extractor.
+
+   The run method merges -exercises.tex and -solutions.tex in to one file using the new format:
 
    \WHAT{Topic of exercise.}
 
