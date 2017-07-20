@@ -30,6 +30,9 @@ object mergesolu {
   def listFiles(dir: String): Vector[String] =
     Files.list(Paths.get(dir)).toArray.map(_.asInstanceOf[Path].toString).toVector.sorted
 
+  def listFilesWith(partOfName: String, inDir: String): Vector[String] =
+      listFiles(inDir).filter(_.toString.contains(partOfName))
+
   def workDir="../../compendium/modules"
   def exerFile(week: String) = s"$workDir/$week-exercise.tex"
   def soluFile(week: String) = s"$workDir/$week-solutions.tex"
@@ -41,21 +44,21 @@ object mergesolu {
     if (start > -1 && stop > -1) Some(fileName.substring(start,stop)) else None
   }
 
+
   def main(args: Array[String]): Unit = {
     val (default, msg) = ("w02", "args(0) missing, using default:")
     val arg = args.lift(0).getOrElse{ println(s"$msg $default") ; default }
     println("*** WELCOME TO mergesolu, a util for merging exercise and solution file")
 
     println(s"*** arg=$arg\nList of exercise files in $workDir:")
-    val exeFiles = listFiles(workDir).filter(_.toString.contains("-exercise.tex"))
+    val exeFiles =listFilesWith(partOfName="-exercise.tex", inDir=workDir)
     exeFiles.foreach(println)
 
     println(s"*** arg=$arg\nList of already merged files in $workDir:")
-    listFiles(workDir).filter(_.toString.contains("-merged.tex")).foreach(println)
+    listFilesWith(partOfName="-merged.tex", inDir=workDir).foreach(println)
 
     val weekNames = exeFiles.flatMap(extractWeekName(arg))
-
-    val week = weekNames.filter(_.contains(arg)).head
+    val week      = weekNames.filter(_.contains(arg)).head
 
     if (isExistingFile(outFile(week))) errExit(s"merge already exists: ${outFile(week)}")
     run(week)
