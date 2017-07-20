@@ -1,6 +1,10 @@
-%!TEX encoding = UTF-8 Unicode
 
-%!TEX root = ../compendium2.tex
+%!TEX encoding = UTF-8 Unicode
+%!TEX root = ../exercises.tex
+
+\ifPreSolution
+
+
 
 \Exercise{\ExeWeekNINE}\label{exe:W09}
 
@@ -14,8 +18,25 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
+\else
 
-\Task \emph{Gemensam bastyp.} Man vill ofta lägga in objekt av olika typ i samma samling.
+
+
+\ExerciseSolution{\ExeWeekNINE}
+
+\BasicTasks %%%%%%%%%%%
+
+\fi
+
+
+
+
+
+\WHAT{Gemensam bastyp.}
+
+\QUESTBEGIN
+
+\Task  \what~  Man vill ofta lägga in objekt av olika typ i samma samling.
 \begin{REPL}
 scala> class Gurka(val vikt: Int)
 scala> class Tomat(val vikt: Int)
@@ -64,7 +85,39 @@ scala> val anonymGrönsak = new Grönsak { val vikt = 42 }
 
 
 
-\Task \emph{Polymorfism i samband med arv.} Polymorfism betyder ''många skepnader''. I samband med arv  innebär det att flera subtyper, till exempel \code{Ko} och \code{Gris}, kan hanteras gemensamt som om de vore instanser av samma supertyp, så som \code{Djur}. Subklasser kan implementera en metod med samma namn på olika sätt. Vilken metod som exekveras bestäms vid körtid beroende på vilken subtyp som instansieras. På så sätt kan djur komma i många skepnader.
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  \code{Vector[Object]}.
+
+\SubtaskSolved  Det beror på att vektorns element är av typen \code{Object}. \code{vikt} är inte definierat för denna typ.
+
+\SubtaskSolved  -.
+
+\SubtaskSolved  \code{Vector[Grönsak]}.
+
+\SubtaskSolved  Ja.
+
+\SubtaskSolved  -.
+
+\SubtaskSolved  \code{Grönsak}. \$anon\$1@88dfbe.
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Polymorfism i samband med arv.}
+
+\QUESTBEGIN
+
+\Task  \what~  Polymorfism betyder ''många skepnader''. I samband med arv  innebär det att flera subtyper, till exempel \code{Ko} och \code{Gris}, kan hanteras gemensamt som om de vore instanser av samma supertyp, så som \code{Djur}. Subklasser kan implementera en metod med samma namn på olika sätt. Vilken metod som exekveras bestäms vid körtid beroende på vilken subtyp som instansieras. På så sätt kan djur komma i många skepnader.
 
 \Subtask Implementera funktionen \code{skapaDjur} nedan så att den returnerar antingen en ny Ko eller en ny Gris med lika sannolikhet.
 
@@ -81,7 +134,38 @@ scala> bondgård.foreach(_.väsnas)
 
 
 
-\Task \emph{Bastypen \code{Shape} och subtyperna \code{Rectangle} och \code{Circle}.} Du ska nu skapa ett litet bibliotek för geometriska former med oföränderliga objekt implementerade med hjälp av case-klasser. De geometriska formerna har en gemensam bastyp kallad \code{Shape}. Skriv nedan kod i en editor och klistra sedan in den i REPL med kommandot \code{:paste}.
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved 
+\begin{Code}
+def skapaDjur: Djur =
+   {if(math.random > 0.5) new Ko else new Gris}
+\end{Code}
+
+\SubtaskSolved 
+\begin{Code}
+class Häst extends Djur{ def väsnas = println("Gnääääägg") }
+def skapaDjur: Djur = {val r = math.random;
+   if(r < 0.33) new Ko else if(r < 0.67) new Gris else new Häst}
+\end{Code}
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Bastypen \code{Shape} och subtyperna \code{Rectangle} och \code{Circle}.}
+
+\QUESTBEGIN
+
+\Task  \what~  Du ska nu skapa ett litet bibliotek för geometriska former med oföränderliga objekt implementerade med hjälp av case-klasser. De geometriska formerna har en gemensam bastyp kallad \code{Shape}. Skriv nedan kod i en editor och klistra sedan in den i REPL med kommandot \code{:paste}.
 \begin{Code}
 case class Point(x: Double, y: Double) {
   def move(dx: Double, dy: Double): Point = Point(x + dx, y + dy)
@@ -121,7 +205,44 @@ case class Circle(pos: Point, radius: Double) extends Shape {
 
 
 
-\Task \label{task:fyle} \emph{Inmixning.} Man kan utvidga en klass med multipla traits med nyckelordet \code{with}. På så sätt kan man fördela medlemmar i olika traits och återanvända gemensamma koddelar genom så kallad \textbf{inmixning}, så som nedan exempel visar.
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved 
+\begin{Code}
+val c1 = Circle(Point(1, 1), 42)
+val r1 = Rectangle(Point(3, 3), 20, 30)
+c1.move(2, 3)
+r1.move(3, 2)
+\end{Code}
+
+\SubtaskSolved  För \code{Point}: \code{def moveTo(dx: Double, dy: Double): Point = Point(dx, dy)}. \\
+För \code{Shape}: \code{def moveTo(dx: Double, dy: Double): Shape}. \\
+För \code{Rectangle}: \code{override def moveTo(dx: Double, dy: Double): Rectangle = } \\
+\code{Rectangle(pos.moveTo(dx, dy), this.dx, this.dy)}. \\
+För \code{Circle}: \code{override def moveTo(dx: Double, dy: Double): Circle =} \\
+\code{Circle(pos.moveTo(dx, dy), radius)}.
+
+\SubtaskSolved  \code{def distanceTo(that: Point): Double = math.hypot(that.x - x, that.y - y)}.
+
+\SubtaskSolved  \code{def distanceTo(that: Shape): Double = pos.distanceTo(that.pos)}.
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Inmixning.}
+
+\QUESTBEGIN
+
+\Task \label{task:fyle} \what~   Man kan utvidga en klass med multipla traits med nyckelordet \code{with}. På så sätt kan man fördela medlemmar i olika traits och återanvända gemensamma koddelar genom så kallad \textbf{inmixning}, så som nedan exempel visar.
 
 En alternativ fågeltaxonomi, speciellt populär i Skåne, delar in alla fåglar i två specifika kategorier: Kråga respektive Ånka. Krågor kan flyga men inte simma, medan Ånkor kan simma och oftast även flyga. Fågel i generell, kollektiv bemärkelse kallas på gammal skånska för Fyle.%
 \footnote{\href{http://www.klangfix.se/ordlista.htm}{www.klangfix.se/ordlista.htm}}
@@ -165,14 +286,65 @@ scala> val antalKrax: Int = ???
 scala> val antalKvack: Int = ???
 \end{REPL}
 
-\Task \emph{Finala klasser.} Om man vill förhindra att man kan göra \code{extends} på en klass kan man göra den final genom att placera nyckelordet \code{final} före nyckelordet \code{class}.
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved 
+\begin{Code}
+fyle.filter(f => f.isInstanceOf[Ånka] && f.ärFlygkunnig).size
+\end{Code}
+
+\SubtaskSolved 
+\begin{Code}
+val antalKrax: Int = fyle.filter(f => !f.ärSimkunnig).size * 2
+val antalKvack: Int = fyle.filter(f => f.ärSimkunnig).size * 4
+\end{Code}
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Finala klasser.}
+
+\QUESTBEGIN
+
+\Task  \what~  Om man vill förhindra att man kan göra \code{extends} på en klass kan man göra den final genom att placera nyckelordet \code{final} före nyckelordet \code{class}.
 
 \Subtask Eftersom klassificeringen av fåglar i uppgiften ovan i antingen Ånkor eller Krågor är fullständig och det inte finns några subtyper till varken Ånkor eller Krågor är det lämpligt att göra dessa finala. Ändra detta i din kod.
 
 \Subtask Testa att ändå försöka göra en subklass \code{Simkråga extends Kråga}. Vad ger kompilatorn för felmeddelande om man försöker utvidga en final klass?
 
 
-\Task \emph{Accessregler vid arv och nyckelordet \code{protected}.} Om en medlem i en supertyp är privat så kan man inte komma åt den i en subklass. Ibland vill man att subklassen ska kunna komma åt en medlem även om den ska vara otillgänglig i annan kod.
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  Sätt \code{final} framför \code{class} i klasserna.
+
+\SubtaskSolved  error: illegal inheritance from final class Kråga.
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Accessregler vid arv och nyckelordet \code{protected}.}
+
+\QUESTBEGIN
+
+\Task  \what~  Om en medlem i en supertyp är privat så kan man inte komma åt den i en subklass. Ibland vill man att subklassen ska kunna komma åt en medlem även om den ska vara otillgänglig i annan kod.
 
 \begin{REPL}
 trait Super {
@@ -191,7 +363,31 @@ class Sub extends Super {
 
 \Subtask Fungerar det att anropa metoden \code{kryptisk} på instanser av klassen \code{Sub}?
 
-\Task \emph{Använding av \code{protected}.} Den flitige ornitologen från uppgift \ref{task:fyle} ska ringmärka alla 42 fåglar hen hittat i skogen. När hen ändå håller på bestämmer hen att även försöka ta reda på hur mycket oväsen som skapas av respektive fågelsort. För detta ändamål apterar den flitige ornitologen en linuxdator på allt infångat fyle. Du ska hjälpa ornitologen att skriva programmet.
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  error: not found: value minHemlis.
+
+\SubtaskSolved  error: value vårHemlis in class Super\$class cannot be accessed in Sub.
+
+\SubtaskSolved  Ja.
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Använding av \code{protected}.}
+
+\QUESTBEGIN
+
+\Task  \what~  Den flitige ornitologen från uppgift \ref{task:fyle} ska ringmärka alla 42 fåglar hen hittat i skogen. När hen ändå håller på bestämmer hen att även försöka ta reda på hur mycket oväsen som skapas av respektive fågelsort. För detta ändamål apterar den flitige ornitologen en linuxdator på allt infångat fyle. Du ska hjälpa ornitologen att skriva programmet.
 
 \Subtask Inför en \code{protected var räknaLäte} i traiten \code{Fyle} och skriv kod på lämpliga ställen för att räkna hur många läten som respektive fågelinstans yttrar.
 
@@ -203,7 +399,39 @@ class Sub extends Super {
 
 
 
-\Task \emph{Typtester med \code{isInstanceOf} och typkonvertering med \code{asInstanceOf}.} Gör nedan deklarationer.
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  I Fyle:
+\begin{Code}
+protected var räknaLäte: Int = 0
+def väsnas: Unit = { print(läte * 2); räknaLäte += 2 }
+\end{Code}
+
+I Ånka: \code| override def väsnas = { print(läte * 4); räknaLäte += 4 }|
+
+\SubtaskSolved  \code{ def antalLäten: Int = räknaLäte }
+
+\SubtaskSolved  Om en klass som representerar en fågel som skulle ge ifrån sig fler/färre läten än en vanlig \code{Fyle}, behöver \code{väsnas} ändras. Denna metod behöver tillgång till \code{räknaLäte}, vilken inte får vara \code{private}.
+
+\SubtaskSolved  Räknar-variabeln ska inte kunna påverkas i någon annan del av programmet.
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Typtester med \code{isInstanceOf} och typkonvertering med \code{asInstanceOf}.}
+
+\QUESTBEGIN
+
+\Task  \what~  Gör nedan deklarationer.
 \begin{REPL}
 scala> trait A; trait B extends A; class C extends B; class D extends B
 scala> val (c, d) = (new C, new D)
@@ -244,7 +472,45 @@ scala> b.asInstanceOf[A]
 
 
 
-\Task \emph{Regler för \code{override}, \code{private} och \code{final}.}
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  B ärver A. C och D ärver B.
+
+\SubtaskSolved  1. True eftersom c är av typen C. \\
+2. False eftersom c inte är av typen D. \\
+3. True eftersom d är av typen D som är en subtyp av B. \\
+4. True eftersom c är av typen C som är en subtyp av B, som i sin tur är en subtyp av A. \\
+5. True eftersom b är av typen D, som är en subtyp av B, som i sin tur är en subtyp av A. \\
+6. True eftersom b är av typen D. \\
+7. True eftersom a är av typen C som är en subtyp av B. \\
+8. True eftersom c är av typen C som är en subtyp av AnyRef. \\
+9. True eftersom c är av typen C som är en subtyp av Any. \\
+10. Error eftersom \code{isInstanceOf} inte kan använda sig av \code{AnyVal}.  \\
+11. True eftersom c är av typen C som är en subtyp av Object (Object är java-representationen av AnyRef). \\
+12. Error eftersom \code{isInstanceOf} inte kan testa om värdetyper (i detta fallet \code{42}) är referenstyper. \\
+13. True eftersom \code{42} är av typen \code{Int} som är en subtyp av Any. \\
+
+\SubtaskSolved  3. Går inte eftersom c inte är av typen D, utan typen C. \\
+6. Går inte eftersom a inte är av typen D, utan typen C. \\
+7. Går inte eftersom typen E inte finns. \\
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Regler för \code{override}, \code{private} och \code{final}.}
+
+\QUESTBEGIN
+
+\Task  \what~ 
 
 \Subtask \label{subtask:overriderules} Undersök överskuggningning av abstrakta, konkreta, privata och finala medlemmar genom att skriva in raderna nedan en i taget i REPL. Vilka rader ger felmeddelande? Varför? Vid felmeddelande: notera hur felmeddelandet lyder och ändra deklarationen av den felande medlemmen så att koden blir kompilerbar (eller om det är enda rimliga lösningen: ta bort den felaktiga medlemmen), innan du provar efterkommande rad.
 
@@ -271,7 +537,44 @@ class Sub15 extends Super14 { def a = 43; override var b = 43; val c = "?" }
 
 \Subtask Läs igenom reglerna i kapitel  \ref{slideW07:overriderules} om vad som gäller vid arv och överskuggning av medlemmar. Gör några egna undersökningar i REPL som försöker bryta mot någon regel som inte testades i deluppgift \ref{subtask:overriderules}.
 
-\Task \emph{Supertyp med parameter.} En trait kan inte ha någon parameter. Vill man ha en parameter till supertypen måste man använda en klass istället, enligt nedan exempel.
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  2. Måste ha \code{override} framför \code{b} för att kunna ändra på metoden. \\
+4. \code{c} är \code{private}, vilket betyder att den är gömd för subklasserna. Därför kan den inte överskuggas. Genom att ta bort \code{override} fungerar klassen. \\
+5. En \code{final}-medlem måste ha ett bestämt värde. Kan lösas genom att tilldela \code{final a} ett värde eller ta bort \code{final}. \\
+6. En \code{final}-medlem kan inte överskuggas, varken med eller utan \code{override}. Här får konflikterna tas bort.  \\
+7. Se 6. \\
+8. Eftersom \code{c} inte finns i \code{Super5} kan den inte överskuggas. Genom att ta bort \code{override} fungerar klassen. \\
+10. Överskuggningen av \code{val} måste vara oföränderlig (immutable); detta är inte nödvändigtvis \code{def}. Löses genom att byta ut \code{def a} mot \code{val a} hos \code{Sub10}.  \\
+11. Samma problem som i 10.; \code{lazy val} kan vara föränderlig. Löses genom att ta bort \code{lazy}. \\
+12. Samma problem igen! \code{var} är föränderlig, vilket bryter mot typsäkerheten när man försöker överskugga en \code{val}. Löses genom att ändra \code{var} till \code{val}. \\
+15.\code{def a = 43} och \code{val c = "?"} täcker inte allt som \code{var} kräver. Det behövs en setter för att kunna uppfylla kraven för överskuggning för en \code{var}. Dessutom finns det ingen anledning för en \code{val} att överskuggas; man kan ju ändra på den lite hur man vill!
+
+\SubtaskSolved  Sub3: a = 43, b = 43 eftersom medlemmen är överskuggad. c hittas inte eftersom den är \code{private}.
+
+Sub13: a = 43, b = 42, c = "still lazy" eftersom medlemmen överskuggas.
+
+SubSub: a = 44 eftersom medlemmen överskuggas, b = 42, c = "still lazy".
+
+\SubtaskSolved  -.
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Supertyp med parameter.}
+
+\QUESTBEGIN
+
+\Task  \what~  En trait kan inte ha någon parameter. Vill man ha en parameter till supertypen måste man använda en klass istället, enligt nedan exempel.
 
 Utbildningsdepartementet vill i sitt system hålla koll på vissa personer och skapar därför en klasshierarki enligt nedan. Skriv in koden i en editor och klipp sedan in den i REPL.
 \begin{Code}
@@ -317,7 +620,67 @@ Hur ser utbildningsdepartementets kod ut nu, efter alla ändringar? Skriv ett te
 
 
 
-\Task \emph{Uppräknade värden.} Ett sätt att hålla reda på uppräknade värden, t.ex. färgen på olika kort i en kortlek, är att använda olika heltal som får representera de olika värdena, till exempel så här:\footnote{Om namnkonventioner för konstanter i Scala: läs under rubriken ''Constants, Values, Variable and Methods'' här \href{http://docs.scala-lang.org/style/naming-conventions.html}{docs.scala-lang.org/style/naming-conventions.html}}
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved 
+\begin{Code}
+val person = new Person("Person1")
+val akademiker = new Akademiker("Person2", "LTH")
+val student = new Student("Person3", "LTH", "D")
+val forskare = new Forskare("Person4", "LTH", "Doktorand")
+\end{Code}
+
+\SubtaskSolved 
+\begin{Code}
+val vec = Vector(person, akademiker, student, forskare)
+for(i <- vec){ print(i.toString + i.namn) }
+\end{Code}
+
+\SubtaskSolved  error: class Person is abstract; cannot be instantiated.
+
+\SubtaskSolved  error: overriding value namn in class Person of type String; value namn needs `override' modifier.\\
+toString för Student: Student(Person3,LTH,D). \\
+toString för Forskare: Student(Person4,LTH,Doktorand).
+
+\SubtaskSolved 
+\begin{Code}
+trait Person {val namn: String; val nbr: Int}
+trait Akademiker extends Person {val universitet: String}
+case class Student(
+  namn: String,
+  nbr: Int,
+  universitet: String,
+  program: String) extends Akademiker
+case class Forskare(
+  namn: String,
+  nbr: Int,
+  universitet: String,
+  titel: String) extends Akademiker
+case class IckeAkademiker(
+    namn: String,
+    nbr: Int) extends Person
+\end{Code}
+
+\SubtaskSolved  Man måste använda en klass om man behöver klassparametrar. Man måste använda en trait om man vill göra in-mixning med \code{with}. \\
+ Se \href{http://www.artima.com/pins1ed/traits.html\#12.7}{http://www.artima.com/pins1ed/traits.html\#12.7}.
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Uppräknade värden.}
+
+\QUESTBEGIN
+
+\Task  \what~  Ett sätt att hålla reda på uppräknade värden, t.ex. färgen på olika kort i en kortlek, är att använda olika heltal som får representera de olika värdena, till exempel så här:\footnote{Om namnkonventioner för konstanter i Scala: läs under rubriken ''Constants, Values, Variable and Methods'' här \href{http://docs.scala-lang.org/style/naming-conventions.html}{docs.scala-lang.org/style/naming-conventions.html}}
 \begin{Code}
 object Färg {
   val Spader = 1
@@ -404,16 +767,139 @@ scala> färgPoäng(blandadKortlek.take(5))
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task Det visar sig att vår flitige ornitolog från uppgift \ref{task:fyle} på sidan \pageref{task:fyle} sov på en av föreläsningarna i zoologi när hen var nolla på Natfak, och därför helt missat fylekategorin \code{Pjodd}. Hjälp vår stackars ornitolog så att fylehierarkin nu även omfattar Pjoddar. En Pjodd kan flyga som en Kråga men den \code{ÄrLiten} medan en Kråga \code{ÄrStor}. En Pjodd kvittrar dubbelt så många gånger som en Ånka kvackar. En Pjodd \code{KanKanskeSimma} där simkunnighetssannolikheten är $0.2$. Låt ornitologen ånyo finna 42 slumpmässiga fåglar i skogen och filtrera fram lämpliga arter. Undersök sedan hur dessa väsnas, i likhet med deluppgift \ref{task:fyle}\ref{subtask:fyle:sound}.
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  Sättet är säkrare då man inte kan tilldela korten en färg som inte finns. Med heltalskonstanterna kan man till exempel ge ett kort färgen 5, vilken inte korresponderar till någon riktig färg.
+
+\SubtaskSolved  \code{for (f <- Färg.values; v <- 1 to 13) yield Kort(f,v)}
+
+\SubtaskSolved 
+\begin{Code}
+def blandadKortlek: Vector[Kort] = {
+  val kortlek =
+    for (f <- Färg.values; v <- 1 to 13) yield Kort(f,v)
+  scala.util.Random.shuffle(kortlek)
+}
+\end{Code}
+
+\SubtaskSolved  \code{def färgPoäng(xs: Vector[Kort]): Int = xs.map(_.färg.toInt).sum}
+
+\ExtraTasks %%%%%%%%%%%%
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{NEEDS A TOPIC DESCRIPTION}
+
+\QUESTBEGIN
+
+\Task  \what~ Det visar sig att vår flitige ornitolog från uppgift \ref{task:fyle} på sidan \pageref{task:fyle} sov på en av föreläsningarna i zoologi när hen var nolla på Natfak, och därför helt missat fylekategorin \code{Pjodd}. Hjälp vår stackars ornitolog så att fylehierarkin nu även omfattar Pjoddar. En Pjodd kan flyga som en Kråga men den \code{ÄrLiten} medan en Kråga \code{ÄrStor}. En Pjodd kvittrar dubbelt så många gånger som en Ånka kvackar. En Pjodd \code{KanKanskeSimma} där simkunnighetssannolikheten är $0.2$. Låt ornitologen ånyo finna 42 slumpmässiga fåglar i skogen och filtrera fram lämpliga arter. Undersök sedan hur dessa väsnas, i likhet med deluppgift \ref{task:fyle}\ref{subtask:fyle:sound}.
 
 
 \clearpage
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task Hitta på en egen fördjupningsuppgift inspirerat av denna artikel på Stackoverflow: \url{http://stackoverflow.com/questions/16173477/usages-of-null-nothing-unit-in-scala}
+\SOLUTION
 
-\Task Studera den djupa arvshierarkin i paketet \code{numbers} nedan som modellerar olika sorters tal i matematiken. Du kan även ladda ner koden här: \\
+
+\TaskSolved \what
+
+
+\begin{Code}
+trait Fyle {
+  val läte: String
+  def väsnas: Unit = { print(läte * 2); räknaLäte += 2 }
+  protected var räknaLäte: Int = 0
+  val ärSimkunnig: Boolean
+  val ärFlygkunnig: Boolean
+  val ärStor : Boolean
+  def antalLäten: Int = räknaLäte
+}
+trait KanSimma { val ärSimkunnig = true }
+trait KanInteSimma { val ärSimkunnig = false }
+trait KanFlyga { val ärFlygkunnig = true }
+trait KanKanskeFlyga { val ärFlygkunnig = math.random < 0.8 }
+trait KanKanskeSimma { val ärSimkunnig = math.random < 0.2 }
+trait ÄrStor { val ärStor = true }
+trait ÄrLiten { val ärStor = false }
+
+final class Kråga
+  extends Fyle
+  with KanFlyga
+  with KanInteSimma
+  with ÄrStor{
+  val läte = "krax"
+}
+
+final class Ånka
+  extends Fyle
+  with KanSimma
+  with KanKanskeFlyga
+  with ÄrStor{
+  val läte = "kvack"
+  override def väsnas = { print(läte * 4); räknaLäte += 4 }
+}
+
+final class Pjodd
+  extends Fyle
+  with KanFlyga
+  with KanKanskeSimma
+  with ÄrLiten{
+  val läte = "kvitter"
+  override def väsnas = { print(läte * 8); räknaLäte += 8 }
+}
+\end{Code}
+
+I REPL:
+\begin{REPL}
+val fyle = Vector.fill(42)(
+  if(math.random < 0.33) new Kråga else
+  if (math.random < 0.5) new Ånka else
+  new Pjodd)
+fyle.filter(f => f.isInstanceOf[Kråga]).size*2
+fyle.filter(f => f.isInstanceOf[Ånka]).size*4
+fyle.filter(f => f.isInstanceOf[Pjodd]).size*8
+\end{REPL}
+
+\AdvancedTasks %%%%%%%%%
+\QUESTEND
+
+
+
+
+
+
+\WHAT{NEEDS A TOPIC DESCRIPTION}
+
+\QUESTBEGIN
+
+\Task  \what~ Hitta på en egen fördjupningsuppgift inspirerat av denna artikel på Stackoverflow: \url{http://stackoverflow.com/questions/16173477/usages-of-null-nothing-unit-in-scala}
+
+\SOLUTION
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{NEEDS A TOPIC DESCRIPTION}
+
+\QUESTBEGIN
+
+\Task  \what~ Studera den djupa arvshierarkin i paketet \code{numbers} nedan som modellerar olika sorters tal i matematiken. Du kan även ladda ner koden här: \\
 \href{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/numbers.scala}{github.com/lunduniversity/introprog/blob/master/compendium/examples/numbers.scala}
 \\ Notera metoden \code{reduce} som reducerar ett tal till sin enklaste form och dess implementation överskuggas på lämpliga ställen med relevant reduktion.
 
@@ -445,4 +931,8 @@ res2: numbers.Complex = Complex(Real(0),Real(42.42))
 
 \Subtask Gör så att metoden \code{reduce} i klassen \code{AbstractRational} använder algoritmen Greatest Common Divisor (GCD)\footnote{\href{https://sv.wikipedia.org/wiki/St\%C3\%B6rsta_gemensamma_delare}{https://sv.wikipedia.org/wiki/St\%C3\%B6rsta\_gemensamma\_delare}} så som beskrivs här: \\ \href{http://www.artima.com/pins1ed/functional-objects.html#6.8}{www.artima.com/pins1ed/functional-objects.html\#6.8} \\ så att täljare och nämnare blir så små som möjligt.
 
-\scalainputlisting[numbers=left, basicstyle=\ttfamily\fontsize{9}{11}\selectfont]{examples/numbers.scala}
+\scalainputlisting[numbers=left, basicstyle=\ttfamily\fontsize{9}{11}\selectfont]{examples/numbers.scala}\SOLUTION
+
+
+\QUESTEND
+

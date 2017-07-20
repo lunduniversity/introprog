@@ -1,6 +1,10 @@
-%!TEX encoding = UTF-8 Unicode
 
-%!TEX root = ../compendium2.tex
+%!TEX encoding = UTF-8 Unicode
+%!TEX root = ../exercises.tex
+
+\ifPreSolution
+
+
 
 \Exercise{\ExeWeekFOURTEEN}\label{exe:W14}
 
@@ -21,7 +25,25 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task \emph{Trådar.}  Klassen \code{java.lang.Thread} används för att skapa  \textbf{trådar} med jämlöpande exekvering \Eng{concurrent execution}. På så sätt kan man få olika koddelar att köra samtidigt.
+\else
+
+
+
+\ExerciseSolution{\ExeWeekFOURTEEN}
+
+\BasicTasks %%%%%%%%%%%
+
+\fi
+
+
+
+
+
+\WHAT{Trådar.}
+
+\QUESTBEGIN
+
+\Task  \what~   Klassen \code{java.lang.Thread} används för att skapa  \textbf{trådar} med jämlöpande exekvering \Eng{concurrent execution}. På så sätt kan man få olika koddelar att köra samtidigt.
 
 Klassen \code{Thread} definierar en tom \code{run}-metod. Vill man att tråden ska göra något vettigt får man överskugga \code{run} med det man vill ska göras.
 
@@ -58,7 +80,34 @@ ibland(print("zzz ")); ibland(print("snark ")); ibland(println("hej!"))
 \end{REPL}
 
 
-\Task \label{task:racecondition} \emph{Jämlöpande variabeluppdatering.} Skriv klasserna \code{Bank} och \code{Kund} i en editor och klistra sedan in koden i REPL.
+\SOLUTION
+
+
+\TaskSolved \what
+     %%%TODO number  1 %%%starts with: \emph{Trådar.}  %%%
+
+\SubtaskSolved   -
+
+\SubtaskSolved  \code {java.lang.IllegalThreadStateException}. Det går inte att starta en tråd mer än en gång. Tråden kan därför inte startas om när den redan har exekverats.
+
+\SubtaskSolved   När \code {start} anropas exekveras koden i \code{run} parallellt. Därför skrivs \code{Gurka} och \code{Tomat} ut omlöpande. Om istället \code{run} anropas direkt blir det inte jämnlöpande exekvering och \code{Gurka} skrivs ut 100 gånger, sedan skrivs \code{Tomat} ut 100 gånger.
+
+\SubtaskSolved   \code{Thread.sleep} pausar inte tråden i exakt den tiden som angets. Alltså kommer det skrivas ut \code{zzz snark hej!} i de flesta fall, men det är inte garanterat.
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Jämlöpande variabeluppdatering.}
+
+\QUESTBEGIN
+
+\Task \label{task:racecondition} \what~   Skriv klasserna \code{Bank} och \code{Kund} i en editor och klistra sedan in koden i REPL.
 
 \begin{Code}
 class Bank {
@@ -100,7 +149,27 @@ ibland(bank.visaSaldo)
 \end{REPL}
 
 
-\Task \emph{Trådsäkra \code{AtomicInteger}.} Det finns stöd i JVM för att åstadkomma uppdateringar som inte kan avbrytas av andra trådar under pågånde minnesskrivning. En operation som inte kan avbrytas kallas \textbf{atomär} \Eng{atomic}. Studera dokumentationen för \code{AtomicInteger}\footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html}{docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html}} och prova nedan kod. Förklara vad som händer.
+\SOLUTION
+
+
+\TaskSolved \what
+     %%%TODO number  2 %%%starts with: \emph{Jämlöpande variabeluppdat%%%
+
+\SubtaskSolved  I \code{slösaSpara} hämtas saldot, ändras och placeras tillbaka i minnet -  fördröjs -  upprepas. Om \code{bamse} blir klar med att ladda, ändra och lagra innan skutt gör detsamma med den muterbara variablen hade det inte varit perfekt. Problemet ligger i  när en tråd laddar och innan den kan lagra det förändrade värdet laddar den andra tråden samma värde. Bara en av dessa trådar vinner racet och får lagra sitt ändrade tal. \code{skutt} och \code{bamse} blir alltså upprörda för att inte alla dess uttag och insättningar registreras.
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Trådsäkra \code{AtomicInteger}.}
+
+\QUESTBEGIN
+
+\Task  \what~  Det finns stöd i JVM för att åstadkomma uppdateringar som inte kan avbrytas av andra trådar under pågånde minnesskrivning. En operation som inte kan avbrytas kallas \textbf{atomär} \Eng{atomic}. Studera dokumentationen för \code{AtomicInteger}\footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html}{docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html}} och prova nedan kod. Förklara vad som händer.
 
 Använd funktionerna \code{ofta} och \code{ibland} från tidigare uppgifter.
 \begin{Code}
@@ -130,7 +199,27 @@ ibland(säkerBank.visaSaldo)
 
 
 
-\Task \label{task:future} \emph{Jämlöpande exekvering med \code{scala.concurrent.Future}.} Att skapa och hålla reda på trådar kan bli ganska omständligt och knepigt att få rätt på.
+\SOLUTION
+
+
+\TaskSolved \what
+     %%%TODO number  3 %%%starts with: \emph{Jämlöpande exekvering med%%%
+
+Nu är \code{farmor} garanterad att kunna ladda saldot, ta ut pengar/ändra och lagra innan \code{vargen} kan överskriva resultatet. I \code{slösaSpara} pausas tråden i en millisekund så \code{vargen} kan fortfarande ta ut pengar innan \code{farmor} hinner sätta in pengar igen. Dock kommer alla uttag och insättningar registreras eftersom operationerna är atomära.
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Jämlöpande exekvering med \code{scala.concurrent.Future}.}
+
+\QUESTBEGIN
+
+\Task \label{task:future} \what~   Att skapa och hålla reda på trådar kan bli ganska omständligt och knepigt att få rätt på.
 Med hjälp av \code{scala.concurrent.Future} kan man på ett enklare sätta skapa jämlöpande exekvering.
 
 \begin{Background}
@@ -170,7 +259,33 @@ scala> Await.result(big(1234567), 20.seconds)
 
 
 
-\Task \emph{Använda \code{Future} för att göra flera saker samtidigt.}
+\SOLUTION
+
+
+\TaskSolved \what
+     %%%TODO number  4 %%%starts with: TODO  %%%%%%%%%%%%%%%%%%%\Advan%%%
+
+\SubtaskSolved  error: Cannot find an implicit ExecutionContext. Future behöver en ExecutionContext för att kunna köras. \code{f} är av typen Future[Unit].
+
+\SubtaskSolved  Funktionen \code{printLater} har en Future, vilket innebär att när både \code{printLater} och \code{println} anropas i foreach-loopen exekveras dom jämnlöpande. Eftersom det tar längre tid att starta upp en Future för datorn är \code{println} snabbare och skriver ut att alla är igång först. Sedan skrivs siffrorna från 1 - 42 ut med oregelbundna mellanrum eftersom tråden pausas olika länge.
+
+\SubtaskSolved  \code{big} är en Future[Int]. Det stora talet har 7 520 383 siffror. \code{r} är av typen Try[Int] (se dokumentationen för Future om du är osäker)
+
+\SubtaskSolved  Eftersom exekveringen blockas tills den har fått ett resultat går det inte att fortsätta skriva i REPL medan uträkningen pågår. Väntar man för kort tid får man ett TimeOutException och uträkningen avbryts.
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Använda \code{Future} för att göra flera saker samtidigt.}
+
+\QUESTBEGIN
+
+\Task  \what~ 
 I denna uppgift ska du ladda ner webbsidor parallellt med hjälp av \code{Future}, så att en nedladdning kan avslutas under tiden en annan dröjer.
 
 \Subtask Koden för en minimal webbsida ser ut som nedan. Du kan beskåda sidan här: \url{http://fileadmin.cs.lth.se/pgk/mini.html} eller skriva in nedan kod i en fil som heter något som slutar på \texttt{.html} och öppna filen i din webbläsare.
@@ -247,7 +362,43 @@ scala> Future{ olycka }.onFailure{ case e => println(s":( $e") }
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
 
-\Task Räkna ut stora primtal parallellt genom att använda nedan funktioner. Implementera \code{isPrime} enligt pseudokod från den engelska wikipediasidan om primtalstest\footnote{\href{https://en.wikipedia.org/wiki/Primality_test}{en.wikipedia.org/wiki/Primality\_test}} med den s.k. ''naiva algoritmen''.  Räkna ut 10 st slumpvisa primtal med 16 siffror vardera. Gör beräkningarna parallellt med hjälp av \code{Future}.
+\SOLUTION
+
+
+\TaskSolved \what
+     %%%TODO number  5 %%%starts with: Sök upp och studera dokumentati%%%
+
+\SubtaskSolved  -
+
+\SubtaskSolved  -
+
+\SubtaskSolved  Varje sida fördröjs med mellan 2 upp till 3 sekunder (2000-3000 millisekunder). Så i medeltal tar det 2.5 sekunder för varje sida att laddas. Vektorn måste fyllas innan exekveringen kan fortsätta. Därför laddas alla 10 stycken sidor in innan man kan se första websidan. Det tar därför i medeltal 2.5 x 10 = 25 sekunder.
+
+\SubtaskSolved  \code{f} ger en Vektor fylld med strängar där varje element ges av en rad på hemsidan. Då \code{f} körs i bakgrunden kan programmet fortlöpa medan innehållet räknas ut. Du kan därför skriva \code{f} i REPL:n men det är inte säkert att proccessen är klar och det slutgilltiga resultatet visas.
+
+\SubtaskSolved  Samma som ovan, förutom att det blir en vektor där varje element är i sig en vektor med strängar.
+
+\SubtaskSolved  Laddar in datan parallelt så nedladdingen sker samtidigt, men det går olika snabbt pga metoden seg.
+
+\SubtaskSolved  Eftersom datan laddas i parallella trådar utan blockering blir dom inte klara i ordning, utan i den ordningen tråden körs klart. Till slut blir alla klara och resultatet visar en vektor med \code{true} värden.
+
+\SubtaskSolved  Metoden \code{lycka} är väldefinerad och kastar därför inga undantag. Den skriver alltid ut \code{:)}. Metoden \code{olycka} är inte väldefinerad då division med 0 ger \code{java.lang.ArithmeticException}. Detta fångas upp vid callbacken och det skrivs ut \code{:(} samt det specifierade undantaget.
+
+\ExtraTasks %%%%%%%%%%%%
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{NEEDS A TOPIC DESCRIPTION}
+
+\QUESTBEGIN
+
+\Task  \what~ Räkna ut stora primtal parallellt genom att använda nedan funktioner. Implementera \code{isPrime} enligt pseudokod från den engelska wikipediasidan om primtalstest\footnote{\href{https://en.wikipedia.org/wiki/Primality_test}{en.wikipedia.org/wiki/Primality\_test}} med den s.k. ''naiva algoritmen''.  Räkna ut 10 st slumpvisa primtal med 16 siffror vardera. Gör beräkningarna parallellt med hjälp av \code{Future}.
 
 \begin{Code}
 def isPrime(n: BigInt): Boolean = ???
@@ -265,7 +416,46 @@ def randomBigInt(nDigits: Int): BigInt = {
 }
 \end{Code}
 
-\Task\Pen \emph{Svara på teorifrågor.}
+\SOLUTION
+
+
+\TaskSolved \what
+  %%%TODO number  6 %%%
+
+\begin{Code}
+def isPrime(n: BigInt): Boolean = n match {
+  case _ if (n <= 1) => false
+  case _ if (n <= 3) => true
+  case _ if n % 2 == 0 || n % 3 == 0 => false
+  case _ =>
+    var i = BigInt(5)
+    while (i * i < n) {
+      if (n % i == 0 || n % (i + 2) == 0) false
+      i += 6
+    }
+    true
+}
+
+import scala.concurrent._
+import ExecutionContext.Implicits.global
+
+val primes = Vector.fill(10)(Future{nextPrime(randomBigInt(16))})
+primes.foreach(_.onSuccess{case i => println(i)})
+\end{Code}
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Svara på teorifrågor.}
+
+\QUESTBEGIN
+
+\Task  \what~\Pen 
 
 \Subtask Vad är en tråd?
 
@@ -280,7 +470,45 @@ def randomBigInt(nDigits: Int): BigInt = {
 \Subtask Nämn några fördelar med att använda Future jämfört med att använda trådar direkt.
 
 
-\Task Läs om och testa klasserna AtomicBoolean, AtomicDouble och AtomicReference för atomär uppdatering i paketet \code{java.util.concurrent.atomic}. Använd några av dessa tillsammans med \code{scala.concurrent.Future}.
+\SOLUTION
+
+
+\TaskSolved \what
+ %%%TODO number  7 %%%
+
+\SubtaskSolved  Stackoverflow ger följande förklaring:
+
+A thread is an independent set of values for the processor registers (for a single core). Since this includes the Instruction Pointer (aka Program Counter), it controls what executes in what order. It also includes the Stack Pointer, which had better point to a unique area of memory for each thread or else they will interfere with each other.
+
+\SubtaskSolved 
+
+\begin{Code}
+val thread = new Thread(new Runnable{
+	def run(){println(''Det här är en tråd'')}
+})
+\end{Code}
+
+\SubtaskSolved  \code{thread.start}
+
+\SubtaskSolved  Det kan bli kapplöpning(race conditions) om vilken tråds resurser blir sparade. Vilket leder till att de andra trådarnas ändringar blir ignorerade.
+
+\SubtaskSolved  Trådsäkerhet innebär att flera trådar kan köras parallellt utan felaktigheter i resultatet. Exempelvis får man vara väldigt försiktig om man vill ha en muterbar variabel som alla trådar ska ändra samtidigt.
+
+\SubtaskSolved  Till exempel slipper man skapa instanser av klassen Thread eftersom man kan placera koden i en Future istället. Den löser även mycket under huven för kodaren.
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{NEEDS A TOPIC DESCRIPTION}
+
+\QUESTBEGIN
+
+\Task  \what~ Läs om och testa klasserna AtomicBoolean, AtomicDouble och AtomicReference för atomär uppdatering i paketet \code{java.util.concurrent.atomic}. Använd några av dessa tillsammans med \code{scala.concurrent.Future}.
 
 
 
@@ -289,7 +517,29 @@ def randomBigInt(nDigits: Int): BigInt = {
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
-\Task \emph{Skapa din egen multitrådade webbserver.}
+\SOLUTION
+
+
+\TaskSolved \what
+ %%%TODO number  8 %%%
+
+-
+
+\AdvancedTasks %%%%%%%%%
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Skapa din egen multitrådade webbserver.}
+
+\QUESTBEGIN
+
+\Task  \what~ 
 
 \Subtask Skriv in\footnote{Eller ladda ner här: \href{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/simple-web-server/webserver.scala}{github.com/lunduniversity/introprog/blob/master/compendium/examples/simple-web-server/webserver.scala}} nedan kod i en editor och spara i en fil med namn \texttt{webserver.scala} och kompilera och kör med \texttt{scala webserver.start} och beskriv vad som händer när du med din webbläsare surfar till adressen: \\ \url{http://localhost:8089/abbasillen}
 
@@ -402,16 +652,115 @@ Använd den rekursiva funktionen ovan för att pilla in radbrytningstaggar på v
 
 Hur stora tal klarar din server nu? Vad händer med servern när minnet tar slut? Hur kan du skydda servern så att den inte kan hänga sig?
 
-\Task Utöka din server med fler beräkningsintensiva funktioner. Exempelvis primtalsberäkningar eller beräkningar av valfritt antal decimaler av $\pi$ eller $e$. Utnyttja gärna det du lärt dig i  matematiken om summor och serieutvecklingar.
+\SOLUTION
 
-\Task Läs mer om \code{Future} och jämlöpande exekvering i Scala här:\\
+
+\TaskSolved \what
+ %%%TODO number  9 %%%
+
+\SubtaskSolved  \code{abbasillen} skrivs ut baklänges till \code{nellisabba}.
+
+\SubtaskSolved 
+
+\SubtaskSolved 
+
+\SubtaskSolved 
+
+\SubtaskSolved 
+
+\SubtaskSolved 
+
+\SubtaskSolved 
+
+\SubtaskSolved 
+
+\SubtaskSolved 
+
+Lösningsförslag:
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/simple-web-server/fibserver-threaded-memcached-while.scala}
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{NEEDS A TOPIC DESCRIPTION}
+
+\QUESTBEGIN
+
+\Task  \what~ Utöka din server med fler beräkningsintensiva funktioner. Exempelvis primtalsberäkningar eller beräkningar av valfritt antal decimaler av $\pi$ eller $e$. Utnyttja gärna det du lärt dig i  matematiken om summor och serieutvecklingar.
+
+\SOLUTION
+
+
+\TaskSolved \what
+ %%%TODO number  10 %%%
+
+---
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{NEEDS A TOPIC DESCRIPTION}
+
+\QUESTBEGIN
+
+\Task  \what~ Läs mer om \code{Future} och jämlöpande exekvering i Scala här:\\
 \href{http://alvinalexander.com/scala/future-example-scala-cookbook-oncomplete-callback}{alvinalexander.com/scala/future-example-scala-cookbook-oncomplete-callback}
 
-\Task Läs mer om jämlöpande exekvering och multitrådade program i Java här: \href{http://www.tutorialspoint.com/java/java_multithreading.htm}{www.tutorialspoint.com/java/java\_multithreading.htm}  \\
+\SOLUTION
+
+
+\TaskSolved \what
+ %%%TODO number  11 %%%
+
+---
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{NEEDS A TOPIC DESCRIPTION}
+
+\QUESTBEGIN
+
+\Task  \what~ Läs mer om jämlöpande exekvering och multitrådade program i Java här: \href{http://www.tutorialspoint.com/java/java_multithreading.htm}{www.tutorialspoint.com/java/java\_multithreading.htm}  \\
 \noindent När man skriver program med jämlöpande exekvering finns det många fallgropar; det kan bli kapplöpning \Eng{race conditions} om gemensamma resurser och dödläge \Eng{deadlock} där inget händer för att trådar väntar på varandra. Mer om detta i senare kurser.
 
 
-\Task\Pen \emph{Studera dokumentationen i \code{scala.concurrent}.}
+\SOLUTION
+
+
+\TaskSolved \what
+ %%%TODO number  12 %%%
+
+---
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Studera dokumentationen i \code{scala.concurrent}.}
+
+\QUESTBEGIN
+
+\Task  \what~\Pen 
 
 \Subtask Studera dokumentationen för \code{scala.concurrent.Future}\footnote{\href{http://www.scala-lang.org/files/archive/api/current/\#scala.concurrent.Future}{http://www.scala-lang.org/files/archive/api/current/\#scala.concurrent.Future}}. Hur samverkar \code{Future} med \code{Try} och \code{Option}? Vilka vanliga samlingsmetoder känner du igen?
 
@@ -421,8 +770,46 @@ Hur stora tal klarar din server nu? Vad händer med servern när minnet tar slut
 
 
 
-\Task Fördjupa dig inom webbteknologi.
+\SOLUTION
+
+
+\TaskSolved \what
+ %%%TODO number  13 %%%
+
+\SubtaskSolved 
+
+\SubtaskSolved 
+
+\SubtaskSolved 
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{NEEDS A TOPIC DESCRIPTION}
+
+\QUESTBEGIN
+
+\Task  \what~ Fördjupa dig inom webbteknologi.
 
 \Subtask Lär dig om HTML, CSS och JavaScript här: \url{https://developer.mozilla.org/en-US/docs/Learn}
 
-\Subtask Lär dig om Scala.JS här: \url{http://www.scala-js.org/}
+\Subtask Lär dig om Scala.JS här: \url{http://www.scala-js.org/}\SOLUTION
+
+
+\TaskSolved \what
+ %%%TODO number  14 %%%
+
+\SubtaskSolved  ---
+
+\SubtaskSolved  ---
+
+\SubtaskSolved  ---
+
+\SubtaskSolved  ---
+\QUESTEND
+

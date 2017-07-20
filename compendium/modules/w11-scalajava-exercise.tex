@@ -1,6 +1,10 @@
-%!TEX encoding = UTF-8 Unicode
 
-%!TEX root = ../compendium2.tex
+%!TEX encoding = UTF-8 Unicode
+%!TEX root = ../exercises.tex
+
+\ifPreSolution
+
+
 
 \Exercise{\ExeWeekELEVEN}\label{exe:W11}
 
@@ -19,7 +23,25 @@
 
 \BasicTasks %%%%%%%%%%%%%%%%
 
-\Task \emph{Översätta metoder från Java till Scala.} I denna uppgift ska du översätta en Java-klass som används som en modul\footnote{\href{https://en.wikipedia.org/wiki/Modular_programming}{en.wikipedia.org/wiki/Modular\_programming}} och bara innehåller statiska metoder och inget varaktigt tillstånd. (I nästa uppgift ska du sedan översätta klasser med attribut och varaktiga tillstånd.)
+\else
+
+
+
+\ExerciseSolution{\ExeWeekELEVEN}
+
+\BasicTasks %%%%%%%%%%%
+
+\fi
+
+
+
+
+
+\WHAT{Översätta metoder från Java till Scala.}
+
+\QUESTBEGIN
+
+\Task  \what~  I denna uppgift ska du översätta en Java-klass som används som en modul\footnote{\href{https://en.wikipedia.org/wiki/Modular_programming}{en.wikipedia.org/wiki/Modular\_programming}} och bara innehåller statiska metoder och inget varaktigt tillstånd. (I nästa uppgift ska du sedan översätta klasser med attribut och varaktiga tillstånd.)
 
 Vi börjar med att göra översättningen från Java till Scala rad för rad och du ska behålla så mycket som möjligt av syntax och semantik så att Scala-koden blir så Java-lik som möjligt. I efterföljande deluppgift ska du sedan omforma översättningen så att Scala-koden blir mer idiomatisk\footnote{\href{https://sv.wikipedia.org/wiki/Idiom_\%28programmering\%29}{sv.wikipedia.org/wiki/Idiom\_\%28programmering\%29}}.
 
@@ -103,7 +125,30 @@ Funktionen \code{loop} returnerar en 2-tupel med antalet felgissningar och \code
 
 
 
-\Task \emph{Översätta mellan klasser i Scala och klasser i Java.}
+\SOLUTION
+
+
+\TaskSolved \what
+     %%%TODO number  1 %%%starts with: \emph{Översätta algoritmer och %%%
+
+\SubtaskSolved  \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{10.3}{12}\selectfont]{examples/scalajava/hangman1.scala}
+
+\SubtaskSolved  \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11.2}{13}\selectfont]{examples/scalajava/hangman2.scala}
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Översätta mellan klasser i Scala och klasser i Java.}
+
+\QUESTBEGIN
+
+\Task  \what~ 
 Klassen \code{Point} nedan är en modell av en punkt som kan sparas på begäran i en lista. Listan är privat för kompanjonsobjektet och kan skrivas ut med en metod \code{showSaved}. I koden används en \code{ArrayBuffer}, men i framtiden vill man, vid behov, kunna ändra från \code{ArrayBuffer} till en annan sekvenssamlingsimplementation, t.ex. \code{ListBuffer}, som uppfyller egenskaperna hos supertypen \code{Buffer}, men har andra prestandaegenskaper för olika operationer. Därför är attributet \code{saved} i kompanjonsobjektet deklarerat med den mer generella typen.
 
 \scalainputlisting[numbers=left]{examples/scalajava/Point.scala}
@@ -164,7 +209,52 @@ scala> Person.unapply(p)
 \end{REPL}
 
 
-\Task \emph{Auto(un)boxing.} I JVM måste typparametern för generiska klasser vara av referenstyp. I Scala löser kompilatorn detta åt oss så att vi ändå kan ha t.ex. \code{Int} som argument till en typparameter i Scala, medan man i Java \emph{inte} direkt kan ha den primitiva typen \jcode{int} som typparameter till t.ex. \code{ArrayList}.
+\SOLUTION
+
+
+\TaskSolved \what
+     %%%TODO number  2 %%%starts with: \emph{Översätta mellan klasser %%%
+
+\SubtaskSolved   \javainputlisting[numbers=left]{examples/scalajava/JPoint.java}
+
+\SubtaskSolved   -
+
+\SubtaskSolved   \begin{Code}
+case class Person(name: String, age: Int = 0)
+\end{Code}
+
+\SubtaskSolved  p.*TAB* - copy, producArity, ProductIterator, productElement, productPrefix
+
+Person.*TAB* - apply, curried, tupled, unapply
+
+\begin{REPLnonum}
+scala> p.copy
+   def copy(name: String,age: Int): Person
+
+scala> p.copy()
+res0: Person = Person(Björn,49)
+
+scala> p.copy(age = p.age + 1)
+res1: Person = Person(Björn,50)
+
+scala> Person.unapply(p)
+res2: Option[(String, Int)] = Some((Björn,49))
+\end{REPLnonum}
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Auto(un)boxing.}
+
+\QUESTBEGIN
+
+\Task  \what~  I JVM måste typparametern för generiska klasser vara av referenstyp. I Scala löser kompilatorn detta åt oss så att vi ändå kan ha t.ex. \code{Int} som argument till en typparameter i Scala, medan man i Java \emph{inte} direkt kan ha den primitiva typen \jcode{int} som typparameter till t.ex. \code{ArrayList}.
 
 I Java och i den underliggande plattformen JVM används s.k. wrapper-klasser för att lösa detta, t.ex. genom wrapper-klassen \code{Integer} som boxar den primitiva typen \jcode{int}. Java-kompilatorn har stöd för att automatiskt packa in värden av primitiv typ i sådana wrapper-klasser för att skapa referenstyper och kan även automatiskt packa upp dem.
 
@@ -209,7 +299,51 @@ scala> i.compareTo(42)  // varför fungerar detta?
 \Subtask\Pen Med ledning av de båda tidigare deluppgifterna: sammanfatta de två nämnda fallgropar med autoboxing i Java i två generella punkter, så att du har nytta av att memorera dem inför din framtida Javakodning.
 
 
-\Task \emph{JavaConverters.} Med \code{import scala.collection.JavaConverters._} får man i sina Scalaprogram tillgång till de smidiga metoderna \code{asJava} och \code{asScala} som översätter mellan motsvarande samlingar i resp språks standardbibliotek. Kör nedan i REPL och gör efterföljande deluppgifter.
+\SOLUTION
+
+
+\TaskSolved \what
+     %%%TODO number  3 %%%starts with: \emph{Auto(un)boxing.} I JVM må%%%
+
+\SubtaskSolved   -
+
+\SubtaskSolved   Cell har typen java.lang.Integer. När man hämtar ut värdet med \code{c.value} hämtas den primitiva typ \code{int} ut.
+
+\SubtaskSolved   Med hjälp av autoboxing förvandlas 42 till typen \code{Integer} och kan därför jämföras med en annan \code{Integer}.
+
+\SubtaskSolved   i.compareTo(42) fungerar på grund av autoboxing. Då JVM packar in den primitiva typ int i en Integer-objekt automatiskt.
+
+\SubtaskSolved 
+\begin{REPLnonum}
+0 10 20 30 40 50 60 ... 390 400 410
+
+[0]: 0
+[42]: 0
+NOT EQUAL
+\end{REPLnonum}
+
+\SubtaskSolved   \javainputlisting[numbers=left]{examples/scalajava/Autoboxing2.java}
+
+\SubtaskSolved   42 kommer läggas längst fram i listan istället för längst bak, då autounboxing kommer göra Integer(0) till 0 och tvärtom med variablen \code{pos}.
+
+\SubtaskSolved   Om man ska undersöka om två int-variabler är lika ska man använda ==, men om variablerna är av typen Integer måste man använda \code{equals}.
+
+JVM kommer inte varna om man vänder på \code{Integer} och \code{int}, som i \code{xs.add(0, pos)}.
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{JavaConverters.}
+
+\QUESTBEGIN
+
+\Task  \what~  Med \code{import scala.collection.JavaConverters._} får man i sina Scalaprogram tillgång till de smidiga metoderna \code{asJava} och \code{asScala} som översätter mellan motsvarande samlingar i resp språks standardbibliotek. Kör nedan i REPL och gör efterföljande deluppgifter.
 
 \begin{REPL}
 scala> val sv = Vector(1,2,3)
@@ -236,7 +370,44 @@ och prova några fler konverteringar.
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%
 
-\Task Översätt nedan kod från Java till Scala. Skriv koden i en fil som heter \texttt{showInt.scala} och kalla Scala-objektet med \code{main}-metoden för \code{showInt}. Läs tipsen som följer efter koden innan du börjar.
+\SOLUTION
+
+
+\TaskSolved \what
+     %%%TODO number  4 %%%starts with: \emph{JavaConverters.} Med \cod%%%
+
+\SubtaskSolved   Vector[Int] - java.util.List[Int]
+Set[Char] - java.util.Set[Char]
+Map[String, Int] - java.util.Map[String, Int]
+
+\SubtaskSolved   ArrayList[Int] - scala.collection.mutable.Buffer[Int]
+HashSet[Char] - scala.collection.mutable.Set[Char]
+
+Båda blir föränderliga motsvarigheter. Det visas genom att de till hör \code{scaka.collection.mutable} och både \code{ArrayList} och \code{HashSet} är förändrliga i Java.
+
+\SubtaskSolved   \code{scala.collection.immutable.Set}
+
+\SubtaskSolved   \code{sm.asJava.asScala} ger typen \code{scala.collection.mutable.Map[String,Int]}
+
+\code{sm.asJava.asScala.toMap} ger typen \code{scala.collection.immutable.Map[String,Int]}
+
+\SubtaskSolved   -
+
+\ExtraTasks %%%%%%%%%%%%
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{NEEDS A TOPIC DESCRIPTION}
+
+\QUESTBEGIN
+
+\Task  \what~ Översätt nedan kod från Java till Scala. Skriv koden i en fil som heter \texttt{showInt.scala} och kalla Scala-objektet med \code{main}-metoden för \code{showInt}. Läs tipsen som följer efter koden innan du börjar.
 
 \javainputlisting[numbers=left]{examples/scalajava/JShowInt.java}
 
@@ -252,7 +423,58 @@ och prova några fler konverteringar.
 Kompilera din Scala-kod och kör i terminalen och testa så att allt funkar. Vill du även kompilera Java-koden så finns den i kursens repo i filen\\ \texttt{compendium/examples/scalajava/JShowInt.java}
 
 
-\Task Studera och prova denna fallgrop med innehållslikhet:\\ \href{https://github.com/bjornregnell/lth-eda016-2015/blob/master/lectures/examples/eclipse-ws/lecture-examples/src/week10/generics/TestPitfall3.java}{\small github.com/bjornregnell/lth-eda016-2015/blob/master/lectures/examples/eclipse-ws/lecture-examples/src/week10/generics/TestPitfall3.java}
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\begin{Code}[numbers=left]
+object showInt {
+  def show(obj: Any, msg: String = ""): Unit = println(msg + obj)
+
+  def repeatChar(ch: Char, n: Int): String = ch.toString * n
+
+  def showInt(i: Int): Unit = {
+    val leading = Integer.numberOfLeadingZeros(i)
+    val binaryString = repeatChar('0', leading) + i.toBinaryString
+    show(i,               "Heltal : ")
+    show(i.asInstanceOf[Char],         "Tecken : ")
+    show(binaryString,    "Binärt : ")
+    show(i.toHexString,   "Hex    : ")
+    show(i.toOctalString, "Oktal  : ")
+  }
+
+
+  import scala.io.StdIn.readLine
+  import scala.util.{Try,Success,Failure}
+
+  def loop: Unit =
+    Try { readLine("Heltal annars pang: ").toInt } match {
+      case Failure(e) => show(e); show("PANG!")
+      case Success(i) => showInt(i); loop
+    }
+
+  def main(args: Array[String]): Unit =
+    if(args.length > 0) args.foreach(i => showInt(i.toInt))
+    else loop
+}
+\end{Code}
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{NEEDS A TOPIC DESCRIPTION}
+
+\QUESTBEGIN
+
+\Task  \what~ Studera och prova denna fallgrop med innehållslikhet:\\ \href{https://github.com/bjornregnell/lth-eda016-2015/blob/master/lectures/examples/eclipse-ws/lecture-examples/src/week10/generics/TestPitfall3.java}{\small github.com/bjornregnell/lth-eda016-2015/blob/master/lectures/examples/eclipse-ws/lecture-examples/src/week10/generics/TestPitfall3.java}
 
 
 
@@ -261,9 +483,38 @@ Kompilera din Scala-kod och kör i terminalen och testa så att allt funkar. Vil
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
 
-\Task\Pen Studera fallgropar för hur man skriver en \code{equals}-metod i Java här:
+\SOLUTION
+
+
+\TaskSolved \what
+     %%%TODO number  6 %%%starts with: \TODO Fallgrop med Point som in%%%
+
+\AdvancedTasks %%%%%%%%%
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{NEEDS A TOPIC DESCRIPTION}
+
+\QUESTBEGIN
+
+\Task  \what~\Pen Studera fallgropar för hur man skriver en \code{equals}-metod i Java här:
 \href{http://www.artima.com/lejava/articles/equality.html}{www.artima.com/lejava/articles/equality.html} och jämför med  det fullständiga receptet för hur man skriver en välfungerande \code{equals} och \code{hashcode} i Scala här: \href{http://www.artima.com/pins1ed/object-equality.html}{www.artima.com/pins1ed/object-equality.html}
 
 \Subtask Vilka skillnader och likheter finns vid överskuggning av equals i Java respektive Scala, som ska ge en fungerande innehållstest för en hierarki med bastyper och subtyper?
 
-\Subtask Vilka fallgropar är gemensamma för Java och Scala?
+\Subtask Vilka fallgropar är gemensamma för Java och Scala?\SOLUTION
+
+
+\TaskSolved \what
+     %%%TODO number  7 %%%starts with: \TODO \emph{Gränssnitt i Scala %%%
+
+
+
+\QUESTEND
+
