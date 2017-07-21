@@ -1,3 +1,5 @@
+// Just some unfinished ideas dumped into this file; nothing of below is in use yet... 
+
 object AnyToHexString {
   import javax.xml.bind.DatatypeConverter
   import java.security.MessageDigest
