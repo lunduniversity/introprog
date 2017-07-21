@@ -1,4 +1,5 @@
-// Just some unfinished ideas dumped into this file; nothing of below is in use yet... 
+// Just some unfinished ideas dumped into this file; nothing of below is in use yet...
+package justSomeIdeas
 
 object AnyToHexString {
   import javax.xml.bind.DatatypeConverter

@@ -1,11 +1,14 @@
-object ConceptQuiz {  // to generate tables for a concept connection quiz
+package genquiz  // see types in package object in TypesAndUtils.scala
 
-  type QuizName = String
-  type Term     = String
-  type Defi     = String
-  type Concept  = (Term, Defi)
+object QuizData {  // to generate tables for a concept connection quizes in latex
+
+  def concepts(q: QuizName): Concepts =
+    quizes(q).zipWithIndex.map { case ((k,v), i) => ((k.trim,i), (v.trim,i)) }
+
+  def quizNames: Vector[QuizName] = quizes.keys.toVector
 
   val quizes = Map[QuizName, Vector[Concept]](
+
     "quiz-w01-concepts" -> Vector(
       "litteral       " -> "anger ett specifikt datavärde",
       "sträng         " -> "en sekvens av tecken",
@@ -24,6 +27,7 @@ object ConceptQuiz {  // to generate tables for a concept connection quiz
       "flyttal        " -> "decimaltal med begränsad noggrannhet",
       "boolesk        " -> "antingen sann eller falsk"
     ),
+
     "quiz-w01-types" -> Vector(
       "\\code|1    |" -> "\\code|Int    |",
       "\\code|1L   |" -> "\\code|Long   |",
@@ -36,6 +40,7 @@ object ConceptQuiz {  // to generate tables for a concept connection quiz
       "\\code|false|" -> "\\code|Boolean|",
       "\\code|()   |" -> "\\code|Unit   |"
     ),
+
     "quiz-w01-values" -> Vector(
       "\\code|1.0 + 18          |"    ->   "\\code|19.0: Double    | ",
       "\\code|(41 + 1).toDouble |"    ->   "\\code|42.0: Double    | ",
@@ -50,6 +55,7 @@ object ConceptQuiz {  // to generate tables for a concept connection quiz
       "\\code|('A' + '0').toChar|"    ->   "\\code|'q': Char       | ",
       "\\code|\"*!%#\".charAt(0)|"    ->   "\\code|'*': Char       | "
     ),
+
     "quiz-w01-intdiv" -> Vector(
       "\\code| 4 / 42      |" ->   "\\code|    0: Int      | ",
       "\\code| 42.0 / 2    |" ->   "\\code| 10.5: Double   | ",
@@ -58,57 +64,22 @@ object ConceptQuiz {  // to generate tables for a concept connection quiz
       "\\code| 4 % 42      |" ->   "\\code|    4: Int      | ",
       "\\code| 40 % 4 == 0 |" ->   "\\code|true : Boolean  | ",
       "\\code| 42 % 4 == 0 |" ->   "\\code|false: Boolean  | "
-    )
+    ),
+
+    "quiz-w02-concepts" -> Vector(
+      "kompilerad  " -> "maskinkod sparad och kan köras igen utan kompilering",
+      "skript      " -> "maskinkod sparas ej utan skapas före varje körning",
+      "paket       " -> "skapar namnrymd; maskinkod placeras i egen katalog",
+      "modul       " -> "koddelar som hör ihop, exempel: singelobjekt, paket",
+      "singelobjekt" -> "samlar tillstånd och funktioner i en enda instans",
+      "block       " -> "kan ha lokala namn; sista uttrycket blir blockets värde",
+      "import      " -> "gör namn tillgängligt utan att hela sökvägen behövs",
+      "Array       " -> "en förändringsbar, indexerbar samling",
+      "Vector      " -> "en oföränderlig, indexerbar samling",
+      "Range       " -> "en samling som representerar ett intervall av heltal",
+      "            " -> "",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty)
 
   )
-
-  type Index = Int
-  type Concepts = Vector[((Term, Index), (Defi, Index))]
-
-  def concepts(q: QuizName): Concepts =
-    quizes(q).zipWithIndex.map { case ((k,v), i) => ((k.trim,i), (v.trim,i)) }
-
-  def terms(cs: Concepts): Vector[(Term, Index)] = cs.map { case ((t, i), (d, j)) => (t,i)}
-  def defis(cs: Concepts): Vector[(Term, Index)] = cs.map { case ((t, i), (d, j)) => (d,j)}
-
-  type Solution = Map[Int, Int]
-
-  def replaceDefiNumberWithOrdererdIndex(cs: Concepts): Concepts =
-    cs.zipWithIndex.map{ case (((t, i), (d, j)), row) => ((t, i), (d, row))}
-
-  def scramble(cs: Concepts): (Concepts, Solution) = {
-    val shuffledDefis = scala.util.Random.shuffle(defis(cs))
-    val solution = shuffledDefis.map { case (d, i) => i } .zipWithIndex.toMap
-    val shuffledConcepts = terms(cs) zip shuffledDefis
-    (replaceDefiNumberWithOrdererdIndex(shuffledConcepts), solution)
-  }
-
-  def unscramble(cs: Concepts, solution: Solution): Concepts =
-    terms(cs) zip defis(cs).map { case (d, i) => (d, solution(i))}
-
-  def indexToChar(i: Index): Char   = ('A' + i).toChar
-  def indexToNum (i: Index): String = (i + 1)  .toString
-
-  def toTaskRowLatex(row: ((Term, Index), (Defi, Index))): String = row match {
-    case ((term, i), (defi, j)) =>
-      s"""  $term & ${indexToNum(i)} & & ${indexToChar(j)} & $defi \\\\ """
-  }
-
-  def toSolutionRowLatex(row: ((Term, Index), (Defi, Index))): String = row match {
-    case ((term, i), (defi, j)) =>
-    val arrow = "~~\\Large$\\leadsto$~~"
-    s"""  $term & ${indexToNum(i)} & $arrow &  ${indexToChar(j)} & $defi \\\\ """
-  }
-
-  def toLatexTaskSolution(q: QuizName): (String, String) = {
-    val cs = concepts(q)
-    val (scs, sol) = scramble(cs)
-    val ucs = unscramble(cs, sol)
-
-    val taskRows: String = scs.map(toTaskRowLatex).mkString("\n")
-    val soluRows: String = ucs.map(toSolutionRowLatex).mkString("\n")
-
-    (taskRows, soluRows)
-  }
-
 }
