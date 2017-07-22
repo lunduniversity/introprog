@@ -113,8 +113,8 @@
 
 \newcommand{\ChapterUnnum}[1]{\chapter*{#1}\addcontentsline{toc}{chapter}{#1}}
 \newcommand{\SectionUnnum}[1]{\section*{#1}\addcontentsline{toc}{section}{#1}}
-\newcommand{\Exercise}[1]{\newpage\section{Övning: {\tt #1}}\label{section:exe:#1}}
-\newcommand{\ExerciseSolution}[1]{\newpage\section{Lösningar till övning {\tt #1}}}
+\newcommand{\Exercise}[1]{\newpage\section{Övning {\tt #1}}\label{section:exe:#1}}
+\newcommand{\ExerciseSolution}[1]{\newpage\section{Lösning {\tt #1}}}
 \newcommand{\Lab}[1]{\newpage\section{Laboration: {\tt #1}}\label{section:lab:#1}}
 \newcommand{\Teamlab}[1]{\newpage\section{Grupplaboration: {\tt #1}}\label{section:lab:#1}}
 \newcommand{\Assignment}[1]{\newpage\section{Projektuppgift: {\tt #1}}\label{section:proj:#1}}

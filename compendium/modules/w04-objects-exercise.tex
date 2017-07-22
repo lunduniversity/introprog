@@ -14,15 +14,139 @@
 \item \StudyTheory{04}
 \end{Preparations}
 
-\BasicTasks %%%%%%%%%%%%%%%%
-
-\TODO{ÖVNINGAR OM OBJEKT}
-
 \else
-
 
 \ExerciseSolution{\ExeWeekFOUR}
 
-%Uppgift 1
-
 \fi
+
+
+\BasicTasks %%%%%%%%%%%%%%%%
+
+
+
+\WHAT{Para ihop begrepp med beskrivning.}
+
+\QUESTBEGIN
+
+\Task \what
+
+\vspace{1em}\noindent Koppla varje begrepp med den (förenklade) beskrivning som passar bäst:
+
+\begin{ConceptConnections}
+\input{generated/quiz-w04-concepts-taskrows-generated.tex}
+\end{ConceptConnections}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\begin{ConceptConnections}
+\input{generated/quiz-w04-concepts-solurows-generated.tex}
+\end{ConceptConnections}
+
+\QUESTEND
+
+
+
+
+
+
+
+
+\WHAT{Objekt som moduler.}
+
+\QUESTBEGIN
+
+\Task  \what~  \TODO{FLYTTA ALLT OM OBJEKT TILL W04}
+
+\Subtask Lär dig följande terminologi utantill:
+
+\begin{itemize}[noitemsep, nolistsep]
+\item Ett singelobjekt som samlar funktioner och variabler kallas även en \textbf{modul}.
+\item Funktioner i objekt kallas även \textbf{metoder}.
+\item Variabler och metoder i objekt kallas \textbf{medlemmar}.
+%\item Moduler kan i sin tur innehålla moduler, i godtyckligt \textbf{nästlingsdjup}.
+\item Man kommer åt innehållet i en modul med \textbf{punktnotation}.
+\item Med \textbf{import} slipper man punktnotation.
+\item Ett objekt med variabler sägs ha ett \textbf{tillstånd}.
+\end{itemize}
+
+\Subtask Deklarera modulerna \code{stringstat} och \code{Test} nedan i REPL eller i Kojo.
+
+\begin{Code}
+object stringstat {
+  object stringfun {
+    def sentences(s: String): Array[String] = s.split('.')
+    def words(s: String): Array[String] = s.split(' ')
+    def countWords(s: String): Int = words(s).size
+    def countSentences(s: String): Int = sentences(s).size
+  }
+
+  object statistics {
+    var history = ""
+    def printFreq(s: String): Unit = {
+      println("\n---- Frekvenser ----")
+      println("Antal tecken:   " + s.size)
+      println("Antal ord:      " + stringfun.countWords(s))
+      println("Antal meningar: " + stringfun.countSentences(s))
+      history = history + " " + s
+    }
+    def printTotal: Unit = printFreq(history)
+  }
+}
+
+object Test {
+  import stringstat._
+  def apply(n: Int = 42): Unit = {
+    val s1 = "Fem myror är fler än fyra elefanter. Ät gurka."
+    val s2 = "Galaxer i mina braxer. Tomat är gott. Hejsan."
+    statistics.printFreq(s1 * n)
+    statistics.printFreq(s2 * n)
+    statistics.printTotal
+  }
+}
+\end{Code}
+
+\Subtask Anropa \code{Test()} och förklara vad som händer. Vad skrivs ut?
+
+\Subtask Vilket av objekten i modulen \code{stringstat} har tillstånd och vilket av objekten är tillståndslöst? Vad består tillståndet av?
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  -
+
+\SubtaskSolved  -
+
+\SubtaskSolved
+\begin{REPLnonum}
+
+---- Frekvenser ----
+Antal tecken: 1932
+Antal ord: 337
+Antal meningar: 84
+
+---- Frekvenser ----
+Antal tecken: 1890
+Antal ord: 295
+Antal meningar: 126
+
+---- Frekvenser ----
+Antal tecken: 3824
+Antal ord: 633
+Antal meningar: 210
+
+\end{REPLnonum}
+
+Först och främst, vi har default argument 42 så det är det som används vid anropet. Detta används för att multiplicera \code{s1} och \code{s2} i \code{Test} när man anropar \code{printFreq}. \code{statistics} objektet använder i sin tur funktionerna i \code{stringfun} för att räkna ord och meningar. Resultatet presenteras av \code{statistics}, vilket är det vi ser.
+
+\SubtaskSolved  Vi ser att \code{stringfun} enbart innehåller funktioner och därmed inte har något tillstånd. \code{statistics} har däremot ett tillstånd eftersom variabeln \code{history} sparar vad som skett, så när man anropar funktioner i objektet så kan objektet ändra beteende beroende på dess tillstånd, tillståndet består alltså av \code{history}.
+
+
+
+\QUESTEND

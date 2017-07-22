@@ -60,8 +60,9 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
   val exitValue = cmd.#>(cmdOutputFile).#&&(cmd).#>(cmdOutputFile).run.exitValue
   if (exitValue != 0) {
     println("*** ############ ERROR LOG STARTS HERE ############### ***")
-    Process(Seq("cat", cmdOutputFile.getName), workDir).run
-    error(s"\n*** ERROR: pdflatex exit code: $exitValue\nSee pdflatex output in: $cmdOutputFile")
+    //Process(Seq("cat", cmdOutputFile.getName), workDir).run
+    Process(Seq("tail", "-40", cmdOutputFile.getName), workDir).run
+    error(s"\n*** ERROR: pdflatex exit code: $exitValue\nSee COMPLETE pdflatex output in: $cmdOutputFile")
   } else println(s"         Log file: $cmdOutputFile")
 }
 
@@ -98,6 +99,23 @@ pdf := {
   runPdfLatexCmd(texFile = file("assignments.tex"), workDir = file("compendium"))
   runPdfLatexCmd(texFile = file("solutions.tex"), workDir = file("compendium"))
 }
+
+//http://www.scala-sbt.org/0.13/docs/Howto-Triggered.html
+watchSources ++= ((baseDirectory.value / "compendium") * "*.tex").get
+watchSources ++= ((baseDirectory.value / "compendium") * "*.cls").get
+
+watchSources ++= ((baseDirectory.value / "compendium" / "modules") * "*.tex").get
+
+lazy val pdfExercises = taskKey[Unit]("Compile exercises.tex")
+pdfExercises := {
+  runPdfLatexCmd(texFile = file("exercises.tex"), workDir = file("compendium"))
+}
+
+lazy val pdfSolutions = taskKey[Unit]("Compile solutions.tex")
+pdfSolutions := {
+  runPdfLatexCmd(texFile = file("solutions.tex"), workDir = file("compendium"))
+}
+
 
 lazy val root = (project in file(".")).
   aggregate(workspace, plan).

@@ -39,7 +39,7 @@ object Main extends {
       println(s"Generating: $q-solurows" )
       s.save(currentDir + s"../compendium/generated/$q-solurows-generated.tex")
 
-      1  // to count number of files generated.
+      2  // to count number of files generated.
     }
 
     println(s"    ${n.sum} files generated.")
