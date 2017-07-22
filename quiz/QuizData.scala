@@ -9,7 +9,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
 
   val quizes = Map[QuizName, Vector[Concept]](
 
-    "quiz-w01-concepts" -> Vector(
+    "quiz-w01-concepts" -> Vector( //expressions
       "litteral       " -> "anger ett specifikt datavärde",
       "sträng         " -> "en sekvens av tecken",
       "sats           " -> "en kodrad som gör något; kan särskiljas med semikolon",
@@ -66,20 +66,85 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "\\code| 42 % 4 == 0 |" ->   "\\code|false: Boolean  | "
     ),
 
-    "quiz-w02-concepts" -> Vector(
-      "kompilerad  " -> "maskinkod sparad och kan köras igen utan kompilering",
-      "skript      " -> "maskinkod sparas ej utan skapas före varje körning",
-      "paket       " -> "skapar namnrymd; maskinkod placeras i egen katalog",
-      "modul       " -> "koddelar som hör ihop, exempel: singelobjekt, paket",
-      "singelobjekt" -> "samlar tillstånd och funktioner i en enda instans",
-      "block       " -> "kan ha lokala namn; sista uttrycket blir blockets värde",
-      "import      " -> "gör namn tillgängligt utan att hela sökvägen behövs",
-      "Array       " -> "en förändringsbar, indexerbar samling",
-      "Vector      " -> "en oföränderlig, indexerbar samling",
-      "Range       " -> "en samling som representerar ett intervall av heltal",
-      "            " -> "",
+    "quiz-w02-concepts" -> Vector(  //programs
+      "kompilerad    " -> "maskinkod sparad och kan köras igen utan kompilering",
+      "skript        " -> "maskinkod sparas ej utan skapas före varje körning",
+      "objekt        " -> "samlar variabler och funktioner",
+      "main          " -> "där exekveringen av kompilerad app startar",
+      "samling       " -> "datastruktur som innehåller många element av samma typ",
+      "sekvenssamling" -> "datastruktur med element i en viss ordning",
+      "Array         " -> "en förändringsbar, indexerbar sekvenssamling",
+      "Vector        " -> "en oföränderlig, indexerbar sekvenssamling",
+      "Range         " -> "en samling som representerar ett intervall av heltal",
+      "yield         " -> "används i for-uttryck för att skapa ny samling",
+      "map           " -> "applicerar en funktion på varje element i en samling",
+      "algoritm      " -> "stegvis beskrivning av en lösning på ett problem",
+      "implementation" -> "en specifik realisering av en algoritm",
+      "              " -> "",
       "" -> ""
-    ).filter(_._1.trim.nonEmpty)
+    ).filter(_._1.trim.nonEmpty),
 
-  )
+    "quiz-w03-concepts" -> Vector(  //functions
+      "parameter         " -> "namn i funktionshuvud; binds till argument vid anrop",
+      "argument          " -> "uttryck som är invärde vid funktionsapplicering",
+      "block             " -> "kan ha lokala namn; sista uttrycket blir returvärde",
+      "värdeanrop        " -> "argumentet evalueras innan funktionen appliceras",
+      "namnanrop         " -> "fördröjd evaluering av argument",
+      "namngivna argument" -> "möjliggör att argument kan ges i valfri ordning",
+      "tupel             " -> "en sekvens med ett visst antal värden, ev. av olika typ",
+      "funktionshuvud    " -> "har en parameterlista och eventuellt en returtyp",
+      "funktionskropp    " -> "koden som exekveras vid funktionsapplicering",
+      "anonym funktion   " -> "funktion utan namn; kallas även lambda",
+      "parameterlista    " -> "beskriver namn och typ på parametrar om fler än noll",
+      "rekursiv funktion " -> "en funktion som anropar sig själv",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w04-concepts" -> Vector(  //objects
+      "modul             " -> "kodenhet med abstraktioner som kan återanvändas",
+      "singelobjekt      " -> "modul som kan ha tillstånd; finns i en enda upplaga",
+      "paket             " -> "modul som skapar namnrymd; maskinkod får egen katalog",
+      "import            " -> "gör namn tillgängligt utan att hela sökvägen behövs",
+      "lat initialisering" -> "allokering sker först när namnet refereras",
+      "medlem            " -> "tillhör ett objekt; nås med punktnotation om synlig",
+      "attribut          " -> "en variabel som utgör (del av) ett objekts tillstånd",
+      "metod             " -> "en funktion som är medlem av ett objekt",
+      "privat            " -> "modifierar synligheten av en objektmedlem",
+      "överlagring       " -> "?",
+      "namnrymd          " -> "en mängd av namn skapad för att förhindra krockar",
+      "         " -> "",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w05-concepts" -> Vector(  //classes
+      "klass          " -> "en mall för att skapa flera objektinstanser av samma typ",
+      "instans        " -> "ett objektupplaga med eget minne för attributvärden",
+      "konstruktion   " -> "skapandet av ett objekt, kräver allokering av minne",
+      "klassparameter " -> "?",
+      "fabriksmetod   " -> "?",
+      "referenslikhet " -> "?",
+      "innehållslikhet" -> "?",
+      "case-klass     " -> "?",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w06-concepts" -> Vector(  //sequences
+      "         " -> "",
+      "         " -> "",
+      "         " -> "",
+      "         " -> "",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w07-concepts" -> Vector(  //sets-maps
+      "         " -> "",
+      "         " -> "",
+      "         " -> "",
+      "         " -> "",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+
+    "" -> Vector()
+  ).filter(_._1.trim.nonEmpty)
 }

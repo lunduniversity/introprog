@@ -62,23 +62,23 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 \newenvironment{Slide}[2][]
   {\begin{frame}[fragile,environment=Slide,#1]{#2}}
   {\end{frame}}
-  
+
 \newenvironment{SlideSimple}[2][]
   {\begin{frame}[fragile,plain, environment=SlideSimple,#1]{#2}}
-  {\end{frame}}  
-  
+  {\end{frame}}
+
 %\usepackage[framemethod=default]{mdframed}
 %\mdfdefinestyle{exampledefault}{%
 %rightline=true,innerleftmargin=10,innerrightmargin=10,
 %frametitlerule=true,frametitlerulecolor=green,
 %frametitlebackgroundcolor=yellow,
 %frametitlerulewidth=2pt}
-% USAGE: \begin{mdframed}[style=exampledefault,frametitle={My Title}] 
+% USAGE: \begin{mdframed}[style=exampledefault,frametitle={My Title}]
 
 \newcommand{\Subsection}[1]{\subsection{#1}\frame{\centering\huge\bfseries\textcolor{blue}{#1}}}
 
 \newlength\slidefontsize
-\newcommand{\Size}[1]{\setlength\slidefontsize{#1}\fontsize{\slidefontsize}{1.25\slidefontsize}\selectfont}  
+\newcommand{\Size}[1]{\setlength\slidefontsize{#1}\fontsize{\slidefontsize}{1.25\slidefontsize}\selectfont}
 
 \newcommand{\SlideImg}[2]{\frame[plain]{\frametitle{#1}
 \centering\includegraphics[width=1.0\textwidth]{#2}
@@ -94,11 +94,13 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 \newcommand{\SlideFontTiny}{\SlideFontSize{8}{10}}
 
 %http://tex.stackexchange.com/questions/104220/beamer-tableofcontents-does-not-display-the-correct-section-number-after-setco
-\makeatletter 
+\makeatletter
 \newcommand{\setnextsection}[1]{%
   \setcounter{section}{\numexpr#1-1\relax}%
   \beamer@tocsectionnumber=\numexpr#1-1\relax\space}
 \makeatother
+
+\newcommand{\TODO}{\colorbox{red!70}{TODO!!!}~}
 
 \newcommand{\Emph}[1]{\textcolor{myemphcolor}{\textbf{#1}}}
 \newcommand{\Alert}[1]{\textcolor{myalertcolor}{\textbf{#1}}}
@@ -126,7 +128,7 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 
 
 \lstset{
-    language=Scala, 
+    language=Scala,
     basicstyle=\ttfamily\scriptsize\selectfont,
     keywordstyle=\bfseries\color{eclipsepurple},
     commentstyle=\color{eclipsegreen},
@@ -206,7 +208,7 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
     \lstset{
       numberstyle=\color{black!80}\ttfamily\fontsize{6}{8}\selectfont,
       numbers=left,
-      basicstyle=\color{white}\ttfamily\fontsize{7}{9}\selectfont,      
+      basicstyle=\color{white}\ttfamily\fontsize{7}{9}\selectfont,
       language=,otherkeywords={},%
       tabsize=2,
       backgroundcolor=\color{black!80},
@@ -217,7 +219,7 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 
 \lstnewenvironment{REPLnonum}[1][]{%
     \lstset{
-      basicstyle=\color{white}\ttfamily\fontsize{9}{11}\selectfont,      
+      basicstyle=\color{white}\ttfamily\fontsize{9}{11}\selectfont,
       language=,otherkeywords={},%
       tabsize=2,
       backgroundcolor=\color{black!80},
@@ -235,5 +237,3 @@ tabsize=4,#1]{#2}}
 
 \newif\ifkompendium
 \kompendiumfalse
-
-

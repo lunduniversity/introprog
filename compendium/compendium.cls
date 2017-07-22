@@ -99,7 +99,7 @@
 \tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3cm, rectangle split, rectangle split parts = 3]
 \tikzstyle{umlarrow}=[->, >=open triangle 90, thick]
 
-\newcommand{\TODO}{\colorbox{blue!30}{TODO!!!}~}
+\newcommand{\TODO}{\colorbox{red!70}{TODO!!!}~}
 \newcommand{\StudyTheory}[1]{Studera begreppen i kapitel \ref{chapter:W#1}.}
 \newcommand{\DoExercise}[2]{Gör övning {\tt #1} i avsnitt \ref{exe:W#2}.}
 \newcommand{\ReadTheLab}{Läs igenom och begrunda hela laborationsinstruktionen.}
@@ -119,6 +119,7 @@
 \newcommand{\Teamlab}[1]{\newpage\section{Grupplaboration: {\tt #1}}\label{section:lab:#1}}
 \newcommand{\Assignment}[1]{\newpage\section{Projektuppgift: {\tt #1}}\label{section:proj:#1}}
 \newcommand{\BasicTasks}{\subsection{Grunduppgifter; förberedelse inför laboration}}
+\newcommand{\BasicTasksNoLab}{\subsection{Grunduppgifter}}
 \newcommand{\ExtraTasks}{\subsection{Extrauppgifter; träna mer}}
 \newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter; utmaningar}}
 \newcommand{\TaskSection}[1]{\subsubsection*{#1}}
