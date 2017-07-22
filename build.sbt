@@ -116,6 +116,11 @@ pdfSolutions := {
   runPdfLatexCmd(texFile = file("solutions.tex"), workDir = file("compendium"))
 }
 
+lazy val pdfCompendium = taskKey[Unit]("Compile compendium.tex")
+pdfCompendium := {
+  runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))
+}
+
 
 lazy val root = (project in file(".")).
   aggregate(workspace, plan).
