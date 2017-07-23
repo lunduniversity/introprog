@@ -21,7 +21,10 @@
 \fi
 
 
+
 \BasicTasks %%%%%%%%%%%%%%%%
+
+
 
 
 
@@ -46,9 +49,6 @@
 \end{ConceptConnections}
 
 \QUESTEND
-
-
-
 
 
 
@@ -150,3 +150,340 @@ Först och främst, vi har default argument 42 så det är det som används vid 
 
 
 \QUESTEND
+
+
+
+
+
+%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 13
+
+
+
+
+\WHAT{Block, namnsynlighet, namnöverskuggning}
+
+\QUESTBEGIN
+
+\Task  \what~ . Kör nedan kod i Scala REPL eller i Kojo. Vad händer nedan? Varför?
+
+\Subtask \code|val a = {1 + 1; 2 + 2; 3 + 3; 4 + 4}; println(a)|
+
+\Subtask \code|val b = {1; 2; 3; {val b = 4; b + b; b + 1}}; println(b)|
+
+\Subtask \code|{val a = 42; println(a)}|
+
+\Subtask \code|{val a = 42}; println(a)|
+
+\Subtask \code|{val a = 42; {val a = 43; println(a)}; println(a)}|
+
+\Subtask \code|{var a = 42; {a = a + 1}; var a = 43}|
+
+\Subtask \code|{var a = 42; {a = a + b; var b = 43}; println(a)}|
+
+\Subtask \code|{var a = 42; {var b = 43; a = a + b}; println(a)}|
+
+\Subtask \code|{var a = 42; {a = a + b; def b = 43}; println(a)}|
+
+\Subtask \code|{object a{var b=42;object a{var a=43}};println(a.b+a.a.a)}|
+
+\Subtask
+
+\begin{Code}
+{
+  object a {
+    var b = 42
+    object a {
+      var a = 43
+    }
+  }
+  println(a.b + a.a.a)
+}
+\end{Code}
+
+\Subtask Vad är fördelen med att namn deklarerade inne i ett block är lokala i stället för globala?
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  Skriver ut talet 8. \code{a} får värdet \code{4 + 4} eftersom detta är den sista satsen i blocket. Man får också tre stycken varningar. Detta beror på att det förekommer tre satser i blocket som inte gör någon skillnad.
+
+\SubtaskSolved  Skriver ut talet 5. De tre första satserna i det yttre blocket ignoreras. \code{b} får värdet som returneras av det yttre blocket. Det yttre blocket returnerar värdet som returneras i den sista satsen i blocket, som i sin tur är ett block. I det inre blocket skapas en ny \code{val} som också får namnet \code{b}. Notera att detta alltså inte är samma värde, även om det har samma namn. Den andra satsen räknar summan av \code{b} med sig själv. Eftersom vi nu befinner oss i det block där det andra \code{b}et precis har definieras så är det detta \code{b} som används och summan blir alltså åtta. Detta är dock helt irrelevant eftersom resultatet inte sparas någonstans. I den sista satsen blir resultatet 5 (eftersom \code{b} är fyra och vi adderar ett). Detta resultatet returneras från det innre blocket och vidare ur det yttre blocket.
+
+\SubtaskSolved  Skriver ut talet 42. Blockets satser exekveras i ordning.
+
+\SubtaskSolved  Skriver inte ut 42. I blocket skapas ett \code{val} med namnet \code{a} och värdet \code{42}. Detta värde finns inte utanför blocket och kommer därför inte att skrivas ut. Om du däremot definierat \code{a} som något annat tidigare så kommer istället det värdet att skrivas ut.
+
+\SubtaskSolved  Skriver först ut \code{43} och sedan \code{42}. Förklaring:
+
+\code{a} initieras med värdet \code{42}. Ett nytt värde som också har namnet \code{a} initieras med värdet \code{43}. Eftersom detta sker innanför ett nytt block, befinner vi oss i ett annat "namespace" och det gör alltså inget att vi använder samma namn. \code{a} skrivs ut. Eftersom vi befinner oss i det inre blocket är det \code{43} som skrivs ut, inte \code{42}. Scala kollar först efter värden som heter \code{a} i det inre "namespacet". Det är först i andra hand som den skulle upptäcka att det finns ett \code{a} i det yttre blocket. Till sist körs den sista satsen i det yttre blocket. Då skrivs \code{a} ut. Eftersom vi nu befinner oss i det yttre blocket, vet inte ens scala om att det andra \code{a}:et existerar. Resultatet av den här utskriften blir alltså \code{42}.
+
+\SubtaskSolved  Ett fel uppstår. Variabeln \code{a} initieras två gånger i samma namespace. Förklaring till felet:
+
+I det yttre blockets första sats initieras variablen \code{a} med värdet \code{42}. I det yttre blockets tredje sats försöker vi definiera en ny variabel med samma namn. I och med att vi befinner oss i samma namespace, krockar namnen.
+
+Förklaring till vad som händer i sats två:
+
+I det inre blocket har vi inte definierat någon variabel \code{a}. Till en början hittar alltså inte scala något sådant. Då letar scala vidare i det namespace som finns utanför det inre blocket och hittar variabeln som vi definierade i det yttre blockets första sats. Denna variabel får sitt värde förändrat.
+
+\SubtaskSolved  Fel. Framåtreferens. Förklaring:
+
+Det är inte tillåtet att referera till variabler som initieras senare i koden.
+
+\SubtaskSolved  Skriver ut \code{85}. Förklaring:
+
+I och med att vi den här gången initierade variabeln \code{b} och gav den ett värde innan vi använder oss av den, slipper vi problemet ovan.
+
+\SubtaskSolved  Skriver ut \code{85}. Förklaring:
+
+Det är tillåtet att referera till funktioner som definieras senare i koden.
+
+\SubtaskSolved  Skriver ut \code{85}. Förklaring:
+
+\code{a.b} refererar till variabeln \code{b} som ingår i objektet \code{a}.
+\code{a.a.a} refererar till variabeln \code{a}, som ingår i ett objekt som heter \code{a} som i sin tur befinner sig i ett annat objekt som också heter \code{a}.
+
+\SubtaskSolved  Skriver ut \code{85}. Förklaring:
+
+Koden är identisk med förra deluppgiften förutom att ny rad används istället för semikolon.
+
+\SubtaskSolved  I stora projekt med mycket kod, kan det vara svårt att hitta unika namn till alla sina variabler. Då är det en fördel om man kan hålla sina variabler i begränsade namespaces, så att de bara är tillgängliga precis när de behöver användas.
+
+
+
+\QUESTEND
+
+
+
+
+%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 14??? NUMMER I KOMMENTAR STÄMMER EJ MED GENERERAT NUMMER
+
+
+
+
+\WHAT{Paket, \code{import} och klassfilstrukturer.}
+
+\QUESTBEGIN
+
+\Task \label{task:package} \what~   Med Java-8-plattformen kommer 4240 färdiga klasser, som är organiserade i 217 olika paket.\footnote{Se Stackoverflow: \href{http://stackoverflow.com/questions/3112882/how-many-classes-are-there-in-java-standard-edition}{how-many-classes-are-there-in-java-standard-edition}}
+
+\Subtask Vilka paket finns i paketet javax som börjar på s?
+
+\begin{REPLnonum}
+scala> javax.s   //tryck på TAB-tangenten
+\end{REPLnonum}
+
+\Subtask Kör raderna nedan i REPL. Beskriv vad som händer för varje rad.
+\begin{REPL}[numbers=left, numberstyle=\color{black}\ttfamily\scriptsize\selectfont]
+scala> import javax.swing.JOptionPane
+scala> def msg(s: String) = JOptionPane.showMessageDialog(null, s)
+scala> msg("Hej på dej!")
+scala> def input(msg: String) = JOptionPane.showInputDialog(null, msg)
+scala> input("Vad heter du?")
+scala> import JOptionPane.{showOptionDialog => optDlg}
+scala> def inputOption(msg: String, opt: Array[Object]) =
+         optDlg(null, msg, "Option", 0, 0, null, opt, opt(0))
+scala> inputOption("Vad väljer du?", Array("Sten", "Sax", "Påse"))
+\end{REPL}
+
+\Subtask\Pen Vad hade du behövt ändra på efterföljande rader om import-satsen på rad 1 ovan ej hade gjorts?
+
+\Subtask Skapa med en editor filen paket.scala och kompilera. Rita en bild av hur katalogstrukturen ser ut.
+
+\begin{Code}
+package gurka.tomat.banan
+
+package p1 {
+  package p11 {
+    object hello {
+      def hello = println("Hej paket p1.p11!")
+    }
+  }
+  package p12 {
+    object hello {
+      def hello = println("Hej paket p1.p12!")
+    }
+  }
+}
+
+package p2 {
+  package p21 {
+    object hello {
+      def hello = println("Hej paket p2.p21!")
+    }
+  }
+}
+
+object Main {
+  def main(args: Array[String]): Unit = {
+    import p1._
+    p11.hello.hello
+    p12.hello.hello
+    import p2.{p21 => apelsin}
+    apelsin.hello.hello
+  }
+}
+\end{Code}
+
+\begin{REPL}
+> gedit paket.scala
+> scalac paket.scala
+> scala gurka.tomat.banan.Main
+> ls -R
+\end{REPL}
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  \code{script   security   smartcardio   sound   sql   swing}
+
+\SubtaskSolved  Radernas funktion i ordning:
+
+1. Importerar JOptionPane från javax.swing
+
+2. Definierar en metod som tar en sträng och öppnar en dialogruta med strängen.
+
+3. Testar funktionen med argumentet "Hej på dej!". En dialogruta öppnas med texten "Hej på dej!".
+
+4. Definierar en metod som tar emot en sträng som argument och öppnar en input-dialogruta med strängen.
+
+5. Testar funktionen med argumentet "Vad heter du?". En dialogruta öppnas med texten "Vad heter du?". I ett fält kan man fylla i sitt namn. Funktionen returnerar namnet.
+
+6. Importerar showOptionDialog från JOptionPane under namnet optDlg.
+
+7. Definierar en metod som tar emot en sträng och en Array som argument och öppnar en flervalsdialog. Strängen ska innehålla frågan som flervalsdialogen visar upp. Arrayn ska innehålla alternativen som användaren ska välja mellan.
+
+8.Testar funktionen med argumenten \code{"Vad väljer du?"} och \\ \code{Array("Sten, "Sax", "Påse")}. En dialogruta kommer upp och man får möjlighet att välja sten sax eller påse. Funktionen returnerar valet som man gör.
+
+\SubtaskSolved  På alla ställen där \code{JOptionPane} förekommer, hade man istället fått skriva \code{javax.swing.JOptionPane}.
+
+\SubtaskSolved  -
+
+
+
+\QUESTEND
+
+
+
+
+%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 15
+
+
+
+
+\WHAT{Skapa \code{jar}-filer och använda classpath}
+
+\QUESTBEGIN
+
+\Task  \what~
+
+\Subtask Skriv kommandot \code{jar} i terminalen och undersök vad som finns för optioner. Se speciellt ''Example 1.'' i hjälputskriften. Vilket kommando ska du använda för att packa ihop flera filer i en enda jar-fil?
+
+\Subtask Som en fortsättning på uppgift \ref{task:package}, packa ihop biblioteket \code{gurka} i en jar-fil med nedan kommando, samt kör igång REPL med jar-filen på classpath.
+
+\begin{REPL}
+> jar cvf mittpaket.jar gurka
+> scala -cp mittpaket.jar
+scala> gurka.tomat.banan.Main.main(Array())
+\end{REPL}
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  jar cvf [namn på skapad fil] [namn på input-filer]
+
+\SubtaskSolved  -
+
+
+
+\QUESTEND
+
+
+
+
+%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 16
+
+
+
+
+\WHAT{Skapa dokumentation med \code{scaladoc}-kommandot}
+
+\QUESTBEGIN
+
+\Task  \what~
+
+\Subtask Som en fortsättning på uppgift \ref{task:package}, kör nedan kommando i terminalen:
+
+\begin{REPL}
+> scaladoc paket.scala
+> ls
+> firefox index.html   # eller öppna index.html i valfri webbläsare
+\end{REPL}
+
+Vad händer?
+
+\Subtask Lägg till några fler metoder i något av objekten i filen \code{paket.scala} och lägg även till några dokumentationskommentarer. Kompilera om och kör. Generera om dokumentationen.
+
+\begin{verbatim}
+//... ändra i filen paket.scala
+
+/** min paketdokumentationskommentar p2 */
+package p2 {
+  /** min paketdokumentationskommentar p21 */
+  package p21 {
+    /** ett hälsningsobjekt */
+    object hello {
+      /** en hälsningsmetod i p2.p21 */
+      def hello = println("Hej paket p2.p21!")
+
+      /** en metod som skriver ut tiden */
+      def date = println(new java.util.Date)
+    }
+  }
+}
+
+\end{verbatim}
+
+\begin{REPL}
+> gedit paket.scala
+> scalac paket.scala
+> jar cvf mittpaket.jar gurka
+> scala -cp mittpaket.jar
+scala> gurka.tomat.banan.p2.p21.hello.date
+scala> :q
+> scaladoc paket.scala
+> firefox index.html
+\end{REPL}
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+\SubtaskSolved  -
+
+\SubtaskSolved  -
+
+\QUESTEND
+
+
+
+
+
+\ExtraTasks %%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+\AdvancedTasks %%%%%%%%%%%%%%%%%

@@ -72,7 +72,8 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "objekt         " -> "samlar variabler och funktioner",
       "main           " -> "där exekveringen av kompilerad app startar",
       "programargument" -> "överförs via parametern args i main",
-      "samling        " -> "datastruktur som innehåller många element av samma typ",
+      "datastruktur   " -> "många olika element i en helhet; elementvis åtkomst",
+      "samling        " -> "datastruktur med element av samma typ",
       "sekvenssamling " -> "datastruktur med element i en viss ordning",
       "Array          " -> "en förändringsbar, indexerbar sekvenssamling",
       "Vector         " -> "en oföränderlig, indexerbar sekvenssamling",
@@ -81,6 +82,16 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "map            " -> "applicerar en funktion på varje element i en samling",
       "algoritm       " -> "stegvis beskrivning av en lösning på ett problem",
       "implementation " -> "en specifik realisering av en algoritm",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w02-hello-scala-java" -> Vector(  //programs
+       "\\code|object|       " -> "\\jcode|public class|      ",
+       "\\code|def main|     " -> "\\jcode|public static main|",
+       "\\code|Array[String]|" -> "\\jcode|String[]|          ",
+       "\\code|: Unit|       " -> "\\jcode|void|              ",
+       "\\code|=|            " -> "\\jcode|) {|               ",
+       "\\code|println|      " -> "\\jcode|System.out.println|",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
@@ -115,7 +126,8 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "metod             " -> "funktion som är medlem av ett objekt",
       "privat            " -> "modifierar synligheten av en objektmedlem",
       "överlagring       " -> "metoder med samma namn men olika parametertyper",
-      "namnrymd          " -> "en mängd av namn skapad för att förhindra krockar",
+      "namnskuggning     " -> "lokalt namn döljer samma namn i omgivande block",
+      "namnrymd          " -> "omgivning där är alla namn är unika",
       "uniform access    " -> "ändring mellan def och val påverkar ej användning",
       "typalias          " -> "alternativt namn på typ som ofta ökar läsbarheten",
       "         " -> "",
