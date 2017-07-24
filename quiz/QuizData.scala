@@ -95,6 +95,30 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
+    "quiz-w02-array-vector" -> Vector(  //programs
+      "Vector" -> "oföränderlig, men nya delvis ändrade varianter skapas snabbt",
+      "Array " -> "enskilda element är förändringsbara genom tilldelning",
+//      "Array " -> "snabbare vid allokering och indexering än andra samlingar",
+      "Array " -> "måste kopieras i sin helhet vid ändring av storlek",
+//      "Array " -> "olik andra samlingar: likhetstest med == kollar ej innehåll",
+//      "Vector" -> "xs == ys kollar om elementen i xs och ys är lika",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w02-collection-methods" -> Vector(  //programs
+     "\\code|Array.fill(9)(0) |  " -> "skapar ny förändringsbar sekvens med 9 nollor",
+     "\\code|Vector.fill(9)(' ')|" -> "skapar ny oföränderlig sekvens med 9 blanktecken",
+     "\\code|xs.apply(0)        |" -> "indexera i sekvenssamling; ger första elementet",
+     "\\code|xs(0)              |" -> "indexera i sekvenssamling; ger första elementet",
+     "\\code|xs :+ 0            |" -> "skapar ny samling med en nolla tillagd på slutet",
+     "\\code|0 +: xs            |" -> "skapar ny samling med en nolla tillagd i början",
+     "\\code|xs.mkString        |" -> "skapar en sträng med alla element intill varandra",
+     "\\code|xs.mkString(\",\") |" -> "skapar en sträng med komma mellan elementen",
+     "\\code|xs.map(_.toString))|" -> "ny samling med elementen omgjorda till strängar",
+     "\\code|xs.map(_.toInt))   |" -> "ny samling med elementen omgjorda till heltal",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
     "quiz-w03-concepts" -> Vector(  //functions
       "funktionshuvud    " -> "har parameterlista och eventuellt returtyp",
       "funktionskropp    " -> "koden som exekveras vid funktionsanrop",
