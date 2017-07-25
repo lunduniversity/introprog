@@ -95,27 +95,46 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w02-array-vector" -> Vector(  //programs
-      "Vector" -> "oföränderlig, men nya delvis ändrade varianter skapas snabbt",
-      "Array " -> "enskilda element är förändringsbara genom tilldelning",
-//      "Array " -> "snabbare vid allokering och indexering än andra samlingar",
-      "Array " -> "måste kopieras i sin helhet vid ändring av storlek",
-//      "Array " -> "olik andra samlingar: likhetstest med == kollar ej innehåll",
-//      "Vector" -> "xs == ys kollar om elementen i xs och ys är lika",
+    "quiz-w02-array-vector-mutability" -> Vector(  //programs
+      "Vector" -> "oföränderlig",
+      "Array " -> "förändringsbar",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
+    "quiz-w02-array-vector-append" -> Vector(  //programs
+      "Vector" -> "varianter med fler/andra element skapas snabbt ur befintlig",
+      "Array " -> "långsam vid ändring av storlek (kopiering av rubbet krävs)",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w02-array-vector-equality" -> Vector(  //programs
+      "Vector" -> "\\code|xs == ys| är \\code|true| om alla element lika",
+      "Array " -> "olikt andra samlingar kollar \\code|==| ej innehållslikhet",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+
     "quiz-w02-collection-methods" -> Vector(  //programs
-     "\\code|Array.fill(9)(0) |  " -> "skapar ny förändringsbar sekvens med 9 nollor",
-     "\\code|Vector.fill(9)(' ')|" -> "skapar ny oföränderlig sekvens med 9 blanktecken",
-     "\\code|xs.apply(0)        |" -> "indexera i sekvenssamling; ger första elementet",
-     "\\code|xs(0)              |" -> "indexera i sekvenssamling; ger första elementet",
-     "\\code|xs :+ 0            |" -> "skapar ny samling med en nolla tillagd på slutet",
-     "\\code|0 +: xs            |" -> "skapar ny samling med en nolla tillagd i början",
-     "\\code|xs.mkString        |" -> "skapar en sträng med alla element intill varandra",
-     "\\code|xs.mkString(\",\") |" -> "skapar en sträng med komma mellan elementen",
-     "\\code|xs.map(_.toString))|" -> "ny samling med elementen omgjorda till strängar",
-     "\\code|xs.map(_.toInt))   |" -> "ny samling med elementen omgjorda till heltal",
+      "\\code|val xs = Vector(2) |" -> "ny referens till sekvens av längd 1",
+      "\\code|Array.fill(9)(0)   |" -> "ny förändringsbar sekvens med nollor",
+      "\\code|Vector.fill(9)(' ')|" -> "ny oföränderlig sekvens med blanktecken",
+      "\\code|xs(0)              |" -> "förkortad skrivning av \\code|apply(0)|",
+      "\\code|xs.apply(0)        |" -> "indexering, ger första elementet",
+      "\\code|xs :+ 0            |" -> "ny samling med en nolla tillagd på slutet",
+      "\\code|0 +: xs            |" -> "ny samling med en nolla tillagd i början",
+      "\\code|xs.mkString        |" -> "ny sträng med alla element intill varandra",
+      "\\code|xs.mkString(\",\") |" -> "ny sträng med komma mellan elementen",
+      "\\code|xs.map(_.toString))|" -> "ny samling, elementen omgjorda till strängar",
+      "\\code|xs.map(_.toInt))   |" -> "ny samling, elementen omgjorda till heltal",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w02-for-yield-map" -> Vector(  //programs
+      "\\code|for (x <- xs) yield x - 1|" -> "\\code|Vector(0, 1, 2)|",
+      "\\code|xs.map(x => x + 1)    |" -> "\\code|Vector(2, 3, 4)|",
+      "\\code|for (i <- 0 to 1) yield xs(i)|" -> "\\code|Vector(1, 2)|",
+      "\\code|(1 to 3).map(i => i)|" -> "\\code|Vector(1, 2, 3)|",
+      "\\code|(1 until 3).map(i => xs(i))|" -> "\\code|Vector(2, 3)|",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
