@@ -130,7 +130,8 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
     "quiz-w02-for-yield-map" -> Vector(  //programs
-      "\\code|for (x <- xs) yield x - 1|" -> "\\code|Vector(0, 1, 2)|",
+      "\\code|for (x <- xs) yield x * 2|" -> "\\code|Vector(1, 2, 4)|",
+      "\\code|for (i <- xs.indices) yield i|" -> "\\code|Vector(0, 1, 2)|",
       "\\code|xs.map(x => x + 1)    |" -> "\\code|Vector(2, 3, 4)|",
       "\\code|for (i <- 0 to 1) yield xs(i)|" -> "\\code|Vector(1, 2)|",
       "\\code|(1 to 3).map(i => i)|" -> "\\code|Vector(1, 2, 3)|",
