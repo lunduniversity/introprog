@@ -159,6 +159,17 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
+    "quiz-w03-code-fragments" -> Vector(  //programs
+      "\\code|options.indices|" -> "heltalssekvens med alla index i en sekvens",
+      "\\code|\"1X2\".toLowercase|" -> "gör om en sträng till små bokstäver",
+      "\\code|Random.nextInt(n)|" -> "slumptal i intervallet \\code|0 until n|",
+      "\\code|try { } catch { }|" -> "fångar undantag för att förhindra krasch",
+      "\\code|\"\"\" ... \"\"\"|" -> "sträng som kan sträcka sig över flera kodrader",
+      "\\code|s.stripMargin|" -> "tar bort marginal till och med vertikalstreck",
+      "\\code|e.printStackTrace|" -> "skriver ut information om ett undantag",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
     "quiz-w04-concepts" -> Vector(  //objects
       "modul             " -> "kodenhet med abstraktioner som kan återanvändas",
       "singelobjekt      " -> "modul som kan ha tillstånd; finns i en enda upplaga",
