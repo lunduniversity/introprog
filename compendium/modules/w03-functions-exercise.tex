@@ -107,7 +107,7 @@ def minska(x: Int = 1): Int = x - 1
 \Task  \what~Ladda ner spelet nedan \footnote{
 \url{https://raw.githubusercontent.com/lunduniversity/introprog/master/compendium/examples/AliensOnEarth.scala}} och studera koden.
 
-\scalainputlisting[basicstyle=\ttfamily\fontsize{10.5}{12.5}\selectfont]{examples/AliensOnEarth.scala}
+\scalainputlisting[basicstyle=\ttfamily\fontsize{10.5}{12.5}\selectfont,numbers=left]{examples/AliensOnEarth.scala}
 
 % def randomDistribution(weights: Vector[Int]): Int = {
 %   require(weights.size > 0)
@@ -132,7 +132,7 @@ def minska(x: Int = 1): Int = x - 1
 \input{generated/quiz-w03-code-fragments-taskrows-generated.tex}
 \end{ConceptConnections}
 
-\noindent\emph{Tips:} Med hjälp av REPL kan du ta reda på hur olika delar fungerar, i likhet med nedan undersökningar:
+\noindent\emph{Tips:} Med hjälp av REPL kan du ta reda på hur olika delar fungerar, t.ex.:
 
 \begin{REPL}
 scala> val os = Vector("p", "w", "a")
@@ -150,14 +150,14 @@ här: \\ \url{http://www.scala-lang.org/api/current/index.html}
 \begin{framed}
 \noindent\emph{Tips inför fortsättningen:}
 
-\begin{itemize}
+\begin{itemize}[nolistsep]
   \item När jag hittade på \code{AliensOnEarth} började jag med ett mycket litet program med en enkel \code{main}-funktion som bara skrev ut något kul. Sedan byggde jag vidare på programmet steg för steg och kompilerade och testade efter varje liten ändring.
 
   \item När jag kodar har jag REPL igång i ett eget terminalfönster och api-dokumentationen för Scala i en webbläsare redo för sökningar. Jag återanvänder också användbara snuttar från kod jag gjort tidigare och inspireras ofta av lösningar från \url{https://stackoverflow.com} (om jag kan begripa dem och de verkar rimliga).
 
   \item Detta arbetssätt tar ett tag att komma in i, men är ett bra sätt att uppfinna allt större och bättre program. Ett stort program byggs lättast i små inkrement och felsökning blir mycket lättare om man bara gör små tillägg åt gången.
 
-  \item  Du får också det mycket lättare att förstå ditt program om du delar upp koden i många korta funktioner med bra namn. Du kan sedan lättare hitta på mer avancerade funktioner genom att återanvända befintliga.
+  \item Du får också det mycket lättare att förstå ditt program om du delar upp koden i många korta funktioner med bra namn. Du kan sedan lättare hitta på mer avancerade funktioner genom att återanvända befintliga.
 
   \item Under veckans laboration ska du utveckla ditt eget textspel. Då har du nytta av att återanvända funktionerna för indata och slumpdragning från \code{AliensOnEarth}.
 \end{itemize}
@@ -181,29 +181,70 @@ här: \\ \url{http://www.scala-lang.org/api/current/index.html}
 
 
 
-
-
-\WHAT{Föränderlighet av parametrar.}
+\WHAT{Äkta funktioner.}
 
 \QUESTBEGIN
 
-\Task \what~Är en parameter oföränderlig i funktionskroppen ...
+\Task  \what~  En äkta funktion%
+\footnote{Äkta funktioner uppfyller per definition  \textit{referentiell transparens} \Eng{referential transparency} som du kan läsa mer om här:  \href{https://en.wikipedia.org/wiki/Referential_transparency}{en.wikipedia.org/wiki/Referential\_transparency}}
+\Eng{pure function} ger alltid samma resultat med samma argument (så som vi är vana vid inom matematiken) och har inga sidoeffekter (så som utskrifter).
 
-\Subtask ... i Scala?  (Ja/Nej)
+\begin{Code}
+object inSearchOfPurity {
+  var x = 0
+  val y = x
+  def inc(i: Int) = i + 1
+  def oink(i: Int) = {x = x + i; "Pig says " + ("oink " * x)}
+  def addX(i: Int): Int = x + i
+  def addY(i: Int): Int = y + i
+  def isPalindrome(s: String): Boolean = s == s.reverse
+  def rnd(min: Int, max: Int) = math.random * max + min
+}
+\end{Code}
 
-\Subtask ... i Java?  (Ja/Nej)
+\noindent Vilka funktioner i objektet \code{inSearchOfPurity} ovan är äkta funktioner? Testa att anropa funktionerna i REPL om du är osäker på vad som händer.
+
+\SOLUTION
+
+\TaskSolved \what
+
+\begin{itemize}
+  \item Funktionerna  \code{inc}, \code{addY} och \code{isPalindrome} är äkta. Notera att \code{y}-variablen initialiseras till \code{0} och kan sedan inte ändras eftersom den är deklarerad med nyckelordet \code{val}.
+\end{itemize}
+
+\QUESTEND
+
+
+
+
+\WHAT{Funktioner är objekt med en \code{apply}-metod.}
+
+\QUESTBEGIN
+
+\Task  \what~
+
+
+\begin{REPL}
+scala> object plus { def apply(x: Int, y: Int) = x + y }
+scala> plus.apply(42, 43)
+scala> plus.apply(42)
+scala> plus(42, 43)
+scala> plus(42)
+\end{REPL}
+Vilka rader ovan ger kompileringsfel?
 
 
 \SOLUTION
 
-\TaskSolved \what~
+\TaskSolved \what
 
-\Subtask Nej, i Scala är parametern oföränderlig och det blir kompileringsfel om man försöker tilldela den ett nytt värde i funktionskroppen.
-
-\Subtask Ja det går utmärkt i Java att ändra värdet på parametern i funktionskroppen med tilldelning, men koden riskerar att bli förvirrande.\\
-\url{https://stackoverflow.com/questions/2970984}
+\begin{itemize}
+  \item Rad 3 och 5 ger kompileringsfelet\\
+  \texttt{error: not enough arguments for method apply}
+\end{itemize}
 
 \QUESTEND
+
 
 
 
@@ -216,77 +257,9 @@ här: \\ \url{http://www.scala-lang.org/api/current/index.html}
 \vspace{2em}\noindent\TODO Se över nedan uppgifter. Flytta? Stryka? Ändra?
 
 
-\WHAT{Funktion med default-argument.}
-
-\QUESTBEGIN
-
-\Task  \what~  Förklara vad som händer här?
-
-\begin{REPL}
-scala> def inc(i: Int, j: Int = 1) = i + j
-scala> inc(42, 2)
-scala> inc(42, 1)
-scala> inc(42)
-\end{REPL}
-
-\SOLUTION
-
-\TaskSolved \what
-
-Funktionen lägger helt enkelt ihop två värden och om det andra saknas så lägger den bara på 1 till första värdet, d.v.s. om andra värdet saknas antas det vara 1.
-
-Så det första anropet returnerar 44, det andra 43 och det sista returnerar även det 43 då j antas vara 1.
-
-\QUESTEND
-
-
-
 
 %%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 4
 
-
-
-
-\WHAT{Funktionsanrop med namngivna argument.}
-
-\QUESTBEGIN
-
-\Task  \what~
-\begin{REPL}
-scala> def skrivNamn(förnamn: String, efternamn: String) =
-         println("Namn: " + efternamn + ", " + förnamn)
-scala> skrivNamn("Kim", "Finkodare")
-scala> skrivNamn(förnamn = "Viktor", efternamn = "Oval")
-scala> skrivNamn(efternamn = "Triangelsson", förnamn = "Stina")
-\end{REPL}
-
-\Subtask Förklara vad som händer ovan?
-
-\Subtask Vad är fördelen med namngivna argument?
-
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved
-Utskriften blir följande:
-\begin{REPLnonum}
-Namn: Finkodare, Kim
-Namn: Oval, Viktor
-Namn: Triangelsson, Stina
-\end{REPLnonum}
-Eftersom vi har namngett argumenten så behöver vi inte nödvändigtvis skriva argumenten i rätt ordning. Att namnge argumenten i andra anropet gör ingen skillnad, men i tredje så skriver vi egentligen in argumenten i fel ordning.
-
-\SubtaskSolved
-Det blir lättare att hålla reda på vad som är vad både när man skriver och sedan när man ska läsa koden. Det låter oss även skriva argument i den ordningen som känns naturligast för oss istället för vad funktionen har dikterat.
-
-
-
-\QUESTEND
 
 
 
@@ -609,107 +582,7 @@ Samma sak senare, genom att skapa variablerna inc och dec som summan av +1 respe
 
 \QUESTEND
 
-\WHAT{Äkta funktioner.}
 
-\QUESTBEGIN
-
-\Task  \what~  En \textbf{äkta funktion} ger alltid samma resultat med samma argument  (så som vi är vana vid inom matematiken).\footnote{Äkta funktioner uppfyller per definition  \textit{referentiell transparens} \Eng{referential transparency} som du kan läsa mer om här:  \href{https://en.wikipedia.org/wiki/Referential_transparency}{en.wikipedia.org/wiki/Referential\_transparency}}
-
-\begin{Code}
-object inSearchOfPurity {
-  var x = 0
-  val y = x
-  def inc(i: Int) = i + 1
-  def oink(i: Int) = {x = x + i; "Pig says " + "oink " * x}
-  def addX(i: Int): Int = x + i
-  def addY(i: Int): Int = y + i
-  def isPalindrome(s: String): Boolean = s == s.reverse
-  def rnd(min: Int, max: Int) = math.random * max + min
-}
-\end{Code}
-
-\Subtask Vilka funktioner i objektet \code{inSearchOfPurity} är äkta funktioner?
-
-\Subtask \label{subtask:nonpure} Anropa de funktioner som inte är äkta i REPL och demonstrera med exempel att de kan ge olika resultat för samma argument.
-
-\Subtask Vad är objektets tillstånd efter dina körningar i uppgift \ref{subtask:nonpure}?
-
-\Subtask Vilken del av tillståndet i objektet är oföränderligt?
-
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved  inc, addY och isPalindrome. Notera att y sätts till x's värde i början vilket är 0 och sedan kan det inte ändras eftersom det är en \code{val}.
-
-\SubtaskSolved  Försök att med samma argument få olika resultat med samma funktion genom att ändra x
-
-\SubtaskSolved  Vad är x och y?
-
-\SubtaskSolved  y
-
-
-
-\QUESTEND
-
-
-
-
-\WHAT{NEEDS A TOPIC DESCRIPTION}
-
-\QUESTBEGIN
-
-\Task  \what~ Funktioner är objekt med en \code{apply}-metod.
-
-\Subtask Förklara vad som händer här:
-\begin{REPL}
-scala> object plus { def apply(x: Int, y: Int) = x + y }
-scala> plus.apply(42,43)
-scala> plus(42, 43)
-scala> val add: (Int, Int) => Int = (x, y) => x + y
-scala> add(42, 42)
-scala> add.   // tryck på TAB
-scala> add.apply(42, 42)
-scala> val inc = add.curried(1)
-scala> inc(42)
-\end{REPL}
-
-\Subtask Definiera i REPL ett objekt som heter \code{slumptal} som har en \code{apply}-metod som tar två heltalsparametrar \code{a} och \code{b} och som med hjälp av \code{math.random} returnerar ett slumpmässigt heltal i intervallet $[a, b]$. Anropa objektets \code{apply}-metod med \code{(1 to 100).foreach(i => print(??? + " "))} för att skriva ut $100$ slumptal mellan 1 och 6. Prova både att explicit anropa \code{apply} med punktnotation och att använda funktionsappliceringssyntax.
-
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved
-Först notera att \code{plus} med bara paranteser och med \code{apply} är indentiska anrop, för det är det som är tricket med ett object med \code{apply} metod man kan kalla på den som en funktion.
-
-Sedan sparar vi en funktion som add, men eftersom alla fukntioner också är object så så har de några andra metoder man också kan anropa vilket vi ser med TAB.
-
-Till sist så sparar vi en ny funktion inc som en curry funktion av add med 1 som argument.
-
-\SubtaskSolved
-\begin{REPL}
-scala> object slumptal{ def apply(a: Int, b: Int) = (math.random * b + a).toInt }
-defined object slumptal
-
-scala> (1 to 100).foreach{i => print(slumptal.apply(1,6) + " ")}
-3 5 6 6 5 3 4 3 2 3 1 3 1 2 2 5 1 2 6 2 1 1 4 5 5 3 4 6 5 1 1 2 3 1 1 1 4 4 6 1 1 6 3 3 1 4 3 4 2 3 4 4 1 2 5 6 1 6 4 2 5 3 6 1 6 5 1 1 1 3 4 3 5 5 3 6 6 4 4 1 2 5 6 5 5 1 1 2 6 1 6 4 6 3 5 5 2 2 3 3
-scala> (1 to 100).foreach{i => print(slumptal(1,6) + " ")}
-4 2 1 6 5 2 5 2 2 3 1 3 3 3 5 1 6 1 1 2 2 2 2 2 3 6 1 5 6 4 2 3 3 2 2 4 1 5 4 6 4 5 6 2 4 4 3 4 3 3 3 1 3 2 6 4 3 6 4 2 6 6 3 1 1 3 4 3 6 1 4 4 4 5 5 2 5 2 4 2 5 2 1 4 1 5 4 3 1 2 3 6 3 3 5 5 6 6 6 5
-
-\end{REPL}
-
-
-
-\QUESTEND
 
 
 
@@ -804,192 +677,8 @@ Men även om man inte vill slöa ner ett system med en massa arbete när allt de
 
 
 
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 16
-
-
-
-
-\WHAT{Aktiveringspost.}
-
-\QUESTBEGIN
-
-\Task  \what~  Antag att vi bara kan addera eller subtrahera med ett. Då kan man ändå skapa en additionsfunktion på nedan (ganska omständliga) sätt. Skriv nedan program i en editor, kompilera och exekvera.
-\begin{Code}
-object Count {
-  def inc(x: Int) = {println("inc[x = " + x + "]"); x + 1}
-  def dec(x: Int) = {println("dec[x = " + x + "]"); x - 1}
-
-  def add(x: Int, y: Int) = {
-    println("add[x = " + x + ", y = " + y + "]")
-    var result = x
-    var i = 0
-    while (i < math.abs(y)){
-      result = if (y >= 0) inc(result) else dec(result)
-      i = i + 1
-    }
-    result
-  }
-
-  def main(args: Array[String]): Unit = {
-    val x =  inc(dec(inc(0)))
-    println(x)
-    val y = add(1, add(1, add(1, -2)))
-    println(y)
-  }
-}
-\end{Code}
-
-\Subtask Vad skrivs ut? Förklara vad som händer.
-
-\Subtask Rita hur anropsstacken förändras under exekveringen av main-metoden.
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved
-Utskrift: \\
-inc[x = 0]\\
-dec[x = 1]\\
-inc[x = 0]\\
-1\\
-
-\code{inc} kallar på \code{dec} som i sin tur kallar på \code{inc} med argumentet 0. den sista funktionen returnerar sedan 1 varpå nästa minskar till 0 och den sista ökar till 1.
-
-add[x = 1, y = -2]\\
-dec[x = 1]\\
-dec[x = 0]\\
-add[x = 1, y = -1]\\
-dec[x = 1]\\
-add[x = 1, y = 0]\\
-1\\
-
-\code{add} kallas på tre gånger, \code{add} längst ner kallar på \code{dec} två gånger på varandra för att returnera -1 till andra \code{inc} som tar det som argument.
-
-Den andra \code{add} kallar på \code{dec} en gång och returnerar 0 till första \code{add}
-
-Den ursprungliga \code{add} returnerar till sist 1 utan att kalla på några andra funktioner
-
-\SubtaskSolved
-Stacken för \code{x} när den är som djupast
-
-\begin{tabular}{|c|}
-\hline
-inc \\
-\hline
-dec\\
-\hline
-inc \\
-\hline
-\end{tabular}
-\\
-\\
-När vi har nått tredje add och den kallat på dec så ser den ut så här för två iterationer.
-\\
-\\
-\begin{tabular}{|c|}
-
-\hline
-dec \\
-\hline
-add \\
-\hline
-add\\
-\hline
-add \\
-\hline
-\end{tabular}
-\\
-\\
-Sedan vid det andra add så ser den ut så här i en iteration varpå den sedan rensas
-\\
-\\
-\begin{tabular}{|c|}
-
-\hline
-dec \\
-\hline
-add \\
-\hline
-add\\
-\hline
-\end{tabular}
-
-
-
-\QUESTEND
-
-
-
 
 %%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 17
-
-
-
-
-\WHAT{Lokala funktioner.}
-
-\QUESTBEGIN
-
-\Task  \what~  Skapa nedan program i en editor, kompilera och exekvera. I programmet nedan har metoden \code{add} två lokala funktioner som skiljer sig från metoderna med samma namn.
-\begin{Code}
-object Count {
-  def inc(x: Int) = x + 1
-  def dec(x: Int) = x - 1
-
-  def add(x: Int, y: Int) = {
-    def inc(x: Int) = {println("inc[x = " + x + "]"); x + 1}
-    def dec(x: Int) = {println("dec[x = " + x + "]"); x - 1}
-    println("add[x = " + x + ", y = " + y + "]")
-    var result = x
-    var i = 0
-    while (i < math.abs(y)){
-      result = if (y >= 0) inc(result) else dec(result)
-      i = i + 1
-    }
-    result
-  }
-
-  def main(args: Array[String]): Unit = {
-    val x =  inc(dec(inc(0)))
-    println(x)
-    val y = add(1, add(1, add(1, -2)))
-    println(y)
-  }
-}
-\end{Code}
-
-\Subtask Vad skrivs ut? Förklara vad som händer.
-
-\Subtask Vilka fördelar finns med lokala funktioner?
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved
-1\\
-add[x = 1, y = -2]\\
-dec[x = 1]\\
-dec[x = 0]\\
-add[x = 1, y = -1]\\
-dec[x = 1]\\
-add[x = 1, y = 0]\\
-1\\
-Vi saknar utskrift när den arbetar med \code{x} för den använder de funktioner som den känner till vilket är de versioner utan utskrift, när vi kallar på \code{add} så får vi dock utskrift när vi kallar på \code{inc} samt \code{dec} för add använder sin lokala variant.
-
-\SubtaskSolved
-Den stora fördelen är att man kan separera kod i funktioner lokalt utan att påverka något utanför och därmed göra sin kod mer lättläst. Det kommer även dock till stor nytta ifall man vill ha annan funktionalitet lokalt än allmänt, då kan man definera en ny lokal funktion med samma namn som gör något lite anorlunda.
-
-
-
-\QUESTEND
 
 
 
@@ -1129,7 +818,85 @@ def avg(x: Int, y: Int): Double = (x + y) / 2.0
 
 
 
+
+
+\WHAT{Funktionsanrop med namngivna argument.}
+
+\QUESTBEGIN
+
+\Task  \what~
+\begin{REPL}
+scala> def skrivNamn(efternamn: String, förnamn: String) =
+         println(s"Namn: $efternamn, $förnamn")
+scala> skrivNamn(förnamn = "Stina", efternamn = "Triangelsson")
+scala> skrivNamn(efternamn = "Oval", "Viktor")
+
+\end{REPL}
+
+\Subtask Vad skrivs ut efter rad 3 resp. rad 4 ovan?
+
+\Subtask Nämn tre fördelar med namngivna argument.
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved
+\begin{REPL}
+Namn: Triangelsson, Stina
+Namn: Oval, Viktor
+\end{REPL}
+
+\SubtaskSolved
+\begin{itemize}
+  \item Anroparen kan själv välja ordning.
+  \item Koden blir lättare att begripa om parameternamnen är självbeskrivande.
+  \item Hjälper till att förhindra buggar som beror på förväxlade parametrar.
+\end{itemize}
+
+\QUESTEND
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \AdvancedTasks %%%%%%%%%%%%%%%%%
+
+
+
+\WHAT{Föränderlighet av parametrar.}
+
+\QUESTBEGIN
+
+\Task \what~Är en parameter förändringsbar i funktionskroppen ...
+
+\Subtask ... i Scala?  (Ja/Nej)
+
+\Subtask ... i Java?  (Ja/Nej)
+
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\Subtask Nej, i Scala är parametern oföränderlig och det blir kompileringsfel om man försöker tilldela den ett nytt värde i funktionskroppen.
+
+\Subtask Ja det går utmärkt i Java att ändra värdet på parametern i funktionskroppen med tilldelning, men koden riskerar att bli förvirrande.\\
+\url{https://stackoverflow.com/questions/2970984}
+
+\QUESTEND
+
+
+
 
 
 \WHAT{Bortkastade resultatvärden och returtypen \code{Unit}.}
