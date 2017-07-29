@@ -170,6 +170,33 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
+    "quiz-w03-yield-map" -> Vector(  //programs
+      "\\code|for (i <- 1 to 3) yield öka(i)|" -> "\\code|Vector(2, 3, 4)|",
+      "\\code|Vector(2, 3, 4).map(i => öka(i))|" -> "\\code|xs|",
+      "\\code|xs.map(öka)|" -> "\\code|Vector(4, 5, 6)|",
+      "\\code|xs.map(öka).map(öka)|" -> "\\code|Vector(5, 6, 7)|",
+      "\\code|xs.foreach(öka)|" -> "\\code|()|",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w03-function-values" -> Vector(  //programs
+      "\\code| öka(-1)     |" -> "\\code| 0     |",
+      "\\code| app(1, öka) |" -> "\\code| öka(1)|",
+      "\\code| app(5, f2)  |" -> "\\code| 4     |",
+      "\\code| f1(2)       |" -> "\\code| 3     |",
+      "\\code| f2(2)       |" -> "\\code| 1     |",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w03-lambda" -> Vector(  //programs
+      "\\code|(0 to 2).map(i => i + 1)           |" -> "\\code|(2 to 4).map(i => i - 1)|",
+      "\\code|(1 to 3).map(_ + 1)                |" -> "\\code|Vector(2, 3, 4)         |",
+      "\\code|(2 to 4).map(math.pow(2, _))       |" -> "\\code|Vector(4.0, 8.0, 16.0)  |",
+      "\\code|(3 to 5).map(math.pow(_, 2))       |" -> "\\code|Vector(9.0, 16.0, 25.0) |",
+      "\\code|(4 to 6).map(_.toDouble).map(_ / 2)|" -> "\\code|Vector(2.0, 2.5, 3.0)   |",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
     "quiz-w04-concepts" -> Vector(  //objects
       "modul             " -> "kodenhet med abstraktioner som kan återanvändas",
       "singelobjekt      " -> "modul som kan ha tillstånd; finns i en enda upplaga",

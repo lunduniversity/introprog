@@ -479,11 +479,271 @@ scala> :q
 
 
 
-
-\ExtraTasks %%%%%%%%%%%%%%%%%%%
-
+\ExtraTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
 
-\AdvancedTasks %%%%%%%%%%%%%%%%%
+\WHAT{???}
+
+\QUESTBEGIN
+
+\Task \what~\TODO
+
+\SOLUTION
+
+\TaskSolved \what~\TODO
+
+\QUESTEND
+
+
+
+
+\AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\WHAT{???}
+
+\QUESTBEGIN
+
+\Task \what~\TODO
+
+\SOLUTION
+
+\TaskSolved \what~\TODO
+
+\QUESTEND
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%% TODO FIXA NEDAN; KOLLA, FLYTTA, STRYK %%%%%%%%%%%%%%%%%%
+\subsubsection \TODO Se över nedan uppgifter. Flytta? Stryka? Ändra?
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\WHAT{Tupler som parametrar.}
+
+\QUESTBEGIN
+
+\Task  \what~ Implementera nedan varianter av beräkning av avståndet mellan två punkter:
+\begin{Code}
+def distxy(x1: Int, y1: Int, x2: Int, y2: Int): Double = ???
+
+def distpt(p1: (Int, Int), p2: (Int, Int)): Double = ???
+
+def distp(p1: (Int, Int))(p2: (Int, Int)): Double = ???
+
+\end{Code}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\begin{Code}
+def distxy(x1: Int, y1: Int, x2: Int, y2: Int): Double =
+  hypot(x1 - x2, y1 - y2)
+
+def distpt(p1: (Int, Int), p2: (Int, Int)): Double =
+  hypot(p1._1 - p2._1, p2._2 - p2._2)
+
+def distp(p1: (Int, Int))(p2: (Int, Int)): Double =
+  hypot(p1._1 - p2._1, p2._2 - p2._2)
+\end{Code}
+
+\QUESTEND
+
+
+
+
+\WHAT{Värdeanrop och namnanrop (fördröjd evaluering, ''lata'' argument).}
+
+\QUESTBEGIN
+
+\Task  \what~  Deklarera nedan funktioner i REPL.
+
+\begin{Code}
+def snark: Int = { print("snark "); Thread.sleep(1000); 42 }
+
+def callByValue(x: Int) = x + x
+
+def callByName(x: => Int) = x + x
+\end{Code}
+
+Evaluera nedan uttryck. Förklara vad som händer.
+
+\Subtask \code{snark}
+
+\Subtask \code{snark; snark; snark}
+
+\Subtask \code{callByValue(1)}
+
+\Subtask \code{callByName(1)}
+
+\Subtask \code{callByValue(snark)}
+
+\Subtask \code{callByName(snark)}
+
+
+\Subtask Förklara vad som händer här:
+\begin{REPL}
+scala> def görDetta(block: => Unit) = block
+scala> görDetta(println("hej"))
+scala> görDetta{println("goddag")}
+scala> görDetta{println("hej"); println("svejs")}
+scala> def görDettaTvåGånger(block: => Unit) = {block; block}
+scala> görDettaTvåGånger{println("goddag")}
+\end{REPL}
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  \code{snark 42}
+
+\SubtaskSolved  \code{snark snark snark 42}
+
+Den evaluerar inte uttrycket förrän det behövs, så flera snark ger bara ett resultat för det är bara det som begärs.
+
+\SubtaskSolved  \code{2}
+
+\SubtaskSolved  \code{2}
+
+Det är ingen större skillnad när vi bara skickar in en etta.
+
+\SubtaskSolved  \code{snark, Int = 84}
+
+\SubtaskSolved  När vi kallar på \code{callByValue} så skickar vi in snark som ett värde, och därmed behöver x bara beräknas en gång medans när vi kallar på \code{callByName} så skickar vi den som en funktion och därmed kallas snark på två gånger i funktionen för att beräkna x båda gångerna.
+
+\code{snark snark, Int = 84}
+
+\SubtaskSolved  \code{görDetta} är en kontrollstruktur som helt enkelt exekverar koden den matas med, \code{görDettaTvåGånger} gör just vad den säger. Detta är dock grunderna för vad som kan bli mycket mer avancerat om man kombinerar detta med loopar eller if-satser, som i sig är kontrollstrukturer.
+
+\QUESTEND
+
+
+
+
+\WHAT{Skapa din egen kontrollstruktur.}
+
+\QUESTBEGIN
+
+\Task  \what~
+
+\Subtask Använd fördröjd evaluering i kombination med en uppdelad parameterlista och skapa din egen kontrollstruktur enligt nedan. (Det är så här som loopen \code{upprepa} i Kojo är definierad.)
+\begin{REPL}
+scala> def upprepa(n: Int)(block: => Unit): Unit = {
+         var i = 0
+         while (i < n) {block; i += 1}
+       }
+\end{REPL}
+
+\Subtask Använd din nya loop-procedur och förklara vad som händer nedan.
+\begin{REPL}
+scala> upprepa(10)(println("hej"))
+scala> upprepa(1000){
+  val tärning = (math.random * 6 + 1).toInt
+  print(tärning + " ")
+}
+\end{REPL}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved  -
+
+\SubtaskSolved  I den första parameterlistan så anges hur många gånger koden i den andra parameterlistan ska exekveras. så \code{upprepa(10)(println("hej"))} printar hej 10 gånger
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Fördröjd initialisering (''lata'' variabler).}
+
+\QUESTBEGIN
+
+\Task  \what~
+
+\Subtask \label{subtask:delayalloc} Förklara vad som händer här:
+\begin{REPL}
+scala> val olat = 42
+scala> lazy val lat = 42
+scala> println(lat)
+scala> val nu = {Thread.sleep(1000); println("nu"); 42}
+scala> lazy val sen = {Thread.sleep(1000); println("sen"); 42}
+scala> def igen = {Thread.sleep(1000); println("hver gang"); 42}
+scala> println(nu)
+scala> println(sen)
+scala> println(igen)
+scala> println(nu)
+scala> println(sen)
+scala> println(igen)
+scala> object m {lazy val stor = Array.fill(1e9.toInt)(liten); val liten = 42}
+scala> m.liten
+scala> m.stor
+\end{REPL}
+
+\Subtask Vad är skillnaden mellan \code{val}, \code{lazy val} och \code{def}, vad gäller \emph{när} evalueringen sker?
+
+
+\Subtask \label{subtask:forwardref} Förklara vad som händer här:
+\begin{REPL}
+scala> object objektÄrLata { val sen = { println("nu!"); 42 } }
+scala> objektÄrLata
+scala> objektÄrLata.sen
+scala> {val x = y; val y = 42}
+scala> object buggig {val a = b; val b = 42}
+scala> buggig.a
+scala> object funkar {lazy val a = b; val b = 42}
+scala> funkar.a
+scala> object nowarning {val many = Array.fill(10)(one); val one = 1}
+scala> nowarning.many
+\end{REPL}
+
+\Subtask Med ledning av uppgift \ref{subtask:delayalloc} och uppgift \ref{subtask:forwardref}, beskriv två olika situationer när kan man ha nytta av \code{lazy val}?
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  Notera vid deklarationen av \code{nu}, \code{sen} och \code{igen} så är det bara \code{nu} som tar tid och skriver ut sin text. För \code{nu} evalueras men de andra väntar.
+
+Men när vi ska kalla på dem så tar \code{nu} ingen tid och skriver inte ut nu medans \code{sen} och \code{igen} nu tar tid och skriver ut sin text. För \code{nu} har redan evaluerats men de andra behöver evalueras för de kallas på.
+
+Och när vi kallar på dem för andra gången så är det bara \code{igen} som tar tid. För \code{nu} och \code{sen} är evaluerade och vid det här laget identiska medans \code{igen} behöver evalueras varje gång man kallar på den.
+
+Vid deklaration av objektet så går allt bra, när vi kallar på \code{liten} så får vi 42 men när vi kallar på \code{stor} så får vi exception. Eftersom objekt är lata så evalueras inte objektet förrän vi anropar något ur det men \code{stor} är också lazy så den blir inte ett problem förrän just den anropas.
+
+\SubtaskSolved
+\code{val} evalueras direkt, \code{lazy val} evalueras när det behövs medans \code{def} evalueras varje gång det behövs.
+
+\SubtaskSolved
+När vi skapar objektÄrLata så skrivs inget ut för det evalueras inte förrän vi kallar på det, som vi gör nästa rad då skrivs nu ut. När vi sedan anropar sen evalueras inget och nu skrivs inte ut.
+
+\{\code{val x=y; val y = 42}\} kastar error eftersom y inte är evaluerad när vi försöker evaluera x.
+
+När vi skapar \code{buggig} så varnar den och vi ser varför på nästa rad då att \code{a} verkar vara lika med 0. Eftersom \code{b} inte är evaluerad än så blir det 0 men till skillnad från tidigare vet \code{val a} iallafall att den är en Int eftersom objectet med \code{b} är åtminstone definerat.
+
+\code{funkar} fungerar just för att \code{a} är en \code{lazy val} och evalueras då inte förrän efter \code{b} evaluerats och ger därför 42 som den ska.
+
+\code{nowarning} har samma problem som \code{buggig} men ger ingen varning och därför försöker skriva ut innan \code{one} är evaluerad och ger därför nollor.
+
+\SubtaskSolved
+När man vill skapa ett objekt som funkar eller fixa problemet i no warning, man kan vilja ha sina variabler i just den ordningen p.g.a. läslighet.
+
+Men även om man inte vill slöa ner ett system med en massa arbete när allt deklareras på en gång utan tar det hellre gradvis allteftersom det används.
+
+\QUESTEND

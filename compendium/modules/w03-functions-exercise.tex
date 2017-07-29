@@ -187,22 +187,24 @@ här: \\ \url{http://www.scala-lang.org/api/current/index.html}
 
 \Task  \what~  En äkta funktion%
 \footnote{Äkta funktioner uppfyller per definition  \textit{referentiell transparens} \Eng{referential transparency} som du kan läsa mer om här:  \href{https://en.wikipedia.org/wiki/Referential_transparency}{en.wikipedia.org/wiki/Referential\_transparency}}
-\Eng{pure function} ger alltid samma resultat med samma argument (så som vi är vana vid inom matematiken) och har inga sidoeffekter (så som utskrifter).
+\Eng{pure function} ger alltid samma resultat med samma argument (så som vi är vana vid inom matematiken) och har inga externt observerbara sidoeffekter (till exempel utskrifter).
 
+Vilka funktioner i objektet \code{inSearchOfPurity} nedan är äkta funktioner?
 \begin{Code}
 object inSearchOfPurity {
   var x = 0
   val y = x
-  def inc(i: Int) = i + 1
-  def oink(i: Int) = {x = x + i; "Pig says " + ("oink " * x)}
+  def inc(i: Int): Int = i + 1
+  def oink(i: Int): String = { x = x + i; "Pig says " + ("oink " * x) }
   def addX(i: Int): Int = x + i
   def addY(i: Int): Int = y + i
   def isPalindrome(s: String): Boolean = s == s.reverse
-  def rnd(min: Int, max: Int) = math.random * max + min
+  def rnd(min: Int, max: Int): Double = math.random * max + min
 }
 \end{Code}
 
-\noindent Vilka funktioner i objektet \code{inSearchOfPurity} ovan är äkta funktioner? Testa att anropa funktionerna i REPL om du är osäker på vad som händer.
+
+\noindent\emph{Tips:} Klistra in hela singelobjektet i REPL och testa att anropa funktionerna om du är osäker på vad som händer. Om du gör \code{import inSearchOfPurity._} kommer du åt namnen i singelobjektet direkt och kan lätt undersöka variablernas värden.
 
 \SOLUTION
 
@@ -221,8 +223,8 @@ object inSearchOfPurity {
 
 \QUESTBEGIN
 
-\Task  \what~
-
+\Task  \what~ \\
+\noindent Vilka rader nedan ger kompileringsfel?
 
 \begin{REPL}
 scala> object plus { def apply(x: Int, y: Int) = x + y }
@@ -231,7 +233,6 @@ scala> plus.apply(42)
 scala> plus(42, 43)
 scala> plus(42)
 \end{REPL}
-Vilka rader ovan ger kompileringsfel?
 
 
 \SOLUTION
@@ -247,443 +248,91 @@ Vilka rader ovan ger kompileringsfel?
 
 
 
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%% TODO FIXA NEDAN; KOLLA, FLYTTA, STRYK
-
-
-\vspace{2em}\noindent\TODO Se över nedan uppgifter. Flytta? Stryka? Ändra?
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 4
-
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 5
-
-
-
-
-\WHAT{Applicera en funktion på elementen i en samling.}
-
-\QUESTBEGIN
-
-\Task  \what~  Använd dina funktioner \code{öka} och \code{minska} från uppgift \ref{task:funcall}. Vad har nedan uttryck för värde? Förklara vad som händer.
-
-\Subtask \code{for (i <- 0 to 4) yield öka(i)}
-
-\Subtask \code{for (i <- 1 to 5) yield minska(i)}
-
-\Subtask \code{(0 to 4).map(i => öka(i))}
-
-\Subtask \code{(1 to 5).map(i => minska(i))}
-
-\Subtask \code{(0 to 4).map(öka)}
-
-\Subtask \code{(1 to 5).map(minska)}
-
-\Subtask \code{Vector(12, 3, 41, -8).map(öka)}
-
-\Subtask \code{Vector(12, 3, 41, -8).map(öka).map(minska).map(minska)}
-
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-Detta är alla olika sätt att köra en funktion över alla element i en samling
-
-\SubtaskSolved  \code{Vector(1, 2, 3, 4, 5)}
-
-\SubtaskSolved  \code{Vector(0, 1, 2, 3, 4)}
-
-\SubtaskSolved  \code{Vector(1, 2, 3, 4, 5)}
-
-\SubtaskSolved  \code{Vector(0, 1, 2, 3, 4)}
-
-\SubtaskSolved  \code{Vector(1, 2, 3, 4, 5)}
-
-\SubtaskSolved  \code{Vector(0, 1, 2, 3, 4)}
-
-\SubtaskSolved  \code{Vector(13, 4, 42, -7)}
-
-\SubtaskSolved  \code{Vector(11, 2, 40, -9)}
-
-
-
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 6
-
-
-
-
-
-
-
-\WHAT{Värdeanrop och namnanrop (fördröjd evaluering, ''lata'' argument).}
-
-\QUESTBEGIN
-
-\Task  \what~  Deklarera nedan funktioner i REPL eller Kojo.
-
-\begin{Code}
-def snark: Int = {print("snark "); Thread.sleep(1000); 42}
-def callByValue(x: Int) = x + x
-def callByName(x: => Int) = x + x
-\end{Code}
-
-Evaluera nedan uttryck. Förklara vad som händer.
-
-\Subtask \code{snark}
-
-\Subtask \code{snark; snark; snark}
-
-\Subtask \code{callByValue(1)}
-
-\Subtask \code{callByName(1)}
-
-\Subtask \code{callByValue(snark)}
-
-\Subtask \code{callByName(snark)}
-
-
-\Subtask Förklara vad som händer här:
-\begin{REPL}
-scala> def görDetta(block: => Unit) = block
-scala> görDetta(println("hej"))
-scala> görDetta{println("goddag")}
-scala> görDetta{println("hej"); println("svejs")}
-scala> def görDettaTvåGånger(block: => Unit) = {block; block}
-scala> görDettaTvåGånger{println("goddag")}
-\end{REPL}
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved  \code{snark, Int = 42}
-
-\SubtaskSolved  \code{snark snark snark, Int = 42}
-
-Den evaluerar inte uttrycket förrän det behövs, så flera snark ger bara ett resultat för det är bara det som begärs.
-
-\SubtaskSolved  \code{2}
-
-\SubtaskSolved  \code{2}
-
-Det är ingen större skillnad när vi bara skickar in en etta.
-
-\SubtaskSolved  \code{snark, Int = 84}
-
-\SubtaskSolved  När vi kallar på \code{callByValue} så skickar vi in snark som ett värde, och därmed behöver x bara beräknas en gång medans när vi kallar på \code{callByName} så skickar vi den som en funktion och därmed kallas snark på två gånger i funktionen för att beräkna x båda gångerna.
-
-\code{snark snark, Int = 84}
-
-\SubtaskSolved  \code{görDetta} är en kontrollstruktur som helt enkelt exekverar koden den matas med, \code{görDettaTvåGånger} gör just vad den säger. Detta är dock grunderna för vad som kan bli mycket mer advancerat om man kombinerar detta med loopar eller if-satser, som i sig är kontrolstrukturer.
-
-
-
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 8
-
-
-
-
-\WHAT{Uppdelad parameterlista.}
-
-\QUESTBEGIN
-
-\Task  \what~  Man kan dela upp parametrarna till en funktion i flera parameterlistor. Förklara vad som händer här:
-\begin{REPL}
-scala> def add(a: Int)(b: Int) = a + b
-scala> add(22)(20)
-scala> add(22)(add(1)(19))
-\end{REPL}
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-Först så adderas 22 och 20 för att bli 42.
-Sedan adderas först 1 och 19 och det adderas sen med 22 för att tillslut bli 42.
-
-
-
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 9
-
-
-
-
-\WHAT{Skapa din egen kontrollstruktur.}
+\WHAT{Applicera funktion på varje element i en samling. Funktion som argument.}
 
 \QUESTBEGIN
 
 \Task  \what~
 
-\Subtask Använd fördröjd evaluering i kombination med en uppdelad parameterlista och skapa din egen kontrollstruktur enligt nedan. (Det är så här som loopen \code{upprepa} i Kojo är definierad.)
+\noindent Deklarera funktionen \code{öka} och variabeln \code{xs} enligt nedan i REPL:
 \begin{REPL}
-scala> def upprepa(n: Int)(block: => Unit): Unit = {
-         var i = 0
-         while (i < n) {block; i = i + 1}
-       }
+scala> def öka(x: Int) = x + 1
+scala> val xs = Vector(3, 4, 5)
 \end{REPL}
+\noindent Para ihop nedan uttryck till vänster med det uttryck till höger som har samma värde. Om du undrar något, testa uttrycken och olika varianter av dem i REPL.
 
-\Subtask Använd din nya loop-procedur och förklara vad som händer nedan.
-\begin{REPL}
-scala> upprepa(10)(println("hej"))
-scala> upprepa(1000){
-  val tärning = (math.random * 6 + 1).toInt
-  print(tärning + " ")
-}
-\end{REPL}
-
-
+\begin{ConceptConnections}
+\input{generated/quiz-w03-yield-map-taskrows-generated.tex}
+\end{ConceptConnections}
 
 \SOLUTION
 
-
 \TaskSolved \what
 
-
-\SubtaskSolved  -
-
-\SubtaskSolved  I den första parameterlistan så anges hur många gånger koden i den andra parameterlistan ska exekveras. så \code{upprepa(10)(println("hej"))} printar hej 10 gånger
-
-
+\begin{ConceptConnections}
+  \input{generated/quiz-w03-yield-map-solurows-generated.tex}
+\end{ConceptConnections}
 
 \QUESTEND
 
 
 
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 10
-
-
-
-
-\WHAT{Funktion som värde.}
+\WHAT{Funktion som äkta värde.}
 
 \QUESTBEGIN
 
-\Task  \what~  Funktioner är äkta värden i Scala.
+\Task  \what~  Funktioner är \emph{äkta värden} i Scala\footnote{I likhet med t.ex. Javascript, men till skillnad från t.ex. Java.}. Det betyder att variabler kan ha funktioner som värden och funktionsvärden kan vara argument till funktioner som har funktionsparametrar\footnote{Funktioner som tar funktioner som argument kallas \emph{högre ordningens funktioner}}.
 
-\Subtask \label{subtask:funcval} Förklara vad som händer nedan. Notera understrecket på rad 4:
+  En funktion som har en heltalsparameter och ett heltalsresultat är av funktionstypen \code{Int => Int} (uttalas \emph{int-till-int}) och värdet av funktionen utgör ett objekt som har en metod som heter \code{apply} med motsvarande funktionstyp.
 
-\begin{REPL}[numbers=left, numberstyle=\color{black}\ttfamily\scriptsize\selectfont]
-scala> def inc(x: Int): Int = x + 1
-scala> inc(42)
-scala> Vector(12, 3, 41, -8).map(inc)
-scala> val f = inc _
-scala> Vector(12, 3, 41, -8).map(f)
-\end{REPL}
-
-\Subtask Vad händer om du bara skriver \code{val f = inc} utan understreck?
-
-\Subtask På liknande sätt som i uppgift \ref{subtask:funcval}: definiera en funktion \code{dec} som i stället \emph{minskar} med 1. Deklarera ett funktionsvärde \code{g} som tilldelas funktionen \code{dec} och kör sedan \code{g} på varje element i \code{Vector(12, 3, 41, -8)} med metoden \code{map}.
-
-\Subtask Vad har variablerna \code{f} och \code{g} ovan för typ?
-
-\Subtask Förklara vad som händer nedan. Vad får \code{d} och \code{h} för värde?
+\Subtask \label{subtask:funcval} Deklarera nedan funktioner och variabler i REPL. Notera understrecket på rad 3. Para sedan ihop nedan uttryck till vänster med det uttryck till höger som har samma värde. Om du undrar något, testa uttrycken och olika varianter av dem i REPL.
 
 \begin{REPL}
-scala> def applicera(x: Int, f: Int => Int) = f(x)
-scala> def dubbla(x: Int) = 2 * x
-scala> def halva(x: Int) = x / 2
-scala> val d = applicera(42, dubbla)
-scala> val h = applicera(42, halva)
+scala> def öka(x: Int): Int = x + 1
+scala> def app(x: Int, f: Int => Int): Int = f(x)
+scala> val f1 = öka _
+scala> var f2 = (x: Int) => x - 1
 \end{REPL}
+
+\begin{ConceptConnections}
+\input{generated/quiz-w03-function-values-taskrows-generated.tex}
+\end{ConceptConnections}
+
+
+\Subtask Vilka typer har variablerna \code{f1} och \code{f2}?
+
+\Subtask Går det att ge variabeln \code{f2} funktionsvärdet \code{öka} genom tilldelning?
+
+\Subtask Går det bra att skriva \code{val f3 = öka} utan understreck?
+
+\Subtask Går det bra att skriva \code{val f3: Int => Int = öka} utan understreck?
 
 \SOLUTION
 
-
 \TaskSolved \what
 
-
-\SubtaskSolved  Man kan spara en funktion som en variabel och funktioner kan likt andra värden sparade i variabler användas i andra funktioner så länge det är godkänd indata. Så femte raden blir identisk med tredje.
-
-\SubtaskSolved  Kompilatorn saknar en parameterlista så den kastar ett fel, genom att ange \_ så säger vi åt den att vi tar emot en godtycklig parameter.
-
 \SubtaskSolved
-\begin{REPLnonum}
-def dec(x: Int): Int = x - 1
-val g = dec _
-Vector(12, 3, 41, -8).map(g)
-\end{REPLnonum}
 
-\SubtaskSolved  Int => Int
+\begin{ConceptConnections}
+  \input{generated/quiz-w03-function-values-solurows-generated.tex}
+\end{ConceptConnections}
 
-g har samma typ som f alltså  Int => Int
+\SubtaskSolved Båda har typen \code{Int => Int}
 
-\SubtaskSolved  d = 84, h = 21. Räkna tar en funktion och ger den det första argumentet som indata.
+\SubtaskSolved  Ja, det går fint.
 
-
-
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 11
-
-
-
-
-\WHAT{Stegade funktioner (''Curry-funktioner'').}
-
-\QUESTBEGIN
-
-\Task  \what~ Förklara vad som händer nedan.
+\SubtaskSolved  Nej det blir kompileringsfel: \\
 \begin{REPL}
-scala> def sum(a: Int)(b: Int) = a + b
-scala> sum(1)(2)
-scala> val f = sum(42) _
-scala> f(1)
-scala> val inc = sum(1) _
-scala> val dec = sum(-1) _
-scala> inc(42)
-scala> dec(42)
+scala> val f3 = öka
+<console>:12: error: missing argument list for method öka
+Unapplied methods are only converted to functions when
+a function type is expected. You can make this conversion
+explicit by writing 'öka _' or 'öka(_)' instead of 'öka'.
 \end{REPL}
 
-\SOLUTION
-
-
-\TaskSolved \what
- När man gör curryfunktioner så skjuter man upp att ange det andra värdet till senare och på så sätt gör "nya" funktioner så att säga. När vi sparar undan variablen \code{f} så har vi angett första argumentet men den väntar fortfarande på det andra som vi anger sen vilket ger ett resultatvärde.
-
-Samma sak senare, genom att skapa variablerna inc och dec som summan av +1 respektive -1 så har vi "skapat" våra \code{inc} och \code{dec} funktioner från tidigare funktioner.
-
-
+\SubtaskSolved  Ja, det går fint. Nu med typinformationen på plats är kompilatorn säker på vad du vill göra.
 
 \QUESTEND
-
-
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 15
-
-
-
-
-\WHAT{Fördröjd initialisering (''lata'' variabler).}
-
-\QUESTBEGIN
-
-\Task  \what~
-
-\Subtask \label{subtask:delayalloc} Förklara vad som händer här:
-\begin{REPL}
-scala> val olat = 42
-scala> lazy val lat = 42
-scala> println(lat)
-scala> val nu = {Thread.sleep(1000); println("nu"); 42}
-scala> lazy val sen = {Thread.sleep(1000); println("sen"); 42}
-scala> def igen = {Thread.sleep(1000); println("hver gang"); 42}
-scala> println(nu)
-scala> println(sen)
-scala> println(igen)
-scala> println(nu)
-scala> println(sen)
-scala> println(igen)
-scala> object m {lazy val stor = Array.fill(1e9.toInt)(liten); val liten = 42}
-scala> m.liten
-scala> m.stor
-\end{REPL}
-
-\Subtask Vad är skillnaden mellan \code{val}, \code{lazy val} och \code{def}, vad gäller \emph{när} evalueringen sker?
-
-
-\Subtask \label{subtask:forwardref} Förklara vad som händer här:
-\begin{REPL}
-scala> object objektÄrLata { val sen = { println("nu!"); 42 } }
-scala> objektÄrLata
-scala> objektÄrLata.sen
-scala> {val x = y; val y = 42}
-scala> object buggig {val a = b; val b = 42}
-scala> buggig.a
-scala> object funkar {lazy val a = b; val b = 42}
-scala> funkar.a
-scala> object nowarning {val many = Array.fill(10)(one); val one = 1}
-scala> nowarning.many
-\end{REPL}
-
-\Subtask Med ledning av uppgift \ref{subtask:delayalloc} och uppgift \ref{subtask:forwardref}, beskriv två olika situationer när kan man ha nytta av \code{lazy val}?
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved  Notera vid deklarationen av \code{nu}, \code{sen} och \code{igen} så är det bara \code{nu} som tar tid och skriver ut sin text. För \code{nu} evalueras men de andra väntar.
-
-Men när vi ska kalla på dem så tar \code{nu} ingen tid och skriver inte ut nu medans \code{sen} och \code{igen} nu tar tid och skriver ut sin text. För \code{nu} har redan evaluerats men de andra behöver evalueras för de kallas på.
-
-Och när vi kallar på dem för andra gången så är det bara \code{igen} som tar tid. För \code{nu} och \code{sen} är evaluerade och vid det här laget identiska medans \code{igen} behöver evalueras varje gång man kallar på den.
-
-Vid deklaration av objektet så går allt bra, när vi kallar på \code{liten} så får vi 42 men när vi kallar på \code{stor} så får vi exception. Eftersom objekt är lata så evalueras inte objektet förrän vi anropar något ur det men \code{stor} är också lazy så den blir inte ett problem förrän just den anropas.
-
-\SubtaskSolved
-\code{val} evalueras direkt, \code{lazy val} evalueras när det behövs medans \code{def} evalueras varje gång det behövs.
-
-\SubtaskSolved
-När vi skapar objektÄrLata så skrivs inget ut för det evalueras inte förrän vi kallar på det, som vi gör nästa rad då skrivs nu ut. När vi sedan anropar sen evalueras inget och nu skrivs inte ut.
-
-\{\code{val x=y; val y = 42}\} kastar error eftersom y inte är evaluerad när vi försöker evaluera x.
-
-När vi skapar \code{buggig} så varnar den och vi ser varför på nästa rad då att \code{a} verkar vara lika med 0. Eftersom \code{b} inte är evaluerad än så blir det 0 men till skillnad från tidigare vet \code{val a} iallafall att den är en Int eftersom objectet med \code{b} är åtminstone definerat.
-
-\code{funkar} fungerar just för att \code{a} är en \code{lazy val} och evalueras då inte förrän efter \code{b} evaluerats och ger därför 42 som den ska.
-
-\code{nowarning} har samma problem som \code{buggig} men ger ingen varning och därför försöker skriva ut innan \code{one} är evaluerad och ger därför nollor.
-
-\SubtaskSolved
-När man vill skapa ett objekt som funkar eller fixa problemet i no warning, man kan vilja ha sina variabler i just den ordningen p.g.a. läslighet.
-
-Men även om man inte vill slöa ner ett system med en massa arbete när allt deklareras på en gång utan tar det hellre gradvis allteftersom det används.
-
-
-
-\QUESTEND
-
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 17
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 18
 
 
 
@@ -692,72 +341,38 @@ Men även om man inte vill slöa ner ett system med en massa arbete när allt de
 
 \QUESTBEGIN
 
-\Task  \what~  Vi har flera gånger sett syntaxen \code{i => i + 1}, till exempel i en loop \code{(1 to 10).map(i => i + 1)} där funktionen \code{i => i + 1} appliceras på alla heltal från 1 till och med 10. Funktionen \code{i => i + 1} kallas en \textbf{anonym} funktion, eftersom den inte har något namn, till skillnad från \code{def öka(i: Int): Int = i + 1}, som har namnet \code{öka}.
+\Task  \what~  Vi har flera gånger sett syntaxen \code{i => i + 1}, till exempel i en loop \code{(1 to 10).map(i => i + 1)} där funktionen \code{i => i + 1} appliceras på alla heltal från 1 till och med 10 och resultatet blir en ny sekvenssamling.
 
-Anonyma funktioner kallas även för \emph{funktionsliteraler} eller \emph{lambda}.
+Syntaxen \code{(i: Int) => i + 1} är en litteral för att skapa ett funktionsvärde. Syntaxen liknar den för funktionsdeklarationer, men nyckelordet \code{def} saknas i funktionshuvudet och i stället för likhetstecken används \code{=>} för att avskilja parameterlistan från funktionskroppen.
+Om kompilatorn kan härleda typen ur sammanhanget kan kortformen \code{i => i + 1} användas.
 
-Det finns ett ännu kortare sätt att skriva en anonym funktion om den bara använder sin parameter en enda gång, med understreck \code{ _ + 1} som expanderas av kompilatorn till \code{ngtnamn => ngtnamn + 1} (namnet på parametern spelar ingen roll; kompilatorn väljer något eget, internt namn).
+Det finns ett \emph{ännu} kortare sätt att skriva en anonym funktion \emph{om} typen kan härledas \emph{och} den bara använder sin parameter \emph{en enda gång}; då går funktionslitteraler att skriva med s.k. platshållarsyntax som använder understreck, till exempel \code{ _ + 1} och som automatiskt expanderas av kompilatorn till \code{ngtnamn => ngtnamn + 1} (namnet på parametern spelar ingen roll; kompilatorn väljer något eget, internt namn).
 
-\Subtask Förklara vad som händer nedan. Vad blir resultatet av varje uttryck?
+Para ihop uttryck till vänster med uttryck till höger som har samma värde:
 
-\begin{REPL}
-scala> (1 to 4).map(i => i + 1)
-scala> (1 to 4).map(_ + 1)
-scala> (1 to 4).map(math.pow(2, _))
-scala> (1 to 4).map(math.pow(_, 2))
-scala> (1 to 4).map(i => i.toString)
-scala> (1 to 4).map(_.toString)
-\end{REPL}
+\begin{ConceptConnections}
+\input{generated/quiz-w03-lambda-taskrows-generated.tex}
+\end{ConceptConnections}
 
-\Subtask Vilken typ kommer kompilatorn att härleda för de anonyma funktionerna i argumenten till metoden \code{map} på rad 1--6 i uppgiften ovan? Vad använder kompilatorn för information i dessa exempel för att härleda funktionstyperna?
-
-\Subtask Vilka felmeddelande ger kompilatorn när den inte kan lista ut att funktionsliteralerna nedan har typen \code{Int => Int}?
-
-\begin{REPL}
-scala> val inc = i => i + 1
-scala> val inc = (i: Int) => i + 1
-scala> (1 to 10).map(inc)
-scala> val dec = _ - 1
-scala> val dec: Int => Int = _ - 1
-scala> (1 to 10).map(dec)
-\end{REPL}
-
-
+\noindent
+Funktionslitteraler kallas även \textit{anonyma funktioner}\footnote{Ett annat populärt men mer kryptiskt namn är \textit{lambda}.}, eftersom de inte har något namn, till skillnad från t.ex. \code{def öka(i: Int): Int = i + 1}, som ju heter \code{öka}.
 
 \SOLUTION
 
-
 \TaskSolved \what
 
-
-\SubtaskSolved
-\code{Vector(2, 3, 4, 5} Lägger till 1 på varje\\
-\code{Vector(2, 3, 4, 5} Identisk med ovan\\
-\code{Vector(2.0, 4.0, 8.0, 16.0} Ger 2 upphöjt med talen från vektorn\\
-\code{Vector(1.0, 4.0, 9.0, 16.0} Talen upphöjt med 2\\
-\code{Vector(1, 2, 3, 4} Skriver ut talen som sträng\\
-\code{Vector(1, 2, 3, 4} Identisk med ovan\\
-
-\SubtaskSolved
-Int => Int
-Int => Int
-Int => Double
-Int => Double
-Int => String
-Int => String \\
-Den vet vad den behöver utgå ifrån och på samma sätt som man i vanliga fall inte explicit behöver ange returtyp för funktioner i scala så ser den vad för typ som returneras t.ex. \code{i.toString} returnerar en String
-
-\SubtaskSolved
-Missing Parameter type och Missing Parameter type for expanded function
-
-
+\begin{ConceptConnections}
+  \input{generated/quiz-w03-lambda-solurows-generated.tex}
+\end{ConceptConnections}
 
 \QUESTEND
 
 
 
 
-\ExtraTasks %%%%%%%%%%%%%%%%%%%
+
+\ExtraTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -794,8 +409,6 @@ Vad har nedan uttryck för värden? Förklara vad som händer.
 
 
 
-
-
 \WHAT{Medelvärde.}
 
 \QUESTBEGIN
@@ -810,12 +423,7 @@ Vad har nedan uttryck för värden? Förklara vad som händer.
 def avg(x: Int, y: Int): Double = (x + y) / 2.0
 \end{Code}
 
-
 \QUESTEND
-
-
-
-
 
 
 
@@ -859,46 +467,6 @@ Namn: Oval, Viktor
 
 
 
-
-
-
-
-
-
-
-
-
-
-\AdvancedTasks %%%%%%%%%%%%%%%%%
-
-
-
-\WHAT{Föränderlighet av parametrar.}
-
-\QUESTBEGIN
-
-\Task \what~Är en parameter förändringsbar i funktionskroppen ...
-
-\Subtask ... i Scala?  (Ja/Nej)
-
-\Subtask ... i Java?  (Ja/Nej)
-
-
-\SOLUTION
-
-\TaskSolved \what~
-
-\Subtask Nej, i Scala är parametern oföränderlig och det blir kompileringsfel om man försöker tilldela den ett nytt värde i funktionskroppen.
-
-\Subtask Ja det går utmärkt i Java att ändra värdet på parametern i funktionskroppen med tilldelning, men koden riskerar att bli förvirrande.\\
-\url{https://stackoverflow.com/questions/2970984}
-
-\QUESTEND
-
-
-
-
-
 \WHAT{Bortkastade resultatvärden och returtypen \code{Unit}.}
 
 \QUESTBEGIN
@@ -927,9 +495,7 @@ scala> println(bortkastad2)
 
 \SOLUTION
 
-
 \TaskSolved \what
-
 
 \SubtaskSolved Procedurer returnerar tomma värdet och \code{println} är en procedur.
 
@@ -944,40 +510,31 @@ scala> println(bortkastad2)
 
 
 
+\AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
-\WHAT{Tupler som parametrar.}
+
+\WHAT{Föränderlighet av parametrar.}
 
 \QUESTBEGIN
 
-\Task  \what~ Implementera nedan varianter av beräkning av avståndet mellan två punkter:
-\begin{Code}
-def distxy(x1: Int, y1: Int, x2: Int, y2: Int): Double = ???
+\Task \what~Är en parameter förändringsbar i funktionskroppen ...
 
-def distpt(p1: (Int, Int), p2: (Int, Int)): Double = ???
+\Subtask ... i Scala?  (Ja/Nej)
 
-def distp(p1: (Int, Int))(p2: (Int, Int)): Double = ???
-
-\end{Code}
+\Subtask ... i Java?  (Ja/Nej)
 
 \SOLUTION
 
-\TaskSolved \what
+\TaskSolved \what~
 
-\begin{Code}
-def distxy(x1: Int, y1: Int, x2: Int, y2: Int): Double =
-  hypot(x1 - x2, y1 - y2)
+\Subtask Nej, i Scala är parametern oföränderlig och det blir kompileringsfel om man försöker tilldela den ett nytt värde i funktionskroppen.
 
-def distpt(p1: (Int, Int), p2: (Int, Int)): Double =
-  hypot(p1._1 - p2._1, p2._2 - p2._2)
-
-def distp(p1: (Int, Int))(p2: (Int, Int)): Double =
-  hypot(p1._1 - p2._1, p2._2 - p2._2)
-\end{Code}
+\Subtask Ja det går utmärkt i Java att ändra värdet på parametern i funktionskroppen med tilldelning, men koden riskerar att bli förvirrande.\\
+\url{https://stackoverflow.com/questions/2970984}
 
 \QUESTEND
-
 
 
 
@@ -1010,7 +567,6 @@ scala> add(100,100)
 scala> add(Int.MaxValue, 0)
 scala> add(0, Int.MaxValue)
 \end{REPL}
-
 
 \SOLUTION
 
@@ -1058,6 +614,7 @@ scala> :javap countdown2
 
 \SOLUTION
 
+\TaskSolved \TODO %% TODO
 
 \QUESTEND
 
@@ -1067,7 +624,7 @@ scala> :javap countdown2
 
 \QUESTBEGIN
 
-\Task  \what~  Du kan be kompilatorn att ge felmeddelande om den inte kan optimera koden till motsvarande en while-loop. Om den inte kan det hämmas prestanda och det finns risk för en överfull anropssstack \Eng{stack overflow}. Prova nedan rader i REPL och förklara vad som händer.
+\Task  \what~  Du kan be kompilatorn att ge felmeddelande om den inte kan optimera koden till motsvarande en while-loop. Om den inte kan det hämmas prestanda och det finns risk för en överfull stack \Eng{stack overflow}. Prova nedan rader i REPL och förklara vad som händer.
 \begin{REPL}
 scala> def countNoTailrec(n: Long): Unit =
          if (n <= 0L) println("Klar! " + n) else {countNoTailrec(n-1L); ()}
@@ -1083,5 +640,54 @@ scala> countTailrec(100000L)
 scala> countTailrec(Int.MaxValue.toLong * 2L)
 \end{REPL}\SOLUTION
 
+\QUESTEND
+
+
+
+\WHAT{Uppdelad parameterlista. \TODO}
+
+\QUESTBEGIN
+
+\Task  \what~Man kan dela upp parametrarna till en funktion i flera parameterlistor. Förklara vad som händer här:
+\begin{REPL}
+scala> def add(a: Int)(b: Int) = a + b
+scala> add(22)(20)
+scala> add(22)(add(1)(19))
+\end{REPL}
+
+\SOLUTION
+
+\TaskSolved \what
+
+Först så adderas 22 och 20 för att bli 42.
+Sedan adderas först 1 och 19 och det adderas sen med 22 för att till slut bli 42.
+
+\QUESTEND
+
+
+
+
+\WHAT{Stegade funktioner (''Curry-funktioner''). \TODO}
+
+\QUESTBEGIN
+
+\Task  \what~ Förklara vad som händer nedan.
+\begin{REPL}
+scala> def sum(a: Int)(b: Int) = a + b
+scala> sum(1)(2)
+scala> val f = sum(42) _
+scala> f(1)
+scala> val inc = sum(1) _
+scala> val dec = sum(-1) _
+scala> inc(42)
+scala> dec(42)
+\end{REPL}
+
+\SOLUTION
+
+\TaskSolved \what
+ När man gör curryfunktioner så skjuter man upp att ange det andra värdet till senare och på så sätt gör "nya" funktioner så att säga. När vi sparar undan variablen \code{f} så har vi angett första argumentet men den väntar fortfarande på det andra som vi anger sen vilket ger ett resultatvärde.
+
+Samma sak senare, genom att skapa variablerna inc och dec som summan av +1 respektive -1 så har vi "skapat" våra \code{inc} och \code{dec} funktioner från tidigare funktioner.
 
 \QUESTEND
