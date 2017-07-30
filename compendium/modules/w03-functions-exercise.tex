@@ -570,7 +570,7 @@ scala> add(0, Int.MaxValue)
 
 \SOLUTION
 
-\TaskSolved \what
+\TaskSolved \what \TODO se över texten nedan
 
 \SubtaskSolved
 \code{countdown} skriver ut x och kallar på \code{countdown} igen med x-1 som argument om det är större än noll vilket innebär att samma sak görs igen tills x når 0.
@@ -578,7 +578,7 @@ scala> add(0, Int.MaxValue)
 \code{finalCountdown} gör samma sak fast med en Byte och den fortsätter även om x passerar 0 med de rekursiva funktionsanropen.
 
 \SubtaskSolved
-Eftersom vi hade \code{1/x} efter rekursionsanropet innan så kom vi aldrig dit för vi returnerade aldrig något utan gick bara djupare i stacken. Om vi placerar \code{1/x} tidigare så når vi den raden kod och den kastar ett exception då det är division med noll.
+Eftersom vi hade \code{1/x} efter det rekursiva anropet innan så kom vi aldrig dit för vi returnerade aldrig något utan gick bara djupare i stacken. Om vi placerar \code{1/x} tidigare så når vi den raden kod och den kastar ett exception då det är division med noll.
 
 \SubtaskSolved
 Den sista raden leder till mycket fler rekursiva anrop, för rekursionen avslutas när y är noll, inte om x är det.
@@ -614,7 +614,7 @@ scala> :javap countdown2
 
 \SOLUTION
 
-\TaskSolved \TODO %% TODO
+\TaskSolved \what~\TODO %% TODO
 
 \QUESTEND
 
@@ -638,56 +638,66 @@ scala> @tailrec def countTailrec(n: Long): Unit =
 scala> countTailrec(1000L)
 scala> countTailrec(100000L)
 scala> countTailrec(Int.MaxValue.toLong * 2L)
-\end{REPL}\SOLUTION
-
-\QUESTEND
-
-
-
-\WHAT{Uppdelad parameterlista. \TODO}
-
-\QUESTBEGIN
-
-\Task  \what~Man kan dela upp parametrarna till en funktion i flera parameterlistor. Förklara vad som händer här:
-\begin{REPL}
-scala> def add(a: Int)(b: Int) = a + b
-scala> add(22)(20)
-scala> add(22)(add(1)(19))
 \end{REPL}
 
 \SOLUTION
 
-\TaskSolved \what
-
-Först så adderas 22 och 20 för att bli 42.
-Sedan adderas först 1 och 19 och det adderas sen med 22 för att till slut bli 42.
+\TaskSolved \what~\TODO %% TODO
 
 \QUESTEND
 
 
 
 
-\WHAT{Stegade funktioner (''Curry-funktioner''). \TODO}
+\WHAT{Uppdelad parameterlista och stegade funktioner.}
 
 \QUESTBEGIN
 
-\Task  \what~ Förklara vad som händer nedan.
-\begin{REPL}
-scala> def sum(a: Int)(b: Int) = a + b
-scala> sum(1)(2)
-scala> val f = sum(42) _
-scala> f(1)
-scala> val inc = sum(1) _
-scala> val dec = sum(-1) _
-scala> inc(42)
-scala> dec(42)
-\end{REPL}
+\Task \what~Man kan dela upp parametrarna till en funktion i flera parameterlistor. Funktionen \code{add1} nedan har en parameterlista med två parametrar medan \code{add2} har två parameterlistor med en parameter vardera:
+\begin{Code}
+  def add1(a: Int, b: Int) = a + b
+  def add2(a: Int)(b: Int) = a + b
+\end{Code}
 
+\Subtask  När man anropar funktionen \code{add2} ska argumenten skrivas inom två olika parentespar. Hur kan du använda \code{add2} för att räkna ut \code{1 + 1}?
+
+\Subtask En fördel med uppdelade parameterlistor är att man kan skapa s.k. \emph{stegade funktioner}\footnote{Kallas även Curry-funktioner efter matematikern och logikern Haskell Brooks Curry.} där argumenten är partiellt applicerade. Prova det stegade funktionsvärdet \code{singLa} nedan. Vad skrivs ut på efter raderna 3 och 5?
+
+\begin{REPL}
+scala> def repeat(s: String)(n: Int): String = s * n
+scala> val song = repeat("doremi ")(3)
+scala> println(song)
+scala> val singLa = repeat("la") _
+scala> println(singLa(7))
+\end{REPL}
+\noindent Vi ska senare se hur uppdelad parameterlista i kombination med namnanrop kan användas för att skapa egna kontrollstrukturer, likt \code{upprepa} som du använde under Kojo-labben i första veckan.
 \SOLUTION
 
 \TaskSolved \what
- När man gör curryfunktioner så skjuter man upp att ange det andra värdet till senare och på så sätt gör "nya" funktioner så att säga. När vi sparar undan variablen \code{f} så har vi angett första argumentet men den väntar fortfarande på det andra som vi anger sen vilket ger ett resultatvärde.
 
-Samma sak senare, genom att skapa variablerna inc och dec som summan av +1 respektive -1 så har vi "skapat" våra \code{inc} och \code{dec} funktioner från tidigare funktioner.
+\SubtaskSolved
+\begin{REPL}
+scala> def add2(a: Int)(b: Int) = a + b
+add2: (a: Int)(b: Int)Int
+
+scala> add2(1)(1)
+res0: Int = 2
+\end{REPL}
+
+\SubtaskSolved
+\begin{itemize}
+
+\item Rad 3:
+\begin{REPLnonum}
+doremi doremi doremi
+\end{REPLnonum}
+
+\item Rad 5:
+\begin{REPLnonum}
+lalalalalalala
+\end{REPLnonum}
+
+\end{itemize}
+
 
 \QUESTEND
