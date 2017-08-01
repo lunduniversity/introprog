@@ -12,6 +12,7 @@
 
 \begin{Preparations}
 \item \StudyTheory{04}
+\item Läs om hur man fixar buggar i appendix \ref{appendix:debug}.
 \end{Preparations}
 
 \else
@@ -25,8 +26,12 @@
 \BasicTasks %%%%%%%%%%%%%%%%
 
 
-
-
+%%%% TODO
+%%%% ta med tupler
+%%%% ändra blockmole så att den använder pt som tuple2 istf x,y
+%%%% flytta simplewindowundersökningar från blockmole till övningen
+%%%% visa classpath och ladda ner cslib på övningen
+%%%%
 
 \WHAT{Para ihop begrepp med beskrivning.}
 
@@ -52,13 +57,130 @@
 
 
 
+\WHAT{\TODO Fixa detta som är hitflyttat från labben}
+
+\QUESTBEGIN
+
+\Task \what~\TODO
+
+
+\Subtask
+Ladda ner \texttt{cslib.jar} via länken \url{http://cs.lth.se/pgk/cslib} och lägg jar-filen i samma katalog som ditt Scala-program. Detta kan du göra i Linux med \code{wget} så här:
+\begin{REPLnonum}
+> wget -O cslib.jar http://cs.lth.se/pgk/cslib
+\end{REPLnonum}
+En jar-fil används för att paketera färdigkompilerade program, kod, dokumentation, resursfiler, etc, och är komprimerad på samma sätt som en zip-fil.
+
+\Subtask
+Byt ut \code{main}-funktionens kropp mot följande block:
+\begin{Code}
+{
+	val w = new cslib.window.SimpleWindow(300, 500, "Digging")
+	w.moveTo(10, 10)
+	w.lineTo(10, 20)
+	w.lineTo(20, 20)
+	w.lineTo(20, 10)
+	w.lineTo(10, 10)
+}
+\end{Code}
+Den första raden skapar ett nytt \code{SimpleWindow} som ritar upp ett fönster som är 300 bildpunkter brett och 500 bildpunkter högt med titeln \emph{Digging}.
+\code{SimpleWindow} har en \emph{penna} som kan flyttas runt och rita linjer.
+Anropet \code{w.moveTo(10, 10)} flyttar pennan för fönstret \code{w} till position $(10,10)$ utan att rita något, och anropet \code{w.lineTo(10, 20)} ritar en linje därifrån till position $(10, 20)$.
+
+\Subtask
+Nu ska du kompilera ditt program, men eftersom \code{SimpleWindow} inte finns i Scalas standardbibliotek utan i \texttt{cslib.jar} behöver du visa kompilatorn var den ska leta.
+Det gör du genom att ange en \emph{classpath}, dvs. en sökväg till \texttt{class}-filer, när du kompilerar.
+Använd flaggan \texttt{-cp cslib.jar} för att ange \texttt{cslib.jar} som classpath och kompilera ditt Scala-program igen:
+\begin{REPLnonum}
+> scalac -cp cslib.jar Mole.scala
+\end{REPLnonum}
+
+\Subtask
+Nu ska du köra ditt program, och då behöver du också ange var \texttt{class}-filerna ligger.
+Du ska ange den katalog där \texttt{class}-filerna för \code{Mole} ligger, som du just kompilerat, men du ska också ange \texttt{cslib.jar}, och det gör du med en kolon-separerad lista\footnote{Kolon används i Linux och macOS, medan Windows använder semikolon.}, till exempel \code{"sökväg1:sökväg2:sökväg3"}.
+Katalogen du står i, där dina \texttt{class}-filer ligger, kan anges med en punkt (\texttt{.}).
+Kör programmet med följande kommando (om Windows använd semikolon):
+\begin{REPLnonum}
+> scala -cp ".:cslib.jar" Mole
+\end{REPLnonum}
+Du ska nu få upp ett fönster med en liten kvadrat utritad i övre vänstra hörnet.
+
+
+\SOLUTION
+
+\TaskSolved \what~\TODO
+
+\QUESTEND
+
+
+
+
+
+\WHAT{\TODO FIXA ÖVNING MED FÄRG. Nedan borttaget ur labben.}
+
+\QUESTBEGIN
+
+
+\Task \what~
+
+Det finns många sätt att beskriva färger.
+I naturligt språk har vi olika namn på färgerna, till exempel \emph{vitt}, \emph{rosa} och \emph{magenta}.
+I datorn är det vanligt att beskriva färgerna som en blandning av \emph{rött}, \emph{grönt} och \emph{blått} i det så kallade RGB-systemet.
+\code{SimpleWindow} använder typen \code{java.awt.Color} för att beskriva färger och \code{java.awt.Color} bygger på RGB.
+Det finns några fördefinierade färger i \code{java.awt.Color}, till exempel \code{java.awt.Color.black} för svart och \code{java.awt.Color.green} för grönt.
+Andra färger kan skapas genom att ange mängden rött, grönt och blått.
+
+\Subtask
+Skapa ett nytt objekt i \texttt{Mole.scala} med namnet \code{Colors} och lägg in följande definitioner:
+\begin{Code}
+val mole   = new java.awt.Color(51, 51, 0)
+val soil   = new java.awt.Color(153, 102, 51)
+val tunnel = new java.awt.Color(204, 153, 102)
+\end{Code}
+% val sky = new java.awt.Color(51, 51, 204)
+% val grass = new java.awt.Color(51, 204, 51)
+Den tre parametrarna till \code{new java.awt.Color(r, g, b)} anger hur mycket \emph{rött}, \emph{grönt} respektive \emph{blått} som färgen ska innehålla, och mängderna ska vara i intervallet 0--255.
+Färgen $(153, 102, 51)$ innebär ganska mycket rött, lite mindre grönt och ännu mindre blått och det upplevs som brunt.
+Objektet \code{Colors} är en färgpallett, men vi har inte ritat något med färg ännu.
+Kompilera och kör ditt program ändå, för att se så programmet fungerar likadant som sist.
+
+\Subtask
+Lägg till en parameter till \code{Graphics.block} sist i parameterlistan med namnet \code{color} och typen \code{java.awt.Color}.
+Låt \emph{default-argumentet} för den nya parametern vara \code{java.awt.Color.black}.
+(Kommer du inte ihåg hur man gör default-argument kan du titta på övningarna i kapitel~\ref{exe:W03}.)
+För att ändra färgen på blocket kan du byta linjefärg innan du ritar.
+Lägg till följande rad i början på \code{Graphics.block}:
+\begin{Code}
+w.setLineColor(color)
+\end{Code}
+Kompilera och kör ditt program igen för att se om det fortfarande fungerar.
+
+\Subtask\Pen
+Funktionen \code{Graphics.block} har tre parametrar, men den anropas bara med två parametrar i \code{Mole.main}.
+Varför är det tillåtet?
+Vilket värde har den tredje parametern om ingen anges?
+Skriv ner dina svar inför redovisningen.
+
+
+\Subtask
+Ändra i \code{Mole.main} och lägg till en av definitionerna från objektet \code{Colors} som tredje parameter till \code{Graphics.block}.
+Kompilera och kör ditt program och upplev världen i färg.
+
+
+\QUESTEND
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
 
 
 \WHAT{Objekt som moduler.}
 
 \QUESTBEGIN
 
-\Task  \what~  \TODO{FLYTTA ALLT OM OBJEKT TILL W04}
+\Task  \what~
 
 \Subtask Lär dig följande terminologi utantill:
 
