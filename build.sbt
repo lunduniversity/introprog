@@ -116,6 +116,12 @@ pdfSolutions := {
   runPdfLatexCmd(texFile = file("solutions.tex"), workDir = file("compendium"))
 }
 
+lazy val pdfLabs = taskKey[Unit]("Compile labs.tex")
+pdfLabs := {
+  runPdfLatexCmd(texFile = file("labs.tex"), workDir = file("compendium"))
+}
+
+
 lazy val pdfCompendium = taskKey[Unit]("Compile compendium.tex")
 pdfCompendium := {
   runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))
