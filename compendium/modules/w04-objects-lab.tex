@@ -48,50 +48,44 @@ Skapa en ny fil med namnet \texttt{blockmole.scala} i en ny katalog i din hemkat
 
 
 \Subtask
-Navigera till din nya katalog med \texttt{cd}-kommandot \Eng{change directory} och kontrollera med \texttt{ls}-kommandot \Eng{list} att din nya fil finns där.
+Navigera till din nya katalog och kontrollera att din nya fil finns där.
 \begin{REPLnonum}
 > cd ~/pgk/w04/lab/
 > ls
+blockmole.scala
 \end{REPLnonum}
-Om allt går bra ska \texttt{ls}-kommandot skriva ut \texttt{blockmole.scala}.
 
 \Subtask
-Gå tillbaka till din texteditor och gör i början av filen \code{blockmole.scala} en paketdeklaration så att koden ingår i paketet \code{blockmole}.
+I början av filen \code{blockmole.scala} gör en paketdeklaration så att koden du ska skriva nedan ingår i paketet \code{blockmole}.
 
 \Subtask
-Deklarera sedan ett singelobjekt med namnet \code{Main} och lägg till en \code{main}-funktion i objektet som skriver ut texten: \texttt{"Keep on digging!"}
+Deklarera sedan ett singelobjekt med namnet \code{Main} med en \code{main}-procedur skriver ut texten: \texttt{"Keep on digging!"}
 
 \Subtask
-Kompilera ditt program. När du rätta eventuella fel, ett i taget, och lyckats kompilera helt utan fel, kontrollera med \texttt{ls}-kommandot att några filer som slutar på \texttt{class} har skapats i subkatalogen \code{blockmole}. \Pen Varför hamnade bytekoden i denna katalog?
+Kompilera ditt program. Kontrollera med \texttt{ls}-kommandot att några filer som slutar på \texttt{class} har skapats i subkatalogen \code{blockmole}. \Pen Varför hamnade bytekoden i denna katalog?
 
 \Subtask
-Kör kommandot \texttt{scala blockmole.Main} för att exekvera ditt program.
-Om allt går bra ska texten du angivit skrivas ut i terminalfönstret.
+Kör kommandot \texttt{scala blockmole.Main} för att exekvera ditt program och kontrollera utskriften i terminalfönstret.
 
-\vspace{1em}\noindent Nu har du skrivit ett program som skriver ut en uppmaning till en mullvad att fortsätta gräva.
-Det programmet är inte så användbart, eftersom mullvadar inte kan inte läsa. Nästa steg är därför att skriva ett grafiskt program.%, snarare än ett textbaserat.
-
-
-
+\vspace{1em}\noindent Nu har du skrivit ett program som uppmanar en blockmullvad att fortsätta gräva. Det programmet är inte så användbart, eftersom mullvadar inte kan inte läsa. Nästa steg är därför att skriva ett grafiskt program.%, snarare än ett textbaserat.
 
 
 
 \Task \emph{Skapa en grundstruktur för programmet.}
-I mindre program fungerar det bra att samla många funktioner i samma singelobjekt, men i stora program blir det lättare att hitta i koden och förstå vad den gör om man har flera moduler med olika ansvar. Ditt program ska ha följande övergripande struktur:
+I mindre program fungerar det bra att samla alla funktioner i ett singelobjekt, men i stora program blir det lättare att hitta i koden och förstå vad den gör om man har flera moduler med olika ansvar. Ditt program ska ha följande övergripande struktur:
 
 \begin{Code}
 package blockmole
 
 object Colors {
-  // Samlar olika färger som behövs i övriga objekt
+  // Skapar olika färger som behövs i övriga moduler
 }
 
 object Graphics {
-  // Har ett SimpleWindow och procedurer för blockgrafik
+  // Har ett SimpleWindow och ritar blockgrafik
 }
 
-object Mole {
-  // Representerar en blockmullvad som kan gräva:
+object Mole { // Representerar en blockmullvad som kan gräva
   def dig(): Unit = println("Här ska det grävas!")
 }
 
@@ -105,13 +99,16 @@ object Main {
 }
 \end{Code}
 
-Vi lägger i denna laboration alla moduler i samma fil, men om modulerna blir stora och ska återanvändas av flera olika program är det bra att ha dem i olika filer så att de kan kompileras och testas separat.
+\noindent Skapa programskelettet ovan i filen \code{blockmole.scala} och se till att koden kompilerar utan fel och går att köra med utskrifter som förväntat.
 
-\Subtask Skapa programskelettet ovan i filen \code{blockmole.scala} och se till att koden kompilerar utan fel och går att köra med utskrifter som förväntat.
+Vi lägger i denna laboration alla moduler i samma fil, men i andra situationer när  modulerna blir stora och/eller ska återanvändas av flera olika program är det bra att ha dem i olika filer så att de kan kompileras och testas separat.
 
-\Subtask I singelobjektet \code{Color} ska vi lägga in färger med hjälp av Java-klassen \code{java.awt.Color}. Eftersom vårt singelobjektnamn''krockar'' med namnet på färgklassen i Java-paketet  så byter vi namn på Java-klassen till \code{Jcolor} i importdeklarationen. Lägg in en importdeklaration med namnbytet direkt efter paketdeklarationen. Vi lägger importen så att den syns i hela paketet eftersom flera objekt behöver tillgång till \code{JColor}. Säkerställ att koden fortfarande kompilerar utan fel.
 
-\Subtask Lägg in nedan färger i objektet \code{Colors}:
+\Task \emph{Lägg till färger i färgmodulen.} I singelobjektet \code{Color} ska vi skapa färger med hjälp av Java-klassen \code{java.awt.Color}. Eftersom vårt singelobjektnamn''krockar'' med namnet på Java-färgklassen så byter vi namn på Java-klassen till \code{JColor} i importdeklarationen.
+
+Lägg in en importdeklaration med namnbytet direkt efter paketdeklarationen. Vi lägger importen så att den syns i hela paketet eftersom flera objekt behöver tillgång till \code{JColor}. Säkerställ att koden fortfarande kompilerar utan fel.
+
+Skapa sedan nedan färger i objektet \code{Colors}:
 \begin{Code}
 object Color {
   val black  = new JColor(  0,   0,   0)
@@ -122,16 +119,17 @@ object Color {
 \end{Code}
 
 
-\Subtask Lägg till nedan tre variabler i singelobjektet \code{Graphics}:
+\Task \emph{Skapa ett ritfönster i modulen för blockgrafik.} Lägg till nedan tre variabler i singelobjektet \code{Graphics}:
 
 \begin{Code}
-val windowSize = (30, 50)  // number of blocks width, height
-val blockSize  = 10        // number of pixels per block
+  val windowSize = (30, 50)  // number of blocks width, height
+  val blockSize  = 10        // number of pixels per block
 
-val win = new SimpleWindow(???, ???, ???)
+  val win = new SimpleWindow(???, ???, ???)
 \end{Code}
 
 \begin{itemize}%[noitemsep]
+  \item Importera \code{cslib.window.SimpleWindow} lokalt i \code{Graphics}.
   \item Gör så att storleken på \code{win} motsvarar blockstorleken gånger fönsterstorleken.
   \item Ge fönstret en lämplig tiltel, t.ex. \code{"Digging Blockmole"}.
   \item Gör en lokal import-deklaration i \code{Graphics} då det bara är detta objekt som behöver tillgång till \code{SimpleWindow}.
@@ -139,31 +137,31 @@ val win = new SimpleWindow(???, ???, ???)
   \item Om du glömt ordningen på parametrarna till klassen \code{SimpleWindow} så kolla i dokumentationen\footnote{\url{http://cs.lth.se/pgk/api/}}. Det går tyvärr inte att använda namngivna argument när man använder Java-klasser.
 \end{itemize}
 
-\Subtask Lägg till en enkel utritning genom att i proceduren \code{drawWorld} använda \code{Graphics.win}, för att se så att allt fungerar så här långt, till exempel:
+För att testa fönstret, lägg till en enkel testritning genom att i proceduren \code{drawWorld} använda \code{Graphics.win}, till exempel:
 \begin{Code}
-  def drawWorld(): Unit = Graphics.win.lineTo(100,100)
+  def drawWorld(): Unit = {
+    Graphics.win.moveTo(100,10)
+    Graphics.win.lineTo(200,20)
+  }
 \end{Code}
 Kompilera och kör och säkerställ att allt fungerar som förväntat.
 
 
-\Task Nu har du gjort ett grafiskt program, men ännu syns ingen mullvad.
+\Task \emph{Skapa procedur för blockgrafik.} Nu har du gjort ett grafiskt program, men ännu syns ingen mullvad.
 Det är dags att skapa koordinatsystemet i blockmullvadens blockvärld.
 
 \Subtask\Pen
-Inför redovisningen: säkerställ att du kan förklara vad \code{x}- och \code{y}-parametrarna i \code{SimpleWindow.lineTo} innebär, genom att med papper och penna rita en enkel skiss av ungefär var positionerna $(0,0)$, $(300, 0)$, $(0, 300)$ och $(300, 300)$ ligger i ett fönster som är 300 bildpunkter \Eng{pixels} brett och 500 bildpunkter högt.
+Inför redovisningen: säkerställ att du kan förklara vad \code{x}- och \code{y}-parametrarna i \code{SimpleWindow.lineTo} innebär, genom att med papper och penna rita en enkel skiss av ungefär var positionerna $(0,0)$, $(300, 0)$, $(0, 300)$ och $(300, 300)$ ligger i ett fönster som är 300 bildpunkter brett och 500 bildpunkter högt.
 
 \Subtask
-Nu ska du skapa ett nytt koordinatsystem för \code{Graphics} som har \emph{stora} bildpunkter.
-Vi kallar \code{Graphics} stora bildpunkter för \emph{block} för att lättare skilja dem från de enpixelstora bildpunkterna i \code{SimpleWindow}.
+Koordinatsystem i \code{Graphics} ska ha kvadratiska, \emph{stora} bildpunkter som består av många fönsterpixlar. Vi kallar dessa stora bildpunkter för \emph{block} för att lättare skilja dem från de enpixelstora bildpunkterna i \code{SimpleWindow}. I block-koordinatsystemet för \code{Graphics} gäller följande:
 
 \begin{framed}
-\noindent I block-koordinatsystemet för \code{Graphics} gäller följande:
-
- Om blockstorleken är $b$, så ligger koordinaten $(x, y)$ i \code{Graphics} på koordinaten $(bx, by)$ i \code{SimpleWindow}.
+\noindent \emph{Blockstorleken} anger sidan i kvadraten för ett block räknat i antalet pixlar. Om blockstorleken är $b$, så ligger koordinaten $(x, y)$ i \code{Graphics} på koordinaten $(bx, by)$ i \code{SimpleWindow}.
 
 \end{framed}
 
-\noindent Implementera funktionen \code{block} i modulen \code{Graphics} enligt nedan, så att ett block ritas ut. Parametern \code{point} anger blockkoordinaten och parametern \code{color} anger färgen. Fyll i det som saknas.
+\noindent Implementera funktionen \code{block} i modulen \code{Graphics} enligt nedan, så att en kvadrat ritas ut när proceduren anropas. Parametern \code{point} anger block-koordinaten och parametern \code{color} anger färgen. Fyll i det som saknas.
 \begin{Code}
   def block(point: (Int, Int))(color: JColor = Color.black): Unit = {
     win.setLineColor(color)
@@ -183,85 +181,81 @@ I vilken ordning ritas linjerna?
 Skriv ner dina svar inför redovisningen.
 
 \Subtask
-Anropa funktionen \code{Graphics.block} några gånger i \code{Main.drawWorld} så att några block ritas upp i fönstret när programmet körs. Kompilera och kör ditt program och kontrollera att allt fungerar som det ska.
+För att testa din procedur, anropa funktionen \code{Graphics.block} några gånger i \code{Main.drawWorld}, dels med utelämnat defaultargument, dels med olika färger ur färgmodulen. Kompilera och kör ditt program och kontrollera att allt fungerar som det ska.
 
 
 
-
-\Task \emph{Rektangelprocedur.}
-Nu ska du skriva en funktion för att rita en rektangel. Rektangeln ska ritas med hjälp av funktionen \code{block}.
-Sen ska du rita upp mullvadens underjordiska värld med hjälp av denna funktion.
+\Task \emph{Skapa rektangelprocedur och underjorden.} Du ska nu skriva en procedur med namnet \code{rectangle} som ritar en rektangel med hjälp av proceduren \code{block}. Sen ska du använda \code{rectangle} i \code{Main.drawWorld} för att rita upp mullvadens underjordiska värld.
 
 \Subtask
-Lägg till en funktion i objektet \code{Graphics} med namnet \code{rectangle} som tar fem parametrar \code{x}, \code{y}, \code{width} och \code{height} av typen \code{Int} och \code{color} av typen \code{Color}.
-Parametrarna \code{x} och \code{y} anger \code{Graphics}-koordinaten för rektangelns övre vänstra hörn och \code{width} och \code{height} anger bredden respektive höjden.
-Använd följande \code{for}-satser för att rita ut rektangeln.
+Lägg till proceduren \code{rectangle} i grafikmodulen. Procedurhuvudet ska ha följande paramtrar uppdelade i tre olika paramterlistor:
 \begin{Code}
-for (yy <- y until (y + height)) {
-	for (xx <- x until (x + width)) {
-		block(xx, yy, color)
+(leftTop: (Int, Int))(size: (Int, Int))(color: JColor = JColor.black)
+\end{Code}
+
+Parametern \code{leftTop} anger blockkoordinaten för rektangelns övre vänstra hörn och \code{size} anger $(bredd, höjd)$.
+
+Använd denna nästlade repetition för att rita ut rektangeln:
+
+\begin{Code}
+for (y <- ???) {
+	for (x <- ???) {
+		block(x, y, color)
 	}
 }
 \end{Code}
 
 \Subtask\Pen
-I vilken ordning ritas blocken ut?
+I vilken ordning ritas blocken i rektangeln ut (lodrät eller vågrät)?
 
-% \Subtask\Pen (Fråga något om skuggning gällande \code{width} och \code{height}.)
 
-\Subtask
-Skriv en funktion i objektet \code{Mole} med namnet \code{drawWorld} som ritar ut mullvadens värld, det vill säga en massa jord där den kan gräva sina tunnlar.
-\code{Mole.drawWorld} ska inte ha några parametrar och returtypen ska vara \code{Unit} och den ska anropa \code{Graphics.rectangle} för att rita en rektangel med färgen \code{Colors.soil} som precis täcker fönstret.
-Eftersom funktionen har många parametrar som lätt kan blandas ihop ska du använda namngivna argument vid anropet.
-(Om du har glömt hur man använder namngivna argument kan du titta på övningarna i kapitel~\ref{exe:W03}.)
+\Subtask Ändra i \code{Mole.drawWorld} så att den ritar ut underjorden, det vill säga en massa jord där blockmullvaden kan gräva sina tunnlar.
+ Underjorden ska bestå av en rektangel med färgen \code{Colors.soil} som precis täcker fönstret.
 
-\Subtask
-Anropa \code{Mole.drawWorld} i \code{Mole.main} och testa så att det fungerar.
+Eftersom funktionen \code{rectangle} har mer än en parameter med samma typ som lätt kan blandas ihop utan att kompilatorn hittar felet, ska du namnge det andra argumentet \code{size} vid anropet. För det första argumentet (\code{leftTop}) ska du utnyttja att det går att skippa tupelparenteserna (gäller vid parameterlista med endast en parameter av tupeltyp).
+
+\Subtask Anropa \code{Mole.drawWorld} i \code{Mole.main} och testa så att det fungerar.
 
 \Task
 I \code{SimpleWindow} finns funktioner för att känna av tangenttryckningar och musklick.
-Du ska använda de funktionerna för att styra en liten blockmullvad.
+Du ska använda de funktionerna för att styra en blockmullvad.
 
 \Subtask
-Importera \code{cslib.window.SimpleWindow} i \code{Graphics} och lägg till denna metod:
+Lägg till denna funktion i \code{Graphics}:
 \begin{Code}
-def waitForKey(): Char = {
-  w.waitForEvent()
-  while (w.getEventType() != SimpleWindow.KEY_EVENT) w.waitForEvent()
-  w.getKey
-}
+  def waitForKey(): Char = {
+    w.waitForEvent
+    while (w.getEventType != SimpleWindow.KEY_EVENT) w.waitForEvent
+    w.getKey
+  }
 \end{Code}
-Det finns olika sorters händelser som ett \code{SimpleWindow} kan reagera på, till exempel tangenttryckningar och musklick.
+\noindent Det finns olika sorters händelser som ett \code{SimpleWindow} kan reagera på, till exempel tangenttryckningar och musklick.
 Funktionen som du precis lagt in väntar på en händelse i ditt \code{SimpleWindow} (\code{w.waitForEvent}) ända tills det kommer en tangenttryckning (\code{KEY_EVENT}).
 När det kommit en tangenttryckning anropas \code{w.getKey} för att ta reda på vilken bokstav eller vilket tecken det blev, och det resultatet blir också resultatet av \code{waitForKey}, eftersom det ligger sist i blocket.
 
 \Subtask
-Lägg till en funktion i objektet \code{Mole} med namnet \code{dig}, utan parametrar och med returtypen \code{Unit}.
-Funktionens kropp ska se ut såhär (fast utan \code{???}):
+Lägg till proceduren \code{Mole.dig} enligt nedan:
 \begin{Code}
-{
-  var x = Graphics.width / 2
-  var y = Graphics.height / 2
-  while (true) {
-    Graphics.block(x, y, Colors.mole)
-    val key = Graphics.waitForKey()
-    if (key == 'w') ???
-    else if (key == 'a') ???
-    else if (key == 's') ???
-    else if (key == 'd') ???
+  def dig(): Unit = {
+    var x = Graphics.windowSize._1 / 2
+    var y = Graphics.windowSize._2 / 2
+    while (true) {
+      Graphics.block(x, y)(Color.mole)
+      val key = Graphics.waitForKey()
+      Graphics.block(x, y)(Color.tunnel)
+      if      (key == 'w') ???
+      else if (key == 'a') ???
+      else if (key == 's') ???
+      else if (key == 'd') ???
+    }
   }
-}
 \end{Code}
-Fyll i alla \code{???} så att \code{'w'} styr mullvaden ett steg uppåt, \code{'a'} ett steg åt vänster, \code{'s'} ett steg nedåt och \code{'d'} ett steg åt höger.
 
-\Subtask
-Ändra \code{Mole.main} så att den bara innehåller två anrop: ett till \code{drawWorld} och ett till \code{dig}.
-Kompilera och kör ditt program för att se om programmet reagerar på w, a, s och d.
+\Subtask Fyll i alla \code{???} så att \code{'w'} styr mullvaden ett steg uppåt, \code{'a'} ett steg åt vänster, \code{'s'} ett steg nedåt och \code{'d'} ett steg åt höger.
 
-\Subtask
-Om programmet fungerar kommer det bli många mullvadar som tillsammans bildar en lång mask, och det är ju lite underligt.
-Lägg till ett anrop i \code{Mole.dig} som ritar ut en bit tunnel på position $(x, y)$ efter anropet till \code{Graphics.waitForKey} men innan \code{if}-satserna.
-Kompilera och kör ditt program för att gräva tunnlar med din blockmullvad.
+\Subtask Ändra \code{main} så att den bara innehåller två anrop: ett till \code{drawWorld} och ett till \code{dig}. Kompilera och kör ditt program för att se om programmet reagerar på w, a, s och d.
+
+\Subtask Om programmet fungerar kommer det bli många mullvadar som tillsammans bildar en lång mask, och det är ju lite underligt. Lägg till ett anrop i \code{Mole.dig} som ritar ut en bit tunnel på position $(x, y)$ efter anropet till \code{Graphics.waitForKey} men innan \code{if}-satserna. Kompilera och kör ditt program för att gräva tunnlar med din blockmullvad.
 
 \subsection{Kontrollfrågor}\Checkpoint
 
@@ -276,6 +270,9 @@ Kompilera och kör ditt program för att gräva tunnlar med din blockmullvad.
 \item Vi använde flera singelobjekt som olika s.k. \code{moduler} i denna laboration. Vad är fördelen med att att dela upp koden i moduler?
 \end{enumerate}
 
+
+
+
 \clearpage
 
 \subsection{Frivilliga extrauppgifter}
@@ -287,14 +284,15 @@ Lägg till några \code{if}-satser i början av \code{while}-satsen som upptäck
 \Task
 Mullvadar är inte så intresserade av livet ovanför jord, men det kan vara trevligt att se hur långt ner mullvaden grävt sig.
 Lägg till en himmelsfärg och en gräsfärg i objektet \code{Colors} och rita ut himmel och gräs i \code{Mole.drawWorld}.
-Justera också det du gjorde i föregående uppgift, så mullvaden håller sig under jord.
-(\emph{Tips:} Den andra parametern till \code{Color} reglerar mängden grönt och den tredje parametern reglerar mängden blått.)
+Justera också det du gjorde i föregående uppgift, så att mullvaden håller sig under jord.
+
+\emph{Tips:} Du har nytta av färgväljaren i Kojo som du får fram genom att högerklicka i editorfönstret i kojo. Med hjälp av den kan du interaktivt blanda till den färg du tycker passar bäst.
 
 \Task
 Ändra så att mullvaden kan springa uppe på gräset också, men se till så att ingen tunnel ritas ut där.
 
-\Task
-Skriv om loopen i \code{Graphics.waitForKey} så att den använder \code{do while} i stället. Vilken variant tycker du är lättast att förstå?
+% \Task
+% Skriv om loopen i \code{Graphics.waitForKey} så att den använder \code{do while} i stället. Vilken variant tycker du är lättast att förstå?
 
 \Task
 Låt mullvaden fortsätta gräva även om man inte trycker ned någon tangent. Tangenttryckning ska ändra riktningen.
@@ -337,4 +335,49 @@ Skapa en ny metod \code{Graphics.keepOnDigging} som från början är en kopia a
 
 \item Anpassa fördröjningen efter din förmåga att hinna styra blockmullvaden.
 
+\item Lägg till så att man kan pausa grävandet om man trycker på blankstegstangenten.
+
+\item Gör så att om man ger en parameter \code{--non-blocking} till programmet när man startar det kan välja mellan om \code{main} anropar \code{dig} eller \code{keepOnDigging}.
+
 \end{enumerate}
+
+
+\Task \emph{Fånga blockmasken.}
+
+\begin{quote}
+  \noindent\textbf{Blockmask} (\textit{Lumbricus quadratus}) är ett fantasidjur i familjen daggmaskar. Den är känd för att kunna teleportera sig från en plats till en annan på ett ögonblick. Den har i likhet med den verkliga daggmasken (\emph{Lumbricus terrestris}) RGB-färgen $(225, 100, 235)$, men är kvadratisk och endast ett block stor.
+\end{quote}
+
+\Subtask Lägg till nedan modul i din kod och använd procedurerna i \code{keepOnDigging} så att blockmullvaden får en blockmask att jaga. Gör så att texten \code{"WORM CATCHED!"} skrivs ut i terminalen om blockmullvaden är på samma plats som blockmasken. Koden nedan förutsätter att himmel och gräs finns i fönstrets översta $8$ block. Använd parametern \code{notHere} till att förhindra att blockmasken teleporterar sig till samma plats som blockmullvaden.
+
+\begin{Code}
+object Worm {
+  def nextRandomPos(): (Int, Int) =
+    ( (math.random * (Graphics.windowSize._1)).toInt,
+      (math.random * (Graphics.windowSize._2 - 8) + 8).toInt )
+
+  var pos = nextRandomPos()
+
+  def isHere(p: (Int, Int)): Boolean = pos == p
+
+  def draw(): Unit  = Graphics.block(pos)(Color.worm)
+
+  def erase(): Unit = Graphics.block(pos)(Color.soil)
+
+  val teleportProbability = 0.03
+
+  def randomTeleport(notHere: (Int, Int)): Unit =
+    if (math.random < Worm.teleportProbability) {
+      erase()
+      pos = nextRandomPos()
+      while (pos == notHere) pos = nextRandomPos()
+      draw()
+    }
+}
+\end{Code}
+
+\Subtask Gör så att blockmullvaden får $1000$ poäng varje gång den fångar blockmasken.
+
+\Subtask Gör så att spelet varar en bestämd, lagom lång tid. Använd \code{System.currentTimeMillis} som ger aktuella antalet millisekunder sedan den förste januari 1970. När spelet är slut ska den totala poängen som blockmullvaden samlat skrivas ut i terminalen.
+
+\Subtask Gör så att spelets hastighet ökar (d.v.s. att fördröjningen i spel-loopen minskar) efter en viss tid. I samband med det ska sannolikheten för att blockmasken teleporterar sig öka.
