@@ -167,13 +167,14 @@ trait Plan {
         | insättningssortering, urvalssortering,
         | algoritm: INSERTION-SORT, algoritm: SELECTION-SORT,
         | Ordering[T], Ordered[T], Comparator[T], Comparable[T],
+        | riktlinjer för projektredovisning,
         """.stripTrim),
         //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
-    Module("Repetition, tentaträning, projekt", id = "examprep", exercise = "Extenta", lab = "", contents = ""),
+    Module("Repetition, tentaträning, projekt", id = "examprep", exercise = "examprep", lab = "", contents = "göra extenta, förbereda projektredovisning, skapa dokumentation med scaladoc och javadoc"),
 
-    Module("Extra: jämlöpande exekvering",
-      id = "extra", exercise = "threads", lab = "", contents = """
+    Module("Extra: jämlöpande exekvering, webbprogrammering",
+      id = "extra", exercise = "extra", lab = "", contents = """
       | tråd, jämlöpande exekvering,
       | icke-blockerande anrop, callback,
       | java.lang.Thread,
@@ -204,7 +205,7 @@ trait Plan {
 
   lazy val exerciseNumOfWeek =
     ("Övn01,Övn02,Övn03,Övn04,Övn05,Övn06,Övn07,--," +
-     "Övn08,Övn09,Övn10,Övn11,Övn12,--,Övn14,--,--").split(',').toVector
+     "Övn08,Övn09,Övn10,Övn11,Övn12,Övn13,Övn14,--,--").split(',').toVector
 
   lazy val exerciseOfWeek = for (w <- 0 until exerciseNumOfWeek.size) yield {
     if (exerciseNumOfWeek(w).startsWith("Ö") && modules(w).exercise != "")
