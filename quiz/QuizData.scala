@@ -140,7 +140,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
     "quiz-w03-concepts" -> Vector(  //functions
-      "funktionshuvud    " -> "har parameterlista och eventuellt returtyp",
+      "funktionshuvud    " -> "har parameterlista och eventuellt en returtyp",
       "funktionskropp    " -> "koden som exekveras vid funktionsanrop",
       "parameterlista    " -> "beskriver namn och typ på parametrar",
 //      "parameter         " -> "namn i funktionshuvud; binds till argument",
@@ -153,7 +153,8 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "tupel             " -> "lista med bestämt antal (heterogena) värden",
       "tupelreturtyp     " -> "gör att en funktion kan flera resultatvärden",
       "äkta funktion     " -> "ger alltid samma resultat om samma argument",
-      "slumptalsfrö      " -> "om lika blir sekvensen av pseudoslumptal samma",
+      "predikat          " -> "en funktion som ger ett booleskt värde",
+      "slumptalsfrö      " -> "ger återupprepningsbar sekvens av pseudoslumptal",
       "anonym funktion   " -> "funktion utan namn; kallas även lambda",
       "rekursiv funktion " -> "en funktion som anropar sig själv",
       "" -> ""
@@ -211,6 +212,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "namnskuggning     " -> "lokalt namn döljer samma namn i omgivande block",
       "namnrymd          " -> "omgivning där är alla namn är unika",
       "uniform access    " -> "ändring mellan def och val påverkar ej användning",
+      "punktnotation     " -> "används för att komma åt icke-privata delar",
       "typalias          " -> "alternativt namn på typ som ofta ökar läsbarheten",
       "         " -> "",
       "" -> ""

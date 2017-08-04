@@ -48,82 +48,246 @@
 \QUESTEND
 
 
-%%%% TODO översikt:
+%%%% Översikt av strukturen i grundövningarna:
 %%%% tupler
 %%%% objekt
-%%%% paket
 %%%% ladda ner cs-lib och använd classpath till REPL
 %%%% cslib.window.SimpleWindow
 %%%% java.awt.Color
+%%%% paket
 
 
-
-
-
-\WHAT{.}
+\WHAT{Nästlade singelobjekt, import, synlighet och punktnotation.}
 
 \QUESTBEGIN
 
-\Task \what~\TODO
+\Task \what~I den tvådimensionella Underjorden bor Mullvaden och Masken. Masken har gömt sig för Mullvaden och befinner sig på en plats långt bort. Masken har även gjort delar av sin position osynlig för omvärlden:
+
+\begin{Code}
+object Underjorden {
+  var x = 0
+  var y = 1
+
+  object Mullvaden {
+    var x = Underjorden.x + 10
+    var y = Underjorden.y + 9
+  }
+
+  object Masken {
+    private var x = Mullvaden.x
+    var y = Mullvaden.y + 190
+    def ärMullvadsmat: Boolean = ???
+  }
+}
+\end{Code}
+
+\Subtask Skapa ovan kod i filen \code{Underjorden.scala} med en editor och implementera predikatet  \code{ärMullvadsmat} så att det blir sant om mullvadens koordinater är samma som maskens.
+
+\Subtask Testa livet i Underjorden genom att klistra in din modul i REPL. Importera Underjordens medlemmar med understreck så att du ser Mullvaden och Masken. Flytta med hjälp av tilldelning Maskens y-koordinat så att Masken hamnar på samma plats som Mullvaden. Kontrollera att predikatet \code{ärMullvadsmat} fungerar som tänkt.
+
+ \Subtask Importera därefter allt i Mullvaden och sedan allt i Masken och tilldela \code{x} ett nytt värde enligt raderna 1--3 nedan. Vad ger uttrycken på raderna 4--6 nedan för värde? Förklara vad som händer i termer av namnöverskuggning och synlighet?
+
+\begin{REPL}
+scala> import Mullvaden._
+scala> import Masken._
+scala> x = -1
+scala> Mullvaden.x
+scala> Masken.x
+scala> Underjorden.x
+\end{REPL}
+
+
 
 \SOLUTION
 
-\TaskSolved \what~\TODO
+\TaskSolved \what
+
+\SubtaskSolved
+
+\begin{Code}
+object Underjorden {
+  var x = 0
+  var y = 1
+
+  object Mullvaden {
+    var x = Underjorden.x + 10
+    var y = Underjorden.y + 9
+  }
+
+  object Masken {
+    private var x = Mullvaden.x
+    var y = Mullvaden.y + 190
+    def ärMullvadsmat: Boolean = x == Mullvaden.x && y == Mullvaden.y
+  }
+}
+\end{Code}
+
+\SubtaskSolved
+
+\begin{REPL}
+scala> :paste underjorden.scala
+scala> import Underjorden._
+scala> Masken.ärMullvadsmat
+res0: Boolean = false
+scala> Masken.y = Mullvaden.y
+scala> Masken.ärMullvadsmat
+res1: Boolean = true
+\end{REPL}
+
+
+\SubtaskSolved
+
+\begin{REPL}
+scala> import Mullvaden._
+scala> import Masken._
+scala> x = -1
+scala> Mullvaden.x
+res2: Int = -1
+
+scala> Masken.x
+<console>:46: error:
+  variable x in object Masken cannot be accessed
+  in object Underjorden.Masken
+
+scala> Underjorden.x
+res3: Int = 0
+\end{REPL}
+
+\noindent \emph{Förklaring:} När importen av Maskens alla synliga medlemmar sker kommer de som ej är privata att överskugga andra medlemmar med samma namn. Det är Mullvadens \code{x}-variabel som tilldelas \code{-1} eftersom Maskens \code{x} är privat och ej syns utåt.
 
 \QUESTEND
 
 
 
 
-
-
-\WHAT{\TODO Fixa detta som är hitflyttat från labben}
+\WHAT{Tupler.}
 
 \QUESTBEGIN
 
-\Task \what~\TODO
+\Task \what~ Tupler sammanför flera olika värden i ett oföränderligt objekt. Nedan används tupler för att representera en 3D-punkt i underjorden med koordinater av typen \code{(x: Int, y: Int, z: Double)}, där $z$-koordinaten anger hur djupt ner i underjorden punkten ligger. På en hemlig plats finns uppgången till överjorden.
+
+\begin{Code}
+object Underjorden3D {
+  private val hemlis = ("uppgången till överjorden", (0, 0, 0.0))
+
+  object Mullvaden {
+    var pos = (5, 3, math.random * 10)
+    def djup  = ???
+  }
+
+  object Masken {
+    private var pos = (0, 0, 10.0)
+    def ärMullvadsmat: Boolean = ???
+    def ärRaktUnderUppgången: Boolean = ???
+  }
+}
+\end{Code}
+
+\Subtask Funktionen \code{djup} ska ge $z$-koordinaten för Mullvaden. Vilken typ har \code{djup}?
+
+\Subtask Vilken typ har \code{hemlis}?
+
+\Subtask Skriv in koden för \code{Underjorden3D} i en editor och implementera de saknade delarna. Predikatet \code{ärMullvadsmat} ska vara sant om Masken finns på samma plats som Mullvaden. Predikatet  \code{ärRaktUnderUppgången} ska vara sant om $x$- och $y$-koordinaterna sammanfaller med den hemliga uppgången till överjorden. Testa så att dina implementationer fungerar i REPL.
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved \code{djup} har typen \code{Double}.
+
+\SubtaskSolved \code{hemlis} har typen \code{(String, (Int, Int, Double))}.
 
 
-\Subtask
-Ladda ner \texttt{cslib.jar} via länken \url{http://cs.lth.se/pgk/cslib} och lägg jar-filen i samma katalog som ditt Scala-program. Detta kan du göra i Linux med \code{wget} så här:
+\SubtaskSolved
+\begin{Code}
+object Underjorden3D {
+  private val hemlis = ("uppgången till överjorden", (3, 4, 0.0))
+
+  object Mullvaden {
+    var pos = (5, 3, math.random * 10 + 1)
+
+    def djup: Double  = pos._3
+  }
+
+  object Masken {
+    private var pos = (0, 0, 10.0)
+
+    def ärMullvadsmat: Boolean = pos == Mullvaden.pos
+
+    def ärRaktUnderUppgången: Boolean =
+      pos._1 == hemlis._2._1 && pos._2 == hemlis._2._2
+  }
+}
+\end{Code}
+
+
+
+
+\WHAT{Färdigkompilerad kod i jarfil. Classpath. Använda paket.}
+
+\QUESTBEGIN
+
+\Task \what~En jar-fil används för att samla färdigkompilerade program, kod, dokumentation, resursfiler, etc, i en enda fil. En jar-fil är komprimerad på samma sätt som en zip-fil.
+
+\Subtask På veckans laboration ska vi använda klassen \code{SimpleWindow} som finns i paketet \code{windows} som ligger i paketet \code{cslib}. Vilka argument ska ges när man skapar ett fönster?
+
+\emph{Tips:}  Läs dokumentationen av \code{SimpleWindow} här:  \url{http://cs.lth.se/pgk/api/}
+ Leta efter beskrivningen av klassens konstruktor.
+
+\Subtask Ladda ner \texttt{cslib.jar} via länken \url{http://cs.lth.se/pgk/cslib} och lägg jar-filen i samma katalog som ditt Scala-program. Detta kan du göra i Linux med \code{wget} så här:
+
 \begin{REPLnonum}
 > wget -O cslib.jar http://cs.lth.se/pgk/cslib
 \end{REPLnonum}
-En jar-fil används för att paketera färdigkompilerade program, kod, dokumentation, resursfiler, etc, och är komprimerad på samma sätt som en zip-fil.
 
-\Subtask
-Byt ut \code{main}-funktionens kropp mot följande block:
+\Subtask Testa \code{SimpleWindow} i REPL enligt nedan. Med argumentet \code{-cp cslib.jar}, där optionen \code{cp} är en förkortning av \emph{classpath}, gör du koden i \code{cslib.jar} synlig i REPL.  Skriv kod som ritar en kvadrat med sidan $100$:
+
+\begin{REPL}
+> scala -cp cslib.jar
+Welcome to Scala 2.12.3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_144).
+Type in expressions for evaluation. Or try :help.
+
+scala> val w = new cslib.window.SimpleWindow(400,300,"HEJ")
+scala> w.moveTo(100, 100)
+scala> w.lineTo(200, 100)
+scala> // rita en kvadrat
+\end{REPL}
+
+\Subtask Skriv nedan program med en editor i filen \code{hello-simplewindow.scala} och fyll i de saknade delarna så att en kvadrat ritas ut.
+
 \begin{Code}
-{
-	val w = new cslib.window.SimpleWindow(300, 500, "Digging")
-	w.moveTo(10, 10)
-	w.lineTo(10, 20)
-	w.lineTo(20, 20)
-	w.lineTo(20, 10)
-	w.lineTo(10, 10)
+package hello
+
+object Main {
+  val w = new cslib.window.SimpleWindow(400,300,"HEJ")
+
+  def square(topLeft: (Int, Int))(side: Int): Unit = {
+    w.moveTo( topLeft._1,        topLeft._2        )
+    w.lineTo( topLeft._1 + side, topLeft._2        )
+    w.lineTo( topLeft._1 + side, topLeft._2 + side )
+    ???
+  }
+
+  def main(args: Array[String]): Unit = {
+    println("Rita kvadrat:")
+    square(300,100)(50)
+  }
 }
 \end{Code}
-Den första raden skapar ett nytt \code{SimpleWindow} som ritar upp ett fönster som är 300 bildpunkter brett och 500 bildpunkter högt med titeln \emph{Digging}.
-\code{SimpleWindow} har en \emph{penna} som kan flyttas runt och rita linjer.
-Anropet \code{w.moveTo(10, 10)} flyttar pennan för fönstret \code{w} till position $(10,10)$ utan att rita något, och anropet \code{w.lineTo(10, 20)} ritar en linje därifrån till position $(10, 20)$.
 
-\Subtask
-Nu ska du kompilera ditt program, men eftersom \code{SimpleWindow} inte finns i Scalas standardbibliotek utan i \texttt{cslib.jar} behöver du visa kompilatorn var den ska leta.
-Det gör du genom att ange en \emph{classpath}, dvs. en sökväg till \texttt{class}-filer, när du kompilerar.
-Använd flaggan \texttt{-cp cslib.jar} för att ange \texttt{cslib.jar} som classpath och kompilera ditt Scala-program igen:
-\begin{REPLnonum}
-> scalac -cp cslib.jar Mole.scala
-\end{REPLnonum}
+\noindent
+När du kompilerar ditt program, behöver du lägga \code{cslib.jar} till classpath.
+När du sedan ska köra ditt program behöver du förutom  \code{cslib.jar} också lägga aktuell katalog till classpath. Om man vill ha flera saker på classpath behövs en lista med sökvägar inom citationstecken och ett kolon som separator\footnote{Kolon används i Linux och macOS, medan Windows använder semikolon.}, till exempel \code{"sökväg1:sökväg2:sökväg3"}.
+Aktuell katalog (där katalogen \code{hello} med dina kompilerade byte-kodfiler finns) anges med en punkt.
 
-\Subtask
-Nu ska du köra ditt program, och då behöver du också ange var \texttt{class}-filerna ligger.
-Du ska ange den katalog där \texttt{class}-filerna för \code{Mole} ligger, som du just kompilerat, men du ska också ange \texttt{cslib.jar}, och det gör du med en kolon-separerad lista\footnote{Kolon används i Linux och macOS, medan Windows använder semikolon.}, till exempel \code{"sökväg1:sökväg2:sökväg3"}.
-Katalogen du står i, där dina \texttt{class}-filer ligger, kan anges med en punkt (\texttt{.}).
-Kör programmet med följande kommando (om Windows använd semikolon):
-\begin{REPLnonum}
-> scala -cp ".:cslib.jar" Mole
-\end{REPLnonum}
-Du ska nu få upp ett fönster med en liten kvadrat utritad i övre vänstra hörnet.
+Använd följande kommando (om Windows använd semikolon i stället för kolon):
+\begin{REPL}
+> atom hello-simplewindow.scala  // skriv koden ovan
+> scalac -cp cslib.jar hello-simplewindow.scala
+> ls hello
+> scala -cp "cslib.jar:." hello.Main
+\end{REPL}
+\noindent Du ska nu få upp ett fönster med en liten kvadrat till höger i fönstret.
 
 
 \SOLUTION
@@ -136,56 +300,67 @@ Du ska nu få upp ett fönster med en liten kvadrat utritad i övre vänstra hö
 
 
 
-\WHAT{\TODO FIXA ÖVNING MED FÄRG. Nedan borttaget ur labben.}
+
+\WHAT{Färg.}
 
 \QUESTBEGIN
 
-
-\Task \what~
-
-Det finns många sätt att beskriva färger.
+\Task \what~ Det finns många sätt att beskriva färger.
 I naturligt språk har vi olika namn på färgerna, till exempel \emph{vitt}, \emph{rosa} och \emph{magenta}.
-I datorn är det vanligt att beskriva färgerna som en blandning av \emph{rött}, \emph{grönt} och \emph{blått} i det så kallade RGB-systemet.
-\code{SimpleWindow} använder typen \code{java.awt.Color} för att beskriva färger och \code{java.awt.Color} bygger på RGB.
+I bildminnen i datorer är det vanligt att beskriva färger som en blandning av \emph{rött}, \emph{grönt} och \emph{blått} i det så kallade RGB-systemet.
+
+På veckans labb ska vi använda \code{SimpleWindow}, som beskriver RGB-färger med klassen \code{java.awt.Color}.
 Det finns några fördefinierade färger i \code{java.awt.Color}, till exempel \code{java.awt.Color.black} för svart och \code{java.awt.Color.green} för grönt.
 Andra färger kan skapas genom att ange mängden rött, grönt och blått.
 
-\Subtask
-Skapa ett nytt objekt i \texttt{Mole.scala} med namnet \code{Colors} och lägg in följande definitioner:
+På laborationen behöver vi dessa tre brunaktiga färger:
 \begin{Code}
-val mole   = new java.awt.Color(51, 51, 0)
-val soil   = new java.awt.Color(153, 102, 51)
-val tunnel = new java.awt.Color(204, 153, 102)
+  val mole   = new java.awt.Color( 51,  51,   0)
+  val soil   = new java.awt.Color(153, 102,  51)
+  val tunnel = new java.awt.Color(204, 153, 102)
 \end{Code}
-% val sky = new java.awt.Color(51, 51, 204)
-% val grass = new java.awt.Color(51, 204, 51)
+
 Den tre parametrarna till \code{new java.awt.Color(r, g, b)} anger hur mycket \emph{rött}, \emph{grönt} respektive \emph{blått} som färgen ska innehålla, och mängderna ska vara i intervallet 0--255.
 Färgen $(153, 102, 51)$ innebär ganska mycket rött, lite mindre grönt och ännu mindre blått och det upplevs som brunt.
-Objektet \code{Colors} är en färgpallett, men vi har inte ritat något med färg ännu.
-Kompilera och kör ditt program ändå, för att se så programmet fungerar likadant som sist.
 
-\Subtask
-Lägg till en parameter till \code{Graphics.block} sist i parameterlistan med namnet \code{color} och typen \code{java.awt.Color}.
-Låt \emph{default-argumentet} för den nya parametern vara \code{java.awt.Color.black}.
-(Kommer du inte ihåg hur man gör default-argument kan du titta på övningarna i kapitel~\ref{exe:W03}.)
-För att ändra färgen på blocket kan du byta linjefärg innan du ritar.
-Lägg till följande rad i början på \code{Graphics.block}:
+\noindent\begin{minipage}{0.82\textwidth}
+Använd koden nedan för att rita tre kvadrater i REPL. Proceduren \code{rak} ska rita en horisontell linje från punkten \code{p} med längden \code{d}. Proceduren \code{fyll} ska rita en fylld kvadrat med övre vänstra hörnet i punkten \code{p} och sidan \code{s}. Det som ritas ut ska se ut som bilden till höger.
+\end{minipage}
+\hfill\begin{minipage}{0.23\textwidth}
+\includegraphics[width=\textwidth]{../img/fyll-rak.png}
+\end{minipage}
+
+\begin{REPL}
+> scala -cp cslib.jar
+scala> val w = new cslib.window.SimpleWindow(400,300,"Tre nyanser av brunt")
+scala> type Pt = (Int, Int)
+scala> def rak(p:Pt)(d:Int) = {w.moveTo(p._1, p._2);w.lineTo(???)}
+scala> def fyll(p:Pt)(s:Int) = for (i <- 0 to s){rak(???)(s)}
+
+scala> :paste
+val mole   = new java.awt.Color( 51,  51,   0)
+val soil   = new java.awt.Color(153, 102,  51)
+val tunnel = new java.awt.Color(204, 153, 102)
+
+scala> w.setLineColor(soil)
+scala> fyll(100,100)(75)
+
+scala> w.setLineColor(tunnel)
+scala> fyll(100,100)(50)
+
+scala> w.setLineColor(mole)
+scala> fyll(150,150)(25)
+\end{REPL}
+\noindent Vid anropen av \code{rak} och \code{fyll} ovan utnyttjas att man kan skippa tupelparenteserna om ett tupelargument är ensamt i sin parameterlista.
+
+
+\SOLUTION
+
+\TaskSolved \what~
 \begin{Code}
-w.setLineColor(color)
+def rak(p: Pt)(d: Int)  = { w.moveTo(p._1, p._2); w.lineTo(p._1 + d, p._2) }
+def fyll(p: Pt)(s: Int) = for (i <- 0 to s){ rak(p._1, p._2 + i)(s) }
 \end{Code}
-Kompilera och kör ditt program igen för att se om det fortfarande fungerar.
-
-\Subtask\Pen
-Funktionen \code{Graphics.block} har tre parametrar, men den anropas bara med två parametrar i \code{Mole.main}.
-Varför är det tillåtet?
-Vilket värde har den tredje parametern om ingen anges?
-Skriv ner dina svar inför redovisningen.
-
-
-\Subtask
-Ändra i \code{Mole.main} och lägg till en av definitionerna från objektet \code{Colors} som tredje parameter till \code{Graphics.block}.
-Kompilera och kör ditt program och upplev världen i färg.
-
 
 \QUESTEND
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -194,27 +369,139 @@ Kompilera och kör ditt program och upplev världen i färg.
 
 
 
+\ExtraTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\WHAT{Använda färdiga paket. Skapa en färgväljare.}
+
+\QUESTBEGIN
+
+\Task \what~På laborationen har du nytta av att kunna blanda egna färger så att du kan rita himmel och gräs. Du kan använda färgväljaren i Kojo eller skapa en färgväljare själv med hjälp av swing-paketet enligt nedan. Vad händer om du efter nedan skriver \code{f.setVisible(false)}?
+
+\begin{REPL}
+scala> val f = new javax.swing.JFrame
+scala> val c = new javax.swing.JColorChooser
+scala> f.add(c)
+scala> f.setVisible(true)    // välj färg i RGB-fliken
+scala> c.getColor
+scala> c.getColor.getAlpha   // alpha styr genomskinlighet
+\end{REPL}
+
+
+\SOLUTION
+
+\TaskSolved \what~\\När du skriver \code{f.setVisible(false)} så stängs färgfäljarfönstret.
+
+\QUESTEND
+
+
+
+
+\AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\WHAT{Undersök JDK.}
+
+\QUESTBEGIN
+
+\Task \what~ Ta med hjälp av \url{http://stackoverflow.com/} reda på hur många klasser och paket det finns i Java-plattformen JDK8.
+
+\SOLUTION
+
+\TaskSolved \what~Med JDK8-plattformen kommer 4240 färdiga klasser, som är organiserade i 217 olika paket. Se Stackoverflow: \\\url{http://stackoverflow.com/questions/3112882}
+
+\QUESTEND
+
+
+
+\WHAT{Tupler som funktionsresultat.}
+
+\QUESTBEGIN
+
+\Task \what~Tupler möjliggör att en funktion kan returnera flera olika värden på samma gång. Implementera funktionen statistics nedan. Den ska returnera en 3-tupel som innehåller antalet element i \code{xs}, medelvärdet av elementen, samt en 2-tupel med variationsvidden $(min, max)$. Ange returtypen explicit i din implementation. Testa så att den fungerar i REPL. \emph{Tips:} Du har nytta av metoderna \code{size}, \code{sum}, \code{min} och \code{max} som fungerar på nummersekvenser.
+
+\begin{Code}
+/** Returns the size, the mean, and the range of xs */
+def statistics(xs: Vector[Double]) = ???
+\end{Code}
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\begin{Code}
+def statistics(xs: Vector[Double]): (Int, Double, (Double, Double)) =
+  (xs.size, xs.sum / xs.size, (xs.min, xs.max))
+\end{Code}
+
+\begin{REPL}
+scala> statistics(Vector(0, 2.5, 5))
+res10: (Int, Double, (Double, Double)) = (3,2.5,(0.0,5.0))
+\end{REPL}
+
+\QUESTEND
+
+
+
+
+
+\WHAT{Skapa din egen \code{jar}-fil. \TODO}
+
+\QUESTBEGIN
+
+\Task  \what~
+
+\Subtask Skriv kommandot \code{jar} i terminalen och undersök vad som finns för optioner. Se speciellt ''Example 1.'' i hjälputskriften. Vilket kommando ska du använda för att packa ihop flera filer i en enda jar-fil?
+
+\Subtask Packa ihop biblioteket \TODO \code{gurka} i en jar-fil med nedan kommando, samt kör igång REPL med jar-filen på classpath.
+
+\begin{REPL}
+> jar cvf mittpaket.jar gurka
+> scala -cp mittpaket.jar
+scala> gurka.tomat.banan.Main.main(Array())
+\end{REPL}
+
+
+\SOLUTION
+
+
+\TaskSolved \what\TODO
+
+
+\SubtaskSolved  jar cvf [namn på skapad fil] [namn på input-filer]
+
+\SubtaskSolved  -
+
+
+\QUESTEND
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{\TODO Fixa detta som är hitflyttat från labben}
+
+
 
 
 \WHAT{Objekt som moduler.}
 
 \QUESTBEGIN
 
-\Task  \what~
-
-\Subtask Lär dig följande terminologi utantill:
-
-\begin{itemize}[noitemsep, nolistsep]
-\item Ett singelobjekt som samlar funktioner och variabler kallas även en \textbf{modul}.
-\item Funktioner i objekt kallas även \textbf{metoder}.
-\item Variabler och metoder i objekt kallas \textbf{medlemmar}.
-%\item Moduler kan i sin tur innehålla moduler, i godtyckligt \textbf{nästlingsdjup}.
-\item Man kommer åt innehållet i en modul med \textbf{punktnotation}.
-\item Med \textbf{import} slipper man punktnotation.
-\item Ett objekt med variabler sägs ha ett \textbf{tillstånd}.
-\end{itemize}
-
-\Subtask Deklarera modulerna \code{stringstat} och \code{Test} nedan i REPL eller i Kojo.
+\Task  \what~ Deklarera modulerna \code{stringstat} och \code{Test} nedan i REPL eller i Kojo.
 
 \begin{Code}
 object stringstat {
@@ -261,10 +548,6 @@ object Test {
 \TaskSolved \what
 
 
-\SubtaskSolved  -
-
-\SubtaskSolved  -
-
 \SubtaskSolved
 \begin{REPLnonum}
 
@@ -290,118 +573,8 @@ Först och främst, vi har default argument 42 så det är det som används vid 
 \SubtaskSolved  Vi ser att \code{stringfun} enbart innehåller funktioner och därmed inte har något tillstånd. \code{statistics} har däremot ett tillstånd eftersom variabeln \code{history} sparar vad som skett, så när man anropar funktioner i objektet så kan objektet ändra beteende beroende på dess tillstånd, tillståndet består alltså av \code{history}.
 
 
-
 \QUESTEND
 
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 13
-
-
-
-
-\WHAT{Block, namnsynlighet, namnöverskuggning}
-
-\QUESTBEGIN
-
-\Task  \what~ . Kör nedan kod i Scala REPL eller i Kojo. Vad händer nedan? Varför?
-
-\Subtask \code|val a = {1 + 1; 2 + 2; 3 + 3; 4 + 4}; println(a)|
-
-\Subtask \code|val b = {1; 2; 3; {val b = 4; b + b; b + 1}}; println(b)|
-
-\Subtask \code|{val a = 42; println(a)}|
-
-\Subtask \code|{val a = 42}; println(a)|
-
-\Subtask \code|{val a = 42; {val a = 43; println(a)}; println(a)}|
-
-\Subtask \code|{var a = 42; {a = a + 1}; var a = 43}|
-
-\Subtask \code|{var a = 42; {a = a + b; var b = 43}; println(a)}|
-
-\Subtask \code|{var a = 42; {var b = 43; a = a + b}; println(a)}|
-
-\Subtask \code|{var a = 42; {a = a + b; def b = 43}; println(a)}|
-
-\Subtask \code|{object a{var b=42;object a{var a=43}};println(a.b+a.a.a)}|
-
-\Subtask
-
-\begin{Code}
-{
-  object a {
-    var b = 42
-    object a {
-      var a = 43
-    }
-  }
-  println(a.b + a.a.a)
-}
-\end{Code}
-
-\Subtask Vad är fördelen med att namn deklarerade inne i ett block är lokala i stället för globala?
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved  Skriver ut talet 8. \code{a} får värdet \code{4 + 4} eftersom detta är den sista satsen i blocket. Man får också tre stycken varningar. Detta beror på att det förekommer tre satser i blocket som inte gör någon skillnad.
-
-\SubtaskSolved  Skriver ut talet 5. De tre första satserna i det yttre blocket ignoreras. \code{b} får värdet som returneras av det yttre blocket. Det yttre blocket returnerar värdet som returneras i den sista satsen i blocket, som i sin tur är ett block. I det inre blocket skapas en ny \code{val} som också får namnet \code{b}. Notera att detta alltså inte är samma värde, även om det har samma namn. Den andra satsen räknar summan av \code{b} med sig själv. Eftersom vi nu befinner oss i det block där det andra \code{b}et precis har definieras så är det detta \code{b} som används och summan blir alltså åtta. Detta är dock helt irrelevant eftersom resultatet inte sparas någonstans. I den sista satsen blir resultatet 5 (eftersom \code{b} är fyra och vi adderar ett). Detta resultatet returneras från det innre blocket och vidare ur det yttre blocket.
-
-\SubtaskSolved  Skriver ut talet 42. Blockets satser exekveras i ordning.
-
-\SubtaskSolved  Skriver inte ut 42. I blocket skapas ett \code{val} med namnet \code{a} och värdet \code{42}. Detta värde finns inte utanför blocket och kommer därför inte att skrivas ut. Om du däremot definierat \code{a} som något annat tidigare så kommer istället det värdet att skrivas ut.
-
-\SubtaskSolved  Skriver först ut \code{43} och sedan \code{42}. Förklaring:
-
-\code{a} initieras med värdet \code{42}. Ett nytt värde som också har namnet \code{a} initieras med värdet \code{43}. Eftersom detta sker innanför ett nytt block, befinner vi oss i ett annat "namespace" och det gör alltså inget att vi använder samma namn. \code{a} skrivs ut. Eftersom vi befinner oss i det inre blocket är det \code{43} som skrivs ut, inte \code{42}. Scala kollar först efter värden som heter \code{a} i det inre "namespacet". Det är först i andra hand som den skulle upptäcka att det finns ett \code{a} i det yttre blocket. Till sist körs den sista satsen i det yttre blocket. Då skrivs \code{a} ut. Eftersom vi nu befinner oss i det yttre blocket, vet inte ens scala om att det andra \code{a}:et existerar. Resultatet av den här utskriften blir alltså \code{42}.
-
-\SubtaskSolved  Ett fel uppstår. Variabeln \code{a} initieras två gånger i samma namespace. Förklaring till felet:
-
-I det yttre blockets första sats initieras variablen \code{a} med värdet \code{42}. I det yttre blockets tredje sats försöker vi definiera en ny variabel med samma namn. I och med att vi befinner oss i samma namespace, krockar namnen.
-
-Förklaring till vad som händer i sats två:
-
-I det inre blocket har vi inte definierat någon variabel \code{a}. Till en början hittar alltså inte scala något sådant. Då letar scala vidare i det namespace som finns utanför det inre blocket och hittar variabeln som vi definierade i det yttre blockets första sats. Denna variabel får sitt värde förändrat.
-
-\SubtaskSolved  Fel. Framåtreferens. Förklaring:
-
-Det är inte tillåtet att referera till variabler som initieras senare i koden.
-
-\SubtaskSolved  Skriver ut \code{85}. Förklaring:
-
-I och med att vi den här gången initierade variabeln \code{b} och gav den ett värde innan vi använder oss av den, slipper vi problemet ovan.
-
-\SubtaskSolved  Skriver ut \code{85}. Förklaring:
-
-Det är tillåtet att referera till funktioner som definieras senare i koden.
-
-\SubtaskSolved  Skriver ut \code{85}. Förklaring:
-
-\code{a.b} refererar till variabeln \code{b} som ingår i objektet \code{a}.
-\code{a.a.a} refererar till variabeln \code{a}, som ingår i ett objekt som heter \code{a} som i sin tur befinner sig i ett annat objekt som också heter \code{a}.
-
-\SubtaskSolved  Skriver ut \code{85}. Förklaring:
-
-Koden är identisk med förra deluppgiften förutom att ny rad används istället för semikolon.
-
-\SubtaskSolved  I stora projekt med mycket kod, kan det vara svårt att hitta unika namn till alla sina variabler. Då är det en fördel om man kan hålla sina variabler i begränsade namespaces, så att de bara är tillgängliga precis när de behöver användas.
-
-
-
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 14??? NUMMER I KOMMENTAR STÄMMER EJ MED GENERERAT NUMMER
 
 
 
@@ -410,13 +583,7 @@ Koden är identisk med förra deluppgiften förutom att ny rad används iställe
 
 \QUESTBEGIN
 
-\Task \label{task:package} \what~   Med Java-8-plattformen kommer 4240 färdiga klasser, som är organiserade i 217 olika paket.\footnote{Se Stackoverflow: \href{http://stackoverflow.com/questions/3112882/how-many-classes-are-there-in-java-standard-edition}{how-many-classes-are-there-in-java-standard-edition}}
-
-\Subtask Vilka paket finns i paketet javax som börjar på s?
-
-\begin{REPLnonum}
-scala> javax.s   //tryck på TAB-tangenten
-\end{REPLnonum}
+\Task \what~
 
 \Subtask Kör raderna nedan i REPL. Beskriv vad som händer för varje rad.
 \begin{REPL}[numbers=left, numberstyle=\color{black}\ttfamily\scriptsize\selectfont]
@@ -514,106 +681,7 @@ object Main {
 
 
 
-\ExtraTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-
-
-\WHAT{???}
-
-\QUESTBEGIN
-
-\Task \what~\TODO
-
-\SOLUTION
-
-\TaskSolved \what~\TODO
-
-\QUESTEND
-
-
-
-
-\AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-\WHAT{???}
-
-\QUESTBEGIN
-
-\Task \what~\TODO
-
-\SOLUTION
-
-\TaskSolved \what~\TODO
-
-\QUESTEND
-
-
-
-%%%%%%%%%%%%%%%%%%%%% TODO FIXA NEDAN; KOLLA, FLYTTA, STRYK %%%%%%%%%%%%%%%%%%
-\subsubsection \TODO Se över nedan uppgifter. Flytta? Stryka? Ändra?
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-\WHAT{Skapa en färgväljare. \TODO fördjupningsuppgift?}
-
-\QUESTBEGIN
-
-\Task \what~\TODO
-
-\begin{REPL}
-scala> val f = new javax.swing.JFrame
-scala> val c = new javax.swing.JColorChooser
-scala> f.add(c)
-scala> f.setVisible(true)
-scala> c.getColor
-scala> c.getColor.getAlpha   // alpha styr genomskinlighet
-\end{REPL}
-
-\SOLUTION
-
-\TaskSolved \what~\TODO
-
-\QUESTEND
-
-
-
-
-
-\WHAT{Skapa din egen \code{jar}-fil.}
-
-\QUESTBEGIN
-
-\Task  \what~
-
-\Subtask Skriv kommandot \code{jar} i terminalen och undersök vad som finns för optioner. Se speciellt ''Example 1.'' i hjälputskriften. Vilket kommando ska du använda för att packa ihop flera filer i en enda jar-fil?
-
-\Subtask Packa ihop biblioteket \TODO \code{gurka} i en jar-fil med nedan kommando, samt kör igång REPL med jar-filen på classpath.
-
-\begin{REPL}
-> jar cvf mittpaket.jar gurka
-> scala -cp mittpaket.jar
-scala> gurka.tomat.banan.Main.main(Array())
-\end{REPL}
-
-
-\SOLUTION
-
-
-\TaskSolved \what\TODO
-
-
-\SubtaskSolved  jar cvf [namn på skapad fil] [namn på input-filer]
-
-\SubtaskSolved  -
-
-
-\QUESTEND
 
 
 
