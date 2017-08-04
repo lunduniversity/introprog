@@ -62,7 +62,7 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
     println("*** ############ ERROR LOG STARTS HERE ############### ***")
     //Process(Seq("cat", cmdOutputFile.getName), workDir).run
     Process(Seq("tail", "-40", cmdOutputFile.getName), workDir).run
-    error(s"\n*** ERROR: pdflatex exit code: $exitValue\nSee COMPLETE pdflatex output in: $cmdOutputFile")
+    sys.error(s"\n*** ERROR: pdflatex exit code: $exitValue\nSee COMPLETE pdflatex output in: $cmdOutputFile")
   } else println(s"         Log file: $cmdOutputFile")
 }
 
