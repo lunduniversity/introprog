@@ -7,13 +7,13 @@ lazy val hello = taskKey[Unit]("Prints welcome message")
 
 hello := {
   println("===== WELCOME to the sbt build of lunduniversity/introprog =====")
-  println("\nHAVE PATIENCE: build times can be > 280 sec on a fast machine... \n ")
+  println("\nHAVE PATIENCE: full build can take >500sec on a 2.5GHz machine...\n")
 }
 
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
-  version := "16.1",
-  scalaVersion := "2.11.8"
+  version := "2017-snapshot",
+  scalaVersion := "2.12.3"
 )
 
 lazy val plan = (project in file("plan")).
@@ -81,7 +81,7 @@ pdf := {
   println("\n=== The main doc with all stuff in one pdf optimized for screen:")
   runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))
 
-  println("\n=== Docs optimized for print, two times for xref aux info:")
+  println("\n=== Docs optimized for print, two times for external xref to work:")
   runPdfLatexCmd(texFile = file("compendium1.tex"), workDir = file("compendium"))
   runPdfLatexCmd(texFile = file("compendium2.tex"), workDir = file("compendium"))
 
