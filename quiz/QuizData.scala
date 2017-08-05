@@ -109,7 +109,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
 
     "quiz-w02-array-vector-equality" -> Vector(  //programs
       "Vector" -> "\\code|xs == ys| är \\code|true| om alla element lika",
-      "Array " -> "olikt andra samlingar kollar \\code|==| ej innehållslikhet",
+      "Array " -> "olikt andra Scala-samlingar kollar \\code|==| ej innehållslikhet",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 

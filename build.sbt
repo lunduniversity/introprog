@@ -57,7 +57,8 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
   // val bibtexCmd = Process(Seq("bibtex", texFile.getName.replace(".tex", ".aux")), workDir)
 
   // run pdflatex command TWICE in sequence to generate toc from .aux etc:
-  val exitValue = cmd.#>(cmdOutputFile).#&&(cmd).#>(cmdOutputFile).run.exitValue
+  //val exitValue = cmd.#>(cmdOutputFile).#&&(cmd).#>(cmdOutputFile).run.exitValue
+  val exitValue = cmd.#>(cmdOutputFile).run.exitValue
   if (exitValue != 0) {
     println("*** ############ ERROR LOG STARTS HERE ############### ***")
     //Process(Seq("cat", cmdOutputFile.getName), workDir).run
@@ -136,7 +137,7 @@ lazy val root = (project in file(".")).
     build := Def.sequential(
       hello,
       (run in Compile in plan).toTask(""),
-//      (run in Compile in quiz).toTask(""),  //decomment if you want re-scrambled quizes
+//    (run in Compile in quiz).toTask(""),  //decomment if you want re-scrambled quizes
       pdf
     ).value
   )
