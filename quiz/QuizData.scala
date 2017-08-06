@@ -267,6 +267,17 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
+    "quiz-w05-case-class" -> Vector(  //programs
+      "\\code|val p1 = new Pt(1,2)        |" -> "\\code|Pt(1,2)|",
+      "\\code|val p2 = Pt(y=3)            |" -> "\\code|Pt(0,3)|",
+      "\\code|val p3 = new MutablePt(5, 6)|" -> "\\code|MPt(5,6)|",
+      "\\code|val p4 = Mutable()          |" -> "\\code|error: not found: value|",
+      "\\code|p2.moved(dx=1) == Pt(1, 3)  |" -> "\\code|true|",
+      "\\code|p3.move(dy=1) == new MutablePt(5,7)|" -> "\\code|false|",
+      "\\code|p2 == p3                    |" -> "\\verb|warning: always false|",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
     "quiz-w06-concepts" -> Vector(  //sequences
       "samlingsbibliotek" -> "många färdiga datastrukturer med olika egenskaper",
       "sekvenssamling   " -> "noll el. flera element av samma typ i viss ordning",
