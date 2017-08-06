@@ -16,17 +16,17 @@
 \item klassen \jcode{SimpleWindow} här: \url{http://cs.lth.se/pgk/api/}
 
 \item \code{scala.Double} och \code{scala.math}, speciellt metoder för avrunding, trigonometri och polära koordinater, här:
-\url{http://www.scala-lang.org/api/current/} 
+\url{http://www.scala-lang.org/api/current/}
 \end{itemize}
 
 \end{Preparations}
 
 \subsection{Bakgrund}
 
-Under den här laborationen ska du skapa en samling av klasser som tillsammans kan användas för att rita i ett fönster. Du ska bland annat skapa en klass \code{Turtle} som använder den färdigskrivna java-klassen \code{SimpleWindow} för att möjliggöra sköldpaddsgrafik liknande det vi gjorde i kojo-laborationen i avsnitt \ref{section:lab:kojo}. 
+Under den här laborationen ska du skapa en samling av klasser som tillsammans kan användas för att rita i ett fönster. Du ska bland annat skapa en klass \code{Turtle} som använder den färdigskrivna java-klassen \code{SimpleWindow} för att möjliggöra sköldpaddsgrafik liknande det vi gjorde i kojo-laborationen i avsnitt \ref{section:lab:kojo}.
 
-%SimpleWindow kan skapa ett enkelt ritfönster på skärmen, med metoder för att rita linjer, etc. SimpleWindow håller koll på en ''penna'' som representerar \textit{aktuell ritposition}. Det finns metoder för att flytta pennan och att rita en rak linje från pennans aktuella ritposition till en ny pennposition. 
-%Delar av dokumentationen för SimpleWindow återspeglas i nedan specifikation. 
+%SimpleWindow kan skapa ett enkelt ritfönster på skärmen, med metoder för att rita linjer, etc. SimpleWindow håller koll på en ''penna'' som representerar \textit{aktuell ritposition}. Det finns metoder för att flytta pennan och att rita en rak linje från pennans aktuella ritposition till en ny pennposition.
+%Delar av dokumentationen för SimpleWindow återspeglas i nedan specifikation.
 %Den fullständiga dokumentationen återfinns här: \url{http://cs.lth.se/pgk/api/}
 
 %\vspace{1em}%hack to keep comment with method
@@ -110,57 +110,22 @@ Under den här laborationen ska du skapa en samling av klasser som tillsammans k
 \subsection{Obligatoriska uppgifter}
 
 
-\Task Skapa dessa kataloger %(kallas även bibliotek eller mappar på svenska och \emph{''folder''} eller \emph{directory} på engelska) 
+\Task Skapa dessa kataloger %(kallas även bibliotek eller mappar på svenska och \emph{''folder''} eller \emph{directory} på engelska)
 och tomma filer för din kod med hjälp av nedan linuxkommandon (eller motsvarande på annat lämpligt sätt):
 \begin{REPLnonum}
 mkdir turtle
 cd turtle
 mkdir -p src/main/scala/graphics
-touch Point.scala Main.scala 
-mv *.scala src/main/scala/graphics/.
+touch Main.scala
+mv Main.scala src/main/scala/graphics/.
 ls src/main/scala/graphics/
 \end{REPLnonum}
-Om man skriver mycket kod blir det lättare att hitta olika delar om man har dem i olika filer med lämpliga  filnamn. Det är vanligt att man lägger kodfilerna i katalogen \code{src/main/scala} och där skapar en egen underkatalog för varje paket med samma namn som paketet.\footnote{Flera verktyg kräver exakt denna katalogstruktur för att hitta koden utan specialinställningar.} 
+Om man skriver mycket kod blir det lättare att hitta olika delar om man har dem i olika filer med lämpliga  filnamn. Det är vanligt att man lägger kodfilerna i katalogen \code{src/main/scala} och där skapar en egen underkatalog för varje paket med samma namn som paketet.\footnote{Flera verktyg kräver exakt denna katalogstruktur för att hitta koden utan specialinställningar.}
 
 
-\Task Du ska skapa case-klassen \code{Point} som ska beskriva en koordinat i ett kartesiskt koordinatsystem\footnote{\url{https://sv.wikipedia.org/wiki/Kartesiskt_koordinatsystem}}. Skapa kod med hjälp av en editor, t.ex. \code{atom}, i filen  \code{src/main/scala/graphics/Point.scala} enligt följande riktlinjer:
-\begin{enumerate}%[noitemsep]
-\item Klassen \code{Point} ska vara en oföränderlig case-klass. 
+\Task Lägg din punktklass från veckans övning här:\\ \texttt{src/main/scala/graphics/Point.scala}.
 
-\item Klassen \code{Point} ska ligga i paketet \code{graphics}.
-
-\item Klassen \code{Point} ska ha följande två publika, oföränderliga klassparametrar:
-\begin{itemize}[nolistsep, noitemsep]
-\item \code{x: Double} för x-koordinaten.
-\item \code{y: Double} för y-koordinaten.
-\end{itemize}
-
-\item Klassen \code{Point} ska ha följande publika medlemmar (två oföränderliga attribut och två metoder):
-\begin{itemize}[nolistsep, noitemsep]
-\item \code{val r: Double} ska ge motsvarande polära kordinatens%
-\footnote{\url{https://sv.wikipedia.org/wiki/Pol\%C3\%A4ra\_koordinater}}
- avstånd till origo.
-\item \code{val theta: Double} ska ge polära kordinatens vinkel i radianer.
-\item \code{def negY: Point} ska ge en ny punkt med y-koordinaten negerad. 
-\item \code{def +(p: Point): Point} ska ge en ny punkt vars koordinat är summan av x- respektive y-kordinaterna för denna instans och punkten \code{p}.
-\end{itemize}
-
-\item Klassen \code{Point} ska ha ett kompanjonsobjekt med en metod som konstruerar en punkt från polära koortdinater. Metoden ska ha detta huvud: \\\code{def polar(r: Double, theta: Double): Point}
-
-\end{enumerate}
-
-\noindent Tips vid implementation och senare användning:
-\begin{itemize}
-\item Du har nytta av metoderna \code{math.hypot(x, y)} och \code{math.atan2(y, x)} vid omvandling till polära koordinater.
-
-\item Du har nytta av metoderna \code{math.cos(x)} och \code{math.sin(y)} vid omvandling från polära koordinater.
-
-\item Attributet \code{negY} kommer att underlätta för dig när du i metoden \code{draw} i klassen \code{Turtle} ska omvandla en punkt till fönsterkoordinater där y-axeln är omvänd jämfört med kartesiska koordinater.
-
-\item Notera att klassens attribut är av typen \code{Double} och inte \code{Int}, trots att vi senare ska använda punkten för att beskriva en diskret pixelposition. Anledningen till detta är att det kan uppstå avrundningsfel vid numeriska beräkningar. Detta blir särskilt märkbart vid upprepad räkning med små värden, t.ex. när man ritar en approximerad cirkel med många linjesegment.
-\end{itemize}
-
-\noindent Du ska kunna använda din punkt enligt följande exempel. Starta REPL och klistra först in din case-klass med sitt kompanjonsobjekt efter kommandot \code{:paste} (eller kortare \code{:pa}). (Du ska inte ta med paketdeklarationen, då \code{package} inte fungerar i REPL.) När koden för \code{Point} är tolkad av REPL utan kompileringsfel, testa detta:
+Kontrollera att kan kan använda din punkt-klass enligt nedan. Starta REPL och klistra först in din case-klass med sitt kompanjonsobjekt efter kommandot \code{:paste} (eller kortare \code{:pa}). (Du ska inte ta med paketdeklarationen, då \code{package} inte fungerar i REPL.) När koden för \code{Point} är tolkad av REPL utan kompileringsfel, testa detta:
 \begin{REPLnonum}
 scala> Point(1,1).theta.toDegrees
 res0: Double = 45.0
@@ -182,7 +147,7 @@ $ mkdir lib
 $ wget -O lib/cslib.jar http://cs.lth.se/pgk/cslib
 \end{REPLnonum}
 
-\Task Skapa en \code{main}-metod i singelobjektet \code{Main} i paketet \code{graphics} i filen \code{src/main/scala/graphics/Main.scala} som gör något enkelt med både \code{Point} och \code{SimpleWindow}, t.ex. drar en linje mellan två punkter enlig nedan. 
+\Task Skapa en \code{main}-metod i singelobjektet \code{Main} i paketet \code{graphics} i filen \code{src/main/scala/graphics/Main.scala} som gör något enkelt med både \code{Point} och \code{SimpleWindow}, t.ex. drar en linje mellan två punkter enlig nedan.
 \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{13}\selectfont]%
 {../workspace/w05_turtle/src/main/scala/graphics/Main.scala}
 
@@ -201,7 +166,7 @@ $ scala -cp "lib/cslib.jar:bin" graphics.Main
 
 \begin{itemize}
 \item en position av typen \code{Point} där ett positivt y-värde räknas \emph{nedåt} i fönstret.
-\item en riktning av typen \code{Double} som anges som en vinkel i grader  (och inte radianer), där ett positivt värde anger vinkeln motsols från x-axeln. 
+\item en riktning av typen \code{Double} som anges som en vinkel i grader  (och inte radianer), där ett positivt värde anger vinkeln motsols från x-axeln.
 \item ett läge på pennan av typen \code{Boolean} där \code{true} anger att pennan är nere.
 \end{itemize}
 
@@ -223,7 +188,7 @@ $ scala -cp "lib/cslib.jar:bin" graphics.Main
 \item Du får namnge de privata variablerna som representerar det förändringsbara tillståndet så som du själv anser lämpligt. Tänk på att det i Scala kan bli namnkrock mellan metoder och privata attribut. I dessa fall brukar man namnge det privata attributet med ett understreck i början för att skilja dem åt, t.ex.: \\
 \code{private var _direction: Double  = ???}
 
-\item I metoden \code{forward} har du nytta av metoden \code{Point.polar}, metoden \code{.toRadians} som kan konvertera en \code{Double} i grader till radianer, samt metoden \code{negY}. Tänk på att vinkelberäkningar på radianer förutsätter kartesiskt koordinatsystem, så negeringen av Y-axeln ska ske efter sådana beräkningar, men innan uppdatering av positionen sker. 
+\item I metoden \code{forward} har du nytta av metoden \code{Point.polar}, metoden \code{.toRadians} som kan konvertera en \code{Double} i grader till radianer, samt metoden \code{negY}. Tänk på att vinkelberäkningar på radianer förutsätter kartesiskt koordinatsystem, så negeringen av Y-axeln ska ske efter sådana beräkningar, men innan uppdatering av positionen sker.
 \end{itemize}
 
 
@@ -244,7 +209,7 @@ res0: Pt = Pt(5,3,4)
 
 \clearpage
 
-\Task\Checkpoint När \code{Point}, \code{Turtle} och \code{Rect} är färdigimplementerade ska du testa klasserna i samverkan genom att köra \code{main}-metoden i singelobjektet \code{Demo} nedan. Koden finns i kursens workspace. 
+\Task\Checkpoint När \code{Point}, \code{Turtle} och \code{Rect} är färdigimplementerade ska du testa klasserna i samverkan genom att köra \code{main}-metoden i singelobjektet \code{Demo} nedan. Koden finns i kursens workspace.
 
 Den första bilden ska visa två lika stora kvadrater i samma höjd. Efter musklick kommer en animering av tre färgglada rektanglar. När det finns en handledare ledig, redovisa vad du åstadkommit. Vid väntetid, fortsätt med efterföljande uppgifter.
 
@@ -275,7 +240,7 @@ Nedan uppgifter kan göras i valfri ordning.
 \Task Studera dokumentationen för de \code{SimpleWindow}-metoder som erbjuder hantering av flyttbara bilder \Eng{sprites}. Gör så att en fin Sprite ritas vid positionen för de styrbara sköldpaddorna i föregående uppgift.
 
 
-\Task Skapa en case-klass \code{RectSeq} enligt specifikation på sidan \pageref{code:classes:graphics:rectanglesequence}. I denna klass skall metoden \code{draw} rita ut ett antal rektanglar där varje rektangel har förflyttat sig, roterats och skalats jämfört med föregående rektangel i sekvensen. 
+\Task Skapa en case-klass \code{RectSeq} enligt specifikation på sidan \pageref{code:classes:graphics:rectanglesequence}. I denna klass skall metoden \code{draw} rita ut ett antal rektanglar där varje rektangel har förflyttat sig, roterats och skalats jämfört med föregående rektangel i sekvensen.
 
 \begin{figure}[H]
 \centering
@@ -291,7 +256,7 @@ Nedan uppgifter kan göras i valfri ordning.
   }
 \end{Code}
 
-\noindent Nedan kod ritar bilden i fig. \ref{fig:classes:graphics:rectanglesequence} på sidan \pageref{fig:classes:graphics:rectanglesequence}. Använd gärna \code{setLineColor} i \code{SimpleWindow} för att göra en färggladare stjärna. Slumpvisa transformationer är också kul.  
+\noindent Nedan kod ritar bilden i fig. \ref{fig:classes:graphics:rectanglesequence} på sidan \pageref{fig:classes:graphics:rectanglesequence}. Använd gärna \code{setLineColor} i \code{SimpleWindow} för att göra en färggladare stjärna. Slumpvisa transformationer är också kul.
 
 \begin{Code}
 val w = new SimpleWindow(500, 500, "Shapes")

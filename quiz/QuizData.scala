@@ -222,12 +222,48 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "klass           " -> "en mall för att skapa flera instanser av samma typ",
       "instans         " -> "upplaga av ett objekt med eget tillståndsminne",
       "konstruktor     " -> "skapar instans, allokerar plats för tillståndsminne",
-      "klassparameter  " -> "ge argument vid konstruktion, initialisera tillstånd",
-      "fabriksmetod    " -> "hjälpfunktion för att anropa konstruktor",
-      "referenslikhet  " -> "instanser anses olika även om de har samma tillstånd",
-      "innehållslikhet " -> "olika instanser anses lika om de har samma tillstånd",
+      "klassparameter  " -> "binds till argument som ges vid konstruktion",
+      "referenslikhet  " -> "instanser anses olika även om tillstånden är lika",
+      "innehållslikhet " -> "instanser anses lika om de har samma tillstånd",
       "case-klass      " -> "slipper skriva new; automatisk innehållslikhet",
-      "kompanjonsobjekt" -> "ser privata medlemmar i klassen med samma namn",
+      "getter          " -> "indirekt åtkomst av attributvärde",
+      "setter          " -> "indirekt tilldelning av attributvärde",
+      "kompanjonsobjekt" -> "ser privata medlemmar i klass med samma namn",
+      "fabriksmetod    " -> "hjälpfunktion för indirekt konstruktonsanrop",
+      "\\code|null|    " -> "ett värde som ej refererar till någon instans",
+      "\\code|new|     " -> "nyckelord vid direkt instansiering av klass"
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w05-class-instance" -> Vector(  //programs
+      "\\code|Singelpunkt.x               |" -> "\\code|1|",
+      "\\code|Punkt.x                     |" -> "\\code|error: not found: value|",
+      "\\code|val p  = new Singelpunkt    |" -> "\\verb|error: not found: type|",
+      "\\code|val p1 = new Punkt          |" -> "\\code|p1: Punkt = Punkt@27a1a53c|",
+      "\\code|val p2 = new Punkt          |" -> "\\code|p2: Punkt = Punkt@51ab04bd|",
+      "\\code|{ p1.x = 1; p2.x }          |" -> "\\code|3|",
+      "\\code|(new Punkt).y               |" -> "\\code|2|",
+      "\\code|{ val p: Punkt = null; p.x }|" -> "\\code|java.lang.NullPointerException|",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w05-class-param" -> Vector(  //programs
+      "\\code|val p1 = Point(1, 2)        |" -> "\\code|error: not found: value|",
+      "\\code|val p2 = new Point          |" -> "\\code|error: not enough arguments|",
+      "\\code|val p1 = new Point(1, 2)    |" -> "\\verb|p1: Point = Point@30ef773e|",
+      "\\code|val p2 = new Point(3, 4)    |" -> "\\code|p2: Point = Point@218cf600|",
+      "\\code|p2.x - p1.x                 |" -> "\\code|2|",
+      "\\code|(new Point(0, 1)).y         |" -> "\\code|1|",
+      "\\code|new Point(0, 1, 2)          |" -> "\\code|error: too many arguments|",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w05-class-arg" -> Vector(  //programs
+      "\\code|val p1 = new Point3D        |" -> "\\code|p1: Point3D = Point3D@2eb37eee|",
+      "\\code|val p2 = new Point3D(y = 1) |" -> "\\verb|p2: Point3D = Point3D@65a9e8d7|",
+      "\\code|(new Point3D(z = 2)).z      |" -> "\\code|error: not found: value|",
+      "\\code|p2.y = 0                    |" -> "\\code|error: reassignment to val|",
+      "\\code|p2.y == 0                   |" -> "\\code|false|",
+      "\\code|p1.x == (new Point3D).x     |" -> "\\code|true|",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 

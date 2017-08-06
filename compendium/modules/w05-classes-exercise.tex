@@ -49,8 +49,297 @@
 \QUESTEND
 
 
+\WHAT{Klass och instans.}
+
+\QUESTBEGIN
+
+\Task \what~Du har i övning \texttt{\ExeWeekFOUR}~sett hur singelobjekt i en egen namnrymd  kan samla funktioner (metoder) och ha tillstånd (attribut). Men singelobjekt finns bara i en upplaga.
+
+Vill du kunna skapa många objekt av samma typ behöver du en \emph{klass}. En objektupplaga som skapats ur en klass kallas en \emph{instans} av klassen. Varje instans har sitt eget tillstånd.
+
+Deklarera singelobjektet och klassen nedan i REPL.
+
+\begin{Code}
+object Singelpunkt { var x = 1; var y = 2 }
+class  Punkt       { var x = 3; var y = 2 }
+\end{Code}
+
+\Subtask  Antag att uttrycken till vänster evalueras uppifrån och ned. Vilket resultat till höger hör ihop med respektive uttryck? Prova i REPL om du är osäker.\footnote{Strängen efter \code{@}-tecknet är en hexadecimal representation av det heltal som tillordnas varje objekt för att systemet ska kunna särskilja olika instanser. \url{https://stackoverflow.com/questions/4712139}}
 
 
+\begin{ConceptConnections}
+\input{generated/quiz-w05-class-instance-taskrows-generated.tex}
+\end{ConceptConnections}
+
+\Subtask Vid tre tillfällen blir det fel. Varför? Är det kompileringsfel eller exekveringsfel?
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved
+
+\begin{ConceptConnections}
+\input{generated/quiz-w05-class-instance-solurows-generated.tex}
+\end{ConceptConnections}
+
+\SubtaskSolved
+
+\noindent\begin{tabular}{l l p{5cm}}
+
+~\\ \emph{fel} & \emph{typ} & \emph{förklaring} \\\hline
+
+\code|error: not found: value|
+& kompileringsfel & det finns ingen instans med namnet \code|Punkt|\\
+
+\verb|error: not found: type|
+& kompileringsfel & det finns ingen klass som heter \code|Singelpunkt|\\
+
+\code|NullPointerException|
+& körtidsfel & det går inte att referera attribut i en instans som inte finns\\
+
+\end{tabular}
+
+\QUESTEND
+
+
+
+\WHAT{Klassparametrar.}
+
+\QUESTBEGIN
+
+\Task \what~Klassen punkt i föregående uppgift är inte så smidig att använda eftersom man först \emph{efter} instansiering kan ge attributen \code{x} och \code{y} de koordinatvärden man önskar och detta måste ske med explicita tilldelningssatser.
+
+Detta problem kan du lösa med \emph{klassparametrar} som låter dig initialisera attributen med konstruktionsargument och på så sätt ange ett initialtillstånd direkt i samband med instansiering.
+
+Deklarera klassen nedan i REPL.
+
+\begin{Code}
+class Point(var x: Int, var y: Int)
+\end{Code}
+
+
+\Subtask  Antag att uttrycken till vänster evalueras uppifrån och ned. Vilket resultat till höger hör ihop med respektive uttryck? Prova i REPL om du är osäker.
+
+\begin{ConceptConnections}
+\input{generated/quiz-w05-class-param-taskrows-generated.tex}
+\end{ConceptConnections}
+
+\Subtask Vid tre tillfällen blir det fel. Varför? Är det kompileringsfel eller exekveringsfel?
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved
+
+\begin{ConceptConnections}
+\input{generated/quiz-w05-class-param-solurows-generated.tex}
+\end{ConceptConnections}
+
+\SubtaskSolved
+
+\noindent\begin{tabular}{l l p{5cm}}
+
+  ~\\ \emph{fel} & \emph{typ} & \emph{förklaring} \\\hline
+
+  \code|error: not found: value|
+  & kompileringsfel & det finns ingen instans med namnet \code|Point|\\
+
+  \verb|error: not enough arguments|
+  & kompileringsfel  & du måste ge argument vid konstruktion av klassen \code|Point| \\
+
+  \code|error: too many arguments|
+  & kompileringsfel & antalet argument stämmer ej överens med antalet klassparametrar\\
+
+\end{tabular}
+
+\QUESTEND
+
+
+
+\WHAT{Oföränderlig klass med defaultargument.}
+
+\QUESTBEGIN
+
+\Task \what~Det du tidigare lärt dig om parametrar och argument är tillämpligt även på klassparametrar, t.ex. defaultargument och namngivna argument. Man kan dessutom framför klassparametrar använda synlighetsmodifieraren \code{private} och nyckelorden \code{var} och \code{val}.
+
+Om inget anges framför en klassparameter är det \code{private val} som gäller\footnote{För case-klasser, som vi ska se snart, är det i stället \code{val} som gäller (alltså inte \code{private}).}.
+
+Deklarera nedan klass i REPL.
+
+\begin{Code}
+class Point3D(val x: Int = 0, val y: Int = 0, z: Int = 0)
+\end{Code}
+
+\Subtask Antag att uttrycken till vänster evalueras uppifrån och ned. Vilket resultat till höger hör ihop med respektive uttryck? Prova i REPL om du är osäker.
+
+\begin{ConceptConnections}
+\input{generated/quiz-w05-class-arg-taskrows-generated.tex}
+\end{ConceptConnections}
+
+\Subtask Vad är problemet med ovan klass om man vill använda den för att representera punkter i 3 dimensioner?
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved
+
+\begin{ConceptConnections}
+\input{generated/quiz-w05-class-arg-solurows-generated.tex}
+\end{ConceptConnections}
+
+\SubtaskSolved Problemet är att så som klassen \code{Point3D} är deklarerad går det inte att avläsa \code{z}-koordinaten efter att en instans konstruerats. Det vore bättre om även \code{z}-attributet är \code{val}.
+
+\QUESTEND
+
+
+
+\WHAT{Case-klass.}
+
+\QUESTBEGIN
+
+\Task \what~\TODO
+
+\begin{Code}
+case class Pt(x: Int = 0, y: Int = 0) {
+  def moved(dx: Int = 0, dy: Int = 0): Pt = Pt(x + dx, y + dy)
+}
+
+class MutablePt(private var p: (Int, Int) = (0, 0)) {
+  def x: Int = p._1
+  def y: Int = p._2
+  def move(dx: Int = 0, dy: Int = 0) = { p = (x + dx, y+ dy); this }
+}
+\end{Code}
+
+\Subtask Vilken returtyp kommer kompilatorn härleda för funktionen MutablePt.move?
+
+\Subtask Implementera en fabriksmetod \code{apply} i ett kompanjonsobjekt till klassen \code{MutablePt} som gör att du inte behöver skriva \code{new} när du skapar instanser.
+
+\SOLUTION
+
+\TaskSolved \what~\TODO
+
+
+\QUESTEND
+
+
+\WHAT{Skapa en punktklass att använda på veckans laboration.}
+
+\QUESTBEGIN
+
+\Task \what~
+Du ska som förberedelse till laborationen skapa den oföränderliga case-klassen \code{Point} som ska beskriva en koordinat i ett kartesiskt koordinatsystem\footnote{\url{https://sv.wikipedia.org/wiki/Kartesiskt_koordinatsystem}}. Skapa kod med hjälp av en editor, t.ex. \code{atom}, i filen  \code{Point.scala} enligt följande riktlinjer:
+\begin{enumerate}[noitemsep]
+\item \code{Point} ska ligga i paketet \code{graphics}.
+
+\item \code{Point} ska ha följande två publika, oföränderliga klassparametrar:
+\begin{itemize}[nolistsep, noitemsep]
+\item \code{x: Double} för x-koordinaten.
+\item \code{y: Double} för y-koordinaten.
+\end{itemize}
+
+\item \code{Point} ska ha följande publika medlemmar (två oföränderliga attribut och två metoder):
+\begin{itemize}[nolistsep, noitemsep]
+\item \code{val r: Double} ska ge motsvarande polära kordinatens%
+\footnote{\url{https://sv.wikipedia.org/wiki/Pol\%C3\%A4ra\_koordinater}}
+ avstånd till origo.
+\item \code{val theta: Double} ska ge polära kordinatens vinkel i radianer.
+\item \code{def negY: Point} ska ge en ny punkt med y-koordinaten negerad.
+\item \code{def +(p: Point): Point} ska ge en ny punkt vars koordinat är summan av x- respektive y-kordinaterna för denna instans och punkten \code{p}.
+\end{itemize}
+
+\item \code{Point} ska ha ett kompanjonsobjekt med en metod som konstruerar en punkt från polära koortdinater. Metoden ska ha detta huvud: \\\code{def polar(r: Double, theta: Double): Point}
+
+\end{enumerate}
+
+\noindent Tips vid implementation och senare användning:
+\begin{itemize}
+\item Du har nytta av metoderna \code{math.hypot(x, y)} och \code{math.atan2(y, x)} vid omvandling till polära koordinater.
+
+\item Du har nytta av metoderna \code{math.cos(x)} och \code{math.sin(y)} vid omvandling från polära koordinater.
+
+\item Attributet \code{negY} kommer att underlätta för dig när du i metoden \code{draw} i klassen \code{Turtle} ska omvandla en punkt till fönsterkoordinater där y-axeln är omvänd jämfört med kartesiska koordinater.
+
+\item Notera att klassens attribut är av typen \code{Double} och inte \code{Int}, trots att vi senare ska använda punkten för att beskriva en diskret pixelposition. Anledningen till detta är att det kan uppstå avrundningsfel vid numeriska beräkningar. Detta blir särskilt märkbart vid upprepad räkning med små värden, t.ex. när man ritar en approximerad cirkel med många linjesegment.
+\end{itemize}
+
+\SOLUTION
+
+\TaskSolved \what~\TODO
+
+\QUESTEND
+
+
+
+\AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\WHAT{Ändra attributrepresentation. Privat konstruktor}
+
+\QUESTBEGIN
+
+\Task \what~Kim Kodkunnig skapade för länge sedan denna punktklass som används på många ställen i befintlig kod:
+
+\begin{Code}
+class Point private (val x: Int, val y: Int)
+object Point {
+  def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
+  def origo = apply()
+}
+\end{Code}
+
+\Subtask Vad händer om du försöker instansiera Kim Kodkunnigs klass i din egen kod direkt med nyckelordet \code{new}?
+
+\Subtask Varför använder Kim Kodkunnig ett kompanjonsobjekt med en fabriksmetod? Vilka accessregler gäller mellan ett kompanjonsobjekt och klassen med samma namn?
+
+\Subtask Hjälp Kim Kodkunnig att ändra attributrepresentationen så att det oföränderliga tillståndet utgörs av en 2-tupel \code{val p: (Int, Int)} i stället. Befintlig kod ska inte behöva ändras och klassen \code{Point} ska bete sig från ''utsidan'' precis som innan.
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved Det blir kompileringsfel eftersom konstruktorn är privat.
+\begin{REPL}
+scala> :paste
+
+class Point private (val x: Int, val y: Int)
+object Point {
+  def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
+  def origo = apply()
+}
+
+scala> new Point(0,0)
+<console>:14: error: constructor Point in class Point cannot be accessed
+\end{REPL}
+
+\SubtaskSolved
+\begin{itemize}
+  \item Genom att ha en privat konstruktor och bara göra indirekt instansiering via fakriksmetod är det möjligt att ändra attributrepresentation i framtiden utan att befintlig kod behöver ändras.
+
+  \item Med en \code{apply}-metod i kompansjonsobjektet kan man instansiera genom att skriva \code{Point(1, 2)} utan new.
+
+  \item Accessreglerna för kompanjonsobjekt är sådana att kompanjoner ser varandras privata delar.
+\end{itemize}
+
+\SubtaskSolved
+
+\begin{Code}
+class Point private (private val p: (Int, Int)) {
+  def x: Int = p._1
+  def y: Int = p._2
+}
+object Point {
+  def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
+  def origo = apply()
+}
+\end{Code}
+
+\QUESTEND
+
+
+\subsection{\TODO värdera nedan uppgifter}
 
 
 \WHAT{Instansiering med \code{new} och värdet \code{null}.}
