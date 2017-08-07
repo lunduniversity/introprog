@@ -28,10 +28,10 @@ class Turtle(val window: SimpleWindow,
   /** Move distance in direction, drawing a line if pen is down. */
   def forward(distance: Double): Turtle = ???
 
-  /** Turn the turtle counter-clockwise, relative to its current direction. */
+  /** Turn the turtle counter-clockwise from current direction. */
   def turnLeft(degrees: Double): Turtle = ???
 
-  /** Turn the turtle clokwise, relative to its current direction. */
+  /** Turn the turtle clockwise from current direction. */
   def turnRight(degrees: Double): Turtle = ???
 
   /** Turn the turtle straight up. */
