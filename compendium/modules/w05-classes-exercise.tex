@@ -831,10 +831,12 @@ Eftersom 42-1000 är mindre än noll får man en error.
 
 \begin{Code}
 class Frog private (initX: Int = 0, initY: Int = 0) {
-  def jump(dx: Int, dy: Int): Unit = ???
   def x: Int = ???
   def y: Int = ???
+
+  def jump(dx: Int, dy: Int): Unit = ???
   def randomJump: Unit = ???
+
   def distanceToStart: Double = ???
   def distanceJumped: Double = ???
   def distanceTo(that: Frog): Double = ???
@@ -851,15 +853,13 @@ object Frog {
 
 
 
-\Subtask Skriv ett testhuvudprogram som kontrollerar så att alla krav är uppfyllda och att alla metoder fungerar som de ska.
+\Subtask Skapa en metod \code{def test(): Unit} i ett singelobjekt \code{FrogTest} som innehåller kod som gör minst en kontroll av varje krav. Om ingen kontroll går fel ska \code{"Test Ok!"} skrivas ut annars ska exekveringen avbrytas. \emph{Tips:} Använd \code{assert(b, msg)} som avbryter exekveringen och skriver ut \code{msg} om \code{b} är falsk.
 
 \Subtask Vad kallas en metod som enbart returnerar värdet av ett privat attribut?
 
-\Subtask Hur kan man från en metods signatur få en ledtråd om att ett objekt har föränderligt tillstånd \Eng{mutable state}?
-
 \Subtask Inför setters för attributen som håller reda på x- och y-postitionen. Förändringar av positionen i x- eller y-led ska räknas som ett hopp och alltså registreras i det attribut som håller reda på det ackumulerade hoppavståndet.
 
-\Subtask Simulera ett massivt grodhoppande med krockdetektering genom att skapa 100 grodor som till att börja med är placerade på x-axeln med avståndet $8$ längdenheter mellan sig. Låt grodorna i en \code{while}-sats hoppa slumpmässigt tills någon groda befinner sig närmare än $0.5$ längdenheter som är definitionen på att de har krockat. Räkna hur många looprundor som behövs innan något grodpar krockar och skriv ut antalet. \\ \emph{Tips:} Börja med pseudokod på papper. Använd en grodvektor.
+\Subtask Simulera ett massivt grodhoppande med krockdetektering genom att skapa 100 grodor som till att börja med är placerade på x-axeln med avståndet $8$ längdenheter mellan sig. För varje runda i en \code{while}-sats, låt en slumpässigt vald groda göra ett \code{randomJump} tills någon groda befinner sig närmare än $0.5$ längdenheter, som är den valda definitionen på att de har krockat. Räkna hur många looprundor som behövs innan något grodpar krockar och skriv ut antalet. Skriv även ut det totala antalet \\ \emph{Tips:} Börja med pseudokod på papper. Använd en grodvektor.
 
 
 \SOLUTION
@@ -875,27 +875,24 @@ class Frog private (initX: Int = 0, initY: Int = 0) {
 	private var _y: Int = initY
 	private var _distanceJumped: Double = 0
 
+  def x: Int = _x
+  def y: Int = _y
+
 	def jump(dx: Int, dy: Int): Unit = {
 		_x += dx
 		_y += dy
-		_distanceJumped += Math.hypot(dx, dy)
+		_distanceJumped += math.hypot(dx, dy)
 	}
 
-	def x: Int = _x
-	def y: Int = _y
 
 	def randomJump: Unit = {
-		val r = scala.util.Random
-		val xtmp = r.nextInt(10)+1
-		val ytmp = r.nextInt(10)+1
-		_x += xtmp
-		_y += ytmp
-		_distanceJumped += Math.hypot(xtmp, ytmp)
+		def rnd = util.Random.nextInt(10) + 1
+		jump(rnd, rnd)
 	}
 
-	def distanceToStart: Double = Math.hypot(_x,_y)
+	def distanceToStart: Double = math.hypot(x,y)
 	def distanceJumped: Double = _distanceJumped
-	def distanceTo(that: Frog): Double = Math.hypot(_x - that.x, _y - that.y)
+	def distanceTo(f: Frog): Double = math.hypot(x - f.x, y - f.y)
 }
 
 object Frog {
@@ -903,48 +900,38 @@ object Frog {
 }
 \end{Code}
 
-\SubtaskSolved
+\SubtaskSolved Exempel på testprogram:
 \begin{Code}
-val f1 = Frog.spawn()
-//test requirement 1 and 4
-assert(f1.x == 0 && f1.y == 0, "Either x or y isn't 0")
+object FrogTest {
+  def test(): Unit = {
+    val f1 = Frog.spawn()
+    assert(f1.x == 0 && f1.y == 0, "Test of spawn, reqt 1 & 4 failed.")
 
-f1.jump(4,3)
-//test requirement 1 and 5
-assert(f1.x == 4 && f1.y == 3, "Either x isn't 4 or y isn't 3")
+    f1.jump(4,3)
+    assert(f1.x == 4 && f1.y == 3, "Test of jump, reqt 1 & 4 failed.")
 
-f1.jump(4,3)
-//test requirement 2
-var text = "distanceJumped is " + f1.distanceJumped + ". Should be 10"
-assert(f1.distanceJumped == 10, text)
+    f1.jump(4,3)
+    assert(f1.distanceJumped == 10, "Test of jump, reqt 2 failed.")
 
-f1.jump(-4,-3)
-//test requirement 3
-text = "distanceToStart is " + f1.distanceJumped + ". Should be 5"
-assert(f1.distanceToStart == 5, text)
+    f1.jump(-4,-3)
+    assert(f1.distanceToStart == 5, "Test of jump, reqt 3 failed.")
 
-var f2 = Frog.spawn()
-for (x <- 1 to 1000) {
-	f2.randomJump
-	//test requirement 5
-	text = "Either x or y isn't in [1,10]. x:" + f2.x + ", y: " + f2.y
-	assert(f2.x > 0 && f2.x <= 10 && f2.y > 0 && f2.y <= 10, text)
-	f2 = Frog.spawn()
+    for (x <- 1 to 10000) {
+      val f2 = Frog.spawn()
+    	f2.randomJump
+    	assert(f2.x > 0 && f2.x <= 10 && f2.y > 0 && f2.y <= 10,
+            "Test of randomJump, reqt 5 failed.")
+    }
+    println("Test Ok!")
+  }
 }
-
-val f3 = Frog.spawn()
-f3.jump(1,1)
-val f4 = Frog.spawn()
-f4.jump(4,5)
-// Test distanceT()
-text = "distanceTo is " + f3.distanceTo(f4) + ". Should be 5"
-assert(f3.distanceTo(f4) == 5, text)
 \end{Code}
 
-\SubtaskSolved  Getter
+\SubtaskSolved  En metod som är en indirekt avläsning av attrubtvärden kallas getter.
 
-\SubtaskSolved  Om metoden har parametrar och retur-typen \code{Unit}. Det betyder troligen att parametrarna ändrar något istället för att skapa något nytt.
-\SubtaskSolved  \begin{CodeSmall}
+\SubtaskSolved
+\begin{Code}
+
 class Frog private (initX: Int = 0, initY: Int = 0) {
 	private var _x: Int = initX
 	private var _y: Int = initY
@@ -953,88 +940,106 @@ class Frog private (initX: Int = 0, initY: Int = 0) {
 	def jump(dx: Int, dy: Int): Unit = {
 		_x += dx
 		_y += dy
-		_distanceJumped += Math.hypot(dx, dy)
+		_distanceJumped += math.hypot(dx, dy)
 	}
 
 	def x: Int = _x
-
-	def x_= (newX: Int): Unit = {
-		_distanceJumped += Math.abs(_x - newX)
+  def x_= (newX: Int): Unit = { // Setter för x
+		_distanceJumped += math.abs(x - newX)
 		_x = newX
 	}
-	def y_= (newY: Int): Unit = {
-		_distanceJumped += Math.abs(_y - newY)
-		_y = newY
-	}Small
 
-	def randomJump: Unit = {
-		val r = scala.util.Random
-		val xtmp = r.nextInt(10)+1
-		val ytmp = r.nextInt(10)+1
-		_x += xtmp
-		_y += ytmp
-		_distanceJumped += Math.hypot(xtmp, ytmp)
+  def y: Int = _y
+	def y_= (newY: Int): Unit = { // Setter för y
+		_distanceJumped += math.abs(y - newY)
+		_y = newY
 	}
 
-	def distanceToStart: Double = Math.hypot(_x,_y)
+
+	def randomJump: Unit = {
+		def rnd = util.Random.nextInt(10) + 1
+		jump(rnd, rnd)
+	}
+
+	def distanceToStart: Double = math.hypot(x,y)
 	def distanceJumped: Double = _distanceJumped
-	def distanceTo(that: Frog): Double = Math.hypot(_x - that.x, _y - that.y)
+	def distanceTo(f: Frog): Double = math.hypot(x - f.x, y - f.y)
 }
 
 object Frog {
 	def spawn(): Frog = new Frog()
 }
-\end{CodeSmall}
+
+\end{Code}
 
 \SubtaskSolved
 \begin{Code}
-var noCollision = true
-var counter = 0
-val numberOfFrogs = 100
-val distanceBetweenFrogs = 8
-v0 until numberOfFrogs).foreach(i => frogArray(i).x(i*distanceBetweenFrogs))
-while (noCollision) {
-	for (frog <- frogArray) {
-		for (frog2 <- frogArray) {
-				noCollision = false
-			}
-	}
-	counter += 1
-}int(counter)
+object frogSimulation {
+  def isAnyCollision(frogs: Vector[Frog]): Boolean = {
+    var found = false
+    frogs.indices.foreach { i =>  // generate all pairs (i,j)
+      for (j <- i + 1 until frogs.size)
+        if (!found) found = frogs(i).distanceTo(frogs(j)) <= 0.5
+    }
+    found
+  }
+
+  def jumpUntilCrash(n: Int = 100, initDist: Int = 8): (Int, Double) = {
+    val frogs = Vector.fill(n)(Frog.spawn)
+    (0 until n).foreach(i => frogs(i).x = i * initDistance)
+    var count = 0
+    while (!isAnyCollision(frogs)) {
+      frogs(util.Random.nextInt(n)).randomJump
+    	count += 1
+    }
+    (count, frogs.map(_.distanceJumped).sum)
+  }
+
+  def run(nbrOfCrashTests: Int = 10) = for (i <- 1 to nbrOfCrashTests) {
+    val (n, dist) = jumpUntilCrash()
+    println(s"\nAntalet looprundor innan grodkrock: $n")
+    println(s"Totalt avstånd hoppat av alla grodor: $dist")
+  }
+}
 \end{Code}
 
 \QUESTEND
 
 
-\
+
+
 \QUESTBEGIN
 
-\Task  \what~  Webbshoppen UberSquare säljer flyttbara kvadrater. I affärsmodellen ingår att ta betalt per förflyttning. Du ska hjälpa UberSquare med att utveckla en enkel prototyp för att imponera på riskkapitalister.
+\Task  \what~  Webbshoppen \textbf{UberSquare} säljer flyttbara kvadrater. I affärsmodellen ingår att ta betalt per förflyttning. Du ska hjälpa UberSquare med att utveckla en enkel prototyp för att imponera på riskkapitalister.
 
-\Subtask Implementera \code{Square} enligt efterföljande kodskiss och enligt dessa krav:
+\Subtask Implementera \code{Square} enligt dokumentationskommentarerna i efterföljande kodskiss och enligt dessa krav:
 
-\begin{enumerate}[nolistsep, noitemsep]
+\begin{enumerate}%[nolistsep, noitemsep]
    \item Du ska införa funktionalitet som räknar antalet förflyttningar som gjorts för varje kvadrat som skapats och även räkna ut det totala antalet förflyttningar som någonsin gjorts.
 
   \item Varje gång förflyttning sker ska en kostnad adderas till den ackumulerade kostnaden för respektive kvadrat.
 
-  \item Kostnaden för varje förflyttning ska motsvara avståndet till ursprungsläget multiplicerat med storleken på kvadraten.
+  \item UberSquare är oroliga för att kvadraterna flyttas för långt bort och bestämmer därför att kostnaden för varje förflyttning ska vara den nya positionens avstånd till ursprungsläget vid kvadratens konstruktion multiplicerat med aktuell storlek på kvadraten.
+
+  \item För att framstå som goda bestämmer UberSquare att det är gratis att skala.
 \end{enumerate}
 
 \begin{CodeSmall}
 /** A mutable and expensive Square. */
 class Square private (val initX: Int, val initY: Int, val initSide: Int) {
-
   private var nMoves = 0;
   private var sumCost = 0.0;
+
   private var _x = initX;
+  private var _y = initY;
+
   private var _side = initSide;
 
+  private def addCost(): Unit = {
    sumCost += ???
   }
 
   def x: Int = ???
-
   def y: Int = ???
 
   def side = ???
@@ -1051,8 +1056,8 @@ class Square private (val initX: Int, val initY: Int, val initSide: Int) {
   /** The accumulated cost of this Square */
   def cost: Double = ???
 
-  /** Reset the cost of this Square */
-  def pay: Unit = ???
+  /** Returns the accumulated cost. Sets the accumulated cost to zero. */
+  def pay: Double = ???
 
   override def toString: String =
     s"Square[($x, $y), side: $side, #moves: $nMoves times, cost: $sumCost]"
@@ -1078,16 +1083,19 @@ object Square {
 }
 \end{CodeSmall}
 
-\Subtask Testa din kvadratprototyp i REPL enligt nedan:
+\Subtask Testa din kvadratprototyp i REPL. Använd t.ex. koden nedan:
 \begin{REPL}
 scala> val xs = Vector.fill(10)(Square())
-scala> xs.foreach(_.move(2,3))
+scala> xs.foreach(_.move(2, 3))
 scala> xs.foreach(_.scale(2.9))
+scala> val (m, c) = (Square.totalNumberOfMoves, Square.totalCost)
 m: Int = 10
 c: Double = 36.055512754639885
 \end{REPL}
 
 \SOLUTION
+
+\TaskSolved \what~
 
 \begin{CodeSmall}
 class Square private (val initX: Int, val initY: Int, val initSide: Int) {
@@ -1099,12 +1107,11 @@ class Square private (val initX: Int, val initY: Int, val initSide: Int) {
 
   private var _side = initSide;
 
-  private def addCost: Unit = {
+  private def addCost(): Unit = {
    sumCost += math.hypot(x - initX, y - initY) * side
   }
 
   def x: Int = _x
-
   def y: Int = _y
 
   def side = _side
@@ -1114,18 +1121,18 @@ class Square private (val initX: Int, val initY: Int, val initSide: Int) {
   def move(dx: Int, dy: Int): Unit = {
     _x += dx; _y += dy;
     nMoves += 1
-    addCost
+    addCost()
   }
 
   def moveTo(x: Int, y: Int): Unit = {
     _x = x; _y = y;
     nMoves += 1
-    addCost
+    addCost()
   }
 
   def cost: Double = sumCost
 
-  def pay: Unit = {sumCost = 0}
+  def pay: Double = {val temp = sumCost; sumCost = 0; temp}
 
   override def toString: String =
     s"Square[($x, $y), side: $side, #moves: $nMoves times, cost: $sumCost]"
@@ -1156,7 +1163,7 @@ object Square {
 
 \QUESTBEGIN
 
-\Task \label{task:aux-constructor} \what~I tidigare uppgifter har vi möjliggjort alternativt sätt att skapa instanser genom default-argument eller extra fabriksmetoder med namnet \code{apply} i kompanjonsobjektet.
+\Task \label{task:aux-constructor} \what~I tidigare uppgifter har vi möjliggjort alternativa sätt att skapa instanser genom default-argument eller genom fabriksmetoder med namnet \code{apply} i kompanjonsobjektet.
 
 Ett annat sätt att göras detta på, som i Scala är ovanligt\footnote{Men i Java är detta mycket vanligt då defaultargument m.m. inte ingår i språket.}, är att definiera flera konstruktorer inne i klasskroppen. I Scala kallas en sådan extra konstruktor för \textbf{hjälpkonstruktor} \Eng{auxiliary constructor}.
 
