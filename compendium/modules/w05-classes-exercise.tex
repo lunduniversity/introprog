@@ -222,24 +222,43 @@ Antag att uttrycken till vänster evalueras uppifrån och ned. Vilket REPL-svar 
 \input{generated/quiz-w05-case-class-taskrows-generated.tex}
 \end{ConceptConnections}
 
-\Subtask Vilken returtyp kommer kompilatorn härleda för funktionen MutablePt.move?
+\Subtask Vilken returtyp kommer kompilatorn härleda för funktionen \code{MutablePt.move}?
 
 \Subtask Implementera en fabriksmetod \code{apply} i ett kompanjonsobjekt till klassen \code{MutablePt} som gör att du inte behöver skriva \code{new} när du skapar instanser.
 
+\Subtask Vad kallas sådana metoder som \code{ def x } och \code{ def y } ovan?
+
 \SOLUTION
 
-\TaskSolved \what~\TODO
+\TaskSolved \what~
 
-\SubtaskSolved \TODO
+\SubtaskSolved
 
 \begin{ConceptConnections}
 \input{generated/quiz-w05-case-class-solurows-generated.tex}
 \end{ConceptConnections}
 
 
-\SubtaskSolved \TODO
+\SubtaskSolved Kompilatorn härleder \code{MutablePt} eftersom det är typen på självreferensen this.
+\begin{REPL}
+scala> :type new MutablePt().move()
+MutablePt
+\end{REPL}
 
-\SubtaskSolved \TODO
+\SubtaskSolved
+\begin{Code}
+object MutablePt {
+  def apply(x: Int = 0, y: Int = 0): MutablePt = new MutablePt(x, y)
+}
+\end{Code}
+
+\begin{REPL}
+scala> MutablePt()
+res0: MutablePt = MPt(0,0)
+\end{REPL}
+
+
+\SubtaskSolved En metoder som avläser (delar av) ett objekts (privata) tillstånd utan att ändra det kallas en \emph{getter}.
 
 \QUESTEND
 
@@ -275,89 +294,69 @@ Du ska som förberedelse till laborationen skapa den oföränderliga case-klasse
 
 \noindent Tips vid implementation och senare användning:
 \begin{itemize}
-\item Du har nytta av metoderna \code{math.hypot(x, y)} och \code{math.atan2(y, x)} vid omvandling till polära koordinater.
+\item Du har nytta av metoderna $r = $ \code{math.hypot(x, y)} och $\theta = $ \code{math.atan2(y, x)} vid omvandling till polära koordinater:
 
-\item Du har nytta av metoderna \code{math.cos(x)} och \code{math.sin(y)} vid omvandling från polära koordinater.
+\begin{tikzpicture}[thick]
+\coordinate (O) at (0,0);
+\coordinate (A) at (7,0);
+\coordinate (B) at (7,3);
+\draw (O)--(A)--(B)--cycle;
 
-\item Attributet \code{negY} kommer att underlätta för dig när du i metoden \code{draw} i klassen \code{Turtle} ska omvandla en punkt till fönsterkoordinater där y-axeln är omvänd jämfört med kartesiska koordinater.
+%\tkzLabelSegment[below=2pt](O,A){\textit{adjacent leg}}
+%\tkzLabelSegment[left=2pt](O,B){\textit{hypotenuse}}
+%\tkzLabelSegment[above right=2pt](A,B){\textit{opposite leg}}
+
+\tkzLabelSegment[below=5pt](O,A){\textit{x}}
+\tkzLabelSegment[above left=5pt](O,B){\textit{r}}
+\tkzLabelSegment[right=5pt](A,B){\textit{y}}
+
+\tkzMarkAngle[fill= orange,size=1.5cm, opacity=.4](A,O,B)
+\tkzLabelAngle[pos = 2](A,O,B){\texttt{$\theta$}}
+
+% \tkzMarkAngle[fill= orange,size=0.65cm, opacity=.4](A,O,B)
+% \tkzLabelAngle[pos = 0.35](A,O,B){$\gamma$}
+%
+% \tkzMarkAngle[fill= orange,size=0.8cm, opacity=.4](B,A,O)
+% \tkzLabelAngle[pos = 0.6](B,A,O){$\alpha$}
+%
+% \tkzMarkAngle[fill= orange,size=0.7cm, opacity=.4](O,B,A)
+% \tkzLabelAngle[pos = 0.5](O,B,A){$\beta$}
+
+\end{tikzpicture}
+
+\item Du har nytta av metoderna \code{math.cos(theta)} och \code{math.sin(theta)} vid omvandling från polära koordinater.
+
+\item Attributet \code{negY} kommer att underlätta för dig när du på laborationen ska omvandla en punkt till fönsterkoordinater där y-axeln är omvänd jämfört med kartesiska koordinater.
 
 \item Notera att klassens attribut är av typen \code{Double} och inte \code{Int}, trots att vi senare ska använda punkten för att beskriva en diskret pixelposition. Anledningen till detta är att det kan uppstå avrundningsfel vid numeriska beräkningar. Detta blir särskilt märkbart vid upprepad räkning med små värden, t.ex. när man ritar en approximerad cirkel med många linjesegment.
 \end{itemize}
 
 \SOLUTION
 
-\TaskSolved \what~\TODO
-
-\QUESTEND
-
-
-
-\AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\WHAT{Ändra attributrepresentation. Privat konstruktor}
-
-\QUESTBEGIN
-
-\Task \what~Kim Kodkunnig skapade för länge sedan denna punktklass som används på många ställen i befintlig kod:
-
-\begin{Code}
-class Point private (val x: Int, val y: Int)
-object Point {
-  def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
-  def origo = apply()
-}
-\end{Code}
-
-\Subtask Vad händer om du försöker instansiera Kim Kodkunnigs klass i din egen kod direkt med nyckelordet \code{new}?
-
-\Subtask Varför använder Kim Kodkunnig ett kompanjonsobjekt med en fabriksmetod? Vilka accessregler gäller mellan ett kompanjonsobjekt och klassen med samma namn?
-
-\Subtask Hjälp Kim Kodkunnig att ändra attributrepresentationen så att det oföränderliga tillståndet utgörs av en 2-tupel \code{val p: (Int, Int)} i stället. Befintlig kod ska inte behöva ändras och klassen \code{Point} ska bete sig från ''utsidan'' precis som innan.
-
-\SOLUTION
-
 \TaskSolved \what~
-
-\SubtaskSolved Det blir kompileringsfel eftersom konstruktorn är privat.
-\begin{REPL}
-scala> :paste
-
-class Point private (val x: Int, val y: Int)
-object Point {
-  def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
-  def origo = apply()
-}
-
-scala> new Point(0,0)
-<console>:14: error: constructor Point in class Point cannot be accessed
-\end{REPL}
-
-\SubtaskSolved
-\begin{itemize}
-  \item Genom att ha en privat konstruktor och bara göra indirekt instansiering via fakriksmetod är det möjligt att ändra attributrepresentation i framtiden utan att befintlig kod behöver ändras.
-
-  \item Med en \code{apply}-metod i kompansjonsobjektet kan man instansiera genom att skriva \code{Point(1, 2)} utan new.
-
-  \item Accessreglerna för kompanjonsobjekt är sådana att kompanjoner ser varandras privata delar.
-\end{itemize}
-
-\SubtaskSolved
-
 \begin{Code}
-class Point private (private val p: (Int, Int)) {
-  def x: Int = p._1
-  def y: Int = p._2
+package graphics
+
+case class Point(x: Double, y: Double) {
+  val r: Double          = math.hypot(x, y)
+  val theta: Double      = math.atan2(y, x)
+  def negY: Point        = Point(x, -y)
+  def +(p: Point): Point = Point(x + p.x, y + p.y)
 }
 object Point {
-  def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
-  def origo = apply()
+  def polar(r: Double, theta: Double): Point =
+    Point(r * math.cos(theta), r * math.sin(theta))
 }
 \end{Code}
 
 \QUESTEND
 
 
-\subsection{\TODO värdera nedan uppgifter}
+
+\clearpage
+
+\ExtraTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 \WHAT{Instansiering med \code{new} och värdet \code{null}.}
@@ -378,7 +377,7 @@ scala> g = null
 scala> g.vikt
 \end{REPL}
 
-\Subtask\Pen Rita minnessituationen efter raderna 2, 4, 6.
+\Subtask Rita minnessituationen efter raderna 2, 4, 6.
 
 \SOLUTION
 
@@ -386,7 +385,7 @@ scala> g.vikt
 \TaskSolved \what
 
 
-\SubtaskSolved  Rad 3 och 7 ger båda felmeddelandet "java.lang.NullPointerException". Detta eftersom \code{g} i båda fallen inte innehåller en referens till en \code{Gurka} utan pekar på inget -- "null".
+\SubtaskSolved  Rad 3 och 7 ger båda felmeddelandet \code{java.lang.NullPointerException},  på grund av försök att referera medlemmar med hjälp av en \code{null}-referens, som alltså inte pekar på något objekt.
 
 \SubtaskSolved  \includegraphics[scale=0.6]{../img/w06-solutions/1b}
 
@@ -394,103 +393,273 @@ scala> g.vikt
 \QUESTEND
 
 
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      % uppgift 1
-
-
-
-
-\WHAT{Klasser och instanser.}
+\WHAT{Klasser,  instanser och skräp.}
 
 \QUESTBEGIN
 
-\Task  \what~
+\Task  \what~För länge sedan i en galax långt långt borta...
 
-\Subtask Vad händer nedan?
-\begin{REPL}
-scala> :pa
-class Arm(val ärTillVänster: Boolean)
-class Ben(val ärTillVänster: Boolean)
-class Huvud(val harHår: Boolean)
-class Rymdvarelse {
-  var arm1 = new Arm(true)
-  var arm2 = new Arm(false)
-  var ben1 = new Ben(true)
-  var ben2 = new Ben(false)
-  var huvud1 = new Huvud(false)
-  var huvud2 = new Huvud(true)
+\begin{Code}
+case class Arm(ärTillVänster: Boolean)
+
+case class Ben(ärTillVänster: Boolean)
+
+case class Huvud(harHår: Boolean)
+
+case class Rymdvarelse (
+      arm1:   Arm   = Arm(true),
+      arm2:   Arm   = Arm(false),
+      ben1:   Ben   = Ben(true),
+      ben2:   Ben   = Ben(false),
+      huvud1: Huvud = Huvud(false),
+  var huvud2: Huvud = Huvud(true)
+) {
   def ärSkallig = !huvud1.harHår && !huvud2.harHår
 }
-scala> val alien = new Rymdvarelse
+\end{Code}
+
+\Subtask Klistra in ovan rymdkod i REPL och evaluera nedan rader. Rita minnessituationen efter rad 5 och beskriv vad som händer.
+\begin{REPL}
+scala> val alien = Rymdvarelse()
 scala> alien.ärSkallig
-scala> val predator = new Rymdvarelse
+scala> val predator = Rymdvarelse()
 scala> predator.ärSkallig
 scala> predator.huvud2 = alien.huvud1
+scala> predator.huvud2 eq alien.huvud1  // test av referenslikhet
+scala> println(predator)
 scala> predator.ärSkallig
 \end{REPL}
 
-\Subtask\Pen Rita minnessituationen efter rad 18.
-
-\Subtask\Pen Vad händer så småningom med det ursprungliga huvud2-objektet i predator efter tilldelningen på rad 18? Går det att referera till detta objekt på något sätt?
-
+\Subtask Vad händer så småningom med det ursprungliga \code{huvud2}-objektet i predator efter tilldelningen på rad 5? Går det att referera till detta objekt på något sätt?
 
 \SOLUTION
 
-
 \TaskSolved \what
 
+\SubtaskSolved  Vi skapar två rymdvarelser, \code{alien} och \code{predator}, med vardera två ben och två armar, samt vardera två huvuden (där det ena är skalligt och det andra har hår). Efter det är varken \code{alien} eller \code{predator} skallig eftersom båda har ett huvud med hår. Sen låter man referensen till \code{predator}s huvud med hår referera till aliens huvud utan hår. Nu är predator helt skallig och delar huvud med alien.
 
-\SubtaskSolved  Vi skapar två rymdvarelser, \code{alien} och \code{predator}, med två ben, två armar samt två huvuden (där det ena är skalligt och det andra har hår) vardera. Efter det är varken \code{alien} eller \code{predator} skallig eftersom båda har ett huvud med hår. Sen låter man referensen till \code{predator}s huvud med hår referera till aliens huvud utan hår. Nu är predator helt skallig.
+\includegraphics[scale=0.65]{../img/w06-solutions/2b}
 
-\SubtaskSolved   \includegraphics[scale=0.7]{../img/w06-solutions/2b}
-
-\SubtaskSolved  Eftersom det inte längre finns någon referens som pekar på det objektet kommer Garbage Collector ta hand om det och kommer förr eller senare skrivas över av något annat som behöver sparas. Nej, det går inte att komma åt.
-
-% uppgift 3
+\SubtaskSolved  Eftersom det inte längre finns någon referens som pekar på det objektet kommer skräpsamlaren att ta hand om det och det kommer förr eller senare skrivas över av något annat när platsen i minnet behövs. Objekt som inte har någon referens tills sig går inte att komma åt.
 
 \QUESTEND
 
 
 
 
-%%<AUTOEXTRACTED by mergesolu>%%      % uppgift 2
-
-
-
-
-\WHAT{Synlighet i primärkonstruktorer.}
+\WHAT{Case-klass. Oföränderlig kvadrat.}
 
 \QUESTBEGIN
 
-\Task  \what~  Undersök nedan vad nyckelorden \code{val} och \code{private} får för konsekvenser. Förklara vad som händer. Vilka rader ger vilka felmeddelanden?
+\Task \label{task:Square} \what~
+
+\Subtask Implementera nedan kvadrat med en editor och klistra in den i REPL.
+
+\begin{Code}
+case class Square(val x: Int = 0, val y: Int = 0, val side: Int = 1) {
+  val area: Int = ???
+
+  /** Creates a new Square moved to position (x + dx, y + dy) */
+  def moved(dx: Int, dy: Int): Square = ???
+
+  def isEqualSizeAs(that: Square): Boolean = ???
+
+  /** Multiplies the side with factor and rounded to nearest integer */
+  def scale(factor: Double): Square = ???
+}
+object Square {
+  /** A Square at (0, 0) with side 1 */
+  val unit: Square = ???
+}
+\end{Code}
+
+\Subtask Testa din kvadrat enligt nedan. Förklara vad som händer.
 
 \begin{REPL}
-scala> class Gurka1(vikt: Int)
-scala> new Gurka1(42).vikt
-scala> class Gurka2(val vikt: Int)
-scala> new Gurka2(42).vikt
-scala> class Gurka3(private val vikt: Int)
-scala> new Gurka3(42).vikt
-scala> class Gurka4(private val vikt: Int, kompis: Gurka4){
-         def kompisVikt = kompis.vikt
-       }
-scala> val ingenGurka: Gurka4 = null
-scala> new Gurka4(42, ingenGurka).kompisVikt
-scala> new Gurka4(42, new Gurka4(84, null)).kompisVikt
-scala> class Gurka5(private[this] val vikt: Int, kompis: Gurka5){
-         def kompisVikt = kompis.vikt
-       }
-scala> class Gurka6 private (vikt: Int)
-scala> new Gurka6(42)
-scala> :pa
+scala> val (s1, s2) = (Square(), Square(1, 10, 1))
+scala> val s3 = s1 moved (1,-5)
+scala> s1 isEqualSizeAs s3
+scala> s2 isEqualSizeAs s1
+scala> s1 isEqualSizeAs Square.unit
+scala> s2.scale(math.Pi) isEqualSizeAs s2
+scala> s2.scale(math.Pi) isEqualSizeAs s2.scale(math.Pi)
+scala> s2.scale(math.Pi) eq s2.scale(math.Pi)
+scala> Square.unit eq Square.unit
+\end{REPL}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved
+
+\begin{Code}
+case class Square(val x: Int = 0, val y: Int = 0, val side: Int = 1) {
+	val area: Int = side * side
+
+	def moved(dx: Int, dy: Int): Square = new Square(x + dx, y + dy, side)
+
+	def isEqualSizeAs(that: Square): Boolean = this.side == that.side
+
+	def scale(factor: Double): Square =
+    Square(x, y, (side * factor).round.toInt)
+}
+
+object Square {
+	val unit: Square = Square()
+}
+\end{Code}
+
+\SubtaskSolved
+\begin{REPL}
+scala> val (s1, s2) = (Square(), Square(1, 10, 1))
+s1: Square = Square(0,0,1)
+s2: Square = Square(1,10,1)
+
+scala> val s3 = s1 moved (1,-5)
+s3: Square = Square(1,-5,1)
+
+scala> s1 isEqualSizeAs s3       // lika storlek
+res55: Boolean = true
+
+scala> s2 isEqualSizeAs s1       // lika storlek
+res56: Boolean = true
+
+scala> s1 isEqualSizeAs Square.unit   // s1 har sidan 1
+res57: Boolean = true
+
+scala> s2.scale(math.Pi) isEqualSizeAs s2  // olika storlek
+res58: Boolean = false
+
+scala> s2.scale(math.Pi) == s2.scale(math.Pi) // lika innehåll
+res59: Boolean = true
+
+scala> s2.scale(math.Pi) eq s2.scale(math.Pi)  // olika objekt
+res60: Boolean = false
+
+scala> Square.unit eq Square.unit   // samma objekt
+res61: Boolean = true
+\end{REPL}
+
+\QUESTEND
+
+
+
+
+
+\clearpage
+
+\AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\WHAT{Attributrepresentation. Privat konstruktor. Fabriksmetod.}
+
+\QUESTBEGIN
+
+\Task \what~Kim Kodkunnig skapade för länge sedan denna klass som används på många ställen i befintlig kod:
+
+\begin{Code}
+class Point private (val x: Int, val y: Int)
+object Point {
+  def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
+  val origo = apply()
+}
+\end{Code}
+
+\Subtask Vad händer om du försöker instansiera Kim Kodkunnigs klass direkt med nyckelordet \code{new}?
+
+\Subtask Varför använder Kim Kodkunnig ett kompanjonsobjekt med en fabriksmetod? Vilka accessregler gäller mellan ett kompanjonsobjekt och klassen med samma namn?
+
+\Subtask Hjälp Kim Kodkunnig att ändra attributrepresentationen så att det oföränderliga tillståndet utgörs av en 2-tupel \code{val p: (Int, Int)} i stället. Befintlig kod ska inte behöva ändras och klassen \code{Point} ska bete sig från ''utsidan'' precis som innan.
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved Det blir kompileringsfel eftersom konstruktorn är privat.
+\begin{REPL}
+scala> :paste
+
+class Point private (val x: Int, val y: Int)
+object Point {
+  def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
+  val origo = apply()
+}
+
+scala> new Point(0,0)
+<console>:14: error: constructor Point in class Point cannot be accessed
+\end{REPL}
+
+\SubtaskSolved
+\begin{itemize}
+  \item Genom att ha en privat konstruktor och bara göra indirekt instansiering via fakriksmetod är lätt ändra attributrepresentation i framtiden utan att befintlig kod behöver ändras.
+
+  \item Med en \code{apply}-metod i kompansjonsobjektet kan man instansiera genom att skriva \code{Point(1, 2)} utan new.
+
+  \item Accessreglerna för kompanjonsobjekt är sådana att kompanjoner ser varandras privata delar.
+\end{itemize}
+
+\SubtaskSolved
+
+\begin{Code}
+class Point private (private val p: (Int, Int)) {
+  def x: Int = p._1
+  def y: Int = p._2
+}
+object Point {
+  def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
+  val origo = apply()
+}
+\end{Code}
+
+\QUESTEND
+
+
+
+\WHAT{Synlighet av klassparametrar och konstruktor, \code{private[this]}.}
+
+\QUESTBEGIN
+
+\Task  \what~
+
+\Subtask En av gurk-klasserna nedan är trasig. Varför och vad blir det för fel?
+
+\begin{Code}
+class Gurka1(vikt: Int)
+
+class Gurka2(val vikt: Int)
+
+class Gurka3(private val vikt: Int)
+
+class Gurka4(private val vikt: Int, kompis: Gurka4){
+  def kompisVikt = kompis.vikt
+}
+
+class Gurka5(private[this] val vikt: Int, kompis: Gurka5){
+  def kompisVikt = kompis.vikt
+}
+
+class Gurka6 private (vikt: Int)
+
 class Gurka7 private (var vikt: Int)
 object Gurka7 {
   def apply(vikt: Int) = {
-    require(vikt >= 0, s"negativ vikt: $vikt")
+    require(vikt >= 0, "negativ vikt: " + vikt)
     new Gurka7(vikt)
   }
 }
+\end{Code}
+
+\Subtask Undersök nedan vad nyckelorden \code{val} och \code{private} får för konsekvenser. Förklara vad som händer. Vilka rader ger vilka felmeddelanden?
+
+\begin{REPL}
+scala> new Gurka1(42).vikt
+scala> new Gurka2(42).vikt
+scala> new Gurka3(42).vikt
+scala> val ingenGurka: Gurka4 = null
+scala> new Gurka4(42, ingenGurka).kompisVikt
+scala> new Gurka4(42, new Gurka4(84, null)).kompisVikt
+scala> new Gurka6(42)
 scala> new Gurka7(-42)
 scala> Gurka7(-42)
 scala> val g = Gurka7(42)
@@ -504,57 +673,68 @@ scala> g.vikt
 
 
 \TaskSolved \what
- Rad 2:
+
+\SubtaskSolved \code{Gurka5} är trasig. Eftersom vikten i \code{Gurka5} är privat för instansen och inte klassen kan en instans inte accessa en annan instans vikt.
 \begin{REPL}
-	error: value vikt is not a member of Gurka1
+  error: value vikt is not a member of Gurka5
+  def kompisVikt = kompis.vikt
 \end{REPL}
-Detta eftersom om man varken väljer att skriva \code{val} eller \code{var} skapar inte scala någon getter eller setter (metoder för att läsa/ändra en variabel) och därför ser det ut som att vikt inte finns för kompilatorn.
 
-Rad 4: Denna rad skapar inte en error eftersom om man skriver \code{val} innan variabeln skapas en getter automatiskt och man kan därför komma åt \code{vikt}.
 
-Rad 6:
+\SubtaskSolved
 \begin{REPL}
-	error: value vikt in class Gurka3 cannot be accessed in Gurka3
+scala> new Gurka1(42).vikt
+<console>:13: error: value vikt is not a member of Gurka1
+       new Gurka1(42).vikt
+                      ^
+
+scala> new Gurka2(42).vikt
+res64: Int = 42
+
+scala> new Gurka3(42).vikt
+<console>:13: error: value vikt in class Gurka3 cannot be accessed in Gurka3
+       new Gurka3(42).vikt
+                      ^
+
+scala> val ingenGurka: Gurka4 = null
+ingenGurka: Gurka4 = null
+
+scala> new Gurka4(42, ingenGurka).kompisVikt
+java.lang.NullPointerException
+  at Gurka4.kompisVikt(<console>:13)
+  ... 36 elided
+
+scala> new Gurka4(42, new Gurka4(84, null)).kompisVikt
+res67: Int = 84
+
+scala> new Gurka6(42)
+<console>:13: error: constructor Gurka6 in class Gurka6 cannot be accessed
+       new Gurka6(42)
+       ^
+
+scala> new Gurka7(-42)
+<console>:14: error: constructor Gurka7 in class Gurka7 cannot be accessed
+       new Gurka7(-42)
+       ^
+
+scala> Gurka7(-42)
+java.lang.IllegalArgumentException: requirement failed: negativ vikt: -42
+
+
+scala> val g = Gurka7(42)
+g: Gurka7 = Gurka7@70717ed5
+
+scala> g.vikt
+res71: Int = 42
+
+scala> g.vikt = -1
+g.vikt: Int = -1
+
+scala> g.vikt
+res72: Int = -1
 \end{REPL}
-I detta fallet skapas en \code{getter} men eftersom accessnivån sätts till \code{private} vet kompilatorn att man inte får komma åt variabeln utifrån.
-
-Rad 11:
-\begin{REPL}
-	java.lang.NullPointerException
-\end{REPL}
-Detta eftersom \code{kompis} är \code{ingenGurka} som inte pekar på något objekt och när man då försöker komma åt ett attribut från den kommer det inte funka.
-
-Rad 12: Kommer inte generera en error eftersom när man kallar \code{kompisVikt} (som är \code{public}) försöker den komma åt \code{Gurka4(84, null).vikt}. \code{vikt} är \code{private val} vilket innebär att det har en getter och eftersom huvudobjektet också är av typen \code{Gurka4} är accessnivån tillräckligt hög.
-
-Rad 13:
-\begin{REPL}
-	error: value vikt is not a member of Gurka5
-\end{REPL}
-När man sätter ett attribut till \code{private[this]} tillåts inte ens objekt av samma typ att komma åt variabeln och därför får man en error som säger att den inte finns.
-
-Rad 17:
-\begin{REPL}
-	error: constructor Gurka6 in class Gurka6 cannot be accessed in object
-\end{REPL}
-Eftersom man satt klassparametrarna till \code{private} kan man inte komma åt konstruktorn och därför får man en error.
-
-Rad 26:
-\begin{REPL}
-	error: constructor Gurka7 in class Gurka7 cannot be accessed in object
-\end{REPL}
-Samma anledning som på rad 17.
-
-Rad 27:
-\begin{REPL}
-	java.lang.IllegalArgumentException: requirement failed: negativ vikt: -42
-\end{REPL}
-Kompanjonsobjektet har en requirement på att \code{vikt >= 0} vilket innebär att om det inte stämmer kommer man få en error av typen \code{IllegalArgumentException}.
-
-Rad 30: Anledningen till att man kan sätta vikten till något negativt är att checken om det är negativt endast görs när man skapar \code{Gurka7} vilket innebär att i efterhand kan man ändra den till vilket värde som helst (av typen \code{Int}).
-
 
 \QUESTEND
-
 
 
 
@@ -564,25 +744,28 @@ Rad 30: Anledningen till att man kan sätta vikten till något negativt är att 
 
 \QUESTBEGIN
 
-\Task  \what~
+\Task  \what~Klistra in denna kod i REPL:
 
-\Subtask Förklara vad som händer nedan. Vilka rader ger vilka felmeddelanden?
-\begin{REPL}
-scala> :pa
+\begin{Code}
 class Gurka8 private (private var _vikt: Int) {
   def vikt = _vikt
   def vikt_=(v: Int): Unit = {
-    require(v >= 0, s"negativ vikt: $v")
+    require(v >= 0, "negativ vikt: " +v)
     _vikt = v
   }
 }
 
 object Gurka8 {
   def apply(vikt: Int) = {
-    require(vikt >= 0, s"negativ vikt: $vikt")
+    require(vikt >= 0, "negativ vikt: " + vikt)
     new Gurka8(vikt)
   }
 }
+\end{Code}
+
+
+\Subtask Förklara vad som händer nedan. Vilka rader ger vilka felmeddelanden?
+\begin{REPL}
 scala> val g = Gurka8(-42)
 scala> val g = Gurka8(42)
 scala> g.vikt
@@ -592,7 +775,7 @@ scala> g.vikt += 42
 scala> g.vikt -= 1000
 \end{REPL}
 
-\Subtask\Pen Vad är fördelen med möjligheten att skapa egendefinierade setters?
+\Subtask Vad är fördelen med möjligheten att skapa egendefinierade setters?
 
 \SOLUTION
 
@@ -627,360 +810,12 @@ Eftersom 42-1000 är mindre än noll får man en error.
 
 
 
-%%<AUTOEXTRACTED by mergesolu>%%      % uppgift 4
-
-
-
-
-\WHAT{En oföränderlig kvadrat med alternativ fabriksmetod.}
-
-\QUESTBEGIN
-
-\Task \label{task:Square} \what~
-
-\Subtask Implementera klassen \code{Square} enligt nedan specifikation. Gör  implementationen i en kodeditor, så som \code{gedit}, och klistra in klassen i Scala REPL efter kommandot \code{:pa} (förkortning av \code{:paste}). På så sätt blir \code{object Square} ett kompanjonsobjekt till \code{class Square}.
-
-\begin{ScalaSpec}{Square}
-/** A class representing a square object with position and side. */
-class Square(val x: Int, val y: Int, val side: Int) {
-  /** The area of this Square */
-  val area: Int = ???
-
-  /** Creates a new Square moved to position (x + dx, y + dy) */
-  def move(dx: Int, dy: Int): Square = ???
-
-  /** Tests if this Square has equal size as that Square */
-  def isEqualSizeAs(that: Square): Boolean = ???
-
-  /** Multiplies the side with factor and rounded to nearest integer */
-  def scale(factor: Double): Square = ???
-
-  /** A string representation of this Square */
-  override def toString: String = ???
-}
-
-object Square {
-  /** A square placed in origin with size 1 */
-  val unit: Square = ???
-
-  /** Constructs a new Square object at (x, y) with size side */
-  def apply(x: Int, y: Int, side: Int): Square = ???
-
-  /** Constructs a new Square object at (0, 0) with side 1 */
-  def apply(): Square = ???
-}
-\end{ScalaSpec}
-
-\Subtask Testa din kvadrat enligt nedan. Förklara vad som händer.
-
-\begin{REPL}
-scala> val (s1, s2) = (Square(), Square(1, 10, 1))
-scala> val s3 = s1.move(1,-5)
-scala> s1 isEqualSizeAs s3
-scala> s2 isEqualSizeAs s1
-scala> s1 isEqualSizeAs Square.unit
-scala> s2.scale(math.Pi) isEqualSizeAs s2
-scala> s2.scale(math.Pi) isEqualSizeAs s2.scale(math.Pi)
-\end{REPL}
-
-\SOLUTION
-
-
-\TaskSolved \what
- \begin{CodeSmall}
-	class Square(val x: Int, val y: Int, val side: Int) {
-		val area: Int = side*side
-
-		def move(dx: Int, dy: Int): Square = new Square(x + dx, y + dy, side)
-
-		def isEqualSizeAs(that: Square): Boolean = this.side == that.side
-
-		def scale(factor: Double): Square = new Square(x, y, (side*factor).toInt)
-
-		override def toString: String = s"Square(x: $x, y: $y, side: $side)"
-	}
-
-	object Square {
-		val unit: Square = new Square(0, 0, 1)
-
-		def apply(x: Int, y: Int, side: Int): Square = new Square(x, y, side)
-
-		def apply(): Square = new Square(0, 0, 1)
-	}
-\end{CodeSmall}
-
-Eftersom \code{s1}, \code{s2}, \code{s3} och \code{Square.unit} alla har en sida med längden 1 så kommer rad 3-5 returnera \code{true}. Rad 6 kommer returnera \code{false} eftersom \code{s2.scale(math.Pi)} sida är $\pi$ och \code{s2} fortfarande har sidan 1. Rad 7 kommer däremot returnera \code{true} då båda har sidan $\pi$.
-
-
-\QUESTEND
-
-
-
-
-
-
-\WHAT{Referenslikhet versus strukturlikhet.}
-
-\QUESTBEGIN
-
-\Task  \what~  Metoden \code{==} på case-klasser ger \textbf{strukturlikhet} (även kallad innehållslikhet) så att \emph{innehållet} i klassens klassparametrar jämförs om de har lika värde, medan för vanliga klasser ger metoden \code{==} \textbf{referenslikhet} där olika objekt är olika även om de har samma innehåll (om man inte överskuggar metoden \code{equals} som anropas av \code{==} vilket vi ska titta närmare på i kapitel \ref{chapter:W08}).
-
-\begin{REPL}
-scala> class GurkaRef(val vikt: Int)
-scala> case class GurkaStrukt(val vikt: Int)
-scala> val a = new GurkaRef(42)
-scala> val b = new GurkaRef(42)
-scala> val c = new GurkaStrukt(42)
-scala> val d = new GurkaStrukt(42)
-scala> a == b
-scala> c == d
-\end{REPL}
-
-\Subtask Förklara vad som händer ovan.
-
-\Subtask Istället för \code{==}, prova metoden \code{eq} på objekten ovan. Metoden \code{eq} ger alltid referenslikhet (även om byter ut metoden \code{equals}).
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved  Variablerna \code{a} och \code{b} är båda objekt av en vanlig klass vilket kommer innebära att de jämförs med referenslikhet och eftersom de inte är samma objekt retunerar \code{==} \code{false}. \code{c} och \code{d} är däremot objekt av en case klass så de jämförs med strukturlikhet och eftersom de har samma vikt returnerar \code{==} \code{true}.
-
-\SubtaskSolved  Både \code{a eq b} och \code{c eq d} ska returnera \code{false} eftersom de alla är olika objekt och det är referenslikhetsom gäller.
-
-
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      % uppgift 6
-
-
-
-
-\WHAT{Klassen \code{Point} med case-klass.}
-
-\QUESTBEGIN
-
-\Task \label{task:Point} \what~
-
-\Subtask Implementera klassen \code{Point} som en oföränderlig case-klass med heltalsattributen \code{x} och \code{y}.
-
-\Subtask Lägg till metoden \code{distanceTo(that: Point): Double} som räknar ut avståndet till en annan punkt med hjälp av \code{math.hypot}.
-
-\Subtask Lägg till metoden \code{distanceTo(x: Int, y: Int): Double} som räknar ut avståndet till koordinaterna x och y med hjälpa av metoden i föregående deluppgift.
-
-\Subtask Lägg till metoden \code{move(dx: Int, dy: Int): Point} som skapar en ny punkt på translaterad position enligt delta-koordinaterna \code{dx} och {dy}.
-
-\Subtask Lägg till ett kompanjonsobjekt med medlemmen \code{val origin} som ger en punkt i origo.
-
-\Subtask Undersök metoderna \code{==}, \code{!=}, \code{eq} och \code{ne} och förklara vad som händer nedan:
-\begin{REPL}
-scala> Point(1, 2) == Point(1, 3)
-scala> Point(1, 2) != Point(1, 3)
-scala> Point(1, 2) == Point(1, 2)
-scala> Point(1, 2) != Point(1, 2)
-scala> Point.origin.move(1, 1) == Point.origin.move(1, 1)
-scala> Point.origin.move(1, 1).move(1, 1) != Point(2, 2)
-scala> Point(0, 0) eq Point(0, 0)
-scala> Point(0, 0) ne Point(0, 0)
-scala> Point.origin eq Point.origin
-scala> Point.origin ne Point.origin
-scala> val p1 = Point(0, 0)
-scala> val p2 = p1
-scala> p1 eq p2
-\end{REPL}
-
-\Subtask Vad ger \code{Point.origin eq Point.origin} för resultat om \code{origin} istället  implementeras som \code{def origin: Point = Point(0, 0)}
-
-\Subtask\Pen Vad är det för skillnad på strukturlikhet och referenslikhet?
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved  se e) för komplett lösning
-
-\SubtaskSolved  se e) för komplett lösning
-
-\SubtaskSolved  se e) för komplett lösning
-
-\SubtaskSolved  se e) för komplett lösning
-
-\SubtaskSolved  \begin{CodeSmall}
-case class Point(x: Int, y: Int) {
-
-	def distanceTo(that: Point): Double = math.hypot(that.x - x, that.y -y)
-
-	def distanceTo(x: Int, y: Int): Double = distanceTo(Point(x, y))
-
-	def move(dxdy: (Int, Int)): Point = Point(dxdy._1 + x, dxdy._2 + y)
-}
-
-object Point {
-	//val origin: Point = new Point(0, 0)
-	def origin: Point = Point(0, 0)
-}
-\end{CodeSmall}
-
-\SubtaskSolved  \code{==} och \code{!=} kollar strukturlikhet så om två objekt innehåller samma värden kommer \code{==} returnera \code{true} och \code{!=} \code{false} och vise versa. \code{eq} och \code{ne} kollar referenslikhet så om två variabler pekar på samma objekt kommer \code{eq} returnera \code{true} och \code{ne} \code{false} och vise versa.
-
-\SubtaskSolved  \code{false}. Detta eftersom om origin implementeras som en metod som returnerar en ny \code{Point} varje gång den kallas kommer \code{Point.origin} inte peka på samma objekt varje gång metoden kallas (\code{eq} är referenslikhet).
-
-\SubtaskSolved  Sturkturlikhet bryr sig endast om innehållet i objekten och jämför det. Det kvittar alltså om det är samma objekt eller två olika så länge de innehåller samma värden. Referenslikhet kollar endast på om det är samma objekt variablerna pekar på och struntar fullständigt i om de innehåller samma värden.
-
-% uppgift 8
-
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      % uppgift 7
-
-
-
-
-\WHAT{NEEDS A TOPIC DESCRIPTION}
-
-\QUESTBEGIN
-
-\Task \label{task:PointSquare} \what~ Ändra representationen av positionen i klassen \code{Square} från deluppgift \ref{task:Square} till att vara en \code{Point} från deluppgift \ref{task:Point}.
-
-
-\SOLUTION
-
-
-\TaskSolved \what
- \begin{CodeSmall}
-class Square(val p: Point, val side: Int) {
-	val area: Int = side*side
-
-	def move(dx: Int, dy: Int): Square = new Square(p.move(dx, dy), side)
-
-	def isEqualSizeAs(that: Square): Boolean = this.side == that.side
-
-	def scale(factor: Double): Square = new Square(p, (side*factor).toInt)
-
-	override def toString: String = s"Square(p: $p, side: $side)"
-}
-
-object Square {
-	val unit: Square = new Square(new Point(0, 0), 1)
-
-	def apply(x: Int, y: Int, side: Int): Square =
-		new Square(new Point(x, y), side)
-
-	def apply(): Square = new Square(new Point(0, 0), 1)
-}
-\end{CodeSmall}
-
-
-
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      % uppgift 9
-
-
-
-
-\WHAT{Case-klassen \code{Point} med 2-tupel.}
-
-\QUESTBEGIN
-
-\Task \label{task:PointTuple} \what~   I ett utvecklingsprojekt vill man ändra representationen av positionen i den gamla klassen  \\ \code{case class Point(x: Int, y: Int)} så att positionen istället i den uppdaterade klassen representeras av en 2-tupel. Man kan då vid konstruktion utnyttja att n-tupler som parameter även kan skrivas som en parameterlista med n argument, varför både \code{Point(1,2)} och \code{Point((1,2))} fungerar fint. Samtidigt vill man att befintlig kod som fortfarande använder \code{x} och \code{y} ska fungera utan ändringar.  Implementera den nya \code{Point} enligt specifikationen nedan.
-\begin{ScalaSpec}{Point}
-/** A 2-dimensional immutable position p in an integer coordinate system */
-case class Point(p:(Int, Int)) {
-  /** The x-axis position of this Point */
-  val x: Int = ???
-
-  /** The y-axis position of this Point */
-  val y: Int = ???
-
-  /** The distance to another Point that */
-  def distanceTo(that: Point): Double = ???
-
-  /** The distance to another 2-tuple that representing (x, y). */
-  def distanceTo(that: (Int, Int)): Double = ???
-
-  /** A new Point that is moved (dx, dy) */
-  def move(dxdy: (Int, Int)): Point = ???
-}
-
-object Point {
-  /** A Point object at position (0, 0) */
-  val origin: Point = ???
-}
-\end{ScalaSpec}
-
-\SOLUTION
-
-
-\TaskSolved \what
-  \begin{CodeSmall}
-case class Point(p:(Int,Int)) {
-	val x: Int = p._1
-
-	val y: Int = p._2
-
-	def distanceTo(that: Point): Double = math.hypot(that.x - x, that.y -y)
-
-	def distanceTo(that: (Int, Int)): Double = distanceTo(Point(that))
-	def move(dx: Int, dy: Int): Point = Point(x + dx, y + dy)
-}
-
-object Point {
-	val origin: Point = new Point(0, 0)
-}
-\end{CodeSmall}
-
-
-
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      % uppgift 10
-
-
-
-
-\WHAT{NEEDS A TOPIC DESCRIPTION}
-
-\QUESTBEGIN
-
-\Task  \what~\Pen Vad behöver du ändra i klassen \code{Square} från uppgift \ref{task:PointSquare} för att den ska fungera med en \code{Point} med 2-tupel från uppgift \ref{task:PointTuple}?
-
-\SOLUTION
-
-
-\TaskSolved \what
- Inget! Eftersom både \code{Point(1,2)} och \code{Point((1,2))} är okej sätt att komma åt den nya klassen så kommer det se likadant utifrån och därför behöver man inte ändra något i \code{Square}.
-
-
-\QUESTEND
-
-
-
-
-
-
 \WHAT{Objekt med föränderligt tillstånd \Eng{mutable state}.}
 
 \QUESTBEGIN
 
 \Task  \what~  Du ska implementera en modell av en hoppande groda som uppfyller följande krav:
-\begin{enumerate}[nolistsep, noitemsep]
+\begin{enumerate}%[nolistsep, noitemsep]
 \item Varje grodobjekt ska hålla reda på var den är.
 \item Varje grodobjekt ska hålla reda på hur långt grodan hoppat totalt.
 \item Varje grodobjekt ska kunna beräkna hur långt det är mellan grodans nuvarande position och utgångsläget.
@@ -992,13 +827,9 @@ object Point {
   \end{itemize}
 \end{enumerate}
 
-\Subtask Implementera klassen \code{Frog} enligt nedan specifikation och ovan krav. \\  \emph{Tips:}
-  \begin{itemize} [nolistsep, noitemsep]
-  \item Om namnet man vill ge ett privat föränderligt attribut ''krockar'' med ett metodnamn, är det vanligt att man börjar attributets namn med understreck, t.ex. \code{private var _x } för att på så sätt undkomma namnkonflikten.
-  \item Inför en metod i taget och klistra in den nya grodan i REPL efter varje utvidgning och testa.
-  \end{itemize}
+\Subtask Implementera klassen \code{Frog} enligt nedan kodskelett och ovan krav.
 
-\begin{ScalaSpec}{Frog}
+\begin{Code}
 class Frog private (initX: Int = 0, initY: Int = 0) {
   def jump(dx: Int, dy: Int): Unit = ???
   def x: Int = ???
@@ -1011,21 +842,25 @@ class Frog private (initX: Int = 0, initY: Int = 0) {
 object Frog {
   def spawn(): Frog = ???
 }
-\end{ScalaSpec}
+\end{Code}
+\emph{Tips:}
+\begin{itemize} [nolistsep, noitemsep]
+\item Om namnet man vill ge ett privat föränderligt attribut ''krockar'' med ett metodnamn, är det vanligt att man börjar attributets namn med understreck, t.ex. \code{private var _x } för att på så sätt undkomma namnkonflikten.
+\item Inför en metod i taget och klistra in den nya grodan i REPL efter varje utvidgning och testa.
+\end{itemize}
+
+
 
 \Subtask Skriv ett testhuvudprogram som kontrollerar så att alla krav är uppfyllda och att alla metoder fungerar som de ska.
 
-\Subtask\Pen Vad kallas en metod som enbart returnerar värdet av ett privat attribut?
+\Subtask Vad kallas en metod som enbart returnerar värdet av ett privat attribut?
 
-\Subtask\Pen Hur kan man från en metods signatur få en ledtråd om att ett objekt har föränderligt tillstånd \Eng{mutable state}?
+\Subtask Hur kan man från en metods signatur få en ledtråd om att ett objekt har föränderligt tillstånd \Eng{mutable state}?
 
 \Subtask Inför setters för attributen som håller reda på x- och y-postitionen. Förändringar av positionen i x- eller y-led ska räknas som ett hopp och alltså registreras i det attribut som håller reda på det ackumulerade hoppavståndet.
 
 \Subtask Simulera ett massivt grodhoppande med krockdetektering genom att skapa 100 grodor som till att börja med är placerade på x-axeln med avståndet $8$ längdenheter mellan sig. Låt grodorna i en \code{while}-sats hoppa slumpmässigt tills någon groda befinner sig närmare än $0.5$ längdenheter som är definitionen på att de har krockat. Räkna hur många looprundor som behövs innan något grodpar krockar och skriv ut antalet. \\ \emph{Tips:} Börja med pseudokod på papper. Använd en grodvektor.
 
-\clearpage
-
-\ExtraTasks %%%%%%%%%%%%%%%%%%%
 
 \SOLUTION
 
@@ -1033,7 +868,8 @@ object Frog {
 \TaskSolved \what
 
 
-\SubtaskSolved  \begin{CodeSmall}
+\SubtaskSolved
+\begin{Code}
 class Frog private (initX: Int = 0, initY: Int = 0) {
 	private var _x: Int = initX
 	private var _y: Int = initY
@@ -1065,9 +901,10 @@ class Frog private (initX: Int = 0, initY: Int = 0) {
 object Frog {
 	def spawn(): Frog = new Frog()
 }
-\end{CodeSmall}
+\end{Code}
 
-\SubtaskSolved  \begin{CodeSmall}
+\SubtaskSolved
+\begin{Code}
 val f1 = Frog.spawn()
 //test requirement 1 and 4
 assert(f1.x == 0 && f1.y == 0, "Either x or y isn't 0")
@@ -1102,12 +939,11 @@ f4.jump(4,5)
 // Test distanceT()
 text = "distanceTo is " + f3.distanceTo(f4) + ". Should be 5"
 assert(f3.distanceTo(f4) == 5, text)
-\end{CodeSmall}
+\end{Code}
 
 \SubtaskSolved  Getter
 
 \SubtaskSolved  Om metoden har parametrar och retur-typen \code{Unit}. Det betyder troligen att parametrarna ändrar något istället för att skapa något nytt.
-
 \SubtaskSolved  \begin{CodeSmall}
 class Frog private (initX: Int = 0, initY: Int = 0) {
 	private var _x: Int = initX
@@ -1121,7 +957,6 @@ class Frog private (initX: Int = 0, initY: Int = 0) {
 	}
 
 	def x: Int = _x
-	def y: Int = _y
 
 	def x_= (newX: Int): Unit = {
 		_distanceJumped += Math.abs(_x - newX)
@@ -1130,7 +965,7 @@ class Frog private (initX: Int = 0, initY: Int = 0) {
 	def y_= (newY: Int): Unit = {
 		_distanceJumped += Math.abs(_y - newY)
 		_y = newY
-	}
+	}Small
 
 	def randomJump: Unit = {
 		val r = scala.util.Random
@@ -1151,78 +986,57 @@ object Frog {
 }
 \end{CodeSmall}
 
-\SubtaskSolved  \begin{CodeSmall}
+\SubtaskSolved
+\begin{Code}
 var noCollision = true
 var counter = 0
 val numberOfFrogs = 100
 val distanceBetweenFrogs = 8
-val frogArray = Array.fill(numberOfFrogs){Frog.spawn()}
-(0 until numberOfFrogs).foreach(i => frogArray(i).x(i*distanceBetweenFrogs))
+v0 until numberOfFrogs).foreach(i => frogArray(i).x(i*distanceBetweenFrogs))
 while (noCollision) {
-	frogArray.foreach(frog => frog.randomJump)
 	for (frog <- frogArray) {
 		for (frog2 <- frogArray) {
-			if (frog != frog2 && frog.distanceTo(frog2) < 0.5) {
 				noCollision = false
 			}
-		}
 	}
 	counter += 1
-}
-print(counter)
-\end{CodeSmall}
-
-
-\clearpage
-
-\ExtraTasks %%%%%%%%%%%%
-
+}int(counter)
+\end{Code}
 
 \QUESTEND
 
 
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      % uppgift 11
-
-
-
-
-\WHAT{En kvadratklass med föränderligt tillstånd \Eng{mutable state}.}
-
+\
 \QUESTBEGIN
 
-\Task  \what~  Webbshoppen UberSquare säljer flyttbara kvadrater. I affärsmodellen ingår att ta betalt per förflyttning. Du ska hjälpa UberSquare med att utveckla en enkel systemprototyp.
+\Task  \what~  Webbshoppen UberSquare säljer flyttbara kvadrater. I affärsmodellen ingår att ta betalt per förflyttning. Du ska hjälpa UberSquare med att utveckla en enkel prototyp för att imponera på riskkapitalister.
 
-\Subtask Implementera \code{Square} enligt nedan specifikation, under uppfyllandet av följande krav:
+\Subtask Implementera \code{Square} enligt efterföljande kodskiss och enligt dessa krav:
 
 \begin{enumerate}[nolistsep, noitemsep]
-\item Till skillnad från uppgift \ref{task:Square} ska du nu göra en kvadrat med föränderligt tillstånd \Eng{mutable state}. I stället för att vid förflyttning returnera ett nytt kvadratobjekt, returneras \code{Unit} i samband med att privata attribut uppdateras.
-\item Du ska införa funktionalitet som räknar antalet förflyttningar som gjorts för varje kvadrat som skapats och även räkna ut det totala antalet förflyttningar som någonsin gjorts.
-\item Varje gång förflyttning sker adderas en kostnad till den ackumulerade kostnaden för respektive kvadrat. Kostnaden för varje förflyttning är avståndet till ursprungsläget multiplicerat med storleken på kvadraten.
+   \item Du ska införa funktionalitet som räknar antalet förflyttningar som gjorts för varje kvadrat som skapats och även räkna ut det totala antalet förflyttningar som någonsin gjorts.
+
+  \item Varje gång förflyttning sker ska en kostnad adderas till den ackumulerade kostnaden för respektive kvadrat.
+
+  \item Kostnaden för varje förflyttning ska motsvara avståndet till ursprungsläget multiplicerat med storleken på kvadraten.
 \end{enumerate}
 
-\begin{ScalaSpec}{Square}
+\begin{CodeSmall}
 /** A mutable and expensive Square. */
 class Square private (val initX: Int, val initY: Int, val initSide: Int) {
 
   private var nMoves = 0;
   private var sumCost = 0.0;
   private var _x = initX;
-  private var _y = initY;
   private var _side = initSide;
 
-  private def addCost: Unit = {
    sumCost += ???
   }
 
-  /** The current position on the x axis */
   def x: Int = ???
 
-  /** The current position on the y axis */
   def y: Int = ???
 
-  /** The size of this Square */
   def side = ???
 
   /** Scales the side of this square and rounds it to nearest integer */
@@ -1240,7 +1054,6 @@ class Square private (val initX: Int, val initY: Int, val initSide: Int) {
   /** Reset the cost of this Square */
   def pay: Unit = ???
 
-  /** A string representation of this Square */
   override def toString: String =
     s"Square[($x, $y), side: $side, #moves: $nMoves times, cost: $sumCost]"
 }
@@ -1255,7 +1068,7 @@ object Square {
   }
 
   /** Constructs a new Square object at (0, 0) with side 1 */
-  def apply(): Square = apply(0, 0, 1)
+  def apply(): Square = ???
 
   /** The total number of moves that have been made for all squares. */
   def totalNumberOfMoves: Int = ???
@@ -1263,87 +1076,63 @@ object Square {
   /** The total cost of all squares. */
   def totalCost: Double = ???
 }
-\end{ScalaSpec}
+\end{CodeSmall}
 
 \Subtask Testa din kvadratprototyp i REPL enligt nedan:
 \begin{REPL}
 scala> val xs = Vector.fill(10)(Square())
 scala> xs.foreach(_.move(2,3))
 scala> xs.foreach(_.scale(2.9))
-scala> val (m, c) = (Square.totalNumberOfMoves, Square.totalCost)
 m: Int = 10
 c: Double = 36.055512754639885
 \end{REPL}
 
-
-\clearpage
-
-\AdvancedTasks %%%%%%%%%%%%%%%%%
-
-
 \SOLUTION
 
-
-\TaskSolved \what
-
-
-\vspace{1em} %tweak pagination
-
 \begin{CodeSmall}
-/** A mutable and expensive Square. */
 class Square private (val initX: Int, val initY: Int, val initSide: Int) {
-
   private var nMoves = 0;
   private var sumCost = 0.0;
+
   private var _x = initX;
   private var _y = initY;
+
   private var _side = initSide;
 
   private def addCost: Unit = {
    sumCost += math.hypot(x - initX, y - initY) * side
   }
 
-  /** The current position on the x axis */
   def x: Int = _x
 
-  /** The current position on the y axis */
   def y: Int = _y
 
-  /** The size of the side */
   def side = _side
 
-  /** Scales the size of this square and rounds it to nearest integer */
   def scale(factor: Double): Unit = { _side = (_side * factor).round.toInt }
 
-  /** Moves this square to position (x + xd, y + dy) */
   def move(dx: Int, dy: Int): Unit = {
     _x += dx; _y += dy;
     nMoves += 1
     addCost
   }
 
-  /** Moves this square to position (x, y) */
   def moveTo(x: Int, y: Int): Unit = {
     _x = x; _y = y;
     nMoves += 1
     addCost
   }
 
-  /** The accumulated cost of this Square */
   def cost: Double = sumCost
 
-  /** Reset the cost of this Square */
   def pay: Unit = {sumCost = 0}
 
-  /** A string representation of this Square */
   override def toString: String =
     s"Square[($x, $y), side: $side, #moves: $nMoves times, cost: $sumCost]"
 }
-
 object Square {
   private var created = Vector[Square]()
 
-  /** Constructs a new Square object at (x, y) with size side */
   def apply(x: Int, y: Int, side: Int): Square = {
     require(side >= 0, s"side must be positive: $side")
     val sq = (new Square(x, y, side))
@@ -1351,24 +1140,15 @@ object Square {
     sq
   }
 
-  /** Constructs a new Square object at (0, 0) with side 1 */
   def apply(): Square = apply(0, 0, 1)
 
-  /** The total number of moves that have been made for all squares. */
   def totalNumberOfMoves: Int = created.map(_.nMoves).sum
 
-  /** The total cost of all squares. */
   def totalCost: Double = created.map(_.cost).sum
 }
 \end{CodeSmall}
 
-\AdvancedTasks %%%%%%%%%
-
-\TODO
 \QUESTEND
-
-
-
 
 
 
@@ -1376,9 +1156,11 @@ object Square {
 
 \QUESTBEGIN
 
-\Task \label{task:aux-constructor} \what~   I uppgift \ref{task:Square} erbjöds ett alternativt sätt att skapa \code{Square} med en extra fabriksmetod med namnet \code{apply} i kompanjonsobjektet. Ett annat sätt att göras detta på, som i Scala är mindre vanligt (men i Java är desto vanligare), är att definiera flera konstruktorer innuti klassen. I Scala kallas en sådan extra konstruktor för \textbf{hjälpkonstruktor} \Eng{auxiliary constructor}.
+\Task \label{task:aux-constructor} \what~I tidigare uppgifter har vi möjliggjort alternativt sätt att skapa instanser genom default-argument eller extra fabriksmetoder med namnet \code{apply} i kompanjonsobjektet.
 
-En hjälpkonstruktor skapar man i Scala genom att definiera en metod som har det speciella namnet \code{this}, alltså en deklaration \code{def this(...) = ...} Hjälponstruktorer måste börja med att anropa en annan konstruktor, antingen den primära konstruktorn eller en tidigare definierad  hjälpkonstruktor.
+Ett annat sätt att göras detta på, som i Scala är ovanligt\footnote{Men i Java är detta mycket vanligt då defaultargument m.m. inte ingår i språket.}, är att definiera flera konstruktorer inne i klasskroppen. I Scala kallas en sådan extra konstruktor för \textbf{hjälpkonstruktor} \Eng{auxiliary constructor}.
+
+En hjälpkonstruktor skapar man i Scala genom att definiera en metod som har det speciella namnet \code{this}, alltså en deklaration \code{def this(...) = ...} Hjälpkonstruktorer måste börja med att anropa en annan konstruktor, antingen den primära konstruktorn (d.v.s. den som klasshuvudet definierar) eller en tidigare definierad  hjälpkonstruktor.
 
 \Subtask Läs mer om hjälpkonstruktorer här: \\ \href{http://www.artima.com/pins1ed/functional-objects.html#6.7}{www.artima.com/pins1ed/functional-objects.html\#6.7}
 
@@ -1387,6 +1169,5 @@ En hjälpkonstruktor skapar man i Scala genom att definiera en metod som har det
 
 %\Task \TODO \\ \code{class Rational private (numerator: BigInt, denominator: BigInt)} \\
 %Inspirerat av Rational i pins1ed med GCD\SOLUTION
-
 
 \QUESTEND

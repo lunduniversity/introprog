@@ -274,7 +274,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "\\code|val p4 = Mutable()          |" -> "\\code|error: not found: value|",
       "\\code|p2.moved(dx=1) == Pt(1, 3)  |" -> "\\code|true|",
       "\\code|p3.move(dy=1) == new MutablePt(5,7)|" -> "\\code|false|",
-      "\\code|p2 == p3                    |" -> "\\verb|warning: always false|",
+      "\\code|p2 == p3                      |" -> "\\verb|warning: always false|",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
