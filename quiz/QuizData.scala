@@ -238,8 +238,8 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "\\code|Singelpunkt.x               |" -> "\\code|1|",
       "\\code|Punkt.x                     |" -> "\\code|error: not found: value|",
       "\\code|val p  = new Singelpunkt    |" -> "\\verb|error: not found: type|",
-      "\\code|val p1 = new Punkt          |" -> "\\code|p1: Punkt = Punkt@27a1a53c|",
-      "\\code|val p2 = new Punkt          |" -> "\\code|p2: Punkt = Punkt@51ab04bd|",
+      "\\code|val p1 = new Punkt          |" -> "\\verb|p1: Punkt = Punkt@27a1a53c|",
+      "\\code|val p2 = new Punkt          |" -> "\\verb|p2: Punkt = Punkt@51ab04bd|",
       "\\code|{ p1.x = 1; p2.x }          |" -> "\\code|3|",
       "\\code|(new Punkt).y               |" -> "\\code|2|",
       "\\code|{ val p: Punkt = null; p.x }|" -> "\\code|java.lang.NullPointerException|",
@@ -250,7 +250,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "\\code|val p1 = Point(1, 2)        |" -> "\\code|error: not found: value|",
       "\\code|val p2 = new Point          |" -> "\\code|error: not enough arguments|",
       "\\code|val p1 = new Point(1, 2)    |" -> "\\verb|p1: Point = Point@30ef773e|",
-      "\\code|val p2 = new Point(3, 4)    |" -> "\\code|p2: Point = Point@218cf600|",
+      "\\code|val p2 = new Point(3, 4)    |" -> "\\verb|p2: Point = Point@218cf600|",
       "\\code|p2.x - p1.x                 |" -> "\\code|2|",
       "\\code|(new Point(0, 1)).y         |" -> "\\code|1|",
       "\\code|new Point(0, 1, 2)          |" -> "\\code|error: too many arguments|",
@@ -258,7 +258,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
     "quiz-w05-class-arg" -> Vector(  //programs
-      "\\code|val p1 = new Point3D        |" -> "\\code|p1: Point3D = Point3D@2eb37eee|",
+      "\\code|val p1 = new Point3D        |" -> "\\verb|p1: Point3D = Point3D@2eb37eee|",
       "\\code|val p2 = new Point3D(y = 1) |" -> "\\verb|p2: Point3D = Point3D@65a9e8d7|",
       "\\code|(new Point3D(z = 2)).z      |" -> "\\code|error: not found: value|",
       "\\code|p2.y = 0                    |" -> "\\code|error: reassignment to val|",
@@ -279,15 +279,56 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
     "quiz-w06-concepts" -> Vector(  //sequences
-      "samlingsbibliotek" -> "många färdiga datastrukturer med olika egenskaper",
+      "datastruktur     " -> "många olika element i en helhet; elementvis åtkomst",
+      "element          " -> "objekt i en datastruktur",
+      "samling          " -> "datastruktur med element av samma typ",
+      "samlingsbibliotek" -> "många färdiga samlingar med olika egenskaper",
       "sekvenssamling   " -> "noll el. flera element av samma typ i viss ordning",
-      "sekvensalgoritm  " -> "lösning på problem som drar nytta av sekvenser",
-      "ordning          " -> "beskriver hur element av en viss typ ska ordnas",
+      "sekvensalgoritm  " -> "lösning på problem som drar nytta av sekvenssamling",
+      "ordning          " -> "definierar hur element av en viss typ ska ordnas",
       "sortering        " -> "algoritm som ordnar element i en viss ordning",
-      "söking           " -> "algoritm som leta upp element enligt sökkriterium",
+      "söking           " -> "algoritm som letar upp element enligt sökkriterium",
+      "linjärsöking     " -> "sökalgoritm som letar i sekvens tills element hittas",
       "registrering     " -> "algoritm som räknar element med vissa egenskaper",
-      "varargs          " -> "variabelt antal argument, asterisk efter parametertyp "
+      "varargs          " -> "variabelt antal argument, asterisk efter parametertyp ",
+      "" -> ""
     ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w06-seq-collections" -> Vector(  //sequences
+      "\\code|Vector     |" -> "oföränderlig, ger snabbt godtyckligt ändrad samling",
+      "\\code|List       |" -> "oföränderlig, ger snabbt ny samling ändrad i början",
+      "\\code|Array      |" -> "primitiv, förändringsbar, snabb indexering, fix storlek",
+      "\\code|ArrayBuffer|" -> "förändringsbar, snabb indexering, kan ändra storlek",
+      "\\code|ListBuffer |" -> "förändringsbar, snabb att ändra i början",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w06-abstract-collections" -> Vector(  //sequences
+      "Traversable " -> "bastyp för alla samlingar, har metoden \\code|foreach|",
+      "Iterable    " -> "är traverserbar med hjälp av metoden \\code|iterator|",
+      "Seq         " ->  "bastyp för alla sekvenssamlingar, indexposition från 0",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w06-seq-methods" -> Vector(  //sequences
+      "\\code|x +: xs         |" -> "\\code|Vector(0, 1, 2, 3)                      |",
+      "\\code|xs +: x         |" -> "\\code|error: value +: is not a member of Int  |",
+      "\\code|xs :+ x         |" -> "\\code|Vector(1, 2, 3, 0)                      |",
+      "\\code|xs ++ xs        |" -> "\\code|Vector(1, 2, 3, 1, 2, 3)                |",
+      "\\code|xs.indices      |" -> "\\code|(0 until 3)                             |",
+      "\\code|xs apply 0      |" -> "\\code|1                                       |",
+      "\\code|xs(3)           |" -> "\\code|java.lang.IndexOutOfBoundsException     |",
+      "\\code|xs.length       |" -> "\\code|3                                       |",
+      "\\code|xs.take(4)      |" -> "\\code|Vector(1, 2, 3)                         |",
+      "\\code|xs.drop(2)      |" -> "\\code|Vector(3)                               |",
+      "\\code|xs.updated(0, 2)|" -> "\\code|Vector(2, 2, 3)                         |",
+      "\\code|xs.tail.head    |" -> "\\code|2                                       |",
+      "\\code|xs.head.tail    |" -> "\\code|error: value tail is not a member of Int|",
+      "\\code|xs.isEmpty      |" -> "\\code|false                                   |",
+      "\\code|xs.nonEmpty     |" -> "\\code|true                                    |",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
 
     "quiz-w07-concepts" -> Vector(  //search, sets, maps
       "linjärsökning      " -> "leta i sekvens tills sökkriteriet är uppfyllt",

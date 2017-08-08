@@ -263,6 +263,45 @@ res0: MutablePt = MPt(0,0)
 \QUESTEND
 
 
+\WHAT{Oföränderlig Java-klass.}
+
+\QUESTBEGIN
+
+\Task \what~Översätt nedan Scala-klass till Java-klassen \code{JPoint3D}. Alla attribut ska vara privata (varför?). Översätt defaultargumentet till en alternativ konstruktor. Kalla getters för t.ex. \jcode{getX()}. Kör \code{javac} och testa i REPL.
+
+\begin{Code}
+class Point3D(val x: Int, val y: Int, val z: Int = 0)
+\end{Code}
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\javainputlisting[numbers=left]{examples/JPoint3D.java}
+
+\begin{REPL}
+> atom JPoint3D.java
+> javac JPoint3D.java
+> ls
+JPoint3D.class  JPoint3D.java
+> scala
+Welcome to Scala 2.12.3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_121).
+Type in expressions for evaluation. Or try :help.
+
+scala> val p = new JPoint3D(1,2)
+p: JPoint3D = JPoint3D@53b1a3f8
+
+scala> p.x
+<console>:13: error: value x is not a member of JPoint3D
+
+scala> p.getX
+res0: Int = 1
+\end{REPL}
+
+\QUESTEND
+
+
+
 \WHAT{Skapa en punktklass att använda på veckans laboration.}
 
 \QUESTBEGIN
@@ -404,15 +443,15 @@ case class Arm(ärTillVänster: Boolean)
 
 case class Ben(ärTillVänster: Boolean)
 
-case class Huvud(harHår: Boolean)
+case class Huvud(harHår: Boolean = true)
 
 case class Rymdvarelse (
       arm1:   Arm   = Arm(true),
       arm2:   Arm   = Arm(false),
       ben1:   Ben   = Ben(true),
       ben2:   Ben   = Ben(false),
-      huvud1: Huvud = Huvud(false),
-  var huvud2: Huvud = Huvud(true)
+      huvud1: Huvud = Huvud(harHår = false),
+  var huvud2: Huvud = Huvud()
 ) {
   def ärSkallig = !huvud1.harHår && !huvud2.harHår
 }
@@ -542,6 +581,52 @@ res61: Boolean = true
 \end{REPL}
 
 \QUESTEND
+
+
+
+\WHAT{Förändrinsbar Java-klass.}
+
+\QUESTBEGIN
+
+\Task \what~Översätt nedan Scala-klass till Java-klassen \code{JMutablePoint3D}. Alla attribut ska vara privata (varför?). Översätt defaultargumentet till en alternativ konstruktor. Kalla setters för t.ex. \jcode{setX}. Kör \code{javac} och testa i REPL.
+
+\begin{Code}
+class MutablePoint3D(var x: Int, var y: Int, var z: Int = 0)
+\end{Code}
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\javainputlisting[numbers=left]{examples/JMutablePoint3D.java}
+
+\begin{REPL}
+> atom JMutablePoint3D.java
+> javac JMutablePoint3D.java
+> ls
+JMutablePoint3D.class  JMutablePoint3D.java
+> scala
+Welcome to Scala 2.12.3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_121).
+Type in expressions for evaluation. Or try :help.
+
+scala> val p = new JMutablePoint3D(1,2)
+p: JMutablePoint3D = JMutablePoint3D@2cae9b8
+
+scala> p.x
+<console>:13: error: value x is not a member of JPoint3D
+
+scala> p.getZ
+res0: Int = 0
+
+scala> p.setZ(3)
+
+scala> p.getZ
+res1: Int = 3
+
+\end{REPL}
+
+\QUESTEND
+
 
 
 
@@ -783,27 +868,27 @@ scala> g.vikt -= 1000
 \TaskSolved \what
 
 
-\SubtaskSolved  Rad 16:
+\SubtaskSolved
+
+Rad 1:
 \begin{REPL}
 	java.lang.IllegalArgumentException: requirement failed: negativ vikt: -42
 \end{REPL}
-Kompanjonsobjektet har en requirement på att \code{vikt >= 0} vilket innebär att om det inte stämmer kommer man få en error.
+\code{Gurka8.apply} kräver att \code{vikt >= 0} annars kastar \code{require} ett undantag.
 
-Rad 20:
+Rad 5:
 \begin{REPL}
 	java.lang.IllegalArgumentException: requirement failed: negativ vikt: -1
 \end{REPL}
-Eftersom settern har implementerat ett krav på att vikten måste vara större eller lika med 0 får man en error när man försöker sätta den till -1.
+Settern \code{vikt_=} kräver att \code{vikt >= 0} annars kastar \code{require} ett undantag.
 
-Rad 22:
+Rad 7:
 \begin{REPL}
 	java.lang.IllegalArgumentException: requirement failed: negativ vikt: -958
 \end{REPL}
-Eftersom 42-1000 är mindre än noll får man en error.
+Eftersom \code{42 - 1000} är mindre än noll kastar \code{require} ett undantag.
 
 \SubtaskSolved  Man kan sätta egna mer specifika krav på vad som får göras med värdena så man har större koll på att inget oväntat händer.
-
-% uppgift 5
 
 \QUESTEND
 
@@ -823,7 +908,7 @@ Eftersom 42-1000 är mindre än noll får man en error.
 \item En groda kan hoppa enligt två metoder:
   \begin{itemize} [nolistsep, noitemsep]
   \item relativ förflyttning enligt parametrarna \code{dx} och \code{dy},
-  \item slumpmässig förflyttning $[1, 10]$ i x-led och $[1, 10]$ i y-led.
+  \item slumpmässig relativ förflyttning $[1, 10]$ i x-ledsförändring och $[1, 10]$ i y-ledsförändring.
   \end{itemize}
 \end{enumerate}
 
@@ -859,7 +944,7 @@ object Frog {
 
 \Subtask Inför setters för attributen som håller reda på x- och y-postitionen. Förändringar av positionen i x- eller y-led ska räknas som ett hopp och alltså registreras i det attribut som håller reda på det ackumulerade hoppavståndet.
 
-\Subtask Simulera ett massivt grodhoppande med krockdetektering genom att skapa 100 grodor som till att börja med är placerade på x-axeln med avståndet $8$ längdenheter mellan sig. För varje runda i en \code{while}-sats, låt en slumpässigt vald groda göra ett \code{randomJump} tills någon groda befinner sig närmare än $0.5$ längdenheter, som är den valda definitionen på att de har krockat. Räkna hur många looprundor som behövs innan något grodpar krockar och skriv ut antalet. Skriv även ut det totala antalet \\ \emph{Tips:} Börja med pseudokod på papper. Använd en grodvektor.
+\Subtask Simulera ett massivt grodhoppande med krockdetektering genom att skapa 100 grodor som till att börja med är placerade på x-axeln med avståndet $8$ längdenheter mellan sig. För varje runda i en \code{while}-sats, låt en slumpässigt vald groda göra ett \code{randomJump} tills någon groda befinner sig närmare än $0.5$ längdenheter, vilket är definitionen på att de har krockat. Räkna hur många looprundor som behövs innan något grodpar krockar och skriv ut antalet. Skriv även ut det totala antalet \\ \emph{Tips:} Börja med pseudokod på papper. Använd en grodvektor.
 
 
 \SOLUTION
@@ -1010,18 +1095,20 @@ object frogSimulation {
 
 \QUESTBEGIN
 
-\Task  \what~  Webbshoppen \textbf{UberSquare} säljer flyttbara kvadrater. I affärsmodellen ingår att ta betalt per förflyttning. Du ska hjälpa UberSquare med att utveckla en enkel prototyp för att imponera på riskkapitalister.
+\Task  \what~  Webbshoppen \textbf{UberSquare} säljer flyttbara kvadrater. I affärsmodellen ingår att ta betalt per förflyttning. Du ska hjälpa UberSquare att utveckla en enkel prototyp för att imponera på riskkapitalister.
 
 \Subtask Implementera \code{Square} enligt dokumentationskommentarerna i efterföljande kodskiss och enligt dessa krav:
 
 \begin{enumerate}%[nolistsep, noitemsep]
-   \item Du ska införa funktionalitet som räknar antalet förflyttningar som gjorts för varje kvadrat som skapats och även räkna ut det totala antalet förflyttningar som någonsin gjorts.
+   \item Varje instans av \code{Square} ska räkna antalet förflyttningar som gjorts sedan instansen konstruerats.
 
-  \item Varje gång förflyttning sker ska en kostnad adderas till den ackumulerade kostnaden för respektive kvadrat.
+   \item För att kunna övervaka sina kunder vill UberSquare även räkna det totala antalet förflyttningar som gjorts av alla kvadrater som någonsin skapats (s.k. \emph{big data}).
 
-  \item UberSquare är oroliga för att kvadraterna flyttas för långt bort och bestämmer därför att kostnaden för varje förflyttning ska vara den nya positionens avstånd till ursprungsläget vid kvadratens konstruktion multiplicerat med aktuell storlek på kvadraten.
+  \item Varje gång förflyttning sker ska ett visst belopp adderas till den ackumulerade kostnaden för respektive kvadrat, enligt kostnadsberäkningen i krav 4.
 
-  \item För att framstå som goda bestämmer UberSquare att det är gratis att skala.
+  \item UberSquare är oroliga för att kvadraterna flyttas för långt bort och bestämmer därför att för varje förflyttning ska den ackumulerade kvadratkostnaden ökas med den nya positionens avstånd till ursprungsläget vid kvadratens konstruktion multiplicerat med aktuell storlek på kvadraten.
+
+  \item För att framstå som goda berättar UberSquare i sin marknadsföring att skala är gratis att använda. \footnote{D.v.s ett anrop av metoden \code{scale} orsakar ingen omedelbar kostnad.}
 \end{enumerate}
 
 \begin{CodeSmall}
@@ -1062,6 +1149,7 @@ class Square private (val initX: Int, val initY: Int, val initSide: Int) {
   override def toString: String =
     s"Square[($x, $y), side: $side, #moves: $nMoves times, cost: $sumCost]"
 }
+
 
 object Square {
   private var created = Vector[Square]()
