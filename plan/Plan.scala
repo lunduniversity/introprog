@@ -90,18 +90,18 @@ trait Plan {
       | sekvensalgoritm,  algoritm: SEQ-COPY,
       | in-place vs copy, algoritm: SEQ-REVERSE,
       | registrering, algoritm: SEQ-REGISTER,
+      | linjärsökning, algoritm: LINEAR-SEARCH,
+      | tidskomplexitet, minneskomplexitet,
       | sekvenser i Java vs Scala, for-sats i Java,
       | java.util.Scanner,
       | översikt strängmetoder, StringBuilder,
-      | ordning, inbyggda sökmetoder,
+      | ordning, inbyggda sökmetoder, find, indexOf, indexWhere,
       | inbyggda sorteringsmetoder, sorted, sortWith, sortBy,
       | variabelt argumentantal,
       """.stripTrim),
 
-    Module("Sökning, mängder, tabeller",
-      id = "search", exercise = "search", lab = "words", contents = """
-      | linjärsökning, algoritm: LINEAR-SEARCH,
-      | tidskomplexitet, minneskomplexitet,
+    Module("Mängder, tabeller",
+      id = "setmap", exercise = "lookup", lab = "words", contents = """
       | innehållstest, mängd, Set, mutable.Set,
       | nyckel-värde-tabell, Map, mutable.Map,
       | hash code, java.util.HashMap, java.util.HashSet,
