@@ -279,7 +279,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
     "quiz-w06-concepts" -> Vector(  //sequences
-      "datastruktur     " -> "många olika element i en helhet; elementvis åtkomst",
+//      "datastruktur     " -> "många olika element i en helhet; elementvis åtkomst",
       "element          " -> "objekt i en datastruktur",
       "samling          " -> "datastruktur med element av samma typ",
       "samlingsbibliotek" -> "många färdiga samlingar med olika egenskaper",
@@ -291,6 +291,8 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "linjärsöking     " -> "sökalgoritm som letar i sekvens tills element hittas",
       "registrering     " -> "algoritm som räknar element med vissa egenskaper",
       "varargs          " -> "variabelt antal argument, asterisk efter parametertyp ",
+      "tidskomplexitet  " -> "hur exekveringstiden växer med problemstorleken",
+      "minneskomplexitet" -> "hur minnesåtgången växer med problemstorleken",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
@@ -331,9 +333,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
 
 
     "quiz-w07-concepts" -> Vector(  //search, sets, maps
-      "linjärsökning      " -> "leta i sekvens tills sökkriteriet är uppfyllt",
-      "tidskomplexitet    " -> "hur exekveringstiden växer med problemstorleken",
-      "minneskomplexitet  " -> "hur minnesåtgången växer med problemstorleken",
+//      "linjärsökning      " -> "leta i sekvens tills sökkriteriet är uppfyllt",
       "mängd              " -> "unika element, kan snabbt se om element finns",
       "nyckel-värde-tabell" -> "för att snabbt hitta tillhörande värde",
       "nyckelmängd        " -> "unika identifierare, associerade med ett enda värde",
