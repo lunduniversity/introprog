@@ -87,7 +87,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
 
     "quiz-w02-hello-scala-java" -> Vector(  //programs
 //       "\\code|object|       " -> "\\jcode|public class|      ",
-       "\\code|def main|     " -> "\\jcode|public static main|",
+       "\\code|def main|     " -> "\\jcode|public static void main|",
        "\\code|Array[String]|" -> "\\jcode|String[]|          ",
        "\\code|Unit|         " -> "\\jcode|void|              ",
 //       "\\code|=|            " -> "\\jcode|) {|               ",
