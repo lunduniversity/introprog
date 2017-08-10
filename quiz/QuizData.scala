@@ -332,6 +332,33 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
 
+    "quiz-w06-seq-update" -> Vector(  //sequences
+      "\\code|{ buf(0) = -1; buf(0) }   |" -> "\\code|-1|",
+      "\\code|{ xs(0) = -1; xs(0) }|" ->"{\\small\\code|error: value update is not a member|}",
+      "\\code|buf.update(1, 5)          |"   -> "\\code|(): Unit|",
+      "\\code|xs.updated(0, 5)          |" -> "\\code|Vector(5, 2, 3, 4)|",
+      "\\code|{ buf += 5; buf }         |"   -> "\\code|ArrayBuffer(1, 5, 3, 4, 5)|",
+      "\\code|{ xs += 5; xs }         |"   -> "{\\small\\code|error: value += is not a member|}",
+      "\\code|xs.patch(1,Vector(-1,5),3)|"   -> "\\code|Vector(1, -1, 5)|",
+      "\\code|xs                        |"   -> "\\code|Vector(1, 2, 3, 4)|",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+
+    "quiz-w06-seq-find" -> Vector(  //sequences
+      "\\code|xs.indexOf(0)        |" -> "\\code|5|",
+      "\\code|xs.indexOf(6)        |" -> "\\code|-1|",
+      "\\code|xs.indexWhere(_ < 2) |" -> "\\code|4|",
+      "\\code|xs.indexWhere(_ != 5)|" -> "\\code|1|",
+      "\\code|xs.find(_ == 1)      |" -> "\\code|Some(1)|",
+      "\\code|xs.find(_ == 6)      |" -> "\\code|None|",
+      "\\code|xs.filter(_ == 1)    |" -> "\\code|Vector(1, 1)|",
+      "\\code|xs.filterNot(_ > 1)  |" -> "\\code|Vector(1, 0, 1)|",
+      "\\code|xs.zipWithIndex.filter(_._1 == 1).map(_._2)|" -> "\\code|Vector(4, 6)|",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+
     "quiz-w07-concepts" -> Vector(  //search, sets, maps
 //      "linjärsökning      " -> "leta i sekvens tills sökkriteriet är uppfyllt",
       "mängd              " -> "unika element, kan snabbt se om element finns",

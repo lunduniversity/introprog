@@ -116,7 +116,7 @@ val x: Int = 0
 
 \begin{framed}
 \noindent\emph{Tips inför fortsättningen:}
-Scalas standardbibliotek har många användbara samlingar med enhetlig metoduppsättning. Om du lär dig de viktigaste samlingsmetoderna får du en mångsidig och kraftfull verktygslåda. Läs mer här:
+Scalas standardbibliotek har många användbara samlingar med enhetlig metoduppsättning. Om du lär dig de viktigaste samlingsmetoderna får du en kraftfull verktygslåda. Läs mer här:
 
     \begin{itemize}%[nolistsep]
       \item snabbreferensen (enda tentahjälpmedel): \\{\small\url{http://cs.lth.se/pgk/quickref}}
@@ -161,54 +161,342 @@ Scalas standardbibliotek har många användbara samlingar med enhetlig metodupps
 \QUESTEND
 
 
-\WHAT{Inbyggda metoder för kopiering av sekvenser.}
+\WHAT{Kopiering av sekvenser.}
 
 \QUESTBEGIN
 
-\Task \what~ \code{map} \code{toArray} \code{copyToArray}
+\Task \what~ %\code{map} \code{toArray} \code{copyToArray}
+Klassen \code{Mutant} nedan kan användas för att skapa instanser med förändringsbara heltal.\footnote{Om den inbyggda klassen Int, i likhet med \code{Mutant}, knasigt nog  kunnat användas för att skapa förändringsbara instanser hade heltalsmatematiken i Scala omvandlats till ett skrämmande kaos...}
 
-\Subtask Uppdatering av oföränderliga sekvenser. \TODO
+\noindent\begin{minipage}{0.6\textwidth}
+\begin{Code}[basicstyle=\ttfamily\large\selectfont]
+class Mutant(var int: Int = 0)
+\end{Code}
+\end{minipage}
+\hfill\begin{minipage}{0.36\textwidth}
+%https://www.1001freedownloads.com/free-clipart/mutant
+\centering\includegraphics[width=3.6cm]{../img/mutant.png}
+\captionof{figure}{En instans av klassen Mutant där \code{int} kanske är 5.}
+%https://tex.stackexchange.com/questions/55337/how-to-use-figure-inside-a-minipage
+\end{minipage}
 
-\Subtask Uppdatering av förändringsbara sekvenser. \TODO
+\vspace{0.5em}\noindent Kör detta i REPL:
+\begin{REPL}
+scala> val xs = Vector.fill(3)(new Mutant)
+scala> val ys = xs.toArray    // kopierar referenserna till ny Array
+scala> val zs = xs.map(x => new Mutant(x.int)) // djupkopiera till ny Vector
+scala> xs(0).int = 5
+\end{REPL}
+\Subtask Fyll i tabellen nedan genom att till höger skriva värdet av varje uttryck till vänster. Förklara vad som händer. \emph{Tips:} Metoden \code{eq} jämför alltid referenser (ej innehåll).
+
+\renewcommand{\arraystretch}{2.0}
+\vspace{1em}\noindent\begin{tabular}{@{} l | p{5.5cm}}\hline
+\code|xs(0)         | & \\\hline
+\code|ys(0).int| & \\\hline
+\code|zs(0).int| & \\\hline
+\code|xs(0) eq ys(0)| & \\\hline
+\code|xs(0) eq zs(0)| & \\\hline
+\code|(ys.toBuffer :+ new Mutant).apply(0).int| & \\\hline
+\end{tabular}
+
+\Subtask Implementera med hjälp av en \code{while}-sats funktionen \code{deepCopy} nedan som gör \emph{djup} kopiering, d.v.s skapar en ny array med nya, innehållskopierade mutanter.
+\begin{Code}
+def deepCopy(xs: Array[Mutant]): Array[Mutant] = ???
+\end{Code}
+Använd denna algoritm:
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+
+ \Input{ ~En referens till en mutantarray $xs$}
+ \Output{ ~En referens till en djup kopia av $xs$}
+ $result \leftarrow$ en ny mutantarray med plats för lika många element som i $xs$\\
+ $i \leftarrow 0$  \\
+ \While{$i$ mindre än antalet element}{
+  skapa en kopia av elementet $xs(i)$ och lägg kopian på platsen $i$ i $result$\\
+  öka $i$ med 1
+ }
+ \Return $result$
+\end{algorithm}
+
+\Subtask Testa att din funktion och kolla så att inga läskiga muteringar genom delade referenser går att göra, så som med \code|xs| och \code|ys| i första deluppgiften.
+
+\Subtask Är det vanligt att man, för säkerhets skull, gör djupkopiering av alla element i oföränderliga samlingar som enbart innehåller oföränderliga element?
 
 \SOLUTION
 
-\TaskSolved \what~\TODO
+\TaskSolved \what~
+
+\SubtaskSolved
+
+\renewcommand{\arraystretch}{1.5}
+\vspace{1em}\noindent\begin{tabular}{@{} p{0.4\textwidth} p{0.6\textwidth}}\hline
+\code|xs(0)| & \code|Mutant@5ab7ef8a | varje instans har egen hexkod \\ \hline
+\code|ys(0).int               | & \code|5 | eftersom \code|ys| innehåller samma instanser som \code|xs|\\ \hline
+\code|zs(0).int               | & \code|0 | eftersom \code|!(xs(0) eq zs(0))| \\ \hline
+\code|xs(0) eq ys(0)          | & \code|true |  eftersom samma instanser \\ \hline
+\code|xs(0) eq zs(0)          | & \code|false | eftersom olika instanser\\ \hline
+\code|(ys.toBuffer :+ |
+\code|  new Mutant).apply(0).int| & \code|5 | eftersom kopian av typen \code|ArrayBuffer| har samma instans på första platsen som både \code|ys| och \code|xs|\\ \hline
+\end{tabular}
+
+\noindent Observera alltså att kopiering med \code{toArray}, \code{toVector}, \code{toBuffer}, etc. samt kopiering med \code{clone} \emph{inte är djup}, d.v.s det är bara elementreferenserna som förs över till ombandlad eller klonad samling och inga nya element skapas.
+
+\SubtaskSolved
+\begin{CodeSmall}
+def deepCopy(xs: Array[Mutant]): Array[Mutant] = {
+  val result = Array.ofDim[Mutant](xs.length) //fylld med null-referenser
+  var i = 0
+  while (i < xs.length) {
+    result(i) = new Mutant(xs(i).int) //kopia med samma innehåll på samma plats
+    i += 1
+  }
+  result
+}
+\end{CodeSmall}
+Det går också bra att skapa resultatarrayen med \code{new Array[Mutant](xs.length)}.
+Du kan också använda \code{size} i stället för \code{length}.
+
+\SubtaskSolved
+\begin{REPL}
+scala> class Mutant(var int: Int = 0)
+defined class Mutant
+
+scala> :pa
+def deepCopy(xs: Array[Mutant]): Array[Mutant] = {
+  val result = Array.ofDim[Mutant](xs.length)
+  var i = 0
+  while (i < xs.length) {
+    result(i) = new Mutant(xs(i).int)
+    i += 1
+  }
+  result
+}
+scala> val xs = Array.fill(3)(new Mutant)
+xs: Array[Mutant] = Array(Mutant@46a123e4, Mutant@44bc2449, Mutant@3c28e5b6)
+
+scala> val ys = deepCopy(xs)
+ys: Array[Mutant] = Array(Mutant@14b8a751, Mutant@7345f97d, Mutant@554566a8)
+
+scala> xs(0).int = 5
+xs(0).int: Int = 5
+
+scala> ys(0).int
+res0: Int = 0
+\end{REPL}
+
+\SubtaskSolved Nej, eftersom elementen inte kan förändras kan man utan problem dela referenser mellan samlingar. Det finns inte någon möjlighet att det kan ske förändringar som påverkar flera samlingar samtidigt.
+Dock gör man vanligen (ofta tidsödande) djupkopieringar av samlingar med förändringsbara element för att kunna vara säker på att den ursprungliga samlingen inte förändras.
 
 \QUESTEND
 
 
 
-\WHAT{Inbyggda metoder för uppdatering av sekvenser.}
+\ifPreSolution
+\begin{framed}
+\noindent\emph{Tips inför fortsättningen:} Ofta kan du lösa grundläggande delproblem med inbyggda samlingsmetoder ur standardbiblioteket. Till exempel kan ju kopieringen i \code{deepCopy} i föregående uppgift enkelt göras med hjälp av samlingsmetoden \code{map}.
+
+Men det är mycket bra för din förståelse om du kan implementera grundläggande sekvensalgoritmer själv även om det normalt är bättre att använda färdiga, vältestade  metoder. I kommande uppgifter ska du därför göra egna implementationer av några sekvensalgoritmer som redan finns i standardbiblioteket.
+\end{framed}
+\fi
+
+
+
+\WHAT{Uppdatering av sekvenser.}
 
 \QUESTBEGIN
 
-\Task \what~ \code{updated} \code{update} \code{+=} \code{patch}
+\Task \what~Deklarera dessa variabler i REPL:
 
-\Subtask Uppdatering av oföränderliga sekvenser. \TODO
+\begin{Code}
+val xs = (1 to 4).toVector
+val buf = xs.toBuffer
+\end{Code}
 
-\Subtask Implementera insert på Vector med hjälp av patch. \TODO
+\Subtask Uttrycken till vänster evalueras uppifrån och ned. Para ihop med rätt resultat.
 
-\Subtask Uppdatering av förändringsbara sekvenser. \TODO
+\begin{ConceptConnections}
+\input{generated/quiz-w06-seq-update-taskrows-generated.tex}
+\end{ConceptConnections}
+\emph{Tips:} Läs om metoderna i snabbreferensen och undersök i REPL. Exempel:
+\begin{REPL}
+scala> Vector(1,2,3,4).patch(from = 1, patch = Vector(0,0), replaced = 3)
+res0: scala.collection.immutable.Vector[Int] = Vector(1, 0, 0)
+\end{REPL}
+
+\Subtask Implementera funktionen \code{insert} nedan med hjälp av sekvenssamlingsmetoden \code{patch}. \emph{Tips:} Ge argumentet \code{0} till parametern \code{replaced}.
+\begin{Code}
+/** Skapar kopia av xs men med elem insatt på plats pos. */
+def insert(xs: Array[Int], elem: Int, pos: Int): Array[Int] = ???
+\end{Code}
+
+\Subtask Skriv pseduokod för en algoritm som implementerar \code{insert} med hjälp av \code{while}.
+
+\Subtask Implementera \code{insert} enligt din pseudokod. Testa i REPL och se vad som händer om \code{pos} är negativ? Vad händer om \code{pos} är precis ett steg bortom sista platsen i \code{xs}? Vad händer om \code{pos} är flera steg bortom sista platsen?
 
 \SOLUTION
 
-\TaskSolved \what~\TODO
+\TaskSolved \what~
+
+\SubtaskSolved
+
+\begin{ConceptConnections}
+\input{generated/quiz-w06-seq-update-solurows-generated.tex}
+\end{ConceptConnections}
+
+\SubtaskSolved
+
+\begin{Code}
+def insert(xs: Array[Int], elem: Int, pos: Int): Array[Int] =
+  xs.patch(from = pos, patch = Array(elem), replaced = 0)
+\end{Code}
+
+\SubtaskSolved Pseudokoden nedan är skriven så att den kompilerar fast den är ofärdig.
+\begin{Code}
+def insert(xs: Array[Int], elem: Int, pos: Int): Array[Int] = {
+  val result = ??? /* ny array med plats för ett element mer än i xs */
+  var i = 0
+  while(???){/* kopiera elementen före plats pos och öka i */}
+  if (i < result.length) /* lägg elem i result på plats i */
+  while(???){/* kopiera över resten */}
+  result
+}
+\end{Code}
+
+\SubtaskSolved
+\begin{Code}
+def insert(xs: Array[Int], elem: Int, pos: Int): Array[Int] = {
+  val result = new Array[Int](xs.length + 1)
+  var i = 0
+  while (i < pos && i < xs.length) { result(i) = xs(i); i += 1}
+  if (i < result.length) { result(i) = elem; i += 1 }
+  while (i < result.length && i > 0) { result(i) = xs(i - 1); i += 1}
+  result
+}
+\end{Code}
+\begin{REPL}
+scala> insert(Array(1,2),0,pos = -1)
+res2: Array[Int] = Array(0, 1, 2)
+
+scala> insert(Array(1,2),0,pos = 0)
+res3: Array[Int] = Array(0, 1, 2)
+
+scala> insert(Array(1,2),0,pos = 1)
+res4: Array[Int] = Array(1, 0, 2)
+
+scala> insert(Array(1,2),0,pos = 2)
+res5: Array[Int] = Array(1, 2, 0)
+
+scala> insert(Array(1,2),0,pos = 42)
+res7: Array[Int] = Array(1, 2, 0)
+\end{REPL}
 
 \QUESTEND
 
 
 
 
-\WHAT{Inbyggda metoder för linjärsökning.}
+\ifPreSolution
+\begin{framed}
+\noindent\emph{Tips inför fortsättningen:} Det är inte lätt att få rätt på alla specialfall även i enkla algoritmer så som \code{insert} ovan. Det är därför viktigt att noga tänka igenom sin sekvensalgoritm med avseende på typiska special. Använd denna checklista:
+\begin{enumerate}[noitemsep]
+  \item Vad händer om sekvensen är tom?
+  \item Fungerar det för exakt ett element?
+  \item Kan index bli negativt?
+  \item Kan index bli mer än längden minus ett?
+  \item Kan det bli en oändlig loop, t.ex. p.g.a. saknad loopvariabeluppräkning?
+\end{enumerate}
+Ibland vill man att vettiga undantag ska kastas vid ogiltig indata eller andra feltillstånd och då är \code{require} eller \code{assert} bra att använda. I andra fall vill man att resultatet t.ex. ska bli en tom sekvenssamling om indata är ogiltigt. Sådana beteenden behöver dokumenteras så att andra som använder dina algoritmer (eller du själv efter att du glömt hur det var) förstår vad som händer i olika fall.
+
+
+\end{framed}
+\fi
+
+
+
+
+\WHAT{Linjärsökning enligt olika sökkriterier.}
 
 \QUESTBEGIN
 
-\Task \what~\TODO
+\Task \what~Linjärsökning innebär att man letar tills man hittar det man söker efter i en sekvens. Detta delproblem återkommer ofta! Vanligen börjar linjärsökning från början och håller på tills man hittar något element som uppfyller kriteriet. Beroende på vad som finns i sekvensen och hur kriteriet ser ut kan det hända att man måste gå igenom alla element utan hitta det som eftersöks.
 
+\Subtask Linärsökning med inbyggda sekvenssamlingsmetoder.
+\begin{Code}
+val xs = ((1 to 5).reverse ++ (0 to 5)).toVector
+val n = xs.length
+\end{Code}
+Deklarera ovan variabler i REPL och para ihop uttrycken nedan med rätt värden. Förklara vad som händer.
+
+\begin{ConceptConnections}
+\input{generated/quiz-w06-seq-find-taskrows-generated.tex}
+\end{ConceptConnections}
+
+\Subtask Implementera linjärsökning i strängvektor med strängpredikat.
+\begin{Code}
+/** Returns first index where p. Returns -1 if not found. */
+def indexOf(xs: Vector[String], p: String => Boolean): Int = ???
+\end{Code}
+Ett strängpredikat \code{p: String => Boolean} är en funktion som tar en sträng som indata och ger ett booleskt värde som resultat. Implementera \code{indexOf} med hjälp av en \code{while}-sats. Du kan t.ex. använda en lokal boolesk variabel \code{found} för att hålla reda på om du har hittat det som eftersöks enligt predikatet.
+
+När element som uppfyller predikatet saknas måste man bestämma vad som ska hända. Kravet på din implementation i detta fall ges av dokumentationskommentaren ovan.
+
+Din funktion ska fungera enligt nedan:
+\begin{REPL}
+scala> val xs = Vector("hej","på","dej")
+
+scala> indexOf(xs, _.contains('p'))
+res0: Int = 1
+
+scala> indexOf(xs, _.contains('q'))
+res1: Int = -1
+
+scala> indexOf(Vector(), _.contains('q'))
+res2: Int = -1
+
+scala> indexOf(Vector("q"), _.length == 1)
+res3: Int = 0
+  \end{REPL}
 \SOLUTION
 
-\TaskSolved \what~\TODO
+\TaskSolved \what~
+
+\SubtaskSolved
+
+\begin{ConceptConnections}
+\input{generated/quiz-w06-seq-find-solurows-generated.tex}
+\end{ConceptConnections}
+
+\SubtaskSolved Med en boolesk variabel \code{found}:
+
+\begin{Code}
+def indexOf(xs: Vector[String], p: String => Boolean): Int = {
+  var found = false
+  var i = 0
+  while (i < xs.length && !found) {
+      found = p(xs(i))
+      i += 1
+  }
+  if (found) i - 1 else -1
+}
+\end{Code}
+Eller utan \code{found}:
+\begin{Code}
+def indexOf(xs: Vector[String], p: String => Boolean): Int = {
+  var i = 0
+  while (i < xs.length && !p(xs(i))) i += 1
+  if (i == xs.length) -1 else i
+}
+\end{Code}
+Eller börja bakifrån (kanske enklare att fatta (?) och mer koncis):
+\begin{Code}
+def indexOf(xs: Vector[String], p: String => Boolean): Int = {
+  var i = xs.length - 1
+  while (i >= 0 && !p(xs(i))) i -= 1
+  i
+}
+\end{Code}
+Eller på annat sätt som funkar och är lätt att begripliga.
 
 \QUESTEND
 
@@ -227,36 +515,58 @@ Scalas standardbibliotek har många användbara samlingar med enhetlig metodupps
 \QUESTEND
 
 
-\ifPreSolution
-\begin{framed}
-\noindent\emph{Tips inför fortsättningen:} Normalt kan du lösa grundläggande delproblem med inbyggda samlingsmetoder ur standardbiblioteket. Men det är mycket bra för din förståelse om du kan implementera grundläggande sekvensalgoritmer själv. I kommande uppgifter ska du därför själv implementera liknande funktioner som redan finns färdigt i standardbiblioteket.
-\end{framed}
-\fi
 
 
-\WHAT{Implementera.}
+
+\WHAT{Labbförberedelse: Implementera heltalsregistrering i Array.}
 
 \QUESTBEGIN
 
-\Task \what~\TODO
+\Task \what~Registrering innebär att man räknar antalet förekomster av olika värden. Varje gång ett nytt värde förekommer behöver vi räkna upp en räknare. Vi behöver en räknare för varje möjligt värde. Vi får hålla på med detta tills vi registrerat alla värden.
+
+På veckans laboration ska du registrera förekomsten av olika kortkombinationer i kortspelet poker. I denna övning ska du som träning inför laborationen lösa ett liknande registreringsproblem:  registrering av tärningskast. Då behövs sex olika räknare. Man kan med fördel då använda en sekvenssamling med plats för sex heltal. Man kan t.ex. låta  plats \code{0} håller reda på antalet ettor, plats \code{1} hålla reda på antalet tvåor, etc.
+
+\Subtask Implementera nedan algoritm enligt pseudokoden:
+\begin{Code}
+def registreraTärningskast(xs: Seq[Int]): Vector[Int] = {
+  val result = ??? /* Array med 6 nollor */
+  xs.foreach{ x =>
+    require(x >= 1 && x <= 6, "tärninskast ska vara mellan 1 & 6")
+    ??? /* räkna förekomsten av x */
+  }
+  result.toVector
+}
+\end{Code}
+
+\Subtask Använd \code{kasta} nedan när du testar din registreringsalgoritm med en sekvenssamling innehållande minst $1000$ tärningskast.
+\begin{Code}
+def kasta(n: Int) = Vector.fill(n)(util.Random.nextInt(6) + 1)
+\end{Code}
 
 \SOLUTION
 
-\TaskSolved \what~\TODO
+\TaskSolved \what~
 
-\QUESTEND
+\SubtaskSolved
+\begin{Code}
+def registreraTärningskast(xs: Seq[Int]): Vector[Int] = {
+  val result = Array.fill(6)(0)
+  xs.foreach{ x =>
+    require(x >= 1 && x <= 6, "tärninskast ska vara mellan 1 & 6")
+    result(x - 1) += 1
+  }
+  result.toVector
+}
+\end{Code}
 
+\SubtaskSolved
+\begin{REPL}
+scala> registreraTärningskast(kasta(1000))
+res0: Vector[Int] = Vector(171, 163, 166, 152, 184, 164)
 
-
-\WHAT{Implementera registrering med hjälp av Array. LABBFÖRBEREDELSE.}
-
-\QUESTBEGIN
-
-\Task \what~Räkna tärningskas\TODO
-
-\SOLUTION
-
-\TaskSolved \what~\TODO
+scala> registreraTärningskast(kasta(1000))
+res1: Vector[Int] = Vector(163, 161, 158, 174, 161, 183)
+\end{REPL}
 
 \QUESTEND
 
@@ -267,6 +577,40 @@ Scalas standardbibliotek har många användbara samlingar med enhetlig metodupps
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\WHAT{Registrering av booleska värden. Singla slant.}
+
+\QUESTBEGIN
+
+\Task \what~
+
+\Subtask Implementera en funktion som registrerar många slantsinglingar enligt nedan funktionshuvud. Indata är en sekvens av booleska värden där krona kodas som \code{true} och klave kodas som \code{false}. För registreringen ska du använda en lokal \code{Array[Int]}. I resultatet ska antalet utfall av \code{krona} ligga på första platsen i 2-tupeln medan på andra platsen ska antalet utfall av \code{klave} ligga.
+
+\begin{Code}
+def registerCoinFlips(xs: Seq[Boolean]): (Int, Int) = ???
+\end{Code}
+
+\Subtask Skapa en funktion \code{flips(n)} som ger en boolesk \code{Vector} med $n$ stycken slantsinglingar och använd den när du testar din slantsinglingsregistreringsalgoritm.
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved
+\begin{Code}
+def registerCoinFlips(xs: Seq[Boolean]): (Int, Int) = {
+  val result = Array.fill(2)(0)
+  xs.foreach{ x =>
+    if (x) result(0) += 1 else result(1) += 1
+  }
+  (result(0), result(1))
+}
+\end{Code}
+
+\SubtaskSolved
+
+
+
+\QUESTEND
 
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -467,114 +811,6 @@ Int = 12
 
 
 
-
-%%<AUTOEXTRACTED by mergesolu>%%      % Uppgift 3
-
-
-
-
-\WHAT{Kopiering och uppdatering.}
-
-\QUESTBEGIN
-
-\Task  \what~  Metoder på oföränderliga samlingar skapar nya samlingar istället för att ändra. Därför behöver man inte själv skapa kopior. När en \emph{föränderlig} samling uppdateras på plats, syns denna förändring via alla referenser till samlingen.
-
-\begin{REPL}
-scala> val xs = Vector(1, 2, 3)
-scala> val ys = xs.toArray
-scala> ys(1) = 42
-scala> xs
-scala> ys
-scala> val zs = ys.toArray
-scala> zs(1) = 84
-scala> xs
-scala> ys
-scala> zs
-\end{REPL}
-
-\Subtask Syns uppdateringen av objektet som \code{ys} refererar till via referensen \code{xs}? Varför?
-
-\Subtask Syns uppdateringen av objektet som \code{zs} refererar till via referensen \code{ys}? Varför?
-
-\Subtask Syns uppdateringen av objektet som \code{zs} refererar till via referensen \code{xs}? Varför?
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved  Nej det gör det inte.
-Då ys tilldelas xs.toArray kopieras datan från xs över i en array (som är mutable) vilket är en annan referens än den till xs.
-Detta innebär att xs och ys inte “pekar” på samma objekt längre.
-
-\SubtaskSolved  Ja därför båda är array och nu kopieras referensen till ys över till zs.
-Därför kommer alla ändringar i zs att påverka ys (så länge de pekar på samma referens).
-
-\SubtaskSolved  Nej det gör det inte. Se a).
-
-
-
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      % Uppgift 4
-
-
-
-
-\WHAT{Färdig metod för att skapa kopia av array.}
-
-\QUESTBEGIN
-
-\Task  \what~  Om man inte vill att en uppdatering av en föränderlig samling ska få oönskad påverkan på andra koddelar som refererar till samlingen, behöver man göra kopior av samlingen före uppdatering. Det finns färdiga metoder för kopiering av objekt av typen Array i paketet \code{java.util.Arrays}.
-
-\Subtask\Pen Studera dokumentationen för metoden \code{java.util.Arrays.copyOf} här:\\ \href{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html\#copyOf-int:A-int-}{docs.oracle.com/javase/8/docs/api/java/util/Arrays.html\#copyOf-int:A-int-} \\
-Notera att syntaxen för arrayer i Java är annorlunda: När det står \code{int[]} i Java så motsvarar det \code{Array[Int]} i Scala. Vad används den andra parametern till?
-
-\Subtask\Pen Rita en bild av hur minnet ser ut efter varje tilldelning nedan. Vad har \code{xs}, \code{ys} och \code{zs} för värden efter exekveringen av raderna 1--5 nedan? Varför?
-\begin{REPL}
-scala> val xs = Array(1, 2, 3, 4)
-scala> val ys = xs
-scala> val zs = java.util.Arrays.copyOf(xs, xs.size - 1)
-sxala> xs(0) = 42
-scala> zs(0) = 84
-scala> xs
-scala> ys
-scala> zs
-\end{REPL}
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved  Den andra parametern anger hur stor den nya vektorn som returneras ska vara.
-
-\SubtaskSolved  \begin{enumerate}
-\item \includegraphics[scale=1.2]{../img/w05-solutions/memory-pic-2}
-\item \includegraphics[scale=1.2]{../img/w05-solutions/memory-pic-3}
-\item \includegraphics[scale=1.2]{../img/w05-solutions/memory-pic-4}
-\item \includegraphics[scale=1.2]{../img/w05-solutions/memory-pic-5}
-\item \includegraphics[scale=1.2]{../img/w05-solutions/memory-pic-6}
-\end{enumerate}
-xs = Array(42, 2, 3, 4)\\
-ys = Array(42, 2, 3 ,4)\\
-zs = Array(84, 2, 3)\\
-\code{xs} och \code{yx} refererar till samma objekt och då deras första IntCell:s värde ändras till 42, så kommer förändringen att ske för båda.
-\code{zs} har en referens till ett annat objekt med ett mindre element. Att \code{zs}:s första element ändras, påverkar inte \code{xs} och \code{ys}.
-
-
-
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      % Uppgift 5
 
 
 

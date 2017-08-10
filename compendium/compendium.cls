@@ -83,7 +83,7 @@
 \usepackage{pdfpages} % To include quickref booklet in appendix
 
 \usepackage[labelfont=bf]{caption}  % to get bold faced table and figure captions
-
+%https://tex.stackexchange.com/questions/55337/how-to-use-figure-inside-a-minipage
 
 
 
@@ -193,6 +193,10 @@
 %\newcommand\TaskPen{\Task{\reversemarginpar\marginnote{\footnotesize\smallpencil}[0cm]}}
 \newcommand\Pen{\reversemarginpar\marginnote{\footnotesize\Emph{\smallpencil}}[0cm]}
 \newcommand\Checkpoint{\reversemarginpar\marginnote{\small\Alert{\checkmark \eye}}[0cm]}
+%\newcommand\Uberkurs{}
+%\newcommand\Uberkurs{\reversemarginpar\marginnote{\Large\Alert{$\notin$}}[0cm]}
+\newcommand\Uberkurs{\reversemarginpar\marginnote{\Large\Alert{$\star$}}[0cm]}
+
 
 \newcommand{\MEM}[3]{\vspace{0.5em}
 \begin{tikzpicture}[font=\ttfamily]
