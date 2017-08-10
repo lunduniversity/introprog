@@ -90,7 +90,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
        "\\code|def main|     " -> "\\jcode|public static main|",
        "\\code|Array[String]|" -> "\\jcode|String[]|          ",
        "\\code|: Unit|       " -> "\\jcode|void|              ",
-       "\\code|=|            " -> "\\jcode|) {|               ",
+//       "\\code|=|            " -> "\\jcode|) {|               ",
        "\\code|println|      " -> "\\jcode|System.out.println|",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
