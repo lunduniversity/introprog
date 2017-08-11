@@ -359,6 +359,20 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
 
+    "quiz-w06-seq-sort" -> Vector(  //sequences
+      "\\code|'a' < 'A'                  |" -> "\\code|false|",
+      "\\code|\"AÄÖö\" < \"AÅÖö\"        |" -> "\\code|true|",
+      "\\code|xs.sorted.head             |" -> "\\code|-1|",
+      "\\code|xs.sorted.reverse.head     |" -> "\\code|3|",
+      "\\code|ys.sorted.head             |" -> "\\code|\"ak\"|",
+      "\\code|zs.indexOf('a')            |" -> "\\code|1|",
+      "\\code|ps.sorted.head.förnamn.take(2)|" -> "\\code|error: ...|",
+      "\\code|ps.sortBy(_.förnamn).apply(1).förnamn.take(2)|" -> "\\code|\"ka\"|",
+      "\\code|xs.sortWith((x1,x2) => x1 > x2).indexOf(3)|" -> "\\code|0|",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+
     "quiz-w07-concepts" -> Vector(  //search, sets, maps
 //      "linjärsökning      " -> "leta i sekvens tills sökkriteriet är uppfyllt",
       "mängd              " -> "unika element, kan snabbt se om element finns",
