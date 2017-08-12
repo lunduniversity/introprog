@@ -385,6 +385,18 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
+    "quiz-w07-setops" -> Vector(  //sequences
+      "\\code|Set(1, 2) ++ Set(1, 2)          |" -> "\\code|Set(1, 2)     |",
+      "\\code|(1 to 3).toSet                  |" -> "\\code|Set(1) + 2 + 3|",
+      "\\code|Vector.fill(3)(1).toSet         |" -> "\\code|Set(1, 2) - 2 |",
+      "\\code|Set(1, 2, 3) diff Set(1, 2)     |" -> "\\code|Set(3)        |",
+      "\\code|(1 to 7).toSet.apply(8)         |" -> "\\code|false         |",
+      "\\code|Set(1, 2, 3).sorted             |" -> "\\code|error: ...    |",
+      "\\code|Set(2,4) subsetOf (1 to 7).toSet|" -> "\\code|true          |",
+      "\\code|Set(1, -1, 2, -2).map(_.abs).sum|" -> "\\code|3             |",
+      "\\code|Set(1, 1, 1, 1, 1, 5).sum       |" -> "\\code|6             |",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
 
     "" -> Vector()
   ).filter(_._1.trim.nonEmpty)
