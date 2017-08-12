@@ -48,7 +48,7 @@
 
 \QUESTEND
 
-\clearpage
+
 
 \WHAT{Olika sekvenssamlingar.}
 
@@ -166,7 +166,9 @@ Scalas standardbibliotek har många användbara samlingar med enhetlig metodupps
 \QUESTBEGIN
 
 \Task \what~ %\code{map} \code{toArray} \code{copyToArray}
-Klassen \code{Mutant} nedan kan användas för att skapa instanser med förändringsbara heltal.\footnote{Om den inbyggda klassen Int, i likhet med \code{Mutant}, knasigt nog  kunnat användas för att skapa förändringsbara instanser hade heltalsmatematiken i Scala omvandlats till ett skrämmande kaos.}
+Klassen \code{Mutant} nedan kan användas för att skapa förändringsbara instanser med heltal.\footnote{Om den inbyggda grundtypen Int, i likhet med \code{Mutant}, knasigt nog  kunnat användas för att skapa förändringsbara instanser hade heltalsmatematiken i Scala omvandlats till ett skrämmande kaos.
+%\\Lär mer om fem här: \url{https://www.youtube.com/watch?v=dpdOUEe9mm4}
+}
 
 \noindent\begin{minipage}{0.6\textwidth}
 \begin{Code}[basicstyle=\ttfamily\large\selectfont]
@@ -175,17 +177,18 @@ class Mutant(var int: Int = 0)
 \end{minipage}
 \hfill\begin{minipage}{0.36\textwidth}
 %https://www.1001freedownloads.com/free-clipart/mutant
-\centering\includegraphics[width=3.6cm]{../img/mutant.png}
+\centering\includegraphics[width=3.4cm]{../img/mutant.png}
 \captionof{figure}{En instans av klassen Mutant där \code{int} kanske är 5.}
 %https://tex.stackexchange.com/questions/55337/how-to-use-figure-inside-a-minipage
 \end{minipage}
 
-\vspace{0.5em}\noindent Kör detta i REPL:
+\vspace{1em}\noindent Kör nedan i REPL efter studier av detta:  \url{https://youtu.be/dpdOUEe9mm4}
 \begin{REPL}
-scala> val xs = Vector.fill(3)(new Mutant)
+scala> val fem = new Mutant(5)
+scala> val xs = Vector(fem, fem, fem)
 scala> val ys = xs.toArray    // kopierar referenserna till ny Array
-scala> val zs = xs.map(x => new Mutant(x.int)) // djupkopiera till ny Vector
-scala> xs(0).int = 5
+scala> val zs = xs.map(x => new Mutant(x.int)) // djupkopierar till ny Vector
+scala> xs(0).int = (new Mutant).int
 \end{REPL}
 \Subtask Fyll i tabellen nedan genom att till höger skriva värdet av varje uttryck till vänster. Förklara vad som händer. \emph{Tips:} Metoden \code{eq} jämför alltid referenser (ej innehåll).
 
@@ -231,16 +234,26 @@ Använd denna algoritm:
 
 \renewcommand{\arraystretch}{1.5}
 \vspace{1em}\noindent\begin{tabular}{@{} p{0.4\textwidth} p{0.6\textwidth}}\hline
-\code|xs(0)| & \code|Mutant@5ab7ef8a | varje instans har egen hexkod \\ \hline
-\code|ys(0).int               | & \code|5 | eftersom \code|ys| innehåller samma instanser som \code|xs|\\ \hline
-\code|zs(0).int               | & \code|0 | eftersom \code|!(xs(0) eq zs(0))| \\ \hline
-\code|xs(0) eq ys(0)          | & \code|true |  eftersom samma instanser \\ \hline
+\code|xs(0)| & \code|Mutant@66d766b9 | nya instanser får nya hexkoder \\ \hline
+\code|ys(0).int               | & \code|0 | eftersom \code|ys| innehåller samma instans som \code|xs|\\ \hline
+\code|zs(0).int               | & \code|5 | eftersom \code|!(xs(0) eq zs(0))| \\ \hline
+\code|xs(0) eq ys(0)          | & \code|true |  eftersom samma instans \\ \hline
 \code|xs(0) eq zs(0)          | & \code|false | eftersom olika instanser\\ \hline
 \code|(ys.toBuffer :+ |
-\code|  new Mutant).apply(0).int| & \code|5 | eftersom kopian av typen \code|ArrayBuffer| har samma instans på första platsen som både \code|ys| och \code|xs|\\ \hline
+\code|  new Mutant).apply(0).int| & \code|0 | eftersom kopian av typen \code|ArrayBuffer| refererar samma instans på fösta platsen som både \code|ys| och \code|xs|\\ \hline
 \end{tabular}
 
-\noindent Observera alltså att kopiering med \code{toArray}, \code{toVector}, \code{toBuffer}, etc. samt kopiering med \code{clone} \emph{inte är djup}, d.v.s det är bara elementreferenserna som förs över till ombandlad eller klonad samling och inga nya element skapas.
+\vspace{0.5em}\noindent Observera alltså att kopiering med \code{toArray}, \code{toVector}, \code{toBuffer}, etc. \emph{inte är djup}, d.v.s det är bara elementreferenserna som delas i en samling av ny typ.
+
+Om du gör \code{toXXX} på en samling som redan är av typen \code{XXX} sker ingenting annat än att samlingsreferensen returneras -- det är bara vid omvandling till en \emph{ny} typ av samling som kopiering av \emph{referenserna} sker,  fortfarande utan någon djupkopiering (alltså ingen instansiering av nya element med kopierat innehåll).
+\begin{REPL}
+scala> val a = Array(5)
+a: Array[Int] = Array(5)
+
+scala> a.toArray eq a
+res0: Boolean = true
+\end{REPL}
+
 
 \SubtaskSolved
 \begin{CodeSmall}
@@ -865,8 +878,8 @@ def removeCopy(xs: Array[Int], pos: Int): Array[Int] = {
 
 \QUESTBEGIN
 
-\Task  \what~  Ibland vill man ta bort ett element på en viss position i en array utan att kopiera element. Ett sätt att göra detta är att flytta alla efterföljande element ett steg mot lägre index och fylla ut sista positionen med ett utfyllnadsvärde, t.ex. $0$.
-Skriv först pseudokod. Implementera sedan algoritmen i en funktion med denna signatur:
+\Task  \what~  Ibland vill man ta bort ett element på en viss position i en array utan att kopiera alla element, utom ett, till en ny samling. Ett sätt att göra detta är att flytta alla efterföljande element ett steg mot lägre index och fylla ut sista positionen med ett utfyllnadsvärde, t.ex. $0$.
+Skriv först pseudokod för en sådan algoritm. Implementera sedan algoritmen i en funktion med denna signatur:
 \begin{Code}
 def removeAndPad(xs: Array[Int], pos: Int, pad: Int = 0): Unit
 \end{Code}
@@ -971,14 +984,15 @@ Man får \code{ArrayIndexOutOfBoundsException} då indexeringen är utanför sto
 
 
 
-\WHAT{Insättning i array.}
+\WHAT{Insättning på plats i array.}
 
 \QUESTBEGIN
 
-\Task  \what~  Ett sätt att implementera insättning i en array är att alla elementen efter \code{pos} flyttas fram ett steg och att sista elementet ''försvinner''.
-Skriv först algoritmen i pseudokod och implementera sedan enligt:
+\Task  \what~  Ett sätt att implementera insättning i en array, utan att kopiera alla element till en ny array med en plats extra, är att alla elementen efter \code{pos} flyttas fram ett steg till högre index, så att plats bereds för det nya elementet. Med denna lösning får det sista elementet ''försvinna'' genom brutal överskrivning eftersom arrayer inte kan ändra storlek.
+
+Skriv först en sådan algoritm i pseudokod och implementera den sedan i en procedur med detta huvud:
 \begin{Code}
-def insertDrop(xs: Array[Int], x: Int, pos: Int): Unit
+def insertDropLast(xs: Array[Int], x: Int, pos: Int): Unit
 \end{Code}
 
 \SOLUTION
@@ -999,7 +1013,7 @@ def insertDrop(xs: Array[Int], x: Int, pos: Int): Unit
 \end{algorithm}
 
 \begin{Code}
-def insertDrop(xs: Array[Int], x: Int, pos: Int): Unit = {
+def insertDropLast(xs: Array[Int], x: Int, pos: Int): Unit = {
   val n = xs.size
   val ys = xs.clone
   xs(pos) = x
