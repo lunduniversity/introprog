@@ -50,6 +50,195 @@
 \QUESTEND
 
 
+\WHAT{Vad är en mängd?}
+\QUESTBEGIN
+
+\Task \what~ Förklara vad som händer nedan. Varför hamnar elementen i en ''konstig'' ordning? Varför ''försvinner'' det element?
+
+\begin{REPL}
+scala> val xs = Vector(1,2,3,1,2,3,4,5,7).toSet
+xs: scala.collection.immutable.Set[Int] = Set(5, 1, 2, 7, 3, 4)
+scala> xs.foreach(print)
+512734
+\end{REPL}
+
+\SOLUTION
+
+\TaskSolved \what~En mängd är en samling som snabbt kan ge svaret på frågan om ett visst element ingår i samlingen eller ej. Elementen i en mängd är unika. Tilläg av redan existerande element ignoreras. En mängd är inte en  sekvens, eftersom traversering med t.ex. \code{map} eller \code{foreach} inte (nödvändigtvis) sker i den ordning som elementen gavs när mängden konstruerades eller uppdaterades.
+
+\QUESTEND
+
+
+\WHAT{Räkna unika ord med hjälp av en mängd.}
+
+\QUESTBEGIN
+
+\Task \what~På veckans laboration ska vi göra automatisk språkbehandling av långa texter som vi delar upp i ord.
+
+Med metoden \code{s.split(' ').toVector} kan man dela upp en sträng \code{s} i en vektor av ord. Använd metoderna \code{split} och \code{toSet} för skapa ett uttryck som beräknar hur många unika ord det finns strängen \code{hej} nedan:
+\begin{REPL}
+scala> val hej = "hej hej hemskt mycket hej"
+\end{REPL}
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\begin{REPL}
+scala> val hej = "hej hej hemskt mycket hej"
+scala> val n = hej.split(' ').toSet.size
+n: Int = 3
+\end{REPL}
+
+
+\QUESTEND
+
+
+\WHAT{Skapa 2-tupler med metoden \code{->} ''mappas till''.}
+
+\QUESTBEGIN
+
+\Task \what~Vi har tidigare sett hur två olika värden kan samlas i en 2-tupel, till exempel \code{(0, true)}. Par kan även skapas med hjälp av metoden \code{->} enligt nedan. Testa i REPL.
+\begin{REPLnonum}
+scala> ("Skåne", "Lund")          // ett strängpar
+scala> "Skåne -> "Lund"           // operatornotation med ->
+scala> "Skåne".->("Lund")         // punktnotation med ->
+\end{REPLnonum}
+Metoden \code{->} fungerar med alla typer och är en fabriksmetod för par. Metodnamnet liknar en högerpil och illustrerar en mappning från första till andra värdet.
+
+\Subtask Fungerar det att på par skapade med \code{->} använda metoderna \code{_1} och \code{_2}?
+
+
+\Subtask Deklarera en variabel \code{val huvudstad: Vector[(String, String)]} som innehåller mappningar mellan geografiska områden och deras huvudstäder enligt tabellen nedan.
+
+\begin{table}[H]
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabular}{|l|l|}\hline
+  Sverige & Stockholm \\\hline
+  Danmark & Köpenhamn \\\hline
+  Skåne & Lund \\\hline
+  \end{tabular}
+\end{table}
+
+\Subtask Vad blir det för felmeddelande om du råkar skriva ett komma för mycket före högerparentesen: ...\code{und",)}
+
+\Subtask Skriv ett uttryck som plockar fram \code{"Lund"} ur \code{huvudstad}.
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+\SubtaskSolved Ja, fabriksmetoden returnerar ett helt vanligt par:
+\begin{REPLnonum}
+scala> val härBorJag = "Skåne" -> "Lund"
+härBorJag: (String, String) = (Skåne,Lund)
+
+scala> härBorJag._1
+res0: String = Skåne
+
+scala> härBorJag._2
+res1: String = Lund
+\end{REPLnonum}
+
+
+\SubtaskSolved
+
+\begin{Code}
+val huvudstad = Vector(
+  "Sverige" -> "Stockholm",
+  "Danmark" -> "Köpenhamn",
+  "Skåne"   -> "Lund"
+)
+\end{Code}
+
+\SubtaskSolved
+
+\begin{REPL}
+scala> Vector("Sverige"->"Stockholm","Norge"->"Oslo","Skåne"->"Lund",)
+<console>:1: error: illegal start of simple expression
+\end{REPL}
+Man skriver ofta en mappning per rad för att det ska gå att läsa som en tabell, och inte som ovan med alla mappningar på samma rad.
+
+Det är lätt hänt att få med ett komma för mycket (eller för lite) när man flyttar eller duplicerar rader med många mappningar i en kodeditor. I en framtida version av Scala kommer sådana problem att vara mindre smärtsamma:\\
+\url{http://docs.scala-lang.org/sips/completed/trailing-commas.html}
+
+\SubtaskSolved
+\begin{REPL}
+scala> huvudstad(2)._2
+res2: String = Lund
+\end{REPL}
+
+\QUESTEND
+
+
+
+\WHAT{Linjärsöka efter nyckel i sekvens av mappningar.}
+
+\QUESTBEGIN
+
+\Task \what~
+
+\Subtask Implementera funktionen \code{lookupIndex} nedan, som med hjälp av samlingsmetoden \code{indexWhere} ska göra linjärsökning efter ett par i sekvensen där \code{key} finns på första platsen i paret.
+
+\begin{Code}
+def lookupIndex(xs: Vector[(String, String)])(key: String): Int = ???
+\end{Code}
+
+\Subtask Testa din funktion i REPL genom att slå upp index för Skånes huvudstad i sekvensen \code{huvudstad} från föregående uppgift.
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved
+\begin{Code}
+def lookupIndex(xs: Vector[(String, String)])(key: String): Int =
+  xs.indexWhere(_._1 == key)
+\end{Code}
+
+\SubtaskSolved
+\begin{REPL}
+scala> val i = lookupIndex(huvudstad)("Skåne")
+i: Int = 2
+
+scala> huvudstad(i)._2
+res2: String = Lund
+\end{REPL}
+
+Eller med funktioner som generella, återanvändbara dellösningar:
+\begin{REPL}
+scala> val indexOf = lookupIndex(huvudstad) _
+
+scala> def capitol(key: String) = huvudstad(indexOf(key))._2
+
+scala> capitol("Skåne")
+res3: String = Lund
+
+scala> capitol("Sverige")
+res4: String = Stockholm
+\end{REPL}
+
+\QUESTEND
+
+
+
+\WHAT{Nyckel-värde-tabell.}
+
+\QUESTBEGIN
+
+\Task \what~\TODO
+
+\SOLUTION
+
+\TaskSolved \what~\TODO
+
+\QUESTEND
+
+
+
+
+
 \WHAT{Registrering med inbyggda samlingsmetoder.}
 
 \QUESTBEGIN
@@ -84,104 +273,8 @@
 
 
 
-\WHAT{En enkel datastruktur: tupel.}
-
-\QUESTBEGIN
-
-\Task  \what~  Du kan samla olika data i en tupel. Du kommer åt värdena med en metod som har namnet understreck följt av ordningsnumret.
-\begin{REPL}
-scala> val namn = ("Pippi", "Långstrump")
-scala> namn._1
-scala> namn._2
-scala> println("Förnamn: " + namn._1 + "\nEfternamn:" + namn._2)
-\end{REPL}
-
-\Subtask Definiera en oföränderlig variabel med namnet \code{pt} som representerar en punkt med x-koordinaten 15.9 och y-koordinaten 28.9. Använd sedan \code{math.hypot} för att ta reda på avståndet från origo till punkten. Vad blir svaret?
-
-\Subtask Du kan dela upp en tupel i sina beståndsdelar så här:
-\begin{REPLnonum}
-scala> val (förnamn, efternamn) = ("Ronja", "Rövardotter")
-\end{REPLnonum}
-Dela upp din punkt \code{pt} i sina beståndsdelar och kalla delarna \code{x} och \code{y}
-
-\Subtask Värdena i en tupel kan ha olika typ.
-\begin{REPLnonum}
-scala> val creature = ("Doktor", "Krokodil", 65.0, false)
-scala> val (title, name, weight, isHuman) = creature
-\end{REPLnonum}
-Vilken typ har 4-tupeln \code{creature} ovan?
-
-\Subtask \label{subtask:tuplecoll} Tupler kan ingå i samlingar.
-\begin{REPLnonum}
-scala> val pts = Vector((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
-scala> pts.foreach(println)
-\end{REPLnonum}
-Vilken typ har vektorn \code{pts} ovan?
 
 
-\Subtask För 2-tupler finns ett kortare skrivsätt:
-\begin{REPLnonum}
-scala> ("Skåne", "Malmö")
-scala> "Skåne -> "Malmö"
-scala> val huvudstäder = Vector("Sverige" -> "Stockholm", "Norge" -> "Oslo")
-\end{REPLnonum}
-Lägg till fler huvudstäder i vektorn ovan.
-
-\Subtask Funktioner kan ta tupler som parametrar.
-\begin{REPL}
-scala> def length(pt: (Double, Double)) = math.hypot(pt._1, pt._2)
-scala> length((3.0, 4.0))
-scala> length(3.0, 4.0)    //kompilatorn lägger till parenteserna innan anrop
-\end{REPL}
-Applicera funktionen \code{length} ovan på alla tupler i samlingen \code{pts} från uppgift \ref{subtask:tuplecoll} med \code{map}. Vad får resultatet för värde och typ?
-
-\Subtask Funktioner kan ge tupler som resultat.
-\begin{REPL}
-scala> def div(a: Int, b: Int) = (a / b, a % b)
-scala> div(10, 3)
-scala> (div(9,2), div(10,2))
-scala> (div(9,2)._2, div(10,2)._2)
-scala> val nOdd = (1 to 10).map(i => div(i, 2)._2).sum
-\end{REPL}
-Förklara vad som händer ovan. Använd \code{div} ovan för att ta reda på hur många udda tal finns det i intervallet $[1234, 3456]$.
-
-\Subtask En tupel med $n$ värden kallas $n$-tupel. Om man betraktar enhetsvärdet \code{()} som en tupel, vad kan man då kalla detta värde?
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved
-\begin{REPLnonum}
-scala> val pt = (15.9, 28.9)
-
-scala> math.hypot(pt._1, pt._2)
-res0: Double = 32.98514817307935
-\end{REPLnonum}
-
-\SubtaskSolved   \code{val (x, y) = pt}
-
-\SubtaskSolved   \code{(String, String, Double, Boolean)}
-
-\SubtaskSolved   \code{Vector[(Double, Double)]}
-
-\SubtaskSolved   \code{huvudstäder :+ ''Danmark'' -> ''Köpenhamn''}
-
-\SubtaskSolved   \code{Vector[Double]}
-
-\SubtaskSolved   \code{val antalUdda = (1234 to 3456).map(i => div(i, 2)._2).sum}
-
-\SubtaskSolved   0-tupel
-
-
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 1
 
 
 
