@@ -290,7 +290,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "söking           " -> "algoritm som letar upp element enligt sökkriterium",
       "linjärsöking     " -> "sökalgoritm som letar i sekvens tills element hittas",
       "registrering     " -> "algoritm som räknar element med vissa egenskaper",
-      "varargs          " -> "variabelt antal argument, asterisk efter parametertyp ",
+//      "repeterade param." -> "variabelt antal argument, asterisk efter parametertyp ",
       "tidskomplexitet  " -> "hur exekveringstiden växer med problemstorleken",
       "minneskomplexitet" -> "hur minnesåtgången växer med problemstorleken",
       "" -> ""

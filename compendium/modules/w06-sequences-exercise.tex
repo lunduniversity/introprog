@@ -656,6 +656,58 @@ scala> (1 to 1000).map(_ => Random.shuffle(1 to 6).head).count(_ == 6)
 res2: Int = 168
 \end{REPL}
 
+\QUESTEND
+
+
+
+\WHAT{Repeterade parametrar.}
+
+\QUESTBEGIN
+
+\Task  \what~  Det går att deklarera en funktion som tar en argumentsekvens av godtycklig längd, ä.k. \emph{varargs}. Syntaxen består av en asterisk \code{*} efter typen. Funktion sägs då ha repeterade parametrar \Eng{repeated parameters}. I funktionskroppen får man tillgång till argumenten i en sekvenssamling. Argumenten anges godtyckligt många med komma emellan. Exempel:
+\begin{Code}
+/** Ger en vektor med stränglängder för godtyckligt antal strängar. */
+def stringSizes(xs: String*): Vector[Int] = xs.map(_.size).toVector
+\end{Code}
+
+\Subtask Deklarera och använd \code{stringSizes} i REPL. Vad händer om du anropar \code{stringSizes} med en tom argumentlista?
+
+\Subtask Det händer ibland att man redan har en sekvenssamling, t.ex. \code{xs}, och vill skicka med varje element som argument till en varargs-funktion. Syntaxen för detta är \code{xs: _* } vilket gör att kompilatorn omvandlar sekvenssamlingen till en argumentsekvens av rätt typ.
+
+Prova denna syntax genom att ge en \code{xs} av typen \code{Vector[String]} som argument till \code{stringSizes}. Fungerar det även om \code{xs} är en sekvens av längden 0?
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved
+
+\begin{REPL}
+scala> def stringSizes(xs: String*): Vector[Int] = xs.map(_.size).toVector
+scala> stringSizes("hej")
+res83: Vector[Int] = Vector(3)
+
+scala> stringSizes("hej", "på", "dej", "")
+res84: Vector[Int] = Vector(3, 2, 3, 0)
+
+scala> stringSizes()
+res85: Vector[Int] = Vector()
+\end{REPL}
+
+\noindent Anrop med tom argumentlista ger en tom heltalssekvens.
+
+\SubtaskSolved
+
+\begin{REPL}
+scala> val xs = Vector("hej","på","dej", "")
+
+scala> stringSizes(xs: _*)
+res86: Vector[Int] = Vector(3, 2, 3, 0)
+
+scala> stringSizes(Vector(): _*)
+res87: Vector[Int] = Vector()
+\end{REPL}
+Ja, det funkar fint med tom sekvens.
 
 \QUESTEND
 
@@ -1040,7 +1092,7 @@ def insertDropLast(xs: Array[Int], x: Int, pos: Int): Unit = {
 
 \SubtaskSolved
 
-\begin{itemize}
+\begin{itemize}[noitemsep]
   \item \code{lastIndexOf} är bra om man vill leta bakifrån i stället för framifrån; utan denna hade man annars då behövt använda \code{xs.reverse.indexOf(e)}
   \item \code{indexOfSlice(ys)} letar efter index där en hel sekvens \code{ys} börjar, till skillnad från \code{indexOf(e)} som bara letar efter ett enstaka element.
   \item \code{segmentLength(p, i)} ger längden på den längsta sammanhängande sekvens där alla element uppfyller predikatet \code{p} och sökningen efter en sådan sekvens börjar på plats \code{i}
@@ -1057,60 +1109,6 @@ def insertDropLast(xs: Array[Int], x: Int, pos: Int): Unit = {
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-
-\WHAT{Repeterade parametrar.}
-
-\QUESTBEGIN
-
-\Task  \what~  Det går att deklarera en funktion som tar en argumentsekvens av godtycklig längd, ä.k. \emph{varargs}. Syntaxen består av en asterisk \code{*} efter typen. Funktion sägs ha repeterade parametrar \Eng{repeated parameters}. I funktionskroppen får man tillgång till argumenten i en sekvenssamling. Argumenten anges godtyckligt många med komma emellan. Exempel:
-\begin{Code}
-/** Ger en vektor med stränglängder för godtyckligt antal strängar. */
-def stringSizes(xs: String*): Vector[Int] = xs.map(_.size).toVector
-\end{Code}
-
-\Subtask Deklarera och använd \code{stringSizes} i REPL. Vad händer om du anropar \code{stringSizes} med en tom argumentlista?
-
-\Subtask Det händer ibland att man redan har en sekvenssamling, t.ex. \code{xs}, och vill skicka med varje element som argument till en varargs-funktion. Syntaxen för detta är \code{xs: _* } vilket gör att kompilatorn omvandlar sekvenssamlingen till en argumentsekvens av rätt typ.
-
-Prova denna syntax genom att ge en \code{xs} av typen \code{Vector[String]} som argument till \code{stringSizes}. Fungerar det även om \code{xs} är en sekvens av längden 0?
-
-\SOLUTION
-
-\TaskSolved \what
-
-\SubtaskSolved
-
-\begin{REPL}
-scala> def stringSizes(xs: String*): Vector[Int] = xs.map(_.size).toVector
-scala> stringSizes("hej")
-res83: Vector[Int] = Vector(3)
-
-scala> stringSizes("hej", "på", "dej", "")
-res84: Vector[Int] = Vector(3, 2, 3, 0)
-
-scala> stringSizes()
-res85: Vector[Int] = Vector()
-\end{REPL}
-
-\noindent Anrop med tom argumentlista ger en tom heltalssekvens.
-
-\SubtaskSolved
-
-\begin{REPL}
-scala> val xs = Vector("hej","på","dej", "")
-
-scala> stringSizes(xs: _*)
-res86: Vector[Int] = Vector(3, 2, 3, 0)
-
-scala> stringSizes(Vector(): _*)
-res87: Vector[Int] = Vector()
-\end{REPL}
-Ja, det funkar fint med tom sekvens.
-
-
-
-\QUESTEND
 
 
 
@@ -1240,9 +1238,6 @@ def reverseChars(xs: Array[Char]): Unit = {
 
 
 
-
-
-
 \WHAT{Palindrompredikat.}
 
 \QUESTBEGIN
@@ -1281,6 +1276,41 @@ def isPalindrome(s: String): Boolean = {
 
 \QUESTEND
 
+
+
+\WHAT{Fler användbara sekvenssamlingsmetoder.}
+
+\QUESTBEGIN
+
+\Task \what~Sök på webben och läs om dessa metoder och testa dem i REPL:
+\begin{itemize}[noitemsep]
+  \item \code{xs.tabulate(n)(f)}
+  \item \code{xs.forall(p)}
+  \item \code{xs.exists(p)}
+  \item \code{xs.count(p)}
+  \item \code{xs.zipWithIndex}
+\end{itemize}
+
+\SOLUTION
+
+\TaskSolved \what~
+\begin{REPL}
+scala> val xs = Vector.tabulate(10)(i => math.pow(2, i).toInt)
+xs: Vector[Int] = Vector(1, 2, 4, 8, 16, 32, 64, 128, 256, 512)
+
+scala> xs.forall(_ < 1024)
+res0: Boolean = true
+
+scala> xs.exists(_ == 3)
+res1: Boolean = false
+
+scala> xs.count(_ > 64)
+res2: Int = 3
+
+scala> xs.zipWithIndex.take(5)
+res3: Vector[(Int, Int)] = Vector((1,0), (2,1), (4,2), (8,3), (16,4))
+\end{REPL}
+\QUESTEND
 
 
 
@@ -1501,53 +1531,68 @@ public class DiceScanBuggy {
 \QUESTEND
 
 
-\WHAT{Samlingen \code{WrappedArray}.}
+\WHAT{Arrays don't behave, but \code{WrappedArray}s do!}
 
 \QUESTBEGIN
 
-\Task\Uberkurs \what~
+\Task \what~Även om \code{Array} är primitiv så finns smart krångel ''under huven'' i Scalas samlingsbibliotek för att arrayer ska bete sig nästan som ''riktiga'' samlingar. Därmed behöver man inte ägna sig åt olika typer av specialhantering, t.ex. s.k. boxning, wrapperklasser och typomvandlingar \Eng{type casting}, vilket man ofta behöver kämpa med som Java-programmerare.
 
-\begin{framed}
-Minnesregel: \emph{''Arrays don't behave, but \code{WrappedArray}s do!''}.
-\end{framed}
-\noindent  Även om \code{Array} är primitiv så finns smart krångel ''under huven'' i Scalas standarbibliotek för att samlingar av typen \code{Array} ska bete sig nästan som ''riktiga'' samlingar och undvika man behöver bry sig om saker som s.k. boxning och typomvanling vid körtid, vilket man ofta behöver kämpa med som Java-programmerare.
-
-Dock finns fortfarande begränsningar och anomalier vad gäller till exempel likhetstest. Om du vill att en array ska bete sig som andra samlingar kan du enkelt ''wrappa'' den med metoden \code{toSeq} i en \code{WrappedArray} som beter sig som en helt vanlig sekvenssamling utan att offra snabbheten hos en primitv array.
+Dock finns fortfarande begränsningar och anomalier vad gäller till exempel likhetstest. Om du vill att en array ska bete sig som andra samlingar kan du enkelt ''wrappa'' den med metoden \code{toSeq} som vid anrop på arrayer ger en \code{WrappedArray}. Denna beter sig som en helt vanlig sekvenssamling utan att offra snabbheten hos en primitiv array.
 \begin{Code}
 val as = Array(1,2,3)
 val xs = as.toSeq
 \end{Code}
-\Subtask Undersök \code{as} och \code{xs} i REPL: Hur fungerar likhetstest? Vad har \code{xs} för typ?
+\Subtask Hur fungerar likhetstest mellan två wrappade arrayer? Vad har \code{xs} ovan för typ? Går det att uppdatera en wrappad array?
 
-\Subtask Läs här:
+\Subtask Vilken typ av argumentsekvens du får tillgång till i kroppen för en funktion med repeterade parametrar?
+
+\Subtask\Uberkurs Läs här:
 \url{http://docs.scala-lang.org/overviews/collections/arrays.html}
-och ett exempel på vad mer man inte kan göra med en Array, förutom innehållslikhetstest med \code{as == bs}.
+och ge ett exempel på vad mer man inte kan göra med en array, förutom innehållslikhetstest.
+
+
 
 \SOLUTION
 
 \TaskSolved \what~
 
+\SubtaskSolved Vid repeterade parametrar får man en \code{WrappedArray}.
+
+\begin{REPL}
+scala> def f(xs: Int*) = xs
+f: (xs: Int*)Seq[Int]
+
+scala> println(f(1,2,3))
+WrappedArray(1, 2, 3)
+\end{REPL}
+
+
 \SubtaskSolved \code{xs} erbjuder innehållslikhet och har typen \code{Seq[Int]} med den underliggande typen \code{WrappedArray[Int]}. Det går inte att göra tilldelning av element i en \code{WrappedArray} eftersom metoden \code{update} saknas. Du får snabbt tillbaka en referens till den underliggande arrayen med \code{xs.toArray} utan att kopiering behöver ske.
 
 \begin{REPL}
-scala> val as = Array(1,2,3)
-as: Array[Int] = Array(1, 2, 3)
+scala> val as1 = Array(1,2,3)
+as1: Array[Int] = Array(1, 2, 3)
 
-scala> val xs = as.toSeq
-xs: Seq[Int] = WrappedArray(1, 2, 3)
+scala> val as2 = Array(1,2,3)
+as2: Array[Int] = Array(1, 2, 3)
 
-scala> as == as
-res3: Boolean = true
 
-scala> xs == xs
+scala> val (xs1, xs2) = (as1.toSeq, as2.toSeq)
+xs1: Seq[Int] = WrappedArray(1, 2, 3)
+xs2: Seq[Int] = WrappedArray(1, 2, 3)
+
+scala> as1 == as2
+res0: Boolean = false
+
+scala> xs1 == xs2
 res4: Boolean = true
 
-scala> as(0) = 42
+scala> as1(0) = 42
 
-scala> xs
-res8: Seq[Int] = WrappedArray(42, 2, 3)
+scala> xs1
+res1: Seq[Int] = WrappedArray(42, 2, 3)
 
-scala> xs(0) = 42
+scala> xs1(0) = 42
 <console>:13: error: value update is not a member of Seq[Int]
 \end{REPL}
 
@@ -1604,6 +1649,7 @@ def time(n: Int)(block: => Unit): Double =  {
 // Exiting paste mode, now interpreting.
 
 time: (n: Int)(block: => Unit)Double
+
 
 scala> val n = 100000
 scala> val l = List.fill(n)(math.random)
@@ -1703,7 +1749,7 @@ res3: Double = 138.72
 
 \end{CodeSmall}
 
-\noindent Varför går olika körningar olika snabbt även om for-loopen gör samma sak?
+\noindent Varför går rundor i for-loopen olika snabbt även om varje runda gör samma sak?
 
 \SOLUTION
 
