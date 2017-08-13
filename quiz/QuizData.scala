@@ -352,6 +352,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "\\code|xs.indexWhere(_ != 5)|" -> "\\code|1|",
       "\\code|xs.find(_ == 1)      |" -> "\\code|Some(1)|",
       "\\code|xs.find(_ == 6)      |" -> "\\code|None|",
+      "\\code|xs.contains(0)       |" -> "\\code|true|",
       "\\code|xs.filter(_ == 1)    |" -> "\\code|Vector(1, 1)|",
       "\\code|xs.filterNot(_ > 1)  |" -> "\\code|Vector(1, 0, 1)|",
       "\\code|xs.zipWithIndex.filter(_._1 == 1).map(_._2)|" -> "\\code|Vector(4, 6)|",
@@ -395,6 +396,20 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "\\code|Set(2,4) subsetOf (1 to 7).toSet|" -> "\\code|true          |",
       "\\code|Set(1, -1, 2, -2).map(_.abs).sum|" -> "\\code|3             |",
       "\\code|Set(1, 1, 1, 1, 1, 5).sum       |" -> "\\code|6             |",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    "quiz-w07-mapops" -> Vector(  //sequences
+      "\\code|xs(2) + xs(4)                 |" -> "\\code|8                     |",
+      "\\code|ys(2) + ys(4)                 |" -> "\\verb|error: type mismatch  |",
+      "\\code|ys(0)                         |" -> "\\code|(10, 11)              |",
+      "\\code|xs(0)                         |" -> "\\code|NoSuchElementException|",
+      "\\code|(xs + (0 -> 1)).apply(0)      |" -> "\\code|1                     |",
+      "\\code|xs.keySet.apply(2)            |" -> "\\code|true                  |",
+      "\\code|xs.mapValues(v => -v).apply(8)|" -> "\\code|-9                    |",
+      "\\code|xs isDefinedAt 0              |" -> "\\code|false                 |",
+      "\\code|xs.getOrElse(0, 7)            |" -> "\\code|7                     |",
+      "\\code|xs.maxBy(_._2)                |" -> "\\code|(16, 17)              |",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 

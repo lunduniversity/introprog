@@ -411,7 +411,7 @@ res7: Array[Int] = Array(1, 2, 0)
 
 \ifPreSolution
 \begin{framed}
-\noindent\emph{Tips inför fortsättningen:} Det är inte lätt att få rätt på alla specialfall även i små algoritmer så som \code{insert} ovan. Det är därför viktigt att noga tänka igenom sin sekvensalgoritm med avseende på typiska special. Använd denna checklista:
+\noindent\emph{Tips inför fortsättningen:} Det är inte lätt att få rätt på alla specialfall även i små algoritmer så som \code{insert} ovan. Det är därför viktigt att noga tänka igenom sin sekvensalgoritm med avseende på olika specialfall. Använd denna checklista:
 \begin{enumerate}[noitemsep]
   \item Vad händer om sekvensen är tom?
   \item Fungerar det för exakt ett element?
@@ -1024,6 +1024,33 @@ def insertDropLast(xs: Array[Int], x: Int, pos: Int): Unit = {
 \QUESTEND
 
 
+\WHAT{Fler inbyggda metoder för linjärsökning.}
+
+\QUESTBEGIN
+
+\Task \what~
+
+\Subtask Läs i snabbreferensen om metoderna \code{lastIndexOf}, \code{indexOfSlice}, \code{segmentLength} och \code{maxBy} och beskriv vad var och en kan användas till.
+
+\Subtask Testa metoderna i REPL.
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved
+
+\begin{itemize}
+  \item \code{lastIndexOf} är bra om man vill leta bakifrån i stället för framifrån; utan denna hade man annars då behövt använda \code{xs.reverse.indexOf(e)}
+  \item \code{indexOfSlice(ys)} letar efter index där en hel sekvens \code{ys} börjar, till skillnad från \code{indexOf(e)} som bara letar efter ett enstaka element.
+  \item \code{segmentLength(p, i)} ger längden på den längsta sammanhängande sekvens där alla element uppfyller predikatet \code{p} och sökningen efter en sådan sekvens börjar på plats \code{i}
+  \item \code{xs.maxBy(f)} kör först funktionen \code{f} på alla element i \code{xs} och letar sedan upp det största värdet; motsvarande \code{minBy(f)} ger minimum av \code{f(e)} över alla element \code{e} i \code{xs}
+\end{itemize}
+
+\SubtaskSolved --
+
+\QUESTEND
+
 
 
 \clearpage
@@ -1098,7 +1125,7 @@ scala> xs.prepend(1, 1)
 scala> while (xs.head < 100) {xs.prepend(xs.take(2).sum); println(xs)}
 scala> xs.reverse.toList
 \end{REPL}
-Talen i sekvensen som produceras på rad 4 ovan kallas Fibonaccital\footnote{\href{https://sv.wikipedia.org/wiki/Fibonaccital}{sv.wikipedia.org/wiki/Fibonaccital}} och blir snabbt mycket stora.
+Talen i sekvensen som produceras på rad 4 ovan kallas Fibonacci-tal  \footnote{\href{https://sv.wikipedia.org/wiki/Fibonaccital}{sv.wikipedia.org/wiki/Fibonaccital}} och blir snabbt mycket stora.
 
 \Subtask Definera och testa följande funktion. Den ska internt använda förändringsbara \code{ListBuffer} men returnera en sekvens av oföränderliga \code{List}.
 
@@ -1112,8 +1139,10 @@ def fib(max: Long): List[Long]  = ???
 \Subtask
 Hur lång ska en Fibonacci-sekvens vara för att det sista elementet ska vara så nära \code{Int.MaxValue} som möjligt?
 
-\SOLUTION
 
+\Subtask Implementera \code{fibBig} som använder \code{BigInt} i stället för \code{Long} och låt din dator få använda sitt stora minne medan planeten värms upp en aning.
+
+\SOLUTION
 
 \TaskSolved \what
 
@@ -1135,6 +1164,38 @@ def fib(max: Long): List[Long] = {
 \begin{REPL}
 scala> fib(Int.MaxValue).size
 res0: Int = 46
+\end{REPL}
+
+\SubtaskSolved
+
+\begin{Code}
+def fibBig(max: BigInt): List[BigInt] = {
+  val xs = scala.collection.mutable.ListBuffer.empty[BigInt]
+  xs.prepend(1, 1)
+  while (xs.head < max) xs.prepend(xs.take(2).sum)
+  xs.reverse.drop(1).toList
+}
+\end{Code}
+
+\begin{REPL}
+scala> fibBig(Long.MaxValue).size
+res4: Int = 92
+
+scala> fibBig(BigInt(Long.MaxValue).pow(64)).size
+res8: Int = 5809
+
+scala> fibBig(BigInt(Long.MaxValue).pow(128)).last
+res9: BigInt = 466572805528355449194553611102863153950720005186045547177525242118545194247268198196024304108711020686545660707513547993668927474420737702772726410095432646683782038269206733583562623144723659044965174192994997081915291671203135284448809948278794870130243195729759407652514927641622448506112336858244040087748168546825439555497978038066584506772917257705338472345660520902622305735366348690501583267086607109594118454398543160294999638070938386822164561738531661786873174424857409631803971069795886028284195109247953151499404937810249349132907101567724032186422592145774126660328936577771749713614176045435526886758975994177511201005911748503347657112775964769397750819976041389533451539207673441658345632507479241970993525868183091563469584756527454807108...
+
+scala> fibBig(BigInt(Long.MaxValue).pow(128)).last.toString.size
+res10: Int = 2428
+
+scala> fibBig(BigInt(Long.MaxValue).pow(256)).last.toString.size
+res11: Int = 4856
+
+scala> fibBig(BigInt(Long.MaxValue).pow(1024)).last.toString.size
+java.lang.OutOfMemoryError: Java heap space
+
 \end{REPL}
 
 \QUESTEND
@@ -1186,14 +1247,14 @@ def reverseChars(xs: Array[Char]): Unit = {
 
 \QUESTBEGIN
 
-\Task  \what~ En palindrom\footnote{\url{https://sv.wikipedia.org/wiki/Palindrom}} är ett ord som förblir oförändrat om man läser den baklänges. Exempel på palindromer: kajak, dallassallad.
+\Task  \what~ En palindrom\footnote{\url{https://sv.wikipedia.org/wiki/Palindrom}} är ett ord som förblir oförändrat om man läser det baklänges. Exempel på palindromer: kajak, dallassallad.
 
 Ett sätt att implementera ett palindrompredikat visas nedan:
 \begin{Code}
 def isPalindrome(s: String): Boolean = s == s.reverse
 \end{Code}
 
-\Subtask Lösningen kan behöva gå igenom alla tecknen i strängen två gånger och behöver minnesutrymme för dubbla antalet tecken. Varför?
+\Subtask Implementationen ovan kan innebära traversering av alla tecknen i strängen två gånger och behöver minnesutrymme för dubbla antalet tecken. Varför?
 
 \Subtask Skapa ett palindromtest som går igenom elementen max en gång och som inte behöver extra minnesutrymme för en kopia av strängen. \emph{Lösningsidé:} Jämför parvis första och sista, näst första och näst sista, etc.
 
@@ -1201,7 +1262,7 @@ def isPalindrome(s: String): Boolean = s == s.reverse
 
 \TaskSolved \what
 
-\SubtaskSolved Omvändning med \code{reverse} kan kräva genomgång av hela strängen en gång samt minnesutrymme för kopian. Innehållstestet kräver ytterligare en traversering. (Detta är i och för sig inget stort problem eftersom världens längsta palindrom inte är längre än 19 bokstäver.)
+\SubtaskSolved Omvändning med \code{reverse} kan kräva genomgång av hela strängen en gång samt minnesutrymme för kopian. Innehållstestet kräver ytterligare en traversering. (Detta är i och för sig inget stort problem eftersom världens längsta palindrom inte är längre än 19 bokstäver och är ett obskyrt finskt ord som inte ofta yttras i dagligt tal. Vilket?)
 
 \SubtaskSolved
 
@@ -1375,17 +1436,17 @@ res3: Array[Int] = Array(498, 484, 531, 513, 485, 489)
 
 
 
-\WHAT{Läsa in tal med \code{java.util.Scanner}.}
+\WHAT{Läsa in sekvens av tal med \code{Scanner} i Java.}
 
 \QUESTBEGIN
 
-\Task  \what~  Med \jcode{new Scanner(System.in)} skapas ett objekt som kan läsa in tal från teckensträngar som användaren skriver i terminalfönstret, så som visas i Java-programmet nedan:
+\Task  \what~  Läs i Java-delen av snabbreferensen om \code{java.util.Scanner}. Med \jcode{new Scanner(System.in)} skapas ett objekt som kan läsa in tal från teckensträngar som användaren skriver i terminalfönstret, så som visas i Java-programmet nedan:
 
 \javainputlisting{examples/DiceScanBuggy.java}
 Ladda ner programmet   \href{https://raw.githubusercontent.com/lunduniversity/introprog/master/compendium/examples/DiceReg.java}{\texttt{compendium/examples/DiceScanBuggy.java}}
 och kompilera och kör med indatasekvensen \texttt{1 2 3 4 -1} och notera hur registreringen sker.
 
-\Subtask Läs dokumentationen av \code{java.util.Scanner}. Vad gör \jcode{hasNextInt()} och \jcode{nextInt()}?
+\Subtask Sök upp och läs JDK8-dokumentationen av \code{java.util.Scanner}. Vad gör \jcode{hasNextInt()} och \jcode{nextInt()}?
 
 
 \Subtask Programmet fungerar inte som det ska. Du behöver korrigera 3 saker för att programmet ska göra rätt. Rätta buggarna och spara det rättade programmet som \texttt{DiceScan.java}. Kompilera och testa det rättade programmet.
@@ -1396,8 +1457,9 @@ och kompilera och kör med indatasekvensen \texttt{1 2 3 4 -1} och notera hur re
 
 \SubtaskSolved
 
-\code{hasNextInt()} kollar om det finns ett till tal och returnerar \code{true}/\code{false}. \code{nextInt()} läser nästa tal.
-Se \url{https://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html#hasNextInt%28%29} och \url{https://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html#nextInt%28%29 }.
+\code{hasNextInt()} kollar om det finns ett till tal och returnerar \code{true} eller \code{false}. \code{nextInt()} läser nästa tal.
+
+Se \url{https://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html#hasNextInt%28%29} och \\ \url{https://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html#nextInt%28%29 }.
 
 \SubtaskSolved
 
@@ -1435,5 +1497,245 @@ public class DiceScanBuggy {
 	}
 }
 \end{Code}
+
+\QUESTEND
+
+
+\WHAT{Samlingen \code{WrappedArray}.}
+
+\QUESTBEGIN
+
+\Task\Uberkurs \what~
+
+\begin{framed}
+Minnesregel: \emph{''Arrays don't behave, but \code{WrappedArray}s do!''}.
+\end{framed}
+\noindent  Även om \code{Array} är primitiv så finns smart krångel ''under huven'' i Scalas standarbibliotek för att samlingar av typen \code{Array} ska bete sig nästan som ''riktiga'' samlingar och undvika man behöver bry sig om saker som s.k. boxning och typomvanling vid körtid, vilket man ofta behöver kämpa med som Java-programmerare.
+
+Dock finns fortfarande begränsningar och anomalier vad gäller till exempel likhetstest. Om du vill att en array ska bete sig som andra samlingar kan du enkelt ''wrappa'' den med metoden \code{toSeq} i en \code{WrappedArray} som beter sig som en helt vanlig sekvenssamling utan att offra snabbheten hos en primitv array.
+\begin{Code}
+val as = Array(1,2,3)
+val xs = as.toSeq
+\end{Code}
+\Subtask Undersök \code{as} och \code{xs} i REPL: Hur fungerar likhetstest? Vad har \code{xs} för typ?
+
+\Subtask Läs här:
+\url{http://docs.scala-lang.org/overviews/collections/arrays.html}
+och ett exempel på vad mer man inte kan göra med en Array, förutom innehållslikhetstest med \code{as == bs}.
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved \code{xs} erbjuder innehållslikhet och har typen \code{Seq[Int]} med den underliggande typen \code{WrappedArray[Int]}. Det går inte att göra tilldelning av element i en \code{WrappedArray} eftersom metoden \code{update} saknas. Du får snabbt tillbaka en referens till den underliggande arrayen med \code{xs.toArray} utan att kopiering behöver ske.
+
+\begin{REPL}
+scala> val as = Array(1,2,3)
+as: Array[Int] = Array(1, 2, 3)
+
+scala> val xs = as.toSeq
+xs: Seq[Int] = WrappedArray(1, 2, 3)
+
+scala> as == as
+res3: Boolean = true
+
+scala> xs == xs
+res4: Boolean = true
+
+scala> as(0) = 42
+
+scala> xs
+res8: Seq[Int] = WrappedArray(42, 2, 3)
+
+scala> xs(0) = 42
+<console>:13: error: value update is not a member of Seq[Int]
+\end{REPL}
+
+\SubtaskSolved Det går inte att ha en generisk array som funktionsresultat utan att bifoga kontextgränsen \code{ClassTag} i typparametern för att kompilatorn ska kunna generera kod för den typkonvertering som krävs under runtime av JVM. Se exempel här:\\
+\url{http://docs.scala-lang.org/overviews/collections/arrays.html}
+
+
+\QUESTEND
+
+
+
+
+\WHAT{List eller Vector?}
+
+\QUESTBEGIN
+
+\Task\Uberkurs  \what~ Jämför tidskomplexitet mellan List och Vector vid hantering i början och i slutet, baserat på efterföljande REPL-session i din egen körmiljö.  Körningen nedan gjordes på en Intel i7-4790K CPU @ 4.00GHz under Linux Ubuntu 14.04 med Scala 2.11.8 och JRE 1.8.0\_66, men du ska använda det du har på din dator.
+
+Hur snabbt går nedan på din dator? När är List snabbast och när är Vector snabbast? Hur stor är skillnaderna i prestanda?
+\footnote{Denna typ av mätningar lär du dig mer om i LTH-kursen ''Utvärdering av programvarusystem'', som ges i slutet av årskurs 1 för Datateknikstudenter.}
+%sudo lshw -class processor
+
+\begin{CodeSmall}
+> head -5 /proc/cpuinfo
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 60
+model name	: Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz
+
+>scala
+Welcome to Scala 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_66).
+Type in expressions for evaluation. Or try :help.
+
+scala> :pa
+// Entering paste mode (ctrl-D to finish)
+
+def time(n: Int)(block: => Unit): Double =  {
+  def now = System.nanoTime
+  var timestamp = now
+  var sum = 0L
+  var i = 0
+  while (i < n) {
+    block
+    sum = sum + (now - timestamp)
+    timestamp = now
+    i = i + 1
+  }
+  val average = sum.toDouble / n
+  println("Average time: " + average + " ns")
+  average
+}
+
+// Exiting paste mode, now interpreting.
+
+time: (n: Int)(block: => Unit)Double
+
+scala> val n = 100000
+scala> val l = List.fill(n)(math.random)
+scala> val v = Vector.fill(n)(math.random)
+
+scala> (for(i <- 1 to 20) yield time(n){l.take(10)}).min
+Average time: 476.85004 ns
+Average time: 52.29291 ns
+Average time: 221.50289 ns
+Average time: 218.60302 ns
+Average time: 45.01888 ns
+Average time: 243.7818 ns
+Average time: 45.02228 ns
+Average time: 2132.03995 ns
+Average time: 52.83995 ns
+Average time: 46.7478 ns
+Average time: 51.8753 ns
+Average time: 70.57658 ns
+Average time: 45.26142 ns
+Average time: 95.16307 ns
+Average time: 43.84092 ns
+Average time: 55.24695 ns
+Average time: 84.06113 ns
+Average time: 42.04872 ns
+Average time: 50.9871 ns
+Average time: 122.80649 ns
+res0: Double = 42.04872
+
+scala> (for(i <- 1 to 20) yield time(n){v.take(10)}).min
+Average time: 429.23201 ns
+Average time: 257.70543 ns
+Average time: 271.02261 ns
+Average time: 198.8826 ns
+Average time: 161.67466 ns
+Average time: 190.5253 ns
+Average time: 112.82044 ns
+Average time: 82.45798 ns
+Average time: 81.17192 ns
+Average time: 129.28968 ns
+Average time: 104.86973 ns
+Average time: 80.33942 ns
+Average time: 81.64533 ns
+Average time: 92.22053 ns
+Average time: 78.5791 ns
+Average time: 84.55555 ns
+Average time: 78.88382 ns
+Average time: 77.25284 ns
+Average time: 83.62473 ns
+Average time: 72.39703 ns
+res1: Double = 72.39703
+
+scala> (for(i <- 1 to 20) yield time(1000){l.takeRight(10)}).min
+Average time: 264902.261 ns
+Average time: 225706.676 ns
+Average time: 228625.873 ns
+Average time: 230358.379 ns
+Average time: 229971.679 ns
+Average time: 237404.948 ns
+Average time: 242580.96 ns
+Average time: 242455.325 ns
+Average time: 242316.002 ns
+Average time: 242046.311 ns
+Average time: 242378.896 ns
+Average time: 242740.221 ns
+Average time: 242131.301 ns
+Average time: 242466.169 ns
+Average time: 242075.599 ns
+Average time: 242247.534 ns
+Average time: 242739.886 ns
+Average time: 241982.93 ns
+Average time: 242118.373 ns
+Average time: 241941.998 ns
+res2: Double = 225706.676
+
+scala> (for(i <- 1 to 20) yield time(1000){v.takeRight(10)}).min
+Average time: 661.737 ns
+Average time: 420.765 ns
+Average time: 225.867 ns
+Average time: 256.524 ns
+Average time: 235.596 ns
+Average time: 231.764 ns
+Average time: 154.279 ns
+Average time: 139.37 ns
+Average time: 139.183 ns
+Average time: 153.957 ns
+Average time: 142.883 ns
+Average time: 140.837 ns
+Average time: 154.178 ns
+Average time: 138.72 ns
+Average time: 202.93 ns
+Average time: 174.179 ns
+Average time: 175.98 ns
+Average time: 171.658 ns
+Average time: 177.097 ns
+Average time: 173.1 ns
+res3: Double = 138.72
+
+\end{CodeSmall}
+
+\noindent Varför går olika körningar olika snabbt även om for-loopen gör samma sak?
+
+\SOLUTION
+
+\TaskSolved
+Sekvenssamlingen \code{List} är nästan dubbelt så snabb vid bearbetning i början men ungefär 1000 gånger långsammare vid bearbetning i slutet av en sekvens med 100000 element.
+
+
+Olika körningar går olika snabbt på JVM bl.a. p.g.a optimeringar som sker när JVM-en ''värms upp'' och den så kallade Just-In-Time-kompileringen gör sitt mäktiga jobb. Det går ibland plötsligt väsentligt långsammare när skräpsamlaren tvingas göra tidsödande storstädning av minnet.
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Tiskomplexitet för olika samlingar i Scalas standardbibliotek.}
+
+\QUESTBEGIN
+
+\Task\Uberkurs  \what~\\
+Studera skillnader i tidskomplexitet mellan olika samlingar här: \\ \href{http://docs.scala-lang.org/overviews/collections/performance-characteristics.html}{docs.scala-lang.org/overviews/collections/performance-characteristics.html} \\
+Läs även kritiken av förenklingar i ovan beskrivning här:\\
+\href{http://www.lihaoyi.com/post/ScalaVectoroperationsarentEffectivelyConstanttime.html}{www.lihaoyi.com/post/ScalaVectoroperationsarentEffectivelyConstanttime.html}
+\\
+Läs denna grundliga empirisk genomgång av prestanda i Scalas samlingsbibliotek:\\
+\href{http://www.lihaoyi.com/post/BenchmarkingScalaCollections.html}{www.lihaoyi.com/post/BenchmarkingScalaCollections.html}
+\\Du får lära dig mer om hur man resonerar kring komplexitet i kommande kurser.
+
+
+\SOLUTION
+
+\TaskSolved --
 
 \QUESTEND

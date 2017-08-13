@@ -75,7 +75,7 @@ scala> xs.foreach(print)
 
 \Task \what
 
-\vspace{1em}\noindent Koppla varje uttryck till vänster till ett utryck till höger som har samma värde:
+\vspace{1em}\noindent Para ihop varje uttryck till vänster med ett uttryck till höger som har samma värde:
 
 \begin{ConceptConnections}
 \input{generated/quiz-w07-setops-taskrows-generated.tex}
@@ -92,18 +92,16 @@ scala> xs.foreach(print)
 \QUESTEND
 
 
-
-
 \WHAT{Räkna unika ord med hjälp av en mängd.}
 
 \QUESTBEGIN
 
-\Task \what~På veckans laboration ska vi göra automatisk språkbehandling av långa texter som vi delar upp i ord.
+\Task \what~På veckans laboration ska vi göra automatisk språkbehandling av långa texter som vi delar upp i ord. Med metoden \code{s.split(' ').toVector} kan du dela upp en sträng \code{s} i en sekvens av ord, där \code{s} blivit uppdelad i många strängar vid varje blanktecken och alla blanktecken är borttagna.
 
-Med metoden \code{s.split(' ').toVector} kan man dela upp en sträng \code{s} i en vektor av ord. Använd metoderna \code{split} och \code{toSet} för skapa ett uttryck som beräknar hur många unika ord det finns i strängen \code{hej} nedan:
-\begin{REPL}
+Använd metoderna \code{split} och \code{toSet} för skapa ett uttryck som beräknar hur många unika ord det finns i strängen \code{hej} nedan:
+\begin{REPLnonum}
 scala> val hej = "hej hej hemskt mycket hej"
-\end{REPL}
+\end{REPLnonum}
 
 \SOLUTION
 
@@ -119,19 +117,19 @@ n: Int = 3
 \QUESTEND
 
 
-\WHAT{Skapa 2-tupler med metoden \code{->} ''mappas till''.}
+\WHAT{Skapa 2-tupler med metoden \code{->} som kan uttalas ''mappas till''.}
 
 \QUESTBEGIN
 
-\Task \what~Vi har tidigare sett hur två olika värden kan samlas i en 2-tupel, till exempel \code{(0, true)}. Par kan även skapas med hjälp av metoden \code{->} enligt nedan. Testa i REPL.
-\begin{REPLnonum}
-scala> ("Skåne", "Lund")          // ett strängpar
+\Task \what~Vi har tidigare sett hur två olika värden kan samlas i en 2-tupel, till exempel \code{(0, true)}. Par kan även skapas med hjälp av metoden \code{->} enligt nedan. Testa detta i REPL:
+\begin{REPL}
+scala> ("Skåne", "Lund")          // ett strängpar med vanlig 2-tupel
 scala> "Skåne -> "Lund"           // operatornotation med ->
-scala> "Skåne".->("Lund")         // punktnotation med ->
-\end{REPLnonum}
+scala> "Skåne".->("Lund")         // punktnotation med -> (inte alls vanligt)
+\end{REPL}
 Metoden \code{->} fungerar med alla typer och är en fabriksmetod för par. Metodnamnet liknar en högerpil och illustrerar en mappning från första till andra värdet.
 
-\Subtask Fungerar det att på par skapade med \code{->} använda metoderna \code{_1} och \code{_2}?
+\Subtask Fungerar det på par skapade med \code{->} att använda metoderna \code{_1} och \code{_2}?
 
 
 \Subtask Deklarera en variabel \code{val huvudstad: Vector[(String, String)]} som innehåller mappningar mellan geografiska områden och deras huvudstäder enligt tabellen nedan.
@@ -141,11 +139,12 @@ Metoden \code{->} fungerar med alla typer och är en fabriksmetod för par. Meto
   \begin{tabular}{|l|l|}\hline
   Sverige & Stockholm \\\hline
   Danmark & Köpenhamn \\\hline
+  Grönland & Nuuk \\\hline
   Skåne & Lund \\\hline
   \end{tabular}
 \end{table}
 
-\Subtask Vad blir det för felmeddelande om du råkar skriva ett komma för mycket före högerparentesen: ...\code{und",)}
+\Subtask Vad blir det för felmeddelande om du råkar skriva ett komma för mycket före den avslutande högerparentesen: ...\code{und",)}
 
 \Subtask Skriv ett uttryck som plockar fram \code{"Lund"} ur \code{huvudstad}.
 
@@ -171,9 +170,10 @@ res1: String = Lund
 
 \begin{Code}
 val huvudstad = Vector(
-  "Sverige" -> "Stockholm",
-  "Danmark" -> "Köpenhamn",
-  "Skåne"   -> "Lund"
+  "Sverige"  -> "Stockholm",
+  "Danmark"  -> "Köpenhamn",
+  "Grönland" -> "Nuuk",
+  "Skåne"    -> "Lund"
 )
 \end{Code}
 
@@ -204,7 +204,7 @@ res2: String = Lund
 
 \Task \what~
 
-\Subtask Implementera funktionen \code{lookupIndex} nedan, som med hjälp av samlingsmetoden \code{indexWhere} ska göra linjärsökning efter ett par i sekvensen där \code{key} finns på första platsen i paret.
+\Subtask Implementera funktionen \code{lookupIndex} nedan med hjälp av samlingsmetoden \code{indexWhere} så att linjärsökning sker efter index för ett par i sekvensen där \code{key} finns på första platsen i paret.
 
 \begin{Code}
 def lookupIndex(xs: Vector[(String, String)])(key: String): Int = ???
@@ -231,7 +231,7 @@ scala> huvudstad(i)._2
 res2: String = Lund
 \end{REPL}
 
-Eller med funktioner som generella, återanvändbara dellösningar:
+\noindent Eller med funktioner som återanvändbara dellösningar:
 \begin{REPL}
 scala> val indexOf = lookupIndex(huvudstad) _
 
@@ -252,27 +252,165 @@ res4: String = Stockholm
 
 \QUESTBEGIN
 
-\Task \what~\TODO
+\Task \what~En nyckel-värde-tabell är en smart datastruktur som gör att du kan slå upp det värde som en nyckel mappar till \emph{utan} att linjärsökning behöver ske. Värdet plockas fram direkt på en konstant tid, d.v.s. tiden att slå upp ett värde beror \emph{inte} på antalet element i samlingen, utan sker med mycket liten fördröjning.
+
+I Scala heter nyckelvärdetabeller \code{Map} med stort M och är praktisk att använda i många olika sammanhang. \code{Map} finns i både en oföränderlig och en förändringsbar variant. Det går med metoder på formen \code{toXXX} lätt att omvandla mellan en \code{Map} och en sekvens av par av typen \code{XXX[(Nycketyp, Värdetyp)]}.
+
+\Subtask Deklarera mappen \code{telnr} nedan i REPL och använd \code{apply} för att ta reda på telefonnumret till Fröken Ur.
+
+\Subtask Vad har \code{telnr} för typ?
+
+\Subtask Vad har \code{telnr.toVector} för typ?
+
+\begin{Code}
+val telnr = Map(
+  "Anna"     -> 46462229812L,
+  "Björn"     -> 46462229009L,
+  "Sandra"    -> 46462220368L,
+  "Fröken Ur" -> 464690510L,
+)
+\end{Code}
+En uppsättning \code{Map}-instanser, vid behov nästlade, kan med fördel användas för att bygga upp en i-minnet-databas där kombinationer av inbyggda samlingsmetoder, t.ex. \code{map} och \code{filter}, tillsammans med \code{for}-\code{yield}-uttryck, ger flexibla och effektiva sökmöjligheter. På veckans laboration ska du göra detta.
+
+Samlingen \code{Map} är en generalisering av en sekvens, där man kan ''indexera'', inte bara med ett heltal, utan med vilken typ av värde som helst, t.ex. en sträng. Datastrukturen \code{Map} kallas också \emph{associativ array}\footnote{\href{https://en.wikipedia.org/wiki/Associative_array}{https://en.wikipedia.org/wiki/Associative\_array}} och är implementerad som en s.k. \emph{hashtabell}\footnote{\href{https://en.wikipedia.org/wiki/Hash_table}{https://en.wikipedia.org/wiki/Hash\_table}}, men du får vänta till fortsättningskursen innan vi går igenom hur en sådan datastruktur implementeras.
 
 \SOLUTION
 
-\TaskSolved \what~\TODO
+\TaskSolved \what~
+
+\begin{REPL}
+scala> telnr("Fröken Ur")
+res0: Long = 464690510
+
+scala> :type telnr
+scala.collection.immutable.Map[String,Long]
+
+scala> :type telnr.toVector
+Vector[(String, Long)]
+\end{REPL}
 
 \QUESTEND
 
 
 
-
-
-\WHAT{Registrering med inbyggda samlingsmetoder.}
+\WHAT{Använda nyckel-värdetabell.}
 
 \QUESTBEGIN
 
-\Task \what~\TODO
+\Task \what~
+
+\Subtask Skapa nedan variabler i REPL. Hamnar mappningarna i \code{ys} i samma ordning som de genererades med for-uttrycket som skapade \code{xs}?
+\begin{Code}
+val xs = (for (i <- 2 to 16 by 2) yield (i, i + 1)).toMap
+val ys = xs.toVector
+\end{Code}
+
+\Subtask Med \code{xs} och \code{ys} deklarerade i REPL enligt ovan, para ihop yttryck till vänster med rätt resultat till höger. Om du är osäker på de sammansatta uttrycken, prova enklare uttryck i REPL och undersök värde och typ.
+
+\begin{ConceptConnections}
+\input{generated/quiz-w07-mapops-taskrows-generated.tex}
+\end{ConceptConnections}
 
 \SOLUTION
 
-\TaskSolved \what~\TODO
+\TaskSolved \what
+
+
+\SubtaskSolved Nej nyckel-värde-paren lagras i någon speciell ordning som bestäms av en intern, smart lagringsprincip enligt en s.k. hashfunktion\footnote{\url{https://sv.wikipedia.org/wiki/Hashfunktion}}, för att åstadkomma snabba uppslagningar av värden från nycklar och vilket normalt inte sammanfaller med ordningen i den sekvens som de skapades ur.
+
+\SubtaskSolved
+
+\begin{ConceptConnections}
+  \input{generated/quiz-w07-mapops-solurows-generated.tex}
+\end{ConceptConnections}
+
+\noindent \emph{Fördjupning}:  Felmeddelandet som rad 2 ovan orsakar är lurigt:
+
+\begin{REPL}
+scala> ys(2)
+res22: (Int, Int) = (6,7)
+
+scala> ys(4)
+res23: (Int, Int) = (12,13)
+
+scala> ys(2) + ys(4)
+<console>:13: error: type mismatch;
+ found   : (Int, Int)
+ required: String
+       ys(2) + ys(4)
+
+\end{REPL}
+Det går som förväntat inte att addera två tupler, men varför säger kompilatorn att en sträng krävs?!? Detta beror på att, i enlighet med hur det fungerar i Java, valde Scala-språkets konstruktörer att låta strängsammanfogning fungera med alla möjliga typer vilket gör att kompilatorn inte ger upp när metoden \code{+} inte finns för tupler, utan i stället gör ett misslyckat försök med strängsammanfogning.
+
+Det mest olyckliga med detta är inte att felmeddelanden ibland blir missvisande, utan att det i vissa situationer inte ens \emph{blir} något felmeddelande, trots att man av rent misstag råkat strängkonkatenera i stället för t.ex. lägga till ett element i en mängd eller en mappning i en tabell. Detta typosäkra beteendet av strängsammanfogning har kritiserats, men det är inte okontroversiellt att ändra detta nu när så många utvecklare skrivit så mycket Scala-kod som bygger på strängars förmåga att kunna lägga till vad som helst på slutet. Situationen i Scala är dock inte hopplös efter introduktionen av stränginterpolering i Scala 2.10, som möjliggör infogande av värden i strängar på ett typsäkert sätt.
+\QUESTEND
+
+
+
+\WHAT{Registrering med \code{groupBy} och \code{mapValues}.}
+
+\QUESTBEGIN
+
+\Task \what~Vi ska nu utnyttja ett riktigt listigt trick för att i ett enda kort uttryck implementera registrering med hjälp av samlingsmetoden \code{groupBy} och tabellmetoden \code{mapValues}.
+
+\Subtask Läs om metoden \code{groupBy} i snabbreferensen. Du hittar den under rubriken \emph{''Methods in trait \code{Traversable[A]}''} eftersom \code{groupBy} fungerar på alla samlingar. Testa \code{groupBy} enligt nedan och beskriv vad som händer.
+
+\begin{REPL}
+scala> val xs = Vector(1, 1, 2, 2, 4, 4, 4).groupBy(x => x > 2)
+scala> val ys = Vector(1, 1, 2, 2, 4, 4, 4).groupBy(x => x)
+\end{REPL}
+
+\Subtask Skapa en funktion \code{freq} med nedan funktionshuvud som returnerar en tabell räknar antalet förekomster av olika heltal i \code{xs}. Testa \code{freq} på en sekvens av 1000 slumpvisa tärningskast och förklara hur funktionen \code{freq} fungerar. \emph{Tips:} Gör först \code{groupBy(???)} och sedan \code{mapValues(???)}.
+
+\begin{Code}
+def freq(xs: Vector[Int]): Map[Int, Int] = ???
+
+def kasta(n: Int): Vector[Int] =
+  Vector.fill(n)(util.Random.nextInt(6) + 1)
+
+\end{Code}
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved Metoden \code{groupBy} skapar en nyckel-värde-tabell där värdena i tabellen är en sekvens med elementen grupperade på ett speciellt sett.
+Mer precist:
+
+Resultatet av \code{xs.groupBy(f: K => V)} för en sekvens \code{xs} av typen \code{Vector[K]} blir en tabell av typen \code{Map[V,Vector[K]]} där varje element \code{e} i \code{xs} är grupperade i samma tabellvärde om de lika är enligt \code{f(e)}. Varje grupp får tabellnyckeln \code{f(e)}.
+
+\emph{Listigt trick:} Om man låter funktionen \code{f} vara enhetsfunktionen som avbildar varje element på sig själv, alltså \code{x => x}, så grupperas värdena i samma sekvens om de är lika.
+
+\begin{REPL}
+scala> val xs = Vector(1, 1, 2, 2, 4, 4, 4).groupBy(x => x > 2)
+xs: Map[Boolean,Vector[Int]] =
+  Map(false -> Vector(1, 1, 2, 2), true -> Vector(4, 4, 4))
+
+scala> val ys = Vector(1, 1, 2, 2, 4, 4, 4).groupBy(x => x)
+ys: Map[Int,Vector[Int]] =
+  Map(2 -> Vector(2, 2), 4 -> Vector(4, 4, 4), 1 -> Vector(1, 1))
+\end{REPL}
+
+
+\SubtaksSolved
+
+\begin{Code}
+def freq(xs: Vector[Int]): Map[Int, Int] = xs.groupBy(x => x).mapValues(_.size)
+\end{Code}
+Förklaring: metoden \code{groupBy} skapar en tabell med par \code{k, v} där \code{v} är en sekvens med så många \code{k} som antalet gånger \code{k} förekommer i \code{xs}. Genom att omvandla alla värden \code{v} till storleken av \code{v} får vi en frekvenstabell.
+
+\begin{REPL}
+scala> freq(kasta(1000))
+res0: Map[Int,Int] = Map(5 -> 163, 1 -> 174, 6 -> 161, 2 -> 169, 3 -> 167, 4 -> 166)
+
+scala> freq(kasta(1000)).toVector.sortBy(_._1).foreach(println)
+(1,183)
+(2,167)
+(3,169)
+(4,179)
+(5,154)
+(6,148)
+\end{REPL}
 
 \QUESTEND
 
@@ -292,7 +430,91 @@ res4: String = Stockholm
 
 
 
-\WHAT{Läsa från och skriva till fil.}
+\WHAT{Läsa från fil och URL.}
+
+\QUESTBEGIN
+
+\Task \what~\TODO Gör ett enkelt spel om att gissa europas huvudstäder.
+
+\href{https://raw.githubusercontent.com/lunduniversity/introprog/master/compendium/examples/europa.txt}{\texttt{compendium/examples/europa.txt}}
+
+\SOLUTION
+
+\TaskSolved \what~\TODO
+
+\QUESTEND
+
+
+
+\WHAT{Metoden \code{sliding}.}
+
+\QUESTBEGIN
+
+\Task  \what~  I veckans laboration kommer du att ha nytta av metoden \code{sliding}, som ger en iterator för speciella delsekvenser av en sekvens, vilka kan liknas vid ''utsikten'' i ett ''glidande fönster''.
+
+\Subtask Kör nedan i REPL och beskriv vad som händer.
+
+\begin{REPL}
+scala> val xs = Vector("fem", "gurkor", "är", "fler", "än", "fyra", "tomater")
+scala> xs.sliding(2).toVector
+scala> xs.sliding(3).toVector
+scala> xs.sliding(10).toVector
+\end{REPL}
+
+\Subtask Använd \code{xs.sliding(2)} och omvandla varje element i resultatet till ett par. Gör sedan om sekvensen av par till en nyckel-värde-tabell. Vad kan tabellen användas till?
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved
+\begin{REPL}
+scala> val xs = Vector("fem", "gurkor", "är", "fler", "än", "fyra", "tomater")
+xs: scala.collection.immutable.Vector[String] =
+Vector(fem, gurkor, är, fler, än, fyra, tomater)
+
+scala> xs.sliding(2).toVector
+res9: Vector[scala.collection.immutable.Vector[String]] =
+Vector(Vector(fem, gurkor), Vector(gurkor, är), Vector(är, fler), Vector(fler, än), Vector(än, fyra), Vector(fyra, tomater))
+
+scala> xs.sliding(3).toVector
+res10: Vector[scala.collection.immutable.Vector[String]] =
+Vector(Vector(fem, gurkor, är), Vector(gurkor, är, fler), Vector(är, fler, än), Vector(fler, än, fyra), Vector(än, fyra, tomater))
+
+scala> xs.sliding(10).toVector
+res11: Vector[scala.collection.immutable.Vector[String]] =
+Vector(Vector(fem, gurkor, är, fler, än, fyra, tomater))
+
+\end{REPL}
+\code{xs.sliding(n).toVector} skapar en sekvens som innehåller sekvenser av längden \code{n} som bildas genom att ta varje element och dess \code{n - 1} efterföljande element.
+
+\SubtaskSolved
+\begin{REPL}
+scala> xs.sliding(2).map(ys => ys(0) -> ys(1)).toMap
+res0: scala.collection.immutable.Map[String,String] =
+Map(är -> fler,
+    än -> fyra,
+    fyra -> tomater,
+    gurkor -> är,
+    fem -> gurkor,
+    fler -> än
+)
+\end{REPL}
+Man kan använda tabellen till att slå upp vilket som är efterföljande ord. Det fungerar eftersom alla ord är unika. Om det funnits flera lika dana ord med olika efterföljande ord så hade vi behövt skapa en tabell med nycklar som mappar till en samling som registrerar efterföljande ord. Detta ska vi göra på veckans laboration.
+
+\QUESTEND
+
+
+
+\ExtraTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\TODO
+
+
+\AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\WHAT{Skriva till fil.}
 
 \QUESTBEGIN
 
@@ -303,19 +525,6 @@ res4: String = Stockholm
 \TaskSolved \what~\TODO
 
 \QUESTEND
-
-\WHAT{Läsa från URL.}
-
-\QUESTBEGIN
-
-\Task \what~\TODO
-
-\SOLUTION
-
-\TaskSolved \what~\TODO
-
-\QUESTEND
-
 
 
 
@@ -1899,44 +2108,6 @@ scala> xs.minBy(_._2)
 
 
 
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 23
-
-
-
-
-\WHAT{Samlingsmetoden \code{sliding}.}
-
-\QUESTBEGIN
-
-\Task  \what~  I veckans labb kommer du att ha nytta av samlingsmetoden \code{sliding}, som ger en iterator för speciella delsekvenser av en sekvens, vilka kan liknas vid ''utsikten'' i ett ''glidande fönster''. Kör nedan i REPL och beskriv vad som händer.
-
-\begin{REPL}
-scala> val xs = Vector("fem", "gurkor", "är", "fler", "än", "fyra", "tomater")
-scala> xs.sliding(2).toVector
-scala> xs.sliding(3).toVector
-scala> xs.sliding(4).toVector
-scala> xs.sliding(7).toVector
-scala> xs.sliding(10).toVector
-\end{REPL}
-
-\clearpage
-
-\ExtraTasks %%%%%%%%%%%%%%%%%%%
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-Metoden \code{sliding(i: Int).toVector} skapar en ny vector med alla möjliga permutationer av elementen i en vektor med storleken i.
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 24
 
 
 
@@ -2002,7 +2173,6 @@ object Main {
 
 
 
-\AdvancedTasks %%%%%%%%%%%%%%%%%
 
 \SOLUTION
 
@@ -2092,172 +2262,6 @@ Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla sam
 
 
 \QUESTEND
-
-
-
-
-
-
-\WHAT{NEEDS A TOPIC DESCRIPTION}
-
-\QUESTBEGIN
-
-\Task  \what~ Jämför tidsprestanda mellan List och Vector vid hantering i början och i slutet.
-
-\Subtask Hur snabbt går nedan på din dator? (Exemplet nedan är exekverat på en Intel i7-4790K CPU @ 4.00GHz.) %sudo lshw -class processor
-
-\begin{REPLnonum}
-$scala
-Welcome to Scala 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_66).
-Type in expressions for evaluation. Or try :help.
-
-scala> :pa
-// Entering paste mode (ctrl-D to finish)
-
-def time(n: Int)(block: => Unit): Double =  {
-  def now = System.nanoTime
-  var timestamp = now
-  var sum = 0L
-  var i = 0
-  while (i < n) {
-    block
-    sum = sum + (now - timestamp)
-    timestamp = now
-    i = i + 1
-  }
-  val average = sum.toDouble / n
-  println("Average time: " + average + " ns")
-  average
-}
-
-// Exiting paste mode, now interpreting.
-
-time: (n: Int)(block: => Unit)Double
-
-scala> val n = 100000
-scala> val l = List.fill(n)(math.random)
-scala> val v = Vector.fill(n)(math.random)
-
-scala> (for(i <- 1 to 20) yield time(n){l.take(10)}).min
-Average time: 476.85004 ns
-Average time: 52.29291 ns
-Average time: 221.50289 ns
-Average time: 218.60302 ns
-Average time: 45.01888 ns
-Average time: 243.7818 ns
-Average time: 45.02228 ns
-Average time: 2132.03995 ns
-Average time: 52.83995 ns
-Average time: 46.7478 ns
-Average time: 51.8753 ns
-Average time: 70.57658 ns
-Average time: 45.26142 ns
-Average time: 95.16307 ns
-Average time: 43.84092 ns
-Average time: 55.24695 ns
-Average time: 84.06113 ns
-Average time: 42.04872 ns
-Average time: 50.9871 ns
-Average time: 122.80649 ns
-res0: Double = 42.04872
-
-
-scala> (for(i <- 1 to 20) yield time(n){v.take(10)}).min
-Average time: 429.23201 ns
-Average time: 257.70543 ns
-Average time: 271.02261 ns
-Average time: 198.8826 ns
-Average time: 161.67466 ns
-Average time: 190.5253 ns
-Average time: 112.82044 ns
-Average time: 82.45798 ns
-Average time: 81.17192 ns
-Average time: 129.28968 ns
-Average time: 104.86973 ns
-Average time: 80.33942 ns
-Average time: 81.64533 ns
-Average time: 92.22053 ns
-Average time: 78.5791 ns
-Average time: 84.55555 ns
-Average time: 78.88382 ns
-Average time: 77.25284 ns
-Average time: 83.62473 ns
-Average time: 72.39703 ns
-res1: Double = 72.39703
-
-scala> (for(i <- 1 to 20) yield time(1000){l.takeRight(10)}).min
-Average time: 264902.261 ns
-Average time: 225706.676 ns
-Average time: 228625.873 ns
-Average time: 230358.379 ns
-Average time: 229971.679 ns
-Average time: 237404.948 ns
-Average time: 242580.96 ns
-Average time: 242455.325 ns
-Average time: 242316.002 ns
-Average time: 242046.311 ns
-Average time: 242378.896 ns
-Average time: 242740.221 ns
-Average time: 242131.301 ns
-Average time: 242466.169 ns
-Average time: 242075.599 ns
-Average time: 242247.534 ns
-Average time: 242739.886 ns
-Average time: 241982.93 ns
-Average time: 242118.373 ns
-Average time: 241941.998 ns
-res2: Double = 225706.676
-
-scala> (for(i <- 1 to 20) yield time(1000){v.takeRight(10)}).min
-Average time: 661.737 ns
-Average time: 420.765 ns
-Average time: 225.867 ns
-Average time: 256.524 ns
-Average time: 235.596 ns
-Average time: 231.764 ns
-Average time: 154.279 ns
-Average time: 139.37 ns
-Average time: 139.183 ns
-Average time: 153.957 ns
-Average time: 142.883 ns
-Average time: 140.837 ns
-Average time: 154.178 ns
-Average time: 138.72 ns
-Average time: 202.93 ns
-Average time: 174.179 ns
-Average time: 175.98 ns
-Average time: 171.658 ns
-Average time: 177.097 ns
-Average time: 173.1 ns
-res3: Double = 138.72
-
-\end{REPLnonum}
-
-\Subtask Varför går det olika snabbt olika körningar?
-
-\SOLUTION
-
-
-\QUESTEND
-
-
-
-
-
-
-\WHAT{NEEDS A TOPIC DESCRIPTION}
-
-\QUESTBEGIN
-
-\Task  \what~ Studera skillnader i prestanda mellan olika samlingar här: \\ \href{http://docs.scala-lang.org/overviews/collections/performance-characteristics.html}{docs.scala-lang.org/overviews/collections/performance-characteristics.html} \\
-(Mer om detta i kommande kurser.)
-
-\SOLUTION
-
-
-\QUESTEND
-
-
 
 
 
