@@ -1,6 +1,7 @@
 import sbt._
 import Process._
 import Keys._
+import complete.DefaultParsers._
 
 
 lazy val hello = taskKey[Unit]("Prints welcome message")
@@ -106,6 +107,7 @@ watchSources ++= ((baseDirectory.value / "compendium") * "*.tex").get
 watchSources ++= ((baseDirectory.value / "compendium") * "*.cls").get
 
 watchSources ++= ((baseDirectory.value / "compendium" / "modules") * "*.tex").get
+watchSources ++= ((baseDirectory.value / "slides" / "body") * "*.tex").get
 
 lazy val pdfExercises = taskKey[Unit]("Compile exercises.tex")
 pdfExercises := {
@@ -122,10 +124,32 @@ pdfLabs := {
   runPdfLatexCmd(texFile = file("labs.tex"), workDir = file("compendium"))
 }
 
-
 lazy val pdfCompendium = taskKey[Unit]("Compile compendium.tex")
 pdfCompendium := {
   runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))
+}
+
+lazy val pdfCompendium1 = taskKey[Unit]("Compile compendium.tex")
+pdfCompendium1 := {
+  runPdfLatexCmd(texFile = file("compendium1.tex"), workDir = file("compendium"))
+}
+
+
+lazy val pdfSlides = inputKey[Unit]("run pdflatex slides/lect-w<weeknumber>.tex")
+pdfSlides := {
+  // http://www.scala-sbt.org/1.0/docs/Input-Tasks.html#Basic+Input+Task+Definition
+  val args: Seq[String] = spaceDelimited("<arg>").parsed
+  val weeks = if (args.isEmpty) {
+    val default = Seq.tabulate(7)(i => s"w0${i+1}")
+    println(s"""<args> is empty, using ${default.mkString(" ")}""")
+    default
+  } else args
+  val workDir = file("slides")
+  for (w <- weeks) {
+    val texFile = file("lect-" + w + ".tex")
+    println(s"runPdfLatexCmd($texFile, $workDir)")
+    runPdfLatexCmd(texFile, workDir)
+  }
 }
 
 
