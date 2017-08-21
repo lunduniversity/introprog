@@ -173,7 +173,7 @@ trait Plan {
 
     Module("Repetition, tentaträning, projekt", id = "examprep", exercise = "examprep", lab = "", contents = "göra extenta, förbereda projektredovisning, skapa dokumentation med scaladoc och javadoc"),
 
-    Module("Extra: jämlöpande exekvering, webbprogrammering",
+    Module("Extra",
       id = "extra", exercise = "extra", lab = "", contents = """
       | tråd, jämlöpande exekvering,
       | icke-blockerande anrop, callback,
