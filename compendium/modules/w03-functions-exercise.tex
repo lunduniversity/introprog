@@ -536,116 +536,6 @@ scala> println(bortkastad2)
 
 
 
-\WHAT{Rekursion.}
-
-\QUESTBEGIN
-
-\Task  \what~  En rekursiv funktion anropar sig själv.
-
-\Subtask Förklara vad som händer nedan.
-
-\begin{REPL}
-scala> def countdown(x: Int): Unit = if (x > 0) {println(x); countdown(x -1)}
-scala> countdown(10)
-scala> countdown(-1)
-scala> def finalCountdown(x: Byte): Unit =
-         {println(x); Thread.sleep(100); finalCountdown((x-1).toByte); 1 / x}
-scala> finalCountdown(Byte.MaxValue)
-\end{REPL}
-
-\Subtask Vad händer om du gör satsen som riskerar division med noll \emph{före} det rekursiva anropet i funktionen \code{finalCountdown} ovan?
-
-\Subtask Förklara vad som händer nedan. Varför tar sista raden längre tid än näst sista raden?
-\begin{REPL}
-scala> def signum(a: Int): Int = if (a >= 0) 1 else -1
-scala> def add(x: Int, y: Int): Int =
-         if (y == 0) x else add(x + 1, y - signum(y))
-scala> add(100,100)
-scala> add(Int.MaxValue, 0)
-scala> add(0, Int.MaxValue)
-\end{REPL}
-
-\SOLUTION
-
-\TaskSolved \what \TODO se över texten nedan
-
-\SubtaskSolved
-\code{countdown} skriver ut x och kallar på \code{countdown} igen med x-1 som argument om det är större än noll vilket innebär att samma sak görs igen tills x når 0.
-
-\code{finalCountdown} gör samma sak fast med en Byte och den fortsätter även om x passerar 0 med de rekursiva funktionsanropen.
-
-\SubtaskSolved
-Eftersom vi hade \code{1/x} efter det rekursiva anropet innan så kom vi aldrig dit för vi returnerade aldrig något utan gick bara djupare i stacken. Om vi placerar \code{1/x} tidigare så når vi den raden kod och den kastar ett exception då det är division med noll.
-
-\SubtaskSolved
-Den sista raden leder till mycket fler rekursiva anrop, för rekursionen avslutas när y är noll, inte om x är det.
-
-\QUESTEND
-
-
-
-
-\WHAT{Undersök svansrekursion genom att kasta undantag.}
-
-\QUESTBEGIN
-
-\Task  \what~  Förklara vad som händer. Kan du hitta bevis för att kompilatorn kan optimera rekursionen till en vanlig loop?
-
-\begin{REPL}
-scala> def explode = throw new Exception("BANG!!!")
-scala> explode
-scala> lastException.printStackTrace
-scala> def countdown(n: Int): Unit =
-         if (n == 0) explode else countdown(n-1)
-scala> countdown(10)
-scala> lastException.printStackTrace
-scala> def countdown2(n: Int): Unit =
-         if (n == 0) explode else {countdown2(n-1); print("no tailrec")}
-scala> countdown2(10)
-scala> countdown2(1000)
-scala> lastException
-scala> lastException.getStackTrace.size
-scala> :javap countdown
-scala> :javap countdown2
-\end{REPL}
-
-\SOLUTION
-
-\TaskSolved \what~\TODO %% TODO
-
-\QUESTEND
-
-
-
-\WHAT{\code{@tailrec}-annotering.}
-
-\QUESTBEGIN
-
-\Task  \what~  Du kan be kompilatorn att ge felmeddelande om den inte kan optimera koden till motsvarande en while-loop. Om den inte kan det hämmas prestanda och det finns risk för en överfull stack \Eng{stack overflow}. Prova nedan rader i REPL och förklara vad som händer.
-\begin{REPL}
-scala> def countNoTailrec(n: Long): Unit =
-         if (n <= 0L) println("Klar! " + n) else {countNoTailrec(n-1L); ()}
-scala> countNoTailrec(1000L)
-scala> countNoTailrec(100000L)
-scala> import scala.annotation.tailrec
-scala> @tailrec def countNoTailrec(n: Long): Unit =
-         if (n <= 0L) println("Klar! " + n) else {countNoTailrec(n-1L); ()}
-scala> @tailrec def countTailrec(n: Long): Unit =
-         if (n <= 0L) println("Klar! " + n) else countTailrec(n-1L)
-scala> countTailrec(1000L)
-scala> countTailrec(100000L)
-scala> countTailrec(Int.MaxValue.toLong * 2L)
-\end{REPL}
-
-\SOLUTION
-
-\TaskSolved \what~\TODO %% TODO
-
-\QUESTEND
-
-
-
-
 \WHAT{Uppdelad parameterlista och stegade funktioner.}
 
 \QUESTBEGIN
@@ -696,5 +586,117 @@ lalalalalalala
 
 \end{itemize}
 
+
+\QUESTEND
+
+
+
+
+\WHAT{Rekursion.}
+
+\QUESTBEGIN
+
+\Task\Uberkurs  \what~  En rekursiv funktion anropar sig själv.
+
+\Subtask Förklara vad som händer nedan.
+
+\begin{REPL}
+scala> def countdown(x: Int): Unit = if (x > 0) {println(x); countdown(x -1)}
+scala> countdown(10)
+scala> countdown(-1)
+scala> def finalCountdown(x: Byte): Unit =
+         {println(x); Thread.sleep(100); finalCountdown((x-1).toByte); 1 / x}
+scala> finalCountdown(Byte.MaxValue)
+\end{REPL}
+
+\Subtask Vad händer om du gör satsen som riskerar division med noll \emph{före} det rekursiva anropet i funktionen \code{finalCountdown} ovan?
+
+\Subtask Förklara vad som händer nedan. Varför tar sista raden längre tid än näst sista raden?
+\begin{REPL}
+scala> def signum(a: Int): Int = if (a >= 0) 1 else -1
+scala> def add(x: Int, y: Int): Int =
+         if (y == 0) x else add(x + 1, y - signum(y))
+scala> add(100,100)
+scala> add(Int.MaxValue, 0)
+scala> add(0, Int.MaxValue)
+\end{REPL}
+
+\SOLUTION
+
+\TaskSolved \what \TODO se över texten nedan
+
+\SubtaskSolved
+\code{countdown} skriver ut x och kallar på \code{countdown} igen med x-1 som argument om det är större än noll vilket innebär att samma sak görs igen tills x når 0.
+
+\code{finalCountdown} gör samma sak fast med en Byte och den fortsätter även om x passerar 0 med de rekursiva funktionsanropen.
+
+\SubtaskSolved
+Eftersom vi hade \code{1/x} efter det rekursiva anropet innan så kom vi aldrig dit för vi returnerade aldrig något utan gick bara djupare i stacken. Om vi placerar \code{1/x} tidigare så når vi den raden kod och den kastar ett exception då det är division med noll.
+
+\SubtaskSolved
+Den sista raden leder till mycket fler rekursiva anrop, för rekursionen avslutas när y är noll, inte om x är det.
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Undersök svansrekursion genom att kasta undantag.}
+
+\QUESTBEGIN
+
+\Task\Uberkurs  \what~  Förklara vad som händer. Kan du hitta bevis för att kompilatorn kan optimera rekursionen till en vanlig loop?
+
+\begin{REPL}
+scala> def explode = throw new Exception("BANG!!!")
+scala> explode
+scala> lastException.printStackTrace
+scala> def countdown(n: Int): Unit =
+         if (n == 0) explode else countdown(n-1)
+scala> countdown(10)
+scala> lastException.printStackTrace
+scala> def countdown2(n: Int): Unit =
+         if (n == 0) explode else {countdown2(n-1); print("no tailrec")}
+scala> countdown2(10)
+scala> countdown2(1000)
+scala> lastException
+scala> lastException.getStackTrace.size
+scala> :javap countdown
+scala> :javap countdown2
+\end{REPL}
+
+\SOLUTION
+
+\TaskSolved \what~\TODO %% TODO
+
+\QUESTEND
+
+
+
+\WHAT{\code{@tailrec}-annotering.}
+
+\QUESTBEGIN
+
+\Task\Uberkurs  \what~  Du kan be kompilatorn att ge felmeddelande om den inte kan optimera koden till motsvarande en while-loop. Om den inte kan det hämmas prestanda och det finns risk för en överfull stack \Eng{stack overflow}. Prova nedan rader i REPL och förklara vad som händer.
+\begin{REPL}
+scala> def countNoTailrec(n: Long): Unit =
+         if (n <= 0L) println("Klar! " + n) else {countNoTailrec(n-1L); ()}
+scala> countNoTailrec(1000L)
+scala> countNoTailrec(100000L)
+scala> import scala.annotation.tailrec
+scala> @tailrec def countNoTailrec(n: Long): Unit =
+         if (n <= 0L) println("Klar! " + n) else {countNoTailrec(n-1L); ()}
+scala> @tailrec def countTailrec(n: Long): Unit =
+         if (n <= 0L) println("Klar! " + n) else countTailrec(n-1L)
+scala> countTailrec(1000L)
+scala> countTailrec(100000L)
+scala> countTailrec(Int.MaxValue.toLong * 2L)
+\end{REPL}
+
+\SOLUTION
+
+\TaskSolved \what~\TODO %% TODO
 
 \QUESTEND

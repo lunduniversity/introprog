@@ -151,7 +151,7 @@ scala> Underjorden.x
 res3: Int = 0
 \end{REPL}
 
-\noindent \emph{Förklaring:} När importen av Maskens alla synliga medlemmar sker kommer de som ej är privata att överskugga andra medlemmar med samma namn. Det är Mullvadens \code{x}-variabel som tilldelas \code{-1} eftersom Maskens \code{x} är privat och ej syns utåt.
+\noindent \emph{Förklaring:} När importen av Maskens alla synliga medlemmar sker kommer de som ej är privata att överskugga andra medlemmar med samma namn. Det är Mullvadens \code{x}-variabel som tilldelas \code{-1} eftersom Maskens \code{x} är privat och ej syns utåt. Underjordens medlemmar blir överskuggade av Maskens \code{y} och Mullvadens \code{x} men man kan komma åt dem genom att använda punktnotation.
 
 \QUESTEND
 
@@ -169,7 +169,7 @@ object Underjorden3D {
   private val hemlis = ("uppgången till överjorden", (0, 0, 0.0))
 
   object Mullvaden {
-    var pos = (5, 3, math.random * 10)
+    var pos = (5, 3, math.random * 10 + 1)
     def djup  = ???
   }
 
@@ -374,7 +374,7 @@ object Color {
 
 
 \noindent\begin{minipage}{0.82\textwidth}
-\Subtask Använd koden nedan för att rita tre kvadrater i REPL. Proceduren \code{rak} ska rita en horisontell linje från punkten \code{p} med längden \code{d}. Proceduren \code{fyll} ska rita en fylld kvadrat med övre vänstra hörnet i punkten \code{p} och sidan \code{s}. Det som ritas ut ska se ut som bilden till höger.
+\Subtask Använd koden nedan för att rita tre kvadrater i REPL. Proceduren \code{rak} ska rita en horisontell linje från punkten \code{p} med längden \code{d}. Proceduren \code{fyll} ska, med många streck, rita en fylld kvadrat med övre vänstra hörnet i punkten \code{p} och sidan \code{s}. Det som ritas ut ska se ut som bilden till höger.
 \end{minipage}
 \hfill\begin{minipage}{0.23\textwidth}
 \includegraphics[width=\textwidth]{../img/fyll-rak.png}
@@ -545,23 +545,23 @@ res3: Int = 42
 object stringUtils {
   object split {
     def sentences(s: String): Array[String] = s.split('.')
-    def words(s: String):     Array[String] = s.split(' ')
+    def words(s: String):     Array[String] = s.split(' ').filter(_.nonEmpty)
   }
 
   object count {
     def letters(s: String):   Int = s.count(_.isLetter)
-    def words(s: String):     Int = split.words(s)    .size
+    def words(s: String):     Int = split.words(s).size
     def sentences(s: String): Int = split.sentences(s).size
   }
 
   object statistics {
-    private var history = ""
+    var history = ""
     def printFreq(s: String = history): Unit = {
       println("\n--- FREKVENSANALYS AV:\n" + s)
       println("# bokstäver: " + count.letters(s))
       println("# ord      : " + count.words(s))
       println("# meningar : " + count.sentences(s))
-      history = history + " " + s
+      history = (history + " " + s).trim
     }
   }
 }
@@ -569,7 +569,7 @@ object stringUtils {
 object Test {
   import stringUtils._
   def apply(): Unit = {
-    val s1 = "Fem myror är fler än fyra elefanter. Ät gurka."
+    val s1 = "Fem     myror är fler än fyra elefanter. Ät gurka."
     val s2 = "Galaxer i mina braxer. Tomat är gott. Päronsplitt."
     statistics.printFreq(s1)
     statistics.printFreq(s2)
@@ -595,9 +595,8 @@ res0: Array[String] = Array(päron, sglass)
 \SubtaskSolved
 \begin{REPLnonum}
 scala> Test()
-
 --- FREKVENSANALYS AV:
-Fem myror är fler än fyra elefanter. Ät gurka.
+Fem     myror är fler än fyra elefanter. Ät gurka.
 # bokstäver: 36
 # ord      : 9
 # meningar : 2
@@ -609,12 +608,11 @@ Galaxer i mina braxer. Tomat är gott. Päronsplitt.
 # meningar : 3
 
 --- FREKVENSANALYS AV:
- Fem myror är fler än fyra elefanter. Ät gurka. Galaxer i mina
- braxer. Tomat är gott. Päronsplitt.
+Fem     myror är fler än fyra elefanter. Ät gurka. Galaxer i mina braxer. Tomat
+är gott. Päronsplitt.
 # bokstäver: 76
-# ord      : 18
+# ord      : 17
 # meningar : 5
-
 \end{REPLnonum}
 
 \SubtaskSolved  Objektet \code{statistics} har ett förändringsbart tillstånd i variabeln \code{history}. Tillståndet ändras vid anrop av \code{printFreq}.
@@ -773,143 +771,6 @@ Hej paket p2.p21!
 
 
 
-\WHAT{Använda färdigt paket: färgväljaren i \code{swing}.}
-
-\QUESTBEGIN
-
-\Task \what~På laborationen har du nytta av att kunna blanda egna färger så att du kan rita klarblå himmel och frodigt gräs. Du kan skapa en färgväljare med hjälp av swing-paketet enligt nedan. Vad händer om du efter nedan skriver \code{f.setVisible(false)}?
-
-\begin{REPL}
-scala> val f = new javax.swing.JFrame         // skapa osynligt fönster
-scala> val c = new javax.swing.JColorChooser  // skapa färgväljare
-scala> f.add(c)              // lägg färgväljaren i fönstret
-scala> f.setVisible(true)    // visa fönstret; välj färg i RGB-fliken
-scala> c.getColor            // undersök RGB-värdena
-scala> c.getColor.getAlpha   // alpha styr genomskinlighet
-\end{REPL}
-
-
-\SOLUTION
-
-\TaskSolved \what~\\När du skriver \code{f.setVisible(false)} så stängs färgfäljarfönstret.
-
-\QUESTEND
-
-
-\WHAT{Använda färdigt paket: dialoger med \code{swing}.}
-
-\QUESTBEGIN
-
-\Task \what~
-
-\Subtask Använd proceduren \code{msg} nedan för att meddela att det är \code{"Game over!"}.
-\begin{REPL}
-scala> import javax.swing.JOptionPane
-scala> def msg(s: String) = JOptionPane.showMessageDialog(null, s)
-\end{REPL}
-
-\Subtask Använd funktionen \code{input} för att ta reda på användarens namn. Vad är returtypen? Vad händer om man klickar \emph{Cancel}?
-\begin{REPL}
-scala> def input(msg: String) = JOptionPane.showInputDialog(null, msg)
-\end{REPL}
-
-\Subtask Använd funktionen \code{choice} för att be användaren välja mellan sten, sax och påse. Vad är returtypen?
-\begin{REPL}
-scala> import JOptionPane.{showOptionDialog => showOpt}
-scala> def choice(msg: String, opt: Vector[String], title: String = "?") =
-  showOpt(null, msg, title, 0, 0, null, opt.toArray[Object], opt(0))
-\end{REPL}
-
-
-\SOLUTION
-
-\TaskSolved \what~
-
-\SubtaskSolved
-\begin{REPL}
-scala> msg("Game over!")
-\end{REPL}
-
-\SubtaskSolved Funktionen \code{input} returnerar en sträng som blir \code{null} om man klickar \emph{Cancel}.
-\begin{REPL}
-scala> val name = input("Vad heter du?")
-name: String = Oddput Kulkodare
-\end{REPL}
-
-\SubtaskSolved Funktionen \code{choice} returnerar ett heltal som är det index i argumentet till parametern \code{opt} som användaren valde.
-\begin{REPL}
-scala> choice("Vad väljer du?", Vector("Sten","Sax","Påse"))
-res0: Int = 2
-\end{REPL}
-
-\QUESTEND
-
-
-
-
-\WHAT{Skapa din egen \code{jar}-fil.}
-
-\QUESTBEGIN
-
-\Task  \what~
-
-\Subtask Skriv kommandot \code{jar} i terminalen och undersök vad det finns för optioner. Se speciellt ''Example 1.'' i hjälputskriften. Vilket kommando ska du använda för att packa ihop flera filer i en enda jar-fil? Notera att man (konstigt nog) inte ska ha streck före optionerna när man använder kommandot \code{jar} enligt exempel 1.
-
-\Subtask Skapa med en editor i filen \code{hello.scala} ett enkelt program som skriver ut \texttt{"Hello package!"} eller liknande. Koden ska ligga i paketet \code{hello} och innehålla ett object \code{Main} med en \code{main}-metod.
-
-\Subtask Skriv kommando i terminalen som förpackar koden i en jar-fil med namnet \code{my.jar} och kör igång REPL med jar-filen på classpath. Anropa din \code{main}-funktion i REPL genom att ange sökvägen \textit{\texttt{paketnamn.objektnamn.metodnamn}} med en tom array som argument.
-
-\Subtask Med vilket kommando kan du köra det kompilerade och jar-förpackade programmet direkt i terminalen (alltså utan att dra igång REPL)?
-
-\SOLUTION
-
-\TaskSolved \what
-
-\SubtaskSolved
-
-\texttt{jar cvf \textit{<namn på skapad jar-fil> <namn på det som ska packas>}}
-
-\SubtaskSolved
-\begin{Code}
-package hello
-
-object Main {
-  def main(args: Array[String]): Unit = println("Hello package!")
-}
-\end{Code}
-
-\SubtaskSolved
-\begin{REPL}
-> scalac hello.scala
-> jar cvf my.jar hello
-> ls
-> scala -cp my.jar
-scala> hello.Main.main(Array())
-\end{REPL}
-
-\SubtaskSolved
-\begin{REPL}
-> scala -cp my.jar hello.Main
-\end{REPL}
-
-\QUESTEND
-
-
-
-
-\WHAT{Hur stor är JDK8?}
-
-\QUESTBEGIN
-
-\Task \what~ Ta med hjälp av \url{http://stackoverflow.com/} reda på hur många klasser och paket det finns i Java-plattformen JDK8.
-
-\SOLUTION
-
-\TaskSolved \what~Med JDK8-plattformen kommer 4240 färdiga klasser, som är organiserade i 217 olika paket. Se Stackoverflow: \\\url{http://stackoverflow.com/questions/3112882}
-
-\QUESTEND
-
-
 
 \WHAT{Värdeanrop och namnanrop.}
 
@@ -917,7 +778,7 @@ scala> hello.Main.main(Array())
 
 \Task  \what~Normalt sker i Scala (och i Java) s.k. \emph{värdeanrop} vid anrop av funktioner, vilket innebär att argumentuttrycket evalueras \emph{före} bindningen till parameternamnet sker.
 
-Man kan också i Scala (men inte i Java) med syntaxen \code{=>} framför parametertypen deklarera att \emph{namnanrop} ska ske, vilket innebär att evalueringen av argumentuttrycket fördröjs och sker \emph{varje gång} namnet används i metodkroppen.
+Man kan också i Scala (men inte i Java) med syntaxen \code{=>} framför parametertypen deklarera att \emph{namnanrop} ska ske, vilket innebär att evalueringen av argumentuttrycket \emph{fördröjs} och sker \emph{varje gång} namnet används i metodkroppen.
 
 Deklarera nedan funktioner i REPL.
 
@@ -937,6 +798,7 @@ lazy val zzz = snark
 \Subtask \code{callByName(snark)}
 
 \Subtask \code{callByName(zzz)}
+
 \SOLUTION
 
 \TaskSolved \what
@@ -1051,5 +913,143 @@ repeat(100){ i =>
 \end{Code}
 
 
+
+\QUESTEND
+
+
+
+\WHAT{Använda färdigt paket: färgväljaren i \code{swing}.}
+
+\QUESTBEGIN
+
+\Task\Uberkurs \what~På laborationen har du nytta av att kunna blanda egna färger så att du kan rita klarblå himmel och frodigt gräs. Du kan skapa en färgväljare med hjälp av swing-paketet enligt nedan. Vad händer om du efter nedan skriver \code{f.setVisible(false)}?
+
+\begin{REPL}
+scala> val f = new javax.swing.JFrame         // skapa osynligt fönster
+scala> val c = new javax.swing.JColorChooser  // skapa färgväljare
+scala> f.add(c)              // lägg färgväljaren i fönstret
+scala> f.setVisible(true)    // visa fönstret; välj färg i RGB-fliken
+scala> c.getColor            // undersök RGB-värdena
+scala> c.getColor.getAlpha   // alpha styr genomskinlighet
+\end{REPL}
+
+
+\SOLUTION
+
+\TaskSolved \what~\\När du skriver \code{f.setVisible(false)} så stängs färgfäljarfönstret.
+
+\QUESTEND
+
+
+\WHAT{Använda färdigt paket: dialoger med \code{swing}.}
+
+\QUESTBEGIN
+
+\Task\Uberkurs \what~
+
+\Subtask Använd proceduren \code{msg} nedan för att meddela att det är \code{"Game over!"}.
+\begin{REPL}
+scala> import javax.swing.JOptionPane
+scala> def msg(s: String) = JOptionPane.showMessageDialog(null, s)
+\end{REPL}
+
+\Subtask Använd funktionen \code{input} för att ta reda på användarens namn. Vad är returtypen? Vad händer om man klickar \emph{Cancel}?
+\begin{REPL}
+scala> def input(msg: String) = JOptionPane.showInputDialog(null, msg)
+\end{REPL}
+
+\Subtask Använd funktionen \code{choice} för att be användaren välja mellan sten, sax och påse. Vad är returtypen?
+\begin{REPL}
+scala> import JOptionPane.{showOptionDialog => showOpt}
+scala> def choice(msg: String, opt: Vector[String], title: String = "?") =
+  showOpt(null, msg, title, 0, 0, null, opt.toArray[Object], opt(0))
+\end{REPL}
+
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved
+\begin{REPL}
+scala> msg("Game over!")
+\end{REPL}
+
+\SubtaskSolved Funktionen \code{input} returnerar en sträng som blir \code{null} om man klickar \emph{Cancel}.
+\begin{REPL}
+scala> val name = input("Vad heter du?")
+name: String = Oddput Kulkodare
+\end{REPL}
+
+\SubtaskSolved Funktionen \code{choice} returnerar ett heltal som är det index i argumentet till parametern \code{opt} som användaren valde.
+\begin{REPL}
+scala> choice("Vad väljer du?", Vector("Sten","Sax","Påse"))
+res0: Int = 2
+\end{REPL}
+
+\QUESTEND
+
+
+
+
+\WHAT{Skapa din egen \code{jar}-fil.}
+
+\QUESTBEGIN
+
+\Task\Uberkurs  \what~
+
+\Subtask Skriv kommandot \code{jar} i terminalen och undersök vad det finns för optioner. Se speciellt ''Example 1.'' i hjälputskriften. Vilket kommando ska du använda för att packa ihop flera filer i en enda jar-fil? Notera att man (konstigt nog) inte ska ha streck före optionerna när man använder kommandot \code{jar} enligt exempel 1.
+
+\Subtask Skapa med en editor i filen \code{hello.scala} ett enkelt program som skriver ut \texttt{"Hello package!"} eller liknande. Koden ska ligga i paketet \code{hello} och innehålla ett object \code{Main} med en \code{main}-metod.
+
+\Subtask Skriv kommando i terminalen som förpackar koden i en jar-fil med namnet \code{my.jar} och kör igång REPL med jar-filen på classpath. Anropa din \code{main}-funktion i REPL genom att ange sökvägen \textit{\texttt{paketnamn.objektnamn.metodnamn}} med en tom array som argument.
+
+\Subtask Med vilket kommando kan du köra det kompilerade och jar-förpackade programmet direkt i terminalen (alltså utan att dra igång REPL)?
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved
+
+\texttt{jar cvf \textit{<namn på skapad jar-fil> <namn på det som ska packas>}}
+
+\SubtaskSolved
+\begin{Code}
+package hello
+
+object Main {
+  def main(args: Array[String]): Unit = println("Hello package!")
+}
+\end{Code}
+
+\SubtaskSolved
+\begin{REPL}
+> scalac hello.scala
+> jar cvf my.jar hello
+> ls
+> scala -cp my.jar
+scala> hello.Main.main(Array())
+\end{REPL}
+
+\SubtaskSolved
+\begin{REPL}
+> scala -cp my.jar hello.Main
+\end{REPL}
+
+\QUESTEND
+
+
+
+
+\WHAT{Hur stor är JDK8?}
+
+\QUESTBEGIN
+
+\Task\Uberkurs \what~ Ta med hjälp av \url{http://stackoverflow.com/} reda på hur många klasser och paket det finns i Java-plattformen JDK8.
+
+\SOLUTION
+
+\TaskSolved \what~Med JDK8-plattformen kommer 4240 färdiga klasser, som är organiserade i 217 olika paket. Se Stackoverflow: \\\url{http://stackoverflow.com/questions/3112882}
 
 \QUESTEND

@@ -240,11 +240,10 @@ Använd denna algoritm:
 \code|xs(0) eq ys(0)          | & \code|true |  eftersom samma instans \\ \hline
 \code|xs(0) eq zs(0)          | & \code|false | eftersom olika instanser\\ \hline
 \code|(ys.toBuffer :+ |
-\code|  new Mutant).apply(0).int| & \code|0 | eftersom kopian av typen \code|ArrayBuffer| refererar samma instans på fösta platsen som både \code|ys| och \code|xs|\\ \hline
+\code|  new Mutant).apply(0).int| & \code|0 | eftersom den ej djupkopierade kopian av typen \code|ArrayBuffer| refererar samma instans på första platsen som både \code|ys| och \code|xs| och \code|x(0).int| blev noll i en tilldelning på rad 5 i REPL-körningen\\ \hline
 \end{tabular}
 
 \vspace{0.5em}\noindent Observera alltså att kopiering med \code{toArray}, \code{toVector}, \code{toBuffer}, etc. \emph{inte är djup}, d.v.s det är bara elementreferenserna som delas i en samling av ny typ.
-
 Om du gör \code{toXXX} på en samling som redan är av typen \code{XXX} sker ingenting annat än att samlingsreferensen returneras -- det är bara vid omvandling till en \emph{ny} typ av samling som kopiering av \emph{referenserna} sker,  fortfarande utan någon djupkopiering (alltså ingen instansiering av nya element med kopierat innehåll).
 \begin{REPL}
 scala> val a = Array(5)
@@ -432,7 +431,7 @@ Ibland vill man att vettiga undantag ska kastas vid ogiltig indata eller andra f
 
 \QUESTBEGIN
 
-\Task \what~Linjärsökning innebär att man letar tills man hittar det man söker efter i en sekvens. Detta delproblem återkommer ofta! Vanligen börjar linjärsökning från början och håller på tills man hittar något element som uppfyller kriteriet. Beroende på vad som finns i sekvensen och hur kriteriet ser ut kan det hända att man måste gå igenom alla element utan hitta det som eftersöks.
+\Task \what~Linjärsökning innebär att man letar tills man hittar det man söker efter i en sekvens. Detta delproblem återkommer ofta! Vanligen börjar linjärsökning från början och håller på tills man hittar något element som uppfyller kriteriet. Beroende på vad som finns i sekvensen och hur kriteriet ser ut kan det hända att man måste gå igenom alla element utan att hitta det som söks.
 
 \Subtask Linjärsökning med inbyggda sekvenssamlingsmetoder.
 \begin{Code}
@@ -501,7 +500,7 @@ def indexOf(xs: Vector[String], p: String => Boolean): Int = {
   if (i == xs.length) -1 else i
 }
 \end{Code}
-Eller så kan man börja bakifrån. Lösningen nedan är nog enklare att fatta (?) och definitivt mer koncis, men uppfyller inte kravet att returnera index för \emph{första} förekomsten som det står i uppgiften. Men om vi relaxar kravet till att vår funktion ska returnera \emph{något} index där predikatet gäller så funkar nedan fint:
+Eller så kanske man vill börja bakifrån; lösningen nedan är nog enklare att fatta (?) och definitivt mer koncis, men uppfyller \emph{inte} kravet att returnera index för \emph{första} förekomsten som det står i uppgiften. Men om sammanhanget tillåter att vi returnerar \emph{något} index för vilket predikatet gäller, eller om man faktiskt har kravet att leta bakifrån, så funkar detta:
 \begin{Code}
 def indexOf(xs: Vector[String], p: String => Boolean): Int = {
   var i = xs.length - 1

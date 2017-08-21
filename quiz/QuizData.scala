@@ -58,7 +58,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
 
     "quiz-w01-intdiv" -> Vector(
       "\\code| 4 / 42      |" ->   "\\code|    0: Int      | ",
-      "\\code| 42.0 / 2    |" ->   "\\code| 10.5: Double   | ",
+      "\\code| 42.0 / 2    |" ->   "\\code| 21.0: Double   | ",
       "\\code| 42 / 4      |" ->   "\\code|   10: Int      | ",
       "\\code| 42 % 4      |" ->   "\\code|    2: Int      | ",
       "\\code| 4 % 42      |" ->   "\\code|    4: Int      | ",
@@ -70,7 +70,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "kompilerad     " -> "maskinkod sparad och kan köras igen utan kompilering",
       "skript         " -> "maskinkod sparas ej utan skapas vid varje körning",
       "objekt         " -> "samlar variabler och funktioner",
-      "main           " -> "där exekveringen av kompilerad app startar",
+      "main           " -> "där exekveringen av kompilerat program startar",
       "programargument" -> "överförs via parametern args i main",
       "datastruktur   " -> "många olika element i en helhet; elementvis åtkomst",
       "samling        " -> "datastruktur med element av samma typ",
@@ -130,7 +130,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
     "quiz-w02-for-yield-map" -> Vector(  //programs
-      "\\code|for (x <- xs) yield x * 2|" -> "\\code|Vector(1, 2, 4)|",
+      "\\code|for (x <- xs) yield x * 2|" -> "\\code|Vector(2, 4, 6)|",
       "\\code|for (i <- xs.indices) yield i|" -> "\\code|Vector(0, 1, 2)|",
       "\\code|xs.map(x => x + 1)    |" -> "\\code|Vector(2, 3, 4)|",
       "\\code|for (i <- 0 to 1) yield xs(i)|" -> "\\code|Vector(1, 2)|",
@@ -283,12 +283,12 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "element          " -> "objekt i en datastruktur",
       "samling          " -> "datastruktur med element av samma typ",
       "samlingsbibliotek" -> "många färdiga samlingar med olika egenskaper",
-      "sekvenssamling   " -> "noll el. flera element av samma typ i viss ordning",
+      "sekvens(samling) " -> "noll el. flera element av samma typ i viss ordning",
       "sekvensalgoritm  " -> "lösning på problem som drar nytta av sekvenssamling",
       "ordning          " -> "definierar hur element av en viss typ ska ordnas",
       "sortering        " -> "algoritm som ordnar element i en viss ordning",
       "söking           " -> "algoritm som letar upp element enligt sökkriterium",
-      "linjärsöking     " -> "sökalgoritm som letar i sekvens tills element hittas",
+      "linjärsökning    " -> "sökalgoritm som letar i sekvens tills element hittas",
       "registrering     " -> "algoritm som räknar element med vissa egenskaper",
 //      "repeterade param." -> "variabelt antal argument, asterisk efter parametertyp ",
       "tidskomplexitet  " -> "hur exekveringstiden växer med problemstorleken",
