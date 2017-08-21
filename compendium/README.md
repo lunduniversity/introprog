@@ -1,6 +1,6 @@
 # Compendium
 
-Here you can find different main tex documents that render different layouts and slices of the compendium. You can compile them using LatexOnLine with this link where you change the compendium.tex name in the URL to the desired source file:
+Here you can find different main tex documents that render different layouts and slices of the compendium. You can compile them using LatexOnLine with this link where you change the compendium1.tex name in the URL to the desired source file:
 
 https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium1.tex&command=pdflatex
 
