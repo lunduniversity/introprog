@@ -1,4 +1,4 @@
-package cardSimulation
+package cards
 
 class Deck private (val initCards: Vector[Card]){
   private var cards: Array[Card] = initCards.toArray

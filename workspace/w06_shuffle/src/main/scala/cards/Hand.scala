@@ -1,4 +1,4 @@
-package cardSimulation
+package cards
 
 case class Hand(cards: Vector[Card]) {
   import Hand._

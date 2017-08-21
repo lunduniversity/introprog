@@ -1,4 +1,4 @@
-package cardSimulation
+package cards
 
 case class Card(rank: Int, suit: Int) {
   import Card._

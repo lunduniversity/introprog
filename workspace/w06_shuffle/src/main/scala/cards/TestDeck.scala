@@ -1,4 +1,4 @@
-package cardSimulation
+package cards
 
 object TestDeck {
   def testCreate(): Unit = {
