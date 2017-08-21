@@ -77,7 +77,7 @@ I mindre program fungerar det bra att samla alla funktioner i ett singelobjekt, 
 \begin{Code}
 package blockmole
 
-object Colors {
+object Color {
   // Skapar olika färger som behövs i övriga moduler
 }
 
@@ -108,7 +108,7 @@ Vi lägger i denna laboration alla moduler i samma fil, men i andra situationer 
 
 Lägg in en importdeklaration med namnbytet direkt efter paketdeklarationen. Vi lägger importen så att den syns i hela paketet eftersom flera objekt behöver tillgång till \code{JColor}. Säkerställ att koden fortfarande kompilerar utan fel.
 
-Skapa sedan nedan färger i objektet \code{Colors}:
+Skapa sedan nedan färger i objektet \code{Color}:
 \begin{Code}
 object Color {
   val black  = new JColor(  0,   0,   0)
@@ -151,7 +151,7 @@ Kompilera och kör och säkerställ att allt fungerar som förväntat.
 Det är dags att skapa koordinatsystemet i blockmullvadens blockvärld.
 
 \Subtask\Pen
-Inför redovisningen: säkerställ att du kan förklara vad \code{x}- och \code{y}-parametrarna i \code{SimpleWindow.lineTo} innebär, genom att med papper och penna rita en enkel skiss av ungefär var positionerna $(0,0)$, $(300, 0)$, $(0, 300)$ och $(300, 300)$ ligger i ett fönster som är 300 bildpunkter brett och 500 bildpunkter högt.
+Säkerställ att du kan förklara vad \code{x}- och \code{y}-parametrarna i \code{SimpleWindow.lineTo} innebär, genom att med papper och penna rita en enkel skiss av ungefär var positionerna $(0,0)$, $(300, 0)$, $(0, 300)$ och $(300, 300)$ ligger i ett fönster som är 300 bildpunkter brett och 500 bildpunkter högt.
 
 \Subtask
 Koordinatsystem i \code{Graphics} ska ha kvadratiska, \emph{stora} bildpunkter som består av många fönsterpixlar. Vi kallar dessa stora bildpunkter för \emph{block} för att lättare skilja dem från de enpixelstora bildpunkterna i \code{SimpleWindow}. I block-koordinatsystemet för \code{Graphics} gäller följande:
@@ -175,7 +175,7 @@ Koordinatsystem i \code{Graphics} ska ha kvadratiska, \emph{stora} bildpunkter s
 Säkerställ att koden kompilerar utan fel.
 
 \Subtask\Pen
-Metoden \code{block} ritar ett antal linjer.
+Metoden \code{block} ska rita ett antal linjer.
 Hur många linjer ritas ut?
 I vilken ordning ritas linjerna?
 Skriv ner dina svar inför redovisningen.
@@ -210,7 +210,7 @@ I vilken ordning ritas blocken i rektangeln ut (lodrät eller vågrät)?
 
 
 \Subtask Ändra i \code{Mole.drawWorld} så att den ritar ut underjorden, det vill säga en massa jord där blockmullvaden kan gräva sina tunnlar.
- Underjorden ska bestå av en rektangel med färgen \code{Colors.soil} som precis täcker fönstret.
+ Underjorden ska bestå av en rektangel med färgen \code{Color.soil} som precis täcker fönstret.
 
 Eftersom funktionen \code{rectangle} har mer än en parameter med samma typ som lätt kan blandas ihop utan att kompilatorn hittar felet, ska du namnge det andra argumentet \code{size} vid anropet. För det första argumentet (\code{leftTop}) ska du utnyttja att det går att skippa tupelparenteserna (gäller vid parameterlista med endast en parameter av tupeltyp).
 
@@ -224,17 +224,17 @@ Du ska använda de funktionerna för att styra en blockmullvad.
 Lägg till denna funktion i \code{Graphics}:
 \begin{Code}
   def waitForKey(): Char = {
-    w.waitForEvent
-    while (w.getEventType != SimpleWindow.KEY_EVENT) w.waitForEvent
-    w.getKey
+    win.waitForEvent
+    while (win.getEventType != SimpleWindow.KEY_EVENT) win.waitForEvent
+    win.getKey
   }
 \end{Code}
 \noindent Det finns olika sorters händelser som ett \code{SimpleWindow} kan reagera på, till exempel tangenttryckningar och musklick.
-Funktionen som du precis lagt in väntar på en händelse i ditt \code{SimpleWindow} (\code{w.waitForEvent}) ända tills det kommer en tangenttryckning (\code{KEY_EVENT}).
-När det kommit en tangenttryckning anropas \code{w.getKey} för att ta reda på vilken bokstav eller vilket tecken det blev, och det resultatet blir också resultatet av \code{waitForKey}, eftersom det ligger sist i blocket.
+Funktionen som du precis lagt in väntar på en händelse i ditt \code{SimpleWindow} (\code{win.waitForEvent}) ända tills det kommer en tangenttryckning (\code{KEY_EVENT}).
+När det kommit en tangenttryckning anropas \code{win.getKey} för att ta reda på vilken bokstav eller vilket tecken det blev, och det resultatet blir också resultatet av \code{waitForKey}, eftersom det ligger sist i blocket.
 
 \Subtask
-Lägg till proceduren \code{Mole.dig} enligt nedan:
+Utöka proceduren \code{Mole.dig} enligt nedan:
 \begin{Code}
   def dig(): Unit = {
     var x = Graphics.windowSize._1 / 2
@@ -242,7 +242,6 @@ Lägg till proceduren \code{Mole.dig} enligt nedan:
     while (true) {
       Graphics.block(x, y)(Color.mole)
       val key = Graphics.waitForKey()
-      Graphics.block(x, y)(Color.tunnel)
       if      (key == 'w') ???
       else if (key == 'a') ???
       else if (key == 's') ???
@@ -253,15 +252,17 @@ Lägg till proceduren \code{Mole.dig} enligt nedan:
 
 \Subtask Fyll i alla \code{???} så att \code{'w'} styr mullvaden ett steg uppåt, \code{'a'} ett steg åt vänster, \code{'s'} ett steg nedåt och \code{'d'} ett steg åt höger.
 
-\Subtask Ändra \code{main} så att den bara innehåller två anrop: ett till \code{drawWorld} och ett till \code{dig}. Kompilera och kör ditt program för att se om programmet reagerar på w, a, s och d.
+\Subtask Kontrollera så att \code{main} bara innehåller två anrop: ett till \code{drawWorld} och ett till \code{dig}. Kompilera och kör ditt program för att se om programmet reagerar på tangenterna w, a, s och d.
 
 \Subtask Om programmet fungerar kommer det bli många mullvadar som tillsammans bildar en lång mask, och det är ju lite underligt. Lägg till ett anrop i \code{Mole.dig} som ritar ut en bit tunnel på position $(x, y)$ efter anropet till \code{Graphics.waitForKey} men innan \code{if}-satserna. Kompilera och kör ditt program för att gräva tunnlar med din blockmullvad.
+
+\clearpage
 
 \subsection{Kontrollfrågor}\Checkpoint
 
 \noindent Repetera teorin för denna vecka och var beredd på att kunna svara på dessa frågor när det blir din tur att redovisa vad du gjort under laborationen:
 
-\begin{enumerate}
+\begin{enumerate}[noitemsep]
 \item Till vad används \emph{classpath}?
 \item Vad är en \code{jar}-fil?
 \item Vad innebär punktnotation?
@@ -273,7 +274,7 @@ Lägg till proceduren \code{Mole.dig} enligt nedan:
 
 
 
-\clearpage
+%\clearpage
 
 \subsection{Frivilliga extrauppgifter}
 
@@ -283,10 +284,8 @@ Lägg till några \code{if}-satser i början av \code{while}-satsen som upptäck
 
 \Task
 Mullvadar är inte så intresserade av livet ovanför jord, men det kan vara trevligt att se hur långt ner mullvaden grävt sig.
-Lägg till en himmelsfärg och en gräsfärg i objektet \code{Colors} och rita ut himmel och gräs i \code{Mole.drawWorld}.
-Justera också det du gjorde i föregående uppgift, så att mullvaden håller sig under jord.
-
-\emph{Tips:} Du har nytta av färgväljaren i Kojo som du får fram genom att högerklicka i editorfönstret i kojo. Med hjälp av den kan du interaktivt blanda till den färg du tycker passar bäst.
+Lägg till en himmelsfärg och en gräsfärg i objektet \code{Color} och rita ut himmel och gräs i \code{Mole.drawWorld}.
+Justera också det du gjorde i föregående uppgift, så att mullvaden håller sig under jord. \emph{Tips:} Du har nytta av en interaktiv färgväljare. Du kan söka på nätet efter \code{colorpicker} eller använda färgväljaren i Kojo som du får fram genom att högerklicka i editorn.
 
 \Task
 Ändra så att mullvaden kan springa uppe på gräset också, men se till så att ingen tunnel ritas ut där.
@@ -302,8 +301,8 @@ Skapa en ny metod \code{Graphics.waitForKeyNonBlocking} som möjliggör tangentb
 
 \begin{Code}
   def waitForKeyNonBlocking(): Char  = {
-    w.waitForEvent(10) //wait max 10 milliseconds
-    if (w.getEventType() == SimpleWindow.KEY_EVENT) w.getKey else 0
+    win.waitForEvent(10) //wait max 10 milliseconds
+    if (win.getEventType() == SimpleWindow.KEY_EVENT) win.getKey else 0
   }
 \end{Code}
 
@@ -351,8 +350,12 @@ Skapa en ny metod \code{Graphics.keepOnDigging} som från början är en kopia a
   \noindent\textbf{Blockmask} (\textit{Lumbricus quadratus}) är ett fantasidjur i familjen daggmaskar. Den är känd för att kunna teleportera sig från en plats till en annan på ett ögonblick. Den har i likhet med den verkliga daggmasken (\emph{Lumbricus terrestris}) RGB-färgen $(225, 100, 235)$, men är kvadratisk och endast ett block stor.
 \end{quote}
 
-\Subtask Lägg till nedan modul i din kod och använd procedurerna i \code{keepOnDigging} så att blockmullvaden får en blockmask att jaga. Gör så att texten \code{"WORM CATCHED!"} skrivs ut i terminalen om blockmullvaden är på samma plats som blockmasken. Koden nedan förutsätter att himmel och gräs finns i fönstrets översta $8$ block. Använd parametern \code{notHere} till att förhindra att blockmasken teleporterar sig till samma plats som blockmullvaden.
 
+
+
+\Subtask Lägg till modulen \code{Worm} nedan i din kod och använd procedurerna i \code{keepOnDigging} så att blockmullvaden får en blockmask att jaga.
+
+%\begin{figure}
 \begin{Code}
 object Worm {
   def nextRandomPos(): (Int, Int) =
@@ -378,6 +381,13 @@ object Worm {
     }
 }
 \end{Code}
+%\end{figure}
+
+\Subtask Koden i \code{Worm} förutsätter att himmel och gräs finns i fönstrets översta $8$ block, vilket egentligen med fördel kan vara en konstant med ett bra namn. Fixa  det.
+
+\Subtask Gör så att texten \code{"WORM CATCHED!"} skrivs ut i terminalen om blockmullvaden är på samma plats som blockmasken.
+
+\Subtask Använd parametern \code{notHere} till att förhindra att blockmasken teleporterar sig till samma plats som blockmullvaden.
 
 \Subtask Gör så att blockmullvaden får $1000$ poäng varje gång den fångar blockmasken.
 
