@@ -6,7 +6,10 @@ object Main {
 
   def top(n: Int, freqMap: Map[String, Int]): Vector[(String, Int)] = ???
 
-  def report(text: Text, from: String, n: Int): String = s"""
+  def report(text: Text, from: String, n: Int): String = {
+    val longestWordsWithLength =
+      top(n, text.distinct.map(w => (w, w.length)).toMap).mkString(", ")
+    s"""
     |Källa: $from
     |
     |*** Antal ord: ${text.words.size}
@@ -15,8 +18,9 @@ object Main {
     |${top(n, text.wordFreq).mkString(", ")}
     |
     |*** De $n längsta orden och deras längd:
-    |${top(n, text.distinct.map(w => (w, w.length)).toMap).mkString(", ")}
+    |$longestWordsWithLength
     """.stripMargin
+  }
 
   def main(args: Array[String]): Unit = {
     val location = if (args.isEmpty) defaultUrl else args(0)
