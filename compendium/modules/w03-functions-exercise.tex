@@ -78,14 +78,14 @@ En funktion med en parameter definieras med följande syntax i Scala:
 def öka(x: Int = 1): Int = x + 1
 \end{Code}
 
-\SubtaskSolved  \code{4}
+\SubtaskSolved  \code{5}
 
 \SubtaskSolved
 \begin{Code}
 def minska(x: Int = 1): Int = x - 1
 \end{Code}
 
-\SubtaskSolved  \code{0}
+\SubtaskSolved  \code{1}
 
 \SubtaskSolved
 \begin{itemize}
@@ -344,7 +344,7 @@ explicit by writing 'öka _' or 'öka(_)' instead of 'öka'.
 Syntaxen \code{(i: Int) => i + 1} är en litteral för att skapa ett funktionsvärde. Syntaxen liknar den för funktionsdeklarationer, men nyckelordet \code{def} saknas i funktionshuvudet och i stället för likhetstecken används \code{=>} för att avskilja parameterlistan från funktionskroppen.
 Om kompilatorn kan härleda typen ur sammanhanget kan kortformen \code{i => i + 1} användas.
 
-Det finns ett \emph{ännu} kortare sätt att skriva en anonym funktion \emph{om} typen kan härledas \emph{och} den bara använder sin parameter \emph{en enda gång}; då går funktionslitteraler att skriva med s.k. platshållarsyntax som använder understreck, till exempel \code{ _ + 1} och som automatiskt expanderas av kompilatorn till \code{ngtnamn => ngtnamn + 1} (namnet på parametern spelar ingen roll; kompilatorn väljer något eget, internt namn).
+Det finns ett \emph{ännu} kortare sätt att skriva en anonym funktion \emph{om} typen kan härledas \emph{och} den bara använder sin parameter \emph{en enda gång}; då går funktionslitteraler att skriva med s.k. \emph{platshållaresyntax} som använder understreck, till exempel \code{ _ + 1} och som automatiskt expanderas av kompilatorn till \code{ngtnamn => ngtnamn + 1} (namnet på parametern spelar ingen roll; kompilatorn väljer något eget, internt namn).
 
 Para ihop uttryck till vänster med uttryck till höger som har samma värde:
 
@@ -353,7 +353,7 @@ Para ihop uttryck till vänster med uttryck till höger som har samma värde:
 \end{ConceptConnections}
 
 \noindent
-Funktionslitteraler kallas även \textit{anonyma funktioner}\footnote{Ett annat vanligt namn är \textit{lambda} efter det datalogiska matematikverktyget lambdakalkyl:  \url{https://sv.wikipedia.org/wiki/Lambdakalkyl}}, eftersom de inte har något namn, till skillnad från t.ex. \code{def öka(i: Int): Int = i + 1}, som ju heter \code{öka}.
+Funktionslitteraler kallas även \textit{anonyma funktioner}\footnote{Ett annat vanligt namn är \textit{lambda} efter det datalogiska matematikverktyget lambdakalkyl:  \\\url{https://sv.wikipedia.org/wiki/Lambdakalkyl}}, eftersom de inte har något namn, till skillnad från t.ex. \code{def öka(i: Int): Int = i + 1}, som ju heter \code{öka}.
 
 \SOLUTION
 
@@ -494,11 +494,11 @@ scala> println(bortkastad2)
 
 \TaskSolved \what
 
-\SubtaskSolved Procedurer returnerar tomma värdet och \code{println} är en procedur.
+\SubtaskSolved Procedurer returnerar tomma värdet och \code{println} är en procedur. När tomma värdet skrivs ut visas \code{()}.
 
-\SubtaskSolved Proceudrer returnerar tomma värdet. Om du anger returtyp \code{Unit} explicit, har du bättre chans att kompilatorn kan ge varning då uträkningar kommer att kastas bort.
+\SubtaskSolved Procedurer returnerar tomma värdet. Om du anger returtyp \code{Unit} explicit, har du bättre chans att kompilatorn kan ge varning då uträkningar kommer att kastas bort. En varning avbryter inte exekveringen, utan är ett sätt för kompilatorn att ge dig tips om saker som kan behöva fixas till i din kod.
 
-\SubtaskSolved I Scala är variabeldeklaratin, precis som en tilldelningssats, och inte ett uttryck och saknar värde.
+\SubtaskSolved I Scala är variabeldeklaration, precis som en tilldelningssats, och inte ett uttryck och saknar värde.
 
 \SubtaskSolved  Koden blir lättare att läsa och kompilatorn får bättre möjlighet att hjälpa till med varningar om resultatvärden riskerar att bli bortkastade.
 
@@ -623,23 +623,19 @@ scala> add(0, Int.MaxValue)
 
 \SOLUTION
 
-\TaskSolved \what \TODO se över texten nedan
+\TaskSolved \what
 
 \SubtaskSolved
-\code{countdown} skriver ut x och kallar på \code{countdown} igen med x-1 som argument om det är större än noll vilket innebär att samma sak görs igen tills x når 0.
-
-\code{finalCountdown} gör samma sak fast med en Byte och den fortsätter även om x passerar 0 med de rekursiva funktionsanropen.
-
-\SubtaskSolved
-Eftersom vi hade \code{1/x} efter det rekursiva anropet innan så kom vi aldrig dit för vi returnerade aldrig något utan gick bara djupare i stacken. Om vi placerar \code{1/x} tidigare så når vi den raden kod och den kastar ett exception då det är division med noll.
+\code{countdown} skriver ut x och gör ett rekursivt anrop med \code{x-1} som argument, men bara om basvillkoret \code{(x > 0)} är uppfyllt. Resultatet blir en ändlig  repetition.
+\code{finalCountdown} anropar sig själv rekursivt men saknar ett basvillkor som kan avbryta rekursionen, vilket genererar en oändlig repetition. Vid -128 blir det \emph{overflow} eftersom bitarna inte räcker till för större negativa tal och räkningen börjar om på 127. (Om minskar fördröjningen till \code{Thread.sleep(1)} blir det ganska snabbt \emph{stack overflow})
 
 \SubtaskSolved
-Den sista raden leder till mycket fler rekursiva anrop, för rekursionen avslutas när y är noll, inte om x är det.
+Eftersom vi hade \code{1/x} \emph{efter} det rekursiva anropet i föregående deluppgift, så kom vi aldrig till denna (potentiellt ödesdigra) beräkning, utan lade bara aktiveringsposter på hög på stacken vid varje anrop. Om vi placerar \code{1/x} \emph{före} det rekursiva anropet, så når vi detta uttryck direkt och det kastas ett undantag p.g.a. division med noll.
+
+\SubtaskSolved
+Den sista raden leder till många fler rekursiva anrop, så som basvillkoret och det rekursiva anropet är konstruerade. Lägg gärna in en \code{println}-sats före det rekursiva anropet och undersök i detalj vad som sker.
 
 \QUESTEND
-
-
-
 
 
 
@@ -656,11 +652,12 @@ scala> lastException.printStackTrace
 scala> def countdown(n: Int): Unit =
          if (n == 0) explode else countdown(n-1)
 scala> countdown(10)
+scala> countdown(10000)
 scala> lastException.printStackTrace
 scala> def countdown2(n: Int): Unit =
          if (n == 0) explode else {countdown2(n-1); print("no tailrec")}
 scala> countdown2(10)
-scala> countdown2(1000)
+scala> countdown2(10000)
 scala> lastException
 scala> lastException.getStackTrace.size
 scala> :javap countdown
@@ -669,7 +666,9 @@ scala> :javap countdown2
 
 \SOLUTION
 
-\TaskSolved \what~\TODO %% TODO
+\TaskSolved \what~\code{countdown} är svansrekursiv eftersom det rekursiva anropet står \emph{sist} och kan då optimeras till en \code{while}-loop av kompilatorn. Det går fint att köra ända till det exploderar, även med 10000 anrop.
+
+\code{countdown2} är inte svansrekursiv eftersom den har ett uttryck \code{efter} det rekursiva anropet. Med \code{:javap} får man se maskinkoden och i den ser man ett \code{goto} i \code{countdown} som är den maskinkod som generas vid \code{while}-loopar, medan \code{countdown2} har maskinkodsinstruktionen \code{invokevirtual} och inget \code{goto} vilket indikerar att kompilatorn aldrig lyckades omforma den rekursiva repetitionen till en \code{while}-sats.
 
 \QUESTEND
 
@@ -679,7 +678,9 @@ scala> :javap countdown2
 
 \QUESTBEGIN
 
-\Task\Uberkurs  \what~  Du kan be kompilatorn att ge felmeddelande om den inte kan optimera koden till motsvarande en while-loop. Om den inte kan det hämmas prestanda och det finns risk för en överfull stack \Eng{stack overflow}. Prova nedan rader i REPL och förklara vad som händer.
+\Task\Uberkurs  \what~  Du kan be kompilatorn att ge felmeddelande om den inte kan optimera koden till motsvarande en while-loop. Detta kan användas i de fall man vill vara helt säker på att kompilatorn kan optimera koden och det inte kan finnas risk för en överfull stack \Eng{stack overflow} på grund av för djup anropsnästling.
+
+Prova nedan rader i REPL och förklara vad som händer.
 \begin{REPL}
 scala> def countNoTailrec(n: Long): Unit =
          if (n <= 0L) println("Klar! " + n) else {countNoTailrec(n-1L); ()}
@@ -697,6 +698,6 @@ scala> countTailrec(Int.MaxValue.toLong * 2L)
 
 \SOLUTION
 
-\TaskSolved \what~\TODO %% TODO
+\TaskSolved \what~Första gången \code{countNoTailrec(100000L)}  anropas blir det \code{StackOverflowError}. Med annoteringen \code{@tailrec} får vi ett kompilerinsfel eftersom kompilatorn inte kan optimera en icke svansrekursiv funktion. Om funktionen skrivs om kan kompilatorn optimera funktionen så att rekursionen byts ut mot en \code{while}-loop och vi kan köra så länge vi orkar utan att stacken flödar över. Och himla snabbt går det!!
 
 \QUESTEND
