@@ -105,8 +105,9 @@ pdf := {
 //http://www.scala-sbt.org/0.13/docs/Howto-Triggered.html
 watchSources ++= ((baseDirectory.value / "compendium") * "*.tex").get
 watchSources ++= ((baseDirectory.value / "compendium") * "*.cls").get
-
 watchSources ++= ((baseDirectory.value / "compendium" / "modules") * "*.tex").get
+watchSources ++= ((baseDirectory.value / "compendium" / "prechapters") * "*.tex").get
+watchSources ++= ((baseDirectory.value / "compendium" / "postchapters") * "*.tex").get
 watchSources ++= ((baseDirectory.value / "slides" / "body") * "*.tex").get
 
 lazy val pdfExercises = taskKey[Unit]("Compile exercises.tex")
