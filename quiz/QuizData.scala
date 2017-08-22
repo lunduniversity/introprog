@@ -377,7 +377,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     "quiz-w07-concepts" -> Vector(  //search, sets, maps
       "mängd              " -> "oordnad samling med unika element",
       "nyckel-värde-tabell" -> "oordnad samling av mappningar med unika nycklar",
-      "mappning           " -> "\\code{nyckel -> värde}",
+      "mappning           " -> "\\code|nyckel -> värde|",
       "nyckel             " -> "en unik identifierare",
       "persistens         " -> "egenskapen att finnas kvar efter programmets avslut",
       "serialisera        " -> "koda objekt till avkodningsbar sekvens av symboler",
