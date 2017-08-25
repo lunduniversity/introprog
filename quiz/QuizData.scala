@@ -2,14 +2,14 @@ package genquiz  // see types in package object in TypesAndUtils.scala
 
 object QuizData {  // to generate tables for a concept connection quizes in latex
 
-  def concepts(q: QuizName): Concepts =
+  def concepts(q: QuizID): Concepts =
     quizes(q).zipWithIndex.map { case ((k,v), i) => ((k.trim,i), (v.trim,i)) }
 
-  def quizNames: Vector[QuizName] = quizes.keys.toVector
+  def quizIDs: Vector[QuizID] = quizes.keys.toVector
 
-  val quizes = Map[QuizName, Vector[Concept]](
+  val quizes = Map[QuizID, Vector[Concept]](
 
-    "quiz-w01-concepts" -> Vector( //expressions
+    QuizID("quiz-w01-concepts") -> Vector( //expressions
       "litteral       " -> "anger ett specifikt datavärde",
       "sträng         " -> "en sekvens av tecken",
       "sats           " -> "en kodrad som gör något; kan särskiljas med semikolon",
@@ -28,7 +28,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "boolesk        " -> "antingen sann eller falsk"
     ),
 
-    "quiz-w01-types" -> Vector(
+    QuizID("quiz-w01-types") -> Vector(
       "\\code|1    |" -> "\\code|Int    |",
       "\\code|1L   |" -> "\\code|Long   |",
       "\\code|1.0  |" -> "\\code|Double |",
@@ -41,7 +41,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "\\code|()   |" -> "\\code|Unit   |"
     ),
 
-    "quiz-w01-values" -> Vector(
+    QuizID("quiz-w01-values") -> Vector(
       "\\code|1.0 + 18          |"    ->   "\\code|19.0: Double    | ",
       "\\code|(41 + 1).toDouble |"    ->   "\\code|42.0: Double    | ",
       "\\code|1.042e42 + 1      |"    ->   "\\code|1.042E42: Double| ",
@@ -56,7 +56,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "\\code|\"*!%#\".charAt(0)|"    ->   "\\code|'*': Char       | "
     ),
 
-    "quiz-w01-intdiv" -> Vector(
+    QuizID("quiz-w01-intdiv") -> Vector(
       "\\code| 4 / 42      |" ->   "\\code|    0: Int      | ",
       "\\code| 42.0 / 2    |" ->   "\\code| 21.0: Double   | ",
       "\\code| 42 / 4      |" ->   "\\code|   10: Int      | ",
@@ -66,7 +66,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "\\code| 42 % 4 == 0 |" ->   "\\code|false: Boolean  | "
     ),
 
-    "quiz-w02-concepts" -> Vector(  //programs
+    QuizID("quiz-w02-concepts") -> Vector(  //programs
       "kompilerad     " -> "maskinkod sparad och kan köras igen utan kompilering",
       "skript         " -> "maskinkod sparas ej utan skapas vid varje körning",
       "objekt         " -> "samlar variabler och funktioner",
@@ -85,7 +85,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w02-hello-scala-java" -> Vector(  //programs
+    QuizID("quiz-w02-hello-scala-java") -> Vector(  //programs
 //       "\\code|object|       " -> "\\jcode|public class|      ",
        "\\code|def main|     " -> "\\jcode|public static void main|",
        "\\code|Array[String]|" -> "\\jcode|String[]|          ",
@@ -95,26 +95,26 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w02-array-vector-mutability" -> Vector(  //programs
+    QuizID("quiz-w02-array-vector-mutability") -> Vector(  //programs
       "Vector" -> "oföränderlig",
       "Array " -> "förändringsbar",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w02-array-vector-append" -> Vector(  //programs
+    QuizID("quiz-w02-array-vector-append") -> Vector(  //programs
       "Vector" -> "varianter med fler/andra element skapas snabbt ur befintlig",
       "Array " -> "långsam vid ändring av storlek (kopiering av rubbet krävs)",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w02-array-vector-equality" -> Vector(  //programs
+    QuizID("quiz-w02-array-vector-equality") -> Vector(  //programs
       "Vector" -> "\\code|xs == ys| är \\code|true| om alla element lika",
       "Array " -> "olikt andra Scala-samlingar kollar \\code|==| ej innehållslikhet",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
 
-    "quiz-w02-collection-methods" -> Vector(  //programs
+    QuizID("quiz-w02-collection-methods") -> Vector(  //programs
       "\\code|val xs = Vector(2) |" -> "ny referens till sekvens av längd 1",
       "\\code|Array.fill(9)(0)   |" -> "ny förändringsbar sekvens med nollor",
       "\\code|Vector.fill(9)(' ')|" -> "ny oföränderlig sekvens med blanktecken",
@@ -129,7 +129,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w02-for-yield-map" -> Vector(  //programs
+    QuizID("quiz-w02-for-yield-map") -> Vector(  //programs
       "\\code|for (x <- xs) yield x * 2|" -> "\\code|Vector(2, 4, 6)|",
       "\\code|for (i <- xs.indices) yield i|" -> "\\code|Vector(0, 1, 2)|",
       "\\code|xs.map(x => x + 1)    |" -> "\\code|Vector(2, 3, 4)|",
@@ -139,7 +139,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w03-concepts" -> Vector(  //functions
+    QuizID("quiz-w03-concepts") -> Vector(  //functions
       "funktionshuvud    " -> "har parameterlista och eventuellt en returtyp",
       "funktionskropp    " -> "koden som exekveras vid funktionsanrop",
       "parameterlista    " -> "beskriver namn och typ på parametrar",
@@ -160,7 +160,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w03-code-fragments" -> Vector(  //programs
+    QuizID("quiz-w03-code-fragments") -> Vector(  //programs
       "\\code|options.indices|" -> "heltalssekvens med alla index i en sekvens",
       "\\code|\"1X2\".toLowercase|" -> "gör om en sträng till små bokstäver",
       "\\code|Random.nextInt(n)|" -> "slumptal i intervallet \\code|0 until n|",
@@ -171,7 +171,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w03-yield-map" -> Vector(  //programs
+    QuizID("quiz-w03-yield-map") -> Vector(  //programs
       "\\code|for (i <- 1 to 3) yield öka(i)|" -> "\\code|Vector(2, 3, 4)|",
       "\\code|Vector(2, 3, 4).map(i => öka(i))|" -> "\\code|xs|",
       "\\code|xs.map(öka)|" -> "\\code|Vector(4, 5, 6)|",
@@ -180,7 +180,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w03-function-values" -> Vector(  //programs
+    QuizID("quiz-w03-function-values") -> Vector(  //programs
       "\\code| öka(-1)     |" -> "\\code| 0     |",
       "\\code| app(1, öka) |" -> "\\code| öka(1)|",
       "\\code| app(5, f2)  |" -> "\\code| 4     |",
@@ -189,7 +189,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w03-lambda" -> Vector(  //programs
+    QuizID("quiz-w03-lambda") -> Vector(  //programs
       "\\code|(0 to 2).map(i => i + 1)           |" -> "\\code|(2 to 4).map(i => i - 1)|",
       "\\code|(1 to 3).map(_ + 1)                |" -> "\\code|Vector(2, 3, 4)         |",
       "\\code|(2 to 4).map(math.pow(2, _))       |" -> "\\code|Vector(4.0, 8.0, 16.0)  |",
@@ -198,7 +198,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w04-concepts" -> Vector(  //objects
+    QuizID("quiz-w04-concepts") -> Vector(  //objects
       "modul             " -> "kodenhet med abstraktioner som kan återanvändas",
       "singelobjekt      " -> "modul som kan ha tillstånd; finns i en enda upplaga",
       "paket             " -> "modul som skapar namnrymd; maskinkod får egen katalog",
@@ -218,7 +218,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w05-concepts" -> Vector(  //classes
+    QuizID("quiz-w05-concepts") -> Vector(  //classes
       "klass           " -> "en mall för att skapa flera instanser av samma typ",
       "instans         " -> "upplaga av ett objekt med eget tillståndsminne",
       "konstruktor     " -> "skapar instans, allokerar plats för tillståndsminne",
@@ -234,7 +234,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "\\code|new|     " -> "nyckelord vid direkt instansiering av klass"
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w05-class-instance" -> Vector(  //programs
+    QuizID("quiz-w05-class-instance") -> Vector(  //programs
       "\\code|Singelpunkt.x               |" -> "\\code|1|",
       "\\code|Punkt.x                     |" -> "\\code|error: not found: value|",
       "\\code|val p  = new Singelpunkt    |" -> "\\verb|error: not found: type|",
@@ -246,7 +246,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w05-class-param" -> Vector(  //programs
+    QuizID("quiz-w05-class-param") -> Vector(  //programs
       "\\code|val p1 = Point(1, 2)        |" -> "\\code|error: not found: value|",
       "\\code|val p2 = new Point          |" -> "\\code|error: not enough arguments|",
       "\\code|val p1 = new Point(1, 2)    |" -> "\\verb|p1: Point = Point@30ef773e|",
@@ -257,7 +257,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w05-class-arg" -> Vector(  //programs
+    QuizID("quiz-w05-class-arg") -> Vector(  //programs
       "\\code|val p1 = new Point3D        |" -> "\\verb|p1: Point3D = Point3D@2eb37eee|",
       "\\code|val p2 = new Point3D(y = 1) |" -> "\\verb|p2: Point3D = Point3D@65a9e8d7|",
       "\\code|(new Point3D(z = 2)).z      |" -> "\\code|error: not found: value|",
@@ -267,7 +267,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w05-case-class" -> Vector(  //programs
+    QuizID("quiz-w05-case-class") -> Vector(  //programs
       "\\code|val p1 = new Pt(1,2)        |" -> "\\code|Pt(1,2)|",
       "\\code|val p2 = Pt(y=3)            |" -> "\\code|Pt(0,3)|",
       "\\code|val p3 = new MutablePt(5, 6)|" -> "\\code|MPt(5,6)|",
@@ -278,7 +278,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w06-concepts" -> Vector(  //sequences
+    QuizID("quiz-w06-concepts") -> Vector(  //sequences
 //      "datastruktur     " -> "många olika element i en helhet; elementvis åtkomst",
       "element          " -> "objekt i en datastruktur",
       "samling          " -> "datastruktur med element av samma typ",
@@ -296,7 +296,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w06-seq-collections" -> Vector(  //sequences
+    QuizID("quiz-w06-seq-collections") -> Vector(  //sequences
       "\\code|Vector     |" -> "oföränderlig, ger snabbt godtyckligt ändrad samling",
       "\\code|List       |" -> "oföränderlig, ger snabbt ny samling ändrad i början",
       "\\code|Array      |" -> "primitiv, förändringsbar, snabb indexering, fix storlek",
@@ -305,14 +305,14 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w06-abstract-collections" -> Vector(  //sequences
+    QuizID("quiz-w06-abstract-collections") -> Vector(  //sequences
       "Traversable " -> "bastyp för alla samlingar, har metoden \\code|foreach|",
       "Iterable    " -> "är traverserbar med hjälp av metoden \\code|iterator|",
       "Seq         " ->  "bastyp för alla sekvenssamlingar, indexposition från 0",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w06-seq-methods" -> Vector(  //sequences
+    QuizID("quiz-w06-seq-methods") -> Vector(  //sequences
       "\\code|x +: xs         |" -> "\\code|Vector(0, 1, 2, 3)                      |",
       "\\code|xs +: x         |" -> "\\code|error: value +: is not a member of Int  |",
       "\\code|xs :+ x         |" -> "\\code|Vector(1, 2, 3, 0)                      |",
@@ -332,7 +332,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
 
-    "quiz-w06-seq-update" -> Vector(  //sequences
+    QuizID("quiz-w06-seq-update") -> Vector(  //sequences
       "\\code|{ buf(0) = -1; buf(0) }   |" -> "\\code|-1|",
       "\\code|{ xs(0) = -1; xs(0) }|" ->"{\\small\\code|error: value update is not a member|}",
       "\\code|buf.update(1, 5)          |"   -> "\\code|(): Unit|",
@@ -345,7 +345,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
 
-    "quiz-w06-seq-find" -> Vector(  //sequences
+    QuizID("quiz-w06-seq-find") -> Vector(  //sequences
       "\\code|xs.indexOf(0)        |" -> "\\code|5|",
       "\\code|xs.indexOf(6)        |" -> "\\code|-1|",
       "\\code|xs.indexWhere(_ < 2) |" -> "\\code|4|",
@@ -360,7 +360,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
 
-    "quiz-w06-seq-sort" -> Vector(  //sequences
+    QuizID("quiz-w06-seq-sort") -> Vector(  //sequences
       "\\code|'a' < 'A'                  |" -> "\\code|false|",
       "\\code|\"AÄÖö\" < \"AÅÖö\"        |" -> "\\code|true|",
       "\\code|xs.sorted.head             |" -> "\\code|-1|",
@@ -374,7 +374,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
 
-    "quiz-w07-concepts" -> Vector(  //search, sets, maps
+    QuizID("quiz-w07-concepts") -> Vector(  //search, sets, maps
       "mängd              " -> "oordnad samling med unika element",
       "nyckel-värde-tabell" -> "oordnad samling av mappningar med unika nycklar",
       "mappning           " -> "\\code|nyckel -> värde|",
@@ -386,7 +386,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w07-setops" -> Vector(  //sequences
+    QuizID("quiz-w07-setops") -> Vector(  //sequences
       "\\code|Set(1, 2) ++ Set(1, 2)          |" -> "\\code|Set(1, 2)     |",
       "\\code|(1 to 3).toSet                  |" -> "\\code|Set(1) + 2 + 3|",
       "\\code|Vector.fill(3)(1).toSet         |" -> "\\code|Set(1, 2) - 2 |",
@@ -399,7 +399,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "quiz-w07-mapops" -> Vector(  //sequences
+    QuizID("quiz-w07-mapops") -> Vector(  //sequences
       "\\code|xs(2) + xs(4)                 |" -> "\\code|8                     |",
       "\\code|ys(2) + ys(4)                 |" -> "\\verb|error: type mismatch  |",
       "\\code|ys(0)                         |" -> "\\code|(10, 11)              |",
@@ -413,6 +413,6 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    "" -> Vector()
-  ).filter(_._1.trim.nonEmpty)
+    QuizID("") -> Vector()
+  ).filter(_._1.name.trim.nonEmpty)
 }
