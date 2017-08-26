@@ -21,6 +21,18 @@ object Main extends App {
 
   object modulePlan extends Plan with Table {
     override val heading = Seq("W", "Modul", "Innehåll")
+    def toHtmlPatched: String = { // a hack to insert links to lectures
+      var htmlSoup = toHtml
+      column("Modul").zipWithIndex.take(1).foreach{ case (m, i) =>
+        println(s"Patching html link in module: $m")
+        def href(m: String): String = {
+          val w = column("W").apply(i).toLowerCase
+          s"""<a href="https://fileadmin.cs.lth.se/pgk/lect-$w.pdf">$m</a>"""
+        }
+        htmlSoup = htmlSoup.replaceAllLiterally(s"$m</td>",s"${href(m)}</td>")
+      }
+      htmlSoup
+    }
   }
 
   object overview extends Plan with Table {
@@ -31,15 +43,15 @@ object Main extends App {
   weekPlan.  toMarkdown.save(currentDir + "week-plan-generated.md")
   weekPlan.  toHtml    .save(currentDir + "week-plan-generated.html")
   weekPlan.  toLatex   .prepend(texUtf).save(currentDir + "week-plan-generated.tex")
-  modulePlan.toMarkdown.save(currentDir + "module-plan-generated.md")
-  modulePlan.toHtml    .save(currentDir + "module-plan-generated.html")
+  modulePlan.toMarkdown.    save(currentDir + "module-plan-generated.md")
+  modulePlan.toHtmlPatched. save(currentDir + "module-plan-generated.html")
   modulePlan.latexTableBody.save(currentDir + "module-plan-generated.tex")
   overview  .toLatex   .prepend(texUtf).save(currentDir + "overview-generated.tex")
 
-  val weeks = (0 to 6) ++ (8 to 14) //exlude exam weeks
+  lazy val weeks = (0 to 6) ++ (8 to 14) //exlude exam weeks
 
   // *** Generate chapter heads with topics of each module
-  val minConceptsForTwoCol = 28
+  lazy val minConceptsForTwoCol = 28
 
   def conceptBegin(n: Int) = "Begrepp som ingår i denna veckas studier:\n" +
     (if (n > minConceptsForTwoCol) """\begin{multicols}{2}""" else "") +
