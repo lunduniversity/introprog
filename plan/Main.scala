@@ -24,7 +24,7 @@ object Main extends App {
     def toHtmlPatched: String = { // a hack to insert links to lectures
       var htmlSoup = toHtml
       column("Modul").zipWithIndex.take(1).foreach{ case (m, i) =>
-        println(s"Patching html link in module: $m")
+        println(s"Injecting html link patch in module: $m")
         def href(m: String): String = {
           val w = column("W").apply(i).toLowerCase
           s"""<a href="https://fileadmin.cs.lth.se/pgk/lect-$w.pdf">$m</a>"""
