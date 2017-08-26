@@ -34,6 +34,29 @@ Denna uppgift handlar om analys av naurligt språk \Eng{Natural Language Process
 
 \subsection{Obligatoriska uppgifter}
 
+Du ska bygga ditt program med en editor, t.ex. \texttt{atom}, och kompilera din kod i terminalen med \code{scalac} eller med hjälp av byggverktyget \code{sbt}. Medan du steg för steg utvecklar ditt program, ska du parallellt göra experiment i REPL för att undersöka hur du kan använda samlingsmetoder för att lösa uppgifterna.
+
+Kod att utgå ifrån finns på github här: \url{https://github.com/lunduniversity/introprog/tree/master/workspace/w07_words}
+
+Dessa ofärdiga kodfiler ligger i paketet \code{nlp}:
+\begin{itemize}
+  \item \href{https://github.com/lunduniversity/introprog/blob/master/workspace/w07_words/src/main/scala/nlp/FreqMapBuilder.scala}{\texttt{FreqMapBuilder.scala}} innehåller ett skelett till en klass för att, ord för ord, bygga en nyckel-värde-tabell som registrerar antalet förekomster av olika ord. Att implementera denna ingick i övningen du gjorde tidigare i veckan.
+
+  \item \href{https://github.com/lunduniversity/introprog/blob/master/workspace/w07_words/src/main/scala/nlp/Text.scala}{\texttt{Text.scala}} innehåller ett skelett till en klass som kan göra textbehandling genom att analysera ord i en text.
+
+  \item \href{}{\texttt{}} \href{https://github.com/lunduniversity/introprog/blob/master/workspace/w07_words/src/main/scala/nlp/Main.scala}{\texttt{Main.scala}} innehåller ett ofärdigt huvudprogramsexempel som du kan använda i laborationens senare del.
+\end{itemize}
+
+För att underlätta ditt arbetsflöde under det att du stegvis bygger upp din kod metod för metod, kan du med fördel använda byggverktyget \texttt{sbt} (se appendix \ref{appendix:build}) så här:
+
+\begin{itemize}
+  \item
+    Med \code{sbt}-kommandot \code{console} startar du REPL innifrån \code{sbt} med dina klasser automatiskt  tillgängliga på classpath och du kan anropa de metoder som du gjort färdigt hittills medan du gör experiment inför nästa steg. När du ändrat något i din editor och vill experimentera med nya versionen så trycker du Ctrl+D och startar om REPL med \code{console} (pil-upp) och din kod kompileras om automatiskt.
+  \item
+    Med \code{sbt}-kommandot \code{~run} (notera tilde-tecknet) sker kompilering och körning av \code{main}-metoden automatiskt i terminalen varje gång du gör Ctrl+S i din editor.
+
+\end{itemize}
+
 
 \Task \emph{Skapa frekvenstabeller}. Du ska använda \code{FreqMapBuilder} från veckans övning för att skapa frekvenstabeller av typen \code{Map[String, Int]}, där nyckel-värde-paren i tabellen anger antalet förekomster av en viss sträng.
 
@@ -64,11 +87,11 @@ scala> fmb.toMap
 res2: Map[String,Int] = Map(10292 -> 1, 19125 -> 1, 26985 -> 1, 29301 -> 1, 5451 -> 1, 4018 -> 1, 31211 -> 1, 17319 -> 1, 20778 -> 1, 25285 -> 1, 17079 -> 1, 9936 -> 1, 13172 -
 \end{REPL}
 
-\noindent I kommande uppgifter ska du steg för steg skapa och testa case-klassen \code{Text} nedan. %figur \ref{data:fig-text}.
+\noindent I kommande uppgifter ska du steg för steg skapa och testa case-klassen \code{Text}. %figur \ref{data:fig-text}.
 
 
-\Task \emph{Dela upp en sträng i ord}. Medlemmen \code{words} ska innehålla en vektor med alla ord i \code{source}, utan andra tecken än bokstäver.
-Dela upp strängen \code{source} genom att i tur och ordnig göra följande:
+\Task \emph{Dela upp en sträng i ord}. Du ska implementera medlemmen \code{words}. Den ska innehålla en vektor med alla ord i \code{source}, utan andra tecken än bokstäver.
+Detta åstadkommer du genom att utgå ifrån strängen \code{source} och i tur och ordning göra följande:
 \begin{enumerate}%[nolistsep, noitemsep]
 \item byta ut alla tecken i \code{source} för vilka \code{isWhitespace} är sant mot \code{' '}
 \item byta sedan ut alla tecken för vilka \code{isLetter} är falskt mot \code{' '}
@@ -100,14 +123,14 @@ res4: Set[String] = Set(gurka, ingen, tomat)
 
 
 
-\begin{figure}[t]
+\begin{figure}[H]
 \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{10.4}{12.5}\selectfont]{../workspace/w07_words/src/main/scala/nlp/Text.scala}
 %\caption{Den ofärdiga klassen \code{Text}.}
 %\label{data:fig-text}
 \end{figure}
 
 
-\Task Implementera \code{wordFreq} med hjälp av \code{FreqMapBuilder}. Testa \code{wordFreq} genom att ladda ner boken ''Skattkammarön'' skriven av Robert Louis Stevenson\footnote{Copyright för denna bok har gått ut, så du gör dig inte skyldig till piratkopiering (i juridisk mening).} och undersök frekvensen för olika vanliga ord. Vilket ord är vanligast? Näst vanligast?
+\Task Du ska nu skapa ordfrekvenstabellen \code{wordFreq} genom att registrera ordförekomster med hjälp av \code{FreqMapBuilder}. Tabellen \code{wordFreq} ska bestå av nyckelvärdepar \code{w -> f} där \code{f} är antalet gånger ordet \code{w} förekommer i \code{words}. Testa \code{wordFreq} genom att ladda ner boken ''Skattkammarön'' skriven av Robert Louis Stevenson\footnote{Copyright för denna bok har gått ut, så du gör dig inte skyldig till piratkopiering (i juridisk mening).} och undersök frekvensen för olika vanliga ord. Vilket ord är vanligast? Näst vanligast?
 
 \begin{REPL}[basicstyle=\color{white}\ttfamily\fontsize{9}{11}\selectfont]
 scala> val piratbok = Text.fromURL("https://fileadmin.cs.lth.se/pgk/skattkammaron.txt")
@@ -132,7 +155,7 @@ Länkar till böcker i UTF-8-format som du kan använda i dina tester:
 
 
 
-\Task Implementera metoden \code{ngrams}. \emph{Tips:} Undersök i REPL hur metoden \code{sliding} fungerar. Gör \code{toVector} på resultatet från \code{sliding}. Testa så att \code{ngrams} och \code{bigrams} fungerar.
+\Task Implementera metoden \code{ngrams} som ger en sekvens med alla ordföljder i $n$ steg. \emph{Tips:} På veckans övning ingick att undersöka hur metoden \code{sliding} fungerar, med vilken du kan skapa $n$-gram. Gör \code{toVector} på resultatet från \code{sliding}. Testa noga så att \code{ngrams} och \code{bigrams} fungerar korrekt innan du går vidare.
 \begin{REPL}
 scala> piratbok.ngrams(3).take(2)
 res1: scala.collection.immutable.Vector[Vector[String]] =
@@ -143,7 +166,11 @@ res2: scala.collection.immutable.Vector[(String, String)] =
 Vector((herr,trelawney), (trelawney,doktor))
 \end{REPL}
 
-\Task Implementera \code{followFreq}, som ska innehålla en nyckel-värde-tabell där värdet i sin tur är en frekvenstabell över de ord som kommer efter nyckeln. Utgå från nedan pseudokod:
+\Task Implementera \code{followFreq}, som ska innehålla en nyckel-värde-tabell där värdet i sin tur är en frekvenstabell över de ord som kommer efter nyckeln.
+
+Genom att analysera alla ordpar kan vi få fram vilket som är det vanligaste ordet som följer efter ett givet ord. Metoden \code{bigrams} ger oss alla ordpar \code{(w1, w2)} där \code{w2} följer efter \code{w1}. Vi kan spara statistiken över efterföljande ord i en nyckelvärdetabell med mappningarna \code{w -> f} där nyckeln \code{w} är ett ord  och värdet \code{f} är en frekvenstabell av typen \code{Map[String, Int]}. I frekvenstabellen lagrar vi frekvensen för alla de ord som följer efter \code{w}. Du ska alltså bygga en nästlad tabell av typen \code{Map[String, Map[String, Int]]}. Rita en bild av den nästlade strukturen.\Pen
+
+Implementera metoden followFreq genom att utgå från nedan pseudokod:
 \begin{Code}
 val result = scala.collection.mutable.Map.empty[String, FreqMapBuilder]
 for ((key, next) <- bigrams) {
@@ -154,6 +181,8 @@ for ((key, next) <- bigrams) {
 }
 result.mapValues(_.toMap).toMap // returnerar oföränderligt objekt
 \end{Code}
+Skriv uttryck för att ta reda på följande:\Pen
+
 \Subtask Vilka ord brukar följa efter \emph{han} respektive \emph{hon} i Stevensons ''Skattkammarön''?
 
 \Subtask Vilka ord brukar följa efter \emph{han} respektive \emph{hon} i Stringbergs ''Inferno''?
@@ -198,7 +227,7 @@ Källa: https://fileadmin.cs.lth.se/pgk/skattkammaron.txt
 
 \item Är mängden av alla nycklar i en nyckel-värde-tabell garanterat unika?
 
-\item Är mängden av alla värden i en nyckel-värde-tabell garanterat unika?
+\item Är alla värden i en nyckel-värde-tabell garanterat unika?
 
 \item LTH-teknologen Oddput Clementin vill summera längden på varje sträng i en mängd och skriver:
 \begin{REPL}
@@ -210,27 +239,31 @@ Varför blir det fel? Hur kan Oddput åtgärda problemet?
 
 \subsection{Frivilliga uppgifter}
 
-\Task Implementera nedan metod som ska ge ett slumpmässigt ord ur \code{wordSet}. Varje ord ska förekomma med lika stor sannolikhet.
+\Task Bygg vidare på klasse \code{Text} och implementera nedan metod som ska ge ett slumpmässigt ord ur \code{wordSet}. Varje ord ska förekomma med lika stor sannolikhet.
 \begin{Code}
 def randomWord: String = ???
 \end{Code}
 
-\Task \label{task:words:randomSeq} Implementera nedan metod som ska ge en slumpmässig sekvens av $n$ ord där varje efterföljande ord väljs ur nyckelmängden för \code{followFreq} med lika stor sannolikhet.
+\Task \label{task:words:randomSeq} Med NLP kan man generera slumpmässiga meningar som statistiskt sett liknar ''riktiga'', människoskapade meningar.
+
+Implementera metoden \code{randomSeq(firstWord, n)} nedan i klassen \code{Text}. Den ska ge en sekvens $w_{1}, w_{2}, ..., w_{n}$  där $w_{1}$ är \code{firstWord} och $w_{i+1}$ är något slumpmässigt ord som är draget bland de ord som följer efter $w_{i}$. Detta kan du åstadkomma genom att varje efterföljande ord $w_{i+1}$ väljs ur \code{keys.toVector} för den \code{followFreq}-tabell som hör till $w_{i}$. Orden ska dras med rektangelfördelad sannolikhet ur efterföljandemängden.
 \begin{Code}
 def randomSeq(firstWord: String, n: Int): Vector[String] = ???
 \end{Code}
-\emph{Tips:} Metoden \code{scala.util.Random.shuffle} tar en sekvens som argument och genererar en ny sekvens av samma typ, men med elementen ordnade i slumpmässig ordning, där varje möjlig ordning är lika sannolik.
+%\emph{Tips:} Ett sätt att garanterat välja slumpmässigt element med rektangelfördelning ur en sekvens är att använda metoden \code{scala.util.Random.shuffle} som tar en sekvens som argument och genererar en ny sekvens av samma typ, men med elementen ordnade i slumpmässig ordning på ett välblandat sätt, där varje möjlig ordning är lika sannolik.
 
-\Task \label{task:words:mostCommonSeq} Lägg till metoden \code{mostCommonSeq} i klassen \code{Text} enligt nedan:
+\Task \label{task:words:mostCommonSeq} För att dina datorgenererade meningar verkligen ska likna mänskilgt språk kan vi skapa de mest sannolika meningarna av olika längder ur vår analys av ordfrekvenser.
+
+Lägg till metoden \code{mostCommonSeq} i klassen \code{Text} enligt nedan:
 \begin{Code}
 def mostCommonSeq(firstWord: String, n: Int): Vector[String] = ???
 \end{Code}
-\Subtask Implementera metoden så att resultatet blir en sekvens med \code{n} ord. Sekvensen ska börja med \code{firstWord} och därefter följas av det ord som är det vanligaste efterföljande ordet efter \code{firstWord}, och därpå det vanligaste efterföljande ordet efter det, etc. \emph{Tips:} Använd en lokal variabel \code{val result} som är en ArrayBuffer till vilken du i en \code{while}-loop lägger de efterföljande orden.
+\Subtask Implementera metoden så att resultatet blir en sekvens med \code{n} ord. Sekvensen ska börja med \code{firstWord} och därefter följas av det ord som är det \emph{vanligaste} efterföljande ordet efter \code{firstWord}, och därpå det vanligaste efterföljande ordet efter det, etc. \emph{Tips:} Använd en lokal variabel \code{val result} som är en ArrayBuffer till vilken du i en \code{while}-loop lägger de efterföljande orden.
 
 \Subtask Jämför de slumpmässiga sekvenserna med sekvenser genererade med \code{randomSeq} i uppgift \ref{task:words:randomSeq}. Vilka sekvenser liknar mest ''riktiga'' meningar?
 
 
-\Task Använd befintliga samlingsmetoder i stället för \code{FreqMapBuilder}.
+\Task Använd befintliga samlingsmetoder i stället för \code{FreqMapBuilder} för att registrera efterföljande ord.
 
 \Subtask Undersök i REPL hur metoden \code{groupBy(x => x)} fungerar då den appliceras på en samling med strängar. Sök efter och studera dokumentationen för \code{groupBy}.
 
@@ -238,7 +271,7 @@ def mostCommonSeq(firstWord: String, n: Int): Vector[String] = ???
 
 \Subtask Inför värdet \code{lazy val wordFreq2}. Den ska ge samma resultat som \code{wordFreq} men men implementeras med hjälp av \code{groupBy} och \code{mapValues} i stället för \code{FreqMapBuilder}.
 
-\Subtask Jämför prestanda mellan \code{wordFreq2} och \code{wordFreq}. Vilken är snabbast för stora texter? Är skillnaden stor?
+\Subtask\Uberkurs Jämför prestanda mellan \code{wordFreq2} och \code{wordFreq}. Vilken är snabbast för stora texter? Är skillnaden stor?
 
 \Subtask Inför värdet \code{lazy val followsFreq2}. Den ska ge samma resultat som \code{followsFreq} men implementeras med hjälp av \code{groupBy} och \code{mapValues} i stället för \code{FreqMapBuilder}.
 Denna uppgift är ganska knepig. Experimentera dig fram i REPL, och bygg upp en lösning steg för steg. \emph{Tips:}
@@ -248,10 +281,10 @@ bigrams
   .mapValues(_.map(???).groupBy(???).mapValues(???))
 \end{Code}
 
-\Subtask Jämför prestanda mellan \code{followsFreq2} och \code{followsFreq}. Vilken är snabbast för stora texter? Är skillnaden stor?
+\Subtask\Uberkurs Jämför prestanda mellan \code{followsFreq2} och \code{followsFreq}. Vilken är snabbast för stora texter? Är skillnaden stor?
 
 
-\Task \emph{Gör \code{FreqMapBuilder} generisk.} Senare i kursen ska vi se hur man kan skapa s.k. generiska datastrukturer med hjälp av typparametrar. Denna uppgift går händelserna i förväg och tjuvkikar på hur en generisk klass kan se ut.
+\Task\Uberkurs \emph{Gör \code{FreqMapBuilder} generisk.} Senare i kursen ska vi se hur man kan skapa s.k. generiska datastrukturer med hjälp av typparametrar. Denna uppgift går händelserna i förväg och tjuvkikar på hur en generisk klass kan se ut.
 
 \Subtask Studera \code{FreqMapBuilder} och identifiera allt i den klassen som är specifikt för typen \code{String}.
 
