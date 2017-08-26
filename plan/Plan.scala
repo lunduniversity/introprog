@@ -13,11 +13,10 @@ trait Plan {
 
     Module("Introduktion",
       id = "intro", exercise = "expressions", lab = "kojo", contents = """
-      | sekvens, alternativ, repetition, abstraktion, programmeringsspråk,
-      | programmeringsparadigmer, editera, kompilera, exekvera, datorns delar,
-      | virtuell maskin, JVM, REPL,
-      | literal, värde, uttryck, identifierare, variabel, typ, tilldelning, namn, val, var,
-      | definera funktion, def, anropa funktion, funktionshuvud, funktionskropp, procedur,
+      | sekvens, alternativ, repetition, abstraktion, editera, kompilera, exekvera, datorns delar,
+      | virtuell maskin,
+      | litteral, värde, uttryck, identifierare, variabel, typ, tilldelning, namn, val, var, def,
+      | definera och anropa funktion, funktionshuvud, funktionskropp, procedur,
       | inbyggda grundtyper, Int, Long, Short, Double, Float, Byte, Char, String,
       | println, typen Unit, enhetsvärdet (), stränginterpolatorn s,
       | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random,
@@ -66,9 +65,9 @@ trait Plan {
       | initialisering, lazy val,
       | värdeandrop, namnanrop,
       | typalias,
-      | enkelt bash-skript för kompilering ???här eller i vecka 2???,
-      | sbt tilde run ???här eller i vecka2???,
       """.stripTrim),
+//      | enkelt bash-skript för kompilering ???här eller i vecka 2???,
+//      | sbt tilde run ???här eller i vecka2???,
 
     Module("Klasser",
       id = "classes", exercise = "classes", lab = "turtle", contents = """
