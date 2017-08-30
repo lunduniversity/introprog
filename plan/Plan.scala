@@ -13,11 +13,10 @@ trait Plan {
 
     Module("Introduktion",
       id = "intro", exercise = "expressions", lab = "kojo", contents = """
-      | sekvens, alternativ, repetition, abstraktion, programmeringsspråk,
-      | programmeringsparadigmer, editera, kompilera, exekvera, datorns delar,
-      | virtuell maskin, JVM, REPL,
-      | literal, värde, uttryck, identifierare, variabel, typ, tilldelning, namn, val, var,
-      | definera funktion, def, anropa funktion, funktionshuvud, funktionskropp, procedur,
+      | sekvens, alternativ, repetition, abstraktion, editera, kompilera, exekvera, datorns delar,
+      | virtuell maskin,
+      | litteral, värde, uttryck, identifierare, variabel, typ, tilldelning, namn, val, var, def,
+      | definera och anropa funktion, funktionshuvud, funktionskropp, procedur,
       | inbyggda grundtyper, Int, Long, Short, Double, Float, Byte, Char, String,
       | println, typen Unit, enhetsvärdet (), stränginterpolatorn s,
       | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random,
@@ -66,9 +65,9 @@ trait Plan {
       | initialisering, lazy val,
       | värdeandrop, namnanrop,
       | typalias,
-      | enkelt bash-skript för kompilering ???här eller i vecka 2???,
-      | sbt tilde run ???här eller i vecka2???,
       """.stripTrim),
+//      | enkelt bash-skript för kompilering ???här eller i vecka 2???,
+//      | sbt tilde run ???här eller i vecka2???,
 
     Module("Klasser",
       id = "classes", exercise = "classes", lab = "turtle", contents = """
@@ -224,13 +223,13 @@ trait Plan {
   }
 
 
-  lazy val startLp1 = Date(2016, 8, 29) // Måndag 2016-Aug-29
+  lazy val startLp1 = Date(2017, 8, 28)
 
-  lazy val startLp2 = Date(2016, 10, 31) // Måndag 2016-Okt-31
+  lazy val startLp2 = Date(2017, 10, 30)
 
-  lazy val ksdatum = Date(2016, 10, 25)  // Tisdag 2016-Okt-25
+  lazy val ksdatum = Date(2017, 10, 24)
 
-  lazy val tentadatum = Date(2017, 1, 9)  // Måndag 2017-Jan-9
+  lazy val tentadatum = Date(2018, 1, 5)
 
   def weeksOf(date: Date, n: Int): Seq[String] =
     for (week <- 0 until n) yield date.addDays(week*7).workWeek

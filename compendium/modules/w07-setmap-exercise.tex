@@ -103,7 +103,7 @@ scala> xs.foreach(print)
 scala> val hej = "hej hej hemskt mycket hej"
 \end{REPLnonum}
 
-\Subtask Mängder är snabba på att kolla om ett element finns i mängden men du kan inte förvänta dig att elementen finns i någon viss ordning. Det finns en sekvenssamlingsmetod som skapar en sekvens med unika element ur en sekvens och behåller den ursprungliga ordningen. Vad heter metoden? \\\emph{Tips:} Leta i snabbreferensen eller sök på nätet.
+\Subtask Mängder är snabba på att kolla om ett element finns i mängden men du kan inte förvänta dig att elementen finns i någon viss ordning. Det finns en sekvenssamlingsmetod som skapar en sekvens med unika element ur en sekvens och behåller den ursprungliga ordningen. Vad heter metoden? \\\emph{Tips:} Leta i snabbreferensen eller sök på nätet. Metoden fungerar på alla samlingar som är av typen \code{Seq} och har ett namn som börjar med bokstäverna \code{di}.
 
 \SOLUTION
 
@@ -231,7 +231,7 @@ def lookupIndex(xs: Vector[(String, String)])(key: String): Int =
 \SubtaskSolved
 \begin{REPL}
 scala> val i = lookupIndex(huvudstad)("Skåne")
-i: Int = 2
+i: Int = 3
 
 scala> huvudstad(i)._2
 res2: String = Lund
@@ -273,12 +273,12 @@ val telnr = Map(
   "Anna"     -> 46462229812L,
   "Björn"     -> 46462229009L,
   "Sandra"    -> 46462220368L,
-  "Fröken Ur" -> 464690510L,
+  "Fröken Ur" -> 4690510L,
 )
 \end{Code}
 En uppsättning \code{Map}-instanser, vid behov nästlade, kan med fördel användas för att bygga upp en i-minnet-databas där inbyggda samlingsmetoder, t.ex. \code{map}, \code{filter}, och \code{for}-\code{yield}-uttryck, ger flexibla och effektiva sökmöjligheter. På veckans laboration ska du göra detta.
 
-Samlingen \code{Map} är en generalisering av en sekvens, där man kan ''indexera'', inte bara med ett heltal, utan med vilken typ av värde som helst, t.ex. en sträng. Datastrukturen \code{Map} kallas också \emph{associativ array}\footnote{\href{https://en.wikipedia.org/wiki/Associative_array}{https://en.wikipedia.org/wiki/Associative\_array}} och är implementerad som en s.k. \emph{hashtabell}\footnote{\href{https://en.wikipedia.org/wiki/Hash_table}{https://en.wikipedia.org/wiki/Hash\_table}}, men du får vänta till fortsättningskursen innan vi går igenom hur en sådan datastruktur implementeras.
+Samlingen \code{Map} är en generalisering av en sekvens, där man kan ''indexera'', inte bara med ett heltal, utan med vilken typ av värde som helst, t.ex. en sträng. Datastrukturen \code{Map} kallas också \emph{associativ array}\footnote{\href{https://en.wikipedia.org/wiki/Associative_array}{https://en.wikipedia.org/wiki/Associative\_array}} och är implementerad som en s.k. \emph{hashtabell}\footnote{\href{https://en.wikipedia.org/wiki/Hash_table}{https://en.wikipedia.org/wiki/Hash\_table}}, men du får vänta till fördjupningskursen innan vi går igenom hur en sådan datastruktur implementeras.
 
 \SOLUTION
 
@@ -379,7 +379,22 @@ object FreqMapBuilder {
 
 \SOLUTION
 
-\TaskSolved \what~\TODO
+\TaskSolved \what~
+\begin{Code}
+class FreqMapBuilder {
+  private val register = scala.collection.mutable.Map.empty[String,Int]
+  def toMap: Map[String, Int] = register.toMap
+  def add(s: String): Unit =
+    register += (s -> (register.getOrElse(s, 0) + 1))
+}
+object FreqMapBuilder {
+  def apply(xs: String*): FreqMapBuilder = {
+    val result = new FreqMapBuilder
+    xs.foreach(result.add)
+    result
+  }
+}
+\end{Code}
 
 \QUESTEND
 
@@ -439,7 +454,7 @@ Map(är -> fler,
     fler -> än
 )
 \end{REPL}
-Man kan använda tabellen till att slå upp vilket som är efterföljande ord. Det fungerar eftersom alla ord är unika. Om det funnits flera lika dana ord med olika efterföljande ord så hade vi behövt skapa en tabell med nycklar som mappar till en samling som registrerar efterföljande ord. Detta ska vi göra på veckans laboration.
+Man kan använda tabellen till att slå upp vilket som är efterföljande ord. Det fungerar eftersom alla ord är unika. Om det funnits flera likadana ord med olika efterföljande ord så hade vi behövt skapa en tabell med nycklar som mappar till en samling som registrerar efterföljande ord. Detta ska vi göra på veckans laboration.
 
 \QUESTEND
 
@@ -596,7 +611,8 @@ ys: Map[Int,Vector[Int]] =
 \SubtaskSolved
 
 \begin{Code}
-def freq(xs: Vector[Int]): Map[Int, Int] = xs.groupBy(x => x).mapValues(_.size)
+def freq(xs: Vector[Int]): Map[Int, Int] =
+  xs.groupBy(x => x).mapValues(_.size)
 \end{Code}
 Förklaring: metoden \code{groupBy} skapar en tabell med par \code{k, v} där \code{v} är en sekvens med så många \code{k} som antalet gånger \code{k} förekommer i \code{xs}. Genom att omvandla alla värden \code{v} till storleken av \code{v} får vi en frekvenstabell.
 
