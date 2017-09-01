@@ -21,9 +21,10 @@ object Main extends App {
 
   object modulePlan extends Plan with Table {
     override val heading = Seq("W", "Modul", "Innehåll")
-    def toHtmlPatched: String = { // a hack to insert links to lectures
+    val nbrOfReadyLectures = 2
+    def toHtmlPatched: String = { // a brutal HACK to insert links to lectures
       var htmlSoup = toHtml
-      column("Modul").zipWithIndex.take(1).foreach{ case (m, i) =>
+      column("Modul").zipWithIndex.take(nbrOfReadyLectures).foreach{ case (m, i) =>
         println(s"Injecting html link patch in module: $m")
         def href(m: String): String = {
           val w = column("W").apply(i).toLowerCase
