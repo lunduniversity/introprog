@@ -2,11 +2,9 @@ package object genquiz {
 
   // to understand the types below, see data in QuizData.scala
 
-  case class QuizID(name: String, seed: Int) {
-    def this(name: String) = this(name, name.hashCode)
-  }
+  case class QuizID(name: String, seed: Int)
   object QuizID {
-    def apply(name: String) = new QuizID(name)
+    def apply(name: String) = new QuizID(name, name.hashCode)
   }
 
   type Term     = String
