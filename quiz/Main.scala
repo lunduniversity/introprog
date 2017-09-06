@@ -30,14 +30,14 @@ object Main extends {
     if (partOfQuizName.nonEmpty) println(s"    for quiz names containing args(0)=$partOfQuizName")
     else println("    as no args(0) is given: (re-)generating all existing quiz files")
 
-    val n = for (q <- QuizData.quizNames if q contains partOfQuizName) yield {
+    val n = for (q <- QuizData.quizIDs if q.name contains partOfQuizName) yield {
       val (t, s) = QuizUtils.toLatexTaskSolution(q)
 
-      println(s"\nGenerating: $q-taskrows" )
-      t.save(currentDir + s"../compendium/generated/$q-taskrows-generated.tex")
+      println(s"\nGenerating: ${q.name}-taskrows" )
+      t.save(currentDir + s"../compendium/generated/${q.name}-taskrows-generated.tex")
 
-      println(s"Generating: $q-solurows" )
-      s.save(currentDir + s"../compendium/generated/$q-solurows-generated.tex")
+      println(s"Generating: ${q.name}-solurows" )
+      s.save(currentDir + s"../compendium/generated/${q.name}-solurows-generated.tex")
 
       2  // to count number of files generated.
     }
