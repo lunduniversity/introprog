@@ -5,10 +5,9 @@ import complete.DefaultParsers._
 
 
 lazy val hello = taskKey[Unit]("Prints welcome message")
-
 hello := {
   println("===== WELCOME to the sbt build of lunduniversity/introprog =====")
-  println("\nHAVE PATIENCE: full build can take >500sec on a 2.5GHz machine...\n")
+  println("\nHAVE PATIENCE: a full build can take >500sec on a 2.5GHz machine...\n")
 }
 
 lazy val commonSettings = Seq(
@@ -49,7 +48,7 @@ genquiz := (run in Compile in quiz).toTask("").value
 // ************** cmd util functions
 
 def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-console.log"): Unit = {
-  println(s"\n ******* Compiling $texFile to pdf *******")
+  println(s" ******* Compiling $texFile to pdf *******")
   val cmd = Process(
     Seq("pdflatex","-halt-on-error", texFile.getName),
     workDir
@@ -70,10 +69,13 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
 
 // **************
 
-lazy val pdf = taskKey[Unit]("Compile slides and compendium using pdflatex")
+lazy val pdf = taskKey[Unit](
+  "Compile all pdfs using pdflatex (several times for xrefs and tocs to work)")
 
 pdf := {
-  println("\n=== Compiling slides to pdf")
+  println("\n====== Compiling pdf documents -- this may take several minutes!")
+
+  println("\n=== Compiling slides:")
   val workDir = file("slides")
   val texFiles = (workDir * "*.tex").get
   for (texFile <- texFiles) {
@@ -165,8 +167,8 @@ lazy val root = (project in file(".")).
     name := "introprog",
     build := Def.sequential(
       hello,
-      (run in Compile in plan).toTask(""),
-//    (run in Compile in quiz).toTask(""),  //decomment if you want re-scrambled quizes
+      gen,
+      genquiz,
       pdf
     ).value
   )
