@@ -9,22 +9,22 @@ Grunduppgift:
 \begin{itemize}
 \item Implementera en algoritm som hittar ut ur en labyrint.
 
-\item En labyrint representeras av en \Emph{matris}, \\närmare bestämt en \Emph{vektor av vektorer} med  \Alert{booelska} värden: \\ \code{Vector[Vector[Boolean]]} 
+\item En labyrint representeras av en \Emph{matris}, \\närmare bestämt en \Emph{vektor av vektorer} med  \Alert{booelska} värden: \\ \code{Vector[Vector[Boolean]]}
 
 \pause Där de två olika sanningsvärdena representerar följande:
 \begin{itemize}\SlideFontSmall
 \item \code{true} om det \Emph{finns en vägg} på en viss plats i matrisen
-\item \code{false} om det \Alert{inte} finns en vägg på en viss plats i matrisen 
+\item \code{false} om det \Alert{inte} finns en vägg på en viss plats i matrisen
 
 \end{itemize}
 \pause
 \item Använd enkel idé (som inte ger kortaste vägen): \\ Behåll vänster hand i kontakt med väggen och gå tills du når utgången.
 
-\item Vad krävs av labyrinten för att detta ska fungera?  
+\item Vad krävs av labyrinten för att detta ska fungera?
 \end{itemize}
 \pause Extrauppgift:
 \begin{itemize}
-\item Generera slumpmässig labyrint 
+\item Generera slumpmässig labyrint
 \item Algoritmen (\emph{Prims algoritm}) är given i pseudokod
 \end{itemize}
 
@@ -41,33 +41,61 @@ Grunduppgift:
 \Subsection{Matriser}
 
 \begin{Slide}{Vad är en matris?}\SlideFontSmall
-\begin{multicols}{2}
 \begin{itemize}
-\item En \Emph{matris} inom \Alert{matematiken} innehåller \Emph{rader} med lika många tal och \Emph{kolumner} med lika många tal. 
 
-\item En matris av dimension $m\times{}n$ har $m \cdot n$ stycken element. 
+\item En \Emph{matris} inom \Alert{matematiken} innehåller \Emph{rader} och \Emph{kolumner}\footnote{även kallade \emph{kolonner}} med tal.
 
-\end{itemize}
+\item I en \Alert{matematisk} matris har alla rader \Emph{lika många} element och
 
-\columnbreak
-\begin{itemize}
-\item En matris $M_{2,5}$ ritas inom matematiken ofta så här:
-\end{itemize}
+\item även alla kolumner har \Emph{lika många} element.
+
+\item En matris av dimension $2\times{}5$ har $2 \cdot 5 = 10$ stycken element.
+
+\item Exempel på en matematisk matris av dimension $2\times{}5$:
 \[
-M=
+M_{2,5}=
   \begin{pmatrix}
     5 & 2 & 42 & 4 & 5 \\
     3 & 4 & 18 & 6 & 7
   \end{pmatrix}
 \]
-
-\begin{itemize}
-\pause
-\item Indexering inom matematiken sker från 1 (men oftast från 0 i datorprogram).
-
-\item Vad har talet 42 för index i matrisen M ovan?
 \end{itemize}
-\end{multicols}
+\end{Slide}
+
+\begin{Slide}{Indexering i en matris}\SlideFontSmall
+\begin{itemize}
+
+  \item En matris av dimension $m\times{}n$ har $m \cdot n$ stycken element.
+
+  \item En matris $A_{m,n}$ av dimension $m\times{}n$ ritas inom matematiken ofta så här:
+
+  \[
+  A_{m,n} =
+   \begin{pmatrix}
+    a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
+    a_{2,1} & a_{2,2} & \cdots & a_{2,n} \\
+    \vdots  & \vdots  & \ddots & \vdots  \\
+    a_{m,1} & a_{m,2} & \cdots & a_{m,n}
+   \end{pmatrix}
+  \]
+
+
+\item Matrisindexering inom matematiken sker ofta från $1$, men ofta från $0$ i datorprogram.
+
+\item Vad har talet $42$ för index i matrisen $M_{2,5}$ nedan?
+\begin{itemize}\SlideFontTiny
+  \item[--] Inom matematiken?
+  \item[--] I Scala och Java och många andra språk?
+
+  \[
+  M_{2,5}=
+    \begin{pmatrix}
+      5 & 2 & 42 & 4 & 5 \\
+      3 & 4 & 18 & 6 & 7
+    \end{pmatrix}
+  \]
+\end{itemize}
+\end{itemize}
 \end{Slide}
 
 \begin{Slide}{En matris med array av arrayer}
@@ -187,7 +215,7 @@ Om du kan beräkna initialvärde direkt, använd \code{Vector.fill}:\\
 {\SlideFontTiny\code{def fill[A](n1: Int, n2: Int)(elem: => A): Vector[Vector[A]]}}
 \begin{REPL}
 scala> Vector.fill(2,5)(scala.util.Random.nextInt(6) + 1)
-res0: 
+res0:
   typ???
   värde???
 
@@ -196,7 +224,7 @@ Om du kan beräkna initialvärde ur index, använd \code{Vector.tabulate}:\\
 {\SlideFontTiny\code{def tabulate[A](n1: Int, n2: Int)(f: (Int, Int) => A): Vector[Vector[A]]}}
 \begin{REPL}
 scala> Vector.tabulate(5,2)((x,y) => x + y + 1)
-res1: 
+res1:
   typ???
   värde???
 
@@ -208,8 +236,8 @@ Om du kan beräkna initialvärde direkt, använd \code{Vector.fill}:\\
 {\SlideFontTiny\code{def fill[A](n1: Int, n2: Int)(elem: => A): Vector[Vector[A]]}}
 \begin{REPL}
 scala> Vector.fill(2,5)(scala.util.Random.nextInt(6) + 1)
-res0: 
-  scala.collection.immutable.Vector[scala.collection.immutable.Vector[Int]] = 
+res0:
+  scala.collection.immutable.Vector[scala.collection.immutable.Vector[Int]] =
   Vector(Vector(1, 2, 6, 2, 1), Vector(1, 4, 3, 3, 2))
 
 \end{REPL}
@@ -217,8 +245,8 @@ Om du kan beräkna initialvärde ur index, använd \code{Vector.tabulate}:\\
 {\SlideFontTiny\code{def tabulate[A](n1: Int, n2: Int)(f: (Int, Int) => A): Vector[Vector[A]]}}
 \begin{REPL}
 scala> Vector.tabulate(5,2)((x,y) => x + y + 1)
-res1: 
-  scala.collection.immutable.Vector[scala.collection.immutable.Vector[Int]] = 
+res1:
+  scala.collection.immutable.Vector[scala.collection.immutable.Vector[Int]] =
   Vector(Vector(1,2), Vector(2,3), Vector(3,4), Vector(4,5), Vector(5,	6))
 
 \end{REPL}
@@ -240,12 +268,12 @@ xs: typ??? = värde???
 Uppdatering av nästlad struktur i två dimensioner:
 \begin{REPL}
 scala> var xss = Vector.tabulate(2, 5)((x,y) => x + y + 1)
-xss: 
+xss:
   typ??? =
   värde???
 
 scala> xss = xss.updated(0, xss(0).updated(1, 42))
-xss: 
+xss:
   typ??? =
   värde???
 \end{REPL}
@@ -268,13 +296,13 @@ xs: scala.collection.immutable.Vector[Int] = Vector(1, 42, 3, 4, 5)
 Uppdatering av nästlad struktur i två dimensioner:
 \begin{REPL}
 scala> var xss = Vector.tabulate(2, 5)((x,y) => x + y + 1)
-xss: 
-  scala.collection.immutable.Vector[scala.collection.immutable.Vector[Int]] = 
+xss:
+  scala.collection.immutable.Vector[scala.collection.immutable.Vector[Int]] =
   Vector(Vector(1, 2, 3, 4, 5), Vector(2, 3, 4, 5, 6))
 
 scala> xss = xss.updated(0, xss(0).updated(1, 42))
-xss: 
-  scala.collection.immutable.Vector[scala.collection.immutable.Vector[Int]] = 
+xss:
+  scala.collection.immutable.Vector[scala.collection.immutable.Vector[Int]] =
   Vector(Vector(1, 42, 3, 4, 5), Vector(2, 3, 4, 5, 6))
 \end{REPL}
 
@@ -286,15 +314,15 @@ Iterera med nästlad for-sats:
 \begin{REPL}
 scala> val xss = Vector.tabulate(2,5)((x,y) => x + y + 1)
 
-scala> for (???) { 
+scala> for (???) {
          for (???) {
            print(xss(i)(j) + " ")
          }
          println
        }
 
-1 2 3 4 5 
-2 3 4 5 6 
+1 2 3 4 5
+2 3 4 5 6
 \end{REPL}
 \end{Slide}
 
@@ -303,15 +331,15 @@ Iterera med nästlad for-sats:
 \begin{REPL}
 scala> val xss = Vector.tabulate(2,5)((x,y) => x + y + 1)
 
-scala> for (i <- xss.indices) { 
+scala> for (i <- xss.indices) {
          for (j <- xss(i).indices) {
            print(xss(i)(j) + " ")
          }
          println
        }
 
-1 2 3 4 5 
-2 3 4 5 6 
+1 2 3 4 5
+2 3 4 5 6
 \end{REPL}
 \end{Slide}
 
@@ -356,7 +384,7 @@ Iterera med nästlad for-sats: (vad har xss för typ?)
 \begin{REPL}
 scala> val xss = Vector.fill(100)(roll(5))
 
-scala> for (???) { 
+scala> for (???) {
          for (???) {
            print(s"($i)($j) == " + xss(i)(j) + " ")
          }
@@ -384,7 +412,7 @@ Iterera med nästlad for-sats: (xss är en \code{Vector[Vector[Int]]})
 \begin{REPL}
 scala> val xss = Vector.fill(100)(roll(5))
 
-scala> for (i <- xss.indices) { 
+scala> for (i <- xss.indices) {
          for (j <- xss(i).indices) {
            print(s"($i)($j) == " + xss(i)(j) + " ")
          }
@@ -415,8 +443,8 @@ scala> val xss = Vector.tabulate(2,5)((x,y) => x + y + 1)
 
 xss.foreach{ xs => ??? ; println }
 
-1 2 3 4 5 
-2 3 4 5 6 
+1 2 3 4 5
+2 3 4 5 6
 \end{REPL}
 \end{Slide}
 
@@ -428,8 +456,8 @@ scala> val xss = Vector.tabulate(2,5)((x,y) => x + y + 1)
 
 xss.foreach{ xs => xs.foreach{ x => print(x + " ") }; println }
 
-1 2 3 4 5 
-2 3 4 5 6 
+1 2 3 4 5
+2 3 4 5 6
 \end{REPL}
 \end{Slide}
 
@@ -438,22 +466,22 @@ xss.foreach{ xs => xs.foreach{ x => print(x + " ") }; println }
 Iterera med \Emph{nästlad for-yield}:\\
 %Statisk typ: \code{IndexedSeq[IndexedSeq[[Int]]} \\
 %Dynamisk typ: \code{Vector[Vector[[Int]]}
- 
+
 \begin{REPL}
-scala> val xss = for (i <- 1 to 2) yield { 
+scala> val xss = for (i <- 1 to 2) yield {
                    for (j <- 1 to 5) yield i + j + 1
                  }
-xss: 
+xss:
   scala.collection.immutable.IndexedSeq[
-    scala.collection.immutable.IndexedSeq[Int]] = 
+    scala.collection.immutable.IndexedSeq[Int]] =
       ???
 
 \end{REPL}
 Om man skriver så här får man en endimensionell struktur:
 \begin{REPL}
 scala> val xs = for (i <- 1 to 2; j <- 1 to 5) yield i + j + 1
-xs: 
-  scala.collection.immutable.IndexedSeq[Int] = 
+xs:
+  scala.collection.immutable.IndexedSeq[Int] =
     ???
 
 \end{REPL}
@@ -462,20 +490,20 @@ xs:
 \begin{Slide}{Nästlade for-uttryck}\SlideFontSmall
 Iterera med \Emph{nästlad for-yield}:\\
 \begin{REPL}
-scala> val xss = for (i <- 1 to 2) yield { 
+scala> val xss = for (i <- 1 to 2) yield {
                    for (j <- 1 to 5) yield i + j + 1
                  }
-xss: 
+xss:
   scala.collection.immutable.IndexedSeq[
-    scala.collection.immutable.IndexedSeq[Int]] = 
+    scala.collection.immutable.IndexedSeq[Int]] =
       Vector(Vector(3, 4, 5, 6, 7), Vector(4, 5, 6, 7, 8))
 
 \end{REPL}
 Om man skriver så här får man en endimensionell struktur:
 \begin{REPL}
 scala> val xs = for (i <- 1 to 2; j <- 1 to 5) yield i + j + 1
-xs: 
-  scala.collection.immutable.IndexedSeq[Int] = 
+xs:
+  scala.collection.immutable.IndexedSeq[Int] =
     Vector(3, 4, 5, 6, 7, 4, 5, 6, 7, 8)
 
 \end{REPL}
@@ -487,9 +515,9 @@ xs:
 Iterera med \Emph{nästlade map-uttryck}:\\
 \begin{REPL}
 scala> val xss = (1 to 2).map(i => (1 to 5).map(j => i + j + 1))
-xss: 
+xss:
   scala.collection.immutable.IndexedSeq[
-    scala.collection.immutable.IndexedSeq[Int]] = 
+    scala.collection.immutable.IndexedSeq[Int]] =
       ???
 \end{REPL}
 \end{Slide}
@@ -498,9 +526,9 @@ xss:
 Iterera med \Emph{nästlade map-uttryck}:\\
 \begin{REPL}
 scala> val xss = (1 to 2).map(i => (1 to 5).map(j => i + j + 1))
-xss: 
+xss:
   scala.collection.immutable.IndexedSeq[
-    scala.collection.immutable.IndexedSeq[Int]] = 
+    scala.collection.immutable.IndexedSeq[Int]] =
       Vector(Vector(3, 4, 5, 6, 7), Vector(4, 5, 6, 7, 8))
 \end{REPL}
 \end{Slide}
@@ -523,7 +551,7 @@ public class ArrayMatrix {
             System.out.println();
         }
     }
-    
+
     public static void main(String[] args) {
         int[][] xss = new int[10][5];
         showMatrix(xss);
@@ -531,11 +559,11 @@ public class ArrayMatrix {
 }
 \end{CodeSmall}
 \pause
-Övning: skriv en metod \code{fillRnd} som fyller en heltalsmatris med slumptal 1 till n: 
+Övning: skriv en metod \code{fillRnd} som fyller en heltalsmatris med slumptal 1 till n:
 \pause
 \jcode|public static void fillRnd(int[][] m, int n){ /* ??? */ }| \\
 \pause
-Tips: använd en nästlad for-sats och: \\ 
+Tips: använd en nästlad for-sats och: \\
 \jcode{(int) (Math.random * n + 1)   // (int) motsvarar Scalas asInstanceOf[Int]}
 
 \end{Slide}
@@ -546,7 +574,7 @@ Tips: använd en nästlad for-sats och: \\
 
 \item Fortsätt jobba med Yatzy-exemplet
 
-\item Övning 2f) ger träning i att skapa en \Emph{imperativ} algoritm: \\ 
+\item Övning 2f) ger träning i att skapa en \Emph{imperativ} algoritm: \\
 lös \code{isYatzy} med \code{while}-sats (kunde varit del av en tenta...)
 
 \item Extrauppgiften 7 är en bra träning på matriser där du ska bygga ett enkelt yatzy-spel i terminalen (kunde varit del av en tenta...)
@@ -564,8 +592,8 @@ object Table {
   def fromFile(fileName: String, separator: Char = ';'): Table = ???
 }
 case class Table(
-  data: Vector[Vector[String]], 
-  headings: Vector[String], 
+  data: Vector[Vector[String]],
+  headings: Vector[String],
   sep: String){
   /** A 2-tuple with (number of rows, number of columns) in data */
   val dim: (Int, Int) = ???
@@ -585,7 +613,7 @@ case class Table(
   /** The column-vector with heading h in data */
   def col(h: String): Vector[String] = ???
 
-  /** A vector with the distinct, sorted values of col with heading h */ 
+  /** A vector with the distinct, sorted values of col with heading h */
   def values(h: String): Vector[String] = ???
 
   /** Headings and data with columns separated by sep */
@@ -600,7 +628,7 @@ case class Table(
 \begin{Code}[basicstyle=\SlideFontSize{6}{6.8}\ttfamily\selectfont]
 case class Matrix[T](data: Vector[Vector[T]]){
 
-  def foreachRowCol(f: (Int, Int, T) => Unit): Unit = 
+  def foreachRowCol(f: (Int, Int, T) => Unit): Unit =
     for (r <- data.indices) {
       for (c <- data(r).indices) {
         f(r, c, data(r)(c))
@@ -615,30 +643,18 @@ case class Matrix[T](data: Vector[Vector[T]]){
   /** Gives Some[T](element) at index (r, c) if within index bounds, else None */
   def get(r: Int, c: Int): Option[T] = ???
 
-  /** The row vector of row r */ 
+  /** The row vector of row r */
   def row(r: Int): Vector[T] = ???
 
-  /** The column vector of column c */ 
+  /** The column vector of column c */
   def col(c: Int): Vector[T] = ???
 
   /** A new Matrix with element at row r and col c updated */
   def updated(r: Int, c: Int, value: T): Matrix[T] = ???
 }
 object Matrix {
-  def fill[T](rowSize: Int, colSize: Int)(init: T): Matrix[T] = 
-    new Matrix(Vector.fill(rowSize)(Vector.fill(colSize)(init)))  
+  def fill[T](rowSize: Int, colSize: Int)(init: T): Matrix[T] =
+    new Matrix(Vector.fill(rowSize)(Vector.fill(colSize)(init)))
 }
 \end{Code}
 \end{Slide}
-
-
-
-
-
-
-
-
-
-
-
-
