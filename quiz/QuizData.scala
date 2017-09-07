@@ -413,6 +413,14 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
+    QuizID("quiz-w08-concepts") -> Vector(  //sequences
+      "matris" -> "indexerbar datastruktur i två dimensioner",
+      "generisk" -> "har abstrakt typparameter, typen är generell",
+      "typargument" -> "konkret typ, binds till typparameter vid kompilering",
+      "typhärledning" -> "kompilatorn beräknar typ ur sammanhanget",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
     QuizID("") -> Vector()
   ).filter(_._1.name.trim.nonEmpty)
 }
