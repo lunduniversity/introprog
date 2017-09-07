@@ -415,6 +415,9 @@ object QuizData {  // to generate tables for a concept connection quizes in late
 
     QuizID("quiz-w08-concepts") -> Vector(  //sequences
       "matris" -> "indexerbar datastruktur i två dimensioner",
+      "radvektor" -> "matris av dimension $1\\times{}m$ med $m$ horisontella värden",
+      "kolumnvektor" -> "matris av dimension $m\\times{}1$ med $m$ vertikala värden",
+      "kolonn" -> "annat ord för kolumn",
       "generisk" -> "har abstrakt typparameter, typen är generell",
       "typargument" -> "konkret typ, binds till typparameter vid kompilering",
       "typhärledning" -> "kompilatorn beräknar typ ur sammanhanget",
