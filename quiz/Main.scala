@@ -33,10 +33,10 @@ object Main extends {
     val n = for (q <- QuizData.quizIDs if q.name contains partOfQuizName) yield {
       val (t, s) = QuizUtils.toLatexTaskSolution(q)
 
-      println(s"\nGenerating: ${q.name}-taskrows" )
+      //println(s"\nGenerating: ${q.name}-taskrows" )
       t.save(currentDir + s"../compendium/generated/${q.name}-taskrows-generated.tex")
 
-      println(s"Generating: ${q.name}-solurows" )
+      //println(s"Generating: ${q.name}-solurows" )
       s.save(currentDir + s"../compendium/generated/${q.name}-solurows-generated.tex")
 
       2  // to count number of files generated.
