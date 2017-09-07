@@ -218,7 +218,7 @@
 {\end{itemize}}
 
 \newenvironment{Background}%
-{\begin{adjustwidth}{\parindent}{}\small \emph{Bakgrund för kännedom:}}%
+{\begin{adjustwidth}{\parindent}{}\small \emph{Bakgrund:}}%
 {\end{adjustwidth}}
 
 \newcommand{\vecka}{1}%renew this command in chapter.tex files
