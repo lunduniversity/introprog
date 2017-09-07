@@ -130,11 +130,15 @@ pdfCompendium := {
   runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))
 }
 
-lazy val pdfCompendium1 = taskKey[Unit]("Compile compendium.tex")
+lazy val pdfCompendium1 = taskKey[Unit]("Compile compendium1.tex")
 pdfCompendium1 := {
   runPdfLatexCmd(texFile = file("compendium1.tex"), workDir = file("compendium"))
 }
 
+lazy val pdfCompendium2 = taskKey[Unit]("Compile compendium2.tex")
+pdfCompendium2 := {
+  runPdfLatexCmd(texFile = file("compendium2.tex"), workDir = file("compendium"))
+}
 
 lazy val pdfSlides = inputKey[Unit]("run pdflatex slides/lect-w<weeknumber>.tex")
 pdfSlides := {
