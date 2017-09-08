@@ -111,6 +111,7 @@ watchSources ++= ((baseDirectory.value / "compendium" / "modules") * "*.tex").ge
 watchSources ++= ((baseDirectory.value / "compendium" / "prechapters") * "*.tex").get
 watchSources ++= ((baseDirectory.value / "compendium" / "postchapters") * "*.tex").get
 watchSources ++= ((baseDirectory.value / "slides" / "body") * "*.tex").get
+watchSources ++= ((baseDirectory.value / "slides") * "*.tex").get
 
 lazy val pdfExercises = taskKey[Unit]("Compile exercises.tex")
 pdfExercises := {
