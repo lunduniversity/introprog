@@ -5,7 +5,7 @@ object irritext {
   def printSolved(points: Int): Unit = println(s"GRATTIS DU FICK $points POÄNG!")
 
   def printWelcomeMessage(): Unit = println("""
-    |Välkommen till ett lagom irriterande textspel (om du läst koden)!\n
+    |Välkommen till ett lagom irriterande textspel (om du läst koden)!
     |Du står framför en fuktdrypande vägg med två tunga dörrar.
     |Du hör morrande och rytande.
   """.stripMargin)
@@ -33,6 +33,7 @@ object irritext {
   }
 
   def main(args: Array[String]): Unit = {
+    printWelcomeMessage()
     play()
     if (isDead) printDead else printSolved(points)
   }
