@@ -7,7 +7,7 @@ object irritext {
   def printWelcomeMessage(): Unit = println("""
     |Välkommen till ett lagom irriterande textspel (om du läst koden)!\n
     |Du står framför en fuktdrypande vägg med två tunga dörrar.
-    |Du hör morrande och rytande och det blåser en iskall vind.
+    |Du hör morrande och rytande.
   """.stripMargin)
 
   def doorChoice(): String = readLine("Vilken dörr väljer du? V=vänster H=Höger\n")
