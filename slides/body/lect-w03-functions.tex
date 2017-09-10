@@ -2,7 +2,7 @@
 %!TEX root = ../lect-w03.tex
 
 
-
+\ifkompendium\else
 \Subsection{Kommande vecka}
 
 \begin{Slide}{Mål med övning \ExeWeekTHREE}
@@ -52,7 +52,7 @@ Kolla snabbreferensen vad mer du kan göra med strängar!
 \end{itemize}
 
 \end{Slide}
-
+\fi
 
 
 \Subsection{Funktioner}
@@ -118,36 +118,6 @@ res1: Int = 2
 \end{Slide}
 
 
-\begin{Slide}{Tom parameterlista och inga parametrar}\SlideFontSmall
-\begin{itemize}
-\item Om en funktion deklareras med tom parameterlista \code{()} kan den anropas på två sätt: med och utan tomma parenteser.
-\begin{REPL}
-scala> def tomParameterLista() = 42
-
-scala> tomParameterLista()
-res2: Int = 42
-
-scala> tomParameterLista
-res3: Int = 42
-\end{REPL}
-
-Denna flexibilitet är grunden för \Emph{enhetlig access}: namnet kan användas enhetligt oavsett om det är en funktion eller en variabel.
-\item Om parameterlista saknas får man \Alert{inte} använda \code{()} vid anrop:
-
-\begin{REPL}
-scala> def ingenParameterLista = 42
-
-scala> ingenParameterLista
-res4: Int = 42
-
-scala> ingenParameterLista()
-<console>:13: error: Int does not take parameters
-       ingenParameterLista()
-\end{REPL}
-
-\end{itemize}
-\end{Slide}
-
 
 \begin{Slide}{Funktioner med defaultargument}\SlideFontSmall
 
@@ -191,12 +161,46 @@ res0: String = Name: Kim Coder
 \end{Slide}
 
 
+\begin{Slide}{Tom parameterlista och inga parametrar}\SlideFontSmall
+\begin{itemize}
+\item Om en funktion deklareras med tom parameterlista \code{()} kan den anropas på två sätt: med och utan tomma parenteser.
+\begin{REPL}
+scala> def tomParameterLista() = 42
+
+scala> tomParameterLista()
+res2: Int = 42
+
+scala> tomParameterLista
+res3: Int = 42
+\end{REPL}
+
+Denna flexibilitet är grunden för \Emph{enhetlig access}: namnet kan användas enhetligt oavsett om det är en funktion eller en variabel.
+\item Om parameterlista saknas får man \Alert{inte} använda \code{()} vid anrop:
+
+\begin{REPL}
+scala> def ingenParameterLista = 42
+
+scala> ingenParameterLista
+res4: Int = 42
+
+scala> ingenParameterLista()
+<console>:13: error: Int does not take parameters
+       ingenParameterLista()
+\end{REPL}
+
+\end{itemize}
+\end{Slide}
+
+
+
 \begin{Slide}{Anropsstacken och objektheapen}\SlideFontSmall
 Minnet är uppdelat i två delar:
 \begin{itemize}
-\item \Emph{Anropsstacken}: På stackminnet läggs en \Emph{aktiveringspost} \Eng{stack frame\footnote{\href{https://en.wikipedia.org/wiki/Call_stack}{en.wikipedia.org/wiki/Call\_stack}}, activation record} för varje funktionsanrop med plats för parametrar och lokala variabler. Aktiveringsposten raderas när returvärdet har levererats. Stacken växer vid nästlade funktionsanrop, då en funktion i sin tur anropar en annan funktion.
+\item \Emph{Anropsstacken}: På stackminnet läggs en \Emph{aktiveringspost} \Eng{stack frame\footnote{\href{https://en.wikipedia.org/wiki/Call_stack}{en.wikipedia.org/wiki/Call\_stack}}, activation record} för varje funktionsanrop med plats för \Alert{parametrar} och \Alert{lokala variabler}.
+\item Aktiveringsposten \Alert{raderas} när \Emph{returvärdet} har levererats.
+\item Stacken \Alert{växer} vid \Emph{nästlade funktionsanrop}, då en funktion i sin tur anropar en annan funktion.
 
-\item \Emph{Objektheapen}: I heapminnet\footnote{\href{https://en.wikipedia.org/wiki/Memory_management}{en.wikipedia.org/wiki/Memory\_management}}$^{,}$\footnote{Ej att förväxlas med datastrukturen heap  \href{https://sv.wikipedia.org/wiki/Heap}{sv.wikipedia.org/wiki/Heap}} sparas alla objekt (data) som allokeras under körning. Heapen städas vid tillfälle av skräpsamlaren \Eng{garbage collector}, och minne som inte används längre frigörs. \\\vspace{0.5em}
+\item \Emph{Objektheapen}: I heapminnet\footnote{\href{https://en.wikipedia.org/wiki/Memory_management}{en.wikipedia.org/wiki/Memory\_management}}$^{,}$\footnote{Ej att förväxlas med datastrukturen heap  \href{https://sv.wikipedia.org/wiki/Heap}{sv.wikipedia.org/wiki/Heap}} sparas alla objekt (data) som allokeras under körning. Heapen städas vid tillfälle av \Emph{skräpsamlaren} \Eng{garbage collector}, och minne som inte används längre frigörs. \\\vspace{0.5em}
 \href{http://stackoverflow.com/questions/1565388/increase-heap-size-in-java}{stackoverflow.com/questions/1565388/increase-heap-size-in-java}
 \end{itemize}
 \end{Slide}
@@ -219,7 +223,7 @@ scala> f()
 
 \begin{tabular}{|r | l | l |} \hline
 
-variabel & värde & Vilken aktiveringspost? \\ \hline \hline
+variabel & värde & Aktiveringspost för anrop av... \\ \hline \hline
 \pause
  n & 5 & f \\ \hline
  \pause
@@ -262,6 +266,28 @@ Lokala, nästlade funktionsdeklarationer är tyvärr inte tillåtna i Java.\foot
 
 \end{Slide}
 
+\begin{Slide}{Funktion med fångad variabelrymd: \textit{closure}}
+\begin{Code}
+def f(x: Int): Int => Int = {
+  val a = 42 + x
+  val g = (y: Int) => y + a
+  g
+}
+\end{Code}
+Funktionen \code{g} \Alert{fångar} den lokala variabeln \code{a} i ett s.k. \Emph{closure}.
+\pause
+\begin{REPLnonum}
+scala> val funkis = f(1)
+funkis: Int => Int = $$Lambda$$1061/726226084@498f1f63
+
+scala> funkis(2)
+res0: Int = 45
+\end{REPLnonum}
+\pause
+Ett \Emph{closure} sparar variabler i ett \Alert{persistent funktionsobjekt}. \\
+(Mer om funktioner som objekt senare.)
+\end{Slide}
+
 
 
 \begin{Slide}{Värdeanrop och namnanrop}\SlideFontSmall
@@ -284,7 +310,7 @@ scala> byName({print(" hej"); 21 + 21})
  hej hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42
 \end{REPL}
 
-Kluring: Varför skrivs ''hej'' ut en extra gång i början???
+Kluring: Varför skrivs ''hej'' ut en extra gång i början??? \pause ledtråd: \texttt{1 to \Alert{n}}
 %evalueringen av n i 1 to n ger ett extra hej
 \end{itemize}
 \end{Slide}
@@ -292,9 +318,9 @@ Kluring: Varför skrivs ''hej'' ut en extra gång i början???
 \begin{Slide}{Klammerparenteser vid ensam parameter}
 Så här har vi sett nyss att man man göra:
 \begin{REPL}
-scala> def actTwice(action: => Unit): Unit = { action; action }
+scala> def twice(action: => Unit): Unit = { action; action }
 
-scala> actTwice( { print("hej"); print("san ") } )
+scala> twice( { print("hej"); print("san ") } )
 hejsan hejsan
 \end{REPL}
 
@@ -303,7 +329,7 @@ För alla funktioner \code{f} gäller att: \\ det är helt ok att byta ut vanlig
 
 \vspace{0.5em}Man kan alltså skippa det yttre parentesparet för bättre läsbarhet:
 \begin{REPLnonum}
-scala> actTwice { print("hej"); print("san") }
+scala> twice { print("hej"); print("san ") }
 \end{REPLnonum}
 
 
@@ -336,20 +362,26 @@ res1: Int = 42
 \begin{Slide}{Skapa din egen kontrollstruktur}
 \begin{itemize}
 \item Genom att \Alert{kombinera} \Emph{multipla parameterlistor} med \Emph{namnanrop} med \Emph{klammerparentes vid ensam parameter} kan vi skapa vår egen kontrollstruktur:
-\begin{REPLnonum}
-scala> def upprepa(n: Int)(block: => Unit) = {
-         var i = 0
-         while (i < n) { block; i += 1 }
-       }
+\begin{Code}
+def upprepa(n: Int)(block: => Unit) = {
+  var i = 0
+  while (i < n) { block; i += 1 }
+}
+\end{Code}
 
-scala> upprepa(42){
-         if (math.random < 0.5) {
-           print(" gurka")
-         } else {
-           print(" tomat")
-         }
-       }
- gurka gurka gurka tomat tomat gurka gurka gurka gurka tomat tomat tomat tomat tomat gurka tomat tomat tomat tomat tomat tomat tomat tomat tomat gurka gurka gurka tomat tomat gurka gurka gurka tomat tomat gurka tomat gurka gurka gurka gurka tomat tomat
+\pause
+
+\begin{Code}
+upprepa(42){
+  if (math.random < 0.5) print(" gurka")
+  else print(" tomat")
+}
+\end{Code}
+
+\pause
+
+\begin{REPLnonum}
+gurka gurka gurka tomat tomat gurka gurka gurka gurka tomat tomat tomat tomat tomat
 \end{REPLnonum}
 \end{itemize}
 \end{Slide}
@@ -357,7 +389,7 @@ scala> upprepa(42){
 
 \begin{Slide}{Funktioner är äkta värden i Scala}\SlideFontSmall
 \begin{itemize}
-\item En funktioner är ett äkta värde.
+\item En funktioner är ett \Alert{äkta värde}.
 \item Vi kan till exempel tilldela en variabel ett funktionsvärde.
 \item Med hjälp av blank+understreck efter funktionsnamnet får vi funktionen som ett \Alert{värde} (inga argument appliceras än):
 \begin{REPLnonum}
@@ -404,13 +436,40 @@ res1: Int = 43
 
 
 \begin{Slide}{Applicera funktioner på element i samlingar med \texttt{map}}\SlideFontSmall
+\begin{Code}
+def öka(x: Int) = x + 1
+
+def minska(x: Int) = x - 1
+
+val xs = Vector(1, 2, 3)
+\end{Code}
+\pause
 \begin{REPL}
-scala> def öka(x: Int) = x + 1
+scala> xs.map(öka)
+res0: ???
 
-scala> def minska(x: Int) = x - 1
+scala> xs.map(minska)
+res1: ???
 
-scala> val xs = Vector(1, 2, 3)
+scala> xs map öka
+res2: ???
 
+scala> xs map minska
+res3: ???
+\end{REPL}
+Funktioner som tar andra funktioner som parametrar kallas \\ \Emph{högre ordningens funktioner}.
+\end{Slide}
+
+
+\begin{Slide}{Applicera funktioner på element i samlingar med \texttt{map}}\SlideFontSmall
+\begin{Code}
+def öka(x: Int) = x + 1
+
+def minska(x: Int) = x - 1
+
+val xs = Vector(1, 2, 3)
+\end{Code}
+\begin{REPL}
 scala> xs.map(öka)
 res0: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
 
@@ -435,18 +494,20 @@ Funktioner som tar andra funktioner som parametrar kallas \\ \Emph{högre ordnin
 
 \item En funktionsliteral har ...
 \begin{enumerate}
-\item en parameterlista (utan funktionsnamn) och ev. returtyp, \item sedan den reserverade teckenkombinationen \code{=>} \item och sedan ett uttryck (eller ett block).
+\item en parameterlista (utan funktionsnamn, utan returtyp),
+\item sedan den reserverade teckenkombinationen \code{=>}
+\item och sedan ett uttryck (eller ett block).
 \end{enumerate}
+\pause
 \item Exempel:
-\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
-(x: Int, y: Int): Int => x + y
+\begin{Code}[basicstyle=\ttfamily\SlideFontSize{9}{11}]
+(x: Int, y: Int) => x + y             // vilken typ?
 \end{Code}
 \pause
 \item Om kompilatorn kan gissa typerna från sammanhanget så behöver typerna inte anges i själva  funktionsliteralen:
-\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
+\begin{Code}[basicstyle=\ttfamily\SlideFontSize{9}{11}]
 val f: (Int, Int) => Int = (x, y) => x + y
 \end{Code}
-
 \end{itemize}
 \end{Slide}
 
@@ -460,6 +521,8 @@ scala> val xs = Vector(1, 2, 3)
 scala> xs.map((x: Int): Int => x + 1)
 res0: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
 \end{REPL}
+
+\pause
 \item Eftersom kompilatorn här kan härleda typerna så behövs de inte:
 \begin{REPL}
 scala> xs.map(x => x - 1)
@@ -469,6 +532,8 @@ scala> xs map (x => x - 1)
 res2: scala.collection.immutable.Vector[Int] = Vector(0, 1, 2)
 
 \end{REPL}
+\pause
+
 \item Om man bara använder parametern en enda gång i funktionen så kan man byta ut parameternamnet mot ett understreck.
 
 \begin{REPL}
@@ -543,7 +608,7 @@ res1:scala.collection.immutable.Vector[Int]= Vector(3, 4, 5)
 \end{REPLnonum}
 \end{Slide}
 
-\begin{Slide}{Översikt begrepp vi gått igenom hittills}
+\begin{Slide}{Översikt av begrepp vi gått igenom hittills}
 \begin{itemize}
 \item överlagring
 \item utelämna tom parameterlista (enhetlig access)
