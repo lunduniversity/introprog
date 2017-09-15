@@ -4,9 +4,19 @@
 \Subsection{Objekt}
 
 
+
+\begin{Slide}{Vad rymmer sköldpaddan i Kojo i sitt tillstånd?}
+\centering
+\includegraphics[width=0.7\textwidth]{../img/kojo}
+
+\pause position, rikting, pennfärg, pennbredd, penna uppe/nere, fyllfärg
+\end{Slide}
+
+
+
 \begin{Slide}{Vad är ett objekt?}
 \begin{itemize}
-\item Ett objekt är en abstraktion som finns i datorns minne och
+\item Ett objekt är en abstraktion som...
 \begin{itemize}
   \item kan innehålla \Emph{data} som objektet ''håller reda på'' och
   \item kan erbjuda \Emph{operationer} som \emph{gör} något eller ger ett \emph{värde}
@@ -39,31 +49,175 @@
 \end{Slide}
 
 
-\begin{Slide}{Deklarera, skapa och använda objekt}
+
+\begin{Slide}{Deklarera, allokera, referera}
+Olika saker man kan göra med objekt:
 \begin{itemize}
-  \item
+  \item \Emph{deklarera}: att skriva kod som beskriver objekt
+  \item \Emph{allokera}: att skapa plats i minnet för objektet vid körtid
+  \item \Emph{referera}: att använda objektet via ett namn;\\
+  man kommer åt innehållet i ett objekt med \Alert{punktnotation}: \\
+  \code{ref.medlem}
+  \pause
+  \item (\Emph{avallokera}): att frigöra minne för objekt som inte längre används;
+  detta \Alert{sker automatiskt} i Scala och Java, men i andra språk t.ex. C++ får man själv hålla reda på avallokering, vilket är knepigt och det blir lätt svåra buggar.
 \end{itemize}
 \end{Slide}
+
+
+\begin{Slide}{Allokera objekt}
+Det finns flera olika sätt att skapa objekt:
+\begin{itemize}
+
+\item Använda en \Emph{färdig funktion} som skapar ett objekt åt oss:
+\begin{Code}
+Vector(1,2,3)   // skapar ett Vector-objekt
+\end{Code}
+
+\item Använda \code{new} (mer om detta senare: då behövs en klass):
+\begin{Code}
+new SimpleWindow(600, 400, "fönstertitel")  // skapar ett fönsterobjekt
+\end{Code}
+{\SlideFontSmall Med upprepad användning av \code{new} kan man skapa \Alert{många upplagor} av samma typ av objekt.\vspace{0.5em}}
+
+\item Deklarera ett \Emph{singelobjekt} med nyckelordet \code{object}
+\begin{itemize}
+  \item Ett singelobjekt finns i exakt \Alert{en} upplaga och
+  \item allokeras \Alert{automatisk} första gången man refererar objektet; \\
+  man behöver inte, och kan inte, skriva \code{new}.
+\end{itemize}
+\end{itemize}
+\end{Slide}
+
+
 
 \begin{Slide}{Vad är ett singelobjekt?}
 \begin{itemize}
-\item Ett \code{object} användas ofta för att samla \Emph{medlemmar} \Eng{members} som \Alert{hör ihop} och ge dem en egen \Emph{namnrymd} \Eng{name space}.
-\item Medlemmarna kan vara t.ex.:
-\begin{itemize}
-\item  \code{val} \item \code{var} \item \code{def}
+\item Ett singelobjekt \Eng{singelton} deklareras med nyckelordet \code{object} och kan användas för att samla \Emph{medlemmar} \Eng{members} som \Alert{hör ihop}.
+\item Kallas också \Emph{modul}.
+\item Medlemmarna kan t.ex. vara \Emph{variabler} (\code{val}, \code{var}) och \Emph{metoder} (\code{def}). En \Alert{metod} är en \Emph{funktion} i ett objekt.
+\item Exempel: singelobjekt/modul som hanterar highscore:
+\begin{Code}
+object Highscore {
+  var highscore = 0
+  def isHighscore(points: Int): Boolean = points > highscore
+}
+\end{Code}
 \end{itemize}
+\pause
+{\SlideFontSmall Tanken är ofta att abstraktionen ska vara användbar i annan kod, för att underlätta när man bygger applikationer, och kallas då även ett API (Application Programming Interface). Exempel: ett highscore-API}
+\end{Slide}
 
-\item Ett sådant objekt kallas även för \Emph{modul}.\footnote{
-Även paket som skapas med \code{package} har en egen namnrymd och är därmed också en slags modul. Objekt kan alltså i Scala användas som ett alternativ till paket; en skillnad är att objekt kan ha tillstånd och att objekt inte skapar underkataloger vid kompilering (det finns iofs s.k. \code{package object}) \href{https://en.wikipedia.org/wiki/Modular_programming}{en.wikipedia.org/wiki/Modular\_programming}}
+
+\begin{Slide}{Allokering: minne reserveras med plats för data}
+\begin{Code}
+object Highscore {
+  var highscore = 0
+  def isHighscore(points: Int): Boolean = points > highscore
+}
+\end{Code}
+\pause
+\begin{tikzpicture}[font=\large\sffamily]
+\matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=0.8cm}}] (mat)
+{
+\texttt{HighScore}   &  \makebox(10,10){ }\\
+%\texttt{g2}   &  \makebox(16,12){ }\\
+};
+\node[cloud, cloud puffs=13.0, cloud ignores aspect, minimum width=2cm, minimum height=3.8cm,
+ align=center, draw] (x) at (5.8cm, -1.5cm) {
+ \begin{tabular}{r l}
+ \texttt{highscore} & \fbox{~~~~~0~~} \\
+
+ \end{tabular}
+ };
+\filldraw[black] (1.2cm,0.0cm) circle (3pt) node[] (ref) {};
+ \draw [arrow, line width=0.7mm] (ref) -- (x);
+% \node[cloud, cloud puffs=15.7, cloud ignores aspect, %minimum width=5cm, minimum height=2cm,
+% align=center, draw] (g2) at (5cm, -2cm) {Gurka-\\objekt};
+% \filldraw[black] (0.4cm,-0.4cm) circle (3pt) node[] (g2ref) {};
+% \draw [arrow] (g2ref) -- (g2);
+\end{tikzpicture}
+\end{Slide}
+
+
+\begin{Slide}{Punktnotation, tillståndsförändring med tilldelning}
+\begin{REPLnonum}
+Highscore.highscore = 42
+\end{REPLnonum}
+\pause
+\begin{tikzpicture}[font=\large\sffamily]
+\matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=0.8cm}}] (mat)
+{
+\texttt{HighScore}   &  \makebox(10,10){ }\\
+%\texttt{g2}   &  \makebox(16,12){ }\\
+};
+\node[cloud, cloud puffs=13.0, cloud ignores aspect, minimum width=2cm, minimum height=3.8cm,
+ align=center, draw] (x) at (5.8cm, -1.5cm) {
+ \begin{tabular}{r l}
+ \texttt{highscore} & \fbox{~~~~42~~} \\
+
+ \end{tabular}
+ };
+\filldraw[black] (1.2cm,0.0cm) circle (3pt) node[] (ref) {};
+ \draw [arrow, line width=0.7mm] (ref) -- (x);
+% \node[cloud, cloud puffs=15.7, cloud ignores aspect, %minimum width=5cm, minimum height=2cm,
+% align=center, draw] (g2) at (5cm, -2cm) {Gurka-\\objekt};
+% \filldraw[black] (0.4cm,-0.4cm) circle (3pt) node[] (g2ref) {};
+% \draw [arrow] (g2ref) -- (g2);
+\end{tikzpicture}
+\end{Slide}
+
+
+\begin{Slide}{Inkapsling: att dölja interna delar}\SlideFontSmall
+Med nyckelordet \code{private} döljs interna delar för omvärlden.\\
+Privata delar kan bara refereras innifrån objektet.
+\begin{Code}
+object Highscore {
+  private var highscore = 0    // syns ej utåt
+  def isHighscore(points: Int): Boolean = points > highscore
+  def update(points: Int): Unit = if (isHigscore) highscore = points
+}
+\end{Code}
+Varför har man nytta av detta?
+\begin{itemize}
+  \item Förhindra att man av misstag ändrar objekts tillstånd på fel sätt.
+  \item Förhindra användning av kod som i framtiden kan komma att ändras.
+  \item Erbjuder en enklare ''utsida'' genom dölja komplexitet ''på insidan''.
+  \item Inte ''skräpa ner'' namnrymden med ''onödiga'' namn.
+\end{itemize}
+Nackdelar:
+\begin{itemize}
+  \item Begränsar användningen, har ej tillgång till alla delar.
+  \item Svårare att experimentera med ett API medan man försöker förstå det.
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Modul}
+
+\begin{itemize}
+  \item En modul samlar kod som utgör en sammanhållen, avgränsad \Emph{uppsättning abstraktioner} som kan användas av annan kod  för att lösa ett specifikt (del)problem.
+  \item I Scala finns två sätt att skapa moduler:\footnote{\href{https://en.wikipedia.org/wiki/Modular_programming}{en.wikipedia.org/wiki/Modular\_programming}}
+  \begin{itemize}
+    \item \Emph{singelobjekt} med nyckelordet \code{object} och
+    \item \Emph{paket} med nyckelordet \code{package}
+    \pause
+    \item Liknar varandra; t.ex. kan man använda punktnotation och göra \code{import} på medlemmar i både singelobjekt och paket.
+    \pause
+    \item Skillnader:
+    \begin{itemize}
+      \item paket medför att \Alert{underkataloger} för maskinkoden skapas vid kompilering
+      \item paket innehåller inte variabler på topp-nivå; dessa behöver ligga inuti singelobjekt eller klasser
+    \end{itemize}
+    \item (I Scala kan man kombinera begreppen: \code{package object})
+  \end{itemize}
 
 \end{itemize}
 \end{Slide}
 
 
 
-
-\begin{Slide}{Singelobjekt och metod} \SlideFontSmall
-Ett Scala-\code{object} är ett s.k. \Emph{singelobjekt} \Eng{singleton object} och finns bara i \Alert{en} enda upplaga. \\ Minne för objektets variabler allokeras första gången objektet refereras. \\ En funktion som finns i ett objekt kallas en \Emph{metod} \Eng{method}.
+\begin{Slide}{Exempel: Bankkonto} \SlideFontSmall
 \begin{Code}[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]
 object mittBankkonto {
   val kontonr: Long        = 1234567L
@@ -150,17 +304,22 @@ res1: Int = -24000
 
 
 
-\begin{Slide}{Vad rymmer sköldpaddan i Kojo i sitt tillstånd?}
-\centering
-\includegraphics[width=0.7\textwidth]{../img/kojo}
 
-\pause position, rikting, pennfärg, pennbredd, penna uppe/nere, fyllfärg
+
+\begin{Slide}{Namnrymd \Eng{name space}, synlighet och skuggning}
+\TODO
+\end{Slide}
+
+
+\begin{Slide}{Tupler}
+\TODO
 \end{Slide}
 
 
 
+\Subsection{Fördröjd initialisering}
 
-\begin{Slide}{Lata variabler och fördröjd evaluering}
+\begin{Slide}{Lata variabler och fördröjd initialisering}
 Med nyckelordet \code{lazy} före \code{val} skapas en s.k. ''lat'' \Eng{lazy} variabel.
 \begin{REPL}
 scala> val striktVektor = Vector.fill(1000000)(math.random)
@@ -194,6 +353,31 @@ Lat evaluering är en viktig princip inom funktionsprogrammering som möjliggör
 
 
 
+\begin{Slide}{Singelobjekt är lata}
+
+\begin{itemize}
+  \item Singelobjekt allokeras \Alert{inte} direkt vid deklaration; allokeringen sker först då objektet refereras första gången.
+
+\pause
+
+  \item Exempel:
+
+\end{itemize}
+
+\begin{Code}
+object mittLataObjekt {
+  println("jag är lat")
+  val storArray = { println("skapar stor Array"); Array.fill(10000)(42) }
+  lazy val ännuStörreArray = Array.fill(Int.MaxValue)(42)
+}
+\end{Code}
+
+När sker utskrifterna?
+
+När allokeras variablerna?
+
+\end{Slide}
+
 
 
 \Subsection{Funktioner är objekt}
@@ -211,16 +395,37 @@ Lat evaluering är en viktig princip inom funktionsprogrammering som möjliggör
 \begin{Slide}{Funktioner är äkta objekt i Scala}
 Scala visar hur man kan \Alert{förena} \Eng{unify} \\ \Emph{objekt-orientering} och \Emph{funktionsprogrammering}: \\\vspace{0.5em}
 
-\textbf{\Large En funktion är ett objekt av funktionstyp\\ som har en \code{apply}-metod.}
+\textbf{En funktion är ett objekt som har en \code{apply}-metod.}
+\pause
+\begin{REPLnonum}
+scala> object öka {
+         def apply(x: Int) = x + 1
+       }
+
+scala> öka.apply(1)
+res0: Int = 2
+
+scala> öka(1)   // metoden apply behöver ej skrivas explicit
+res1: Int = 2
+\end{REPLnonum}
+\end{Slide}
+
+
+
+\begin{Slide}{Fördjupning: Äkta funktionsobjekt är av funktionstyp}
+Egentligen, mer precist:\\
+\textbf{En funktion är ett objekt \Alert{av funktionstyp} som har en \code{apply}-metod.}
 \pause
 \begin{REPLnonum}
 scala> object öka extends (Int => Int) {
          def apply(x: Int) = x + 1
        }
 
-
 scala> öka(1)
-res0: Int = 2
+res2: Int = 2
+
+scala> Vector(1,2,3).map(öka)
+res3: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
 
 scala> öka.   // tryck TAB
 andThen   apply   compose   toString
@@ -230,7 +435,7 @@ Mer om \code{extends} senare i kursen... %extends (Int => Int skrivs om till Fun
 
 
 
-\Subsection{SimpleWindow}
+\Subsection{Använda färdiga klasser och dokumentation}
 \begin{Slide}{Färdiga, enkla funktioner för att rita finns i klassen \texttt{cslib.window.SimpleWindow}}
 På labben ska du använda \code{cslib.window.SimpleWindow}
 \begin{itemize}
@@ -242,10 +447,16 @@ På labben ska du använda \code{cslib.window.SimpleWindow}
 \end{itemize}
 \pause
 \begin{REPLnonum}
-$ scala -cp cslib.jar
+> scala -cp cslib.jar
 scala> val w = new SimpleWindow(200,200,"hejsan")
 \end{REPLnonum}
 \pause Studera dokumentationen för \code{cslib.window.SimpleWindow} här: \url{http://cs.lth.se/pgk/api/}
+\end{Slide}
+
+
+
+\begin{Slide}{Använda dokumentation}
+\TODO Scaladoc scala api, javadoc simplewindow
 \end{Slide}
 
 
@@ -254,17 +465,17 @@ scala> val w = new SimpleWindow(200,200,"hejsan")
 
 \Subsection{Veckans övning och laboration}
 
-\begin{Slide}{Övning \texttt{functions}}\SlideFontTiny
+\begin{Slide}{Övning \texttt{objects}}\SlideFontTiny
 \setlength{\leftmargini}{0pt}
 \begin{itemize}
-\input{../compendium/modules/w03-functions-exercise-goals.tex}
+\input{../compendium/modules/w04-objects-exercise-goals.tex}
 \end{itemize}
 \end{Slide}
 
 \begin{Slide}{Lab \texttt{blockmole}}%\SlideFontTiny
 %\setlength{\leftmargini}{0pt}
 \begin{itemize}
-\input{../compendium/modules/w03-functions-lab-goals.tex}
+\input{../compendium/modules/w04-objects-lab-goals.tex}
 \end{itemize}
 
 \end{Slide}
