@@ -28,7 +28,7 @@
 \begin{itemize}
   \item Vilken \Emph{data} sparas av sköldpaddan?
   \pause
-  \item[] position, färg på pennan, vinkel, pennans bredd, ...
+  \item[] position, rikting, pennfärg, ...
 
   \item Vilka \Emph{operationer} kan man be sköldpaddan att utföra?
 
@@ -41,8 +41,8 @@
 \item Terminologi:
 \begin{itemize}
   \item objektets data sparas i variabler som kallas \Alert{attribut}
-  \item operationerna är funktioner i objektet och kallas \Alert{metoder}
   \item alla variabelvärden utgör tillsammans objektets \Alert{tillstånd}
+  \item operationerna är funktioner i objektet och kallas \Alert{metoder}
   \item attribut, metoder (och annat i objektet) kallas \Alert{medlemmar}
 \end{itemize}
 \end{itemize}
@@ -60,7 +60,9 @@ Olika saker man kan göra med objekt:
   \code{ref.medlem}
   \pause
   \item (\Emph{avallokera}): att frigöra minne för objekt som inte längre används;
-  detta \Alert{sker automatiskt} i Scala och Java, men i andra språk t.ex. C++ får man själv hålla reda på avallokering, vilket är knepigt och det blir lätt svåra buggar.
+  detta \Alert{sker automatiskt} i Scala och Java, men i många andra språk,
+  t.ex. C++, får man själv hålla reda på avallokering,
+  vilket är knepigt och det blir lätt svåra buggar.
 \end{itemize}
 \end{Slide}
 
@@ -73,18 +75,21 @@ Det finns flera olika sätt att skapa objekt:
 \begin{Code}
 Vector(1,2,3)   // skapar ett Vector-objekt
 \end{Code}
+{\SlideFontSmall En funktion som skapar objekt kallas \Alert{fabriksmetod}.\vspace{0.5em}}
 
 \item Använda \code{new} (mer om detta senare: då behövs en klass):
 \begin{Code}
 new SimpleWindow(600, 400, "fönstertitel")  // skapar ett fönsterobjekt
 \end{Code}
-{\SlideFontSmall Med upprepad användning av \code{new} kan man skapa \Alert{många upplagor} av samma typ av objekt.\vspace{0.5em}}
+{\SlideFontSmall Med \code{new} kan man skapa \Alert{många upplagor} av samma typ av objekt.\vspace{0.5em}}
 
 \item Deklarera ett \Emph{singelobjekt} med nyckelordet \code{object}
-\begin{itemize}
-  \item Ett singelobjekt finns i exakt \Alert{en} upplaga och
-  \item allokeras \Alert{automatisk} första gången man refererar objektet; \\
+\begin{itemize}\SlideFontSmall
+  \item Ett singelobjekt finns i exakt \Alert{en} upplaga.
+  \item Det allokeras \Alert{automatisk} första gången man refererar objektet; \\
   man behöver inte, och kan inte, skriva \code{new}.
+  \pause
+  \item Medlemmar i ett Scala-singelobjekt motsvarar \jcode{static}-medlemmar i en Java/C++/C\#-klass.
 \end{itemize}
 \end{itemize}
 \end{Slide}
@@ -142,7 +147,10 @@ object Highscore {
 
 \begin{Slide}{Punktnotation, tillståndsförändring med tilldelning}
 \begin{REPLnonum}
-Highscore.highscore = 42
+scala> Highscore.isHighscore(5)
+res0: Boolean = true
+
+scala> Highscore.highscore = 42
 \end{REPLnonum}
 \pause
 \begin{tikzpicture}[font=\large\sffamily]
@@ -168,16 +176,55 @@ Highscore.highscore = 42
 \end{Slide}
 
 
-\begin{Slide}{Inkapsling: att dölja interna delar}\SlideFontSmall
-Med nyckelordet \code{private} döljs interna delar för omvärlden.\\
-Privata delar kan bara refereras innifrån objektet.
+\begin{Slide}{Punktnotation och operatornotation}
+Punktnotation på formen\\~\\
+\code{objekt.metod(argument)}
+\\~\\kan även skrivas med \Emph{operatornotation}:\\~\\
+\code{objekt metod argument}
+\\~\\Exempel:\\
+\code{1 + 2}\\
+\code{Highscore isHigscore 1000}
+
+\end{Slide}
+
+
+\begin{Slide}{Namnrymd och skuggning}
+\begin{itemize}\SlideFontSmall
+  \item En \Emph{namnrymd}\footnote{\url{https://sv.wikipedia.org/wiki/Namnrymd}}  \Eng{name space} är en omgivning (kontext) i vilken alla namn är unika. Genom att skapa flera olika namnrymder
+  kan man undvika ''\Alert{krockar}'' mellan lika namn med olika betydelser (homonymer). \\
+  Exempel: mejladresser \code{kim@företag1.se}  ~$\neq$~  \code{kim@företag2.se}
+  \item Medlemmarna i ett singelobjekt finns i en egen namnrymd,
+  där alla namn måste vara unika. De ''krockar'' inte med namn ''utanför'' objektet. Dock kan det förekomma \Alert{skuggning} \Eng{shadowing}:
+\end{itemize}
 \begin{Code}
-object Highscore {
-  private var highscore = 0    // syns ej utåt
-  def isHighscore(points: Int): Boolean = points > highscore
-  def update(points: Int): Unit = if (isHigscore) highscore = points
+object Game {
+
+  val highscore = 42   // ett annat värde än Game.Highscore.highscore 
+
+  object Highscore {
+    var highscore = 0  // ett annat värde än Game.highscore
+    def isHighscore(points: Int): Boolean = points > highscore
+  }
 }
 \end{Code}
+
+\end{Slide}
+
+
+
+\begin{Slide}{Inkapsling: att dölja interna delar}\SlideFontSmall
+Med nyckelordet \code{private} döljs interna delar för omvärlden.
+Privata medlemmar kan bara refereras \emph{innifrån} objektet.
+Denna princip kallas \Emph{inkapsling} \Eng{encapsulation}.
+\begin{Code}
+object Highscore {
+  private var myHighscore = 0        // namnet myHighscore syns ej utåt
+  def highscore: Int = myHighscore   // en s.k. getter ger ett attributvärde
+  def isHighscore(points: Int): Boolean = points > myHighscore
+  def update(points: Int): Unit = if (isHigscore) myHighscore = points
+}
+\end{Code}
+\pause
 Varför har man nytta av detta?
 \begin{itemize}
   \item Förhindra att man av misstag ändrar objekts tillstånd på fel sätt.
@@ -190,6 +237,31 @@ Nackdelar:
   \item Begränsar användningen, har ej tillgång till alla delar.
   \item Svårare att experimentera med ett API medan man försöker förstå det.
 \end{itemize}
+\end{Slide}
+
+
+
+\begin{Slide}{Idiom: Privata variabler med understreck vid ''krock''}\SlideFontSmall
+\Emph{Idiom}: (d.v.s ett typiskt, allmänt accepterat sätt att skriva kod)
+\begin{itemize}
+  \item Om namnet på en privat variabel krockar med namnet på en getter
+  brukar man börja det privata namnet med ett understreck:
+\end{itemize}
+
+\begin{Code}
+object Highscore {
+  private var _highscore = 0
+  def highscore: Int = _highscore
+  def isHighscore(points: Int): Boolean = points > _highscore
+  def update(points: Int): Unit = if (isHigscore) _highscore = points
+}
+\end{Code}
+
+\pause
+
+(Detta problem uppkommer inte i Java m.fl. språk, där metoder och attribut finns i \emph{olika} namnrymder.
+Men i Scala har man valt att principen om \Emph{enhetlig access} ska gälla; alla medlemmar finns därmed i en gemensam namnrymd.)
+
 \end{Slide}
 
 
@@ -216,6 +288,11 @@ Nackdelar:
 \end{Slide}
 
 
+\begin{Slide}{Exempel: paket}
+\TODO
+\end{Slide}
+
+
 
 \begin{Slide}{Exempel: Bankkonto} \SlideFontSmall
 \begin{Code}[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]
@@ -237,8 +314,8 @@ res0: Boolean = true
 
 
 
-\begin{Slide}{Vad är ett tillstånd?}
-Ett objekts \Emph{tillstånd} är den samlade uppsättningen av värden av alla de variabler som finns i objektet.
+\begin{Slide}{Exempel: tillstånd, attribut}
+Ett objekts \Emph{tillstånd} är den samlade uppsättningen av värden av alla de attribut som finns i objektet.
 \begin{Code}[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]
 object mittBankkonto {
   val kontonr: Long        = 1234567L
@@ -304,16 +381,103 @@ res1: Int = -24000
 
 
 
+\Subsection{Tupler}
 
+\begin{Slide}{Vad är en tupel?}\SlideFontSmall
 
-\begin{Slide}{Namnrymd \Eng{name space}, synlighet och skuggning}
-\TODO
+\begin{itemize}
+\item En tupel samlar $n$ st objekt i en enkel datastruktur med koncis syntax; \\
+använd helt enkelt parenteser och kommatecken: \code{(1,'a',"hej")}
+\item Elementen kan alltså vara av \Alert{olika} typ.
+
+\item
+\code{(1,'a',"hej")} är en \Emph{3-tupel} av typen: \code{(Int, Char, String)}
+
+\pause
+
+\item Du kan komma åt de enskilda elementen med \Emph{\code{_1}}, \Emph{\code{_2}}, ...  \code{_}$n$
+
+\begin{REPL}
+scala> val t = ("hej", 42, math.Pi)
+t: (String, Int, Double) = (hej,42,3.141592653589793)
+
+scala> t._1
+res0: String = hej
+
+scala> t._2
+res1: Int = 42
+\end{REPL}
+
+\pause
+
+\item Tupler är praktiska när man inte vill ta det lite större arbetet att skapa en egen klass.
+(Men med klasser kan man göra mycket mer än med tupler.)
+
+\item I Scala kan du skapa tupler upp till en storlek av 22 element.
+\\ (Behöver du fler element, använd i stället en samling, t.ex. \code{Vector}.)
+
+\end{itemize}
+
 \end{Slide}
 
 
-\begin{Slide}{Tupler}
-\TODO
+\begin{Slide}{Tupler som parametrar och returvärde.}\SlideFontSmall
+
+\begin{itemize}
+
+\item Tupler är smidiga som \Emph{parametrar} om man vill kombinera värden som hör ihop, till exempel
+ x- och y-värdena i en punkt: \code{(3, 4)}
+\pause
+\item Tupler är smidiga när man på ett enkelt och typsäkert sätt
+vill låta en funktion \Emph{returnera mer än ett värde}.
+
+\begin{REPL}
+scala> def längd(p: (Double, Double)): Double = math.hypot(p._1, p._2)
+
+scala> def vinkel(p: (Double, Double)): Double = math.atan2(p._1, p._2)
+
+scala> def polär(p: (Double, Double)) = (längd(p), vinkel(p))
+
+scala> polär((3,4))
+res2: (Double, Double) = (5.0,0.6435011087932844)
+
+\end{REPL}
+\vspace{0.5em}
+\item Om typerna passar kan man skippa dubbla parenteser vid \Emph{ensamt tupel-argument}:
+\begin{REPL}
+scala> polär(3,4)
+res3: (Double, Double) = (5.0,0.6435011087932844)
+\end{REPL}
+\item[] {\SlideFontTiny\href{https://sv.wikipedia.org/wiki/Pol\%C3\%A4ra_koordinater}{https://sv.wikipedia.org/wiki/Polära\_koordinater}}
+
+
+\end{itemize}
 \end{Slide}
+
+
+
+\begin{Slide}{Ett smidigt sätt att skapa 2-tupler med metoden \texttt{->}}
+Det finns en metod vid namn \code{->} som kan användas på objekt av \Alert{godtycklig} typ för att \Emph{skapa par}:
+
+\vspace{0.8em}
+\begin{REPL}
+scala> ("Ålder", 42)
+res0: (String, Int) = (Ålder,42)
+
+scala> "Ålder".->(42)
+res1: (String, Int) = (Ålder,42)
+
+scala> "Ålder" -> 42
+res2: (String, Int) = (Ålder,42)
+
+scala> Vector("Ålder" -> 42, "Längd" -> 178, "Vikt" -> 65)
+res3: scala.collection.immutable.Vector[(String, Int)] =
+        Vector((Ålder,42), (Längd,178), (Vikt,65))
+
+
+\end{REPL}
+\end{Slide}
+
 
 
 
@@ -435,7 +599,18 @@ Mer om \code{extends} senare i kursen... %extends (Int => Int skrivs om till Fun
 
 
 
-\Subsection{Använda färdiga klasser och dokumentation}
+\Subsection{Använda färdiga klasser}
+
+\begin{Slide}{Vad är en klass?}
+\TODO
+\end{Slide}
+
+
+\begin{Slide}{Vad är en jar-fil?}
+\TODO
+\end{Slide}
+
+
 \begin{Slide}{Färdiga, enkla funktioner för att rita finns i klassen \texttt{cslib.window.SimpleWindow}}
 På labben ska du använda \code{cslib.window.SimpleWindow}
 \begin{itemize}
