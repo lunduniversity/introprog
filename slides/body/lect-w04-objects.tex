@@ -1,7 +1,7 @@
 %!TEX encoding = UTF-8 Unicode
 %!TEX root = ../lect-w04.tex
 
-\Subsection{Objekt}
+\Subsection{Vad är ett objekt?}
 
 
 
@@ -53,7 +53,8 @@
 \begin{Slide}{Deklarera, allokera, referera}
 Olika saker man kan göra med objekt:
 \begin{itemize}
-  \item \Emph{deklarera}: att skriva kod som beskriver objekt
+  \item \Emph{deklarera}: att skriva kod som beskriver objekt; \\
+  finns flera sätt: singelobjekt, klass, tupel, ...
   \item \Emph{allokera}: att skapa plats i minnet för objektet vid körtid
   \item \Emph{referera}: att använda objektet via ett namn;\\
   man kommer åt innehållet i ett objekt med \Alert{punktnotation}: \\
@@ -67,7 +68,7 @@ Olika saker man kan göra med objekt:
 \end{Slide}
 
 
-\begin{Slide}{Allokera objekt}
+\begin{Slide}{Allokera objekt}\SlideFontSmall
 Det finns flera olika sätt att skapa objekt:
 \begin{itemize}
 
@@ -91,10 +92,11 @@ new SimpleWindow(600, 400, "fönstertitel")  // skapar ett fönsterobjekt
   \pause
   \item Medlemmar i ett Scala-singelobjekt motsvarar \jcode{static}-medlemmar i en Java/C++/C\#-klass.
 \end{itemize}
+\item Använda en \Emph{tupel}, exempel: \code{val p = (200, 300)}
 \end{itemize}
 \end{Slide}
 
-
+\Subsection{Singelobjekt}
 
 \begin{Slide}{Vad är ett singelobjekt?}
 \begin{itemize}
@@ -199,7 +201,7 @@ Punktnotation på formen\\~\\
 \begin{Code}
 object Game {
 
-  val highscore = 42   // ett annat värde än Game.Highscore.highscore 
+  val highscore = 42   // ett annat värde än Game.Highscore.highscore
 
   object Highscore {
     var highscore = 0  // ett annat värde än Game.highscore
@@ -288,13 +290,10 @@ Men i Scala har man valt att principen om \Emph{enhetlig access} ska gälla; all
 \end{Slide}
 
 
-\begin{Slide}{Exempel: paket}
-\TODO
-\end{Slide}
 
 
 
-\begin{Slide}{Exempel: Bankkonto} \SlideFontSmall
+\begin{Slide}{Exempel: singelobjektet med tillstånd} \SlideFontSmall
 \begin{Code}[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]
 object mittBankkonto {
   val kontonr: Long        = 1234567L
@@ -378,10 +377,58 @@ res1: Int = -24000
 \end{tikzpicture}
 \end{Slide}
 
+\Subsection{Paket}
+
+
+\begin{Slide}{Deklarera paket}
+Med nyckelordet \code{package} först i en kodfil ges alla deklarationer en gemensam namnrymd.\\
+\vspace{1em}
+Denna kod ligger i filen f1.scala:
+\begin{Code}
+package mittpaket
+
+object A {
+  def main(args: Array[String]) : Unit = B.hej
+}
+\end{Code}
+
+Denna kod ligger i filen f2.scala:
+\begin{Code}
+package mittpaket
+
+object B {
+  def hej = println("hej mittpaket")
+}
+\end{Code}
+Singelobjekten \code{A} och \code{B} finns båda i namnrymden \code{mittpaket}.
+\end{Slide}
+
+\begin{Slide}{Kompilera paket}\SlideFontSmall
+Paketdeklarationer medför att kompilatorn placerar bytekodfiler i en katalog med samma namn som paketet:
+\begin{REPL}
+> scalac f1.scala f2.scala     // samkompilering av två filer
+> ls
+f1.scala  f2.scala  mittpaket
+> ls mittpaket
+A.class  A$.class  B.class  B$.class
+> scala mittpaket.A
+hej mittpaket
+\end{REPL}
+\pause
+Idiom, syntax och semantik:
+\begin{itemize}
+  \item Paketnamn brukar bestå av enbart små bokstäver.
+  \item Om paketnamn innehåller punkt(er), skapas nästlade underpaket, exempel:  \code{p1.p2.p3} kompilerar kod till katalogen \code{p1/p2/p3}
+  \item Det är ovanligt, men man kan i Scala ha flera paket och även nästlade paket i \Alert{samma} kodfil
+  om man använder klammerparenteser, exempel:
+  \code|package p1 { object A; package p2 { object B }}|
+\end{itemize}
+\end{Slide}
 
 
 
 \Subsection{Tupler}
+
 
 \begin{Slide}{Vad är en tupel?}\SlideFontSmall
 
@@ -605,6 +652,13 @@ Mer om \code{extends} senare i kursen... %extends (Int => Int skrivs om till Fun
 \TODO
 \end{Slide}
 
+\begin{Slide}{Använda klassen \code{Color}}
+\TODO
+\end{Slide}
+
+\begin{Slide}{Använda dokumentation}
+\TODO Scaladoc scala api, javadoc simplewindow
+\end{Slide}
 
 \begin{Slide}{Vad är en jar-fil?}
 \TODO
@@ -629,10 +683,6 @@ scala> val w = new SimpleWindow(200,200,"hejsan")
 \end{Slide}
 
 
-
-\begin{Slide}{Använda dokumentation}
-\TODO Scaladoc scala api, javadoc simplewindow
-\end{Slide}
 
 
 \ifkompendium\else
