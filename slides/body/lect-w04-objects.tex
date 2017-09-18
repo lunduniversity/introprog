@@ -218,14 +218,14 @@ object Game {
 Med nyckelordet \code{private} döljs interna delar för omvärlden.
 Privata medlemmar kan bara refereras \emph{innifrån} objektet.
 Denna princip kallas \Emph{inkapsling} \Eng{encapsulation}.
-\begin{Code}
+\begin{CodeSmall}
 object Highscore {
   private var myHighscore = 0        // namnet myHighscore syns ej utåt
   def highscore: Int = myHighscore   // en s.k. getter ger ett attributvärde
   def isHighscore(points: Int): Boolean = points > myHighscore
-  def update(points: Int): Unit = if (isHigscore) myHighscore = points
+  def update(points: Int): Unit = if (isHighscore(points)) myHighscore = points
 }
-\end{Code}
+\end{CodeSmall}
 \pause
 Varför har man nytta av detta?
 \begin{itemize}
@@ -250,14 +250,14 @@ Nackdelar:
   brukar man börja det privata namnet med ett understreck:
 \end{itemize}
 
-\begin{Code}
+\begin{CodeSmall}
 object Highscore {
   private var _highscore = 0
   def highscore: Int = _highscore
   def isHighscore(points: Int): Boolean = points > _highscore
-  def update(points: Int): Unit = if (isHigscore) _highscore = points
+  def update(points: Int): Unit = if (isHighscore(points)) _highscore = points
 }
-\end{Code}
+\end{CodeSmall}
 
 \pause
 
@@ -433,8 +433,8 @@ Idiom, syntax och semantik:
 \begin{Slide}{Vad är en tupel?}\SlideFontSmall
 
 \begin{itemize}
-\item En tupel samlar $n$ st objekt i en enkel datastruktur med koncis syntax; \\
-använd helt enkelt parenteser och kommatecken: \code{(1,'a',"hej")}
+\item En $n$-tupel är ett objekt som samlar $n$ st objekt i en enkel datastruktur med koncis syntax; 
+du behöver bara parenteser och kommatecken för att skapa tupel-objekt: ~~\code{(1,'a',"hej")}
 \item Elementen kan alltså vara av \Alert{olika} typ.
 
 \item
@@ -598,7 +598,7 @@ När allokeras variablerna?
 \begin{itemize}
 \item \Emph{Imperativ programmering}: programmet är uppbyggt av sekvenser av olika satser som läser och \Alert{ändrar} tillstånd
 \item \Emph{Objektorienterad programmering}: en sorts imperativ programmering där programmet består av objekt som kapslar in tillstånd och erbjuder operationer som läser och \Alert{ändrar} tillstånd.
-\item \Emph{Funktionsprogrammering}: programmet är uppbyggt av samverkande (matematiska) funktioner som \Alert{undviker} föränderlig data och tillståndsändringar. Oföränderliga datastrukturer skapar effektiva program i kombination med lat evaluering och rekursion.
+\item \Emph{Funktionsprogrammering}: programmet är uppbyggt av samverkande (äkta) funktioner som \Alert{undviker} föränderlig data och tillståndsändringar. Oföränderliga datastrukturer skapar effektiva program i kombination med lat evaluering och rekursion.
 \end{itemize}
 \end{Slide}
 
@@ -649,11 +649,46 @@ Mer om \code{extends} senare i kursen... %extends (Int => Int skrivs om till Fun
 \Subsection{Använda färdiga klasser}
 
 \begin{Slide}{Vad är en klass?}
-\TODO class BankKonto
+En klass kan användas för att skapa många objekt av samma typ. Varje upplaga har sitt eget tillstånd och kallas en \Emph{instans} av klassen (mer om detta nästa vecka).
+\begin{Code}
+class BankKonto(val kontonr: Long, var saldo: Int)  {  // deklarera en klass
+  def ärSkuldsatt: Boolean = saldo < 0
+}
+\end{Code}
+\pause
+\begin{REPL}
+scala> val bk1 = new BankKonto(1234567L, 1000 )   // instansiera en klass
+bk1: BankKonto = BankKonto@5d7399f9
+
+scala> val bk2 = new BankKonto(6789012L, -200 )
+bk2: BankKonto = BankKonto@286855ea
+
+scala> bk1.saldo
+res0: Int = 1000
+
+scala> bk2.ärSkuldsatt
+res1: Boolean = true
+\end{REPL}
 \end{Slide}
 
-\begin{Slide}{Använda klassen \code{Color}}
-\TODO
+\begin{Slide}{Använda klassen \code{Color}}\SlideFontSmall
+\begin{itemize}
+\item I JDK8 (Java Development Kit version 1.8) finns 217 paket (moduler) och 4240 färdiga klasser.\footnote{\url{https://stackoverflow.com/questions/3112882/how-many-classes-are-there-in-java-standard-edition}} 
+
+\item En av dessa klasser heter \code{Color} och ligger i paketet \code{java.awt} och används för att representera RGB-färger med  heltalsattribut som beskriver andelen Rött, Grönt och Blått.
+\end{itemize}
+\begin{REPL}
+scala> val röd = new java.awt.Color(255, 0, 0)    //  en maximalt röd färg    
+
+scala> import java.awt.Color
+
+scala> Color.    // tryck TAB och se alla publika medelmmar
+\end{REPL}
+
+\begin{itemize}
+\item Använd klassen \code{java.awt.Color} på veckans övning.
+\end{itemize}
+
 \end{Slide}
 
 \begin{Slide}{Använda dokumentation}
