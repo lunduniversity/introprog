@@ -433,7 +433,7 @@ Idiom, syntax och semantik:
 \begin{Slide}{Vad är en tupel?}\SlideFontSmall
 
 \begin{itemize}
-\item En $n$-tupel är ett objekt som samlar $n$ st objekt i en enkel datastruktur med koncis syntax; 
+\item En $n$-tupel är ett objekt som samlar $n$ st objekt i en enkel datastruktur med koncis syntax;
 du behöver bara parenteser och kommatecken för att skapa tupel-objekt: ~~\code{(1,'a',"hej")}
 \item Elementen kan alltså vara av \Alert{olika} typ.
 
@@ -673,37 +673,107 @@ res1: Boolean = true
 
 \begin{Slide}{Använda klassen \code{Color}}\SlideFontSmall
 \begin{itemize}
-\item I JDK8 (Java Development Kit version 1.8) finns 217 paket (moduler) och 4240 färdiga klasser.\footnote{\url{https://stackoverflow.com/questions/3112882/how-many-classes-are-there-in-java-standard-edition}} 
+\item I JDK8 (Java Development Kit version 1.8) finns 217 paket (moduler) och 4240 färdiga klasser.
+\footnote{\SlideFontTiny\url{https://stackoverflow.com/questions/3112882/}}
 
-\item En av dessa klasser heter \code{Color} och ligger i paketet \code{java.awt} och används för att representera RGB-färger med  heltalsattribut som beskriver andelen Rött, Grönt och Blått.
+\item En av dessa klasser heter \code{Color} och ligger i paketet \code{java.awt} och används för att representera RGB-färger med ett tal som beskriver andelen Rött, Grönt och Blått.
 \end{itemize}
 \begin{REPL}
-scala> val röd = new java.awt.Color(255, 0, 0)    //  en maximalt röd färg    
+scala> val röd = new java.awt.Color(255, 0, 0)    //  en maximalt röd färg
 
-scala> import java.awt.Color
+scala> import java.awt.Color  // namnet Color tillgängligt i aktuell namnrymd
 
-scala> Color.    // tryck TAB och se alla publika medelmmar
+scala> Color.    // tryck TAB och se alla publika medlemmar
 \end{REPL}
-
+\pause
 \begin{itemize}
 \item Använd klassen \code{java.awt.Color} på veckans övning.
+\item Hur ska jag veta hur jag kan använda en färdig klass?
+\pause
+\begin{enumerate}\SlideFontTiny
+  \item Läs koden, visar ''insidan'' med all sin komplexitet; kan vara knepigt...
+  \item Läs \Emph{dokumentationen}, visar ''utsidan'' som är enklare (?) än ''insidan''
+  \item \Alert{Experimentera} med hjälp av REPL och/eller en IDE
+\end{enumerate}
 \end{itemize}
 
 \end{Slide}
 
-\begin{Slide}{Använda dokumentation}
-\TODO Scaladoc scala api, javadoc simplewindow
+\begin{Slide}{Skapa dokumentation}
+\code{scaladoc} är ett program som tar Scala-kod som indata och skapar en webbsajt med dokumentation.
+
+\vspace{2em}
+\begin{tikzpicture}[node distance=1.5cm,scale=0.8, every node/.style={transform shape}]
+\node (input) [startstop] {\texttt{src/*.scala}};
+
+\node(inptext) [right of=input, text width=4cm, scale=1.2,xshift=4.5cm]{en katalog \texttt{src} som innehåller \texttt{.scala}-filer};
+
+\node (scaladoc) [process, below of=input]
+{\texttt{scaladoc}};
+
+\node (output) [startstop, below of=scaladoc] {\texttt{index.html} ~~~med mera...};
+
+\node(outtext) [right of=output, text width=4cm, scale=1.2,xshift=4.5cm]{En webbsajt};
+
+
+\draw [arrow] (input) -- (scaladoc);
+\draw [arrow] (scaladoc) -- (output);
+\end{tikzpicture}
+
+\vspace{2em} För Java-kod finns motsvarande program som heter \code{javadoc}.
 \end{Slide}
 
+\begin{Slide}{Använda dokumentation för färdiga klasser.}
+\begin{itemize}
+  \item Dokumentation för standardbiblioteket i Scala finns här:  \\ \url{https://www.scala-lang.org/api/}
+  \item Övning: Leta upp dokumentationen för metoden \code{reduceLeft} i klassen \code{Vector}.
+  \item[]
+  \item Dokumentation för standardbiblioteket i Java finns här:  \\ \url{https://docs.oracle.com/javase/8/docs/api/}
+  \item Övning: Leta upp dokumentationen för \code{java.awt.Color}
+
+\end{itemize}
+\end{Slide}
+
+
 \begin{Slide}{Vad är en jar-fil?}
-\TODO
+\begin{itemize}
+  \item Förkortningen \Emph{jar} kommer från ''Java Archive''
+  \item En \Emph{jar}-fil följer ett standardiserat filformat och används för att \Alert{paketera flera filer} i en och samma fil, exempelvis:
+  \begin{itemize}
+    \item \texttt{.class}-filer med bytekod
+    \item resursfiler för en applikation t.ex. bilder \code{.png}, \code{.jpg}, etc
+    \item information om vilken klass som innehåller \code{main}-funktionen
+    \item etc.
+  \end{itemize}
+  \item En \code{.jar}-fil komprimeras på samma sätt som en \code{.zip}-fil.
+  \item Fördjupning för den intresserade:\\
+  {\SlideFontTiny\url{https://en.wikipedia.org/wiki/JAR_(file_format)}}
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Vad är \emph{classpath}?}\SlideFontSmall
+\begin{itemize}
+  \item Hur hittar kompilatorn färdiga moduler?
+\pause
+\item Kompilatorerna \code{scalac} och \code{javac} och programmen \code{scala} och \code{java} som kör igång JVM använder \Alert{en lista med filsökvägar} kallad \Emph{classpath} när de söker efter färdiga moduler.
+\pause
+\item Aktuellt bibliotek samt standardbiblioteket ligger per default på classpath.
+\item Med hjälp av optionen \code{-classpath} eller kortare \code{-cp} kan annan classpath anges.
+\item En lista med bibliotek separeras med kolon.\\(Windows: semikolon)
+\item Det går bra att lägga jar-filer till listan med filsökvägar classpath.
+\item Exempel: (punkt används för att ange aktuellt bibliotek)
+\begin{REPLnonum}
+scala -cp "lib/cslib.jar:." Main
+\end{REPLnonum}
+\end{itemize}
 \end{Slide}
 
 
 \begin{Slide}{Färdiga, enkla funktioner för att rita finns i klassen \texttt{cslib.window.SimpleWindow}}
 På labben ska du använda \code{cslib.window.SimpleWindow}
 \begin{itemize}
-\item Paketet \code{cslib} innehåller paketet \code{window} som innehåller Java-klassen \code{SimpleWindow}.
+\item Jarfilen \code{cslib.jar} innehåller paketet \code{cslib} som innehåller paketet \code{window} som innehåller Java-klassen \code{SimpleWindow}.
 %\item En \Emph{klass} är en ''mall'' för att göra \Emph{objekt}.
 \item Med \code{SimpleWindow} kan man skapa ritfönster.
 %\item När man skapar ett objekt från en klass använder man nyckelordet \code{new}.
