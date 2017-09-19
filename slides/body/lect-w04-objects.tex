@@ -531,16 +531,16 @@ res3: scala.collection.immutable.Vector[(String, Int)] =
 \Subsection{Fördröjd initialisering}
 
 \begin{Slide}{Lata variabler och fördröjd initialisering}
-Med nyckelordet \code{lazy} före \code{val} skapas en s.k. ''lat'' \Eng{lazy} variabel.
+Med nyckelordet \code{lazy} före \code{val} sker ''\Emph{lat}'' evaluering av initialiseringsuttrycket. Motsatsen (det normala i Scala) kallas \Alert{strikt} evaluering.
 \begin{REPL}
-scala> val striktVektor = Vector.fill(1000000)(math.random)
-striktVektor: scala.collection.immutable.Vector[Double] =
+scala> val strikt = Vector.fill(1000000)(math.random)
+strikt: scala.collection.immutable.Vector[Double] =
  Vector(0.7583305221813246, 0.9016192590993339, 0.770022134260162, 0.15667718184929746, ...
 
-scala> lazy val latVektor = Vector.fill(1000000)(math.random)
-latVektor: scala.collection.immutable.Vector[Double] = <lazy>
+scala> lazy val lat = Vector.fill(1000000)(math.random)
+lat: scala.collection.immutable.Vector[Double] = <lazy>
 
-scala> latVektor
+scala> lat
 res0: scala.collection.immutable.Vector[Double] =
   Vector(0.5391685014341797, 0.14759775960530275, 0.722606095900537, 0.9025572787055386, ...
 \end{REPL}
@@ -548,19 +548,6 @@ res0: scala.collection.immutable.Vector[Double] =
 En \code {lazy val} initialiseras \Alert{inte} vid deklarationen utan när den \Alert{refereras första gången}. Yttrycket som anges i deklarationen evalueras med s.k. \Emph{fördröjd evaluering} (även ''lat'' evaluering).
 \end{Slide}
 
-\begin{Slide}{Vad är egentligen skillnaden mellan \texttt{val}, \texttt{var}, \texttt{def} och \texttt{lazy val}?}
-\begin{Code}[basicstyle=\ttfamily\fontsize{8}{11}\selectfont]
-object slump {
-  val förAlltidSammaReferens  = math.random
-  var kanÄndrasMedTilldelning = math.random
-  def evaluerasVidVarjeAnrop  = math.random
-  lazy val fördröjdInit       = Vector.fill(1000000)(math.random)
-}
-\end{Code}
-\vspace{1em}\pause
-Lat evaluering är en viktig princip inom funktionsprogrammering som möjliggör effektiva, oföränderliga datastrukturer där element allokeras först när de behövs. \\
-\href{https://en.wikipedia.org/wiki/Lazy_evaluation}{en.wikipedia.org/wiki/Lazy\_evaluation}
-\end{Slide}
 
 
 
@@ -588,6 +575,25 @@ När sker utskrifterna?
 När allokeras variablerna?
 
 \end{Slide}
+
+
+
+
+\begin{Slide}{Vad är egentligen skillnaden mellan \texttt{val}, \texttt{var}, \texttt{def} och \texttt{lazy val}?}
+\begin{Code}[basicstyle=\ttfamily\fontsize{8}{11}\selectfont]
+object exempel {
+  println("hej exempel")
+  val förAlltidSammaReferens  = { println("hej val"); math.random }
+  var kanÄndrasMedTilldelning = { println("hej var"); math.random }
+  def evaluerasVidVarjeAnrop  = { println("hej def"); math.random }
+  lazy val fördröjdInit  = { println("hej lazy val"); math.random }
+}
+\end{Code}
+\vspace{1em}\pause
+Lat evaluering är en viktig princip inom funktionsprogrammering som möjliggör effektiva, oföränderliga datastrukturer där element allokeras först när de behövs. \\
+\href{https://en.wikipedia.org/wiki/Lazy_evaluation}{en.wikipedia.org/wiki/Lazy\_evaluation}
+\end{Slide}
+
 
 
 
