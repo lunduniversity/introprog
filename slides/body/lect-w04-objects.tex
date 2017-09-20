@@ -705,6 +705,82 @@ scala> Color.    // tryck TAB och se alla publika medlemmar
 
 \end{Slide}
 
+\begin{Slide}{Import av alla namn i en viss modul}\SlideFontSmall
+\begin{itemize}
+\item Man kan importera \Alert{alla} namn i en viss modul (singelobjekt eller paket). Detta kallas på engelska för \emph{wildcard import}.
+
+\begin{itemize}\SlideFontTiny
+  \item Syntax Scala:  \code|import p1.p2._|
+  \item Syntax Java:~  \code|import p1.p2.*|
+\end{itemize}
+
+\item Exempel:
+\begin{REPL}
+scala> import java.awt._  // importera ALLA namn i paketet awt
+\end{REPL}
+\item \Emph{Fördelar}:
+\begin{enumerate}\SlideFontTiny
+  \item Slipper skriva import på varje enskilt namn.
+  \item De abstraktioner som är tänkta att användas tillsammans blir alla synliga i aktuell namnrymd \Eng{in scope}, i Scala t.ex. implicita värden m.m.
+\end{enumerate}
+\item \Alert{Nackdelar}:
+\begin{enumerate}\SlideFontTiny
+  \item Kan ge namnkrockar och svåra buggar vid namnskuggning.
+  \item Man ''skräpar ner'' sin namnrymd med namn som kanske inte är tänkta att används, men som vid misstag, t.ex. felstavning, ändå ger effekt.
+  \item Man kan inte genom att studera import-deklarationerna se exakt vilka namn som används, vilket kan göra det svårare att förstå vad koden gör.
+\end{enumerate}
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Namnbyte vid import}
+\begin{itemize}
+\item Man kan undvika namnkrockar med \Emph{namnbyte vid import}.
+\item Syntax:  \code|import p1.p2.{befintligtNamn => nyttNamn}|
+\item Exempel:
+\begin{REPL}
+scala> import java.awt.{Color => JColor}  // importera och byt namn
+
+scala> val grön = new JColor(0, 255, 0)   // skapa instans med nya namnet
+grön: java.awt.Color = java.awt.Color[r=0,g=255,b=0]
+\end{REPL}
+\item Detta går inte att göra i Java 8.
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Exkludera (gömma) namn vid import}
+\begin{itemize}
+\item Man kan undvika namnkrockar vid import genom att exkludera vissa namn \Eng{import hiding}.
+\item Syntax:  \code|import p1.p2.{exkluderaMig => _}|
+\item Exempel:
+\begin{REPL}
+scala> import java.awt.{_, Event => _}  // importera allt UTOM Event
+\end{REPL}
+\item Kan kombineras med namnbyte:
+\begin{REPL}
+scala> import java.awt.{_, Event => _, Color => JColor}
+\end{REPL}
+\item Detta går inte att göra i Java 8.
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Lokal import-deklaration}
+\begin{itemize}
+\item Man kan begränsa ''nedskräpningen'' av namnrymden genom att göra import-deklarationer så lokalt som möjligt, till exempel i ett objekt eller i en funktionskropp.
+\item Exempel:
+\begin{Code}
+object A {
+  def x = {
+    import java.awt.Color
+    /* ... namnet Color syns bara lokalt i detta block */
+  }
+}
+\end{Code}
+\item Detta går inte i Java 8, där import ska stå i början av filen.
+\end{itemize}
+\end{Slide}
+
+
 \begin{Slide}{Skapa dokumentation}
 \code{scaladoc} är ett program som tar Scala-kod som indata och skapar en webbsajt med dokumentation.
 
