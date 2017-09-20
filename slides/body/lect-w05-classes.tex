@@ -22,7 +22,8 @@
   \item \Emph{attribut}, kallas även fält \Eng{field}: \code{val}, \code{lazy val}, \code{var}
   \item \Emph{metoder}, kallas även operationer: \code{def}
   \end{itemize}
-\item Varje instans har sin uppsättning värden på attributen (fälten).
+\item Varje instans har sin uppsättning värden på attributen
+vilka tillsammans utgör instansens \Emph{tillstånd}.
 \end{itemize}
 
 \end{Slide}
@@ -33,12 +34,13 @@
 
 \begin{multicols}{2}
 
-Metafor: En klass liknar en \Emph{stämpel}
+\emph{Metafor:} En klass liknar en \Emph{stämpel}
 
 \begin{itemize}
-\item En stämpel kan tillverkas -- motsvarar deklaration av klassen.
- \item Det händer inget förrän man stämplar -- motsvarar \code{new}.
-\item Då skapas avbildningar -- motsvarar instanser av klassen.
+\item En stämpel kan \Alert{tillverkas} -- motsvarar \Emph{deklaration} av klassen.
+ \item Det händer inget förrän man \Alert{stämplar} -- motsvarar \code{new}.
+\item Då skapas \Alert{avbildningar} av stämpeln -- motsvarar \Emph{allokering av ett objekt} som är en \Emph{instans} av klassen.
+\item Allokering kallas också \Emph{konstruktion} och funktionen/koden som gör själva allokeringen kallas \Emph{konstruktor}.
 \end{itemize}
 
 
@@ -207,6 +209,34 @@ val instansReferens = new Klassnamn(42, "hej")
 
 
 
+\begin{Slide}{Instansprivata klassparametrar}\SlideFontSmall
+\setlength{\leftmargini}{0pt}
+
+\begin{itemize}
+\item Parametrar som inte föregås av modifierare (t.ex. private val, val, var) blir \Emph{attribut} som är \code{ private[this] val } och bara är synliga i \Alert{denna} instans.
+\item Exempel på konsekvensen av \code{private[this]}:
+\begin{REPL}
+scala> class C(a: Int){ def add(other: C): Int = a + other.a }
+error: value a is not a member of C
+
+// betyder samma sak som:
+
+scala> class C(private[this] a: Int){ def add(other: C): Int = a + other.a }
+error: value a is not a member of C
+\end{REPL}
+\item Men detta fungerar fint:
+\begin{REPL}
+scala> class D(val a: Int){ def add(other: D): Int = a + other.a }
+
+scala> (new D(42)).add(new D(43))
+res0: Int = 85
+\end{REPL}
+...eftersom modifieraren \code{val} framför klassparameter ger publik synlighet.
+\item Vad händer om du skriver \code{private val} framför klassparametern \code{a} ovan?
+\end{itemize}
+\end{Slide}
+
+
 
 
 
@@ -220,9 +250,9 @@ class Complex(val re: Double, val im: Double){
   override def toString = s"$re + $im$imSymbol"
 }
 \end{Code}
-
+Klassparametrarna är parametrar till den s.k. \Emph{primärkonstruktorn}.
 \begin{REPL}
-scala> val c1 = new Complex(3, 4)
+scala> val c1 = new Complex(3, 4)  // konstruktion av instans av Complex
 c1: Complex = 3.0 + 4.0i
 
 scala> val polarForm = (c1.r, c1.fi)
@@ -349,7 +379,7 @@ error:
 \begin{Slide}{Kompanjonsobjekt kan förhindra direkt instansiering}\SlideFontSmall
 \setlength{\leftmargini}{0pt}
 \begin{itemize}
-\item Ett \Emph{kompanjonsobjekt} är ett objekt som ligger i samma kodfil som en klass och har samma namn som klassen.
+\item Ett \Emph{kompanjonsobjekt} är ett objekt som ligger i samma kodfil som en klass och har \Alert{samma namn} som klassen.
 
 \item Medlemmar i ett kompanjonsobjekt \Alert{får accessa privata} medlemmar i kompanjonsklassen (och vice versa) och kompanjonsobjektet får därför accessa privat konstruktor och kan göra \code{new}.
 \begin{Code}
@@ -543,9 +573,11 @@ res0: Complex = 3.0 + 4.0j
 
 \item I Scala \Alert{genererar} kompilatorn en \Emph{primärkonstruktor} med maskinkod som initialiserar alla attribut baserat på klassparametrar och \code{val}- och \code{var}-deklarationer.
 
-\item I Java \Alert{måste} man \Alert{själv} skriva alla konstruktorer med speciell syntax och göra alla initialiseringar själv. Man kan ha många olika alternativa konstruktorer i Java.
+\pause
 
-\item I Scala \Emph{kan} man också skriva egna \Emph{alternativa konstrukturer} med speciell syntax, men det är \Alert{ovanligt}, eftersom man har möjligheten med fabriksmetoder i kompanjonsobjekt och default-argument (saknas i Java).
+\item I Java får man \Alert{explicit} skriva alla konstruktorer med speciell syntax och göra alla initialiseringar själv. Man kan ha många olika alternativa konstruktorer i Java.
+
+\item I Scala \Emph{kan} man också skriva egna alternativa s.k. \Emph{hjälpkonstrukturer}, men det är \Alert{ovanligt}, eftersom man har möjligheten med fabriksmetoder i kompanjonsobjekt och default-argument (saknas i Java).
 \end{itemize}
 \end{Slide}
 
