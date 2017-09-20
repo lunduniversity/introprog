@@ -1,7 +1,7 @@
 object Main extends App {
 
   import StringExtras._
-
+  val nbrOfReadyLectures = 4   // ***** BUMP when new lectures are ready
 
   // Check which dir we are in and if parent to plan then fix prefix
   lazy val here = ".".toPath.toAbsolutePath.getParent
@@ -21,7 +21,6 @@ object Main extends App {
 
   object modulePlan extends Plan with Table {
     override val heading = Seq("W", "Modul", "Innehåll")
-    val nbrOfReadyLectures = 2
     def toHtmlPatched: String = { // a brutal HACK to insert links to lectures
       var htmlSoup = toHtml
       column("Modul").zipWithIndex.take(nbrOfReadyLectures).foreach{ case (m, i) =>

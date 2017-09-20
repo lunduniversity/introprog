@@ -1,6 +1,12 @@
 package object genquiz {
 
-  type QuizName = String   // to understand these types see data in QuizData.scala
+  // to understand the types below, see data in QuizData.scala
+
+  case class QuizID(name: String, seed: Int)
+  object QuizID {
+    def apply(name: String) = new QuizID(name, name.hashCode)
+  }
+
   type Term     = String
   type Defi     = String
   type Concept  = (Term, Defi)
@@ -18,8 +24,8 @@ package object genquiz {
     def replaceDefiNumberWithOrdererdIndex(cs: Concepts): Concepts =
       cs.zipWithIndex.map{ case (((t, i), (d, j)), row) => ((t, i), (d, row))}
 
-    def scramble(cs: Concepts): (Concepts, Solution) = {
-      val shuffledDefis = scala.util.Random.shuffle(defis(cs))
+    def scramble(cs: Concepts, seed: Int): (Concepts, Solution) = {
+      val shuffledDefis = (new scala.util.Random(seed)).shuffle(defis(cs))
       val solution = shuffledDefis.map { case (d, i) => i } .zipWithIndex.toMap
       val shuffledConcepts = terms(cs) zip shuffledDefis
       (replaceDefiNumberWithOrdererdIndex(shuffledConcepts), solution)
@@ -42,9 +48,9 @@ package object genquiz {
       s"""  $term & ${indexToNum(i)} & $arrow &  ${indexToChar(j)} & $defi \\\\ """
     }
 
-    def toLatexTaskSolution(q: QuizName): (String, String) = {
+    def toLatexTaskSolution(q: QuizID): (String, String) = {
       val cs = QuizData.concepts(q)
-      val (scs, sol) = scramble(cs)
+      val (scs, sol) = scramble(cs, q.seed)
       val ucs = unscramble(cs, sol)
 
       val taskRows: String = scs.map(toTaskRowLatex).mkString("\n")

@@ -5,10 +5,9 @@ import complete.DefaultParsers._
 
 
 lazy val hello = taskKey[Unit]("Prints welcome message")
-
 hello := {
   println("===== WELCOME to the sbt build of lunduniversity/introprog =====")
-  println("\nHAVE PATIENCE: full build can take >500sec on a 2.5GHz machine...\n")
+  println("\nHAVE PATIENCE: a full build can take >500sec on a 2.5GHz machine...\n")
 }
 
 lazy val commonSettings = Seq(
@@ -49,7 +48,7 @@ genquiz := (run in Compile in quiz).toTask("").value
 // ************** cmd util functions
 
 def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-console.log"): Unit = {
-  println(s"\n ******* Compiling $texFile to pdf *******")
+  println(s" ******* Compiling $texFile to pdf *******")
   val cmd = Process(
     Seq("pdflatex","-halt-on-error", texFile.getName),
     workDir
@@ -70,10 +69,13 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
 
 // **************
 
-lazy val pdf = taskKey[Unit]("Compile slides and compendium using pdflatex")
+lazy val pdf = taskKey[Unit](
+  "Compile all pdfs using pdflatex (several times for xrefs and tocs to work)")
 
 pdf := {
-  println("\n=== Compiling slides to pdf")
+  println("\n====== Compiling pdf documents -- this may take several minutes!")
+
+  println("\n=== Compiling slides:")
   val workDir = file("slides")
   val texFiles = (workDir * "*.tex").get
   for (texFile <- texFiles) {
@@ -109,6 +111,7 @@ watchSources ++= ((baseDirectory.value / "compendium" / "modules") * "*.tex").ge
 watchSources ++= ((baseDirectory.value / "compendium" / "prechapters") * "*.tex").get
 watchSources ++= ((baseDirectory.value / "compendium" / "postchapters") * "*.tex").get
 watchSources ++= ((baseDirectory.value / "slides" / "body") * "*.tex").get
+watchSources ++= ((baseDirectory.value / "slides") * "*.tex").get
 
 lazy val pdfExercises = taskKey[Unit]("Compile exercises.tex")
 pdfExercises := {
@@ -130,11 +133,15 @@ pdfCompendium := {
   runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))
 }
 
-lazy val pdfCompendium1 = taskKey[Unit]("Compile compendium.tex")
+lazy val pdfCompendium1 = taskKey[Unit]("Compile compendium1.tex")
 pdfCompendium1 := {
   runPdfLatexCmd(texFile = file("compendium1.tex"), workDir = file("compendium"))
 }
 
+lazy val pdfCompendium2 = taskKey[Unit]("Compile compendium2.tex")
+pdfCompendium2 := {
+  runPdfLatexCmd(texFile = file("compendium2.tex"), workDir = file("compendium"))
+}
 
 lazy val pdfSlides = inputKey[Unit]("run pdflatex slides/lect-w<weeknumber>.tex")
 pdfSlides := {
@@ -161,8 +168,8 @@ lazy val root = (project in file(".")).
     name := "introprog",
     build := Def.sequential(
       hello,
-      (run in Compile in plan).toTask(""),
-//    (run in Compile in quiz).toTask(""),  //decomment if you want re-scrambled quizes
+      gen,
+      genquiz,
       pdf
     ).value
   )

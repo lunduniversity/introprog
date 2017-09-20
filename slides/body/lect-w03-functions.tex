@@ -2,8 +2,97 @@
 %!TEX root = ../lect-w03.tex
 
 
+\ifkompendium\else
+\Subsection{Kommande vecka}
+
+\begin{Slide}{Mål med övning \ExeWeekTHREE}
+\begin{itemize}\SlideFontSmall
+  \input{../compendium/modules/w03-functions-exercise-goals.tex}
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Mål med laboration \LabWeekTHREE}
+\begin{itemize}
+  \input{../compendium/modules/w03-functions-lab-goals.tex}
+\end{itemize}
+Läs labbinstruktioner:\url{http://cs.lth.se/pgk/compendium/}
+\end{Slide}
+
+
+\begin{Slide}{Tips inför ditt textspel.}
+\begin{Code}
+"Yes".toLowerCase.startsWith("y")    // true
+"hejsan".contains("ejsa")            // true
+"42".toInt                           // 42
+
+val i = 42
+s"Livets mening är $i!" // dollar $ före namn vid stränginterpolering med s""
+s"Livets mening är inte ${i-1}!"  // klamrar ${} vid evaluering av uttryck
+
+"""|en sträng som spänner över
+   |flera rader där marginalen fram till vertikalstreck
+   |är bortplockad med stripMargin (kan kombineras med s-interpolatorn)
+""".stripMargin
+
+math.random < 0.8                  // true i 80% av fallen
+scala.util.Random.nextInt(42)      // ger slumptal mellan 0 och 41
+scala.io.StdIn.readLine("prompt>") // ger sträng som användaren skriver
+
+try { "?".toInt } catch { case e: Exception => 42 }  // förhindrar krasch
+Thread.sleep(1000)    // sova i 1000 milliskeunder
+\end{Code}
+Kolla snabbreferensen vad mer du kan göra med strängar!
+\end{Slide}
+
+\begin{Slide}{Exempel på en början till ett textspel}
+  \url{https://github.com/lunduniversity/introprog/tree/master/compendium/examples/irritext}
+
+\begin{itemize}
+  \item Vilka begrepp och principer ger koden träning i?
+\end{itemize}
+
+\end{Slide}
+\fi
+
+
 \Subsection{Funktioner}
 
+
+\begin{Slide}{Funktion}
+\setlength{\leftmargini}{0pt}
+\begin{itemize}
+  \item En funktion kan ha parametrar som binds till argument.
+  \item En funktion har ett huvud och en kropp.
+  \item En namngiven funktion \Emph{deklareras} med nyckelordet \code{def}
+\end{itemize}
+
+
+\code{def} funktionsnamn(parameterdeklarationer): returtyp = uttryck
+
+\vspace{1em}
+
+\begin{Code}
+def namn(param1: Typ1, param2: Typ2): Returtyp = kropp
+\end{Code}
+
+\pause
+
+\begin{Code}
+def öka(a: Int, b: Int): Int = a + b
+\end{Code}
+
+\setlength{\leftmargini}{0pt}
+\begin{itemize}
+  \item Funktionskroppen exekveras först vid \Emph{anrop} då \Emph{argument} binds till \Emph{parametrar}.
+\end{itemize}
+
+\begin{REPL}
+scala> öka(42, 1)
+res0: Int = 43
+\end{REPL}
+
+
+\end{Slide}
 
 
 \begin{Slide}{Deklarera funktioner, överlagring}
@@ -13,7 +102,7 @@
 scala> :paste
   def öka(a: Int): Int = a + 1
   def öka(a: Int, b: Int) = a + b
-  
+
 scala> öka(1)
 res0: Int = 2
 
@@ -26,7 +115,50 @@ res1: Int = 2
 \item Detta kallas \Emph{överlagring} \Eng{overloading} av funktioner.
 
 \end{itemize}
-\end{Slide} 
+\end{Slide}
+
+
+
+\begin{Slide}{Funktioner med defaultargument}\SlideFontSmall
+
+\begin{itemize}
+\item Vi kan ofta åstadkomma något som liknar överlagring, men med en enda funktion, om vi i stället använder \Emph{defaultargument}:
+\begin{REPLnonum}
+scala> def inc(a: Int, b: Int = 1) = a + b
+inc: (a: Int, b: Int)Int
+
+scala> inc(42, 2)
+res0: Int = 44
+
+scala> inc(42, 1)
+res1: Int = 43
+
+scala> inc(42)
+res2: Int = 43
+
+\end{REPLnonum}
+\item Om argumentet utelämnas och det finns ett defaultargument, så är det defaultargumentet som appliceras.
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Funktioner med namngivna argument}
+\begin{itemize}
+\item Genom att använda \Emph{namngivna argument} behöver man inte hålla reda på ordningen på parametrarna, bara man känner till parameternamnen.
+\item Namngivna argument går fint att \Alert{kombinera} med defaultargument.
+\begin{REPL}
+scala> def namn(förnamn: String,
+                efternamn: String,
+                förnamnFörst: Boolean = true,
+                ledtext: String = ""): String =
+         if (förnamnFörst) s"$ledtext: $förnamn $efternamn"
+         else s"$ledtext: $efternamn, $förnamn"
+
+scala> namn(ledtext = "Name", efternamn = "Coder", förnamn = "Kim")
+res0: String = Name: Kim Coder
+\end{REPL}
+\end{itemize}
+\end{Slide}
 
 
 \begin{Slide}{Tom parameterlista och inga parametrar}\SlideFontSmall
@@ -57,60 +189,21 @@ scala> ingenParameterLista()
 \end{REPL}
 
 \end{itemize}
-\end{Slide} 
+\end{Slide}
 
-
-\begin{Slide}{Funktioner med defaultargument}\SlideFontSmall
-
-\begin{itemize}
-\item Vi kan ofta åstadkomma något som liknar överlagring, men med en enda funktion, om vi i stället använder \Emph{defaultargument}:
-\begin{REPLnonum}
-scala> def inc(a: Int, b: Int = 1) = a + b
-inc: (a: Int, b: Int)Int
-
-scala> inc(42, 2)
-res0: Int = 44
-
-scala> inc(42, 1)
-res1: Int = 43
-
-scala> inc(42)
-res2: Int = 43
-
-\end{REPLnonum}
-\item Om argumentet utelämnas och det finns ett defaultargument, så är det defaultargumentet som appliceras.
-\end{itemize}
-\end{Slide} 
-
-
-\begin{Slide}{Funktioner med namngivna argument}
-\begin{itemize}
-\item Genom att använda \Emph{namngivna argument} behöver man inte hålla reda på ordningen på parametrarna, bara man känner till parameternamnen. 
-\item Namngivna argument går fint att \Alert{kombinera} med defaultargument.
-\begin{REPL}
-scala> def namn(förnamn: String, 
-                efternamn: String, 
-                förnamnFörst: Boolean = true,
-                ledtext: String = ""): String = 
-         if (förnamnFörst) s"$ledtext: $förnamn $efternamn" 
-         else s"$ledtext: $efternamn, $förnamn"
-
-scala> namn(ledtext = "Name", efternamn = "Coder", förnamn = "Kim")
-res0: String = Name: Kim Coder
-\end{REPL}
-\end{itemize}
-\end{Slide} 
 
 
 \begin{Slide}{Anropsstacken och objektheapen}\SlideFontSmall
 Minnet är uppdelat i två delar:
 \begin{itemize}
-\item \Emph{Anropsstacken}: På stackminnet läggs en \Emph{aktiveringspost} \Eng{stack frame\footnote{\href{https://en.wikipedia.org/wiki/Call_stack}{en.wikipedia.org/wiki/Call\_stack}}, activation record} för varje funktionsanrop med plats för parametrar och lokala variabler. Aktiveringsposten raderas när returvärdet har levererats. Stacken växer vid nästlade funktionsanrop, då en funktion i sin tur anropar en annan funktion. 
+\item \Emph{Anropsstacken}: På stackminnet läggs en \Emph{aktiveringspost} \Eng{stack frame\footnote{\href{https://en.wikipedia.org/wiki/Call_stack}{en.wikipedia.org/wiki/Call\_stack}}, activation record} för varje funktionsanrop med plats för \Alert{parametrar} och \Alert{lokala variabler}.
+\item Aktiveringsposten \Alert{raderas} när \Emph{returvärdet} har levererats.
+\item Stacken \Alert{växer} vid \Emph{nästlade funktionsanrop}, då en funktion i sin tur anropar en annan funktion.
 
-\item \Emph{Objektheapen}: I heapminnet\footnote{\href{https://en.wikipedia.org/wiki/Memory_management}{en.wikipedia.org/wiki/Memory\_management}}$^{,}$\footnote{Ej att förväxlas med datastrukturen heap  \href{https://sv.wikipedia.org/wiki/Heap}{sv.wikipedia.org/wiki/Heap}} sparas alla objekt (data) som allokeras under körning. Heapen städas vid tillfälle av skräpsamlaren \Eng{garbage collector}, och minne som inte används längre frigörs. \\\vspace{0.5em}
+\item \Emph{Objektheapen}: I heapminnet\footnote{\href{https://en.wikipedia.org/wiki/Memory_management}{en.wikipedia.org/wiki/Memory\_management}}$^{,}$\footnote{Ej att förväxlas med datastrukturen heap  \href{https://sv.wikipedia.org/wiki/Heap}{sv.wikipedia.org/wiki/Heap}} sparas alla objekt (data) som allokeras under körning. Heapen städas vid tillfälle av \Emph{skräpsamlaren} \Eng{garbage collector}, och minne som inte används längre frigörs. \\\vspace{0.5em}
 \href{http://stackoverflow.com/questions/1565388/increase-heap-size-in-java}{stackoverflow.com/questions/1565388/increase-heap-size-in-java}
 \end{itemize}
-\end{Slide} 
+\end{Slide}
 
 
 \begin{Slide}{Aktiveringspost}\SlideFontSmall
@@ -130,91 +223,264 @@ scala> f()
 
 \begin{tabular}{|r | l | l |} \hline
 
-variabel & värde & Vilken aktiveringspost? \\ \hline \hline
+variabel & värde & Aktiveringspost för anrop av... \\ \hline \hline
 \pause
  n & 5 & f \\ \hline
- \pause 
+ \pause
  a & 5 & g \\
  b & 10 &  \\
  x & 1  &  \\  \hline
- \pause 
+ \pause
  x & 2  & h \\
  y & 15 &  \\
  z & 17 & \\ \hline
 \end{tabular}
-\end{Slide} 
+\end{Slide}
 
 
 \begin{Slide}{Lokala funktioner}\SlideFontSmall
-Med lokala funktioner kan delproblem lösas med nästlade abstraktioner. 
+Med lokala funktioner kan delproblem lösas med nästlade abstraktioner.
 
-\begin{Code}
-def gissaTalet(max: Int): Unit = {
-  def gissat = io.StdIn.readLine(s"Gissa talet mellan [1, $max]: ").toInt 
-  val hemlis = (math.random * max + 1).toInt
-  def skrivLedtrådOmEjRätt(gissning: Int): Unit = 
-    if (gissning > hemlis) println(s"$gissning är för stort :(") 
+\begin{CodeSmall}
+def gissaTalet(max: Int, min: Int = 1): Unit = {
+  def gissat = io.StdIn.readLine(s"Gissa talet mellan $min och $max:").toInt
+
+  val hemlis = (math.random * (max - min) + min).toInt
+
+  def skrivLedtrådOmEjRätt(gissning: Int): Unit =
+    if (gissning > hemlis) println(s"$gissning är för stort :(")
     else if (gissning < hemlis) println(s"$gissning är för litet :(")
-  def inteRätt(gissning: Int): Boolean = { 
+
+  def inteRätt(gissning: Int): Boolean = {
     skrivLedtrådOmEjRätt(gissning)
     gissning != hemlis
   }
+
   def loop: Int = { var i = 1; while(inteRätt(gissat)){ i += 1 }; i }
-  
+
   println(s"Du hittade talet $hemlis på $loop gissningar :)")
+}
+\end{CodeSmall}
+
+Lokala, nästlade funktionsdeklarationer är tyvärr inte tillåtna i Java.\footnote{\href{http://stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}{\SlideFontSize{8}{9}stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}}
+
+\end{Slide}
+
+
+
+
+\begin{Slide}{Funktioner är äkta värden i Scala}\SlideFontSmall
+\begin{itemize}
+\item En funktioner är ett \Alert{äkta värde}.
+\item Vi kan till exempel tilldela en variabel ett funktionsvärde.
+\pause
+\item Med hjälp av blank+understreck efter funktionsnamnet får vi funktionen som ett \Alert{värde} (inga argument appliceras än):
+\begin{REPLnonum}
+scala> def add(a: Int, b: Int) = a + b
+
+scala> val f = add _
+
+scala> f
+f: (Int, Int) => Int = <function2>
+
+scala> f(21, 21)
+res0: Int = 42
+\end{REPLnonum}
+
+\item Ett funktionsvärde har en \Alert{typ} precis som alla värden: \\
+\code{f: (Int, Int) => Int}
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Funktionsvärden kan vara argument}
+\begin{itemize}
+\item En funktion kan ha en annan funktion som parameter:
+\begin{REPL}
+scala> def tvåGånger(x: Int, f: Int => Int) = f(f(x))
+
+scala> def öka(x: Int) = x + 1
+
+scala> def minska(x: Int) = x - 1
+
+scala> tvåGånger(42, öka _)
+res1: Int = 44
+
+scala> tvåGånger(42, minska _)
+res1: Int = 40
+\end{REPL}
+
+\item Om argumentets funktionstyp \Alert{kan härledas} av kompilatorn och \Alert{passar} med parametertypen så behövs ej understreck: \\
+\begin{REPL}
+scala> tvåGånger(42, öka)
+res1: Int = 44
+\end{REPL}\end{itemize}
+\end{Slide}
+
+
+
+\begin{Slide}{Applicera funktioner på element i samlingar med \texttt{map}}\SlideFontSmall
+\begin{Code}
+def öka(x: Int) = x + 1
+
+def minska(x: Int) = x - 1
+
+val xs = Vector(1, 2, 3)
+\end{Code}
+\pause
+Metoden \Emph{\texttt{map}} fungerar på alla Scala-samlingar och tar \Emph{en funktion som argument} och applicerar denna funktion på alla element och \Alert{skapar en ny samling} med resultaten:
+\begin{REPL}
+scala> xs.map(öka)
+res0: ???
+
+scala> xs.map(minska)
+res1: ???
+\end{REPL}
+Funktioner som tar andra funktioner som parametrar kallas \\ \Emph{högre ordningens funktioner}.
+\end{Slide}
+
+
+\begin{Slide}{Applicera funktioner på element i samlingar med \texttt{map}}\SlideFontSmall
+\begin{Code}
+def öka(x: Int) = x + 1
+
+def minska(x: Int) = x - 1
+
+val xs = Vector(1, 2, 3)
+\end{Code}
+Metoden \Emph{\texttt{map}} fungerar på alla Scala-samlingar och tar \Emph{en funktion som argument} och applicerar denna funktion på alla element och \Alert{skapar en ny samling} med resultaten:
+\begin{REPL}
+scala> xs.map(öka)
+res0: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
+
+scala> xs.map(minska)
+res1: scala.collection.immutable.Vector[Int] = Vector(0, 1, 2)
+\end{REPL}
+Funktioner som tar andra funktioner som parametrar kallas \\ \Emph{högre ordningens funktioner}.
+\end{Slide}
+
+
+
+
+\begin{Slide}{Anonyma funktioner}
+\begin{itemize}
+\item  Man behöver inte ge funktioner namn. De kan i stället skapas med hjälp av \Emph{funktionsliteraler}.\footnote{Även kallat ''lambda-värde'' eller bara ''lambda'' efter den s.k. lambdakalkylen. \href{https://en.wikipedia.org/wiki/Anonymous_function}{en.wikipedia.org/wiki/Anonymous\_function}}
+
+\item En funktionsliteral har ...
+\begin{enumerate}
+\item en parameterlista (utan funktionsnamn, utan returtyp),
+\item sedan den reserverade teckenkombinationen \code{=>}
+\item och sedan ett uttryck (eller ett block).
+\end{enumerate}
+\pause
+\item Exempel:
+\begin{Code}[basicstyle=\ttfamily\SlideFontSize{9}{11}]
+(x: Int, y: Int) => x + y             // vilken typ?
+\end{Code}
+\pause
+\item Om kompilatorn kan gissa typerna från sammanhanget så behöver typerna inte anges i själva  funktionsliteralen:
+\begin{Code}[basicstyle=\ttfamily\SlideFontSize{9}{11}]
+val f: (Int, Int) => Int = (x, y) => x + y
+\end{Code}
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Applicera anonyma funktioner på element i samlingar}\SlideFontSmall
+\begin{itemize}
+\item Anonym funktion skapad med funktionsliteral direkt i anropet:
+\begin{REPL}
+scala> val xs = Vector(1, 2, 3)
+
+scala> xs.map((x: Int): Int => x + 1)
+res0: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
+\end{REPL}
+
+\pause
+\item Eftersom kompilatorn här kan härleda typerna så behövs de inte:
+\begin{REPL}
+scala> xs.map(x => x + 1)
+res1: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
+\end{REPL}
+\pause
+
+\item Om man bara använder parametern en enda gång i funktionen så kan man byta ut parameternamnet mot ett understreck.
+
+\begin{REPL}
+scala> xs.map(_ + 1)
+res2: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
+\end{REPL}
+\end{itemize}
+\end{Slide}
+
+
+
+\begin{Slide}{Platshållarsyntax för anonyma funktioner}\SlideFontSmall
+\begin{itemize}
+\item Understreck i funktionsliteraler kallas \Emph{platshållare} \Eng{placeholder} och medger ett förkortat skrivsätt \Alert{om} den parameter som understrecket representerar används \Alert{endast en gång}.
+
+\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
+_ + 1
+\end{Code}
+Ovan expanderas av kompilatorn till följande funktionsliteral \\(där namnet på parametern är godtyckligt):
+\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
+x => x + 1
+\end{Code}
+\pause
+\item Det kan förekomma flera understreck; det första avser första parametern, det andra avser andra parametern etc.
+\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
+_ + _
+\end{Code}
+\pause
+... expanderas till:
+\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
+(x, y) => x + y
+\end{Code}
+
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Exempel på platshållarsyntax med samlingsmetoden \texttt{reduceLeft}}\SlideFontSmall
+Metoden \code{reduceLeft} applerar en funktion på de två första elementen och tar sedan på resultatet som första argument och nästa element som andra argument och upprepar detta genom hela samlingen.
+\begin{REPL}
+scala> def summa(x: Int, y: Int) = x + y
+
+scala> val xs = Vector(1, 2, 3, 4, 5)
+
+scala> xs.reduceLeft(summa)
+res20: Int = 15
+
+scala> xs.reduceLeft((x, y) => x + y)
+res21: Int = 15
+
+scala> xs.reduceLeft(_ + _)
+res22: Int = 15
+
+scala> xs.reduceLeft(_ * _)
+res23: Int = 120
+\end{REPL}
+\end{Slide}
+
+
+
+
+\begin{Slide}{Hur fungerar egentligen \code{upprepa} i Kojo?}
+\begin{Code}[basicstyle=\ttfamily\SlideFontSize{14}{16}]
+upprepa(10) {
+  println("hej")
 }
 \end{Code}
 
-Lokala, nästlade funktionsdeklarationer är tyvärr inte tillåtna i Java.\footnote{\href{http://stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}{\SlideFontSize{8}{9}stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}} 
-
-\end{Slide} 
-
-
-
-\begin{Slide}{Värdeanrop och namnanrop}\SlideFontSmall
+\pause
+Vi ska nu se hur vi, genom att kombinera ett antal koncept, kan skapa egna kontrollstrukturer likt upprepa ovan:
 \begin{itemize}
-\item Det vi sett hittills är \Emph{värdeanrop}: argumentet evalueras \Alert{först} innan dess \Alert{värde} \emph{sedan} appliceras:
-\begin{REPL}
-scala> def byValue(n: Int): Unit = for (i <- 1 to n) print(" " + n)
-
-scala> byValue(21 + 21)
- 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42
-
-scala> byValue({print(" hej"); 21 + 21})
- hej 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42
-\end{REPL}
-\item Men man kan med \code{=>} före parametertypen åstadkomma \Emph{namnanrop}: argumentet \Alert{''klistras in''} i stället för \Alert{namnet} och evalueras \Alert{varje gång} (kallas även \Emph{fördröjd evaluering}):
-\begin{REPL}
-scala> def byName(n: => Int): Unit = for (i <- 1 to n) print(" " + n)
-
-scala> byName({print(" hej"); 21 + 21})
- hej hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42
-\end{REPL}
-
-Kluring: Varför skrivs ''hej'' ut en extra gång i början???
-
+\item klammerparentes vid ensam paramenter
+\item uppdelad parameterlista
+\item namnanrop (fördröjd evaluering)
 \end{itemize}
-\end{Slide} 
-
-\begin{Slide}{Klammerparenteser vid ensam parameter}
-Så här har vi sett nyss att man man göra:
-\begin{REPL}
-scala> def actTwice(action: => Unit): Unit = { action; action }
-
-scala> actTwice( { print("hej"); print("san ") } )
-hejsan hejsan 
-\end{REPL}
-
-Det ser rätt klyddigt ut med \code+{(+  och \code+)}+ eller vad tycker du? \pause Men...
-För alla funktioner \code{f} gäller att: \\ det är helt ok att byta ut vanliga parenteser: \hfill\code{f(uttryck)} \\ mot krullparenteser: \hfill\code|f{uttryck}| \\ \Alert{om} parameterlistan har \Alert{exakt en} parameter.  
-
-\vspace{0.5em}Man kan alltså skippa det yttre parentesparet för bättre läsbarhet:
-\begin{REPLnonum}
-scala> actTwice { print("hej"); print("san") }
-\end{REPLnonum}
+\end{Slide}
 
 
-\end{Slide} 
 
 \begin{Slide}{Uppdelad parameterlista}
 \begin{itemize}
@@ -237,207 +503,90 @@ res1: Int = 42
 \item Detta kallas även \Emph{multipla parameterlistor} \Eng{multiple parameter lists}
 \end{itemize}
 \href{http://docs.scala-lang.org/style/declarations.html#multiple-parameter-lists}{\SlideFontTiny docs.scala-lang.org/style/declarations.html\#multiple-parameter-lists}
-\end{Slide} 
+\end{Slide}
+
+
+
+\begin{Slide}{Värdeanrop och namnanrop}\SlideFontSmall
+\begin{itemize}
+\item Det vi sett hittills är \Emph{värdeanrop}: argumentet evalueras \Alert{först} innan dess \Alert{värde} \emph{sedan} appliceras:
+\begin{REPL}
+scala> def byValue(n: Int): Unit = for (i <- 1 to n) print(" " + n)
+
+scala> byValue(21 + 21)
+ 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42
+
+scala> byValue({print(" hej"); 21 + 21})
+ hej 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42
+\end{REPL}
+
+\pause
+
+\item Men man kan med \code{=>} före parametertypen åstadkomma \Emph{namnanrop}: argumentet \Alert{''klistras in''} i stället för \Alert{namnet} och evalueras \Alert{varje gång} (kallas även \Emph{fördröjd evaluering}):
+\begin{REPL}
+scala> def byName(n: => Int): Unit = for (i <- 1 to n) print(" " + n)
+
+scala> byName({print(" hej"); 21 + 21})
+ hej hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42
+\end{REPL}
+
+Kluring: Varför skrivs ''hej'' ut en extra gång i början??? \pause ledtråd: \texttt{1 to \Alert{n}}
+%evalueringen av n i 1 to n ger ett extra hej
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Klammerparenteser vid ensam parameter}
+Så här har vi sett nyss att man man göra:
+\begin{REPL}
+scala> def twice(action: => Unit): Unit = { action; action }
+
+scala> twice( { print("hej"); print("san ") } )
+hejsan hejsan
+\end{REPL}
+
+Det ser rätt klyddigt ut med \code+{(+  och \code+)}+ eller vad tycker du? \pause Men...
+För alla funktioner \code{f} gäller att: \\ det är helt ok att byta ut vanliga parenteser: \hfill\code{f(uttryck)} \\ mot krullparenteser: \hfill\code|f{uttryck}| \\ \Alert{om} parameterlistan har \Alert{exakt en} parameter.
+
+\vspace{0.5em}Man kan alltså skippa det yttre parentesparet för bättre läsbarhet:
+\begin{REPLnonum}
+scala> twice { print("hej"); print("san ") }
+\end{REPLnonum}
+\end{Slide}
+
 
 
 \begin{Slide}{Skapa din egen kontrollstruktur}
 \begin{itemize}
-\item Genom att \Alert{kombinera} \Emph{multipla parameterlistor} med \Emph{namnanrop} med \Emph{klammerparentes vid ensam parameter} kan vi skapa vår egen kontrollstruktur:
-\begin{REPLnonum}
-scala> def upprepa(n: Int)(block: => Unit) = { 
-         var i = 0
-         while (i < n) { block; i += 1 }
-       }
+\item Genom att \Alert{kombinera} \Emph{uppdelad parameterlista} med \Emph{namnanrop} med \Emph{klammerparentes vid ensam parameter} kan vi skapa vår egen kontrollstruktur:
+\begin{Code}
+def upprepa(n: Int)(block: => Unit) = {
+  var i = 0
+  while (i < n) { block; i += 1 }
+}
+\end{Code}
 
-scala> upprepa(42){ 
-         if (math.random < 0.5) {
-           print(" gurka")
-         } else {
-           print(" tomat")
-         }
-       }
- gurka gurka gurka tomat tomat gurka gurka gurka gurka tomat tomat tomat tomat tomat gurka tomat tomat tomat tomat tomat tomat tomat tomat tomat gurka gurka gurka tomat tomat gurka gurka gurka tomat tomat gurka tomat gurka gurka gurka gurka tomat tomat
+\pause
+
+\begin{Code}
+upprepa(42){
+  if (math.random < 0.5) print(" gurka")
+  else print(" tomat")
+}
+\end{Code}
+
+\pause
+
+\begin{REPLnonum}
+gurka gurka gurka tomat tomat gurka gurka gurka gurka tomat tomat tomat tomat tomat
 \end{REPLnonum}
 \end{itemize}
-\end{Slide} 
-
-
-\begin{Slide}{Funktioner är äkta värden i Scala}\SlideFontSmall
-\begin{itemize}
-\item En funktioner är ett äkta värde.
-\item Vi kan till exempel tilldela en variabel ett funktionsvärde. 
-\item Med hjälp av blank+understreck efter funktionsnamnet får vi funktionen som ett \Alert{värde} (inga argument appliceras än):
-\begin{REPLnonum}
-scala> def add(a: Int, b: Int) = a + b
-
-scala> val f = add _
-
-scala> f
-f: (Int, Int) => Int = <function2>
-
-scala> f(21, 21)
-res0: Int = 42
-\end{REPLnonum}
-
-\item Ett funktionsvärde har en \Alert{typ} precis som alla värden: \\ 
-\code{f: (Int, Int) => Int}
-\end{itemize}
-\end{Slide} 
-
-\begin{Slide}{Funktionsvärden kan vara argument}
-\begin{itemize}
-\item En funktion kan ha en annan funktion som parameter:
-\begin{REPL}
-scala> def tvåGånger(x: Int, f: Int => Int) = f(f(x))
-
-scala> def öka(x: Int) = x + 1
-
-scala> def minska(x: Int) = x - 1
-
-scala> tvåGånger(42, öka _)
-res1: Int = 43
-
-scala> tvåGånger(42, minska _)
-res1: Int = 41
-\end{REPL}
-
-\item Om argumentets funktionstyp \Alert{kan härledas} av kompilatorn och \Alert{passar} med parametertypen så behövs ej understreck: \\ 
-\begin{REPL}
-scala> tvåGånger(42, öka)
-res1: Int = 43
-\end{REPL}\end{itemize}
 \end{Slide}
-
-
-
-\begin{Slide}{Applicera funktioner på element i samlingar med \texttt{map}}\SlideFontSmall
-\begin{REPL}
-scala> def öka(x: Int) = x + 1
-
-scala> def minska(x: Int) = x - 1
-
-scala> val xs = Vector(1, 2, 3)
-
-scala> xs.map(öka)
-res0: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
-
-scala> xs.map(minska)
-res1: scala.collection.immutable.Vector[Int] = Vector(0, 1, 2)
-
-scala> xs map öka
-res2: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
-
-scala> xs map minska
-res3: scala.collection.immutable.Vector[Int] = Vector(0, 1, 2)
-\end{REPL}
-Funktioner som tar andra funktioner som parametrar kallas \\ \Emph{högre ordningens funktioner}. 
-\end{Slide} 
-
-
-
-
-\begin{Slide}{Anonyma funktioner}
-\begin{itemize}
-\item  Man behöver inte ge funktioner namn. De kan i stället skapas med hjälp av \Emph{funktionsliteraler}.\footnote{Även kallat ''lambda-värde'' eller bara ''lambda'' efter den s.k. lambdakalkylen. \href{https://en.wikipedia.org/wiki/Anonymous_function}{en.wikipedia.org/wiki/Anonymous\_function}}
-
-\item En funktionsliteral har ...
-\begin{enumerate}
-\item en parameterlista (utan funktionsnamn) och ev. returtyp, \item sedan den reserverade teckenkombinationen \code{=>} \item och sedan ett uttryck (eller ett block).
-\end{enumerate}
-\item Exempel:
-\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
-(x: Int, y: Int): Int => x + y
-\end{Code}
-\pause
-\item Om kompilatorn kan gissa typerna från sammanhanget så behöver typerna inte anges i själva  funktionsliteralen:
-\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
-val f: (Int, Int) => Int = (x, y) => x + y
-\end{Code}
-
-\end{itemize}
-\end{Slide}
-
-
-\begin{Slide}{Applicera anonyma funktioner på element i samlingar}\SlideFontSmall
-\begin{itemize}
-\item Anonym funktion skapad med funktionsliteral direkt i anropet:
-\begin{REPL}
-scala> val xs = Vector(1, 2, 3)
-
-scala> xs.map((x: Int): Int => x + 1)
-res0: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
-\end{REPL}
-\item Eftersom kompilatorn här kan härleda typerna så behövs de inte:
-\begin{REPL}
-scala> xs.map(x => x - 1)
-res1: scala.collection.immutable.Vector[Int] = Vector(0, 1, 2)
-
-scala> xs map (x => x - 1)
-res2: scala.collection.immutable.Vector[Int] = Vector(0, 1, 2)
-
-\end{REPL}
-\item Om man bara använder parametern en enda gång i funktionen så kan man byta ut parameternamnet mot ett understreck.
-
-\begin{REPL}
-scala> xs.map(_ + 1)
-res3: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
-\end{REPL}
-\end{itemize}
-\end{Slide} 
-
-
-
-\begin{Slide}{Platshållarsyntax för anonyma funktioner}\SlideFontSmall
-\begin{itemize}
-\item Understreck i funktionsliteraler kallas \Emph{platshållare} \Eng{placeholder} och medger ett förkortat skrivsätt \Alert{om} den parameter som understrecket representerar används \Alert{endast en gång}.
-
-\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
-_ + 1
-\end{Code}
-Ovan expanderas av kompilatorn till följande funktionsliteral \\(där namnet på parametern är godtyckligt):
-\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
-x => x + 1
-\end{Code}
-\pause
-\item Det kan förekomma flera understreck; det första avser första parametern, det andra avser andra parametern etc.
-\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
-_ + _
-\end{Code}
-... expanderas till:
-\begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
-(x, y) => x + y 
-\end{Code}
-
-\end{itemize}
-\end{Slide} 
-
-
-\begin{Slide}{Exempel på platshållarsyntax med samlingsmetoden \texttt{reduceLeft}}\SlideFontSmall
-Metoden \code{reduceLeft} applerar en funktion på de två första elementen och tar sedan på resultatet som första argument och nästa element som andra argument och upprepar detta genom hela samlingen. 
-\begin{REPL}
-scala> def summa(x: Int, y: Int) = x + y
-
-scala> val xs = Vector(1, 2, 3, 4, 5)
-
-scala> xs.reduceLeft(summa)
-res20: Int = 15
-
-scala> xs.reduceLeft((x, y) => x + y)
-res21: Int = 15
-
-scala> xs.reduceLeft(_ + _)
-res22: Int = 15
-
-scala> xs.reduceLeft(_ * _)
-res23: Int = 120
-\end{REPL}
-\end{Slide} 
 
 
 \begin{Slide}{Stegade funktioner, ''Curry-funktioner''}
 Om en funktion har en uppdelad parameterlista kan man skapa \Emph{stegade funktioner}, även kallat \Emph{partiellt applicerade} funktioner \Eng{partially applied functions} eller \Emph{''Curry''-funktioner}.
 \begin{REPLnonum}
-scala> def add(x: Int)(y: Int) = x + y  
+scala> def add(x: Int)(y: Int) = x + y
 
 scala> val öka = add(1) _
 öka: Int => Int = <function1>
@@ -448,50 +597,167 @@ res0:scala.collection.immutable.Vector[Int]= Vector(2, 3, 4)
 scala> Vector(1,2,3).map(add(2))
 res1:scala.collection.immutable.Vector[Int]= Vector(3, 4, 5)
 \end{REPLnonum}
-\end{Slide} 
+\end{Slide}
 
-\begin{Slide}{Översikt begrepp vi gått igenom hittills}
+
+\begin{Slide}{Funktion med fångad variabelrymd: \textit{closure}}
+\begin{Code}
+def f(x: Int): Int => Int = {
+  val a = 42 + x
+  val g = (y: Int) => y + a
+  g
+}
+\end{Code}
+Funktionen \code{g} \Alert{fångar} den lokala variabeln \code{a} i ett s.k. \Emph{closure}.
+\pause
+\begin{REPLnonum}
+scala> val funkis = f(1)
+funkis: Int => Int = $$Lambda$$1061/726226084@498f1f63
+
+scala> funkis(2)
+res0: Int = 45
+\end{REPLnonum}
+\pause
+Ett \Emph{closure} sparar variabler i ett \Alert{persistent funktionsobjekt}. \\
+(Mer om funktioner som objekt senare.)
+\end{Slide}
+
+
+\begin{Slide}{Översikt av begrepp vi gått igenom hittills}
 \begin{itemize}
 \item överlagring
 \item utelämna tom parameterlista (enhetlig access)
 \item defaultargument
 \item namngivna argument
 \item lokala funktioner
-\item namnanrop (fördröjd evaluering)
-\item klammerparentes vid ensam paramenter
-\item uppdelad parameterlista
-\item egendefinierade kontrollstrukturer
 \item funktioner som äkta värden
 \item anonyma funktioner
+\item klammerparentes vid ensam paramenter
+\item uppdelad parameterlista
+\item namnanrop (fördröjd evaluering)
+\item egendefinierade kontrollstrukturer
 \item stegade funktioner (''Curry-funktioner'')
+\item fångad variablelrymd (''closure'')
 \end{itemize}
-\end{Slide} 
+\end{Slide}
 
 \begin{Slide}{Begränsningar i Java}\SlideFontTiny
 \begin{itemize}
-\item Av alla dessa funktionskoncept...
+\item[] Av alla dessa funktionskoncept...
 \begin{itemize}\SlideFontTiny
 \item överlagring
-\item utelämna tom parameterlista (principen om enhetlig access)
+\item utelämna tom parameterlista (enhetlig access)
 \item defaultargument
 \item namngivna argument
 \item lokala funktioner
-\item namnanrop (fördröjd evaluering)
+\item funktioner som äkta värden
+\item anonyma funktioner
 \item klammerparentes vid ensam paramenter
 \item uppdelad parameterlista
 \item egendefinierade kontrollstrukturer
-\item funktioner som äkta värden
-\item anonyma funktioner
+\item namnanrop (fördröjd evaluering)
 \item stegade funktioner (''Curry-funktioner'')
+\item fångad variablelrymd (''closure'')
 \end{itemize}
-\item ...kan man endast göra \Emph{överlagring} i Java 7, 
-\item medan även \Emph{anonyma funktioner} (''lambda'') går att göra (med vissa begränsningar) i Java 8. \href{https://en.wikipedia.org/wiki/Anonymous_function\#Java_Limitations}{en.wikipedia.org/wiki/Anonymous\_function\#Java\_Limitations}
-\item \vspace{0.5em} En av de saker jag saknar mest i Java: \Alert{lokala funktioner}!
+...kan man i Java 8 endast göra:  
+\item[] \Emph{överlagring} ("overloading") och \Emph{anonyma funktioner} (''lambda'') \\ där set senare har starka begränsningar. \footnote{\SlideFontTiny\href{https://en.wikipedia.org/wiki/Anonymous_function\#Java_Limitations}{en.wikipedia.org/wiki/Anonymous\_function\#Java\_Limitations}}
+%\item \vspace{0.5em} En av de saker jag saknar mest i Java: \Alert{lokala funktioner}!
+\item[] Det är \Alert{kombinationen} av alla koncept som \Alert{skapar uttryckskraften} i Scala.
 \end{itemize}
-Det är \Alert{kombinationen} av alla koncept som \Alert{skapar uttryckskraften} i Scala.
-
-\end{Slide} 
 
 
+\end{Slide}
+
+\begin{Slide}{Mål med övning \ExeWeekTHREE}
+\begin{itemize}\SlideFontSmall
+  \input{../compendium/modules/w03-functions-exercise-goals.tex}
+\end{itemize}
+\end{Slide}
 
 
+
+\Subsection{Kort om rekursion}
+
+\begin{Slide}{Rekursiva funktioner}
+\begin{itemize}
+\item Funktioner som \Alert{anropar sig själv} kallas \Emph{rekursiva}.
+
+
+\begin{REPLnonum}
+scala> def fakultet(n: Int): Int =
+         if (n < 2) 1 else n * fakultet(n - 1)
+
+scala> fakultet(5)
+res0: Int = 120
+\end{REPLnonum}
+
+\item För varje nytt anrop läggs en ny aktiveringspost på stacken.
+
+\item I aktiveringsposten sparas varje returvärde som gör att \code{5 * (4 * (3 * (2 * 1)))} kan beräknas.
+
+\item Rekrusionen avbryts när man når \Emph{basfallet}, här \code{n < 2}
+
+\item En rekursiv funktion \Alert{måste} ha en returtyp.
+
+\end{itemize}
+
+\end{Slide}
+
+\begin{Slide}{Loopa med rekursion}
+\begin{Code}
+def gissaTalet(max: Int, min: Int = 1): Unit = {
+  def gissat = io.StdIn.readLine(s"Gissa talet mellan [$min, $max]: ").toInt
+
+  val hemlis = (math.random * (max - min) + min).toInt
+
+  def skrivLedtrådOmEjRätt(gissning: Int): Unit =
+    if (gissning > hemlis) println(s"$gissning är för stort :(")
+    else if (gissning < hemlis) println(s"$gissning är för litet :(")
+
+  def ärRätt(gissning: Int): Boolean = {
+    skrivLedtrådOmEjRätt(gissning)
+    gissning == hemlis
+  }
+
+  def loop(n: Int = 1): Int = if (ärRätt(gissat)) n else loop(n + 1)
+
+  println(s"Du hittade talet $hemlis på ${loop()} gissningar :)")
+}
+\end{Code}
+
+\end{Slide}
+
+
+\begin{Slide}{Rekursiva datastrukturer}
+
+\begin{itemize}
+\item Datastrukturena Lista och Träd är exempel på datastrukturer som passar bra ihop med rekursion.
+\item Båda dessa datastrukturer kan beskrivas rekursivt:
+\begin{itemize}
+\item En lista består av ett huvud och en lista, som i sin tur består av ett huvud och en lista, som i sin tur...
+\item Ett träd består av grenar till träd som i sin tur består av grenar till träd som i sin tur, ...
+\end{itemize}
+\item Dessa datastrukturer bearbetas med fördel med rekursiva algoritmer.
+\item I denna kursen ingår rekursion endast ''för kännedom'': \\ du ska veta vad det är och kunna skapa en enkel rekursiv funktion, t.ex. fakultets-beräkning. Du kommer jobba mer med rekursion och rekursiva datastrukturer i fortsättningskursen.
+\end{itemize}
+\end{Slide}
+
+\Subsection{Bash}
+
+\begin{Slide}{Bash-skript för kompilering}\SlideFontSmall
+\begin{itemize}
+  \item Det gamla skriptspråket \Emph{bash} funkar i Linux och MacOS.
+  \item Bash är smidigt för enkla program som använder terminalkommando, men syntaxen är knepig och det finns många fallgropar.
+  \item I ett bash-skript kan du t.ex. kompilera och köra ett program. Exempel i filen \code{build.sh} nedan:
+\begin{Code}
+scalac mitt-program.scala && scala MinMain
+\end{Code}
+Med pil-upp kan du enkelt kompilera om efter varje ändring:
+\begin{REPLnonum}
+> sh build.sh
+\end{REPLnonum}
+  \item Det går att få \Emph{bash} och ubuntu-terminalen att funka i Windows 10: \\
+  {\SlideFontTiny\url{https://msdn.microsoft.com/en-us/commandline/wsl/install_guide}} \\
+  Välj varianten längre ner med \code{lxrun} så behöver du inte bli s.k. "windows insider".
+\end{itemize}
+\end{Slide}
