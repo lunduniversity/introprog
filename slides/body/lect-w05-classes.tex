@@ -506,10 +506,72 @@ res0: Complex = 3.0 + 4.0j
 \end{Slide}
 
 
+\begin{Slide}{Övning: en läskig mutant}\SlideFontSmall
+\begin{enumerate}
+\item Skapa en klass med namnet \code{Mutant} som har ett förändringsbart attribut som klassparameter med namnet \code{i} av typen \code{Int} med default-argumentet \code{5}.
+\vspace{0.5em}
+
+\item \begin{minipage}{0.5\textwidth}
+Skriv kod som deklarerar två variabler med namnet \code{fem1} och \code{fem2} som refererar till samma \code{Mutant}-instans.
+\end{minipage}
+\hfill\begin{minipage}{0.32\textwidth}
+\hfill\includegraphics[width=3.4cm]{../img/mutant.png}
+
+En \code{Mutant}-instans där \code{i} kanske är fem.
+\vspace{1em}
+\end{minipage}
+
+\item Skriv kod som ändra tillstånd via den ena mutantreferensen.
+
+\item Syns ändringen via den andra mutantreferensen?
+\end{enumerate}
+\end{Slide}
+
+
+\Subsection{Case-klasser}
+
+
+\begin{Slide}{Case-klasser}
+Case-klasser är ett smidigt sätt att skapa \Emph{oföränderliga} datastrukturer. Med nyckelordet \code{case} framför \code{class} får du mycket ''godis på köpet'':
+
+\begin{itemize}
+\item Klassparametrar blir automatiskt publika oföränderliga attribut\footnote{alltså \Alert{inte} \texttt{private[this] val } som i vanliga klasser.} och du slipper alltså skriva \code{val}
+\item Du får en automatisk \Emph{toString} med klassens namn och värdet av alla \code{val}-attribut som ges av klassparametrarna och du slipper alltså skriva en egen toString
+\item Du slipper skriva \code{new} eftersom du får ett automatiskt kompanjonsobjekt med en fabriksmetod \code{apply} för indirekt instansiering där alla klassparametrarnas \code{val}-attribut initialiseras.
+\pause
+\item ... och mer därtill men mer om det senare...
+\end{itemize}
+\end{Slide}
 
 
 
-\Subsection{Minneshantering}
+
+\begin{Slide}{Exempel: oföränderliga case-klassen \code{Point}}
+
+\begin{Code}[basicstyle=\SlideFontSize{10}{12}\ttfamily]
+case class Point(x: Double, y: Double)
+\end{Code}
+
+\begin{REPLnonum}
+scala> val p1 = Point(3, 4)
+p1: Point = Point(3.0,4.0)
+
+scala> val p2 = p1
+p2: Point = Point(3.0,4.0)
+
+scala> p1.x = 42
+error: reassignment to val
+\end{REPLnonum}
+
+\end{Slide}
+
+
+
+
+
+
+\Subsection{Konstruktor}
+
 
 
 \begin{Slide}{Vad är en konstruktor?}
@@ -542,8 +604,6 @@ Fördjupning för kännedom:
 class Point(val x: Int, val y: Int, val z: Int){
   def this(x: Int, y: Int) = this(x, y, 0)   //anrop av primärkonstruktorn
   def this(x: Int) = this(x, 0)              //anrop av hjälpkonstruktor
-  override def toString =
-    if (z == 0) s"Point($x,$y)" else s"Point($x,$y,$z)"
 }
 \end{Code}
 
@@ -562,36 +622,31 @@ p2: Point = Point(1,2)
 scala> val p3 = new Point(1, 2, 3)
 p3: Point = Point(1,2,3)
 \end{REPL}
-
+\pause
 Men man gör \Alert{mycket oftare} så här i Scala:
-\begin{Code}
-class Point(val x: Int, val y: Int = 0, val z: Int = 0){
-  override def toString =
-    if (z == 0) s"Point($x,$y)" else s"Point($x,$y,$z)"
-}
-
+\begin{Code}[basicstyle=\ttfamily\SlideFontSize{8.5}{12}]
+case class Point(val x: Int, val y: Int = 0, val z: Int = 0)
 \end{Code}
-Eller använder en fabriksmetod i kompanjonsobjekt. \\
-Eller ännu hellre en case-klass...
+(Eller en vanlig klass med fabriksmetod i kompanjonsobjekt.)
 \end{Slide}
 
 
 
-\begin{Slide}{Vad gör skräpsamlaren?}\SlideFontSmall
-\begin{itemize}
-\item Scala och Java är båda programmeringsspråk som förutsätter en körmiljö med \Alert{automatisk}  \Emph{skräpsamling} \Eng{garbage collection}.
-
-\item \Emph{Skräpsamlaren} \Eng{the garbage collector} är ett program som automatiskt körs i bakgrunden då och då och \Emph{städar minnet} genom att frigöra den plats som upptas av \Alert{objekt som inte längre används}.
-
-\item JVM:en bestämmer själv när skräpsamlaren ska jobba och programmeraren har ingen kontroll över detta.
-
-\item Den stora \Emph{fördelen} med automatisk skärpsamling är att man slipper bry sig om det svåra och felbenägna arbetet att \Alert{avallokera} minne.
-
-\item \Alert{Nackdelen} är att man inte kan styra exakt hur och när skräpsamlingen ska ske och man kan därmed inte bestämma när processorn ska belastas med minneshanteringen. Detta är normalt inget problem, utom i vissa tidskritiska realtidssystem med hårda minnesbegränsningar och svarstidskrav.
-
-\item I språk utan automatisk skräpsamling, t.ex. C++, måste man ta hand om destruktion av objekt och skriva egna s.k. \Emph{destruktorer}.
-\end{itemize}
-\end{Slide}
+% \begin{Slide}{Vad gör skräpsamlaren?}\SlideFontSmall
+% \begin{itemize}
+% \item Scala och Java är båda programmeringsspråk som förutsätter en körmiljö med \Alert{automatisk}  \Emph{skräpsamling} \Eng{garbage collection}.
+%
+% \item \Emph{Skräpsamlaren} \Eng{the garbage collector} är ett program som automatiskt körs i bakgrunden då och då och \Emph{städar minnet} genom att frigöra den plats som upptas av \Alert{objekt som inte längre används}.
+%
+% \item JVM:en bestämmer själv när skräpsamlaren ska jobba och programmeraren har ingen kontroll över detta.
+%
+% \item Den stora \Emph{fördelen} med automatisk skärpsamling är att man slipper bry sig om det svåra och felbenägna arbetet att \Alert{avallokera} minne.
+%
+% \item \Alert{Nackdelen} är att man inte kan styra exakt hur och när skräpsamlingen ska ske och man kan därmed inte bestämma när processorn ska belastas med minneshanteringen. Detta är normalt inget problem, utom i vissa tidskritiska realtidssystem med hårda minnesbegränsningar och svarstidskrav.
+%
+% \item I språk utan automatisk skräpsamling, t.ex. C++, måste man ta hand om destruktion av objekt och skriva egna s.k. \Emph{destruktorer}.
+% \end{itemize}
+% \end{Slide}
 
 
 \Subsection{Referens saknas: \texttt{null}}
