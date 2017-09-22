@@ -31,7 +31,6 @@ vilka tillsammans utgör instansens \Emph{tillstånd}.
 
 
 \begin{Slide}{En klass liknar en stämpel}\SlideFontSmall
-
 \begin{multicols}{2}
 
 \emph{Metafor:} En klass liknar en \Emph{stämpel}
@@ -43,17 +42,12 @@ vilka tillsammans utgör instansens \Emph{tillstånd}.
 \item Allokering kallas också \Emph{konstruktion} och funktionen/koden som gör själva allokeringen kallas \Emph{konstruktor}.
 \end{itemize}
 
-
 \columnbreak
 
 \includegraphics[width=0.4\textwidth]{../img/stamp}
 
-
 \end{multicols}
 \end{Slide}
-
-
-
 
 
 
@@ -83,7 +77,6 @@ scala> val objRef1 = new C
 \draw [arrow, line width=0.7mm] (ref1) -- (instance1);
 \end{tikzpicture}
 \end{Slide}
-
 
 
 
@@ -118,7 +111,6 @@ scala> val objRef2 = new C
  \end{tabular}
  };
 
-
 \filldraw[black] ($ (mat-1-2) + (0.0cm,0.0cm) $) circle (3pt) node[] (ref1)  {};
 \draw [arrow, line width=0.7mm] (ref1) -- (instance1);
 
@@ -126,7 +118,6 @@ scala> val objRef2 = new C
 \draw [arrow, line width=0.7mm] (ref2) -- (instance2);
 \end{tikzpicture}
 \end{Slide}
-
 
 
 
@@ -173,19 +164,11 @@ scala> objRef2.attr = 43
 
 
 
-
-
-
-
-
 \begin{Slide}{Klassdeklarationer och instansiering}\SlideFontSmall
 \setlength{\leftmargini}{0pt}
 \begin{itemize}
 \item Syntax för deklaration av klass: \\ \vspace{0.5em}{\SlideFontSize{13}{16}\code|class Klassnamn(parametrar){ medlemmar }|}\vspace{0.5em}
-
-
-
-\item Exempel på \Emph{deklaration}:
+\item Exempel: \Emph{deklaration}
 \begin{Code}
 class Klassnamn(val attribut1: Int, attribut2: String){
   val attribut3: Double = 42.0              //publikt oföränderligt attribut
@@ -196,7 +179,7 @@ class Klassnamn(val attribut1: Int, attribut2: String){
 \end{Code}
 
 \item Parametrar initialiseras med de argument som ges vid \code{new}.
-\item Exempel på \Emph{instansiering} med argument för initialisering av klassparametrar:
+\item Exempel: \Emph{instansiering} med argument för initialisering av klassparametrar
 \begin{Code}
 val instansReferens = new Klassnamn(42, "hej")
 \end{Code}
@@ -207,6 +190,39 @@ val instansReferens = new Klassnamn(42, "hej")
 \end{itemize}
 \end{Slide}
 
+
+
+\begin{Slide}{Övning: en klass som representerar en person}
+\begin{enumerate}
+  \item Deklarera en klass \code{Person} med dessa publika attribut:
+  \begin{itemize}
+    \item oföränderligt förnamn
+    \item oföränderligt efternamn
+    \item förändringsbar ålder med defaultargument \code{0}
+  \end{itemize}
+  \item lägg till en metod i klasskroppen med explicit returtyp som ger en 2-tupel med förnamn och efternamn
+  \item skriv en deklaration som deklarerar en variabel \code{p} som initialiseras med värdet av ett uttryck som instansierar klassen \code{Person} med ditt namn och din födelseålder
+  \item skriv en sats som skriver ut ditt förnamn genom att referera attribut med punktnotation
+  \item skriv en tilldelningssats som ändrar tillståndet för den instans som referensen \code{p} refererar till så att åldersattributets värde blir din nuvarande ålder
+\end{enumerate}
+\end{Slide}
+
+
+
+\begin{Slide}{Lösning: klassen Person}
+\begin{Code}[basicstyle=\SlideFontSize{6.9}{9}\ttfamily]
+class Person(val givenName: String, val familyName: String, var age: Int = 0){
+  def name: (String, String) = (givenName, familyName)
+}
+\end{Code}
+\begin{REPLnonum}[basicstyle=\SlideFontSize{7}{9}\ttfamily\color{white}]
+val p = new Person("Björn", "Regnell")
+println(p.name._1)
+p.age = 50
+\end{REPLnonum}
+\pause
+Hur kan vi ändra lösning så att vi får andra varianter som fortfarande uppfyller kraven i övningsuppgiften?
+\end{Slide}
 
 
 \begin{Slide}{Instansprivata klassparametrar}\SlideFontSmall
@@ -241,15 +257,7 @@ res0: Int = 85
 
 
 \begin{Slide}{Exempel: Klassen Complex i Scala}\SlideFontSmall
-\begin{Code}
-class Complex(val re: Double, val im: Double){
-  def r  = math.hypot(re, im)
-  def fi = math.atan2(re, im)
-  def +(other: Complex) = new Complex(re + other.re, im + other.im)
-  var imSymbol = 'i'
-  override def toString = s"$re + $im$imSymbol"
-}
-\end{Code}
+\scalainputlisting[basicstyle=\ttfamily\SlideFontSize{7}{9}]{../compendium/examples/complex1.scala}
 Klassparametrarna är parametrar till den s.k. \Emph{primärkonstruktorn}.
 \begin{REPL}
 scala> val c1 = new Complex(3, 4)  // konstruktion av instans av Complex
@@ -269,15 +277,7 @@ res0: Complex = 4.0 + 6.0i
 
 
 \begin{Slide}{Exempel: Principen om enhetlig access}\SlideFontSmall
-\begin{Code}
-class Complex(val re: Double, val im: Double){
-  val r  = math.hypot(re, im)
-  val fi = math.atan2(re, im)
-  def +(other: Complex) = new Complex(re + other.re, im + other.im)
-  var imSymbol = 'i'
-  override def toString = s"$re + $im$imSymbol"
-}
-\end{Code}
+\scalainputlisting[basicstyle=\ttfamily\SlideFontSize{7}{9}]{../compendium/examples/complex2.scala}
 \pause
 \begin{itemize}
 \item Efter som attributen \code{re} och \code{im} är oföränderliga, kan vi lika gärna ändra i klass-implementationen och göra om metoderna \code{r} och \code{fi} till \code{val}-variabler utan att klientkoden påverkas.
@@ -354,25 +354,18 @@ res2: Complex = 0.0 + -1.0i
 \end{REPL}
 \end{Slide}
 
+
+
 \begin{Slide}{Hur förhindra direkt instansiering?}
 Om vi vill \Emph{förhindra direkt instansiering} kan vi göra primärkonstruktorn \Alert{privat}:
-\begin{Code}
-class Complex private (val re: Double, val im: Double){
-  def r  = math.hypot(re, im)
-  def fi = math.atan2(re, im)
-  def +(other: Complex) = new Complex(re + other.re, im + other.im)
-  var imSymbol = 'i'
-  override def toString = s"$re + $im$imSymbol"
-}
-\end{Code}
+\scalainputlisting[basicstyle=\ttfamily\SlideFontSize{7}{9}]{../compendium/examples/complex3.scala}
 MEN... då går det ju \Alert{inte} längre att instansiera något alls!  \code{   :(}
 \begin{REPLnonum}
 scala> new Complex(3,4)
 error:
-     constructor Complex in class Complex cannot be accessed in object $iw
+ constructor Complex in class Complex cannot be accessed
 \end{REPLnonum}
 \end{Slide}
-
 
 
 
@@ -382,20 +375,8 @@ error:
 \item Ett \Emph{kompanjonsobjekt} är ett objekt som ligger i samma kodfil som en klass och har \Alert{samma namn} som klassen.
 
 \item Medlemmar i ett kompanjonsobjekt \Alert{får accessa privata} medlemmar i kompanjonsklassen (och vice versa) och kompanjonsobjektet får därför accessa privat konstruktor och kan göra \code{new}.
-\begin{Code}
-class Complex private (val re: Double, val im: Double){
-  def r  = math.hypot(re, im)
-  def fi = math.atan2(re, im)
-  def +(other: Complex) = new Complex(re + other.re, im + other.im)
-  var imSymbol = 'i'
-  override def toString = s"$re + $im$imSymbol"
-}
-object Complex {
-  def apply(re: Double, im: Double) = new Complex(re, im)
-  def real(re: Double)              = new Complex(re, 0)
-  def imag(im: Double)              = new Complex(0, im)
-}
-\end{Code}
+\scalainputlisting[basicstyle=\ttfamily\SlideFontSize{7}{9}]{../compendium/examples/complex4.scala}
+
 \item Fabriksmetoder i kompanjonsobjektet ovan och privat kontstruktor gör att vi \Alert{enbart} tillåter \Emph{indirekt instansiering}.
 \end{itemize}
 \end{Slide}
@@ -417,22 +398,14 @@ res3: Complex = 3.0 + 4.0i
 
 scala> new Complex(3, 4)
 error:
-     constructor Complex in class Complex cannot be accessed in object $iw
+     constructor Complex in class Complex cannot be accessed
 \end{REPLnonum}
 \end{Slide}
 
 
 \begin{Slide}{Alternativa direktinstansieringar med default-argument}\SlideFontSmall
 Med \Emph{default-argument} kan vi erbjuda \Emph{alternativa} sätt att direktinstansiera.
-\begin{Code}
-class Complex(val re: Double = 0, val im: Double = 0){
-  def r  = math.hypot(re, im)
-  def fi = math.atan2(re, im)
-  def +(other: Complex) = new Complex(re + other.re, im + other.im)
-  var imSymbol = 'i'
-  override def toString = s"$re + $im$imSymbol"
-}
-\end{Code}
+\scalainputlisting[basicstyle=\ttfamily\SlideFontSize{7}{9}]{../compendium/examples/complex5.scala}
 \begin{REPL}
 scala> new Complex()
 res0: Complex = 0.0 + 0.0i
@@ -450,40 +423,14 @@ res3: Complex = 1.0 + 0.0i
 
 \begin{Slide}{Alternativa sätt att instansiera med fabriksmetod}
 Vi kan också erbjuda \Emph{alternativa} sätt att instansiera \Emph{indirekt} med fabriksmetoden \code{apply} i ett kompanjonsobjekt genom default-argument:
-\begin{Code}
-class Complex private (val re: Double, val im: Double){
-  def r  = math.hypot(re, im)
-  def fi = math.atan2(re, im)
-  def +(other: Complex) = new Complex(re + other.re, im + other.im)
-  var imSymbol = 'i'
-  override def toString = s"$re + $im$imSymbol"
-}
-object Complex {
-  def apply(re: Double = 0, im: Double = 0) = new Complex(re, im)
-  def real(r: Double) = apply(re=r)
-  def imag(i: Double) = apply(im=i)
-  val zero = apply()
-}
-\end{Code}
+\scalainputlisting[basicstyle=\ttfamily\SlideFontSize{7}{9}]{../compendium/examples/complex6.scala}
+
 \end{Slide}
 
 \begin{Slide}{Medlemmar som bara behövs i en enda upplaga}
 Attributet \code{imSymbol} passar bättre att ha i \Emph{kompanjonsobjektet}, eftersom det räcker att ha \Alert{en enda upplaga}, som kan vara gemensam för alla objekt:
-\begin{Code}
-class Complex private (val re: Double, val im: Double){
-  def r  = math.hypot(re, im)
-  def fi = math.atan2(re, im)
-  def +(other: Complex) = new Complex(re + other.re, im + other.im)
-  override def toString = s"$re + $im${Complex.imSymbol}"
-}
-object Complex {
-  var imSymbol = 'i'
-  def apply(re: Double = 0, im: Double = 0) = new Complex(re, im)
-  def real(r: Double) = apply(re=r)
-  def imag(i: Double) = apply(im=i)
-  val zero = apply()
-}
-\end{Code}
+\scalainputlisting[basicstyle=\ttfamily\SlideFontSize{7}{9}]{../compendium/examples/complex7.scala}
+
 \end{Slide}
 
 
@@ -510,9 +457,9 @@ Minnesplatsen för \Emph{attribut i singelobjekt} allokeras automatiskt en gång
 \draw [arrow, line width=0.7mm] (ref1) -- (instance1);
 \end{tikzpicture}
 
-Nu bereder vi inte plats för \code{imSymbol} i varenda \Emph{dynamiskt} allokerad instans:
+Nu bereder vi inte plats för \code{imSymbol} i varenda \Emph{dynamiskt} allokerade instans:
 \begin{REPLnonum}
-scala> val c1 = Complex(3, 4)   // dynamisk allokering på heapen som växer
+scala> val c1 = Complex(3, 4)
 \end{REPLnonum}
 
 \begin{tikzpicture}[font=\SlideFontSmall\sffamily]
