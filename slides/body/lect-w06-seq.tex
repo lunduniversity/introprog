@@ -1,0 +1,271 @@
+%!TEX encoding = UTF-8 Unicode
+%!TEX root = ../lect-w06.tex
+
+\Subsection{Vad är en sekvens?}
+
+\begin{Slide}{Vad är en sekvens?}
+\begin{itemize}
+\item En sekvens är en \Emph{följd av element} som
+  \begin{itemize}
+   \item är \Alert{numrerade} (t.ex. från noll), och
+   \item är av en viss \Alert{typ} (t.ex. heltal).
+  \end{itemize}
+  \pause
+\item En sekvens kan innehålla \Alert{dubbletter}.
+\item En sekvens kan vara \Alert{tom} och ha längden noll.
+\item Exempel på en icke-tom sekvens med dubbletter:
+\begin{REPLnonum}
+scala> val xs = Vector(42, 0, 42, -9, 0, 13, 7)
+xs: scala.collection.immutable.Vector[Int] =
+  Vector(42, 0, 42, -9, 0, 13, 7)
+\end{REPLnonum}
+\pause
+\item \Emph{Indexering} ger ett element via dess ordningsnummer:
+\begin{REPLnonum}
+scala> xs(2)
+res0: Int = 42
+
+scala> xs.apply(2)
+res1: Int = 42
+\end{REPLnonum}
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Exempel: En sträng är en sekvens av tecken}
+\begin{REPLnonum}
+scala> "haj po daj"
+\end{REPLnonum}
+Längd? Elementtyp?
+Vad ligger på första platsen?
+Dubbletter?
+\pause
+\begin{REPLnonum}
+scala> "haj po daj".length
+res1: Int = 10
+
+scala> "haj po daj".apply(0)
+res2: Char = h
+
+scala> "haj po daj"(0)
+res3: Char = h
+
+scala> "haj po daj".distinct
+res4: String = haj pod
+\end{REPLnonum}
+
+\end{Slide}
+
+
+\begin{Slide}{Egenskaper hos några sekvenssamlingar i Scala}
+\vspace{-0.5em}
+\begin{itemize}\SlideFontSmall
+
+\item \code{Vector}
+  \begin{itemize}\SlideFontSmall
+  \item \Emph{Oföränderlig}. Snabb på att skapa kopior med små förändringar.
+  \item Allsidig prestanda: \Emph{bra till det mesta}.
+  \end{itemize}
+
+\item \code{List}
+  \begin{itemize}\SlideFontSmall
+  \item \Emph{Oföränderlig}. Snabb på att skapa kopior med små förändringar.
+  \item Snabb vid bearbetning \Emph{i början}.
+  \item Smidig \& snabb vid \Emph{rekursiva} algoritmer.
+  \item Långsam vid upprepad \Alert{indexering} på godtyckliga ställen.
+  \end{itemize}
+
+\item \code{Array}
+  \begin{itemize}\SlideFontSmall
+  \item \Alert{Föränderlig}: \Emph{snabb indexering \& uppdatering}.
+  \item Kan \Alert{ej ändra storlek}; storlek ges vid allokering.
+  \item Har särställning i JVM: ger snabbast allokering och access.
+  \end{itemize}
+
+\item \code{ArrayBuffer}
+  \begin{itemize}\SlideFontSmall
+  \item \Alert{Föränderlig}: \Emph{snabb indexering \& uppdatering}.
+  \item Kan \Emph{ändra storlek} efter allokering. Snabb att indexera överallt.
+  \end{itemize}
+
+\item \code{ListBuffer}
+  \begin{itemize}\SlideFontSmall
+  \item \Alert{Föränderlig}: snabb indexering \& uppdatering \Emph{i början}.
+  \item Snabb om du bygger upp sekvens genom många tillägg i början.
+  \end{itemize}
+
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Vilken sekvenssamling ska jag välja?}\SlideFontSmall
+\vspace{-0.5em}
+\begin{itemize}
+\item Välj \code{Vector} om ...
+  \begin{itemize}\SlideFontTiny
+  \item[a)] du vill ha oföränderlighet: \code{val xs = Vector[Int](1,2,3)}
+  \item[b)] du behöver föränderlighet (notera \code{var}):\\ \code{var xs = Vector.empty[Int]}
+  \item[c)] du ännu inte vet vilken sekvenssamling som är bäst; du kan alltid ändra efter att du mätt prestanda och kollat flaskhalsar vid upprepade körningar.
+  \end{itemize}
+
+\item Välj \code{List} om ...
+  \begin{itemize}\SlideFontTiny
+  \item[] du har en rekursiv sekvensalgoritm och/eller bara lägger till i början.
+  \end{itemize}
+
+
+\item Välj \code{Array} om ...
+  \begin{itemize}\SlideFontTiny
+  \item[] det behövs av prestandaskäl och du \Alert{vet} storlek vid allokering:\\
+  \code{val xs = Array.fill(initSize)(initValue)     }  eller:
+  \code{val ys = new Array[String](1000)  // 1000 null-referenser}
+  \end{itemize}
+
+\item Välj \code{ArrayBuffer} om ...
+  \begin{itemize}\SlideFontTiny
+  \item[] det behövs av prestandaskäl och du \Alert{inte} vet storlek vid allokering:\\
+  \code{val xs = scala.collection.mutable.ArrayBuffer.empty[Int]}
+  \end{itemize}
+
+\item Välj \code{ListBuffer} om ...
+  \begin{itemize}\SlideFontTiny
+  \item[] det behövs av prestandaskäl och du bara behöver lägga till i början:\\ \code{val xs = scala.collection.mutable.ListBuffer.empty[Int]}
+  \end{itemize}
+
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Sammanfattning: Oföränderlig eller förändringsbar?}
+\begin{itemize}
+\item \Emph{Oföränderlig}:  Kan ej ändra elementreferenserna, men effektiv på att skapa kopia som är (delvis) förändrad\\(vanliga i Scala, men inte i Java): \Emph{Vector} eller \Emph{List}
+
+\item \Alert{Förändringsbar}: kan ändra elemententreferenserna
+  \begin{itemize}
+  \item Kan \Alert{ej ändra storlek} efter allokering: \\ Scala+Java: \Emph{Array}: indexera och uppdatera varsomhelst
+  \item Kan ändra storlek efter allokering:
+  \\ Scala: \Alert{ArrayBuffer} eller \Alert{ListBuffer}
+  \\ Java: \Alert{ArrayList} eller \Alert{LinkedList}
+  \end{itemize}
+\item \Emph{Ofta funkar oföränderlig sekvenssamling utmärkt}, men om man \Alert{efter prestandamätning} upptäcker en flaskhals kan man ändra från \Emph{Vector} till t.ex. \Emph{ArrayBuffer}.
+\end{itemize}
+\end{Slide}
+
+
+
+
+
+\begin{Slide}{Lämna det öppet: använd \texttt{Seq[T]}}
+\begin{Code}[basicstyle=\ttfamily]
+def varannanBaklänges[T](xs: Seq[T]): Seq[T] =
+  for (i <- xs.indices.reverse by -2) yield xs(i)
+\end{Code}
+Fungerar med alla sekvenssamlingar:
+\begin{REPLnonum}
+scala> varannanBaklänges(Vector(1,2,3,4,5))
+res0: Seq[Int] = Vector(5, 3, 1)
+
+scala> varannanBaklänges(List(1,2,3,4,5))
+res1: Seq[Int] = List(5, 3, 1)
+
+scala> varannanBaklänges(collection.mutable.ListBuffer(1,2))
+res2: Seq[Int] = Vector(2)
+\end{REPLnonum}
+Scalas standardbibliotek returnerar ofta lämpligaste specifika sekvenssamlingen som är subtyp till \texttt{Seq[T]}.
+\end{Slide}
+
+
+
+\Subsection{Vad är en sekvensalgoritm?}
+
+\begin{Slide}{Vad är en sekvensalgoritm?}\SlideFontSmall
+\begin{itemize}
+\item En algoritm är en stegvis beskrivning av lösningen på ett problem.
+\item En \textbf{sekvensalgoritm} är en algoritm där \Emph{element i sekvens} utgör en viktig del av \Alert{problembeskrivningen} och/eller \Alert{lösningen}.
+
+
+\item Exempelproblem: sortera en sekvens av personer efter deras ålder.
+
+\pause
+
+\item Några vanliga sekvensalgoritmer som löser ofta återkommande programmeringsproblem:
+
+\begin{itemize}\SlideFontSmall
+  \item \Emph{kopiering} (\Emph{filtrering}) av (delar av) en sekvens
+  \item \Emph{sökning} efter element som uppfyller \Alert{sökkriterium}
+  \item \Emph{sortering} enligt jämförelse av vissa \Alert{egenskaper} hos element
+  \item \Emph{registrering} av \Alert{frekvens} av element med vissa \Alert{egenskaper}
+\end{itemize}
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Vanliga sekvensproblem som funktioner}
+\begin{Code}
+object IntSeqUtils {
+  def copy(xs: Array[Int]): Array[Int] = ???
+
+  def filter(xs: Vector[Int], p: Int => Boolean): Vector[Int] = ???
+
+  def findIndices(xs: Vector[Int], p: Int => Boolean): Vector[Int] = ???
+
+  def sort(xs: Vector[Int]): Vector[Int] = ???
+
+  def freq(xs: Vector[Int]): Vector[(Int, Int)] = ???  // (heltal, frekvens)
+}
+\end{Code}
+\end{Slide}
+
+
+\begin{Slide}{Vanliga sekvensproblem som funktioner}
+\begin{Code}
+object IntSeqUtils {
+  def copy(xs: Array[Int]): Array[Int] = for (x <- xs) yield x
+
+  def filter(xs: Vector[Int], p: Int => Boolean): Vector[Int] =
+    for (x <- xs if p(x)) yield x
+
+  def findIndices(xs: Vector[Int], p: Int => Boolean): Vector[Int] =
+    (for (i <- xs.indices if p(xs(i))) yield i).toVector
+
+  def sort(xs: Vector[Int]): Vector[Int] = xs.sorted // mer om sortering sen
+
+  def freq(xs: Vector[Int]): Vector[(Int, Int)] = // mer om registrering snart
+    for (x <- xs.distinct) yield (x, xs.count(_ == x))
+}
+\end{Code}
+\end{Slide}
+
+
+
+% \begin{Slide}{Vanliga sekvensproblem som generiska funktioner}
+% \begin{Code}
+% object sequenceAlgorithms {
+%   def copy[T](xs: Seq[T]): Seq[T] = ???
+%
+%   def filter[T](xs: Seq[T], p: T => Boolean): Seq[T] = ???
+%
+%   def find[T](xs: Seq[T], p: T => Boolean): T = ???
+%
+%   def sort[T](xs: Seq[T]): Seq[T] = ???
+%
+%   def freq(xs: Seq[T]): Seq[(T, Int)] = ???
+% }
+% \end{Code}
+% \end{Slide}
+
+
+\begin{Slide}{Skapa ny sekvenssamling eller ändra på plats?}
+  Två olika principer vid sekvensalgoritmkonstruktion:
+  \begin{itemize}
+  \item Skapa \Emph{ny sekvens} utan att förändra insekvensen
+  \item Ändra \Emph{på plats} \Eng{in-place} i en \Alert{förändringsbar} sekvensen
+  \end{itemize}
+
+Skapa ny sekvens eller ändra på plats?
+\begin{itemize}
+\item Ofta är det \Emph{lättast att skapa ny samling} och kopiera över elementen efter eventuella förändringar medan man loopar.
+\item Om man har mycket stora samlingar kan man behöva ändra på plats för att spara tid/minne.
+\end{itemize}
+Det är bra att själv kunna implementera sekvensalgortimer även om många av dem finns färdiga, för att bättre förstå vad som händer ''under huven'', och för att i enstaka fall kunna optimera om det verkligen behövs.
+
+Vi illustrerar därför hur man kan implementera några sekvensalgoritmer med primitiva arrayer även om man sällan gör så i praktiken (i Scala).
+\end{Slide}
