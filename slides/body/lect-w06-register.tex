@@ -9,7 +9,7 @@
 \begin{itemize}
 \item \Emph{Registrering} innefattar algoritmer för att räkna antalet förekomster av olika saker.
 
-\item Exempel: 
+\item Exempel:
 \\\vspace{0.5em}Utfallsfrekvens vid kast med en tärning 1000 gånger:
 
 \vspace{1em}\begin{tabular}{r c l}
@@ -27,13 +27,12 @@ utfall & & antal \\ \hline
 \begin{Slide}{Registrering av tärningskast i \code{Array}}
 Vi låter plats 0 representera antalet ettor, plats 1 representerar antalet tvåor etc.
 \begin{REPLnonum}
-scala> val rnd = new java.util.Random(42L)
-rnd: java.util.Random = java.util.Random@6d946eee
+scala> def rollDice = scala.util.Random.nextInt(6) + 1
 
 scala> val reg = new Array[Int](6)
 reg: Array[Int] = Array(0, 0, 0, 0, 0, 0)
 
-scala> for (i <- 1 to 1000) reg(rnd.nextInt(6)) += 1
+scala> for (i <- 1 to 1000) reg(rollDice - 1) += 1
 
 scala> for (i <- 1 to 6) println(i +": " + reg(i - 1))
 1: 178
@@ -45,77 +44,91 @@ scala> for (i <- 1 to 6) println(i +": " + reg(i - 1))
 \end{REPLnonum}
 \end{Slide}
 
-\begin{Slide}{Registrering av tärningskast i \code{Map}, imperativ lösning}
-Vi registrerar antalet i en Map[Int, Int] där nyckeln är antalet tärningsögon och värdet är frekvensen.
-\begin{REPLnonum}
-scala> val rnd = new java.util.Random(42L)
-rnd: java.util.Random = java.util.Random@6d946eee
+% \begin{Slide}{Registrering av tärningskast i \code{Map}, imperativ lösning}
+% Vi registrerar antalet i en Map[Int, Int] där nyckeln är antalet tärningsögon och värdet är frekvensen.
+% \begin{REPLnonum}
+% scala> val rnd = new java.util.Random(42L)
+% rnd: java.util.Random = java.util.Random@6d946eee
+%
+% scala> var reg = (1 to 6).map(i => i -> 0).toMap
+% reg: scala.collection.immutable.Map[Int,Int] =
+%   Map(5 -> 0, 1 -> 0, 6 -> 0, 2 -> 0, 3 -> 0, 4 -> 0)
+%
+% scala> for (i <- 1 to 1000) {
+%          val t = rnd.nextInt(6) + 1
+%          reg = reg + ((t, reg(t) + 1))
+%        }
+%
+% scala> reg
+% res0:scala.collection.immutable.Map[Int,Int]= Map(5 -> 155,
+% 1 -> 178, 6 -> 165, 2 -> 187, 3 -> 167, 4 -> 148)
+% \end{REPLnonum}
+% \end{Slide}
+%
+% \begin{Slide}{Registrering av tärningskast i \code{collection.mutable.Map}, imperativ lösning}
+% Om vi är bekymrade över prestanda:
+% \begin{REPL}
+% scala> val rnd = new java.util.Random(42L)
+% rnd: java.util.Random = java.util.Random@6d946eee
+%
+% scala> val initPairs = (1 to 6).map(i => i -> 0)
+% initPairs: scala.collection.immutable.IndexedSeq[(Int, Int)] =
+% Vector((1,0), (2,0), (3,0), (4,0), (5,0), (6,0))
+%
+% scala> var reg = scala.collection.mutable.Map(initPairs: _*)
+%
+% scala> for (i <- 1 to 1000) {
+%          val t = rnd.nextInt(6) + 1
+%          reg(t) = reg(t) + 1
+%        }
+%
+% scala> reg
+% res0: scala.collection.mutable.Map[Int,Int] =
+% Map(2 -> 187, 5 -> 155, 4 -> 148, 1 -> 178, 3 -> 167, 6 -> 165)
+%
+% \end{REPL}
+% \end{Slide}
+%
+% \begin{Slide}{Registrering av tärningskast i \code{Map}, funktionell lösning}
+% Oföränderlighet: Skapa nya samlingar utan att ändra något.
+% \begin{REPLnonum}
+% scala> val rnd = new java.util.Random(42L)
+% rnd: java.util.Random = java.util.Random@6d946eee
+%
+% scala> val dice = (1 to 1000).map(i => rnd.nextInt(6) + 1)
+%
+% scala> dice.groupBy(i => i).mapValues(_.size)
+% res0:scala.collection.immutable.Map[Int,Int]= Map(5 -> 155,
+% 1 -> 178, 6 -> 165, 2 -> 187, 3 -> 167, 4 -> 148)
+% \end{REPLnonum}
+% Övn. för den nyfikne: mät prestanda för de olika lösningarna.
+% \end{Slide}
 
-scala> var reg = (1 to 6).map(i => i -> 0).toMap
-reg: scala.collection.immutable.Map[Int,Int] = 
-  Map(5 -> 0, 1 -> 0, 6 -> 0, 2 -> 0, 3 -> 0, 4 -> 0)
+\begin{Slide}{Syresättning av hjärnan med registreringslek}\SlideFontTiny
 
-scala> for (i <- 1 to 1000) {
-         val t = rnd.nextInt(6) + 1
-         reg = reg + ((t, reg(t) + 1))
-       }
-       
-scala> reg
-res0:scala.collection.immutable.Map[Int,Int]= Map(5 -> 155, 
-1 -> 178, 6 -> 165, 2 -> 187, 3 -> 167, 4 -> 148)
-\end{REPLnonum}
-\end{Slide}
+%\vspace{-0.65em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/FixSleepyBrainRegisterChosen.scala}
 
-\begin{Slide}{Registrering av tärningskast i \code{collection.mutable.Map}, imperativ lösning}
-Om vi är bekymrade över prestanda:
-\begin{REPL}
-scala> val rnd = new java.util.Random(42L)
-rnd: java.util.Random = java.util.Random@6d946eee
+\begin{Code}
+object StandUpSleepyBrain {
+  def randomChar: Char = (scala.util.Random.nextInt('Z' - 'A') + 'A').toChar
+  val reg = new Array[Int]('Z' - 'A')
+  def tab: Seq[(Char, Int)] = reg.indices.map(i => ((i + 'A').toChar, reg(i)))
+  def winner = "\n ** Toggle Winner: **" + (reg.indexOf(reg.max)+'A').toChar
+  def report = "Registreringsrapport:\n" + tab.mkString("\n") + winner
 
-scala> val initPairs = (1 to 6).map(i => i -> 0)
-initPairs: scala.collection.immutable.IndexedSeq[(Int, Int)] = 
-Vector((1,0), (2,0), (3,0), (4,0), (5,0), (6,0))
-
-scala> var reg = scala.collection.mutable.Map(initPairs: _*)
-
-scala> for (i <- 1 to 1000) {
-         val t = rnd.nextInt(6) + 1
-         reg(t) = reg(t) + 1
-       }
-       
-scala> reg
-res0: scala.collection.mutable.Map[Int,Int] = 
-Map(2 -> 187, 5 -> 155, 4 -> 148, 1 -> 178, 3 -> 167, 6 -> 165)
-
-\end{REPL}
-\end{Slide}
-
-\begin{Slide}{Registrering av tärningskast i \code{Map}, funktionell lösning}
-Oföränderlighet: Skapa nya samlingar utan att ändra något.
-\begin{REPLnonum}
-scala> val rnd = new java.util.Random(42L)
-rnd: java.util.Random = java.util.Random@6d946eee
-
-scala> val dice = (1 to 1000).map(i => rnd.nextInt(6) + 1)
-
-scala> dice.groupBy(i => i).mapValues(_.size)
-res0:scala.collection.immutable.Map[Int,Int]= Map(5 -> 155, 
-1 -> 178, 6 -> 165, 2 -> 187, 3 -> 167, 4 -> 148)
-\end{REPLnonum}
-Övn. för den nyfikne: mät prestanda för de olika lösningarna.
-\end{Slide}
-
-\begin{Slide}{Syresättning av hjärnan med registrering av utvalda}\SlideFontTiny
-
-\vspace{-0.65em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/FixSleepyBrainRegisterChosen.scala}
+  def toggle(n: Int = 10): Unit = {
+    println(s"Toggla (sitt upp/sitt ner) om ditt förnamn börjar på: ")
+    var ready = false
+    while(!ready){
+      val chars = Vector.fill(n)(randomChar).distinct.sorted
+      println("\n" + chars.mkString(" "))
+      chars.foreach(ch => reg(ch - 'A') += 1)
+      ready = scala.io.StdIn.readLine("\n").length > 0
+    }
+    println(report)
+  }
+}
+\end{Code}
 
 \vspace{-0.65em}Medan du lyssnar till: \href{https://www.youtube.com/watch?v=ZVrgj3A0_BY}{ https://www.youtube.com/watch?v=ZVrgj3A0\_BY}
 \end{Slide}
-
-
-
-
-
-
-
-
