@@ -1,11 +1,13 @@
 package graphics
 
+/** A Rectangle with its upper left corner in pos. */
 case class Rect(pos:    Point,
                 width:  Double,
                 height: Double,
                 angle:  Double = 0.0) {
 
-  /** Draws this rectangle starting from pos. */
+  /** Draws this rectangle starting from pos where positive width is
+    * drawn rightwards and positive height is drawn downwards. */
   def draw(turtle: Turtle): Rect = ???
 
   /** A new rectangle rotated to the left. */
