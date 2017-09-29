@@ -1,6 +1,7 @@
 package graphics
 
-/** A Rectangle with its upper left corner in pos. */
+/** A Rectangle with its upper left corner in pos and an angle in
+  * degrees where a positive value is a counter-clockwise rotation.*/
 case class Rect(pos:    Point,
                 width:  Double,
                 height: Double,
