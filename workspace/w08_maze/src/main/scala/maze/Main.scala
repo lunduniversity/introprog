@@ -2,15 +2,13 @@ package maze
 
 import cslib.window.SimpleWindow
 import graphics.SimpleTurtle
-import java.io.File
-import java.nio.file.Paths
 
 object Main {
   val win = new SimpleWindow(800, 640, "A-Maze-Ing Race")
-
+  val animationDelay: Int = 50
   def msg(s: String, y: Int = 100): Unit = { win.moveTo(10, y); win.writeText(s) }
 
-  def drawMazeAndClickToWalk(maze: Maze, animationDelay: Int = 1): Unit = {
+  def drawMazeAndClickToWalk(maze: Maze): Unit = {
     maze.draw(win)
     win.setLineColor(java.awt.Color.red)
     win.setLineWidth(2)
@@ -43,7 +41,6 @@ object Main {
   def getResourcePath : String = getClass.getResource("/").getPath
 
   def main(args: Array[String]): Unit = {
-    drawMazeAndClickToWalk(mySimpleMaze, animationDelay = 1)
     val path = getResourcePath
     println(s"Resource path detected: $path")
     printMazesFromDir(path, n = 4)
@@ -54,12 +51,4 @@ object Main {
     drawMazesInDir(path)
     msg("GOODBYE! File -> Quit or Ctrl+Q to exit.", y = 80)
   }
-
-  val mySimpleMaze = Maze(
-    "### #######",
-    "#         #",
-    "########  #",
-    "#         #",
-    "####### ###"
-  )
 }

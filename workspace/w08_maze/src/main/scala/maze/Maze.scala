@@ -1,12 +1,12 @@
-package maze;
+package maze
 import cslib.window.SimpleWindow
 
 case class Maze(
   val matrix: Vector[Vector[Boolean]],
   val canvasSize: (Int, Int) = (500, 500),
-  var wallChar: Char         = '#', // use '\u2588' for full block
-  var noWallChar: Char       = ' ',
-  var blockSize: Int         = 7,
+  val wallChar: Char         = '#',
+  val noWallChar: Char       = ' ',
+  val blockSize: Int         = 7,
 ) {
   assert(blockSize % 2 == 1, "blockSize must be odd")
   assert(blockSize > 2,      "blockSize must be at least 3")

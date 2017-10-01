@@ -5,8 +5,8 @@ import Keys._
 
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
-  version := "16.1",
-  scalaVersion := "2.11.8"
+  version := "2017.2",
+  scalaVersion := "2.12.2"  // ScalaIDE is not ready for 2.12.3 yet
 )
 
 lazy val cslib = (project in file("cslib")).
@@ -24,7 +24,6 @@ lazy val w03_irritext =(project in file("w03_irritext")).
       EclipseKeys.skipProject := true
     ).dependsOn(cslib)
 
-
 lazy val w04_blockmole =(project in file("w04_blockmole")).
   settings(commonSettings: _*).
   settings(
@@ -35,13 +34,15 @@ lazy val w04_blockmole =(project in file("w04_blockmole")).
 lazy val w05_turtle =(project in file("w05_turtle")).
   settings(commonSettings: _*).
   settings(
-    name := "w05_turtle"
+    name := "w05_turtle",
+    EclipseKeys.skipProject := true
   ).dependsOn(cslib)
 
 lazy val w06_shuffle =(project in file("w06_shuffle")).
   settings(commonSettings: _*).
   settings(
-    name := "w06_shuffle"
+    name := "w06_shuffle",
+    EclipseKeys.skipProject := true
   )
 
 lazy val w07_words =(project in file("w07_words")).
