@@ -96,6 +96,28 @@ res4: String = haj pod
 \end{itemize}
 \end{Slide}
 
+\begin{Slide}{Lägg till i början och i slutet av en sekvens}
+\begin{itemize}
+\item Med metoderna \code{+:} och \code{:+} kan du skapa en ny sekvens med nya element tillagda i början resp. i slutet. 
+\item Minnesregel: ''\Alert{Colon on the collection side}''
+\begin{REPLnonum}
+scala> val xs = Vector(1,2,3)
+scala> 42 +: xs         // ger ny Vector(42, 1, 2, 3)
+scala> xs :+ 42         // ger ny Vector(1, 2, 3, 42)
+\end{REPLnonum}
+\pause
+\item Semantik: operatornotation med operartorer som \Emph{slutar med kolon} är \Alert{högerassociativa}
+\item Anropet \code{42 +: xs} skrivs av kompilatorn om till \code{xs.+:(42)}   
+\begin{REPL}
+scala> xs.+:(42)
+res4: scala.collection.immutable.Vector[Int] = Vector(42, 1, 2, 3)
+\end{REPL}
+\pause
+\item Konkatenering (sammanfogning) av sekvenser: \code{xs ++ ys}
+
+\end{itemize}
+\end{Slide}
+
 \begin{Slide}{Vilken sekvenssamling ska jag välja?}\SlideFontSmall
 \vspace{-0.5em}
 \begin{itemize}
@@ -108,7 +130,7 @@ res4: String = haj pod
 
 \item Välj \code{List} om ...
   \begin{itemize}\SlideFontTiny
-  \item[] du har en rekursiv sekvensalgoritm och/eller bara lägger till i början.
+  \item[] du har en \Alert{rekursiv} sekvensalgoritm och/eller \Alert{mestadels jobbar i början}.
   \end{itemize}
 
 
@@ -136,7 +158,7 @@ res4: String = haj pod
 
 \begin{Slide}{Sammanfattning: Oföränderlig eller förändringsbar?}
 \begin{itemize}
-\item \Emph{Oföränderlig}:  Kan ej ändra elementreferenserna, men effektiv på att skapa kopia som är (delvis) förändrad\\(vanliga i Scala, men inte i Java): \Emph{Vector} eller \Emph{List}
+\item \Emph{Oföränderlig}:  Kan ej ändra elementreferenserna, men effektiv på att skapa kopia som är (delvis) förändrad\\(vanliga i Scala, men inte i Java 8): \Emph{Vector} eller \Emph{List}
 
 \item \Alert{Förändringsbar}: kan ändra elemententreferenserna
   \begin{itemize}
@@ -208,7 +230,7 @@ Någon lämplig specifik samling som är subtyp till \code{Seq[T]} väljs automa
 \item En \textbf{sekvensalgoritm} är en algoritm där \Emph{element i sekvens} utgör en viktig del av \Alert{problembeskrivningen} och/eller \Alert{lösningen}.
 \item Exempelproblem: sortera en sekvens av personer efter deras ålder.
 \pause
-\item Några ofta återkommande programmeringsproblem som löses med en sekvensalgoritm:
+\item \Alert{Fem} ofta återkommande programmeringsproblem som löses med en sekvensalgoritm:
 \begin{itemize}\SlideFontSmall
 \item \Emph{Kopiering} av \Alert{alla} element i en sekvens till en \Alert{ny} sekvens
 \item \Emph{Filtrering}: urval av vissa element som uppfyller ett \Alert{villkor}
@@ -312,7 +334,7 @@ def sort(xs: Vector[Int]): Vector[Int] = ???
 
 def freq(xs: Vector[Int]): Vector[(Int, Int)] = ???  // (heltal, frekvens)
 \end{Code}
-Hur implementera dessa med \code{for}-uttryck och/eller färdiga samlingsmetoder?
+Övning: Hur implementera dessa med \code{for}-uttryck och/eller färdiga samlingsmetoder?
 \end{Slide}
 
 
@@ -331,6 +353,7 @@ def sort(xs: Vector[Int]): Vector[Int] = xs.sorted // mer om sortering sen
 def freq(xs: Vector[Int]): Vector[(Int, Int)] = // mer om registrering snart
   for (x <- xs.distinct) yield (x, xs.count(_ == x))
 \end{Code}
+Övning: Hur implementera dessa med \code{map} och \code{filter} och/eller andra färdiga samlingsmetoder?
 \end{Slide}
 
 \begin{Slide}{Implementation av sekvensproblem med \texttt{map}, \texttt{filter}}
@@ -347,11 +370,12 @@ def sort(xs: Vector[Int]): Vector[Int] = xs.sorted // mer om sortering sen
 def freq(xs: Vector[Int]): Vector[(Int, Int)] = // mer om registrering snart
   xs.distinct.map(x => (x, xs.count(_ == x)))
 \end{Code}
+Fördjupningsövning: Hur göra dessa metoder generiska för alla sekvenssamlingar av typen \code{Seq[T]}?
 \end{Slide}
 
 
 \begin{Slide}{Fördjupning: implementation som generiska funktioner}
-Genom att generalisera funktionshuvudena blir våra lösningar mer användbara.
+Genom att generalisera funktionshuvudena blir våra lösningar användbara för \Alert{alla} skevenser av typen \code{Seq[T]}.
 \begin{Code}
 def copy[T](xs: Seq[T]): Seq[T] = xs.map(x => x)
 
@@ -365,4 +389,6 @@ def sort[T: Ordering](xs: Seq[T]): Seq[T] = xs.sorted // mer om Ordering sen
 def freq[T](xs: Seq[T]): Seq[(T, Int)] =
   xs.distinct.map((_, xs.count(_ == x)))
 \end{Code}
+\pause
+Standardbibliotekets metoder försöker ordna så att det blir samma konkreta typ in som ut, men ibland väljs annan lämplig konkret samling, t.ex. kan en \code{Array} ofta bli en \code{ArrayBuffer}.
 \end{Slide}
