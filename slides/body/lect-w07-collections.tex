@@ -1,16 +1,20 @@
 %!TEX encoding = UTF-8 Unicode
 %!TEX root = ../lect-w07.tex
 
-\Subsection{Samlingar}
 
-\begin{Slide}{Vad är en samling?}
+\Subsection{Hierarki av samlingstyper}
+
+\begin{Slide}{Repetition: Vad är en samling?}
 En \Emph{samling} \Eng{collection} är en datastruktur som kan innehålla många element av \Alert{samma typ}.
 
-\pause 
-\vspace{2em}\emph{Exempel:} \\Heltalsvektor: \hfill\code{val xs = Vector(2, -1, 3, 42, 0)}
+\pause
+\vspace{2em}\emph{Exempel:} \\Heltalsvektor: \hfill\code{val xs = Vector(2, -1, 3, 42, 0)}\\
+\pause
+Härledd typ: \hfill\code{scala.collection.immutable.Vector[Int]}
 
-\pause 
-{\SlideFontSmall\vspace{2em}Samlingar implementeras med hjälp av klasser. \\ I standardbiblioteken \code{scala.collection} och \code{java.util} finns \Alert{många} \Emph{färdiga samlingar}, så man behöver sällan implementera egna. 
+
+\pause
+{\SlideFontSmall\vspace{2em}Samlingar implementeras med hjälp av klasser. \\ I standardbiblioteken \code{scala.collection} och \code{java.util} finns \Alert{många} \Emph{färdiga samlingar}, så man behöver sällan implementera egna.
 
 \pause\vspace{0.5em}\emph{Om} man behöver en egen, speciell datastruktur är det ofta lämpligt att skapa en klass som \emph{innehåller} en \emph{färdig} samling och utgå från dess färdiga metoder.
 
@@ -19,65 +23,65 @@ En \Emph{samling} \Eng{collection} är en datastruktur som kan innehålla många
 \end{Slide}
 
 
+
+
+
 \begin{Slide}{Typparameter möjliggör generiska samlingar}\SlideFontSmall
-Funktioner och klasser kan, förutom vanliga parametrar, även ha \Emph{typparametrar} som skrivs i en egen parameterlista med \Alert{hakparenteser}. En typparameter gör så att funktioner och datastrukturer blir \Emph{generiska} och kan hantera element av \Alert{godtycklig} typ på ett typsäkert sätt. (Mer om detta i w08.)
 
-\begin{REPLnonum}
-scala> def strängLängd[T](x: T): Int = x.toString.length
-strängLängd: [T](x: T)Int
+\begin{itemize}
+  \item Med \Emph{generisk} \Eng{generic} kod menar man att koden kan hantera data av \Alert{godtycklig} typ.
+  \item Funktioner och klasser kan, förutom vanliga parametrar, även ha \Emph{typparametrar} som skrivs i en \Alert{egen} parameterlista med \Alert{hakparenteser} i stället för vanliga parenteser.
 
-scala> strängLängd[Double](42.0)  //Double är typargument
-res0: Int = 4
+  \item En typparameter gör så att funktioner och datastrukturer blir \Emph{generiska}.
 
-scala> strängLängd(42.0) //Kompilatorn härleder T=Double
-res1: Int = 4
+  \item Exempel: Funktionerna \code{baklänges} 1--4 nedan är ordnade från specifik typ till mer generell typ.
 
-scala> Vector.empty[Int] //Här kan den ej härleda typen...
-res2: scala.collection.immutable.Vector[Int] = Vector()
+\begin{Code}
+def baklänges1(xs: Vector[Int]): Vector[Int] = xs.reverse
 
-scala> strängLängd[Vector[Int]](Vector.empty) //...men här
-res3: Int = 8
-\end{REPLnonum}
+def baklänges2[T](xs: Vector[T]): Vector[T] = xs.reverse
+
+def baklänges3(xs: Seq[T]): Vector[T] = xs.reverse.toVector
+
+def baklänges4(xs: Seq[T]): Seq[T] = xs.reverse  // reverse avgör typ
+\end{Code}
+\item Mer om typparametrar i w08.
+\end{itemize}
 \end{Slide}
 
-\begin{Slide}{Hierarki av samlingar i scala.collection}
-\includegraphics[width=1.0\textwidth]{../img/collection/collection-traits}
-\end{Slide}
-\noindent Läs mer om Scalas samlingar här: \\ 
-\url{http://docs.scala-lang.org/overviews/collections/overview}
 
 
 \begin{Slide}{Hierarki av samlingstyper i \texttt{scala.collection}}
 
 \begin{multicols}{2}
-\begin{tikzpicture}[sibling distance=6.1em,->,>=stealth', inner sep=3pt, %scale=0.5, 
+\begin{tikzpicture}[sibling distance=6.1em,->,>=stealth', inner sep=3pt, %scale=0.5,
   every node/.style = {shape=rectangle, draw, align=center,font=\small\ttfamily},
   class/.style = {fill=blue!20},
   trait/.style = {rounded corners, fill=red!20}]
   \node[trait] {Traversable}
-    child { node[trait] {Iterable} 
-      child { node[trait] {Seq} 
+    child { node[trait] {Iterable}
+      child { node[trait] {Seq}
        }
-      child { node[trait] {Set} 
+      child { node[trait] {Set}
       }
-      child { node[trait] {Map} 
+      child { node[trait] {Map}
       }
     };
 \end{tikzpicture}
 
 \columnbreak
- 
-{\SlideFontTiny 
+
+{\SlideFontTiny
 
 \code{Traversable} har metoder som är implementerade med hjälp av: \\
 \code{def foreach[U](f: Elem => U): Unit}\\
 
 \vspace{1em}\code{Iterable} har metoder som är implementerade med hjälp av: \\
-\code{def iterator: Iterator[A] } 
+\code{def iterator: Iterator[A] }
 
 }
 
-\begin{itemize}\SlideFontTiny 
+\begin{itemize}\SlideFontTiny
 \item[] \code{Seq}: ordnade i sekvens
 \item[] \code{Set}: unika element
 \item[] \code{Map}: par av (nyckel, värde)
@@ -86,87 +90,35 @@ res3: Int = 8
 
 \end{multicols}
 
-{\SlideFontSmall Samlingen \Emph{\texttt{Vector}} är en \code{Seq} som är en \code{Iterable} som är en \code{Traversable}.}
-\end{Slide}
-
-\begin{Slide}{Använda \texttt{iterator}}\SlideFontSmall
-Med en \code{iterator} kan man \Emph{iterera} med \code{while} över alla element, men endast \Alert{en   gång}; sedan är iteratorn ''förbrukad''. (Men man kan be om en ny.)
-\begin{REPL}
-scala> val xs = Vector(1,2,3,4)
-xs: scala.collection.immutable.Vector[Int] = Vector(1, 2, 3, 4)
-
-scala> val it = xs.iterator
-it: scala.collection.immutable.VectorIterator[Int] = non-empty iterator
-
-scala> while (it.hasNext) print(it.next)
-1234
-
-scala> it.hasNext
-res1: Boolean = false
-
-scala> it.next
-java.util.NoSuchElementException: reached iterator end
-  at scala.collection.immutable.VectorIterator.next(Vector.scala:674)
-\end{REPL}
-\Emph{Normalt} behöver man \Alert{inte} använda \code{iterator}: det finns oftast färdiga metoder som gör det man vill, till exempel \code{foreach}, \code{map}, \code{sum}, \code{min} etc.
-\end{Slide}
-
-\begin{Slide}{Några användbara metoder på samlingar}\SlideFontTiny
-\begin{tabular}{r r l}\hline
-\texttt{\Emph{Traversable}} 
-  & \code|xs.size| & antal elementet \\
-  & \code|xs.head| & första elementet \\
-  & \code|xs.last| & sista elementet \\
-  & \code|xs.take(n)| & ny samling med de första n elementet \\
-  & \code|xs.drop(n)| & ny samling utan de första n elementet \\
-  & \code|xs.foreach(f)| & gör \code|f| på alla element, returtyp \code|Unit|\\
-  & \code|xs.map(f)| & gör \code|f| på alla element, ger ny samling \\
-  & \code|xs.filter(p)| & ny samling med bara de element där p är sant\\
-  & \code|xs.groupBy(f)| & ger en \code|Map| som grupperar värdena enligt f\\ 
-  & \code|xs.mkString(",")| & en kommaseparerad sträng med alla element\\ \hline
-    
-\texttt{\Emph{Iterable}} 
-  & \code|xs.zip(ys)| & ny samling med par (x, y); ''zippa ihop'' xs och ys \\
-  & \code|xs.zipWithIndex| & ger en \code|Map| med par (x, index för x) \\
-  & \code|xs.sliding(n)| & ny samling av samlingar genom glidande ''fönster''\\ \hline
-
-\texttt{\Emph{Seq}} 
-  & \code|xs.length| & samma som \code|xs.size| \\
-  & \code|xs :+ x| & ny samling med x sist efter xs \\
-  & \code|x +: xs| & ny samling med x före xs \\ \hline
-  
-\end{tabular}
-
-\pause
-\vspace{0.5em}\Emph{Minnesregel} för \code{+:} och \code{:+  } \Alert{Colon on the collection side}
-
-\pause
-Prova fler samlingsmetoder ur snabbreferensen: ~~\url{http://cs.lth.se/quickref}
+{\SlideFontSmall Samlingen \Emph{\texttt{Vector}} är en \code{Seq} som är en \code{Iterable} som är en \code{Traversable}. \\ \vspace{0.5em}\pause
+De konkreta samlingarna är uppdelade i dessa paket:\\
+\code{scala.collection.immutable} \hfill som är \Emph{automatiskt} importerade\\
+\code{scala.collection.mutable}  \hfill som \Alert{måste importeras} explicit\\\pause
+(undantag: primitiva \code{scala.Array} som är automatiskt synlig)
+}
 \end{Slide}
 
 
 
-\begin{Slide}{Använda samlingsmetoder}
-\begin{REPL}
-scala> val tal = Vector(1,4,7,9,42)
-tal: scala.collection.immutable.Vector[Int] = Vector(1, 4, 7, 9, 42)
 
-scala> val jämna = tal.filter(_ % 2 == 0)
-jämna: scala.collection.immutable.Vector[Int] = Vector(4, 42)
 
-scala> val xs = Vector(("Kim","Smith"), ("Kim", "Jones"), ("Robin", "Smith"))
-xs: scala.collection.immutable.Vector[(String, String)] = Vector((Kim,Smith), (Kim,Jones), (Robin,Smith))
+% \begin{Slide}{Hierarki av samlingar i scala.collection}\SlideFontTiny
+% \includegraphics[width=0.95\textwidth]{../img/collection/collection-traits}\\
+% %\noindent Läs mer om Scalas samlingar här: \\
+% \url{http://docs.scala-lang.org/overviews/collections/overview}
+% \end{Slide}
 
-scala> val grupperaEfterFörnamn = xs.groupBy(_._1)
-grupperaEfterFörnamn: Map[String,Vector[(String, String)]] = 
-Map(Kim -> Vector((Kim,Smith), (Kim,Jones)), Robin -> Vector((Robin,Smith)))
 
-scala> val grupperaEfterEfternamn = xs.groupBy(_._2)
-grupperaEfterEfternamn: Map[String,Vector[(String, String)]] = 
-Map(Jones -> Vector((Kim,Jones)), Smith -> Vector((Kim,Smith), (Robin,Smith)))
 
-\end{REPL}
-\end{Slide}
+
+\Subsection{Mängd} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Subsection{Nyckel-värde-tabell} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\Subsection{\texttt{scala.collection}}
 
 
 
@@ -175,21 +127,21 @@ Map(Jones -> Vector((Kim,Jones)), Smith -> Vector((Kim,Smith), (Robin,Smith)))
 Det finns \Alert{mer specifika} \Emph{subtyper} av \code{Seq}, \code{Set} och \code{Map}:
 \\ \vspace{1em}
 
-\begin{tikzpicture}[sibling distance=5.8em,->,>=stealth', inner sep=3pt, %scale=0.5, 
+\begin{tikzpicture}[sibling distance=5.8em,->,>=stealth', inner sep=3pt, %scale=0.5,
   every node/.style = {shape=rectangle, draw, align=center,font=\small\ttfamily},
   class/.style = {fill=blue!20},
   trait/.style = {rounded corners, fill=red!20}]
   \node[trait] {Traversable}
-    child { node[trait] {Iterable} 
-      child { node[trait, xshift=-2.4cm] {Seq} 
+    child { node[trait] {Iterable}
+      child { node[trait, xshift=-2.4cm] {Seq}
         child { node[trait] {IndexedSeq} }
         child { node[trait] {LinearSeq} }
        }
-      child { node[trait, yshift=-0.0cm] {Set} 
+      child { node[trait, yshift=-0.0cm] {Set}
         child { node[trait] {SortedSet} }
         child { node[trait] {BitSet} }
       }
-      child { node[trait, xshift=1.0cm] {Map} 
+      child { node[trait, xshift=1.0cm] {Map}
         child { node[trait] {SortedMap} }
       }
     };
@@ -221,6 +173,94 @@ Det finns \Alert{mer specifika} \Emph{subtyper} av \code{Seq}, \code{Set} och \c
 
 Studera samlingars egenskaper här: \href{http://docs.scala-lang.org/overviews/collections/overview}{docs.scala-lang.org/overviews/collections/overview}
 \end{Slide}
+
+
+
+
+\begin{Slide}{Använda \texttt{iterator}}\SlideFontSmall
+Med en \code{iterator} kan man \Emph{iterera} med \code{while} över alla element, men endast \Alert{en   gång}; sedan är iteratorn ''förbrukad''. (Men man kan be om en ny.)
+\begin{REPL}
+scala> val xs = Vector(1,2,3,4)
+xs: scala.collection.immutable.Vector[Int] = Vector(1, 2, 3, 4)
+
+scala> val it = xs.iterator
+it: scala.collection.immutable.VectorIterator[Int] = non-empty iterator
+
+scala> while (it.hasNext) print(it.next)
+1234
+
+scala> it.hasNext
+res1: Boolean = false
+
+scala> it.next
+java.util.NoSuchElementException: reached iterator end
+  at scala.collection.immutable.VectorIterator.next(Vector.scala:674)
+\end{REPL}
+\Emph{Normalt} behöver man \Alert{inte} använda \code{iterator}: det finns oftast färdiga metoder som gör det man vill, till exempel \code{foreach}, \code{map}, \code{sum}, \code{min} etc.
+\end{Slide}
+
+
+
+
+
+\begin{Slide}{Några användbara metoder på samlingar}\SlideFontTiny
+\begin{tabular}{r r l}\hline
+\texttt{\Emph{Traversable}}
+  & \code|xs.size| & antal elementet \\
+  & \code|xs.head| & första elementet \\
+  & \code|xs.last| & sista elementet \\
+  & \code|xs.take(n)| & ny samling med de första n elementet \\
+  & \code|xs.drop(n)| & ny samling utan de första n elementet \\
+  & \code|xs.foreach(f)| & gör \code|f| på alla element, returtyp \code|Unit|\\
+  & \code|xs.map(f)| & gör \code|f| på alla element, ger ny samling \\
+  & \code|xs.filter(p)| & ny samling med bara de element där p är sant\\
+  & \code|xs.groupBy(f)| & ger en \code|Map| som grupperar värdena enligt f\\
+  & \code|xs.mkString(",")| & en kommaseparerad sträng med alla element\\ \hline
+
+\texttt{\Emph{Iterable}}
+  & \code|xs.zip(ys)| & ny samling med par (x, y); ''zippa ihop'' xs och ys \\
+  & \code|xs.zipWithIndex| & ger en \code|Map| med par (x, index för x) \\
+  & \code|xs.sliding(n)| & ny samling av samlingar genom glidande ''fönster''\\ \hline
+
+\texttt{\Emph{Seq}}
+  & \code|xs.length| & samma som \code|xs.size| \\
+  & \code|xs :+ x| & ny samling med x sist efter xs \\
+  & \code|x +: xs| & ny samling med x före xs \\ \hline
+
+\end{tabular}
+
+\pause
+\vspace{0.5em}\Emph{Minnesregel} för \code{+:} och \code{:+  } \Alert{Colon on the collection side}
+
+\pause
+Prova fler samlingsmetoder ur snabbreferensen: ~~\url{http://cs.lth.se/quickref}
+\end{Slide}
+
+
+
+\begin{Slide}{Använda samlingsmetoder}
+\begin{REPL}
+scala> val tal = Vector(1,4,7,9,42)
+tal: scala.collection.immutable.Vector[Int] = Vector(1, 4, 7, 9, 42)
+
+scala> val jämna = tal.filter(_ % 2 == 0)
+jämna: scala.collection.immutable.Vector[Int] = Vector(4, 42)
+
+scala> val xs = Vector(("Kim","Smith"), ("Kim", "Jones"), ("Robin", "Smith"))
+xs: scala.collection.immutable.Vector[(String, String)] = Vector((Kim,Smith), (Kim,Jones), (Robin,Smith))
+
+scala> val grupperaEfterFörnamn = xs.groupBy(_._1)
+grupperaEfterFörnamn: Map[String,Vector[(String, String)]] =
+Map(Kim -> Vector((Kim,Smith), (Kim,Jones)), Robin -> Vector((Robin,Smith)))
+
+scala> val grupperaEfterEfternamn = xs.groupBy(_._2)
+grupperaEfterEfternamn: Map[String,Vector[(String, String)]] =
+Map(Jones -> Vector((Kim,Jones)), Smith -> Vector((Kim,Smith), (Robin,Smith)))
+
+\end{REPL}
+\end{Slide}
+
+
 
 
 \begin{Slide}{scala.collection.immutable}
@@ -290,22 +330,22 @@ res2: Boolean = false
 
 \begin{Slide}{Den fantastiska nyckel-värde-tabellen \texttt{Map}}\SlideFontSmall
 \begin{itemize}
-\item En \Emph{nyckel-värde-tabell} \Eng{key-value table} är en slags generaliserad vektor där man kan ''indexera'' med godtycklig typ. 
+\item En \Emph{nyckel-värde-tabell} \Eng{key-value table} är en slags generaliserad vektor där man kan ''indexera'' med godtycklig typ.
 
 \item Kallas öven \href{https://sv.wikipedia.org/wiki/Hashtabell}{\Emph{hashtabell}} \Eng{hash table}, \Emph{lexikon} \Eng{dictionary} eller kort och gott \Emph{mapp} \Eng{map},
 
-\item En hashtabell är en \Emph{samling av par}, där varje par består av en \Alert{unik} \Emph{nyckel} och ett tillhörande \Emph{värde}. 
+\item En hashtabell är en \Emph{samling av par}, där varje par består av en \Alert{unik} \Emph{nyckel} och ett tillhörande \Emph{värde}.
 
-\item Om man vet nyckeln kan man få fram värdet \Alert{snabbt}, på liknande sätt som indexering sker i en vektor om man vet heltalsindex. 
+\item Om man vet nyckeln kan man få fram värdet \Alert{snabbt}, på liknande sätt som indexering sker i en vektor om man vet heltalsindex.
 
 \item Denna datastruktur är \Alert{mycket användbar} och liknar en enkel databas.
 \end{itemize}
 \begin{REPL}
-scala> val födelse = Map("C" -> 1972,  "C++" -> 1983, "C#" -> 2000, 
+scala> val födelse = Map("C" -> 1972,  "C++" -> 1983, "C#" -> 2000,
   "Scala" -> 2004, "Java" -> 1995, "Javascript" -> 1995, "Python" -> 1991)
 
 födelse: scala.collection.immutable.Map[String,Int] = Map(Scala -> 2004, C# -> 2000, Python -> 1991, Javascript -> 1995, C -> 1972, C++ -> 1983, Java -> 1995)
-  
+
 scala> födelse.apply("Scala")
 res0: Int = 2004
 
@@ -318,7 +358,7 @@ res1: Int = 1995
 \begin{Slide}{Exempel nyckel-värde-tabell}
 \begin{REPL}
 scala> val färg = Map("gurka" -> "grön", "tomat"->"röd", "aubergine"->"lila")
-färg: scala.collection.immutable.Map[String,String] = 
+färg: scala.collection.immutable.Map[String,String] =
   Map(gurka -> grön, tomat -> röd, aubergine -> lila)
 
 scala> färg("gurka")
@@ -337,7 +377,7 @@ baklängesFärg: Map[String,String] = Map(gurka -> nörg, tomat -> dör, aubergi
 \begin{itemize}
 \item \code{xs.keySet} ger en mängd av alla nycklar
 \item \code{xs.map(f)} mappar funktionen f på alla par av (key, value)
-\item \code{xs.mapValues(f)} mappar funktionen f på alla värden 
+\item \code{xs.mapValues(f)} mappar funktionen f på alla värden
 \end{itemize}
 
 \end{Slide}
@@ -349,18 +389,18 @@ scala> val högaKort = Vector("Knekt", "Dam", "Kung", "Äss")
 scala> val kortIndex = högaKort.zipWithIndex.toMap
 kortIndex: Map[String,Int] = Map(Knekt -> 0, Dam -> 1, Kung -> 2, Äss -> 3)
 
-scala> kortIndex("Kung") > kortIndex("Knekt") 
+scala> kortIndex("Kung") > kortIndex("Knekt")
 res0: Boolean = true
 
 scala> val xs = Vector(("Kim","Smith"), ("Kim", "Jones"), ("Robin", "Smith"))
 xs: Vector[(String, String)] = Vector((Kim,Smith), (Kim,Jones), (Robin,Smith))
 
 scala> val grupperaEfterFörnamn = xs.groupBy(_._1)
-grupperaEfterFörnamn: Map[String,Vector[(String, String)]] = 
+grupperaEfterFörnamn: Map[String,Vector[(String, String)]] =
 Map(Kim -> Vector((Kim,Smith), (Kim,Jones)), Robin -> Vector((Robin,Smith)))
 
 scala> val grupperaEfterEfternamn = xs.groupBy(_._2)
-grupperaEfterEfternamn: Map[String,Vector[(String, String)]] = 
+grupperaEfterEfternamn: Map[String,Vector[(String, String)]] =
 Map(Jones -> Vector((Kim,Jones)), Smith -> Vector((Kim,Smith), (Robin,Smith)))
 
 scala> val frekvens = xs.groupBy(_._1).mapValues(_.size)
@@ -397,7 +437,7 @@ kadabra
 Exempel: räkna bokstäver i ord.  \\
 Undersök vad som händer i REPL:
 \begin{Code}[basicstyle=\SlideFontSize{9}{13}\ttfamily]
-val ord = "sex laxar i en laxask sju sjösjuka sjömän" 
+val ord = "sex laxar i en laxask sju sjösjuka sjömän"
 val uppdelad = ord.split(' ').toVector
 val ordlängd = uppdelad.map(_.length)
 val ordlängdMap = uppdelad.map(s => (s, s.size)).toMap
@@ -414,7 +454,7 @@ val vanligast = antal.maxBy(_._2)
 
 \begin{Slide}{Jobba med föränderlig samling lokalt; \\ returnera oföränderlig samling när du är klar}
 \SlideFontSmall
-Om du vill implementera en imperativ algoritm med en föränderlig samling:\\ 
+Om du vill implementera en imperativ algoritm med en föränderlig samling:\\
 Gör gärna detta \Alert{lokalt} i en \Alert{förändringsbar} samling och returnera sedan en \Emph{oföränderlig} samling, genom att köra t.ex. \code{toSet} på en mängd, eller \code{toMap} på en hashtabell, eller \code{toVector} på en \code{ArrayBuffer} eller \code{Array}.
 
 \begin{REPL}
@@ -434,8 +474,3 @@ res0: (Int, scala.collection.immutable.Set[Int]) = (13,Set(5, 1, 6, 2, 3))
 \end{REPL}
 
 \end{Slide}
-
-
-
-
-
