@@ -11,7 +11,7 @@ object TestHand {
     println(s"isStraightFlush: ${h.isStraightFlush}")
     println(s"categoryRank:    ${h.category}")
     println(s"nameEnglish:     ${Hand.Category.Name.english(h.category)}")
-    println(s"nameSwedish:     ${Hand.Category.Name.english(h.category)}")
+    println(s"nameSwedish:     ${Hand.Category.Name.swedish(h.category)}")
   }
 
   def main(args: Array[String]): Unit = {
