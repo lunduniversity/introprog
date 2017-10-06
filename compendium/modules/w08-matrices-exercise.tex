@@ -79,57 +79,47 @@ scala> m(1)(4)
 \begin{REPL}
 scala> val m2 = Vector(Vector(1,2,3),Vector(4,5),Vector(42))
 scala> val m3 = Vector(Vector(1,2), Vector(1.0, 2.0, 3.0))
-scala> m3(1)
 scala> val m4 = m3(1) +: Vector("a") +: m3
 scala> val m5 = Vector.fill(42){ m2(1).map(e => (e * math.random).toInt) }
 \end{REPL}
 
-\Subtask Beskriv hur minnessituationen ändras efter tilldelningen av \code{m2} på rad 1 ovan.
-
 \Subtask Vilken av variablerna \code{m2}, \code{m3}, \code{m4} och \code{m5} ovan representerar en äkta matris i matematisk mening? Vilken är dess dimensioner?
-
-
 
 \SOLUTION
 
-
 \TaskSolved \what
 
-
-%1.a)
 \SubtaskSolved   \includegraphics{../img/w09-solutions/1a} \\
 Typ: \code{Vector[Vector[Int]]}\\
 Värde: \code{Vector(Vector(1, 2, 3, 4, 5), Vector(3, 4, 5, 6, 7))} \\
 Dimensioner: $2 \times 5$\\
 Inom matematiken sker indexering enligt konvention med 1 som lägsta index. I scala är lägsta index 0, man använder s.k. 0-indexering. \footnote{Detta är inte fallet i alla programmeringsspråk, vilket du kan läsa mer om på \url{https://en.wikipedia.org/wiki/Array\_data\_type\#Index\_origin}}
 
-%1. b)
-\SubtaskSolved  \\
-2: \code{Int}\\
-3: \code{Vector[Int]}\\
-4: \code{Int}
+\SubtaskSolved
+\begin{REPL}
+scala> val m = Vector((1 to 5).toVector, (3 to 7).toVector)
+m: Vector[Vector[Int]] = Vector(Vector(1, 2, 3, 4, 5), Vector(3, 4, 5, 6, 7))
 
-%1.c)
+scala> m.apply(0).apply(1)
+res4: Int = 2
+
+scala> m(1)
+res5: Vector[Int] = Vector(3, 4, 5, 6, 7)
+
+scala> m(1)(4)
+res6: Int = 7
+\end{REPL}
+
 \SubtaskSolved  \\
 m2: \code{Vector[Vector[Int]]}\\
 m3: \code{Vector[Vector[AnyVal]]}\\
 m4: \code{Vector[Vector[Any]]}\\
 m5: \code{Vector[Vector[Int]]}
 
-%1.d)
-\SubtaskSolved  \TODO
-
-%1.e)
 \SubtaskSolved  m5, $42 \times 2$
-
-
 
 \QUESTEND
 
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 2
 
 
 
@@ -187,10 +177,7 @@ scala> println(diceMatrixToString(diceMatrix(10, 5)))
 2 2 3 2 2
 2 6 3 4 6
 4 5 5 2 3
-
 \end{REPL}
-
-
 
 \Subtask Ett imperativt sätt\footnote{Imperativa anreppssätt är nödvändiga att kunna när du stöter på samlingar och/eller språk som saknar funktionsprogrammeringsmöjligheter med \code{map}, \code{mkString} etc.} att göra detta på visas nedan. Förklara hur nedan kod fungerar. Vad händer om \code{xss} är tom? Vad händer om \code{xss} bara innehåller tomma vektorer? Nämn en fördel och en nackdel med att använda \code{val sb: StringBuilder} och \code{append}, jämfört med en vanlig \code{var s: String} och \code{+} för tillägg i slutet.
 \begin{Code}
@@ -223,7 +210,6 @@ scala> println(diceMatrixToString(filterYatzy(diceMatrix(10000, 5))))
 4 4 4 4 4
 2 2 2 2 2
 4 4 4 4 4
-
 \end{REPL}
 
 
@@ -239,20 +225,15 @@ def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] = {
 \end{CodeSmall}
 
 \Subtask Implementera funktionen \\
-\code{def yatzyPips(xss: Vector[Vector[Int]]): Vector[Int]} \\ som ger en vektor med tärningsvärdena för de kast i matrisen \code{xss} som gav yatzy enligt nedan. Använd din funktion \code{isYatzy} och samlingsmetoden \code{filter}.
+\code{def yatzyPips(xss: Vector[Vector[Int]]): Vector[Int]} \\ som ger en vektor med tärningsvärdena för de kast i matrisen \code{xss} som gav yatzy enligt nedan. Använd din funktion \code{filterYatzy}.
 \begin{REPL}
 scala> yatzyPips(diceMatrix(10000, 5))
 res42: Vector[Int] = Vector(3, 5, 6, 6, 3, 3, 2, 6, 1, 3)
 \end{REPL}
 
-
-
-
 \SOLUTION
 
-
 \TaskSolved \what
-
 
 %2.a)
 \SubtaskSolved  \begin{Code}
@@ -263,7 +244,14 @@ def throwDie: Int = (math.random * 6).toInt + 1
 \SubtaskSolved  $1000 \times 5$
 
 %2.c)
-\SubtaskSolved  -- %Inget svar
+\SubtaskSolved
+\begin{Code}
+ds2: IndexedSeq[IndexedSeq[Int]]
+ds3: IndexedSeq[Vector[Int]]
+ds4: IndexedSeq[Vector[Int]]
+ds4: Vector[Vector[Int]]
+\end{Code}
+
 
 %2.d)
 \SubtaskSolved  \begin{Code}
@@ -318,13 +306,15 @@ del av programmet som också har tillgång till referensen; objektet kan helt pl
  innehålla någonting annat, trots att referensen är densamma.
 
 %2.j)
-\SubtaskSolved  \begin{Code}
+\SubtaskSolved
+\begin{Code}
 def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] =
   xss.filter(isYatzy)
 \end{Code}
 
 %2.k)
-\SubtaskSolved  \begin{CodeSmall}
+\SubtaskSolved
+\begin{Code}
 def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] = {
 	var result: Vector[Vector[Int]] = Vector()
 	for (i <- 0 until xss.size) {
@@ -332,7 +322,7 @@ def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] = {
 	}
 	result
 }
-\end{CodeSmall}
+\end{Code}
 
 %2.l)
 \SubtaskSolved  --
@@ -340,299 +330,10 @@ def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] = {
 %2.m)
 \SubtaskSolved  \begin{Code}
 def yatzyPips(xss: Vector[Vector[Int]]): Vector[Int] =
-  xss.filter(isYatzy).map(_.head)
+  filterYatzy(xss).map(_.head)
 \end{Code}
 
-
-
-
 \QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 3
-
-
-
-
-\WHAT{Strängtabell med rubrikrad.}
-
-\QUESTBEGIN
-
-\Task  \what~  Denna övning utgör en början på laboration \hyperref[section:lab:survey]{\texttt{survey}} i avsnitt \ref{section:lab:survey} på sidan \pageref{section:lab:survey}.
-
-\Subtask Implementera case-klassen \code{Table} enligt nedan specifikation. Du kan förutsätta att alla rader har lika många kolumner som antalet element i \code{headings}, samt att alla rubrikerna i \code{headings} är unika. Detta förutsätts också gälla för indatafiler som läses in med \code{fromFile}.
-\\ \noindent \emph{Tips:}
-\begin{itemize}[nolistsep,noitemsep]
-\item Värdet \code{indexOfHeading} kan skapas med hjälp av metoden \code{zipWithIndex} som fungerar på alla sekvenssamlingar, samt metoden \code{toMap} som fungerar på sekvenser av 2-tupler. Undersök först hur metoderna fungerar i REPL och sök upp deras dokumentation.
-\item Skapa en indatafil som du kan använda för att testa att \code{Table} fungerar.
-\end{itemize}
-
-\clearpage
-\begin{ScalaSpec}{Table}
-case class Table(
-  data: Vector[Vector[String]],
-  headings: Vector[String],
-  sep: String){
-  /** A 2-tuple with (number of rows, number of columns) in data */
-  val dim: (Int, Int) = ???
-
-  /** The element in row r and column c of data, counting from 0 */
-  def apply(r: Int, c: Int): String = ???
-
-  /** The row-vector r in data, counting from 0 */
-  def row(r: Int): Vector[String]= ???
-
-  /** The column-vector c in data, counting from 0 */
-  def col(c: Int): Vector[String] = ???
-
-  /** A map from heading to index counting from 0 */
-  lazy val indexOfHeading: Map[String, Int] = ???
-
-  /** The column-vector with heading h in data */
-  def col(h: String): Vector[String] = ???
-
-  /** A vector with the distinct, sorted values of col with heading h */
-  def values(h: String): Vector[String] = ???
-
-  /** Headings and data with columns separated by sep */
-  override lazy val toString: String = ???
-}
-object Table {
-  /** Creates a new Table from fileName with columns split by sep */
-  def fromFile(fileName: String, separator: Char = ';'): Table = ???
-}
-\end{ScalaSpec}
-
-
-
-
-\Subtask Skapa med hjälp av \code{Table} ett program som kan köras från terminalen med \texttt{scala regtable infile.csv ';'} som ger en utskrift av antalet förekomster av olika värden i respektive kolumn (alltså en variant av registrering).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\SOLUTION
-
-
-\TaskSolved \what
-     %starts with: \emph{Strängtabell med rubrikra%%%
-
-%3.a)
-\SubtaskSolved  \begin{CodeSmall}
-case class Table(
-	data: Vector[Vector[String]],
-	headings: Vector[String],
-	sep: String){
-
-	val dim: (Int, Int) = (data.size, headings.size)
-
-	def apply(r: Int, c: Int): String = data(r)(c)
-
-	def row(r: Int): Vector[String]= data(r)
-
-	def col(c: Int): Vector[String] = data.map(r => r(c))
-
-	lazy val indexOfHeading: Map[String, Int] = headings.zipWithIndex.toMap
-
-	def col(h: String): Vector[String] = col(indexOfHeading(h))
-
-	def values(h: String): Vector[String] = col(h).distinct.sorted
-
-	override lazy val toString: String =
-		headings.mkString(sep) + "\n" +data.map(_.mkString(sep)).mkString("\n")
-}
-object Table {
-	def fromFile(fileName: String, separator: Char = ';'): Table = {
-		val lines = scala.io.Source.fromFile(fileName).getLines.toVector
-		val matrix= lines.map(_.split(separator).toVector)
-		new Table(matrix.tail, matrix.head, separator.toString)
-	}
-}
-\end{CodeSmall}
-
-%3.b)
-\SubtaskSolved  \begin{CodeSmall}
-object RegTable {
- 	def main( args:Array[String]): Unit = {
-		val t = Table.fromFile(args(0), args(1)(1))
-		val counts: Vector[Vector[String]] =
- 			(0 until t.dim._2)
-				.map(i => t.values(t.headings(i))
-				.map(x => x + ": " + t.col(i).count(_ == x)))
-				.toVector
-
-    for (i <- 0 until t.dim._2) {
-      println(s"\nColumn: ${i + 1}, ${t.headings(i)}:")
-      for (j <- 0 until counts(i).length) {
-        println(counts(i)(j))
-      }
-    }
-  }
-}
-\end{CodeSmall}
-
-
-
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 4
-
-
-
-
-\WHAT{Generiska funktioner.}
-
-\QUESTBEGIN
-
-\Task  \what~  En generisk funktion har (minst) en typparameter inom klammerparenteser efter namnet, till exempel \code{[T]}. Denna typ förekommer sedan som typ på (någon av) parametrarna i parameterlistan. Kompilatorn härleder en konkret typ vid kompileringstid och ersätter typparametern med denna konkreta typ. På så sätt kan en funktion fungera för många olika typer.
-
-\Subtask Förklara för varje rad nedan vad som händer.
-
-\begin{REPL}
-scala> def tnirp[T](x: T): Unit = println(x.toString.reverse)
-scala> tnirp(42)
-scala> tnirp("hej")
-scala> case class Gurka(vikt: Int)
-scala> tnirp(Gurka(42))
-scala> tnirp[String](42)
-scala> tnirp[Double](42)
-\end{REPL}
-
-\Subtask Man kan kombinera generiska funktioner med funktioner som tar funktioner som parametrar. Det är så \code{map} och \code{foreach} är implementerade. Förklara för varje rad nedan vad som händer.
-
-\begin{REPL}
-scala> def compose[A, B, C](f: A => B, g: B => C)(x: A): C = g(f(x))
-scala> def inc(x: Int): Int = x + 1
-scala> def half(x: Int): Double = x / 2.0
-scala> compose(inc, half)(42)
-scala> compose(half, inc)(42)
-\end{REPL}
-
-\Subtask Hur lyder felmeddelandet på sista raden ovan? Ändra \code{inc} och/eller \code{half} så att typerna passar.
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-     %starts with: \emph{Generiska funkioner.} En %%%
-
-%4.a)
-\SubtaskSolved   \begin{enumerate}
-\item --
-\item Strängrepresentationen av \code{42} spegelvänds
-\item \code{"hej"} spegelvänds - \code{toString} av en sträng ger en likadan sträng
-\item --
-\item Gurk-objektets strängrepresentation spegelvänds
-\item Funktionens typparameter matchar inte parameterns typ: \code{42} är ingen sträng
-\item Implicit typkonvertering till \code{Double} sker för att stämma överens med typparametern, vilket ger en strängrepresentation med decimal
-\end{enumerate}
-
-%4.b)
-\SubtaskSolved   \begin{enumerate}
-\item En funktion definieras så att den tar emot två andra funktioner som argument, sätter ihop dem, och matar in ett tredje argument till den den sammansatta funktionen
-\item En funktion som inkrementerar ett heltal med 1 definieras
-\item En funktion som halverar ett flyttal definieras
-\item \code{42} matas in i \code{inc()} och resultatet (\code{43}) matas vidare till \code{half()}. Inuti \code{half()} sker implicit typkonvertering till \code{Double} då talet divideras med ett flyttal (\code{2.0}) och resultatet blir \code{43.0 / 2.0}, alltså \code{21.5}.
-\item Resultatet från \code{half()} är av typ \code{Double}, medan \code{inc()} tar emot ett argument av typ \code{Int}. Då flyttal generellt inte kan konverteras till heltal utan informationsförlust sker ingen implicit konvertering, istället sker ett kompileringsfel.
-\end{enumerate}
-
-%4.c)
-\SubtaskSolved  \begin{Code}
-def inc(x: Double): Double = x + 1.0
-\end{Code}
-Nu ges kompileringsfel på rad 4 istället, vilket kan lösas med följande ändring:
-\begin{Code}
-def half(x: Double): Double = x / 2.0
-\end{Code}
-
-
-
-
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 4
-
-
-
-
-\WHAT{Generiska klasser.}
-
-\QUESTBEGIN
-
-\Task  \what~  Även klasser kan vara generiska. En generisk klass har (minst) en typparameter inom klammerparenteser efter klassens namn.
-
-\Subtask Testa nedan generiska klass \code{Cell[T]} i REPL. Skapa instanser av klassen \code{Cell[T]} där typparametern \code{T} binds till olika konkreta typer och förklara vad som händer.
-
-\begin{REPL}
-scala> class Cell[T](var value: T){
-         override def toString = "Cell(" + value + ")"
-       }
-scala> new Cell(42)
-scala> new Cell("hej")
-scala> new Cell(new Cell(math.Pi))
-scala> new Cell[String](42)
-scala> new Cell[Double](42)
-\end{REPL}
-
-\Subtask Lägg till metoden \code{def concat[U](that: Cell[U]):Cell[String]} i klassen \code{Cell} som konkatenerar strängrepresentationerna av de båda cellvärdena.
-
-\begin{REPL}
-scala> val a = new Cell("hej")
-scala> val b = new Cell(42)
-scala> a concat b
-\end{REPL}
-
-
-
-\Subtask Vilken sorts celler kan du konkatenera om du tar bort typparameternamnet \code{U} i \code{concat} samtidigt som du använder \code{Cell[T]} som typ på värdeparametern \code{that}? Vad ger det för konsekvenser för celler av annan typ än \code{Cell[String]}?
-
-\Subtask Denna uppgift illustrerar grunderna för att hur generiska samlingar är konstruerade, men vi går inte djupare här (det kommer mer i fördjupningskursen). Fundera om du vill på hur en generisk Matris-klass skulle kunna se ut och om du är intresserad av att fördjupa dig så gör fördjupningsuppgift \ref{task:generic-matrix}.
-
-
-
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-     %starts with: \emph{Generiska klasser.} Även %%%
-
-%5.a)
-\SubtaskSolved  --
-
-%5.b)
-\SubtaskSolved  \begin{Code}
-class Cell[T](var value: T){
-	override def toString = "Cell(" + value + ")"
-	def concat[U](that: Cell[U]): Cell[String] =
-		new Cell(value.toString + that.value.toString)
-}
-\end{Code}
-
-%5.c)
-\SubtaskSolved   Endast celler med samma typparameter kan nu konkateneras. Eftersom \code{concat()} returnerar ett objekt av typ \code{Cell[String]} kan ett ojämnt antal celler med någon annan typparameter än \code{String} alltså inte längre konkateneras. Är antalet jämnt går det att konkatenera dem parvis och sedan konkatenera de returnerade \code{Cell[String]}-objekten, men det är något omständigt.
-
-%5.d)
-\SubtaskSolved   --
-
-
-
-
-\QUESTEND
-
-
-
-
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 6
 
 
 
@@ -647,8 +348,6 @@ class Cell[T](var value: T){
 
 
 \begin{Code}[language=Java]
-// ArrayMatrix.java
-
 public class ArrayMatrix {
 
     public static void showMatrix(int[][] m){
@@ -679,7 +378,7 @@ public class ArrayMatrix {
 \end{Code}
 \noindent \emph{Tips:} med detta uttryck skapas ett slumptal mellan 1 och 42 i Java:\\
 \jcode{(int) (Math.random() * 42 + 1)} \\
-där typkonverteringen \jcode{(int)} ger samma effekt som ett anrop av metoden \code{toInt} i Scala; alltså att dubbelprecisionsflyttal omvandlas till heltal genom avkortning av alla eventuella decimaler.
+där typkonverteringen \jcode{(int)} ger samma effekt som ett anrop av metoden \code{toInt} i Scala; alltså att dubbelprecisionsflyttal omvandlas till heltal genom avkortning av alla decimaler.
 
 
 Ändra huvudprogrammet till:
@@ -725,17 +424,7 @@ ArrayMatrix test
 
 \end{REPL}
 
-
-
-
-
-\clearpage
-
-
-\ExtraTasks %%%%%%%%%%%%%%%%%%%
-
 \SOLUTION
-
 
 \TaskSolved \what
      %starts with: \label{task:arraymatrix-java} \%%%
@@ -782,16 +471,125 @@ public class ArrayMatrix {
 }
 \end{Code}
 
-\ExtraTasks %%%%%%%%%%%%
-
-
-
 \QUESTEND
 
 
 
+\clearpage
 
-%%<AUTOEXTRACTED by mergesolu>%%      %Uppgift 7
+\ExtraTasks %%%%%%%%%%%%
+
+
+\WHAT{Strängtabell med rubrikrad.}
+
+\QUESTBEGIN
+
+\Task  \what~  %Denna övning utgör en början på laboration \hyperref[section:lab:survey]{\texttt{survey}} i avsnitt \ref{section:lab:survey} på sidan \pageref{section:lab:survey}.
+
+\begin{CodeSmall}
+case class Table(
+  data: Vector[Vector[String]],
+  headings: Vector[String],
+  sep: String
+){
+  /** A 2-tuple with (number of rows, number of columns) in data */
+  val dim: (Int, Int) = ???
+
+  /** The element in row r and column c of data, counting from 0 */
+  def apply(r: Int, c: Int): String = ???
+
+  /** The row-vector r in data, counting from 0 */
+  def row(r: Int): Vector[String]= ???
+
+  /** The column-vector c in data, counting from 0 */
+  def col(c: Int): Vector[String] = ???
+
+  /** A map from heading to index counting from 0 */
+  lazy val indexOfHeading: Map[String, Int] = ???
+
+  /** The column-vector with heading h in data */
+  def col(h: String): Vector[String] = ???
+
+  /** A vector with the distinct, sorted values of col with heading h */
+  def values(h: String): Vector[String] = ???
+
+  /** Headings and data with columns separated by sep */
+  override lazy val toString: String = ???
+}
+
+object Table {
+  /** Creates a new Table from fileName with columns split by sep */
+  def fromFile(fileName: String, separator: Char = ';'): Table = ???
+}
+\end{CodeSmall}
+
+\Subtask Implementera case-klassen \code{Table} enligt specifikationen ovan. Du kan förutsätta att alla rader har lika många kolumner som antalet element i \code{headings}, samt att alla rubrikerna i \code{headings} är unika. Detta förutsätts också gälla för indatafiler som läses in med \code{fromFile}.
+
+\emph{Tips:}
+\begin{itemize}%[nolistsep,noitemsep]
+\item Värdet \code{indexOfHeading} kan skapas med hjälp av metoden \code{zipWithIndex} som fungerar på alla sekvenssamlingar, samt metoden \code{toMap} som fungerar på sekvenser av 2-tupler. Undersök först hur metoderna fungerar i REPL och sök upp deras dokumentation.
+\item Skapa en indatafil som du kan använda för att testa att \code{Table} fungerar.
+\end{itemize}
+
+\Subtask Skapa med hjälp av \code{Table} ett program som kan köras från terminalen med \texttt{scala regtable infile.csv ';'} som ger en utskrift av antalet förekomster av olika värden i respektive kolumn (alltså en variant av registrering).
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved  \begin{CodeSmall}
+case class Table(
+	data: Vector[Vector[String]],
+	headings: Vector[String],
+	sep: String){
+
+	val dim: (Int, Int) = (data.size, headings.size)
+
+	def apply(r: Int, c: Int): String = data(r)(c)
+
+	def row(r: Int): Vector[String]= data(r)
+
+	def col(c: Int): Vector[String] = data.map(r => r(c))
+
+	lazy val indexOfHeading: Map[String, Int] = headings.zipWithIndex.toMap
+
+	def col(h: String): Vector[String] = col(indexOfHeading(h))
+
+	def values(h: String): Vector[String] = col(h).distinct.sorted
+
+	override lazy val toString: String =
+		headings.mkString(sep) + "\n" +data.map(_.mkString(sep)).mkString("\n")
+}
+object Table {
+	def fromFile(fileName: String, separator: Char = ';'): Table = {
+		val lines = scala.io.Source.fromFile(fileName).getLines.toVector
+		val matrix= lines.map(_.split(separator).toVector)
+		new Table(matrix.tail, matrix.head, separator.toString)
+	}
+}
+\end{CodeSmall}
+
+\SubtaskSolved  \begin{CodeSmall}
+object RegTable {
+ 	def main( args:Array[String]): Unit = {
+		val t = Table.fromFile(args(0), args(1)(1))
+		val counts: Vector[Vector[String]] =
+ 			(0 until t.dim._2)
+				.map(i => t.values(t.headings(i))
+				.map(x => x + ": " + t.col(i).count(_ == x)))
+				.toVector
+
+    for (i <- 0 until t.dim._2) {
+      println(s"\nColumn: ${i + 1}, ${t.headings(i)}:")
+      for (j <- 0 until counts(i).length) {
+        println(counts(i)(j))
+      }
+    }
+  }
+}
+\end{CodeSmall}
+
+\QUESTEND
 
 
 
@@ -802,9 +600,9 @@ public class ArrayMatrix {
 
 \Task  \what~
 
-\Subtask Skapa med en editor en klass enligt nedan specifikation. Läs om hur de olika predikaten för att kolla olika giltiga kombinationer i Yatzy ska fungera här: \href{https://en.wikipedia.org/wiki/Yahtzee}{en.wikipedia.org/wiki/Yahtzee}. Bygg ett huvudprogram som testar dina funktioner. Kompilera och testa i terminalen allteftersom du lägger till nya funktioner.
+\Subtask Skapa en yatzy-matris enligt nedan specifikation. Läs om hur de olika predikaten för att kolla olika giltiga kombinationer i Yatzy ska fungera här: \href{https://en.wikipedia.org/wiki/Yahtzee}{en.wikipedia.org/wiki/Yahtzee}. Bygg ett huvudprogram som testar dina funktioner. Kompilera och testa i terminalen allteftersom du lägger till nya funktioner.
 
-\begin{ScalaSpec}{YatzyRows}
+\begin{CodeSmall}
 /** En skiss på en klass som kan användas till ett förenklat yatzy-spel */
 case class YatzyRows(val rows: Vector[Vector[Int]]) {
   /** A new YatzyRows with a new row of 5 dice rolls appended to rows  */
@@ -822,19 +620,12 @@ object YatzyRows {
   def isSmallStraight(xs: Vector[Int]): Boolean = ???
   def isLargeStraight(xs: Vector[Int]): Boolean = ???
 }
-\end{ScalaSpec}
+\end{CodeSmall}
 
 
 \Subtask Använd \code{YatzyRows} för att med hjälp av många tärningskast beräkna sannolikheter för några olika giltiga kombinationer. Använd, om du vill, möjligheten som reglerna ger att slå om tärningar i två ytterliggare kast, där de tärningar som slås om väljs slumpmässigt.
 
 \Subtask Bygg ett förenklat yatzy-spel i terminalen där användaren kan bestämma vilka tärningar som ska slås om. Använd \code{Scanner} för att läsa indata från användaren. Börja med något riktigt enkelt och bygg sedan vidare på ditt spel genom att införa fler och fler funktioner.
-
-
-\clearpage
-
-
-\AdvancedTasks %%%%%%%%%%%%%%%%%
-
 
 \SOLUTION
 
@@ -916,12 +707,141 @@ object YatzyStats extends App {
 
 \SubtaskSolved  --
 
-\AdvancedTasks %%%%%%%%%
+\QUESTEND
 
+
+
+
+
+
+\clearpage
+
+\AdvancedTasks %%%%%%%%%%%%%%%%%
+
+
+\WHAT{Generiska funktioner.}
+
+\QUESTBEGIN
+
+\Task  \what~  En generisk funktion har (minst) en typparameter inom klammerparenteser efter namnet, till exempel \code{[T]}. Denna typ förekommer sedan som typ på (någon av) parametrarna i parameterlistan. Kompilatorn härleder en konkret typ vid kompileringstid och ersätter typparametern med denna konkreta typ. På så sätt kan en funktion fungera för många olika typer.
+
+\Subtask Förklara för varje rad nedan vad som händer.
+
+\begin{REPL}
+scala> def tnirp[T](x: T): Unit = println(x.toString.reverse)
+scala> tnirp(42)
+scala> tnirp("hej")
+scala> case class Gurka(vikt: Int)
+scala> tnirp(Gurka(42))
+scala> tnirp[String](42)
+scala> tnirp[Double](42)
+\end{REPL}
+
+\Subtask Man kan kombinera generiska funktioner med funktioner som tar funktioner som parametrar. Det är så \code{map} och \code{foreach} är implementerade. Förklara för varje rad nedan vad som händer.
+
+\begin{REPL}
+scala> def compose[A, B, C](f: A => B, g: B => C)(x: A): C = g(f(x))
+scala> def inc(x: Int): Int = x + 1
+scala> def half(x: Int): Double = x / 2.0
+scala> compose(inc, half)(42)
+scala> compose(half, inc)(42)
+\end{REPL}
+
+\Subtask Hur lyder felmeddelandet på sista raden ovan? Ändra \code{inc} och/eller \code{half} så att typerna passar.
+
+\SOLUTION
+
+\TaskSolved \what
+     %starts with: \emph{Generiska funkioner.} En %%%
+
+%4.a)
+\SubtaskSolved   \begin{enumerate}
+\item --
+\item Strängrepresentationen av \code{42} spegelvänds
+\item \code{"hej"} spegelvänds - \code{toString} av en sträng ger en likadan sträng
+\item --
+\item Gurk-objektets strängrepresentation spegelvänds
+\item Funktionens typparameter matchar inte parameterns typ: \code{42} är ingen sträng
+\item Implicit typkonvertering till \code{Double} sker för att stämma överens med typparametern, vilket ger en strängrepresentation med decimal
+\end{enumerate}
+
+%4.b)
+\SubtaskSolved   \begin{enumerate}
+\item En funktion definieras så att den tar emot två andra funktioner som argument, sätter ihop dem, och matar in ett tredje argument till den den sammansatta funktionen
+\item En funktion som inkrementerar ett heltal med 1 definieras
+\item En funktion som halverar ett flyttal definieras
+\item \code{42} matas in i \code{inc()} och resultatet (\code{43}) matas vidare till \code{half()}. Inuti \code{half()} sker implicit typkonvertering till \code{Double} då talet divideras med ett flyttal (\code{2.0}) och resultatet blir \code{43.0 / 2.0}, alltså \code{21.5}.
+\item Resultatet från \code{half()} är av typ \code{Double}, medan \code{inc()} tar emot ett argument av typ \code{Int}. Då flyttal generellt inte kan konverteras till heltal utan informationsförlust sker ingen implicit konvertering, istället sker ett kompileringsfel.
+\end{enumerate}
+
+%4.c)
+\SubtaskSolved  \begin{Code}
+def inc(x: Double): Double = x + 1.0
+\end{Code}
+Nu ges kompileringsfel på rad 4 istället, vilket kan lösas med följande ändring:
+\begin{Code}
+def half(x: Double): Double = x / 2.0
+\end{Code}
 
 \QUESTEND
 
 
+
+
+\WHAT{Generiska klasser.}
+
+\QUESTBEGIN
+
+\Task  \what~  Även klasser kan vara generiska. En generisk klass har (minst) en typparameter inom klammerparenteser efter klassens namn.
+
+\Subtask Testa nedan generiska klass \code{Cell[T]} i REPL. Skapa instanser av klassen \code{Cell[T]} där typparametern \code{T} binds till olika konkreta typer och förklara vad som händer.
+
+\begin{REPL}
+scala> class Cell[T](var value: T){
+         override def toString = "Cell(" + value + ")"
+       }
+scala> new Cell(42)
+scala> new Cell("hej")
+scala> new Cell(new Cell(math.Pi))
+scala> new Cell[String](42)
+scala> new Cell[Double](42)
+\end{REPL}
+
+\Subtask Lägg till metoden \code{def concat[U](that: Cell[U]):Cell[String]} i klassen \code{Cell} som konkatenerar strängrepresentationerna av de båda cellvärdena.
+
+\begin{REPL}
+scala> val a = new Cell("hej")
+scala> val b = new Cell(42)
+scala> a concat b
+\end{REPL}
+
+\Subtask Vilken sorts celler kan du konkatenera om du tar bort typparameternamnet \code{U} i \code{concat} samtidigt som du använder \code{Cell[T]} som typ på värdeparametern \code{that}? Vad ger det för konsekvenser för celler av annan typ än \code{Cell[String]}?
+
+\Subtask Denna uppgift illustrerar grunderna för att hur generiska samlingar är konstruerade, men vi går inte djupare här (det kommer mer i fördjupningskursen). Fundera om du vill på hur en generisk Matris-klass skulle kunna se ut och om du är intresserad av att fördjupa dig så gör fördjupningsuppgift \ref{task:generic-matrix}.
+
+\SOLUTION
+
+\TaskSolved \what
+
+%5.a)
+\SubtaskSolved  --
+
+%5.b)
+\SubtaskSolved  \begin{Code}
+class Cell[T](var value: T){
+	override def toString = "Cell(" + value + ")"
+	def concat[U](that: Cell[U]): Cell[String] =
+		new Cell(value.toString + that.value.toString)
+}
+\end{Code}
+
+%5.c)
+\SubtaskSolved   Endast celler med samma typparameter kan nu konkateneras. Eftersom \code{concat()} returnerar ett objekt av typ \code{Cell[String]} kan ett ojämnt antal celler med någon annan typparameter än \code{String} alltså inte längre konkateneras. Är antalet jämnt går det att konkatenera dem parvis och sedan konkatenera de returnerade \code{Cell[String]}-objekten, men det är något omständigt.
+
+%5.d)
+\SubtaskSolved   --
+
+\QUESTEND
 
 
 
@@ -979,11 +899,9 @@ object Matrix {
 \QUESTEND
 
 
+\clearpage
 
-
-
-
-\WHAT{NEEDS A TOPIC DESCRIPTION}
+\WHAT{Skapa en Sprite-editor.}
 
 \QUESTBEGIN
 
@@ -1009,10 +927,10 @@ object ColorChooser {
 class Sprite(// en bild med många lager av pixlar i olika färger
   val id: String,
   val size: (Int, Int),
-  val pixels: Matrix[Option[Int]],//Some(color),None=genomskinlig
-  var scale: Int, //uppskalning av storlek i pixlar
-  var colors: Vector[java.awt.Color], //tillgängliga färger
-  var pos: (Int, Int, Int)  // (row, col, layer)
+  val pixels: Matrix[Int],   // färg i colors, -1 betyder genomskinlig
+  var scale: Int,            // uppskalning av storlek i pixlar
+  var colors: Vector[Color], // tillgängliga färger
+  var pos: (Int, Int, Int)   // (row, col, layer)
 ){
   def row = pos._1
   def col = pos._2
@@ -1057,30 +975,37 @@ class SpriteEditor(
 
 
 
-\WHAT{Klasser för täta och glesa matematiska matriser med flyttal.}
 
-\QUESTBEGIN
 
-\Task  \what~   Läs om matrisräkning här: \href{https://sv.wikipedia.org/wiki/Matris}{sv.wikipedia.org/wiki/Matris}
 
-\Subtask Skapa en oföränderlig, final klass \code{DenseMatrix} för matematiska matriser med dubbelprecisionsflyttal. \code{DenseMatrix} ska internt lagra elementen i en privat \emph{endimensionell} array av flyttal av typen \code{Array[Double]}. Klassen ska inte vara en case-klass. Det ska gå att skapa matriser med uttrycket DenseMatrix.ofDim(3,7)(1.0,42,3.2,1.0,2.2,3) tack vare ett kompanjonsobjekt med lämplig fabriksmetod som anropar den privata konstruktorn.  Om antalet element är för litet i förhållande till den angivna dimensionen så fyll på med nollor.
 
-\Subtask Överskugga metoderna equals och hashcode och ge \code{DenseMatrix} innehållslikhet i stället för referenslikhet.
-
-\Subtask Implementera egna innehålllikhetsmetoder med namnet \code{===} på \code{DenseMatrix} som är typsäker, d.v.s. bara tillåter innehållsjämförelse mellan täta matriser.
-
-\Subtask Läs om glesa matriser här: \href{https://sv.wikipedia.org/wiki/Gles_matris}{https://sv.wikipedia.org/wiki/Gles\_matris} och implementera \code{SparseMatrix} med ett privat attribut av typen \\ \code{mutable.Map[(Int, Int), Double]} som bara lagrar index som inte är noll.
-
-\Subtask Skapa ett \code{trait Matrix} som både \code{DenseMatrix} och \code{SparseMatrix} ärver, med lämpliga abstrakta och konkreta medlemmar. Implementera addition, subtraktion och multiplikation av täta och glesa matriser.
-
-%\Task \emph{Matriser med \jcode{ArrayList} i Java.} Om man i Java inte vet antalet element i matrisen från början kan man använda en lista av typen \jcode{ArrayList}, där varje element i sin tur innehåller en lista av typen\jcode{ArrayList}. Javas \jcode{ArrayList} är en generisk samling som motsvaras av Scalas \code{ArrayBuffer}. Generiska samlingar i Java kan endast innehålla referenstyper; vill man ha en primitiv typ, t.ex. \jcode{int}, behöver man packa in denna i en s.k. wrapper-klass, t.ex.  klassen \jcode{Integer}. Det finns en wrapper-klass för varje primitiv typ i Java. Matristypen för en heltalstyp i Java skrivs \jcode{ArrayList<ArrayList<Integer>>} där alltså \code{<T>} motsvarar Scalas hakparenteser \code{[T]} för typparametern T.
+% \WHAT{Klasser för täta och glesa matematiska matriser med flyttal.}
 %
+% \QUESTBEGIN
 %
-%\Subtask \TODO Hitta på deluppgifter med \jcode{ArrayList<ArrayList<Integer>>} som illustrerar ovan. Peka framåt till scalajava-veckan.\SOLUTION
-
-
-\TaskSolved \what
-     %%%TODO number  10 %%%starts with: \emph{Matriser med \jcode{Array%%%
-
-\SubtaskSolved  -- %%%TODO in task 10 %%%
-\QUESTEND
+% \Task  \what~   Läs om matrisräkning här: \href{https://sv.wikipedia.org/wiki/Matris}{sv.wikipedia.org/wiki/Matris}
+%
+% \Subtask Skapa en oföränderlig klass \code{DenseMatrix} för matematiska matriser med dubbelprecisionsflyttal. \code{DenseMatrix} ska internt lagra elementen i en privat \emph{endimensionell} array av flyttal av typen \code{Array[Double]}.
+%
+% Klassen ska inte vara en case-klass. Det ska gå att skapa matriser med uttryck så som  \code{DenseMatrix.ofDim(3,7)(1.0,42,3.2,1.0,2.2,3)} tack vare ett kompanjonsobjekt med lämplig fabriksmetod som anropar den privata konstruktorn.  Om antalet element är för litet i förhållande till den angivna dimensionen så fyll på med nollor.
+%
+% \Subtask Överskugga metoderna equals och hashcode och ge \code{DenseMatrix} innehållslikhet i stället för referenslikhet.
+%
+% \Subtask Implementera egna innehålllikhetsmetoder med namnet \code{===} på \code{DenseMatrix} som är typsäker, d.v.s. bara tillåter innehållsjämförelse mellan täta matriser.
+%
+% \Subtask Läs om glesa matriser här: \href{https://sv.wikipedia.org/wiki/Gles_matris}{https://sv.wikipedia.org/wiki/Gles\_matris} och implementera \code{SparseMatrix} med ett privat attribut av typen \\ \code{mutable.Map[(Int, Int), Double]} som bara lagrar index som inte är noll.
+%
+% \Subtask Skapa ett \code{trait Matrix} som både \code{DenseMatrix} och \code{SparseMatrix} ärver, med lämpliga abstrakta och konkreta medlemmar. Implementera addition, subtraktion och multiplikation av täta och glesa matriser.
+%
+% %\Task \emph{Matriser med \jcode{ArrayList} i Java.} Om man i Java inte vet antalet element i matrisen från början kan man använda en lista av typen \jcode{ArrayList}, där varje element i sin tur innehåller en lista av typen\jcode{ArrayList}. Javas \jcode{ArrayList} är en generisk samling som motsvaras av Scalas \code{ArrayBuffer}. Generiska samlingar i Java kan endast innehålla referenstyper; vill man ha en primitiv typ, t.ex. \jcode{int}, behöver man packa in denna i en s.k. wrapper-klass, t.ex.  klassen \jcode{Integer}. Det finns en wrapper-klass för varje primitiv typ i Java. Matristypen för en heltalstyp i Java skrivs \jcode{ArrayList<ArrayList<Integer>>} där alltså \code{<T>} motsvarar Scalas hakparenteser \code{[T]} för typparametern T.
+% %
+% %
+% %\Subtask \TODO Hitta på deluppgifter med \jcode{ArrayList<ArrayList<Integer>>} som illustrerar ovan. Peka framåt till scalajava-veckan.\SOLUTION
+%
+% \SOLUTION
+%
+% \TaskSolved \what
+%      %%%TODO number  10 %%%starts with: \emph{Matriser med \jcode{Array%%%
+%
+% \SubtaskSolved  -- %%%TODO in task 10 %%%
+% \QUESTEND

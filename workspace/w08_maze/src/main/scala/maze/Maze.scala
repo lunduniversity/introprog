@@ -52,7 +52,7 @@ case class Maze(
   def isAtExit(pos: (Int, Int)): Boolean = pos._2 < yPadding + blockSize / 2
 
   def draw(w: SimpleWindow): Unit = {
-
+    //Lokal metod som ritar ett väggelement givet rad och kolumn i matrix:
     def drawAnotherBrickInTheWall(row: Int, col: Int): Unit = {
       w.setLineWidth(1)
       for (dx <- 1 to blockSize - 1) {
