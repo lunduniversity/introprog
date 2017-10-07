@@ -16,6 +16,7 @@ object TestDeck {
     val deck = Deck(testCards)
     for (i <- 1L to n) {
       if (i % 1e6.toLong == 0L) print(".")
+      deck.reset()
       deck.shuffle()
       val permIndex = perms.indexOf(deck.toVector)
       freq(permIndex) += 1L
