@@ -188,6 +188,61 @@ scala> xs = xs - "gurka"
 
 
 
+
+
+
+\begin{Slide}{Mängd: snabb innehållstest, garanterat dubblettfri}\SlideFontSmall
+En \Emph{mängd} är snabb på att avgöra om ett element \Alert{finns eller inte} i mängden. Ingen linjärsökning sker eftersom den implementationen medger direkt uppslagning av element.
+
+\begin{REPL}
+scala> var veg = Set.empty[String]
+veg: scala.collection.immutable.Set[String] = Set()
+
+scala> veg = veg + "Gurka"
+veg: scala.collection.immutable.Set[String] = Set(Gurka)
+
+scala> veg = veg ++ Set("Broccoli", "Tomat", "Gurka")
+veg: scala.collection.immutable.Set[String] = Set(Gurka, Broccoli, Tomat)
+
+scala> veg.contains("Gurka")
+res0: Boolean = true
+
+scala> veg.apply("Gurka")   // samma som contains
+res1: Boolean = true
+
+scala> veg("Morot")
+res2: Boolean = false
+\end{REPL}
+
+\end{Slide}
+
+
+
+\begin{Slide}{Mysteriet med de försvunna elementen}
+Vad händer här?
+\begin{REPLnonum}
+scala> val xs1 = Vector(1,2,3,4,5,6)
+scala> xs1.map(_ % 2).count(_ == 0)
+res0: Int = 3                          // antalet jämna tal
+scala> val xs2 = Set(1,2,3,4,5,6)
+scala> xs2.map(_ % 2).count(_ == 0)
+res1: Int = 1                          // varför?
+\end{REPLnonum}
+\pause
+Mängdegenskaper ger att \code{mängd == Set(0, 1)}\\
+Fundera alltid noga på om du \Alert{riskerar att förlora duplikat} som du egentligen hade velat behålla!\\
+\pause
+Använd \code{toSeq} på mängd om du behöver sekvensegenskaper:
+\begin{REPLnonum}
+scala> xs2.toSeq.map(_ % 2).count(_ == 0)
+res1: Int = 3         // med toSeq blir det som vi ville
+\end{REPLnonum}
+
+\end{Slide}
+
+
+
+
 \Subsection{Nyckel-värde-tabell} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -211,38 +266,89 @@ nycklarna är alltså \Alert{unika}.
 \end{itemize}
 \end{Slide}
 
+%
+% \begin{Slide}{Exempel: Nyckel-värde-tabell \TODO}
+% \setlength{\leftmargini}{1em}
+% \begin{itemize}
+% \item \Emph{Skapa}:
+% \begin{REPLnonum}
+% scala> var xs = ???
+% \end{REPLnonum}
+%
+% \item \Emph{Läsa}: slå upp värde utifrån nyckel
+% \begin{REPLnonum}
+% scala> xs("gurka")
+% \end{REPLnonum}
+%
+% \item \Emph{Uppdatera}: lägg till mappning (händer inget om redan finns)
+% \begin{REPLnonum}
+% scala> xs = ???
+% \end{REPLnonum}
+%
+% \item \Emph{Ta bort}: ny tabell utan mappning (om finns, annars händer inget)
+% \begin{REPLnonum}
+% scala> xs = xs - ???
+% \end{REPLnonum}
+% \end{itemize}
+% {\SlideFontTiny\code{SLUT} = Skapa, Läsa, Uppdatera, Ta bort \hfill\code{CRUD} = Create, Read, Update, Delete}
+% \end{Slide}
 
-\begin{Slide}{Exempel: Oföränderlig mängd}
-\setlength{\leftmargini}{1em}
+
+
+
+\begin{Slide}{Den fantastiska nyckel-värde-tabellen \texttt{Map}}\SlideFontSmall
 \begin{itemize}
-\item \Emph{Skapa}:
-\begin{REPLnonum}
-scala> var xs = Set("gurka", "tomat", "banan", "pingvin")
-\end{REPLnonum}
+\item En \Emph{nyckel-värde-tabell} \Eng{key-value table} är en slags generaliserad vektor där man kan ''indexera'' med godtycklig typ.
 
-\item \Emph{Läsa}: avgöra medlemskap
-\begin{REPLnonum}
-scala> xs("gurka")
-res1: Boolean = true
-\end{REPLnonum}
+\item Kallas öven \href{https://sv.wikipedia.org/wiki/Hashtabell}{\Emph{hashtabell}} \Eng{hash table}, \Emph{lexikon} \Eng{dictionary} eller kort och gott \Emph{mapp} \Eng{map},
 
-\item \Emph{Uppdatera}: lägg till element (händer inget om redan finns)
-\begin{REPLnonum}
-scala> xs = xs + "jordekorre"
-\end{REPLnonum}
+\item En hashtabell är en \Emph{samling av par}, där varje par består av en \Alert{unik} \Emph{nyckel} och ett tillhörande \Emph{värde}.
 
-\item \Emph{Ta bort}: (om finns, annars händer inget)
-\begin{REPLnonum}
-scala> xs = xs - "gurka"
-\end{REPLnonum}
+\item Om man vet nyckeln kan man få fram värdet \Alert{snabbt}, på liknande sätt som indexering sker i en vektor om man vet heltalsindex.
+
+\item Denna datastruktur är \Alert{mycket användbar} och liknar en enkel databas.
 \end{itemize}
-{\SlideFontTiny\code{SLUT} = Skapa, Läsa, Uppdatera, Ta bort \hfill\code{CRUD} = Create, Read, Update, Delete}
+\begin{REPL}
+scala> val födelse = Map("C" -> 1972,  "C++" -> 1983, "C#" -> 2000,
+  "Scala" -> 2004, "Java" -> 1995, "Javascript" -> 1995, "Python" -> 1991)
+
+födelse: scala.collection.immutable.Map[String,Int] = Map(Scala -> 2004, C# -> 2000, Python -> 1991, Javascript -> 1995, C -> 1972, C++ -> 1983, Java -> 1995)
+
+scala> födelse.apply("Scala")
+res0: Int = 2004
+
+scala> födelse("Java")
+res1: Int = 1995
+
+\end{REPL}
 \end{Slide}
 
+\begin{Slide}{Exempel nyckel-värde-tabell}
+\begin{REPL}
+scala> val färg = Map("gurka" -> "grön", "tomat"->"röd", "aubergine"->"lila")
+färg: scala.collection.immutable.Map[String,String] =
+  Map(gurka -> grön, tomat -> röd, aubergine -> lila)
 
+scala> färg("gurka")
+res0: String = grön
 
+scala> färg.keySet
+res1: scala.collection.immutable.Set[String] = Set(gurka, tomat, aubergine)
 
+scala> val ärGrönSak = färg.map(elem => (elem._1, elem._2 == "grön"))
+ärGrönSak: Map[String,Boolean] = Map(gurka -> true, tomat -> false, aubergine -> false)
 
+scala> val baklängesFärg = färg.mapValues(s => s.reverse)
+baklängesFärg: Map[String,String] = Map(gurka -> nörg, tomat -> dör, aubergine -> alil)
+
+\end{REPL}
+\begin{itemize}
+\item \code{xs.keySet} ger en mängd av alla nycklar
+\item \code{xs.map(f)} mappar funktionen f på alla par av (key, value)
+\item \code{xs.mapValues(f)} mappar funktionen f på alla värden
+\end{itemize}
+
+\end{Slide}
 
 
 
@@ -364,126 +470,6 @@ Map(Jones -> Vector((Kim,Jones)), Smith -> Vector((Kim,Smith), (Robin,Smith)))
 
 
 
-
-\begin{Slide}{scala.collection.immutable}
-\includegraphics[width=0.82\textwidth]{../img/collection/collection-immutable}
-\includegraphics[width=0.33\textwidth]{../img/collection/collection-legend}
-\end{Slide}
-
-
-\begin{Slide}{scala.collection.mutable}
-\includegraphics[width=1.05\textwidth]{../img/collection/collection-mutable}
-\end{Slide}
-
-
-\begin{Slide}{Strängar är implicit en \texttt{IndexedSeq[Char]}}\SlideFontSmall
-Det finns en så kallad \Emph{implicit konvertering} mellan \code{String} och \code{IndexedSeq[Char]} vilket gör att \Alert{alla samlingsmetoder på \texttt{Seq} även funkar på strängar} och även flera andra smidiga strängmetoder erbjuds \Alert{utöver} de som finns i \href{http://docs.oracle.com/javase/8/docs/api/java/lang/String.html}{\code{java.lang.String}} genom klassen \href{http://www.scala-lang.org/api/current/#scala.collection.immutable.StringOps}{\code{StringOps}}.
-
-\vspace{0.5em}
-\begin{REPLnonum}
-scala> "hej".  //tryck på TAB och se alla strängmetoder
-\end{REPLnonum}
-Detta är en stor fördel med Scala jämfört med många andra språk, som har strängar som inte kan allt som andra sekvenssamlingar kan.
-\end{Slide}
-
-
-\begin{Slide}{\texttt{Vector} eller \texttt{List}?}\SlideFontTiny
-{\href{http://stackoverflow.com/questions/6928327/when-should-i-choose-vector-in-scala}{stackoverflow.com/questions/6928327/when-should-i-choose-vector-in-scala}}
-
-\begin{enumerate}
-\item If we only need to transform sequences by operations like map, filter, fold etc: basically it does not matter, we should program our algorithm generically and might even benefit from accepting parallel sequences. For sequential operations List is probably a bit faster. But you should benchmark it if you have to optimize.
-
-\item If we need a lot of random access and different updates, so we should use vector, list will be prohibitively slow.
-
-\item If we operate on lists in a classical functional way, building them by prepending and iterating by recursive decomposition: use list, vector will be slower by a factor 10-100 or more.
-
-\item If we have an performance critical algorithm that is basically imperative and does a lot of random access on a list, something like in place quick-sort: use an imperative data structure, e.g. ArrayBuffer, locally and copy your data from and to it.
-\end{enumerate}
-{\href{http://stackoverflow.com/questions/20612729/how-does-scalas-vector-work}{stackoverflow.com/questions/20612729/how-does-scalas-vector-work}}\\
-Mer om tids- och minneskomplexitet i fördjupningskursen och senare kurser.
-\end{Slide}
-
-
-
-\begin{Slide}{Mängd: snabb innehållstest, garanterat dubblettfri}\SlideFontSmall
-En \Emph{mängd} \Eng{set} är en samling som \Alert{inte} kan innehålla \Alert{dubbletter} och som är snabb på att avgöra om ett element \Alert{finns eller inte} i mängden.
-
-\begin{REPL}
-scala> var veg = Set.empty[String]
-veg: scala.collection.immutable.Set[String] = Set()
-
-scala> veg = veg + "Gurka"
-veg: scala.collection.immutable.Set[String] = Set(Gurka)
-
-scala> veg = veg ++ Set("Broccoli", "Tomat", "Gurka")
-veg: scala.collection.immutable.Set[String] = Set(Gurka, Broccoli, Tomat)
-
-scala> veg.contains("Gurka")
-res0: Boolean = true
-
-scala> veg.apply("Gurka")   // samma som contains
-res1: Boolean = true
-
-scala> veg("Morot")
-res2: Boolean = false
-\end{REPL}
-
-\end{Slide}
-
-\begin{Slide}{Den fantastiska nyckel-värde-tabellen \texttt{Map}}\SlideFontSmall
-\begin{itemize}
-\item En \Emph{nyckel-värde-tabell} \Eng{key-value table} är en slags generaliserad vektor där man kan ''indexera'' med godtycklig typ.
-
-\item Kallas öven \href{https://sv.wikipedia.org/wiki/Hashtabell}{\Emph{hashtabell}} \Eng{hash table}, \Emph{lexikon} \Eng{dictionary} eller kort och gott \Emph{mapp} \Eng{map},
-
-\item En hashtabell är en \Emph{samling av par}, där varje par består av en \Alert{unik} \Emph{nyckel} och ett tillhörande \Emph{värde}.
-
-\item Om man vet nyckeln kan man få fram värdet \Alert{snabbt}, på liknande sätt som indexering sker i en vektor om man vet heltalsindex.
-
-\item Denna datastruktur är \Alert{mycket användbar} och liknar en enkel databas.
-\end{itemize}
-\begin{REPL}
-scala> val födelse = Map("C" -> 1972,  "C++" -> 1983, "C#" -> 2000,
-  "Scala" -> 2004, "Java" -> 1995, "Javascript" -> 1995, "Python" -> 1991)
-
-födelse: scala.collection.immutable.Map[String,Int] = Map(Scala -> 2004, C# -> 2000, Python -> 1991, Javascript -> 1995, C -> 1972, C++ -> 1983, Java -> 1995)
-
-scala> födelse.apply("Scala")
-res0: Int = 2004
-
-scala> födelse("Java")
-res1: Int = 1995
-
-\end{REPL}
-\end{Slide}
-
-\begin{Slide}{Exempel nyckel-värde-tabell}
-\begin{REPL}
-scala> val färg = Map("gurka" -> "grön", "tomat"->"röd", "aubergine"->"lila")
-färg: scala.collection.immutable.Map[String,String] =
-  Map(gurka -> grön, tomat -> röd, aubergine -> lila)
-
-scala> färg("gurka")
-res0: String = grön
-
-scala> färg.keySet
-res1: scala.collection.immutable.Set[String] = Set(gurka, tomat, aubergine)
-
-scala> val ärGrönSak = färg.map(elem => (elem._1, elem._2 == "grön"))
-ärGrönSak: Map[String,Boolean] = Map(gurka -> true, tomat -> false, aubergine -> false)
-
-scala> val baklängesFärg = färg.mapValues(s => s.reverse)
-baklängesFärg: Map[String,String] = Map(gurka -> nörg, tomat -> dör, aubergine -> alil)
-
-\end{REPL}
-\begin{itemize}
-\item \code{xs.keySet} ger en mängd av alla nycklar
-\item \code{xs.map(f)} mappar funktionen f på alla par av (key, value)
-\item \code{xs.mapValues(f)} mappar funktionen f på alla värden
-\end{itemize}
-
-\end{Slide}
-
 \begin{Slide}{Metoderna zipWithIndex, groupBy och mapValues}
 \begin{REPL}
 scala> val högaKort = Vector("Knekt", "Dam", "Kung", "Äss")
@@ -509,6 +495,49 @@ scala> val frekvens = xs.groupBy(_._1).mapValues(_.size)
 frekvens: Map[String,Int] = Map(Kim -> 2, Robin -> 1)
 \end{REPL}
 \end{Slide}
+
+
+
+
+\begin{Slide}{scala.collection.immutable}
+\includegraphics[width=0.82\textwidth]{../img/collection/collection-immutable}
+\includegraphics[width=0.33\textwidth]{../img/collection/collection-legend}
+\end{Slide}
+
+
+\begin{Slide}{scala.collection.mutable}
+\includegraphics[width=1.05\textwidth]{../img/collection/collection-mutable}
+\end{Slide}
+
+
+\begin{Slide}{Strängar är implicit en \texttt{IndexedSeq[Char]}}\SlideFontSmall
+Det finns en så kallad \Emph{implicit konvertering} mellan \code{String} och \code{IndexedSeq[Char]} vilket gör att \Alert{alla samlingsmetoder på \texttt{Seq} även funkar på strängar} och även flera andra smidiga strängmetoder erbjuds \Alert{utöver} de som finns i \href{http://docs.oracle.com/javase/8/docs/api/java/lang/String.html}{\code{java.lang.String}} genom klassen \href{http://www.scala-lang.org/api/current/#scala.collection.immutable.StringOps}{\code{StringOps}}.
+
+\vspace{0.5em}
+\begin{REPLnonum}
+scala> "hej".  //tryck på TAB och se alla strängmetoder
+\end{REPLnonum}
+Detta är en stor fördel med Scala jämfört med många andra språk, som har strängar som inte kan allt som andra sekvenssamlingar kan.
+\end{Slide}
+
+
+% \begin{Slide}{\texttt{Vector} eller \texttt{List}?}\SlideFontTiny
+% {\href{http://stackoverflow.com/questions/6928327/when-should-i-choose-vector-in-scala}{stackoverflow.com/questions/6928327/when-should-i-choose-vector-in-scala}}
+%
+% \begin{enumerate}
+% \item If we only need to transform sequences by operations like map, filter, fold etc: basically it does not matter, we should program our algorithm generically and might even benefit from accepting parallel sequences. For sequential operations List is probably a bit faster. But you should benchmark it if you have to optimize.
+%
+% \item If we need a lot of random access and different updates, so we should use vector, list will be prohibitively slow.
+%
+% \item If we operate on lists in a classical functional way, building them by prepending and iterating by recursive decomposition: use list, vector will be slower by a factor 10-100 or more.
+%
+% \item If we have an performance critical algorithm that is basically imperative and does a lot of random access on a list, something like in place quick-sort: use an imperative data structure, e.g. ArrayBuffer, locally and copy your data from and to it.
+% \end{enumerate}
+% {\href{http://stackoverflow.com/questions/20612729/how-does-scalas-vector-work}{stackoverflow.com/questions/20612729/how-does-scalas-vector-work}}\\
+% Mer om tids- och minneskomplexitet i fördjupningskursen och senare kurser.
+% \end{Slide}
+
+
 
 
 \begin{Slide}{Speciella metoder på förändringsbara samlingar}\SlideFontSmall
