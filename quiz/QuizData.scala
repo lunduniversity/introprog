@@ -337,7 +337,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "\\code|{ xs(0) = -1; xs(0) }|" ->"{\\small\\code|error: value update is not a member|}",
       "\\code|buf.update(1, 5)          |"   -> "\\code|(): Unit|",
       "\\code|xs.updated(0, 5)          |" -> "\\code|Vector(5, 2, 3, 4)|",
-      "\\code|{ buf += 5; buf }         |"   -> "\\code|ArrayBuffer(1, 5, 3, 4, 5)|",
+      "\\code|{ buf += 5; buf }         |"   -> "\\code|ArrayBuffer(-1, 5, 3, 4, 5)|",
       "\\code|{ xs += 5; xs }         |"   -> "{\\small\\code|error: value += is not a member|}",
       "\\code|xs.patch(1,Vector(-1,5),3)|"   -> "\\code|Vector(1, -1, 5)|",
       "\\code|xs                        |"   -> "\\code|Vector(1, 2, 3, 4)|",
