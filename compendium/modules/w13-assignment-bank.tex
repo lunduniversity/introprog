@@ -9,15 +9,14 @@
 \item Kunna sätta samman olika delar från olika moduler
 \item Förstå hur Java-klasser kan användas i Scala
 \item Förstå och bedöma när immutable/mutable såväl som var/val bör användas i större sammanhang
-\item Kunna använda sig av kompanjons-objekt
+\item Kunna använda sig av kompanjonsobjekt
 \item Kunna läsa och skriva till fil
 \item Kunna söka i olika datastrukturer på olika sätt
 \end{itemize}
 
 \subsection{Bakgrund}
 
-I detta projekt ska du skriva ett program som håller reda på bankkonton och kunder i en bank. Programmet ska även hålla reda på bankens nuvarande tillstånd, såväl som föregående.
-Tillstånden ska vid varje tillståndsförändring skrivas till fil så att ifall banken skulle krascha finns alla händelser som genomförts sparade, och banken kan således återställas.
+I detta projekt ska du skriva ett program som håller reda på bankkonton och kunder i en bank. Programmet ska utöver att hålla reda på bankens nuvarande tillstånd även föra historik över alla tillståndsändringar. Historiken ska vara så pass detaljerad att det nuvarande tillståndet kan återskapas genom att återuppspela alla ändringar som finns lagrade i historiken.
 
 Programmet ska vara helt textbaserat, man ska alltså interagera med programmet via terminalen där en meny skrivs ut och input görs via tangentbordet.
 
@@ -39,28 +38,28 @@ Kraven för bankapplikationen återfinns här nedan. För att bli godkänd på d
 \item 6. Skapa ett nytt konto.
 \item 7. Ta bort ett befintligt konto.
 \item 8. Skriv ut bankens alla konton, sorterade i bokstavsordning efter innehavare.
-\item 9. Återställa banken till ett tidigare tillstånd för ett givet datum. För enkelhetens skull får alla händelser genomförda efter det datum banken återställts till permanent kasseras.
+\item 9. Återställa banken till tillståndet den hade vid ett givet datum. För enkelhetens skull får du permanent kassera all historik som skapades efter det datum banken återställs till.
 \item 10. Avsluta.
 \end{itemize}
 
-\item Programmet ska skapa ett nytt tillstånd med tidsstämpel och spara gamla tillstånd varje gång då:
+\item När något av följande sker ska programmet notera det i historiken:
 \begin{itemize}
-\item Pengar sätts in på ett konto
+\item Pengar sätts in på ett konto.
 \item Pengar tas ut från ett konto.
 \item Pengar överförs mellan två konton.
 \item Ett konto skapas.
 \item Ett konto tas bort.
 \end{itemize}
-\item Då bankens tillstånd förändras ska detta skrivas till fil.
-\item Då banken startas upp ska händelsehistoriken läsas in så att banken laddar senaste sparade tillståndet.
-\item Allt som berör användargränssnittet (såsom utskrifter till terminalen och inläsning från terminalen) ska ske i \code{BankApplication}. Det är tillåtet att använda valfritt antal hjälpmetoder och hjälpklasser i \code{BankApplication}.
+\item Historiken ska sparas både i minnet och i en fil.
+\item Då programmet startas ska det läsa in historikfilen för att återskapa tillståndet som banken hade tidigare.
+\item Allt som berör användargränssnittet (såsom utskrifter till terminalen och inläsning från terminalen) ska ske i \code{BankApplication} eller hjälpklasser till \code{BankApplication}, inte i någon annan av klasserna som specificeras i uppgiften.
 \item Alla metoder och attribut ska ha lämpliga åtkomsträttigheter.
 \item Valen av val/var och immutable/mutable måste vara lämpliga.
 \item Din indata måste ge samma resultat som i exemplen i bilagan.
-\item Rimlig felhantering ska finnas, det är alltså önskvärt att programmet inte kraschar då man matar in felaktig input, utan istället säger till användaren att input är ogiltlig.
+\item Rimlig felhantering ska finnas. Det är alltså önskvärt att programmet inte kraschar då man matar in felaktig input, utan istället säger till användaren att input är ogiltlig.
 \item Programdesignen ska följa de specifikationer som är angivna nedan.
-\item Det räcker med att banken ska kunna hantera heltal, men dessa ska ske med klassen \code{BigInt}.
-\item Kontonummer ska genereras i klassen \code{BankAccount}, dessa ska vara unika för varje konto. Vid en tillståndförändringar ska dessa återställas, detta betyder att om en återställning tar bort ett konto så ska detta kontonummer återigen bli tillgängligt.
+\item Det räcker med att banken ska kunna hantera heltal, men detta ska göras med klassen \code{BigInt}.
+\item Klassen \code{BankAccount} ska generera ett unikt kontonummer för varje konto. Dessa ska återställas om bankens tillstånd återställs till ett tidigare datum, d.v.s. att om en återställning av banken tar bort ett konto så ska dess kontonummer återigen bli tillgängligt.
 \end{itemize}
 
 \subsection{Design}
@@ -110,7 +109,7 @@ class BankAccount(val holder: Customer) = {
 \begin{ScalaSpec}{Bank}
 
 /**
- * Creates a new bank with no accounts and no state.
+ * Creates a new bank with no accounts and no history.
  */
 class Bank() = {
 
@@ -146,10 +145,7 @@ class Bank() = {
   def doEvent(event: BankEvent): String = ???
 
   /**
-   * Resets the bank to the state with time-stamp corresponding to the
-   * provided date. If the date provided doesn't correspond exactly to
-   * any time-stamp then the nearest time-stamp with a date previous
-   * to the provided date is used instead.
+   * Resets the bank to the state it had at the provided date.
    * Returns a string describing whether the event was
    * successful or failed.
    */
@@ -169,9 +165,9 @@ Till din hjälp innehåller kursens workspace följande färdigskrivna klasser:
 \subsection{Tips}
 
 \begin{itemize}
-\item För att representera tillstånden är det viktigt att alla händelser som förändrar tillståndet representeras av ett \code{BankEvent}.
+\item Det enda sättet att förändra tillståndet för en \code{Bank} ska vara (förutom att anropa \code{returnToState}) att anropa \code{doEvent} med en \code{BankEvent} som beskriver tillståndsförändringen. Vid en första anblick kan detta kan verka lite väl bökigt, men när ändringshistoriken ska implementeras kommer det vara till stor hjälp att det finns en \code{BankEvent} som representerar varje ändring.
 
-\item För att skriva till fil på ett enkelt sätt kan man t.ex. använda sig av statiska metoder i klassen \code{Files} som finns tillgänglig i \code{java.nio.file}. För att undvika portabilitetsproblem kan man då använda sig av ett bestämt \code{Charset}, t.ex. \code{UTF_8}, som finns tillgänglig i \newline\code{java.nio.charset.StandardCharsets.UTF_8}.
+\item För att skriva till fil på ett enkelt sätt kan man t.ex. använda sig av statiska metoder i klassen \code{Files} som finns tillgänglig i \code{java.nio.file}. För att undvika portabilitetsproblem kan man då använda sig av ett bestämt \code{Charset}, t.ex. \code{UTF_8}, som finns tillgänglig i \code{java.nio.charset.StandardCharsets.UTF_8}.
 
 \item För att läsa ifrån en fil kan man t.ex. använda sig av \code{Source} som finns tillgänglig i \code{scala.io.Source}.
 
@@ -184,25 +180,23 @@ Till din hjälp innehåller kursens workspace följande färdigskrivna klasser:
 
 \Task Implementera klassen \code{BankAccount}.
 
-\Task Skapa en ny klass \code{BankApplication}.
-
-\Subtask Objektet \code{BankApplication} ska innehålla \code{main}-metoden. Det kan vara bra att innan man fortsätter se till att denna klass skriver ut menyn korrekt och kan ta input från tangentbordet som motsvarar de menyval som finns.
+\Task Skapa singelobjektet \code{BankApplication}, som ska innehålla \code{main}-metoden. Det kan vara bra att innan man fortsätter se till att denna skriver ut menyn korrekt och kan ta input från tangentbordet som motsvarar de menyval som finns.
 
 \Task Implementera klassen \code{Bank}.
 
 \Subtask Implementera menyval 6 och 8. Testa noga.
 
-\Subtask Implementera tillståndsfunktionaliteten. Varje nytt \code{BankEvent} ska ge upphov till ett nytt tillstånd och gamla tillstånd ska sparas som historik till det nya tillståndet.
+\Subtask Implementera ändringshistoriken. Varje gång \code{doEvent} anropas ska dess \code{BankEvent}-argument läggas till i historiken tillsammans med det nuvarande datumet.
 
-\Subtask Implementera alla andra menyval, förutom menyval 9. Testa de nya menyvalen noga efterhand som du implementerar dem, i synnerhet så att tillståndsförändringarna fungerar korrekt. Gör de utökningar du anser behövs.
+\Subtask Implementera alla andra menyval, förutom menyval 9. Testa de nya menyvalen noga efterhand som du implementerar dem, i synnerhet så att ändringshistoriken fungerar korrekt. Gör de utökningar du anser behövs.
 
-\Task Implementera menyval 9. När man försöker återställa banken till ett datum ska den senaste \code{BankEvent} genomförd före detta datum hämtas, med andra ord ska alla \code{BankEvent} med tidsstämpel efter återställningsdatumet kasseras permanent. Testa noga. Det är viktigt att denna funktionalitet fungerar bra innan man går vidare.
+\Task Implementera menyval 9 genom att först nollställa bankens tillstånd och sedan återuppspela allt i historiken som hände före det givna datumet. Allt i historiken som hände efter det givna datumet bör tas bort permanent.
 
-\Task Implementera säkerhetskopiering av tillstånden.
+\Task Implementera säkerhetskopiering av historiken.
 
-\Subtask Implementera utskriften till fil då ett nytt tillstånd skapas, utskriften ska ske omedelbart. Banken ska ej behöva avslutas för att utskriften ska hamna på fil, om så vore fallet kan information fortfarande gå förlorad om banken kraschar.
+\Subtask När en \code{BankEvent} läggs till i historiken ska den också skrivas till en historikfil omedelbart. Banken ska ej behöva avslutas för att utskriften ska hamna på fil, om så vore fallet kan information gå förlorad om banken kraschar.
 
-I repositoriet för denna projekt uppgift finns en sparfil bifogad, för bekvämlighet finns ett utdrag av denna fil  infogad nedanför. Inläsning och utskrift ska ske med dess format:\\~\\
+I workspace-katalogen för denna projektuppgift finns en historikfil bifogad. För bekvämlighet finns ett utdrag av denna fil infogad nedanför. Inläsning och utskrift ska ske med dess format:\\~\\
 2016 3 7 10 6 N 850127 Fredrik\newline
 2016 3 7 10 28 D 1000 16500\newline
 2016 3 9 10 52 W 1000 3900\newline
@@ -226,13 +220,12 @@ De olika klasserna av \code{BankEvent} representeras med följande bokstav:
 \item E - \code{DeleteAccount}
 \end{itemize}
 
-\Subtask Implementera inläsningen från fil då banken startas.
+\Subtask När programmet startar ska det läsa in alla händelser från historikfilen och återuppspela dem en efter en. På så sätt kan bankens tillstånd återställas, fastän vi bara har sparat ändringshistoriken och inte själva tillståndet.
 
 
 \subsection{Frivilliga extrauppgifter}
 
-Gör först klart projektets obligatoriska delar. Därefter kan du, om du vill, utöka ditt
-program enligt följande.
+Gör först klart projektets obligatoriska delar. Därefter kan du, om du vill, utöka ditt program enligt följande.
 
 \Task Skriv en eller flera av klasserna \code{Customer} och \code{BankAccount} i Java istället och använd dig av dessa i din Scala-kod.
 
