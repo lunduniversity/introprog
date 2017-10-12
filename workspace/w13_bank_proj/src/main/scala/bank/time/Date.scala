@@ -9,29 +9,29 @@ import java.time.LocalDateTime
  */
 case class Date(year: Int, month: Int, dayOfMonth: Int, hour: Int, minute: Int) {
 
-  private val calender = LocalDateTime.of(year, month, dayOfMonth, hour, minute)
+  private val calendar = LocalDateTime.of(year, month, dayOfMonth, hour, minute)
 
   /**
    * Short format of the date
    */
-  lazy val shortDate = "" + calender.getDayOfMonth + "/" + (calender.getMonth)
+  lazy val shortDate = "" + calendar.getDayOfMonth + "/" + (calendar.getMonth)
 
   /**
    * Relaxed format of the date
    */
-  lazy val relaxedTimeFormat = calender.getYear + " " + calender.getMonthValue + " " + calender.getDayOfMonth + " " + calender.getHour + " " + calender.getMinute
+  lazy val relaxedTimeFormat = calendar.getYear + " " + calendar.getMonthValue + " " + calendar.getDayOfMonth + " " + calendar.getHour + " " + calendar.getMinute
 
   /**
    * Standard output of the date
    */
-  lazy val calendarTime = calender.getHour + ":" + calender.getMinute + ":" + calender.getSecond + " CET " + calender.getMonthValue + " / " +
-        calender.getDayOfMonth + " - " + calender.getYear
+  lazy val calendarTime = calendar.getHour + ":" + calendar.getMinute + ":" + calendar.getSecond + " CET " + calendar.getMonthValue + " / " +
+        calendar.getDayOfMonth + " - " + calendar.getYear
 
   /**
    * Checks whether this date happened before, at the same time as or after the provided date.
    */
   def compare(date: Date): Int = {
-    calender.compareTo(date.calender)
+    calendar.compareTo(date.calendar)
   }
 }
 
