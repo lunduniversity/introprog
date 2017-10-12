@@ -2,12 +2,12 @@
 
 package bank.time
 
+import java.time.LocalDateTime
+
  /**
  * Creates a Date object based on date given as parameters.
  */
 case class Date(year: Int, month: Int, dayOfMonth: Int, hour: Int, minute: Int) {
-  import java.time;
-  import java.time.LocalDateTime
 
   private val calender = LocalDateTime.of(year, month, dayOfMonth, hour, minute)
 
@@ -40,7 +40,7 @@ object Date {
    * Creates a Date object based on the current time of the computer's clock.
    */
   def now() = {
-    Date(java.time.LocalDateTime.now.getYear, java.time.LocalDateTime.now.getMonthValue, java.time.LocalDateTime.now.getDayOfMonth,
-         java.time.LocalDateTime.now.getHour, java.time.LocalDateTime.now.getMinute)
+    Date(LocalDateTime.now.getYear, LocalDateTime.now.getMonthValue, LocalDateTime.now.getDayOfMonth,
+         LocalDateTime.now.getHour, LocalDateTime.now.getMinute)
   }
 }
