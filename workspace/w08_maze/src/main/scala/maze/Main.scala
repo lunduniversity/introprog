@@ -38,7 +38,7 @@ object Main {
     }
   }
 
-  def getResourcePath : String = getClass.getResource("/").getPath
+  def getResourcePath : String = Paths.get(getClass.getResource("/").toURI).toString + "/"
 
   def main(args: Array[String]): Unit = {
     val path = getResourcePath
