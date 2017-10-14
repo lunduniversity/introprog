@@ -18,37 +18,39 @@ object Main {
     mazeWalker.walk(maze, animationDelay)
   }
 
-  def drawMazesInDir(path: String): Unit = {
+  def drawMazesFromResources(): Unit = {
     for (mazeNbr <- 1 to 4) {
       val filename = s"maze$mazeNbr.txt"
-      msg(s"Click to draw $path$filename")
+      msg(s"Click to draw $filename")
       win.waitForMouseClick()
       win.clear()
       win.setLineColor(java.awt.Color.black)
-      val maze = Maze.fromFile(path + filename)
+      val maze = Maze.fromFile(getResourcePath(filename))
       drawMazeAndClickToWalk(maze)
     }
   }
 
-  def printMazesFromDir(path: String, n: Int): Unit = {
+  def printMazesFromResources(n: Int): Unit = {
     for (mazeNbr <- 1 to n) {
       val filename = s"maze$mazeNbr.txt"
-      val maze = Maze.fromFile(path + filename)
+      val maze = Maze.fromFile(getResourcePath(filename))
       println(maze)
     }
   }
 
-  def getResourcePath : String = getClass.getResource("/").getPath
+  def getResourcePath(resource: String): String = {
+    Paths.get(getClass.getResource("/" + resource).toURI).toString
+  }
 
   def main(args: Array[String]): Unit = {
-    val path = getResourcePath
+    val path = getResourcePath("")
     println(s"Resource path detected: $path")
-    printMazesFromDir(path, n = 4)
+    printMazesFromResources(4)
     msg(s"Mazes in $path have been printed to console.")
     msg("CLICK TO CONTINUE!", y = 200)
     win.waitForMouseClick()
     win.clear()
-    drawMazesInDir(path)
+    drawMazesFromResources()
     msg("GOODBYE! File -> Quit or Ctrl+Q to exit.", y = 80)
   }
 }
