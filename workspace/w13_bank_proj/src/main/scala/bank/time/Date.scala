@@ -12,19 +12,19 @@ case class Date(year: Int, month: Int, dayOfMonth: Int, hour: Int, minute: Int) 
   private val calendar = LocalDateTime.of(year, month, dayOfMonth, hour, minute)
 
   /**
-   * Short format of the date
+   * A short string showing the day and month
    */
-  lazy val shortDate = "" + calendar.getDayOfMonth + "/" + (calendar.getMonth)
+  lazy val toShortFormat = "" + calendar.getDayOfMonth + "/" + (calendar.getMonth)
 
   /**
-   * Relaxed format of the date
+   * A string suitable for writing to log files
    */
-  lazy val relaxedTimeFormat = calendar.getYear + " " + calendar.getMonthValue + " " + calendar.getDayOfMonth + " " + calendar.getHour + " " + calendar.getMinute
+  lazy val toLogFormat = calendar.getYear + " " + calendar.getMonthValue + " " + calendar.getDayOfMonth + " " + calendar.getHour + " " + calendar.getMinute
 
   /**
-   * Standard output of the date
+   * A string suitable for showing to users
    */
-  lazy val calendarTime = calendar.getHour + ":" + calendar.getMinute + ":" + calendar.getSecond + " CET " + calendar.getMonthValue + " / " +
+  lazy val toNaturalFormat = calendar.getHour + ":" + calendar.getMinute + ":" + calendar.getSecond + " CET " + calendar.getMonthValue + " / " +
         calendar.getDayOfMonth + " - " + calendar.getYear
 
   /**
