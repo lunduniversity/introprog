@@ -23,8 +23,8 @@ case class Date(year: Int, month: Int, dayOfMonth: Int, hour: Int, minute: Int) 
   /**
    * A string suitable for showing to users
    */
-  lazy val toNaturalFormat: String = calendar.getHour + ":" + calendar.getMinute + ":" + calendar.getSecond + " CET " + calendar.getMonthValue + " / " +
-        calendar.getDayOfMonth + " - " + calendar.getYear
+  lazy val toNaturalFormat: String = calendar.getHour + ":" + calendar.getMinute + ":" + calendar.getSecond + " CET " + calendar.getDayOfMonth + " / " +
+        calendar.getMonthValue + " - " + calendar.getYear
 
   /**
    * Checks whether this date happened before, at the same time as or after the provided date.
