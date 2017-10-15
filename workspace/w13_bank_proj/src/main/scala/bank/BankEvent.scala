@@ -36,3 +36,25 @@ case class DeleteAccount(account: Int) extends BankEvent {
   def toLogFormat: String = s"E $account"
   def toNaturalFormat: String = s"Raderade konto $account"
 }
+
+object BankEvent {
+  /**
+   * Converts a string obtained from toLogFormat into a BankEvent object.
+   */
+  def fromLogFormat(str: String): BankEvent = {
+    try {
+      val xs = str.split(' ')
+      xs(0) match {
+        case "D" => Deposit(xs(1).toInt, BigInt(xs(2)))
+        case "W" => Withdraw(xs(1).toInt, BigInt(xs(2)))
+        case "T" => Transfer(xs(1).toInt, xs(2).toInt, BigInt(xs(3)))
+        case "N" => NewAccount(xs(1).toLong, xs.drop(2).mkString(" "))
+        case "E" => DeleteAccount(xs(1).toInt)
+        case s => throw new IllegalArgumentException(s"Unknown BankEvent type: $str")
+      }
+    } catch {
+      case e @ (_: IndexOutOfBoundsException | _: NumberFormatException) =>
+        throw new IllegalArgumentException(s"Invalid BankEvent string: $str", e)
+    }
+  }
+}
