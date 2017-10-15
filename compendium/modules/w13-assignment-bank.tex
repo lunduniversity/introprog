@@ -37,9 +37,10 @@ Kraven för bankapplikationen återfinns här nedan. För att bli godkänd på d
 \item 5. Överföra pengar mellan två olika konton.
 \item 6. Skapa ett nytt konto.
 \item 7. Ta bort ett befintligt konto.
-\item 8. Skriv ut bankens alla konton, sorterade i bokstavsordning efter innehavare.
-\item 9. Återställa banken till tillståndet den hade vid ett givet datum. För enkelhetens skull får du permanent kassera all historik som skapades efter det datum banken återställs till.
-\item 10. Avsluta.
+\item 8. Skriva ut bankens alla konton, sorterade i bokstavsordning efter innehavare.
+\item 9. Skriva ut historiken över alla ändringar av bankens tillstånd.
+\item 10. Återställa banken till tillståndet den hade vid ett givet datum. För enkelhetens skull får du permanent kassera all historik som skapades efter det datum banken återställs till.
+\item 11. Avsluta.
 \end{itemize}
 
 \item När något av följande sker ska programmet notera det i historiken:
@@ -133,12 +134,17 @@ class Bank() = {
    */
   def findByName(namePattern: String): Vector[Customer] = ???
 
- /**
+  /**
    * Executes an event in the bank.
    * Returns a string describing whether the
    * event was successful or failed.
    */
   def doEvent(event: BankEvent): String = ???
+
+  /**
+   * Returns a log of all changes to the bank's state.
+   */
+  def history(): Vector[HistoryEntry] = ???
 
   /**
    * Resets the bank to the state it had at the provided date.
@@ -150,11 +156,7 @@ class Bank() = {
 \end{ScalaSpec}
 
 
-Till din hjälp innehåller kursens workspace följande färdigskrivna klasser. Du får göra ändringar i dem om du vill, men det går också bra att använda dem oförändrade.
-\begin{itemize}
-\item \code{Date}, en enkel wrapper av \code{Java.time} som du ska använda för att representera tidsstämplar.
-\item \code{BankEvent} med tillhörande subtyper, som du ska använda för att representera förändringar av bankens tillstånd.
-\end{itemize}
+Till din hjälp innehåller kursens workspace de färdigskrivna klasserna \code{HistoryEntry}, \code{Date} samt \code{BankEvent} med tillhörande subtyper. Du får göra ändringar i dem om du vill, men det går också bra att använda dem oförändrade.
 
 
 \subsection{Tips}
@@ -181,13 +183,13 @@ Till din hjälp innehåller kursens workspace följande färdigskrivna klasser. 
 
 \Subtask Implementera menyval 6 och 8. Testa noga.
 
-\Subtask Implementera ändringshistoriken. Varje gång \code{doEvent} anropas ska dess \code{BankEvent}-argument läggas till i historiken tillsammans med det nuvarande datumet.
+\Subtask Implementera menyval 9. Varje gång \code{doEvent} exekveras utan fel ska dess \code{BankEvent}-argument läggas till i historiken tillsammans med det nuvarande datumet.
 
-\Subtask Implementera alla andra menyval, förutom menyval 9. Testa de nya menyvalen noga efterhand som du implementerar dem, i synnerhet så att ändringshistoriken fungerar korrekt. Gör de utökningar du anser behövs.
+\Subtask Implementera alla andra menyval, förutom menyval 10. Testa de nya menyvalen noga efterhand som du implementerar dem, i synnerhet så att ändringshistoriken fungerar korrekt. Gör de utökningar du anser behövs.
 
 \Task Implementera säkerhetskopiering av historiken.
 
-\Subtask När en \code{BankEvent} läggs till i historiken ska den också skrivas till en historikfil omedelbart. Banken ska ej behöva avslutas för att utskriften ska hamna på fil, om så vore fallet kan information gå förlorad om banken kraschar.
+\Subtask När något läggs till i historiken ska det också skrivas till en historikfil omedelbart. Banken ska ej behöva avslutas för att utskriften ska hamna på fil, om så vore fallet kan information gå förlorad om banken kraschar.
 
 I workspace-katalogen för denna projektuppgift finns en historikfil bifogad. För bekvämlighet finns ett utdrag av denna fil infogad nedanför. Inläsning och utskrift ska ske med dess format:\\~\\
 2016 3 7 10 6 N 850127 Fredrik\newline
@@ -213,7 +215,7 @@ De olika sorternas \code{BankEvent} representeras med följande bokstäver:
 \end{itemize}
 
 \noindent
-Du kan ta hjälp av \code{toLogString}-metoderna i \code{BankEvent} och \code{Date} för att få utskrifter i detta format.
+Använd \code{toLogString}-metoden i \code{HistoryEntry} för att få utskrifter i rätt format.
 
 \Subtask När programmet startar ska det läsa in alla händelser från historikfilen och återuppspela dem en efter en. På så sätt kan bankens tillstånd återställas, fastän vi bara har sparat ändringshistoriken och inte själva tillståndet.
 
@@ -226,7 +228,7 @@ Gör först klart projektets obligatoriska delar. Därefter kan du, om du vill, 
 
 \Task Skriv en eller flera av klasserna \code{Customer} och \code{BankAccount} i Java istället och använd dig av dessa i din Scala-kod.
 
-\Task	Implementera ett nytt menyalternativ som skriver ut all kontohistorik för en given person. I historiken ska finnas typ av händelse med tillhörande parametrar, dåvarande saldo vid händelsen, såväl som datumet för händelsen.
+\Task Implementera ett nytt menyalternativ som skriver ut all kontohistorik för en given person. I historiken ska finnas typ av händelse med tillhörande parametrar, dåvarande saldo vid händelsen, såväl som datumet för händelsen.
 
 \subsection{Exempel på körning av programmet}
 
@@ -337,6 +339,16 @@ Konto 1001 (Berit Besson, id 8505255678) 1000 kr\\
 \end{exampleblock}
 \begin{exampleblock}
 Val: \textbf{9}\\
+10:03:0 CET 14 / 5 - 2016: Skapade ett konto tillhörandes Adam Asson, id 6707071234\\
+10:12:0 CET 14 / 5 - 2016: Skapade ett konto tillhörandes Berit Besson, id 8505255678\\
+13:56:0 CET 14 / 5 - 2016: Skapade ett konto tillhörandes Berit Besson, id 8505255678\\
+14:36:0 CET 14 / 5 - 2016: Satte in 5000 kr i konto 1000\\
+14:37:0 CET 14 / 5 - 2016: Överförde 1000 kr från konto 1000 till konto 1001\\
+14:54:0 CET 14 / 5 - 2016: Raderade konto 1002\\
+14:58:0 CET 14 / 5 - 2016\\
+\end{exampleblock}
+\begin{exampleblock}
+Val: \textbf{10}\\
 Vilket datum vill du återställa banken till?\\
 År: \textbf{2016}\\
 Månad: \textbf{5}\\
@@ -344,6 +356,11 @@ Datum (dag): \textbf{14}\\
 Timme: \textbf{10}\\
 Minut: \textbf{5}\\
 Banken återställd.\\
+15:00:0 CET 14 / 5 - 2016\\
+\end{exampleblock}
+\begin{exampleblock}
+Val: \textbf{9}\\
+10:03:0 CET 14 / 5 - 2016: Skapade ett konto tillhörandes Adam Asson, id 6707071234\\
 15:00:0 CET 14 / 5 - 2016\\
 \end{exampleblock}
 \begin{exampleblock}
