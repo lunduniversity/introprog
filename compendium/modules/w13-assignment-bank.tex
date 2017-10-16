@@ -37,9 +37,10 @@ Kraven för bankapplikationen återfinns här nedan. För att bli godkänd på d
 \item 5. Överföra pengar mellan två olika konton.
 \item 6. Skapa ett nytt konto.
 \item 7. Ta bort ett befintligt konto.
-\item 8. Skriv ut bankens alla konton, sorterade i bokstavsordning efter innehavare.
-\item 9. Återställa banken till tillståndet den hade vid ett givet datum. För enkelhetens skull får du permanent kassera all historik som skapades efter det datum banken återställs till.
-\item 10. Avsluta.
+\item 8. Skriva ut bankens alla konton, sorterade i bokstavsordning efter innehavare.
+\item 9. Skriva ut historiken över alla ändringar av bankens tillstånd.
+\item 10. Återställa banken till tillståndet den hade vid ett givet datum. För enkelhetens skull får du permanent kassera all historik som skapades efter det datum banken återställs till.
+\item 11. Avsluta.
 \end{itemize}
 
 \item När något av följande sker ska programmet notera det i historiken:
@@ -52,11 +53,12 @@ Kraven för bankapplikationen återfinns här nedan. För att bli godkänd på d
 \end{itemize}
 \item Historiken ska sparas både i minnet och i en fil.
 \item Då programmet startas ska det läsa in historikfilen för att återskapa tillståndet som banken hade tidigare.
+\item Formatet för historikfilen ska vara detsamma som formatet för den bifogade exempelfilen.
 \item Allt som berör användargränssnittet (såsom utskrifter till terminalen och inläsning från terminalen) ska ske i \code{BankApplication} eller hjälpklasser till \code{BankApplication}, inte i någon annan av klasserna som specificeras i uppgiften.
 \item Alla metoder och attribut ska ha lämpliga åtkomsträttigheter.
 \item Valen av val/var och immutable/mutable måste vara lämpliga.
-\item Din indata måste ge samma resultat som i exemplen i bilagan.
-\item Rimlig felhantering ska finnas. Det är alltså önskvärt att programmet inte kraschar då man matar in felaktig input, utan istället säger till användaren att input är ogiltlig.
+\item Programmet ska fungera som i de bifogade exemplen på körning av programmet.
+\item Rimlig felhantering ska finnas. Det är alltså önskvärt att programmet inte kraschar då användaren matar in felaktig input, utan istället säger till användaren att input är ogiltig. Du kan dock anta att historikfilen alltid är i rätt format.
 \item Programdesignen ska följa de specifikationer som är angivna nedan.
 \item Det räcker med att banken ska kunna hantera heltal, men detta ska göras med klassen \code{BigInt}.
 \item Klassen \code{BankAccount} ska generera ett unikt kontonummer för varje konto. Dessa ska återställas om bankens tillstånd återställs till ett tidigare datum, d.v.s. att om en återställning av banken tar bort ett konto så ska dess kontonummer återigen bli tillgängligt.
@@ -135,12 +137,17 @@ class Bank() = {
    */
   def findByName(namePattern: String): Vector[Customer] = ???
 
- /**
+  /**
    * Executes an event in the bank.
    * Returns a string describing whether the
    * event was successful or failed.
    */
   def doEvent(event: BankEvent): String = ???
+
+  /**
+   * Returns a log of all changes to the bank's state.
+   */
+  def history(): Vector[HistoryEntry] = ???
 
   /**
    * Resets the bank to the state it had at the provided date.
@@ -152,11 +159,7 @@ class Bank() = {
 \end{ScalaSpec}
 
 
-Till din hjälp innehåller kursens workspace följande färdigskrivna klasser. Du får göra ändringar i dem om du vill, men det går också bra att använda dem oförändrade.
-\begin{itemize}
-\item \code{Date}, en enkel wrapper av \code{Java.time} som du ska använda för att representera tidsstämplar.
-\item \code{BankEvent} med tillhörande subtyper, som du ska använda för att representera förändringar av bankens tillstånd.
-\end{itemize}
+Till din hjälp innehåller kursens workspace de färdigskrivna klasserna \code{HistoryEntry} och \code{Date} samt \code{BankEvent} med tillhörande subtyper.
 
 
 \subsection{Tips}
@@ -183,41 +186,15 @@ Till din hjälp innehåller kursens workspace följande färdigskrivna klasser. 
 
 \Subtask Implementera menyval 6 och 8. Testa noga.
 
-\Subtask Implementera ändringshistoriken. Varje gång \code{doEvent} anropas ska dess \code{BankEvent}-argument läggas till i historiken tillsammans med det nuvarande datumet.
+\Subtask Implementera menyval 9. Varje gång \code{doEvent} exekveras utan fel ska dess \code{BankEvent}-argument läggas till i historiken tillsammans med det nuvarande datumet.
 
-\Subtask Implementera alla andra menyval, förutom menyval 9. Testa de nya menyvalen noga efterhand som du implementerar dem, i synnerhet så att ändringshistoriken fungerar korrekt. Gör de utökningar du anser behövs.
+\Subtask Implementera alla andra menyval, förutom menyval 10. Testa de nya menyvalen noga efterhand som du implementerar dem, i synnerhet så att ändringshistoriken fungerar korrekt. Gör de utökningar du anser behövs.
 
 \Task Implementera säkerhetskopiering av historiken.
 
-\Subtask När en \code{BankEvent} läggs till i historiken ska den också skrivas till en historikfil omedelbart. Banken ska ej behöva avslutas för att utskriften ska hamna på fil, om så vore fallet kan information gå förlorad om banken kraschar.
+\Subtask När något läggs till i historiken ska det också skrivas till en historikfil omedelbart. Banken ska ej behöva avslutas för att utskriften ska hamna på fil, om så vore fallet kan information gå förlorad om banken kraschar. Använd \code{toLogString}-metoden i \code{HistoryEntry} för att få utskrifter i rätt format.
 
-I workspace-katalogen för denna projektuppgift finns en historikfil bifogad. För bekvämlighet finns ett utdrag av denna fil infogad nedanför. Inläsning och utskrift ska ske med dess format:\\~\\
-2016 3 7 10 6 N 850127 Fredrik\newline
-2016 3 7 10 28 D 1000 16500\newline
-2016 3 9 10 52 W 1000 3900\newline
-2016 3 9 11 8 N 900318 Casper\newline
-2016 3 9 16 28 D 1001 6500\newline
-2016 4 1 10 11 W 1001 1900\newline
-2016 4 1 11 19 W 1001 2000\newline
-2016 4 2 16 33 N 651002 Björn\newline
-2016 4 2 16 46 D 1002 25000\newline
-2016 4 3 10 11 T 1002 1000 4000\\~\\
-Formen är alltså: \textbf{År  Månad  Dag  Timme  Minut  BankEventTyp  Argument}
-\\~\\
-De olika sorternas \code{BankEvent} representeras med följande bokstäver:
-
-\begin{itemize}
-\item D - \code{Deposit}
-\item W - \code{Withdraw}
-\item T - \code{Transfer}
-\item N - \code{NewAccount}
-\item E - \code{DeleteAccount}
-\end{itemize}
-
-\noindent
-Du kan ta hjälp av \code{toLogString}-metoderna i \code{BankEvent} och \code{Date} för att få utskrifter i detta format.
-
-\Subtask När programmet startar ska det läsa in alla händelser från historikfilen och återuppspela dem en efter en. På så sätt kan bankens tillstånd återställas, fastän vi bara har sparat ändringshistoriken och inte själva tillståndet.
+\Subtask När programmet startar ska det läsa in alla händelser från historikfilen och återuppspela dem en efter en. På så sätt kan bankens tillstånd återställas, fastän vi bara har sparat ändringshistoriken och inte själva tillståndet. Använd \code{fromLogString}-metoden i \code{HistoryEntry} när du läser in strängar från filen.
 
 \Task Implementera menyval 9 genom att först nollställa bankens tillstånd och sedan återuppspela allt i historiken som hände före det givna datumet. Resten av historiken bör tas bort permanent, både i minnet och i historikfilen.
 
@@ -228,7 +205,19 @@ Gör först klart projektets obligatoriska delar. Därefter kan du, om du vill, 
 
 \Task Skriv en eller flera av klasserna \code{Customer} och \code{BankAccount} i Java istället och använd dig av dessa i din Scala-kod.
 
-\Task	Implementera ett nytt menyalternativ som skriver ut all kontohistorik för en given person. I historiken ska finnas typ av händelse med tillhörande parametrar, dåvarande saldo vid händelsen, såväl som datumet för händelsen.
+\Task Implementera ett nytt menyalternativ som skriver ut all kontohistorik för en given person. I historiken ska finnas typ av händelse med tillhörande parametrar, dåvarande saldo vid händelsen, såväl som datumet för händelsen.
+
+\subsection{Exempel på historikfil}
+
+I workspace-katalogen för denna projektuppgift medföljer en historikfil. För bekvämlighet finns den även infogad nedan. Inläsning och utskrift ska ske med dess format.
+
+\begin{multicols}{2}
+\small
+\lstinputlisting{../workspace/w13_bank_proj/bank_log.txt}
+\end{multicols}
+
+\noindent
+Formen är alltså: \textbf{År  Månad  Dag  Timme  Minut  BankEventTyp  Argument}. De olika sorternas \code{BankEvent} representeras med följande bokstäver: D för \code{Deposit}, W för \code{Withdraw}, T för \code{Transfer}, N för \code{NewAccount} och E för \code{DeleteAccount}.
 
 \subsection{Exempel på körning av programmet}
 
@@ -339,6 +328,16 @@ Konto 1001 (Berit Besson, id 8505255678) 1000 kr\\
 \end{exampleblock}
 \begin{exampleblock}
 Val: \textbf{9}\\
+10:03:0 CET 14 / 5 - 2016: Skapade ett konto tillhörandes Adam Asson, id 6707071234\\
+10:12:0 CET 14 / 5 - 2016: Skapade ett konto tillhörandes Berit Besson, id 8505255678\\
+13:56:0 CET 14 / 5 - 2016: Skapade ett konto tillhörandes Berit Besson, id 8505255678\\
+14:36:0 CET 14 / 5 - 2016: Satte in 5000 kr i konto 1000\\
+14:37:0 CET 14 / 5 - 2016: Överförde 1000 kr från konto 1000 till konto 1001\\
+14:54:0 CET 14 / 5 - 2016: Raderade konto 1002\\
+14:58:0 CET 14 / 5 - 2016\\
+\end{exampleblock}
+\begin{exampleblock}
+Val: \textbf{10}\\
 Vilket datum vill du återställa banken till?\\
 År: \textbf{2016}\\
 Månad: \textbf{5}\\
@@ -346,6 +345,11 @@ Datum (dag): \textbf{14}\\
 Timme: \textbf{10}\\
 Minut: \textbf{5}\\
 Banken återställd.\\
+15:00:0 CET 14 / 5 - 2016\\
+\end{exampleblock}
+\begin{exampleblock}
+Val: \textbf{9}\\
+10:03:0 CET 14 / 5 - 2016: Skapade ett konto tillhörandes Adam Asson, id 6707071234\\
 15:00:0 CET 14 / 5 - 2016\\
 \end{exampleblock}
 \begin{exampleblock}
