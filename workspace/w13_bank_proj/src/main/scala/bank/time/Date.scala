@@ -5,6 +5,8 @@ package bank.time
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+import scala.util.Try
+
 /**
  * Creates a Date object based on date given as parameters.
  */
@@ -49,12 +51,12 @@ object Date {
    * Converts a string obtained from toLogFormat into a Date object.
    */
   def fromLogFormat(str: String): Date = {
-    try {
+    Try{
       val xs = str.split(' ')
       Date(xs(0).toInt, xs(1).toInt, xs(2).toInt, xs(3).toInt, xs(4).toInt)
-    } catch {
+    }.recover{
       case e @ (_: IndexOutOfBoundsException | _: NumberFormatException) =>
         throw new IllegalArgumentException(s"Invalid Date string: $str", e)
-    }
+    }.get
   }
 }
