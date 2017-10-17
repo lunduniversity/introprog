@@ -55,7 +55,9 @@ object Date {
       val xs = str.split(' ')
       Date(xs(0).toInt, xs(1).toInt, xs(2).toInt, xs(3).toInt, xs(4).toInt)
     }.recover{
-      case e @ (_: IndexOutOfBoundsException | _: NumberFormatException) =>
+      case e: IndexOutOfBoundsException =>
+        throw new IllegalArgumentException(s"Invalid Date string: $str", e)
+      case e: NumberFormatException =>
         throw new IllegalArgumentException(s"Invalid Date string: $str", e)
     }.get
   }
