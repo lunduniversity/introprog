@@ -1,5 +1,7 @@
 package bank
 
+import scala.util.Try
+
 sealed trait BankEvent {
   /**
    * Returns a string suitable for writing to log files.
@@ -42,7 +44,7 @@ object BankEvent {
    * Converts a string obtained from toLogFormat into a BankEvent object.
    */
   def fromLogFormat(str: String): BankEvent = {
-    try {
+    Try{
       val xs = str.split(' ')
       xs(0) match {
         case "D" => Deposit(xs(1).toInt, BigInt(xs(2)))
@@ -52,9 +54,9 @@ object BankEvent {
         case "E" => DeleteAccount(xs(1).toInt)
         case s => throw new IllegalArgumentException(s"Unknown BankEvent type: $str")
       }
-    } catch {
+    }.recover{
       case e @ (_: IndexOutOfBoundsException | _: NumberFormatException) =>
         throw new IllegalArgumentException(s"Invalid BankEvent string: $str", e)
-    }
+    }.get
   }
 }
