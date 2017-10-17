@@ -144,7 +144,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Språkskillnader",
-      id = "scala-java", exercise = "scala-java", lab = "lthopoly-team", contents = """
+      id = "scala-java", exercise = "scala-java", lab = "javatext", contents = """
       | syntaxskillnader mellan Scala och Java,
       | klasser i Scala och Java,
       | referensvariabler i Java, enkla värden i Java, primitiva typer i Java,
