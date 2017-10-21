@@ -135,7 +135,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Mönstermatchning, undantag",
-      id = "patterns", exercise = "patterns", lab = "chords-team", contents = """
+      id = "patterns", exercise = "patterns", lab = "music", contents = """
       | mönstermatchning, match, Option, throw, try, catch, Try, unapply, sealed,
       | flatten, flatMap, partiella funktioner, collect,
       | wildcard-mönster, variabelbinding i mönster, sekvens-wildcard, bokstavliga mönster,

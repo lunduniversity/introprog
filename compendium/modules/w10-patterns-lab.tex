@@ -2,118 +2,207 @@
 
 %!TEX root = ../compendium2.tex
 
-\Teamlab{\LabWeekTEN}
+\Lab{\LabWeekTEN}
 
 \begin{Goals}
-\item Kunna använda mönstermatchning
-\item Känna till exceptions
-\item Förstå hur Try fungerar
+\item Kunna använda mönstermatchning.
+\item Kunna förklara hur \code{Option} användas för att hantera saknde värden.
+\item Känna till att \code{scala.util.Try} kan användas för att hantera undantag.
+\item Känna till att undantag kan hanteras med \code{try catch}.
 
 \end{Goals}
 
 \begin{Preparations}
 \item Gör övning {\tt \ExeWeekTEN} i kapitel \ref{chapter:W10}.
-\item Läs om exceptions och felhantering.
-\item Bonus: ha tillgång till en dator där ni kan spela upp ljud.
-\input{team-lab-prep-items.tex}
+\item Testa så att datorn du ska använda på redovisningen kan spela upp ljud med \code{javax.sound.midi} genom att köra igång \code{Main} i den givna koden.
+\item Det är bra om du kan ta med hörlurar till laborationen så att du inte stör andra.
 \end{Preparations}
 
 \subsection{Bakgrund}
-Inom musik utgår man från en skala med 12 olika toner (C, C\#, D, D\#, E, F, F\#,G, G\#, A, A\#, B). Nästa ton efter B är C och tillhör nästa oktav. Ett ackord är uppbyggt av ett antal olika toner som spelas tillsammans. Laborationen kommer att utgå från två olika instrument: gitarr och ukulele. Skillnaden mellan dessa två instrument är antalet strängar och vilken tonart de är stämda i. Båda instrumenten har en greppbräda med ett antal olika band. Ett ackord spelas genom att man med ett finger trycker ner på strängen på band $i$. Om strängen spelas kommer tonen att vara ett halvt tonsteg högre än om man håller ner strängen på plats $i-1$.
+När man skriver program skapar man ofta modeller av en viss, verklig \emph{domän}, som kan vara t.ex. försäkringskassans regelverk eller en fysiksimulering i ett datorspel. För att kunna skapa sådana modeller behöver man ofta skaffa sig omfattande \emph{domänkunskap} genom att noga sätta sig in i vad olika koncept i domänen innebär och hur de är relaterade. Under denna läroprocess kan man använda programkod för att skapa modeller av domänen, utifrån noga valda förenklingar av verkligheten. Förmåga att kunna skapa domänmodeller utgör en viktig grund för konsten att utveckla bra programvarusystem.
 
-Laborationen kommer att bestå av ett textbaserat användargränssnitt där man kommer att ha möjlighet att bland annat lägga till nya ackord, rita upp ackord och spela ackord. En ton anges på följande format "E2", vilket innebär andra oktaven tonen E. Rekommenderad stämning för gitarr resp. ukulele är: E2, A2, D3, G3, B3, E4 resp. G4, C4, E4, A4. Denna stämning kommer att fungera för de fördefinierade ackorden i filen chords.txt.
+I denna laboration ska du skapa ett program baserat på en förenklad modell av domänen \emph{musik}. Du får färdig kod som modellerar hur toner är uppbyggda, samt hur olika stränginstrument fungerar.
+Med denna domänmodell ska du skapa ditt eget musikprogram som använder \emph{ackord} som är uppbyggda av flera toner som spelas tillsammans.
 
-Om ni är fler än fyra i gruppen behöver ni även göra extrauppgiften, men om ni däremot enbart är tre behöver ni inte implementera play.
-\\ \\ \\
-De givna kodfilerna är:\footnote{Du kan bläddra bland klasserna i paketet Chords här: \\
-\href{https://github.com/lunduniversity/introprog/tree/master/workspace/w08_chords_team/src/main/scala/chord}{\mbox{\fontsize{9}{11}\selectfont  https://github.com/lunduniversity/introprog/tree/master/workspace/w08\_chords\_team/src/main/scala/chord}}}
+\subsection{Domänmodell}
 
-\begin{itemize}
-\item \code{Chord.scala} innehåller ett \code{trait Chord} som beskriver ett ackord med tillhörande  funktionalitet som rör ackordhantering.
-\item \code{ChordDraw.scala} innehåller ett \code{object ChordDraw} med metoder för att rita ut ett ackord i \code{SimpleWindow}.
-\item \code{ChordPlayer.scala} innehåller ett \code{object ChordPlayer} med en metod \code{def apply(chord: Chord, time: Int)} som spelar upp ett ackord den angivna tiden.
-\item \code{database.scala} innehåller metoder för att lägga till, ta bort och hantera ackord i databasen.
-\item \code{io.scala} används för läsning/skrivning till/från fil.
-\item \code{Main.scala} startar användargränssnittet och läser in kommandon från användaren.
-\item \code{Notes.scala} innehåller ett object med metoder som används för att konvertera en not till ett nummer och vice versa.
-\item \code{SimpleNotePlayer.scala} innehåller ett hjälpobjekt för uppspelning av noter med hjälp av inbyggd MIDI-spelare.
-\item \code{textui.scala} innehåller en modul som har hand om det textuella användargränssnittet och alla kommandon.
+
+\subsubsection{Tonhöjd}
+
+En \textbf{ton} \Eng{note} som spelas på ett instrument, t.ex. ett piano eller en gitarr, har en \textbf{tonhöjd} \Eng{pitch} som är relaterad till den specifika  grundfrekvens som tonens ljud har. I vår modell av musikdomänen tillordnar vi olika distinkta tonhöjder ett unikt heltal. En tonhöjd kan då beskrivas av en \code{case class Pitch(nbr: Int)} där vi använder \code{nbr} i intervallet \code{(0 to 127)}. Heltalet \code{60} motsvarar en viss ton, som även har namnet  \code{"C5"}, och som ligger ungefär i mitten av tangentbordet på ett piano.
+
+Inom (västerländsk) musik utgår man från 12 olika \emph{tonklasser} \Eng{pitch classes}.
+Dessa tolv tonklasser är ordnade i en sekvens av så kallade \emph{halva tonsteg} och har följande \textbf{tonklassnamn}:
+\begin{Code}
+  val pitchClassNames: Vector[String] =
+    Vector("C","C#","D","D#","E","F","F#","G","G#","A","A#","B")
+\end{Code}
+Efter tonklassen med namnet \code{B} återkommer tonklassen med namnet \code{C}.
+Symbolen \code{#} representerar en höjning ett halvt tonsteg och kallas \emph{sharp} engelska, och \code{C#} uttalas \emph{see sharp}. På svenska säger man \emph{siss}.\footnote{Man använder även b-förtecknet $\flat$, som uttalas \emph{flat} på engelska, för sänkning av en ton ett halvt tonsteg, men för enkelhetens skull bortser vi i vår modell från detta sätt att namnge toner.}
+ Notera att det är ett halvt tonsteg mellan \code{E} och \code{F}, samt mellan \code{B} och \code{C} (det finns därför varken \code{E#} eller \code{B#} i listan med tonklassnamn.\footnote{Varför det är på detta viset kan du läsa mer om på t.ex. Wikipedia, men du kan också nöja dig med att det helt enkelt är så på grund av historiska skäl.})
+
+På ett piano motsvaras de vita tangenterna av tonklassnamen \code{C D E F G A B} och de svarta tangenterna motsvaras av tonklassnamnen \code{C# D# F# G# A#}.
+
+En s.k. \textbf{tonklass} är ett positivt heltal i intervallet \code{0 until 12} som motsvaras av index för tonklassnamnet i \code{pitchClassNames}. En tonhöjd  \code{Pitch(nbr)} tillhör tonklassen \code{nbr % 12}.
+
+Med hjälp av heltalsdivision med 12 får man fram tonhöjdens så kallade \textbf{oktav}, alltså \code{nbr / 12}. Ett piano har normalt toner som spänner över 7 eller 8 oktaver.
+En tonhöjd \code{Pitch(nbr)} kan även namnges med en kombination av tonklassnamnet och tonens oktav, t.ex. \code{"C5"}.
+
+Med denna domänbeskrivning kan vi skapa en mer detaljerad modell av konceptet tonhöjd med hjälp av en case-klass och tillhörande kompanjonsobjekt:
+
+\scalainputlisting[basicstyle=\ttfamily\fontsize{10}{13}\selectfont]{../workspace/w10_music/src/main/scala/music/Pitch.scala}
+
+\noindent Kompanjonsobjektet har två fabriksmetoder som kan skapa \code{Pitch}-objekt från en strängrepresentation av en tonhöjd.
+
+\begin{itemize}[noitemsep]
+  \item Metoden \code{fromString} omvandlar en sträng till en \code{Option[Pitch]}.
+
+  \item Metoden \code {apply} kastar ett undantag om det inte går att omvandla en sträng till ett \code{Pitch}-objekt.
 \end{itemize}
 
-\subsection{Obligatoriska uppgifter}
-
-\Task \code{Notes}. Objektet ska kunna omvandla en tons namn (t.ex. "E2") till
-en heltalsrepresentation och tvärtom.
-
-\Subtask Implementera först metoden \code{fromNbrToNote} med hjälp av \code{%}-operatorn
+\Task\label{music:exceptions}\Pen Vilka två uttryck i \code{Try}-blocket kan ge undantag? Undersök liknande undantagsuttryck i REPL och skriv ner namnet på undantagen.
 
 
-\Subtask Implementera metoden \code{unapply} som ska ta in en sträng som innehåller tonens namn och oktavnummer (t.ex. "C2"). Tänk på att en not kan vara på formen "C2"\ och "C\#2"\ . "E2"\ kommer översättas till 16 och "C1"\ till 0 och tänk på att hantera specialfallet då till exempel "C\#1"\ ska ge värdet 1. Även felaktiga ackord ska hanteras, t.ex. om användaren anger två bokstäver eller inte anger oktavnummer. Använd attributet \code{toNumber} för att översätta en ton ("C\#", "E") till ett nummer. Titta gärna på vad metoden \code{zipWithIndex.toMap} gör och använd den i \code{toNumber}.
+\Task Undersök klassen \code{Pitch} i REPL.
 
-\Subtask Använd \code{TestNotes} som ligger i paketet \code{test} för att se till så att \code{Notes} är rätt implementerat. Starta \code{TestNotes} och rätta till eventuella fel.
+\begin{REPL}
+> sbt
+sbt> console
+Welcome to Scala 2.12.3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_144).
 
-\Task \code{Chord}. Representation av de två olika ackorden. Lägg märke till
-hur stämning (eng. \textit{tuning}) och ett grepp (eng. \textit{grip}) representeras i \code{Chord}. $-1$ i ett grepp betyder att strängen inte ska
-spelas.
+scala> import music._
+import music._
 
-\Subtask Implementera \code{toString} i \code{trait Chord} så att den matchar utskriften i filen \textit{chords.txt}. I klassen \code{Guitar} ska \code{toString} vara på formen
-git:D:-1 -1 0 2 3 2
+scala> Pitch("C#5").nbr
+res0: Int = 61
 
-\Subtask Implementera metoden \code{isIncludedBy}. Använd \code{.split(";")} för att dela upp strängen \code{filter} i de olika filtersträngarna. För varje filtersträng ska det kollas om denna förekommer i strängen som returneras från \code{toString}. Exempel på filtersträng: "git:G;B;uku". \textbf{Tänk på att metoden \code{forall} kollar om ett villkor gäller för alla möjligheter. I det här fallet räcker det att det gäller för ett av fallen}
+scala> Pitch("C") + 1
+res1: music.Pitch = Pitch("C#5")
+\end{REPL}
 
-\Subtask Implementera \code{isGit} och \code{isUku} som jämför början av strängen \code{s} och returnerar \code{true} om strängen matchar ett gitarrackord resp. ukuleleackord.
 
-\Subtask Implementera klassen \code{Guitar}. \code{toString} ska vara på samma format som i filen \textit{chords.txt}. \code{tuning} ska vara en strängrepresentation av gitarrens stämning, alltså E2 A2 D3 G3 B3 E4.
+\Subtask\Pen Ge ett exempel på argument till \code{Pitch.apply} som gör att undantag kastas.
 
-\Subtask Skapa en ny klass \code{Ukulele} som har liknande beteende som \code{Guitar}.
+\Subtask\Pen Ge ett exempel på argument till \code{Pitch.fromString} som ger \code{None}.
 
-\Subtask Implementera \code{instToChord} med hjälp av \code{match} och låt basfallet (om ackordet är varken gitarrackord eller ukuleleackord) returnera \code{None}.
+\Subtask\Pen Ge ett exempel på argument till \code{Pitch.+} som gör att undantag kastas.
 
-\Task \code{database}. Kommer att hålla reda på alla ackord i programmet. Testa varje metod innan nästa blir implementerad. Det blir då lättare att upptäcka fel i koden. Metoderna kan testas genom att skriva ett testprogram eller efterhand som uppgift 4 implementeras.
 
-\Subtask Börja med att implementera \code{add} och \code{allChords}.
+\Task Ändra i implementationen av \code{fromString} så att du i stället för \code{.toOption} gör en mönstermatchning med \code{match} på \code{Try}-resultaten \code{Success} och \code{Failure} i varsin case-klausul på formen \code{case Sucess(e) => } och \code{case Failure(e: ???) => ???} och returnera lämpligt värde. Ta endast hand om de två förväntade undantagstyperna som du identifierade i uppgift \ref{music:exceptions}. Gör så att alla övriga eventuella undantag kastas genom denna klausul: \code{case Failure(e) => throw e}
 
-\Subtask Implementera \code{find} och \code{updateFilter}. \code{find} ska returnera alla ackord som innehåller söksträngen, alltså inte bara första förekomsten. Metoden \code{find} i \code{Vector} returnerar enbart första förekomsten. \code{updateFilter} ska ändra filtersträngen i \code{database} till den angivna strängen.
+\Subtask Testa så att din lösning fungerar i både normalfall och vid felaktigt tönhöjdsnamn.
 
-\Subtask Implementera \code{filteredChords} och \code{sort} med hjälp av metoden \code{isIncludedBy} i \code{Chord}. Tom filtersträng innebär att inget filter appliceras. Vid \code{sort} kan man ta hjälp av metoden \code{sortBy} i \code{Vector}. När man listar alla ackord ska man skriva ut enbart de ackord som matchar det applicerade filtret. Listan ska vara numrerad så att man utgår från dessa nummer när man väljer ackord i listan.
+\Subtask\Pen Undersök vad som händer om du kommenterar bort olika case-klausuler. När ger kompilatorn varning? Varför?
 
-\Subtask Implementera \code{delete}. \textbf{Tänk på att \code{delete} ska radera ackordet på plats $i$ i \code{filteredChords} och inte i \code{allChords}}. För detta kan man använda \code{filter} för att filtrera ut det ackord på plats $i$ i \code{filteredChords} så här: \code{db.filter(_ != filteredChords(i))}.
+\Subtask\Pen Finns det någon fördel resp. nackdel med att bara fånga vissa undantag?
 
-\Task \code{textui}
+\subsubsection{Ackord}
 
-\Subtask Provkör programmet och prova några olika kommandon (t.ex. add, del, help). Använd metoderna i \code{database} för att implementera kommandona.
+Ett ackord består av flera toner som spelas tillsammans. Man kan spela ett ackord på ett stränginstrument genom att slå an en mängd toner samtidigt eller en sekvens av toner i snabb följd. Man väljer att kalla en av tonerna i ackordet (oftast den lägsta/första tonen) för \textbf{grundton} \Eng{root}.
 
-\Subtask Titta på objektet \code{Help}. Använd \code{match} på ett liknande sätt för att ta hand om alla alternativ för de olika kommandona.
-
+Ett \textbf{intervall} är en tons relativa tonhöjdsavstånd från grundtonen. Ackord har olika namn beroende på vilka intervall som ingår i ackordet. Det finns väldigt många olika ackordnamn, men här begränsar vi oss för enkelhetens skull till fyra olika typer av ackord: \footnote{Om du vill veta mer om ackordnamn läs här: \url{https://en.wikipedia.org/wiki/Chord_(music)}}
 \begin{itemize}
-\item \code{Add}. Argumenten måste först bli en sträng med hjälp av \code{mkString(" ")} för att sedan delas upp vid ';'. Användaren kan skriva in felaktiga ackord, vilket måste hanteras. Metoden \code{fromString} i \code{Chord} returnerar ett \code{Option[Chord]}. Titta närmare på metoden \code{flatMap}.
-
-\item \code{Lst}. Använd \code{match} för att ta hand om fallet när användaren anger ett argument, som inte ska vara med, till kommandot. Använd metoden i \code{database}. Listan ska vara numrerad från $1$.
-
-\item \code{Del}. Använd \code{match} för att ta hand om felfallen att inget argument och fler än ett argument angivits. Ett tredje felfall är om användaren anger något annat än en siffra som argument. Använd \code{Try} och \code{match} för att ta hand om felet.
-
-\item \code{Filter}. Använd metoderna i \code{database}. De filtrerade ackorden behöver inte skrivas ut efter filtrering, utan användaren behöver använda kommandot \code{list} för att lista de filtrerade ackorden.
-
-\item \code{Find}. Använd \code{match} för att ta hand om felfallen att inget argument eller fler än ett argument angivits.
-
-\item \code{Load}. Använd \code{match} för att ta hand om felfallen att inget argument eller fler än ett argument angivits. Använd metoden \code{load} i objektet \code{io} för att läsa in från den angivna filen. Metoden kommer att likna metoden \code{Add}.
-
-\item \code{Save}. Använd \code{match} för att ta hand om felfallen att inget argument eller fler än ett argument angivits. Använd metoden \code{save} i objektet \code{io} för att skriva till den angivna filen. Om filen inte finns kommer den att skapas.
-
-\item \code{Sort}. Använd \code{match} för att ta hand om fallet när användaren anger ett argument, som inte behövs, till kommandot. Använd metoden i \code{database}.
-
-\item \code{Quit}. Använd \code{match} för att ta hand om fallet när användaren anger ett argument, som inte behövs, till kommandot. Skapa en hjälpmetod \code{quitPrompt} som returnerar en \code{Boolean} med värdet \code{true} om användaren anger 'y', \code{False} om användaren anger 'n' och som körs igen vid felaktigt svar (allt annat än 'y' och 'n'). Även 'Y' och 'N' ska vara acceptabla svar.
+  \item dur-ackord, betecknas t.ex. \code{"C"},
+  \item moll-ackord, betecknas t.ex. \code{"Cm"}
+  \item sju-ackord, betecknas t.ex. \code{"C7"}
+  \item maj-sju-ackord som betecknas t.ex. \code{"Cmaj7"}.
 \end{itemize}
 
-\Task \code{ChordPlayer}. Ska spela upp enstaka ackord \code{chord} med en viss längd \code{time} i millisekunder.
+I case-klassen \code{Chord} nedan finns en metod \code{name} som definerar vilka intervall som ingår i de olika ackordtyperna ovan, utom maj-sju-ackord. Den krångliga modulo-12-omräkningen innan matchningen gör så att intervall i olika oktaver behandlas lika, även för negativa intervall.
 
-\Subtask Titta vilka parametrar metoden \code{play} i \code{SimpleNotePlayer} behöver. Heltalet \code{note} ska vara heltalsrepresentationen av en ton.
+\scalainputlisting[basicstyle=\ttfamily\fontsize{10}{13}\selectfont]{../workspace/w10_music/src/main/scala/music/Chord.scala}
 
-\Subtask För att omvandla ett ackord till toner behöver först stämningen, \code{tuning}, omvandlas till sin heltalsrepresentation och sen ska greppet, \code{grip}, adderas till stämningen för varje sträng. Varje strängs ton ska sedan spelas upp under den angivna tiden. Koden för att spela ackordet ska placeras ovanför den existerande koden. \textbf{Tänk på att strängar med greppet -1 inte ska spelas}
+\Task
 
-\Subtask Lägg till menyvalet \code{play} i \code{textui}. Använd \code{match} för att bryta ut de olika argumenten och för att ta hand om felfallet inga argument. Första argumentet är tempo i millisekunder och resten är siffror som motsvarar platsen för ackordet i den filtrerade listan. Varje sträng i argumentlistan ska omvandlas till \code{Int} och det är viktigt att ta hand om fallet då användaren anger något annat än en siffra. Använd \code{Try} och \code{match} för att ta hand om felet. Använd \code{ChordPlayer} för att spela upp ett ackord. \textbf{Kom ihåg att lägga till kommandot i listan med kommandon i \code{doCommand}}
+\Subtask Maj-sju-ackord har samma intervall som sju-ackord, förutom att det fjärde intervallet ska vara \code{11} halva tonsteg från grundtonen i stället för \code{10}. Lägg till en case-klausul i \code{Chord.name} så att maj-sju-ackord ges namn som slutar med ändelsen \code{"maj7"}.
 
-\subsection{Extrauppgifter}
+\Subtask Testa din kod och kontrollera så att ackordet \code{Chord("D4","F#4","A4","C#5")} får namnet \code{"Dmaj7"}
+
+\begin{REPL}
+scala> Chord("D4","F#4","A4","C#5").name()
+res2: String = "Dmaj7"
+\end{REPL}
+
+\Subtask Vilka fyra toner har ett \code{Cmaj7}-ackord med grundtonen \code{"C5"}?
+
+\subsubsection{Stränginstrument}
+
+Ett stränginstrument, t.ex. ett piano eller en gitarr, kännetecknas av att det kan spela ackord genom att flera strängar kan sättas i svängning så att många toner spelas tillsammans. I vår modell fångar vi denna egenskap med en trait \code{StringInstrument} som har en metod \code{toChordOpt} som ger något ackord om minst en sträng spelas.
+
+Stränginstrument som man spelar på genom att trycka på en greppbräda \Eng{fret board} med en hand, samtidigt som man knäpper på strängarna med den andra handen, kallas på engelska \emph{fretted instruments}. Gitarr och ukulele är exempel på sådana instrument. Dessa instrument kan skilja sig åt vad gäller antalet strängar och hur dessa strängar är stämda. Gitarr har 6 strängar, medan ukulele bara har 4 strängar. Dessa egenskaper modelleras i koden nedan.
+
+Varje sträng har en stämskruv med vilken kan man ändra strängens spänning,  strängens s.k. \textbf{stämning} \Eng{tuning}.  Om man knäpper på alla lösa strängarna på en gitarr med standardstämning spelas tonerna E3, A3, D4, G4, B4, E5, räknat från den tjockaste till den tunnaste strängen.
+
+\scalainputlisting[basicstyle=\ttfamily\fontsize{10}{13}\selectfont]{../workspace/w10_music/src/main/scala/music/instruments.scala}
+
+Om man trycker på greppbrädans olika positioner får man olika toner, beroende på vilken position man trycker på. Positionerna på greppbrädan räknas från ett och uppåt. Position \code{0} motsvarar lös sträng. En negativ position, tex. \code{-1}, anger att en sträng inte spelas; många gitarrackord spelas genom att bara en delmängd av strängarna slås an.
+
+Ett exempel på ett gitarrackord visas i figur \ref{music:fig:guitar-chord}. Detta motsvarar ackordet \code{Guitar(3,3,2,0,1,0)}, där tonen G spelas på den tjockaste strängen.
+
+\Task\Pen Studera modellen av stränginstrument ovan och använd REPL för att svara på dessa frågor:
+
+\Subtask Vad är namnet på detta pianoackord om vi väljer att lägsta tonen i ackordet är grundton: \code{Piano(Set(60, 64, 67, 70))}
+
+\Subtask Vad heter tonerna som ingår i ackordet \code{Guitar(3,3,2,0,1,0)}.
+
+\Subtask Vad heter detta ackord om vi väljer ett A som grundton: \code{ Ukulele(0,2,1,2)}
+
+
+\begin{figure}
+  \centering
+  \includegraphics{../img/chords/guitar-C-major-chord.jpg}
+  \caption{Ett C-dur-ackord på en gitarr med tonen G i basen.}
+  \label{music:fig:guitar-chord}
+\end{figure}
+
+
+\subsubsection{Elektroniska instrument}
+
+Ett elektroniska instrument syntetiserar ljud med hjälp av analog och/eller digital elektronik, och kallas därför \textbf{synthesizer}, ofta förkortat \emph{synt} \Eng{synth}.
+
+I JDK ingår ett api för att styra syntar. De flesta moderna datorer har ljudkort med inbyggd synt som följer den så kallade MIDI-standarden. Java-paketet \code{javax.sound.midi} innehåller klasser som kan få ett sådant ljudkort att spela musik med hjälp av MIDI.
+
+MIDI-standarden baseras på en modell av ett pianotangentbord där olika toner kan vara ''på'' eller ''av'' beroende på om en tangent är nedtryckt eller ej. Dessa toners höjd är modellerade på samma sätt som i vår klass \code{Pitch}, där alltså tonhöjden \code{60} motsvarar tonen \code{"C5"}, etc. En tangent kan tryckas ner olika hårt, vilket representeras av ett heltalsvärde i \code{Range(0,128)} kallat \code{velocity}. Ett högt värde ger en stark ton, medan ett litet värde motsvarar en svag (tyst) ton.
+
+En synt som följer MIDI-standarden kan spela upp ljud via 16 olika så kallade \textbf{kanaler} \Eng{channel}, numrerade \code{(0 until 16)},  där varje kanal kan ställas in så att den spelar ett ljud som t.ex. liknar ett visst verkligt instrument, så som piano eller gitarr.
+
+I kursens workspace i paketet \code{music} finns en \code{Synth}-modul som förenklar användningen av Java-paketet \code{javax.sound.midi}. I modulen \code{Synth} finns metoden \code{playBlocking} som kan spela flera toner under en viss tid med hjälp av synten på ditt ljudkort. Exekveringen av ditt program  blockeras tills tonerna spelats klart, därav \emph{''blocking''} i namnet.
+
+Metoden \code{playBlocking} har följande parametrar, default-argument och returtyp:
+\footnote{Om du är nyfiken kan du studera implementationen av \code{Synth}-modulen här:
+\\\url{https://github.com/lunduniversity/introprog/tree/master/workspace/w10_music}
+ Koden blir lättare att förstå om du samtidigt läser api-dokumentationen av paketet \code{javax.sound.midi} och även lära dig mer om MIDI-standarden med hjälp av t.ex. wikipedia.}
+
+\begin{Code}
+def playBlocking(
+  noteNumbers: Seq[Int] = Seq(60), // en sekvens av tonhöjder
+  velocity: Int         = 60,      // hur hårt anslag i Range(0, 128)
+  duration: Long        = 300,     // hur länge i millisekunder
+  spread:   Long        = 50,      // millisekunder mellan tonerna
+  after:    Long        = 0,       // millisekunder innan första tonen
+  channel:  Int         = 0        // MIDI-kanal som spelar tonerna
+): Unit
+\end{Code}
+
+
+\Task Anropa \code{playBlocking()} i REPL och undersök om din dator kan spela tonen \code{"C5"}. Använd gärna lurar så att du inte stör dina labbkamrater. Prova vad som händer när du ger olika argument till \code{playBlocking}.
+
+\Task Gör klart modulen \code{ChordPlayer} enligt nedan så att metoden \code{play} kan spela ett ackord. Case-klassen \code{Strike} representerar ett ackordanslag.
+
+\scalainputlisting[basicstyle=\ttfamily\fontsize{10}{13}\selectfont]{../workspace/w10_music/src/main/scala/music/ChordPlayer.scala}
+
+\clearpage
+
+\subsection{Frivilliga extrauppgifter}
+
+
+
+\Task Bygg vidare på terminalappen \code{music.Main} enligt nedan.
+
+...
+
+\vspace{7em}{\TODO OLD TEXT FROM HERE:}
+
 
 \Task ChordDraw
 

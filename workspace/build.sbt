@@ -65,17 +65,17 @@ lazy val w09_turtlerace_team =(project in file("w09_turtlerace_team")).
     name := "w09_turtlerace_team"
   ).dependsOn(cslib)
 
-lazy val w10_chords_team =(project in file("w10_chords_team")).
+lazy val w10_music =(project in file("w10_music")).
   settings(commonSettings: _*).
   settings(
-    name := "w10_chords_team"
+    name := "w10_music"
   ).dependsOn(cslib)
 
 lazy val w11_lthopoly_team =(project in file("w11_lthopoly_team")).
   settings(commonSettings: _*).
   settings(
     name := "w11_lthopoly_team"
-  )
+  ).dependsOn(cslib)
 
 lazy val w12_survey =(project in file("w12_survey")).
   settings(commonSettings: _*).

@@ -1,20 +1,22 @@
 package music
 
-trait StringInstrument { def toChord: Chord }
+trait StringInstrument { def toChordOpt: Option[Chord] }
 
 case class Piano(isKeyDown: Set[Int]) extends StringInstrument {
-  override def toChord: Chord =
-    Chord(isKeyDown.toVector.sorted.map(Pitch.apply))
+  override def toChordOpt: Option[Chord] =
+    if (isKeyDown.nonEmpty)
+      Some(Chord(isKeyDown.toVector.sorted.map(Pitch.apply)))
+    else None
 }
 
 trait FrettedInstrument extends StringInstrument {
   def nbrOfStrings: Int
   def tuning: Vector[Pitch]
   def grip:   Vector[Int]
-  override def toChord: Chord = {
+  override def toChordOpt: Option[Chord] =  {
     val notes =
       for (i <- grip.indices if grip(i) >= 0) yield tuning(i) + grip(i)
-    Chord(notes.toVector)
+    if (notes.nonEmpty) Some(Chord(notes.toVector)) else None
   }
 }
 
