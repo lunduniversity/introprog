@@ -3,7 +3,7 @@ package turtlerace
 import graphics.Turtle
 import cslib.window._
 
-object TurtleRace {
+class TurtleRace(val millisPerStep: Int = 5) {
   def race(
     turtles: Seq[RaceTurtle],
     rw: RaceWindow,

@@ -10,73 +10,112 @@
 
 \begin{Preparations}
 \item Gör övning {\tt \ExeWeekNINE} i kapitel \ref{exe:W09}.
-\item Läs på om och förstå arv
 \input{team-lab-prep-items.tex}
+\item Träffas i din samarbetsgrupp och diskutera ert arbetssätt utifrån följande frågeställningar:
+\begin{itemize}
+  \item Vilken av era varianter av \code{Turtle} ska ni utgå ifrån?
+  \item Hur ska ni jobba med gemensamma koddelar?
+  \item Hur ska ni dela med er av de koddelar som ni utvecklar var för sig?
+\end{itemize}
+
 \end{Preparations}
 
 \subsection{Bakgrund}
-I labben kommer sköldpaddor, \code{Turtle}, att få tävla mot varandra i ett lopp. Racet kommer att köras i ett \code{RaceWindow} som ärver från \code{SimpleWindow}. Först kommer en \code{RaceTurtle} att skapas, som ärver från \code{Turtle} och sedan kommer sköldpaddor med olika egenskaper att skapas. Dessa sköldpaddor kommer sedan att tävla i en turnering med 32 sköldpaddor. Det kommer att vara åtta sköldpaddor i varje deltävling och turneringen kommer att bestå av fyra kvartsfinaler, två semifinaler och tillsist en final.
+
+I denna grupplaboration ska ni skapa en sköldpaddstävling med 8 olika instanser av speciella tävlingssköldpaddor, som försöker vinna genom att komma först i mål.
+
+Ni ska skapa en arvshierarki från \code{Turtle}-klassen från tidigare labb, enligt figur~\ref{turtle-race:fig:uml-diagram1}.
+Med utgångspunkt från \code{Turtle} ska ni skapa följande subtyper:
+\begin{itemize}
+  \item En subtyp \code{class ColorTurtle extends Turtle} som har en färg och som överskuggar metoden \code{forward}, så att den valda färgen används när ett spår ritas.
+  \item En subtyp \code{class RaceTurtle extends Turtle} som kan ingå i en tävling och som vid anrop av \code{raceStep} tar ett steg med slumpmässigt längd. En \code{RaceTurtle} har även andra attribut, t.ex. ett startnummer \code{nbr} och ett namn \code{name} (visas ej i figur~\ref{turtle-race:fig:uml-diagram1}).
+\end{itemize}
+
+\noindent Ni ska även skapa minst en subtyp per gruppmedlem till \code{RaceTurtle} som ger tävlingssköldpaddor speciella egenskaper som ni själva väljer.
+
+När ni är klara kan en skölpaddstävling se ut som i figur~\ref{turtle-race:fig:race}.
+Till er hjälp har ni den färdiga klassen \code{RaceWindow} som utvidgar \code{SimpleWindow} med attribut och metoder för att skapa tävlingsbanan, enligt kod på sidan \pageref{turtle-race:RaceWindow}. Metoden \code{draw} ritar ut en tävlingsbana, metoden \code{writeRacerList} skriver ut en lista med deltagare och metoden \code{writeTitle} ger tävlingsbanan en överskrift. Ni får gärna förbättra och förändra utseendet på tävlingsbanan.
+
+\begin{figure}
+\begin{center}
+\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+\tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=4cm, rectangle split, rectangle split parts = 3]
+\begin{tikzpicture}[inner sep=0.5em,scale=1.2, every node/.style={transform shape}]
+
+  \node [umlclass, rectangle split parts = 1, xshift=0cm, yshift=4cm] (BaseType1)  {
+              \textit{\textbf{\centerline{\TextBox{\code{Turtle}}}}}
+              %\nodepart[]{second}\TextBox{~}
+          };
+
+
+  \node [umlclass, rectangle split parts = 2, xshift=0cm, yshift=2.5cm] (BaseType2)  {
+              \textit{\textbf{\centerline{\TextBox{\code{ColorTurtle}}}}}
+              \nodepart[]{second}\TextBox{\code{var color: Color}}
+          };
+
+\node [umlclass, rectangle split parts = 2, xshift=0cm] (BaseType3)  {
+            \textit{\textbf{\centerline{\TextBox{\code{RaceTurtle}}}}}
+            \nodepart[]{second}\TextBox{\code{val defaultStep: Int}}
+        };
+
+% \node [umlclass, rectangle split parts = 2]  at (5cm,-3cm) (SubType1) {
+%             \textbf{\centerline{\TextBox{\code{Dizzy}}}}
+%             \nodepart[]{second} \TextBox{\code{val dizziness: Int}}
+%         };
+%
+% \node [umlclass, rectangle split parts = 2]  at (0cm,-3cm) (SubType2) {
+%           \textbf{\centerline{\TextBox{\code{AbsentMinded}}}}
+%           \nodepart[]{second} \TextBox{\code{val chance: Int}}
+%         };
+%
+% \node [umlclass, rectangle split parts = 2] at (-5cm,-3cm) (SubType3)  {
+%             \textbf{\centerline{\TextBox{\code{Mole}}}}
+%             \nodepart[]{second} \TextBox{\code{val digging: Double}}
+%         };
+% \draw[umlarrow] (SubType1.north) -- ++(0,0.5) -| (BaseType3.south);
+% \draw[umlarrow] (SubType2.north) -- ++(0,0.5) -| (BaseType3.south);
+% \draw[umlarrow] (SubType3.north) -- ++(0,0.5) -| (BaseType3.south);
+\draw[umlarrow] (BaseType3.north) -- ++(0,0.5) -| (BaseType2.south);
+\draw[umlarrow] (BaseType2.north) -- ++(0,0.5) -| (BaseType1.south);
+
+\end{tikzpicture}
+\end{center}
+\caption{Arvshierarki med \code{Turtle} som bastyp.}
+\label{turtle-race:fig:uml-diagram1}
+\end{figure}
+
+
+
+\begin{figure}
+\centering\includegraphics[width=1.02\textwidth, trim={1.5cm 0.2cm 1.5cm 3cm},clip]{../img/turtlerace/RaceWindow}
+\caption{Exempel på en sköldpaddstävling i ett \code{RaceWindow}.}
+\label{turtle-race:fig:race}
+\end{figure}
+
+
+\begin{figure}
+  \scalainputlisting[basicstyle=\ttfamily\fontsize{10}{13}\selectfont]{../workspace/w09_turtlerace_team/src/main/scala/turtlerace/RaceWindow.scala}
+  \caption{Den färdiga klassen \code{RaceWindow}.}
+  \label{turtle-race:RaceWindow}
+\end{figure}
+
 
 \subsection{Obligatoriska uppgifter}
 
-\Task \code{ColorTurtle}.
+\Task Gör klart \code{ColorTurtle} enligt nedan. Testa noga så att allt fungerar.
 
-\Subtask Om du använder Eclipse: högerklicka på projektet \code{w07_turtlerace_team} och välj \code{Build Path} $\rightarrow$ \code{Configure Build Path}. Välj fliken \code{Projects} och tryck \code{Add...}. Markera projektet \code{w06_turtlegraphics} och tryck \code{OK}. \\
-Om du använder IntelliJ: tryck på \code{File} $\rightarrow$ \code{Project Structure...}. Välj sedan \code{modules} och markera \code{w07_turtlerace_team} och tryck på fliken \code{Dependencies}. Tryck på det gröna plustecknet till höger och välj \code{JARs or directories...}. Navigera till \code{w06_turtlegraphics} och tryck på \code{OK}.
+\scalainputlisting[basicstyle=\ttfamily\fontsize{10}{13}\selectfont]{../workspace/w09_turtlerace_team/src/main/scala/turtlerace/ColorTurtle.scala}
 
-\Subtask Skapa en ny klass \code{ColorTurtle} som ärver från \code{Turtle} och tar in en extra parameter \code{color} av typen \code{java.awt.Color}. \code{Turtle} måste importeras från paketet \code{turtlegraphics}.
 
-\Subtask Använd \code{override} på metoden \code{forward}, där färgen i \code{SimpleWindow} sparas undan och sedan ändras till den angivna färgen \code{color}. Anropa sedan metoden \code{forward} i \code{Turtle} och byt tillbaka färgen i \code{SimpleWindow} till den färg som sparades undan.
+\Task Gör klart \code{RaceTurtle} enligt nedan. Testa noga så att allt fungerar.
 
-\Task \code{RaceWindow}
+\scalainputlisting[basicstyle=\ttfamily\fontsize{10}{13}\selectfont]{../workspace/w09_turtlerace_team/src/main/scala/turtlerace/RaceTurtle.scala}
 
-\Subtask Skapa \code{RaceWindow} som ärver från \code{SimpleWindow} med fix storlek och förbestämd titel. Lämplig storlek är 800x400. Det ska finnas två attribut \code{startX} och \code{endX} som är förbestämda och motsvarar start och mål.
+\Task Gör klart \code{TurtleRace} enligt nedan. Testa att köra ett race med åtta sköldpaddor vid startlinjen.
 
-\Subtask Skapa tre metoder \code{startX}, \code{endX} och \code{startY}. \code{startX} och \code{endX} ska returnera värdet på motsvarande attribut. \code{startY} ska ta in ett heltal \code{nbr} som är ett startnummer och returnera y-värdet för det startnumret. \code{startX} och \code{endX} är x-värdet för start- resp. mållinjen och \code{startY} är y-värdet för varje sköldpaddas startposition på startlinjen.
+\scalainputlisting[basicstyle=\ttfamily\fontsize{10}{13}\selectfont]{../workspace/w09_turtlerace_team/src/main/scala/turtlerace/TurtleRace.scala}
 
-\Subtask Skapa en metod \code{draw} som ritar upp ett race i fönstret och skriver ut startnummer. Definiera gärna en klass som ritar upp ett start-/målfält. Bilden är enbart ett exempel på vad man kan göra. Rita något kul! Titeln och alla tävlande turtles kommer att skrivas ut senare i uppgiften.
-
-\includegraphics[width=\textwidth]{../img/turtlerace/RaceWindow}
-
-\Subtask Skapa en metod \code{printTitle} som tar in en sträng och skriver ut den som titel på racet. Denna sträng skiljer sig från SimpleWindow-konstruktorns titelsträng, och används för att inuti fönstret skriva ut titeln för det nuvarande racet. Titelsträngen i SimpleWindow anger istället titeln för hela fönstret.
-
-\begin{Code}
-class RaceTurtle(private val w: RaceWindow,
-var nbr: Int, val name: String) {
-/**
-* Takes one step of a random length 1 to 5
-*/
-def raceStep(): Unit = ???
-
-/**
-* Restarts the turtle at the finish line.
-* To be used before each race
-*/
-def restart: Unit = ???
-
-override def toString: String = ???
-}
-\end{Code}
-
-\Task \code{RaceTurtle}.
-
-\Subtask Implementera klassen \code{RaceTurtle} som ska ärva från \code{Turtle}. \code{Turtle} och \code{Point} behöver importeras från \code{turtlegraphics}. Startpositionen för en \code{RaceTurtle} hämtas från \code{RaceWindow}.\\Exempel på import-sats: \code{import turtlegraphics.Turtle}.
-
-\Subtask Skapa en metod \code{printRacers} i \code{RaceWindow} som tar in en lista med \code{RaceTurtle}, ett $x$-värde för placering av utskriften i x-led, samt en titel på listan. Därefter skrivs listan ut vid angiven $x$-position och vid lämplig y-position. Se exemplet med listan \textit{Racers} och \textit{Winners}.
-
-\Subtask Det går nu att testa \code{RaceTurtle} (för det krävs \code{TurtleRace}).
-
-\Subtask Ändra så att \code{RaceTurtle} istället ärver från \code{ColorTurtle}. \code{RaceTurtle} behöver då ta in en parameter av typen \code{Color}.
-
-\Task \code{TurtleRace}
-
-\Subtask Implementera metoden \code{race} som ska börja med att skriva ut tävlande och titel i \code{RaceWindow}. Skapa en tom \code{ArrayBuffer} med namnet \code{winners} (för detta behöver man importera \code{scala.collection.mutable.ArrayBuffer}). Låt varje \code{RaceTurtle} ta ett steg tills en passerar mållinjen. Lägg över alla som passerat mållinjen i \code{winners} och kör detta tills alla \code{RaceTurtle} har hamnat i \code{winners}. Använd \code{SimpleWindow.delay(5)} mellan varje steg för att se animeringen. Skriv ut vinnarna i \code{RaceWindow} och vänta på musklick. Returnera listan med vinnare.
-
-\Subtask Testa att köra ett race mellan åtta sköldpaddor.
-
-\Task \code{Dizziness}, \code{AbsentMindness} och \code{Mole}
-
-\Subtask Implementera tre \code{trait} som ärver från \code{RaceTurtle} och som \code{override} \code{raceStep} och \code{toString}. \code{toString} ska utöver \code{toString} från \code{RaceTurtle} även bestå av vilken typ av \code{RaceTurtle} det är och graden av yrsel/tankspriddhet den har.
+\Task \emph{Skapa nya tävlingsegenskaper.} Gör det möjligt att ge en \code{RaceTurtle} nya tävlingsegenskaper, t.ex. \code{Dizziness}, \code{AbsentMindness} och \code{Mole}, enligt förslag i punktlistan nedan, genom att implementera tre olika inmixningsbara traits som utvidgar \code{RaceTurtle} och som gör \code{override} på \code{raceStep} och \code{toString}. Metoden \code{toString} ska utöver superklassens \code{toString} även innehålla text som beskriver vilken typ av egenskaper som sköldpaddan har, enligt exempel i figur~\ref{turtle-race:fig:race}.
 
 \begin{itemize}
 
@@ -88,8 +127,65 @@ override def toString: String = ???
 
 \end{itemize}
 
-\Task \code{TurtleTournament}
+\noindent För varje sköldpadda som deltar i tävlingen, välj slumpmässigt exakt en egenskap som mixas in med \code{with} när \code{RaceTurtle} instansieras.
 
-\Subtask Börja med att skapa en hjälpmetod \code{randTurtle} som tar in ett \code{RaceWindow}, ett nummer och ett namn som parameter. Slumpa med lika stor sannolikhet mellan att skapa en \code{ColorTurtle} med en av de tre olika egenskaperna och låt de olika egenskaperna ha olika färger.
+\begin{figure}
+\begin{center}
+\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+\tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=4cm, rectangle split, rectangle split parts = 3]
+\begin{tikzpicture}[inner sep=0.5em]
 
-\Subtask Skapa ett \code{RaceWindow}. Slumpa fram 32 sköldpaddor och låt åtta av dem tävla åt gången, i totalt fyra st  \code{TurtleRace} . Ta vara på vinnarna och låt de fyra bästa från varje lopp köra två lopp till. De fyra bästa från båda dessa loppen går vidare till finalen. \textbf{Tänk på att rensa \code{RaceWindow} efter varje lopp och rita ut det på nytt innan varje lopp}.
+  \node [umlclass, rectangle split parts = 1, xshift=0cm, yshift=4cm] (BaseType1)  {
+              \textit{\textbf{\centerline{\TextBox{\code{class Turtle}}}}}
+              %\nodepart[]{second}\TextBox{~}
+          };
+
+
+  \node [umlclass, rectangle split parts = 2, xshift=0cm, yshift=2.5cm] (BaseType2)  {
+              \textit{\textbf{\centerline{\TextBox{\code{class ColorTurtle}}}}}
+              \nodepart[]{second}\TextBox{\code{var color: Color}}
+          };
+
+\node [umlclass, rectangle split parts = 2, xshift=0cm] (BaseType3)  {
+            \textit{\textbf{\centerline{\TextBox{\code{class RaceTurtle}}}}}
+            \nodepart[]{second}\TextBox{\code{val defaultStep: Int}}
+        };
+
+\node [umlclass, rectangle split parts = 2]  at (5cm,-3cm) (SubType1) {
+            \textbf{\centerline{\TextBox{\code{trait Dizzy}}}}
+            \nodepart[]{second} \TextBox{\code{val dizziness: Int}}
+        };
+
+\node [umlclass, rectangle split parts = 2]  at (0cm,-3cm) (SubType2) {
+          \textbf{\centerline{\TextBox{\code{trait AbsentMinded}}}}
+          \nodepart[]{second} \TextBox{\code{val absent: Int}}
+        };
+
+\node [umlclass, rectangle split parts = 2] at (-5cm,-3cm) (SubType3)  {
+            \textbf{\centerline{\TextBox{\code{trait Mole}}}}
+            \nodepart[]{second} \TextBox{\code{val digging: Double}}
+        };
+\draw[umlarrow] (SubType1.north) -- ++(0,0.5) -| (BaseType3.south);
+\draw[umlarrow] (SubType2.north) -- ++(0,0.5) -| (BaseType3.south);
+\draw[umlarrow] (SubType3.north) -- ++(0,0.5) -| (BaseType3.south);
+\draw[umlarrow] (BaseType3.north) -- ++(0,0.5) -| (BaseType2.south);
+\draw[umlarrow] (BaseType2.north) -- ++(0,0.5) -| (BaseType1.south);
+
+\end{tikzpicture}
+\end{center}
+\caption{Arvshierarki med exempel på subtyper till \code{RaceTurtle}.}
+\label{turtle-race:fig:uml-diagram2}
+\end{figure}
+
+
+% \Task \code{TurtleTournament}
+%
+% \Subtask Börja med att skapa en hjälpmetod \code{randTurtle} som tar in ett \code{RaceWindow}, ett nummer och ett namn som parameter. Slumpa med lika stor sannolikhet mellan att skapa en \code{ColorTurtle} med en av de tre olika egenskaperna och låt de olika egenskaperna ha olika färger.
+%
+% \Subtask Skapa ett \code{RaceWindow}. Slumpa fram 32 sköldpaddor och låt åtta av dem tävla åt gången, i totalt fyra st  \code{TurtleRace} . Ta vara på vinnarna och låt de fyra bästa från varje lopp köra två lopp till. De fyra bästa från båda dessa loppen går vidare till finalen. \textbf{Tänk på att rensa \code{RaceWindow} efter varje lopp och rita ut det på nytt innan varje lopp}.
+
+\Task Förbered redovisningen så att var och en i gruppen kan redogöra för hur hela programmet fungerar och beskriva arbetsfördelningen.
+
+\subsection{Frivillig extrauppgift}
+
+\Task Skapa ett \code{class TurtleTournament extends TurtleRace} som via metoden \code{tournament} kan genomföra en sekvens av sköldpaddstävlingar där de snabbaste sköldpaddorna går vidare till semifinal och sedan final. Slumpa fram t.ex. 32 sköldpaddor och låt åtta av dem tävla åt gången, i totalt fyra tävlingsomgångar.
