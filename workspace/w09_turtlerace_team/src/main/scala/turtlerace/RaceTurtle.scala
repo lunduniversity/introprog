@@ -1,16 +1,27 @@
-package turtlerace;
+package turtlerace
 
-class RaceTurtle(private val w: RaceWindow, var nbr: Int, val name: String) {
-  /**
-   * Takes one step of a random length 1 to 5
-   */
+import graphics.Point
+import cslib.window.SimpleWindow
+import java.awt.Color
+
+class RaceTurtle(
+  override val window: RaceWindow,
+  var nbr: Int,
+  val name: String,
+  override val initColor: Color
+) extends ColorTurtle(
+    window,
+    initPosition = Point(window.startX, window.startY(nbr)),
+    initDirection = 0.0,
+    initColor
+) {
+  val defaultStep = 6
+
+  /** Tar ett steg av slumpmässig längd i Range(0,defaultStep) */
   def raceStep(): Unit = ???
-  
-  /**
-   * Restarts the turtle at the finish line.
-   * To be used before each race
-   */
-  def restart: Unit = ???
-  
-  override def toString: String = ???
+
+  /** Återgår till initPosition */
+  def restart(): Unit  = ???
+
+  override def toString: String = s"#$nbr name: $name"
 }

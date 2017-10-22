@@ -1,11 +1,16 @@
-package turtlerace;
+package turtlerace
 
-import scala.collection.mutable.ArrayBuffer
+import graphics.Turtle
 import cslib.window._
 
 object TurtleRace {
-  /**
-   * Perform a race between eight turtles and returns the turtles in finishing order
-   */
-  def race(turtles: Seq[RaceTurtle], rw: RaceWindow, title: String): List[RaceTurtle] = ???
+  def race(
+    turtles: Seq[RaceTurtle],
+    rw: RaceWindow,
+    title: String
+  ): Seq[RaceTurtle] = {
+    rw.writeTitle("TurtleRace NOT READY")
+    rw.draw()
+    Seq()
+  }
 }

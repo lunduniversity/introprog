@@ -13,6 +13,7 @@ lazy val cslib = (project in file("cslib")).
   settings(commonSettings: _*).
   settings(
     name := "cslib",
+    version := "",
     javacOptions in (Compile,doc) ++= Seq(
       "-encoding", "UTF-8", "-charset", "UTF-8", "-docencoding", "UTF-8")
   )
@@ -63,7 +64,7 @@ lazy val w09_turtlerace_team =(project in file("w09_turtlerace_team")).
   settings(commonSettings: _*).
   settings(
     name := "w09_turtlerace_team"
-  ).dependsOn(cslib)
+  ).dependsOn(cslib, w05_turtle)
 
 lazy val w10_music =(project in file("w10_music")).
   settings(commonSettings: _*).
