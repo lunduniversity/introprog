@@ -4,8 +4,6 @@
 
 \ifPreSolution
 
-
-
 \Exercise{\ExeWeekNINE}\label{exe:W09}
 
 \begin{Goals}
@@ -16,17 +14,39 @@
 \item \StudyTheory{09}
 \end{Preparations}
 
-\BasicTasks %%%%%%%%%%%%%%%%
+\BasicTasks
 
 \else
 
-
-
 \ExerciseSolution{\ExeWeekNINE}
 
-\BasicTasks %%%%%%%%%%%
+\BasicTasks
 
 \fi
+
+
+
+\WHAT{Para ihop begrepp med beskrivning.}
+
+\QUESTBEGIN
+
+\Task \what
+
+\vspace{1em}\noindent Koppla varje begrepp med den (förenklade) beskrivning som passar bäst:
+
+\begin{ConceptConnections}
+\input{generated/quiz-w09-concepts-taskrows-generated.tex}
+\end{ConceptConnections}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\begin{ConceptConnections}
+\input{generated/quiz-w09-concepts-solurows-generated.tex}
+\end{ConceptConnections}
+
+\QUESTEND
 
 
 
@@ -66,7 +86,7 @@ scala> val grönsaker = Vector(new Gurka(300), new Tomat(42))
 
 \Subtask Vad blir det nu för typ på variabeln \code{grönsaker} ovan?
 
-\Subtask Fungerar det nu att räkna ut summan av vikterna i \code{grönsaker} med \code{grönsaker.map(_.vikt).sum}?
+\Subtask Undersök om det nu går att räkna ut summan av vikterna i \code{grönsaker} med \\ \code{grönsaker.map(_.vikt).sum}
 
 
 \Subtask En trait liknar en klass, men man kan inte instansiera den och den kan inte ha några parametrar. En typ som inte kan instansieras kallas \textbf{abstrakt} \Eng{abstract}. Vad blir det för felmeddelande om du försöker göra \code{new} på en trait enligt nedan?
@@ -140,13 +160,13 @@ scala> bondgård.foreach(_.väsnas)
 \TaskSolved \what
 
 
-\SubtaskSolved 
+\SubtaskSolved
 \begin{Code}
 def skapaDjur: Djur =
    {if(math.random > 0.5) new Ko else new Gris}
 \end{Code}
 
-\SubtaskSolved 
+\SubtaskSolved
 \begin{Code}
 class Häst extends Djur{ def väsnas = println("Gnääääägg") }
 def skapaDjur: Djur = {val r = math.random;
@@ -161,11 +181,245 @@ def skapaDjur: Djur = {val r = math.random;
 
 
 
+
+
+
+\WHAT{Supertyp med parameter.}
+
+\QUESTBEGIN
+
+\Task  \what~  En trait kan inte ha någon parameter. Vill man ha en parameter till supertypen måste man använda en klass istället, enligt nedan exempel.
+
+Utbildningsdepartementet vill i sitt system hålla koll på vissa personer och skapar därför en klasshierarki enligt nedan. Skriv in koden i en editor och klipp sedan in den i REPL.
+\begin{Code}
+class Person(val namn: String)
+
+class Akademiker(
+  namn: String,
+  val universitet: String) extends Person(namn)
+
+class Student(
+  namn: String,
+  universitet: String,
+  program: String) extends Akademiker(namn, universitet)
+
+class Forskare(
+  namn: String,
+  universitet: String,
+  titel: String) extends Akademiker(namn, universitet)
+\end{Code}
+
+
+\Subtask Deklarera fyra olika \code{val}-variabler med lämpliga namn som refererar till olika instanser av alla olika klasser ovan och ge attributen valfria initialvärden genom olika parametrar till konstruktorerna.
+
+\Subtask Skriv två satser: en som först stoppar in instanserna i en \code{Vector} och en som sedan loopar igenom vektorn och skriv ut alla instansers \code{toString} och \code{namn}.
+
+
+\Subtask Utbildningsdepartementet vill att det inte ska gå att instansiera objekt av typerna \code{Person} och \code{Akademiker}. Det kan åstadkommas genom att placera nyckelordet \code{abstract} före \code{class}. Uppdatera koden i enlighet med detta. Vilket blir felmeddelande om man försöker instansiera en \code{abstract class}?
+
+\Subtask Utbildningsdeparetementet vill slippa implementera \code{toString} och slippa skriva \code{new} vid instansiering. Gör därför om typerna \code{Student} och \code{Forskare} till case-klasser. \emph{Tips:} För att undkomma ett kompileringsfel (vilket?) behöver du använda \code{override val} på lämpligt ställe.
+
+Skapa instanser av de nya case-klasserna \code{Student} och \code{Forskare} och skriv ut deras \code{toString}. Hur ser utskriften ut?
+
+\Subtask Eftersom \code{Person} och \code{Akademiker} nu är abstrakta, vill utbildningsdepartementet att du gör om dessa typer till traits med abstrakta attribut istället för klasser. Du kan då undvika \code{override val} i klassparametrarna till de konkreta case-klasserna.
+
+Man inför också en case-klass \code{IckeAkademiker} som man tänker använda i olika statistiska medborgarundersökningar.
+
+Dessutom förser man alla personer med ett personnummer representerat som en \code{Int}.
+
+Hur ser utbildningsdepartementets kod ut nu, efter alla ändringar? Skriv ett testprogram som skapar några instanser och skriver ut deras attribut.
+
+\Subtask I vilka sammanhang är det nödvändigt att använda en \code{trait} respektive en \code{class}?
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved
+\begin{Code}
+val person = new Person("Person1")
+val akademiker = new Akademiker("Person2", "LTH")
+val student = new Student("Person3", "LTH", "D")
+val forskare = new Forskare("Person4", "LTH", "Doktorand")
+\end{Code}
+
+\SubtaskSolved
+\begin{Code}
+val vec = Vector(person, akademiker, student, forskare)
+for(i <- vec){ print(i.toString + i.namn) }
+\end{Code}
+
+\SubtaskSolved  error: class Person is abstract; cannot be instantiated.
+
+\SubtaskSolved  error: overriding value namn in class Person of type String; value namn needs `override' modifier.\\
+toString för Student: Student(Person3,LTH,D). \\
+toString för Forskare: Student(Person4,LTH,Doktorand).
+
+\SubtaskSolved
+\begin{Code}
+trait Person {val namn: String; val nbr: Int}
+trait Akademiker extends Person {val universitet: String}
+case class Student(
+  namn: String,
+  nbr: Int,
+  universitet: String,
+  program: String) extends Akademiker
+case class Forskare(
+  namn: String,
+  nbr: Int,
+  universitet: String,
+  titel: String) extends Akademiker
+case class IckeAkademiker(
+    namn: String,
+    nbr: Int) extends Person
+\end{Code}
+
+\SubtaskSolved  Man måste använda en klass om man behöver klassparametrar. Man måste använda en trait om man vill göra in-mixning med \code{with}. \\
+ Se \href{http://www.artima.com/pins1ed/traits.html\#12.7}{http://www.artima.com/pins1ed/traits.html\#12.7}.
+
+
+\QUESTEND
+
+
+
+
+
+
+
+
+\WHAT{Uppräknade värden.}
+
+\QUESTBEGIN
+
+\Task  \what~  Ett sätt att hålla reda på uppräknade värden, t.ex. färgen på olika kort i en kortlek, är att använda olika heltal som får representera de olika värdena, till exempel så här:\footnote{Om namnkonventioner för konstanter i Scala: läs under rubriken ''Constants, Values, Variable and Methods'' här \href{http://docs.scala-lang.org/style/naming-conventions.html}{docs.scala-lang.org/style/naming-conventions.html}}
+\begin{Code}
+object Färg {
+  val Spader = 1
+  val Hjärter = 2
+  val Ruter = 3
+  val Klöver = 4
+}
+\end{Code}
+Dessa kan sedan användas som parametrar till denna case-klass vid skapande av kortobjekt:
+\begin{lstlisting}[language=,keywords={case,class}]
+case class Kort(färg: Int, valör: Int)
+\end{lstlisting}
+Man kan hålla reda på färgen med en variabel av typen \code{Int} och tilldela den en viss färg med ovan konstanter. Och när man skapar ett kort behöver man inte komma ihåg vilket numret är.
+\begin{REPL}
+scala> val f = Färg.Spader
+scala> import Färg._
+scala> Kort(Ruter, 7)
+\end{REPL}
+En annan fördelen med detta är att man lätt kan loopa från 1 till 4 för att gå igenom alla färger.
+\begin{REPL}
+scala> val kortlek = for (f <- 1 to 4; v <- 1 to 13) yield Kort(f, v)
+\end{REPL}
+Nackdelen är att kompilatorn vid kompileringstid inte kollar om variablerna av misstag råkar ges något värde utanför det giltiga intervallet, t.ex. 42. Detta får vi själv hålla koll på vid körtid, till exempel med funktionen \code{require} eller \code{if}-satser, etc.
+
+Istället kan man använda case-objekt enligt nedan deluppgifter och få hjälp av kompilatorn att hitta eventuella fel vid kompileringstid.  Ett case-objekt är som ett vanligt singelton-objekt men det får automatiskt en \code{toString} samma som namnet och kan användas i matchningar etc. (mer om match i kapitel \ref{chapter:W08}).
+
+\Subtask Deklarera följande uppräknade värden som singelton objekt med gemensam bastyp. Med nyckelordet \code{sealed} så ''förseglas'' klassen och inga andra direkta subtyper tillåts förutom de som finns i samma kod-fil eller block. I detta exempel  med kortfärger vet vi ju att det inte finns fler än dessa fyra färger.
+\begin{Code}
+sealed trait Färg
+case object Spader extends Färg
+case object Hjärter extends Färg
+case object Ruter extends Färg
+case object Klöver extends Färg
+\end{Code}
+Dessa kan sedan användas som parametrar till denna case-klass vid skapande av kortobjekt:
+\begin{lstlisting}[language=,keywords={case,class}]
+case class Kort(färg: Färg, valör: Int)
+\end{lstlisting}
+Skapa därefter några exempelinstanser av klassen \code{Kort}. Vad är fördelen med ovan angreppssätt jämfört med att använda heltalskonstanter?
+
+\Subtask Om man vill kunna iterera över alla värden är det bra om de finns i en samling med alla värden. Vi kan lägga en sådan i ett kompanjonsobjekt till bastypen enligt nedan. Skriv ut alla färgvärden med en \code{for}-sats.
+
+\begin{Code}
+sealed trait Färg
+object Färg {
+  val values = Vector(Spader, Hjärter, Ruter, Klöver)
+}
+case object Spader extends Färg
+case object Hjärter extends Färg
+case object Ruter extends Färg
+case object Klöver extends Färg
+\end{Code}
+Skapa en kortlek med 52 olika kort och blanda den sedan med \code{Random.shuffle} enligt nedan. Använd en dubbel \code{for}-sats och \code{yield}.
+\begin{REPL}
+scala> val kortlek: Vector[Kort] = ???
+scala> val blandad = scala.util.Random.shuffle(kortlek)
+\end{REPL}
+
+\Subtask Skriv en funktion \code{ def blandadKortlek: Vector[Kort] = ???} som ger en ny blandad kortlek varje gång den anropas med metoden i föregående uppgift.
+
+%%%%%%%%%%%%%%%%%%% FEEEEEELLL \end{Code}
+
+
+
+\Subtask Om man även vill ha en heltalsrepresentation med en medlem \code{toInt} för alla värden, kan man ge bastypen en parameter och i stället för en trait (som inte kan ha några parametrar) använda en abstrakt klass.
+
+\begin{Code}
+sealed abstract class Färg(final val toInt: Int)
+object Färg {
+  val values = Vector(Spader, Hjärter, Ruter, Klöver)
+}
+case object Spader  extends Färg(0)
+case object Hjärter extends Färg(1)
+case object Ruter   extends Färg(2)
+case object Klöver  extends Färg(3)
+\end{Code}
+Skapa en funktion \code{färgPoäng} som räknar ut summan av heltalsrepresentationen av alla färger hos en vektor med kort, och använd den sedan för att räkna ut \code{färgPoäng} för de första fem korten.
+\begin{REPL}
+scala> def blandadKortlek: Vector[Kort] = ???
+scala> def färgPoäng(xs: Vector[Kort]): Int = ???
+scala> färgPoäng(blandadKortlek.take(5))
+\end{REPL}
+
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved  Sättet är säkrare då man inte kan tilldela korten en färg som inte finns. Med heltalskonstanterna kan man till exempel ge ett kort färgen 5, vilken inte korresponderar till någon riktig färg.
+
+\SubtaskSolved  \code{for (f <- Färg.values; v <- 1 to 13) yield Kort(f,v)}
+
+\SubtaskSolved
+\begin{Code}
+def blandadKortlek: Vector[Kort] = {
+  val kortlek =
+    for (f <- Färg.values; v <- 1 to 13) yield Kort(f,v)
+  scala.util.Random.shuffle(kortlek)
+}
+\end{Code}
+
+\SubtaskSolved  \code{def färgPoäng(xs: Vector[Kort]): Int = xs.map(_.färg.toInt).sum}
+
+\QUESTEND
+
+
+
+
+
+
+
+
+
+
+
+
+\ExtraTasks %%%%%%%%%%%%%%%%%
+
+
+
 \WHAT{Bastypen \code{Shape} och subtyperna \code{Rectangle} och \code{Circle}.}
 
 \QUESTBEGIN
 
-\Task  \what~  Du ska nu skapa ett litet bibliotek för geometriska former med oföränderliga objekt implementerade med hjälp av case-klasser. De geometriska formerna har en gemensam bastyp kallad \code{Shape}. Skriv nedan kod i en editor och klistra sedan in den i REPL med kommandot \code{:paste}.
+\Task  \what~  Du ska i denna uppgift skapa ett litet bibliotek för geometriska former med oföränderliga objekt implementerade med hjälp av case-klasser. De geometriska formerna har en gemensam bastyp kallad \code{Shape}. Utgå från koden nedan.
+
 \begin{Code}
 case class Point(x: Double, y: Double) {
   def move(dx: Double, dy: Double): Point = Point(x + dx, y + dy)
@@ -193,17 +447,11 @@ case class Circle(pos: Point, radius: Double) extends Shape {
 
 \Subtask Instansiera några cirklar och rektanglar och gör några relativa förflyttningar av dina instanser genom att anropa \code{move}.
 
-\Subtask Lägg till metoden \code{moveTo} i \code{Point}, \code{Shape}, \code{Rectangle} och \code{Circle} som gör en absolut förflyttning till koordinaterna \code{x} och \code{y}. Klistra in i REPL och testa på några instanser av \code{Rectangle} och \code{Circle}.
+\Subtask Lägg till metoden \code{moveTo} i \code{Point}, \code{Shape}, \code{Rectangle} och \code{Circle} som gör en absolut förflyttning till koordinaterna \code{x} och \code{y}. Testa med REPL på några instanser av \code{Rectangle} och \code{Circle}.
 
 \Subtask Lägg till metoden \code{distanceTo(that: Point): Double } i case-klassen \code{Point} som räknar ut avståndet till en annan punkt med hjälp av \code{math.hypot}. Klistra in i REPL och testa på några instanser av \code{Point}.
 
-\Subtask Lägg till en konkret metod \code{distanceTo(that: Shape): Double } i traiten \code{Shape} som räknar ut avståndet till positionen för en annan Shape. Klistra in i REPL och testa på några instanser av \code{Rectangle} och \code{Circle}.
-
-
-
-
-
-
+\Subtask Lägg till en konkret metod \code{distanceTo(that: Shape): Double } i traiten \code{Shape} som räknar ut avståndet till positionen för en annan Shape. Testa i REPL på några instanser av \code{Rectangle} och \code{Circle}.
 
 \SOLUTION
 
@@ -211,7 +459,7 @@ case class Circle(pos: Point, radius: Double) extends Shape {
 \TaskSolved \what
 
 
-\SubtaskSolved 
+\SubtaskSolved
 \begin{Code}
 val c1 = Circle(Point(1, 1), 42)
 val r1 = Rectangle(Point(3, 3), 20, 30)
@@ -238,6 +486,74 @@ För \code{Circle}: \code{override def moveTo(dx: Double, dy: Double): Circle =}
 
 
 
+\WHAT{Regler för \code{override}, \code{private} och \code{final}.}
+
+\QUESTBEGIN
+
+\Task  \what~
+
+\Subtask \label{subtask:overriderules} Undersök överskuggningning av abstrakta, konkreta, privata och finala medlemmar genom att skriva in raderna nedan en i taget i REPL. Vilka rader ger felmeddelande? Varför? Vid felmeddelande: notera hur felmeddelandet lyder och ändra deklarationen av den felande medlemmen så att koden blir kompilerbar (eller om det är enda rimliga lösningen: ta bort den felaktiga medlemmen), innan du provar efterkommande rad.
+
+\begin{REPL}
+trait Super1 { def a: Int; def b = 42; private def c = "hemlis" }
+class Sub2 extends Super1 { def a = 43; def b = 43; def c = 43 }
+class Sub3 extends Super1 { def a = 43; override def b = 43 }
+class Sub4 extends Super1 { def a = 43; override def c = "43" }
+trait Super5 { final def a: Int; final def b = 42 }
+class Sub6 extends Super5 { override def a = 43; def b = 43 }
+class Sub7 extends Super5 { def a = 43; override def b = 43 }
+class Sub8 extends Super5 { def a = 43; override def c = "43" }
+trait Super9 { val a: Int; val b = 42; lazy val c: String = "lazy" }
+class Sub10 extends Super9 { override def a = 43; override val b = 43 }
+class Sub11 extends Super9 { val a = 43; override lazy val b = 43 }
+class Sub12 extends Super9 { val a = 43; override var b = 43 }
+class Sub13 extends Super9 { val a = 43; override lazy val c = "still lazy" }
+class SubSub extends Sub13 { override val a = 44}
+trait Super14 { var a: Int; var b = 42; var c: String }
+class Sub15 extends Super14 { def a = 43; override var b = 43; val c = "?" }
+\end{REPL}
+
+\Subtask Skapa instanser av klasserna \code{Sub3}, \code{Sub13} och \code{SubSub} från ovan deluppgift och undersök alla medlemmarnas värden för respektive instans. Förklara varför de har dessa värden.
+
+%\Subtask Läs igenom reglerna i kapitel  \ref{slideW07:overriderules} om vad som gäller vid arv och överskuggning av medlemmar. Gör några egna undersökningar i REPL som försöker bryta mot någon regel som inte testades i deluppgift \ref{subtask:overriderules}.
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  2. Måste ha \code{override} framför \code{b} för att kunna ändra på metoden. \\
+4. \code{c} är \code{private}, vilket betyder att den är gömd för subklasserna. Därför kan den inte överskuggas. Genom att ta bort \code{override} fungerar klassen. \\
+5. En \code{final}-medlem måste ha ett bestämt värde. Kan lösas genom att tilldela \code{final a} ett värde eller ta bort \code{final}. \\
+6. En \code{final}-medlem kan inte överskuggas, varken med eller utan \code{override}. Här får konflikterna tas bort.  \\
+7. Se 6. \\
+8. Eftersom \code{c} inte finns i \code{Super5} kan den inte överskuggas. Genom att ta bort \code{override} fungerar klassen. \\
+10. Överskuggningen av \code{val} måste vara oföränderlig (immutable); detta är inte nödvändigtvis \code{def}. Löses genom att byta ut \code{def a} mot \code{val a} hos \code{Sub10}.  \\
+11. Samma problem som i 10.; \code{lazy val} kan vara föränderlig. Löses genom att ta bort \code{lazy}. \\
+12. Samma problem igen! \code{var} är föränderlig, vilket bryter mot typsäkerheten när man försöker överskugga en \code{val}. Löses genom att ändra \code{var} till \code{val}. \\
+15.\code{def a = 43} och \code{val c = "?"} täcker inte allt som \code{var} kräver. Det behövs en setter för att kunna uppfylla kraven för överskuggning för en \code{var}. Dessutom finns det ingen anledning för en \code{val} att överskuggas; man kan ju ändra på den lite hur man vill!
+
+\SubtaskSolved  Sub3: a = 43, b = 43 eftersom medlemmen är överskuggad. c hittas inte eftersom den är \code{private}.
+
+Sub13: a = 43, b = 42, c = "still lazy" eftersom medlemmen överskuggas.
+
+SubSub: a = 44 eftersom medlemmen överskuggas, b = 42, c = "still lazy".
+
+\SubtaskSolved  -.
+
+
+\QUESTEND
+
+
+
+
+
+\AdvancedTasks %%%%%%%%%%%%%%%%%
+
+
+
+
 \WHAT{Inmixning.}
 
 \QUESTBEGIN
@@ -246,7 +562,6 @@ För \code{Circle}: \code{override def moveTo(dx: Double, dy: Double): Circle =}
 
 En alternativ fågeltaxonomi, speciellt populär i Skåne, delar in alla fåglar i två specifika kategorier: Kråga respektive Ånka. Krågor kan flyga men inte simma, medan Ånkor kan simma och oftast även flyga. Fågel i generell, kollektiv bemärkelse kallas på gammal skånska för Fyle.%
 \footnote{\href{http://www.klangfix.se/ordlista.htm}{www.klangfix.se/ordlista.htm}}
-Skriv in nedan kod i en editor och spara den för kommande uppgifter. Klistra in koden i REPL med kommandot \code{:paste}.
 
 \begin{Code}
 trait Fyle {
@@ -292,12 +607,12 @@ scala> val antalKvack: Int = ???
 \TaskSolved \what
 
 
-\SubtaskSolved 
+\SubtaskSolved
 \begin{Code}
 fyle.filter(f => f.isInstanceOf[Ånka] && f.ärFlygkunnig).size
 \end{Code}
 
-\SubtaskSolved 
+\SubtaskSolved
 \begin{Code}
 val antalKrax: Int = fyle.filter(f => !f.ärSimkunnig).size * 2
 val antalKvack: Int = fyle.filter(f => f.ärSimkunnig).size * 4
@@ -305,6 +620,11 @@ val antalKvack: Int = fyle.filter(f => f.ärSimkunnig).size * 4
 
 
 \QUESTEND
+
+
+
+
+
 
 
 
@@ -393,9 +713,9 @@ class Sub extends Super {
 
 \Subtask Inför en metod \code{antalLäten} som returnerar antalet krax respektive kvack som en viss fågel yttrat sedan dess skapelse.
 
-\Subtask\Pen Varför inte använda \code{private} i stället for \code{protected}?
+\Subtask Varför inte använda \code{private} i stället for \code{protected}?
 
-\Subtask\Pen Varför är det bra att göra räknar-variabeln oåtkomlig från ''utsidan''?
+\Subtask Varför är det bra att göra räknar-variabeln oåtkomlig från ''utsidan''?
 
 
 
@@ -422,6 +742,79 @@ I Ånka: \code| override def väsnas = { print(läte * 4); räknaLäte += 4 }|
 
 \QUESTEND
 
+
+
+
+
+\WHAT{Inmixning av egenskaper.}
+
+\QUESTBEGIN
+
+\Task  \what~ Det visar sig att vår flitige ornitolog från uppgift \ref{task:fyle} på sidan \pageref{task:fyle} sov på en av föreläsningarna i zoologi när hen var nolla på Natfak, och därför helt missat fylekategorin \code{Pjodd}. Hjälp vår stackars ornitolog så att fylehierarkin nu även omfattar Pjoddar. En Pjodd kan flyga som en Kråga men den \code{ÄrLiten} medan en Kråga \code{ÄrStor}. En Pjodd kvittrar dubbelt så många gånger som en Ånka kvackar. En Pjodd \code{KanKanskeSimma} där simkunnighetssannolikheten är $0.2$. Låt ornitologen ånyo finna 42 slumpmässiga fåglar i skogen och filtrera fram lämpliga arter. Undersök sedan hur dessa väsnas, i likhet med deluppgift \ref{task:fyle}\ref{subtask:fyle:sound}.
+
+
+\SOLUTION
+
+\TaskSolved \what
+
+
+\begin{Code}
+trait Fyle {
+  val läte: String
+  def väsnas: Unit = { print(läte * 2); räknaLäte += 2 }
+  protected var räknaLäte: Int = 0
+  val ärSimkunnig: Boolean
+  val ärFlygkunnig: Boolean
+  val ärStor : Boolean
+  def antalLäten: Int = räknaLäte
+}
+trait KanSimma { val ärSimkunnig = true }
+trait KanInteSimma { val ärSimkunnig = false }
+trait KanFlyga { val ärFlygkunnig = true }
+trait KanKanskeFlyga { val ärFlygkunnig = math.random < 0.8 }
+trait KanKanskeSimma { val ärSimkunnig = math.random < 0.2 }
+trait ÄrStor { val ärStor = true }
+trait ÄrLiten { val ärStor = false }
+
+final class Kråga
+  extends Fyle
+  with KanFlyga
+  with KanInteSimma
+  with ÄrStor{
+  val läte = "krax"
+}
+
+final class Ånka
+  extends Fyle
+  with KanSimma
+  with KanKanskeFlyga
+  with ÄrStor{
+  val läte = "kvack"
+  override def väsnas = { print(läte * 4); räknaLäte += 4 }
+}
+
+final class Pjodd
+  extends Fyle
+  with KanFlyga
+  with KanKanskeSimma
+  with ÄrLiten{
+  val läte = "kvitter"
+  override def väsnas = { print(läte * 8); räknaLäte += 8 }
+}
+\end{Code}
+
+I REPL:
+\begin{REPL}
+val fyle = Vector.fill(42)(
+  if(math.random < 0.33) new Kråga else
+  if (math.random < 0.5) new Ånka else
+  new Pjodd)
+fyle.filter(f => f.isInstanceOf[Kråga]).size*2
+fyle.filter(f => f.isInstanceOf[Ånka]).size*4
+fyle.filter(f => f.isInstanceOf[Pjodd]).size*8
+\end{REPL}
+
+\QUESTEND
 
 
 
@@ -506,380 +899,14 @@ scala> b.asInstanceOf[A]
 
 
 
-\WHAT{Regler för \code{override}, \code{private} och \code{final}.}
 
-\QUESTBEGIN
 
-\Task  \what~ 
 
-\Subtask \label{subtask:overriderules} Undersök överskuggningning av abstrakta, konkreta, privata och finala medlemmar genom att skriva in raderna nedan en i taget i REPL. Vilka rader ger felmeddelande? Varför? Vid felmeddelande: notera hur felmeddelandet lyder och ändra deklarationen av den felande medlemmen så att koden blir kompilerbar (eller om det är enda rimliga lösningen: ta bort den felaktiga medlemmen), innan du provar efterkommande rad.
 
-\begin{REPL}
-trait Super1 { def a: Int; def b = 42; private def c = "hemlis" }
-class Sub2 extends Super1 { def a = 43; def b = 43; def c = 43 }
-class Sub3 extends Super1 { def a = 43; override def b = 43 }
-class Sub4 extends Super1 { def a = 43; override def c = "43" }
-trait Super5 { final def a: Int; final def b = 42 }
-class Sub6 extends Super5 { override def a = 43; def b = 43 }
-class Sub7 extends Super5 { def a = 43; override def b = 43 }
-class Sub8 extends Super5 { def a = 43; override def c = "43" }
-trait Super9 { val a: Int; val b = 42; lazy val c: String = "lazy" }
-class Sub10 extends Super9 { override def a = 43; override val b = 43 }
-class Sub11 extends Super9 { val a = 43; override lazy val b = 43 }
-class Sub12 extends Super9 { val a = 43; override var b = 43 }
-class Sub13 extends Super9 { val a = 43; override lazy val c = "still lazy" }
-class SubSub extends Sub13 { override val a = 44}
-trait Super14 { var a: Int; var b = 42; var c: String }
-class Sub15 extends Super14 { def a = 43; override var b = 43; val c = "?" }
-\end{REPL}
 
-\Subtask Skapa instanser av klasserna \code{Sub3}, \code{Sub13} och \code{SubSub} från ovan deluppgift och undersök alla medlemmarnas värden för respektive instans. Förklara varför de har dessa värden.
 
-\Subtask Läs igenom reglerna i kapitel  \ref{slideW07:overriderules} om vad som gäller vid arv och överskuggning av medlemmar. Gör några egna undersökningar i REPL som försöker bryta mot någon regel som inte testades i deluppgift \ref{subtask:overriderules}.
 
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved  2. Måste ha \code{override} framför \code{b} för att kunna ändra på metoden. \\
-4. \code{c} är \code{private}, vilket betyder att den är gömd för subklasserna. Därför kan den inte överskuggas. Genom att ta bort \code{override} fungerar klassen. \\
-5. En \code{final}-medlem måste ha ett bestämt värde. Kan lösas genom att tilldela \code{final a} ett värde eller ta bort \code{final}. \\
-6. En \code{final}-medlem kan inte överskuggas, varken med eller utan \code{override}. Här får konflikterna tas bort.  \\
-7. Se 6. \\
-8. Eftersom \code{c} inte finns i \code{Super5} kan den inte överskuggas. Genom att ta bort \code{override} fungerar klassen. \\
-10. Överskuggningen av \code{val} måste vara oföränderlig (immutable); detta är inte nödvändigtvis \code{def}. Löses genom att byta ut \code{def a} mot \code{val a} hos \code{Sub10}.  \\
-11. Samma problem som i 10.; \code{lazy val} kan vara föränderlig. Löses genom att ta bort \code{lazy}. \\
-12. Samma problem igen! \code{var} är föränderlig, vilket bryter mot typsäkerheten när man försöker överskugga en \code{val}. Löses genom att ändra \code{var} till \code{val}. \\
-15.\code{def a = 43} och \code{val c = "?"} täcker inte allt som \code{var} kräver. Det behövs en setter för att kunna uppfylla kraven för överskuggning för en \code{var}. Dessutom finns det ingen anledning för en \code{val} att överskuggas; man kan ju ändra på den lite hur man vill!
-
-\SubtaskSolved  Sub3: a = 43, b = 43 eftersom medlemmen är överskuggad. c hittas inte eftersom den är \code{private}.
-
-Sub13: a = 43, b = 42, c = "still lazy" eftersom medlemmen överskuggas.
-
-SubSub: a = 44 eftersom medlemmen överskuggas, b = 42, c = "still lazy".
-
-\SubtaskSolved  -.
-
-
-\QUESTEND
-
-
-
-
-
-
-\WHAT{Supertyp med parameter.}
-
-\QUESTBEGIN
-
-\Task  \what~  En trait kan inte ha någon parameter. Vill man ha en parameter till supertypen måste man använda en klass istället, enligt nedan exempel.
-
-Utbildningsdepartementet vill i sitt system hålla koll på vissa personer och skapar därför en klasshierarki enligt nedan. Skriv in koden i en editor och klipp sedan in den i REPL.
-\begin{Code}
-class Person(val namn: String)
-
-class Akademiker(
-  namn: String,
-  val universitet: String) extends Person(namn)
-
-class Student(
-  namn: String,
-  universitet: String,
-  program: String) extends Akademiker(namn, universitet)
-
-class Forskare(
-  namn: String,
-  universitet: String,
-  titel: String) extends Akademiker(namn, universitet)
-\end{Code}
-
-
-\Subtask Deklarera fyra olika \code{val}-variabler med lämpliga namn som refererar till olika instanser av alla olika klasser ovan och ge attributen valfria initialvärden genom olika parametrar till konstruktorerna.
-
-\Subtask Skriv två satser: en som först stoppar in instanserna i en \code{Vector} och en som sedan loopar igenom vektorn och skriv ut alla instansers \code{toString} och \code{namn}.
-
-
-\Subtask Utbildningsdepartementet vill att det inte ska gå att instansiera objekt av typerna \code{Person} och \code{Akademiker}. Det kan åstadkommas genom att placera nyckelordet \code{abstract} före \code{class}. Uppdatera koden i enlighet med detta. Vilket blir felmeddelande om man försöker instansiera en \code{abstract class}?
-
-\Subtask Utbildningsdeparetementet vill slippa implementera \code{toString} och slippa skriva \code{new} vid instansiering. Gör därför om typerna \code{Student} och \code{Forskare} till case-klasser. \emph{Tips:} För att undkomma ett kompileringsfel (vilket?) behöver du använda \code{override val} på lämpligt ställe.
-
-Skapa instanser av de nya case-klasserna \code{Student} och \code{Forskare} och skriv ut deras \code{toString}. Hur ser utskriften ut?
-
-\Subtask Eftersom \code{Person} och \code{Akademiker} nu är abstrakta, vill utbildningsdepartementet att du gör om dessa typer till traits med abstrakta attribut istället för klasser. Du kan då undvika \code{override val} i klassparametrarna till de konkreta case-klasserna.
-
-Man inför också en case-klass \code{IckeAkademiker} som man tänker använda i olika statistiska medborgarundersökningar.
-
-Dessutom förser man alla personer med ett personnummer representerat som en \code{Int}.
-
-Hur ser utbildningsdepartementets kod ut nu, efter alla ändringar? Skriv ett testprogram som skapar några instanser och skriver ut deras attribut.
-
-\Subtask\Pen I vilka sammanhang är det nödvändigt att använda en \code{trait} respektive en \code{class}?
-
-
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved 
-\begin{Code}
-val person = new Person("Person1")
-val akademiker = new Akademiker("Person2", "LTH")
-val student = new Student("Person3", "LTH", "D")
-val forskare = new Forskare("Person4", "LTH", "Doktorand")
-\end{Code}
-
-\SubtaskSolved 
-\begin{Code}
-val vec = Vector(person, akademiker, student, forskare)
-for(i <- vec){ print(i.toString + i.namn) }
-\end{Code}
-
-\SubtaskSolved  error: class Person is abstract; cannot be instantiated.
-
-\SubtaskSolved  error: overriding value namn in class Person of type String; value namn needs `override' modifier.\\
-toString för Student: Student(Person3,LTH,D). \\
-toString för Forskare: Student(Person4,LTH,Doktorand).
-
-\SubtaskSolved 
-\begin{Code}
-trait Person {val namn: String; val nbr: Int}
-trait Akademiker extends Person {val universitet: String}
-case class Student(
-  namn: String,
-  nbr: Int,
-  universitet: String,
-  program: String) extends Akademiker
-case class Forskare(
-  namn: String,
-  nbr: Int,
-  universitet: String,
-  titel: String) extends Akademiker
-case class IckeAkademiker(
-    namn: String,
-    nbr: Int) extends Person
-\end{Code}
-
-\SubtaskSolved  Man måste använda en klass om man behöver klassparametrar. Man måste använda en trait om man vill göra in-mixning med \code{with}. \\
- Se \href{http://www.artima.com/pins1ed/traits.html\#12.7}{http://www.artima.com/pins1ed/traits.html\#12.7}.
-
-
-\QUESTEND
-
-
-
-
-
-
-\WHAT{Uppräknade värden.}
-
-\QUESTBEGIN
-
-\Task  \what~  Ett sätt att hålla reda på uppräknade värden, t.ex. färgen på olika kort i en kortlek, är att använda olika heltal som får representera de olika värdena, till exempel så här:\footnote{Om namnkonventioner för konstanter i Scala: läs under rubriken ''Constants, Values, Variable and Methods'' här \href{http://docs.scala-lang.org/style/naming-conventions.html}{docs.scala-lang.org/style/naming-conventions.html}}
-\begin{Code}
-object Färg {
-  val Spader = 1
-  val Hjärter = 2
-  val Ruter = 3
-  val Klöver = 4
-}
-\end{Code}
-Dessa kan sedan användas som parametrar till denna case-klass vid skapande av kortobjekt:
-\begin{lstlisting}[language=,keywords={case,class}]
-case class Kort(färg: Int, valör: Int)
-\end{lstlisting}
-Man kan hålla reda på färgen med en variabel av typen \code{Int} och tilldela den en viss färg med ovan konstanter. Och när man skapar ett kort behöver man inte komma ihåg vilket numret är.
-\begin{REPL}
-scala> val f = Färg.Spader
-scala> import Färg._
-scala> Kort(Ruter, 7)
-\end{REPL}
-En annan fördelen med detta är att man lätt kan loopa från 1 till 4 för att gå igenom alla färger.
-\begin{REPL}
-scala> val kortlek = for (f <- 1 to 4; v <- 1 to 13) yield Kort(f, v)
-\end{REPL}
-Nackdelen är att kompilatorn vid kompileringstid inte kollar om variablerna av misstag råkar ges något värde utanför det giltiga intervallet, t.ex. 42. Detta får vi själv hålla koll på vid körtid, till exempel med funktionen \code{require} eller \code{if}-satser, etc.
-
-Istället kan man använda case-objekt enligt nedan deluppgifter och få hjälp av kompilatorn att hitta eventuella fel vid kompileringstid.  Ett case-objekt är som ett vanligt singelton-objekt men det får automatiskt en \code{toString} samma som namnet och kan användas i matchningar etc. (mer om match i kapitel \ref{chapter:W08}).
-
-\Subtask Deklarera följande uppräknade värden som singelton objekt med gemensam bastyp i en editor och klistra in i REPL med kommandot \code{:paste}. Med nyckelordet \code{sealed} så ''förseglas'' klassen och inga andra direkta subtyper tillåts förutom de som finns i samma kod-fil eller block. I detta exempel  med kortfärger vet vi ju att det inte finns fler än dessa fyra färger.
-\begin{Code}
-sealed trait Färg
-case object Spader extends Färg
-case object Hjärter extends Färg
-case object Ruter extends Färg
-case object Klöver extends Färg
-\end{Code}
-Dessa kan sedan användas som parametrar till denna case-klass vid skapande av kortobjekt:
-\begin{lstlisting}[language=,keywords={case,class}]
-case class Kort(färg: Färg, valör: Int)
-\end{lstlisting}
-Skapa därefter några exempelinstanser av klassen \code{Kort}. Vad är fördelen med ovan angreppssätt jämfört med att använda heltalskonstanter?
-
-\Subtask Om man vill kunna iterera över alla värden är det bra om de finns i en samling med alla värden. Vi kan lägga en sådan i ett kompanjonsobjekt till bastypen. Uppdatera koden enligt nedan och klistra in på nytt i REPL med kommandot \code{:paste}. Skriv ut alla färgvärden med en \code{for}-sats.
-
-\begin{Code}
-sealed trait Färg
-object Färg {
-  val values = Vector(Spader, Hjärter, Ruter, Klöver)
-}
-case object Spader extends Färg
-case object Hjärter extends Färg
-case object Ruter extends Färg
-case object Klöver extends Färg
-\end{Code}
-Skapa en kortlek med 52 olika kort och blanda den sedan med \code{Random.shuffle} enligt nedan. Använd en dubbel \code{for}-sats och \code{yield}.
-\begin{REPL}
-scala> val kortlek: Vector[Kort] = ???
-scala> val blandad = scala.util.Random.shuffle(kortlek)
-\end{REPL}
-
-\Subtask Skriv en funktion \code{ def blandadKortlek: Vector[Kort] = ???} som ger en ny blandad kortlek varje gång den anropas med metoden i föregående uppgift.
-
-%%%%%%%%%%%%%%%%%%% FEEEEEELLL \end{Code}
-
-
-
-\Subtask Om man även vill ha en heltalsrepresentation med en medlem \code{toInt} för alla värden, kan man ge bastypen en parameter och i stället för en trait (som inte kan ha några parametrar) använda en abstrakt klass.
-
-\begin{Code}
-sealed abstract class Färg(final val toInt: Int)
-object Färg {
-  val values = Vector(Spader, Hjärter, Ruter, Klöver)
-}
-case object Spader  extends Färg(0)
-case object Hjärter extends Färg(1)
-case object Ruter   extends Färg(2)
-case object Klöver  extends Färg(3)
-\end{Code}
-Skapa en funktion \code{färgPoäng} som räknar ut summan av heltalsrepresentationen av alla färger hos en vektor med kort, och använd den sedan för att räkna ut \code{färgPoäng} för de första fem korten.
-\begin{REPL}
-scala> def blandadKortlek: Vector[Kort] = ???
-scala> def färgPoäng(xs: Vector[Kort]): Int = ???
-scala> färgPoäng(blandadKortlek.take(5))
-\end{REPL}
-
-
-\ExtraTasks %%%%%%%%%%%%%%%%%%%
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved  Sättet är säkrare då man inte kan tilldela korten en färg som inte finns. Med heltalskonstanterna kan man till exempel ge ett kort färgen 5, vilken inte korresponderar till någon riktig färg.
-
-\SubtaskSolved  \code{for (f <- Färg.values; v <- 1 to 13) yield Kort(f,v)}
-
-\SubtaskSolved 
-\begin{Code}
-def blandadKortlek: Vector[Kort] = {
-  val kortlek =
-    for (f <- Färg.values; v <- 1 to 13) yield Kort(f,v)
-  scala.util.Random.shuffle(kortlek)
-}
-\end{Code}
-
-\SubtaskSolved  \code{def färgPoäng(xs: Vector[Kort]): Int = xs.map(_.färg.toInt).sum}
-
-\ExtraTasks %%%%%%%%%%%%
-
-
-\QUESTEND
-
-
-
-
-
-
-\WHAT{NEEDS A TOPIC DESCRIPTION}
-
-\QUESTBEGIN
-
-\Task  \what~ Det visar sig att vår flitige ornitolog från uppgift \ref{task:fyle} på sidan \pageref{task:fyle} sov på en av föreläsningarna i zoologi när hen var nolla på Natfak, och därför helt missat fylekategorin \code{Pjodd}. Hjälp vår stackars ornitolog så att fylehierarkin nu även omfattar Pjoddar. En Pjodd kan flyga som en Kråga men den \code{ÄrLiten} medan en Kråga \code{ÄrStor}. En Pjodd kvittrar dubbelt så många gånger som en Ånka kvackar. En Pjodd \code{KanKanskeSimma} där simkunnighetssannolikheten är $0.2$. Låt ornitologen ånyo finna 42 slumpmässiga fåglar i skogen och filtrera fram lämpliga arter. Undersök sedan hur dessa väsnas, i likhet med deluppgift \ref{task:fyle}\ref{subtask:fyle:sound}.
-
-
-\clearpage
-
-\AdvancedTasks %%%%%%%%%%%%%%%%%
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\begin{Code}
-trait Fyle {
-  val läte: String
-  def väsnas: Unit = { print(läte * 2); räknaLäte += 2 }
-  protected var räknaLäte: Int = 0
-  val ärSimkunnig: Boolean
-  val ärFlygkunnig: Boolean
-  val ärStor : Boolean
-  def antalLäten: Int = räknaLäte
-}
-trait KanSimma { val ärSimkunnig = true }
-trait KanInteSimma { val ärSimkunnig = false }
-trait KanFlyga { val ärFlygkunnig = true }
-trait KanKanskeFlyga { val ärFlygkunnig = math.random < 0.8 }
-trait KanKanskeSimma { val ärSimkunnig = math.random < 0.2 }
-trait ÄrStor { val ärStor = true }
-trait ÄrLiten { val ärStor = false }
-
-final class Kråga
-  extends Fyle
-  with KanFlyga
-  with KanInteSimma
-  with ÄrStor{
-  val läte = "krax"
-}
-
-final class Ånka
-  extends Fyle
-  with KanSimma
-  with KanKanskeFlyga
-  with ÄrStor{
-  val läte = "kvack"
-  override def väsnas = { print(läte * 4); räknaLäte += 4 }
-}
-
-final class Pjodd
-  extends Fyle
-  with KanFlyga
-  with KanKanskeSimma
-  with ÄrLiten{
-  val läte = "kvitter"
-  override def väsnas = { print(läte * 8); räknaLäte += 8 }
-}
-\end{Code}
-
-I REPL:
-\begin{REPL}
-val fyle = Vector.fill(42)(
-  if(math.random < 0.33) new Kråga else
-  if (math.random < 0.5) new Ånka else
-  new Pjodd)
-fyle.filter(f => f.isInstanceOf[Kråga]).size*2
-fyle.filter(f => f.isInstanceOf[Ånka]).size*4
-fyle.filter(f => f.isInstanceOf[Pjodd]).size*8
-\end{REPL}
-
-\AdvancedTasks %%%%%%%%%
-\QUESTEND
-
-
-
-
-
-
-\WHAT{NEEDS A TOPIC DESCRIPTION}
+\WHAT{Saknad referens med \texttt{null} och topptypen \texttt{Nothing}.}
 
 \QUESTBEGIN
 
@@ -895,7 +922,7 @@ fyle.filter(f => f.isInstanceOf[Pjodd]).size*8
 
 
 
-\WHAT{NEEDS A TOPIC DESCRIPTION}
+\WHAT{Arvshierarki med matematiska tal.}
 
 \QUESTBEGIN
 
@@ -907,6 +934,7 @@ fyle.filter(f => f.isInstanceOf[Pjodd]).size*8
 \begin{REPL}
 $ scalac numbers.scala
 $ scala
+
 scala> numbers.  // Tryck Tab
 AbstractComplex   AbstractNatural    AbstractReal   Frac    Nat      Polar
 AbstractInteger   AbstractRational   Complex        Integ   Number   Real
@@ -931,8 +959,7 @@ res2: numbers.Complex = Complex(Real(0),Real(42.42))
 
 \Subtask Gör så att metoden \code{reduce} i klassen \code{AbstractRational} använder algoritmen Greatest Common Divisor (GCD)\footnote{\href{https://sv.wikipedia.org/wiki/St\%C3\%B6rsta_gemensamma_delare}{https://sv.wikipedia.org/wiki/St\%C3\%B6rsta\_gemensamma\_delare}} så som beskrivs här: \\ \href{http://www.artima.com/pins1ed/functional-objects.html#6.8}{www.artima.com/pins1ed/functional-objects.html\#6.8} \\ så att täljare och nämnare blir så små som möjligt.
 
-\scalainputlisting[numbers=left, basicstyle=\ttfamily\fontsize{9}{11}\selectfont]{examples/numbers.scala}\SOLUTION
+\scalainputlisting[numbers=left, basicstyle=\ttfamily\fontsize{9.2}{12}\selectfont]{examples/numbers.scala}\SOLUTION
 
 
 \QUESTEND
-

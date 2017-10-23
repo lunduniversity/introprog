@@ -424,6 +424,27 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
+    QuizID("quiz-w09-concepts") -> Vector(  //sequences
+      "bastyp"             -> "den mest generella typen i en arvshierarki",
+      "sypertyp"           -> "en typ som är mer generell",
+      "subtyp"             -> "en typ som är mer specifik",
+      "körtidstyp"         -> "kan vara mer specifik än den statiska typen",
+      "dynamisk bindning"  -> "körtidstypen avgör vilken metod som körs",
+      "plymorfism"         -> "kan ha många former, t.ex. en av flera subtyper",
+      "trait"              -> "abstrakt klass, kan mixas in, kan ej ha parametrar",
+      "inmixning"          -> "klass får nya egenskaper från trait",
+      "överskuggad medlem" -> "medlem i subtyp ersätter medlem i supertyp",
+      "anonym klass"       -> "den mest generella typen i en arvshierarki",
+      "skyddad medlem"     -> "är endast synlig i subtyper",
+      "abstrakt medlem"    -> "saknar implementation",
+      "abstrakt klass"     -> "kan ej instansieras",
+      "referenstyp"        -> "ej värdetyp, har supertypen \\code|AnyRef|",
+      "förseglad typ"      -> "subtypning utanför denna kodfil är förhindrad",
+      "värdetyp"           -> "minneslagring kan optimeras, har supertypen, \\code|AnyVal|",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+
     QuizID("") -> Vector()
   ).filter(_._1.name.trim.nonEmpty)
 }
