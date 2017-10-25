@@ -55,7 +55,9 @@ object BankEvent {
         case s => throw new IllegalArgumentException(s"Unknown BankEvent type: $str")
       }
     }.recover{
-      case e @ (_: IndexOutOfBoundsException | _: NumberFormatException) =>
+      case e: IndexOutOfBoundsException =>
+        throw new IllegalArgumentException(s"Invalid BankEvent string: $str", e)
+      case e: NumberFormatException =>
         throw new IllegalArgumentException(s"Invalid BankEvent string: $str", e)
     }.get
   }
