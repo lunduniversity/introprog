@@ -1,5 +1,5 @@
 object courses {
-  def download(year: String = "16_17"): Vector[Course] = { 
+  def download(year: String = "17_18"): Vector[Course] = { 
     val urlStart = s"https://kurser.lth.se/lot/?lasar=$year"
     val urlSearch = "&soek_text=&sort=kod&val=kurs&soek=t"
     val url = urlStart + urlSearch
@@ -9,7 +9,7 @@ object courses {
     lines.filter(_.contains("kurskod")).map(Course.fromHtml)
   }
   
-  lazy val lth2016: Vector[Course] = download()
+  lazy val lth2017: Vector[Course] = download()
     
   case class Course(
     code:    String,
