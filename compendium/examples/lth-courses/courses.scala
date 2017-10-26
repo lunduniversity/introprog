@@ -1,6 +1,6 @@
 object courses {
   def download(year: String = "16_17"): Vector[Course] = { 
-    val urlStart = s"http://kurser.lth.se/lot/?lasar=$year"
+    val urlStart = s"https://kurser.lth.se/lot/?lasar=$year"
     val urlSearch = "&soek_text=&sort=kod&val=kurs&soek=t"
     val url = urlStart + urlSearch
     println("*** Downloading from: " + url)
