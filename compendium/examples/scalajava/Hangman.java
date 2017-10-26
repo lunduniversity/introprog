@@ -40,7 +40,7 @@ public class Hangman {
     }
     
     private static boolean foundAll(String secret, 
-                                   Set<Character> found){
+                                    Set<Character> found){
         boolean foundMissing = false;
         int i = 0;
         while (i < secret.length() && !foundMissing) {
