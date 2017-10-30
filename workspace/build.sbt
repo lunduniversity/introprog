@@ -35,8 +35,7 @@ lazy val w04_blockmole =(project in file("w04_blockmole")).
 lazy val w05_turtle =(project in file("w05_turtle")).
   settings(commonSettings: _*).
   settings(
-    name := "w05_turtle",
-    EclipseKeys.skipProject := true
+    name := "w05_turtle"
   ).dependsOn(cslib)
 
 lazy val w06_shuffle =(project in file("w06_shuffle")).
