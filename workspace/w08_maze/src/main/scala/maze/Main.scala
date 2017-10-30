@@ -39,7 +39,7 @@ object Main {
   }
 
   def getResourcePath(resource: String): String = {
-    Paths.get(getClass.getResource("/" + resource).toURI).toString
+    java.nio.file.Paths.get(getClass.getResource("/" + resource).toURI).toString
   }
 
   def main(args: Array[String]): Unit = {
