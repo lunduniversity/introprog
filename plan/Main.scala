@@ -1,7 +1,7 @@
 object Main extends App {
 
   import StringExtras._
-  val nbrOfReadyLectures = 9   // ***** BUMP when new lectures are ready
+  val nbrOfReadyLectures = 8   // ***** BUMP when new lectures are ready
 
   // Check which dir we are in and if parent to plan then fix prefix
   lazy val here = ".".toPath.toAbsolutePath.getParent
@@ -23,13 +23,18 @@ object Main extends App {
     override val heading = Seq("W", "Modul", "Innehåll")
     def toHtmlPatched: String = { // a brutal HACK to insert links to lectures
       var htmlSoup = toHtml
-      column("Modul").zipWithIndex.take(nbrOfReadyLectures).foreach{ case (m, i) =>
-        println(s"Injecting html link patch in module: $m")
-        def href(m: String): String = {
-          val w = column("W").apply(i).toLowerCase
-          s"""<a href="https://fileadmin.cs.lth.se/pgk/lect-$w.pdf">$m</a>"""
-        }
-        htmlSoup = htmlSoup.replaceAllLiterally(s"$m</td>",s"${href(m)}</td>")
+      // adjust for the strange week with KONTROLLSKRIVNING
+      val n = if (nbrOfReadyLectures < 8) nbrOfReadyLectures else nbrOfReadyLectures + 1
+      column("Modul").zipWithIndex.take(n).foreach {
+          case (m, i) if i != 7 =>
+            println(s"Injecting html link patch in module: $m")
+            def href(m: String): String = {
+              val w = column("W").apply(i).toLowerCase
+              s"""<a href="https://fileadmin.cs.lth.se/pgk/lect-$w.pdf">$m</a>"""
+            }
+            htmlSoup = htmlSoup.replaceAllLiterally(s"$m</td>",s"${href(m)}</td>")
+
+          case (m, _) => println(s"Ignoring html-patching of link in module: $m")
       }
       htmlSoup
     }
