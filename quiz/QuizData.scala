@@ -434,7 +434,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "trait"              -> "abstrakt klass, kan mixas in, kan ej ha parametrar",
       "inmixning"          -> "klass får nya egenskaper från trait",
       "överskuggad medlem" -> "medlem i subtyp ersätter medlem i supertyp",
-      "anonym klass"       -> "den mest generella typen i en arvshierarki",
+      "anonym klass"       -> "klass utan namn, utvidgad med extra implementation",
       "skyddad medlem"     -> "är endast synlig i subtyper",
       "abstrakt medlem"    -> "saknar implementation",
       "abstrakt klass"     -> "kan ej instansieras",
