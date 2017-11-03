@@ -6,7 +6,7 @@ case class Maze(
   val canvasSize: (Int, Int) = (500, 500),
   val wallChar: Char         = '#',
   val noWallChar: Char       = ' ',
-  val blockSize: Int         = 7,
+  val blockSize: Int         = 7
 ) {
   assert(blockSize % 2 == 1, "blockSize must be odd")
   assert(blockSize > 2,      "blockSize must be at least 3")
