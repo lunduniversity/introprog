@@ -6,7 +6,7 @@ This is the repo of a course given by Lund University called "Introduction to Pr
 
 Course homepage (in Swedish): http://cs.lth.se/pgk/
 
-This is work in progress; the first instance of the course starts this fall semester, August 29, 2016 at LTH in Lund.
+This is on-going work, and the first instance of the course was given in 2016 at Lund University. A new instance of the course is given each fall semester.
 
 ## How to use this repo
 
@@ -19,7 +19,7 @@ This is work in progress; the first instance of the course starts this fall seme
   - [compendium1.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium1.tex&command=pdflatex)  with lectures and assigmnets for the first half of the course, formatted for print
 
   - [compendium2.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium2.tex&command=pdflatex)  with lectures and assigmnets for the second half of the course, formatted for print
-  
+
   - [compendium.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium.tex&command=pdflatex)  with both parts above in one pdf formatted for easy screen readability
 
   - Thanks to [LaTeX.Online](https://latexonline.cc) for their cloud service!
@@ -165,21 +165,6 @@ Here are some other inspiring style guides that illustrate the variety in what d
   * `\begin{Code}` ... `\end{Code}` and `\scalainputlisting{examples/hello-app.scala}` are used for Scala code
   * `\begin{Code}[language=Java]` ... `\end{Code}` and `\javainputlisting{examples/Hi.java}` are used for Java code
   * `\begin{Slide}` and `\end{Slide}` defined in `slides/lecture-notes.cls` and in `compendium/compendium.cls` is used to generate beamer slides and to generate framed text in compendium chapters together with lecture notes that appear after each slide.
-
-#### How to make figures in the compendium
-
-Here is an example of our convention for figures (using the float-package):
-
-        \begin{figure}[H]
-        \centering
-        \includegraphics[width=0.7\textwidth]{../img/pirates/selectws.png}
-        \caption { \emph{Öppna workspace.} Bläddra fram till kursens workspace och klicka OK. }
-        \label{fig:eclipse:ide:open}
-        \end{figure}
-
-Adapt the size of the figure width to make it look good by changing 0.7 above to something appropriate depending on the proportion of height/width of your figure.
-
-Labels are named with the convention `\label{chap:subchap:subsubchap:somegoodname}`
 
 # License
 
