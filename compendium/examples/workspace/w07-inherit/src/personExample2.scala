@@ -1,9 +1,7 @@
 object personExample2 {
 
-  trait Person { val namn: String }
-
+  trait Person     { val namn: String }
   trait Akademiker { val universitet: String }
-
   trait Examinerad { val titel: String }
 
   class Student(val namn: String,
@@ -15,9 +13,7 @@ object personExample2 {
                  val titel: String) extends Person with Akademiker with Examinerad
 
   def main(args: Array[String]): Unit = {
-    var p: Person = new Forskare("Robin Smith", "Lund", "Professor Dr")
-    println(s"${p.namn}")  // staiska typen Person har inget universitet el. titel
-    if (p.isInstanceOf[Akademiker]) println(p.namn)
-    if (p.isInstanceOf[Forskare]) println(p.asInstanceOf[Forskare].titel)
-  } // Ovan görs hellre med match,
-}   // undvik om det går att använda isInstanceOf och asInstanceOf.
+    val f = new Forskare("B. Regnell", "Lunds universitet", "Professor Dr")
+    println(s"${f.titel} ${f.namn}, ${f.universitet}")
+  }
+}

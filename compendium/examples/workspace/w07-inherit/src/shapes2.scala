@@ -7,10 +7,10 @@ object shapes2 {
   }
 
   case class Rectangle(pos: Pt, dxy: Pt) extends Shape with CanDraw { // inmixning
-    override def move(dx: Double, dy: Double): Rectangle =
+    def move(dx: Double, dy: Double): Rectangle =
       Rectangle((pos._1 + dx, pos._2 + dy), dxy)
 
-    override def draw(dw: DrawingWindow): Unit = { // implementation av draw
+    def draw(dw: DrawingWindow): Unit = { // implementation av draw
       dw.penTo(pos)
       dw.drawTo((pos._1 + dxy._1, pos._2))
       dw.drawTo((pos._1 + dxy._1, pos._2 + dxy._2))

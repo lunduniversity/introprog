@@ -17,7 +17,7 @@ object shapes1 {
   }
 
   case class Triangle(pos: Pt, dxy1: Pt, dxy2: Pt) extends Shape {
-    override def move(dx: Double, dy: Double): Triangle =
+    def move(dx: Double, dy: Double): Triangle =
       Triangle((pos._1 + dx, pos._2 + dy), dxy1, dxy2)
   }
 }
