@@ -1,7 +1,7 @@
 object Main extends App {
 
   import StringExtras._
-  val nbrOfReadyLectures = 8   // ***** BUMP when new lectures are ready
+  val nbrOfReadyLectures = 9   // ***** BUMP when new lectures are ready
 
   // Check which dir we are in and if parent to plan then fix prefix
   lazy val here = ".".toPath.toAbsolutePath.getParent
