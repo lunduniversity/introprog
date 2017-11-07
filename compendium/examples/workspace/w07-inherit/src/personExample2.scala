@@ -18,5 +18,6 @@ object personExample2 {
     var p: Person = new Forskare("Robin Smith", "Lund", "Professor Dr")
     println(s"${p.namn}")  // staiska typen Person har inget universitet el. titel
     if (p.isInstanceOf[Akademiker]) println(p.namn)
-  }
-}
+    if (p.isInstanceOf[Forskare]) println(p.asInstanceOf[Forskare].titel)
+  } // Ovan görs hellre med match,
+}   // undvik om det går att använda isInstanceOf och asInstanceOf.
