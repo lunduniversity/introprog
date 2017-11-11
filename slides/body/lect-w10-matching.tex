@@ -41,6 +41,26 @@ Förberedelser:
 
 \end{Slide}
 
+
+\begin{Slide}{Modell av toner och ackord}
+
+\begin{itemize}
+\item En ton (tonhöjd) representeras med ett heltal.
+\begin{Code}
+case class Pitch(nbr: Int)
+\end{Code}
+
+\item[]
+
+\item Ett ackord är en sekvens av toner (tonhöjder).
+\begin{Code}
+case class Chord(ps: Vector[Pitch])
+\end{Code}
+\end{itemize}
+
+\end{Slide}
+
+
 \begin{Slide}{Domänmodell: Toner, oktaver och ackord}\SlideFontSmall
 \begin{itemize}
 \item
@@ -63,6 +83,9 @@ Inom musiken utgår man från 12 olika \Emph{tonklasser} \Eng{pitch classes}.
 \item Ett \Emph{ackord} består av flera toner som spelas tillsammans.
 \end{itemize}
 \end{Slide}
+
+
+
 
 \begin{Slide}{Toner på ett stränginstrument}
 \begin{minipage}{0.5\textwidth}
@@ -116,28 +139,28 @@ Se implementationer här:
 
 \begin{Slide}{Modell av ackord}
 \begin{CodeSmall}
-  case class Chord(ps: Vector[Pitch]) {
+case class Chord(ps: Vector[Pitch]) {
 
-    assert(ps.nonEmpty, "Chord pitch sequence is empty")
+  assert(ps.nonEmpty, "Chord pitch sequence is empty")
 
-    val pitchClasses: Vector[Int]   = ps.map(_.pitchClass).toVector
+  val pitchClasses: Vector[Int]   = ps.map(_.pitchClass).toVector
 
-    def apply(i: Int): Pitch = ps(i)
+  def apply(i: Int): Pitch = ps(i)
 
-    def intervalls(root: Pitch = ps(0)): Vector[Int] = ps.map(_.nbr - root.nbr)
+  def intervalls(root: Pitch = ps(0)): Vector[Int] = ps.map(_.nbr - root.nbr)
 
-    def relativePitchClasses(root: Pitch = ps(0)): Vector[Int] = ???
+  def relativePitchClasses(root: Pitch = ps(0)): Vector[Int] = ???
 
-    def name(root: Pitch = ps(0)): String = ???
+  def name(root: Pitch = ps(0)): String = ???
 
-    override def toString = ps.map(_.name).mkString("Chord(",",",")")
-  }
+  override def toString = ps.map(_.name).mkString("Chord(",",",")")
+}
 
-  object Chord {
-    def apply(xs: String*): Chord = Chord(xs.map(Pitch.apply).toVector)
+object Chord {
+  def apply(xs: String*): Chord = Chord(xs.map(Pitch.apply).toVector)
 
-    def random(pitchNumbers: Seq[Int] = (60 to 72), n: Int = 3): Chord = ???
-  }
+  def random(pitchNumbers: Seq[Int] = (60 to 72), n: Int = 3): Chord = ???
+}
 \end{CodeSmall}
 \SlideFontTiny
 Se implementationer här:
