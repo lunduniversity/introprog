@@ -34,7 +34,7 @@ final class Gurka(val vikt: Int, ärÄtbar: Boolean) {
   Notera typen \code{Any} -- detta följer hur man valde att göra i Java (tyvärr?).
   \pause
   \item
-  En \Alert{typsäkrare} innehållslikhetstest som \Emph{garanterat} bara jämför en gurka med en gurka och inget annat:
+  Ett \Alert{typsäkrare} innehållslikhetstest som \Emph{garanterat} bara jämför en gurka med en gurka och inget annat:
   \begin{Code}
     def ===(other: Gurka): Boolean =
       vikt == other.vikt && ärÄtbar == other.ärÄtbar
@@ -45,20 +45,21 @@ final class Gurka(val vikt: Int, ärÄtbar: Boolean) {
 
 \begin{Slide}{Fördjupning: Recept i 8 steg för arvssäker \code{equals}}\SlideFontTiny
 %fungerar även för klasser som inte är \code{final}:
+\setlength{\leftmargini}{0pt}
 \begin{enumerate}\SlideFontTiny
-\item Inför denna metod: \code{ def canEqual(other: Any): Boolean}\\Observera att typen på parametern ska vara \code{Any}. %\\Om i subklass behövs även \code{override}.
+\item Inför denna metod: \code{ def canEqual(other: Any): Boolean}\\Observera att typen på parametern ska vara \code{Any}. Om subklass behövs \code{override}.
 
-\item Metoden \code{canEqual} ska ge \code{true} om \code{other} är av samma typ som \code{this}, t.ex.: \code{def canEqual(other: Any): Boolean = other.isInstanceOf[Complex]}
+\item Metoden \code{canEqual} ska ge \code{true} om \code{other} är av samma typ som \code{this}, t.ex.: \code{override def canEqual(other: Any): Boolean = other.isInstanceOf[Gurka]}
 
 \item Inför metoden \code{equals} och var noga med att parametern har typen \code{Any}: \\ \code{override def equals(other: Any): Boolean}
 
 \item Implementera metoden \code{equals} med ett match-uttryck som börjar så här:
 \code|other match { ... } |
 
-\item Match-uttrycket ska ha två grenar. Den första grenen ska ha ett typat mönster för den klass som ska jämföras, t.ex.: \\ \code{  case that: Complex =>}
+\item Match-uttrycket ska ha två grenar. Den första grenen ska ha ett typat mönster för den klass som ska jämföras, t.ex.: \\ \code{  case that: Gurka =>}
 
 \item Om du implementerar \code{equals} i den klass som inför \code{canEqual}, börja med: \\ \code{(that canEqual this) &&} \\
-och skapa därefter en fortsättning som baseras på innehållet i klassen, t.ex.: \code{this.re == that.re && this.im == that.im} \\
+och skapa därefter en fortsättning som baseras på innehållet i klassen, t.ex.: \code{this.vikt == that.vikt && this.längd == that.längd} \\
 Om du överskuggar equals vill du nog börja med
  \code{super.equals(that) && }
 
@@ -66,7 +67,7 @@ Om du överskuggar equals vill du nog börja med
 \code{case _ => false}
 
 \item Överskugga \code{hashCode}, t.ex. med tupel av attributvärden och metoden \code{##}: \\
-\code{override def hashCode: Int  = (re, im).## }
+\code{override def hashCode: Int  = (vikt, längd).## }
 
 \end{enumerate}
 \url{http://www.artima.com/pins1ed/object-equality.html}
