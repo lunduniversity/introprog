@@ -39,8 +39,10 @@ object Synth {
   }
 
   def changeInstrumentByName(containing: String, channel: Int = 0): Unit = {
-    val firstInstrumentFound = findInstrumentIndicesByName(containing).head
-    changeInstrument(firstInstrumentFound, channel)
+    findInstrumentIndicesByName(containing).headOption match {
+      case Some(instrument) => changeInstrument(instrument, channel)
+      case None => println("Instrument containing \""+ containing + "\" not found")
+    }
   }
 
   lazy val defaultInstruments = Vector("piano","guit","bass","trump","flute")
