@@ -26,7 +26,11 @@ object Synth {
     val found = sortedInstruments.filter(key =>
       containing.forall(s => key.toLowerCase.contains(s.toLowerCase))
     )
-    found.map(instrIndex).toVector
+
+    if(found.isEmpty)
+      findInstrumentIndicesByName("piano")
+    else
+      found.map(instrIndex).toVector
   }
 
   def changeInstrument(index: Int, channel: Int = 0): Unit = {
@@ -39,7 +43,7 @@ object Synth {
     changeInstrument(firstInstrumentFound, channel)
   }
 
-  lazy val defaultInstruments = Vector("grand","guit","bass","trump","flute")
+  lazy val defaultInstruments = Vector("piano","guit","bass","trump","flute")
 
   def resetInstruments(): Unit = defaultInstruments.zipWithIndex.foreach {
     case (nameContains, channel) => changeInstrumentByName(nameContains, channel)
