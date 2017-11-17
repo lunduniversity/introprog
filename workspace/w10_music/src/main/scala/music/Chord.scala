@@ -10,7 +10,7 @@ case class Chord(ps: Vector[Pitch]) {
   def intervalls(root: Pitch = ps(0)): Vector[Int] = ps.map(_.nbr - root.nbr)
 
   def relativePitchClasses(root: Pitch = ps(0)): Vector[Int] =
-    intervalls(root).map(i => (12*11 + i) % 12).distinct.sorted
+    intervalls(root).map(i => (i%12 + 12) % 12).distinct.sorted
 
   def name(root: Pitch = ps(0)): String = relativePitchClasses(root) match {
     case Vector(0, 4, 7)     => root.pitchClassName
