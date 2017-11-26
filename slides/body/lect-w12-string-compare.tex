@@ -6,7 +6,7 @@
 \Subsection{Jämföra strängar}
 
 \begin{Slide}{Att jämföra strängar lexikografiskt}\SlideFontSmall
-Teckenstandard \href{https://sv.wikipedia.org/wiki/UTF-16}{UTF-16}: Alla stora bokstäver är ''mindre'' än alla små:
+Teckenstandard \href{https://sv.wikipedia.org/wiki/UTF-8}{UTF-8}: Alla stora bokstäver är \href{https://www.youtube.com/watch?v=MijmeoH9LT4}{''mindre''} än alla små: 
 \begin{REPLnonum}
 scala> Array("hej","Hej","gurka").sorted
 \end{REPLnonum}
@@ -15,9 +15,9 @@ scala> Array("hej","Hej","gurka").sorted
 res0: Array[String] = Array(Hej, gurka, hej)\end{REPLnonum}
 \pause
 \begin{itemize}
-\item Antag att vi vill lösa detta problem ''från scratch'': \\ \Emph{att sortera en sekvens med strängar} 
-\item För att göra detta behöver vi lösa dessa delproblemen: 
-\begin{itemize}
+\item Antag att vi vill lösa detta problem ''från scratch'': \\ \Emph{att sortera en sekvens med strängar}
+\item För att göra detta behöver vi lösa dessa delproblemen:
+\begin{itemize}\SlideFontTiny
 \item \Emph{att} \Alert{jämföra strängar}
 \item \Emph{sökning i sekvenser}
 \item \Emph{SWAP} (om på-plats-sortering i förändringsbar sekvens)
@@ -31,7 +31,7 @@ res0: Array[String] = Array(Hej, gurka, hej)\end{REPLnonum}
 \end{Slide}
 
 \begin{Slide}{Jämföra strängar: likhet}\SlideFontSmall
-Antag att vi inte kan göra \code{s1 == s2} utan bara kan jämföra strängar tecken för tecken, 
+Antag att vi inte kan göra \code{s1 == s2} utan bara kan jämföra strängar tecken för tecken,
 t.ex. så här: \code{s1(i) == s2(i)}. Antag också att vi inte har tillgång till annat än metoderna \code{length} och \code{apply} på strängar, samt  \code{while} och variabler av grundtyp. \Emph{Lös problemet att \emph{avgöra om två strängar är lika}.}
 
 \pause
@@ -61,7 +61,7 @@ def isEqual(s1: String, s2: String): Boolean = {
 }
 \end{Code}
 
-\pause Detta är en variant av s.k. \Emph{linjärsökning} där vi söker från början i en sekvens till vi hittar det vi söker efter (här söker vi efter tecken som skiljer sig åt). 
+\pause Detta är en variant av s.k. \Emph{linjärsökning} där vi söker från början i en sekvens till vi hittar det vi söker efter (här söker vi efter tecken som skiljer sig åt).
 \\\pause\vspace{2.5em} Hur ser implementationen i exekverbar Scala ut?
 \end{Slide}
 
@@ -79,14 +79,14 @@ def isEqual(s1: String, s2: String): Boolean = {
   } else false
 }
 \end{Code}
-\pause 
+\pause
 {\SlideFontTiny Fördjupning: jämför ovan med implementationen av \code{String.equals} här:
 \href{http://hg.openjdk.java.net/jdk8u/jdk8u60/jdk/file/935758609767/src/share/classes/java/lang/String.java#l976}{hg.openjdk.java.net/jdk8u/jdk8u60/jdk/file/935758609767/src/share/classes/java} \\ och använd \code{timed} nedan och jämför prestanda med \code{isEqual} ovan.\\
 Obs! Mät många gånger så att JVM:en optimerar din kod.}
 \vspace{-0.25em}\begin{Code}
-def timed[T](block: => T): (Double, T) = { 
+def timed[T](block: => T): (Double, T) = {
   val (t, res) = (System.nanoTime, block)
-  ((System.nanoTime - t) / 1e9, res) 
+  ((System.nanoTime - t) / 1e9, res)
 }
 \end{Code}
 
@@ -103,7 +103,7 @@ scala> val t = s.updated(enMiljon - 1, 'y')
 scala> timed { s == t }
 res42: (Double, Boolean) = (3.76459E-4,false)
 
-scala> timed { isEqual(s,t) } 
+scala> timed { isEqual(s,t) }
 res43: (Double, Boolean) = (3.31597E-4,false)
 \end{REPL}
 Ovan är kört efter ''uppvärmning'' på i7-4790K CPU @ 4.00GHz \\
@@ -131,15 +131,15 @@ Antag också att vi inte har tillgång till annat än metoderna \code{length} oc
 Pseudokod:
 \begin{Code}
 def isLessThan(s1: String, s2: String): Boolean = {
-  
+
   val minLength = /* minimum av längderna på s1 och s2 */
-  
-  def firstDiff(s1: String, s2: String): Int = 
+
+  def firstDiff(s1: String, s2: String): Int =
     /* index för första skillnaden (om de börjar lika: minLength) */
 
   val diffIndex = firstDiff(s1, s2)
   if (diffIndex == minLength) /* s1 är kortare än s2 */
-  else /* tecknet s1(diffIndex) är mindre än tecknet s2(diffIndex) */ 
+  else /* tecknet s1(diffIndex) är mindre än tecknet s2(diffIndex) */
 }
 \end{Code}
 \end{Slide}
@@ -153,8 +153,8 @@ def isLessThan(s1: String, s2: String): Boolean = {
   def firstDiff(s1: String, s2: String): Int = {
     var foundDiff = false
     var i = 0
-    while (!foundDiff && i < minLength) 
-      if (s1(i) != s2(i)) foundDiff = true 
+    while (!foundDiff && i < minLength)
+      if (s1(i) != s2(i)) foundDiff = true
       else i += 1
     i
   }
@@ -172,7 +172,7 @@ def isLessThan(s1: String, s2: String): Boolean = {
 
 \item Dessutom ger operatorerna \code{==} och \code{!=} \emph{inte} innehålls(o)likhet utan \Alert{referens(o)likhet} \code{:(}
 
-\item Istället \Alert{måste} man i Java använda metoderna \code{equals} och \code{compareTo} 
+\item Istället \Alert{måste} man i Java använda metoderna \code{equals} och \code{compareTo}
 \\Dessa fungerar även i Scala eftersom strängar i Scala och Java är av samma typ, nämligen \code{java.lang.String}.
 \pause
 \item \code{s1.compareTo(s2)} ger ett heltal som är:
@@ -202,23 +202,10 @@ Vad skriver detta Java-program ut?
 \javainputlisting{../compendium/examples/StringEqTest.java}
 \pause
 \begin{REPL}
-$ javac StringEqTest.java 
-$ java StringEqTest 
+$ javac StringEqTest.java
+$ java StringEqTest
 false
 true
 0
 \end{REPL}
 \end{Slide}
-
-
-
-
-
-
-
-
-
-
-
-
-
