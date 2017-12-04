@@ -96,7 +96,7 @@ trait Plan {
       | översikt strängmetoder, StringBuilder,
       | ordning, inbyggda sökmetoder, find, indexOf, indexWhere,
       | inbyggda sorteringsmetoder, sorted, sortWith, sortBy,
-      | variabelt argumentantal,
+      | repeterade parametrar,
       """.stripTrim),
 
     Module("Mängder, tabeller",
