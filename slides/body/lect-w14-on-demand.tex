@@ -3,6 +3,91 @@
 
 %%%
 
+
+%http://tex.stackexchange.com/questions/135393/how-to-draw-bar-pie-chart
+\definecolor{c1}{RGB}{220,57,18}
+\definecolor{c2}{RGB}{255,153,0}
+\definecolor{c3}{RGB}{102,140,217}
+\definecolor{c4}{RGB}{16,150,24}
+\definecolor{c5}{RGB}{153,0,153}
+
+
+
+
+\makeatletter
+
+\tikzstyle{chart}=[
+    legend label/.style={font={\scriptsize},anchor=west,align=left},
+    legend box/.style={rectangle, draw, minimum size=5pt},
+    axis/.style={black,semithick,->},
+    axis label/.style={anchor=east,font={\tiny}},
+]
+
+\tikzstyle{bar chart}=[
+    chart,
+    bar width/.code={
+        \pgfmathparse{##1/2}
+        \global\let\bar@w\pgfmathresult
+    },
+    bar/.style={very thick, draw=white},
+    bar label/.style={font={\bf\small},anchor=north},
+    bar value/.style={font={\footnotesize}},
+    bar width=.75,
+]
+
+\tikzstyle{pie chart}=[
+    chart,
+    slice/.style={line cap=round, line join=round, very thick,draw=white},
+    pie title/.style={font={\bf}},
+    slice type/.style 2 args={
+        ##1/.style={fill=##2},
+        values of ##1/.style={}
+    }
+]
+
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+
+\newcommand{\pie}[3][]{
+    \begin{scope}[#1]
+    \pgfmathsetmacro{\curA}{90}
+    \pgfmathsetmacro{\r}{1}
+    \def\c{(0,0)}
+    \node[pie title] at (90:1.3) {#2};
+    \foreach \v/\s in{#3}{
+        \pgfmathsetmacro{\deltaA}{\v/100*360}
+        \pgfmathsetmacro{\nextA}{\curA + \deltaA}
+        \pgfmathsetmacro{\midA}{(\curA+\nextA)/2}
+
+        \path[slice,\s] \c
+            -- +(\curA:\r)
+            arc (\curA:\nextA:\r)
+            -- cycle;
+        \pgfmathsetmacro{\d}{max((\deltaA * -(.5/50) + 1) , .5)}
+
+        \begin{pgfonlayer}{foreground}
+        \path \c -- node[pos=\d,pie values,values of \s]{$\v\%$} +(\midA:\r);
+        \end{pgfonlayer}
+
+        \global\let\curA\nextA
+    }
+    \end{scope}
+}
+
+\newcommand{\legend}[2][]{
+    \begin{scope}[#1]
+    \path
+        \foreach \n/\s in {#2}
+            {
+                  ++(0,-10pt) node[\s,legend box] {} +(5pt,0) node[legend label] {\n}
+            }
+    ;
+    \end{scope}
+}
+
+
 \ifkompendium\else
 
 \Subsection{Repetition, uppsamling, kursutvärdering}
@@ -136,18 +221,35 @@ Vårt utbildninguppdrag vid institutionen för Datavetenskap:
 \end{Slide}
 
 
-\begin{Slide}{Varför Scala?}
-Lätt för nybörjare och intressant för icke-nybörjare:
+\begin{Slide}{Förstaspråk på LTH}%\small
+Historiska förstaspråk på LTH för D-are:
+\begin{table}
+\begin{tabular}{l l}
+(Algol) & (förhistoria\footnote{Scalas uppfinnare Prof. Martin Odersky vid EPFL i Schweiz har skapat stora delar av Java-kompilatorn. Han var doktorand hos Prof. Niklaus Wirth, som ligger bakom Algol, Pascal, Modula etc.}, programmering med hålkort) \\
+ Pascal & 1982, CSE program started\\
+ Simula &  1990\\ % , first OO language; Invented in Scandianiva
+  Java &  1997 \\
+\Alert{Scala} &  2016 \\
+\end{tabular}
+\end{table}
+
+\end{Slide}
+
+
+\begin{Slide}{Varför Scala? -- ur pedagogisk synvinkel}
+\Emph{Lätt} för nybörjare och \Alert{intressant} för icke-nybörjare:
 \begin{itemize}
-\item enhetlig semantik; alla värden är objekt
-\item koncis och uttrycksfull semantik
-\item interaktivt lärande med Scala REPL
+\item Enhetlig semantik; alla värden är objekt
+\item Koncis syntax: drunknar inte i ''bokstavssoppa''
+\item Uttrycksfull semantik: kan demonstrera många koncept
+\item Statisk typning hjälper till med förståelse av abstraktioner
+\item Statisk typning gör att kompilatorn kan hitta buggar tidigt
+\item Interaktivt lärande med Scala REPL
 \item Multi-paradigm, pragmatiskt: \\ imperativt, objekt-orienterat, funktionellt
-\item Rik semantik: kan demonstrera många koncept
-\item Modernt språk som utvecklas med forskningen
+\item Modernt språk som utvecklas med forskning och praxis
 \item Språket och verktygen är fri öppen källkod
 \end{itemize}
-\pause Några risker som vi identifierade som inte visat sig vara några problem: omogna verktyg, brist på kursmaterial för nybörjare, kritisk massa i communityn, industriell spridning.
+\pause {\SlideFontSmall Några \Alert{risker} men som vi identifierade men som \Emph{inte} visat sig vara problem: verktygsmognad, tillgång till kursmaterial för nybörjare, kritisk massa i communityn, industriell acceptans och relevans.}
 %\begin{itemize}\fontsize{9}{10}\selectfont
 %\item Tools not becoming mature fast enough?
 %\item Lack of beginner-oriented teaching material?
@@ -155,6 +257,131 @@ Lätt för nybörjare och intressant för icke-nybörjare:
 %\item Critical mass of community?
 %\end{itemize}
 \end{Slide}
+
+\begin{Slide}{Varför inte Python? -- ur pedagogisk synvinkel}\SlideFontSmall
+Det finns många fördelar med Python som även gäller Scala, t.ex. enhetligt och kraftfullt standardbibliotek och koncis syntax, men också många nackdelar som inte Scala har:
+\begin{itemize}
+\item Indenteringssyntaxen gör det svårare att förstå koncepten block, lokala variabler och namnrymd, speciellt precis i början av lärandet, och speciellt vid nästlade strukturer.
+\item Avsaknad av typinformation vid abstraktion och buggrättning - utan t.ex. parametertyper blandar nybörjaren ihop t.ex. om argument är samlingar eller enskilt element och andra onödiga trösklar där kompilatorn ej kan hjälpa i Python medan i statiskt typat språk blir det kompileringsfel.
+\item Att (t.ex. felstavade) variabler kan införas utan deklaration medför mycket svårhittade överskuggningsbuggar även för icke-nybörjaren.
+\item Att objektmodellen är så pass långt från "riktig" objektorientering gör att de möjliga lärandemålen kring objektorientering begränsas starkt.
+  \end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Betyg, D-are: 2015 Java; 2016 Scala}
+
+  2015, januari, 91st
+
+  \pgfplotstableread{
+  betyg antal
+  0 12
+  3 04
+  4 26
+  5 49
+  }{\mydataFifteen}
+
+  \begin{minipage}{0.4\textwidth}
+  \hspace*{-0.0cm}
+  \begin{tikzpicture}[scale=0.8, every node/.style={scale=0.8}]
+      \begin{axis}[
+              ybar,
+              bar width=.5cm,
+              width=\textwidth,
+              height=0.9\textwidth,
+              symbolic x coords={0,3,4,5},
+              xtick=data,
+              nodes near coords,
+              nodes near coords align={vertical},
+              ymin=0,ymax=50,
+              ylabel={Antal},
+              xlabel={Betyg},
+          ]
+          \addplot table[x=betyg,y=antal]{\mydataFifteen};
+      \end{axis}
+  \end{tikzpicture}
+  \end{minipage}%
+  \begin{minipage}{0.3\textwidth}
+  \vspace*{-1cm}\hspace*{0.5cm}
+  \begin{tikzpicture}
+  [
+      pie chart,
+      slice type={NOLL}{c1},
+      slice type={TRE}{c4},
+      slice type={FYRA}{c2},
+      slice type={FEM}{c3},
+      pie values/.style={font={\small}},
+      scale=1.3, every node/.style={scale=0.8}
+  ]
+      \pie{}{13/NOLL,4/TRE,29/FYRA,54/FEM}
+      \legend[shift={(1.5cm,1cm)}]{{0}/NOLL,{3}/TRE, {4}/FYRA, {5}/FEM}
+  \end{tikzpicture}
+  \end{minipage}%
+
+
+\vspace*{1em}
+
+2016, januari, 86st
+\pgfplotstableread{
+betyg antal
+0 17
+3 12
+4 29
+5 28
+}{\mydataSixteen}
+
+\begin{minipage}{0.4\textwidth}
+\hspace*{-0.0cm}
+\begin{tikzpicture}[scale=0.8, every node/.style={scale=0.8}]
+    \begin{axis}[
+            ybar,
+            bar width=.5cm,
+            width=\textwidth,
+            height=0.9\textwidth,
+            symbolic x coords={0,3,4,5},
+            xtick=data,
+            nodes near coords,
+            nodes near coords align={vertical},
+            ymin=0,ymax=50,
+            ylabel={Antal},
+            xlabel={Betyg},
+        ]
+        \addplot table[x=betyg,y=antal]{\mydataSixteen};
+    \end{axis}
+\end{tikzpicture}
+\end{minipage}%
+\begin{minipage}{0.3\textwidth}
+\vspace*{-1cm}\hspace*{0.5cm}
+\begin{tikzpicture}
+[
+    pie chart,
+    slice type={NOLL}{c1},
+    slice type={TRE}{c4},
+    slice type={FYRA}{c2},
+    slice type={FEM}{c3},
+    pie values/.style={font={\small}},
+    scale=1.3, every node/.style={scale=0.8}
+]
+    \pie{}{20/NOLL,14/TRE,34/FYRA,33/FEM}
+    \legend[shift={(1.5cm,1cm)}]{{0}/NOLL,{3}/TRE, {4}/FYRA, {5}/FEM}
+\end{tikzpicture}
+\end{minipage}%
+
+
+\end{Slide}
+
+
+
+
+\begin{Slide}{Betygens värde i fördjupningskursen 2015:\\EDA016 Java => EDAA01 Java}
+\href{https://jsfiddle.net/dyb0kpvh/}{\includegraphics[width=1.05\textwidth]{../about/course-experience-first-year/img/2015}}
+\end{Slide}
+
+\begin{Slide}{Betygens värde i fördjupningskursen 2016:\\EDAA45 Scala => EDAA01 Java}
+\href{https://jsfiddle.net/wa7fr8po/}{\includegraphics[width=1.05\textwidth]{../about/course-experience-first-year/img/2016}}
+\end{Slide}
+
+
 
 
 \Subsection{Utblick: Framtiden för Scala?}
@@ -170,7 +397,7 @@ Mest älskade språk på \code{stackoverflow} (2016)
 Jobbmarknaden för Scala växer globalt och i Sverige:
 
 \begin{minipage}{0.48\textwidth}
-\href{www.indeed.com/joptrends/q-scala.html}{www.indeed.com/joptrends/q-scala.html}\\
+\href{www.indeed.com/jobtrends/q-scala.html}{www.indeed.com/jobtrends/q-scala.html}\\
 \vspace{1em}
 \includegraphics[width=1.0\textwidth]{../img/w14/scala-jobs-indeed-2017.png}~~
 \end{minipage}
@@ -183,17 +410,40 @@ Jobbmarknaden för Scala växer globalt och i Sverige:
 \end{Slide}
 
 
+
+
 \begin{Slide}{Hur ser framtiden ut för Scala?}\SlideFontSmall
 
-Framtiden för \Emph{Scala}:
 \begin{itemize}
+\item Scala 2.11 industriell spridning, stabilitet, prestanda
 \item Scala 2.12 bättre bytekod med lambda i JVM Java 8
-\item Scala 2.13 bättre standardbibliotek
-\item Ny kompilator: \Emph{dotty}; Nytt format ''över'' bytekod: \Emph{Tasty}
-\item Scala.JS: dela kod+kompetens mellan backend och frontend
-\item Scala native: kör Scala kompilerat direkt ''på metallen''
-\item Scala-ramverk för stordata, massiv parallellism, AI, ...
+\item Scala 2.13 bättre standardbibliotek, \code{scala.collection}
+\item Scala 3.0: stora tekniksprång + verktyg för migrering
+\item Ny experimentkompilator för Scala ''dotty'': \url{http://dotty.epfl.ch/}
+\begin{itemize}\SlideFontTiny
+  \item Formell bas för Scala: DOT (en algebra för dependent object types)
+  \item Städa upp språket (skippa vissa saker, t.ex. xml-litteraler)
+  \item Prova nya språkkonstruktioner, t.ex. union types, implicit functions
+  \item Nytt format för kodträd som kompletterar bytekod: \Emph{Tasty}\\
 \end{itemize}
+\item Flera ''backends'' som breddar Scalas användningsområde:
+\begin{itemize}\SlideFontTiny
+  \item \href{http://www.scala-js.org/}{scala-js.org}: dela kod+kompetens mellan backend och frontend
+  \item \href{http://scala-native.org}{scala-native.org}: kör Scala kompilerat direkt ''på metallen''
+  \item \href{http://scala-android.org}{scala-android.org}: skapa appar för mobilen
+\end{itemize}
+\item Några viktiga Scala-ramverk för stordata, massiv parallellism, AI:
+\begin{itemize}\SlideFontTiny
+  \item \href{https://akka.io/}{Akka} ramverk för skalbara parallella arkitekturer
+  \item \href{https://spark.apache.org/}{Apache Spark} för parallell behandling av stordata i molnet, för AI, ML ...
+  \item \href{https://www.playframework.com/}{Play framework} för moderna, skalbara webbappar
+\end{itemize}
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Roadmap för Scala 3.0}
+  \includegraphics[width=0.9\textwidth]{../img/w14/scala-dotty-roadmap-odersky.jpeg}
 \end{Slide}
 
 \Subsection{Överraskning: LUFOSS}
@@ -206,6 +456,16 @@ Framtiden för \Emph{Scala}:
     \item Hederspris
   \end{itemize}
   \item Gästföreläsning hederspristagare
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Hur håller jag mig uppdaterad med Scalas utveckling?}
+\begin{itemize}
+  \item \url{http://docs.scala-lang.org/sips}
+  \item \url{http://scalatimes.com/}
+  \item \url{}
+  \item \url{}
 \end{itemize}
 \end{Slide}
 
