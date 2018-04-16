@@ -82,7 +82,6 @@ public class Hangman {
         int bad = 0;
         boolean won = false;
         while (bad < hangman.length && !won){
-            System.out.println(renderHangman(bad));
             System.out.print("\nFelgissningar: " + bad + "\t");
             System.out.println(hideSecret(secret, found));
             char guess = makeGuess();
@@ -90,6 +89,7 @@ public class Hangman {
                 found.add(guess);
             } else {
               bad++;
+              System.out.println(renderHangman(bad));
             }
             won = foundAll(secret, found);
         }
