@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Scanner;
 
 public class Hangman {
-    private static String[] hangman = new String[]{
+    private String[] hangman = new String[]{
         " ======  ",
         " |/   |  ",
         " |    O  ",
@@ -15,7 +15,7 @@ public class Hangman {
         " |       ",
         " ==========================   RIP  :("};
             
-    private static String renderHangman(int n){
+    private String renderHangman(int n){
         StringBuilder result = new StringBuilder();    
         for (int i = 0; i < n; i++){
             result.append(hangman[i]);
@@ -26,7 +26,7 @@ public class Hangman {
         return result.toString();
     }
     
-    private static String hideSecret(String secret, 
+    private String hideSecret(String secret, 
                                      Set<Character> found){
         String result = "";
         for (int i = 0; i < secret.length(); i++) {
@@ -39,7 +39,7 @@ public class Hangman {
         return result;
     }
     
-    private static boolean foundAll(String secret, 
+    private boolean foundAll(String secret, 
                                     Set<Character> found){
         boolean foundMissing = false;
         int i = 0;
@@ -50,7 +50,7 @@ public class Hangman {
         return !foundMissing;
     }
     
-    private static char makeGuess(){
+    private char makeGuess(){
         Scanner scan = new Scanner(System.in);
         String guess = "";
         do {
@@ -77,7 +77,7 @@ public class Hangman {
         return result;
     }
 
-    public static void play(String secret){
+    public void play(String secret){
         Set<Character> found = new HashSet<Character>();
         int bad = 0;
         boolean won = false;
@@ -103,13 +103,14 @@ public class Hangman {
     }
 
     public static void main(String[] args){
+        Hangman hangman = new Hangman();
         if (args.length == 0) {
             String runeberg = 
                 "http://runeberg.org/words/ord.ortsnamn.posten";
-            play(download(runeberg, "ISO-8859-1"));
+            hangman.play(Hangman.download(runeberg, "ISO-8859-1"));
         } else {
             int rnd = (int) (Math.random() * args.length);
-            play(args[rnd]);
+            hangman.play(args[rnd]);
         }
     }
 }
