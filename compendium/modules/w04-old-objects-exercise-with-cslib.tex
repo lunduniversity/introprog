@@ -1,0 +1,1055 @@
+%!TEX encoding = UTF-8 Unicode
+%!TEX root = ../exercises.tex
+
+\ifPreSolution
+
+
+\Exercise{\ExeWeekFOUR}\label{exe:W04}
+\begin{Goals}
+\input{modules/w04-objects-exercise-goals.tex}
+\end{Goals}
+
+\begin{Preparations}
+\item \StudyTheory{04}
+\item Läs om hur man fixar buggar i appendix \ref{appendix:debug}.
+\end{Preparations}
+
+\else
+
+\ExerciseSolution{\ExeWeekFOUR}
+
+\fi
+
+
+
+\BasicTasks %%%%%%%%%%%%%%%%
+
+
+\WHAT{Para ihop begrepp med beskrivning.}
+
+\QUESTBEGIN
+
+\Task \what
+
+\vspace{1em}\noindent Koppla varje begrepp med den (förenklade) beskrivning som passar bäst:
+
+\begin{ConceptConnections}
+\input{generated/quiz-w04-concepts-taskrows-generated.tex}
+\end{ConceptConnections}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\begin{ConceptConnections}
+\input{generated/quiz-w04-concepts-solurows-generated.tex}
+\end{ConceptConnections}
+
+\QUESTEND
+
+
+%%%% Översikt av strukturen i grundövningarna:
+%%%% tupler
+%%%% objekt
+%%%% ladda ner cs-lib och använd classpath till REPL
+%%%% cslib.window.SimpleWindow
+%%%% java.awt.Color
+%%%% paket
+
+
+\WHAT{Nästlade singelobjekt, import, synlighet och punktnotation.}
+
+\QUESTBEGIN
+
+\Task \what~I den tvådimensionella Underjorden bor Mullvaden och Masken. Masken har gömt sig för Mullvaden och befinner sig på en plats långt bort. Masken har även gjort delar av sin position osynlig för omvärlden:
+
+\begin{Code}
+object Underjorden {
+  var x = 0
+  var y = 1
+
+  object Mullvaden {
+    var x = Underjorden.x + 10
+    var y = Underjorden.y + 9
+  }
+
+  object Masken {
+    private var x = Mullvaden.x
+    var y = Mullvaden.y + 190
+    def ärMullvadsmat: Boolean = ???
+  }
+}
+\end{Code}
+
+\Subtask Skapa ovan kod i filen \code{Underjorden.scala} med en editor och implementera predikatet  \code{ärMullvadsmat} så att det blir sant om mullvadens koordinater är samma som maskens.
+
+\Subtask Testa livet i Underjorden genom att klistra in din modul i REPL. Importera Underjordens medlemmar med understreck så att du ser Mullvaden och Masken. Flytta med hjälp av tilldelning Maskens y-koordinat så att Masken hamnar på samma plats som Mullvaden. Kontrollera att predikatet \code{ärMullvadsmat} fungerar som tänkt.
+
+ \Subtask Importera därefter allt i Mullvaden och sedan allt i Masken och tilldela \code{x} ett nytt värde enligt raderna 1--3 nedan. Vad ger uttrycken på raderna 4--6 nedan för värde? Förklara vad som händer i termer av namnöverskuggning och synlighet?
+
+\begin{REPL}
+scala> import Mullvaden._
+scala> import Masken._
+scala> x = -1
+scala> Mullvaden.x
+scala> Masken.x
+scala> Underjorden.x
+\end{REPL}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved
+
+\begin{Code}
+object Underjorden {
+  var x = 0
+  var y = 1
+
+  object Mullvaden {
+    var x = Underjorden.x + 10
+    var y = Underjorden.y + 9
+  }
+
+  object Masken {
+    private var x = Mullvaden.x
+    var y = Mullvaden.y + 190
+    def ärMullvadsmat: Boolean = x == Mullvaden.x && y == Mullvaden.y
+  }
+}
+\end{Code}
+
+\SubtaskSolved
+
+\begin{REPL}
+scala> :paste underjorden.scala
+scala> import Underjorden._
+scala> Masken.ärMullvadsmat
+res0: Boolean = false
+scala> Masken.y = Mullvaden.y
+scala> Masken.ärMullvadsmat
+res1: Boolean = true
+\end{REPL}
+
+
+\SubtaskSolved
+
+\begin{REPL}
+scala> import Mullvaden._
+scala> import Masken._
+scala> x = -1
+scala> Mullvaden.x
+res2: Int = -1
+
+scala> Masken.x
+<console>:46: error:
+  variable x in object Masken cannot be accessed
+  in object Underjorden.Masken
+
+scala> Underjorden.x
+res3: Int = 0
+\end{REPL}
+
+\noindent \emph{Förklaring:} När importen av Maskens alla synliga medlemmar sker kommer de som ej är privata att överskugga andra medlemmar med samma namn. Det är Mullvadens \code{x}-variabel som tilldelas \code{-1} eftersom Maskens \code{x} är privat och ej syns utåt. Underjordens medlemmar blir överskuggade av Maskens \code{y} och Mullvadens \code{x} men man kan komma åt dem genom att använda punktnotation.
+
+\QUESTEND
+
+
+
+
+\WHAT{Tupler.}
+
+\QUESTBEGIN
+
+\Task \what~ Tupler sammanför flera olika värden i ett oföränderligt objekt. Nedan används tupler för att representera en 3D-punkt i underjorden med koordinater \code{(x, y, z)} av typen \code{(Int, Int, Double)}, där $z$-koordinaten anger hur djupt ner i underjorden punkten ligger. På en hemlig plats finns uppgången till överjorden.
+
+\begin{Code}
+object Underjorden3D {
+  private val hemlis = ("uppgången till överjorden", (0, 0, 0.0))
+
+  object Mullvaden {
+    var pos = (5, 3, math.random * 10 + 1)
+    def djup  = ???
+  }
+
+  object Masken {
+    private var pos = (0, 0, 10.0)
+    def ärMullvadsmat: Boolean = ???
+    def ärRaktUnderUppgången: Boolean = ???
+  }
+}
+\end{Code}
+
+\Subtask Funktionen \code{djup} ska ge $z$-koordinaten för Mullvaden. Vilken typ har \code{djup}?
+
+\Subtask Vilken typ har \code{hemlis}?
+
+\Subtask Skriv in koden för \code{Underjorden3D} i en editor och implementera de saknade delarna. Predikatet \code{ärMullvadsmat} ska vara sant om Masken finns på samma plats som Mullvaden. Predikatet  \code{ärRaktUnderUppgången} ska vara sant om $x$- och $y$-koordinaterna sammanfaller med den hemliga uppgången till överjorden. Testa så att dina implementationer fungerar i REPL.
+
+\Subtask En tupel med $n$ värden kallas $n$-tupel. Om man betraktar det tomma värdet  \code{()} som en tupel, vad kan man då kalla detta värde?
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved \code{djup} har typen \code{Double}.
+
+\SubtaskSolved \code{hemlis} har typen \code{(String, (Int, Int, Double))}.
+
+
+\SubtaskSolved
+\begin{Code}
+object Underjorden3D {
+  private val hemlis = ("uppgången till överjorden", (3, 4, 0.0))
+
+  object Mullvaden {
+    var pos = (5, 3, math.random * 10 + 1)
+
+    def djup: Double  = pos._3
+  }
+
+  object Masken {
+    private var pos = (0, 0, 10.0)
+
+    def ärMullvadsmat: Boolean = pos == Mullvaden.pos
+
+    def ärRaktUnderUppgången: Boolean =
+      pos._1 == hemlis._2._1 && pos._2 == hemlis._2._2
+  }
+}
+\end{Code}
+
+\SubtaskSolved Noll-tupeln.
+
+\QUESTEND
+
+
+\WHAT{Jar-fil. Classpath. Paket.}
+
+\QUESTBEGIN
+
+\Task \what~En jar-fil används för att samla färdigkompilerade program, kod, dokumentation, resursfiler, etc, i en enda fil. En jar-fil är komprimerad på samma sätt som en zip-fil.
+
+\Subtask På veckans laboration ska vi använda klassen \code{SimpleWindow} som finns i paketet \code{windows} som ligger i paketet \code{cslib}. Vilka argument ska ges när man skapar ett fönster?
+
+\emph{Tips:}  Läs dokumentationen av \code{SimpleWindow} här:  \url{http://cs.lth.se/pgk/api/}
+ Leta efter beskrivningen av klassens konstruktor.
+
+\Subtask Ladda ner \texttt{cslib.jar} via länken \url{http://cs.lth.se/pgk/cslib} och lägg jar-filen i samma katalog som ditt Scala-program. Detta kan du göra i Linux med \code{wget} så här:
+
+\begin{REPLnonum}
+> wget -O cslib.jar http://cs.lth.se/pgk/cslib
+\end{REPLnonum}
+
+\Subtask Testa \code{SimpleWindow} i REPL enligt nedan. Med argumentet \code{-cp cslib.jar}, där optionen \code{cp} är en förkortning av \emph{classpath}, gör du koden i \code{cslib.jar} synlig i REPL.  Skriv kod som ritar en kvadrat med sidan $100$ och som har sitt vänstra, övre hörn i punkten $(100,100)$, genom att fortsätta på nedan påbörjade kod:
+
+\begin{REPL}
+> scala -cp cslib.jar
+Welcome to Scala 2.12.3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_144).
+Type in expressions for evaluation. Or try :help.
+
+scala> val w = new cslib.window.SimpleWindow(400,300,"HEJ")
+scala> w.moveTo(100, 100)
+scala> w.lineTo(200, 100)
+scala> // fortsätt så att en hel kvadrat ritas
+\end{REPL}
+
+\Subtask Skriv nedan program med en editor i filen \code{hello-simplewindow.scala} och fyll i de saknade delarna så att en kvadrat ritas ut.
+
+\begin{Code}
+package hello
+
+object Main {
+  val w = new cslib.window.SimpleWindow(400,300,"HEJ")
+
+  def square(topLeft: (Int, Int))(side: Int): Unit = {
+    w.moveTo( topLeft._1,        topLeft._2        )
+    w.lineTo( topLeft._1 + side, topLeft._2        )
+    w.lineTo( topLeft._1 + side, topLeft._2 + side )
+    ???
+  }
+
+  def main(args: Array[String]): Unit = {
+    println("Rita kvadrat:")
+    square(300,100)(50)
+  }
+}
+\end{Code}
+
+\noindent
+När du kompilerar ditt program, behöver du lägga \code{cslib.jar} till classpath.
+När du sedan ska köra ditt program behöver du förutom  \code{cslib.jar} också lägga aktuell katalog till classpath. Om man vill ha flera saker på classpath behövs en lista med sökvägar inom citationstecken och ett kolon som separator\footnote{Kolon används i Linux och macOS, medan Windows använder semikolon.}, till exempel \code{"sökväg1:sökväg2:sökväg3"}.
+Aktuell katalog (där katalogen \code{hello} med dina kompilerade byte-kodfiler finns) anges med en punkt.
+
+Använd följande kommando (om Windows använd semikolon i stället för kolon):
+\begin{REPL}
+> atom hello-simplewindow.scala  // skriv koden ovan
+> scalac -cp cslib.jar hello-simplewindow.scala
+> ls hello
+> scala -cp "cslib.jar:." hello.Main
+\end{REPL}
+\noindent Du ska nu få upp ett fönster med en liten kvadrat till höger i fönstret.
+
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved När man skapar ett fönster ska tre argument ges enligt dokumentationen:
+\begin{itemize}[nolistsep,noitemsep]
+  \item \code{width : Int   } fönstrets bredd
+  \item \code{height: Int   } fönstrets höjd
+  \item \code{title : String} fönstrets titel
+\end{itemize}
+
+
+\SubtaskSolved
+\begin{REPL}
+> scala -cp cslib.jar
+scala> val w = new cslib.window.SimpleWindow(400,300,"HEJ")
+scala> w.moveTo(100, 100)
+scala> w.lineTo(200, 100)
+scala> w.lineTo(200, 200)
+scala> w.lineTo(100, 200)
+scala> w.lineTo(100, 100)
+\end{REPL}
+
+\SubtaskSolved
+\begin{Code}
+package hello
+
+object Main {
+  val w = new cslib.window.SimpleWindow(400,300,"HEJ")
+
+  def square(topLeft: (Int, Int))(side: Int): Unit = {
+    w.moveTo( topLeft._1,        topLeft._2        )
+    w.lineTo( topLeft._1 + side, topLeft._2        )
+    w.lineTo( topLeft._1 + side, topLeft._2 + side )
+    w.lineTo( topLeft._1       , topLeft._2 + side )
+    w.lineTo( topLeft._1       , topLeft._2        )
+  }
+
+  def main(args: Array[String]): Unit = {
+    println("Rita kvadrat:")
+    square(300,100)(50)
+  }
+}
+\end{Code}
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Färg.}
+
+\QUESTBEGIN
+
+\Task \what~ Det finns många sätt att beskriva färger.
+I naturligt språk har vi olika namn på färgerna, till exempel \emph{vitt}, \emph{rosa} och \emph{magenta}.
+I bildminnen i datorer är det vanligt att beskriva färger som en blandning av \emph{rött}, \emph{grönt} och \emph{blått} i det så kallade RGB-systemet.
+
+På veckans labb ska vi använda \code{SimpleWindow}, som beskriver RGB-färger med klassen \code{java.awt.Color}.
+Det finns några fördefinierade färger i \code{java.awt.Color}, till exempel \code{java.awt.Color.black} för svart och \code{java.awt.Color.green} för grönt.
+Andra färger kan skapas genom att ange mängden rött, grönt och blått.
+Den tre parametrarna till \code{new java.awt.Color(r, g, b)} anger hur mycket \emph{rött}, \emph{grönt} respektive \emph{blått} som färgen ska innehålla, och mängderna ska vara i intervallet 0--255.
+Färgen $(153, 102, 51)$ innebär ganska mycket rött, lite mindre grönt och ännu mindre blått och det upplevs som brunt.
+
+
+\Subtask
+På laborationen behöver vi dessa tre brunaktiga färger och vill samla dem i ett singelobjekt som heter \code{Color} enligt nedan.
+\begin{Code}
+object Color {
+  val mole   = new java.awt.Color( 51,  51,   0)
+  val soil   = new java.awt.Color(153, 102,  51)
+  val tunnel = new java.awt.Color(204, 153, 102)
+}
+\end{Code}
+\noindent Men vi vill helst göra import på \code{java.awt.Color} för att kunna använda klassens namn utan att upprepa hela sökvägen, trots att namnet krockar med namnet på vårt singelobjekt. Skriv om koden ovan med hjälp av namnbyte vid import så att färgerna kan skapas med \code{new JColor(...)}. Gör importen lokalt i singelobjektet \code{Color}.
+
+
+
+\noindent\begin{minipage}{0.82\textwidth}
+\Subtask Använd koden nedan för att rita tre kvadrater i REPL. Proceduren \code{rak} ska rita en horisontell linje från punkten \code{p} med längden \code{d}. Proceduren \code{fyll} ska, med många streck, rita en fylld kvadrat med övre vänstra hörnet i punkten \code{p} och sidan \code{s}. Det som ritas ut ska se ut som bilden till höger.
+\end{minipage}
+\hfill\begin{minipage}{0.23\textwidth}
+\includegraphics[width=\textwidth]{../img/fyll-rak.png}
+\end{minipage}
+
+\begin{REPL}
+> scala -cp cslib.jar
+scala> val w = new cslib.window.SimpleWindow(400,300,"Tre nyanser av brunt")
+scala> type Pt = (Int, Int)
+scala> def rak(p:Pt)(d:Int) = {w.moveTo(p._1, p._2);w.lineTo(???)}
+scala> def fyll(p:Pt)(s:Int) = for (i <- 0 to s){rak(???)(s)}
+
+scala> :paste
+object Color {
+ ???
+}
+
+scala> w.setLineColor(soil)
+scala> fyll(100,100)(75)
+
+scala> w.setLineColor(tunnel)
+scala> fyll(100,100)(50)
+
+scala> w.setLineColor(mole)
+scala> fyll(150,150)(25)
+\end{REPL}
+\Subtask Vid vilka anrop ovan utnyttjas att tupelparenteserna kan skippas?
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved
+\begin{Code}
+object Color {
+  import java.awt.{Color => JColor}
+
+  val mole   = new JColor( 51,  51,   0)
+  val soil   = new JColor(153, 102,  51)
+  val tunnel = new JColor(204, 153, 102)
+}
+\end{Code}
+
+\SubtaskSolved
+
+\begin{Code}
+def rak(p: Pt)(d: Int)  = {
+  w.moveTo(p._1    , p._2)
+  w.lineTo(p._1 + d, p._2)
+}
+def fyll(p: Pt)(s: Int) = for (i <- 0 to s) rak(p._1, p._2 + i)(s)
+\end{Code}
+
+\SubtaskSolved Vid anropen av \code{rak} och \code{fyll} utnyttjas att man kan skippa tupelparenteserna om ett tupelargument är ensamt i sin parameterlista.
+
+
+
+\QUESTEND
+
+
+
+\WHAT{Lat initialisering.}
+
+\QUESTBEGIN
+
+\Task \what~ Med \code{lazy val} kan man fördröja initialiseringen.
+
+\Subtask Vad ger raderna 2 och 3 nedan för resultat?
+\begin{REPL}
+scala> lazy val z = { println("nu!"); Array.fill(1e1.toInt)(0)}
+scala> z
+scala> z
+\end{REPL}
+
+\Subtask Prova ovan igen men med så stor array att minnet blir fullt. När sker allokeringen?
+
+\Subtask Singelobjekt är lata. Initialiseringsordningen kan bli fel.
+\begin{Code}
+object test {
+  object zzz    { val a = { println("nu!"); 42} }
+  object buggig { val a = b ; val b = 42        }
+  object funkar { lazy val a = b; val b = 42    }
+
+}
+\end{Code}
+\noindent Klistra in modulen \code{test} i REPL. Vad ger kompilatorn för varning? Skrivs  \code{"nu!"} ut?
+
+\Subtask Vad händer i REPL om du refererar de tre olika \code{a}-variablerna?
+
+\Subtask Vad är det för skillnad på \code{ lazy val a = uttryck } och \code{ def b = uttryck }?
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved \code{"nu!"} skrivs bara ut första gången \code{z} används.
+\begin{REPL}
+scala> z
+nu!
+res19: Array[Int] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+scala> z
+res20: Array[Int] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\end{REPL}
+
+\SubtaskSolved Allokeringen av arrayen sker första gången \code{z} används (och inte vid deklarationen).
+\begin{REPL}
+scala> lazy val z = { println("nu!"); Array.fill(1e9.toInt)(0)}
+z: Array[Int] = <lazy>
+
+scala> z
+nu!
+java.lang.OutOfMemoryError: Java heap space
+\end{REPL}
+
+\SubtaskSolved Nej, utskriften av \code{"nu!"} sker först när singelobjektet \code{zzz} används för första gången. Varningen lyder:
+\begin{REPL}
+warning: Reference to uninitialized value b
+         object buggig { val a = b ; val b = 42}
+\end{REPL}
+\noindent Detta är en varning om att det kan bli problem på grund av initialiseringsordningen. Vi borde lägga initialiseringen av \code{b} före \code{a} eller göra \code{a} till en \code{lazy val}.
+
+\SubtaskSolved
+\begin{REPL}
+scala> import test._
+import test._
+
+scala> zzz.a      // först när vi använder zzz skrivs "nu!"
+nu!               // detta skedde *inte* när vi importerade test
+res0: Int = 42
+
+scala> buggig.a   // a blir 0 eftersom b inte är initialiserad
+res1: Int = 0
+
+scala> funkar.a   // med lazy val unviker vi problemet
+res2: Int = 42
+
+
+scala> zzz.a     // andra gången är init redan gjort och ingen "nu!"
+res3: Int = 42
+\end{REPL}
+
+\SubtaskSolved \code{lazy val a = uttryck } innebär att initialiseringsuttrycket evalueras \emph{en} gång, men evalueringen skjuts på framtiden tills det eventuellt händer att namnet \code{a} används, medan \code{ def b = uttryck } innebär att funktionskroppens uttryck evalueras \emph{varje gång} namnet \code{b} (eventuellt) används.
+
+
+\QUESTEND
+
+
+
+
+
+\clearpage
+
+\ExtraTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\WHAT{Skapa moduler med hjälp av singelobjekt.}
+
+\QUESTBEGIN
+
+\Task  \what~
+
+\Subtask Undersök i REPL vad uttrycket \code{"päronisglass".split('i')} har för värde.
+
+\Subtask Vad skrivs ut om du med \code{Test()} anropar \code{apply}-metoden nedan?
+\begin{Code}
+object stringUtils {
+  object split {
+    def sentences(s: String): Array[String] = s.split('.')
+    def words(s: String):     Array[String] = s.split(' ').filter(_.nonEmpty)
+  }
+
+  object count {
+    def letters(s: String):   Int = s.count(_.isLetter)
+    def words(s: String):     Int = split.words(s).size
+    def sentences(s: String): Int = split.sentences(s).size
+  }
+
+  object statistics {
+    var history = ""
+    def printFreq(s: String = history): Unit = {
+      println("\n--- FREKVENSANALYS AV:\n" + s)
+      println("# bokstäver: " + count.letters(s))
+      println("# ord      : " + count.words(s))
+      println("# meningar : " + count.sentences(s))
+      history = (history + " " + s).trim
+    }
+  }
+}
+
+object Test {
+  import stringUtils._
+  def apply(): Unit = {
+    val s1 = "Fem     myror är fler än fyra elefanter. Ät gurka."
+    val s2 = "Galaxer i mina braxer. Tomat är gott. Päronsplitt."
+    statistics.printFreq(s1)
+    statistics.printFreq(s2)
+    statistics.printFreq()
+  }
+}
+\end{Code}
+
+\Subtask Vilket av objekten i modulen \code{stringUtils} har tillstånd? Är det förändringsbart?
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+\SubtaskSolved
+\begin{REPLnonum}
+scala> "päronisglass".split('i')
+res0: Array[String] = Array(päron, sglass)
+\end{REPLnonum}
+
+\SubtaskSolved
+\begin{REPLnonum}
+scala> Test()
+--- FREKVENSANALYS AV:
+Fem     myror är fler än fyra elefanter. Ät gurka.
+# bokstäver: 36
+# ord      : 9
+# meningar : 2
+
+--- FREKVENSANALYS AV:
+Galaxer i mina braxer. Tomat är gott. Päronsplitt.
+# bokstäver: 40
+# ord      : 8
+# meningar : 3
+
+--- FREKVENSANALYS AV:
+Fem     myror är fler än fyra elefanter. Ät gurka. Galaxer i mina braxer. Tomat
+är gott. Päronsplitt.
+# bokstäver: 76
+# ord      : 17
+# meningar : 5
+\end{REPLnonum}
+
+\SubtaskSolved  Objektet \code{statistics} har ett förändringsbart tillstånd i variabeln \code{history}. Tillståndet ändras vid anrop av \code{printFreq}.
+
+\QUESTEND
+
+
+\WHAT{Tupler som parametrar.}
+
+\QUESTBEGIN
+
+\Task  \what~ Implementera nedan olika varianter av beräkning av avståndet mellan två punkter. \emph{Tips:} Använd \code{math.hypot}.
+\begin{Code}
+def distxy(x1: Int, y1: Int, x2: Int, y2: Int): Double = ???
+def distpt(p1: (Int, Int), p2: (Int, Int)):     Double = ???
+def distp(p1: (Int, Int))(p2: (Int, Int)):      Double = ???
+
+\end{Code}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\begin{Code}
+def distxy(x1: Int, y1: Int, x2: Int, y2: Int): Double =
+  hypot(x1 - x2, y1 - y2)
+
+def distpt(p1: (Int, Int), p2: (Int, Int)): Double =
+  hypot(p1._1 - p2._1, p2._2 - p2._2)
+
+def distp(p1: (Int, Int))(p2: (Int, Int)): Double =
+  hypot(p1._1 - p2._1, p2._2 - p2._2)
+\end{Code}
+
+\QUESTEND
+
+
+\WHAT{Tupler som funktionsresultat.}
+
+\QUESTBEGIN
+
+\Task \what~Tupler möjliggör att en funktion kan returnera flera olika värden på samma gång. Implementera funktionen statistics nedan. Den ska returnera en 3-tupel som innehåller antalet element i \code{xs}, medelvärdet av elementen, samt en 2-tupel med variationsvidden $(min, max)$. Ange returtypen explicit i din implementation. Testa så att den fungerar i REPL. \emph{Tips:} Du har nytta av metoderna \code{size}, \code{sum}, \code{min} och \code{max} som fungerar på nummersekvenser.
+
+\begin{Code}
+/** Returns the size, the mean, and the range of xs */
+def statistics(xs: Vector[Double]) = ???
+\end{Code}
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\begin{Code}
+def statistics(xs: Vector[Double]): (Int, Double, (Double, Double)) =
+  (xs.size, xs.sum / xs.size, (xs.min, xs.max))
+\end{Code}
+
+\begin{REPL}
+scala> statistics(Vector(0, 2.5, 5))
+res10: (Int, Double, (Double, Double)) = (3,2.5,(0.0,5.0))
+\end{REPL}
+
+\QUESTEND
+
+
+
+
+\WHAT{Skapa moduler med hjälp av paket.}
+
+\QUESTBEGIN
+
+\Task \what~
+
+\Subtask Koden nedan ligger i filen \code{paket.scala}. Rita en bild av katalogstrukturen som skapas i aktuellt bibliotek när nedan kod kompileras med: \code{scalac paket.scala}
+\begin{Code}
+package gurka.tomat.banan
+
+package p1 {
+  package p11 {
+    object hello {
+      def hello = println("Hej paket p1.p11!")
+    }
+  }
+  package p12 {
+    object hello {
+      def hello = println("Hej paket p1.p12!")
+    }
+  }
+}
+
+package p2 {
+  package p21 {
+    object hello {
+      def hello = println("Hej paket p2.p21!")
+    }
+  }
+}
+
+object Main {
+  def main(args: Array[String]): Unit = {
+    import p1._
+    p11.hello.hello
+    p12.hello.hello
+    import p2.{p21 => apelsin}
+    apelsin.hello.hello
+  }
+}
+\end{Code}
+
+\Subtask Vad skrivs ut när programmet körs?
+
+\Subtask Får paket ha tillståndsvariabler utan att de placeras inuti ett singelobjekt eller en klass?
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved
+
+\begin{REPL}
+> atom paket.scala
+> scalac paket.scala
+> find . -type d         # linuxkommando som listar alla subkataloger
+.
+./gurka
+./gurka/tomat
+./gurka/tomat/banan
+./gurka/tomat/banan/p1
+./gurka/tomat/banan/p1/p11
+./gurka/tomat/banan/p1/p12
+./gurka/tomat/banan/p2
+./gurka/tomat/banan/p2/p21
+\end{REPL}
+
+\SubtaskSolved
+\begin{REPL}
+> scala gurka.tomat.banan.Main
+Hej paket p1.p11!
+Hej paket p1.p12!
+Hej paket p2.p21!
+\end{REPL}
+
+\SubtaskSolved Nej, paket får varken ha variabler eller funktioner på toppnivå. Men det kan man i Scala lösa ändå med hjälp av ett s.k. \code{package object}. \\
+ \url{https://stackoverflow.com/questions/3400734}
+
+\QUESTEND
+
+
+
+
+
+\AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+\WHAT{Värdeanrop och namnanrop.}
+
+\QUESTBEGIN
+
+\Task  \what~Normalt sker i Scala (och i Java) s.k. \emph{värdeanrop} vid anrop av funktioner, vilket innebär att argumentuttrycket evalueras \emph{före} bindningen till parameternamnet sker.
+
+Man kan också i Scala (men inte i Java) med syntaxen \code{=>} framför parametertypen deklarera att \emph{namnanrop} ska ske, vilket innebär att evalueringen av argumentuttrycket \emph{fördröjs} och sker \emph{varje gång} namnet används i metodkroppen.
+
+Deklarera nedan funktioner i REPL.
+
+\begin{Code}
+def snark: Int = { print("snark "); Thread.sleep(1000); 42 }
+def callByValue(x: Int):   Int = x + x
+def callByName(x: => Int): Int = x + x
+lazy val zzz = snark
+\end{Code}
+
+\noindent Förklara vad som händer när nedan uttryck evalueras.
+
+\Subtask \code{snark + snark}
+
+\Subtask \code{callByValue(snark)}
+
+\Subtask \code{callByName(snark)}
+
+\Subtask \code{callByName(zzz)}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved Vid varje anrop av \code{snark} sker en utskrift och en fördröjnig innan $42$ returneras, \code{42 + 42 == 84} vilket blir värdet av uttrycket.
+\begin{REPL}
+scala> snark + snark
+snark snark res1: Int = 84
+\end{REPL}
+
+\SubtaskSolved Uttrycket \code{snark} evalueras direkt vid anropet och parametern \code{x} binds till värdet $42$ och i funktionskroppen beräknas $42+42$. Utskriften sker bara en gång.
+\begin{REPL}
+callByValue(snark)
+snark res2: Int = 84
+\end{REPL}
+
+\SubtaskSolved Evalueringen av uttrycket \code{snark} fördröjs tills varje förekomst av parametern \code{x} i funktionskroppen. Utskriften sker två gånger.
+\begin{REPL}
+callByName(snark)
+snark snark res3: Int = 84
+\end{REPL}
+
+\SubtaskSolved Evalueringen av uttrycket \code{zzz} fördröjs tills varje förekomst av parametern \code{x} i funktionskroppen. Utskriften sker en gång eftersom \code{val}-variabler tilldelas sitt värde en gång för alla vid den fördröjda initialiseringen.
+\begin{REPL}
+callByName(zzz)
+snark res4: Int = 84
+\end{REPL}
+
+\QUESTEND
+
+
+
+
+\WHAT{Skapa din egen kontrollstruktur med hjälp av namnanrop.}
+
+\QUESTBEGIN
+
+\Task  \what~
+
+\Subtask Deklarera denna procedur i REPL:
+\begin{Code}
+def görDettaTvåGånger(b: => Unit): Unit = { b; b }
+\end{Code}
+
+\Subtask Anropa \code{görDettaTvåGånger} med ett block som parameter. Blocket ska innehålla en utskriftssats. Förklara vad som händer.
+
+\Subtask Använd namnanrop i kombination med en uppdelad parameterlista och skapa din egen kontrollstruktur enligt nedan.\footnote{Det är så loopen \code{upprepa} i Kojo är definierad.}
+\begin{Code}
+def upprepa(n: Int)(block: => Unit): Unit = {
+   var i = 0
+   while (i < n) { ??? }
+}
+\end{Code}
+
+\Subtask
+Testa din kontrollstruktur i REPL. Låt upprepa 100 gånger att ett slumptal mellan 1 och 6 dras och sedan skrivs ut.
+
+\Subtask Fördelen med \code{upprepa} är att den är koncis och lättanvänd. Men den är inte lika lätt att använda om man behöver tillgång till en loopvariabel. Implementera därför nedan kontrollstruktur.
+
+\begin{Code}
+def repeat(n: Int)(p: Int => Unit): Unit = {
+   var i = 0
+   while (i < n) { ??? }
+}
+\end{Code}
+
+\Subtask Använd \code{repeat} för att 100 gånger skriva ut loopvariabeln och ett slumpdecimaltal mellan 0 och 1.
+
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved Blocket är ett uttryck som har värdet \code{(): Unit}. Evalueringen av blocket sker där namnet \code{b} förekommer i procedurkroppen, vilket är två gånger.
+\begin{REPL}
+scala> görDettaTvåGånger { println("goddag") }
+goddag
+goddag
+\end{REPL}
+
+\SubtaskSolved
+\begin{Code}
+def upprepa(n: Int)(block: => Unit): Unit = {
+   var i = 0
+   while (i < n) {block; i += 1}
+}
+\end{Code}
+
+\SubtaskSolved
+\begin{Code}
+upprepa(100){
+  val tärningskast = (math.random * 6 + 1).toInt
+  print(tärningskast + " ")
+}
+\end{Code}
+
+
+\SubtaskSolved
+\begin{Code}
+def repeat(n: Int)(p: Int => Unit): Unit = {
+   var i = 0
+   while (i < n) {p(i); i += 1}
+}
+\end{Code}
+
+\SubtaskSolved
+\begin{Code}
+repeat(100){ i =>
+  print(i + ": ")
+  println(math.random)
+}
+\end{Code}
+
+
+
+\QUESTEND
+
+
+
+\WHAT{Använda färdigt paket: färgväljaren i \code{swing}.}
+
+\QUESTBEGIN
+
+\Task\Uberkurs \what~På laborationen har du nytta av att kunna blanda egna färger så att du kan rita klarblå himmel och frodigt gräs. Du kan skapa en färgväljare med hjälp av swing-paketet enligt nedan. Vad händer om du efter nedan skriver \code{f.setVisible(false)}?
+
+\begin{REPL}
+scala> val f = new javax.swing.JFrame         // skapa osynligt fönster
+scala> val c = new javax.swing.JColorChooser  // skapa färgväljare
+scala> f.add(c)              // lägg färgväljaren i fönstret
+scala> f.setVisible(true)    // visa fönstret; välj färg i RGB-fliken
+scala> c.getColor            // undersök RGB-värdena
+scala> c.getColor.getAlpha   // alpha styr genomskinlighet
+\end{REPL}
+
+
+\SOLUTION
+
+\TaskSolved \what~\\När du skriver \code{f.setVisible(false)} så stängs färgfäljarfönstret.
+
+\QUESTEND
+
+
+\WHAT{Använda färdigt paket: dialoger med \code{swing}.}
+
+\QUESTBEGIN
+
+\Task\Uberkurs \what~
+
+\Subtask Använd proceduren \code{msg} nedan för att meddela att det är \code{"Game over!"}.
+\begin{REPL}
+scala> import javax.swing.JOptionPane
+scala> def msg(s: String) = JOptionPane.showMessageDialog(null, s)
+\end{REPL}
+
+\Subtask Använd funktionen \code{input} för att ta reda på användarens namn. Vad är returtypen? Vad händer om man klickar \emph{Cancel}?
+\begin{REPL}
+scala> def input(msg: String) = JOptionPane.showInputDialog(null, msg)
+\end{REPL}
+
+\Subtask Använd funktionen \code{choice} för att be användaren välja mellan sten, sax och påse. Vad är returtypen?
+\begin{REPL}
+scala> import JOptionPane.{showOptionDialog => showOpt}
+scala> def choice(msg: String, opt: Vector[String], title: String = "?") =
+  showOpt(null, msg, title, 0, 0, null, opt.toArray[Object], opt(0))
+\end{REPL}
+
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved
+\begin{REPL}
+scala> msg("Game over!")
+\end{REPL}
+
+\SubtaskSolved Funktionen \code{input} returnerar en sträng som blir \code{null} om man klickar \emph{Cancel}.
+\begin{REPL}
+scala> val name = input("Vad heter du?")
+name: String = Oddput Kulkodare
+\end{REPL}
+
+\SubtaskSolved Funktionen \code{choice} returnerar ett heltal som är det index i argumentet till parametern \code{opt} som användaren valde.
+\begin{REPL}
+scala> choice("Vad väljer du?", Vector("Sten","Sax","Påse"))
+res0: Int = 2
+\end{REPL}
+
+\QUESTEND
+
+
+
+
+\WHAT{Skapa din egen \code{jar}-fil.}
+
+\QUESTBEGIN
+
+\Task\Uberkurs  \what~
+
+\Subtask Skriv kommandot \code{jar} i terminalen och undersök vad det finns för optioner. Se speciellt ''Example 1.'' i hjälputskriften. Vilket kommando ska du använda för att packa ihop flera filer i en enda jar-fil? Notera att man (konstigt nog) inte ska ha streck före optionerna när man använder kommandot \code{jar} enligt exempel 1.
+
+\Subtask Skapa med en editor i filen \code{hello.scala} ett enkelt program som skriver ut \texttt{"Hello package!"} eller liknande. Koden ska ligga i paketet \code{hello} och innehålla ett object \code{Main} med en \code{main}-metod.
+
+\Subtask Skriv kommando i terminalen som förpackar koden i en jar-fil med namnet \code{my.jar} och kör igång REPL med jar-filen på classpath. Anropa din \code{main}-funktion i REPL genom att ange sökvägen \textit{\texttt{paketnamn.objektnamn.metodnamn}} med en tom array som argument.
+
+\Subtask Med vilket kommando kan du köra det kompilerade och jar-förpackade programmet direkt i terminalen (alltså utan att dra igång REPL)?
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved
+
+\texttt{jar cvf \textit{<namn på skapad jar-fil> <namn på det som ska packas>}}
+
+\SubtaskSolved
+\begin{Code}
+package hello
+
+object Main {
+  def main(args: Array[String]): Unit = println("Hello package!")
+}
+\end{Code}
+
+\SubtaskSolved
+\begin{REPL}
+> scalac hello.scala
+> jar cvf my.jar hello
+> ls
+> scala -cp my.jar
+scala> hello.Main.main(Array())
+\end{REPL}
+
+\SubtaskSolved
+\begin{REPL}
+> scala -cp my.jar hello.Main
+\end{REPL}
+
+\QUESTEND
+
+
+
+
+\WHAT{Hur stor är JDK8?}
+
+\QUESTBEGIN
+
+\Task\Uberkurs \what~ Ta med hjälp av \url{http://stackoverflow.com/} reda på hur många klasser och paket det finns i Java-plattformen JDK8.
+
+\SOLUTION
+
+\TaskSolved \what~Med JDK8-plattformen kommer 4240 färdiga klasser, som är organiserade i 217 olika paket. Se Stackoverflow: \\\url{http://stackoverflow.com/questions/3112882}
+
+\QUESTEND
