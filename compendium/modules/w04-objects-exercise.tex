@@ -225,217 +225,6 @@ object Underjorden3D {
 \QUESTEND
 
 
-\WHAT{Jar-fil. Classpath. Paket.}
-
-\QUESTBEGIN
-
-\Task \what~En jar-fil används för att samla färdigkompilerade program, kod, dokumentation, resursfiler, etc, i en enda fil. En jar-fil är komprimerad på samma sätt som en zip-fil.
-
-\Subtask På veckans laboration ska vi använda klassen \code{SimpleWindow} som finns i paketet \code{windows} som ligger i paketet \code{cslib}. Vilka argument ska ges när man skapar ett fönster?
-
-\emph{Tips:}  Läs dokumentationen av \code{SimpleWindow} här:  \url{http://cs.lth.se/pgk/api/}
- Leta efter beskrivningen av klassens konstruktor.
-
-\Subtask Ladda ner \texttt{cslib.jar} via länken \url{http://cs.lth.se/pgk/cslib} och lägg jar-filen i samma katalog som ditt Scala-program. Detta kan du göra i Linux med \code{wget} så här:
-
-\begin{REPLnonum}
-> wget -O cslib.jar http://cs.lth.se/pgk/cslib
-\end{REPLnonum}
-
-\Subtask Testa \code{SimpleWindow} i REPL enligt nedan. Med argumentet \code{-cp cslib.jar}, där optionen \code{cp} är en förkortning av \emph{classpath}, gör du koden i \code{cslib.jar} synlig i REPL.  Skriv kod som ritar en kvadrat med sidan $100$ och som har sitt vänstra, övre hörn i punkten $(100,100)$, genom att fortsätta på nedan påbörjade kod:
-
-\begin{REPL}
-> scala -cp cslib.jar
-Welcome to Scala 2.12.3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_144).
-Type in expressions for evaluation. Or try :help.
-
-scala> val w = new cslib.window.SimpleWindow(400,300,"HEJ")
-scala> w.moveTo(100, 100)
-scala> w.lineTo(200, 100)
-scala> // fortsätt så att en hel kvadrat ritas
-\end{REPL}
-
-\Subtask Skriv nedan program med en editor i filen \code{hello-simplewindow.scala} och fyll i de saknade delarna så att en kvadrat ritas ut.
-
-\begin{Code}
-package hello
-
-object Main {
-  val w = new cslib.window.SimpleWindow(400,300,"HEJ")
-
-  def square(topLeft: (Int, Int))(side: Int): Unit = {
-    w.moveTo( topLeft._1,        topLeft._2        )
-    w.lineTo( topLeft._1 + side, topLeft._2        )
-    w.lineTo( topLeft._1 + side, topLeft._2 + side )
-    ???
-  }
-
-  def main(args: Array[String]): Unit = {
-    println("Rita kvadrat:")
-    square(300,100)(50)
-  }
-}
-\end{Code}
-
-\noindent
-När du kompilerar ditt program, behöver du lägga \code{cslib.jar} till classpath.
-När du sedan ska köra ditt program behöver du förutom  \code{cslib.jar} också lägga aktuell katalog till classpath. Om man vill ha flera saker på classpath behövs en lista med sökvägar inom citationstecken och ett kolon som separator\footnote{Kolon används i Linux och macOS, medan Windows använder semikolon.}, till exempel \code{"sökväg1:sökväg2:sökväg3"}.
-Aktuell katalog (där katalogen \code{hello} med dina kompilerade byte-kodfiler finns) anges med en punkt.
-
-Använd följande kommando (om Windows använd semikolon i stället för kolon):
-\begin{REPL}
-> atom hello-simplewindow.scala  // skriv koden ovan
-> scalac -cp cslib.jar hello-simplewindow.scala
-> ls hello
-> scala -cp "cslib.jar:." hello.Main
-\end{REPL}
-\noindent Du ska nu få upp ett fönster med en liten kvadrat till höger i fönstret.
-
-
-\SOLUTION
-
-\TaskSolved \what~
-
-\SubtaskSolved När man skapar ett fönster ska tre argument ges enligt dokumentationen:
-\begin{itemize}[nolistsep,noitemsep]
-  \item \code{width : Int   } fönstrets bredd
-  \item \code{height: Int   } fönstrets höjd
-  \item \code{title : String} fönstrets titel
-\end{itemize}
-
-
-\SubtaskSolved
-\begin{REPL}
-> scala -cp cslib.jar
-scala> val w = new cslib.window.SimpleWindow(400,300,"HEJ")
-scala> w.moveTo(100, 100)
-scala> w.lineTo(200, 100)
-scala> w.lineTo(200, 200)
-scala> w.lineTo(100, 200)
-scala> w.lineTo(100, 100)
-\end{REPL}
-
-\SubtaskSolved
-\begin{Code}
-package hello
-
-object Main {
-  val w = new cslib.window.SimpleWindow(400,300,"HEJ")
-
-  def square(topLeft: (Int, Int))(side: Int): Unit = {
-    w.moveTo( topLeft._1,        topLeft._2        )
-    w.lineTo( topLeft._1 + side, topLeft._2        )
-    w.lineTo( topLeft._1 + side, topLeft._2 + side )
-    w.lineTo( topLeft._1       , topLeft._2 + side )
-    w.lineTo( topLeft._1       , topLeft._2        )
-  }
-
-  def main(args: Array[String]): Unit = {
-    println("Rita kvadrat:")
-    square(300,100)(50)
-  }
-}
-\end{Code}
-
-
-\QUESTEND
-
-
-
-
-
-
-\WHAT{Färg.}
-
-\QUESTBEGIN
-
-\Task \what~ Det finns många sätt att beskriva färger.
-I naturligt språk har vi olika namn på färgerna, till exempel \emph{vitt}, \emph{rosa} och \emph{magenta}.
-I bildminnen i datorer är det vanligt att beskriva färger som en blandning av \emph{rött}, \emph{grönt} och \emph{blått} i det så kallade RGB-systemet.
-
-På veckans labb ska vi använda \code{SimpleWindow}, som beskriver RGB-färger med klassen \code{java.awt.Color}.
-Det finns några fördefinierade färger i \code{java.awt.Color}, till exempel \code{java.awt.Color.black} för svart och \code{java.awt.Color.green} för grönt.
-Andra färger kan skapas genom att ange mängden rött, grönt och blått.
-Den tre parametrarna till \code{new java.awt.Color(r, g, b)} anger hur mycket \emph{rött}, \emph{grönt} respektive \emph{blått} som färgen ska innehålla, och mängderna ska vara i intervallet 0--255.
-Färgen $(153, 102, 51)$ innebär ganska mycket rött, lite mindre grönt och ännu mindre blått och det upplevs som brunt.
-
-
-\Subtask
-På laborationen behöver vi dessa tre brunaktiga färger och vill samla dem i ett singelobjekt som heter \code{Color} enligt nedan.
-\begin{Code}
-object Color {
-  val mole   = new java.awt.Color( 51,  51,   0)
-  val soil   = new java.awt.Color(153, 102,  51)
-  val tunnel = new java.awt.Color(204, 153, 102)
-}
-\end{Code}
-\noindent Men vi vill helst göra import på \code{java.awt.Color} för att kunna använda klassens namn utan att upprepa hela sökvägen, trots att namnet krockar med namnet på vårt singelobjekt. Skriv om koden ovan med hjälp av namnbyte vid import så att färgerna kan skapas med \code{new JColor(...)}. Gör importen lokalt i singelobjektet \code{Color}.
-
-
-
-\noindent\begin{minipage}{0.82\textwidth}
-\Subtask Använd koden nedan för att rita tre kvadrater i REPL. Proceduren \code{rak} ska rita en horisontell linje från punkten \code{p} med längden \code{d}. Proceduren \code{fyll} ska, med många streck, rita en fylld kvadrat med övre vänstra hörnet i punkten \code{p} och sidan \code{s}. Det som ritas ut ska se ut som bilden till höger.
-\end{minipage}
-\hfill\begin{minipage}{0.23\textwidth}
-\includegraphics[width=\textwidth]{../img/fyll-rak.png}
-\end{minipage}
-
-\begin{REPL}
-> scala -cp cslib.jar
-scala> val w = new cslib.window.SimpleWindow(400,300,"Tre nyanser av brunt")
-scala> type Pt = (Int, Int)
-scala> def rak(p:Pt)(d:Int) = {w.moveTo(p._1, p._2);w.lineTo(???)}
-scala> def fyll(p:Pt)(s:Int) = for (i <- 0 to s){rak(???)(s)}
-
-scala> :paste
-object Color {
- ???
-}
-
-scala> w.setLineColor(soil)
-scala> fyll(100,100)(75)
-
-scala> w.setLineColor(tunnel)
-scala> fyll(100,100)(50)
-
-scala> w.setLineColor(mole)
-scala> fyll(150,150)(25)
-\end{REPL}
-\Subtask Vid vilka anrop ovan utnyttjas att tupelparenteserna kan skippas?
-
-\SOLUTION
-
-\TaskSolved \what~
-
-\SubtaskSolved
-\begin{Code}
-object Color {
-  import java.awt.{Color => JColor}
-
-  val mole   = new JColor( 51,  51,   0)
-  val soil   = new JColor(153, 102,  51)
-  val tunnel = new JColor(204, 153, 102)
-}
-\end{Code}
-
-\SubtaskSolved
-
-\begin{Code}
-def rak(p: Pt)(d: Int)  = {
-  w.moveTo(p._1    , p._2)
-  w.lineTo(p._1 + d, p._2)
-}
-def fyll(p: Pt)(s: Int) = for (i <- 0 to s) rak(p._1, p._2 + i)(s)
-\end{Code}
-
-\SubtaskSolved Vid anropen av \code{rak} och \code{fyll} utnyttjas att man kan skippa tupelparenteserna om ett tupelargument är ensamt i sin parameterlista.
-
-
-
-\QUESTEND
-
-
-
 \WHAT{Lat initialisering.}
 
 \QUESTBEGIN
@@ -457,7 +246,6 @@ object test {
   object zzz    { val a = { println("nu!"); 42} }
   object buggig { val a = b ; val b = 42        }
   object funkar { lazy val a = b; val b = 42    }
-
 }
 \end{Code}
 \noindent Klistra in modulen \code{test} i REPL. Vad ger kompilatorn för varning? Skrivs  \code{"nu!"} ut?
@@ -524,6 +312,346 @@ res3: Int = 42
 
 
 
+\WHAT{Jar-fil. Classpath. Paket.}
+
+\QUESTBEGIN
+
+\Task \what~En jar-fil används för att samla färdigkompilerade program, kod, dokumentation, resursfiler, etc, i en enda fil. En jar-fil är komprimerad på samma sätt som en zip-fil. Kursens använder vi ett paket med namnet \code{introprog} som ligger i en jarfilen som lämpligen ges namnet \LibJar~ där numret anger version och ändras vid varje ny utgåva.
+
+\Subtask På veckans laboration ska vi använda klassen \code{PixelWindow} som finns i paketet \code{introprog}. Vilka parametrar har klassen \code{PixelWindow} och vilka defaultargument finns? Hur skriver man om man vill skapa en \code{PixelWindow}-instans?
+
+\emph{Tips:}  Läs dokumentationen av \code{PixelWindow} här: \url{http://cs.lth.se/pgk/api/}
+och leta efter beskrivningen av klassens konstruktor.
+
+\Subtask Ladda ner senaste utgåvan av jar-filen med \code{introprog}-paketet här:
+\\\url{https://github.com/lunduniversity/introprog-scalalib/releases}
+\\ Spara filen med namnet  \code{introprog-X.Y.Z.jar} på lämplig plats där \code{X.Y.Z} byts ut mot senaste versionsnumret. Du kan ladda ner filen direkt i terminalen med kommandot \code{wget} så här, där optionen \code{-O} med stort O anger utfilens namn:
+\begin{REPLnonum}
+> wget -O introprog-X.Y.Z.jar http://cs.lth.se/pgk/lib
+\end{REPLnonum}
+Byt \code{X.Y.Z} mot senaste versionsnumret.
+
+\Subtask Testa \code{PixelWindow} i REPL enligt nedan. Använd optionen \texttt{-cp} med argumentet \LibJar. Optionen \code{cp} är en förkortning av \emph{classpath} och med den gör du så att koden i \LibJar~blir synlig i REPL.  Skriv kod som ritar en kvadrat med sidan $100$ och som har sitt vänstra, övre hörn i punkten $(100,100)$, genom att fortsätta på nedan påbörjade kod:
+
+\begin{REPL}
+> scala -cp introprog-X.Y.Z.jar
+Welcome to Scala 2.12.3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_144).
+Type in expressions for evaluation. Or try :help.
+
+scala> val w = new introprog.PixelWindow(400,300,"HEJ")
+scala> w.line(100, 100, 200, 100)
+scala> w.line(200, 100, 200, 200)
+scala> // fortsätt så att en hel kvadrat ritas
+\end{REPL}
+
+\Subtask Studera dokumentationen av metoden \code{line} i \code{PixelWindow} här:\\ \url{http://cs.lth.se/pgk/api/}
+\\ Skriv sedan nedan program med en editor i filen \code{hello-window.scala} och fyll i de saknade delarna så att en röd kvadrat ritas ut.
+
+\begin{Code}
+package hello
+
+object Main {
+  val w = new introprog.PixelWindow(400,300,"HEJ")
+
+  var color = java.awt.Color.red
+
+  /** Kvadrat med övre hörnet i punkten p och storleken side pixlar. */
+  def square(p: (Int, Int))(side: Int): Unit = if (side > 0) {
+    val d = side - 1  // side == 1 ger en kvadrat som är en enda pixel
+    w.line(p._1,     p._2,     p._1 + d, p._2,     color)
+    w.line(p._1 + d, p._2,     p._1 + d, p._2 + d, color)
+    w.line(p._1 + d, p._2 + d, p._1,     p._2 + d, color)
+    ???
+  }
+
+  def main(args: Array[String]): Unit = {
+    println("Rita kvadrat:")
+    square(300,100)(50)
+  }
+}
+\end{Code}
+
+\noindent
+När du kompilerar ditt program, behöver du lägga \LibJar~till classpath.
+När du sedan ska köra ditt program behöver du förutom  \LibJar~också lägga \emph{aktuell} katalog till classpath. Om man vill ha flera saker på classpath behövs en lista med sökvägar inom citationstecken och ett kolon som separator\footnote{Kolon används i Linux och macOS, medan Windows använder semikolon.}, till exempel \code{"sökväg1:sökväg2:sökväg3"}.
+Aktuell katalog (där katalogen \code{hello} med dina kompilerade byte-kodfiler finns) anges med en punkt.
+
+Använd följande kommando (om du kör Windows så använd semikolon i stället för kolon):
+\begin{REPL}
+> atom hello-window.scala  // skriv koden ovan
+> scalac -cp introprog-X.Y.Z.jar hello-window.scala
+> ls hello
+> scala -cp "introprog-X.Y.Z.jar:." hello.Main
+\end{REPL}
+\noindent But ut \code{X.Y.Z} mot aktuell version. Du ska nu få upp ett fönster med en liten, röd kvadrat till höger i fönstret.
+
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved Enligt dokumentationen har \code{PixelWindow}-klassen dessa parametrar:
+%new PixelWindow(width: Int = 800, height: Int = 640, title: String = "PixelWindow", background: Color = java.awt.Color.black, foreground: Color = java.awt.Color.green)
+\begin{itemize}[nolistsep,noitemsep]
+  \item \code{width : Int} anger fönstrets bredd, defaultargument \code{800}
+  \item \code{height: Int} anger fönstrets höjd, defaultargument \code{640}
+  \item \code{title : String} anger fönstrets titel, defaultargument \code{"PixelWindow"}
+  \item \code{background: Color} anger bakgrundsfärg, defaultargument \code{java.awt.Color.black}
+  \item \code{foreground: Color} anger bakgrundsfärg, defaultargument \code{java.awt.Color.green}
+\end{itemize}
+Man kan skapa nya fönsterinstanser till exempel så här:
+\begin{Code}
+val w1 = new introprog.PixelWindow()
+val w2 = new introprog.PixelWindow(100, 200, "Mitt fina nya fönster")
+\end{Code}
+
+\SubtaskSolved
+\begin{REPL}
+> scala -cp cslib.jar
+scala> val w = new cslib.window.SimpleWindow(400,300,"HEJ")
+scala> w.moveTo(100, 100)
+scala> w.lineTo(200, 100)
+scala> w.lineTo(200, 200)
+scala> w.lineTo(100, 200)
+scala> w.lineTo(100, 100)
+\end{REPL}
+
+\SubtaskSolved
+\begin{Code}
+package hello
+
+object Main {
+  val w = new cslib.window.SimpleWindow(400,300,"HEJ")
+
+  def square(topLeft: (Int, Int))(side: Int): Unit = {
+    w.moveTo( topLeft._1,        topLeft._2        )
+    w.lineTo( topLeft._1 + side, topLeft._2        )
+    w.lineTo( topLeft._1 + side, topLeft._2 + side )
+    w.lineTo( topLeft._1       , topLeft._2 + side )
+    w.lineTo( topLeft._1       , topLeft._2        )
+  }
+
+  def main(args: Array[String]): Unit = {
+    println("Rita kvadrat:")
+    square(300,100)(50)
+  }
+}
+
+object Main {
+  val w = new introprog.PixelWindow(width = 400, height = 300, title = "HEJ")
+
+  var color = java.awt.Color.red
+
+  def square(p: (Int, Int))(side: Int): Unit = if (side > 0) {
+    val d = side - 1  // side == 1 ska ge en kvadrat som är en pixel stor
+    w.line(p._1,     p._2,     p._1 + d, p._2,     color)
+    w.line(p._1 + d, p._2,     p._1 + d, p._2 + d, color)
+    w.line(p._1 + d, p._2 + d, p._1,     p._2 + d, color)
+    w.line(p._1,     p._2 + d, p._1,     p._2,     color)
+  }
+
+  def main(args: Array[String]): Unit = {
+    println("Rita kvadrat:")
+    square(300,100)(50)
+  }
+}
+
+\end{Code}
+
+
+\QUESTEND
+
+
+
+\WHAT{Färg.}
+
+\QUESTBEGIN
+
+\Task \what~ Det finns många sätt att beskriva färger.
+I naturligt språk har vi olika namn på färgerna, till exempel \emph{vitt}, \emph{rosa} och \emph{magenta}.
+I bildminnen i datorer är det vanligt att beskriva färger som en blandning av \emph{rött}, \emph{grönt} och \emph{blått} i det så kallade RGB-systemet.
+
+På veckans labb ska vi använda \code{PixelWindow}, som beskriver RGB-färger med klassen \code{java.awt.Color}.
+Det finns några fördefinierade färger i \code{java.awt.Color}, till exempel \code{java.awt.Color.black} för svart och \code{java.awt.Color.green} för grönt, se vidare dokumentationen för \code{java.awt.Color} i JDK\footnote{\JDKApiUrl}.
+Andra färger kan skapas genom att du själv anger den specifika mängden rött, grönt och blått som behövs för att blanda en viss färg.
+Den tre parametrarna till \code{new java.awt.Color(r, g, b)} anger hur mycket \emph{rött}, \emph{grönt} respektive \emph{blått} som färgen ska innehålla, och mängderna ska vara i intervallet 0--255.
+Färgen $(153, 102, 51)$ innebär ganska mycket rött, lite mindre grönt och ännu mindre blått och det upplevs som brunt.
+
+
+\Subtask
+På laborationen behöver du dessa tre brunaktiga färger och det är smidigt att samla dem i en egen namnrymd via ett singelobjekt som heter \code{Color} enligt nedan.
+\begin{Code}
+object Color {
+  val mole   = new java.awt.Color( 51,  51,   0)
+  val soil   = new java.awt.Color(153, 102,  51)
+  val tunnel = new java.awt.Color(204, 153, 102)
+}
+\end{Code}
+\noindent Men vi vill helst göra import på \code{java.awt.Color} för att kunna använda klassens namn utan att upprepa hela sökvägen, trots att namnet krockar med namnet på vårt singelobjekt. Skriv om koden ovan med hjälp av namnbyte vid import så att färgerna kan skapas med \code{new JColor(...)}. Gör importen lokalt i singelobjektet \code{Color}.
+
+
+
+\noindent\begin{minipage}{0.82\textwidth}
+\Subtask Inspireras av REPL-experimenten nedan och ändra ditt program i \code{hello-window.scala} så att \emph{tre} överlappande färgfyllda kvadrater ritas enligt den övre bilden till höger. I stället för att rita med den färdiga metoden \code{fill} som finns i \code{PixelWindow}, ska du träna på iteration genom att själv implementera ritprocedurerna \code{rak} och \code{fyll} enligt nedan.
+  Proceduren \code{rak} ska rita en horisontell linje med vänstra punkten \code{p} och med längden \code{d} pixlar. Proceduren \code{fyll} ska, med många horisontell linjer, rita en fylld kvadrat med övre vänstra hörnet i punkten \code{p} och sidan \code{s} pixlar. Det som ritas ut ska se ut som den övre bilden till höger. Om du t.ex. tar med en pixel för mycket i dina koordinatberäkningar kan det bli som i den felaktiga undre bilden.
+\end{minipage}
+\hfill\begin{minipage}{0.23\textwidth}
+\includegraphics[width=0.8\textwidth]{../img/fyll-rak.png}
+\includegraphics[width=0.8\textwidth]{../img/fyll-rak-fel.png}
+
+\end{minipage}
+
+\begin{REPL}
+> scala -cp cslib.jar
+scala> val w = new cslib.window.SimpleWindow(400,300,"Tre nyanser av brunt")
+scala> type Pt = (Int, Int)
+scala> var color = java.awt.Color.red
+scala> def rak(p: Pt)(d: Int) = w.line(p._1, p._2, ???, ???, color)
+scala> def fyll(p: Pt)(s: Int) = for (i <- ???){ rak((p._1, ???))(s) }
+
+scala> :paste
+object Color {
+ ???
+}
+
+scala> color = Color.soil
+scala> fyll(100,100)(75)
+
+scala> color = Color.tunnel
+scala> fyll(100,100)(50)
+
+scala> color = Color.mole
+scala> fyll(150,150)(25)
+\end{REPL}
+\Subtask Vid vilka anrop ovan utnyttjas att tupelparenteserna kan skippas?
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved
+\begin{Code}
+object Color {
+  import java.awt.{Color => JColor}
+
+  val mole   = new JColor( 51,  51,   0)
+  val soil   = new JColor(153, 102,  51)
+  val tunnel = new JColor(204, 153, 102)
+}
+\end{Code}
+
+\SubtaskSolved
+
+\begin{CodeSmall}
+package hello
+
+object Color {
+  import java.awt.{Color => JColor}
+  val mole   = new JColor( 51, 51,    0)
+  val soil   = new JColor(153, 102, 51)
+  val tunnel = new JColor(204, 153, 102)
+}
+
+
+object Main {
+  val w = new introprog.PixelWindow(width = 400, height = 300, title = "HEJ")
+
+  type Pt = (Int, Int)
+
+  var color = java.awt.Color.red
+
+  def rak(p:  Pt)(d: Int) = w.line(p._1, p._2, p._1 + d - 1, p._2, color)
+
+  def fyll(p: Pt)(s: Int) = for (i <- 0 until s){rak((p._1, p._2 + i))(s)}
+
+  def square(p: (Int, Int))(side: Int): Unit = if (side > 0) {
+    val d = side - 1  // side == 1 ska ge en kvadrat som är en pixel stor
+    w.line(p._1,     p._2,     p._1 + d, p._2,     color)
+    w.line(p._1 + d, p._2,     p._1 + d, p._2 + d, color)
+    w.line(p._1 + d, p._2 + d, p._1,     p._2 + d, color)
+    w.line(p._1,     p._2 + d, p._1,     p._2,     color)
+  }
+
+  def main(args: Array[String]): Unit = {
+    import Color._
+    color = soil
+    fyll(100,100)(75)
+    color = tunnel
+    fyll(100,100)(50)
+    color = mole
+    fyll(150,150)(25)
+  }
+}
+\end{CodeSmall}
+
+\SubtaskSolved Vid anropen av \code{rak} och \code{fyll} utnyttjas att man kan skippa tupelparenteserna om ett tupelargument är ensamt i sin parameterlista.
+
+
+
+\QUESTEND
+
+
+
+\WHAT{Händelser.}
+
+\QUESTBEGIN
+
+\Task \what~På veckans laboration ska du implementera ett enkelt spel där användaren kan styra en blockmullvad med tangentbordet. Med \code{introprog.PixelWindow} kan du hantera de händelser som genereras när användaren trycker ner eller släpper en tangent eller en musknapp.
+
+
+\Subtask Studera dokumentationen för singelobjektet \code{introprog.PixelWindow.Event}. Vad heter den oföränderliga strängvariabel som representerar att en nedtryckning av en tangentbordsknapp har inträffat? Vad har strängen för värde?
+
+\Subtask Via dokumentationen för av singelobjektet \code{introprog.examples.TestPixelWindow} kan du komma åt koden som implementerar objektet genom att klicka på länken \code{Source} ovanför sökrutan. Vilken rad i huvudprogrammet i \code{main}-metoden tar hand om fallet att en knappnedtryckningshändelse har inträffat?
+
+\Subtask Testa huvudprogrammet i \code{TestPixelWindow} med följande kommando där första argumentet lägger \code{introprog}-paketet på classpath och andra argumentet pekar ut vilken klass som innehåller den \code{main}-metod som ska köras.:
+\begin{REPLnonum}
+> scala -cp introprog-X.Y.Z.jar introprog.examples.TestPixelWindow
+\end{REPLnonum}
+där \code{X.Y.Z} ska bytas mot aktuell version. Ett testfönster öppnas när \code{main}-metoden körs. Klicka i fönstret på olika ställen och tryck på olika tangenter och observera vad som skrivs ut. Vad skrivs ut när pil-upp-tangenten trycks ned och släpps upp?
+
+\Subtask Med inspiration från implementationen av \code{TestPixelWindow}, skriv ett program som ritar gröna linjer mellan positionerna för varje musknapp-nedtryck och musknapp-uppsläpp som användaren gör. \\\emph{Tips:} När musknappen trycks ned så spara undan positionen i en variabel med namnet \code{start}. När musknappen släpps upp, rita linjen från den sparade positionen till \code{w.lastMousePos}.
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved Den oföränderliga strängvariablen \code{KeyPressed} i \code{introprog.PixelWindow.Event} har värdet \code{"KeyPressed"}.
+
+\SubtaskSolved Kodraden nedan tar hand om knappnedtryckningsfallet:
+\begin{Code}
+case PixelWindow.Event.KeyPressed => println("lastKey == " + w.lastKey)
+\end{Code}
+
+\SubtaskSolved När pil-upp-knappen på tangentbordet trycks ned får \code{w.lastKey} strängvärdet \code{"Up"}. Följande skrivs ut av testprogrammet när pil-upp-tangenten trycks ned och släpps upp:
+\begin{REPL}
+lastEventType == KeyPressed
+lastKey == Up
+lastEventType == KeyReleased
+lastKey == Up
+\end{REPL}
+
+
+\SubtaskSolved En loop som låter användaren rita linjer med musen:
+\begin{Code}
+var start = (0,0)
+while (w.lastEventType != PixelWindow.Event.WindowClosed) {
+  w.awaitEvent(10)  // wait for next event for max 10 milliseconds
+  w.lastEventType match {
+    case PixelWindow.Event.MousePressed  =>
+      start = w.lastMousePos
+
+    case PixelWindow.Event.MouseReleased =>
+      w.line(start._1, start._2, w.lastMousePos._1, w.lastMousePos._2)
+
+    case PixelWindow.Event.WindowClosed  =>
+       println("Goodbye!");
+    case _ =>
+  }
+  PixelWindow.delay(100) // wait for 0.1 seconds
+}
+\end{Code}
+
+\QUESTEND
 
 
 \clearpage
@@ -918,25 +1046,44 @@ repeat(100){ i =>
 
 
 
-\WHAT{Använda färdigt paket: färgväljaren i \code{swing}.}
+\WHAT{Färgväljare.}
 
 \QUESTBEGIN
 
-\Task\Uberkurs \what~På laborationen har du nytta av att kunna blanda egna färger så att du kan rita klarblå himmel och frodigt gräs. Du kan skapa en färgväljare med hjälp av swing-paketet enligt nedan. Vad händer om du efter nedan skriver \code{f.setVisible(false)}?
-
+\Task \what~På laborationen har du nytta av att kunna blanda egna färger så att du kan rita klarblå himmel och frodigt gräs. Du kan skapa en färgväljare med hjälp av \code{introprog}-paketet enligt nedan.
+% \begin{REPL}
+% scala> val init = java.awt.Color.black
+% scala> def välj() = javax.swing.JColorChooser.showDialog(null, "välj", init)
+% scala> välj()
+% \end{REPL}
 \begin{REPL}
-scala> val f = new javax.swing.JFrame         // skapa osynligt fönster
-scala> val c = new javax.swing.JColorChooser  // skapa färgväljare
-scala> f.add(c)              // lägg färgväljaren i fönstret
-scala> f.setVisible(true)    // visa fönstret; välj färg i RGB-fliken
-scala> c.getColor            // undersök RGB-värdena
-scala> c.getColor.getAlpha   // alpha styr genomskinlighet
+> scala -cp introprog-X.Y.Z.jar
+scala> introprog.Dialog.selectColor()
 \end{REPL}
 
+\Subtask Vad händer om du trycker \Button{Ok} efter att du valt en grön färg?
+
+\Subtask Vad händer om du trycker \Button{Cancel}~?
+
+\Subtask Vad händer om du trycker \Button{Reset}~?
 
 \SOLUTION
 
-\TaskSolved \what~\\När du skriver \code{f.setVisible(false)} så stängs färgfäljarfönstret.
+\TaskSolved \what~
+
+\Subtask Den valda färgen returneras inkapslad i en \code{Option}. Man kan få ut värdet med \code{get}.
+\begin{REPL}
+scala> introprog.Dialog.selectColor()
+res1: Option[java.awt.Color] = Some(java.awt.Color[r=0,g=204,b=0])
+scala> res1.get
+res2: java.awt.Color = java.awt.Color[r=0,g=204,b=0]
+
+\end{REPL}
+
+
+\Subtask \code{None} returneras. Med \code{getOrElse(init)} på det returnerade \code{Option}-värdet kan man använda default-färgen även vid \emph{Cancel}.
+
+\Subtask Defaultfärgen \code{init} returneras i en \code{Option}.
 
 \QUESTEND
 
