@@ -301,100 +301,12 @@ res0: Int = 1
 
 
 
-\WHAT{Skapa en punktklass att använda på veckans laboration.}
-
-\QUESTBEGIN
-
-\Task \what~
-Du ska som förberedelse till laborationen skapa den oföränderliga case-klassen \code{Point} som ska beskriva en koordinat i ett kartesiskt koordinatsystem\footnote{\url{https://sv.wikipedia.org/wiki/Kartesiskt_koordinatsystem}}. Skapa kod med hjälp av en editor, t.ex. \code{atom}, i filen  \code{Point.scala} enligt följande riktlinjer:
-\begin{enumerate}[noitemsep]
-\item \code{Point} ska ligga i paketet \code{graphics}.
-
-\item \code{Point} ska ha följande två publika, oföränderliga klassparametrar:
-\begin{itemize}[nolistsep, noitemsep]
-\item \code{x: Double} för x-koordinaten.
-\item \code{y: Double} för y-koordinaten.
-\end{itemize}
-
-\item \code{Point} ska ha följande publika medlemmar (två oföränderliga attribut och två metoder):
-\begin{itemize}[nolistsep, noitemsep]
-\item \code{val r: Double} ska ge motsvarande polära kordinatens%
-\footnote{\url{https://sv.wikipedia.org/wiki/Pol\%C3\%A4ra\_koordinater}}
- avstånd till origo.
-\item \code{val theta: Double} ska ge polära kordinatens vinkel i radianer.
-\item \code{def negY: Point} ska ge en ny punkt med y-koordinaten negerad.
-\item \code{def +(p: Point): Point} ska ge en ny punkt vars koordinat är summan av x- respektive y-kordinaterna för denna instans och punkten \code{p}.
-\end{itemize}
-
-\item \code{Point} ska ha ett kompanjonsobjekt med en metod som konstruerar en punkt från polära koortdinater. Metoden ska ha detta huvud: \\\code{def polar(r: Double, theta: Double): Point}
-
-\end{enumerate}
-
-\noindent Tips vid implementation och senare användning:
-\begin{itemize}
-\item Du har nytta av metoderna $r = $ \code{math.hypot(x, y)} och $\theta = $ \code{math.atan2(y, x)} vid omvandling till polära koordinater:
-
-\begin{tikzpicture}[thick]
-\coordinate (O) at (0,0);
-\coordinate (A) at (7,0);
-\coordinate (B) at (7,3);
-\draw (O)--(A)--(B)--cycle;
-
-%\tkzLabelSegment[below=2pt](O,A){\textit{adjacent leg}}
-%\tkzLabelSegment[left=2pt](O,B){\textit{hypotenuse}}
-%\tkzLabelSegment[above right=2pt](A,B){\textit{opposite leg}}
-
-\tkzLabelSegment[below=5pt](O,A){\textit{x}}
-\tkzLabelSegment[above left=5pt](O,B){\textit{r}}
-\tkzLabelSegment[right=5pt](A,B){\textit{y}}
-
-\tkzMarkAngle[fill= orange,size=1.5cm, opacity=.4](A,O,B)
-\tkzLabelAngle[pos = 2](A,O,B){\texttt{$\theta$}}
-
-% \tkzMarkAngle[fill= orange,size=0.65cm, opacity=.4](A,O,B)
-% \tkzLabelAngle[pos = 0.35](A,O,B){$\gamma$}
-%
-% \tkzMarkAngle[fill= orange,size=0.8cm, opacity=.4](B,A,O)
-% \tkzLabelAngle[pos = 0.6](B,A,O){$\alpha$}
-%
-% \tkzMarkAngle[fill= orange,size=0.7cm, opacity=.4](O,B,A)
-% \tkzLabelAngle[pos = 0.5](O,B,A){$\beta$}
-
-\end{tikzpicture}
-
-\item Du har nytta av metoderna \code{math.cos(theta)} och \code{math.sin(theta)} vid omvandling från polära koordinater.
-
-\item Attributet \code{negY} kommer att underlätta för dig när du på laborationen ska omvandla en punkt till fönsterkoordinater där y-axeln är omvänd jämfört med kartesiska koordinater.
-
-\item Notera att klassens attribut är av typen \code{Double} och inte \code{Int}, trots att vi senare ska använda punkten för att beskriva en diskret pixelposition. Anledningen till detta är att det kan uppstå avrundningsfel vid numeriska beräkningar. Detta blir särskilt märkbart vid upprepad räkning med små värden, t.ex. när man ritar en approximerad cirkel med många linjesegment.
-\end{itemize}
-
-\SOLUTION
-
-\TaskSolved \what~
-\begin{Code}
-package graphics
-
-case class Point(x: Double, y: Double) {
-  val r: Double          = math.hypot(x, y)
-  val theta: Double      = math.atan2(y, x)
-  def negY: Point        = Point(x, -y)
-  def +(p: Point): Point = Point(x + p.x, y + p.y)
-}
-object Point {
-  def polar(r: Double, theta: Double): Point =
-    Point(r * math.cos(theta), r * math.sin(theta))
-}
-\end{Code}
-
-\QUESTEND
 
 
 
 \clearpage
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 \WHAT{Instansiering med \code{new} och värdet \code{null}.}
@@ -429,6 +341,114 @@ scala> g.vikt
 
 
 \QUESTEND
+
+
+
+\WHAT{Skapa en punktklass som kan hantera polära koordinater.}
+
+\QUESTBEGIN
+
+\Task \what~
+Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en koordinat både med ''vanliga'' kartesiska koordinatet\footnote{\url{https://sv.wikipedia.org/wiki/Kartesiskt_koordinatsystem}} och med polära koordinater%
+\footnote{\url{https://sv.wikipedia.org/wiki/Pol\%C3\%A4ra\_koordinater}}.
+
+\Subtask Skapa kod med hjälp av en editor, t.ex. \code{atom}, i filen  \code{Point.scala} enligt följande riktlinjer:
+\begin{enumerate}[noitemsep]
+\item \code{Point} ska ligga i paketet \code{graphics}.
+
+\item \code{Point} ska ha följande två publika, oföränderliga klassparametrar:
+\begin{itemize}[nolistsep, noitemsep]
+\item \code{x: Double} för x-koordinaten.
+\item \code{y: Double} för y-koordinaten.
+\end{itemize}
+
+\item \code{Point} ska ha följande publika medlemmar (två oföränderliga attribut och två metoder):
+\begin{itemize}[nolistsep, noitemsep]
+\item \code{val r: Double} ska ge motsvarande polära koordinatens
+ avstånd till origo.
+\item \code{val theta: Double} ska ge polära koordinatens vinkel i radianer.
+\item \code{def negY: Point} ska ge en ny punkt med y-koordinaten negerad.
+\item \code{def +(p: Point): Point} ska ge en ny punkt vars koordinat är summan av x- respektive y-koordinaterna för denna instans och punkten \code{p}.
+\end{itemize}
+
+\item \code{Point} ska ha ett kompanjonsobjekt med en metod som konstruerar en punkt från polära koortdinater. Metoden ska ha detta huvud: \\\code{def polar(r: Double, theta: Double): Point}
+
+\end{enumerate}
+
+\noindent Tips:
+\begin{itemize}
+\item Du har nytta av metoderna $r = $ \code{math.hypot(x, y)} och $\theta = $ \code{math.atan2(y, x)} vid omvandling till polära koordinater:
+
+\begin{tikzpicture}[thick]
+\coordinate (O) at (0,0);
+\coordinate (A) at (7,0);
+\coordinate (B) at (7,3);
+\draw (O)--(A)--(B)--cycle;
+
+%\tkzLabelSegment[below=2pt](O,A){\textit{adjacent leg}}
+%\tkzLabelSegment[left=2pt](O,B){\textit{hypotenuse}}
+%\tkzLabelSegment[above right=2pt](A,B){\textit{opposite leg}}
+
+\tkzLabelSegment[below=5pt](O,A){\textit{x}}
+\tkzLabelSegment[above left=5pt](O,B){\textit{r}}
+\tkzLabelSegment[right=5pt](A,B){\textit{y}}
+
+\tkzMarkAngle[fill= orange,size=1.5cm, opacity=.4](A,O,B)
+\tkzLabelAngle[pos = 2](A,O,B){\texttt{$\theta$}}
+
+% \tkzMarkAngle[fill= orange,size=0.65cm, opacity=.4](A,O,B)
+% \tkzLabelAngle[pos = 0.35](A,O,B){$\gamma$}
+%
+% \tkzMarkAngle[fill= orange,size=0.8cm, opacity=.4](B,A,O)
+% \tkzLabelAngle[pos = 0.6](B,A,O){$\alpha$}
+%
+% \tkzMarkAngle[fill= orange,size=0.7cm, opacity=.4](O,B,A)
+% \tkzLabelAngle[pos = 0.5](O,B,A){$\beta$}
+
+\end{tikzpicture}
+
+\item Du har nytta av metoderna \code{math.cos(theta)} och \code{math.sin(theta)} vid omvandling från polära koordinater.
+
+\item Attributet \code{negY} är användbar vid omvandling till fönsterkoordinater där y-axeln är omvänd jämfört med kartesiska koordinater.
+
+\item Notera att klassens attribut är av typen \code{Double} och inte \code{Int}, trots att vi senare ska använda punkten för att beskriva en diskret pixelposition i ett \code{PixelWindow}. Anledningen till detta är att det kan uppstå avrundningsfel vid numeriska beräkningar. Detta blir särskilt märkbart vid upprepad räkning med små värden, t.ex. när man ritar en approximerad cirkel med många linjesegment.
+\end{itemize}
+
+\Subtask Använd din punktklass genom att deklarera en funktion \code{cyclic(n, r, p)} som ger en sekvens av punkter som beskriver en liksidig månghörning med \code{n} hörn där hörnen är placerade på en cirkel med radien \code{r} och mittpunkten \code{p}.
+
+\Subtask Skapa en funktion \code{drawPolygon(pts)} som ritar månghörningar enligt en punktsekvens \code{pts} i ett \code{PixelWindow}.
+
+\Subtask Hur många hörn behövs det för att en liksidig månghörning ska se ut som en cirkel?
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\Subtask \begin{Code}
+package graphics
+
+case class Point(x: Double, y: Double) {
+  val r: Double          = math.hypot(x, y)
+  val theta: Double      = math.atan2(y, x)
+  def negY: Point        = Point(x, -y)
+  def +(p: Point): Point = Point(x + p.x, y + p.y)
+}
+object Point {
+  def polar(r: Double, theta: Double): Point =
+    Point(r * math.cos(theta), r * math.sin(theta))
+}
+\end{Code}
+
+\Subtask \TODO
+
+\Subtask \TODO
+
+\Subtask \TODO
+
+
+\QUESTEND
+
+
 
 
 \WHAT{Klasser,  instanser och skräp.}
