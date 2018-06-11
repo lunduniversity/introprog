@@ -49,15 +49,14 @@
 \QUESTEND
 
 
+
 \WHAT{Klass och instans.}
 
 \QUESTBEGIN
 
 \Task \what~Du har i övning \texttt{\ExeWeekFOUR}~sett hur singelobjekt i en egen namnrymd  kan samla funktioner (metoder) och ha tillstånd (attribut). Men singelobjekt finns bara i en upplaga.
-
 Vill du kunna skapa många objekt av samma typ behöver du en \emph{klass}. En objektupplaga som skapats ur en klass kallas en \emph{instans} av klassen. Varje instans har sitt eget tillstånd.
-
-Deklarera singelobjektet och klassen nedan i REPL.
+Deklarera singelobjektet och klassen nedan och klistra in i REPL.
 
 \begin{Code}
 object Singelpunkt { var x = 1; var y = 2 }
@@ -300,11 +299,186 @@ res0: Int = 1
 \QUESTEND
 
 
+\WHAT{Implementera av klasserna \code{Pos}, \code{KeyControl}, \code{Mole} och \code{BlockWindow} som behövs under veckans laboration.}
+
+\QUESTBEGIN
+
+\Task  \what~Under veckans laboration ska du bygga vidare på \code{blockmole}-labben och göra ett spel för två spelare där varje spelare styr sin \emph{egen} instans av en \code{blockmole}. Vi måste då göra om \code{Mole} så att den blir en klass i stället för ett singelobjekt. Gör färdigt klasserna nedan och testa noggrant så att de fungerar. Alla klasser ska tillhöra i paketet \code{blockbattle} och ligga i varsin egen fil med samma namn som klassen, t.ex. \code{Pos.scala}. När du har mer än en kodfil som du vill kompilera om upprepade gånger vid stegvis implementation och felsökning, underlättas ditt arbetet stort om du använder byggverktyget \code{sbt} som finns installerat på skolans datorer {se även Appendix~\ref{appendix:build}}. Lägg en fil med namnet \code{build.sbt} i biblioteket där du jobbar t.ex. \code{~/pgk/w05/lab} med detta innehåll:
+\begin{Code}
+scalaVersion := "2.12.6"
+\end{Code}
+Då kan du i ett eget terminalfönster köra igång \code{sbt} och sedan kommandot \code{~compile}. Då kompileras din ändrade kod om automatiskt varje gång du spara en scala-fil i detta bibliotek.
+\begin{REPLnonum}
+>sbt
+sbt> ~compile
+\end{REPLnonum}
+
+\Subtask Under veckans laboration är det smidigt att kunna representera flyttbara positioner i ett pixelfönster. Implementera case-klassen \code{Pos} i ett nytt terminalfönster enligt nedan så att den fungerar enligt efterföljande REPL-tester.
+\begin{Code}
+case class Pos(x: Int, y: Int) {
+  def moved(delta: (Int, Int)): Pos = ???
+}
+\end{Code}
+Om du använder \code{sbt} hamnar den kompilerade koden i \code{target/scala-2.12/classes}. Testa så att \code{Pos} fungerar med hjälp av REPL enligt nedan:
+\begin{REPL}
+> cd ~/pgk/w05/lab
+> scala -cp target/scala-2.12/classes
+Welcome to Scala 2.12.6 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_171).
+Type in expressions for evaluation. Or try :help.
+
+scala> blockbattle.Pos(1,2)
+res0: blockbattle.Pos = Pos(1,2)
+
+scala> import blockbattle._
+import blockbattle._
+
+scala> val p = Pos(1,2)
+p: blockbattle.Pos = Pos(1,2)
+
+scala> p.moved(0,1)
+res1: blockbattle.Pos = Pos(1,3)
+\end{REPL}
+
+\Subtask Under veckans är det smidigt att kunna representera vilka tangenter som motsvarar de olika riktningar som en användare kan styra sin mullvad. Implementera case-klassen \code{KeyControl} enligt nedan så att den fungerar enligt efterföljande REPL-tester.
+\begin{CodeSmall}
+case class KeyControl(left: String, right: String, up: String, down: String){
+  def direction(key: String): (Int, Int) = ???
+
+  def has(key: String): Boolean = ???
+}
+\end{CodeSmall}
+\begin{REPL}
+scala> import blockbattle._
+import blockbattle._
+
+scala> val kc1 = KeyControl(right="D",left="A",up="W",down="S")
+kc1: blockbattle.KeyControl = KeyControl(A,D,W,S)
+
+scala> val kc2 = KeyControl("Left","Right","Up","Down")
+kc2: blockbattle.KeyControl = KeyControl(Left,Right,Up,Down)
+
+scala> kc2.left
+res2: String = Left
+
+scala> kc2.has("A")
+res3: Boolean = false
+
+scala> kc2.has("Up")
+res4: Boolean = true
+
+scala> kc1.direction("A")
+res5: (Int, Int) = (-1,0)
+
+scala> kc1.direction("S")
+res6: (Int, Int) = (0,1)
+
+scala> kc1.direction("D")
+res7: (Int, Int) = (1,0)
+
+scala> kc1.direction("W")
+res8: (Int, Int) = (0,-1)
+
+scala> Pos(1,2).moved(kc1.direction("A"))
+res9: blockbattle.Pos = Pos(0,2)
+\end{REPL}
+
+
+\Subtask Implementera case-klassen \code{Mole} enligt nedan. Mole är klass som representerar en blockmullvad med föränderliga attribut för position, riktning och poäng. Varje instans har även oföränderliga attribut som håller reda på dess namn, dess färg och vilka tangenter som kan användas för att styra mullvaden. Implementera klassens medlemmarna en i taget och testa noga med lämpliga testfall efter varje tillägg/buggfix. Skapa ett huvudprogram t.ex. i filen \code{Main.scala} med dina tester som skapar instanser och skriver ut attribut etc. När du kör \code{~run} i sbt så kommer huvudprogrammet att automatiskt köras om efter automatisk omkompilering av de ändrade delarna varje gång du spara någon \code{.scala}-fil.
+
+\begin{CodeSmall}
+class Mole(
+  val name: String,
+  var pos: Pos,
+  var dir: (Int, Int),
+  val color: java.awt.Color,
+  val keyControl: KeyControl
+){
+  var points = 0
+
+  override def toString =
+    s"Mole[name=$name, pos=$pos, dir=$dir, points=$points]"
+
+  /** Om keyControl.has(key) så uppdateras riktningen dir enligt keyControl */
+  def setDir(key: String): Unit = ???
+
+  /** Uppdaterar dir till motsatta riktningen. */
+  def reverseDir(): Unit = ???
+
+  /** Uppdaterar pos så att den blir nextPos */
+  def move(): Unit = ???
+
+  /** Ger nästa position enligt riktningen dir utan att uppdatera pos */
+  def nextPos: Pos = ???
+}
+\end{CodeSmall}
+
+
+
+\Subtask Implementera klassen \code{BlockWindow} enligt nedan.
+
+\begin{CodeSmall}
+class BlockWindow(
+  val nbrOfBlocks: (Int, Int),
+  val title: String = "BLOCK WINDOW",
+  val blockSize: Int = 14
+) {
+  import introprog._
+  import BlockWindow.Event._
+
+  val pixelWindow = new PixelWindow(
+    nbrOfBlocks._1 * blockSize, nbrOfBlocks._2 * blockSize, title)
+
+  def setBlock(pos: Pos, color: java.awt.Color): Unit = ???
+
+  def getBlock(pos: Pos): java.awt.Color = ???
+
+  def write(
+    text: String,
+    pos: Pos,
+    color: java.awt.Color,
+    textSize: Int = blockSize
+  ): Unit = {
+    pixelWindow.drawText(
+      text, pos.x * blockSize, pos.y * blockSize, color, textSize)
+  }
+
+  def nextEvent(ms: Int = 2): BlockWindow.Event.EventType  = {
+    pixelWindow.awaitEvent(ms)
+    pixelWindow.lastEventType match {
+      case PixelWindow.Event.KeyPressed   => KeyPressed(pixelWindow.lastKey)
+      case PixelWindow.Event.WindowClosed => WindowClosed
+      case _                              => Undefined
+    }
+  }
+}
+
+object BlockWindow {
+  def delay(millis: Int): Unit = Thread.sleep(millis)
+
+  object Event {
+    trait EventType
+    case class  KeyPressed(key: String) extends EventType
+    case object WindowClosed            extends EventType
+    case object Undefined               extends EventType
+  }
+}
+
+\end{CodeSmall}
+
+\Subtask Gör så att huvudprogramet i \code{Main.scala} ritar ut två mullvadar med olika färger på olika positioner i ett \code{BlockWindow}.
+
+\SOLUTION
+
+
+\TaskSolved \what Denna uppgift är laborationsförberedelse. Utvärdera dina lösningar genom tester i REPL.
+
+\QUESTEND
 
 
 
 
-\clearpage
+
+%\clearpage
 
 \ExtraTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -414,7 +588,7 @@ Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en k
 \item Notera att klassens attribut är av typen \code{Double} och inte \code{Int}, trots att vi senare ska använda punkten för att beskriva en diskret pixelposition i ett \code{PixelWindow}. Anledningen till detta är att det kan uppstå avrundningsfel vid numeriska beräkningar. Detta blir särskilt märkbart vid upprepad räkning med små värden, t.ex. när man ritar en approximerad cirkel med många linjesegment.
 \end{itemize}
 
-\Subtask Använd din punktklass genom att deklarera en funktion \code{cyclic(n, r, p)} som ger en sekvens av punkter som beskriver en liksidig månghörning med \code{n} hörn där hörnen är placerade på en cirkel med radien \code{r} och mittpunkten \code{p}.
+\Subtask Använd din punktklass då du deklarerar en funktion \code{cyclic(n, r, p)} som ger en sekvens av punkter som beskriver en liksidig månghörning med \code{n} hörn där hörnen är placerade på en cirkel med radien \code{r} och mittpunkten \code{p}.
 
 \Subtask Skapa en funktion \code{drawPolygon(pts)} som ritar månghörningar enligt en punktsekvens \code{pts} i ett \code{PixelWindow}.
 
