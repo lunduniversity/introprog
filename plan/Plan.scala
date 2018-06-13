@@ -70,7 +70,7 @@ trait Plan {
 //      | sbt tilde run ???här eller i vecka2???,
 
     Module("Klasser",
-      id = "classes", exercise = "classes", lab = "turtle", contents = """
+      id = "classes", exercise = "classes", lab = "blockbattle", contents = """
       | objektorientering, klass, instans, Point, Square, Complex,
       | Any, isInstanceOf, toString,
       | new, null, this,
