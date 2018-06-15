@@ -38,7 +38,7 @@
 
 Du ska utveckla ett spel för två spelare som sitter vid samma tangentbord, där den vänstra spelaren styr en blockmullvad med tangenterna A,S,D,W, och den högra spelaren styr en annan blockmullvad med piltangenterna.
 
-I bilden till höger ser du hur spelet kan se ut. Det finns en ljusbrun och en mörkbrun mullvad. Poängräkningen visas överst i himlen. Det finns fyra rosa blockmaskar (se uppgift \ref{lab:blockmole:task:blockworm} i laboration \code{blockmole}) som mullvadarna tävlar om att försöka fånga. När en blockmask teleporterar sig till en ny slumpmässig position lämnar den jord efter sig. När en mullvad är vid gräsytan lämnar den jord efter sig.
+I bilden till vänster ser du hur spelet kan se ut. Det finns en ljusbrun och en mörkbrun mullvad. Poängräkningen visas överst i himlen. Det finns fyra rosa blockmaskar (se uppgift \ref{lab:blockmole:task:blockworm} i laboration \code{blockmole}) som mullvadarna tävlar om att försöka fånga. När en blockmask teleporterar sig till en ny slumpmässig position lämnar den jord efter sig. När en mullvad är vid gräsytan lämnar den jord efter sig.
 Det ger poäng att gräva tunnlar och att fånga blockmaskar.
 
 Du bestämmer själv hur poängsättningen ska ske och kriteriet för när spelet är slut etc.
@@ -96,8 +96,9 @@ Innan du redovisar din implementation, förbered dig genom att vara beredd på a
   \item Beskriv hur du hade behövt ändra i klassen \code{Mole} för att det ska gå att skriva \code{new Mole.move().move().reverseDir().move()}
 \end{itemize}
 
-\subsection{Tips och goda råd}
+\subsection{Tips och förslag}
 
+\TODO Vad behöver finnas här för att labben ska gå smidigt?
 
 % \begin{figure}[H]
 % \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{9.8}{11.8}\selectfont]%
@@ -107,3 +108,61 @@ Innan du redovisar din implementation, förbered dig genom att vara beredd på a
 
 
 %\Task En riktig utmaning, för den som har lust: Implementera spelet ''Masken'' som beskrivs här: \url{https://sv.wikipedia.org/wiki/Snake}.
+
+\noindent\TODO Berätta om händelsehanteringen nedan
+\begin{CodeSmall}
+  var e = window.nextEvent()
+  while (e != BlockWindow.Event.Undefined) {
+    e match {
+      case BlockWindow.Event.KeyPressed(key) =>
+        leftMole.setDir(key)
+        rightMole.setDir(key)
+
+      case BlockWindow.Event.WindowClosed =>
+        quit = true
+    }
+    e = window.nextEvent()
+  }
+\end{CodeSmall}
+
+\noindent\TODO Tipsa om att rita före sudda med sparad Pos för flimmerfri utritning
+
+\begin{CodeSmall}
+  class Game(
+    val leftPlayerName: String = "LEFT",
+    val rightPlayerName: String = "RIGHT"
+  ) {
+    import Game._
+
+    val window    = new BlockWindow(windowSize, windowTitle, blockSize = 14)
+    val leftMole  = ???
+    val rightMole = ???
+
+    def drawWorld(): Unit = ???
+
+    def eraseBlocks(x1: Int, y1: Int, x2: Int, y2: Int): Unit = ???
+
+    def update(mole: Mole): Unit = ???
+
+   def detectCollision(me: Mole, other: Mole): Unit = ???
+
+   def showPoints(leftPts: Int, rightPts: Int): Unit = ???
+
+   def gameLoop(): Unit = ???
+
+   def start(): Unit = {
+     println("Start digging!")
+     println(s"$leftPlayerName ${leftMole.keyControl}")
+     println(s"$rightPlayerName ${rightMole.keyControl}")
+     drawWorld()
+     gameLoop()
+   }
+}
+
+object Game {
+  val windowSize = (30, 50)
+  val windowTitle = "BLOCK BATTLE"
+  def worldColorAtHeight(y: Int): java.awt.Color = ???
+  object Color { ??? }
+}
+\end{CodeSmall}
