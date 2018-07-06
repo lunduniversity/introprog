@@ -8,7 +8,7 @@
 | W06 | 2/10-6/10   | Lp1V6 | Sekvenser                         | F11 F12 | sequences   | shuffle         |
 | W07 | 9/10-13/10  | Lp1V7 | Mängder, tabeller                 | F13 F14 | lookup      | words           |
 | KS  | 24/10       | TP1   | KONTROLLSKRIVN.                   | --      | --          | --              |
-| W08 | 30/10-3/11  | Lp2V1 | Matriser, typparametrar           | F15 F16 | matrices    | maze            |
+| W08 | 30/10-3/11  | Lp2V1 | Matriser, typparametrar           | F15 F16 | matrices    | life            |
 | W09 | 6/11-10/11  | Lp2V2 | Arv                               | F17 F18 | inheritance | turtlerace-team |
 | W10 | 13/11-17/11 | Lp2V3 | Mönstermatchning, undantag        | F19 F20 | patterns    | music           |
 | W11 | 20/11-24/11 | Lp2V4 | Språkskillnader                   | F21 F22 | scala-java  | javatext        |

@@ -114,7 +114,7 @@ trait Plan {
       id = "rebootcamp", exercise = "reboot-init", lab = "reboot-check", contents = "REBOOT CAMP: identifiera dina egna lärandetrösklar och kunskapsluckor, kom-i-kapp med övningar och labbar, repetera, fördjupning för de som är redo, specialträning för behövande"), */
 
     Module("Matriser, typparametrar",
-      id = "matrices", exercise = "matrices", lab = "maze", contents = """
+      id = "matrices", exercise = "matrices", lab = "life", contents = """
       | matris, nästlad samling, nästlad for-sats,
       | typparameter, generisk funktion, generisk klass, fri vs bunden typparameter,
       | generisk samling som typparameter,
