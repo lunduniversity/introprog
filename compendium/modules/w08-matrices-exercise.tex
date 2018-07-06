@@ -62,6 +62,7 @@
 \QUESTBEGIN
 
 \Task  \what~  Man kan i ett datorprogram, med hjälp av samlingar som innehåller samlingar, skapa nästlade strukturer som kan indexeras i två dimensioner och på så sätt representera en matematisk \textbf{matris}.\footnote{\href{https://sv.wikipedia.org/wiki/Matris}{sv.wikipedia.org/wiki/Matris}}
+\TODO{Flytta delövningar till extraövning, tex allt om imperativa varianter.}
 
 \Subtask Rita minnessituationen efter tilldelningen på rad 1 nedan. Vad har \code{m} för typ och värde? Vad har \code{m} för dimensioner? Hur sker indexeringen i ett datorprogram jämfört med i matematiken?
 
@@ -300,7 +301,7 @@ eftersom \code{xss.size} blir \code{0} och \code{until} är exkluderande.
 Innehållet i den yttre \code{for}-loopen hoppas över och en tom sträng returneras.
 Är alla rader tomma hoppas i stället de inre \code{for}-looparna över, med samma resultat.\\
 Fördel: \code{StringBuilder} är snabbare vid tillägg på slutet vid stora strängar (men här kommer det inte märkas eftersom strängen är så liten)\\
-Nackdel: StringBuilder-koden uppfattas av många som svårare att läsa. 
+Nackdel: StringBuilder-koden uppfattas av många som svårare att läsa.
 
 %2.j)
 \SubtaskSolved
@@ -470,6 +471,125 @@ public class ArrayMatrix {
 
 \QUESTEND
 
+
+
+\WHAT{En oföränderlig, generisk matris-klass till veckans laboration \hyperref[section:lab:\LabWeekEIGHT]{\texttt{\LabWeekEIGHT}}.}
+
+\QUESTBEGIN
+
+\Task\label{exe:classes:labprep}  \what~Under veckans laboration ska du simulera en enkel form av ''liv'' som består av celler i ett rutnät. För detta ändamål har vi nytta av en matris-klass som du ska implementera steg för steg i denna övning.
+Skapa case-klassen nedan med en editor i filen \code{Matrix.scala}. Testa genom att använda \code{sbt console}, och gör efterföljande övningar.
+\begin{Code}
+case class Matrix(data: Vector[Vector[String]]){
+  def apply(row: Int, col: Int): String = data(row)(col)
+}
+object Matrix {
+  def fill(dim: (Int, Int))(value: String): Matrix =
+    Matrix(Vector.fill(dim._1, dim._2)(value))
+}
+\end{Code}
+
+\begin{REPLnonum}
+scala> val m = Matrix.fill(3,4)("hej")
+scala> val e = m(2, 2)
+\end{REPLnonum}
+
+\Subtask Vad får \code{m} ovan för typ?
+
+\Subtask Vad får \code{e} ovan för typ?
+
+\Subtask På hur många ställen måste du ändra i \code{Matrix} ovan för att den i stället ska representera en matris av heltal?
+
+\Subtask Du ska nu med hjälp av en \textbf{typparameter} göra \code{Matrix} \textbf{generisk} \Eng{generic}, så att den blir en mer användbar matrisklass som kan innehålla element av vilken typ som helst. Genomför följande ändringar i \code{Matrix.scala}:
+
+\begin{itemize}[noitemsep, nolistsep]
+  \item Lägg till en typparameter \code{T} inom klammerparenteser efter namnet \code{Matrix} på alla ställen där det förekommer \emph{utom} efter namnet på kompanjonsobjektet\footnote{Singelobjekt kan inte ha typparametrar, men deras medlemmar kan.}.
+  \item Byt ut \code{String} mot \code{T} på alla ställen där \code{String} förekommer.
+  \item Lägg till en typparameter \code{T} inom klammerparenteser efter \code{def fill}.
+\end{itemize}
+Testa din generiska klass i REPL genom att skapa en boolesk matris:
+\begin{REPLnonum}
+scala> val bm = Matrix.fill(3,4)(false)
+scala> val be = bm(0, 0)
+\end{REPLnonum}
+
+\Subtask Vad får \code{bm} ovan för typ?
+
+\Subtask Vad får \code{be} ovan för typ?
+
+\Subtask Lägg en kodrad i början av klasskroppen som med hjälp av \code{require} garanterar att alla rader i matrisen är lika långa.
+
+\Subtask Lägg till en medlem \code{val dim: (Int, Int)} i klasskroppen efter \code{require}-satsen som ger ett par (alltså en 2-tupel) med antalet rader resp. kolumner i matrisen.
+
+\Subtask Lägg till en metod \code{def updated(row: Int, col: Int)(value: T): Matrix[T]} som ger en ny matris där element på platsen \code{(row, col)} har uppdaterats till \code{value}.
+
+\Subtask Lägg till en metod \code{def foreachIndex(f: (Int, Int) => Unit): Unit} som för varje index i \code{data} applicerar funktionen \code{f}.
+
+\Subtask Lägg till en metod \code{override def toString} som så att en instans av \code{Matrix} visas enligt följande:
+\begin{REPLnonum}
+scala> val dm = Matrix.fill(3,4)(42.0)
+dm: Matrix[Double] =
+Matrix of dim (3,4):
+42.0 42.0 42.0 42.0
+42.0 42.0 42.0 42.0
+42.0 42.0 42.0 42.0
+\end{REPLnonum}
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+\SubtaskSolved Typen på \code{m} blir \code{Matrix}.
+
+\SubtaskSolved Typen på \code{e} blir \code{String}.
+
+\SubtaskSolved Man behöver ändra på 2 ställen från \code{String} till \code{Int}.
+
+\SubtaskSolved
+
+\begin{CodeSmall}
+case class Matrix[T](data: Vector[Vector[T]]) {
+  def apply(row: Int, col: Int): T = data(row)(col)
+}
+
+object Matrix {
+  def fill[T](dim: (Int, Int))(value: T): Matrix[T] =
+    Matrix[T](Vector.fill(dim._1, dim._2)(value))
+}
+\end{CodeSmall}
+
+\SubtaskSolved Tack vare kompilatorns typinferens så blir typen på \code{bm} blir \code{Matrix[Boolean]}.
+
+\SubtaskSolved Typen på \code{be} blir \code{Boolean}.
+
+\SubtaskSolved \SubtaskSolved \SubtaskSolved \SubtaskSolved \SubtaskSolved
+\begin{CodeSmall}
+case class Matrix[T](data: Vector[Vector[T]]) {
+  require(data.forall(row => row.length == data(0).length))
+
+  val dim: (Int, Int) = (data.length, data(0).length)
+
+  def apply(row: Int, col: Int): T = data(row)(col)
+
+  def updated(row: Int, col: Int)(value: T): Matrix[T] =
+    Matrix(data.updated(row, data(row).updated(col, value)))
+
+  def foreachIndex(f: (Int, Int) => Unit): Unit =
+    for (r <- data.indices; c <- data(r).indices) f(r, c)
+
+  override def toString =
+    s"""Matrix of dim $dim:\n${ data.map(_.mkString(" ")).mkString("\n") }"""
+}
+
+object Matrix {
+  def fill[T](dim: (Int, Int))(value: T): Matrix[T] =
+    Matrix[T](Vector.fill(dim._1, dim._2)(value))
+}
+\end{CodeSmall}
+
+\QUESTEND
 
 
 \clearpage
