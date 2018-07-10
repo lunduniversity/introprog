@@ -7,7 +7,7 @@ import complete.DefaultParsers._
 lazy val hello = taskKey[Unit]("Prints welcome message")
 hello := {
   println("===== WELCOME to the sbt build of lunduniversity/introprog =====")
-  println("\nHAVE PATIENCE: a full build can take >500sec on a 2.5GHz machine...\n")
+  println("\nDON'T PANIC: a full build can take >500sec on a 2.5GHz machine...\n")
 }
 
 lazy val commonSettings = Seq(
