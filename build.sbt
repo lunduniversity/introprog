@@ -7,7 +7,7 @@ import complete.DefaultParsers._
 lazy val hello = taskKey[Unit]("Prints welcome message")
 hello := println("""
   ===== WELCOME to the sbt build of lunduniversity/introprog ======
-    type 'build' for a complete build of all pdfs 
+    type 'build' for a complete build of all pdfs
   DON'T PANIC: a full build can take >500sec on a 2.5GHz machine...
 """)
 
@@ -48,7 +48,7 @@ genquiz := (run in Compile in quiz).toTask("").value
 
 def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-console.log"): Unit = {
   println(s" ******* Compiling $texFile to pdf *******")
-  val cmd = Process(
+  val cmd = scala.sys.process.Process(
     Seq("pdflatex","-halt-on-error", texFile.getName),
     workDir
   )
@@ -61,7 +61,7 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
   if (exitValue != 0) {
     println("*** ############ ERROR LOG STARTS HERE ############### ***")
     //Process(Seq("cat", cmdOutputFile.getName), workDir).run
-    Process(Seq("tail", "-40", cmdOutputFile.getName), workDir).run
+    scala.sys.process.Process(Seq("tail", "-40", cmdOutputFile.getName), workDir).run
     sys.error(s"\n*** ERROR: pdflatex exit code: $exitValue\nSee COMPLETE pdflatex output in: $cmdOutputFile")
   } else println(s"         Log file: $cmdOutputFile")
 }
