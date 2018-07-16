@@ -103,6 +103,7 @@ pdf := {
 }
 
 //http://www.scala-sbt.org/0.13/docs/Howto-Triggered.html
+// This does not seem to work on sbt 1.1 :( as pdf task are not triggered on change anymore
 watchSources ++= ((baseDirectory.value / "compendium") * "*.tex").get
 watchSources ++= ((baseDirectory.value / "compendium") * "*.cls").get
 watchSources ++= ((baseDirectory.value / "compendium" / "modules") * "*.tex").get
