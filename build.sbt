@@ -7,32 +7,30 @@ import complete.DefaultParsers._
 lazy val hello = taskKey[Unit]("Prints welcome message")
 hello := println("""
   ===== WELCOME to the sbt build of lunduniversity/introprog ======
+    type 'build' for a complete build of all pdfs 
   DON'T PANIC: a full build can take >500sec on a 2.5GHz machine...
 """)
 
 
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
-  version := "2017-snapshot",
-  scalaVersion := "2.12.3"
+  version := "v3-snapshot",
+  scalaVersion := "2.12.6"
 )
 
-lazy val plan = (project in file("plan")).
-  settings(commonSettings: _*).
+lazy val plan = (project in file("plan")).settings(commonSettings: _*).
   settings(
     name := "plan",
     EclipseKeys.skipProject := true
   )
 
-lazy val quiz = (project in file("quiz")).
-  settings(commonSettings: _*).
+lazy val quiz = (project in file("quiz")).settings(commonSettings: _*).
   settings(
     name := "quiz",
     EclipseKeys.skipProject := true
   )
 
-lazy val workspace = (project in file("workspace")).
-  settings(commonSettings: _*).
+lazy val workspace = (project in file("workspace")).settings(commonSettings: _*).
   settings(
     name := "workspace",
     EclipseKeys.withSource := true
@@ -70,8 +68,7 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
 
 // **************
 
-lazy val pdf = taskKey[Unit](
-  "Compile all pdfs using pdflatex (several times for xrefs and tocs to work)")
+lazy val pdf = taskKey[Unit]("Latex all pdfs several times for xrefs & tocs to work)")
 
 pdf := {
   println("\n====== Compiling pdf documents -- this may take several minutes!")
@@ -175,5 +172,3 @@ lazy val root = (project in file(".")).
       pdf
     ).value
   )
-
-// ***********************************************************
