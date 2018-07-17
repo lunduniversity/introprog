@@ -27,13 +27,13 @@ trait AbstractComplex extends Number {
   override def reduce: AbstractComplex = if (im.decimal == 0) re.reduce else this
 }
 
-case class Complex(re: Real, im: Real) extends AbstractComplex
+final case class Complex(re: Real, im: Real) extends AbstractComplex
 
 object Complex {
   def apply(re: BigDecimal, im: BigDecimal) = new Complex(Real(re), Real(im))
 }
 
-case class Polar(
+final case class Polar(
     override val abs: Real,
     override val fi: Real
   ) extends AbstractComplex {
@@ -55,7 +55,7 @@ trait AbstractReal extends AbstractComplex {
     if (decimal == 0) Number.Zero else if (decimal == 1) Number.One else this
 }
 
-case class Real(decimal: BigDecimal) extends AbstractReal
+final case class Real(decimal: BigDecimal) extends AbstractReal
 
 trait AbstractRational extends AbstractReal {
   def numerator: AbstractInteger
@@ -66,7 +66,7 @@ trait AbstractRational extends AbstractReal {
     if (denominator.isOne) numerator.reduce else this // should use GCD
 }
 
-case class Frac(numerator: Integ, denominator: Integ) extends AbstractRational {
+final case class Frac(numerator: Integ, denominator: Integ) extends AbstractRational {
   require(denominator.integ != 0, "denominator must be non-zero")
 }
 
@@ -85,11 +85,11 @@ trait AbstractInteger extends AbstractRational {
     if (isZero) Number.Zero else if (isOne) Number.One else this
 }
 
-case class Integ(integ: BigInt) extends AbstractInteger
+final case class Integ(integ: BigInt) extends AbstractInteger
 
 trait AbstractNatural extends AbstractInteger
 
-case class Nat(integ: BigInt) extends AbstractNatural{
+final case class Nat(integ: BigInt) extends AbstractNatural{
   require(integ >= 0, "natural numnbers must be non-negative")
 }
 
