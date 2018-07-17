@@ -113,7 +113,6 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-
     QuizID("quiz-w02-collection-methods") -> Vector(  //programs
       "\\code|val xs = Vector(2) |" -> "ny referens till sekvens av längd 1",
       "\\code|Array.fill(9)(0)   |" -> "ny förändringsbar sekvens med nollor",
@@ -331,7 +330,6 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-
     QuizID("quiz-w06-seq-update") -> Vector(  //sequences
       "\\code|{ buf(0) = -1; buf(0) }   |" -> "\\code|-1|",
       "\\code|{ xs(0) = -1; xs(0) }|" ->"{\\small\\code|error: value update is not a member|}",
@@ -343,7 +341,6 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "\\code|xs                        |"   -> "\\code|Vector(1, 2, 3, 4)|",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
-
 
     QuizID("quiz-w06-seq-find") -> Vector(  //sequences
       "\\code|xs.indexOf(0)        |" -> "\\code|5|",
@@ -359,7 +356,6 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-
     QuizID("quiz-w06-seq-sort") -> Vector(  //sequences
       "\\code|'a' < 'A'                  |" -> "\\code|false|",
       "\\code|\"AÄÖö\" < \"AÅÖö\"        |" -> "\\code|true|",
@@ -372,7 +368,6 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "\\code|xs.sortWith((x1,x2) => x1 > x2).indexOf(3)|" -> "\\code|0|",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
-
 
     QuizID("quiz-w07-concepts") -> Vector(  //search, sets, maps
       "mängd              " -> "oordnad samling med unika element",
@@ -430,20 +425,19 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "subtyp"             -> "en typ som är mer specifik",
       "körtidstyp"         -> "kan vara mer specifik än den statiska typen",
       "dynamisk bindning"  -> "körtidstypen avgör vilken metod som körs",
-      "polymorfism"         -> "kan ha många former, t.ex. en av flera subtyper",
-      "trait"              -> "abstrakt klass, kan mixas in, kan ej ha parametrar",
-      "inmixning"          -> "klass får nya egenskaper från trait",
+      "polymorfism"        -> "kan ha många former, t.ex. en av flera subtyper",
+      "trait"              -> "är abstrakt, kan mixas in, kan ej ha parametrar",
+      "inmixning"          -> "tillföra egenskaper med \\code|with| och en trait",
       "överskuggad medlem" -> "medlem i subtyp ersätter medlem i supertyp",
       "anonym klass"       -> "klass utan namn, utvidgad med extra implementation",
       "skyddad medlem"     -> "är endast synlig i subtyper",
       "abstrakt medlem"    -> "saknar implementation",
-      "abstrakt klass"     -> "kan ej instansieras",
-      "referenstyp"        -> "ej värdetyp, har supertypen \\code|AnyRef|",
+      "abstrakt klass"     -> "kan ha parametrar, kan ej instansieras, kan ej mixas in",
       "förseglad typ"      -> "subtypning utanför denna kodfil är förhindrad",
-      "värdetyp"           -> "minneslagring kan optimeras, har supertypen \\code|AnyVal|",
-      "" -> ""
+      "referenstyp"        -> "har supertypen \\code|AnyRef|, allokeras i heapen via referens",
+      "värdetyp"           -> "har supertypen \\code|AnyVal|, lagras direkt på stacken",
+      // "" -> ""
     ).filter(_._1.trim.nonEmpty),
-
 
     QuizID("") -> Vector()
   ).filter(_._1.name.trim.nonEmpty)
