@@ -182,6 +182,197 @@ def skapaDjur: Djur = {val r = math.random;
 
 
 
+\WHAT{Olika typer av heltalspar till veckans laboration \hyperref[section:lab:\LabWeekNINE]{\texttt{\LabWeekNINE}}.}
+
+
+\QUESTBEGIN
+
+
+\Task\label{exe:inheritance:labprep-pair}  \what~Under veckans laboration ska du använda olika typer av par som representerar riktning och position på en tvådimensionell spelplan, samt spelplanens storlek. I stället för att använda en vanlig 2-tupel till dessa tre olika typer av par ska du skapa egna, specifika  typer som alla ärver bastypen \code{Pair[T]} nedan.
+\begin{Code}
+trait Pair[T] {
+  def x: T
+  def y: T
+}
+\end{Code}
+Skillnaden mellan \code{Pair[T]} och en vanlig 2-tupel är att medlemmarna \code{x} och \code{y} garanterat är av \emph{samma} typ, medan en 2-tupel kan innehålla element av olika typ.
+
+I fig. \ref{snake:fig:pairs-uml} visas en bild av klasshierarkin som du steg-för-steg ska utveckla i efterföljande  uppgifter. Fördelen med att ha olika typer av par är ökad typsäkerhet: vi får hjälp av kompilatorn att upptäcka om vi av misstag förväxlar t.ex. en position med en riktning.
+
+\begin{figure}[H]
+\begin{center}
+\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+\tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=2cm, rectangle split, rectangle split parts = 3]
+\begin{tikzpicture}[inner sep=0.5em,scale=1.2, every node/.style={transform shape}]
+
+  \node [umlclass, rectangle split parts = 1, xshift=0cm, yshift=4.5cm] (BaseType1)  {
+              \textit{\textbf{\centerline{\TextBox{\code{Pair[T]}}}}}
+%              \nodepart[align=left]{second}\code{def x: T} \newline \code{def y: T}
+          };
+
+
+  \node [umlclass, rectangle split parts = 1, xshift=-3cm, yshift=2.5cm] (SubType1)  {
+              \textit{\textbf{\centerline{\TextBox{\code{Dim}}}}}
+%              \nodepart[align=left]{second}\code{val x: Int} \newline \code{val y: Int}
+          };
+
+\node [umlclass, rectangle split parts = 1, xshift=0cm, yshift=2.5cm] (SubType2)  {
+            \textit{\textbf{\centerline{\TextBox{\code{Pos}}}}}
+%            \nodepart[]{second}\TextBox{\code{val dim: Int}}
+        };
+
+\node [umlclass, rectangle split parts = 1, xshift=3cm, yshift=2.5cm] (SubType3)  {
+            \textit{\textbf{\centerline{\TextBox{\code{Dir}}}}}
+%            \nodepart[]{second}\TextBox{\code{val dim: Int}}
+        };
+
+
+\draw[umlarrow] (SubType1.north) -- ++(0,0.5) -| (BaseType1.south);
+\draw[umlarrow] (SubType2.north) -- ++(0,0.5) -| (BaseType1.south);
+\draw[umlarrow] (SubType3.north) -- ++(0,0.5) -| (BaseType1.south);
+
+\end{tikzpicture}
+\end{center}
+\caption{Arvshierarki med \code{Pair[T]} som bastyp.}
+\label{snake:fig:pairs-uml}
+\end{figure}
+
+\Subtask Öppna en editor och koda \code{trait Pair[T]} i en fil \code{pairs.scala}. Lägg dessutom till en konkret metod \code{tuple} i \code{Pair[T]} som returnerar en 2-tupel med de båda elementen i paret, så att det vid behov går att omvandla \code{Pair}-instanser till 2-tupler. Klistra in i REPL testa att detta fungerar:
+\begin{REPLnonum}
+scala> val p = new Pair[Int] { override val x = 10; override val y = 20 }
+p: Pair[Int]{val x: Int; val y: Int} = $anon$1@784223e9
+
+scala> p.tuple
+res0: (Int, Int) = (10,20)
+\end{REPLnonum}
+
+\Subtask Skapa en case-klass \code{Dim} som ärver \code{Pair[Int]}. Instanser av denna klass kommer du att använda under veckans laboration för att representera en spelplans storlek genom att låta \code{x} ange antalet horisontella positioner och \code{y} antalet vertikala positioner.
+
+\Subtask Lägg till ett kompanjonsobjekt \code{Dim} med en \code{apply}-metod som kan skapa \code{Dim}-instanser givet en 2-tupel.
+Testa i REPL enligt nedan.
+\begin{REPLnonum}
+scala> Dim(50, 60)
+res1: Dim = Dim(50,60)
+
+scala> Dim((60, 50))
+res2: Dim = Dim(60,50)
+
+scala> res2.tuple
+res3: (Int, Int) = (60,50)
+\end{REPLnonum}
+
+\Subtask Lägg till en case-klass \code{Pos} som ärver \code{Pair[Int]} som representerar en position med en \code{x}-koordinat och en \code{y}-koordinat inom en spelplansstorlek \code{dim}. Kordinatpositionerna är heltal och räknas från \code{0} till (men inte med) \code{dim.x} resp. \code{dim.y}.
+
+\Subtask Implementera metoderna \code{+} och \code{-} i case-klassen \code{Pos}. Båda metoderna ska ta en parameter \code{p} av typen \code{Pair[Int]} och returnera en ny \code{Pos}, där \code{p.x} resp. \code{p.y} är adderat resp. subtraherat från aktuell position. Aritmetiken ska ske modulo storleken \code{dim}, d.v.s en position kan aldrig hamna utanför spelplanen; om något beräkningsresultat hamnar utanför spelplanen så börjar man om på andra sidan. \\ \emph{Tips:} Använd  \code|java.lang.Math.floorMod|.
+
+\Subtask Lägg till ett kompanjonsobjekt \code{Pos} med en \code{apply}-metod som skapar en ny \code{Pos}-instans som garanterat har koordinaterna inom \code{dim} med hjälp av \code{floorMod}. Gör dessutom konstruktorn i case-klassen \code{Pos} privat så att det inte går att skapa positioner utanför \code{dim} med \code{new}.
+Testa att det fungerar enligt nedan:
+\begin{REPLnonum}
+scala> Pos(-1,20,Dim(10,20))
+res4: Pos = Pos(9,0,Dim(10,20))
+
+scala> new Pos(-1,20,Dim(10,20))
+error: constructor Pos in class Pos cannot be accessed
+\end{REPLnonum}
+
+\Subtask Lägg även till fabriksmetoden \code{random} som kan skapa nya slumpmässiga positioner inom en viss spelplansstorlek. \emph{Tips:} Använd \code{scala.util.Random.nextInt}.
+\begin{REPLnonum}
+scala> for (_ <- 1 to 3) yield Pos.random(Dim(10,10))
+res5: Vector(Pos(6,1,Dim(10,10)), Pos(7,9,Dim(10,10)), Pos(3,2,Dim(10,10)))
+\end{REPLnonum}
+
+\Subtask Lägg till en abstrakt, förseglad klass \code{Dir} som ärver \code{Pair[Int]} och har två \code{val}-parametrar \code{x} och \code{y}. Lägg också till fyra case-object som ärver \code{Dir} och som representerar riktningar i de fyra väderstrecken väderstrecken genom att parametrarna \code{x} resp. \code{y} ges något av värden $1$, $-1$ eller $0$. Norrut ska anges som $-1$ etc. Verifiera i REPL att förseglingen fungerar. Hur lyder felmeddelandet?
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+\SubtaskSolved
+\begin{CodeSmall}
+trait Pair[T] {
+  def x: T
+  def y: T
+  def tuple: (T, T) = (x, y)
+}
+\end{CodeSmall}
+
+\SubtaskSolved
+\begin{CodeSmall}
+case class Dim(x: Int, y: Int) extends Pair[Int]
+\end{CodeSmall}
+
+\SubtaskSolved
+\begin{CodeSmall}
+object Dim {
+  def apply(dim: (Int, Int)): Dim = Dim(dim._1, dim._2)
+}
+\end{CodeSmall}
+
+\SubtaskSolved
+\begin{CodeSmall}
+case class Pos(x: Int, y: Int, dim: Dim) extends Pair[Int]
+\end{CodeSmall}
+
+\SubtaskSolved
+\begin{CodeSmall}
+case class Pos(x: Int, y: Int, dim: Dim) extends Pair[Int] {
+  import java.lang.Math.{floorMod => mod}
+
+  def +(p: Pair[Int]): Pos =
+    copy(x = mod(x + p.x, dim.x), y = mod(y + p.y, dim.y))
+
+  def -(p: Pair[Int]): Pos =
+    copy(x = mod(x - p.x, dim.x), y = mod(y - p.y, dim.y))
+}
+\end{CodeSmall}
+
+\SubtaskSolved \SubtaskSolved
+\begin{CodeSmall}
+case class Pos private (x: Int, y: Int, dim: Dim) extends Pair[Int] {
+  import java.lang.Math.{floorMod => mod}
+
+  def +(p: Pair[Int]): Pos =
+    copy(x = mod(x + p.x, dim.x), y = mod(y + p.y, dim.y))
+
+  def -(p: Pair[Int]): Pos =
+    copy(x = mod(x - p.x, dim.x), y = mod(y - p.y, dim.y))
+}
+
+object Pos {
+  import java.lang.Math.{floorMod => mod}
+  import scala.util.Random
+
+  def apply(x: Int, y: Int, dim: Dim): Pos =
+    new Pos(mod(x, dim.x), mod(y, dim.y), dim)
+
+  def random(dim: Dim): Pos = {
+    Pos(Random.nextInt(dim.x), Random.nextInt(dim.y), dim)
+  }
+}
+\end{CodeSmall}
+
+\SubtaskSolved
+\begin{CodeSmall}
+abstract sealed class Dir(val x: Int, val y: Int) extends Pair[Int]
+
+case object North extends Dir( 0, -1)
+case object South extends Dir( 0,  1)
+case object East  extends Dir( 1,  0)
+case object West  extends Dir(-1,  0)
+\end{CodeSmall}
+
+\begin{REPLnonum}
+scala> case object Gurka extends Dir(0,0)
+error: illegal inheritance from sealed class Dir
+\end{REPLnonum}
+
+\QUESTEND
+
+
+
+
 
 
 \WHAT{Supertyp med parameter.}
@@ -214,22 +405,15 @@ class Forskare(
 
 \Subtask Skriv två satser: en som först stoppar in instanserna i en \code{Vector} och en som sedan loopar igenom vektorn och skriv ut alla instansers \code{toString} och \code{namn}.
 
-
 \Subtask Utbildningsdepartementet vill att det inte ska gå att instansiera objekt av typerna \code{Person} och \code{Akademiker}. Det kan åstadkommas genom att placera nyckelordet \code{abstract} före \code{class}. Uppdatera koden i enlighet med detta. Vilket blir felmeddelande om man försöker instansiera en \code{abstract class}?
 
 \Subtask Utbildningsdeparetementet vill slippa implementera \code{toString} och slippa skriva \code{new} vid instansiering. Gör därför om typerna \code{Student} och \code{Forskare} till case-klasser. \emph{Tips:} För att undkomma ett kompileringsfel (vilket?) behöver du använda \code{override val} på lämpligt ställe.
-
 Skapa instanser av de nya case-klasserna \code{Student} och \code{Forskare} och skriv ut deras \code{toString}. Hur ser utskriften ut?
 
 \Subtask Eftersom \code{Person} och \code{Akademiker} nu är abstrakta, vill utbildningsdepartementet att du gör om dessa typer till traits med abstrakta attribut istället för klasser. Du kan då undvika \code{override val} i klassparametrarna till de konkreta case-klasserna.
-
 Man inför också en case-klass \code{IckeAkademiker} som man tänker använda i olika statistiska medborgarundersökningar.
-
 Dessutom förser man alla personer med ett personnummer representerat som en \code{Long}.
-
 Hur ser utbildningsdepartementets kod ut nu, efter alla ändringar? Skriv ett testprogram som skapar några instanser och skriver ut deras attribut.
-
-\Subtask I vilka sammanhang är det nödvändigt att använda en \code{trait} respektive en \code{class}?
 
 \SOLUTION
 
@@ -276,14 +460,19 @@ case class IckeAkademiker(
     nbr: Long) extends Person
 \end{Code}
 
-\SubtaskSolved  Man måste använda en klass om man behöver klassparametrar. Man måste använda en trait om man vill göra in-mixning med \code{with}. \\
- Se \href{http://www.artima.com/pins1ed/traits.html\#12.7}{http://www.artima.com/pins1ed/traits.html\#12.7}.
 
 
 \QUESTEND
 
 
 
+
+\clearpage
+
+
+
+
+\ExtraTasks %%%%%%%%%%%%%%%%%
 
 
 
@@ -306,19 +495,19 @@ Dessa kan sedan användas som parametrar till denna case-klass vid skapande av k
 \begin{lstlisting}[language=,keywords={case,class}]
 case class Kort(färg: Int, valör: Int)
 \end{lstlisting}
-Man kan hålla reda på färgen med en variabel av typen \code{Int} och tilldela den en viss färg med ovan konstanter. Och när man skapar ett kort behöver man inte komma ihåg vilket numret är.
+Man kan hålla reda på färgen med en variabel av typen \code{Int} och tilldela den en viss färg med ovan konstanter. Och när du skapar ett kort kan du använda färgnamnet och du slipper därmed att behöva komma ihåg vilket heltal som representerar färgen.
 \begin{REPL}
 scala> val f = Färg.Spader
 scala> import Färg._
 scala> Kort(Ruter, 7)
 \end{REPL}
-En annan fördelen med detta är att man lätt kan loopa från 1 till 4 för att gå igenom alla färger.
+En annan fördelen med detta är att man lätt kan iterera över alla färger:
 \begin{REPL}
 scala> val kortlek = for (f <- 1 to 4; v <- 1 to 13) yield Kort(f, v)
 \end{REPL}
-Nackdelen är att kompilatorn vid kompileringstid inte kollar om variablerna av misstag råkar ges något värde utanför det giltiga intervallet, t.ex. 42. Detta får vi själv hålla koll på vid körtid, till exempel med funktionen \code{require} eller \code{if}-satser, etc.
+Men den stora nackdelen med detta är att kompilatorn vid kompileringstid inte kollar om variablerna av misstag råkar ges något värde utanför det giltiga intervallet, eftersom alla heltal är möjliga. Detta får vi själv hålla koll på vid körtid, till exempel med funktionen \code{require} eller \code{if}-satser, etc.
 
-Istället kan man använda case-objekt enligt nedan deluppgifter och få hjälp av kompilatorn att hitta eventuella fel vid kompileringstid.  Ett case-objekt är som ett vanligt singelton-objekt men det får automatiskt en \code{toString} samma som namnet. Case-objekt kan dessutom användas som värden i mönstermatchningar (mer om detta i kapitel \ref{chapter:W10}).
+Istället kan man använda uppräknade värden med hjälp av case-objekt enligt nedan deluppgifter och därmed få hjälp av kompilatorn att hitta eventuella fel vid kompileringstid.  Ett case-objekt är som ett vanligt singelton-objekt men det får bl.a. automatiskt en \code{toString} som är samma som namnet. Case-objekt kan dessutom användas som värden i mönstermatchningar (mer om detta i kapitel \ref{chapter:W10}).
 
 \Subtask Deklarera följande uppräknade värden som singelton objekt med gemensam bastyp. Med nyckelordet \code{sealed} så ''förseglas'' klassen och inga andra direkta subtyper tillåts förutom de som finns i samma kod-fil eller block. I detta exempel  med kortfärger vet vi ju att det inte finns fler än dessa fyra färger.
 \begin{Code}
@@ -353,10 +542,6 @@ scala> val blandad = scala.util.Random.shuffle(kortlek)
 \end{REPL}
 
 \Subtask Skriv en funktion \code{ def blandadKortlek: Vector[Kort] = ???} som ger en ny blandad kortlek varje gång den anropas med metoden i föregående uppgift.
-
-%%%%%%%%%%%%%%%%%%% FEEEEEELLL \end{Code}
-
-
 
 \Subtask Om man även vill ha en heltalsrepresentation med en medlem \code{toInt} för alla värden, kan man ge bastypen en parameter och i stället för en trait (som inte kan ha några parametrar) använda en abstrakt klass.
 
@@ -402,15 +587,6 @@ def blandadKortlek: Vector[Kort] = {
 
 
 
-
-
-
-
-
-
-
-
-\ExtraTasks %%%%%%%%%%%%%%%%%
 
 
 
@@ -549,8 +725,27 @@ SubSub: a = 44 eftersom medlemmen överskuggas, b = 42, c = "still lazy".
 
 
 
+\clearpage
+
+
+
+
+
 \AdvancedTasks %%%%%%%%%%%%%%%%%
 
+\WHAT{Använda \code{trait} eller \code{class}?}
+
+\QUESTBEGIN
+
+\Task \what~ I vilka sammanhang är det nödvändigt att använda en \code{trait} respektive en \code{class}? Läs här för fördjupning:\\  \href{http://www.artima.com/pins1ed/traits.html\#12.7}{http://www.artima.com/pins1ed/traits.html\#12.7}.
+
+
+\SOLUTION
+
+
+\TaskSolved \what~Man måste använda en klass om man behöver klassparametrar. Man måste använda en trait om man vill göra in-mixning med \code{with}. \\
+
+ \QUESTEND
 
 
 
@@ -563,7 +758,7 @@ SubSub: a = 44 eftersom medlemmen överskuggas, b = 42, c = "still lazy".
 En alternativ fågeltaxonomi, speciellt populär i Skåne, delar in alla fåglar i två specifika kategorier: Kråga respektive Ånka. Krågor kan flyga men inte simma, medan Ånkor kan simma och oftast även flyga. Fågel i generell, kollektiv bemärkelse kallas på gammal skånska för Fyle.%
 \footnote{\href{http://www.klangfix.se/ordlista.htm}{www.klangfix.se/ordlista.htm}}
 
-\begin{Code}
+\begin{CodeSmall}
 trait Fyle {
   val läte: String
   def väsnas: Unit = print(läte * 2)
@@ -584,7 +779,7 @@ class Ånka extends Fyle with KanSimma with KanKanskeFlyga {
   val läte = "kvack"
   override def väsnas = print(läte * 4)
 }
-\end{Code}
+\end{CodeSmall}
 
 \Subtask En flitig ornitolog hittar 42 fåglar i en perfekt skog där alla fågelsorter är lika sannolika, representerat av vektorn \code{fyle} nedan. Skriv i REPL ett uttryck som undersöker hur många av dessa som är flygkunniga Ånkor, genom att använda metoderna \code{filter}, \code{isInstanceOf}, \code{ärFlygkunnig} och \code{size}.
 
@@ -926,7 +1121,7 @@ scala> b.asInstanceOf[A]
 
 \QUESTBEGIN
 
-\Task  \what~ Studera den djupa arvshierarkin i paketet \code{numbers} nedan som modellerar olika sorters tal i matematiken. Du kan även ladda ner koden här: \\
+\Task  \what~ Studera den djupa arvshierarkin i paketet \code{numbers} i koden på efterföljande sidor. Paketet  \code{numbers}modellerar olika sorters tal i matematiken. Du kan även ladda ner koden här: \\
 \href{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/numbers.scala}{github.com/lunduniversity/introprog/blob/master/compendium/examples/numbers.scala}
 \\ Notera metoden \code{reduce} som reducerar ett tal till sin enklaste form och dess implementation överskuggas på lämpliga ställen med relevant reduktion.
 
@@ -958,6 +1153,8 @@ res2: numbers.Complex = Complex(Real(0),Real(42.42))
 \Subtask Implementera fler räknesätt och bygg vidare på koden så som du finner intressant.
 
 \Subtask Gör så att metoden \code{reduce} i klassen \code{AbstractRational} använder algoritmen Greatest Common Divisor (GCD)\footnote{\href{https://sv.wikipedia.org/wiki/St\%C3\%B6rsta_gemensamma_delare}{https://sv.wikipedia.org/wiki/St\%C3\%B6rsta\_gemensamma\_delare}} så som beskrivs här: \\ \href{http://www.artima.com/pins1ed/functional-objects.html#6.8}{www.artima.com/pins1ed/functional-objects.html\#6.8} \\ så att täljare och nämnare blir så små som möjligt.
+
+\clearpage
 
 \scalainputlisting[numbers=left, basicstyle=\ttfamily\fontsize{9.2}{12}\selectfont]{examples/numbers.scala}\SOLUTION
 
