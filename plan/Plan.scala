@@ -122,7 +122,7 @@ trait Plan {
       """.stripTrim),
 
    Module("Arv",
-      id = "inheritance", exercise = "inheritance", lab = "turtlerace-team", contents = """
+      id = "inheritance", exercise = "inheritance", lab = "snake", contents = """
       | arv, polymorfism, trait, extends, asInstanceOf, with, inmixning,
       | supertyp, subtyp, bastyp, override,
       | Scalas typhierarki, Any, AnyRef, Object, AnyVal, Null, Nothing,
