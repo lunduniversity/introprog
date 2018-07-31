@@ -104,13 +104,29 @@ pdf := {
 
 //http://www.scala-sbt.org/0.13/docs/Howto-Triggered.html
 // This does not seem to work on sbt 1.1 :( as pdf task are not triggered on change anymore
-watchSources ++= ((baseDirectory.value / "compendium") * "*.tex").get
-watchSources ++= ((baseDirectory.value / "compendium") * "*.cls").get
-watchSources ++= ((baseDirectory.value / "compendium" / "modules") * "*.tex").get
-watchSources ++= ((baseDirectory.value / "compendium" / "prechapters") * "*.tex").get
-watchSources ++= ((baseDirectory.value / "compendium" / "postchapters") * "*.tex").get
-watchSources ++= ((baseDirectory.value / "slides" / "body") * "*.tex").get
-watchSources ++= ((baseDirectory.value / "slides") * "*.tex").get
+//watchSources ++= ((baseDirectory.value / "compendium") * "*.tex").get
+//Found workaround here thanks to eatkins:
+//https://github.com/sbt/sbt/issues/4272
+def ws(base: sbt.io.syntax.File, includeFilter: sbt.io.FileFilter): sbt.internal.io.Source =
+  WatchSource(base, includeFilter, excludeFilter=NothingFilter)
+// expands to e.g.:
+//watchSources += WatchSource(baseDirectory.value / "compendium","*.tex", NothingFilter)
+watchSources += ws(baseDirectory.value / "compendium",                  "*.tex")
+watchSources += ws(baseDirectory.value / "compendium",                  "*.cls")
+watchSources += ws(baseDirectory.value / "compendium" / "modules",      "*.tex")
+watchSources += ws(baseDirectory.value / "compendium" / "prechapters",  "*.tex")
+watchSources += ws(baseDirectory.value / "compendium" / "postchapters", "*.tex")
+watchSources += ws(baseDirectory.value / "slides" / "body",             "*.tex")
+watchSources += ws(baseDirectory.value / "slides",                      "*.tex")
+
+// OLD COODE below replaced with above workaround:
+//watchSources ++= ((baseDirectory.value / "compendium") * "*.tex").get
+//watchSources ++= ((baseDirectory.value / "compendium") * "*.cls").get
+//watchSources ++= ((baseDirectory.value / "compendium" / "modules") * "*.tex").get
+//watchSources ++= ((baseDirectory.value / "compendium" / "prechapters") * "*.tex").get
+//watchSources ++= ((baseDirectory.value / "compendium" / "postchapters") * "*.tex").get
+//watchSources ++= ((baseDirectory.value / "slides" / "body") * "*.tex").get
+//watchSources ++= ((baseDirectory.value / "slides") * "*.tex").get
 
 lazy val pdfExercises = taskKey[Unit]("Compile exercises.tex")
 pdfExercises := {
