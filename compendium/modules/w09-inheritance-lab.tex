@@ -9,10 +9,12 @@
 
 \begin{Preparations}
 \item Gör övning {\tt \ExeWeekNINE} i kapitel \ref{exe:W09}, speciellt uppgift \ref{exe:inheritance:labprep-pair}.
+\item Läs dokumentationen för \code{introprog.BlockGame}.
+\item Läs igenom hela laborationen och förbered dig inför första gruppmötet.
 \input{team-lab-prep-items.tex}
 \item Träffas i din samarbetsgrupp och diskutera ert arbetssätt utifrån följande frågeställningar:
 \begin{itemize}
-  \item Vilken av era varianter av \code{Turtle} ska ni utgå ifrån?
+  \item Vilken krav ska ni implementera?
   \item Hur ska ni jobba med gemensamma koddelar?
   \item Hur ska ni dela med er av de koddelar som ni utvecklar var för sig?
 \end{itemize}
@@ -23,9 +25,10 @@
 
 Spelet \emph{Snake}\footnote{Även kallat ''masken''. \url{https://sv.wikipedia.org/wiki/Snake}}
 
+\TODO screendumps one+two-player game
 \subsection{Obligatoriska funktionella krav}
 
-Följande funktionella krav ska uppfyllas av ert program om ni är sex personer i gruppen. Om ni är färre kan ni välja att skippa krav enligt efterföljande tabell.
+Följande funktionella krav ska uppfyllas av ert program om ni är sex personer i gruppen. Om ni är färre kan ni välja att skippa krav enligt tabell \ref{lab:snak:table-reqt}.
 %\footnote{Om någon student, p.g.a. långvarig sjukdom eller annat giltigt skäl, genomför laborationen själv i efterhand som en individuell laboration ska följande krav implementeras på egen hand: \code{Player}, \code{OnePlayerGame}, \code{Snake}, \code{Apple}.}
 \begin{itemize}[nosep, label={$\square$},]
 \item \textbf{\texttt{Player}}. Det ska finnas spelare som motsvarar mänskliga användare och som har ett namn och fyra knappar som den kan spela med. Varje spelare har en egen orm som den kan styra med sina knappar.
@@ -43,7 +46,7 @@ Följande funktionella krav ska uppfyllas av ert program om ni är sex personer 
 \end{itemize}
 \begin{table}[H]
   \centering
-  \caption{Krav som minst ska implementeras vid respektive gruppstorlek.}
+  \caption{Krav som minst ska implementeras vid respektive gruppstorlek. \label{lab:snak:table-reqt}}
 
 \begin{tabular}{r | c c c c c}
   Krav                   & 2       & 3       & 4       & 5       & 6 \\ \hline
@@ -58,13 +61,34 @@ Följande funktionella krav ska uppfyllas av ert program om ni är sex personer 
 
 \subsection{Obligatoriska design-krav}
 
+\begin{enumerate}[label={$\square$}, leftmargin=*]
 
+\item Snake-spel ska gå att starta med huvudprogrammet nedan. Huvudprogrammet får ändras vid behov i enlighet med minimikrav vad gäller gruppstorlek i tabell \ref{lab:snak:table-reqt}, samt valbara extrakrav i avsnitt \ref{lab:snake:extra-reqts}.
+\begin{Code}
+package snake
+
+object Main {
+  def main(args: Array[String]): Unit = {
+    val buttons = Seq("One","Two", "Tournament", "Cancel")
+    val selected =
+      introprog.Dialog.select("Number of players?", buttons, "Snake")
+    selected match {
+      case "One" => (new OnePlayerGame).play("Pink")
+      case "Two" => (new TwoPlayerGame).play("Purple", "Pink")
+      case "Tournament" => ??? // valbart krav
+      case _ =>
+    }
+  }
+}
+\end{Code}
+
+\item Spelet ska bygga vidare på \code{introprog.BlockWindow} enligt typhierarkin i fig.~\ref{snake:fig:game-hierarchy}.
 
 \begin{figure}[H]
 \begin{center}
 \newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
 \tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3cm, rectangle split, rectangle split parts = 3]
-\begin{tikzpicture}[inner sep=0.5em,scale=1.2, every node/.style={transform shape}]
+\begin{tikzpicture}[inner sep=0.5em,scale=1.0, every node/.style={transform shape}]
 
   \node [umlclass, rectangle split parts = 1, xshift=0cm, yshift=4.5cm] (BaseType)  {
               \textit{\textbf{\centerline{\TextBox{\code{BlockGame}}}}}
@@ -78,12 +102,12 @@ Följande funktionella krav ska uppfyllas av ert program om ni är sex personer 
           };
 
 \node [umlclass, rectangle split parts = 1, xshift=-3cm, yshift=1.0cm] (SubSubType1)  {
-            \textit{\textbf{\centerline{\TextBox{\code{OnePlayerGame}}}}}
+            {\textbf{\centerline{\TextBox{\code{OnePlayerGame}}}}}
 %            \nodepart[]{second}\TextBox{\code{val dim: Int}}
         };
 
 \node [umlclass, rectangle split parts = 1, xshift=3cm, yshift=1.0cm] (SubSubType2)  {
-            \textit{\textbf{\centerline{\TextBox{\code{TwoPlayerGame}}}}}
+            {\textbf{\centerline{\TextBox{\code{TwoPlayerGame}}}}}
 %            \nodepart[]{second}\TextBox{\code{val dim: Int}}
         };
 
@@ -98,18 +122,195 @@ Följande funktionella krav ska uppfyllas av ert program om ni är sex personer 
 \end{figure}
 
 
+\item Ormar och frukt ska utgå från bastypen \code{Entity} enligt typhierarkin i ~\ref{snake:fig:entity-hierarchy}.
 
-\subsection{Valbara krav -- välj minst ett}
+\begin{figure}[H]
+\begin{center}
+\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+\tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=2.5cm, rectangle split, rectangle split parts = 3]
+\begin{tikzpicture}[inner sep=0.5em,scale=1.0, every node/.style={transform shape}]
+
+  \node [umlclass, rectangle split parts = 1, xshift=-1.0cm, yshift=4.5cm] (BaseType)  {
+              \textit{\textbf{\centerline{\TextBox{\code{Entity}}}}}
+%              \nodepart[align=left]{second}\code{def x: T} \newline \code{def y: T}
+          };
+
+
+  \node [umlclass, rectangle split parts = 1, xshift=-3cm, yshift=2.5cm] (SubType1)  {
+              \textit{\textbf{\centerline{\TextBox{\code{MovingEntity}}}}}
+%              \nodepart[align=left]{second}\code{val x: Int} \newline \code{val y: Int}
+          };
+
+\node [umlclass, rectangle split parts = 1, xshift=-4.5cm, yshift=0.5cm] (SubSubType0)  {
+            {\textbf{\centerline{\TextBox{\code{Snake}}}}}
+%            \nodepart[]{second}\TextBox{\code{val dim: Int}}
+};
+
+
+\node [umlclass, rectangle split parts = 1, xshift=0.75cm, yshift=2.5cm] (SubType2)  {
+            \textit{\textbf{\centerline{\TextBox{\code{Fruit}}}}}
+%            \nodepart[]{second}\TextBox{\code{val dim: Int}}
+        };
+
+\node [umlclass, rectangle split parts = 1, xshift=-1.0cm, yshift=0.5cm] (SubSubType1)  {
+            {\textbf{\centerline{\TextBox{\code{Apple}}}}}
+%            \nodepart[]{second}\TextBox{\code{val dim: Int}}
+        };
+
+\node [umlclass, rectangle split parts = 1, xshift=2.5cm, yshift=0.5cm] (SubSubType2)  {
+            {\textbf{\centerline{\TextBox{\code{Banana}}}}}
+%            \nodepart[]{second}\TextBox{\code{val dim: Int}}
+        };
+
+
+\draw[umlarrow] (SubType1.north) -- ++(0,0.5) -| (BaseType.south);
+\draw[umlarrow] (SubType2.north) -- ++(0,0.5) -| (BaseType.south);
+\draw[umlarrow] (SubSubType1.north) -- ++(0,0.5) -| (SubType2.south);
+\draw[umlarrow] (SubSubType2.north) -- ++(0,0.5) -| (SubType2.south);
+\draw[umlarrow] (SubSubType0.north) -- ++(0,0.5) -| (SubType1.south);
+
+\end{tikzpicture}
+\end{center}
+\caption{Arvshierarki med klassen \code{Entity} som bastyp.}
+\label{snake:fig:entity-hierarchy}
+\end{figure}
+
+
+\item \code{Entity} representerar en varelse i ett spel och ska se ut så här:
+\begin{Code}
+trait Entity {
+  def draw():   Unit
+  def erase():  Unit
+  def update(): Unit
+  def reset():  Unit
+}
+\end{Code}
+Metoderna \code{draw} resp. \code{erase} anropas vid ritning resp. radering. Metoden \code{reset} återställer ursprungstillståndet. Metoden \code{update} anropas en gång i varje runda i spel-loopen.
+
+\item \code{MovingEntity} representerar en spelvarelse som kan röra sig i en viss hastighet och ska se ut så här:
+\begin{Code}
+trait MovingEntity extends Entity {
+  def move(): Unit
+
+  var movesPerSecond: Double = 20.0
+
+  final def millisBetweenMoves(): Int =
+    (1000 / movesPerSecond).round.toInt max 1
+
+  private var _timestampLastMove: Long = System.currentTimeMillis
+  final def timestampLastMove = _timestampLastMove
+
+  override final def update(): Unit =
+    if (System.currentTimeMillis > _
+          timestampLastMove + millisBetweenMoves) {
+      _timestampLastMove = System.currentTimeMillis
+      move()
+    }
+}
+\end{Code}
+
+\item Det ska i \code{SnakeGame} finnas en typhierarki med \code{State} som bastyp som representerar spelets övergripande tillstånd enligt följande:
+\begin{Code}
+sealed trait State
+case object Starting extends State
+case object Playing  extends State
+case object GameOver extends State
+case object Quitting extends State
+\end{Code}
+
+\item Vid varje runda i spelloopen ska följande logik exekveras. Denna kod placeras förslagsvis i \code{gameLoopAction}, se vidare \code{SnakeGame} i avsnitt \ref{lab:snake:tips}.
+\begin{Code}
+if (state == Playing) {
+  entities.foreach(_.erase)
+  entities.foreach(_.update)
+  entities.foreach(_.draw)
+  if (isGameOver) enterGameOverState()
+}
+\end{Code}
+
+\end{enumerate}
+
+
+
+\subsection{Valbara krav -- välj minst ett}\label{lab:snake:extra-reqts}
 
 Du ska implementera minst ett (gärna flera) av dessa krav:
 \begin{itemize}[nosep, label={$\square$}]
-\item
+\item Spelare kan ange sitt namn, t.ex. via en dialog eller genom argument till \code{main}.
+\item Om en spelare kör in i sin egen orms svans så är spelet förlorat. %(Detta är vanligt i många Snake-spel.)
+\item Om en spelare kör utanför spelplanen så är spelet förlorat. %(Detta är vanligt i många Snake-spel.)
+\item \textbf{\code{Points}}. Inför ett poängsystem, där poängen beror på t.ex. längden på svansen, antalet svängar, antal uppätna äpplen, etc.
+\item \textbf{\code{Highscore}}. Spelet ska visa en lista med de spelare som fått flest poäng.
+
+\item \textbf{\code{TwoPlayerComp extends Competition}}. Två spelare ska kunna tävla i en bäst-av-$n$-matcher-tävling i en sekvens av \code{TwoPlayerGame.play}, där den som vinner flest matcher blir blir totalvinnare.
+
+\item \textbf{\code{SinglePlayerComp extends Competition}}. Flera spelare ska kunna tävla i en-persons-Snake, där den som får flest poäng av $n$ \code{OnePlayerGame}-spel blir totalvinnare.
+
+
+\item \textbf{\code{Tournament extends Competition}}. Många spelare ska kunna spela en turnering.\footnote{\url{https://en.wikipedia.org/wiki/Tournament}} Namnen på spelarna läses in från en textfil.
+\begin{itemize}[nosep, label={$\square$}]
+\item \textbf{\code{KnockOut extends Tournament}}. Det ska gå att spela en utslagsturnering, som avslutas med final efter semi-final, etc., beroende på antal spelare.
+\item \textbf{\code{RoundRobin extends Tournament}}. Det ska gå att spela en alla-möter-alla-turnering, där alla möjliga par av spelare möts i slumpvis ordning.
+\end{itemize}
+
 \end{itemize}
 
 
-\subsection{Tips och förslag}
+\subsection{Tips och förslag}\label{lab:snake:tips}
+
+Här följer en skiss på den abstrakta klassen \code{SnakeGame} med de abstrakta metoderna \code{isGameOver} och \code{play} som överskuggas i underklasserna \code{OnePlayerGame} och \code{TwoPlayerGame}:
+\begin{CodeSmall}
+package snake
+import introprog.BlockGame
+
+abstract class SnakeGame(title: String) extends BlockGame(
+  title,
+  dim = (60, 60),
+  blockSize = 15,
+  background = Colors.black,
+  framesPerSecond = 50,
+  messageAreaHeight = 3,
+) {
+  var entities: Vector[Entity] = Vector.empty
+  var players: Vector[Player] = Vector.empty
+  var state: State = Starting
+
+  def enterStartingState(): Unit = {
+    clearWindow
+    drawCenteredText("Press SPACE to start!")
+    state = Starting
+  }
+
+  def enterPlayingState(): Unit = {
+    clearWindow
+    entities.foreach(_.reset)
+    entities.foreach(_.draw)
+    state = Playing
+  }
+
+  def enterGameOverState(): Unit =  ???
+
+  def enterQuittingState(): Unit =  ???
+
+  override def handleKey(key: String): Unit = ???
+
+  override def onClose(): Unit = ???
+
+  def isGameOver(): Boolean
+
+  override def gameLoopAction(): Unit =
+
+  def startGameLoop(): Unit = {
+    pixelWindow.open // möjliggör omstart även om fönstret stängts
+    enterStartingState()
+    gameLoop(stopWhen = state == Quitting)
+  }
+
+  def play(playerNames: String*): Unit
+}
+\end{CodeSmall}
+
 
 \begin{enumerate}[leftmargin=*]
 \item
-
 \end{enumerate}
