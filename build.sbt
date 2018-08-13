@@ -6,11 +6,30 @@ import complete.DefaultParsers._
 
 lazy val hello = taskKey[Unit]("Prints welcome message")
 hello := println("""
-  ===== WELCOME to the sbt build of lunduniversity/introprog ======
-    type 'build' for a complete build of all pdfs
-  DON'T PANIC: a full build can take >500sec on a 2.5GHz machine...
+  ======= WELCOME to the sbt build of lunduniversity/introprog =========
+
+    type 'build' for a complete pdf build including dependent gen tasks
+      DON'T PANIC: a full build can take >200sec on a 2.8GHz machine...
+
+    type 'pdf' generate all pdf files
+
+    type 'pdf<TAB>' to see individual pdf build commands
+
+    type 'genQuiz' to generate quiz files
+
+    type 'gen' to generate plan files
+
+    type 'eclipse' to generate eclipse workspace
+
+    type 'hello' to see this message
+
+  =====================================================================
+
 """)
 
+lazy val startupTransition: State => State = { s: State =>
+  "hello" :: s
+}
 
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
@@ -36,7 +55,12 @@ lazy val workspace = (project in file("workspace")).settings(commonSettings: _*)
     EclipseKeys.withSource := true
   )
 
-lazy val build = taskKey[Unit]("plan/run before pdf")
+lazy val build = taskKey[Unit]("complete build including plan/run before pdf")
+build := Def.sequential(
+  gen,
+  genquiz,
+  pdf
+).value
 
 lazy val gen = taskKey[Unit]("alias for plan/run")
 gen := (run in Compile in plan).toTask("").value
@@ -119,15 +143,6 @@ watchSources += ws(baseDirectory.value / "compendium" / "postchapters", "*.tex")
 watchSources += ws(baseDirectory.value / "slides" / "body",             "*.tex")
 watchSources += ws(baseDirectory.value / "slides",                      "*.tex")
 
-// OLD COODE below replaced with above workaround:
-//watchSources ++= ((baseDirectory.value / "compendium") * "*.tex").get
-//watchSources ++= ((baseDirectory.value / "compendium") * "*.cls").get
-//watchSources ++= ((baseDirectory.value / "compendium" / "modules") * "*.tex").get
-//watchSources ++= ((baseDirectory.value / "compendium" / "prechapters") * "*.tex").get
-//watchSources ++= ((baseDirectory.value / "compendium" / "postchapters") * "*.tex").get
-//watchSources ++= ((baseDirectory.value / "slides" / "body") * "*.tex").get
-//watchSources ++= ((baseDirectory.value / "slides") * "*.tex").get
-
 lazy val pdfExercises = taskKey[Unit]("Compile exercises.tex")
 pdfExercises := {
   runPdfLatexCmd(texFile = file("exercises.tex"), workDir = file("compendium"))
@@ -176,16 +191,14 @@ pdfSlides := {
   if (args.isEmpty) runPdfLatexCmd(file("all-lectures.tex"), workDir)
 }
 
-
 lazy val root = (project in file(".")).
   aggregate(workspace, plan).
   settings(commonSettings: _*).
   settings(
     name := "introprog",
-    build := Def.sequential(
-      hello,
-      gen,
-      genquiz,
-      pdf
-    ).value
+    onLoad in Global := {
+      // https://www.scala-sbt.org/1.0/docs/offline/Howto-Startup.html
+      val old = (onLoad in Global).value
+      startupTransition compose old
+    }
   )
