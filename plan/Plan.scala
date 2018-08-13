@@ -135,7 +135,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Mönstermatchning, undantag",
-      id = "patterns", exercise = "patterns", lab = "music", contents = """
+      id = "patterns", exercise = "patterns", lab = "tabular", contents = """
       | mönstermatchning, match, Option, throw, try, catch, Try, unapply, sealed,
       | flatten, flatMap, partiella funktioner, collect,
       | wildcard-mönster, variabelbinding i mönster, sekvens-wildcard, bokstavliga mönster,
@@ -159,7 +159,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Sortering",
-        id = "sort", exercise = "sort", lab = "survey", contents = """
+        id = "sort", exercise = "sort", lab = "", contents = """
         | strängjämförelse, compareTo, implicit ordning,
         | binärsökning, algoritm: BINARY-SEARCH,
         | sortering till ny vektor, sortering på plats,
@@ -213,7 +213,7 @@ trait Plan {
   }
 
   lazy val labNumOfWeek =
-    "Lab01,--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab07,Lab08,Lab09,Lab10,Lab11,Projekt,--,--,--".
+    "Lab01,--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab07,Lab08,Lab09,Lab10,--,Projekt,--,--,--".
        split(',').toVector
 
   lazy val labOfWeek = for (w <- 0 until labNumOfWeek.size) yield {
@@ -221,7 +221,6 @@ trait Plan {
       modules(w).lab
     else labNumOfWeek(w)
   }
-
 
   lazy val startLp1 = Date(2017, 8, 28)
 
