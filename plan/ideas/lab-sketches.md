@@ -112,7 +112,7 @@ Byta namn till turtlegraphics?
   1. Skapa klasser som har attribut som är referenser till andra klasser (delegering, aggregering)
   1. Klasser som tar metoder som har andra klasser av samma typ som parameter så att man måste fatta this och other
   1. Koncept kopplade till klasser: 
-    * Alternativ konstruktur vs fabriksmetoder
+    * Alternativ konstruktor vs fabriksmetoder
     * Equals
     * inklapsling av var.
     * private, public

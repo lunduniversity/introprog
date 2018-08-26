@@ -7,7 +7,7 @@ case class Chord(ps: Vector[Pitch]) {
 
   def apply(i: Int): Pitch = ps(i)
 
-  def intervalls(root: Pitch = ps(0)): Vector[Int] = ps.map(_.nbr - root.nbr)
+  def intervals(root: Pitch = ps(0)): Vector[Int] = ps.map(_.nbr - root.nbr)
 
   def relativePitchClasses(root: Pitch = ps(0)): Vector[Int] =
     intervalls(root).map(i => (i%12 + 12) % 12).distinct.sorted
