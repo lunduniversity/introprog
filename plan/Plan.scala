@@ -61,7 +61,7 @@ trait Plan {
       | namnrymd, synlighet, privat medlem, inkapsling,
       | getter och setter, principen om uniform access,
       | överlagring av metoder,
-      | cslib.window.SimpleWindow,
+      | introprog.PixelWindow,
       | initialisering, lazy val,
       | värdeandrop, namnanrop,
       | typalias,
