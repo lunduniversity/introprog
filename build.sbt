@@ -184,7 +184,8 @@ pdfSlides := {
     default
   } else args
   for (w <- weeks) {
-    val texFile = file("lect-" + w + ".tex")
+    val f: String = if (w startsWith "w") "lect-" + w else w // hack to make it possible to give both just w01 as arg but also info-week00 as arg
+    val texFile = if (f.takeRight(4) != ".tex") file(f + ".tex") else file(f)
     println(s"runPdfLatexCmd($texFile, $workDir)")
     runPdfLatexCmd(texFile, workDir)
   }
