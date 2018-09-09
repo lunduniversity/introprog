@@ -17,14 +17,14 @@
 \item Exempel på olika samlingar där elementen är organiserade på olika vis: \\
 \vspace{0.5em}
 \begin{tabular}{l c}
-\Emph{Lista} & \includegraphics[width=5cm]{../img/list.pdf} \\
+\Emph{Sekvens} & \includegraphics[width=5cm]{../img/list.pdf} \\
 \Emph{Träd}  & \includegraphics[width=2.2cm]{../img/tree.pdf} \\
 \Emph{Graf}  & \includegraphics[width=2.2cm]{../img/graph.pdf} \\
 \end{tabular}
 \end{itemize}
 {
 \SlideFontTiny \vspace{1em }\hskip2em
-Mer om listor \& träd \href{http://cs.lth.se/edaa01vt}{fördjupningskursen}.
+Mer om sekvenser \& träd i \href{http://cs.lth.se/edaa01vt}{EDAA01 pfk}.
 Mer om träd, grafer i \href{http://cs.lth.se/edaa40}{Diskreta strukturer.}
 }
 
@@ -37,15 +37,16 @@ Mer om träd, grafer i \href{http://cs.lth.se/edaa40}{Diskreta strukturer.}
 \setlength{\leftmargini}{0pt}
 \begin{itemize}
 \item En \Emph{samling} \Eng{collection} är en datastruktur som kan innehålla många element av \Alert{samma typ}.
+\item En \Emph{sekvens} \Eng{sequence} är en samling där alla element är ordnade.
 
-\item Exempel på \Emph{färdiga samlingar} i Scalas standardbibliotek där elementen är organiserade på olika vis så att samlingen får olika egenskaper som passar \Alert{olika användningsområden}:
+\item Exempel på \Emph{färdiga samlingar} i Scalas standardbibliotek där elementen är organiserade  internt på \Alert{olika} vis så att samlingen får olika egenskaper som passar \Alert{olika användningsområden}:
 \begin{itemize}\SlideFontTiny
-\item \texttt{scala.collection.immutable.\Emph{Vector}}, snabb access \Alert{överallt}.
-\item \texttt{scala.collection.immutable.\Emph{List}}, snabb access \Alert{i början}.
-\item \texttt{scala.collection.immutable.\Emph{Set}}, \texttt{scala.collection.\Alert{mutable}.\Emph{Set}}, unika element, snabb innehållstest.
-\item \texttt{scala.collection.immutable.\Emph{Map}}, \texttt{scala.collection.\Alert{mutable}.\Emph{Map}}, nyckel-värde-par, snabb access via nyckel.
-\item \texttt{scala.collection.\Alert{mutable}.\Emph{ArrayBuffer}}, kan ändra storlek.
-\item \texttt{scala.\Emph{Array}}, motsvarar primitiva, föränderliga Java-arrayer, fix storlek.
+\item \texttt{scala.collection.immutable.\Emph{Vector}}, sekvens med snabb access \Alert{överallt}.
+\item \texttt{scala.collection.immutable.\Emph{List}}, sekvens med snabb access \Alert{i början}.
+\item \texttt{scala.collection.immutable.\Emph{Set}}, \texttt{scala.collection.\Alert{mutable}.\Emph{Set}}, mängd med unika element; ej i sekvens men snabb innehållstest.
+\item \texttt{scala.collection.immutable.\Emph{Map}}, \texttt{scala.collection.\Alert{mutable}.\Emph{Map}}, mängd med par av nyckel \& tillhörande värde, snabb access via nyckel.
+\item \texttt{scala.collection.\Alert{mutable}.\Emph{ArrayBuffer}}, förändringsbar sekvens kan ändra storlek.
+\item \texttt{scala.\Emph{Array}}, förändringsbar sekvens som \Alert{inte} kan ändra storlek. Alla element är lagrade efter varandra i minnet: snabbast access av alla samlingar.
 \end{itemize}
 \end{itemize}
 \end{Slide}
@@ -53,19 +54,19 @@ Mer om träd, grafer i \href{http://cs.lth.se/edaa40}{Diskreta strukturer.}
 
 \begin{Slide}{Olika sätt att skapa datastrukturer}
 \begin{itemize}
-\item \Emph{Tupler}
+\item \Emph{Tupel} \Eng{tuple}
   \begin{itemize}
   \item samla $n$ st datavärden i element \Emph{\code{_1}}, \Emph{\code{_2}}, ...  \code{_}$n$
   \item elementen kan vara av \Alert{olika} typ
   \end{itemize}
-\item \Emph{Klasser}
+\item \Emph{Klass} \Eng{class}
   \begin{itemize}
   \item samlar data i \Emph{attribut} med (väl valda!) namn
   \item attributen kan vara av \Alert{olika} typ
   \item definierar även \Emph{metoder} som använder attributen \\ (kallas även \Emph{operationer} på data)
   \end{itemize}
 
-\item \Emph{Färdiga samlingar}
+\item \Emph{Färdig samling}
   \begin{itemize}
   \item speciella klasser som samlar data i element av \Alert{samma} typ
   \item exempel: \code{scala.collection.immutable.Vector}
@@ -84,23 +85,22 @@ Mer om träd, grafer i \href{http://cs.lth.se/edaa40}{Diskreta strukturer.}
 
 
 
-
 \begin{Slide}{Vad är en vektor?}\SlideFontSmall
 En \Emph{vektor}\footnote{Vektor kallas ibland på svenska även \href{https://sv.wikipedia.org/wiki/F\%C3\%A4lt_\%28datastruktur\%29}{fält}, men det skapar stor förvirring eftersom det engelska ordet \emph{field} ofta används för \emph{attribut} (förklaras senare).}
-\Eng{vector, \href{https://en.wikipedia.org/wiki/Array_data_structure}{array}} är en \Emph{samling} som är \Alert{snabb} att \Emph{indexera} i.
-Åtkomst av element sker med \code{apply(platsnummer)}:
+\Eng{vector} är en \Emph{sekvens} som är \Alert{snabb} att \Emph{indexera} i.
+Åtkomst av element i en sekvens som t.ex. heter \code{xs} sker i Scala med \code{xs.apply(platsnummer)}:
 
 \begin{REPL}
 scala> val heltal = Vector(42, 13, -1, 0, 1)
 heltal: scala.collection.immutable.Vector[Int] = Vector(42, 13, -1, 0, 1)
 
-scala> heltal.apply(0)
+scala> heltal.apply(0)   // platsnummer räknas från noll
 res0: Int = 42
 
-scala> heltal(1)    // man kan skippa .apply före (
+scala> heltal(1)         // man kan i Scala skippa .apply före (
 res1: Int = 13
 
-scala> heltal(5)
+scala> heltal(5)         // ger körtidsfel då sjätte platsen inte finns
 java.lang.IndexOutOfBoundsException: 5
   at scala.collection.immutable.Vector.checkRangeConvert(Vector.scala:132)
 \end{REPL}
@@ -158,7 +158,7 @@ g: String = tomat
 scala> val xs = Vector(42, "gurka", true, 42.0)
 xs: scala.collection.immutable.Vector[Any] = Vector(42, gurka, true, 42.0)
 \end{REPL}
-Notera typen \code{Any} (mer om denna typ senare).
+Notera typen \code{Any} som betyder ''\Emph{vilken typ som helst}''. \footnote{(\code{Any} liknar Java's \code{Object} men är \Alert{mer generell}; mer om \code{Any} senare).}
 \end{Slide}
 
 
@@ -171,7 +171,7 @@ Notera typen \code{Any} (mer om denna typ senare).
 \item En \Emph{kontrollstruktur} påverkar \Alert{sekvensen}.
 \begin{itemize}
 \item[] Exempel på inbyggda kontrollstrukturer:
-\\\vspace{0.5em}\code{for}-sats, \code{while}-sats
+\\\vspace{0.5em}\code{for}-sats, \code{while}-sats, \code{for}-\code{yield}-uttryck
 \end{itemize}
 
 \item[]
@@ -226,11 +226,11 @@ paprika
 selleri
 
 \end{REPL}
-
+Den stiliserade bakåtpilen \code{<-} betyder:\\Plocka ut varje element ur samlingen och låt namnet före pilen (här \code{g}) referera till ett nytt värde för varje runda i loopen.\\Detta namn motsvarar en \Emph{lokal} \code{val}-variabel.
 \end{Slide}
 
 
-\begin{Slide}{Bygga en ny samling från en befintlig med for-uttryck}
+\begin{Slide}{Bygg ny samling från befintlig med for-yield-uttryck}
 Ett \code{for}-\code{yield}-\Emph{uttryck} som \Emph{skapar en \Alert{ny} samling}.
 
 \begin{Code}[basicstyle=\ttfamily\fontsize{12}{14}\selectfont]
@@ -240,11 +240,7 @@ for (g <- grönsaker) yield "god " + g
 \begin{REPL}
 scala> val grönsaker = Vector("gurka","tomat","paprika","selleri")
 
-scala> for (g <- grönsaker) yield "god " + g
-res0: scala.collection.immutable.Vector[String] =
-  Vector(god gurka, god tomat, god paprika, god selleri)
-
-scala> val åsikter = for (g <- grönsaker) yield s"god $g"
+scala> val åsikter = for (g <- grönsaker) yield "god " + g
 åsikter: scala.collection.immutable.Vector[String] =
   Vector(god gurka, god tomat, god paprika, god selleri)
 \end{REPL}
@@ -322,7 +318,7 @@ scala> for (i <- 1 to 6) print(" gurka " + i)
 
 
 \begin{itemize}
-\item En \code{Array} liknar en \code{Vector} men har en särställning i JVM:
+\item En \href{https://en.wikipedia.org/wiki/Array_data_structure}{\code{Array}} liknar en \code{Vector} men har en särställning i JVM:
 \begin{itemize}
 \item Lagras som en sekvens i minnet på efterföljande adresser.
 \item \Emph{Fördel}: snabbaste samlingen för element-access i JVM.
@@ -458,7 +454,7 @@ dej
 \begin{Slide}{Loopa genom argumenten i ett Scala-huvudprogram}
 Skriv denna kod och spara i filen \texttt{helloargs.scala}
 \begin{REPLnonum}
-$ gedit helloargs.scala
+$ atom helloargs.scala
 \end{REPLnonum}
 \begin{Code}
 object HelloScalaArgs {
@@ -484,7 +480,7 @@ tomat
 
 \begin{Slide}{Loopa genom argumenten i ett Java-huvudprogram}
 \begin{REPLnonum}
-$ gedit HelloJavaArgs.java
+$ atom HelloJavaArgs.java
 \end{REPLnonum}
 \begin{Code}[language=Java]
 // this is Java
@@ -511,7 +507,7 @@ tomat
 \end{Slide}
 
 
-\begin{Slide}{Scala-skript}
+\begin{Slide}{För kännedom (överkurs): Scala-\textbf{skript}}
 \begin{itemize}
 \item Skala-kod kan köras som ett \Emph{skript}.\footnote{\SlideFontTiny Du får prova detta på övningen. Vi kommer mest att köra kompilerat i kursen, då Scala-skript saknar mekanism för inkludering av andra skript. Men det finns ett öppenkällkodsprojekt som löser det: \url{http://www.lihaoyi.com/Ammonite/}
 }
@@ -522,12 +518,12 @@ tomat
 \begin{Code}[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]
 // spara nedan i filen 'myscript.scala'
 
-println("Hejsan argumnet!")
-for (arg <- args) println(arg)
+println("Hej alla mina argument:")
+for (arg <- args) println("Hej: " + arg)
 \end{Code}
 
 \begin{REPLnonum}
-$ scala myscript.scala
+> scala myscript.scala
 \end{REPLnonum}
 
 
@@ -595,9 +591,10 @@ object HighScore {
   }
 }
 \end{Code}
+\SlideFontSmall %(Mer om \code{import} senare.)\\
 \pause
 Är det en bugg eller en feature att det står\\ \texttt{points > highscore} \\ och inte \\ \texttt{points >= highscore} \\ ?
-% Buggen är att man inte får GRATTIS om poäng == highscore vilket är tråkigt :)
+\pause Man får ej GRATTIS om poäng == highscore vilket är tråkigt :)
 \end{Slide}
 
 
@@ -1052,11 +1049,11 @@ Programmet \texttt{scaladoc} läser källkod och skapar en webbsajt med dokument
 \begin{Slide}{Att göra denna vecka: Förstå grundläggande kodstrukturer}
 
 \begin{enumerate}
-\item Laborationer är \Alert{obligatoriska}.\\ Ev. sjukdom måste anmälas \Alert{före} via mejl till kursansvarig!
+%\item Laborationer är \Alert{obligatoriska}.\\ Ev. sjukdom måste anmälas \Alert{före} via mejl till kursansvarig!
 \item Gör övning \texttt{programs}
 \item OBS! Ingen lab denna vecka w02. Använd tiden att komma ikapp om du ligger efter!
 \item Träffas i samarbetsgrupper och hjälp varandra att förstå.
-\item Vi har nosat på flera koncept som vi kommer tillbaka till senare: du måste inte fatta alla detaljer redan nu.
+\item Vi har nosat på flera koncept som vi kommer tillbaka till senare: du kommer förstå mer detaljer på djupet då.
 \item Om ni inte redan gjort det: \\Visa \href{https://github.com/bjornregnell/lth-eda016-2015/tree/master/assignments}{samarbetskontrakt} för handledare på resurstid.
 \item \Alert{Koda på resurstiderna} och få hjälp och tips!
 \end{enumerate}
