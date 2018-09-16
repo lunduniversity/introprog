@@ -2,57 +2,6 @@
 %!TEX root = ../lect-w03.tex
 
 
-\ifkompendium\else
-\Subsection{Kommande vecka}
-
-\begin{Slide}{Mål med övning \ExeWeekTHREE}
-\begin{itemize}\SlideFontSmall
-  \input{../compendium/modules/w03-functions-exercise-goals.tex}
-\end{itemize}
-\end{Slide}
-
-\begin{Slide}{Mål med laboration \LabWeekTHREE}
-\begin{itemize}
-  \input{../compendium/modules/w03-functions-lab-goals.tex}
-\end{itemize}
-Läs labbinstruktioner:\url{http://cs.lth.se/pgk/compendium/}
-\end{Slide}
-
-
-\begin{Slide}{Tips inför ditt textspel.}
-\begin{Code}
-"Yes".toLowerCase.startsWith("y")    // true
-"hejsan".contains("ejsa")            // true
-"42".toInt                           // 42
-
-val i = 42
-s"Livets mening är $i!" // dollar $ före namn vid stränginterpolering med s""
-s"Livets mening är inte ${i-1}!"  // klamrar ${} vid evaluering av uttryck
-
-"""|en sträng som spänner över
-   |flera rader där marginalen fram till vertikalstreck
-   |är bortplockad med stripMargin (kan kombineras med s-interpolatorn)
-""".stripMargin
-
-math.random < 0.8                  // true i 80% av fallen
-scala.util.Random.nextInt(42)      // ger slumptal mellan 0 och 41
-scala.io.StdIn.readLine("prompt>") // ger sträng som användaren skriver
-
-try { "?".toInt } catch { case e: Exception => 42 }  // förhindrar krasch
-Thread.sleep(1000)    // sova i 1000 milliskeunder
-\end{Code}
-Kolla snabbreferensen vad mer du kan göra med strängar!
-\end{Slide}
-
-\begin{Slide}{Exempel på en början till ett textspel}
-  \url{https://github.com/lunduniversity/introprog/tree/master/compendium/examples/irritext}
-
-\begin{itemize}
-  \item Vilka begrepp och principer ger koden träning i?
-\end{itemize}
-
-\end{Slide}
-\fi
 
 
 \Subsection{Funktioner}
@@ -62,8 +11,8 @@ Kolla snabbreferensen vad mer du kan göra med strängar!
 \setlength{\leftmargini}{0pt}
 \begin{itemize}
   \item En funktion kan ha parametrar som binds till argument.
-  \item En funktion har ett huvud och en kropp.
-  \item En namngiven funktion \Emph{deklareras} med nyckelordet \code{def}
+  \item En funktion har ett \Emph{huvud} och efter \code{=} kommer dess \Emph{kropp}.
+  \item En \Alert{namngiven} funktion \Emph{deklareras} med nyckelordet \code{def}
 \end{itemize}
 
 
@@ -72,7 +21,7 @@ Kolla snabbreferensen vad mer du kan göra med strängar!
 \vspace{1em}
 
 \begin{Code}
-def namn(param1: Typ1, param2: Typ2): Returtyp = kropp
+def namn(param1: Typ1, param2: Typ2): Returtyp = uttryck
 \end{Code}
 
 \pause
@@ -101,7 +50,7 @@ res0: Int = 43
 \begin{REPL}
 scala> :paste
   def öka(a: Int): Int = a + 1
-  def öka(a: Int, b: Int) = a + b
+  def öka(a: Int, b: Int): Int = a + b
 
 scala> öka(1)
 res0: Int = 2
@@ -110,10 +59,10 @@ scala> öka(1,1)
 res1: Int = 2
 
 \end{REPL}
-\item Båda funktionerna ovan kan finnas samtidigt! Trots att de har samma namn är de \Alert{olika} funktioner; kompilatorn kan skilja dem åt med hjälp av de olika parameterlistorna.
+\item Båda funktionerna ovan kan finnas samtidigt! Trots att de har \Emph{samma namn} är de \Alert{olika funktioner}; kompilatorn kan skilja dem åt med hjälp av de \Alert{olika parameterlistorna}.
 
 \item Detta kallas \Emph{överlagring} \Eng{overloading} av funktioner.
-
+\item Överlagring ger flexibilitet i användningen; vi slipper hitta på nytt namn så som \code{öka2} vid 2 parametrar.
 \end{itemize}
 \end{Slide}
 
@@ -122,7 +71,7 @@ res1: Int = 2
 \begin{Slide}{Funktioner med defaultargument}\SlideFontSmall
 
 \begin{itemize}
-\item Vi kan ofta åstadkomma något som liknar överlagring, men med en enda funktion, om vi i stället använder \Emph{defaultargument}:
+\item Vi kan ofta åstadkomma samma flexibilitet som vid överlagring, men med \Alert{en enda} funktion, om vi i stället använder \Emph{defaultargument}:
 \begin{REPLnonum}
 scala> def inc(a: Int, b: Int = 1) = a + b
 inc: (a: Int, b: Int)Int
@@ -137,7 +86,7 @@ scala> inc(42)
 res2: Int = 43
 
 \end{REPLnonum}
-\item Om argumentet utelämnas och det finns ett defaultargument, så är det defaultargumentet som appliceras.
+\item Om ett argument utelämnas och parametern deklarerats med defaultargument så appliceras detta. Kompilatorn fyller alltså i argumentet åt oss, om det är entydigt vilken parameter som avses.
 \end{itemize}
 \end{Slide}
 
@@ -200,7 +149,7 @@ Minnet är uppdelat i två delar:
 \item Aktiveringsposten \Alert{raderas} när \Emph{returvärdet} har levererats.
 \item Stacken \Alert{växer} vid \Emph{nästlade funktionsanrop}, då en funktion i sin tur anropar en annan funktion.
 
-\item \Emph{Objektheapen}: I heapminnet\footnote{\href{https://en.wikipedia.org/wiki/Memory_management}{en.wikipedia.org/wiki/Memory\_management}}$^{,}$\footnote{Ej att förväxlas med datastrukturen heap  \href{https://sv.wikipedia.org/wiki/Heap}{sv.wikipedia.org/wiki/Heap}} sparas alla objekt (data) som allokeras under körning. Heapen städas vid tillfälle av \Emph{skräpsamlaren} \Eng{garbage collector}, och minne som inte används längre frigörs. \\\vspace{0.5em}
+\item \Emph{Objektheapen}: I heapminnet\footnote{\href{https://en.wikipedia.org/wiki/Memory_management}{en.wikipedia.org/wiki/Memory\_management}}$^{,}$\footnote{Ej att förväxlas med datastrukturen heap  \href{https://sv.wikipedia.org/wiki/Heap}{sv.wikipedia.org/wiki/Heap}} sparas alla objekt (data) som allokeras under körning. Heapen städas då och då av \Emph{skräpsamlaren} \Eng{garbage collector}, och minne som inte används längre frigörs. \\\vspace{0.5em}
 \href{http://stackoverflow.com/questions/1565388/increase-heap-size-in-java}{stackoverflow.com/questions/1565388/increase-heap-size-in-java}
 \end{itemize}
 \end{Slide}
@@ -660,7 +609,7 @@ Ett \Emph{closure} sparar variabler i ett \Alert{persistent funktionsobjekt}. \\
 \item stegade funktioner (''Curry-funktioner'')
 \item fångad variablelrymd (''closure'')
 \end{itemize}
-...kan man i Java 8 endast göra:  
+...kan man i Java 8 endast göra:
 \item[] \Emph{överlagring} ("overloading") och \Emph{anonyma funktioner} (''lambda'') \\ där set senare har starka begränsningar. \footnote{\SlideFontTiny\href{https://en.wikipedia.org/wiki/Anonymous_function\#Java_Limitations}{en.wikipedia.org/wiki/Anonymous\_function\#Java\_Limitations}}
 %\item \vspace{0.5em} En av de saker jag saknar mest i Java: \Alert{lokala funktioner}!
 \item[] Det är \Alert{kombinationen} av alla koncept som \Alert{skapar uttryckskraften} i Scala.
@@ -743,7 +692,16 @@ def gissaTalet(max: Int, min: Int = 1): Unit = {
 \end{itemize}
 \end{Slide}
 
-\Subsection{Bash}
+\Subsection{Automatisera kompilering: byggverktyg}
+
+\begin{Slide}{Bygga applikationer}
+\begin{itemize}
+  \item Den kreativa programmeringsprocessen innehåller många korta cykler av koda, ändra, testa.
+  \item Det blir många omkompileringar och då vill man gärna slippa skriva samma kommando om och om igen. En lösning är att skapa ett skript, t.ex. i språket \Emph{bash}, som kör kompileringen.
+  \item  Om man bara gör en liten ändring vill man bara kompilera om det som ändrats och inte kompilera om rubbet varje gång. En lösning på detta problem är att använda ett \Emph{byggverktyg}, t.ex. Scala Build Tool (\code{sbt}), se Appendix F.
+
+\end{itemize}
+\end{Slide}
 
 \begin{Slide}{Bash-skript för kompilering}\SlideFontSmall
 \begin{itemize}
@@ -759,6 +717,79 @@ Med pil-upp kan du enkelt kompilera om efter varje ändring:
 \end{REPLnonum}
   \item Det går att få \Emph{bash} och ubuntu-terminalen att funka i Windows 10: \\
   {\SlideFontTiny\url{https://msdn.microsoft.com/en-us/commandline/wsl/install_guide}} \\
-  Välj varianten längre ner med \code{lxrun} så behöver du inte bli s.k. "windows insider".
+  Det finns dock stora begränsningar och om du vill ha "riktig" linux rekommenderas att installera Ubuntu med dual-boot: \\
+  {\SlideFontTiny\url{https://linoxide.com/distros/install-ubuntu-18-04-dual-boot-windows-10/}}
 \end{itemize}
 \end{Slide}
+
+\begin{Slide}{Scala Build Tool: \texttt{sbt}}
+\begin{itemize}
+  \item Ett byggverktyg, t.ex. \code{sbt}, kan användas för att kompilera, testköra, ladda ner, paketer, distribuera programbibliotek och applikationer.
+  \item Det är mycket enkelt att använda \code{sbt} för att kompilera och köra om ditt program varje gång du sparar din fil, tex. med \code{Ctrl+S} så här:
+\begin{REPLnonum}
+> sbt
+sbt> ~run   // tecknet ~ ger omkörning vid ändring
+\end{REPLnonum}
+Tecknet \code{~} kallas \emph{tilde} och skrivs med högra Alt-tangenten nere och två tryck på tangenten bredvid Enter.
+  \item LTH:s datorer har \code{sbt} förinstallerat. Ladda ner till din dator: \\
+  \url{https://www.scala-sbt.org/download.html}
+  \item Läs mer om byggverktyg i Appendix F.
+
+\end{itemize}
+
+\end{Slide}
+
+
+\ifkompendium\else
+\Subsection{Kommande vecka}
+
+\begin{Slide}{Mål med övning \ExeWeekTHREE}
+\begin{itemize}\SlideFontSmall
+  \input{../compendium/modules/w03-functions-exercise-goals.tex}
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Mål med laboration \LabWeekTHREE}
+\begin{itemize}
+  \input{../compendium/modules/w03-functions-lab-goals.tex}
+\end{itemize}
+Ni ska spela \Emph{varandras} textspel i din \Alert{samarbetsgrupp}.\\
+Läs labbinstruktioner:\url{http://cs.lth.se/pgk/compendium/}
+\end{Slide}
+
+
+\begin{Slide}{Tips inför ditt textspel.}
+\begin{Code}
+"Yes".toLowerCase.startsWith("y")    // true
+"hejsan".contains("ejsa")            // true
+"42".toInt                           // 42
+
+val i = 42
+s"Livets mening är $i!" // dollar $ före namn vid stränginterpolering med s""
+s"Livets mening är inte ${i-1}!"  // klamrar ${} vid evaluering av uttryck
+
+"""|en sträng som spänner över
+   |flera rader där marginalen fram till vertikalstreck
+   |är bortplockad med stripMargin (kan kombineras med s-interpolatorn)
+""".stripMargin
+
+math.random < 0.8                  // true i 80% av fallen
+scala.util.Random.nextInt(42)      // ger slumptal mellan 0 och 41
+scala.io.StdIn.readLine("prompt>") // ger sträng som användaren skriver
+
+try { "?".toInt } catch { case e: Exception => 42 }  // förhindrar krasch
+Thread.sleep(1000)    // sova i 1000 milliskeunder
+\end{Code}
+Kolla snabbreferensen vad mer du kan göra med strängar!
+\end{Slide}
+
+\begin{Slide}{Exempel på en början till ett textspel}
+  Här finns en exempel på en enkel \emph{början} på ett textspel som du stegvis kan ändra och bygga ut till något du själv vill göra:
+  \url{https://github.com/lunduniversity/introprog/tree/master/compendium/examples/irritext}
+
+\begin{itemize}
+  \item Vilka begrepp och principer ger koden träning i?
+\end{itemize}
+
+\end{Slide}
+\fi
