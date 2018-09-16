@@ -154,14 +154,42 @@ Minnet är uppdelat i två delar:
 \end{itemize}
 \end{Slide}
 
+% \begin{Slide}{Aktiveringspost}\SlideFontSmall
+% Nästlade anrop ger växande anropsstack.
+% \begin{REPL}
+% scala> def f(x: Int, y: Int): Int = { val z = x + y; println(z); z}
+% scala> def g(a: Int, b: Int): Int = { val c = a + b; println(c); f(c, 2 * c) }
+% scala> def h(i: Int): Int = { val n = 5; g(i, i * n) }
+% scala> h(2)
+% \end{REPL}
+%
+% \pause
+% \Alert{Stacken}
+%
+% \begin{tabular}{|r | l | l |} \hline
+%
+% variabel & värde & Aktiveringspost för anrop av... \\ \hline \hline
+% \pause
+%  i & 2 & h \\
+%  n & 5 & \\ \hline
+%  \pause
+%  a & 2 & g \\
+%  b & 10 &  \\
+%  c & 12  &  \\  \hline
+%  \pause
+%  x & 12  & f \\
+%  y & 24 &  \\
+%  z & 36 & \\ \hline
+% \end{tabular}
+% \end{Slide}
 
 \begin{Slide}{Aktiveringspost}\SlideFontSmall
 Nästlade anrop ger växande anropsstack.
 \begin{REPL}
 scala> :paste
-def f(): Unit = { val n = 5; g(n, 2 * n) }
-def g(a: Int, b: Int): Unit = { val x = 1; h(x + 1, a + b) }
 def h(x: Int, y: Int): Unit = { val z = x + y; println(z) }
+def g(a: Int, b: Int): Unit = { val x = 1; h(x + 1, a + b) }
+def f(): Unit = { val n = 5; g(n, 2 * n) }
 
 scala> f()
 
@@ -340,7 +368,7 @@ val f: (Int, Int) => Int = (x, y) => x + y
 \begin{REPL}
 scala> val xs = Vector(1, 2, 3)
 
-scala> xs.map((x: Int): Int => x + 1)
+scala> xs.map((x: Int) => x + 1)
 res0: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
 \end{REPL}
 
@@ -506,22 +534,24 @@ scala> twice { print("hej"); print("san ") }
 
 \begin{Slide}{Skapa din egen kontrollstruktur}
 \begin{itemize}
-\item Genom att \Alert{kombinera} \Emph{uppdelad parameterlista} med \Emph{namnanrop} med \Emph{klammerparentes vid ensam parameter} kan vi skapa vår egen kontrollstruktur:
+\item Genom att \Alert{kombinera} \Emph{uppdelad parameterlista} med \Emph{namnanrop} med \Emph{klammerparentes vid ensam parameter} kan vi skapa vår egen kontrollstruktur: \code{upprepa} \pause
+\begin{Code}
+upprepa(42){
+  if (math.random < 0.5) print(" gurka")
+  else print(" tomat")
+}
+\end{Code}
+Hur då?
+\pause
+ Till exempel så här:
 \begin{Code}
 def upprepa(n: Int)(block: => Unit) = {
   for(i <- 0 until n) {
     block
   }
 }
-\end{Code}
 
-\pause
 
-\begin{Code}
-upprepa(42){
-  if (math.random < 0.5) print(" gurka")
-  else print(" tomat")
-}
 \end{Code}
 
 \pause
@@ -554,8 +584,8 @@ res1:scala.collection.immutable.Vector[Int]= Vector(3, 4, 5)
 \begin{Code}
 def f(x: Int): Int => Int = {
   val a = 42 + x
-  val g = (y: Int) => y + a
-  g
+  def g(y: Int): Int = y + a
+  g _
 }
 \end{Code}
 Funktionen \code{g} \Alert{fångar} den lokala variabeln \code{a} i ett s.k. \Emph{closure}.
@@ -593,7 +623,7 @@ Ett \Emph{closure} sparar variabler i ett \Alert{persistent funktionsobjekt}. \\
 
 \begin{Slide}{Begränsningar i Java}\SlideFontTiny
 \begin{itemize}
-\item[] Av alla dessa funktionskoncept...
+\item[] Av alla dessa funktionsprogrammeringskoncept...
 \begin{itemize}\SlideFontTiny
 \item överlagring
 \item utelämna tom parameterlista (enhetlig access)
@@ -617,13 +647,6 @@ Ett \Emph{closure} sparar variabler i ett \Alert{persistent funktionsobjekt}. \\
 
 
 \end{Slide}
-
-\begin{Slide}{Mål med övning \ExeWeekTHREE}
-\begin{itemize}\SlideFontSmall
-  \input{../compendium/modules/w03-functions-exercise-goals.tex}
-\end{itemize}
-\end{Slide}
-
 
 
 \Subsection{Kort om rekursion}
