@@ -1,6 +1,31 @@
 %!TEX encoding = UTF-8 Unicode
 %!TEX root = ../lect-w04.tex
 
+\ifkompendium\else
+\begin{Slide}{Denna vecka: Objekt}
+\begin{itemize}
+\item Övning \texttt{objects}:
+\begin{itemize}
+\item deklarera singelobjekt med funktioner och tillstånd
+\item namnrymder, namnöverskuggning, punktnotation
+\item skapa objekt med hjälp av tupler
+\item lat initialisering
+\item jar-fil, paket, namnbyte vid import
+\item använda färdiga klasser, t.ex. \code{java.awt.Color}
+\item händelsehantering i ett grafiskt fönster
+\end{itemize}
+
+\item Laboration \texttt{blockmole}
+\begin{itemize}
+  \item dela upp din kod i flera singelobjekt
+  \item använda färdig klass i jar-fil: \code{introprog.PixelWindow}
+  \item skapa ett grafiskt spel
+\end{itemize}
+\end{itemize}
+\end{Slide}
+\fi
+
+
 \Subsection{Vad är ett objekt?}
 
 
@@ -80,7 +105,7 @@ Vector(1,2,3)   // skapar ett Vector-objekt
 
 \item Använda \code{new} (mer om detta senare: då behövs en klass):
 \begin{Code}
-new SimpleWindow(600, 400, "fönstertitel")  // skapar ett fönsterobjekt
+new introprog.PixelWindow(title = "Hej!")  // skapar ett fönsterobjekt
 \end{Code}
 {\SlideFontSmall Med \code{new} kan man skapa \Alert{många upplagor} av samma typ av objekt.\vspace{0.5em}}
 
@@ -90,7 +115,7 @@ new SimpleWindow(600, 400, "fönstertitel")  // skapar ett fönsterobjekt
   \item Det allokeras \Alert{automatiskt} första gången man refererar objektet; \\
   man behöver inte, och kan inte, skriva \code{new}.
   \pause
-  \item Medlemmar i ett Scala-singelobjekt motsvarar \jcode{static}-medlemmar i en Java/C++/C\#-klass.
+  \item Medlemmar i ett Scala-singelobjekt liknar \jcode{static}-medlemmar i en Java/C++/C\#-klass.
 \end{itemize}
 \item Använda en \Emph{tupel}, exempel: \code{val p = (200, 300)}
 \end{itemize}
@@ -460,7 +485,7 @@ res1: Int = 42
 \item Tupler är praktiska när man inte vill ta det lite större arbetet att skapa en egen klass.
 (Men med klasser kan man göra mycket mer än med tupler.)
 
-\item I Scala kan du skapa tupler upp till en storlek av 22 element.
+\item I Scala 2.12 kan du skapa tupler upp till en storlek av 22 element.
 \\ (Behöver du fler element, använd i stället en samling, t.ex. \code{Vector}.)
 
 \end{itemize}
@@ -840,36 +865,44 @@ object A {
 \pause
 \item Kompilatorerna \code{scalac} och \code{javac} och programmen \code{scala} och \code{java} som kör igång JVM använder \Alert{en lista med filsökvägar} kallad \Emph{classpath} när de söker efter färdiga moduler.
 \pause
-\item Aktuellt bibliotek samt standardbiblioteket ligger per default på classpath.
+\item Aktuellt bibliotek samt Scalas standardbibliotek läggs automatiskt på classpath.
 \item Med hjälp av optionen \code{-classpath} eller kortare \code{-cp} kan annan classpath anges.
 \item En lista med bibliotek separeras med kolon.\\(Windows: semikolon)
 \item Det går bra att lägga jar-filer till listan med filsökvägar classpath.
 \item Exempel: (punkt används för att ange aktuellt bibliotek)
 \begin{REPLnonum}
-scala -cp "lib/cslib.jar:." Main
+scala -cp "introprog_2.12-1.0.0.jar:." Main
 \end{REPLnonum}
 \end{itemize}
 \end{Slide}
 
 
-\begin{Slide}{Färdiga, enkla funktioner för att rita finns i klassen \texttt{cslib.window.SimpleWindow}}
-På labben ska du använda \code{cslib.window.SimpleWindow}
+\begin{Slide}{Färdiga metoder för pixelgrafik finns i klassen \texttt{introprog.PixelWindow}}
+På labben ska du använda \code{introprog.PixelWindow}
 \begin{itemize}
-\item Jarfilen \code{cslib.jar} innehåller paketet \code{cslib} som innehåller paketet \code{window} som innehåller Java-klassen \code{SimpleWindow}.
+\item Jarfilen \code{introprog_2.12-1.0.0.jar} innehåller paketet \code{introprog} som bl.a. innehåller klassen \code{PixelWindow}.
 %\item En \Emph{klass} är en ''mall'' för att göra \Emph{objekt}.
-\item Med \code{SimpleWindow} kan man skapa ritfönster.
+\item Med \code{PixelWindow} kan man skapa ritfönster.
 %\item När man skapar ett objekt från en klass använder man nyckelordet \code{new}.
-\item Ladda ner \url{http://cs.lth.se/pgk/cslib} och lägg sedan jar-filen den katalog där du startar REPL med: \code{scala -cp cslib.jar}
+\item Ladda ner \url{http://cs.lth.se/pgk/lib} och lägg sedan jar-filen i den katalog där du startar REPL med: \code{scala -cp introprog_2.12-1.0.0.jar}
 \end{itemize}
-\pause
+%\pause
 \begin{REPLnonum}
-> scala -cp cslib.jar
-scala> val w = new SimpleWindow(200,200,"hejsan")
+> scala -cp introprog_2.12-1.0.0.jar
+scala> val w = new introprog.PixelWindow(300, 200, "hejsan")
 \end{REPLnonum}
-\pause Studera dokumentationen för \code{cslib.window.SimpleWindow} här: \url{http://cs.lth.se/pgk/api/}
+%\pause
+Studera dokumentationen för \code{introprog.PixelWindow} här: \url{http://cs.lth.se/pgk/api/}
 \end{Slide}
 
-
+\begin{Slide}{Använda \texttt{introprog} tillsammans med \texttt{sbt}}
+Lägg detta i filen \code{build.sbt}:
+\begin{Code}
+scalaVersion := "2.12.6"
+libraryDependencies += "se.lth.cs" %% "introprog" % "1.0.0"
+\end{Code}
+Första gången du kör \code{compile}, \code{run} eller \code{console} i \code{sbt} kommer paketet \code{introprog} automatiskt att laddas ner från webbplatsen \Emph{Sonatype Maven Central} där många öppenkällkodspaket finns fritt tillgängliga.
+\end{Slide}
 
 
 \ifkompendium\else
@@ -884,7 +917,7 @@ scala> val w = new SimpleWindow(200,200,"hejsan")
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{Lab \texttt{blockmole}}%\SlideFontTiny
+\begin{Slide}{Lab \texttt{blockmole}}\SlideFontTiny
 %\setlength{\leftmargini}{0pt}
 \begin{itemize}
 \input{../compendium/modules/w04-objects-lab-goals.tex}
