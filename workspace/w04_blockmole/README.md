@@ -3,14 +3,14 @@
 Laboration blockmole utvecklar du helt från början med en kodeditor och kompilering i terminalen. Du hittar laborationsuppgifterna i kompendiet:
 http://cs.lth.se/pgk/kompendium
 
-Filen hello-simplewindow.scala kan du använda för prova kompilering med en jar-fil på classpath.
+Filen `hello-window.scala` kan du använda för prova kompilering med en jar-fil på classpath.
 Ladda ner introprog-biblioteket härifrån: http://cs.lth.se/pgk/lib och kalla filen för `introprog.jar`
 
   wget -O introprog.jar http://cs.lth.se/pgk/lib
 
-Kompilera filen `hello-pixelwindow.scala` i linuxterminal med detta kommando:
+Kompilera filen `hello-window.scala` i linuxterminal med detta kommando:
 
-    scalac -cp "introprog.jar:." hello-pixelwindow.scala
+    scalac -cp "introprog.jar:." hello-window.scala
 
 Kör i linuxterminal med detta kommando:
 
