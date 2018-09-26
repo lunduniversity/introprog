@@ -10,13 +10,13 @@ case class Chord(ps: Vector[Pitch]) {
   def intervals(root: Pitch = ps(0)): Vector[Int] = ps.map(_.nbr - root.nbr)
 
   def relativePitchClasses(root: Pitch = ps(0)): Vector[Int] =
-    intervalls(root).map(i => (i%12 + 12) % 12).distinct.sorted
+    intervals(root).map(i => (i%12 + 12) % 12).distinct.sorted
 
   def name(root: Pitch = ps(0)): String = relativePitchClasses(root) match {
     case Vector(0, 4, 7)     => root.pitchClassName
     case Vector(0, 3, 7)     => root.pitchClassName + "m"
     case Vector(0, 4, 7, 10) => root.pitchClassName + "7"
-    case _ => root.pitchClassName + intervalls(root).mkString("[",",","]")
+    case _ => root.pitchClassName + intervals(root).mkString("[",",","]")
   }
 
   override def toString = ps.map(_.name).mkString("Chord(",",",")")

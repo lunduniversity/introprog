@@ -14,7 +14,7 @@ lazy val cslib = (project in file("cslib")).  // still used by
   settings(commonSettings: _*).
   settings(
     name := "cslib",
-    version := "",
+    version := "2017",
     javacOptions in (Compile,doc) ++= Seq(
       "-encoding", "UTF-8", "-charset", "UTF-8", "-docencoding", "UTF-8")
   )
@@ -36,7 +36,7 @@ lazy val w04_blockmole =(project in file("w04_blockmole")).
 lazy val w05_blockbattle =(project in file("w05_blockbattle")).
   settings(commonSettings: _*).
   settings(
-    name := "w05_blockbattle"
+    name := "w05_blockbattle",
     EclipseKeys.skipProject := true
   )
 
@@ -66,11 +66,11 @@ lazy val w09_snake =(project in file("w09_snake")).
     name := "w09_snake"
   )
 
-lazy val w10_survey =(project in file("w10_tabular")).
+lazy val w10_tabular =(project in file("w10_tabular")).
   settings(commonSettings: _*).
   settings(
     name := "w10_tabular"
-  )
+  ).dependsOn(cslib)
 
 lazy val w11_javatext =(project in file("w11_javatext")).
   settings(commonSettings: _*).
@@ -103,6 +103,7 @@ lazy val workspace = (project in file(".")).
     name := "workspace",
     EclipseKeys.withSource := true,
     EclipseKeys.skipProject := true,
-    EclipseKeys.skipParents in ThisBuild := true
+    EclipseKeys.skipParents in ThisBuild := true,
+    //EclipseKeys.relativizeLibs := true,
     // https://github.com/typesafehub/sbteclipse/wiki/Using-sbteclipse
  )
