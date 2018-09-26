@@ -22,3 +22,5 @@ Du kan också använda `sbt` som beskrivs i Appendix "Byggverktyg" i kompendiet.
 
     scalaVersion := "2.12.6"
     libraryDependencies += "se.lth.cs" %% "introprog" % "1.0.0"
+
+Se vidare dokumentationen för `introprog` här: http://fileadmin.cs.lth.se/pgk/api/

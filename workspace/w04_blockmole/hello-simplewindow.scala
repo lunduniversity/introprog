@@ -1,10 +1,10 @@
-import cslib.window.SimpleWindow
+import introprog.PixelWindow
 
-object hello { 
+object Main {
   def main(args: Array[String]): Unit = {
-    println("HELLO main method! åäö ÅÄÖ") 
-    val w = new SimpleWindow(600,600,"Hello Window! ÅÄÖ åäö")
-    w.moveTo(100,100)
-    w.writeText("HELLO SIMPLE WINDOW! ÅÄÖ åäö")
+    println("HELLO main method! åäö ÅÄÖ")
+    val w = new PixelWindow(width = 800, height = 600, title = "Hello Window!")
+    w.drawText(x = 100, y = 200, text = "HELLO PIXEL WINDOW! ÅÄÖ åäö")
+    introprog.examples.TestPixelWindow.main(Array())
   }
 }
