@@ -1,18 +1,24 @@
 # Laboration W03 blockmole
 
-Laboration blockmole utvecklar du helt från början med en kodeditor och kompilering i terminalen.
-Därför finns inget kodskellett till denna veckas labb. Du hittar laborationsuppgifterna i kompendiet:
+Laboration blockmole utvecklar du helt från början med en kodeditor och kompilering i terminalen. Du hittar laborationsuppgifterna i kompendiet:
 http://cs.lth.se/pgk/kompendium
 
 Filen hello-simplewindow.scala kan du använda för prova kompilering med en jar-fil på classpath.
-Ladda ner cslib.jar härifrån: http://cs.lth.se/pgk/cslib
+Ladda ner introprog-biblioteket härifrån: http://cs.lth.se/pgk/lib och kalla filen för `introprog.jar`
 
-Kompilera i linuxterminal med detta kommando: 
+  wget -O introprog.jar http://cs.lth.se/pgk/lib
 
-    scalac -cp "cslib.jar:." hello-simplewindow.scala
+Kompilera filen `hello-pixelwindow.scala` i linuxterminal med detta kommando:
 
-Kör i linuxterminal med detta kommando: 
+    scalac -cp "introprog.jar:." hello-pixelwindow.scala
 
-    scala -cp "cslib.jar:." hello.scala
+Kör i linuxterminal med detta kommando:
+
+    scala -cp "introprog.jar:." Main
 
 Om du kör i Windows Powershell eller Cmd byt kolon mot semikolon i kommandona ovan.
+
+Du kan också använda `sbt` som beskrivs i Appendix "Byggverktyg" i kompendiet. Lägg då jar-filen i en underkatalog kallad `lib` *eller* låt `sbt` automatiskt ladda ner biblioteket från Sonatype Maven Central genom att använda följande text i en fil `build.sbt`:
+
+    scalaVersion := "2.12.6"
+    libraryDependencies += "se.lth.cs" %% "introprog" % "1.0.0"
