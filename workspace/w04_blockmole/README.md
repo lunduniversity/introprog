@@ -1,6 +1,6 @@
-# Laboration W03 blockmole
+# Laboration blockmole
 
-Laboration blockmole utvecklar du helt från början med en kodeditor och kompilering i terminalen. Du hittar laborationsuppgifterna i kompendiet:
+Laboration `blockmole` utvecklar du helt från början med en kodeditor och kompilering i terminalen. Du hittar laborationsuppgifterna i kompendiet:
 http://cs.lth.se/pgk/kompendium
 
 Filen `hello-window.scala` kan du använda för prova kompilering med en jar-fil på classpath.
