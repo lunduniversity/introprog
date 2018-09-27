@@ -14,9 +14,10 @@
 \begin{Preparations}
 \item Gör övning {\tt \ExeWeekEIGHT} i kapitel \ref{chapter:W08}, speciellt uppgift \ref{exe:matrices:labprep}.
 
-\item Läs igenom hela laborationen och studera den befintliga koden i \TODO \code{workspace}.
+\item Läs appendix \ref{appendix:ide} och välj vilken IDE du ska använda. Säkerställ att du får igång en av dessa utvecklingsmijöer genom att köra hello-world-exemplet och sedan ladda ner och importera kursens \code{workspace} enligt instruktionerna i appendix \ref{appendix:ide}.
 
-\item Läs appendix \ref{appendix:ide} och välj vilken IDE du ska använda (ScalaIDE/Eclipse eller IntelliJ IDEA). Säkerställ att du får igång en av dessa utvecklingsmijöer genom att köra hello-world-exemplet och sedan ladda ner och importera kursens \TODO workspace enligt instruktionerna i appendix \ref{appendix:ide}.
+\item Läs igenom hela laborationen och studera den befintliga koden i  \code{workspace}.
+
 \end{Preparations}
 
 
@@ -127,105 +128,105 @@ Testa med filen \texttt{glider-gun.txt} som ska ha följande innehåll på de f�
 
 \begin{enumerate}[leftmargin=*]
 \item Här är ett förslag på hur du kan utforma klassen \code{Life}:
-\begin{CodeSmall}
-package life
-
-case class Life(val cells: Matrix[Boolean]) {
-
-  /** Ger true om cellen på plats (row, col) är vid liv annars false.
-    * Ger false om indexeringen är utanför universums gränser.
-    */
-  def apply(row: Int, col: Int): Boolean = ???
-
-  /** Sätter status på cellen på plats (row, col) till value. */
-  def updated(row: Int, col: Int, value: Boolean): Life = ???
-
-  /** Växlar status på cellen på plats (row, col). */
-  def toggled(row: Int, col: Int): Life = ???
-
-  /** Räknar antalet levande grannar till cellen i (row, col).*/
-  def nbrOfNeighbours(row: Int, col: Int): Int = ???
-
-  /** Skapar en ny Life-instans med nästa generation av universum.
-    * Detta sker genom att applicera funktionen \code{rule} på cellerna.
-    */
-  def evolved(rule: (Int, Int, Life) => Boolean = Life.defaultRule):Life = {
-    var nextGeneration = Life.empty(cells.dim)
-    cells.foreachIndex { (r,c) =>
-      ???
-    }
-    nextGeneration
-  }
-
-  override def toString =
-    cells.data.map(_.map(if (_) '0' else '-').mkString).mkString("\n")
-}
-
-object Life {
-  /** Skapar ett universum med döda celler. */
-  def empty(dim: (Int, Int)): Life = ???
-
-  /** Skapar ett unviversum med slumpmässigt liv. */
-  def random(dim: (Int, Int)): Life = ???
-
-  /** Implementerar reglerna enligt Conways Game of Life. */
-  def defaultRule(row: Int, col: Int, current: Life): Boolean = ???
-}
-\end{CodeSmall}
+\scalainputlisting[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w08_life/src/main/scala/life/Life.scala}
+% \begin{CodeSmall}
+% package life
+%
+% case class Life(cells: Matrix[Boolean]) {
+%
+%   /** Ger true om cellen på plats (row, col) är vid liv annars false.
+%     * Ger false om indexeringen är utanför universums gränser.
+%     */
+%   def apply(row: Int, col: Int): Boolean = ???
+%
+%   /** Sätter status på cellen på plats (row, col) till value. */
+%   def updated(row: Int, col: Int, value: Boolean): Life = ???
+%
+%   /** Växlar status på cellen på plats (row, col). */
+%   def toggled(row: Int, col: Int): Life = ???
+%
+%   /** Räknar antalet levande grannar till cellen i (row, col).*/
+%   def nbrOfNeighbours(row: Int, col: Int): Int = ???
+%
+%   /** Skapar en ny Life-instans med nästa generation av universum.
+%     * Detta sker genom att applicera funktionen \code{rule} på cellerna.
+%     */
+%   def evolved(rule: (Int, Int, Life) => Boolean = Life.defaultRule):Life = {
+%     var nextGeneration = Life.empty(cells.dim)
+%     cells.foreachIndex { (r,c) =>
+%       ???
+%     }
+%     nextGeneration
+%   }
+%
+%   override def toString =
+%     cells.data.map(_.map(if (_) '0' else '-').mkString).mkString("\n")
+% }
+%
+% object Life {
+%   /** Skapar ett universum med döda celler. */
+%   def empty(dim: (Int, Int)): Life = ???
+%
+%   /** Skapar ett unviversum med slumpmässigt liv. */
+%   def random(dim: (Int, Int)): Life = ???
+%
+%   /** Implementerar reglerna enligt Conways Game of Life. */
+%   def defaultRule(row: Int, col: Int, current: Life): Boolean = ???
+% }
+% \end{CodeSmall}
 Du har nytta av metoden \code{copy} när du implementerar \code{updated} och \code{toggled}. Metoden \code{nbrOfNeighbours} har du nytta av när du ska implementera \code{defaultRule}. När du ska implementera \code{random} har du nytta av metoden \code{foreachIndex} i \code{Matrix[T]}.
 Om du som i förslaget ovan låter \code{evolved} ta uppdateringsregeln som en funktionsparameter blir det lättare att konfigurera vilka regler som ska gälla och därmed blir det även lättare att skapa varianter av \emph{Game of Life} genom att införa nya regler i kompanjonsobjektet (se en av de valfria uppgifterna med vidare hänvisning till Wikipedia).
 
 \item Här är ett förslag på hur du kan utforma klassen \code{LifeWindow}:
-\begin{CodeSmall}
-package life
-
-import introprog.PixelWindow
-import introprog.PixelWindow.Event
-
-class LifeWindow(rows: Int, cols: Int){
-  import LifeWindow._ // importera konstanter för cellstorlek, färger, etc.
-
-  var life = Life.empty(rows, cols)
-  val window: PixelWindow = ???
-  var quit = false
-  var play = false
-
-  def drawGrid(): Unit = ???
-
-  def drawCell(row: Int, col: Int): Unit = ???
-
-  def update(newLife: Life): Unit = {
-    val oldLife = life
-    life = newLife
-    life.cells.foreachIndex{ ??? }
-  }
-
-  def handleKey(key: String): Unit = ???
-
-  def handleClick(pos: (Int, Int)): Unit = ???
-
-  def loopUntilQuit(): Unit = while (!quit) {
-    val t0 = System.currentTimeMillis
-    if (play) update(life.evolved())
-    window.awaitEvent(EventMaxWait)
-    while (window.lastEventType != PixelWindow.Event.Undefined) {
-      window.lastEventType match {
-        case Event.KeyPressed  =>  handleKey(window.lastKey)
-        case Event.MousePressed => handleClick(window.lastMousePos)
-        case Event.WindowClosed => quit = true
-        case _ =>
-      }
-      window.awaitEvent(EventMaxWait)
-    }
-    val elapsed = System.currentTimeMillis - t0
-    Thread.sleep((NextGenerationDelay - elapsed) max 0)
-  }
-
-  def start(): Unit = { drawGrid(); loopUntilQuit() }
-}
-\end{CodeSmall}
+\scalainputlisting[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w08_life/src/main/scala/life/LifeWindow.scala}
+% \begin{CodeSmall}
+% package life
+%
+% import introprog.PixelWindow
+% import introprog.PixelWindow.Event
+%
+% class LifeWindow(rows: Int, cols: Int){
+%   import LifeWindow._ // importera konstanter för cellstorlek, färger, etc.
+%
+%   var life = Life.empty(rows, cols)
+%   val window: PixelWindow = ???
+%   var quit = false
+%   var play = false
+%
+%   def drawGrid(): Unit = ???
+%
+%   def drawCell(row: Int, col: Int): Unit = ???
+%
+%   def update(newLife: Life): Unit = {
+%     val oldLife = life
+%     life = newLife
+%     life.cells.foreachIndex{ ??? }
+%   }
+%
+%   def handleKey(key: String): Unit = ???
+%
+%   def handleClick(pos: (Int, Int)): Unit = ???
+%
+%   def loopUntilQuit(): Unit = while (!quit) {
+%     val t0 = System.currentTimeMillis
+%     if (play) update(life.evolved())
+%     window.awaitEvent(EventMaxWait)
+%     while (window.lastEventType != PixelWindow.Event.Undefined) {
+%       window.lastEventType match {
+%         case Event.KeyPressed  =>  handleKey(window.lastKey)
+%         case Event.MousePressed => handleClick(window.lastMousePos)
+%         case Event.WindowClosed => quit = true
+%         case _ =>
+%       }
+%       window.awaitEvent(EventMaxWait)
+%     }
+%     val elapsed = System.currentTimeMillis - t0
+%     Thread.sleep((NextGenerationDelay - elapsed) max 0)
+%   }
+%
+%   def start(): Unit = { drawGrid(); loopUntilQuit() }
+% }
+% \end{CodeSmall}
 
 \item \textbf{Dra nytta av den IDE du valt.} Det finns många användbara finesser i en integrerad utvecklingsmiljö. Orientera dig om grunderna genom att läsa appendix \ref{appendix:ide}. Lär dig några viktiga kortkommandon och studera hur du får igång debuggern. Prova att i debuggern sätta brytpunkter, stega dig fram och avläsa variablers värden.
 \end{enumerate}
-
-\noindent\TODO Är det för mycket tips? Eller behövs mer tips för att labben ska gå smidigt?
