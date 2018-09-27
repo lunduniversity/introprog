@@ -21,13 +21,17 @@ hello := println("""
 
     type 'eclipse' to generate eclipse workspace
 
+    type 'projects' to see all sub-projects
+
+    type 'project workspace' to change to sub-project workspace
+
     type 'hello' to see this message
 
   =====================================================================
 
 """)
 
-lazy val startupTransition: State => State = { s: State =>
+lazy val myStartupTransition: State => State = { s: State =>
   "hello" :: s
 }
 
@@ -196,10 +200,10 @@ lazy val root = (project in file(".")).
   aggregate(workspace, plan).
   settings(commonSettings: _*).
   settings(
-    name := "introprog",
+    name := "introprog root",
     onLoad in Global := {
       // https://www.scala-sbt.org/1.0/docs/offline/Howto-Startup.html
       val old = (onLoad in Global).value
-      startupTransition compose old
+      myStartupTransition compose old
     }
   )
