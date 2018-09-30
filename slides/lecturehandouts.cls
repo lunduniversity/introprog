@@ -48,6 +48,7 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning, calc}
+\usepackage{tkz-euclide}\usetkzobj{all}%https://tex.stackexchange.com/questions/96459/automatically-draw-and-labels-angles-of-a-triangle-in-tikz
 \usepackage{pgfplots}
 %https://www.sharelatex.com/blog/2013/08/29/tikz-series-pt3.html
 \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
