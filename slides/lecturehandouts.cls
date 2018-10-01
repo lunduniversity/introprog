@@ -6,7 +6,9 @@
 \LoadClass[handout]{beamer}
 \usepackage{etex} % after adding algorithm2e paga then strange error otherwise if not this package etex is included: http://tex.stackexchange.com/questions/38607/no-room-for-a-new-dimen
 \beamertemplatenavigationsymbolsempty
-\setbeamertemplate{footline}[frame number] %https://tex.stackexchange.com/questions/432054/missing-frame-numbers-with-paloalto-theme
+%https://tex.stackexchange.com/questions/432054/missing-frame-numbers-with-paloalto-theme
+\setbeamertemplate{footline}[frame number] % fix for ubuntu 18.04 see link above
+\setbeamercolor{page number in head/foot}{fg=gray}  % fix for ubuntu 18.04 see link above
 
 \usetheme{Antibes} \usecolortheme{default}
 
