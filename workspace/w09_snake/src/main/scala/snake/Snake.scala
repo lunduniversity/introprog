@@ -13,7 +13,7 @@ class Snake (
 
   val body: scala.collection.mutable.Buffer[Pos] = initBody.toBuffer
 
-  val initTailSize: Int = 10 // eller vad som är kul och lagom svårt
+  val initTailSize: Int = 10 // välj själv vad som är lagom svårt
 
   // var nbrOfStepsSinceReset = 0
   // val growEvery = 10
