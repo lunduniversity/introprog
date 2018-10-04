@@ -9,7 +9,7 @@ class Snake (
 ) extends CanMove {
   var dir: Dir = initDir
 
- val initBody: List[Pos] = List(initPos + initDir, initPos)
+  val initBody: List[Pos] = List(initPos + initDir, initPos)
 
   val body: scala.collection.mutable.Buffer[Pos] = initBody.toBuffer
 
