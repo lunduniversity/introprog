@@ -7,17 +7,17 @@
 \Subsection{Implementera insert, remove, append}
 
 
-\begin{Slide}{Exempel: PolygonWindow}
+\begin{Slide}{Exempel: PolygonWindow}\SlideFontTiny
 \setlength{\leftmargini}{0pt}
 \begin{itemize}
-\item En polygon kan representeras som en sekvens av punkter, där varje punkt är en 2-tupel:  \code{Seq[(Int, Int)]}
+\item En polygon kan representeras som en punktsekvens, där varje punkt är ett heltalspar.
 
 \item \code{PolygonWindow} nedan är ett fönster som kan rita en polygon.
 \end{itemize}
 
-\vspace{-0.0em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/PolygonWindow.scala}
+\vspace{-0.5em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/sequences/PolygonWindow.scala}
 \pause
-\vspace{0em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/polygonTest1.scala}
+\vspace{-0em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/sequences/PolygonTest.scala}
 \end{Slide}
 
 \begin{Slide}{Typ-alias för att abstrahera typnamn}\SlideFontSmall
@@ -41,7 +41,7 @@ Detta är bra om:
 \begin{itemize}
 \item man har en lång och krånglig typ och vill använda ett kortare namn,
 
-\item om man vill abstrahera en typ och öppna för möjligheten att byta implementation senare (t.ex. till en egen klass), medan man ändå kan fortsätta att använda befintligt namn.
+\item öppnar för möjligheten att byta implementation senare (t.ex. case-klass)
 \end{itemize}
 \end{Slide}
 
@@ -49,7 +49,7 @@ Detta är bra om:
 \begin{Slide}{Exempel: SEQ-INSERT/REMOVE-COPY}
 Nu ska vi ''uppfinna hjulet'' och som träning implementera \Emph{insättning} och \Emph{borttagning} till en \Alert{ny} sekvens utan användning av sekvenssamlingsmetoder (förutom \code{length} och \code{apply}):
 \begin{Code}
-object pointSeqUtils {
+object PointSeqUtils {
   type Pt = (Int, Int)  // a type alias to make the code more concise
 
   def primitiveInsertCopy(pts: Array[Pt], pos: Int, pt: Pt): Array[Pt] = ???
@@ -67,12 +67,12 @@ object pointSeqUtils {
  \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
 
  \Input{\texttt{pts: Array[Pt], pt: Pt, pos: Int}} ~\\
- 
+
  \Output{En kopia av $pts$ men där $pt$ är infogat på plats $pos$}~\\
- 
- 
+
+
  \noindent\hrulefill
- 
+
   $result \leftarrow$ en ny \texttt{Array[Pt]} med plats för $pts.length + 1$ element \\
  \For{$i \leftarrow 0$ \KwTo $pos - 1$}{
   $result(i) \leftarrow pts(i)$
@@ -90,33 +90,33 @@ object pointSeqUtils {
 \end{Slide}
 
 \begin{Slide}{Insättning/borttagning i kopia av primitiv Array}
-\vspace{-0.6em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6}{7.2}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/pointSeqUtils.scala}
+\vspace{-0.6em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6}{7.2}\ttfamily\selectfont]{../compendium/examples/sequences/PointSeqUtils.scala}
 
 \pause
 \SlideFontSmall Man gör \Alert{mycket lätt fel} på gränser/specialfall: +-1, to/until, tom sekvens etc.
 \end{Slide}
 
-\begin{Slide}{Exempel: Test av SEQ-INSERT/REMOVE-COPY}
-\vspace{-0.6em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/polygonTest2.scala}
-\end{Slide}
+% \begin{Slide}{Exempel: Test av SEQ-INSERT/REMOVE-COPY}
+% \vspace{-0.6em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/polygonTest2.scala}
+% \end{Slide}
 
-\begin{Slide}{Exempel: Göra insättning med take/drop}\SlideFontSmall
-Om du inte vill ''uppfinna hjulet'' och inte använda \code{patch} kan du göra så här: \\Använd \code{take} och \code{drop} tillsammans med \code{:+} och \code{++} \\Du kan också göra insättningen generiskt användbar för alla sekvenser:
-\begin{REPLnonum}
-scala> val xs = Vector(1,2,3)
-xs: scala.collection.immutable.Vector[Int] =
-  Vector(1, 2, 3)
-
-scala> val ys = (xs.take(2) :+ 42) ++ xs.drop(2)
-ys: scala.collection.immutable.Vector[Int] =
-  Vector(1, 2, 42, 3)
-
-scala> def insertCopy[T](xs: Seq[T], elem: T, pos: Int) =
-        (xs.take(pos) :+ elem) ++ xs.drop(pos)
-
-scala> insertCopy(xs, 42, 2)
-res0: Seq[Int] = Vector(1, 2, 42, 3)
-
-\end{REPLnonum}
-\Emph{Övning}: Implementera \code{insertCopy[T]} med \code{patch} istället.
-\end{Slide}
+% \begin{Slide}{Exempel: Göra insättning med take/drop}\SlideFontSmall
+% Om du inte vill ''uppfinna hjulet'' och inte använda \code{patch} kan du göra så här: \\Använd \code{take} och \code{drop} tillsammans med \code{:+} och \code{++} \\Du kan också göra insättningen generiskt användbar för alla sekvenser:
+% \begin{REPLnonum}
+% scala> val xs = Vector(1,2,3)
+% xs: scala.collection.immutable.Vector[Int] =
+%   Vector(1, 2, 3)
+%
+% scala> val ys = (xs.take(2) :+ 42) ++ xs.drop(2)
+% ys: scala.collection.immutable.Vector[Int] =
+%   Vector(1, 2, 42, 3)
+%
+% scala> def insertCopy[T](xs: Seq[T], elem: T, pos: Int) =
+%         (xs.take(pos) :+ elem) ++ xs.drop(pos)
+%
+% scala> insertCopy(xs, 42, 2)
+% res0: Seq[Int] = Vector(1, 2, 42, 3)
+%
+% \end{REPLnonum}
+% \Emph{Övning}: Implementera \code{insertCopy[T]} med \code{patch} istället.
+% \end{Slide}
