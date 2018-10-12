@@ -648,23 +648,39 @@ scala> freq(kasta(1000)).toVector.sortBy(_._1).foreach(println)
 
 \QUESTBEGIN
 
-\Task\Uberkurs \what~Som hjälp när du skapar egna intressanta applikationer eller bygger vidare på kursens laborationer och övningar med frivilliga extrauppgifter, kan du använda funktionerna i singelobjektet \code{Disk} nedan.\footnote{Finns i kursrepot: \href{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/Disk.scala}{compendium/examples/Disk.scala}}
+\Task \what~Som hjälp när du skapar egna intressanta applikationer eller bygger vidare på kursens laborationer och övningar med frivilliga extrauppgifter, kan du använda funktionerna i singelobjektet \code{IO} nedan, som finns i kursens scala-bibliotek \href{http://cs.lth.se/pgk/api}{introprog}.\footnote{Källkoden finns här och även på sidan \pageref{disk-access-code}:\\ \href{https://github.com/lunduniversity/introprog/blob/master/compendium/workspace/introprog/src/main/scala/introprog/IO.scala}{https://github.com/lunduniversity/introprog-scalalib/blob/master/src/main/scala/introprog/IO.scala}}
 
-Disk-modulen använder \code{scala.io.Source} för att serialisera och de-serialisera strängar till och från vanliga textfiler. Disk-modulen använder även paketet \code{java.io} för att erbjuda funktioner som gör det enkelt att serialisera/de-serialisera godtyckliga objekt till/från binärfiler.
+IO-modulen använder \code{scala.io.Source} för att serialisera och de-serialisera strängar till och från vanliga textfiler. IO-modulen använder även paketet \code{java.io} för att erbjuda funktioner som gör det enkelt att serialisera/de-serialisera godtyckliga objekt skapade med hjälp av serialserbara klasser till/från binärfiler. Case-klasser i Scala blir automatiskt serialiserbara.
 
-Testa detta i REPL:
-\begin{REPL}
-scala> case class Player(name: String)
-scala> val highscores = Map(Player("Sandra") -> 42, Player("Björn") -> 5)
-scala> Disk.saveObject(hs,"highscores.ser")
-scala> val highscores2 = Disk.loadObject[Map[Player, Int]]("highscores.ser")
-scala> highscores2 == highscores
-res0: Boolean = true
-\end{REPL}
-Använd Disk-modulen nedan för att spara användarens poängresultat i ditt spel om Europas länder och städer, i extrauppgiften ovan.
+I implementationen av \code{IO} används \code{try ... finally} för att säkerställa att filer inte lämnas öppnade även om något går fel under den läs/skriv-process som sköts av det underliggande operativsystemet.
+
+\Subtask
+Kompilera och resta nedan med \code{introprog} på classpath, t.ex. med hjälp av \code{sbt}.
+\begin{Code}
+object Main {
+  import introprog.IO
+
+  case class Player(name: String)
+
+  def main(args: Array[String]): Unit = {
+    println("Test of output/input objects to/from disk:")
+    val highscores = Map(Player("Sandra") -> 42, Player("Björn") -> 5)
+    IO.saveObject(highscores,"highscores.ser")
+    val highscores2 = IO.loadObject[Map[Player, Int]]("highscores.ser")
+    val isSameContents = highscores2 == highscores
+    val testResult = if (isSameContents) "SUCCESS :)" else "FAILURE :("
+    println(testResult)
+  }
+
+}
+\end{Code}
+
+\Subtask
+Använd \code{IO}-modulen för att spara användarens poängresultat i ditt spel om Europas länder och städer, i extrauppgiften ovan.
 
 \begin{figure}
-  \scalainputlisting[basicstyle=\ttfamily\fontsize{9.2}{11}\selectfont]{examples/Disk.scala}
+%  \scalainputlisting[basicstyle=\ttfamily\fontsize{9.2}{11}\selectfont]{examples/IO.scala}
+  \scalainputlisting[basicstyle=\ttfamily\fontsize{9.2}{11}\selectfont]{../workspace/introprog/src/main/scala/introprog/IO.scala}
   \label{disk-access-code}
 \end{figure}
 \SOLUTION

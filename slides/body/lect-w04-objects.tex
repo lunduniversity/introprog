@@ -450,6 +450,29 @@ Idiom, syntax och semantik:
 \end{itemize}
 \end{Slide}
 
+\begin{Slide}{Paket i REPL}
+Paket funkar inte i REPL direkt; använd \code{:paste -raw}
+
+\begin{REPLnonum}
+scala> package mittpaket { object X { def hej = println("Hej") } }
+<console>:1: error: illegal start of definition
+       package mittpaket { object X { def hej = println("Hej") } }
+       ^
+
+scala> :paste -raw
+// Entering paste mode (ctrl-D to finish)
+
+package mittpaket { object X { def hej = println("Hej") } }
+
+// Exiting paste mode, now interpreting.
+
+
+scala> mittpaket.X.hej
+Hej
+
+\end{REPLnonum}
+
+\end{Slide}
 
 
 \Subsection{Tupler}
@@ -907,13 +930,42 @@ scala> val w = new introprog.PixelWindow(300, 200, "hejsan")
 Studera dokumentationen för \code{introprog.PixelWindow} här: \url{http://cs.lth.se/pgk/api/}
 \end{Slide}
 
+
+\Subsection{\texttt{sbt} för smidig omkompilering}
+\begin{Slide}{Scala Build Tool: \texttt{sbt}}\SlideFontSmall
+\begin{itemize}
+\item Du kan låta \code{sbt} automatiskt sköta omkompilering och körning vid varje Ctrl+S med kommandot \code{~run}
+och enbart omkompilering med \code{~compile}
+\begin{REPL}
+> sbt              # kör igång sbt i en katalog med .scala-filer
+[info] Set current project to hellosbt (in build file:/home/bjornr/tmp/hellosbt/)
+[info] sbt server started at 127.0.0.1:5320
+sbt:hellosbt> ~run
+\end{REPL}
+Avsluta med Enter. Om flera \code{main} gör: \code{ ~runMain DettaMainObj}
+\item Kod antas finnas direkt i \Emph{aktuell katalog} eller i \code{src/main/scala}
+\item Lägg \code{.jar}-filer i en katalog \code{lib} så hamnar de automatiskt på classpath
+\item Om du vill: skapa en fil med namnet \code{build.sbt} som konfigurerar \code{sbt}
+\begin{Code}
+name := "hellosbt"          // bestäm namnet på ditt projekt
+scalaVersion := "2.12.7"    // bestäm version av Scala-kompilatorn
+\end{Code}
+Se Appendix F i kompendiet och \url{http://www.scala-sbt.org/}
+\end{itemize}
+\end{Slide}
+
+
+
 \begin{Slide}{Använda \texttt{introprog} tillsammans med \texttt{sbt}}
 Lägg detta i filen \code{build.sbt}:
 \begin{Code}
-scalaVersion := "2.12.6"
-libraryDependencies += "se.lth.cs" %% "introprog" % "1.0.0"
+scalaVersion := "2.12.7"
+libraryDependencies += "se.lth.cs" %% "introprog" % "1.1.0"
 \end{Code}
-Första gången du kör \code{compile}, \code{run} eller \code{console} i \code{sbt} kommer paketet \code{introprog} automatiskt att laddas ner från webbplatsen \Emph{Sonatype Maven Central} där många öppenkällkodspaket finns fritt tillgängliga.
+Första gången du kör \code{compile}, \code{run} eller \code{console} i \code{sbt} kommer en jar-fil med paketet \code{introprog} automatiskt att laddas ner från webbplatsen \Emph{Sonatype Maven Central} där många öppenkällkodspaket finns fritt tillgängliga. \\~\\
+
+Jar-filen kommer automatiskt läggas i din hemkatalog här: \\
+\code{~/.ivy2/cache/se.lth.cs/introprog_2.12/jars}
 \end{Slide}
 
 
