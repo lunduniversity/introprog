@@ -52,7 +52,7 @@ object IO {
   /** Test if a file with name `fileName` exists. */
   def isExisting(fileName: String): Boolean = new java.io.File(fileName).exists
 
-  /** Create a directory with name ´dir´ if it does not exist. */
+  /** Create a directory with name `dir` if it does not exist. */
   def createDirIfNotExist(dir: String): Boolean = new java.io.File(dir).mkdirs()
 
   /** Return the path name or the current user's home directory. */
