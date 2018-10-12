@@ -31,7 +31,8 @@ case class Date(year: Int, month: Int, dayOfMonth: Int, hour: Int, minute: Int) 
   lazy val toNaturalFormat: String = toFormat("HH:mm d/M-yyyy")
 
   /**
-   * Checks whether this date happened before, at the same time as or after the provided date.
+   * Returns a negative number if this date happened before the argument date, returns a positive number
+   * if this date happened after the argument date, and returns 0 if both dates are equal.
    */
   def compare(date: Date): Int = {
     calendar.compareTo(date.calendar)
