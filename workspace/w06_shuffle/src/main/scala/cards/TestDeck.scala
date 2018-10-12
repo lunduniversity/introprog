@@ -22,7 +22,7 @@ object TestDeck {
       freq(permIndex) += 1L
     }
     val listingOfPercentages = perms.indices
-      .map(i => s"${perms(i).mkString}: ${freq(i).toDouble/n}%")
+      .map(i => s"${perms(i).mkString}: ${freq(i).toDouble/n*100}%")
       .mkString("\n")
     println(s"\n$listingOfPercentages")
   }
