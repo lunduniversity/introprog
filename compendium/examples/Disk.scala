@@ -1,4 +1,4 @@
-object Disk {
+object Disk { 
   def loadString(fileName: String, enc: String = "UTF-8"): String =
     scala.io.Source.fromFile(fileName, enc).mkString
 

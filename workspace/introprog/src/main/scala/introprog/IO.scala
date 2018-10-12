@@ -4,9 +4,6 @@ package introprog
 object IO {
   /** Load a string from a text file called `fileName` using encoding `enc`. */
   def loadString(fileName: String, enc: String = "UTF-8"): String = {
-    //This implementation risk leak open file handles:
-    //   scala.io.Source.fromFile(fileName, enc).mkString
-    // Instead:
     var result: String = ""
     val source = scala.io.Source.fromFile(fileName, enc)
     try { result = source.mkString } finally { source.close }
@@ -15,9 +12,6 @@ object IO {
 
   /** Load string lines from a text file called `fileName` using encoding `enc`. */
   def loadLines(fileName: String, enc: String = "UTF-8"): Vector[String] = {
-    //This implementation risk leak open file handles:
-    //   scala.io.Source.fromFile(fileName, enc).getLines.toVector
-    // Instead:
     var result = Vector.empty[String]
     val source = scala.io.Source.fromFile(fileName, enc)
     try { result = source.getLines.toVector } finally { source.close }
