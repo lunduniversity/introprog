@@ -63,6 +63,10 @@ object Swing {
       .getDefaultConfiguration
       .createCompatibleImage(initWidth, initHeight, java.awt.Transparency.OPAQUE)
 
+    val g: java.awt.Graphics2D = img.createGraphics()
+    g.setColor(initBackground)
+    g.fillRect(0, 0, initWidth, initHeight)
+
     setBackground(initBackground)
 		setDoubleBuffered(true)
 		setPreferredSize(new java.awt.Dimension(initWidth, initHeight))

@@ -1,12 +1,12 @@
 package introprog
 
-/** A model with input/output operations from/to the underlying file system. */
+/** A module with input/output operations from/to the underlying file system. */
 object IO {
   /** Load a string from a text file called `fileName` using encoding `enc`. */
   def loadString(fileName: String, enc: String = "UTF-8"): String = {
     var result: String = ""
     val source = scala.io.Source.fromFile(fileName, enc)
-    try { result = source.mkString } finally { source.close }
+    try result = source.mkString finally source.close()
     result
   }
 
@@ -14,7 +14,7 @@ object IO {
   def loadLines(fileName: String, enc: String = "UTF-8"): Vector[String] = {
     var result = Vector.empty[String]
     val source = scala.io.Source.fromFile(fileName, enc)
-    try { result = source.getLines.toVector } finally { source.close }
+    try result = source.getLines.toVector finally source.close()
     result
   }
 
@@ -33,7 +33,7 @@ object IO {
   def loadObject[T](fileName: String): T = {
     val f = new java.io.File(fileName)
     val ois = new java.io.ObjectInputStream(new java.io.FileInputStream(f))
-    try { ois.readObject.asInstanceOf[T] } finally ois.close()
+    try ois.readObject.asInstanceOf[T] finally ois.close()
   }
 
   /** Serialize `obj` to a binary file called `fileName`. */
@@ -49,11 +49,11 @@ object IO {
   /** Create a directory with name `dir` if it does not exist. */
   def createDirIfNotExist(dir: String): Boolean = new java.io.File(dir).mkdirs()
 
-  /** Return the path name or the current user's home directory. */
-  def userDir: String = System.getProperty("user.home")
+  /** Return the path name of the current user's home directory. */
+  def userDir(): String = System.getProperty("user.home")
 
-  /** Return the path name or the current working directory. */
-  def currentDir: String =
+  /** Return the path name of the current working directory. */
+  def currentDir(): String =
     java.nio.file.Paths.get(".").toAbsolutePath.normalize.toString
 
   /** Return a sequence of file names in the directory `dir`. */
