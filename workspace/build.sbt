@@ -17,7 +17,7 @@ lazy val cslib = (project in file("cslib")).  // still used by w13_img_proj
     name := "cslib",
     version := "2017",
     javacOptions in (Compile,doc) ++= Seq(
-      "-encoding", "UTF-8", "-charset", "UTF-8", "-docencoding", "UTF-8"),
+      "-encoding", "UTF-8", "-charset", "UTF-8", "-docencoding", "UTF-8")
   )
 
 val Version = "1.0.0"
@@ -92,7 +92,7 @@ lazy val w10_tabular =(project in file("w10_tabular")).
   settings(commonSettings: _*).
   settings(
     name := "w10_tabular"
-  ).dependsOn(cslib) // TODO: remove this dependency when updated
+  ).dependsOn(introprog_scalalib) // TODO: remove this dependency when updated
 
 lazy val w11_javatext =(project in file("w11_javatext")).
   settings(commonSettings: _*).
@@ -126,7 +126,7 @@ lazy val workspace = (project in file(".")).
     name := "workspace",
     EclipseKeys.withSource := true,
     EclipseKeys.skipProject := true,
-    EclipseKeys.skipParents in ThisBuild := true,
+    EclipseKeys.skipParents in ThisBuild := true
     //EclipseKeys.relativizeLibs := true,
     // https://github.com/typesafehub/sbteclipse/wiki/Using-sbteclipse
  )
