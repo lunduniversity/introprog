@@ -7,11 +7,16 @@ object Main {
 
   def main(args: Array[String]): Unit = {
     scala.util.Try {
-      println(s"$welcome\nCurrent dir: ${introprog.IO.currentDir}")
+      println(s"$welcome\nCurrent dir: ${introprog.IO.currentDir()}")
       args.toVector match {
         case Vector() => println("No args given. Staring with empty table.")
-        case Vector(uri) => Command.load(uri, Command.currentSeparator)
-        case Vector(uri, sep) if sep.nonEmpty => Command.load(uri, sep(0))
+
+        case Vector(uri) => Command.load(uri)
+
+        case Vector(uri, sep) if sep.nonEmpty =>
+          Command.currentSeparator = sep(0)
+          Command.load(uri)
+
         case _ => println(s"""Unkown args: ${args.mkString(" ")}$usage""")
       }
       Command.loopUntilQuit()

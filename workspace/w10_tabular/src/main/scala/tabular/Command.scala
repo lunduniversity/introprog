@@ -1,7 +1,7 @@
 package tabular
 
 import scala.util.Try
-import introprog.IO
+import introprog.{IO, Dialog}
 
 object Command {
   var currentSeparator: Char = ','
@@ -13,8 +13,8 @@ object Command {
     |help                 Print this list of commands
     |ls                   List files in current directory
     |load                 Load a file using introprog.Dialog.file
-    |load filename|url    Load a table from <location> using current separator
-    |save                 Save
+    |load filename|url    Load a table from filename or url using current separator
+    |save                 Save a file using introprog.Dialog.file
     |save filename        Save current table to <filepath>
     |sep                  Show current column separator
     |sep c                Change current column separator to char c
@@ -29,24 +29,28 @@ object Command {
    def fromUser(): Vector[String] = {
      // readLine can give null if Ctrl+D is typed by user (Linux, MacOS)
      val cmdOpt = Option(scala.io.StdIn.readLine("> ")) // None if null
-     cmdOpt.map(_.split(' ').toVector.map(_.trim)).getOrElse(Vector("quit"))
+     cmdOpt.map(_.split(' ').map(_.trim).toVector).getOrElse(Vector("quit"))
    }
 
-   def TODO = "Command not yet implemented."
+   def TODO = "TODO: Not yet implemented."
 
-   def load(fileOrUrl: String, separator: Char): String = TODO
+   def load(fileOrUrl: String): String = TODO
 
-   def save(file: String, separator: Char): String = {
-     Table.save(file, separator)
-     s"Table saved to file: $file"
-   }
+   def save(file: String): String = TODO
+
+   def listFiles(): String = IO.currentDir +"\n"+ IO.list(IO.currentDir).mkString(" ")
 
    def doCommand(cmd: Vector[String]): String  = cmd match {
      case Vector("") | Vector()            => shortHelpText
+
      case Vector("help")                   => longHelpText
-     case Vector("ls")                     => IO.list(IO.currentDir).mkString(" ")
-     case Vector("load", fileOrUrl)        => load(fileOrUrl, currentSeparator)
+
+     case Vector("ls")                     => listFiles()
+
+     case Vector("load", fileOrUrl)        => load(fileOrUrl)
+
      case Vector("quit")                   => "quit"
+
      case _ => s"""Invalid command: ${cmd.mkString(" ")} \n$shortHelpText\n"""
    }
 

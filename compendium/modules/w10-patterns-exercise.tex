@@ -284,9 +284,6 @@ En förseglad supertyp innebär att programmeraren redan vid kompileringstid få
 
 
 
-
-
-
 \WHAT{Betydelsen av små och stora begynnelsebokstäver vid matchning.}
 
 \QUESTBEGIN
@@ -354,6 +351,44 @@ case `tomat` => println("tomat")
 \QUESTEND
 
 
+
+
+
+\WHAT{Matcha på innehåll i en Vector.}
+
+\QUESTBEGIN
+
+\Task \what ~ Kör nedan i REPL. Vad skrivs ut? Förklara vad som händer.
+\begin{REPL}
+scala> val xss = Vector(Vector("hej"),Vector("på", "dej"),Vector("4","x","2"))
+scala> xss.map( _ match {
+  case Vector() => "tom"
+  case Vector(a) => a.reverse
+  case Vector(_, b) => b.reverse
+  case Seq(a, "x", b) => a + b
+  case _ => "ANNARS DETTA"
+} ).foreach(println)
+\end{REPL}
+
+
+\SOLUTION
+
+\TaskSolved \what
+
+\begin{REPL}
+jeh
+jed
+42
+\end{REPL}
+För varje element i \code{xss} görs en matching som resulterar i en sträng. Vad som händer i varje gren förklaras nedan.
+\begin{enumerate}
+  \item Första match-grenen aktiveras aldrig eftersom \code{xss} ej innehåller någon tom vektor.
+  \item Andra grenen passar med \code{Vector("hej")} och variablen \code{a} binds till \code{"hej"}.
+  \item Tredje grenen matchar \code{Vector("på", "dej")} där första värdet binds inte till någon variabel eftersom understreck finns på motsvarande plats, medan andra värdet binds till \code{b}.
+  \item Fjärde grenen matchar en sekvens med tre värden där mittenvärdet är \code{"x"}. Den sista grenen aktiveras inte i detta exempel men hade matchat allt som inte fångas av tidigare grenar.
+\end{enumerate}
+
+\QUESTEND
 
 
 
@@ -679,6 +714,95 @@ scala> xs.map(_.toOption).flatten.size
 \SubtaskSolved  Typen \code{Nothing} är en subtyp av varenda typ i Scalas hierarki. Detta innebär att den även är en subtyp av \code{String} vilket implicerar att \code{String} inkluderar både strängar och \code{Nothing} och därav blir returtypen.
 
 
+\QUESTEND
+
+
+
+
+\WHAT{Laborationsförberedelse.}
+
+\QUESTBEGIN
+
+\Task  \what~ På veckans laboration ska du hantera data som finns i tabeller med celler som kan bestå av decimaltal eller strängar. Studera den givna koden som du ska utgå ifrån; uppgifterna nedan berör \code{Cell.scala} och \code{Table.scala}:
+\url{https://github.com/lunduniversity/introprog/tree/master/workspace/w10_tabular/src/main/scala/tabular}
+
+Bastypen \code{Cell} i koden nedan har två subtyper \code{Str} och \code{Num}.
+
+\begin{CodeSmall}
+sealed trait Cell { def value: String }
+case class Str(value: String) extends Cell
+case class Num(num: BigDecimal) extends Cell { def value = num.toString }
+\end{CodeSmall}
+\code{BigDecimal} används för att representera decimaltal med bättre precision än vanliga flyttal av typen \code{Double}.
+
+\Subtask Studera dokumentationen för \code{BigDecimal}: \url{https://www.scala-lang.org/api}\\
+Vad gör fabriksmetoden \code{def apply(x: String): BigDecimal} (se kompanjonsobj.).
+
+
+\Subtask Vad är fördelen med att \code{Cell} är förseglad?
+
+\Subtask Skriv koden ovan i en fil \code{Cell.scala} och kör igång \code{sbt console}. Vad ger koden nedan för resultat? Ange värde och typ för varje rad.
+
+\begin{REPL}
+scala> val xs = Seq[Cell](Str("!"), Num(BigDecimal("100000000.000000001")))
+scala> val ys = xs.map(_ match { case Num(n) => Some(n) case _ => None })
+scala> val b = ys.flatten.headOption.getOrElse(BigDecimal(0))
+\end{REPL}
+
+\Subtask Lägg till ett kompanjonsobjekt enligt nedan. Gör klart den saknade implementationen. Använd \code{Try} och matcha på \code{Success} och \code{Failure}. Testa så att alla metoder i kompanjonsobjektet fungerar.
+
+\Subtask Gör om implementation så att du i stället använder \code{Try} och \code{getOrElse}. Testa så att det fungerar som innan. Vilken implementation är smidigast?
+\begin{CodeSmall}
+object Cell {
+  import scala.util.{Try, Success, Failure}
+
+  /** Ger en Num om BigDecimal(s) lyckas annars en Str. */
+  def apply(s: String): Cell =  ???
+
+  def apply(i: Int): Num = Num(BigDecimal(i))
+
+  def empty: Str = Str("")
+
+  def zero: Num = Num(BigDecimal(0))
+}
+\end{CodeSmall}
+
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{9}{11.5}\selectfont]{../workspace/w10_tabular/src/main/scala/tabular/Table.scala}
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+\SubtaskSolved ''Translates the decimal String representation of a BigDecimal into a BigDecimal.''
+
+\SubtaskSolved Eftersom \code{Cell} är förseglad med \code{sealed} så kan inga andra subtyper finnas och vi behöver inte kolla efter andra subtyper när vi matchar. Kompilatorn varnar också om vi glömmer matcha på någon av subtyperna.
+
+\SubtaskSolved
+\begin{REPL}
+scala> val xs = Seq[Cell](Str("!"), Num(BigDecimal("100000000.000000001")))
+xs: Seq[Cell] = List(Str(!), Num(100000000.000000001))
+
+scala> val ys = xs.map(_ match { case Num(n) => Some(n) case _ => None })
+ys: Seq[Option[BigDecimal]] = List(None, Some(100000000.000000001))
+
+scala> val b = ys.flatten.headOption.getOrElse(BigDecimal(0))
+b: BigDecimal = 100000000.000000001
+\end{REPL}
+
+\SubtaskSolved
+\begin{Code}
+  def apply(s: String): Cell = Try(BigDecimal(s)) match {
+    case Success(num) => Num(num)
+    case Failure(_)   => Str(s)
+  }
+\end{Code}
+
+\SubtaskSolved
+\begin{Code}
+  def apply(s: String): Cell = Try(Num(BigDecimal(s))).getOrElse(Str(s))
+\end{Code}
+
 
 \QUESTEND
 
@@ -981,10 +1105,6 @@ res2: polynomial.Poly = -5x + y^4 + 3z^2
 
 
 \QUESTEND
-
-
-\AdvancedTasks %%%%%%%%%
-
 
 
 
