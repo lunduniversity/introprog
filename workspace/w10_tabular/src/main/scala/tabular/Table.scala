@@ -10,10 +10,10 @@ case class Table(
   val nCols = rows.map(_.length).max
   val dim = (nRows, nCols)
 
-  /** Uppgift: Ändra så att den ger -1 om heading inte finns. */
+  /** Uppgift: Ändra så att resultatet blir -1 om heading inte finns. */
   val indexOfHeading: Map[String, Int] = headings.zipWithIndex.toMap
 
-  /** Cell på plats (row, col), ger Cell.empty om indexering utanför gräns. */
+  /** Cell på plats (row, col), Cell.empty om indexering utanför gräns. */
   def apply(row: Int, col: Int): Cell = ??? //
 
   /** Some(cell) på plats (row, col), None om indexering utanför gräns. */
@@ -48,11 +48,11 @@ case class Table(
     s"$line\n$heading\n$line\n$paddedRows\n$line\n (nRows, nCols) == $dim\n"
   }
 
-  /** Strängvektor för varje rad i `rows`, kolumner skilda med `separator` */
+  /** Strängvektor för varje rad i `rows`, kolumner skilda med `separator`. */
   def toLines(separator: Char): Vector[String] = ???
 }
 
 object Table {
-  /** Skapar tabell från rader i textfil med kolumner skilda med `separator`. */
-  def load(from: String, separator: Char): Table = ???
+  /** Skapa tabell från fil el. webbadress; kolumner skilda med `separator`. */
+  def load(fileOrUrl: String, separator: Char): Table = ???
 }

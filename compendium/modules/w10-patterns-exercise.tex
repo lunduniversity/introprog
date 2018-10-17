@@ -767,8 +767,24 @@ object Cell {
 }
 \end{CodeSmall}
 
+\Subtask Nedan finns en nästan färdig klass för att hantera tabelldata. Implementera de saknade delarna enligt beskrivning i dokumentationskommentarerna. Testa så att dina implementationer fungerar och försök förstå hur övriga delar av \code{Table} fungerar.
+
 \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{9}{11.5}\selectfont]{../workspace/w10_tabular/src/main/scala/tabular/Table.scala}
 
+Skiss på implementation av \code{load} i kompanjonsobjektet:
+\begin{CodeSmall}
+    def load(fileOrUrl: String, separator: Char): Table = {
+      val source = fileOrUrl match {
+        case /* använd gard och startsWith*/ => scala.io.Source.fromURL(url)
+        case path  => scala.io.Source.fromFile(path)
+      }
+      val lines = try source.getLines.toVector finally source.close
+      val rows = ??? // kör split(separator).toVector på alla rader i lines
+      Table(rows.head, rows.tail.map(_.map(Cell.apply)), separator)
+    }
+\end{CodeSmall}
+En webbadress börjar med \code{http}.
+Med \code{try sats1 finally sats2} så kan man garantera att \code{sats2} alltid görs även om \code{sats1} ger undantag. Detta används typiskt för att frigöra resurser som annars förblir allokerade vid undantag. I koden ovan används det för att undvika att filer inte stängs även om något går fel under läsningen.
 \SOLUTION
 
 
@@ -803,11 +819,16 @@ b: BigDecimal = 100000000.000000001
   def apply(s: String): Cell = Try(Num(BigDecimal(s))).getOrElse(Str(s))
 \end{Code}
 
+\SubtaskSolved \emph{Lämnas som egen laborationsförberedelse.}
+Tips:
+\begin{itemize}%[nolistsep]
+  \item Nyckel-värde-tabeller har en metod \code{withDefaultValue} som är smidig om man vill undvika undantag vid uppslagning med nyckel som inte finns och det i stället för undantag är möjligt/lämpligt att erbjuda ett vettigt defaultvärde.
+  \item Metoderna \code{getOrElse} och \code{toOption} på en \code{Try} är smidiga när man vill ge resultat som beror av om det är \code{Success} eller \code{Failure} utan att man behöver göra en \code{match}.
+\end{itemize}
 
 \QUESTEND
 
 
-\clearpage
 \AdvancedTasks %%%%%%%%%%%%%%%%%%%
 
 
@@ -847,18 +868,25 @@ trait Grönsak {
 	def ärÄtbar: Boolean
 }
 
-case class Gurka(vikt: Int, ärRutten: Boolean) extends
-	Grönsak { val ärÄtbar: Boolean = (!ärRutten && vikt > 100)}
-case class Tomat(vikt: Int, ärRutten: Boolean) extends
-	Grönsak { val ärÄtbar: Boolean = (!ärRutten && vikt > 50)}
+case class Gurka(vikt: Int, ärRutten: Boolean) extends Grönsak {
+  val ärÄtbar: Boolean = (!ärRutten && vikt > 100)
+}
+
+case class Tomat(vikt: Int, ärRutten: Boolean) extends Grönsak {
+  val ärÄtbar: Boolean = (!ärRutten && vikt > 50)
+}
 
 object Main{
 	def slumpvikt: Int = (math.random*500 + 100).toInt
+
 	def slumprutten: Boolean = math.random > 0.8
+
 	def slumpgurka: Gurka = Gurka(slumpvikt, slumprutten)
+
 	def slumptomat: Tomat = Tomat(slumpvikt, slumprutten)
-	def slumpgrönsak: Grönsak = if (math.random > 0.2) slumpgurka
-		else slumptomat
+
+	def slumpgrönsak: Grönsak =
+    if (math.random > 0.2) slumpgurka else slumptomat
 
 	def main(args: Array[String]): Unit = {
 		val skörd = Vector.fill(args(0).toInt)(slumpgrönsak)
@@ -872,8 +900,7 @@ object Main{
 \SubtaskSolved
 Följande \code{case class} läggs till:
 \begin{Code}
-case class Broccoli(vikt: Int, ärRutten: Boolean)
-    extends Grönsak {
+case class Broccoli(vikt: Int, ärRutten: Boolean) extends Grönsak {
   val ärÄtbar: Boolean = (!ärRutten && vikt > 80)
 }
 \end{Code}
