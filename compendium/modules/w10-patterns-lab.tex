@@ -6,212 +6,185 @@
 \begin{Goals}
 \item Kunna använda mönstermatchning.
 \item Kunna förklara hur \code{Option} användas för att hantera saknde värden.
-\item Känna till att \code{scala.util.Try} kan användas för att hantera undantag.
-\item Känna till att undantag kan hanteras med \code{try catch}.
-\item Kunna använda inbyggda sorteringsfunktioner \code{sortBy} och \code{sortWith}.
+\item Kunna använda \code{scala.util.Try} för att hantera undantag.
+%\item Känna till att undantag kan hanteras med \code{try catch}.
+%\item Kunna använda inbyggda sorteringsfunktioner \code{sortBy} och \code{sortWith}.
 %\item Kunna implementera insättningssortering till ny sekvens.
 \item Känna till hur strängar ordnas.
-\item Kunna använda registrering (frekvensräkning).
-\item Kunna använda matriser med strängar.
+\item Kunna implementera registrering (frekvensräkning).
+%\item Kunna använda matriser med strängar.
 \end{Goals}
 
 \begin{Preparations}
 %\item \StudyTheory{12}
-\item Gör övning {\texttt{\ExeWeekTEN}} i kapitel \ref{chapter:W10}.
+\item Gör övning {\texttt{\ExeWeekTEN}}, speciellt uppgift \ref{task:labprep-patterns-tabular}.
 \item \ReadTheLab
-%\item Studera den givna koden i workspace för labben \code{survey}
 \item Fyll i denna enkät: \url{https://goo.gl/forms/hC6JK2UQXVpbGECc2}  \\
 I enkäten ska du för olika flervalsalternativlistor besvara frågan: \\ \textit{Vilket är ditt favoritalternativ?}
+\item Studera den givna koden i \code{src/main/scala/tabular} här: \url{https://github.com/lunduniversity/introprog/tree/master/workspace/w10_tabular}
 \end{Preparations}
 
 
 \subsection{Bakgrund}
 
-I den här veckans laboration ska du utveckla ett program som analyserar svar på enkäter med flervalsfrågor. Indata utgörs av text i form av \textbf{kolumnseparerade värden}, där varje persons svar finns på en egen rad och varje svarsrad innehåller svarsalternativ.
-Exempelindata finns i filen \code{favorit.csv} i mappen resources:
+I den här veckans laboration ska du utveckla en terminalapplikation som analyserar data i tabeller. Indata utgörs av text i form av \textbf{kolumnseparerade värden}, där varje rad följs av \code{`\n`} och innehåller kolumner som är separerade med ett valfritt s.k. separator-tecken, till exempel \code{','}, \code{'\t'} eller \code{';'}. Din app ska förutsätta att första indataraden innehåller kolumnrubriker.
+
+Du ska använda din app till att analysera svar på enkäter med flervalsfrågor, där varje persons svar finns på en egen rad och varje svarsrad innehåller svarsalternativ i kolumner.
+Exempelindata finns i filen \code{favorit.csv} i mappen resources och ser ut som följer. Kolumnseparator i tabellen nedan är \code{","}. Första raden är en rubrikrad som anger kolumnernas respektive rubrik.
 \lstinputlisting[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w10_tabular/src/main/resources/favorit.csv}
-Kolumnerna är separerade med en \textbf{kolumnseparator} som t.ex. kan vara \code{"\t"} eller \code{","}. Första raden i textfilen anger kolumnernas namn.
 
+\subsection{Krav}
 
-\subsection{Obligatoriska uppgifter}
+\begin{enumerate}[leftmargin=*]
+\item Din applikation ska kunna behandla kolumndata i en tabell kallad \code{currentTable}.
 
-\Task Implementera case-klassen \code{Table} för sortering, filtrering, registrering av strängmatriser med titelrad, enligt specifikationen nedan.
+\item Den aktuella tabellen ska kunna laddas från disk via filnamn eller från en webbadress som börjar med \code{http}.
 
-\begin{ScalaSpec}{Table}
-case class Table(matrix: Vector[Vector[String]],
-                 headings: Vector[String],
-                 separator: String) {
+\item Din applikation ska acceptera noll, ett eller två argument vid uppstart, där man kan styra ev. textkälla och ev. kolumnseparator.
 
-  /** Returns the number of (rows, columns) of the matrix data. */
-  val dim: (Int, Int) = ???
+\item Din applikation ska interagera med användaren genom terminalen och acceptera textkommandot \code{help} som ska ge följande utskrift. Körningen visar utskrift efter uppstart utan argument och resultatet av att användaren skrivit kommandot \code{help} efter prompten \code{"> "}.
 
-  /** Returns the values from a specified column. */
-  def col(c: Int): Vector[String] = ???
+\begin{REPLnonum}
+Welcome to tabular: an app for analysis of data in tables
+Current dir: /home/bjornr/pgk/labs/w10_tabular
+No args given. Staring with empty table.
+Type 'help' for help on commands and 'quit' to exit app.
+> help
+Commands:
+help                 Print this list of commands
+ls                   List files in current directory
+load                 Load a file using introprog.Dialog.file
+load filename|url    Load a table from <location> using current separator
+save                 Save
+save filename        Save current table to <filepath>
+sep                  Show current column separator
+sep c                Change current column separator to char c
+show                 Print current table to the console
+sort h               Sort current table on heading h
+filter h a b c ...   Keep rows where heading h has values a b c ...
+pie h                Draw a pie chart of current table's heading h
+bar h                Draw a bar chart of current table's heading h
+quit, Ctrl+D         Terminate app
+\end{REPLnonum}
+Följande kommandon är redan implementerade i given kod i modulen \code{Command}: \code{help}, \code{quit}, \code{Ctrl+D} och \code{ls}. Efter listorna nedan med obligatoriska och valfria krav finns en exempelkörning där utdata från olika kommando illustreras.
 
-  /** Returns the matrix in string format using separator between columns*/
-  override lazy val toString: String = ???
-
-  /** A new Table with rows sorted on column c (implemented using sortBy). */
-  def sort(c: Int): Table = ???
-
-  /** A new Table with rows sorted on column c (implemented from scratch). */
-  def mySort(c: Int): Table = ???
-
-  /**
-   * A new Table filtered so that column c only contains the wanted values.
-   */
-  def filter(c: Int, wanted: Vector[String]): Table = ???
-
-  /**
-   * Returns the distinct values for the given column coupled with the number
-   * of occurrences for that value. The pairs are sorted descending on the
-   * number of occurrences. The first element is the column header together
-   * with the total number of occurrences for all values.
-   */
-  def register(c: Int): Vector[(String, Int)] = ???
-}
-\end{ScalaSpec}
-
-
-Till din hjälp finns följande kod given i workspace:
-\begin{itemize}
-\item \code{Main} sätter igång användarinteraktionen och hanterar undantag.
-
-\item \code{Command} sköter läs-evaluera-skriv-loopen i programmet.
-
-\item \code{Chart} ritar diagram i \code{SimpleWindow}.
-
-\item Kompanjonsobjektet \code{Table} har den färdig fabriksmetoden \code{fromFile} för inläsning av kolumnseparerad data och konstruktion av \code{Table}-instanser, och kan även spara tabeller i filer med den färdiga metoden \code{save}.
+\item Du ska implementera följande \textbf{obligatoriska} funktioner:
+\begin{itemize}[nosep, label={$\square$},]
+\item \code{load filename|url} -- laddar \code{currentTable} från fil eller url
+\item \code{show} -- visar tabellen i ett inramat rutnät i terminalen (se exempel)
+\item \code{sep} -- visar aktuell kolumnseparator
+\item \code{sep c} -- ändrar aktuell kolumnseparator till första tecknet i strängen \code{c}
+\item \code{sort h} -- sorterar tabellens rader så att kolumnen med rubriken \code{h} är sorterad i bokstavsordning.
+\item \code{filter h a b c ...} -- gör så att aktuell tabell bara innehåller de rader där kolumnen med rubriken \code{h} har något av angivna värdena \code{a b c ...}. Värdena ska var minst ett och separeras med blanktecken efter kolumnnamnet \code{h}.
 \end{itemize}
 
-\noindent Du hittar koden här:
-\href{https://github.com/lunduniversity/introprog/tree/master/workspace/w10_tabular/src/main}{https://github.com/lunduniversity/introprog/tree/master/\\workspace/w10\_survey/src/main}
+\item Du ska implementera \emph{minst en} av följande \textbf{valfria} funktioner:
+\begin{itemize}[nosep, label={$\square$},]
+\item \code{load} -- laddar tabell från fil som anges av användaren i en filväljardialog med hjälp av \code{introprog.Dialog.file}
+\item \code{save} -- sparar tabell som text till fil som anges av användaren i en filväljardialog med hjälp av \code{introprog.Dialog.file}
+\item \code{pie h} -- ritar ett tårtdiagram över antalet förekomster av olika värden i kolumnen med rubriken \code{h} med hjälp av givna koden i \code{Graph.scala}.
+\item \code{bar h} -- ritar ett stapeldiagram över antalet förekomster av olika värden i kolumnen med rubriken \code{h} med hjälp av givna koden i \code{Graph.scala}.
+\item Implementera valfria funktioner för att göra beräkningar på \emph{numeriska} data i kolumner, t.ex. summa, medelvärde, standardavvikelse.
+\end{itemize}
 
+\end{enumerate}
 
+\subsection{Design}
 
+Du ska bygga vidare på den delvis färdiga koden i \code{workspace/w10_tabular} enligt denna design:
+\begin{itemize}
 
-\Task Testa systematiskt alla kommandon med olika parametrar och kontrollera så att alla delar av \code{Table} fungerar korrekt. Nedan exempelkörning visar hur testandet kan gå till.
+\item Alla abstraktioner ska ligga i paketet \code{tabular}.
 
+\item Den färdiga modulen \code{Main} hanterar ev. argument och sätter igång användarinteraktionen och gör så att appen inte avbryts om något ej hanterat undantag uppstår.
+
+\item Den påbörjade modulen \code{Command} sköter läs-evaluera-skriv-loopen i programmet. Du ska för varje kommando som du implementerar utöka matchningen i metoden \code{doCommand} med ett mönster som passar med kommandot och ev. argument. Utöka \code{Command} med fler metoder som exekverar resp. kommando som i sin tur tar hjälp av egna eller givna abstraktioner.
+
+\item Den färdiga modulen \code{Graph} ritar diagram i ett \code{PixelWindow}.
+
+\item Den nästan färdiga bastypen \code{Cell} med kompanjonsobjekt och subklasser som ingick i uppgift \ref{task:labprep-patterns-tabular} på veckans övning.
+
+\item Den nästan färdiga modulen \code{Table} som ingick i uppgift \ref{task:labprep-patterns-tabular} på veckans övning.
+\end{itemize}
+
+\subsection{Exempelkörning}
+
+Du ska använda ditt program för att analysera enkätsvar med avseende på t.ex. vilket språk som är populärast på resp. program. Enkätsvar årsvis sedan 2016 finns här \url{http://cs.lth.se/pgk/favorit}
+
+Nedan visas exempelkörning.
 \begin{REPLnonum}
-*** Welcome to stats for table data ***
-
-Current dir: /home/bjornr/lthgitlab/pgk/solution-workspace/w10_tabular/bin/
-Type 'help' for list of commands.
-> help
-Commands: help
-             Prints this list of commands.
-          load <location>
-             Loads a table from <location> using , as separator
-          load <location> <separator>
-             Loads a table from <location> using <separator>
-          save <filepath>
-             Saves the table to <filepath>
-          sep <separator>
-             Changes the separator of the table
-          filter <column> <values: a b c>
-             Filters the table so <column> only contains <values>
-          sort <column>
-             Sorts the table on <column>
-          mysort <column>
-             Sorts the table on <column> using my own sort implementation
-          print
-             Prints the table to the console
-          printchart <column>
-             Prints a barchart of <column> to the console
-          pie <column>
-             Draws a pie chart of current table in a SimpleWindow
-          bar <column>
-             Draws a bar chart of current table in a SimpleWindow
-          quit
-             Terminates the program
+> sep
+Current separator: ','
 > load favorit.csv
-Loading favorit.csv with separator ',' to table ...
+Table loaded with (nCols, nRows) == (17,7)
+> sort Program
+Current table sorted on column Program
+> show
+----------------------------------------------------------------------
+|Program|Indent|UI      |Lang      |OS        |Browser |DE           |
+----------------------------------------------------------------------
+|C      |Spaces|Terminal|Javascript|Windows 7 |Chrome  |Notepad++    |
+|C      |Spaces|GUI     |Java      |Windows 8 |Firefox |Eclipse      |
+|C      |Tabs  |Terminal|C#        |Windows 10|Edge    |Visual Studio|
+|D      |Spaces|Terminal|C         |BSD       |Firefox |Emacs        |
+|D      |Spaces|GUI     |Java      |macOS     |Safari  |Gedit        |
+|D      |Spaces|Terminal|Java      |Windows 8 |Edge    |Eclipse      |
+|D      |Spaces|GUI     |C         |Linux     |Firefox |Vim          |
+|D      |Tabs  |GUI     |Javascript|macOS     |Chrome  |Emacs        |
+|D      |Spaces|GUI     |Python    |Windows 7 |Chrome  |Notepad++    |
+|D      |Tabs  |GUI     |C         |Linux     |Chrome  |Gedit        |
+|E      |Spaces|Terminal|Java      |Linux     |Chromium|Eclipse      |
+|F      |Spaces|Terminal|C         |Linux     |Chrome  |Emacs        |
+|F      |Spaces|Terminal|C         |Linux     |Firefox |Vim          |
+|I      |Tabs  |Terminal|PHP       |Windows 10|Edge    |Notepad++    |
+|I      |Tabs  |Terminal|Python    |Windows 10|Chrome  |Notepad++    |
+|K      |Tabs  |GUI     |C#        |Windows 7 |Firefox |Visual Studio|
+|Nano   |Tabs  |Terminal|Javascript|macOS     |Safari  |Vim          |
+----------------------------------------------------------------------
+ (nRows, nCols) == (17,7)
 
-Done. Size: 17x7.
+> filter program D C
+Filter error.
+> filter Program D C
+Current table filtered on values Vector(D, C) of column Program
+> show
+---------------------------------------------------------------------
+|Program|Indent|UI      |Lang      |OS        |Browser|DE           |
+---------------------------------------------------------------------
+|D      |Spaces|Terminal|C         |BSD       |Firefox|Emacs        |
+|C      |Spaces|Terminal|Javascript|Windows 7 |Chrome |Notepad++    |
+|D      |Spaces|GUI     |Java      |macOS     |Safari |Gedit        |
+|C      |Spaces|GUI     |Java      |Windows 8 |Firefox|Eclipse      |
+|D      |Spaces|Terminal|Java      |Windows 8 |Edge   |Eclipse      |
+|D      |Spaces|GUI     |C         |Linux     |Firefox|Vim          |
+|C      |Tabs  |Terminal|C#        |Windows 10|Edge   |Visual Studio|
+|D      |Tabs  |GUI     |Javascript|macOS     |Chrome |Emacs        |
+|D      |Spaces|GUI     |Python    |Windows 7 |Chrome |Notepad++    |
+|D      |Tabs  |GUI     |C         |Linux     |Chrome |Gedit        |
+---------------------------------------------------------------------
+(nRows, nCols) == (10,7)
 
-> print
-Program,Indent,UI,Lang,OS,Browser,DE
-D,Spaces,Terminal,C,BSD,Firefox,Emacs
-C,Spaces,Terminal,Javascript,Windows 7,Chrome,Notepad++
-D,Spaces,GUI,Java,macOS,Safari,Gedit
-I,Tabs,Terminal,PHP,Windows 10,Edge,Notepad++
-C,Spaces,GUI,Java,Windows 8,Firefox,Eclipse
-D,Spaces,Terminal,Java,Windows 8,Edge,Eclipse
-F,Spaces,Terminal,C,Linux,Chrome,Emacs
-D,Spaces,GUI,C,Linux,Firefox,Vim
-Nano,Tabs,Terminal,Javascript,macOS,Safari,Vim
-C,Tabs,Terminal,C#,Windows 10,Edge,Visual Studio
-D,Tabs,GUI,Javascript,macOS,Chrome,Emacs
-D,Spaces,GUI,Python,Windows 7,Chrome,Notepad++
-E,Spaces,Terminal,Java,Linux,Chromium,Eclipse
-I,Tabs,Terminal,Python,Windows 10,Chrome,Notepad++
-K,Tabs,GUI,C#,Windows 7,Firefox,Visual Studio
-F,Spaces,Terminal,C,Linux,Firefox,Vim
-D,Tabs,GUI,C,Linux,Chrome,Gedit
-> filter 0 D
-> print
-Program,Indent,UI,Lang,OS,Browser,DE
-D,Spaces,Terminal,C,BSD,Firefox,Emacs
-D,Spaces,GUI,Java,macOS,Safari,Gedit
-D,Spaces,Terminal,Java,Windows 8,Edge,Eclipse
-D,Spaces,GUI,C,Linux,Firefox,Vim
-D,Tabs,GUI,Javascript,macOS,Chrome,Emacs
-D,Spaces,GUI,Python,Windows 7,Chrome,Notepad++
-D,Tabs,GUI,C,Linux,Chrome,Gedit
+> pie Lang
+pie chart of heading Lang drawn in another window
+> load http://cs.lth.se/pgk/favorit
+Table loaded with (nCols, nRows) == (192,8)
+> bar Program
+bar chart of heading Program drawn in another window
 > sep ;
-> print
-Program;Indent;UI;Lang;OS;Browser;DE
-D;Spaces;Terminal;C;BSD;Firefox;Emacs
-D;Spaces;GUI;Java;macOS;Safari;Gedit
-D;Spaces;Terminal;Java;Windows 8;Edge;Eclipse
-D;Spaces;GUI;C;Linux;Firefox;Vim
-D;Tabs;GUI;Javascript;macOS;Chrome;Emacs
-D;Spaces;GUI;Python;Windows 7;Chrome;Notepad++
-D;Tabs;GUI;C;Linux;Chrome;Gedit
-> sort 1
-> print
-Program;Indent;UI;Lang;OS;Browser;DE
-D;Spaces;Terminal;C;BSD;Firefox;Emacs
-D;Spaces;GUI;Java;macOS;Safari;Gedit
-D;Spaces;Terminal;Java;Windows 8;Edge;Eclipse
-D;Spaces;GUI;C;Linux;Firefox;Vim
-D;Spaces;GUI;Python;Windows 7;Chrome;Notepad++
-D;Tabs;GUI;Javascript;macOS;Chrome;Emacs
-D;Tabs;GUI;C;Linux;Chrome;Gedit
-> mysort 2
-> print
-Program;Indent;UI;Lang;OS;Browser;DE
-D;Spaces;GUI;Java;macOS;Safari;Gedit
-D;Spaces;GUI;C;Linux;Firefox;Vim
-D;Spaces;GUI;Python;Windows 7;Chrome;Notepad++
-D;Tabs;GUI;Javascript;macOS;Chrome;Emacs
-D;Tabs;GUI;C;Linux;Chrome;Gedit
-D;Spaces;Terminal;C;BSD;Firefox;Emacs
-D;Spaces;Terminal;Java;Windows 8;Edge;Eclipse
+Current separator: ';'
+> save data.csv
+Table saved to file: data.csv
+> ls
+/home/bjornr/git/cs/pgk-solutions/solutions-2018/w10_tabular
+.classpath favorit-snapshot.csv .settings src project build.sbt data.csv t.csv bin .idea target scp-favorit-snapshot.sh .project favorit.csv lib w10_survey.iml
+> quit
+Goodbye!
+
+$ cat data.csv  #visa filen och kolla att den har semikolonseparator
 \end{REPLnonum}
 
-\Task Använd programmet för att analysera enkätsvaren här:\\  \url{http://cs.lth.se/pgk/favorit}
+Exempel på tårt- och stapeldiagram visas nedan.
 
-\clearpage
+\includegraphics[scale=0.5]{../img/survey/pie.png}
 
-\subsection{Frivillig extrauppgift}
-
-I den frivilliga extrauppgiften ska du implementera metoden \code{bar} i singelobjektet \code{Chart} som kan rita ut stapeldiagram enligt figuren nedan. Du har nytta av att studera koden i den befintliga metoden \code{pie}.
-\begin{REPLnonum}
-*** Welcome to stats for table data ***
-
-Current dir: /home/bjornr/lthgitlab/pgk/solution-workspace/w10_tabular/bin/
-Type 'help' for list of commands.
-> load favorit.csv
-Loading favorit.csv
-  with separator ',' to table ...
-
-Done. Size: 17x7.
-
-> pie 0
-> bar 0
-\end{REPLnonum}
-
-\includegraphics[width=0.5\textwidth]{../img/survey/pie.png}
-
-\includegraphics[width=0.7\textwidth]{../img/survey/bar.png}
+\includegraphics[scale=0.5]{../img/survey/bar.png}

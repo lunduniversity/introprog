@@ -723,7 +723,7 @@ scala> xs.map(_.toOption).flatten.size
 
 \QUESTBEGIN
 
-\Task  \what~ På veckans laboration ska du hantera data som finns i tabeller med celler som kan bestå av decimaltal eller strängar. Studera den givna koden som du ska utgå ifrån; uppgifterna nedan berör \code{Cell.scala} och \code{Table.scala}:
+\Task  \what~ \label{task:labprep-patterns-tabular} På veckans laboration ska du hantera data som finns i tabeller med celler som kan bestå av decimaltal eller strängar. Studera den givna koden som du ska utgå ifrån; uppgifterna nedan berör \code{Cell.scala} och \code{Table.scala} här:
 \url{https://github.com/lunduniversity/introprog/tree/master/workspace/w10_tabular/src/main/scala/tabular}
 
 Bastypen \code{Cell} i koden nedan har två subtyper \code{Str} och \code{Num}.
@@ -741,7 +741,7 @@ Vad gör fabriksmetoden \code{def apply(x: String): BigDecimal} (se kompanjonsob
 
 \Subtask Vad är fördelen med att \code{Cell} är förseglad?
 
-\Subtask Skriv koden ovan i en fil \code{Cell.scala} och kör igång \code{sbt console}. Vad ger koden nedan för resultat? Ange värde och typ för varje rad.
+\Subtask Kör igång REPL med koden för \code{Cell}-hierarkin tillgänglig på classpath, t.ex. med \code{sbt console}. Vad ger koden nedan för resultat? Ange värde och typ för varje rad.
 
 \begin{REPL}
 scala> val xs = Seq[Cell](Str("!"), Num(BigDecimal("100000000.000000001")))
@@ -767,24 +767,29 @@ object Cell {
 }
 \end{CodeSmall}
 
-\Subtask Nedan finns en nästan färdig klass för att hantera tabelldata. Implementera de saknade delarna enligt beskrivning i dokumentationskommentarerna. Testa så att dina implementationer fungerar och försök förstå hur övriga delar av \code{Table} fungerar.
+\Subtask I given kod och nedan finns en nästan färdig klass för tabelldatahantering. Implementera de saknade delarna enligt beskrivning i dokumentationskommentarerna. Testa så att dina implementationer fungerar och försök förstå hur övriga delar av \code{Table} fungerar.
 
 \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{9}{11.5}\selectfont]{../workspace/w10_tabular/src/main/scala/tabular/Table.scala}
 
-Skiss på implementation av \code{load} i kompanjonsobjektet:
+\noindent Tips vid färdigställande av \code{Table}:
+\begin{itemize}[leftmargin=*]
+  \item Nyckel-värde-tabeller har en metod \code{withDefaultValue} som är smidig om man vill undvika undantag vid uppslagning med nyckel som inte finns och det i stället för undantag är möjligt/lämpligt att erbjuda ett vettigt defaultvärde.
+  \item Metoderna \code{getOrElse} och \code{toOption} på en \code{Try} är smidiga när man vill ge resultat som beror av om det är \code{Success} eller \code{Failure} utan att man behöver göra en \code{match}.
+\item Skiss på implementation av \code{load} i kompanjonsobjektet:
 \begin{CodeSmall}
-    def load(fileOrUrl: String, separator: Char): Table = {
-      val source = fileOrUrl match {
-        case /* använd gard och startsWith*/ => scala.io.Source.fromURL(url)
-        case path  => scala.io.Source.fromFile(path)
-      }
-      val lines = try source.getLines.toVector finally source.close
-      val rows = ??? // kör split(separator).toVector på alla rader i lines
-      Table(rows.head, rows.tail.map(_.map(Cell.apply)), separator)
-    }
+def load(fileOrUrl: String, separator: Char): Table = {
+  val source = fileOrUrl match {
+    case /* använd gard och startsWith*/ => scala.io.Source.fromURL(url)
+    case path  => scala.io.Source.fromFile(path)
+  }
+  val lines = try source.getLines.toVector finally source.close
+  val rows = ??? // kör split(separator).toVector på alla rader i lines
+  Table(rows.head, rows.tail.map(_.map(Cell.apply)), separator)
+}
 \end{CodeSmall}
 En webbadress börjar med \code{http}.
 Med \code{try sats1 finally sats2} så kan man garantera att \code{sats2} alltid görs även om \code{sats1} ger undantag. Detta används typiskt för att frigöra resurser som annars förblir allokerade vid undantag. I koden ovan används det för att undvika att filer inte stängs även om något går fel under läsningen.
+\end{itemize}
 \SOLUTION
 
 
@@ -820,11 +825,6 @@ b: BigDecimal = 100000000.000000001
 \end{Code}
 
 \SubtaskSolved \emph{Lämnas som egen laborationsförberedelse.}
-Tips:
-\begin{itemize}%[nolistsep]
-  \item Nyckel-värde-tabeller har en metod \code{withDefaultValue} som är smidig om man vill undvika undantag vid uppslagning med nyckel som inte finns och det i stället för undantag är möjligt/lämpligt att erbjuda ett vettigt defaultvärde.
-  \item Metoderna \code{getOrElse} och \code{toOption} på en \code{Try} är smidiga när man vill ge resultat som beror av om det är \code{Success} eller \code{Failure} utan att man behöver göra en \code{match}.
-\end{itemize}
 
 \QUESTEND
 

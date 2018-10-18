@@ -10,7 +10,7 @@ case class Table(
   val nCols = rows.map(_.length).max
   val dim = (nRows, nCols)
 
-  /** Uppgift: Ändra så att resultatet blir -1 om heading inte finns. */
+  /** Uppgift: Ändra så att resultatet blir -1 om nyckel inte finns. */
   val indexOfHeading: Map[String, Int] = headings.zipWithIndex.toMap
 
   /** Cell på plats (row, col), Cell.empty om indexering utanför gräns. */
@@ -25,8 +25,8 @@ case class Table(
 
   def col(heading: String): Vector[Cell] = col(indexOfHeading(heading))
 
-  def freq(heading: String): Vector[(Cell, Int)] =
-    col(heading).groupBy(x => x).mapValues(_.size).toVector
+  /** Registrering av frekvens för varje unikt värde i kolumn heading.*/
+  def freq(heading: String): Vector[(Cell, Int)] = ???
 
   def filter(heading: String, values: Set[String]): Table =
     copy(rows = rows.filter(r => values.contains(r(indexOfHeading(heading)).value)))
