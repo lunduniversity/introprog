@@ -264,97 +264,40 @@ scala> isEqual(xss, yss)
 
 
 \ifkompendium\else
-\begin{Slide}{Fördjupning: Fallgrop typradering \Eng{type erasure}}\SlideFontSmall
-Informationen om typerna i typparametrar raderas innan kodgenerering av prestandaskäl och \Alert{typparametrar saknas vid runtime}.
-\vspace{-0.25em}\begin{REPL}
-scala> val xs = Vector(1,2,3)
-xs: scala.collection.immutable.Vector[Int] = Vector(1, 2, 3)
 
-scala> val ys = xs.map(_.toDouble)
-ys: scala.collection.immutable.Vector[Double] = Vector(1.0, 2.0, 3.0)
-
-scala> def hasDoubles[T](xs: Vector[T]): Boolean = xs match {
-         case _: Vector[Int] => false
-         case _: Vector[Double] => true
-       }
-
-<console>:13: warning: ???
-
-
-                        ^
-<console>:14: warning: ???
-
-
-                        ^
-<console>:14: warning: ???
-\end{REPL}
-\end{Slide}
-\fi
 
 \begin{Slide}{Fördjupning: Fallgrop typradering \Eng{type erasure}}\SlideFontSmall
-Informationen om typerna i typparametrar raderas innan kodgenerering av prestandaskäl och \Alert{typparametrar saknas vid runtime}.
+Informationen om typerna i typparametrar raderas innan kodgenerering för JVM av prestandaskäl och \Alert{typparametrar saknas vid runtime} i bytekoden.
 \vspace{-0.25em}\begin{REPL}
-scala> val xs = Vector(1,2,3)
-xs: scala.collection.immutable.Vector[Int] = Vector(1, 2, 3)
+scala> def isIntVector[T](xs: Vector[T]) = xs.isInstanceOf[Vector[Int]]
 
-scala> val ys = xs.map(_.toDouble)
-ys: scala.collection.immutable.Vector[Double] = Vector(1.0, 2.0, 3.0)
-
-scala> def hasDoubles[T](xs: Vector[T]): Boolean = xs match {
-         case _: Vector[Int] => false
-         case _: Vector[Double] => true
-       }
-
-<console>:13: warning: non-variable type argument Int in type pattern scala.collection.immutable.Vector[Int]
+warning: non-variable type argument Int in Vector[Int]
 is unchecked since it is eliminated by erasure
-                case _: Vector[Int] => false
-                        ^
-<console>:14: warning: non-variable type argument Double in type pattern scala.collection.immutable.Vector[Int]
-is unchecked since it is eliminated by erasure
-                case _: Vector[Double] => true
-                        ^
-<console>:14: warning: unreachable code: case _: Vector[Double] => true
-\end{REPL}
-\end{Slide}
 
-\begin{Slide}{Fördjupning: Dynamisk typtest vid typradering}\SlideFontSmall
-Typtest vid körtid med nästlad matchning:
+scala> scala> isIntVector(Vector("hej"))
+res42: Boolean = true  // AAAARGHH!! :(
+\end{REPL}
+Måste ''packa upp'' samlingen och typtesta alla element:
 \begin{REPL}
-scala> def hasDoubles2[T](xs: Vector[T]): Boolean = xs match {
-         case x +: xs => x match {
-           case _: Double => true
-           case _ => false
-         }
-         case _ => false
-       }
+scala> def isIntVector[T](xs: Vector[T]) =
+         xs.isInstanceOf[Vector[T]] && xs.forall(x => x.isInstanceOf[Int])
 
-scala> hasDoubles2(Vector(1.0))    // funkar!
-\end{REPL}
-
-Typtest vid körtid med match och gard med \code{isInstanceOf}:
-\begin{REPL}
-
-scala> def hasDoubles3[T](xs: Vector[T]): Boolean = xs match {
-         case x +: xs if x.isInstanceOf[Double] => true
-         case _ => false
-       }
-
-scala> hasDoubles3(Vector(1.0))    // funkar!
-
+scala> isIntVector(Vector(42,"hej"))
+res43: Boolean = false  // FUNKAR :)
 
 \end{REPL}
+Ovan kan även lösas med \code{match}.\\Mer om det i vecka \code{w10} om mönstermatchning.
+
 \end{Slide}
 
 
-\ifkompendium\else
 
 \begin{Slide}{Typparametrar på tentan?}
 \begin{itemize}
 \item Det ingår att kunna använda färdiga generiska strukturer med specifika typer, t.ex. \code{Vector[Int]}
 
-\item Det ingår att kunna skapa strukturer med specifika typparametrar, t.ex. en case-klass som tar en vektor med en specifik typ:\\
+\item Det ingår att kunna skapa abstraktioner med specifika typparametrar, t.ex. metoder eller klasser som tar en vektor med en specifik typ som parameter:\\
 \code{case class X(x: Vector[Int])}
-
 
 
 \item Det ingår \Alert{inte} på tentan att kunna skapa generiska metoder eller klasser, t.ex.: \\
