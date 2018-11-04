@@ -10,10 +10,7 @@
 \setbeamertemplate{footline}[frame number] % fix for ubuntu 18.04 see link above
 \setbeamercolor{page number in head/foot}{fg=gray}  % fix for ubuntu 18.04 see link above
 
-\usetheme{Antibes} \usecolortheme{default}
-
 \usepackage{xcolor}
-
 
 \definecolor{mygreen}{rgb}{0,0.5,0}
 \definecolor{mylinkcolor}{rgb}{0,0,0.6}
@@ -22,6 +19,21 @@
 \definecolor{eclipsepurple}{rgb}{0.5,0,0.25}
 \definecolor{eclipseblue}{rgb}{0.16,0,1.0}
 \definecolor{eclipsegreen}{rgb}{0,0.5,0}
+\definecolor{scalared}{rgb}{0.86,0.2,0.18}
+
+
+\usetheme{Antibes}
+%\usecolortheme{default}
+% Scala RED is #DC332D
+\setbeamercolor{palette primary}{bg=scalared}
+\setbeamercolor{palette secondary}{bg=scalared!70!black}
+\setbeamercolor{palette tertiary}{bg=scalared!60!black}
+\setbeamercolor{palette quaternary}{bg=scalared!50!black}
+
+%\setbeamercolor{background canvas}{bg=gray!50!white}
+\setbeamercolor{background canvas}{bg=white}
+
+
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
