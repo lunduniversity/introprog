@@ -46,28 +46,29 @@
 
 
 \begin{Slide}{Vad är en typparameter?}\SlideFontSmall
+  \setlength{\leftmargini}{0pt}
+
 \begin{itemize}
 \item En \Emph{typparameter} gör det möjligt att ge ett \Emph{typargument}
 \item En \Emph{fri} typparameter kan bindas till vilken typ som helst
 \item Bindingen sker vid \Alert{kompileringstid}
 \item En typparameter är \Emph{fri} om den \Alert{inte} fått något värde i omslutande deklarationer, annars \Emph{bunden}.
 \end{itemize}
-Exempel: \Emph{generisk} metod:
+Exempel: \Emph{generisk} funktion:
 \begin{Code}
-def tnirp[A](x: A):Unit = println(x.toString.reverse)
+def tnirp[A](x: A):Unit = println(x.toString.reverse) // A fri
 \end{Code}
 \pause
-Exempel: \Emph{generisk} klass:
+Exempel: \Emph{generisk} klass med generiska metoder:
 \begin{Code}
-class Cell[A](var value: A){
-  override def toString = s"Cell($value)"
-  def concat(x: A): Cell[String] = new Cell(value.toString + x)   // A bunden
-  def tnirp[B](x: B): Unit = println(x.toString.reverse)          // B fri
+class Cell[A](var value: A){                          // A fri
+  def update(x: A): Unit = value = x                  // A bunden
+  def create[B](x: B = value): Cell[B] = new Cell(x)  // B fri
 }
 \end{Code}
 \pause
 \begin{itemize}
-\item \Alert{Skuggning kan förekomma}: Om \code{tnirp} i \code{Cell} hade använt namnet A på sin typparameter hade den \Emph{skuggat} klassens typparameter och blivit en ny fri typparameter.
+\item \Alert{Skuggning kan förekomma}: Om \code{create} i \code{Cell} hade använt namnet A på sin typparameter hade den \Emph{skuggat} klassens typparameter och tolkats som en  fri typparameter och metoden hade fungerat på samma sätt. (jämför med namnöverskuggning vid lokala variabler i nästlade block)
 \end{itemize}
 
 \end{Slide}
@@ -211,7 +212,7 @@ Primitiva arrayer har en equals-metod som ger referenslikhet, \Alert{inte} inneh
 \begin{REPL}
 scala> def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = {
          var i = 0
-         var allEqual = true
+         var foundUnequal = false
          while (???) {
            var j = 0
            while (???) {
@@ -220,7 +221,7 @@ scala> def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = {
            }
            i += 1
          }
-         allEqual
+         !foundUnequal
        }
 
 scala> val (xss, yss) = (Array.fill(5,2)(42), Array.fill(5,2)(42))
@@ -239,16 +240,16 @@ scala> isEqual(xss, yss)
 \begin{REPL}
 scala> def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = {
          var i = 0
-         var allEqual = true
-         while (i < xss.length && allEqual) {
+         var foundUnequal = false
+         while (i < xss.length && !foundUnequal) {
            var j = 0
-           while (j < xss(i).length && allEqual) {
-             if (xss(i)(j) != yss(i)(j)) allEqual = false
+           while (j < xss(i).length && !foundUnequal) {
+             if (xss(i)(j) != yss(i)(j)) foundUnequal = true
              j += 1
            }
            i += 1
          }
-         allEqual
+         !foundUnequal
        }
 
 scala> val (xss, yss) = (Array.fill(5,2)(42), Array.fill(5,2)(42))
