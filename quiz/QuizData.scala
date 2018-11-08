@@ -228,7 +228,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "getter          " -> "indirekt åtkomst av attributvärde",
       "setter          " -> "indirekt tilldelning av attributvärde",
       "kompanjonsobjekt" -> "ser privata medlemmar i klass med samma namn",
-      "fabriksmetod    " -> "hjälpfunktion för indirekt konstruktonsanrop",
+      "fabriksmetod    " -> "hjälpfunktion för indirekt konstruktion",
       "\\code|null|    " -> "ett värde som ej refererar till någon instans",
       "\\code|new|     " -> "nyckelord vid direkt instansiering av klass"
     ).filter(_._1.trim.nonEmpty),
@@ -286,7 +286,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "sekvensalgoritm  " -> "lösning på problem som drar nytta av sekvenssamling",
       "ordning          " -> "definierar hur element av en viss typ ska ordnas",
       "sortering        " -> "algoritm som ordnar element i en viss ordning",
-      "söking           " -> "algoritm som letar upp element enligt sökkriterium",
+      "sökning          " -> "algoritm som letar upp element enligt sökkriterium",
       "linjärsökning    " -> "sökalgoritm som letar i sekvens tills element hittas",
       "registrering     " -> "algoritm som räknar element med vissa egenskaper",
 //      "repeterade param." -> "variabelt antal argument, asterisk efter parametertyp ",

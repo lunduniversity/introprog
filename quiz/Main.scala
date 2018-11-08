@@ -30,7 +30,7 @@ object Main extends {
     if (partOfQuizName.nonEmpty) println(s"    for quiz names containing args(0)=$partOfQuizName")
     else println("    as no args(0) is given: (re-)generating all existing quiz files")
 
-    val n = for (q <- QuizData.quizIDs if q.name contains partOfQuizName) yield {
+    val ns = for (q <- QuizData.quizIDs if q.name contains partOfQuizName) yield {
       val (t, s) = QuizUtils.toLatexTaskSolution(q)
 
       //println(s"\nGenerating: ${q.name}-taskrows" )
@@ -42,7 +42,25 @@ object Main extends {
       2  // to count number of files generated.
     }
 
-    println(s"    ${n.sum} files generated.")
+    println(s"    ${ns.sum} quiz files generated.")
+
+    // code to make a textfile with all concept definitions:
+
+      val conceptQuizes = QuizData.quizIDs.filter(_.name.contains("concept"))
+      def fixPair(p: (String, String)): (String, String) = {
+        def replaceStuff(s: String): String =
+          s.replaceAllLiterally("\\code|", "").replaceAllLiterally("|","")
+        (replaceStuff(p._1).trim, replaceStuff(p._2).trim)
+      }
+      val concepts = conceptQuizes
+        .flatMap(id => QuizData.quizes(id))
+        .map(fixPair)
+        .distinct
+        .sortBy(_._1.toLowerCase)
+        .map{case (key, value) => s"$key\t$value"}
+
+      val conceptFile = "quiz-concepts.tsv"
+      concepts.mkString("\n").save(conceptFile)
   }
 
 }
