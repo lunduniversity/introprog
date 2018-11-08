@@ -1,6 +1,7 @@
 import StringExtras._
 object Main {
   val quizConceptsFile = "../quiz/quiz-concepts.tsv"
+  val conceptsFile = "concepts-generated"
 
   val Begr  = "Begrepp"
   val Beskr = "Beskrivning"
@@ -11,8 +12,8 @@ object Main {
       .map(_.split("\t"))
       .map( xs => Map(Begr -> xs(0), Beskr -> xs(1)))
     val table = Table(Seq(Begr, Beskr), concepts)
-    table.toMarkdown.save("concepts.md")
-    table.toHtml.save("concepts.html")
-    table.toLatex.save("concepts.tex")
+    table.toMarkdown.save(s"$conceptsFile.md")
+    table.toHtml.save(s"$conceptsFile.html")
+    table.toLatex.save(s"$conceptsFile.tex")
   }
 }
