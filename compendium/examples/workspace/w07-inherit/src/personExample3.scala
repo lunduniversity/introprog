@@ -18,4 +18,4 @@ object personExample3 {
     p = new Student("Kim Robinson", "Lund", "Data")  // går det att göra p.program?
     if (p.isInstanceOf[Student]) println(p.asInstanceOf[Student].program)
   }  // Ovan görs hellre med match som kommer nästa vecka.
-}    // Undvik om det går att använda isInstanceOf och asInstanceOf!
+} 
