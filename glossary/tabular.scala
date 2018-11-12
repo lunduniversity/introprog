@@ -2,8 +2,6 @@ object Table {
   type Row    = Seq[String]
   type RowMap = Map[String, String]
   type Grid   = Seq[RowMap]
-
-  def fromFile(file: String): Table = ???
 }
 case class Table(heading: Table.Row, body: Table.Grid) {
     import Table._

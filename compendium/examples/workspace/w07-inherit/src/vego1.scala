@@ -1,26 +1,23 @@
 object exempelVego1 {
 
   trait Grönsak {
-    def skala(): Unit
     var vikt: Double
-    val namn: String
     var ärSkalad: Boolean = false
-    override def toString = s"$namn ${if (!ärSkalad) "o" else ""}skalad $vikt g"
+
+    def skala(): Unit
   }
 
   class Gurka(var vikt: Double) extends Grönsak {
-    val namn = "gurka"
     def skala(): Unit = if (!ärSkalad) {
-      println("Gurkan skalas med skalare.")
+      println("Skalas med skalare.")
       vikt = 0.99 * vikt
       ärSkalad = true
     }
   }
 
   class Tomat(var vikt: Double) extends Grönsak {
-    val namn = "tomat"
     def skala(): Unit = if (!ärSkalad) {
-      println("Tomaten skalas genom skållning.")
+      println("Skållas.")
       vikt = 0.99 * vikt
       ärSkalad = true
     }

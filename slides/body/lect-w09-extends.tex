@@ -48,6 +48,65 @@ $X$ \Emph{är en} $Y$
 \end{Slide}
 
 
+
+\begin{Slide}{Klassdiagram med UML (Unified Modeling Language)}
+\begin{center}
+\begin{tikzpicture}
+\node (Class) [umlclass, rectangle split parts = 3, xshift = -2cm, yshift=-1.5cm, text width = 4.2cm, scale=0.8]  {
+            \textbf{\centerline{Name}}
+            \nodepart[]{second}attr1: Type \newline attr2: Type
+            \nodepart[]{third}method1(a: Type): Type \newline  method2(b: Type): Type
+       };
+\node (explain1)[above of = Class, yshift=1cm, text width=5.5cm]{En klass, i ett \Emph{UML}-diagram kan ha 3 delar:};
+%\node (explain2)[below of = Class, yshift=-1cm]{Ibland utelämnar man attribut/metoder};
+
+\pause
+
+\node [umlclass, rectangle split parts = 3]  at (4,0) (Robot) {
+            \textbf{\centerline{Robot}}
+            \nodepart[]{second}name: String
+            \nodepart[]{third}work(): Unit
+       };
+\node [umlclass, rectangle split parts = 3]  at (4, -3) (TalkingRobot)  {
+            \textbf{\centerline{TalkingRobot}}
+            \nodepart[]{second} phrase: String
+            \nodepart[]{third}talk(): Unit
+        };
+\draw[umlarrow] (TalkingRobot.north) -- ++(0,0.8) -| (Robot.south);
+
+\end{tikzpicture}
+\end{center}
+Mer om UML-diagram i pfk, OMD.\\
+\href{https://en.wikipedia.org/wiki/Class_diagram}{\SlideFontTiny en.wikipedia.org/wiki/Class\_diagram}
+
+\end{Slide}
+
+\begin{Slide}{Exempel: Robot}
+\begin{center}
+\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+\begin{tikzpicture}[inner sep=0.5em]
+\node [umlclass, rectangle split parts = 2, xshift=0cm, text width=4cm] (AbstractRobot)  {
+           \textit{\textbf{\centerline{\TextBox{AbstractRobot}}}}
+           \nodepart[]{second}\TextBox{\code{def work(): Unit}}
+       };
+
+\node [umlclass, rectangle split parts = 2, text width=4cm]  at (3cm,-3cm) (MuteRobot) {
+           \textbf{\centerline{\TextBox{MuteRobot}}}
+           \nodepart[]{second} \TextBox{~}
+       };
+
+\node [umlclass, rectangle split parts = 2, text width=4cm] at (-3cm,-3cm) (TalkingRobot)  {
+           \textbf{\centerline{\TextBox{TalkingRobot}}}
+           \nodepart[]{second} \TextBox{\code{def talk(): Unit}}
+       };
+\draw[umlarrow] (TalkingRobot.north) -- ++(0,0.5) -| (AbstractRobot.south);
+\draw[umlarrow] (MuteRobot.north) -- ++(0,0.5) -| (AbstractRobot.south);
+\end{tikzpicture}
+\end{center}
+Ibland utelämnar man attribut och/eller metoder för att minska på antalet detaljer och ge överblick.
+\end{Slide}
+
+
 \begin{Slide}{Behovet av gemensam bastyp}\SlideFontSmall
 \begin{REPL}
 scala> class Gurka(val vikt: Int)
@@ -290,6 +349,10 @@ Alla dina egna typer ingår underförstått i Scalas typhierarki:
 \end{Slide}
 
 
+
+
+
+
 \begin{Slide}{Vad är en trait?}
 \begin{itemize}
 \item \Alert{Trait} betyder \Emph{egenskap}.
@@ -375,37 +438,6 @@ scala> trait Z(x: Int)
 \end{REPL}
 \end{Slide}
 
-
-\begin{Slide}{Terminologi och nyckelord vid arv}\SlideFontTiny
-
-\begin{tabular}{r  l}
-\Emph{subtyp}           & en typ som ärver en supertyp\\
-\Emph{supertyp}         & en typ som ärvs av en subtyp\\
-\Emph{bastyp}           & en typ som är rot i ett arvsträd\\
-\Emph{abstrakt medlem}  & en medlem som saknar implementation\\
-\Emph{konkret medlem}   & en medlem som ej saknar implementation\\
-\Emph{abstrakt typ}     & en typ som kan ha abstrakta medlemmar; kan ej instansieras\\
-\Emph{konkret typ}      & en typ som ej har abstrakta medlemmar; kan instansieras\\
-\code|class|            & en klass är en konkret typ: \Alert{kan ej ha abstrakta medlemmar}\\
-\code|abstract class|   & en klass är en abstrakt typ som \Emph{kan ha parametrar}\\
-\code|trait|            & är en abstrakt typ, \Alert{kan ej ha parametrar} men \Emph{kan mixas in}\\
-\code|extends|          & står före en supertyp, medför arv av supertypens medlemmar\\
-\code|override|         & en medlem överskuggar (byter ut) en medlem i en superttyp\\
-\code|protected|        & gör en medlem synlig i subtyper till denna typ (jmf \code|private|)\\
-\code|final gurka|      & gör medlemen gurka final: förhindrar överskuggning\\
-\code|final class|      & gör klassen final: förhindrar vidare subtypning\\
-\code|sealed trait|     & förseglad trait: bara de direkta subtyperna i denna kodfil\\
-\code|super.gurka|      & refererar till supertypens medlem \code|gurka| (jmf \code|this|)\\
-\end{tabular}
-
-\ifkompendium\else
-\pause
-\begin{tikzpicture}[overlay]
-     \node at (10.7,0.6) {\includegraphics[scale=0.36]{../img/ttsuper}};
-\end{tikzpicture}
-\fi
-
-\end{Slide}
 
 
 \begin{Slide}{Abstrakta och konkreta medlemmar}
@@ -703,126 +735,4 @@ res0: Int = 2
 \end{REPL}
 Nyckelordet \code{abstract} förhindrar instansiering av \code{Färg}. \\
 Nyckelordet \code{sealed} förhindrar vidare subtypning av \code{Färg}.
-\end{Slide}
-
-
-
-\Subsection{Exempel: Shape}
-
-
-\begin{Slide}{Exempel: shapes1.scala}
-Typisk Scala-kod: En trait som bastyp åt flera case-klasser.
-\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.4}{7.7}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/shapes1.scala}
-\end{Slide}
-
-\begin{Slide}{Exempel: shapesTest1.scala}
-Test av konkreta subklasser till bastypen \code{Shape}.
-\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.4}{7.7}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/shapesTest1.scala}
-
-\begin{REPL}
-Rectangle((100.0,100.0),(75.0,120.0))
-Rectangle((141.0,183.0),(75.0,120.0))
-Triangle((0.0,0.0),(4.0,0.0),(4.0,3.0))
-Triangle((1.0,1.0),(4.0,0.0),(4.0,3.0))
-Triangle((0.0,0.0),(4.0,0.0),(4.0,3.0))
-\end{REPL}
-\end{Slide}
-
-
-\begin{Slide}{Fördjupningsexempel gränssnitt: draw.scala}
-Två traits som kan användas för att ''koppla ihop'' kod och ge flexibilitet i implementationen:
-\scalainputlisting[%numbers=left,numberstyle=,
-basicstyle=\fontsize{9}{11}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/draw.scala}
-
-\pause
-\setlength{\leftmargini}{0pt}
-\begin{itemize}\SlideFontSmall
-\item  Traits som använda för att abstrahera implementation och möjliggöra uppfyllandet av ett slags ''kontrakt'' om vad som ska finnas kallas \Emph{gränssnitt} \Eng{interface} och används ofta för att skapa av ett flexibelt api.
-
-%\item Implementationen av de delar vi vill kunna ändra senare placeras i subtyper som inte används direkt av klientkoden.
-
-\item Vi visar bara information om vad som erbjuds men inte hur det ser ut ''inuti''.
-
-\end{itemize}
-\end{Slide}
-
-\begin{Slide}{Exempel: shapes2.scala}\SlideFontTiny
-Genom att \Emph{mixa in} vår \code{trait CanDraw} kan en rektangel nu även ritas ut:
-
-\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{7.8}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/shapes2.scala}
-
-\pause
-\vspace{-0.5em}Notera: ingen ändring i \code {Shape}! Vi behöver nu bara ett \Emph{\code{DrawingWindow}}...
-\end{Slide}
-
-
-\begin{Slide}{Exempel: SimpleDrawingWindow.scala}\SlideFontTiny
-\vspace{-0.35em}
-Vi skapar en ny klass som ärver \code{SimpleWindow}, som \Alert{dessutom} även \Emph{är ett} \code{DrawingWindow}, tack vare \Emph{inmixning} med nyckelordet \code{with}.\\
-Observera att vi måste skicka vidare klassparametrarna till superklassens konstruktor.
-
-\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.3}{7.5}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/SimpleDrawingWindow.scala}
-
-\pause
-\vspace{-0.35em}
-\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.3}{7.5}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/shapesTest2.scala}
-\end{Slide}
-
-
-%\begin{Slide}{Exempel: Robot}
-%\begin{center}
-%\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
-%\begin{tikzpicture}[inner sep=0.5em]
-%\node [umlclass, rectangle split parts = 2, xshift=0cm] (AbstractRobot)  {
-%            \textit{\textbf{\centerline{\TextBox{AbstractRobot}}}}
-%            \nodepart[]{second}\TextBox{work(): void}
-%        };
-%
-%\node [umlclass, rectangle split parts = 2]  at (2cm,-3cm) (MuteRobot) {
-%            \textbf{\centerline{\TextBox{MuteRobot}}}
-%            \nodepart[]{second} \TextBox{~}
-%        };
-%
-%\node [umlclass, rectangle split parts = 2] at (-2cm,-3cm) (TalkingRobot)  {
-%            \textbf{\centerline{\TextBox{TalkingRobot}}}
-%            \nodepart[]{second} \TextBox{talk(): void}
-%        };
-%\draw[umlarrow] (TalkingRobot.north) -- ++(0,0.5) -| (AbstractRobot.south);
-%\draw[umlarrow] (MuteRobot.north) -- ++(0,0.5) -| (AbstractRobot.south);
-%\end{tikzpicture}
-%\end{center}
-%\end{Slide}
-
-
-
-
-
-
-\begin{Slide}{Attribut och metoder i UML-diagram}
-\begin{center}
-\begin{tikzpicture}
-\node (Class) [umlclass, rectangle split parts = 3, xshift = -2cm, yshift=-1.5cm, text width = 4.2cm, scale=0.8]  {
-            \textbf{\centerline{Name}}
-            \nodepart[]{second}attr1: Type \newline attr2: Type
-            \nodepart[]{third}method1(a: Type): Type \newline  method2(b: Type): Type
-       };
-\node (explain1)[above of = Class, yshift=1cm, text width=4.9cm]{En klass i ett \Emph{UML}-diagram kan ha 3 delar:};
-\node (explain2)[below of = Class, yshift=-1cm]{Ibland utelämnar man typerna.};
-
-
-
-\node [umlclass, rectangle split parts = 3]  at (4,0) (Robot) {
-            \textbf{\centerline{Robot}}
-            \nodepart[]{second}name: String
-            \nodepart[]{third}work(): Unit
-       };
-\node [umlclass, rectangle split parts = 3]  at (4, -3) (TalkingRobot)  {
-            \textbf{\centerline{TalkingRobot}}
-            \nodepart[]{second} phrase: String
-            \nodepart[]{third}speak(): Unit
-        };
-\draw[umlarrow] (TalkingRobot.north) -- ++(0,0.8) -| (Robot.south);
-\end{tikzpicture}
-\end{center}
-\hskip2em\href{https://en.wikipedia.org/wiki/Class_diagram}{\SlideFontTiny en.wikipedia.org/wiki/Class\_diagram}
 \end{Slide}
