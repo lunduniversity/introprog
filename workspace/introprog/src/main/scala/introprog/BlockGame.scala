@@ -166,7 +166,7 @@ abstract class BlockGame(
   def drawTextInMessageArea(msg: String, x: Int, y: Int, color: Color = pixelWindow.foreground, size: Int = blockSize): Unit = {
     require(y < messageAreaHeight && y >= 0, s"not in message area: y = $y")
     require(x < dim._1 * blockSize && x >= 0, s"not in message area: x = $x")
-    pixelWindow.drawText(msg, x * blockSize, y + dim._2 * blockSize, color, size)
+    pixelWindow.drawText(msg, x * blockSize, (y + dim._2) * blockSize, color, size)
   }
 
   /** Clear a rectangle in the message area in block coordinates. */
