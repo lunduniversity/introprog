@@ -27,7 +27,7 @@ object Pos {
   import scala.util.Random
 
   def apply(x: Int, y: Int, dim: Dim): Pos =
-    new Pos(mod(x, dim.x), mod(y, dim.y), dim)
+    Pos(mod(x, dim.x), mod(y, dim.y), dim)
 
   def random(dim: Dim): Pos = {
     Pos(Random.nextInt(dim.x), Random.nextInt(dim.y), dim)
