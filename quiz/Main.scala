@@ -59,7 +59,7 @@ object Main extends {
         .sortBy(_._1.toLowerCase)
         .map{case (key, value) => s"$key\t$value"}
 
-      val conceptFile = "quiz-concepts.tsv"
+      val conceptFile = "quiz/quiz-concepts.tsv"
       concepts.mkString("\n").save(conceptFile)
   }
 
