@@ -9,7 +9,7 @@ object Main {
     scala.util.Try {
       println(s"$welcome\nCurrent dir: ${introprog.IO.currentDir()}")
       args.toVector match {
-        case Vector() => println("No args given. Staring with empty table.")
+        case Vector() => println("No args given. Starting with empty table.")
 
         case Vector(uri) => Command.load(uri)
 
