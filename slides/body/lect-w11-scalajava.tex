@@ -46,7 +46,7 @@
 
 \begin{Slide}{Några saker som finns i Scala men inte i Java}\SlideFontTiny
 \vspace{-1em}\begin{multicols}{2}
-\begin{itemize}\SlideFontSize{6}{7}
+\begin{itemize}\SlideFontSize{6.8}{7.2}
 \item \code{case}-klasser
 
 \item Lokala funktioner
@@ -85,9 +85,9 @@
 
 \item Tomma värdet () av typen \code{Unit}
 
-\item Option, Some, None
+\item \code{Option}, \code{Some}, \code{None}  (Java har \code{Optional} som ger en del, men inte allt...)
 
-\item Try, Success, Failure
+\item \code{Try}, \code{Success}, \code{Failure}
 
 \item Samlingarna i Scalas standardbibliotek, speciellt de \Emph{oföränderliga} samlingarna \code{Vector}, \code{Map}, \code{Set}, \code{List}, etc.
 
@@ -120,11 +120,11 @@
 \begin{Slide}{Några saker som finns i Java men inte i Scala}
 \vspace{-0.7em}\begin{multicols}{2}\SlideFontTiny
 \begin{itemize}
-\item[\textbf{\texttt{+}}] Uppräknade typer med {\texttt{\bfseries{\color{eclipsepurple}{enum}}}}
+\item[\textbf{\texttt{+}}] Snabbare kompilering
 
-\item[\textbf{\texttt{+}}] Nästan alltid snabbare kompilering
+\item[\textbf{\texttt{+}}] Uppräknade typer med {\texttt{\bfseries{\color{eclipsepurple}{enum}}}} (kommer i Scala 3)
 
-\item[\textbf{\texttt{+}}] Mer omfattande IDE-stöd
+\item[\textbf{\texttt{+}}] Mer omfattande IDE-stöd (kommer i Scala 3 via LSP)
 
 \item Variabeldeklaration utan initialisering
 
@@ -190,19 +190,20 @@ public class JMain {
 Exempel på variabeldeklarationer i
 \begin{multicols}{2}
 \Emph{Scala}
-\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{8}{10}]
+\begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{7}{10}]
   var i1: Int = 0
   var i2 = 0
   var i3 = 0: Int
-  var p = new Point(0, 0)
+  var p1: Point = new Point(0, 0)
+  var p2 = new Point(0, 0)
   var (x, y) = (0, 0)
   val a = 0
   final val Constant = 42
 \end{CodeSmall}
 \begin{itemize}\SlideFontTiny
-\item i2 härledd typ; går ej i Java
+\item i2 härledd typ; går ej i Java 8,9 men finns med \code{var} i Java 10
 
-\item i3 typ i uttryck; går ej i Java
+\item i3 typ varhelst i uttryck; går ej i Java
 
 \item (x, y) mönster i init; går ej i Java
 
@@ -212,10 +213,12 @@ Exempel på variabeldeklarationer i
 \columnbreak
 
 \Emph{Java}
-\begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{8}{10}]
+\begin{CodeSmall}[language=Java,morekeywords={var},basicstyle=\ttfamily\SlideFontSize{7}{10}]
   int i1 = 0;
+  var i2 = 0; // från Java 10
   int i4;
-  Point p = new Point(0, 0);
+  Point p1 = new Point(0, 0);
+  var p2 = new Point(0, 0); //Java 10
   final int CONSTANT = 42;
 \end{CodeSmall}
 \begin{itemize}\SlideFontTiny
@@ -313,7 +316,7 @@ I Scala är \code{s.indices} att föredra!
 
 
 
-\begin{Slide}{For-each-sats i Scala och Java}
+\begin{Slide}{For-each-sats i Java}
 \begin{multicols}{2}
 \Emph{Scala}
 \begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8}]
@@ -340,7 +343,12 @@ for (char ch: s.toCharArray()) {
 \end{CodeSmall}
 \end{multicols}
 
-\pause\code{s.foreach(println)       } går ej i Java
+\pause
+{\SlideFontSmall
+\code{s.foreach(println)  } går ej i Java men
+från Java 8 finns metoden \code{chars} som ger en \code{IntStream} och då kan man:
+ \jcode{str.chars().forEachOrdered(i -> System.out.println((char) i));}
+ }
 \end{Slide}
 
 
@@ -528,6 +536,7 @@ object Person {
 }
 \end{CodeSmall}
 
+\pause
 \columnbreak
 
 En oföränderlig datatyp i \Emph{Java} med \Alert{motsvarande} funktionalitet kräver egen implementation av dessa metoder:
@@ -599,7 +608,7 @@ strings(1) = "second"
 \begin{CodeSmall}[language=Java,basicstyle=\ttfamily\SlideFontSize{6}{8}]
 int[] xs = new int[]{42, 43, 44};
 
-// samma som ovan, men kortare:
+// betyder samma som ovan, men kortare:
 int[] xs2 = {42, 43, 44};
 
 int n = xs.length;  // OBS! EJ length()
