@@ -1,6 +1,6 @@
 object courses {
   def download(): Vector[Course] = {
-    val URL = "http://cs.lth.se/pgk/lthkurser"
+    val url = "http://cs.lth.se/pgk/lthkurser"
     val lines = scala.io.Source.fromURL(url, "UTF-8").getLines.toVector
     lines.drop(1).map(s => Course.fromLine(s, '\t'))
   }
