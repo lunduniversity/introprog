@@ -1,41 +1,27 @@
 object courses {
-  def download(year: String = "17_18"): Vector[Course] = { 
-    val urlStart = s"https://kurser.lth.se/lot/?lasar=$year"
-    val urlSearch = "&soek_text=&sort=kod&val=kurs&soek=t"
-    val url = urlStart + urlSearch
-    println("*** Downloading from: " + url)
-    println("*** This may take a while...")
-    val lines = scala.io.Source.fromURL(url).getLines.toVector  
-    lines.filter(_.contains("kurskod")).map(Course.fromHtml)
+  def download(): Vector[Course] = {
+    val URL = "http://cs.lth.se/pgk/lthkurser"
+    val lines = scala.io.Source.fromURL(url, "UTF-8").getLines.toVector
+    lines.drop(1).map(s => Course.fromLine(s, '\t'))
   }
-  
-  lazy val lth2017: Vector[Course] = download()
-    
+
+  lazy val lth: Vector[Course] = download()
+
   case class Course(
     code:    String,
-    nameSv:  String, 
-    nameEn:  String, 
+    nameSv:  String,
+    nameEn:  String,
     credits: Double,
     level:   String
   )
-    
+
   object Course {
-    import scala.util.Try
-    def fromHtml(s: String): Course = {
-      def extract(s: String, init: String, stop: Char): String = 
-        s.replaceAllLiterally(init, "").takeWhile(_ != stop)
-      val codeInit = """<a href="/lot/?val=kurs&amp;kurskod="""
-      val dataInit = """<td class="mitt">"""
-      val xs = s.split("td>")
-      val code = Try { extract(xs(1), codeInit, '"') }.getOrElse("???")
-      val credits = Try {
-        val s = extract(xs(2), dataInit, '<')
-        s.replaceAllLiterally(",",".").toDouble //fix decimals
-      }.getOrElse(0.0)
-      val level = Try { extract(xs(3), dataInit, '<') }.getOrElse("???")
-      val nameSv = Try { xs(5).takeWhile(_ != '<') }.getOrElse("???")
-      val nameEn = Try { xs(7).takeWhile(_ != '<') }.getOrElse("???")
-      Course(code, nameSv, nameEn, credits, level)
+    def fromLine(line: String, separator: Char): Course = {
+      import scala.util.Try
+      val xs = line.split(separator).toSeq
+      def str(i: Int): String = Try(xs(i)).getOrElse("")
+      def num(i: Int): Double = Try(xs(i).toDouble).getOrElse(0.0)
+      Course(str(0), str(1), str(2), num(3), str(4))
     }
   }
 }

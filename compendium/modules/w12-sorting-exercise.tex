@@ -370,7 +370,7 @@ scala> timed{ lin(udda.last, udda) }
 scala> timed{ bin(udda.last, udda) }
 \end{REPL}
 
-\Subtask\Pen Om en samling innehåller $n$ element, hur många jämförelser behövs då vid binärsökning i värsta fall? \emph{Tips:} Läs om algoritmen på Wikipedia\textsuperscript{\ref{footnote:binarysearch}}.
+\Subtask Om en samling innehåller $n$ element, hur många jämförelser behövs då vid binärsökning i värsta fall? \emph{Tips:} Läs om algoritmen på Wikipedia\textsuperscript{\ref{footnote:binarysearch}}.
 
 
 \SOLUTION
@@ -463,39 +463,40 @@ log_2(n) = b
 
 \QUESTBEGIN
 
-\Task \label{task:linsearch-lth} \what~ OBS! Använd \code{https} och \emph{inte} \code{http} i webbadresserna i denna och nästa uppgift, för att det ska fungera.
+\Task \label{task:linsearch-lth}\what~
 
-\Subtask Surfa till denna URL:\\{%\nolinebreak[4]
-\footnotesize\url{https://kurser.lth.se/lot/?lasar=17_18&soek_text=&sort=kod&val=kurs&soek=t}}
-\\
-och inspektera HTML-koden i din webbläsare genom att trycka \emph{Ctrl+U} (fungerar i Firefox och Chrome). Rulla ner till rad 171 och framåt. Var finns antalet poäng för respektive kurs i HTML-koden?
+\Subtask Via denna URL kan du ladda ner en tab-separerad lista med alla kurser som ges på LTH under innevarande läsår: \url{http://cs.lth.se/pgk/kurser} \\Vilken data finns i filen? Du kan undersöka detta t.ex. med:
+\begin{REPLnonum}
+scala> import scala.io.Source.fromURL
+scala> val URL = "http://cs.lth.se/pgk/lthkurser"
+scala> val data = fromURL(URL,"UTF-8").getLines.mkString("\n")
+\end{REPLnonum}
 
-\Subtask \label{subtask:download-lthcourses} Klistra in objektet \code{courses} på sidan \pageref{lth-courses} med kommandot \code{:paste} i REPL.\footnote{Du kan ladda ner koden från: \\ \href{https://raw.githubusercontent.com/lunduniversity/introprog/master/compendium/examples/lth-courses/courses.scala}{github.com/lunduniversity/introprog/tree/master/compendium/examples/lth-courses/courses.scala}} Vad gör koden? Hur många kurser innehåller \code{lth2017}?
+\Subtask \label{subtask:download-lthcourses} Klistra in objektet \code{courses} på sidan \pageref{lth-courses} med kommandot \code{:paste} i REPL.\footnote{Du kan ladda ner koden från: \\ \href{https://raw.githubusercontent.com/lunduniversity/introprog/master/compendium/examples/lth-courses/courses.scala}{github.com/lunduniversity/introprog/tree/master/compendium/examples/lth-courses/courses.scala}} Vad gör koden? Hur många kurser innehåller \code{courses.lth}?
 
-\begin{figure}
+\begin{figure}[h]
   \scalainputlisting[basicstyle=\ttfamily\fontsize{10.9}{14}\selectfont]{examples/lth-courses/courses.scala}
-  \caption{Kod för att söka bland kurser från LTH:s webbsida.}
+  \caption{Kod för att ladda ner data om alla kurser på LTH.}
   \label{lth-courses}
 \end{figure}
 
 
-\Subtask \emph{Linjärsökning med find.} Teknologen Oddput Clementina vill gå första bästa datavetenskapskurs som är på G2-nivå. Hjälp Oddput med att söka upp första bästa kurs genom linjärsökning med samlingsmetoden \code{find}. Kurskoder vid datavetenskap börjar på EDA eller ETS\footnote{Detta är en förenklad bild av LTH:s kurskodnamnsystem. Några kurser från EIT-institutionen  kommer att slinka med, men det bortser vi ifrån i denna uppgift.}. \emph{Tips:} Du har nytta av att definiera predikatet \code{def isCS(s: String): Boolean} som i sin tur lämpligen nyttjar strängmetoden \code{startsWith}.
+\Subtask \emph{Linjärsökning med find.} Teknologen Oddput Clementina vill gå första bästa datavetenskapskurs som är på G2-nivå. Hjälp Oddput med att söka upp första förekommande kurs genom linjärsökning med samlingsmetoden \code{find}. Kurskoder vid datavetenskap börjar på EDA eller ETS\footnote{Detta är en förenklad bild av LTH:s kurskodnamnsystem. Några kurser från EIT-institutionen  kommer att slinka med, men det bortser vi ifrån i denna uppgift.}. \emph{Tips:} Du har nytta av att definiera predikatet \code{def isCS(s: String): Boolean} som i sin tur lämpligen nyttjar strängmetoden \code{startsWith}.
 
 \Subtask \emph{Implementera linjärsökning.} Som träning ska du nu implementera en egen linjärsökningsfunktion med signaturen: \\ \code{def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = ???}
-\\ Funktionen ska ta en sekvenssamling \code{xs} och ett predikat \code{p} som är en funktion som tar ett element och returnerar ett booleskt värde. Funktionen \code{p} ska ge \code{true} om parametern är ett eftersökt element. Funktionen \code{linearSearch} ska returnera index för första hittade elementet i \code{xs} där \code{p} gäller. Om det inte finns något element som uppfyller predikatet ska -1 returneras. Skriv först pseudokod för funktionen med penna och papper. Använd \code{while}.
-
-Typen \code{Seq} är supertyp till alla sekvenssamlingar, så om vi använder den som parametertyp för parametern \code{xs} så fungerar funktionen för \code{Vector}, \code{Array}, \code{List}, etc. Genom typparametern \code{T} blir funktionen generisk och fungerar för godtycklig typ.
-
+\\ Funktionen ska ta en sekvenssamling \code{xs} och ett predikat \code{p} som är en funktion som tar ett element och returnerar ett booleskt värde. Typen \code{Seq} är supertyp till alla sekvenssamlingar, så om vi använder den som parametertyp för parametern \code{xs} så fungerar funktionen för \code{Vector}, \code{Array}, \code{List}, etc. Genom typparametern \code{T} blir funktionen generisk och fungerar för godtycklig typ.
+Funktionen \code{p} ska ge \code{true} om parametern är ett eftersökt element. Funktionen \code{linearSearch} ska returnera index för första hittade elementet i \code{xs} där \code{p} gäller. Om det inte finns något element som uppfyller predikatet ska -1 returneras. Skriv först pseudokod för funktionen med penna och papper. Du ska använda \code{while}.
 
 
-\Subtask \label{subtask:linsearch-rndCode} Implementera en funktion \code{def rndCode: String} som genererar slumpmässiga kurskoder som består av 4 bokstäver mellan A och Z följt av 2 siffror mellan 0 och 9. \emph{Tips:} Använd REPL  för att stegvis bygga upp hjälpfunktioner som du, när de fungerar som de ska, klistrar in i ett editorfönster som lokala funktioner där du utvecklar den slutliga koden för en lättläst, koncis och fungerande \code{rndCode}.
+
+\Subtask \label{subtask:linsearch-rndCode} Implementera en funktion \code{def rndCode: String} som genererar slumpmässiga kurskoder som består av 4 bokstäver mellan A och Z följt av 2 siffror mellan 0 och 9. \emph{Tips:} Använd REPL i kombination med en editor för att stegvis skapa och testa hjälpfunktioner som löser lämpliga delproblem.
 
 
 \Subtask Använd \code{rndCode} från föregående deluppgift för att fylla en vektor kallad \code{xs} med en halv miljon slumpmässiga kurskoder. För varje slumpkod i \code{xs} sök med din funktion \code{linearSearch} efter index i vektorn \code{courses.lth2017} från deluppgift \ref{subtask:download-lthcourses}. Mät totala tiden för de $500000$ linjärsökningarna med hjälp av funktionen \code{timed} från uppgift \ref{task:timed}. Hur många av de slumpmässiga kurskoderna hittades bland de verkliga kurskoderna på LTH?
 
 
 
-\Subtask\Pen Hur kan du implementera \code{linearSearch} med den inbyggda samlingsmetoden \code{indexWhere}?
+\Subtask Hur kan du implementera \code{linearSearch} med den inbyggda samlingsmetoden \code{indexWhere}?
 
 
 
@@ -506,41 +507,35 @@ Typen \code{Seq} är supertyp till alla sekvenssamlingar, så om vi använder de
 
 
 \SubtaskSolved
-Den finns som värde för en \emph{td} tagg, på följande vis: \code{<td class="mitt">2</td>}.
+Första raden innehåller kolumnnamnen \code{Kurskod KursSve KursEng Hskpoang Niva}. Därefter kommer en rad för varje kurs med kursdata enligt kolumnnamnen.
 
 \SubtaskSolved
-Koden laddar ner html-koden för sidan \\ \mbox{\small\url{https://kurser.lth.se/lot/?lasar=17_18&soek_text=&sort=kod&val=kurs&soek=t}} och sparar den i en vektor. Sedan filtreras ut endast de rader som innehåller strängen ”kurskod” så att all onödig HTML-kod försvinner. Sedan konverteras detta, för varje rad, till \code{Course}-objekt med hjälp av metoden \code{fromHtml}. Eftersom variabeln \code{lth2017} är deklarerad som \code{lazy} kommer inte \code{download()} bli anropad förrän vi vill komma åt variabeln. Vi startar alltså processen genom att referera variabeln \code{lth2017} i objektet \code{courses}:
-
+Koden laddar ner data och skapar en vektor med instanser av case-klassen \code{Course} med hjälp av metoden \code{fromLine}. Eftersom variabeln \code{lth} är deklarerad som \code{lazy} kommer inte \code{download()} bli anropad förrän första gången som variablen \code{lth} refereras. Antalet kurser ges av:
 \begin{REPLnonum}
-courses.lth2017
-\end{REPLnonum}
-Detta generarar en lång lista med \code{Course}-objekt. Antalet kurser är således lika med storleken på vektorn \code{lth2017}.
-
-\begin{REPLnonum}
-courses.lth2017.size
-res38: Int = 1101
+scala> val n = courses.lth.length
+n: Int = 1104
 \end{REPLnonum}
 
 \SubtaskSolved
 \begin{REPL}
 scala> def isCS(s: String) = s.startsWith("EDA") || s.startsWith("ETS")
-scala> val x = courses.lth2017.find(c => isCS(c.code) && c.level == "G2").get
-x: courses.Course = Course(EDAF05,Algoritmer, datastrukturer och komplexitet,Algorithms, Data Structures and Complexity,5.0,G2)
+scala> val x = courses.lth.find(c => isCS(c.code) && c.level == "G2")
+x: Option[courses.Course] = Some(Course(EDAF05,Algoritmer, datastrukturer och
+   komplexitet,Algorithms, Data Structures and Complexity,5.0,G2))
 \end{REPL}
-Obs: metoden \code{find} returnerar ett objekt av typen \code{Option}. För att få värdet som är lagrat i detta objekt krävs det att man kallar på \code{get}.
 
 \SubtaskSolved
 \begin{Code}
 def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = {
    var i = 0
-   while(i < xs.size && !p(xs(i))) i += 1
-   if (i < xs.size) i else -1
+   while(i < xs.length && !p(xs(i))) i += 1
+   if (i < xs.length) i else -1
 }
 \end{Code}
 
 \SubtaskSolved
 
-\begin{Code}[language=Scala]
+\begin{Code}
 def rndCode: String = {
    //randomizes from 0 to n (inclusive)
    def rnd(n: Int) = (math.random * (n + 1)).toInt
@@ -554,23 +549,136 @@ def rndCode: String = {
 \SubtaskSolved
 
 \begin{Code}
-val lthCourses = courses.lth2017 //avoid including download time
 val xs = Vector.fill(500000)(rndCode)
-val(ixs, elapsedLin) = timed{
-xs.map(x => linearSearch(lthCourses)(_.code == x))}
+val(ixs, elapsedLin) =
+  timed { xs.map(x => linearSearch(courses.lth)(_.code == x)) }
 val found = ixs.filterNot(_== -1).size
 \end{Code}
 
 \SubtaskSolved
 
 \begin{Code}
-def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int =
-  xs.indexWhere(p)
+def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = xs.indexWhere(p)
 \end{Code}
 
 
 
 \QUESTEND
+
+%%%%%% GAMLA VARIANTEN AV OVAN UPPGIFT
+%%%%%% -- Funkar ej längre URL-api till LTH:S databas
+% \WHAT{Sök bland LTH:s kurser med linjärsökning.}
+%
+% \QUESTBEGIN
+%
+% \Task \label{task:linsearch-lth} \what~ OBS! Använd \code{https} och \emph{inte} \code{http} i webbadresserna i denna och nästa uppgift, för att det ska fungera.
+%
+% \Subtask Surfa till denna URL:\\{%\nolinebreak[4]
+% \footnotesize\url{https://kurser.lth.se/lot/?lasar=17_18&soek_text=&sort=kod&val=kurs&soek=t}}
+% \\
+% och inspektera HTML-koden i din webbläsare genom att trycka \emph{Ctrl+U} (fungerar i Firefox och Chrome). Rulla ner till rad 171 och framåt. Var finns antalet poäng för respektive kurs i HTML-koden?
+%
+% \Subtask \label{subtask:download-lthcourses} Klistra in objektet \code{courses} på sidan \pageref{lth-courses} med kommandot \code{:paste} i REPL.\footnote{Du kan ladda ner koden från: \\ \href{https://raw.githubusercontent.com/lunduniversity/introprog/master/compendium/examples/lth-courses/courses.scala}{github.com/lunduniversity/introprog/tree/master/compendium/examples/lth-courses/courses.scala}} Vad gör koden? Hur många kurser innehåller \code{lth2017}?
+%
+% \begin{figure}
+%   \scalainputlisting[basicstyle=\ttfamily\fontsize{10.9}{14}\selectfont]{examples/lth-courses/courses.scala}
+%   \caption{Kod för att söka bland kurser från LTH:s webbsida.}
+%   \label{lth-courses}
+% \end{figure}
+%
+%
+% \Subtask \emph{Linjärsökning med find.} Teknologen Oddput Clementina vill gå första bästa datavetenskapskurs som är på G2-nivå. Hjälp Oddput med att söka upp första bästa kurs genom linjärsökning med samlingsmetoden \code{find}. Kurskoder vid datavetenskap börjar på EDA eller ETS\footnote{Detta är en förenklad bild av LTH:s kurskodnamnsystem. Några kurser från EIT-institutionen  kommer att slinka med, men det bortser vi ifrån i denna uppgift.}. \emph{Tips:} Du har nytta av att definiera predikatet \code{def isCS(s: String): Boolean} som i sin tur lämpligen nyttjar strängmetoden \code{startsWith}.
+%
+% \Subtask \emph{Implementera linjärsökning.} Som träning ska du nu implementera en egen linjärsökningsfunktion med signaturen: \\ \code{def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = ???}
+% \\ Funktionen ska ta en sekvenssamling \code{xs} och ett predikat \code{p} som är en funktion som tar ett element och returnerar ett booleskt värde. Funktionen \code{p} ska ge \code{true} om parametern är ett eftersökt element. Funktionen \code{linearSearch} ska returnera index för första hittade elementet i \code{xs} där \code{p} gäller. Om det inte finns något element som uppfyller predikatet ska -1 returneras. Skriv först pseudokod för funktionen med penna och papper. Använd \code{while}.
+%
+% Typen \code{Seq} är supertyp till alla sekvenssamlingar, så om vi använder den som parametertyp för parametern \code{xs} så fungerar funktionen för \code{Vector}, \code{Array}, \code{List}, etc. Genom typparametern \code{T} blir funktionen generisk och fungerar för godtycklig typ.
+%
+%
+%
+% \Subtask \label{subtask:linsearch-rndCode} Implementera en funktion \code{def rndCode: String} som genererar slumpmässiga kurskoder som består av 4 bokstäver mellan A och Z följt av 2 siffror mellan 0 och 9. \emph{Tips:} Använd REPL  för att stegvis bygga upp hjälpfunktioner som du, när de fungerar som de ska, klistrar in i ett editorfönster som lokala funktioner där du utvecklar den slutliga koden för en lättläst, koncis och fungerande \code{rndCode}.
+%
+%
+% \Subtask Använd \code{rndCode} från föregående deluppgift för att fylla en vektor kallad \code{xs} med en halv miljon slumpmässiga kurskoder. För varje slumpkod i \code{xs} sök med din funktion \code{linearSearch} efter index i vektorn \code{courses.lth2017} från deluppgift \ref{subtask:download-lthcourses}. Mät totala tiden för de $500000$ linjärsökningarna med hjälp av funktionen \code{timed} från uppgift \ref{task:timed}. Hur många av de slumpmässiga kurskoderna hittades bland de verkliga kurskoderna på LTH?
+%
+%
+%
+% \Subtask\Pen Hur kan du implementera \code{linearSearch} med den inbyggda samlingsmetoden \code{indexWhere}?
+%
+%
+%
+% \SOLUTION
+%
+%
+% \TaskSolved \what
+%
+%
+% \SubtaskSolved
+% Den finns som värde för en \emph{td} tagg, på följande vis: \code{<td class="mitt">2</td>}.
+%
+% \SubtaskSolved
+% Koden laddar ner html-koden för sidan \\ \mbox{\small\url{https://kurser.lth.se/lot/?lasar=17_18&soek_text=&sort=kod&val=kurs&soek=t}} och sparar den i en vektor. Sedan filtreras ut endast de rader som innehåller strängen ”kurskod” så att all onödig HTML-kod försvinner. Sedan konverteras detta, för varje rad, till \code{Course}-objekt med hjälp av metoden \code{fromHtml}. Eftersom variabeln \code{lth2017} är deklarerad som \code{lazy} kommer inte \code{download()} bli anropad förrän vi vill komma åt variabeln. Vi startar alltså processen genom att referera variabeln \code{lth2017} i objektet \code{courses}:
+%
+% \begin{REPLnonum}
+% courses.lth2017
+% \end{REPLnonum}
+% Detta generarar en lång lista med \code{Course}-objekt. Antalet kurser är således lika med storleken på vektorn \code{lth2017}.
+%
+% \begin{REPLnonum}
+% courses.lth2017.size
+% res38: Int = 1101
+% \end{REPLnonum}
+%
+% \SubtaskSolved
+% \begin{REPL}
+% scala> def isCS(s: String) = s.startsWith("EDA") || s.startsWith("ETS")
+% scala> val x = courses.lth2017.find(c => isCS(c.code) && c.level == "G2").get
+% x: courses.Course = Course(EDAF05,Algoritmer, datastrukturer och komplexitet,Algorithms, Data Structures and Complexity,5.0,G2)
+% \end{REPL}
+% Obs: metoden \code{find} returnerar ett objekt av typen \code{Option}. För att få värdet som är lagrat i detta objekt krävs det att man kallar på \code{get}.
+%
+% \SubtaskSolved
+% \begin{Code}
+% def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = {
+%    var i = 0
+%    while(i < xs.size && !p(xs(i))) i += 1
+%    if (i < xs.size) i else -1
+% }
+% \end{Code}
+%
+% \SubtaskSolved
+%
+% \begin{Code}[language=Scala]
+% def rndCode: String = {
+%    //randomizes from 0 to n (inclusive)
+%    def rnd(n: Int) = (math.random * (n + 1)).toInt
+%
+%    def letter = (rnd('Z' - 'A') + 'A').toChar
+%    def dig = ('0' + rnd(9)).toChar
+%    Seq(letter, letter, letter, letter, dig, dig).mkString
+% }
+% \end{Code}
+%
+% \SubtaskSolved
+%
+% \begin{Code}
+% val lthCourses = courses.lth2017 //avoid including download time
+% val xs = Vector.fill(500000)(rndCode)
+% val(ixs, elapsedLin) = timed{
+% xs.map(x => linearSearch(lthCourses)(_.code == x))}
+% val found = ixs.filterNot(_== -1).size
+% \end{Code}
+%
+% \SubtaskSolved
+%
+% \begin{Code}
+% def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int =
+%   xs.indexWhere(p)
+% \end{Code}
+%
+%
+%
+% \QUESTEND
 
 
 
@@ -581,7 +689,7 @@ def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int =
 
 \QUESTBEGIN
 
-\Task  \what~  \\Sökningsalgoritmen BINSEARCH kan formuleras med nedan pseudokod:
+\Task  \what~Sökalgoritmen BINSEARCH kan formuleras med nedan pseudokod:
 
 \begin{algorithm}[H]
  \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
@@ -610,7 +718,7 @@ och testa i REPL för olika fall. Vad händer om sekvensen inte är sorterad?
 \begin{Code}
 def binarySearch(xs: Seq[String], key: String): Int = ???
 
-val lthCodesSorted = courses.lth2017.map(_.code).sorted
+val lthCodesSorted = courses.lth.map(_.code).sorted
 val xs = Vector.fill(500000)(rndCode)
 val (_, elapsedBin) =
   timed{xs.map(x => binarySearch(lthCodesSorted, x))}
@@ -660,8 +768,17 @@ Med en i7-3770K @ 3.50Hz tog sökningarna följande tid:
 \item Linjärsökning: \code{time: 3316.5 ms}
 \end{itemize}
 
+Med en i7-8700T @ 2.40GHz tog sökningarna följande tid:
+\begin{itemize}
+\item Binärsökning: \code{time: 81.5 ms}
+\item Linjärsökning: \code{time: 5138.6 ms}
+\end{itemize}
+
+
+
+
 \SubtaskSolved
-Binärsökningen var ca 23 gånger snabbare.
+Binärsökningen var ca 23 gånger snabbare på en i7-3770K @ 3.50Hz och ca 63 gånger snabbare på en i7-8700T CPU @ 2.40GHz.
 
 
 
@@ -722,7 +839,7 @@ Metoden \code{fillRnd} ingår i uppgift \ref{task:arraymatrix-java} i kapitel \r
 
 
 \SubtaskSolved
-\begin{Code}
+\begin{Code}[language=Java]
 public static boolean isYatzy(int[] dice){
     int col = 1;
     boolean allSimilar = true;
