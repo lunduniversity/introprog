@@ -29,7 +29,7 @@ object Command {
    def fromUser(): Vector[String] = {
      // readLine can give null if Ctrl+D is typed by user (Linux, MacOS)
      val cmdOpt = Option(scala.io.StdIn.readLine("> ")) // None if null
-     cmdOpt.map(_.split(' ').map(_.trim).toVector).getOrElse(Vector("quit"))
+     cmdOpt.map(s => """"[^"]+"|[^\s]+""".r.findAllMatchIn(s).toVector.map(s => s.toString().replace("\"","")).map(_.trim)).getOrElse(Vector("quit"))
    }
 
    def TODO = "TODO: Not yet implemented."
