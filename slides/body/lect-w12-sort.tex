@@ -62,32 +62,39 @@ Antal jämförelser i medeltal vid många mätningar: $ O(n \cdot n!) $
 
 
 
+\begin{Slide}{Det finns många olika sorteringsalgoritmer}
+\begin{itemize}
+\item Visualisering av 15 olika sorteringsalgoritmer på 6 min:\\{\SlideFontSmall\url{https://www.youtube.com/watch?v=kPRA0W1kECg}}
+\item Olika sorteringsalgoritmer har olika tids- \& minneskomplexitet: i bästa fall, i värsta fall, i medeltal, för nästan sorterad, etc.
+\\{\SlideFontSmall\url{https://en.wikipedia.org/wiki/Sorting_algorithm}}
+\item Olika sorteringsalgoritmer lämpar sig olika väl för parallellisering på många kärnor.
+\end{itemize}
+\end{Slide}
+
+
+
+
 \begin{Slide}{Insättnings- och urvalssortering}
 \Emph{Insertion sort}
 \begin{itemize}
-\item Wikipedia: \href{https://sv.wikipedia.org/wiki/Insättningssortering}{svenska} och
-\href{https://en.wikipedia.org/wiki/Insertion_sort}{engelska: Insertion sort}
+\item Wikipedia:\\
+{\SlideFontSmall\url{https://sv.wikipedia.org/wiki/Insättningssortering}}
+{\SlideFontSmall\url{https://en.wikipedia.org/wiki/Insertion_sort}}
 
-\item AlgoRythmics \href{https://www.youtube.com/watch?v=ROalU379l3U}{Insert-sort with Romanian folk dance  }
+\item AlgoRythmics: Insert-sort with Romanian folk dance\\
+{\SlideFontSmall\url{https://www.youtube.com/watch?v=ROalU379l3U}}
 \end{itemize}
 
 \vspace{2em}
 \Emph{Selection sort}
 
 \begin{itemize}
-\item Wikipedia: \href{https://sv.wikipedia.org/wiki/Urvalssortering}{svenska} och
-\href{https://en.wikipedia.org/wiki/Selection_sort}{engelska: Selection sort}
+\item Wikipedia:\\ 
+{\SlideFontSmall\url{https://sv.wikipedia.org/wiki/Urvalssortering}}\\
+{\SlideFontSmall\url{https://en.wikipedia.org/wiki/Selection_sort}}
 
-\item AlgoRythmics \href{https://www.youtube.com/watch?v=Ns4TPTC8whw}{Select-sort with Gypsy folk dance }
-\end{itemize}
-\end{Slide}
-
-\begin{Slide}{Det finns många olika sorteringsalgoritmer}
-\begin{itemize}
-\item \href{https://www.youtube.com/watch?v=kPRA0W1kECg}{Visualisering av 15 olika sorteringsalgoritmer på 6 min}
-\item Olika sorteringsalgoritmer har olika komplexitet: \\ i bästa fall, i värsta fall, i medeltal, för nästan sorterad. \\
-\href{https://en.wikipedia.org/wiki/Sorting_algorithm}{Olika sorteringsalgoritmers egenskaper enl. wikipedia}
-\item Olika sorteringsalgoritmer lämpar sig olika väl för parallellisering på många kärnor.
+\item AlgoRythmics: Select-sort with Gypsy folk dance \\ 
+{\SlideFontSmall\url{https://www.youtube.com/watch?v=Ns4TPTC8whw}}
 \end{itemize}
 \end{Slide}
 
@@ -110,6 +117,7 @@ def insertionSort(xs: Vector[Int]): Vector[Int] = {
 }
 \end{Code}
 \end{Slide}
+
 
 \begin{Slide}{Sortera till ny vektor med insättningssortering: implementation i Scala}
 \begin{Code}
@@ -375,7 +383,7 @@ public void insertionSortInPlaceSwap(int[] xs) {
 \end{Slide}
 
 \begin{Slide}{Insertion sort, in place, kortare implementation}
-Kortare! Men inte mer lättläst?
+Kortare! Men kanske inte mer lättläst?
 \begin{Code}[language=Java]
     public void insertionSortInPlace(int[] xs) {
         for (int i = 1; i < xs.length; i++) {
@@ -479,6 +487,7 @@ res1: scala.collection.immutable.Vector[Gurka] =
 \end{Slide}
 
 
+
 \begin{Slide}{Fördjupning: sortera samlingar implicit ordning}
 \begin{REPL}
 scala> case class Gurka(namn: String, vikt: Int)
@@ -490,6 +499,26 @@ scala> xs.sorted
 <console>:15: error: No implicit Ordering defined for Gurka.
        xs.sorted
           ^
+\end{REPL}
+\pause
+Detta kan fixas genom att tillhandahålla en \Emph{implicit} ordning för \code{Gurka}:
+\begin{Code}
+implicit object minGurkOrdning extends Ordering[Gurka] {
+  def compare(x: Gurka, y: Gurka): Int =
+    if (x == y) 0
+    else if (x.vikt < y.vikt) -1
+    else 1
+}
+\end{Code}
+\end{Slide}
+
+
+\begin{Slide}{Fördjupning: sortera samlingar implicit ordning}
+\begin{REPL}
+scala> case class Gurka(namn: String, vikt: Int)
+defined class Gurka
+
+scala> val xs = Vector(Gurka("a", 100), Gurka("b", 50), Gurka("c", 100))
 
 scala> implicit object minGurkOrdning extends Ordering[Gurka] {
          def compare(x: Gurka, y: Gurka): Int =
@@ -502,6 +531,8 @@ scala> xs.sorted
 res0: scala.collection.immutable.Vector[Gurka] =
         Vector(Gurka(b,50), Gurka(a,100), Gurka(c,100))
 \end{REPL}
+{\SlideFontTiny Se exempel på olika bekvämare sätt att definiera en ordning för dina egna typer: 
+\url{https://stackoverflow.com/questions/19345030/easy-idiomatic-way-to-define-ordering-for-a-simple-case-class}}
 \end{Slide}
 
 
