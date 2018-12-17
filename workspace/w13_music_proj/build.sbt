@@ -4,4 +4,4 @@ connectInput        := true // http://www.scala-sbt.org/1.x/docs/Forking.html
 outputStrategy      := Some(StdoutOutput)
 scalacOptions       := Seq("-unchecked", "-deprecation")
 //libraryDependencies += "jline" % "jline" % "2.14.4"
-// https://maven2repo.com/jline/jline/2.14.4/jar
+// http://central.maven.org/maven2/jline/jline/2.14.4/jline-2.14.4.jar
