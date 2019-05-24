@@ -26,9 +26,6 @@ object hangman {
       val words = fromURL(address, coding).getLines.toVector
       val rnd = (math.random * words.size).toInt
       words(rnd)
-    }.recover{ case e: Exception =>  
-      println(s"Error: $e")
-      "lackalänga"
     }.toOption
 
   def play(secret: String): Unit = {
@@ -52,7 +49,8 @@ object hangman {
   def main(args: Array[String] ): Unit = {
     if (args.length == 0) {
       val runeberg = "http://runeberg.org/words/ord.ortsnamn.posten"
-      download(runeberg, "ISO-8859-1").foreach(play)
+      val secret = download(runeberg, "ISO-8859-1").getOrElse("läckalånga")
+      play(secret)
     } else play(args((math.random * args.length).toInt))
   }  
 }
