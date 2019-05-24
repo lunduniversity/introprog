@@ -166,6 +166,17 @@ Till din hjälp innehåller kursens workspace de färdigskrivna klasserna \code{
 \subsection{Tips}
 
 \begin{itemize}
+\item Använd ett \code{match}-uttryck för att hantera de olika subtyperna av \code{BankEvent} när du implementerar \code{doEvent}.
+\begin{Code}
+event match {
+  case Deposit(account, amount) => ???
+  case Withdraw(account, amount) => ???
+  case Transfer(accFrom, accTo, amount) => ???
+  case NewAccount(name, id) => ???
+  case DeleteAccount(account) => ???
+}
+\end{Code}
+
 \item För att skriva till fil på ett enkelt sätt kan man t.ex. använda sig av statiska metoder i klassen \code{Files} som finns tillgänglig i \code{java.nio.file}. För att undvika portabilitetsproblem kan man då använda sig av ett bestämt \code{Charset}, t.ex. \code{UTF_8}, som finns tillgänglig i \code{java.nio.charset.StandardCharsets.UTF_8}.
 
 \item För att läsa ifrån en fil kan man t.ex. använda sig av \code{Source} som finns tillgänglig i \code{scala.io.Source}.
@@ -183,7 +194,9 @@ Till din hjälp innehåller kursens workspace de färdigskrivna klasserna \code{
 
 \Task Implementera klassen \code{Bank}.
 
-\Subtask Implementera menyval 6 och 8. Testa noga.
+\Subtask Implementera menyval 6. När användaren väljer att skapa ett nytt konto ska \code{BankApplication} skapa ett \code{NewAccount}-objekt som den sedan använder som argument i ett anrop till \code{doEvent} i \code{Bank}. Det är i \code{doEvent} (eller en privat funktion som anropas från \code{doEvent}) som kontot faktiskt ska skapas.
+
+\Subtask Implementera menyval 8. Kontrollera att både menyval 6 och 8 fungerar rätt.
 
 \Subtask Implementera menyval 9. Varje gång \code{doEvent} exekveras utan fel ska dess \code{BankEvent}-argument läggas till i historiken tillsammans med det nuvarande datumet.
 
@@ -208,15 +221,7 @@ Gör först klart projektets obligatoriska delar. Därefter kan du, om du vill, 
 
 \subsection{Exempel på historikfil}
 
-I workspace-katalogen för denna projektuppgift medföljer en historikfil. För bekvämlighet finns den även infogad nedan. Inläsning och utskrift ska ske med dess format.
-
-\begin{multicols}{2}
-\small
-\lstinputlisting{../workspace/w13_bank_proj/bank_log.txt}
-\end{multicols}
-
-\noindent
-Formen är alltså: \textbf{År  Månad  Dag  Timme  Minut  BankEventTyp  Argument}. De olika sorternas \code{BankEvent} representeras med följande bokstäver: D för \code{Deposit}, W för \code{Withdraw}, T för \code{Transfer}, N för \code{NewAccount} och E för \code{DeleteAccount}.
+I workspace-katalogen för denna projektuppgift medföljer en historikfil. Inläsning och utskrift ska ske med dess format. Varje rad representerar en händelse, och formatet för en rad är: \textbf{År  Månad  Dag  Timme  Minut  BankEventTyp  Argument}. De olika sorternas \code{BankEvent} representeras med följande bokstäver: D för \code{Deposit}, W för \code{Withdraw}, T för \code{Transfer}, N för \code{NewAccount} och E för \code{DeleteAccount}.
 
 \subsection{Exempel på körning av programmet}
 
