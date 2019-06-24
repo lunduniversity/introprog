@@ -1,3 +1,5 @@
+package introprog.examples
+
 /** Example of serializing objects to and from binary files on disk. */
 object TestIO {
   import introprog.IO
