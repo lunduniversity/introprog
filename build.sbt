@@ -168,10 +168,9 @@ pdfCompendium := {
 }
 
 lazy val pdfCompendiumPrint = taskKey[Unit]("Compile compendium-print.tex")
-pdfCompendium := {
+pdfCompendiumPrint := {
   runPdfLatexCmd(texFile = file("compendium-print.tex"), workDir = file("compendium"))
 }
-
 
 lazy val pdfCompendium1 = taskKey[Unit]("Compile compendium1.tex")
 pdfCompendium1 := {
