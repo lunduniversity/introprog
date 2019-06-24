@@ -38,7 +38,7 @@ lazy val myStartupTransition: State => State = { s: State =>
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
   version := "v3-snapshot",
-  scalaVersion := "2.12.6"
+  scalaVersion := "2.12.8"
 )
 
 lazy val plan = (project in file("plan")).settings(commonSettings: _*).
@@ -166,6 +166,12 @@ lazy val pdfCompendium = taskKey[Unit]("Compile compendium.tex")
 pdfCompendium := {
   runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))
 }
+
+lazy val pdfCompendiumPrint = taskKey[Unit]("Compile compendium-print.tex")
+pdfCompendium := {
+  runPdfLatexCmd(texFile = file("compendium-print.tex"), workDir = file("compendium"))
+}
+
 
 lazy val pdfCompendium1 = taskKey[Unit]("Compile compendium1.tex")
 pdfCompendium1 := {
