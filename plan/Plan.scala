@@ -10,7 +10,12 @@ trait Plan {
   )
 
   lazy val modules: Seq[Module] = Vector(
-
+  /* Ändring 2018->2019: sänk tempot på labbarna i lp1 - en labb mindre
+    * flytta labb blockbattle en vecka senare, så att man får två veckor på sig
+    * tidigarelägg modul Mönster, Undantag till efter modul Klasser, för att hålla tempot i teorin
+    * gör om labb tabular till ett projekt - totalt en labb mindre i kursen
+    * senarelägg modul Mängder, tabeller till efter modul Matriser, typparametrar eftersom det är svårt med nästlade strukturer och det är bra med en lätt labb (life är lättare än words?) efter kontrollskrivningen
+  */
     Module("Introduktion",
       id = "intro", exercise = "expressions", lab = "kojo", contents = """
       | sekvens, alternativ, repetition, abstraktion, editera, kompilera, exekvera, datorns delar,
@@ -70,7 +75,7 @@ trait Plan {
 //      | sbt tilde run ???här eller i vecka2???,
 
     Module("Klasser",
-      id = "classes", exercise = "classes", lab = "blockbattle", contents = """
+      id = "classes", exercise = "classes", lab = "", contents = """
       | objektorientering, klass, instans, Point, Square, Complex,
       | Any, isInstanceOf, toString,
       | new, null, this,
@@ -80,6 +85,16 @@ trait Plan {
       | case-klass, kompanjonsobjekt,
       | referenslikhet, innehållslikhet, eq, ==,
       """.stripTrim),
+
+    Module("Mönster, undantag",
+      id = "patterns", exercise = "patterns", lab = "blockbattle", contents = """
+      | mönstermatchning, match, Option, throw, try, catch, Try, unapply, sealed,
+      | flatten, flatMap, partiella funktioner, collect,
+      | wildcard-mönster, variabelbindning i mönster, sekvens-wildcard, bokstavliga mönster,
+      | equals, hashcode, exempel: equals för klassen Complex, 
+      | switch-sats i Java,
+      """.stripTrim), // equals -> sortering???
+
 
     Module("Sekvenser",
       id = "sequences", exercise = "sequences", lab = "shuffle", contents = """
@@ -99,15 +114,6 @@ trait Plan {
       | repeterade parametrar,
       """.stripTrim),
 
-    Module("Mängder, tabeller",
-      id = "setmap", exercise = "lookup", lab = "words", contents = """
-      | innehållstest, mängd, Set, mutable.Set,
-      | nyckel-värde-tabell, Map, mutable.Map,
-      | hash code, java.util.HashMap, java.util.HashSet,
-      | persistens, serialisering, textfiler, Source.fromFile, java.nio.file,
-      | repetition inför kontrollskrivning,
-      """.stripTrim),
-
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
 /*    Module("Repetition, trösklar, luckor",
@@ -121,6 +127,16 @@ trait Plan {
       | matriser i Java vs Scala, allokering av nästlade arrayer i Scala och Java,
       """.stripTrim),
 
+    Module("Mängder, tabeller",
+    id = "setmap", exercise = "lookup", lab = "words", contents = """
+    | innehållstest, mängd, Set, mutable.Set,
+    | nyckel-värde-tabell, Map, mutable.Map,
+    | hash code, java.util.HashMap, java.util.HashSet,
+    | persistens, serialisering, textfiler, Source.fromFile, java.nio.file,
+    | repetition inför kontrollskrivning,
+    """.stripTrim),
+
+
    Module("Arv",
       id = "inheritance", exercise = "inheritance", lab = "snake", contents = """
       | arv, polymorfism, trait, extends, asInstanceOf, with, inmixning,
@@ -132,15 +148,6 @@ trait Plan {
       | case-object, typer med uppräknade värden,
       | trait, abstrakt klass, inmixning,
       | gränssnitt, interface i Java, programmeringsgränssnitt (api),
-      """.stripTrim),
-
-    Module("Mönstermatchning, undantag",
-      id = "patterns", exercise = "patterns", lab = "tabular", contents = """
-      | mönstermatchning, match, Option, throw, try, catch, Try, unapply, sealed,
-      | flatten, flatMap, partiella funktioner, collect,
-      | wildcard-mönster, variabelbinding i mönster, sekvens-wildcard, bokstavliga mönster,
-      | equals, hashcode, exempel: equals för klassen Complex,
-      | switch-sats i Java,
       """.stripTrim),
 
     Module("Språkskillnader",
@@ -213,7 +220,7 @@ trait Plan {
   }
 
   lazy val labNumOfWeek =
-    "Lab01,--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab07,Lab08,Lab09,Lab10,--,Projekt,--,--,--".
+    "Lab01,--,Lab02,Lab03,--,Lab04,Lab05,--,Lab06,Lab07,Lab08,Lab09,--,Projekt,--,--,--".
        split(',').toVector
 
   lazy val labOfWeek = for (w <- 0 until labNumOfWeek.size) yield {
