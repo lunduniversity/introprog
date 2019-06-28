@@ -1,0 +1,1356 @@
+
+%!TEX encoding = UTF-8 Unicode
+%!TEX root = ../exercises.tex
+
+\ifPreSolution
+
+
+
+\Exercise{\ExeWeekSIX}\label{exe:W06}
+
+\begin{Goals}
+\item Kunna skapa och använda \code{match}-uttryck med konstanta värden, garder och mönstermatchning med case-klasser.
+\item Kunna skapa och använda case-objekt för matchningar på uppräknade värden.
+\item Kunna hantera saknade värden med hjälp av typen \code{Option} och mönstermatchning på \code{Some} och \code{None}.
+\item Kunna fånga undantag med \code{scala.util.Try}.
+\item Känna till \code{try}, \code{catch} och \code{throw}.
+\item Känna till \jcode{switch}-satser i Java.
+\item Känna till nyckelordet \code{sealed} och förstå nyttan med förseglade typer.
+\item Känna till relationen mellan \code{hashCode} och \code{equals}.
+\item Kunna skapa partiella funktioner med case-uttryck.
+%\item Känna till betydelsen av små och stora begynnelsebokstäver i case-grenar i en matchning, samt förstå hur namn binds till värden in en case-gren.
+%\item Kunna använda \code{flatMap} tillsammans med \code{Option} och \code{Try}.
+%\item Känna till skillnaderna mellan \code{try}-\code{catch} i Scala och java.
+%\item Känna till hur metoden \code{unapply} används vid mönstermatchning.
+%\item Kunna implementera \code{equals} med hjälp av en \code{match}-sats, som fungerar för finala klasser utan arv.
+%\item Känna till \code{null}.
+\end{Goals}
+
+\begin{Preparations}
+\item \StudyTheory{06}
+\end{Preparations}
+
+\BasicTasks %%%%%%%%%%%%%%%%
+
+\else
+
+
+
+\ExerciseSolution{\ExeWeekSIX}
+
+\BasicTasks %%%%%%%%%%%
+
+\fi
+
+
+
+
+
+\WHAT{Hur fungerar en \jcode{switch}-sats i Java (och flera andra språk)?}
+
+\QUESTBEGIN
+
+\Task \label{task:switch} \what~   Det händer ofta att man vill testa om ett värde är ett av många olika alternativ. Då kan man använda en sekvens av många \code{if}-\code{else}, ett för varje alternativ. Men det finns ett annat sätt i Java och många andra språk: man kan använda \jcode{switch} som kollar flera alternativ i en och samma sats, se t.ex. \href{https://en.wikipedia.org/wiki/Switch_statement}{en.wikipedia.org/wiki/Switch\_statement}.
+
+\Subtask Skriv in nedan kod i en kodeditor. Spara med namnet \texttt{Switch.java} och kompilera filen med kommandot \texttt{javac Switch.java}. Kör den med \texttt{java Switch} och ange din favoritgrönsak som argument till programmet. Vad händer? Förklara hur \jcode{switch}-satsen fungerar.
+
+\javainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{9}{11}\selectfont]{examples/Switch.java}
+
+\Subtask \label{subtask:break} Vad händer om du tar bort \jcode{break}-satsen på rad 16?
+
+
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  Beroende på första bokstaven i din favoritgrönsak får du olika svar såsom \textit{gurka är gott!} vid första bokstaven $g$.\\
+Javas \jcode{switch}-sats testar den första bokstaven på favoritgrönsaken genom att stegvis jämföra den med \jcode{case}-uttrycken. Om första bokstaven \jcode{firstChar} matchar bokstaven efter ett \jcode{case} körs koden efter kolonet till \jcode{switch}-satsens slut eller tills ett \jcode{break} avbryter \jcode{switch}-satsen.\\
+Matchar inte \jcode{firstChar} något \jcode{case} så finns även \jcode{default}, som körs oavsett vilken första bokstaven är, ett generellt fall.
+
+\SubtaskSolved  Om \jcode{case 't'} körs kommer både  \textit{tomat är gott!} och \textit{broccoli är gott!} skrivas ut, man säger att koden $"$faller igenom$"$. Utan \jcode{break}-satsen i Java körs koden i efterkommande \jcode{case} tills ett \jcode{break} avbryter exekveringen eller \jcode{switch}-satsen tar slut.
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Matcha på konstanta värden.}
+
+\QUESTBEGIN
+
+\Task \label{task:vegomatch} \what~   I Scala finns ingen \jcode{switch}-sats. I stället har Scala ett \code{match}-uttryck som är mer kraftfullt. Dock saknar Scala nyckelordet \jcode{break} och Scalas \code{match}-uttryck kan inte ''falla igenom'' som skedde i uppgift \ref{task:switch}\ref{subtask:break}.
+
+\Subtask \label{subtask:vegomatch} Skriv nedan program med en kodeditor och spara i filen \texttt{Match.scala}. Kompilera med \texttt{scalac Match.scala}. Kör med \texttt{scala Match} och ge som argument din favoritgrönsak. Vad händer? Förklara hur ett \code{match}-uttryck fungerar.
+
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/Match.scala}
+
+\Subtask Vad blir det för felmeddelande om du tar bort case-grenen för defaultvärden och indata väljs så att inga case-grenar matchar? Är det ett exekveringsfel eller ett kompileringsfel?
+
+
+\Subtask Beskriv några skillnader i syntax och semantik mellan Javas flervalssats \jcode{switch} och Scalas flervalsuttryck \code{match}.
+
+
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  Svaret blir identiskt mot föregående uppgiften i Java.\\
+Scalas \code{match}-uttryck fungerar väldigt likt Javas \jcode{switch}. Den jämför stegvis värdet med varje \code{case} för att sedan returnera ett värde tillhörande motsvarande \code{case}.
+
+\SubtaskSolved  \begin{REPL}
+scala.MatchError (of class java.lang.Character)
+\end{REPL}
+Exekveringsfel, uppstår av en viss input under körningen.
+
+\SubtaskSolved  Scalas \code{match} ersätter kolonet (:) i \jcode{switch} med Scalas högerpil (=>).\\
+\code{match} returnerar ett värde till skillnad från \jcode{switch} som inte returnerar något.\\
+\code{match} kan inte $"$falla igenom$"$ så ett \jcode{break} efter varje \jcode{case} är inte nödvändigt.\\
+Till skillnad från \jcode{switch}-satsen kastar \code{match} ett \code{MatchError} om ingen matchning skulle ske.
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Gard i case-grenar.}
+
+\QUESTBEGIN
+
+\Task  \what~  Med hjälp en gard \Eng{guard} i en case-gren kan man begränsa med ett villkor om grenen ska väljas.
+
+Utgå från koden i uppgift \ref{task:vegomatch}\ref{subtask:vegomatch} och byt ut case-grenen för \code{'g'}-matchning till nedan variant med en gard med nyckelordet \code{if} (notera att det inte behövs parenteser runt villkoret):
+\begin{Code}
+    case 'g' if math.random > 0.5 => "gurka är gott ibland..."
+\end{Code}
+Kompilera om och kör programmet upprepade gånger med olika indata tills alla grenar i \code{match}-uttrycket har exekverats. Förklara vad som händer.
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+Garden som införts vid \code{case 'g'} slumpar fram ett tal mellan 0 och 1 och om talet inte är större än $0.5$ så blir det ingen matchning med \code{case 'g'} och programmet testar vidare tills default-caset.\\
+Gardens krav måste uppfyllas för att det ska matcha som vanligt.
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Mönstermatcha på attributen i case-klasser.}
+
+\QUESTBEGIN
+
+\Task \label{task:match-caseclass} \what~   Scalas \code{match}-uttryck är extra kraftfulla om de används tillsammans med \code{case}-klasser: då kan attribut extraheras automatiskt och bindas till lokala variabler direkt i case-grenen som nedan exempel visar (notera att \code{v} och \code{rutten} inte behöver deklareras explicit). Detta kallas för \textbf{mönstermatchning}.
+
+\Subtask \label{subtask:autobinding-match} Vad skrivs ut nedan? Varför? Prova att byta namn på \code{v} och \code{rutten}.
+\begin{REPL}
+scala> case class Gurka(vikt: Int, ärRutten: Boolean)
+scala> val g = Gurka(100, true)
+scala> g match { case Gurka(v,rutten) => println("G" + v + rutten) }
+\end{REPL}
+
+\Subtask Skriv sedan nedan i REPL och tryck TAB två gånger efter punkten. Vad har \code{unapply}-metoden för resultattyp?
+\begin{REPL}
+scala> Gurka.unapply   // Tryck TAB två gånger
+\end{REPL}
+\begin{Background}
+Case-klasser får av kompilatorn automatiskt ett kompanjonsobjekt \Eng{companion object}, i detta fallet \code{object Gurka}. Det objektet får av kompilatorn automatiskt en \code{unapply}-metod. Det är \code{unapply} som anropas ''under huven'' när case-klassernas attribut extraheras vid mönstermatchning, men detta sker alltså automatiskt och man behöver inte explicit nyttja \code{unapply} om man inte själv vill implementera s.k. extraherare \Eng{extractors}; om du är nyfiken på detta, se fördjupningsuppgift \ref{task:extractor}.
+\end{Background}
+
+\Subtask Anropa \code{unapply}-metoden enligt nedan. Vad blir resultatet?
+\begin{REPL}
+scala> Gurka.unapply(g)
+\end{REPL}
+Vi ska i senare uppgifter undersöka hur typerna \code{Option} och \code{Some} fungerar och hur man kan ha nytta av dessa i andra sammanhang.
+
+% \Subtask Spara programmet nedan i filen \texttt{vegomatch.scala} och kompilera och kör med \code{scala vegomatch.Main 1000} i terminalen. Förklara hur predikatet \code{ärÄtvärd} fungerar.
+% \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/vegomatch.scala}
+%
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  G100true. Vid byte av plats: Gtrue100.\\
+\code{match} testar om kompanjonsobjektet \code{Gurka} är av typen \code{Gurka} med två parametervärden. De angivna parametrarna tilldelas namn, \code{vikt} får namnet \code{v} och \code{ärRutten} namnet \code{rutten} och skrivs sedan ut. Byts namnen dessa ges skrivs de ut i den omvända ordningen.
+
+\SubtaskSolved  \code{Option[(Int, Boolean)]}
+
+\SubtaskSolved  \code{Some((100, true))}, en \code{Option} med en tupel av parametrarna från g.
+
+% \SubtaskSolved  \code{ärÄtvärd} testar om \code{Grönsak g} är av typen \code{Gurka(v, rutten)} eller \code{Tomat}. Dessa har sedan garder.\\ \code{Gurka} måste ha \code{vikt} över 100 och \code{ärRutten} vara \code{false} för att \code{case Gurka} ska returnera \code{true}.\\
+% \code{Tomat} måste ha \code{vikt} över 50 och \code{ärRutten} vara \code{false} för att \code{case Tomat} ska returnera \code{true}.\\
+% Matchas inte \code{Grönsak g} med någon av dessa returneras default-värdet \code{false}.
+
+
+
+\QUESTEND
+
+
+
+
+
+
+
+\WHAT{Matcha på case-objekt och nyttan med \code{sealed}.}
+
+\QUESTBEGIN
+
+\Task  \what~  Skapa nedan kod i en editor, och klistra in i REPL med kommandot \code{:pa}. Notera nyckelordet \code{sealed} som används för att försegla en typ. En \textbf{förseglad typ} måste ha alla sina subtyper i en och samma kodfil.
+\begin{Code}
+sealed trait Färg
+object Färg {
+  val values = Vector(Spader, Hjärter, Ruter, Klöver)
+}
+case object Spader  extends Färg
+case object Hjärter extends Färg
+case object Ruter   extends Färg
+case object Klöver  extends Färg
+\end{Code}
+
+\Subtask Skapa en funktion \code{def parafärg(f: Färg): Färg} i en editor, som med hjälp av ett match-uttryck returnerar parallellfärgen till en färg. Parallellfärgen till \code{Hjärter} är \code{Ruter} och vice versa, medan parallellfärgen till \code{Klöver} är \code{Spader} och vice versa. Klistra in funktionen i REPL.
+\begin{REPL}
+scala> parafärg(Spader)
+scala> val xs = Vector.fill(5)(Färg.values((math.random * 4).toInt))
+scala> xs.map(parafärg)
+\end{REPL}
+
+\Subtask Vi ska nu undersöka vad som händer om man glömmer en av case-grenarna i matchningen i \code{parafärg}. ''Glöm'' alltså avsiktligt en av case-grenarna och klistra in den nya \code{parafärg} med den ofullständiga matchningen. Hur lyder varningen? Kommer varningen vid körtid eller vid kompilering?
+
+\Subtask Anropa \code{parafärg} med den ''glömda'' färgen. Hur lyder felmeddelandet? Är det ett kompileringsfel eller ett körtidsfel?
+
+\Subtask Förklara vad nyckelordet \code{sealed} innebär och vilken nytta man kan ha av att \textbf{försegla} en supertyp.
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved
+\begin{Code}
+def parafärg(f: Färg): Färg = f match {
+  case Spader  => Klöver
+  case Hjärter => Ruter
+  case Ruter   => Hjärter
+  case Klöver  => Spader
+}
+\end{Code}
+
+\SubtaskSolved
+\begin{REPL}
+<console>:17: warning: match may not be exhaustive.
+It would fail on the following input: Ruter
+\end{REPL}
+Varningen kommer redan vid kompilering.
+
+\SubtaskSolved
+\begin{REPL}
+scala.MatchError: Ruter (of class Ruter)
+  at .parafärg(<console>:17)
+\end{REPL}
+Detta är ett körtidsfel.
+
+\SubtaskSolved  Om en klass är \code{sealed} innebär det att om ett element ska matchas och är en subtyp av denna klass så ger Scala varning redan vid kompilering om det finns en risk för ett \code{MatchError}, alltså om \code{match}-uttrycket inte är uttömmande och det finns fall som inte täcks av ett \code{case}.\\
+En förseglad supertyp innebär att programmeraren redan vid kompileringstid får en varning om ett fall inte täcks och i sånt fall vilket av undertyperna, liksom annan hjälp av kompilatorn. Detta kräver dock att alla subtyperna delar samma fil som den förseglade klassen.
+
+
+
+\QUESTEND
+
+
+
+\WHAT{Betydelsen av små och stora begynnelsebokstäver vid matchning.}
+
+\QUESTBEGIN
+
+\Task  \what~  För att åstadkomma att namn kan bindas till variabler vid matchning utan att de behöver deklareras i förväg (som vi såg i uppgift \ref{task:match-caseclass}\ref{subtask:autobinding-match}) så har identifierare med liten begynnelsebokstav fått speciell betydelse: den tolkas av kompilatorn som att du vill att en variabel  binds till ett värde vid matchningen. En identifierare med stor begynnelsebokstav tolkas däremot som ett konstant värde (t.ex. ett case-objekt eller ett case-klass-mönster).
+
+\Subtask \emph{En case-gren som fångar allt}. En case-gren med en identifierare med liten begynnelsebokstav som saknar gard kommer att matcha allt. Prova nedan i REPL, men försök lista ut i förväg vad som kommer att hända. Vad händer?
+\begin{REPL}
+scala> val x = "urka"
+scala> x match {
+         case str if str.startsWith("g") => println("kanske gurka")
+         case vadsomhelst => println("ej gurka: " + vadsomhelst)
+       }
+scala> val g = "gurka"
+scala> g match {
+         case str if str.startsWith("g") => println("kanske gurka")
+         case vadsomhelst => println("ej gurka: " + vadsomhelst)
+       }
+\end{REPL}
+
+\Subtask \emph{Fallgrop med små begynnelsbokstäver.} Innan du provar nedan i REPL, försök gissa vad som kommer att hända. Vad händer? Hur lyder varningarna och vad innebär de?
+\begin{REPL}
+scala> val any: Any = "varken tomat eller gurka"
+scala> case object Gurka
+scala> case object tomat
+scala> any match {
+         case Gurka => println("gurka")
+         case tomat => println("tomat")
+         case _ => println("allt annat")
+       }
+\end{REPL}
+
+\Subtask \emph{Använd backticks för att tvinga fram match på konstant värde.} Det finns en utväg om man inte vill att kompilatorn ska skapa en ny lokal variabel: använd specialtecknet \emph{backtick}, som skrivs \`{} och kräver speciella tangentbordstryck.\footnote{Fråga någon om du inte hittar hur man gör backtick \`{} på ditt tangentbord.}  Gör om föregående uppgift men omgärda nu identifieraren \code{tomat} i tomat-case-grenen med backticks, så här: \code{  case `tomat` => ...}
+
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  Både \code{str} och \code{vadsomhelst} matchar med inputen, oavsett vad denna är på grund av att de har en liten begynnelsebokstav.\\
+ \code{str} har dock en gard att strängen måste börja med $g$ vilket gör så endast \code{val g = "gurka"} matchar med denna. \code{val x = "urka"} plockas dock upp av \code{vadsomhelst} som är utan gard.
+
+\SubtaskSolved
+\begin{REPL}
+<console>:16: warning: patterns after a variable pattern cannot match (SLS 8.1
+.1)
+\end{REPL}
+och
+\begin{REPL}
+<console>:17: warning: unreachable code due to variable patter 'tomat' on line
+16
+\end{REPL}
+Trots att en klass \code{tomat} existerar så tolkar Scalas \code{match} den som en \code{case}-gren som fångar allt på grund av en liten begynnelsebokstav. Detta gör så alla objekt som inte är av typen \code{Gurka} kommer ge utskriften \textit{tomat} och att sista caset inte kan nås.
+
+\SubtaskSolved
+\begin{Code}
+case `tomat` => println("tomat")
+\end{Code}
+
+
+
+\QUESTEND
+
+
+
+
+
+\WHAT{Matcha på innehåll i en Vector.}
+
+\QUESTBEGIN
+
+\Task \what ~ Kör nedan i REPL. Vad skrivs ut? Förklara vad som händer.
+\begin{REPL}
+scala> val xss = Vector(Vector("hej"),Vector("på", "dej"),Vector("4","x","2"))
+scala> xss.map( _ match {
+  case Vector() => "tom"
+  case Vector(a) => a.reverse
+  case Vector(_, b) => b.reverse
+  case Seq(a, "x", b) => a + b
+  case _ => "ANNARS DETTA"
+} ).foreach(println)
+\end{REPL}
+
+
+\SOLUTION
+
+\TaskSolved \what
+
+\begin{REPL}
+jeh
+jed
+42
+\end{REPL}
+För varje element i \code{xss} görs en matching som resulterar i en sträng. Vad som händer i varje gren förklaras nedan.
+\begin{enumerate}
+  \item Första match-grenen aktiveras aldrig eftersom \code{xss} ej innehåller någon tom vektor.
+  \item Andra grenen passar med \code{Vector("hej")} och variablen \code{a} binds till \code{"hej"}.
+  \item Tredje grenen matchar \code{Vector("på", "dej")} där första värdet binds inte till någon variabel eftersom understreck finns på motsvarande plats, medan andra värdet binds till \code{b}.
+  \item Fjärde grenen matchar en sekvens med tre värden där mittenvärdet är \code{"x"}. Den sista grenen aktiveras inte i detta exempel men hade matchat allt som inte fångas av tidigare grenar.
+\end{enumerate}
+
+\QUESTEND
+
+
+
+
+\WHAT{Använda \code{Option} och matcha på värden som kanske saknas.}
+
+\QUESTBEGIN
+
+\Task  \what~  Man behöver ofta skriva kod för att hantera värden som eventuellt saknas, t.ex. saknade telefonnummer i en persondatabas. Denna situation är så pass vanlig att många språk har speciellt stöd för saknande värden.
+
+I Java\footnote{Scala har också \code{null} men det behövs bara vid samverkan med Java-kod.} används värdet \code{null} för att indikera att en referens saknar värde. Man får då komma ihåg att testa om värdet saknas varje gång sådana värden ska behandlas, t.ex. med \code+if (ref != null) { ...} else { ... }+. Ett annat vanligt trick är att låta \code{-1} indikera saknade positiva heltal, till exempel saknade index, som får behandlas med \code+if (i != -1) { ...} else { ... }+.
+
+I Scala finns en speciell typ \code{Option} som möjliggör smidig och typsäker hantering av saknade värden. Om ett kanske saknat värde packas in i en \code{Option} \Eng{wrapped in an Option}, finns det i en speciell slags samling som bara kan innehålla \emph{inget} eller \emph{något} värde, och alltså har antingen storleken \code{0} eller \code{1}.
+
+\Subtask Förklara vad som händer nedan.
+\begin{REPL}
+scala> var kanske: Option[Int] = None
+scala> kanske.size
+scala> kanske = Some(42)
+scala> kanske.size
+scala> kanske.isEmpty
+scala> kanske.isDefined
+scala> def ökaOmFinns(opt: Option[Int]): Option[Int] = opt match {
+         case Some(i) => Some(i + 1)
+         case None    => None
+       }
+scala> val annanKanske = ökaOmFinns(kanske)
+scala> def öka(i: Int) = i + 1
+scala> val merKanske = kanske.map(öka)
+\end{REPL}
+
+\Subtask Mönstermatchingen ovan är minst lika knölig som en \code{if}-sats, men tack vare att en \code{Option} är en slags (liten) samling finns det smidigare sätt. Förklara vad som händer nedan.
+\begin{REPL}
+val meningen = Some(42)
+val ejMeningen = Option.empty[Int]
+meningen.map(_ + 1)
+ejMeningen.map(_ + 1)
+ejMeningen.map(_ + 1).orElse(Some("saknas")).foreach(println)
+meningen.map(_ + 1).orElse(Some("saknas")).foreach(println)
+\end{REPL}
+
+\Subtask \emph{Samlingsmetoder som ger en \code{Option}.} Förklara för varje rad nedan vad som händer. En av raderna ger ett felmeddelande; vilken rad och vilket felmeddelande?
+\begin{REPL}
+val xs = (42 to 84 by 5).toVector
+val e = Vector.empty[Int]
+xs.headOption
+xs.headOption.get
+xs.headOption.getOrElse(0)
+xs.headOption.orElse(Some(0))
+e.headOption
+e.headOption.get
+e.headOption.getOrElse(0)
+e.headOption.orElse(Some(0))
+Vector(xs, e, e, e)
+Vector(xs, e, e, e).map(_.lastOption)
+Vector(xs, e, e, e).map(_.lastOption).flatten
+xs.lift(0)
+xs.lift(1000)
+e.lift(1000).getOrElse(0)
+xs.find(_ > 50)
+xs.find(_ < 42)
+e.find(_ > 42).foreach(_ => println("HITTAT!"))
+\end{REPL}
+
+\Subtask Vilka är fördelerna med \code{Option} jämfört med \code{null} eller \code{-1} om man i sin kod glömmer hantera saknade värden?
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  \begin{enumerate}
+\item \code{var kanske} blir en \code{Option} som håller \code{Int} men är utan något värde, kallas då \code{None}.
+\item Eftersom \code{var kanske} är utan värde är storleken av den 0.
+\item \code{var kanske} tilldelas värdet 42 som förvaras i en \code{Some} som visar att värde finns.
+\item Eftersom \code{var kanske} nu innehåller ett värde är storleken 1.
+\item Eftersom \code{var kanske} innehåller ett värde är den inte tom.
+\item Eftersom \code{var kanske} innehåller ett värde är den definierad.
+\item \code{def ökaOmFinns} matchar en \code{Option[Int]} med dess olika fall.\\
+Finns ett värde, alltså \code{opt: Option[Int]} är en \code{Some}, så returneras en \code{Some} med ursprungliga värdet plus 1.\\
+Finns inget värde, alltså \code{opt: Option[Int]} är en \code{None}, så returneras en \code{None}.
+\item -
+\item -
+\item -
+\item \code{def ökaOmFinns} appliceras på \code{kanske} och returnerar en \code{Some} med värdet hos \code{kanske} plus 1, alltså 43.
+\item \code{def öka} tar emot värdet av en \code{Int} och returnerar värdet av denna plus 1.
+\item \code{map} applicerar \code{def öka} till det enda elementen i \code{kanske}, 42. Denna funktion returnerar en \code{Some} med värdet 43 som tilldelas \code{merKanske}.
+\end{enumerate}
+
+\SubtaskSolved  \begin{enumerate}
+\item \code{val meningen} blir en \code{Some} med värdet 42.
+\item \code{val ejMeningen} blir en \code{Option[Int]} utan något värde, en \code{None}.
+\item \code{map(_ + 1)} appliceras på \code{meningen} och ökar det existerande värdet med 1 till 43.
+\item \code{map(_ + 1)} appliceras på \code{ejMening} men eftersom inget värde existerar fortsätter denna vara \code{None}.
+\item \code{map(_ + 1)} appliceras ännu en gång på \code{ejMening} men denna gång inkluderas metoden \code{orElse}. Om ett värde inte existerar hos en \code{Option}, alltså är av typen \code{None}, så utförs koden i \code{orElse}-metoden som i detta fall skriver ut \textit{saknas} för värdet som saknas.
+\item Samma anrop från föregående rad utförs denna gång på \code{meningen} och eftersom ett värde finns utförs endast första biten som ökar detta värde med 1.
+\end{enumerate}
+Denna metod kan användas i stället för \code{match}-versionen i föregående exempel i och med dennas simplare form. En \code{Option} innehåller ju antingen ett värde eller inte så ett längre \code{match}-uttryck är inte nödvändigt.
+
+\SubtaskSolved \begin{enumerate}
+\item En vektor \code{xs} skapas med var femte tal från 42 till 82.
+\item En tom \code{Int}-vektor \code{e} skapas.
+\item \code{headOption} tar ut första värdet av vektorn \code{xs} och returnerar den sparad i en \code{Option}, \code{Some(42)}.
+\item Första värdet i vektorn \code{xs} sparas i en \code{Option} och hämtas sedan av \code{get}-metoden, 42.
+\item Som i föregående rad men denna gång används \code{getOrElse} som om den \code{Option} som returneras saknar ett värde, alltså är av typen \code{None}, returnerar 0 istället.\\
+ Eftersom \code{xs} har minst ett värde så är den \code{Option} som returneras inte \code{None} och ger samma värde som i föregående, 42.
+\item Som föregående rad fast istället för att returnera 0 om värde saknas så returneras en \code{Option[Int]} med 0 som värde.
+\item \code{headOption} försöker ta ut första värdet av vektorn \code{e} men eftersom denna saknar värden returneras en \code{None}.
+\item \begin{REPL}
+java.util.NoSuchElementException: None.get
+\end{REPL}
+Liksom föregående rad returnerar \code{headOption} på den tomma vektorn \code{e} en \code{None}. När  \code{get}-metoden försöker hämta ett värde från en \code{None} som saknar värde ger detta upphov till ett körtidsfel.
+\item Liksom i föregående returneras \code{None}  av \code{headOption} men eftersom \code{getOrElse}-metoden används på denna \code{None} returneras 0 istället.
+\item Liksom föregående används \code{getOrElse}-metoden på den \code{None} som returneras. Denna gång returneras dock en \code{Option[Int]} som håller värdet 0.
+\item En vektor innehållandes elementen \code{xs}-vektorn och 3 \code{e}-vektorer skapas.
+\item \code{map} använder metoden \code{lastOption} på varje delvektor från vektorn på föregående rad. Detta sammanställer de sista elementen från varje delvektor i en ny vektor. Eftersom vektor \code{e} är tom returneras \code{None} som element från denna.
+\item Samma sker som i föregående rad men \code{flatten}-metoden appliceras på slutgiltiga vektorn som rensar vektorn på \code{None} och lämnar endast faktiska värden.
+\item \code{lift}-metoden hämtar det eventuella värdet på plats 0  i \code{xs} och returnerar den i en \code{Option} som blir \code{Some(42)}.
+\item \code{lift}-metoden försöker hämta elementet på plats 1000 i \code{xs}, eftersom detta inte existerar returneras \code{None}.
+\item  Samma sker som i föregående fast applicerat på vektorn \code{e}. Sedan appliceras \code{getOrElse(0)} som, eftersom \code{lift}-metoden returnerar \code{None}, i sin tur returnerar 0.
+\item \code{find}-metoden anropas på \code{xs}-vektorn. Den letar upp första talet över 50 och returnerar detta värde i en \code{Option[Int]}, alltså \code{Some(52)}.
+\item \code{find}-metoden anropas på \code{xs}-vektorn. Den letar upp första värdet under 42 men eftersom inget värde existerar under 42 i \code{xs} returneras \code{None} istället.
+\item \code{find}-metoden anropas på \code{e}-vektorn och skriver ut \textit{HITTAT!} om ett element under 42 hittas. Eftersom \code{e}-vektorn är tom returneras \code{None} vilket \code{foreach} inte räknar som element och därav inte utförs på.
+\end{enumerate}
+
+\SubtaskSolved  Användning av -1 som returvärde vid fel eller avsaknad på värde kan ge upphov till körtidsfel som är svåra att upptäcka. \jcode{null} kan i sin tur orsaka kraschar om det skulle bli fel under körningen. \code{Option} har inte samma problem som dessa, används ett \code{getOrElse}-uttryck eller dylikt så kraschar inte heller programmet.\\
+Dessutom behöver inte en funktion som returnerar en \code{Option} samma dokumentation av returvärdena. Istället för att skriva kommentarer till koden på vilka värden som kan returneras och vad dessa betyder så syns det direkt i koden.\\
+Slutgiltligen är \code{Option} mer typsäkert än \code{null}. När du returnerar en \code{Option} så specificeras typen av det värde som den kommer innehålla, om den innehåller något, vilket underlättar att förstå och begränsar vad den kan returnera.
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Kasta undantag.}
+
+\QUESTBEGIN
+
+\Task  \what~  Om man vill signalera att ett fel eller en onormal situtation uppstått så kan man \textbf{kasta} \Eng{throw} ett \textbf{undantag} \Eng{exception}. Då avbryts programmet direkt med ett felmeddelande, om man inte väljer att \textbf{fånga} \Eng{catch} undantaget.
+
+\Subtask Vad händer nedan?
+\begin{REPL}
+scala> throw new Exception("PANG!")
+scala> java.lang.   // Tryck TAB efter punkten
+scala> throw new IllegalArgumentException("fel fel fel")
+scala> val carola = try {
+         throw new Exception("stormvind!")
+         42
+       } catch { case e: Throwable => println("Fångad av en " + e); -1 }
+\end{REPL}
+\Subtask Nämn ett par undantag som finns i paketet \code{java.lang} som du kan gissa vad de innebär och i vilka situationer de kastas.
+
+\Subtask Vilken typ har variabeln \code{carola} ovan? Vad hade typen blivit om catch-grenen hade returnerat en sträng i stället?
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  \begin{enumerate}
+\item Ett \code{Exception} kastas med felmeddelandet \textit{PANG!}.
+\item Flera olika typer av \code{Exception} visas.
+\item En typ av \code{Exception}, \code{IllegalArgumentException}, kastas med felmeddelandet \textit{fel fel fel}.
+\item Ett stycke kod testas med \code{try}. Ett \code{Exception} med felmeddelandet \textit{stormvind!} kastas som fångas av \code{catch}-uttrycket. Den matchar felmeddelandet såsom ett \code{match}-uttryck och det godtyckliga fallet \code{e} skriver ut det \code{Exception} som fångats och returnerar -1.
+\end{enumerate}
+
+\SubtaskSolved  Exempelvis: \\
+\code{OutOfMemoryError}, om programmet får slut på minne.\\
+\code{IndexOutOfBoundsException}, om en vektorposition som är större än vad som finns hos vektorn försöker nås.\\
+\code{NullPointerException}, om en metod eller dylikt försöker användas hos ett objekt som inte finns och därav är en nullreferens.
+
+\SubtaskSolved  Eftersom värdet som skulle vara av typen \code{Int} känner \code{try}-funktionen igen returtypen hos \code{case e} och \code{carola} blir av typen \code{Int}. Skulle \code{catch}-grenen returnera en sträng istället vet programmet inte vilken typ denna är av och \code{carola} blir av typen \code{Any}.
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Fånga undantantag i Java med en \jcode{try}-\jcode{catch}-sats.}
+
+\QUESTBEGIN
+
+\Task \label{task:javatry} \what~   Det finns som vi såg i förra uppgiften inbyggt stöd i JVM för att hantera när program avbryts på oväntade sätt, t.ex. på grund av division med noll eller ej förväntade indata från användaren. Skriv in nedan Java-program i en editor och spara i en fil med namnet \texttt{TryCatch.java} och kompilera med \texttt{javac TryCatch.java} i terminalen.
+
+\javainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/TryCatch.java}
+
+\Subtask Förklara vad som händer när du kör programmet med olika indata:
+\begin{REPL}
+> java TryCatch 42
+> java TryCatch 0
+> java TryCatch safe 42
+> java TryCatch safe 0
+> java TryCatch
+\end{REPL}
+
+\Subtask Vad händer om du ''glömmer bort'' raden 15 och därmed missar att initialisera input? Hur lyder felmeddelandet? Är det ett körtidsfel eller kompileringsfel?
+
+\Subtask Beskriv några skillnader och likheter i syntax och semantik mellan \code{try}-\code{catch} i Java respektive Scala.
+
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  \begin{enumerate}
+\item Eftersom första argumentet inte är strängen \textit{safe} görs en oskyddad division av 42 med 42 där slutsvaret 1 visas.
+\item Eftersom första argumentet inte är strängen \textit{safe} görs en oskyddad division av 42 med 0 som ger \code{ArithmeticException} eftersom ett tal inte kan delas med noll.
+\item Eftersom första argumentet är strängen \textit{safe} görs en skyddad division av 42 med 42 där slutsvaret 1 visas.
+\item Eftersom första argumentet är strängen \textit{safe} görs en skyddad division av 42 med 0. Denna gång fångas \code{ArithmeticException} av \code{try-catch}-satsen vilket ersätter den gamla division med en säker division med 1 där slutsvaret 42 visas.
+\item Eftersom inga argument givits kastas ett \code{ArrayIndexOutOfBoundsException} när programmet försöker anropa \code{equals} metoden hos en sträng som inte finns. Detta kunde också kontrollerats av en \code{try-catch}-sats.
+\end{enumerate}
+
+\SubtaskSolved  \begin{REPL}
+TryCatch.java:16: error: variable input might not have been initialized
+\end{REPL}
+Ett kompileringsfel uppstår på grund av risken att \code{input} inte blivit definierad vid division.
+
+\SubtaskSolved  Den mest markanta skillnaden mellan språken är att Scala varken kräver att ett undantag fångas av en \code{catch} eller att ett undantag behöver deklareras innan det kastas med en \code{@throws}. Dessutom saknar \code{catch}-metoden hos Java de \code{match}-egenskaper Scala har. Inte heller returnerar \code{catch} hos Java något värde vilket gör det nödvändigt att definiera variabler för detta innan. I övrigt är semantiken och syntaxen väldigt lika mellan båda språken. De använder samma struktur och samma ord, dessutom har de en hel del \code{Exception} gemensamt.
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Fånga undantantag i Scala med \code{scala.util.Try}.}
+
+\QUESTBEGIN
+
+\Task  \what~  I paketet \code{scala.util} finns typen \code{Try} med stort T som är som en slags samling som kan innehålla antingen ett ''lyckat'' eller ''misslyckat'' värde. Om beräkningen av värdet lyckades och inga undantag kastas blir värdet inkapslat i en \code{Success}, annars blir undantaget inkapslat i en \code{Failure}. Man kan extrahera värdet, respektive undantaget, med mönstermatchning, men det är oftast smidigare att använda samlingsmetoderna \code{map} och \code{foreach}, i likhet med hur \code{Option} används. Det finns även en smidig metod \code{recover} på objekt av typen \code{Try} där man kan skicka med kod som körs om det uppstår en undantagssituation.
+
+\Subtask Förklara vad som händer nedan.
+\begin{REPL}
+scala> def pang = throw new Exception("PANG!")
+scala> import scala.util.{Try, Success, Failure}
+scala> Try{pang}
+scala> Try{pang}.recover{case e: Throwable =>   "desarmerad bomb: " + e}
+scala> Try{"tyst"}.recover{case e: Throwable => "desarmerad bomb: " + e}
+scala> def kanskePang = if (math.random > 0.5) "tyst" else pang
+scala> def kanskeOk = Try{ kanskePang}
+scala> val xs = Vector.fill(100)(kanskeOk)
+scala> xs(13) match {
+         case Success(x) => ":)"
+         case Failure(e) => ":( " + e
+       }
+scala> x(13).isSuccess
+scala> x(13).isFailure
+scala> xs.count(_.isFailure)
+scala> xs.find(_.isFailure)
+scala> val badOpt = xs.find(_.isFailure)
+scala> val goodOpt = xs.find(_.isSuccess)
+scala> badOpt
+scala> badOpt.get
+scala> badOpt.get.get
+scala> badOpt.map(_.getOrElse("bomben desarmerad!")).get
+scala> goodOpt.map(_.getOrElse("bomben desarmerad!")).get
+scala> xs.map(_.getOrElse("bomben desarmerad!")).foreach(println)
+scala> xs.map(_.toOption)
+scala> xs.map(_.toOption).flatten
+scala> xs.map(_.toOption).flatten.size
+\end{REPL}
+
+
+\Subtask Vad har funktionen \code{pang} för returtyp?
+
+\Subtask Varför får funktionen \code{kanskePang} den härledda returtypen \code{String}?
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  \begin{enumerate}
+\item \code{def pang} skapas som kastar ett \code{Exception} med felmeddelandet \textit{PANG!}.
+\item Scalas verktyg \code{Try}, \code{Success} och \code{Failure} importeras.
+\item \code{def pang} anropas i \code{Try} som fångar undantaget och kapslar in den i en \code{Failure}.
+\item Metoden \code{recover} matchar undantaget i \code{Failure} från föregående rad med ett \code{case} och gör om föredetta \code{Failure} till \code{Success} vid matchning, liknande \code{catch}.
+\item Strängen \textit{tyst} körs i föregående test men eftersom inget undantag kastas blir den inkapslad i en \code{Success} och \code{recover} behöver inte göra något. Den tar endast hand om undantag.
+\item \code{def kanskePang} skapas som har lika stor chans att returnera strängen \textit{tyst} såsom anropa \code{def pang}.
+\item \code{def kanskeOk} skapas som testar \code{def kanskePang} med \code{Try}.
+\item En vektor \code{xs} fylls med resultaten, \code{Success} och \code{Failure}, från 100 körningar av \code{kanskeOk}.
+\item Elementet på plats 13 i vektor \code{xs} matchas med något av 2 \code{case}. Om det är en \code{Success} skrivs \textit{:)} ut, om en \code{Failure} skrivs \textit{:(} plus felmeddelandet ut.
+\item -
+\item -
+\item -
+\item Metoden \code{isSuccess} testar om elementet på plats 13 i \code{xs} är en \code{Success} och returnerar \code{true} om så är fallet.
+\item Metoden \code{isFailure} testar om elementet på plats 13 i \code{xs} är en \code{Failure} och returnerar \code{true} om så är fallet.
+\item Metoden \code{count} räknar med hjälp av \code{isFailure} hur många av elementen i \code{xs} som är \code{Failure} och returnerar detta tal.
+\item Metoden \code{find} letar upp med hjälp av \code{isFailure} ett element i \code{xs} som är \code{Failure} och returnerar denna i en \code{Option}.
+\item \code{badOpt} tilldelas den första \code{Failure} som hittas i \code{xs}.
+\item \code{goodOpt} tilldelas den första \code{Success} som hittas i \code{xs}.
+\item Resultatet badOpt skrivs ut, \code{Option[scala.util.Try[String]] =}\\
+\code{Some(Failure(java.lang.Exception: PANG!))}
+\item Metoden \code{get} hämtar från \code{badOpt} den \code{Failure} som förvaras i en \code{Option}.
+\item Metoden \code{get} anropas ännu en gång på resultatet från föregående rad, alltså en \code{Failure}, som hämtar undantaget från denna och som då i sin tur kastas.
+\item Metoden \code{getOrElse} anropas på den \code{Failure} som finns i \code{badOpt}. Eftersom detta är en \code{Exception} utförs \code{orElse}-biten istället för att undantaget försöker hämtas. Då returneras strängen \textit{bomben desarmerad!}.
+\item Metoden \code{getOrElse} anropas på den \code{Success} som finns i \code{goodOpt}. Eftersom detta är en \code{Success} med en normal sträng sparad i sig returneras denna sträng, \textit{tyst}.
+\item Metoden från föregående används denna gång på alla element i \code{xs} där resultatet skrivs ut för varje.
+\item Metoden \code{toOption} appliceras på alla \code{Success} och \code{Failure} i \code{xs}. De med ett exception, alltså \code{Failure}, blir en \code{None} medan de med värden i \code{Success} ger en \code{Some} med strängen \textit{tyst} i sig.
+\item Metoden \code{flatten} appliceras på vektorn fylld med \code{Option} från föregående rad för att ta bort alla \code{None}-element.
+\item Metoden \code{size} används på slutgiltiga listan från föregående rad för att räkna ut hur många \code{Some} som resultatet innehåller. Den har alltså beräknat antalet element i \code{xs} som var av typen \code{Success} med hjälp av \code{Option}-typen.
+\end{enumerate}
+
+\SubtaskSolved  \code{pang} har returtypen \code{Nothing}, en specialtyp inom Scala som inte är kopplad till \code{Any}, och som inte går att returnera.
+
+\SubtaskSolved  Typen \code{Nothing} är en subtyp av varenda typ i Scalas hierarki. Detta innebär att den även är en subtyp av \code{String} vilket implicerar att \code{String} inkluderar både strängar och \code{Nothing} och därav blir returtypen.
+
+
+\QUESTEND
+
+
+
+
+\WHAT{Laborationsförberedelse.}
+
+\QUESTBEGIN
+
+\Task  \what~ \label{task:labprep-patterns-tabular} På veckans laboration ska du hantera data som finns i tabeller med celler som kan bestå av decimaltal eller strängar. Studera den givna koden som du ska utgå ifrån; uppgifterna nedan berör \code{Cell.scala} och \code{Table.scala} här:
+\url{https://github.com/lunduniversity/introprog/tree/master/workspace/w10_tabular/src/main/scala/tabular}
+
+Bastypen \code{Cell} i koden nedan har två subtyper \code{Str} och \code{Num}.
+
+\begin{CodeSmall}
+sealed trait Cell { def value: String }
+case class Str(value: String) extends Cell
+case class Num(num: BigDecimal) extends Cell { def value = num.toString }
+\end{CodeSmall}
+\code{BigDecimal} används för att representera decimaltal med bättre precision än vanliga flyttal av typen \code{Double}.
+
+\Subtask Studera dokumentationen för \code{BigDecimal}: \url{https://www.scala-lang.org/api}\\
+Vad gör fabriksmetoden \code{def apply(x: String): BigDecimal} (se kompanjonsobj.).
+
+
+\Subtask Vad är fördelen med att \code{Cell} är förseglad?
+
+\Subtask Kör igång REPL med koden för \code{Cell}-hierarkin tillgänglig på classpath, t.ex. med \code{sbt console}. Vad ger koden nedan för resultat? Ange värde och typ för varje rad.
+
+\begin{REPL}
+scala> val xs = Seq[Cell](Str("!"), Num(BigDecimal("100000000.000000001")))
+scala> val ys = xs.map(_ match { case Num(n) => Some(n) case _ => None })
+scala> val b = ys.flatten.headOption.getOrElse(BigDecimal(0))
+\end{REPL}
+
+\Subtask Lägg till ett kompanjonsobjekt enligt nedan. Gör klart den saknade implementationen. Använd \code{Try} och matcha på \code{Success} och \code{Failure}. Testa så att alla metoder i kompanjonsobjektet fungerar.
+
+\Subtask Gör om implementation så att du i stället använder \code{Try} och \code{getOrElse}. Testa så att det fungerar som innan. Vilken implementation är smidigast?
+\begin{CodeSmall}
+object Cell {
+  import scala.util.{Try, Success, Failure}
+
+  /** Ger en Num om BigDecimal(s) lyckas annars en Str. */
+  def apply(s: String): Cell =  ???
+
+  def apply(i: Int): Num = Num(BigDecimal(i))
+
+  def empty: Str = Str("")
+
+  def zero: Num = Num(BigDecimal(0))
+}
+\end{CodeSmall}
+
+\Subtask I given kod och nedan finns en nästan färdig klass för tabelldatahantering. Implementera de saknade delarna enligt beskrivning i dokumentationskommentarerna. Testa så att dina implementationer fungerar och försök förstå hur övriga delar av \code{Table} fungerar.
+
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{9}{11.5}\selectfont]{../workspace/w10_tabular/src/main/scala/tabular/Table.scala}
+
+\noindent Tips vid färdigställande av \code{Table}:
+\begin{itemize}[leftmargin=*]
+  \item Nyckel-värde-tabeller har en metod \code{withDefaultValue} som är smidig om man vill undvika undantag vid uppslagning med nyckel som inte finns och det i stället för undantag är möjligt/lämpligt att erbjuda ett vettigt defaultvärde.
+  \item Metoderna \code{getOrElse} och \code{toOption} på en \code{Try} är smidiga när man vill ge resultat som beror av om det är \code{Success} eller \code{Failure} utan att man behöver göra en \code{match}.
+\item Skiss på implementation av \code{load} i kompanjonsobjektet:
+\begin{CodeSmall}
+def load(fileOrUrl: String, separator: Char): Table = {
+  val source = fileOrUrl match {
+    case /* använd gard och startsWith*/ => scala.io.Source.fromURL(url)
+    case path  => scala.io.Source.fromFile(path)
+  }
+  val lines = try source.getLines.toVector finally source.close
+  val rows = ??? // kör split(separator).toVector på alla rader i lines
+  Table(rows.head, rows.tail.map(_.map(Cell.apply)), separator)
+}
+\end{CodeSmall}
+En webbadress börjar med \code{http}.
+Med \code{try sats1 finally sats2} så kan man garantera att \code{sats2} alltid görs även om \code{sats1} ger undantag. Detta används typiskt för att frigöra resurser som annars förblir allokerade vid undantag. I koden ovan används det för att undvika att filer inte stängs även om något går fel under läsningen.
+\end{itemize}
+\SOLUTION
+
+
+\TaskSolved \what
+
+\SubtaskSolved ''Translates the decimal String representation of a BigDecimal into a BigDecimal.''
+
+\SubtaskSolved Eftersom \code{Cell} är förseglad med \code{sealed} så kan inga andra subtyper finnas och vi behöver inte kolla efter andra subtyper när vi matchar. Kompilatorn varnar också om vi glömmer matcha på någon av subtyperna.
+
+\SubtaskSolved
+\begin{REPL}
+scala> val xs = Seq[Cell](Str("!"), Num(BigDecimal("100000000.000000001")))
+xs: Seq[Cell] = List(Str(!), Num(100000000.000000001))
+
+scala> val ys = xs.map(_ match { case Num(n) => Some(n) case _ => None })
+ys: Seq[Option[BigDecimal]] = List(None, Some(100000000.000000001))
+
+scala> val b = ys.flatten.headOption.getOrElse(BigDecimal(0))
+b: BigDecimal = 100000000.000000001
+\end{REPL}
+
+\SubtaskSolved
+\begin{Code}
+  def apply(s: String): Cell = Try(BigDecimal(s)) match {
+    case Success(num) => Num(num)
+    case Failure(_)   => Str(s)
+  }
+\end{Code}
+
+\SubtaskSolved
+\begin{Code}
+  def apply(s: String): Cell = Try(Num(BigDecimal(s))).getOrElse(Str(s))
+\end{Code}
+
+\SubtaskSolved \emph{Lämnas som egen laborationsförberedelse.}
+
+\QUESTEND
+
+
+\AdvancedTasks %%%%%%%%%%%%%%%%%%%
+
+
+
+\WHAT{Använda matchning eller dynamisk bindning?}
+
+\QUESTBEGIN
+
+\Task  \what~ Man kan åstadkomma urskiljningen av de ätbara grönsakerna i uppgift \ref{task:match-caseclass} med dynamisk bindning i stället för \code{match}.
+
+\Subtask Gör en ny variant av ditt program enligt nedan riktlinjer och spara den modifierade koden i filen \texttt{vegopoly.scala} och kompilera och kör.
+\begin{itemize}[noitemsep]
+\item Ta bort predikatet \code{ärÄtvärd} i objektet \code{Main} och inför i stället en abstrakt metod \code{def ärÄtbar: Boolean} i traiten \code{Grönsak}.
+\item Inför konkreta \code{val}-medlemmar i respektive grönsak som definierar ätbarheten.
+\item Ändra i huvudprogrammet i enlighet med ovan ändringar så att \code{ärÄtvärd} anropas som en metod på de skördade grönsaksobjekten när de ätvärda ska filtreras ut.
+\end{itemize}
+
+\Subtask Lägg till en ny grönsak \code{case class Broccoli} och definiera dess ätbarhet. Ändra i slump-funktionerna så att broccoli blir ovanligare än gurka.
+
+\Subtask Jämför lösningen med \code{match} i uppgift \ref{task:match-caseclass} och lösningen ovan med polymorfism. Vilka är för- och nackdelarna med respektive lösning? Diskutera två olika situationer på ett hypotetiskt företag som utvecklar mjukvara för jordbrukssektorn: 1) att uppsättningen grönsaker inte ändras särskilt ofta medan definitionerna av ätbarhet ändras väldigt ofta och 2) att uppsättningen grönsaker ändras väldigt ofta men att ätbarhetsdefinitionerna inte ändras särskilt ofta.
+
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved
+\begin{Code}
+package vegopoly
+
+trait Grönsak {
+	def vikt: Int
+	def ärRutten: Boolean
+	def ärÄtbar: Boolean
+}
+
+case class Gurka(vikt: Int, ärRutten: Boolean) extends Grönsak {
+  val ärÄtbar: Boolean = (!ärRutten && vikt > 100)
+}
+
+case class Tomat(vikt: Int, ärRutten: Boolean) extends Grönsak {
+  val ärÄtbar: Boolean = (!ärRutten && vikt > 50)
+}
+
+object Main{
+	def slumpvikt: Int = (math.random*500 + 100).toInt
+
+	def slumprutten: Boolean = math.random > 0.8
+
+	def slumpgurka: Gurka = Gurka(slumpvikt, slumprutten)
+
+	def slumptomat: Tomat = Tomat(slumpvikt, slumprutten)
+
+	def slumpgrönsak: Grönsak =
+    if (math.random > 0.2) slumpgurka else slumptomat
+
+	def main(args: Array[String]): Unit = {
+		val skörd = Vector.fill(args(0).toInt)(slumpgrönsak)
+		val ätvärda = skörd.filter(_.ärÄtbar)
+		println("Antal skördade grönsaker: " + skörd.size)
+		println("Antal ätvärda grönsaker: " + ätvärda.size)
+	}
+}
+\end{Code}
+
+\SubtaskSolved
+Följande \code{case class} läggs till:
+\begin{Code}
+case class Broccoli(vikt: Int, ärRutten: Boolean) extends Grönsak {
+  val ärÄtbar: Boolean = (!ärRutten && vikt > 80)
+}
+\end{Code}
+~\\
+Därefter läggs följande till i \code{object Main} innan \code{def slumpgrönsak}:
+
+\begin{Code}
+def slumpbroccoli: Broccoli = Broccoli(slumpvikt, slumprutten)
+\end{Code}
+~\\
+Slutligen ändras \code{def slumpgrönsak} till följande:
+
+\begin{Code}
+def slumpgrönsak: Grönsak = {    // välj t.ex. denna fördelning:
+  val rnd = math.random
+  if (rnd > 0.5) slumpgurka      // 50% sannolikhet för gurka
+  else if (rnd > 0.2) slumptomat // 30% sannolikhet för tomat
+  else slumpbroccoli             // 20% sannolikhet för broccoli
+}
+\end{Code}
+
+\SubtaskSolved  Fördelarna med \code{match}-versionen, och mönstermatchning i sig, är att det är väldigt lätt att göra ändringar på hur matchningen sker. Detta innebär att det skulle vara väldigt lätt att ändra definitionen för ätbarheten. Skulle dock dessa inte ändras ofta utan snarare grönsaksutbudet så kan det polyformistiska alternativet vara att föredra. Detta eftersom det skulle implementeras och ändras lättare än mönstermatchningen vid byte av grönsaker.
+
+
+
+\QUESTEND
+
+
+
+
+
+\WHAT{Metoden \code{equals}.}
+
+\QUESTBEGIN
+
+\Task  \what~   Om man överskuggar den befintliga metoden \code{equals} så kommer metoden \code{==} att fungera annorlunda. Man kan då själv åstadkomma innehållslikhet i stället för referenslikhet. Vi börjar att studera den befintliga equals med referenslikhet.
+
+\Subtask \label{subtask:refequals} Vad händer nedan? Om du trycker TAB \emph{två} gånger efter ett metodnamn får du se metodens signatur. Vilken signatur har metoden \code{equals}?
+\begin{REPL}
+scala> class Gurka(val vikt: Int, ärÄtbar: Boolean)
+scala> val g1 = new Gurka(42, true)
+scala> val g2 = g1
+scala> val g3 = new Gurka(42, true)
+scala> g1 == g2
+scala> g1 == g3
+scala> g1.equals  // tryck TAB två gånger
+\end{REPL}
+
+\Subtask Rita minnessituationen efter rad 4.
+
+\Subtask \emph{Överskugga metoderna \code{equals} och \code{hashCode}.}
+
+\begin{Background}
+Det visar sig förvånande komplicerat att implementera innehållslikhet med metoden \code{equals} så att den ger bra resultat under alla speciella omständigheter. Till exempel måste man även överskugga en metod vid namn \code{hashCode} om man överskuggar \code{equals}, eftersom dessa båda används gemensamt av effektivitetsskäl för att skapa den interna lagringen av objekten i vissa samlingar. Om man missar det kan objekt bli ''osynliga'' i \code{hashCode}-baserade samlingar -- men mer om detta i senare kurser. Om objekten ingår i en öppen arvshierarki blir det också mer komplicerat; det är enklare om man har att göra med finala klasser. Dessutom krävs speciella hänsyn om klassen har en typparameter.
+\end{Background}
+
+\noindent Definera klassen nedan i REPL med överskuggade \code{equals} och \code{hashCode}; den ärver inte något och är final.
+
+\begin{Code}
+// fungerar fint om klassen är final och inte ärver något
+final class Gurka(val vikt: Int, ärÄtbar: Boolean) {
+  override def equals(other: Any): Boolean = other match {
+    case that: Gurka => this.vikt == that.vikt
+    case _ => false
+  }
+  override def hashCode: Int = (vikt, ärÄtbar).## //förklaras sen
+}
+\end{Code}
+\Subtask Vad händer nu nedan, där \code{Gurka} nu har en överskuggad \code{equals} med innehållslikhet?
+\begin{REPL}
+scala> val g1 = new Gurka(42, true)
+scala> val g2 = g1
+scala> val g3 = new Gurka(42, true)
+scala> g1 == g2
+scala> g1 == g3
+\end{REPL}
+\Subtask Hur märker man ovan att den överskuggade \code{equals} medför att \code{==} nu ger innehållslikhet? Jämför med deluppgift \ref{subtask:refequals}.
+
+I uppgift \ref{task:equals:Complex} får du prova på att följa det fullständiga receptet i 8 steg för att överskugga en \code{equals} enligt konstens alla regler. I efterföljande kurs kommer mer träning i att hantera innehållslikhet och hash-koder. I Scala får man ett objekts hash-kod med metoden \code{##}.\footnote{Om du är nyfiken på hash-koder, läs mer här:
+\href{https://en.wikipedia.org/wiki/Java_hashCode()}{en.wikipedia.org/wiki/Java\_hashCode()}.}
+
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  \begin{enumerate}
+\item En klass \code{Gurka} skapas med parametrarna \code{vikt} av typen \code{Int} och ärÄtbar av typen \code{Boolean}.
+\item \code{g1} tilldelas en instans av \code{Gurka}-klassen med \code{vikt = 42} och \code{ärÄtbar = true}.
+\item \code{g2} tilldelas samma \code{Gurka}-objekt som g1.
+\item \code{g3} tilldelas en ny instans av \code{Gurka}-klassen med motsvarande parametrar som g1.
+\item \code{==}(\code{equals})-metoden jämför g1 med g2 och returnerar \code{true}.
+\item \code{==}(\code{equals})-metoden jämför g1 med g3 och returnerar \code{false}.
+\item \code{def equals(x\$1: Any): Boolean}
+\end{enumerate}
+Som kan ses ovan är elementet som jämförs i \code{equals} av typen \code{Any}. Eftersom programmet inte känner till klassen så används \code{Any.equals} vid jämförelsen. Till skillnad från de primitiva datatyperna som vid jämförelse med \code{equals} jämför innehållslikhet, så jämförs referenslikheten hos klasser om inget annat är specificerat. \code{g1} och \code{g2} refererar till samma objekt medan \code{g3} pekar på ett eget sådant vilket innebär att \code{g1} och \code{g3} inte har referenslikhet.
+
+\SubtaskSolved  \\
+\vspace{1em}
+\tikzstyle{mybox} = [draw=red, fill=blue!20, very thick,
+    rectangle, rounded corners, inner sep=10pt, inner ysep=20pt]
+\begin{tikzpicture}[
+	font=\large\sffamily,
+	varname/.style={node distance=0.2cm},
+	varbox/.style={draw, node distance=0.2cm},
+	objcloud/.style={cloud, cloud puffs=15.7, cloud ignores aspect, align=center, draw},
+]
+
+\node [varname] (g1var) {\texttt{g1}};
+\node [varbox, right = of g1var] (g1ref) {\phantom{abc}};
+\filldraw[black] (g1ref) circle (3pt) node[] (g1dot) {};
+\node [objcloud, right = of g1ref, yshift=1.3cm, scale =0.8] (g1obj) {
+	\texttt{\textbf{Gurka}} \\~\\ \texttt{vikt} \framebox{42} ~ \texttt{ärÄtvärd} \framebox{true}
+};
+\draw [arrow] (g1dot) -- (g1obj);
+
+\node [varname, below = of g1var] (g2var) {\texttt{g2}};
+\node [varbox, right = of g2var] (g2ref) {\phantom{abc}};
+\filldraw[black] (g2ref) circle (3pt) node[] (g2dot) {};
+\node [objcloud, right = of g2ref, yshift=-1.3cm, scale =0.8] (g2obj) {
+	\texttt{\textbf{Gurka}} \\~\\ \texttt{vikt} \framebox{42} ~ \texttt{ärÄtvärd} \framebox{true}
+};
+\draw [arrow] (g2dot) -- (g1obj);
+\node [varname, below = of g2var] (g3var) {\texttt{g3}};
+\node [varbox, right = of g3var] (g3ref) {\phantom{abc}};
+\filldraw[black] (g3ref) circle (3pt) node[] (g3dot) {};
+\draw [arrow] (g3dot) -- (g2obj);
+
+\end{tikzpicture}
+
+\SubtaskSolved  -
+
+\SubtaskSolved  I de första 3 raderna sker samma som i deluppgift \textit{a}. När nu dessa jämförelser görs mellan \code{Gurka}-objekten så överskuggas \code{Any.equals} av den \code{equals} som är specificerad för just \code{Gurka}. Eftersom båda objekten \code{g1} jämförs med också är av typen \code{Gurka} så matchar den med \code{case that: Gurka}. Denna i sin tur jämför vikterna hos de båda gurkorna och returnerar en \code{Boolean} huruvida de är lika eller inte, vilket de i båda fallen är.
+
+\SubtaskSolved  I deluppgift a gav \code{g1 == g3 false} trots innehållslikhet. Efter skuggningen ger dock detta uttryck \code{true} vilket påvisar jämförelse av innehållslikhet.
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Polynom.}
+
+\QUESTBEGIN
+
+\Task \label{task:polynomial} \what~   Med hjälp av koden nedan, kan man göra följande:
+\begin{REPL}
+scala> :pa polynomial.scala
+
+scala> import polynomial._
+
+scala> Const(1) * x
+res0: polynomial.Term = x
+
+scala> (x*5)^2
+res1: polynomial.Prod = 25x^2
+
+scala> Poly(x*(-5), y^4, (z^2)*3)
+res2: polynomial.Poly = -5x + y^4 + 3z^2
+
+\end{REPL}
+
+\Subtask Förklara vad som händer ovan genom att studera koden för \code{object polynomial} nedan i filen \code{polynomial.scala}.\footnote{Koden finns även här:\\ \href{https://github.com/lunduniversity/introprog/tree/master/compendium/examples/polynomial}{github.com/lunduniversity/introprog/tree/master/compendium/examples/polynomial}}
+
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{examples/polynomial/polynomial.scala}
+
+\Subtask Bygg vidare på \code{object polynomial} och implementera addition mellan olika termer.
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved \TODO
+
+\SubtaskSolved \TODO
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{\code{Option} som en samling.}
+
+\QUESTBEGIN
+
+\Task  \what~Studera dokumentationen för \code{Option} här och se om du känner igen några av metoderna som också finns på samlingen \code{Vector}:\\ \href{http://www.scala-lang.org/api/current/scala/Option.html}{www.scala-lang.org/api/current/scala/Option.html}
+\\Förklara hur metoden \code{contains} på en \code{Option} fungerar med hjälp av dokumentationens exempel.
+
+
+
+\SOLUTION
+
+
+\TaskSolved \what \TODO
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Fånga undantag med \code{catch} i Java och Scala.}
+
+\QUESTBEGIN
+
+\Task  \what~ Gör motsvarande program i Scala som visas i uppgift \ref{task:javatry}, men utnyttja att Scalas \code{try}-\code{catch} är ett uttryck. Kompilera och kör och testa så att de ur användarens synvinkel fungerar precis på samma sätt. Notera de viktigaste skillnaderna mellan de båda programmen.
+
+
+\SOLUTION
+
+
+\TaskSolved \what \TODO
+
+
+\QUESTEND
+
+
+
+\WHAT{Polynom, fortsättning: reducering.}
+
+\QUESTBEGIN
+
+\Task  \what~ Bygg vidare på \code{object polynomial} i uppgift \ref{task:polynomial} på sidan \pageref{task:polynomial} och implementera metoden \code{def reduce: Poly} i case-klassen \code{Poly} som förenklar polynom om flera \code{Prod}-termer kan adderas.
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+
+\QUESTEND
+
+
+
+
+\WHAT{Hash-koder.}
+
+\QUESTBEGIN
+
+\Task  \what~ Läs om hash-koder här: \href{https://en.wikipedia.org/wiki/Java_hashCode()}{en.wikipedia.org/wiki/Java\_hashCode()} \\
+Vad ger metoden \code{##} i scala.Any för resultat? Läs dokumentationen här: \\ \href{http://www.scala-lang.org/api/current/scala/Any.html}{www.scala-lang.org/api/current/scala/Any.html}
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Typsäker innehållstest med metoden \code{===}.}
+
+\QUESTBEGIN
+
+\Task  \what~  Metoderna \code{equals} och \code{==} tillåter jämförelse med vad som helst. Ibland vill man ha en typsäker innehållsjämförelse som bara tillåter jämförelse av objekt av en mer specifik typ och ger kompileringsfel annars. Man brukar då definiera en metod \code{===} som har en parameter \code{that} som har en så specifik typ som önskas. Inför nedan abstrakta metod \code{===} i traiten \code{polynomial.Term} i uppgift \ref{task:polynomial} på sidan \pageref{task:polynomial} och överskugga den sedan i alla subklasser till Term. Testa så att du får kompileringsfel om du försöker jämföra en \code{Term} med något helt annat, t.ex. en \code{String} eller \code{Vector}.
+\begin{Code}
+  def ===(that: Term): Boolean
+\end{Code}
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Överskugga \code{equals} med innehållslikhet även för icke-finala klasser.}
+
+\QUESTBEGIN
+
+\Task \label{task:equals:Complex} \what~   Nedan visas delar av klassen \code{Complex} som representerar ett komplext tal med realdel och imaginärdel. I stället för att, som man ofta gör i Scala, använda en case-klass och en \code{equals}-metod som automatiskt ger innehållslikhet, ska du träna på att implementera en egen \code{equals}.
+\begin{Code}
+class Complex(val re: Double, val im: Double) {
+  def abs: Double = math.hypot(re, im)
+  override def toString = s"Complex($re, $im)"
+  def canEqual(other: Any): Boolean = ???
+  override def hashCode: Int  = ???
+  override def equals(other: Any): Boolean = ???
+}
+case object Complex {
+  def apply(re: Double, im: Double): Complex = new Complex(re, im)
+}
+\end{Code}
+Följ detta \textbf{recept}\footnote{Detta recept bygger på \url{http://www.artima.com/pins1ed/object-equality.html}} i 8 steg för att överskugga \code{equals} med innehållslikhet som fungerar även för klasser som inte är \code{final}:
+
+\begin{enumerate}[leftmargin=*]
+\item Inför denna metod: \code{ def canEqual(other: Any): Boolean}\\Observera att typen på parametern ska vara \code{Any}. Om detta görs i en subklass till en klass som redan implementerat \code{canEqual}, behövs även \code{override}.
+
+\item Metoden \code{canEqual} ska ge \code{true} om \code{other} är av samma typ som \code{this}, alltså till exempel: \\
+\code{def canEqual(other: Any): Boolean = other.isInstanceOf[Complex]}
+
+\item Inför metoden \code{equals} och var noga med att parametern har typen \code{Any}: \\ \code{override def equals(other: Any): Boolean}
+
+\item Implementera metoden \code{equals} med ett match-uttryck som börjar så här:
+\code|other match { ... } |
+
+\item Match-uttrycket ska ha två grenar. Den första grenen ska ha ett typat mönster för den klass som ska jämföras: \\ \code{  case that: Complex =>}
+
+\item Om du implementerar \code{equals} i den klass som inför \code{canEqual}, börja uttrycket med: \\ \code{(that canEqual this) &&} \\
+och skapa därefter en fortsättning som baseras på innehållet i klassen, till exempel: \code{this.re == that.re && this.im == that.im} \\
+Om du överskuggar en \textit{annan} equals än den standard-equals som finns i \code{AnyRef}, vill du förmodligen börja det logiska uttrycket med att anropa superklassens equals-metod:
+ \code{super.equals(that) && } men du får fundera noga på vad likhet av underklasser egentligen ska innebära i ditt speciella fall.
+
+\item Den andra grenen i matchningen ska vara:
+\code{case _ => false}
+
+\item Överskugga \code{hashCode}, till exempel genom att göra en tupel av innehållet i klassen och anropa metoden \code{##} på tupeln så får du i en bra hashcode: \\
+\code{override def hashCode: Int  = (re, im).## }
+
+\end{enumerate}
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Överskugga equals vid arv.}
+
+\QUESTBEGIN
+
+\Task  \what~ Bygg vidare på exemplet nedan och överskugga equals vid arv, genom att följa receptet i uppgift \ref{task:equals:Complex}.
+\begin{Code}
+trait Number {
+  override def equals(other: Any): Boolean = ???
+}
+class Complex(re: Double, im: Double) extends Number {
+  override def equals(other: Any): Boolean = ???
+}
+class Rational(numerator: Int, denominator: Int) extends Number {
+  override def equals(other: Any): Boolean = ???
+}
+\end{Code}
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Speciella matchningar.}
+
+\QUESTBEGIN
+
+\Task  \what~ Läs om olika speciella matchningar här: \\
+\href{http://www.artima.com/pins1ed/case-classes-and-pattern-matching.html}{www.artima.com/pins1ed/case-classes-and-pattern-matching.html}
+
+\Subtask Prova variabelbinding med \texttt{@} i en matchning i REPL.
+
+\Subtask Prova sekvensmönster med \texttt{\_} och \texttt{\_*} i en matching i REPL.
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Extraktorer.}
+
+\QUESTBEGIN
+
+\Task \label{task:extractor} \what~  Läs mer om extraktorer här: \\ \href{http://www.artima.com/pins1ed/extractors.html}{www.artima.com/pins1ed/extractors.html} \\
+Skapa ditt eget extraktor-objekt för http-addresser som i t.ex.: \\
+\texttt{http://my.host.domain/path/to/this} \\ extraherar \texttt{my.host.domain} och \texttt{path/to/this} med metoden \code{unapply} och testa i en matchning.
+
+%\Task \TODO \emph{flatten och flatMap med Option och Try}
+%Ska detta vara ordinarie uppgift eller fördjupning???
+
+
+%\Task \TODO \emph{partiella funktioner och metoderna collect och collectFirst på samlingar}
+%Ska detta vara ordinarie uppgift eller fördjupning???
+
+\SOLUTION
+
+
+\TaskSolved \what --
+
+
+
+\QUESTEND
+
+
+
+
+\WHAT{Polynom, fortsättning: polynomdivision.}
+
+\QUESTBEGIN
+
+\Task  \what~ En rejäl utmaning: Implementera polynomdivision på lämpligt sätt genom att bygga vidare på  \code{object polynomial} i  uppgift \ref{task:polynomial} på sidan \pageref{task:polynomial}.  \\ Läs mer om polynomdivision här: \href{https://sv.wikipedia.org/wiki/Polynomdivision}{sv.wikipedia.org/wiki/Polynomdivision}
+
+\SOLUTION
+
+
+\TaskSolved \what --
+
+\QUESTEND

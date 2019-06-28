@@ -121,11 +121,6 @@ pdf := {
   runPdfLatexCmd(texFile = file("lectures.tex"),  workDir = file("compendium"))
   runPdfLatexCmd(texFile = file("exercises.tex"), workDir = file("compendium"))
   runPdfLatexCmd(texFile = file("labs.tex"),      workDir = file("compendium"))
-
-  runPdfLatexCmd(texFile = file("lectures.tex"),  workDir = file("compendium"))
-  runPdfLatexCmd(texFile = file("exercises.tex"), workDir = file("compendium"))
-  runPdfLatexCmd(texFile = file("labs.tex"),      workDir = file("compendium"))
-
   runPdfLatexCmd(texFile = file("assignments.tex"), workDir = file("compendium"))
   runPdfLatexCmd(texFile = file("solutions.tex"), workDir = file("compendium"))
 }

@@ -1,0 +1,1782 @@
+
+%!TEX encoding = UTF-8 Unicode
+%!TEX root = ../exercises.tex
+
+\ifPreSolution
+
+
+\Exercise{\ExeWeekSEVEN}\label{exe:W07}
+
+\begin{Goals}
+\input{modules/w07-sequences-exercise-goals.tex}
+\end{Goals}
+
+\begin{Preparations}
+\item \StudyTheory{07}
+\end{Preparations}
+
+\else
+
+\ExerciseSolution{\ExeWeekSEVEN}
+
+\fi
+
+
+\BasicTasks %%%%%%%%%%%
+
+
+
+\WHAT{Para ihop begrepp med beskrivning.}
+
+\QUESTBEGIN
+
+\Task \what
+
+\vspace{1em}\noindent Koppla varje begrepp med den (förenklade) beskrivning som passar bäst:
+
+\begin{ConceptConnections}
+\input{generated/quiz-w07-concepts-taskrows-generated.tex}
+\end{ConceptConnections}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\begin{ConceptConnections}
+\input{generated/quiz-w07-concepts-solurows-generated.tex}
+\end{ConceptConnections}
+
+\QUESTEND
+
+
+
+\WHAT{Olika sekvenssamlingar.}
+
+\QUESTBEGIN
+
+\Task \what~Koppla varje sekvenssamling med den (förenklade) beskrivning som passar bäst:
+
+\begin{ConceptConnections}
+\input{generated/quiz-w07-seq-collections-taskrows-generated.tex}
+\end{ConceptConnections}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\begin{ConceptConnections}
+\input{generated/quiz-w07-seq-collections-solurows-generated.tex}
+\end{ConceptConnections}
+
+\QUESTEND
+
+
+
+
+\WHAT{Typer i hierarkin av sekvenssamlingar.}
+
+\QUESTBEGIN
+
+\Task \what~Koppla varje typ i hierarkin av sekvenssamling med den (förenklade) beskrivning som passar bäst:
+
+\begin{ConceptConnections}
+\input{generated/quiz-w07-abstract-collections-taskrows-generated.tex}
+\end{ConceptConnections}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\begin{ConceptConnections}
+\input{generated/quiz-w07-abstract-collections-solurows-generated.tex}
+\end{ConceptConnections}
+
+\QUESTEND
+
+
+\WHAT{Använda sekvenssamlingar.}
+
+\QUESTBEGIN
+
+\Task \what~Antag att nedan variabler finns synliga i aktuell namnrymd:
+\begin{Code}
+val xs: Vector[Int] = Vector(1, 2, 3)
+val x: Int = 0
+\end{Code}
+
+\Subtask Koppla varje uttryck till vänster med motsvarande resultat till höger. Om du är osäker på resultatet, läs i snabbreferensen och testa i REPL. \\\emph{Tips: ''colon on the collection side''}.
+
+\begin{ConceptConnections}
+\input{generated/quiz-w07-seq-methods-taskrows-generated.tex}
+\end{ConceptConnections}
+
+\Subtask Vid tre tillfällen blir det fel. Varför? Är det kompileringsfel eller exekveringsfel?
+
+\begin{framed}
+\noindent\emph{Tips inför fortsättningen:}
+Scalas standardbibliotek har många användbara samlingar med enhetlig metoduppsättning. Om du lär dig de viktigaste samlingsmetoderna får du en kraftfull verktygslåda. Läs mer här:
+
+    \begin{itemize}%[nolistsep]
+      \item snabbreferensen (enda tentahjälpmedel): \\{\small\url{http://cs.lth.se/pgk/quickref}}
+      \item översikt (av Prof. Martin Odersky, uppfinnare av Scala, m.fl.): \\
+       {\small\url{http://docs.scala-lang.org/overviews/collections/introduction.html}}
+      \item api-dokumentation:\\  {\small\url{https://www.scala-lang.org/api/current/scala/collection/}}
+    \end{itemize}
+\end{framed}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved
+
+\begin{ConceptConnections}
+\input{generated/quiz-w07-seq-methods-solurows-generated.tex}
+\end{ConceptConnections}
+
+\SubtaskSolved
+
+\noindent\renewcommand*{\arraystretch}{1.2}\begin{tabular}{p{5cm} l p{6cm}}
+
+~\\ \emph{fel} & \emph{typ} & \emph{förklaring} \\\hline
+
+\code|error: value +: is| \code|not a member of Int|
+& kompileringsfel
+& Operatorer som slutar med kolon är högerassociativa. Metodanropet \code|xs +: x| motsvarar med punktnotation \code|x.+:(xs)| och det finns ingen metod med namnet \code|+:| på heltal.\\\hline
+
+\code|IndexOutOfBoundsException|
+& körtidsfel & Det finns bara 3 element och index räknas från 0 i sekvenssamlingar.\\\hline
+
+\code|error: value tail is | \code|not a member of Int|
+& kompileringsfel
+& Metoden \code|head| ger första elementet och heltal saknar sekvenssamlingsmetoden \code|tail|.\\\hline
+
+\end{tabular}
+
+
+\QUESTEND
+
+
+\WHAT{Kopiering av sekvenser.}
+
+\QUESTBEGIN
+
+\Task \what~ %\code{map} \code{toArray} \code{copyToArray}
+Klassen \code{Mutant} nedan kan användas för att skapa förändringsbara instanser med heltal.\footnote{Om den inbyggda grundtypen Int, i likhet med \code{Mutant}, knasigt nog  kunnat användas för att skapa förändringsbara instanser hade heltalsmatematiken i Scala omvandlats till ett skrämmande kaos.
+%\\Lär mer om fem här: \url{https://www.youtube.com/watch?v=dpdOUEe9mm4}
+}
+
+\noindent\begin{minipage}{0.6\textwidth}
+\begin{Code}[basicstyle=\ttfamily\large\selectfont]
+class Mutant(var int: Int = 0)
+\end{Code}
+\end{minipage}
+\hfill\begin{minipage}{0.38\textwidth}
+%https://www.1001freedownloads.com/free-clipart/mutant
+\centering\includegraphics[width=3.4cm]{../img/mutant.png}
+\captionof{figure}{En instans av klassen Mutant där \code{int} kanske är 5.}
+%https://tex.stackexchange.com/questions/55337/how-to-use-figure-inside-a-minipage
+\end{minipage}
+
+\vspace{1em}\noindent Kör nedan i REPL efter studier av detta:  \url{https://youtu.be/dpdOUEe9mm4}
+\begin{REPL}
+scala> val fem = new Mutant(5)
+scala> val xs = Vector(fem, fem, fem)
+scala> val ys = xs.toArray    // kopierar referenserna till ny Array
+scala> val zs = xs.map(x => new Mutant(x.int)) // djupkopierar till ny Vector
+scala> xs(0).int = (new Mutant).int
+\end{REPL}
+\Subtask Fyll i tabellen nedan genom att till höger skriva värdet av varje uttryck till vänster. Förklara vad som händer. \emph{Tips:} Metoden \code{eq} jämför alltid referenser (ej innehåll).
+
+\renewcommand{\arraystretch}{2.0}
+\vspace{1em}\noindent\begin{tabular}{@{} l | p{5.5cm}}\hline
+\code|xs(0)         | & \\\hline
+\code|ys(0).int| & \\\hline
+\code|zs(0).int| & \\\hline
+\code|xs(0) eq ys(0)| & \\\hline
+\code|xs(0) eq zs(0)| & \\\hline
+\code|(ys.toBuffer :+ new Mutant).apply(0).int| & \\\hline
+\end{tabular}
+
+\Subtask Implementera med hjälp av en \code{while}-sats funktionen \code{deepCopy} nedan som gör \emph{djup} kopiering, d.v.s skapar en ny array med nya, innehållskopierade mutanter.
+\begin{Code}
+def deepCopy(xs: Array[Mutant]): Array[Mutant] = ???
+\end{Code}
+Använd denna algoritm:
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+
+ \Input{ ~En mutantarray $xs$}
+ \Output{ ~En djup kopia av $xs$}
+ $result \leftarrow$ en ny mutantarray med plats för lika många element som i $xs$\\
+ $i \leftarrow 0$  \\
+ \While{$i$ mindre än antalet element}{
+  skapa en kopia av elementet $xs(i)$ och lägg kopian i $result$ på platsen $i$ \\
+  öka $i$ med 1
+ }
+ \Return $result$
+\end{algorithm}
+
+\Subtask Testa att din funktion och kolla så att inga läskiga muteringar genom delade referenser går att göra, så som med \code|xs| och \code|ys| i första deluppgiften.
+
+\Subtask Är det vanligt att man, för säkerhets skull, gör djupkopiering av alla element i oföränderliga samlingar som enbart innehåller oföränderliga element?
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved
+
+\renewcommand{\arraystretch}{1.5}
+\vspace{1em}\noindent\begin{tabular}{@{} p{0.4\textwidth} p{0.6\textwidth}}\hline
+\code|xs(0)| & \code|Mutant@66d766b9 | nya instanser får nya hexkoder \\ \hline
+\code|ys(0).int               | & \code|0 | eftersom \code|ys| innehåller samma instans som \code|xs|\\ \hline
+\code|zs(0).int               | & \code|5 | eftersom \code|!(xs(0) eq zs(0))| \\ \hline
+\code|xs(0) eq ys(0)          | & \code|true |  eftersom samma instans \\ \hline
+\code|xs(0) eq zs(0)          | & \code|false | eftersom olika instanser\\ \hline
+\code|(ys.toBuffer :+ |
+\code|  new Mutant).apply(0).int| & \code|0 | eftersom den ej djupkopierade kopian av typen \code|ArrayBuffer| refererar samma instans på första platsen som både \code|ys| och \code|xs| och \code|x(0).int| blev noll i en tilldelning på rad 5 i REPL-körningen\\ \hline
+\end{tabular}
+
+\vspace{0.5em}\noindent Observera alltså att kopiering med \code{toArray}, \code{toVector}, \code{toBuffer}, etc. \emph{inte är djup}, d.v.s det är bara elementreferenserna som delas i en samling av ny typ.
+Om du gör \code{toXXX} på en samling som redan är av typen \code{XXX} sker ingenting annat än att samlingsreferensen returneras -- det är bara vid omvandling till en \emph{ny} typ av samling som kopiering av \emph{referenserna} sker,  fortfarande utan någon djupkopiering (alltså ingen instansiering av nya element med kopierat innehåll).
+\begin{REPL}
+scala> val a = Array(5)
+a: Array[Int] = Array(5)
+
+scala> a.toArray eq a
+res0: Boolean = true
+\end{REPL}
+
+
+\SubtaskSolved
+\begin{CodeSmall}
+def deepCopy(xs: Array[Mutant]): Array[Mutant] = {
+  val result = Array.ofDim[Mutant](xs.length) //fylld med null-referenser
+  var i = 0
+  while (i < xs.length) {
+    result(i) = new Mutant(xs(i).int) //kopia med samma innehåll på samma plats
+    i += 1
+  }
+  result
+}
+\end{CodeSmall}
+Det går också bra att skapa resultatarrayen med \code{new Array[Mutant](xs.length)}.
+Du kan också använda \code{size} i stället för \code{length}.
+
+\SubtaskSolved
+\begin{REPL}
+scala> class Mutant(var int: Int = 0)
+defined class Mutant
+
+scala> :pa
+def deepCopy(xs: Array[Mutant]): Array[Mutant] = {
+  val result = Array.ofDim[Mutant](xs.length)
+  var i = 0
+  while (i < xs.length) {
+    result(i) = new Mutant(xs(i).int)
+    i += 1
+  }
+  result
+}
+scala> val xs = Array.fill(3)(new Mutant)
+xs: Array[Mutant] = Array(Mutant@46a123e4, Mutant@44bc2449, Mutant@3c28e5b6)
+
+scala> val ys = deepCopy(xs)
+ys: Array[Mutant] = Array(Mutant@14b8a751, Mutant@7345f97d, Mutant@554566a8)
+
+scala> xs(0).int = 5
+xs(0).int: Int = 5
+
+scala> ys(0).int
+res0: Int = 0
+\end{REPL}
+
+\SubtaskSolved Nej, eftersom elementen inte kan förändras kan man utan problem dela referenser mellan samlingar. Det finns inte någon möjlighet att det kan ske förändringar som påverkar flera samlingar samtidigt.
+Dock gör man vanligen (ofta tidsödande) djupkopieringar av samlingar med förändringsbara element för att kunna vara säker på att den ursprungliga samlingen inte förändras.
+
+\QUESTEND
+
+
+
+\ifPreSolution
+\begin{framed}
+\noindent\emph{Tips inför fortsättningen:} Ofta kan du lösa grundläggande delproblem med inbyggda samlingsmetoder ur standardbiblioteket. Till exempel kan ju kopieringen i \code{deepCopy} i föregående uppgift enkelt göras med hjälp av samlingsmetoden \code{map}.
+
+Men det är mycket bra för din förståelse om du kan implementera grundläggande sekvensalgoritmer själv även om det normalt är bättre att använda färdiga, vältestade  metoder. I kommande uppgifter ska du därför göra egna implementationer av några sekvensalgoritmer som redan finns i standardbiblioteket.
+\end{framed}
+\fi
+
+
+
+\WHAT{Uppdatering av sekvenser.}
+
+\QUESTBEGIN
+
+\Task \what~Deklarera dessa variabler i REPL:
+
+\begin{Code}
+val xs = (1 to 4).toVector
+val buf = xs.toBuffer
+\end{Code}
+
+\Subtask Uttrycken till vänster evalueras uppifrån och ned. Para ihop med rätt resultat.
+
+\begin{ConceptConnections}
+\input{generated/quiz-w07-seq-update-taskrows-generated.tex}
+\end{ConceptConnections}
+\emph{Tips:} Läs om metoderna i snabbreferensen och undersök i REPL. Exempel:
+\begin{REPL}
+scala> Vector(1,2,3,4).patch(from = 1, patch = Vector(0,0), replaced = 3)
+res0: scala.collection.immutable.Vector[Int] = Vector(1, 0, 0)
+\end{REPL}
+
+\Subtask Implementera funktionen \code{insert} nedan med hjälp av sekvenssamlingsmetoden \code{patch}. \emph{Tips:} Ge argumentet \code{0} till parametern \code{replaced}.
+\begin{Code}
+/** Skapar kopia av xs men med elem insatt på plats pos. */
+def insert(xs: Array[Int], elem: Int, pos: Int): Array[Int] = ???
+\end{Code}
+
+\Subtask Skriv pseduokod för en algoritm som implementerar \code{insert} med hjälp av \code{while}.
+
+\Subtask Implementera \code{insert} enligt din pseudokod. Testa i REPL och se vad som händer om \code{pos} är negativ? Vad händer om \code{pos} är precis ett steg bortom sista platsen i \code{xs}? Vad händer om \code{pos} är flera steg bortom sista platsen?
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved
+
+\begin{ConceptConnections}
+\input{generated/quiz-w07-seq-update-solurows-generated.tex}
+\end{ConceptConnections}
+
+\SubtaskSolved
+
+\begin{Code}
+def insert(xs: Array[Int], elem: Int, pos: Int): Array[Int] =
+  xs.patch(from = pos, patch = Array(elem), replaced = 0)
+\end{Code}
+
+\SubtaskSolved Pseudokoden nedan är skriven så att den kompilerar fast den är ofärdig.
+\begin{Code}
+def insert(xs: Array[Int], elem: Int, pos: Int): Array[Int] = {
+  val result = ??? /* ny array med plats för ett element mer än i xs */
+  var i = 0
+  while(???){/* kopiera elementen före plats pos och öka i */}
+  if (i < result.length) /* lägg elem i result på plats i */
+  while(???){/* kopiera över resten */}
+  result
+}
+\end{Code}
+
+\SubtaskSolved
+\begin{Code}
+def insert(xs: Array[Int], elem: Int, pos: Int): Array[Int] = {
+  val result = new Array[Int](xs.length + 1)
+  var i = 0
+  while (i < pos && i < xs.length) { result(i) = xs(i); i += 1}
+  if (i < result.length) { result(i) = elem; i += 1 }
+  while (i < result.length && i > 0) { result(i) = xs(i - 1); i += 1}
+  result
+}
+\end{Code}
+\begin{REPL}
+scala> insert(Array(1,2),0,pos = -1)
+res2: Array[Int] = Array(0, 1, 2)
+
+scala> insert(Array(1,2),0,pos = 0)
+res3: Array[Int] = Array(0, 1, 2)
+
+scala> insert(Array(1,2),0,pos = 1)
+res4: Array[Int] = Array(1, 0, 2)
+
+scala> insert(Array(1,2),0,pos = 2)
+res5: Array[Int] = Array(1, 2, 0)
+
+scala> insert(Array(1,2),0,pos = 42)
+res7: Array[Int] = Array(1, 2, 0)
+\end{REPL}
+
+\QUESTEND
+
+
+
+
+\ifPreSolution
+\begin{framed}
+\noindent\emph{Tips inför fortsättningen:} Det är inte lätt att få rätt på alla specialfall även i små algoritmer så som \code{insert} ovan. Det är därför viktigt att noga tänka igenom sin sekvensalgoritm med avseende på olika specialfall. Använd denna checklista:
+\begin{enumerate}[noitemsep]
+  \item Vad händer om sekvensen är tom?
+  \item Fungerar det för exakt ett element?
+  \item Kan index bli negativt?
+  \item Kan index bli mer än längden minus ett?
+  \item Kan det bli en oändlig loop, t.ex. p.g.a. saknad loopvariabeluppräkning?
+\end{enumerate}
+Ibland vill man att vettiga undantag ska kastas vid ogiltig indata eller andra feltillstånd och då är \code{require} eller \code{assert} bra att använda. I andra fall vill man att resultatet t.ex. ska bli en tom sekvenssamling om indata är ogiltigt. Sådana beteenden behöver dokumenteras så att andra som använder dina algoritmer (eller du själv efter att du glömt hur det var) förstår vad som händer i olika fall.
+
+
+\end{framed}
+\fi
+
+
+
+
+\WHAT{Linjärsökning enligt olika sökkriterier.}
+
+\QUESTBEGIN
+
+\Task \what~Linjärsökning innebär att man letar tills man hittar det man söker efter i en sekvens. Detta delproblem återkommer ofta! Vanligen börjar linjärsökning från början och håller på tills man hittar något element som uppfyller kriteriet. Beroende på vad som finns i sekvensen och hur kriteriet ser ut kan det hända att man måste gå igenom alla element utan att hitta det som söks.
+
+\Subtask Linjärsökning med inbyggda sekvenssamlingsmetoder.
+\begin{Code}
+val xs = ((1 to 5).reverse ++ (0 to 5)).toVector
+\end{Code}
+Deklarera ovan variabel i REPL och para ihop uttrycken nedan med rätt värden. Förklara vad som händer.
+
+\begin{ConceptConnections}
+\input{generated/quiz-w07-seq-find-taskrows-generated.tex}
+\end{ConceptConnections}
+
+\Subtask Implementera linjärsökning i strängvektor med strängpredikat.
+\begin{Code}
+/** Returns first index where p is true. Returns -1 if not found. */
+def indexOf(xs: Vector[String], p: String => Boolean): Int = ???
+\end{Code}
+Ett strängpredikat \code{p: String => Boolean} är en funktion som tar en sträng som indata och ger ett booleskt värde som resultat. Implementera \code{indexOf} med hjälp av en \code{while}-sats. Du kan t.ex. använda en lokal boolesk variabel \code{found} för att hålla reda på om du har hittat det som eftersöks enligt predikatet.
+
+När element som uppfyller predikatet saknas måste man bestämma vad som ska hända. Kravet på din implementation i detta fall ges av dokumentationskommentaren ovan.
+
+Din funktion ska fungera enligt nedan:
+\begin{REPL}
+scala> val xs = Vector("hej","på","dej")
+
+scala> indexOf(xs, _.contains('p'))
+res0: Int = 1
+
+scala> indexOf(xs, _.contains('q'))
+res1: Int = -1
+
+scala> indexOf(Vector(), _.contains('q'))
+res2: Int = -1
+
+scala> indexOf(Vector("q"), _.length == 1)
+res3: Int = 0
+\end{REPL}
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved
+
+\begin{ConceptConnections}
+\input{generated/quiz-w07-seq-find-solurows-generated.tex}
+\end{ConceptConnections}
+
+\SubtaskSolved Med en boolesk variabel \code{found}:
+
+\begin{Code}
+def indexOf(xs: Vector[String], p: String => Boolean): Int = {
+  var found = false
+  var i = 0
+  while (i < xs.length && !found) {
+      found = p(xs(i))
+      i += 1
+  }
+  if (found) i - 1 else -1
+}
+\end{Code}
+Eller utan \code{found}:
+\begin{Code}
+def indexOf(xs: Vector[String], p: String => Boolean): Int = {
+  var i = 0
+  while (i < xs.length && !p(xs(i))) i += 1
+  if (i == xs.length) -1 else i
+}
+\end{Code}
+Eller så kanske man vill börja bakifrån; lösningen nedan är nog enklare att fatta (?) och definitivt mer koncis, men uppfyller \emph{inte} kravet att returnera index för \emph{första} förekomsten som det står i uppgiften. Men om sammanhanget tillåter att vi returnerar \emph{något} index för vilket predikatet gäller, eller om man faktiskt har kravet att leta bakifrån, så funkar detta:
+\begin{Code}
+def indexOf(xs: Vector[String], p: String => Boolean): Int = {
+  var i = xs.length - 1
+  while (i >= 0 && !p(xs(i))) i -= 1
+  i
+}
+\end{Code}
+Eller så kan man göra på flera andra sätt. När du ska implementera algoritmer, både på programmeringstentan och i yrkeslivet som systemutvecklare, finns det ofta många olika sätt att lösa uppgiften på som har olika egenskaper, fördelar och nackdelar. Det viktiga är att lösningen fungerar så gott det går enligt kraven, att koden är begriplig för människor och att implementationen inte är så ineffektiv att användarna tröttnar i sin väntan på resultatet...
+
+\QUESTEND
+
+
+
+
+\WHAT{Labbförberedelse: Implementera heltalsregistrering i Array.}
+
+\QUESTBEGIN
+
+\Task \what~Registrering innebär att man räknar antalet förekomster av olika värden. Varje gång ett nytt värde förekommer behöver vi räkna upp en frekvensräknare. Det behövs en räknare för varje värde som ska registreras. Vi ska fortsätta räkna ända tills alla värden är registrerade.
+
+På veckans laboration ska du registrera förekomsten av olika kortkombinationer i kortspelet poker. I denna övning ska du som träning inför laborationen lösa ett liknande registreringsproblem:  frekvensanalys av många tärningskast. Vid tärningsregistrering behövs sex olika räknare. Man kan med fördel då använda en sekvenssamling med plats för sex heltal. Man kan t.ex. låta  plats \code{0} håller reda på antalet ettor, plats \code{1} hålla reda på antalet tvåor, etc.
+
+\Subtask Implementera nedan algoritm enligt pseudokoden:
+\begin{Code}
+def registreraTärningskast(xs: Seq[Int]): Vector[Int] = {
+  val result = ??? /* Array med 6 nollor */
+  xs.foreach{ x =>
+    require(x >= 1 && x <= 6, "tärningskast ska vara mellan 1 & 6")
+    ??? /* räkna förekomsten av x */
+  }
+  result.toVector
+}
+\end{Code}
+
+\Subtask Använd funktionen \code{kasta} nedan när du testar din registreringsalgoritm med en sekvenssamling innehållande minst $1000$ tärningskast.
+\begin{Code}
+def kasta(n: Int) = Vector.fill(n)(util.Random.nextInt(6) + 1)
+\end{Code}
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved
+\begin{Code}
+def registreraTärningskast(xs: Seq[Int]): Vector[Int] = {
+  val result = Array.fill(6)(0)
+  xs.foreach{ x =>
+    require(x >= 1 && x <= 6, "tärningskast ska vara mellan 1 & 6")
+    result(x - 1) += 1
+  }
+  result.toVector
+}
+\end{Code}
+
+\SubtaskSolved
+\begin{REPL}
+scala> registreraTärningskast(kasta(1000))
+res0: Vector[Int] = Vector(171, 163, 166, 152, 184, 164)
+
+scala> registreraTärningskast(kasta(1000))
+res1: Vector[Int] = Vector(163, 161, 158, 174, 161, 183)
+\end{REPL}
+
+\QUESTEND
+
+
+
+
+\WHAT{Inbyggda metoder för sortering.}
+
+\QUESTBEGIN
+
+\Task \what~Det finns fler olika sätt att ordna sekvenser efter olika kriterier. För  grundtyperna \code{Int}, \code{Double}, \code{String}, etc., finns inbyggda ordningar som gör att sekvenssamlingsmetoden \code{sorted} fungerar utan vidare argument (om du är nöjd med den inbyggda ordningsdefinitionen). Det finns också metoderna \code{sortBy} och \code{sortWith} om du vill ordna en sekvens med element av någon grundtyp efter egna ordningsdefinitioner eller om du har egna klasser i din sekvens.
+\begin{Code}
+val xs = Vector(1, 2, 1, 3, -1)
+val ys = Vector("abra", "ka", "dabra").map(_.reverse)
+val zs = Vector('a', 'A', 'b', 'c').sorted
+
+case class Person(förnamn: String, efternamn: String)
+
+val ps = Vector(Person("Kim", "Ung"), Person("kamrat", "Clementin"))
+\end{Code}
+Deklarera ovan i REPL och para ihop uttryck nedan med rätt resultat.
+\\\emph{Tips:} Stora bokstäver sorteras före små bokstäver i den inbyggda ordningen för grundtyperna \code{String} och \code{Char}. Dessutom har svenska tecken knasig ordning.\footnote{Ordningen kommer ursprungligen från föråldrade teckenkodningsstandarder:    \url{https://sv.wikipedia.org/wiki/ASCII}}
+\\Läs om sorteringsmetoderna i snabbreferensen och prova i REPL.
+
+\begin{ConceptConnections}
+\input{generated/quiz-w07-seq-sort-taskrows-generated.tex}
+\end{ConceptConnections}
+Vi ska senare i kursen implementera egna sorteringsalgoritmer som träning, men i normala fall använder man inbyggda sorteringar som är effektiva och vältestade. Dock är det inte ovanligt att man vill definiera egna ordningar för egna klasser, vilket vi ska undersöka senare i kursen.
+
+\SOLUTION
+
+\TaskSolved \what
+
+\begin{ConceptConnections}
+\input{generated/quiz-w07-seq-sort-solurows-generated.tex}
+\end{ConceptConnections}
+Det blir fel i uttrycket ovan som försöker sortera en sekvens med instanser av \code{Person} direkt med metoden \code{sorted}:
+\begin{REPL}
+scala> ps.sorted
+<console>:13: error: No implicit Ordering defined for Person.
+\end{REPL}
+Det blir fel eftersom kompilatorn inte hittar någon ordningsdefinition för dina egna klasser. Senare i kursen ska vi se hur vi kan skapa egna ordningar om man vill få \code{sorted} att fungera på sekvenser med instanser av egna klasser, men ofta räcker det fint med \code{sortBy} och \code{sortWith}.
+\QUESTEND
+
+
+\WHAT{Inbyggd metod för blandning.}
+
+\QUESTBEGIN
+
+\Task \what~På veckans laboration ska du implementera en egen blandningsalgoritm och använda den för att blanda en kortlek. Det finns redan en inbygg metod \code{shuffle} i singelobjektet \code{Random} i paketet \code{scala.util}.
+
+\Subtask Sök upp dokumentationen för \code{Random.shuffle} och studera funktionshuvudet. Det står en hel del invecklade saker om \code{CanBuildFrom} etc. Detta smarta krångel, som vi inte går närmare in på i denna kurs, är till för att metoden ska kunna returnera lämplig typ av samling. När du ser ett sådant funktionshuvud kan du anta att metoden fungerar fint med flera olika typer av lämpliga samlingar i Scalas standardbibliotek.
+
+Klicka på \code{shuffle}-dokumentationen så att du ser hela texten. Vad säger dokumentationen om resultatet? Är det blandning på plats eller blandning till ny samling?
+
+\Subtask Prova upprepade blandningar av olika typer av sekvenser med olika typer av element i REPL.
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved \code{Random.shuffle} returnerar en ny blandad sekvenssamling av samma typ. Ordningen i den ursprungliga samlingen påverkas inte.
+
+\SubtaskSolved Exempel på användning av \code{random.shuffle}:
+\begin{REPL}
+scala> import scala.util.Random
+
+scala> val xs = Vector("Sten", "Sax", "Påse")
+
+scala> (1 to 10).foreach(_ => println(Random.shuffle(xs).mkString(" ")))
+Sax Påse Sten
+Sten Påse Sax
+Sten Sax Påse
+Sten Sax Påse
+Sten Påse Sax
+Sten Påse Sax
+Sax Sten Påse
+Sten Påse Sax
+Sax Påse Sten
+Sax Påse Sten
+
+scala> scala> (1 to 5).map(_ => Random.shuffle(1 to 6))
+res1: IndexedSeq[IndexedSeq[Int]] =
+  Vector(Vector(5, 2, 1, 4, 3, 6), Vector(6, 5, 4, 2, 1, 3),
+  Vector(3, 1, 4, 6, 5, 2), Vector(3, 2, 6, 5, 1, 4),
+  Vector(5, 3, 4, 6, 1, 2))
+
+scala> (1 to 1000).map(_ => Random.shuffle(1 to 6).head).count(_ == 6)
+res2: Int = 168
+\end{REPL}
+
+\QUESTEND
+
+
+
+\WHAT{Repeterade parametrar.}
+
+\QUESTBEGIN
+
+\Task  \what~  Det går att deklarera en funktion som tar en argumentsekvens av godtycklig längd, ä.k. \emph{varargs}. Syntaxen består av en asterisk \code{*} efter typen. Funktion sägs då ha repeterade parametrar \Eng{repeated parameters}. I funktionskroppen får man tillgång till argumenten i en sekvenssamling. Argumenten anges godtyckligt många med komma emellan. Exempel:
+\begin{Code}
+/** Ger en vektor med stränglängder för godtyckligt antal strängar. */
+def stringSizes(xs: String*): Vector[Int] = xs.map(_.size).toVector
+\end{Code}
+
+\Subtask Deklarera och använd \code{stringSizes} i REPL. Vad händer om du anropar \code{stringSizes} med en tom argumentlista?
+
+\Subtask Det händer ibland att man redan har en sekvenssamling, t.ex. \code{xs}, och vill skicka med varje element som argument till en varargs-funktion. Syntaxen för detta är \code{xs: _* } vilket gör att kompilatorn omvandlar sekvenssamlingen till en argumentsekvens av rätt typ.
+
+Prova denna syntax genom att ge en \code{xs} av typen \code{Vector[String]} som argument till \code{stringSizes}. Fungerar det även om \code{xs} är en sekvens av längden 0?
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved
+
+\begin{REPL}
+scala> def stringSizes(xs: String*): Vector[Int] = xs.map(_.size).toVector
+scala> stringSizes("hej")
+res83: Vector[Int] = Vector(3)
+
+scala> stringSizes("hej", "på", "dej", "")
+res84: Vector[Int] = Vector(3, 2, 3, 0)
+
+scala> stringSizes()
+res85: Vector[Int] = Vector()
+\end{REPL}
+
+\noindent Anrop med tom argumentlista ger en tom heltalssekvens.
+
+\SubtaskSolved
+
+\begin{REPL}
+scala> val xs = Vector("hej","på","dej", "")
+
+scala> stringSizes(xs: _*)
+res86: Vector[Int] = Vector(3, 2, 3, 0)
+
+scala> stringSizes(Vector(): _*)
+res87: Vector[Int] = Vector()
+\end{REPL}
+Ja, det funkar fint med tom sekvens.
+
+\QUESTEND
+
+
+
+\clearpage
+
+\ExtraTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\WHAT{Registrering av booleska värden. Singla slant.}
+
+\QUESTBEGIN
+
+\Task \what~
+
+\Subtask Implementera en funktion som registrerar många slantsinglingar enligt nedan funktionshuvud. Indata är en sekvens av booleska värden där krona kodas som \code{true} och klave kodas som \code{false}. För registreringen ska du använda en lokal \code{Array[Int]}. I resultatet ska antalet utfall av \code{krona} ligga på första platsen i 2-tupeln och på andra platsen ska antalet utfall av \code{klave} ligga.
+
+\begin{Code}
+def registerCoinFlips(xs: Seq[Boolean]): (Int, Int) = ???
+\end{Code}
+
+\Subtask Skapa en funktion \code{flips(n)} som ger en boolesk \code{Vector} med $n$ stycken slantsinglingar och använd den när du testar din slantsinglingsregistreringsalgoritm.
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved
+\begin{Code}
+def registerCoinFlips(xs: Seq[Boolean]): (Int, Int) = {
+  val result = Array.fill(2)(0)
+  xs.foreach(x => if (x) result(0) += 1 else result(1) += 1)
+  (result(0), result(1))
+}
+\end{Code}
+
+\SubtaskSolved
+
+\QUESTEND
+
+
+\WHAT{Kopiering och tillägg på slutet.}
+
+\QUESTBEGIN
+
+\Task \what~
+Skapa funktionen \code{copyAppend} som implementerar nedan algoritm, \emph{efter} att du rättat de \textbf{\color{red}{två buggarna}} nedan:
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+
+ \Input{Heltalsarray $xs$ och heltalet $x$}
+ \Output{En ny heltalsarray som som är en kopia av $xs$ men med $x$ tillagt på slutet som extra element.}
+ $ys \leftarrow$ en ny array med plats för ett element mer än i $xs$\\
+ $i \leftarrow 0$  \\
+ \While{$i \leq xs.length$}{
+  $ys(i) \leftarrow xs(i)$
+ }
+lägg $x$ på sista platsen i $ys$
+\end{algorithm}
+
+\noindent Granska din kod enligt checklistan i tidigare tipsruta. Testa din funktion för de olika fallen: tom sekvens, sekvens med exakt ett element, sekvens med många element.
+
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\begin{Code}
+def copyAppend(xs: Array[Int], x: Int): Array[Int] = {
+  val ys = new Array[Int](xs.length + 1)
+  var i = 0
+  while(i < xs.length) {
+    ys(i) = xs(i)
+    i += 1
+  }
+  ys(xs.length) = x
+  ys
+}
+\end{Code}
+De två buggarna i algoritmen finns (1) i villkoret som ska vara strikt mindre än och (2) inne i loopen där uppräkningen av loppvariabeln saknas.
+
+\QUESTEND
+
+
+
+% \WHAT{Välja sekvenssamling.}
+%
+% \QUESTBEGIN
+%
+% \Task  \what~Vilken sekvenssamling är lämpligast i respektive situation nedan? Välj mellan \code{Vector}, \code{ArrayBuffer} och \code{ListBuffer}.
+%
+% \Subtask Det asociala mediet ZuckerBok ska lagra statusuppdateringar från sina användare. Dessa lagras i en förändringsbar sekvens där nya poster läggs till först. Indexering mitt i sekvensen är mycket ovanligt eftersom de flesta användarna sällan läser vad andra skriver, utan mest skriver nya inlägg om sig själv.
+%
+% \Subtask ZuckerBok försöker öka sina intäkter och börjar frenetiskt indexera i kors och tvärs i sekvensen med statusuppdaringar för att söka efter lämpliga spamoffer.
+%
+% \Subtask ZuckerBok bestämmer sig för att lagra födelsedatum för alla ca $10^7$ medborgare i Sverige i en oföränderlig sekvens för att kunna förmedla specialreklam på födelsedagar.
+%
+% \SOLUTION
+%
+% \TaskSolved \what
+%
+% \SubtaskSolved  \code{ListBuffer} som är snabb på fröändringar i början av sekvensen.
+%
+% \SubtaskSolved  \code{ArrayBuffer} som är snabb på både storleksförändringar och godtycklig indexering.
+%
+% \SubtaskSolved  \code{Vector} eftersom ofränderlighet efterfrågas.
+%
+% \QUESTEND
+
+
+
+\WHAT{Kopiera och reversera sekvens.}
+
+\QUESTBEGIN
+
+\Task  \what~  Implementera \code{seqReverseCopy} enligt:
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+
+ \Input{Heltalsarray $xs$}
+ \Output{En ny heltalsarray med elementen i $xs$ i omvänd ordning.}
+ $n \leftarrow$ antalet element i $xs$ \\
+ $ys \leftarrow$ en ny heltalsarray med plats för $n$ element\\
+ $i \leftarrow 0$  \\
+ \While{$i < n$}{
+  $ys(n - i - 1) \leftarrow xs(i)$ \\
+  $i \leftarrow i + 1$
+ }
+ \Return $ys$
+\end{algorithm}
+
+\Subtask Använd en \code{while}-sats på samma sätt som i algoritmen. Prova din implementation i REPL och kolla så att den fungerar i olika fall.
+
+\Subtask Gör en ny implementation som i stället använder en \code{for}-sats som börjar bakifrån. Kör din implementation i REPL och kolla så att den fungerar i olika fall.
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved  \begin{Code}
+def seqReverseCopy(xs: Array[Int]): Array[Int] = {
+  val n = xs.length
+  val ys = new Array[Int](n)
+  var i = 0
+  while(i < n) {
+    ys(n-i-1) = xs(i)
+    i += 1
+  }
+  ys
+}
+\end{Code}
+
+\SubtaskSolved  \begin{Code}
+def seqReverseCopy(xs: Array[Int]): Array[Int] = {
+  val n = xs.length
+  val ys = new Array[Int](n)
+  for(i <- n - 1 to 0 by -1) ys(n - i - 1) = xs(i)
+  ys
+}
+\end{Code}
+
+
+\QUESTEND
+
+
+
+
+\WHAT{Kopiera alla utom ett.}
+
+\QUESTBEGIN
+
+\Task  \what~  Implementera kopiering av en array \emph{utom} ett element på en viss angiven plats.
+Skriv först pseudokod innan du implementerar:
+\begin{Code}
+def removeCopy(xs: Array[Int], pos: Int): Array[Int]
+\end{Code}
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+
+ \Input{En sekvens $xs$ av typen \texttt{Array[Int]} och $pos$}
+ \Output{En ny sekvens av typen \texttt{Array[Int]} som är en kopia av $xs$ fast med elementet på plats $pos$ borttaget}
+ $n \leftarrow$ antalet element $xs$\\
+ $ys \leftarrow$ en ny \texttt{Array[Int]} med plats för $n-1$ element \\
+ \For{$i \leftarrow 0$ \KwTo $pos - 1$}{
+  $ys(i) \leftarrow xs(i)$
+ }
+ $ys(pos) \leftarrow x$ \\
+ \For{$i \leftarrow pos+1$ \KwTo $n - 1$}{
+  $ys(i - 1) \leftarrow xs(i)$
+ }
+ \Return $ys$
+\end{algorithm}
+
+\begin{Code}
+def removeCopy(xs: Array[Int], pos: Int): Array[Int] = {
+  val n = xs.size
+  val ys = Array.fill(n - 1)(0)
+  for (i <- 0 until pos) ys(i) = xs(i)
+  for (i <- pos+1 until n) ys(i - 1) = xs(i)
+  ys
+}
+\end{Code}
+
+\QUESTEND
+
+
+
+
+\WHAT{Borttagning på plats i array.}
+
+\QUESTBEGIN
+
+\Task  \what~  Ibland vill man ta bort ett element på en viss position i en array utan att kopiera alla element, utom ett, till en ny samling. Ett sätt att göra detta är att flytta alla efterföljande element ett steg mot lägre index och fylla ut sista positionen med ett utfyllnadsvärde, t.ex. $0$.
+Skriv först pseudokod för en sådan algoritm. Implementera sedan algoritmen i en funktion med denna signatur:
+\begin{Code}
+def removeAndPad(xs: Array[Int], pos: Int, pad: Int = 0): Unit
+\end{Code}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+
+ \Input{En sekvens $xs$ av typen \texttt{Array[Int]}, en position $pos$ och ett utfyllnadsvärde $pad$}
+ \Output{En uppdaterad sekvens av $xs$ där elementet på plats $pos$ tagits bort och efterföljande element flyttas ett steg mot lägre index med ett sista elementet som tilldelats värdet av $pad$}
+ $n \leftarrow$ antalet element $xs$\\
+ \For{$i \leftarrow pos+1$ \KwTo $n - 1$}{
+  $xs(i - 1) \leftarrow xs(i)$
+ }
+ $xs(n - 1) \leftarrow pad$ \\
+\end{algorithm}
+
+\begin{Code}
+def remove(xs: Array[Int], pos: Int, pad: Int = 0): Unit = {
+  val n = xs.size
+  for (i <- pos+1 until n) xs(i - 1) = xs(i)
+  xs(n-1) = pad
+}
+\end{Code}
+
+\QUESTEND
+
+
+
+
+\WHAT{Kopiering och insättning.}
+
+\QUESTBEGIN
+
+\Task  \what~
+
+\Subtask Implementera en funktion med detta huvud enligt efterföljande algoritm:
+\begin{Code}
+def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int]
+\end{Code}
+
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+
+ \Input{En sekvens $xs$ av typen \texttt{Array[Int]} och heltalen $x$ och $pos$}
+ \Output{En ny sekvens av typen \texttt{Array[Int]} som är en kopia av $xs$ men där $x$ är infogat på plats $pos$}
+ $n \leftarrow$ antalet element $xs$\\
+ $ys \leftarrow$ en ny \texttt{Array[Int]} med plats för $n+1$ element \\
+ \For{$i \leftarrow 0$ \KwTo $pos - 1$}{
+  $ys(i) \leftarrow xs(i)$
+ }
+ $ys(pos) \leftarrow x$ \\
+ \For{$i \leftarrow pos$ \KwTo $n - 1$}{
+  $ys(i + 1) \leftarrow xs(i)$
+ }
+ \Return $ys$
+\end{algorithm}
+
+
+\Subtask Vad måste \code{pos} vara för att det ska fungera med en tom array som argument?
+
+\Subtask Vad händer om din funktion anropas med ett negativt argument för \code{pos}?
+
+\Subtask Vad händer om din funktion anropas med \code{pos} lika med \code{xs.size}?
+
+\Subtask Vad händer om din funktion anropas med \code{pos} större än \code{xs.size}?
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved  \begin{Code}
+def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int] = {
+  val n = xs.size
+  val ys = Array.ofDim[Int](n + 1)
+  for (i <- 0 until pos) ys(i) = xs(i)
+  ys(pos) = x
+  for (i <- pos until n) ys(i + 1) = xs(i)
+  ys
+}
+\end{Code}
+
+\SubtaskSolved  \code{pos} måste vara \code{0}.
+
+\SubtaskSolved  \begin{REPL}
+java.lang.ArrayIndexOutOfBoundsException: -1
+\end{REPL}
+
+\SubtaskSolved  Elementet \code{x} läggs till på slutet av arrayen, alltså kommer den returnerande arrayen vara större än den som skickades in.
+
+\SubtaskSolved  \begin{REPL}
+java.lang.ArrayIndexOutOfBoundsException: 5
+\end{REPL}
+Man får \code{ArrayIndexOutOfBoundsException} då indexeringen är utanför storleken hos arrayen.
+
+\QUESTEND
+
+
+
+
+\WHAT{Insättning på plats i array.}
+
+\QUESTBEGIN
+
+\Task  \what~  Ett sätt att implementera insättning i en array, utan att kopiera alla element till en ny array med en plats extra, är att alla elementen efter \code{pos} flyttas fram ett steg till högre index, så att plats bereds för det nya elementet. Med denna lösning får det sista elementet ''försvinna'' genom brutal överskrivning eftersom arrayer inte kan ändra storlek.
+
+Skriv först en sådan algoritm i pseudokod och implementera den sedan i en procedur med detta huvud:
+\begin{Code}
+def insertDropLast(xs: Array[Int], x: Int, pos: Int): Unit
+\end{Code}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+
+ \Input{En sekvens $xs$ av typen \texttt{Array[Int]} och heltalen $x$ och $pos$}
+ \Output{En uppdaterad sekvens av $xs$ där elementet $x$ har satts in på platsen $pos$ och efterföljande element flyttas ett steg där sista elementet försvinner}
+ $n \leftarrow$ antalet element i $xs$\\
+ $ys \leftarrow$ en klon av $xs$\\
+ $xs(pos) \leftarrow x$\\
+ \For{$i \leftarrow pos+1$ \KwTo $n - 1$}{
+  $xs(i) \leftarrow ys(i - 1)$
+ }
+\end{algorithm}
+
+\begin{Code}
+def insertDropLast(xs: Array[Int], x: Int, pos: Int): Unit = {
+  val n = xs.size
+  val ys = xs.clone
+  xs(pos) = x
+  for (i <- pos + 1 until n) xs(i) = ys(i - 1)
+}
+\end{Code}
+
+\QUESTEND
+
+
+\WHAT{Fler inbyggda metoder för linjärsökning.}
+
+\QUESTBEGIN
+
+\Task \what~
+
+\Subtask Läs i snabbreferensen om metoderna \code{lastIndexOf}, \code{indexOfSlice}, \code{segmentLength} och \code{maxBy} och beskriv vad var och en kan användas till.
+
+\Subtask Testa metoderna i REPL.
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved
+
+\begin{itemize}[noitemsep]
+  \item \code{lastIndexOf} är bra om man vill leta bakifrån i stället för framifrån; utan denna hade man annars då behövt använda \code{xs.reverse.indexOf(e)}
+  \item \code{indexOfSlice(ys)} letar efter index där en hel sekvens \code{ys} börjar, till skillnad från \code{indexOf(e)} som bara letar efter ett enstaka element.
+  \item \code{segmentLength(p, i)} ger längden på den längsta sammanhängande sekvens där alla element uppfyller predikatet \code{p} och sökningen efter en sådan sekvens börjar på plats \code{i}
+  \item \code{xs.maxBy(f)} kör först funktionen \code{f} på alla element i \code{xs} och letar sedan upp det största värdet; motsvarande \code{minBy(f)} ger minimum av \code{f(e)} över alla element \code{e} i \code{xs}
+\end{itemize}
+
+\SubtaskSolved --
+
+\QUESTEND
+
+
+
+\clearpage
+
+\AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\WHAT{Fibonacci-sekvens med ListBuffer.}
+
+\QUESTBEGIN
+
+\Task  \what~ Samlingen \code{ListBuffer} är en förändringsbar sekvens som är snabb och minnessnål vid tillägg i början \Eng{prepend}. Undersök vad som händer här:
+\begin{REPL}
+scala> val xs = scala.collection.mutable.ListBuffer.empty[Int]
+scala> xs.prepend(1, 1)
+scala> while (xs.head < 100) {xs.prepend(xs.take(2).sum); println(xs)}
+scala> xs.reverse.toList
+\end{REPL}
+Talen i sekvensen som produceras på rad 4 ovan kallas Fibonacci-tal  \footnote{\href{https://sv.wikipedia.org/wiki/Fibonaccital}{sv.wikipedia.org/wiki/Fibonaccital}} och blir snabbt mycket stora.
+
+\Subtask Definera och testa följande funktion. Den ska internt använda förändringsbara \code{ListBuffer} men returnera en sekvens av oföränderliga \code{List}.
+
+\begin{Code}
+/** Ger en lista med tal ur Fibonacci-sekvensen 1, 1, 2, 3, 5, 8 ...
+  * där det största talet är mindre än max. */
+def fib(max: Long): List[Long] = ???
+\end{Code}
+
+
+\Subtask
+Hur lång ska en Fibonacci-sekvens vara för att det sista elementet ska vara så nära \code{Int.MaxValue} som möjligt?
+
+
+\Subtask Implementera \code{fibBig} som använder \code{BigInt} i stället för \code{Long} och låt din dator få använda sitt stora minne medan planeten värms upp en aning.
+
+\SOLUTION
+
+\TaskSolved \what
+
+
+\SubtaskSolved
+
+\begin{Code}
+def fib(max: Long): List[Long] = {
+  val xs = scala.collection.mutable.ListBuffer.empty[Long]
+  xs.prepend(1, 1)
+  while (xs.head < max) xs.prepend(xs.take(2).sum)
+  xs.reverse.drop(1).toList
+}
+
+\end{Code}
+
+\SubtaskSolved
+
+\begin{REPL}
+scala> fib(Int.MaxValue).size
+res0: Int = 46
+\end{REPL}
+
+\SubtaskSolved
+
+\begin{Code}
+def fibBig(max: BigInt): List[BigInt] = {
+  val xs = scala.collection.mutable.ListBuffer.empty[BigInt]
+  xs.prepend(1, 1)
+  while (xs.head < max) xs.prepend(xs.take(2).sum)
+  xs.reverse.drop(1).toList
+}
+\end{Code}
+
+\begin{REPL}
+scala> fibBig(Long.MaxValue).size
+res4: Int = 92
+
+scala> fibBig(BigInt(Long.MaxValue).pow(64)).size
+res8: Int = 5809
+
+scala> fibBig(BigInt(Long.MaxValue).pow(128)).last
+res9: BigInt = 466572805528355449194553611102863153950720005186045547177525242118545194247268198196024304108711020686545660707513547993668927474420737702772726410095432646683782038269206733583562623144723659044965174192994997081915291671203135284448809948278794870130243195729759407652514927641622448506112336858244040087748168546825439555497978038066584506772917257705338472345660520902622305735366348690501583267086607109594118454398543160294999638070938386822164561738531661786873174424857409631803971069795886028284195109247953151499404937810249349132907101567724032186422592145774126660328936577771749713614176045435526886758975994177511201005911748503347657112775964769397750819976041389533451539207673441658345632507479241970993525868183091563469584756527454807108...
+
+scala> fibBig(BigInt(Long.MaxValue).pow(128)).last.toString.size
+res10: Int = 2428
+
+scala> fibBig(BigInt(Long.MaxValue).pow(256)).last.toString.size
+res11: Int = 4856
+
+scala> fibBig(BigInt(Long.MaxValue).pow(1024)).last.toString.size
+java.lang.OutOfMemoryError: Java heap space
+
+\end{REPL}
+
+\QUESTEND
+
+
+
+\WHAT{Omvända sekvens på plats.}
+
+\QUESTBEGIN
+
+\Task \what~Implementera nedan algoritm i funktionen \code{reverseChars} och testa så att den fungerar för olika fall i REPL.
+
+
+\begin{algorithm}[H]
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+
+ \Input{En array $xs$ med tecken}
+ \Output{Samma array med tecknen i omvänd ordning}
+ $n \leftarrow$ antalet element i $xs$\\
+ \For{$i \leftarrow 0$ \KwTo $\frac{n}{2} - 1$}{
+  $temp \leftarrow xs(i)$ \\
+  $xs(i) \leftarrow xs(n - i - 1)$ \\
+  $xs(n - i - 1) \leftarrow temp$ \\
+ }
+\end{algorithm}
+
+\SOLUTION
+
+\TaskSolved \what~
+\begin{Code}
+def reverseChars(xs: Array[Char]): Unit = {
+  val n = xs.length
+  for (i <- 0 to n / 2 - 1) {
+    val temp = xs(i)
+    xs(i) = xs(n - i - 1)
+    xs(n - i - 1) = temp
+  }
+}
+\end{Code}
+
+\QUESTEND
+
+
+
+\WHAT{Palindrompredikat.}
+
+\QUESTBEGIN
+
+\Task  \what~ En palindrom\footnote{\url{https://sv.wikipedia.org/wiki/Palindrom}} är ett ord som förblir oförändrat om man läser det baklänges. Exempel på palindromer: kajak, dallassallad.
+
+Ett sätt att implementera ett palindrompredikat visas nedan:
+\begin{Code}
+def isPalindrome(s: String): Boolean = s == s.reverse
+\end{Code}
+
+\Subtask Implementationen ovan kan innebära traversering av alla tecknen i strängen två gånger och behöver minnesutrymme för dubbla antalet tecken. Varför?
+
+\Subtask Skapa ett palindromtest som går igenom elementen max en gång och som inte behöver extra minnesutrymme för en kopia av strängen. \emph{Lösningsidé:} Jämför parvis första och sista, näst första och näst sista, etc.
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved Omvändning med \code{reverse} kan kräva genomgång av hela strängen en gång samt minnesutrymme för kopian. Innehållstestet kräver ytterligare en traversering. (Detta är i och för sig inget stort problem eftersom världens längsta palindrom inte är längre än 19 bokstäver och är ett obskyrt finskt ord som inte ofta yttras i dagligt tal. Vilket?)
+
+\SubtaskSolved
+
+\begin{Code}
+def isPalindrome(s: String): Boolean = {
+  val n = s.length
+  var foundDiff = false
+  var i = 0
+  while (i < n / 2 && !foundDiff)  {
+    foundDiff = s(i) != s(n - i - 1)
+    i += 1
+  }
+  !foundDiff
+}
+\end{Code}
+
+\QUESTEND
+
+
+
+\WHAT{Fler användbara sekvenssamlingsmetoder.}
+
+\QUESTBEGIN
+
+\Task \what~Sök på webben och läs om dessa metoder och testa dem i REPL:
+\begin{itemize}[noitemsep]
+  \item \code{xs.tabulate(n)(f)}
+  \item \code{xs.forall(p)}
+  \item \code{xs.exists(p)}
+  \item \code{xs.count(p)}
+  \item \code{xs.zipWithIndex}
+\end{itemize}
+
+\SOLUTION
+
+\TaskSolved \what~
+\begin{REPL}
+scala> val xs = Vector.tabulate(10)(i => math.pow(2, i).toInt)
+xs: Vector[Int] = Vector(1, 2, 4, 8, 16, 32, 64, 128, 256, 512)
+
+scala> xs.forall(_ < 1024)
+res0: Boolean = true
+
+scala> xs.exists(_ == 3)
+res1: Boolean = false
+
+scala> xs.count(_ > 64)
+res2: Int = 3
+
+scala> xs.zipWithIndex.take(5)
+res3: Vector[(Int, Int)] = Vector((1,0), (2,1), (4,2), (8,3), (16,4))
+\end{REPL}
+\QUESTEND
+
+
+
+\WHAT{Array och \code{for}-sats i Java.}
+
+\QUESTBEGIN
+
+\Task  \what~Ladda ner programet nedan från kursens GitHub-repo: \href{https://raw.githubusercontent.com/lunduniversity/introprog/master/compendium/examples/DiceReg.java}{\texttt{compendium/examples/DiceReg.java}}
+
+
+\Subtask
+Kompilera med \code{javac DiceReg.java} och kör med \code{java DiceReg 10000 42} och förklara vad som händer.
+
+\javainputlisting{examples/DiceReg.java}
+
+\Subtask Beskriv skillnaderna mellan Scala och Java, vad gäller syntaxen för array och \code{for}-sats. Beskriv några andra skillnader mellan språken som syns i programmet ovan.
+
+\Subtask Ändra i programmet ovan så att loop-variabeln \code{i} skrivs ut i varje runda i varje \code{for}-sats. Kompilera om och kör.
+
+\Subtask Skriv om programmet ovan genom att abstrahera huvudprogrammets delar till de statiska metoderna \code{parseArguments}, \code{registerPips} och \code{printReg} enligt nedan skelett. Spara programmet i filen \code{DiceReg2.java} och kompilera med \texttt{javac DiceReg2.java} i terminalen.
+
+\begin{Code}[language=Java]
+// DiceReg2.java
+import java.util.Random;
+
+public class DiceReg2 {
+    public static int[] diceReg = new int[6];
+    private static Random rnd = new Random();
+
+    public static int parseArguments(String[] args) {
+        // ???
+        return n;
+    }
+
+    public static void registerPips(int n){
+        // ???
+    }
+
+    public static void printReg() {
+        // ???
+    }
+
+    public static void main(String[] args) {
+        int n = parseArguments(args);
+        registerPips(n);
+        printReg();
+    }
+}
+\end{Code}
+
+\Subtask Starta Scala REPL i samma katalog som filen \texttt{DiceReg2.class} ligger i och kör nedan 7 rader i REPL och förklara vad som händer:
+\begin{REPL}
+scala> DiceReg2.main(Array("1000","42"))
+scala> DiceReg2.diceReg
+scala> DiceReg2.registerPips(1000)
+scala> DiceReg2.printReg
+scala> DiceReg2.registerPips(1000)
+scala> DiceReg2.printReg
+scala> DiceReg2.rnd
+\end{REPL}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved Programmet simulerar 10000 tärningskast (med slumptalsfrö 42) och skriver ut förekomsten av respektive tärningskast.
+
+\begin{REPL}
+Rolling the dice 10000 times with seed 42
+Number of 1's: 1654
+Number of 2's: 1715
+Number of 3's: 1677
+Number of 4's: 1629
+Number of 5's: 1643
+Number of 6's: 1682
+\end{REPL}
+
+\SubtaskSolved  I Java används hakparenteser medan Scala har ''vanliga'' parenteser. En array i scala deklareras så här: \\
+ \code{val scalaArray = Array.ofDim[Int](6)} \\
+ vilket i java motsvarar: \code{int[] javaArray = new int[6];}
+
+\code{for}-sats i scala skrivs: \code|for(i <- 0 to n) {...}| medan i java skrivs: \code|for (int i = 0; i < n; i++) { ... }|.
+
+I java måste semikolon skrivas efter varje sats och typen måste anges explicit vid varje variabeldeklaration.
+
+I scala behövs inte semikolon (förutom för att separera satser på samma rad) och typer kan ofta härledas i Scala av kompilatorn och behöver inte alltid skrivas explicit.
+
+\SubtaskSolved  Lägg till \code{System.out.println(i);} i for-looparna
+
+\SubtaskSolved  \begin{Code}[language=Java]
+// DiceReg2.java
+import java.util.Random;
+public class DiceReg2{
+	public static int[] diceReg = new int[6];
+	private static Random rnd = new Random();
+
+	public static int parseArguments(String[] args){
+		int n = 100;
+		if(args.length > 0) {
+			n = Integer.parseInt(args[0]);
+		}
+		if(args.length > 1) {
+			int seed = Integer.parseInt(args[1]);
+			rnd.setSeed(seed);
+		}
+		return n;
+	}
+
+	public static void registerPips(int n) {
+		for(int i = 0; i<n; i++) {
+			int pips = rnd.nextInt(6);
+			diceReg[pips]++;
+		}
+	}
+
+	public static void main(String[] args) {
+		int n = parseArguments(args);
+		registerPips(n);
+		printReg();
+	}
+}
+\end{Code}
+
+\SubtaskSolved
+
+\begin{REPL}
+  // Skriver ut förekomsten av 1000 tärningskast med slumptalsfrö 42.
+Number of 1's: 165
+Number of 2's: 163
+Number of 3's: 178
+Number of 4's: 183
+Number of 5's: 156
+Number of 6's: 155
+
+  // Skriver ut diceReg-attributet
+res1: Array[Int] = Array(165, 163, 178, 183, 156, 155)
+
+  // Skriver ut diceReg-attributet efter 1000 till kast.
+res2: Array[Int] = Array(329, 325, 349, 360, 324, 313)
+
+  // Skriver ut diceReg-attributet efter 1000 till kast.
+res3: Array[Int] = Array(498, 484, 531, 513, 485, 489)
+
+  // Det blir kompileringsfel då attributet rnd är privat
+<console>:11: error: value rnd is not a member of object DiceReg2
+	DiceReg2.rnd
+				    ^
+\end{REPL}
+
+\QUESTEND
+
+
+
+
+
+\WHAT{Läsa in sekvens av tal med \code{Scanner} i Java.}
+
+\QUESTBEGIN
+
+\Task  \what~  Läs i Java-delen av snabbreferensen om \code{java.util.Scanner}. Med \jcode{new Scanner(System.in)} skapas ett objekt som kan läsa in tal från teckensträngar som användaren skriver i terminalfönstret, så som visas i Java-programmet nedan:
+
+\javainputlisting{examples/DiceScanBuggy.java}
+Ladda ner programmet   \href{https://raw.githubusercontent.com/lunduniversity/introprog/master/compendium/examples/DiceReg.java}{\texttt{compendium/examples/DiceScanBuggy.java}}
+och kompilera och kör med indatasekvensen \texttt{1 2 3 4 -1} och notera hur registreringen sker.
+
+\Subtask Sök upp och läs JDK8-dokumentationen av \code{java.util.Scanner}. Vad gör \jcode{hasNextInt()} och \jcode{nextInt()}?
+
+
+\Subtask Programmet fungerar inte som det ska. Du behöver korrigera 3 saker för att programmet ska göra rätt. Rätta buggarna och spara det rättade programmet som \texttt{DiceScan.java}. Kompilera och testa det rättade programmet.
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved
+
+\code{hasNextInt()} kollar om det finns ett till tal och returnerar \code{true} eller \code{false}. \code{nextInt()} läser nästa tal.
+
+Se \url{https://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html#hasNextInt%28%29} och \\ \url{https://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html#nextInt%28%29 }.
+
+\SubtaskSolved
+
+\begin{Code}[language=Java,numbers=left]
+import java.util.Random;
+import java.util.Scanner;
+
+public class DiceScanBuggy {
+	public static int[] diceReg = new int[6];
+	public static Scanner scan = new Scanner(System.in);
+
+	public static void registerPips() {
+		System.out.println("Enter pips separated by blanks: ");
+		System.out.println("End with -1 and <Enter>.");
+		boolean isPips = true;
+		while(isPips && scan.hasNextInt()){
+			int pips = scan.nextInt();
+			if(pips >= 1 && pips <= 6) {
+				diceReg[pips-1]++;
+			} else {
+				isPips = false;
+			}
+		}
+	}
+
+	public static void printReg(){
+		for(int i = 1; i<7; i++) {
+		System.out.println("Number of " + i + "'s: " + diceReg[i-1]);
+		}
+	}
+
+	public static void main(String[] args) {
+		registerPips();
+		printReg();
+	}
+}
+\end{Code}
+
+\QUESTEND
+
+
+\WHAT{Arrays don't behave, but \code{WrappedArray}s do!}
+
+\QUESTBEGIN
+
+\Task \what~Även om \code{Array} är primitiv så finns smart krångel ''under huven'' i Scalas samlingsbibliotek för att arrayer ska bete sig nästan som ''riktiga'' samlingar. Därmed behöver man inte ägna sig åt olika typer av specialhantering, t.ex. s.k. boxning, wrapperklasser och typomvandlingar \Eng{type casting}, vilket man ofta behöver kämpa med som Java-programmerare.
+
+Dock finns fortfarande begränsningar och anomalier vad gäller till exempel likhetstest. Om du vill att en array ska bete sig som andra samlingar kan du enkelt ''wrappa'' den med metoden \code{toSeq} som vid anrop på arrayer ger en \code{WrappedArray}. Denna beter sig som en helt vanlig sekvenssamling utan att offra snabbheten hos en primitiv array.
+\begin{Code}
+val as = Array(1,2,3)
+val xs = as.toSeq
+\end{Code}
+\Subtask Hur fungerar likhetstest mellan två wrappade arrayer? Vad har \code{xs} ovan för typ? Går det att uppdatera en wrappad array?
+
+\Subtask Vilken typ av argumentsekvens du får tillgång till i kroppen för en funktion med repeterade parametrar?
+
+\Subtask\Uberkurs Läs här:
+\url{http://docs.scala-lang.org/overviews/collections/arrays.html}
+och ge ett exempel på vad mer man inte kan göra med en array, förutom innehållslikhetstest.
+
+
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved Vid repeterade parametrar får man en \code{WrappedArray}.
+
+\begin{REPL}
+scala> def f(xs: Int*) = xs
+f: (xs: Int*)Seq[Int]
+
+scala> println(f(1,2,3))
+WrappedArray(1, 2, 3)
+\end{REPL}
+
+
+\SubtaskSolved \code{xs} erbjuder innehållslikhet och har typen \code{Seq[Int]} med den underliggande typen \code{WrappedArray[Int]}. Det går inte att göra tilldelning av element i en \code{WrappedArray} eftersom metoden \code{update} saknas. Du får snabbt tillbaka en referens till den underliggande arrayen med \code{xs.toArray} utan att kopiering behöver ske.
+
+\begin{REPL}
+scala> val as1 = Array(1,2,3)
+as1: Array[Int] = Array(1, 2, 3)
+
+scala> val as2 = Array(1,2,3)
+as2: Array[Int] = Array(1, 2, 3)
+
+
+scala> val (xs1, xs2) = (as1.toSeq, as2.toSeq)
+xs1: Seq[Int] = WrappedArray(1, 2, 3)
+xs2: Seq[Int] = WrappedArray(1, 2, 3)
+
+scala> as1 == as2
+res0: Boolean = false
+
+scala> xs1 == xs2
+res4: Boolean = true
+
+scala> as1(0) = 42
+
+scala> xs1
+res1: Seq[Int] = WrappedArray(42, 2, 3)
+
+scala> xs1(0) = 42
+<console>:13: error: value update is not a member of Seq[Int]
+\end{REPL}
+
+\SubtaskSolved Det går inte att ha en generisk array som funktionsresultat utan att bifoga kontextgränsen \code{ClassTag} i typparametern för att kompilatorn ska kunna generera kod för den typkonvertering som krävs under runtime av JVM. Se exempel här:\\
+\url{http://docs.scala-lang.org/overviews/collections/arrays.html}
+
+
+\QUESTEND
+
+
+
+
+\WHAT{List eller Vector?}
+
+\QUESTBEGIN
+
+\Task\Uberkurs  \what~ Jämför tidskomplexitet mellan List och Vector vid hantering i början och i slutet, baserat på efterföljande REPL-session i din egen körmiljö.  Körningen nedan gjordes på en Intel i7-4790K CPU @ 4.00GHz under Linux Ubuntu 14.04 med Scala 2.11.8 och JRE 1.8.0\_66, men du ska använda det du har på din dator.
+
+Hur snabbt går nedan på din dator? När är List snabbast och när är Vector snabbast? Hur stor är skillnaderna i prestanda?
+\footnote{Denna typ av mätningar lär du dig mer om i LTH-kursen ''Utvärdering av programvarusystem'', som ges i slutet av årskurs 1 för Datateknikstudenter.}
+%sudo lshw -class processor
+
+\begin{CodeSmall}
+> head -5 /proc/cpuinfo
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 60
+model name	: Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz
+
+>scala
+Welcome to Scala 2.12.6 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_66).
+Type in expressions for evaluation. Or try :help.
+
+scala> :pa
+// Entering paste mode (ctrl-D to finish)
+
+def time(n: Int)(block: => Unit): Double =  {
+  def now = System.nanoTime
+  var timestamp = now
+  var sum = 0L
+  var i = 0
+  while (i < n) {
+    block
+    sum = sum + (now - timestamp)
+    timestamp = now
+    i = i + 1
+  }
+  val average = sum.toDouble / n
+  println("Average time: " + average + " ns")
+  average
+}
+
+// Exiting paste mode, now interpreting.
+
+time: (n: Int)(block: => Unit)Double
+
+
+scala> val n = 100000
+scala> val l = List.fill(n)(math.random)
+scala> val v = Vector.fill(n)(math.random)
+
+scala> (for(i <- 1 to 20) yield time(n){l.take(10)}).min
+Average time: 476.85004 ns
+Average time: 52.29291 ns
+Average time: 221.50289 ns
+Average time: 218.60302 ns
+Average time: 45.01888 ns
+Average time: 243.7818 ns
+Average time: 45.02228 ns
+Average time: 2132.03995 ns
+Average time: 52.83995 ns
+Average time: 46.7478 ns
+Average time: 51.8753 ns
+Average time: 70.57658 ns
+Average time: 45.26142 ns
+Average time: 95.16307 ns
+Average time: 43.84092 ns
+Average time: 55.24695 ns
+Average time: 84.06113 ns
+Average time: 42.04872 ns
+Average time: 50.9871 ns
+Average time: 122.80649 ns
+res0: Double = 42.04872
+
+scala> (for(i <- 1 to 20) yield time(n){v.take(10)}).min
+Average time: 429.23201 ns
+Average time: 257.70543 ns
+Average time: 271.02261 ns
+Average time: 198.8826 ns
+Average time: 161.67466 ns
+Average time: 190.5253 ns
+Average time: 112.82044 ns
+Average time: 82.45798 ns
+Average time: 81.17192 ns
+Average time: 129.28968 ns
+Average time: 104.86973 ns
+Average time: 80.33942 ns
+Average time: 81.64533 ns
+Average time: 92.22053 ns
+Average time: 78.5791 ns
+Average time: 84.55555 ns
+Average time: 78.88382 ns
+Average time: 77.25284 ns
+Average time: 83.62473 ns
+Average time: 72.39703 ns
+res1: Double = 72.39703
+
+scala> (for(i <- 1 to 20) yield time(1000){l.takeRight(10)}).min
+Average time: 264902.261 ns
+Average time: 225706.676 ns
+Average time: 228625.873 ns
+Average time: 230358.379 ns
+Average time: 229971.679 ns
+Average time: 237404.948 ns
+Average time: 242580.96 ns
+Average time: 242455.325 ns
+Average time: 242316.002 ns
+Average time: 242046.311 ns
+Average time: 242378.896 ns
+Average time: 242740.221 ns
+Average time: 242131.301 ns
+Average time: 242466.169 ns
+Average time: 242075.599 ns
+Average time: 242247.534 ns
+Average time: 242739.886 ns
+Average time: 241982.93 ns
+Average time: 242118.373 ns
+Average time: 241941.998 ns
+res2: Double = 225706.676
+
+scala> (for(i <- 1 to 20) yield time(1000){v.takeRight(10)}).min
+Average time: 661.737 ns
+Average time: 420.765 ns
+Average time: 225.867 ns
+Average time: 256.524 ns
+Average time: 235.596 ns
+Average time: 231.764 ns
+Average time: 154.279 ns
+Average time: 139.37 ns
+Average time: 139.183 ns
+Average time: 153.957 ns
+Average time: 142.883 ns
+Average time: 140.837 ns
+Average time: 154.178 ns
+Average time: 138.72 ns
+Average time: 202.93 ns
+Average time: 174.179 ns
+Average time: 175.98 ns
+Average time: 171.658 ns
+Average time: 177.097 ns
+Average time: 173.1 ns
+res3: Double = 138.72
+
+\end{CodeSmall}
+
+\noindent Varför går olika rundor i for-loopen olika snabbt även om varje runda gör samma sak?
+
+\SOLUTION
+
+\TaskSolved
+Sekvenssamlingen \code{List} är nästan dubbelt så snabb vid bearbetning i början men ungefär 1000 gånger långsammare vid bearbetning i slutet av en sekvens med 100000 element.
+
+
+Olika körningar går olika snabbt på JVM bl.a. p.g.a optimeringar som sker när JVM-en ''värms upp'' och den så kallade Just-In-Time-kompileringen gör sitt mäktiga jobb. Det går ibland plötsligt väsentligt långsammare när skräpsamlaren tvingas göra tidsödande storstädning av minnet.
+
+\QUESTEND
+
+
+
+
+
+
+\WHAT{Tidskomplexitet för olika samlingar i Scalas standardbibliotek.}
+
+\QUESTBEGIN
+
+\Task\Uberkurs  \what~\\
+Studera skillnader i tidskomplexitet mellan olika samlingar här: \\ \href{http://docs.scala-lang.org/overviews/collections/performance-characteristics.html}{docs.scala-lang.org/overviews/collections/performance-characteristics.html} \\
+Läs även kritiken av förenklingar i ovan beskrivning här:\\
+\href{http://www.lihaoyi.com/post/ScalaVectoroperationsarentEffectivelyConstanttime.html}{www.lihaoyi.com/post/ScalaVectoroperationsarentEffectivelyConstanttime.html}
+\\
+Läs denna grundliga empirisk genomgång av prestanda i Scalas samlingsbibliotek:\\
+\href{http://www.lihaoyi.com/post/BenchmarkingScalaCollections.html}{www.lihaoyi.com/post/BenchmarkingScalaCollections.html}
+\\Du får lära dig mer om hur man resonerar kring komplexitet i kommande kurser.
+
+
+\SOLUTION
+
+\TaskSolved --
+
+\QUESTEND

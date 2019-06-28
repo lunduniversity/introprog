@@ -277,7 +277,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    QuizID("quiz-w06-concepts") -> Vector(  //sequences
+    QuizID("quiz-w07-concepts") -> Vector(  //sequences
 //      "datastruktur     " -> "många olika element i en helhet; elementvis åtkomst",
       "element          " -> "objekt i en datastruktur",
       "samling          " -> "datastruktur med element av samma typ",
@@ -295,7 +295,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    QuizID("quiz-w06-seq-collections") -> Vector(  //sequences
+    QuizID("quiz-w07-seq-collections") -> Vector(  //sequences
       "\\code|Vector     |" -> "oföränderlig, ger snabbt godtyckligt ändrad samling",
       "\\code|List       |" -> "oföränderlig, ger snabbt ny samling ändrad i början",
       "\\code|Array      |" -> "primitiv, förändringsbar, snabb indexering, fix storlek",
@@ -304,14 +304,14 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    QuizID("quiz-w06-abstract-collections") -> Vector(  //sequences
+    QuizID("quiz-w07-abstract-collections") -> Vector(  //sequences
       "Traversable " -> "bastyp för alla samlingar, har metoden \\code|foreach|",
       "Iterable    " -> "är traverserbar med hjälp av metoden \\code|iterator|",
       "Seq         " ->  "bastyp för alla sekvenssamlingar, indexposition från 0",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    QuizID("quiz-w06-seq-methods") -> Vector(  //sequences
+    QuizID("quiz-w07-seq-methods") -> Vector(  //sequences
       "\\code|x +: xs         |" -> "\\code|Vector(0, 1, 2, 3)                      |",
       "\\code|xs +: x         |" -> "\\code|error: value +: is not a member of Int  |",
       "\\code|xs :+ x         |" -> "\\code|Vector(1, 2, 3, 0)                      |",
@@ -330,7 +330,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    QuizID("quiz-w06-seq-update") -> Vector(  //sequences
+    QuizID("quiz-w07-seq-update") -> Vector(  //sequences
       "\\code|{ buf(0) = -1; buf(0) }   |" -> "\\code|-1|",
       "\\code|{ xs(0) = -1; xs(0) }|" ->"{\\small\\code|error: value update is not a member|}",
       "\\code|buf.update(1, 5)          |"   -> "\\code|(): Unit|",
@@ -342,7 +342,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    QuizID("quiz-w06-seq-find") -> Vector(  //sequences
+    QuizID("quiz-w07-seq-find") -> Vector(  //sequences
       "\\code|xs.indexOf(0)        |" -> "\\code|5|",
       "\\code|xs.indexOf(6)        |" -> "\\code|-1|",
       "\\code|xs.indexWhere(_ < 2) |" -> "\\code|4|",
@@ -356,7 +356,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    QuizID("quiz-w06-seq-sort") -> Vector(  //sequences
+    QuizID("quiz-w07-seq-sort") -> Vector(  //sequences
       "\\code|'a' < 'A'                  |" -> "\\code|false|",
       "\\code|\"AÄÖö\" < \"AÅÖö\"        |" -> "\\code|true|",
       "\\code|xs.sorted.head             |" -> "\\code|-1|",
@@ -369,7 +369,18 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    QuizID("quiz-w07-concepts") -> Vector(  //search, sets, maps
+    QuizID("quiz-w08-concepts") -> Vector(  //matrices
+      "matris" -> "indexerbar datastruktur i två dimensioner",
+      "radvektor" -> "matris av dimension $1\\times{}m$ med $m$ horisontella värden",
+      "kolumnvektor" -> "matris av dimension $m\\times{}1$ med $m$ vertikala värden",
+      "kolonn" -> "annat ord för kolumn",
+      "generisk" -> "har abstrakt typparameter, typen är generell",
+      "typargument" -> "konkret typ, binds till typparameter vid kompilering",
+      "typhärledning" -> "kompilatorn beräknar typ ur sammanhanget",
+      "" -> ""
+    ).filter(_._1.trim.nonEmpty),
+
+    QuizID("quiz-w09-concepts") -> Vector(  //search, sets, maps
       "mängd              " -> "oordnad samling med unika element",
       "nyckel-värde-tabell" -> "oordnad samling av mappningar med unika nycklar",
       "mappning           " -> "\\code|nyckel -> värde|",
@@ -381,7 +392,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    QuizID("quiz-w07-setops") -> Vector(  //sequences
+    QuizID("quiz-w09-setops") -> Vector(  //sets
       "\\code|Set(1, 2) ++ Set(1, 2)          |" -> "\\code|Set(1, 2)     |",
       "\\code|(1 to 3).toSet                  |" -> "\\code|Set(1) + 2 + 3|",
       "\\code|Vector.fill(3)(1).toSet         |" -> "\\code|Set(1, 2) - 2 |",
@@ -394,7 +405,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    QuizID("quiz-w07-mapops") -> Vector(  //sequences
+    QuizID("quiz-w09-mapops") -> Vector(  //maps
       "\\code|xs(2) + xs(4)                 |" -> "\\code|8                     |",
       "\\code|ys(2) + ys(4)                 |" -> "\\verb|error: type mismatch  |",
       "\\code|ys(0)                         |" -> "\\code|(10, 11)              |",
@@ -408,18 +419,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    QuizID("quiz-w08-concepts") -> Vector(  //sequences
-      "matris" -> "indexerbar datastruktur i två dimensioner",
-      "radvektor" -> "matris av dimension $1\\times{}m$ med $m$ horisontella värden",
-      "kolumnvektor" -> "matris av dimension $m\\times{}1$ med $m$ vertikala värden",
-      "kolonn" -> "annat ord för kolumn",
-      "generisk" -> "har abstrakt typparameter, typen är generell",
-      "typargument" -> "konkret typ, binds till typparameter vid kompilering",
-      "typhärledning" -> "kompilatorn beräknar typ ur sammanhanget",
-      "" -> ""
-    ).filter(_._1.trim.nonEmpty),
-
-    QuizID("quiz-w09-concepts") -> Vector(  //sequences
+    QuizID("quiz-w10-concepts") -> Vector(  //inheritance
       "bastyp"             -> "den mest generella typen i en arvshierarki",
       "supertyp"           -> "en typ som är mer generell",
       "subtyp"             -> "en typ som är mer specifik",
