@@ -64,6 +64,14 @@
 \usepackage{titlesec}
 \usepackage{titletoc}
 
+% increase space due to wide numbers in table of contents:
+%https://stackoverflow.com/questions/33093493/adding-space-after-section-numbers-in-toc
+\makeatletter
+\renewcommand{\l@section}{\@dottedtocline{1}{1.5em}{2.6em}}
+\renewcommand{\l@subsection}{\@dottedtocline{2}{4.8em}{3.8em}}
+\renewcommand{\l@subsubsection}{\@dottedtocline{3}{7.4em}{4.5em}}
+\makeatother
+
 \usepackage[normalem]{ulem}  % for strikethrough: \sout{Hello World}
 
 \usepackage{hyphenat}
