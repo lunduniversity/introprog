@@ -10,7 +10,8 @@
 \setbeamertemplate{footline}[frame number] % fix for ubuntu 18.04 see link above
 \setbeamercolor{page number in head/foot}{fg=gray}  % fix for ubuntu 18.04 see link above
 
-\usetheme{Antibes} \usecolortheme{default}
+\usetheme{Antibes} 
+\usecolortheme{default}
 
 \usepackage{xcolor}
 
@@ -22,6 +23,12 @@
 \definecolor{eclipsepurple}{rgb}{0.5,0,0.25}
 \definecolor{eclipseblue}{rgb}{0.16,0,1.0}
 \definecolor{eclipsegreen}{rgb}{0,0.5,0}
+
+% \setbeamercolor{palette primary}{bg=mygreen}
+% \setbeamercolor{palette secondary}{bg=mygreen!70!black}
+% \setbeamercolor{palette tertiary}{bg=mygreen!60!black}
+% \setbeamercolor{palette quaternary}{bg=mygreen!50!black}
+
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -67,6 +74,13 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 \newenvironment{Slide}[2][]
   {\begin{frame}[fragile,environment=Slide,#1]{#2}}
   {\end{frame}}
+
+\newcommand{\AdminColor}{red!15}
+
+\newenvironment{SlideAdmin}[2][]
+{\setbeamercolor{background canvas}{bg=\AdminColor}\begin{frame}[fragile,environment=SlideAdmin,#1]{#2}}
+{\end{frame}}
+  
 
 \newenvironment{SlideSimple}[2][]
   {\begin{frame}[fragile,plain, environment=SlideSimple,#1]{#2}}

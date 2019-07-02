@@ -19,16 +19,17 @@
 \definecolor{eclipsepurple}{rgb}{0.5,0,0.25}
 \definecolor{eclipseblue}{rgb}{0.16,0,1.0}
 \definecolor{eclipsegreen}{rgb}{0,0.5,0}
-\definecolor{scalared}{rgb}{0.86,0.2,0.18}
-
+\definecolor{scalared}{rgb}{0.87,0.2,0.14}
+%https://www.schemecolor.com/scala-logo-colors.php
+%RGB: (222, 52, 35)
 
 \usetheme{Antibes}
 %\usecolortheme{default}
 % Scala RED is #DC332D
-\setbeamercolor{palette primary}{bg=scalared}
-\setbeamercolor{palette secondary}{bg=scalared!70!black}
-\setbeamercolor{palette tertiary}{bg=scalared!60!black}
-\setbeamercolor{palette quaternary}{bg=scalared!50!black}
+\setbeamercolor{palette primary}{bg=mygreen}
+\setbeamercolor{palette secondary}{bg=mygreen!70!black}
+\setbeamercolor{palette tertiary}{bg=mygreen!60!black}
+\setbeamercolor{palette quaternary}{bg=mygreen!50!black}
 
 %\setbeamercolor{background canvas}{bg=gray!50!white}
 \setbeamercolor{background canvas}{bg=white}
@@ -80,6 +81,12 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
   {\begin{frame}[fragile,environment=Slide,#1]{#2}}
   {\end{frame}}
 
+\newcommand{\AdminColor}{red!15}
+
+\newenvironment{SlideAdmin}[2][]
+{\setbeamercolor{background canvas}{bg=\AdminColor}\begin{frame}[fragile,environment=SlideAdmin,#1]{#2}}
+{\end{frame}}
+
 \newenvironment{SlideSimple}[2][]
   {\begin{frame}[fragile,plain, environment=SlideSimple,#1]{#2}}
   {\end{frame}}
@@ -92,7 +99,7 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 %frametitlerulewidth=2pt}
 % USAGE: \begin{mdframed}[style=exampledefault,frametitle={My Title}]
 
-\newcommand{\Subsection}[1]{\subsection{#1}\frame{\centering\huge\bfseries\textcolor{blue}{#1}}}
+\newcommand{\Subsection}[1]{{\subsection{#1}\frame{\centering\huge\bfseries\textcolor{blue}{#1}}}}
 
 \newlength\slidefontsize
 \newcommand{\Size}[1]{\setlength\slidefontsize{#1}\fontsize{\slidefontsize}{1.25\slidefontsize}\selectfont}
