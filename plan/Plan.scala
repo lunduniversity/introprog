@@ -91,7 +91,7 @@ trait Plan {
       | mönstermatchning, match, Option, throw, try, catch, Try, unapply, sealed,
       | flatten, flatMap, partiella funktioner, collect,
       | wildcard-mönster, variabelbindning i mönster, sekvens-wildcard, bokstavliga mönster,
-      | equals, hashcode, exempel: equals för klassen Complex, 
+      | implementera equals, hashcode, exempel: equals för klassen Complex, 
       | switch-sats i Java,
       """.stripTrim), // equals -> sortering???
 
