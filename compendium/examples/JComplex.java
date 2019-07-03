@@ -8,11 +8,13 @@ public class JComplex {            // man kan ej deklarera klassparametrar i Jav
         im = imag;
     }
     
-    public double getRe(){  // en så kallad "getter" som ger attributvärdet, förhindra förändring av re
+// en så kallad "getter" som ger attributvärdet, förhindra förändring av re
+    public double getRe(){  
         return re;
     }
 
-    public double getIm(){ return im; }  // ej bruklig formattering i Java, så metoder blir minst 3 rader
+// ej bruklig formattering i Java, så metoder blir minst 3 rader
+    public double getIm(){ return im; }  
 
     public double getR(){
         return Math.hypot(re, im);       // Math med stort M i Java
@@ -22,7 +24,8 @@ public class JComplex {            // man kan ej deklarera klassparametrar i Jav
         return Math.atan2(re, im);
     }
     
-    public JComplex add(JComplex other){ // Javametodnamn får ej ha operatortecken t.ex. +, därav namnet add 
+// Javametodnamn får ej ha operatortecken t.ex. +, därav namnet add     
+    public JComplex add(JComplex other){ 
         return new JComplex(re + other.getRe(), im + other.getIm());
     }
 

@@ -81,10 +81,10 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
   {\begin{frame}[fragile,environment=Slide,#1]{#2}}
   {\end{frame}}
 
-\newcommand{\AdminColor}{red!15}
+\newcommand{\SlideExtraColor}{red!15}
 
-\newenvironment{SlideAdmin}[2][]
-{\setbeamercolor{background canvas}{bg=\AdminColor}\begin{frame}[fragile,environment=SlideAdmin,#1]{#2}}
+\newenvironment{SlideExtra}[2][]
+{\setbeamercolor{background canvas}{bg=\SlideExtraColor}\begin{frame}[fragile,environment=SlideExtra,#1]{#2}}
 {\end{frame}}
 
 \newenvironment{SlideSimple}[2][]
