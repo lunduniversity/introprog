@@ -719,114 +719,114 @@ scala> xs.map(_.toOption).flatten.size
 
 
 
-\WHAT{Laborationsförberedelse.}
+% \WHAT{Laborationsförberedelse.}
 
-\QUESTBEGIN
+% \QUESTBEGIN
 
-\Task  \what~ \label{task:labprep-patterns-tabular} På veckans laboration ska du hantera data som finns i tabeller med celler som kan bestå av decimaltal eller strängar. Studera den givna koden som du ska utgå ifrån; uppgifterna nedan berör \code{Cell.scala} och \code{Table.scala} här:
-\url{https://github.com/lunduniversity/introprog/tree/master/workspace/w10_tabular/src/main/scala/tabular}
+% \Task  \what~ \label{task:labprep-patterns-tabular} På veckans laboration ska du hantera data som finns i tabeller med celler som kan bestå av decimaltal eller strängar. Studera den givna koden som du ska utgå ifrån; uppgifterna nedan berör \code{Cell.scala} och \code{Table.scala} här:
+% \url{https://github.com/lunduniversity/introprog/tree/master/workspace/w10_tabular/src/main/scala/tabular}
 
-Bastypen \code{Cell} i koden nedan har två subtyper \code{Str} och \code{Num}.
+% Bastypen \code{Cell} i koden nedan har två subtyper \code{Str} och \code{Num}.
 
-\begin{CodeSmall}
-sealed trait Cell { def value: String }
-case class Str(value: String) extends Cell
-case class Num(num: BigDecimal) extends Cell { def value = num.toString }
-\end{CodeSmall}
-\code{BigDecimal} används för att representera decimaltal med bättre precision än vanliga flyttal av typen \code{Double}.
+% \begin{CodeSmall}
+% sealed trait Cell { def value: String }
+% case class Str(value: String) extends Cell
+% case class Num(num: BigDecimal) extends Cell { def value = num.toString }
+% \end{CodeSmall}
+% \code{BigDecimal} används för att representera decimaltal med bättre precision än vanliga flyttal av typen \code{Double}.
 
-\Subtask Studera dokumentationen för \code{BigDecimal}: \url{https://www.scala-lang.org/api}\\
-Vad gör fabriksmetoden \code{def apply(x: String): BigDecimal} (se kompanjonsobj.).
-
-
-\Subtask Vad är fördelen med att \code{Cell} är förseglad?
-
-\Subtask Kör igång REPL med koden för \code{Cell}-hierarkin tillgänglig på classpath, t.ex. med \code{sbt console}. Vad ger koden nedan för resultat? Ange värde och typ för varje rad.
-
-\begin{REPL}
-scala> val xs = Seq[Cell](Str("!"), Num(BigDecimal("100000000.000000001")))
-scala> val ys = xs.map(_ match { case Num(n) => Some(n) case _ => None })
-scala> val b = ys.flatten.headOption.getOrElse(BigDecimal(0))
-\end{REPL}
-
-\Subtask Lägg till ett kompanjonsobjekt enligt nedan. Gör klart den saknade implementationen. Använd \code{Try} och matcha på \code{Success} och \code{Failure}. Testa så att alla metoder i kompanjonsobjektet fungerar.
-
-\Subtask Gör om implementation så att du i stället använder \code{Try} och \code{getOrElse}. Testa så att det fungerar som innan. Vilken implementation är smidigast?
-\begin{CodeSmall}
-object Cell {
-  import scala.util.{Try, Success, Failure}
-
-  /** Ger en Num om BigDecimal(s) lyckas annars en Str. */
-  def apply(s: String): Cell =  ???
-
-  def apply(i: Int): Num = Num(BigDecimal(i))
-
-  def empty: Str = Str("")
-
-  def zero: Num = Num(BigDecimal(0))
-}
-\end{CodeSmall}
-
-\Subtask I given kod och nedan finns en nästan färdig klass för tabelldatahantering. Implementera de saknade delarna enligt beskrivning i dokumentationskommentarerna. Testa så att dina implementationer fungerar och försök förstå hur övriga delar av \code{Table} fungerar.
-
-\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{9}{11.5}\selectfont]{../workspace/w10_tabular/src/main/scala/tabular/Table.scala}
-
-\noindent Tips vid färdigställande av \code{Table}:
-\begin{itemize}[leftmargin=*]
-  \item Nyckel-värde-tabeller har en metod \code{withDefaultValue} som är smidig om man vill undvika undantag vid uppslagning med nyckel som inte finns och det i stället för undantag är möjligt/lämpligt att erbjuda ett vettigt defaultvärde.
-  \item Metoderna \code{getOrElse} och \code{toOption} på en \code{Try} är smidiga när man vill ge resultat som beror av om det är \code{Success} eller \code{Failure} utan att man behöver göra en \code{match}.
-\item Skiss på implementation av \code{load} i kompanjonsobjektet:
-\begin{CodeSmall}
-def load(fileOrUrl: String, separator: Char): Table = {
-  val source = fileOrUrl match {
-    case /* använd gard och startsWith*/ => scala.io.Source.fromURL(url)
-    case path  => scala.io.Source.fromFile(path)
-  }
-  val lines = try source.getLines.toVector finally source.close
-  val rows = ??? // kör split(separator).toVector på alla rader i lines
-  Table(rows.head, rows.tail.map(_.map(Cell.apply)), separator)
-}
-\end{CodeSmall}
-En webbadress börjar med \code{http}.
-Med \code{try sats1 finally sats2} så kan man garantera att \code{sats2} alltid görs även om \code{sats1} ger undantag. Detta används typiskt för att frigöra resurser som annars förblir allokerade vid undantag. I koden ovan används det för att undvika att filer inte stängs även om något går fel under läsningen.
-\end{itemize}
-\SOLUTION
+% \Subtask Studera dokumentationen för \code{BigDecimal}: \url{https://www.scala-lang.org/api}\\
+% Vad gör fabriksmetoden \code{def apply(x: String): BigDecimal} (se kompanjonsobj.).
 
 
-\TaskSolved \what
+% \Subtask Vad är fördelen med att \code{Cell} är förseglad?
 
-\SubtaskSolved ''Translates the decimal String representation of a BigDecimal into a BigDecimal.''
+% \Subtask Kör igång REPL med koden för \code{Cell}-hierarkin tillgänglig på classpath, t.ex. med \code{sbt console}. Vad ger koden nedan för resultat? Ange värde och typ för varje rad.
 
-\SubtaskSolved Eftersom \code{Cell} är förseglad med \code{sealed} så kan inga andra subtyper finnas och vi behöver inte kolla efter andra subtyper när vi matchar. Kompilatorn varnar också om vi glömmer matcha på någon av subtyperna.
+% \begin{REPL}
+% scala> val xs = Seq[Cell](Str("!"), Num(BigDecimal("100000000.000000001")))
+% scala> val ys = xs.map(_ match { case Num(n) => Some(n) case _ => None })
+% scala> val b = ys.flatten.headOption.getOrElse(BigDecimal(0))
+% \end{REPL}
 
-\SubtaskSolved
-\begin{REPL}
-scala> val xs = Seq[Cell](Str("!"), Num(BigDecimal("100000000.000000001")))
-xs: Seq[Cell] = List(Str(!), Num(100000000.000000001))
+% \Subtask Lägg till ett kompanjonsobjekt enligt nedan. Gör klart den saknade implementationen. Använd \code{Try} och matcha på \code{Success} och \code{Failure}. Testa så att alla metoder i kompanjonsobjektet fungerar.
 
-scala> val ys = xs.map(_ match { case Num(n) => Some(n) case _ => None })
-ys: Seq[Option[BigDecimal]] = List(None, Some(100000000.000000001))
+% \Subtask Gör om implementation så att du i stället använder \code{Try} och \code{getOrElse}. Testa så att det fungerar som innan. Vilken implementation är smidigast?
+% \begin{CodeSmall}
+% object Cell {
+%   import scala.util.{Try, Success, Failure}
 
-scala> val b = ys.flatten.headOption.getOrElse(BigDecimal(0))
-b: BigDecimal = 100000000.000000001
-\end{REPL}
+%   /** Ger en Num om BigDecimal(s) lyckas annars en Str. */
+%   def apply(s: String): Cell =  ???
 
-\SubtaskSolved
-\begin{Code}
-  def apply(s: String): Cell = Try(BigDecimal(s)) match {
-    case Success(num) => Num(num)
-    case Failure(_)   => Str(s)
-  }
-\end{Code}
+%   def apply(i: Int): Num = Num(BigDecimal(i))
 
-\SubtaskSolved
-\begin{Code}
-  def apply(s: String): Cell = Try(Num(BigDecimal(s))).getOrElse(Str(s))
-\end{Code}
+%   def empty: Str = Str("")
 
-\SubtaskSolved \emph{Lämnas som egen laborationsförberedelse.}
+%   def zero: Num = Num(BigDecimal(0))
+% }
+% \end{CodeSmall}
 
-\QUESTEND
+% \Subtask I given kod och nedan finns en nästan färdig klass för tabelldatahantering. Implementera de saknade delarna enligt beskrivning i dokumentationskommentarerna. Testa så att dina implementationer fungerar och försök förstå hur övriga delar av \code{Table} fungerar.
+
+% \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{9}{11.5}\selectfont]{../workspace/w10_tabular/src/main/scala/tabular/Table.scala}
+
+% \noindent Tips vid färdigställande av \code{Table}:
+% \begin{itemize}[leftmargin=*]
+%   \item Nyckel-värde-tabeller har en metod \code{withDefaultValue} som är smidig om man vill undvika undantag vid uppslagning med nyckel som inte finns och det i stället för undantag är möjligt/lämpligt att erbjuda ett vettigt defaultvärde.
+%   \item Metoderna \code{getOrElse} och \code{toOption} på en \code{Try} är smidiga när man vill ge resultat som beror av om det är \code{Success} eller \code{Failure} utan att man behöver göra en \code{match}.
+% \item Skiss på implementation av \code{load} i kompanjonsobjektet:
+% \begin{CodeSmall}
+% def load(fileOrUrl: String, separator: Char): Table = {
+%   val source = fileOrUrl match {
+%     case /* använd gard och startsWith*/ => scala.io.Source.fromURL(url)
+%     case path  => scala.io.Source.fromFile(path)
+%   }
+%   val lines = try source.getLines.toVector finally source.close
+%   val rows = ??? // kör split(separator).toVector på alla rader i lines
+%   Table(rows.head, rows.tail.map(_.map(Cell.apply)), separator)
+% }
+% \end{CodeSmall}
+% En webbadress börjar med \code{http}.
+% Med \code{try sats1 finally sats2} så kan man garantera att \code{sats2} alltid görs även om \code{sats1} ger undantag. Detta används typiskt för att frigöra resurser som annars förblir allokerade vid undantag. I koden ovan används det för att undvika att filer inte stängs även om något går fel under läsningen.
+% \end{itemize}
+% \SOLUTION
+
+
+% \TaskSolved \what
+
+% \SubtaskSolved ''Translates the decimal String representation of a BigDecimal into a BigDecimal.''
+
+% \SubtaskSolved Eftersom \code{Cell} är förseglad med \code{sealed} så kan inga andra subtyper finnas och vi behöver inte kolla efter andra subtyper när vi matchar. Kompilatorn varnar också om vi glömmer matcha på någon av subtyperna.
+
+% \SubtaskSolved
+% \begin{REPL}
+% scala> val xs = Seq[Cell](Str("!"), Num(BigDecimal("100000000.000000001")))
+% xs: Seq[Cell] = List(Str(!), Num(100000000.000000001))
+
+% scala> val ys = xs.map(_ match { case Num(n) => Some(n) case _ => None })
+% ys: Seq[Option[BigDecimal]] = List(None, Some(100000000.000000001))
+
+% scala> val b = ys.flatten.headOption.getOrElse(BigDecimal(0))
+% b: BigDecimal = 100000000.000000001
+% \end{REPL}
+
+% \SubtaskSolved
+% \begin{Code}
+%   def apply(s: String): Cell = Try(BigDecimal(s)) match {
+%     case Success(num) => Num(num)
+%     case Failure(_)   => Str(s)
+%   }
+% \end{Code}
+
+% \SubtaskSolved
+% \begin{Code}
+%   def apply(s: String): Cell = Try(Num(BigDecimal(s))).getOrElse(Str(s))
+% \end{Code}
+
+% \SubtaskSolved \emph{Lämnas som egen laborationsförberedelse.}
+
+% \QUESTEND
 
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%%%

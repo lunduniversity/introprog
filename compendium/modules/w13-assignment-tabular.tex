@@ -16,9 +16,6 @@
 % \end{Goals}
 
 \begin{Preparations}
-%\item \StudyTheory{12}
-\item Gör övning {\texttt{\ExeWeekTEN}}, speciellt uppgift \ref{task:labprep-patterns-tabular}.
-\item \ReadTheLab
 \item Fyll i denna enkät: \url{https://goo.gl/forms/hC6JK2UQXVpbGECc2}  \\
 I enkäten ska du för olika flervalsalternativlistor besvara frågan: \\ \textit{Vilket är ditt favoritalternativ?}
 \item Studera den givna koden i \code{src/main/scala/tabular} här: \url{https://github.com/lunduniversity/introprog/tree/master/workspace/w10_tabular}
@@ -27,13 +24,13 @@ I enkäten ska du för olika flervalsalternativlistor besvara frågan: \\ \texti
 
 \subsection{Bakgrund}
 
-I den här veckans laboration ska du utveckla en terminalapplikation som analyserar data i tabeller. Indata utgörs av text med \textbf{kolumnseparerade värden}, där varje rad följs av \code{`\n`} och innehåller kolumner som är separerade med ett valfritt s.k. separator-tecken, till exempel \code{','}, \code{'\t'} eller \code{';'}. Din app ska förutsätta att första indataraden innehåller kolumnrubriker.
+Detta projekt innefattar en terminalapplikation som analyserar data i tabeller och ritar statistiska grafer. Indata utgörs av text med \textbf{kolumnseparerade värden}, där varje rad följs av \code{`\n`} och innehåller kolumner som är separerade med ett valfritt s.k. separator-tecken, till exempel \code{','}, \code{'\t'} eller \code{';'}. Din app ska förutsätta att första indataraden innehåller kolumnrubriker.
 
 Du ska använda din app till att analysera svar på enkäter med flervalsfrågor, där varje persons svar finns på en egen rad och varje svarsrad innehåller svarsalternativ i kolumner.
 Exempelindata finns i filen \code{favorit.csv} i mappen resources och ser ut som följer. Kolumnseparator i tabellen nedan är \code{","}. Första raden är en rubrikrad som anger kolumnernas respektive rubrik.
 \lstinputlisting[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w10_tabular/src/main/resources/favorit.csv}
 
-\subsection{Krav}
+\subsection{Krav}\label{tabular:requirements}
 
 \begin{enumerate}[leftmargin=*]
 \item Din applikation ska kunna behandla kolumndata i en tabell kallad \code{currentTable}.
@@ -76,15 +73,20 @@ Följande kommandon är redan implementerade i given kod i modulen \code{Command
 \item \code{sep c} -- ändrar aktuell kolumnseparator till första tecknet i strängen \code{c}
 \item \code{sort h} -- sorterar tabellens rader så att kolumnen med rubriken \code{h} är sorterad i bokstavsordning.
 \item \code{filter h a b c ...} -- gör så att aktuell tabell bara innehåller de rader där kolumnen med rubriken \code{h} har något av angivna värdena \code{a b c ...}. Värdena ska var minst ett och separeras med blanktecken efter kolumnnamnet \code{h}.
-\end{itemize}
-
-\item Du ska implementera \emph{minst en} av följande \textbf{valfria} funktioner:
-\begin{itemize}[nosep, label={$\square$},]
 \item \code{load} -- laddar tabell från fil som anges av användaren i en filväljardialog med hjälp av \code{introprog.Dialog.file}
 \item \code{save} -- sparar tabell som text till fil som anges av användaren i en filväljardialog med hjälp av \code{introprog.Dialog.file}
 \item \code{pie h} -- ritar ett tårtdiagram över antalet förekomster av olika värden i kolumnen med rubriken \code{h} med hjälp av givna koden i \code{Graph.scala}.
 \item \code{bar h} -- ritar ett stapeldiagram över antalet förekomster av olika värden i kolumnen med rubriken \code{h} med hjälp av givna koden i \code{Graph.scala}.
-\item Implementera valfria funktioner för att göra beräkningar på \emph{numeriska} data i kolumner, t.ex. summa, medelvärde, standardavvikelse.
+
+\end{itemize}
+
+\item Valfria funktioner:
+\begin{itemize}[nosep, label={$\square$},]
+\item Implementera funktioner för att göra beräkningar på \emph{numeriska} data i kolumner, t.ex. 
+\begin{itemize}
+  \item summa för kolumn, \item medelvärde för kolumn, \item standardavvikelse för kolumn.
+\end{itemize}
+\item Implementera fler statistiska diagram, t.ex. scatterplot i 2 dimensioner för två valda kolumner. \\\url{https://en.wikipedia.org/wiki/Scatter_plot} 
 \end{itemize}
 
 \end{enumerate}
@@ -102,17 +104,86 @@ Du ska bygga vidare på den delvis färdiga koden i \code{workspace/w10_tabular}
 
 \item Den färdiga modulen \code{Graph} ritar diagram i ett \code{PixelWindow}.
 
-\item Den nästan färdiga bastypen \code{Cell} med kompanjonsobjekt och subklasser som ingick i uppgift \ref{task:labprep-patterns-tabular} på veckans övning.
+\item Den nästan färdiga bastypen \code{Cell} med kompanjonsobjekt och subklasser som representerar en cell i en matris som kan innehålla strängvärden eller numeriska värden. %ingick i uppgift \ref{task:labprep-patterns-tabular} på veckans övning.
 
-\item Den nästan färdiga modulen \code{Table} som ingick i uppgift \ref{task:labprep-patterns-tabular} på veckans övning.
+\item Den nästan färdiga modulen \code{Table} som representerar en matris med celler. %ingick i uppgift \ref{task:labprep-patterns-tabular} på veckans övning.
 \end{itemize}
 
-\subsection{Exempelkörning}
 
-Du ska använda ditt program för att analysera enkätsvar med avseende på t.ex. vilket språk som är populärast på resp. program. Enkätsvar årsvis sedan 2016 finns här \url{http://cs.lth.se/pgk/favorit}
+\subsection{Implementation}
+
+\Task  Bastypen \code{Cell} i koden nedan har två subtyper \code{Str} och \code{Num}.
+
+\begin{CodeSmall}
+sealed trait Cell { def value: String }
+case class Str(value: String) extends Cell
+case class Num(num: BigDecimal) extends Cell { def value = num.toString }
+\end{CodeSmall}
+\code{BigDecimal} används för att representera decimaltal med bättre precision än vanliga flyttal av typen \code{Double}.
+
+\Subtask Studera dokumentationen för \code{BigDecimal}: \url{https://www.scala-lang.org/api}\\
+Vad gör fabriksmetoden \code{def apply(x: String): BigDecimal} (se kompanjonsobj.).
+
+
+\Subtask Vad är fördelen med att \code{Cell} är förseglad?
+
+\Subtask Kör igång REPL med koden för \code{Cell}-hierarkin tillgänglig på classpath, t.ex. med \code{sbt console}. Vad ger koden nedan för resultat? Ange värde och typ för varje rad.
+
+\begin{REPL}
+scala> val xs = Seq[Cell](Str("!"), Num(BigDecimal("100000000.000000001")))
+scala> val ys = xs.map(_ match { case Num(n) => Some(n) case _ => None })
+scala> val b = ys.flatten.headOption.getOrElse(BigDecimal(0))
+\end{REPL}
+
+\Subtask Lägg till ett kompanjonsobjekt enligt nedan. Gör klart den saknade implementationen. Använd \code{Try} och matcha på \code{Success} och \code{Failure}. Testa så att alla metoder i kompanjonsobjektet fungerar.
+
+\Subtask Gör om implementation så att du i stället använder \code{Try} och \code{getOrElse}. Testa så att det fungerar som innan. Vilken implementation är smidigast?
+\begin{CodeSmall}
+object Cell {
+  import scala.util.{Try, Success, Failure}
+
+  /** Ger en Num om BigDecimal(s) lyckas annars en Str. */
+  def apply(s: String): Cell =  ???
+
+  def apply(i: Int): Num = Num(BigDecimal(i))
+
+  def empty: Str = Str("")
+
+  def zero: Num = Num(BigDecimal(0))
+}
+\end{CodeSmall}
+
+\Subtask I given kod och nedan finns en nästan färdig klass för tabelldatahantering. Implementera de saknade delarna enligt beskrivning i dokumentationskommentarerna. Testa så att dina implementationer fungerar och försök förstå hur övriga delar av \code{Table} fungerar.
+
+\scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{9}{11.5}\selectfont]{../workspace/w10_tabular/src/main/scala/tabular/Table.scala}
+
+\noindent Tips vid färdigställande av \code{Table}:
+\begin{itemize}[leftmargin=*]
+  \item Nyckel-värde-tabeller har en metod \code{withDefaultValue} som är smidig om man vill undvika undantag vid uppslagning med nyckel som inte finns och det i stället för undantag är möjligt/lämpligt att erbjuda ett vettigt defaultvärde.
+  \item Metoderna \code{getOrElse} och \code{toOption} på en \code{Try} är smidiga när man vill ge resultat som beror av om det är \code{Success} eller \code{Failure} utan att man behöver göra en \code{match}.
+\item Skiss på implementation av \code{load} i kompanjonsobjektet:
+\begin{CodeSmall}
+def load(fileOrUrl: String, separator: Char): Table = {
+  val source = fileOrUrl match {
+    case /* använd gard och startsWith*/ => scala.io.Source.fromURL(url)
+    case path  => scala.io.Source.fromFile(path)
+  }
+  val lines = try source.getLines.toVector finally source.close
+  val rows = ??? // kör split(separator).toVector på alla rader i lines
+  Table(rows.head, rows.tail.map(_.map(Cell.apply)), separator)
+}
+\end{CodeSmall}
+En webbadress börjar med \code{http}.
+Med \code{try sats1 finally sats2} så kan man garantera att \code{sats2} alltid görs även om \code{sats1} ger undantag. Detta används typiskt för att frigöra resurser som annars förblir allokerade vid undantag. I koden ovan används det för att undvika att filer inte stängs även om något går fel under läsningen.
+\end{itemize}
+
+\Task Implementera de obligatoriska och ev. de valfria kraven i avsnitt \ref{tabular:requirements}.
+
+\Task Använd ditt program för att analysera enkätsvar med avseende på t.ex. vilket språk som är populärast på resp. program. Enkätsvar årsvis sedan 2016 finns här \url{http://cs.lth.se/pgk/favorit}
 
 Nedan visas exempelkörning.
-\begin{REPLnonum}
+\begin{figure}
+\begin{REPLnonum}[basicstyle=\color{white}\ttfamily\fontsize{9}{11}\selectfont]
 > sep
 Current separator: ','
 > load favorit.csv
@@ -182,6 +253,7 @@ Goodbye!
 
 $ cat data.csv  #visa filen och kolla att den har semikolonseparator
 \end{REPLnonum}
+\end{figure}
 
 Exempel på tårt- och stapeldiagram visas nedan.
 
