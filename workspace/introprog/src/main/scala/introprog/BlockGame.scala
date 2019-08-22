@@ -60,7 +60,12 @@ abstract class BlockGame(
 
   /** The underlying window used for drawing blocks and messages. */
   protected val pixelWindow: PixelWindow =
-    new PixelWindow(width = dim._1 * blockSize, height = (dim._2  + messageAreaHeight) * blockSize, title, background)
+    new PixelWindow(
+      width = dim._1 * blockSize, 
+      height = (dim._2  + messageAreaHeight) * blockSize + blockSize / 2, 
+      title, 
+      background
+    )
 
   /** Internal buffer with block colors. */
   private val blockBuffer: Array[Array[Color]] =  Array.fill(dim._1, dim._2)(background)
@@ -166,7 +171,7 @@ abstract class BlockGame(
   def drawTextInMessageArea(msg: String, x: Int, y: Int, color: Color = pixelWindow.foreground, size: Int = blockSize): Unit = {
     require(y < messageAreaHeight && y >= 0, s"not in message area: y = $y")
     require(x < dim._1 * blockSize && x >= 0, s"not in message area: x = $x")
-    pixelWindow.drawText(msg, x * blockSize, y + dim._2 * blockSize, color, size)
+    pixelWindow.drawText(msg, x * blockSize, (y + dim._2) * blockSize, color, size)
   }
 
   /** Clear a rectangle in the message area in block coordinates. */
@@ -175,7 +180,7 @@ abstract class BlockGame(
     require(x < dim._1 * blockSize && x >= 0, s"not in message area: x = $x")
     pixelWindow.fill(
       x * blockSize,     (y + dim._2) * blockSize,
-      width * blockSize, messageAreaHeight * blockSize,
+      width * blockSize, messageAreaHeight * blockSize + blockSize / 2,
       messageAreaBackground
     )
   }
