@@ -1,14 +1,14 @@
-public class JComplex {            // man kan ej deklarera klassparametrar i Java
+public class JComplex { // man kan ej deklarera klassparametrar i Java
     private double re;             // initialiseras i konstruktorn nedan 
     private double im;             // initialiseras i konstruktorn nedan
-    public  char   imSymbol = 'i'; // publikt attribut (inte vanligt i Java) 
+    public  char   imSymbol = 'i'; // publikt attribut (ej vanligt i Java) 
     
-    public JComplex(double real, double imag){  // konstruktor, anropas vid new
+    public JComplex(double real, double imag){ // konstruktor, körs vid new
         re = real;
         im = imag;
     }
     
-// en så kallad "getter" som ger attributvärdet, förhindra förändring av re
+// en "getter" som ger attributvärdet, hindrar förändring av re
     public double getRe(){  
         return re;
     }
