@@ -6,7 +6,7 @@ import Keys._
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
   version := "2018.1",
-  scalaVersion := "2.12.3"  // ScalaIDE is not ready for 2.12.8 yet
+  scalaVersion := "2.12.3"  // ScalaIDE is not ready for >2.12.3 yet
   // check versions here: http://scala-ide.org/download/sdk.html
 )
 
