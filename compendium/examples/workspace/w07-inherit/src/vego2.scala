@@ -1,12 +1,12 @@
 object exempelVego2 {
 
   trait Grönsak {  // innehåller alla gemensamma delar; hjälper oss undvika upprepning
-    val skalningsmetod: String
-    val skalfaktor = 0.99
-    var vikt: Double
-    var ärSkalad: Boolean = false
+    val skalningsmetod: String      // abstrakt
+    val skalfaktor = 0.99           // konkret
+    var vikt: Double                // abstrakt
+    var ärSkalad: Boolean = false   // konkret
     
-    def skala(): Unit = if (!ärSkalad) {
+    def skala(): Unit = if (!ärSkalad) { // konkret
       println(skalningsmetod)
       vikt = skalfaktor * vikt
       ärSkalad = true

@@ -2,7 +2,7 @@ object exempelVego4 {
 
   trait Grönsak {
     val skalningsmetod: String
-    final val skalfaktor = 0.99              // en final medlem kan ej överskuggas
+    final val skalfaktor = 0.99  // en final medlem kan ej överskuggas
     var vikt: Double
     var ärSkalad: Boolean = false
 
@@ -19,6 +19,7 @@ object exempelVego4 {
 
   class Tomat(var vikt: Double) extends Grönsak {
     val skalningsmetod = "Skållas."
-//  override val skalfaktor = 0.95 // KOMPILERINGSFEL: "cannot override final member"
+//  override val skalfaktor = 0.95 
+//  ger KOMPILERINGSFEL: "cannot override final member"
   }
 }
