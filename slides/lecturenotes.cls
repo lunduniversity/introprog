@@ -35,6 +35,7 @@
 \setbeamercolor{background canvas}{bg=white}
 
 
+\usepackage[swedish]{babel}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
