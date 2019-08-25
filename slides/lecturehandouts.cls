@@ -11,7 +11,12 @@
 \setbeamercolor{page number in head/foot}{fg=gray}  % fix for ubuntu 18.04 see link above
 
 \usetheme{Antibes} 
-\usecolortheme{default}
+%\usecolortheme{default}
+% Scala RED is #DC332D 
+\setbeamercolor{palette primary}{bg=mygreen}
+\setbeamercolor{palette secondary}{bg=mygreen!70!black}
+\setbeamercolor{palette tertiary}{bg=mygreen!60!black}
+\setbeamercolor{palette quaternary}{bg=mygreen!50!black}
 
 \usepackage{xcolor}
 \usepackage{microtype}
