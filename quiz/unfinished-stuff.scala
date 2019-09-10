@@ -2,27 +2,24 @@
 package justSomeIdeas
 
 
-/* use this java code to roll my own printHexBinary
-    private static final char[] hexCode = "0123456789ABCDEF".toCharArray();
-
-    public static String printHexBinary(byte[] data) {
-        StringBuilder r = new StringBuilder(data.length * 2);
-        for (byte b : data) {
-            r.append(hexCode[(b >> 4) & 0xF]);
-            r.append(hexCode[(b & 0xF)]);
-        }
-        return r.toString();
-    }
-*/
-
 object AnyToHexString {
-  //import javax.xml.bind.DatatypeConverter
+  //import javax.xml.bind.DatatypeConverter does not work in jdk11
   import java.security.MessageDigest
+
+  def convertBytesToHex(bytes: Seq[Byte]): String = {
+    //https://alvinalexander.com/source-code/scala-how-to-convert-array-bytes-to-hex-string
+    val sb = new StringBuilder
+    for (b <- bytes) {
+        sb.append(String.format("%02x", Byte.box(b)))
+    }
+    sb.toString
+  }
+
   def apply(a: Any): String = {
     val bytes = a.toString.getBytes("UTF-8")
     val digest = MessageDigest.getInstance("SHA-256").digest(bytes)
-    digest.toString
-    //DatatypeConverter.printHexBinary(digest)
+    convertBytesToHex(digest)
+    //DatatypeConverter.printHexBinary(digest)  // does not work in jdk11
   }
 }
 
