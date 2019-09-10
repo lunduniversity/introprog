@@ -1,13 +1,28 @@
 // Just some unfinished ideas dumped into this file; nothing of below is in use yet...
 package justSomeIdeas
 
+
+/* use this java code to roll my own printHexBinary
+    private static final char[] hexCode = "0123456789ABCDEF".toCharArray();
+
+    public static String printHexBinary(byte[] data) {
+        StringBuilder r = new StringBuilder(data.length * 2);
+        for (byte b : data) {
+            r.append(hexCode[(b >> 4) & 0xF]);
+            r.append(hexCode[(b & 0xF)]);
+        }
+        return r.toString();
+    }
+*/
+
 object AnyToHexString {
-  import javax.xml.bind.DatatypeConverter
+  //import javax.xml.bind.DatatypeConverter
   import java.security.MessageDigest
-  def apply(a: Any) = {
+  def apply(a: Any): String = {
     val bytes = a.toString.getBytes("UTF-8")
     val digest = MessageDigest.getInstance("SHA-256").digest(bytes)
-    DatatypeConverter.printHexBinary(digest)
+    digest.toString
+    //DatatypeConverter.printHexBinary(digest)
   }
 }
 
