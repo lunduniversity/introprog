@@ -2,41 +2,84 @@
 %!TEX root = ../lect-w03.tex
 
 
+\ifkompendium\else
+\begin{SlideExtra}{Scala 2.12.10}
+  Den 10:e September släpptes Scala 2.12.10 med viktigaste förbättringen att filtrering i Scaladoc nu fungerar igen. 
+  \\~\\
+  \url{https://www.scala-lang.org/news/2.12.10}
+  \\~\\ Du kan gärna installera 2.12.10 om du vill, men inte nödvändigt.
+  \\~\\ När du kollar api-dokumentationen för Scalas standardbibliotek så använd denna länk:\\ 
+  \url{https://www.scala-lang.org/api/2.12.10}
+
+\end{SlideExtra}
+\fi
+
 \Subsection{Funktioner}
 
 
-\begin{Slide}{Funktion}
-\SlideOnly{\setlength{\leftmargini}{0pt}}
+\ifkompendium\else
+\begin{SlideExtra}{Om veckans tema: Funktioner}
 \begin{itemize}
-  \item En funktion kan ha parametrar som binds till argument.
+  \item Funktioner är en av de viktigaste abstraktionsmekanismerna inom datavetenskapen
+  \item Du kan redan massor om funktioner, bl.a. från matematiken.
+  \item Denna vecka ska vi fördjupa förståelsen:
+  \begin{itemize}\SlideFontSize{6}{8}
+    \item överlagring
+    \item enhetlig access
+    \item defaultargument
+    \item namngivna argument
+    \item lokala funktioner
+    \item funktioner som äkta värden
+    \item anonyma funktioner
+    \item klammerparentes vid ensam paramenter
+    \item uppdelad parameterlista
+    \item egendefinierade kontrollstrukturer
+    \item fördröjd evaluering (''call-by-name'')
+    \item stegade funktioner (''Curry-funktioner'')
+    \item fångad variablelrymd (''closure'')
+    \end{itemize}
+\end{itemize}  
+\end{SlideExtra}
+
+\begin{SlideExtra}{Om veckans tema: Funktioner}
+  \includegraphics[width=1.0\textwidth]{../img/coffee-grinder}
+\end{SlideExtra}
+\fi
+
+
+\begin{Slide}{Funktion: deklaration och anrop}
+\SlideOnly{\setlength{\leftmargini}{0pt}}
+
+\code{def} funktionsnamn(parameterdeklarationer): returtyp = uttryck
+\vspace{0.5em}
+
+% \begin{Code}
+% def namn(param1: Typ1, param2: Typ2): Returtyp = uttryck
+% \end{Code}
+
+\begin{itemize}\SlideFontSmall
   \item En funktion har ett \Emph{huvud} och efter \code{=} kommer dess \Emph{kropp}.
   \item En \Alert{namngiven} funktion \Emph{deklareras} med nyckelordet \code{def}
+  \item En funktion kan ha \Emph{parametrar} som deklareras i huvudet. 
+  \item Kroppen ska vara ett uttryck (ev. ett block med flera uttryck).
+  \item Parametrar binds till argument vid anrop.
+  \item Uttrycket i funktionens kropp evalueras vid varje anrop. 
+  \item Värdet av uttrycket blir funktionen returvärde. 
 \end{itemize}
 
 
-\code{def} funktionsnamn(parameterdeklarationer): returtyp = uttryck
 
-\vspace{1em}
-
-\begin{Code}
-def namn(param1: Typ1, param2: Typ2): Returtyp = uttryck
-\end{Code}
 
 \pause
-
+Exempel:
 \begin{Code}
 def öka(a: Int, b: Int): Int = a + b
 \end{Code}
-
-\SlideOnly{\setlength{\leftmargini}{0pt}}
-\begin{itemize}
-  \item Funktionskroppen exekveras först vid \Emph{anrop} då \Emph{argument} binds till \Emph{parametrar}.
-\end{itemize}
-
-\begin{REPL}
+\pause
+\begin{REPLnonum}
 scala> öka(42, 1)
 res0: Int = 43
-\end{REPL}
+\end{REPLnonum}
 
 
 \end{Slide}
@@ -108,9 +151,9 @@ res0: String = Name: Kim Coder
 \end{Slide}
 
 
-\begin{Slide}{Tom parameterlista och inga parametrar}\SlideFontSmall
+\begin{Slide}{Enhetlig access med tom parameterlista}\SlideFontSmall
 \begin{itemize}
-\item Om en funktion deklareras med tom parameterlista \code{()} kan den anropas på två sätt: med och utan tomma parenteser.
+\item Om en funktion \Emph{deklareras} med tom parameterlista \code{()}, eller helt utan parameterlista, så kan den \Emph{anropas} \Alert{utan parameterlista}.
 \begin{REPL}
 scala> def tomParameterLista() = 42
 
@@ -121,7 +164,7 @@ scala> tomParameterLista
 res3: Int = 42
 \end{REPL}
 
-Denna flexibilitet är grunden för \Emph{enhetlig access}: namnet kan användas enhetligt oavsett om det är en funktion eller en variabel.
+\item Denna flexibilitet är grunden för \Emph{enhetlig access}: namnet kan användas enhetligt oavsett om det är en funktion eller en variabel.
 \item Om parameterlista saknas får man \Alert{inte} använda \code{()} vid anrop:
 
 \begin{REPL}
@@ -141,14 +184,20 @@ scala> ingenParameterLista()
 
 
 \begin{Slide}{Anropsstacken och objektheapen}\SlideFontSmall
-Minnet är uppdelat i två delar:
+Minnet som innehåller ett programs data är uppdelat i två delar:
 \begin{itemize}
-\item \Emph{Anropsstacken}: På stackminnet läggs en \Emph{aktiveringspost} \Eng{stack frame\footnote{\href{https://en.wikipedia.org/wiki/Call_stack}{en.wikipedia.org/wiki/Call\_stack}}, activation record} för varje funktionsanrop med plats för \Alert{parametrar} och \Alert{lokala variabler}.
+\item \Emph{Anropsstacken}: 
+\begin{itemize}\SlideFontSmall
+\item På stackminnet läggs en \Emph{aktiveringspost} \Eng{stack frame\footnote{\href{https://en.wikipedia.org/wiki/Call_stack}{en.wikipedia.org/wiki/Call\_stack}}, activation record} för varje funktionsanrop med plats för \Alert{parametrar} och \Alert{lokala variabler}.
 \item Aktiveringsposten \Alert{raderas} när \Emph{returvärdet} har levererats.
 \item Stacken \Alert{växer} vid \Emph{nästlade funktionsanrop}, då en funktion i sin tur anropar en annan funktion.
-
+\end{itemize}
 \item \Emph{Objektheapen}: I heapminnet\footnote{\href{https://en.wikipedia.org/wiki/Memory_management}{en.wikipedia.org/wiki/Memory\_management}}$^{,}$\footnote{Ej att förväxlas med datastrukturen heap  \href{https://sv.wikipedia.org/wiki/Heap}{sv.wikipedia.org/wiki/Heap}} sparas alla objekt (data) som allokeras under körning. Heapen städas då och då av \Emph{skräpsamlaren} \Eng{garbage collector}, och minne som inte används längre frigörs. \\\vspace{0.5em}
-\href{http://stackoverflow.com/questions/1565388/increase-heap-size-in-java}{stackoverflow.com/questions/1565388/increase-heap-size-in-java}
+%\href{http://stackoverflow.com/questions/1565388/increase-heap-size-in-java}{stackoverflow.com/questions/1565388/increase-heap-size-in-java}
+\href{https://stackoverflow.com/questions/1441373/increase-jvm-heap-size-for-scala}{stackoverflow.com/questions/1441373/increase-jvm-heap-size-for-scala}
+\begin{REPLnonum}
+scala -J-Xmx16g -J-XX:-UseGCOverheadLimit Main
+\end{REPLnonum}
 \end{itemize}
 \end{Slide}
 
@@ -218,7 +267,7 @@ Med lokala funktioner kan delproblem lösas med nästlade abstraktioner.
 
 \begin{CodeSmall}
 def gissaTalet(max: Int, min: Int = 1): Unit = {
-  def gissat = io.StdIn.readLine(s"Gissa talet mellan $min och $max:").toInt
+  def gissat = io.StdIn.readLine(s"Gissa talet mellan $min och $max: ").toInt
 
   val hemlis = (math.random * (max - min) + min).toInt
 
@@ -582,7 +631,7 @@ Ett \Emph{closure} sparar variabler i ett \Alert{persistent funktionsobjekt}. \\
 
 \ifkompendium\else
 \begin{SlideExtra}{Översikt av begrepp vi gått igenom hittills}
-\begin{itemize}
+\begin{enumerate}
 \item överlagring
 \item utelämna tom parameterlista (enhetlig access)
 \item defaultargument
@@ -596,14 +645,14 @@ Ett \Emph{closure} sparar variabler i ett \Alert{persistent funktionsobjekt}. \\
 \item egendefinierade kontrollstrukturer
 \item stegade funktioner (''Curry-funktioner'')
 \item fångad variablelrymd (''closure'')
-\end{itemize}
+\end{enumerate}
 \end{SlideExtra}
 \fi
 
-\begin{Slide}{Begränsningar i Java}\SlideFontTiny
-\begin{itemize}
-\item[] Av alla dessa funktionsprogrammeringskoncept...
+\begin{Slide}{Begränsningar i Java}
 \begin{itemize}\SlideFontTiny
+\item[] Av alla dessa funktionsprogrammeringskoncept...
+\begin{itemize}\SlideFontSize{6}{8}
 \item överlagring
 \item utelämna tom parameterlista (enhetlig access)
 \item defaultargument
@@ -618,12 +667,17 @@ Ett \Emph{closure} sparar variabler i ett \Alert{persistent funktionsobjekt}. \\
 \item stegade funktioner (''Curry-funktioner'')
 \item fångad variablelrymd (''closure'')
 \end{itemize}
-...kan man i Java 8 endast göra:
-\item[] \Emph{överlagring} ("overloading") och \Emph{anonyma funktioner} (''lambda'') \\ där set senare har starka begränsningar. \footnote{\SlideFontTiny\href{https://en.wikipedia.org/wiki/Anonymous_function\#Java_Limitations}{en.wikipedia.org/wiki/Anonymous\_function\#Java\_Limitations}}
+\item[] ...kan man i Java %\footnote{\SlideFontTiny\href{https://en.wikipedia.org/wiki/Java_version_history}{en.wikipedia.org/wiki/Java\_version\_history}}  
+endast göra: \Emph{överlagring} (''overloading'') och \Emph{anonyma funktioner} (''lambda'') där det senare har starka begränsningar. %\footnote{\SlideFontTiny\href{https://en.wikipedia.org/wiki/Anonymous_function\#Java_Limitations}{en.wikipedia.org/wiki/Anonymous\_function\#Java\_Limitations}}
+
 %\item \vspace{0.5em} En av de saker jag saknar mest i Java: \Alert{lokala funktioner}!
 \item[] Det är \Alert{kombinationen} av alla koncept som \Alert{skapar uttryckskraften} i Scala.
 \end{itemize}
-
+\ifkompendium\else
+\vfill\SlideFontSize{6}{8} 
+\fi Läs mer om Java här:\\
+\url{{https://en.wikipedia.org/wiki/Java_version_history}}
+\url{https://en.wikipedia.org/wiki/Anonymous_function\#Java_Limitations}
 
 \end{Slide}
 
@@ -794,4 +848,18 @@ Kolla snabbreferensen vad mer du kan göra med strängar!
 \end{itemize}
 
 \end{SlideExtra}
+
+\begin{SlideExtra}{Jobba så här}
+\begin{itemize}
+  \item Skriv koden i en editor.
+  \item Ha ett terminalfönster med \code{sbt} där du kör \code{~compile} eller \code{~run} så att din kod kompileras eller körs om varje gång du sparar.
+  \item Ha ett terminalfönster med en fristående scala REPL där du kan göra mindre undersökningar rad för rad.
+  \item Börja enkelt och bygg vidare steg för steg.
+  \item Bygg om koden allteftersom den växer genom att införa nya abstraktioner med väl valda namn (s.k. ''refaktorisering'') .
+  \item Fixa alla kompileringsfel eller körtidsfel innan du går vidare.
+  \item Fokusera på kodens läsbarhet.
+\end{itemize}
+
+\end{SlideExtra}
+
 \fi
