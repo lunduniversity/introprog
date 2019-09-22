@@ -161,6 +161,12 @@ class PixelWindow(
         throw new IllegalArgumentException(s"Unknown Event: $e")
   }
 
+  /** Return `true` if `(x, y)` is inside windows borders else `false`. */
+  def isInside(x: Int, y: Int): Boolean = x >= 0 && x < width && y >= 0 && y < height
+
+  private def requireInside(x: Int, y: Int): Unit = 
+    require(isInside(x,y), s"(x=$x, y=$y) out of window bounds (0 until $width, 0 until $height)")
+
   /** Wait for next event until `timeoutInMillis` milliseconds.
     *
     * If time is out, `lastEventType` is `Undefined`.
@@ -187,21 +193,35 @@ class PixelWindow(
       g.fillRect(x, y, width, height)
     }
 
-  /** Set the color of the pixel at `(x, y)`. */
-  def setPixel(x: Int, y: Int, color: java.awt.Color = foreground): Unit =
+  /** Set the color of the pixel at `(x, y)`. 
+    *
+    * If (x, y) is outside of window bounds then an IllegalArgumentException is thrown.
+    */
+  def setPixel(x: Int, y: Int, color: java.awt.Color = foreground): Unit = {
+    requireInside(x, y)
     canvas.withImage { img =>
       img.setRGB(x, y, color.getRGB)
     }
+  }
 
-  /** Clear the pixel at `(x, y)` using the `background` class parameter. */
-  def clearPixel(x: Int, y: Int): Unit =
+  /** Clear the pixel at `(x, y)` using the `background` class parameter. 
+    *
+    * If (x, y) is outside of window bounds then an IllegalArgumentException is thrown.
+    */
+  def clearPixel(x: Int, y: Int): Unit = {
+    requireInside(x, y)
     canvas.withImage { img =>
       img.setRGB(x, y, background.getRGB)
     }
+  }
 
-  /** Return the color of the pixel at `(x, y)`. */
-  def getPixel(x: Int, y: Int): java.awt.Color = Swing.await {
-    new java.awt.Color(canvas.img.getRGB(x, y))
+  /** Return the color of the pixel at `(x, y)`. 
+    *
+    * If (x, y) is outside of window bounds then an IllegalArgumentException is thrown.
+    */
+  def getPixel(x: Int, y: Int): java.awt.Color = {
+    requireInside(x, y)
+    Swing.await { new java.awt.Color(canvas.img.getRGB(x, y)) }
   }
 
   /** Show the window. Has no effect if the window is already visible. */

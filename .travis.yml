@@ -1,12 +1,50 @@
+# .travis.yml
+# inspired by https://stackoverflow.com/a/52446551
+
 sudo: required
 dist: trusty
 
 language: scala
 scala: 2.12.8
 
+cache:
+  - directories:
+    - $TRAVIS_BUILD_DIR/MY_DEB_PACKAGES # This must be accessible for non-root users
+
 before_install:
- - sudo apt-get update -q
- - sudo apt-get install texlive-full texlive-latex-extra texlive-lang-all texlive-lang-swedish -y
+  # Check if we already have this custom cache dir, if not, create it
+  - |
+    if [ ! -d "$TRAVIS_BUILD_DIR/MY_DEB_PACKAGES" ]
+    then 
+      mkdir -p "$TRAVIS_BUILD_DIR/MY_DEB_PACKAGES" 
+    fi
+  - 
+before_script:
+  - echo "Print content of $MY_DEB_PACKAGES"
+  - ls -alFt $TRAVIS_BUILD_DIR/MY_DEB_PACKAGES
+  - echo "Check whether apt-get has no cache"
+  - ls /var/cache/apt/archives
+  -
+  - echo "Start loading cache"
+  - |
+    exist() {
+        [ -e "$1" ]
+    }
+  - |
+    if exist $TRAVIS_BUILD_DIR/MY_DEB_PACKAGES/*.deb
+    then
+        echo "Cache from previous builds exists! mv files to /var/cache/apt/archives/"
+        sudo mv $TRAVIS_BUILD_DIR/MY_DEB_PACKAGES/*.deb /var/cache/apt/archives/
+        ls /var/cache/apt/archives
+    fi
+  -
+  - echo "Start to install software"
+  - sudo apt-get update
+  - sudo apt-get install texlive-full texlive-latex-extra texlive-lang-all texlive-lang-swedish -y
+  -
+  - echo "Start updating the cache"
+  - cp /var/cache/apt/archives/*deb $TRAVIS_BUILD_DIR/MY_DEB_PACKAGES/
 
 script:
- - sbt build
+  - ls -alFt $TRAVIS_BUILD_DIR/MY_DEB_PACKAGES/
+  - sbt build
