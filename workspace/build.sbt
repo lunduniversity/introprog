@@ -6,7 +6,7 @@ import Keys._
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
   version := "2018.1",
-  scalaVersion := "2.12.3"  // ScalaIDE is not ready for >2.12.3 yet
+  scalaVersion := "2.12.10"  // ScalaIDE is not ready for >2.12.3 yet
   // check versions here: http://scala-ide.org/download/sdk.html
 )
 
@@ -20,7 +20,7 @@ lazy val cslib = (project in file("cslib")).  // still used by w13_img_proj
       "-encoding", "UTF-8", "-charset", "UTF-8", "-docencoding", "UTF-8")
   )
 
-val Version = "1.0.0"
+val Version = "1.1.4"
 val Name    = "introprog"
 lazy val introprog_scalalib = (project in file("introprog")).
   settings(commonSettings: _*).
@@ -55,24 +55,17 @@ lazy val w04_blockmole =(project in file("w04_blockmole")).
     EclipseKeys.skipProject := true
   ).dependsOn(introprog_scalalib)
 
-lazy val w05_blockbattle =(project in file("w05_blockbattle")).
+lazy val w06_blockbattle =(project in file("w06_blockbattle")).
   settings(commonSettings: _*).
   settings(
-    name := "w05_blockbattle",
+    name := "w06_blockbattle",
     EclipseKeys.skipProject := true
   ).dependsOn(introprog_scalalib)
 
-lazy val w06_shuffle =(project in file("w06_shuffle")).
+lazy val w07_shuffle =(project in file("w07_shuffle")).
   settings(commonSettings: _*).
   settings(
-    name := "w06_shuffle",
-    EclipseKeys.skipProject := true
-  )
-
-lazy val w07_words =(project in file("w07_words")).
-  settings(commonSettings: _*).
-  settings(
-    name := "w07_words",
+    name := "w07_shuffle",
     EclipseKeys.skipProject := true
   )
 
@@ -82,17 +75,19 @@ lazy val w08_life =(project in file("w08_life")).
     name := "w08_life"
   ).dependsOn(introprog_scalalib)
 
-lazy val w09_snake =(project in file("w09_snake")).
+lazy val w09_words =(project in file("w09_words")).
   settings(commonSettings: _*).
   settings(
-    name := "w09_snake"
+    name := "w09_words",
+    EclipseKeys.skipProject := true
+  )
+
+lazy val w10_snake =(project in file("w10_snake")).
+  settings(commonSettings: _*).
+  settings(
+    name := "w10_snake"
   ).dependsOn(introprog_scalalib)
 
-lazy val w10_tabular =(project in file("w10_tabular")).
-  settings(commonSettings: _*).
-  settings(
-    name := "w10_tabular"
-  ).dependsOn(introprog_scalalib) // TODO: remove this dependency when updated
 
 lazy val w11_javatext =(project in file("w11_javatext")).
   settings(commonSettings: _*).
@@ -106,18 +101,25 @@ lazy val w13_bank_proj =(project in file("w13_bank_proj")).
     name := "w13_bank_proj"
   )
 
-// TODO: decouple dependency to cslib, extend introprog if needed
-lazy val w13_img_proj =(project in file("w13_img_proj")).
-  settings(commonSettings: _*).
-  settings(
-    name := "w13_img_proj"
-  ).dependsOn(cslib)
+lazy val w13_tabular =(project in file("w13_tabular")).
+settings(commonSettings: _*).
+settings(
+  name := "w13_tabular"
+).dependsOn(introprog_scalalib) // TODO: remove this dependency when updated
+
 
 lazy val w13_music_proj =(project in file("w13_music_proj")).
   settings(commonSettings: _*).
   settings(
     name := "w13_music_proj"
   )
+
+// TODO: decouple dependency to cslib, extend introprog if needed
+lazy val w13_img_proj =(project in file("w13_img_proj")).
+  settings(commonSettings: _*).
+  settings(
+    name := "w13_img_proj"
+  ).dependsOn(cslib)
 
 
 lazy val workspace = (project in file(".")).

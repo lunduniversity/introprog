@@ -38,7 +38,7 @@ lazy val myStartupTransition: State => State = { s: State =>
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
   version := "v3-snapshot",
-  scalaVersion := "2.12.9"
+  scalaVersion := "2.12.10"
 )
 
 lazy val plan = (project in file("plan")).settings(commonSettings: _*).
