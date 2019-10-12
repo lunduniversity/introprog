@@ -3,11 +3,18 @@
 
 \Subsection{Vad är en sekvens?}
 
-\begin{Slide}{Vad är en sekvens?}
+\ifkompendium\else
+{
+  \setbeamercolor{background canvas}{bg=black}
+  \frame[plain]{\centering\Huge\textbf{\color{pink}{ORDNINGEN}\\SPELAR\\ROLL}}
+}
+\fi
+
+\begin{Slide}{Vad är en sekvens?}  
 \begin{itemize}
 \item En sekvens är en \Emph{följd av element} som
   \begin{itemize}
-   \item är \Alert{numrerade} (t.ex. från noll), och
+   \item har \Alert{ordningsnummer} (t.ex. numrerade från noll)
    \item är av en viss \Alert{typ} (t.ex. heltal).
   \end{itemize}
   \pause
@@ -35,8 +42,9 @@ res1: Int = 42
 \begin{REPLnonum}
 scala> "haj po daj"
 \end{REPLnonum}
-Längd? Elementtyp?
+Längd? 
 Vad ligger på första platsen?
+Elementtyp?
 Dubbletter?
 \pause
 \begin{REPLnonum}
@@ -56,6 +64,29 @@ res4: String = haj pod
 \end{Slide}
 
 
+\begin{Slide}{Lägg till i början och i slutet av en sekvens}
+  \begin{itemize}
+  \item Med metoderna \code{+:} och \code{:+} kan du skapa en ny sekvens med nya element tillagda i början resp. i slutet.
+  \item Minnesregel: ''\Alert{Colon on the collection side}''
+  \begin{REPLnonum}
+  scala> val xs = Vector(1,2,3)
+  scala> 42 +: xs         // ger ny Vector(42, 1, 2, 3)
+  scala> xs :+ 42         // ger ny Vector(1, 2, 3, 42)
+  \end{REPLnonum}
+  \pause
+  \item Semantik: operatornotation med operatorer som \Emph{slutar med kolon} är \Alert{högerassociativa}
+  \item Anropet \code{42 +: xs} skrivs av kompilatorn om till \code{xs.+:(42)}
+  \begin{REPL}
+  scala> xs.+:(42)
+  res4: scala.collection.immutable.Vector[Int] = Vector(42, 1, 2, 3)
+  \end{REPL}
+  \pause
+  \item Konkatenering (sammanfogning) av sekvenser: \code{xs ++ ys}
+  
+  \end{itemize}
+\end{Slide}
+
+
 \begin{Slide}{Egenskaper hos några sekvenssamlingar i Scala}
 \vspace{-0.5em}
 \begin{itemize}\SlideFontSmall
@@ -69,7 +100,7 @@ res4: String = haj pod
 \item \code{List}
   \begin{itemize}\SlideFontSmall
   \item \Emph{Oföränderlig}. Snabb på att skapa kopior med små förändringar.
-  \item Snabb vid bearbetning \Emph{i början}.
+  \item Snabb indexering \& uppdatering \Emph{i början}.
   \item Smidig \& snabb vid \Emph{rekursiva} algoritmer.
   \item Långsam vid upprepad \Alert{indexering} på godtyckliga ställen.
   \end{itemize}
@@ -96,27 +127,7 @@ res4: String = haj pod
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{Lägg till i början och i slutet av en sekvens}
-\begin{itemize}
-\item Med metoderna \code{+:} och \code{:+} kan du skapa en ny sekvens med nya element tillagda i början resp. i slutet.
-\item Minnesregel: ''\Alert{Colon on the collection side}''
-\begin{REPLnonum}
-scala> val xs = Vector(1,2,3)
-scala> 42 +: xs         // ger ny Vector(42, 1, 2, 3)
-scala> xs :+ 42         // ger ny Vector(1, 2, 3, 42)
-\end{REPLnonum}
-\pause
-\item Semantik: operatornotation med operatorer som \Emph{slutar med kolon} är \Alert{högerassociativa}
-\item Anropet \code{42 +: xs} skrivs av kompilatorn om till \code{xs.+:(42)}
-\begin{REPL}
-scala> xs.+:(42)
-res4: scala.collection.immutable.Vector[Int] = Vector(42, 1, 2, 3)
-\end{REPL}
-\pause
-\item Konkatenering (sammanfogning) av sekvenser: \code{xs ++ ys}
 
-\end{itemize}
-\end{Slide}
 
 \begin{Slide}{Vilken sekvenssamling ska jag välja?}\SlideFontSmall
 \vspace{-0.5em}
@@ -156,66 +167,19 @@ res4: scala.collection.immutable.Vector[Int] = Vector(42, 1, 2, 3)
 \end{Slide}
 
 
-\begin{Slide}{Sammanfattning: Oföränderlig eller förändringsbar?}
+\begin{Slide}{Oföränderlig eller förändringsbar?}
 \begin{itemize}
-\item \Emph{Oföränderlig}:  Kan ej ändra elementreferenserna, men effektiv på att skapa kopia som är (delvis) förändrad\\(vanliga i Scala, men inte i Java 8): \Emph{Vector} eller \Emph{List}
+\item \Emph{Oföränderlig}:  Kan ej ändra elementreferenserna, men effektiv på att skapa kopia som är (delvis) förändrad \Emph{Vector} eller \Emph{List}
 
 \item \Alert{Förändringsbar}: kan ändra elemententreferenserna
   \begin{itemize}
-  \item Kan \Alert{ej ändra storlek} efter allokering: \\ Scala+Java: \Emph{Array}: indexera och uppdatera varsomhelst
+  \item Kan \Alert{ej ändra storlek} efter allokering: \\ \Emph{Array}: indexera och uppdatera varsomhelst
   \item Kan ändra storlek efter allokering:
-  \\ Scala: \Alert{ArrayBuffer} eller \Alert{ListBuffer}
-  \\ Java: \Alert{ArrayList} eller \Alert{LinkedList}
+  \\\Alert{ArrayBuffer} eller \Alert{ListBuffer}
+  %\\ Java: \Alert{ArrayList} eller \Alert{LinkedList}
   \end{itemize}
 \item \Emph{Ofta funkar oföränderlig sekvenssamling utmärkt}, men om man \Alert{efter prestandamätning} upptäcker en flaskhals kan man ändra från \Emph{Vector} till t.ex. \Emph{ArrayBuffer}.
 \end{itemize}
-\end{Slide}
-
-
-
-\begin{Slide}{Fördjupning. Lämna det öppet: använd \texttt{Seq[T]}}\SlideFontSmall
-Typen \Emph{\code{Seq[T]}} är supertyp till alla sekvenssamlingar i \code{scala.collection}.
-\pause Exempel: kopiering av sekvens:
-\begin{itemize}
-\item Kopiering av \Alert{specifik} sekvens:
-\begin{Code}
-def copyIntArray(xs: Array[Int]): Array[Int] = for (x <- xs) yield x
-\end{Code}
-
-\item Kopiering av \Emph{generisk} sekvens:
-\begin{Code}
-def copySeq[T](xs: Seq[T]): Seq[T] = for (x <- xs) yield x
-\end{Code}
-\end{itemize}
-\pause
-\begin{REPL}
-  scala> val xs = Array(1,2,3)
-  xs: Array[Int] = Array(1, 2, 3)
-
-  scala> val ys = copyIntArray(xs)
-  ys: Array[Int] = Array(1, 2, 3)
-
-  scala> val zs = copySeq(xs)
-  zs: Seq[Int] = ArrayBuffer(1, 2, 3)
-\end{REPL}
-Någon lämplig specifik samling som är subtyp till \code{Seq[T]} väljs automatiskt. \\
-(Mer om typparametrar och supertyper/subtyper senare i kursen.)
-% \begin{Code}[basicstyle=\ttfamily]
-% def varannanBaklänges[T](xs: Seq[T]): Seq[T] =
-%   for (i <- xs.indices.reverse by -2) yield xs(i)
-% \end{Code}
-% Fungerar med alla sekvenssamlingar:
-% \begin{REPLnonum}
-% scala> varannanBaklänges(Vector(1,2,3,4,5))
-% res0: Seq[Int] = Vector(5, 3, 1)
-%
-% scala> varannanBaklänges(List(1,2,3,4,5))
-% res1: Seq[Int] = List(5, 3, 1)
-%
-% scala> varannanBaklänges(collection.mutable.ListBuffer(1,2))
-% res2: Seq[Int] = Vector(2)
-% \end{REPLnonum}
-% Scalas standardbibliotek returnerar ofta lämpligaste specifika sekvenssamlingen som är subtyp till \texttt{Seq[T]}.
 \end{Slide}
 
 
@@ -377,10 +341,105 @@ def sort(xs: Vector[Int]): Vector[Int] = xs.sorted // mer om sortering sen
 def freq(xs: Vector[Int]): Vector[(Int, Int)] = // mer om registrering snart
   xs.distinct.map(x => (x, xs.count(_ == x)))
 \end{Code}
-Fördjupningsövning: Hur göra dessa metoder generiska för alla sekvenssamlingar av typen \code{Seq[T]}?
+%Fördjupningsövning: Hur göra dessa metoder generiska för alla sekvenssamlingar av typen \code{Seq[T]}?
 \end{Slide}
 
 
+\begin{Slide}{Hierarki av samlingstyper i \texttt{scala.collection} v2.12}
+
+  \begin{multicols}{2}
+  \begin{tikzpicture}[sibling distance=6.1em,->,>=stealth', inner sep=3pt, %scale=0.5,
+    every node/.style = {shape=rectangle, draw, align=center,font=\small\ttfamily},
+    class/.style = {fill=blue!20},
+    trait/.style = {rounded corners, fill=red!20}]
+    \node[trait] {Traversable}
+      child { node[trait] {Iterable}
+        child { node[trait] {Seq}
+         }
+        child { node[trait] {Set}
+        }
+        child { node[trait] {Map}
+        }
+      };
+  \end{tikzpicture}
+  
+  \columnbreak
+  
+  {\SlideFontTiny
+  
+  \code{Traversable} har metoder som är implementerade med hjälp av: \\
+  \code{def foreach[U](f: Elem => U): Unit}\\
+  
+  \vspace{1em}\code{Iterable} har metoder som är implementerade med hjälp av: \\
+  \code{def iterator: Iterator[A] }
+  
+}
+
+\begin{itemize}\SlideFontTiny
+  \item[] \code{Seq}: ordnade i sekvens
+  \item[] \code{Set}: unika element
+  \item[] \code{Map}: par av (nyckel, värde)
+  \end{itemize}
+  
+  
+  \end{multicols}
+  
+  {\SlideFontSmall Samlingen \Emph{\texttt{Vector}} är en \code{Seq} som är en \code{Iterable} som är en \code{Traversable}. \\ \vspace{0.5em}\pause
+  De konkreta samlingarna är uppdelade i dessa paket:\\
+  \code{scala.collection.immutable} \hfill som är \Emph{automatiskt} importerade\\
+  \code{scala.collection.mutable}  \hfill som \Alert{måste importeras} explicit\\\pause
+  (undantag: primitiva \code{scala.Array} som är automatiskt synlig)
+  }
+\end{Slide}
+  
+
+
+\begin{Slide}{Lämna det öppet: använd \texttt{Seq}}\SlideFontSmall
+  Typen \Emph{\code{Seq}} är supertyp till alla sekvenssamlingar i \code{scala.collection}.
+  \pause Exempel: kopiering av sekvens:
+  \begin{itemize}
+  \item Kopiering av \Alert{specifik} heltalssekvens:
+  \begin{Code}
+  def copyIntArray(xs: Array[Int]): Array[Int] = for (x <- xs) yield x
+  \end{Code}
+  
+  \item Kopiering som fungerar för alla heltalssekvenser:
+  \begin{Code}
+  def copyIntSeq[Int](xs: Seq[Int]): Seq[Int] = for (x <- xs) yield x
+  \end{Code}
+  \end{itemize}
+  \pause
+  \begin{REPL}
+    scala> val xs = Array(1,2,3)
+    xs: Array[Int] = Array(1, 2, 3)
+  
+    scala> val ys = copyIntArray(xs)
+    ys: Array[Int] = Array(1, 2, 3)
+  
+    scala> val zs = copyIntSeq(xs)
+    zs: Seq[Int] = ArrayBuffer(1, 2, 3)
+  \end{REPL}
+%  Någon lämplig specifik samling som är subtyp till \code{Seq[T]} väljs automatiskt. \\
+ % (Mer om typparametrar och supertyper/subtyper senare i kursen.)
+  % \begin{Code}[basicstyle=\ttfamily]
+  % def varannanBaklänges[T](xs: Seq[T]): Seq[T] =
+  %   for (i <- xs.indices.reverse by -2) yield xs(i)
+  % \end{Code}
+  % Fungerar med alla sekvenssamlingar:
+  % \begin{REPLnonum}
+  % scala> varannanBaklänges(Vector(1,2,3,4,5))
+  % res0: Seq[Int] = Vector(5, 3, 1)
+  %
+  % scala> varannanBaklänges(List(1,2,3,4,5))
+  % res1: Seq[Int] = List(5, 3, 1)
+  %
+  % scala> varannanBaklänges(collection.mutable.ListBuffer(1,2))
+  % res2: Seq[Int] = Vector(2)
+  % \end{REPLnonum}
+  % Scalas standardbibliotek returnerar ofta lämpligaste specifika sekvenssamlingen som är subtyp till \texttt{Seq[T]}.
+  \end{Slide}
+  
+\ifkompendium  
 \begin{Slide}{Fördjupning: implementation som generiska funktioner}
 Genom att generalisera funktionshuvudena blir våra lösningar användbara för \Alert{alla} sekvenser av typen \code{Seq[T]}.
 \begin{Code}
@@ -399,3 +458,5 @@ def freq[T](xs: Seq[T]): Seq[(T, Int)] =
 \pause
 Standardbibliotekets metoder försöker ordna så att det blir samma konkreta typ in som ut, men ibland väljs annan lämplig konkret samling, t.ex. kan en \code{Array} ofta bli en \code{ArrayBuffer}.
 \end{Slide}
+\else
+\fi
