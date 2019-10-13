@@ -10,6 +10,7 @@
 }
 \fi
 
+
 \begin{Slide}{Vad är en sekvens?}  
 \begin{itemize}
 \item En sekvens är en \Emph{följd av element} som
@@ -197,15 +198,15 @@ res4: String = haj pod
 \item \Alert{Sex} ofta återkommande programmeringsproblem som löses med en sekvensalgoritm:
 \begin{itemize}\SlideFontTiny
 \item \Emph{Kopiering} av alla element i en sekvens till en \Alert{ny} sekvens
-\item \Emph{Transformering} av alla element i en sekvens till en \Alert{ny} sekvens
+\item \Emph{Uppdatering} av sekvensen: ta bort, lägga till, byta ut enskilda element
+\item \Emph{Transformering}: applicera en \Alert{funktion} på alla element   
 \item \Emph{Filtrering}: urval av vissa element som uppfyller ett \Alert{villkor}
 \item \Emph{Sökning} efter ett element som uppfyller ett \Alert{sökkriterium}
 \item \Emph{Sortering} enligt någon \Alert{ordning}
 \item \Emph{Registrering} av \Alert{frekvens} av element med vissa \Alert{egenskaper}
 \end{itemize}
 \end{itemize}
-\pause
-För alla problem \href{https://youtu.be/0ArlUSVDQIw?t=27s}{\textbf{KTFSSR}} ovan ingår det i kursen att kunna 1) lösa dessa problem med färdiga samlingsmetoder, och 2) implementera egna lösningar med hjälp av sekvens, alternativ, repetition, abstraktion (\textbf{SARA}).
+\href{https://youtu.be/0ArlUSVDQIw?t=27s}{\textbf{KUTFSSR}} 
 \end{Slide}
 
 \Subsection{Använda färdiga sekvenssamlingsmetoder}
@@ -251,6 +252,28 @@ För alla problem \href{https://youtu.be/0ArlUSVDQIw?t=27s}{\textbf{KTFSSR}} ova
 {\SlideFontTiny\url{https://docs.scala-lang.org/overviews/collections/introduction.html}}
 \end{Slide}
 
+\begin{Slide}{Uppdaterad sekvens med kraftfulla metoden \texttt{patch}}
+  Metoden \code{patch} kan användas så: \code{xs.patch(fromPos, ys, nbrReplaced)} \\för att skapa en \Alert{ny} sekvens där \Emph{ett} eller \Emph{flera} element i xs är...  
+  \begin{itemize}
+    \item utbytta \Eng{replaced}
+    \item borttagna \Eng{removed}
+    \item tillagda \Eng{inserted}
+  \end{itemize}
+  .. med nya element ur \code{ys} 
+\begin{REPL}
+scala> val xs = Vector(1,2,3)
+
+scala> xs.patch(2, Vector(1), -1)     // replaced one elem
+res0: scala.collection.immutable.Vector[Int] = Vector(1, 2, -1)
+
+scala> xs.patch(1, Vector(42), 0)     // inserted one elem
+res11: scala.collection.immutable.Vector[Int] = Vector(1, 42, 2, 3)
+
+scala> xs.patch(0, Vector(), 2)       // removed two elems
+res2: scala.collection.immutable.Vector[Int] = Vector(3)
+ 
+\end{REPL}
+\end{Slide}
 
 \begin{Slide}{Använda for-uttryck för filtrering med hjälp av gard}
 I ett for-uttryck kan man ha en \Emph{gard} \Eng{guard} i form av ett booleskt uttryck efter nyckelordet \code{if}. Då kommer uttrycket efter \code{yield} bara göras om gard-uttrycket är sant.
@@ -405,7 +428,7 @@ def freq(xs: Vector[Int]): Vector[(Int, Int)] = // mer om registrering snart
   
   \item Kopiering som fungerar för alla heltalssekvenser:
   \begin{Code}
-  def copyIntSeq[Int](xs: Seq[Int]): Seq[Int] = for (x <- xs) yield x
+  def copyIntSeq(xs: Seq[Int]): Seq[Int] = for (x <- xs) yield x
   \end{Code}
   \end{itemize}
   \pause
@@ -458,5 +481,5 @@ def freq[T](xs: Seq[T]): Seq[(T, Int)] =
 \pause
 Standardbibliotekets metoder försöker ordna så att det blir samma konkreta typ in som ut, men ibland väljs annan lämplig konkret samling, t.ex. kan en \code{Array} ofta bli en \code{ArrayBuffer}.
 \end{Slide}
-\else
+\else 
 \fi
