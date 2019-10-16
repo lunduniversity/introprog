@@ -16,7 +16,7 @@ Undantag representerar ett fel eller ett onormalt tillstånd som upptäcks under
 
 \pause
 
-\begin{itemize}
+\begin{itemize} \SlideFontSmall
 \item Indexering utanför vektorns indexgränser.
 
 \item Läsning bortom filens slut.
@@ -25,15 +25,33 @@ Undantag representerar ett fel eller ett onormalt tillstånd som upptäcks under
 
 \item Minnet är slut.
 
-\item Division med noll.
+\item Heltalsdivision med noll ger \code{java.lang.ArithmeticException}.
 
-\item \code{"hej".toInt} resulterar i \\\code{java.lang.NumberFormatException}
+\item \code{"hej".toInt} ger \code{java.lang.NumberFormatException}
 
 \end{itemize}
 
 \end{Slide}
 
-\begin{Slide}{''Kasta'' dina egna undantag med \texttt{throw}}\SlideFontSmall
+
+\begin{Slide}{Orsaka undantag \textit{indirekt} med \texttt{require} och \texttt{assert}}
+
+\begin{itemize}\SlideFontSmall
+  \item Med funktionen \code{require(p)} skapas ett \code{new IllegalArgumentException("requirement failed")} \\ om \code{p} är \code{false}
+  \item \code{require} används om man vill begränsa vilka argument som är giltiga
+  \item Med funktionen \code{assert(p)} skapas ett \code{new AssertionError("assertion failed")} \\ om \code{p} är \code{false} 
+  \item \code{assert} används om man vill förhindra ogiltiga tillstånd
+\end{itemize}
+{
+  \ifkompendium\else
+  \vfill\SlideFontTiny
+  \fi
+  Se implementationen av \code{require} här:\\
+\url{https://github.com/scala/scala/blob/v2.12.10/src/library/scala/Predef.scala#L266}
+}
+\end{Slide}
+
+\begin{Slide}{Kasta dina egna undantag med \texttt{throw}}\SlideFontSmall
 Man kan själv generera ett undantag med \code{throw}, vilket kallas att \Emph{kasta} ett undantag som (om det inte \Emph{fångas}), gör att exekveringen \Alert{avbryts}.
 
 
@@ -104,12 +122,12 @@ scala> def försök = Try { kanskePang }
 
 scala> val xs = Vector.fill(15){försök}
 
-scala> val trettonde = xs(13) match {
+scala> val trettonde = xs(12) match {
          case Success(value) => value
          case Failure(e) => println(e); -1
        }
 
-scala> (xs(13).isSuccess, xs(13).isFailure)
+scala> (xs(12).isSuccess, xs(12).isFailure)
 
 scala> försök.foreach(println)
 

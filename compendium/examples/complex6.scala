@@ -7,7 +7,7 @@ class Complex private (val re: Double, val im: Double){
 }
 object Complex {
   def apply(re: Double = 0, im: Double = 0) = new Complex(re, im)
-  def real(r: Double) = apply(re=r)
-  def imag(i: Double) = apply(im=i)
+  def real(r: Double) = apply(re = r)
+  def imag(i: Double) = apply(im = i)
   val zero = apply()
 }
