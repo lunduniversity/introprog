@@ -19,7 +19,7 @@ object TestDeck {
       deck.reset()
       deck.shuffle()
       val permIndex = perms.indexOf(deck.toVector)
-      freq(permIndex) += 1L
+      if (permIndex != -1) freq(permIndex) += 1L
     }
     val listingOfPercentages = perms.indices
       .map(i => s"${perms(i).mkString}: ${freq(i).toDouble*100/n}%")
