@@ -1,6 +1,7 @@
 %!TEX encoding = UTF-8 Unicode
 %!TEX root = ../lect-w09.tex
 
+\Subsection{Repetition: sekvens}
 
 \begin{Slide}{Repetition: Vad är en sekvens?}
 \begin{itemize}
@@ -45,8 +46,9 @@ scala> Set(1,1,2,2,3,3,4,4,5,5)
 res0: scala.collection.immutable.Set[Int] =
   Set(5, 1, 2, 3, 4)
 \end{REPLnonum}
+\pause
 \item En mängd är \Alert{inte}  en sekvens: du kan inte utgå från att elementen ligger i någon viss ordning, t.ex. den ordning som de ges vid konstruktion; en mängd har ej längd, men en \Emph{storlek}; metoden \code{size} ger antalet element men metoden \code{length} saknas.
-\item Det går \Alert{inte att indexera} i en mängd.
+\item Det går således \Alert{inte att indexera} i en mängd.
 \item Men man \Emph{kan} gå igenom element i \Emph{någon} ordning (exakt vilken är ej def.), med till exempel \code{xs.map(f)} eller \code{for (x <- xs) yield f(x)}
 \item En mängd kan vara \Alert{tom} och har då storleken \code{0}.
 \pause
@@ -83,35 +85,6 @@ scala> xs = xs - "gurka"
 \end{Slide}
 
 
-
-
-\begin{Slide}{Exempel: Förändringsbar mängd}\SlideFontSmall
-Med en \Alert{förändringsbar} mängd kan man stegvis utöka på plats.
-\begin{REPL}
-scala> val mängd = scala.collection.mutable.Set.empty[Int]
-
-scala> for (i <- 1 to 1000000) mängd += i
-
-scala> mängd.contains(-1)                     // samma som mängd(-1)
-\end{REPL}
-En \Emph{mängd} är \Alert{snabb} på att avgöra om ett element \Alert{finns eller inte} i mängden. Ingen linjärsökning krävs eftersom den smarta implementationen av datastrukturen medger snabb uppslagning \Eng{lookup} av ett element.
-\pause
-\\\vspace{0.5em}Men i en samling krävs linjärsökning vid innehållstest:
-\begin{REPL}
-scala> val sekvens = (1 to 1000000).toVector
-
-scala> sekvens.contains(-1)   // kräver linjärsökning ända till slutet
-\end{REPL}
-\pause\SlideFontTiny Övning: Testa själv att mäta tidsskillnaden med hjälp av:
-\begin{Code}
-def mät(b: => Unit) = 
-  { val t1 = System.nanoTime; b; System.nanoTime - t1 }
-\end{Code}
-
-\end{Slide}
-
-
-
 \begin{Slide}{Mysteriet med de försvunna elementen}
 Vad händer här?
 \begin{REPLnonum}
@@ -133,6 +106,37 @@ res1: Int = 3         // med toSeq blir det som vi ville
 \end{REPLnonum}
 
 \end{Slide}
+  
+  
+
+
+
+
+\begin{Slide}{Exempel: Förändringsbar mängd}\SlideFontSmall
+Med en \Alert{förändringsbar} mängd kan man stegvis utöka på plats.
+\begin{REPL}
+scala> val mängd = scala.collection.mutable.Set.empty[Int]
+
+scala> for (i <- 1 to 1000000) mängd += i
+
+scala> mängd.contains(-1)                     // samma som mängd(-1)
+\end{REPL}
+En \Emph{mängd} är \Alert{snabb} på att avgöra om ett element \Alert{finns eller inte} i mängden. Ingen linjärsökning krävs eftersom den smarta implementationen av datastrukturen medger snabb uppslagning \Eng{lookup} av ett element.
+\pause
+\\\vspace{0.5em}Men i en sekvens krävs linjärsökning vid innehållstest:
+\begin{REPL}
+scala> val sekvens = (1 to 1000000).toVector
+
+scala> sekvens.contains(-1)   // kräver linjärsökning ända till slutet
+\end{REPL}
+\pause\SlideFontTiny Övning: Testa själv att mäta tidsskillnaden med hjälp av:
+\begin{Code}
+def nanos(b: => Unit) = { val t1 = System.nanoTime; b; System.nanoTime - t1 }
+\end{Code}
+
+\end{Slide}
+
+
 
 
 
@@ -320,7 +324,46 @@ De konkreta samlingarna är uppdelade i dessa paket:\\
 \end{Slide}
 
 
+\begin{Slide}{Hierarki av samlingstyper i \texttt{scala.collection} v2.13}
 
+  \begin{multicols}{2}
+  \begin{tikzpicture}[sibling distance=5.0em,->,>=stealth', inner sep=3pt, %scale=0.5,
+    every node/.style = {shape=rectangle, draw, align=center,font=\small\ttfamily},
+    class/.style = {fill=blue!20},
+    trait/.style = {rounded corners, fill=red!20}]
+    \node[trait] {Iterable}
+        child { node[trait] {Seq} }
+        child { node[trait] {Set} }
+        child { node[trait] {Map} }
+    ;
+  \end{tikzpicture}
+  
+  \columnbreak
+  
+  {\SlideFontTiny
+  
+  \code{Iterable} har metoder som är implementerade med hjälp av: \\
+  \code{def foreach[U](f: Elem => U): Unit}\\
+  \code{def iterator: Iterator[A] }
+  
+  }
+  
+  \begin{itemize}\SlideFontTiny
+  \item[] \code{Seq}: ordnade i sekvens
+  \item[] \code{Set}: unika element
+  \item[] \code{Map}: par av (nyckel, värde)
+  \end{itemize}
+  
+  
+  \end{multicols}
+  
+  {\SlideFontSmall Samlingen \Emph{\texttt{Vector}} är en \code{Seq} som är en \code{Iterable}. \\ \vspace{0.5em}%\pause
+  De konkreta samlingarna är uppdelade i dessa paket:\\
+  \code{scala.collection.immutable} \hfill som är \Emph{automatiskt} importerade\\
+  \code{scala.collection.mutable}  \hfill som \Alert{måste importeras} explicit\\%\pause
+  (undantag: primitiva \code{scala.Array} som är automatiskt synlig)
+  }
+  \end{Slide}
 
 
 
@@ -445,7 +488,7 @@ Fördjupning: Studera samlingars prestandaegenskaper här:\\ \href{https://docs.
 \end{tabular}
 
 \pause
-\vspace{0.5em}\Emph{Minnesregel} för \code{+:} och \code{:+  } \Alert{Colon on the collection side}
+\vspace{0.5em}\Emph{Minnesregel} för \code{+:} och \code{:+  } \pause \Alert{Colon on the collection side}
 
 \pause
 Prova fler samlingsmetoder ur snabbreferensen: ~~\url{http://cs.lth.se/quickref}
@@ -515,8 +558,8 @@ frekvens: Map[Int,Int] = Map(5 -> 1, 1 -> 1, 6 -> 2, 2 -> 2, 3 -> 1, 4 -> 2)
 \else
 
 \begin{Slide}{scala.collection.immutable}
-\includegraphics[width=0.82\textwidth]{../img/collection/collection-immutable}
-\includegraphics[width=0.33\textwidth]{../img/collection/collection-legend}
+\includegraphics[width=0.67\textwidth]{../img/collection/collection-immutable}~~%
+\includegraphics[width=0.3\textwidth]{../img/collection/collection-legend}
 \end{Slide}
 
 
