@@ -7,6 +7,7 @@ object Game {
   val skyRange    = 0 to 7
   val grassRange  = 8 to 8
   object Color { ??? }
+  /** Used with the different ranges and eraseBlocks */
   def backgroundColorAtDepth(y: Int): java.awt.Color = ???
 }
 
@@ -22,6 +23,7 @@ class Game(
 
  def drawWorld(): Unit = ???
 
+ /** Use to erase old points, e.g updated score */
  def eraseBlocks(x1: Int, y1: Int, x2: Int, y2: Int): Unit = ???
 
  def update(mole: Mole): Unit = ???  // update, draw new, erase old
