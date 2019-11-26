@@ -7,7 +7,5 @@ public class Game {
 
     public int getScore();
 
-    public long getElapsedTimeMs();
-
     public void run();
 }
