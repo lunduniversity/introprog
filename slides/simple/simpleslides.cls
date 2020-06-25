@@ -8,10 +8,10 @@
 \beamertemplatenavigationsymbolsempty
 %https://tex.stackexchange.com/questions/432054/missing-frame-numbers-with-paloalto-theme
 
-% \setbeamertemplate{footline}[frame number] 
-% \setbeamercolor{page number in head/foot}{fg=gray}  
-\setbeamertemplate{footline}[] 
-\setbeamercolor{page number in head/foot}{}  
+\setbeamertemplate{footline}[frame number] 
+\setbeamercolor{page number in head/foot}{fg=gray}  
+% \setbeamertemplate{footline}[] 
+% \setbeamercolor{page number in head/foot}{}  
 
 \usepackage{xcolor}
 
