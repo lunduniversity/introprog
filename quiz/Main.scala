@@ -49,7 +49,7 @@ object Main extends {
       val conceptQuizes = QuizData.quizIDs.filter(_.name.contains("concept"))
       def fixPair(p: (String, String)): (String, String) = {
         def replaceStuff(s: String): String =
-          s.replaceAllLiterally("\\code|", "").replaceAllLiterally("|","")
+          s.replace("\\code|", "").replace("|","")
         (replaceStuff(p._1).trim, replaceStuff(p._2).trim)
       }
       val concepts = conceptQuizes

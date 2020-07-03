@@ -15,7 +15,7 @@ hello := println("""
 
     type 'pdf<TAB>' to see individual pdf build commands
 
-    type 'genQuiz' to generate quiz files
+    type 'genquiz' to generate quiz files
 
     type 'gen' to generate plan files
 
@@ -38,7 +38,8 @@ lazy val myStartupTransition: State => State = { s: State =>
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
   version := "v3-snapshot",
-  scalaVersion := "2.12.10"
+  scalaVersion := "2.13.3",
+  scalacOptions ++= Seq("-deprecation", "-feature")
 )
 
 lazy val plan = (project in file("plan")).settings(commonSettings: _*).

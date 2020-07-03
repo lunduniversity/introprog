@@ -19,7 +19,7 @@ object StringExtras {
       val escapeChars = "&_"
       var result = s
       for (c <- escapeChars){ 
-        result = result.replaceAllLiterally(c.toString, "\\" + c)
+        result = result.replace(c.toString, "\\" + c)
       }
       result
     }
