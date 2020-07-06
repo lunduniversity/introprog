@@ -229,11 +229,11 @@ trait Plan {
     else labNumOfWeek(w)
   }
 
-  lazy val startLp1 = Date(2019, 8, 31)
+  lazy val startLp1 = Date(2020, 8, 31)
 
-  lazy val startLp2 = Date(2019, 11, 2)
+  lazy val startLp2 = Date(2020, 11, 2)
 
-  lazy val ksdatum = Date(2019, 10, 27)
+  lazy val ksdatum = Date(2020, 10, 27)
 
   lazy val tentadatum = Date(2020, 1, 11)
 
