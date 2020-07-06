@@ -5,8 +5,8 @@ import Keys._
 
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
-  version := "2018.1",
-  scalaVersion := "2.12.10"  // ScalaIDE is not ready for >2.12.3 yet
+  version := "2020.1",
+  scalaVersion := "2.13.3"  // ScalaIDE is not ready for >2.12.3 yet
   // check versions here: http://scala-ide.org/download/sdk.html
 )
 
@@ -79,7 +79,7 @@ lazy val w09_words =(project in file("w09_words")).
   settings(commonSettings: _*).
   settings(
     name := "w09_words",
-    EclipseKeys.skipProject := true
+    EclipseKeys.skipProject := false
   )
 
 lazy val w10_snake =(project in file("w10_snake")).

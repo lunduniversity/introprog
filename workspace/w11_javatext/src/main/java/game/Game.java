@@ -1,11 +1,19 @@
 package game;
 
 public class Game {
-    public Game(String playerName);
+    public Game(String playerName){
 
-    public String getPlayerName();
+    }
 
-    public int getScore();
+    public String getPlayerName(){
+        return "";
+    }
 
-    public void run();
+    public int getScore(){
+        return 0;
+    }
+
+    public void run(){
+        
+    }
 }

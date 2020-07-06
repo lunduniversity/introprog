@@ -35,6 +35,6 @@ object irritext {
   def main(args: Array[String]): Unit = {
     printWelcomeMessage()
     play()
-    if (isDead) printDead else printSolved(points)
+    if (isDead) printDead() else printSolved(points)
   }
 }

@@ -63,7 +63,7 @@ object ImageUI {
     println(greeting)
     var i = 0
     for (file <- images) {
-      println(i + ". " + file.getName)
+      println(s"$i. ${file.getName}")
       i += 1
     }
   }
