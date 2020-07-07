@@ -15,9 +15,11 @@ hello := println("""
 
     type 'pdf<TAB>' to see individual pdf build commands
 
+    type 'gen' to generate plan files
+
     type 'genquiz' to generate quiz files
 
-    type 'gen' to generate plan files
+    type 'gengloss' to generate glossary files
 
     type 'eclipse' to generate eclipse workspace
 
@@ -60,10 +62,18 @@ lazy val workspace = (project in file("workspace")).settings(commonSettings: _*)
     EclipseKeys.withSource := true
   )
 
+lazy val glossary = (project in file("glossary")).settings(commonSettings: _*).
+  settings(
+    name := "glossary",
+    EclipseKeys.skipProject := true
+  )
+
+
 lazy val build = taskKey[Unit]("complete build including plan/run before pdf")
 build := Def.sequential(
   gen,
   genquiz,
+  gengloss,
   pdf
 ).value
 
@@ -72,6 +82,10 @@ gen := (run in Compile in plan).toTask("").value
 
 lazy val genquiz = taskKey[Unit]("alias for quiz/run")
 genquiz := (run in Compile in quiz).toTask("").value
+
+
+lazy val gengloss = taskKey[Unit]("alias for glossary/run")
+gengloss := (run in Compile in glossary).toTask("").value
 
 // ************** cmd util functions
 
