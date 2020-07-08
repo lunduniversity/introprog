@@ -1,3 +1,4 @@
+<div id="Hårdvara"></div>
 ## Hårdvara
 
 Vid undervisning på campus rekommenderas LTH:s [Linux-datorer](http://www.student.lth.se/datorsupport/datorsalar-och-schema/datorsalar/e-huset/). Ta gärna med ett eget tangentbord och en egen mus och koppla in i skolans datorer så minskar du smittrisken. 
