@@ -15,7 +15,7 @@ Både [Lenovo](https://www.lenovo.com/se/sv/studentrabatt/) och [Dell](https://w
 
 Vid distansundervisning är det bra med headset och webbkamera. Det går bra att koppla ditt eget headset till skolans datorer, t.ex. om du behöver prata med en handledare som jobbar hemifrån. Om du har ett headset med 4-polig mobil-kontakt medan din dator har två 3-poliga kontakter för mic och hörlurar behövs en sådan här  adapter:
 
-<img src="adapter.jpg" alt="drawing" style="width:200px;"/>
+<img src="https://github.com/lunduniversity/introprog/raw/master/web/tools/adapter.jpg" alt="drawing" style="width:200px;"/>
 
 Kan t.ex. köpas här: 
 [NetOnNet](https://www.netonnet.se/art/ljud-bild/kablar/adapter/andersson-computer-headset-adapter-female/1006756.13721/), 
