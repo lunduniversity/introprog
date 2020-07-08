@@ -6,7 +6,7 @@ Om du får [sjukdoms-symptom](https://www.lth.se/covid19/) ska du studera hemifr
 
 ### Dator
 
-När man ska programmera är det bra med en dator med minst 8GB RAM och 2.5GHz CPU. Du kan t.ex. köpa dator här: [Compliq i Lund](https://www.compliq.se/bygga-dator/), [Webbhallen i Malmö](https://www.webhallen.com/se/store/22-Malmo-Triangeln), [Inet i Malmö](https://www.inet.se/info/243/inet-malmo)
+När du ska programmera är det bra med en dator med minst 8GB RAM och 2.5GHz CPU. Du kan t.ex. köpa dator här: [Compliq i Lund](https://www.compliq.se/bygga-dator/), [Webbhallen i Malmö](https://www.webhallen.com/se/store/22-Malmo-Triangeln), [Inet i Malmö](https://www.inet.se/info/243/inet-malmo)
 
 Både [Lenovo](https://www.lenovo.com/se/sv/studentrabatt/) och [Dell](https://www.dell.com/sv-se/shop/dell-advantage/cp/students) har studentrabatt och säljer både stationära och bärbara datorer. De har även datorer med Linux förinstallerat (speciella konfigurationer av [bärbara XPS13](https://www.dell.com/se/offentlig/p/xps-13-linux/pd) resp. [bärbara Thinkpad och stationära Thinkstation](https://techworld.idg.se/2.2524/1.735625/lenovo-linux)).
 
