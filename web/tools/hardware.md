@@ -20,8 +20,7 @@ Vid distansundervisning är det bra med headset och webbkamera. Det går bra att
 Kan t.ex. köpas här: 
 [NetOnNet](https://www.netonnet.se/art/ljud-bild/kablar/adapter/andersson-computer-headset-adapter-female/1006756.13721/), 
 [Elgiganten](https://www.elgiganten.se/product/ljud-hifi/ljudkablar-adapters/HAMA54572/hama-3-5-mm-adapter-for-headset-med-mikrofon), 
-[Webhallen](https://www.webhallen.com/se/product/313979-iiglo-Multimedia-adapter-till-Dator-Svart),  
-[Kjell](https://www.kjell.com/se/produkter/dator/horlurar-headset/tillbehor-for-horlurar-headset/datoradapter-for-mobil-headset-p39356),
-[Mediamarkt](https://www.mediamarkt.se/sv/product/_deltaco-ljudadapter-3-5mm-mikrofon-3-5mm-stereo-hane-till-3-5mm-hona-4-pin-0-1-m-1305626.html),
-[Inet](https://www.inet.se/produkt/8904289/deltaco-adapter-2x3-5mm-ha-till-3-5mm-ho-4-pin-0-1m-svart
-)
+[Webhallen](https://www.webhallen.com/se/product/313979-iiglo-Multimedia-adapter-till-Dator-Svart), 
+[Kjell](https://www.kjell.com/se/produkter/dator/horlurar-headset/tillbehor-for-horlurar-headset/datoradapter-for-mobil-headset-p39356), 
+[Mediamarkt](https://www.mediamarkt.se/sv/product/_deltaco-ljudadapter-3-5mm-mikrofon-3-5mm-stereo-hane-till-3-5mm-hona-4-pin-0-1-m-1305626.html), 
+[Inet](https://www.inet.se/produkt/8904289/deltaco-adapter-2x3-5mm-ha-till-3-5mm-ho-4-pin-0-1m-svart)
