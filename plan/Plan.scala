@@ -99,7 +99,7 @@ trait Plan {
     Module("Sekvenser",
       id = "sequences", exercise = "sequences", lab = "shuffle", contents = """
       | översikt av Scalas samlingsbibliotek och samlingsmetoder,
-      | klasshierarkin i scala.collection, Traversable, Iterable,
+      | klasshierarkin i scala.collection, Iterable,
       | Seq, List, ListBuffer, ArrayBuffer, WrappedArray,
       | sekvensalgoritm,  algoritm: SEQ-COPY,
       | in-place vs copy, algoritm: SEQ-REVERSE,

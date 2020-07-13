@@ -276,54 +276,6 @@ baklängesFärg: Map[String,String] = Map(gurka -> nörg, tomat -> dör, aubergi
 
 
 
-\begin{Slide}{Hierarki av samlingstyper i \texttt{scala.collection} v2.12}
-
-\begin{multicols}{2}
-\begin{tikzpicture}[sibling distance=6.1em,->,>=stealth', inner sep=3pt, %scale=0.5,
-  every node/.style = {shape=rectangle, draw, align=center,font=\small\ttfamily},
-  class/.style = {fill=blue!20},
-  trait/.style = {rounded corners, fill=red!20}]
-  \node[trait] {Traversable}
-    child { node[trait] {Iterable}
-      child { node[trait] {Seq}
-       }
-      child { node[trait] {Set}
-      }
-      child { node[trait] {Map}
-      }
-    };
-\end{tikzpicture}
-
-\columnbreak
-
-{\SlideFontTiny
-
-\code{Traversable} har metoder som är implementerade med hjälp av: \\
-\code{def foreach[U](f: Elem => U): Unit}\\
-
-\vspace{1em}\code{Iterable} har metoder som är implementerade med hjälp av: \\
-\code{def iterator: Iterator[A] }
-
-}
-
-\begin{itemize}\SlideFontTiny
-\item[] \code{Seq}: ordnade i sekvens
-\item[] \code{Set}: unika element
-\item[] \code{Map}: par av (nyckel, värde)
-\end{itemize}
-
-
-\end{multicols}
-
-{\SlideFontSmall Samlingen \Emph{\texttt{Vector}} är en \code{Seq} som är en \code{Iterable} som är en \code{Traversable}. \\ \vspace{0.5em}\pause
-De konkreta samlingarna är uppdelade i dessa paket:\\
-\code{scala.collection.immutable} \hfill som är \Emph{automatiskt} importerade\\
-\code{scala.collection.mutable}  \hfill som \Alert{måste importeras} explicit\\\pause
-(undantag: primitiva \code{scala.Array} som är automatiskt synlig)
-}
-\end{Slide}
-
-
 \begin{Slide}{Hierarki av samlingstyper i \texttt{scala.collection} v2.13}
 
 \begin{multicols}{2}
@@ -395,20 +347,20 @@ java.util.NoSuchElementException: reached iterator end
 
 
 
-\ifkompendium
-\else
-\begin{Slide}{Hierarki av samlingar i scala.collection v2.12}\SlideFontTiny
-\includegraphics[width=0.95\textwidth]{../img/collection/collection-traits}\\
-%\noindent Läs mer om Scalas samlingar här: \\
-\url{https://docs.scala-lang.org/overviews/collections/overview.html}
-\end{Slide}
-\fi
+% \ifkompendium
+% \else
+% \begin{Slide}{Hierarki av samlingar i scala.collection v2.12}\SlideFontTiny
+% \includegraphics[width=0.6\textwidth]{../img/collection/collection-traits}\\
+% %\noindent Läs mer om Scalas samlingar här: \\
+% \url{https://docs.scala-lang.org/overviews/collections/overview.html}
+% \end{Slide}
+% \fi
 
 
 
 
 
-\begin{Slide}{Mer specifika samlingstyper i \texttt{scala.collection} v2.12}
+\begin{Slide}{Mer specifika samlingstyper i \texttt{scala.collection}}
 Det finns \Alert{mer specifika} \Emph{subtyper} av \code{Seq}, \code{Set} och \code{Map}:
 \\ \vspace{1em}
 
@@ -416,8 +368,7 @@ Det finns \Alert{mer specifika} \Emph{subtyper} av \code{Seq}, \code{Set} och \c
   every node/.style = {shape=rectangle, draw, align=center,font=\small\ttfamily},
   class/.style = {fill=blue!20},
   trait/.style = {rounded corners, fill=red!20}]
-  \node[trait] {Traversable}
-    child { node[trait] {Iterable}
+  \node[trait] {Iterable}
       child { node[trait, xshift=-2.4cm] {Seq}
         child { node[trait] {IndexedSeq} }
         child { node[trait] {LinearSeq} }
@@ -428,13 +379,18 @@ Det finns \Alert{mer specifika} \Emph{subtyper} av \code{Seq}, \code{Set} och \c
       }
       child { node[trait, xshift=1.0cm] {Map}
         child { node[trait] {SortedMap} }
-      }
     };
 \end{tikzpicture}
 
-\vspace{0.5em}
+\pause\vspace{0.5em}
 \Emph{\texttt{Vector}} är en \Alert{\texttt{IndexedSeq}} medan
 \Emph{\texttt{List}} är en \Alert{\texttt{LinearSeq}}.
+
+\pause\vspace{1em}{\SlideFontSmall
+\href
+{https://docs.scala-lang.org/overviews/collections-2.13/overview.html}
+{docs.scala-lang.org/overviews/collections-2.13/overview.html}
+}
 \end{Slide}
 
 \begin{Slide}{Några oföränderliga och förändringsbara sekvenssamlingar}\SlideFontSmall
@@ -463,7 +419,7 @@ Fördjupning: Studera samlingars prestandaegenskaper här:\\ \href{https://docs.
 
 \begin{Slide}{Några användbara metoder på samlingar}\SlideFontTiny
 \begin{tabular}{r r l}\hline
-\texttt{\Emph{Traversable}}
+\texttt{\Emph{Iterable}}
   & \code|xs.size| & antal elementet \\
   & \code|xs.head| & första elementet \\
   & \code|xs.last| & sista elementet \\
@@ -473,9 +429,7 @@ Fördjupning: Studera samlingars prestandaegenskaper här:\\ \href{https://docs.
   & \code|xs.map(f)| & gör \code|f| på alla element, ger ny samling \\
   & \code|xs.filter(p)| & ny samling med bara de element där p är sant\\
   & \code|xs.groupBy(f)| & ger en \code|Map| som grupperar värdena enligt f\\
-  & \code|xs.mkString(",")| & en kommaseparerad sträng med alla element\\ \hline
-
-\texttt{\Emph{Iterable}}
+  & \code|xs.mkString(",")| & en kommaseparerad sträng med alla element\\ 
   & \code|xs.zip(ys)| & ny samling med par (x, y); ''zippa ihop'' xs och ys \\
   & \code|xs.zipWithIndex| & ger en \code|Map| med par (x, index för x) \\
   & \code|xs.sliding(n)| & ny samling av samlingar genom glidande ''fönster''\\ \hline
@@ -554,19 +508,19 @@ frekvens: Map[Int,Int] = Map(5 -> 1, 1 -> 1, 6 -> 2, 2 -> 2, 3 -> 1, 4 -> 2)
 \end{Slide}
 
 
-\ifkompendium\else
+% \ifkompendium\else
 
-\begin{Slide}{scala.collection.immutable}
-\includegraphics[width=0.67\textwidth]{../img/collection/collection-immutable}~~%
-\includegraphics[width=0.3\textwidth]{../img/collection/collection-legend}
-\end{Slide}
+% \begin{Slide}{scala.collection.immutable}
+% \includegraphics[width=0.67\textwidth]{../img/collection/collection-immutable}~~%
+% \includegraphics[width=0.3\textwidth]{../img/collection/collection-legend}
+% \end{Slide}
 
 
-\begin{Slide}{scala.collection.mutable}
-\includegraphics[width=1.05\textwidth]{../img/collection/collection-mutable}
-\end{Slide}
+% \begin{Slide}{scala.collection.mutable}
+% \includegraphics[width=1.05\textwidth]{../img/collection/collection-mutable}
+% \end{Slide}
 
-\fi
+% \fi
 
 \begin{Slide}{Strängar är implicit en \texttt{IndexedSeq[Char]}}\SlideFontSmall
 Det finns en så kallad \Emph{implicit konvertering} mellan \code{String} och \code{IndexedSeq[Char]} vilket gör att \Alert{alla samlingsmetoder på \texttt{Seq} även funkar på strängar} och även flera andra smidiga strängmetoder erbjuds \Alert{utöver} de som finns i \href{http://docs.oracle.com/javase/8/docs/api/java/lang/String.html}{\code{java.lang.String}} genom klassen \href{http://www.scala-lang.org/api/current/scala/collection/immutable/StringOps.html}{\code{StringOps}}.
