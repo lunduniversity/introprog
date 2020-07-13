@@ -553,11 +553,11 @@ Använd oföränderliga tabeller med lämpliga nycklar och värden. Du kan anvä
 \AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\WHAT{Registrering med \code{groupBy} och \code{mapValues}.}
+\WHAT{Registrering med \code{groupBy}.}
 
 \QUESTBEGIN
 
-\Task \what~Vi ska nu utnyttja ett riktigt listigt trick för att via en enda kodrad implementera registrering med hjälp av samlingsmetoden \code{groupBy} och tabellmetoden \code{mapValues}.
+\Task \what~Vi ska nu utnyttja ett riktigt listigt trick för att via en enda kodrad implementera registrering med hjälp av samlingsmetoderna \code{groupBy} och \code{map}.
 
 \Subtask Läs om metoden \code{groupBy} i snabbreferensen. Du hittar den under rubriken \emph{''Methods in trait \code{Traversable[A]}''} eftersom \code{groupBy} fungerar på alla samlingar. Testa \code{groupBy} enligt nedan och beskriv vad som händer.
 
@@ -566,7 +566,7 @@ scala> val xs = Vector(1, 1, 2, 2, 4, 4, 4).groupBy(x => x > 2)
 scala> val ys = Vector(1, 1, 2, 2, 4, 4, 4).groupBy(x => x)
 \end{REPL}
 
-\Subtask Skapa en funktion \code{freq} med nedan funktionshuvud som returnerar en tabell med antalet förekomster av olika heltal i \code{xs}. Testa \code{freq} på en sekvens av 1000 slumpvisa tärningskast och förklara hur funktionen \code{freq} fungerar. \emph{Tips:} Gör först \code{groupBy(???)} och sedan \code{mapValues(???)}.
+\Subtask Skapa en funktion \code{freq} med nedan funktionshuvud som returnerar en tabell med antalet förekomster av olika heltal i \code{xs}. Testa \code{freq} på en sekvens av 1000 slumpvisa tärningskast och förklara hur funktionen \code{freq} fungerar. \emph{Tips:} Gör först \code{groupBy(???)} och sedan \code{map(???)}.
 
 \begin{Code}
 def freq(xs: Vector[Int]): Map[Int, Int] = ???
@@ -601,9 +601,9 @@ ys: Map[Int,Vector[Int]] =
 
 \begin{Code}
 def freq(xs: Vector[Int]): Map[Int, Int] =
-  xs.groupBy(x => x).mapValues(_.size)
+  xs.groupBy(x => x).map(p => p._1 -> p._2.size)
 \end{Code}
-Förklaring: metoden \code{groupBy} skapar en tabell med par \code{k, v} där \code{v} är en sekvens med så många \code{k} som antalet gånger \code{k} förekommer i \code{xs}. Genom att omvandla alla värden \code{v} till storleken av \code{v} får vi en frekvenstabell.
+Förklaring: metoden \code{groupBy} skapar en tabell med par \code{k, v} där \code{v} är en sekvens med så många \code{k} som antalet gånger \code{k} förekommer i \code{xs}. Genom att omvandla alla värden \code{p._2} till storleken \code{p._2.size} får vi en frekvenstabell.
 
 \begin{REPL}
 scala> freq(kasta(1000))

@@ -412,10 +412,10 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "\\code|xs(0)                         |" -> "\\code|NoSuchElementException|",
       "\\code|(xs + (0 -> 1)).apply(0)      |" -> "\\code|1                     |",
       "\\code|xs.keySet.apply(2)            |" -> "\\code|true                  |",
-      "\\code|xs.mapValues(v => -v).apply(8)|" -> "\\code|-9                    |",
       "\\code|xs isDefinedAt 0              |" -> "\\code|false                 |",
       "\\code|xs.getOrElse(0, 7)            |" -> "\\code|7                     |",
       "\\code|xs.maxBy(_._2)                |" -> "\\code|(16, 17)              |",
+      "\\code|xs.map(p => p._1 -> -p._2)(8) |" -> "\\code|-9                    |",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 

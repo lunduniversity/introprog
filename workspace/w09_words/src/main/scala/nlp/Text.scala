@@ -26,8 +26,6 @@ case class Text(source: String){
     }
     //eller kortare med samma resultat: (lättare eller svårare att läsa?)
     //  followFreq.map(kv => kv._1 -> kv._2.maxBy(_._2)._1)
-    //eller ännu lite kortare men samma resultat: 
-    //  followFreq.view.mapValues(_.maxBy(_._2)._1).toMap
 }
 
 object Text {
