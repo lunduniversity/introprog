@@ -64,7 +64,7 @@ trait Plan {
       | lokal funktion,
       | funktioner är objekt med apply-metod,
       | namnrymd, synlighet, privat medlem, inkapsling,
-      | getter och setter, principen om uniform access,
+      | getter och setter, principen om enhetlig access,
       | överlagring av metoder,
       | introprog.PixelWindow,
       | initialisering, lazy val,
