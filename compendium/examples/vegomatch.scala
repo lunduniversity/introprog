@@ -9,12 +9,12 @@ case class Gurka(vikt: Int, ärRutten: Boolean) extends Grönsak
 case class Tomat(vikt: Int, ärRutten: Boolean) extends Grönsak
 
 object Main {
-  def slumpvikt:    Int     = (math.random * 420 + 42).toInt
-  def slumprutten:  Boolean = math.random > 0.8
+  def slumpvikt:    Int     = (math.random() * 420 + 42).toInt
+  def slumprutten:  Boolean = math.random() > 0.8
   def slumpgurka:   Gurka   = Gurka(slumpvikt, slumprutten)
   def slumptomat:   Tomat   = Tomat(slumpvikt, slumprutten)
   def slumpgrönsak: Grönsak = 
-    if (math.random > 0.2) slumpgurka else slumptomat
+    if (math.random() > 0.2) slumpgurka else slumptomat
   
   def ärÄtvärd(g: Grönsak): Boolean = g match {
     case Gurka(v, rutten) if v > 100 && !rutten => true 
