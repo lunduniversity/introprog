@@ -26,14 +26,16 @@
 
 
 \begin{Slide}{Exempel: Generisk case-klass med generell matris}
-  En \emph{generisk} datastruktur har en \Emph{typparameter} som är \Alert{abstrakt} (alltså generell) som kan bindas  till ett \Alert{konkret} \Emph{typargument}. \\~\\
-  En generisk case-class med en \code{Vector[Vector[T]]}:
+  En \emph{generisk} datastruktur har minst en obunden \Emph{typparameter} som kan bindas  till ett \Alert{konkret} \Emph{typargument}.
+  
   \begin{Code}
   case class Matrix[T](data: Vector[Vector[T]]){
     def apply(x: Int, y: Int): T = data(x)(y)
   }
   \end{Code}
+  \code{Matrix} i exemplet ovan är en \Emph{generisk} case-class där \code{T} är obunden, eftersom \code{T} är en typparameter deklarerad inom \code{[]} \Alert{efter} klassens namn men \Alert{före} klassparameterlistan. \\
 
+  \vspace{0.5em} Användning där \code{T} binds till \code{Int} via kompilatorns typhärledning:
   \begin{REPL}
   scala> Matrix(Vector(Vector(5, 2, 42, 4, 5),Vector(3, 4, 18, 6, 7)))
   res1: Matrix[Int] =
@@ -56,14 +58,14 @@
 \end{itemize}
 Exempel: \Emph{generisk} funktion:
 \begin{Code}
-def tnirp[A](x: A):Unit = println(x.toString.reverse) // A fri
+def tnirp[A](x: A):Unit = println(x.toString.reverse) // A är fri
 \end{Code}
 \pause
 Exempel: \Emph{generisk} klass med generiska metoder:
 \begin{Code}
-class Cell[A](var value: A){                          // A fri
-  def update(x: A): Unit = value = x                  // A bunden
-  def create[B](x: B = value): Cell[B] = new Cell(x)  // B fri
+class Cell[A](var value: A){                          // A är fri
+  def update(x: A): Unit = value = x                  // A är bunden
+  def create[B](x: B = value): Cell[B] = new Cell(x)  // B är fri
 }
 \end{Code}
 \pause
