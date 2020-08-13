@@ -1,5 +1,8 @@
 # TODO
 
+**This old TODO is abandoned. Now github issues to the rescue....** 
+Kept for archeological interest :)
+
 ## Started
 
 * Make week plan and module plan with module contents fro each week
