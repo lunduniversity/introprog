@@ -2,6 +2,7 @@ import sbt._
 import Process._
 import Keys._
 
+scalaVersion := "2.13.3"
 
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
