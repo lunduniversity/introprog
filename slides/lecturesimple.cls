@@ -116,6 +116,8 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 %%%%%%%%%%%%% compatibility setting
 %https://tex.stackexchange.com/questions/81899/what-does-running-in-backwards-compatibility-mode-mean-and-what-should-i-fix-t
 %\pgfplotsset{compat=newest} 
+%\pgfplotsset{compat=1.13} 
+
 
 %https://www.sharelatex.com/blog/2013/08/29/tikz-series-pt3.html
 \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
