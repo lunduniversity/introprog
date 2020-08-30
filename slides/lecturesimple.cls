@@ -112,7 +112,10 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning, calc}
 \usepackage{tkz-euclide}\usetkzobj{all}%https://tex.stackexchange.com/questions/96459/automatically-draw-and-labels-angles-of-a-triangle-in-tikz
 \usepackage{pgfplots}
-\pgfplotsset{compat=newest} %https://tex.stackexchange.com/questions/81899/what-does-running-in-backwards-compatibility-mode-mean-and-what-should-i-fix-t
+
+%%%%%%%%%%%%% compatibility setting
+%https://tex.stackexchange.com/questions/81899/what-does-running-in-backwards-compatibility-mode-mean-and-what-should-i-fix-t
+%\pgfplotsset{compat=newest} 
 
 %https://www.sharelatex.com/blog/2013/08/29/tikz-series-pt3.html
 \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
