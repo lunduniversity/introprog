@@ -10,6 +10,8 @@ När du ska programmera är det bra med en dator med minst 8GB RAM och 2.5GHz CP
 
 Både [Lenovo](https://www.lenovo.com/se/sv/studentrabatt/) och [Dell](https://www.dell.com/sv-se/shop/dell-advantage/cp/students) har studentrabatt och säljer både stationära och bärbara datorer. De har även datorer med Linux förinstallerat (speciella konfigurationer av [bärbara XPS13](https://www.dell.com/se/offentlig/p/xps-13-linux/pd) resp. [bärbara Thinkpad och stationära Thinkstation](https://techworld.idg.se/2.2524/1.735625/lenovo-linux)).
 
+Om du letar efter en toksnabb fläktlös stationär dator rekommenderas senaste modellen av [Siago](https://www.atlastsolutions.com/sigao/). Om du inte vill beställa från webben utan köpa i lokal butik, så ta kontakt med [Compliq i Lund](https://www.compliq.se/kontakta-oss/) och fråga om de kan beställa en åt dig.
+
 
 ### Headset-adapter
 
