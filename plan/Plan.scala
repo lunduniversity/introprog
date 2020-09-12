@@ -48,9 +48,8 @@ trait Plan {
       | applicera funktion på alla element i en samling,
       | uppdelad parameterlista, skapa egen kontrollstruktur,
       | funktionsvärde, funktionstyp, äkta funktion, stegad funktion, apply,
-      | anonyma funktioner, lambda,
-      | aktiveringspost, anropsstacken, objektheapen,
-      | funktioner är objekt med apply-metod,
+      | anonyma funktioner, lambda, predikat,
+      | aktiveringspost, anropsstacken, objektheapen, stack trace,
       | rekursion,
       | scala.util.Random, slumptalsfrö,
       """.stripTrim),
@@ -63,8 +62,9 @@ trait Plan {
       | tupel, multipla returvärden,
       | block, lokal variabel, skuggning,
       | lokal funktion,
+      | funktioner är objekt med apply-metod,
       | namnrymd, synlighet, privat medlem, inkapsling,
-      | getter och setter, principen om uniform access,
+      | getter och setter, principen om enhetlig access,
       | överlagring av metoder,
       | introprog.PixelWindow,
       | initialisering, lazy val,
@@ -99,7 +99,7 @@ trait Plan {
     Module("Sekvenser",
       id = "sequences", exercise = "sequences", lab = "shuffle", contents = """
       | översikt av Scalas samlingsbibliotek och samlingsmetoder,
-      | klasshierarkin i scala.collection, Traversable, Iterable,
+      | klasshierarkin i scala.collection, Iterable,
       | Seq, List, ListBuffer, ArrayBuffer, WrappedArray,
       | sekvensalgoritm,  algoritm: SEQ-COPY,
       | in-place vs copy, algoritm: SEQ-REVERSE,
@@ -229,13 +229,13 @@ trait Plan {
     else labNumOfWeek(w)
   }
 
-  lazy val startLp1 = Date(2019, 9, 2)
+  lazy val startLp1 = Date(2020, 8, 31)
 
-  lazy val startLp2 = Date(2019, 11, 4)
+  lazy val startLp2 = Date(2020, 11, 2)
 
-  lazy val ksdatum = Date(2019, 10, 29)
+  lazy val ksdatum = Date(2020, 10, 27)
 
-  lazy val tentadatum = Date(2020, 1, 13)
+  lazy val tentadatum = Date(2020, 1, 11)
 
   def weeksOf(date: Date, n: Int): Seq[String] =
     for (week <- 0 until n) yield date.addDays(week*7).workWeek

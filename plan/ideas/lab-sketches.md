@@ -98,7 +98,7 @@ Nytt namn: "pirates"  ???
 * case class Card("Spades", 13) Engelska el. Svenska i strängarna? Ok med svenska i strängarna men namn som kompilatorn ser i koden ska vara på engelska.
 
 * Lägg till registrering så att de får träna på det:
-    * Visa "färdig" myCardMap.groupBy(_.color).mapValues(_.size)  (kanske ska dett göras redan på föreläsning och övning)
+    * Visa "färdig" myCardMap.groupBy(_.color).map(p => p._1 -> p._2.size)  (kanske ska det göras redan på föreläsning och övning)
     * Inplementera egen registrering i en Map så att man kan registrera inte bara på int utan string i (key, value)-par
 
 * Använda wild-card-syntaxen vid metodanrop på collection -> kolla så att detta övas på övningar

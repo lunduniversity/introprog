@@ -1,4 +1,4 @@
-// paste into kojo or run as script: scala timer2.scala
+// paste into kojo or run as script: scala timer2.sc
 
 object timer {
   def now: Long = System.currentTimeMillis
@@ -24,12 +24,12 @@ def timeInt(n: Int): Double = {
 
 def show(msg: String, sec: Double): Unit = {
   print(msg + ": ")
-  println(sec + " seconds")
+  println(s"$sec seconds")
 }
 
 def report(n: Long): Unit = {
-  show("Long " + n, timeLong(n))
-  if (n <= Int.MaxValue) show("Int  " + n, timeInt(n.toInt))
+  show(s"Long $n", timeLong(n))
+  if (n <= Int.MaxValue) show(s"Int  $n", timeInt(n.toInt))
 }
 
 // HUVUDPROGRAM, mätningar:

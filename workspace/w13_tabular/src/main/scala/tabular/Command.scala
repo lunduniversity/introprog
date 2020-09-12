@@ -38,7 +38,7 @@ object Command {
 
    def save(file: String): String = TODO
 
-   def listFiles(): String = IO.currentDir +"\n"+ IO.list(IO.currentDir).mkString(" ")
+   def listFiles(): String = IO.currentDir() +"\n"+ IO.list(IO.currentDir()).mkString(" ")
 
    def doCommand(cmd: Vector[String]): String  = cmd match {
      case Vector("") | Vector()            => shortHelpText

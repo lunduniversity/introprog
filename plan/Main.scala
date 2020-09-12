@@ -32,7 +32,7 @@ object Main extends App {
               val w = column("W").apply(i).toLowerCase
               s"""<a href="https://fileadmin.cs.lth.se/pgk/lect-$w.pdf">$m</a>"""
             }
-            htmlSoup = htmlSoup.replaceAllLiterally(s"$m</td>",s"${href(m)}</td>")
+            htmlSoup = htmlSoup.replace(s"$m</td>",s"${href(m)}</td>")
 
           case (m, _) => println(s"Ignoring html-patching of link in module: $m")
       }

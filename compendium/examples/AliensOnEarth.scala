@@ -15,7 +15,7 @@ object AliensOnEarth {
 
   def playGame(alien: String, maxPoints: Int = 1000): Int = {
     val os = Vector("penguin", "window", "apple")
-    val correct = if (math.random < 0.5) os(0) else randomChoice(os)
+    val correct = if (math.random() < 0.5) os(0) else randomChoice(os)
     val cheatCode = (os.indexOf(correct) + 1) * math.Pi
     println(s"""Hello $alien!
                |You are an alien on Earth.

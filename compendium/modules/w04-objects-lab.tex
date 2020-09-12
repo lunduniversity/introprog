@@ -117,6 +117,7 @@ object Color {
   val mole   = new JColor( 51,  51,   0)
   val soil   = new JColor(153, 102,  51)
   val tunnel = new JColor(204, 153, 102)
+  val grass  = new JColor( 25, 130,  35)
 }
 \end{Code}
 
@@ -161,13 +162,13 @@ Koordinatsystem i \code{BlockWindow} ska ha kvadratiska, \emph{stora} bildpunkte
 
 \end{framed}
 
-\noindent Implementera funktionen \code{block} i modulen \code{BlockWindow} enligt nedan, så att en kvadrat ritas ut när proceduren anropas. Parametern \code{pos} anger block-koordinaten och parametern \code{color} anger färgen. Typ-alias-deklarationen av \code{Pos} ger ett beskrivande typnamn för en 2-tupel av heltal, som vi kan använda i parameterlistor för att betecknande positioner i ett \code{BlockWindow}. Se dokumentationen av \code{fill}-metoden i \code{PixelWindow}. Fyll i det som saknas nedan.
+\noindent Implementera funktionen \code{block} i modulen \code{BlockWindow} enligt nedan, så att en kvadrat ritas ut när proceduren anropas. Parametern \code{pos} anger block-koordinaten och parametern \code{color} anger färgen. Typ-alias-deklarationen av \code{Pos} ger ett beskrivande typnamn för en 2-tupel av heltal, som vi kan använda i parameterlistor för att betecknande positioner i ett \code{BlockWindow}. Se dokumentationen av \code{fill}-metoden i \code{PixelWindow}. Observera att du behöver räkna om block-koordinaterna i \code{pos} till fönsterkoordinater i \code{windows.fill}. Fyll i det som saknas nedan.
 \begin{Code}
   type Pos = (Int, Int)
 
   def block(pos: Pos)(color: JColor = JColor.gray): Unit = {
-    val x = ???
-    val y = ???
+    val x = ??? //räkna ut fönstrets x-koordinat i pixlar istf block
+    val y = ??? //räkna ut fönstrets y-koordinat i pixlar istf block
     window.fill(???)
   }
 \end{Code}
@@ -181,7 +182,7 @@ Säkerställ att koden kompilerar utan fel.
 % Skriv ner dina svar inför redovisningen.
 
 \Subtask
-För att testa din procedur, anropa funktionen \code{BlockWindow.block} några gånger i \code{Main.drawWorld}, dels med utelämnat defaultargument, dels med olika färger ur färgmodulen. Kompilera och kör ditt program och kontrollera att allt fungerar som det ska.
+För att testa din procedur, anropa funktionen \code{BlockWindow.block} några gånger i  \\\code{Main.drawWorld}, dels med utelämnat defaultargument, dels med olika färger ur färgmodulen. Kompilera och kör ditt program och kontrollera att allt fungerar som det ska.
 
 
 
@@ -193,7 +194,7 @@ Lägg till proceduren \code{rectangle} i grafikmodulen. Procedurhuvudet ska ha f
 (leftTop: Pos)(size: (Int, Int))(color: JColor = JColor.gray)
 \end{Code}
 
-Parametern \code{leftTop} anger blockkoordinaten för rektangelns övre vänstra hörn och \code{size} anger \code{(bredd, höjd)}.
+Parametern \code{leftTop} anger blockkoordinaten för rektangelns övre vänstra hörn, och \code{size} anger \code{(bredd, höjd)} uttryckt i antal block.
 
 Använd denna nästlade repetition för att rita ut rektangeln:
 
@@ -206,16 +207,20 @@ for (y <- ???) {
 \end{Code}
 
 \Subtask\Pen
-I vilken ordning ritas blocken i rektangeln ut (lodrät eller vågrät)? Om du är osäker kan du lägga in en utskrift av \code{(x, y)} i den innersta loopen för att se ordningen.
+I vilken ordning ritas blocken i rektangeln ut (lodrätt eller vågrätt)? Om du är osäker kan du lägga in en utskrift av \code{(x, y)} i den innersta loopen för att se ordningen.
 
 \Subtask\Pen En annan lösning är att i stället anropa \code{fill}-metoden i \code{PixelWindow} direkt för att rita en motsvarande stor rektangel \emph{utan} nästlad loop. Vilka argument ska \code{fill}-anropet då ha?
 
-\Subtask Ändra i \code{Main.drawWorld} så att den ritar ut underjorden, det vill säga en massa jord där blockmullvaden kan gräva sina tunnlar.
- Underjorden ska bestå av en rektangel med färgen \code{Color.soil} som precis täcker fönstret.
+\Subtask Lägg följande kod i \code{Main.drawWorld} så att programmet ritar ut underjorden (det vill säga en massa jord där blockmullvaden kan gräva sina tunnlar) och även lite gräs.
 
-Eftersom funktionen \code{rectangle} har mer än en parameter med samma typ som lätt kan blandas ihop utan att kompilatorn hittar felet, ska du namnge det andra argumentet \code{size} vid anropet. För det första argumentet (\code{leftTop}) ska du utnyttja att det går att skippa tupelparenteserna (gäller vid parameterlista med endast en parameter av tupeltyp).
+\begin{Code}
+def drawWorld(): Unit = {
+  BlockWindow.rectangle(0, 0)(size = (30, 4))(Color.grass)
+  BlockWindow.rectangle(0, 4)(size = (30, 46))(Color.soil)
+}
+\end{Code}
 
-\Subtask Anropa \code{Main.drawWorld} i \code{Main.main} och testa så att det fungerar.
+\Subtask Anropa \code{Main.drawWorld} i \code{Main.main} och testa att det fungerar. Om någon del av fönstret förblir svart istället för att få gräsfärg eller jordfärg, kontrollera att \code{block} och \code{rectangle} är korrekt implementerade.
 
 \Task
 I \code{PixelWindow} finns funktioner för att känna av tangenttryckningar och mus\-klick.
@@ -291,11 +296,11 @@ Lägg till några \code{if}-satser i början av \code{while}-satsen som upptäck
 
 \Task
 Mullvadar är inte så intresserade av livet ovanför jord, men det kan vara trevligt att se hur långt ner mullvaden grävt sig.
-Lägg till en himmelsfärg och en gräsfärg i objektet \code{Color} och rita ut himmel och gräs i \code{Mole.drawWorld}.
-Justera också det du gjorde i föregående uppgift, så att mullvaden håller sig under jord. \emph{Tips:} Du har nytta av en interaktiv färgväljare som du kan få genom att anropa \code{introprog.Dialog.selectColor()} i Scala REPL.
+Lägg till en himmelsfärg i objektet \code{Color} och rita ut himmel ovanför gräset i \code{Mole.drawWorld}.
+Justera också det du gjorde i föregående uppgift, så att mullvaden håller sig på marken. \emph{Tips:} Du har nytta av en interaktiv färgväljare som du kan få genom att anropa \code{introprog.Dialog.selectColor()} i Scala REPL.
 
 \Task
-Ändra så att mullvaden kan springa uppe på gräset också, men se till så att ingen tunnel ritas ut där.
+Ändra så att mullvaden inte lämnar någon tunnel efter sig när den springer på gräset.
 
 \Task
 Låt mullvaden fortsätta gräva även om man inte trycker ned någon tangent. Tangenttryckning ska ändra riktningen.
@@ -394,7 +399,7 @@ object Worm {
   val teleportProbability = 0.02
 
   def randomTeleport(notHere: Pos): Unit =
-    if (math.random < Worm.teleportProbability) {
+    if (math.random() < Worm.teleportProbability) {
       erase()
       do pos = nextRandomPos() while (pos == notHere)
       draw()

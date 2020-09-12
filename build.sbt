@@ -3,6 +3,7 @@ import Process._
 import Keys._
 import complete.DefaultParsers._
 
+scalaVersion := "2.13.3"
 
 lazy val hello = taskKey[Unit]("Prints welcome message")
 hello := println("""
@@ -15,9 +16,11 @@ hello := println("""
 
     type 'pdf<TAB>' to see individual pdf build commands
 
-    type 'genQuiz' to generate quiz files
-
     type 'gen' to generate plan files
+
+    type 'genquiz' to generate quiz files
+
+    type 'gengloss' to generate glossary files
 
     type 'eclipse' to generate eclipse workspace
 
@@ -38,7 +41,8 @@ lazy val myStartupTransition: State => State = { s: State =>
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
   version := "v3-snapshot",
-  scalaVersion := "2.12.10"
+  scalaVersion := "2.13.3",
+  scalacOptions ++= Seq("-deprecation", "-feature")
 )
 
 lazy val plan = (project in file("plan")).settings(commonSettings: _*).
@@ -59,10 +63,18 @@ lazy val workspace = (project in file("workspace")).settings(commonSettings: _*)
     EclipseKeys.withSource := true
   )
 
+lazy val glossary = (project in file("glossary")).settings(commonSettings: _*).
+  settings(
+    name := "glossary",
+    EclipseKeys.skipProject := true
+  )
+
+
 lazy val build = taskKey[Unit]("complete build including plan/run before pdf")
 build := Def.sequential(
   gen,
   genquiz,
+  gengloss,
   pdf
 ).value
 
@@ -71,6 +83,10 @@ gen := (run in Compile in plan).toTask("").value
 
 lazy val genquiz = taskKey[Unit]("alias for quiz/run")
 genquiz := (run in Compile in quiz).toTask("").value
+
+
+lazy val gengloss = taskKey[Unit]("alias for glossary/run")
+gengloss := (run in Compile in glossary).toTask("").value
 
 // ************** cmd util functions
 

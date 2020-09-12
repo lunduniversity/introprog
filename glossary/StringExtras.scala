@@ -19,7 +19,7 @@ object StringExtras {
       val enc = "UTF-8"
       var result: Vector[String] = Vector()
       val source = scala.io.Source.fromFile(s, enc)
-      try result = source.getLines.toVector finally source.close()
+      try result = source.getLines().toVector finally source.close()
       result
     }
 
@@ -27,7 +27,7 @@ object StringExtras {
       val escapeChars = "&_"
       var result = s
       for (c <- escapeChars){
-        result = result.replaceAllLiterally(c.toString, "\\" + c)
+        result = result.replace(c.toString, "\\" + c)
       }
       result
     }

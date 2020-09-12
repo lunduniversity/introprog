@@ -465,30 +465,30 @@ scala> for (i <- xss.indices) {
 \end{Slide}
 
 
-\begin{Slide}{Iterera över nästlad struktur med nästlad foreach}\SlideFontSmall
-Iterera med nästlad foreach-sats:
-\begin{REPL}
-scala> val xss = Vector.tabulate(2,5)((x,y) => x + y + 1)
+% \begin{Slide}{Iterera över nästlad struktur med nästlad foreach}\SlideFontSmall
+% Iterera med nästlad foreach-sats:
+% \begin{REPL}
+% scala> val xss = Vector.tabulate(2,5)((x,y) => x + y + 1)
 
-xss.foreach{ xs => ??? ; println }
+% xss.foreach{ xs => ??? ; println }
 
-1 2 3 4 5
-2 3 4 5 6
-\end{REPL}
-\end{Slide}
+% 1 2 3 4 5
+% 2 3 4 5 6
+% \end{REPL}
+% \end{Slide}
 
 
-\begin{Slide}{Iterera över nästlad struktur med nästlad foreach}\SlideFontSmall
-Iterera med nästlad foreach-sats:
-\begin{REPL}
-scala> val xss = Vector.tabulate(2,5)((x,y) => x + y + 1)
+% \begin{Slide}{Iterera över nästlad struktur med nästlad foreach}\SlideFontSmall
+% Iterera med nästlad foreach-sats:
+% \begin{REPL}
+% scala> val xss = Vector.tabulate(2,5)((x,y) => x + y + 1)
 
-xss.foreach{ xs => xs.foreach{ x => print(x + " ") }; println }
+% xss.foreach{ xs => xs.foreach{ x => print(x + " ") }; println }
 
-1 2 3 4 5
-2 3 4 5 6
-\end{REPL}
-\end{Slide}
+% 1 2 3 4 5
+% 2 3 4 5 6
+% \end{REPL}
+% \end{Slide}
 
 
 \begin{Slide}{Nästlade for-uttryck}\SlideFontSmall
@@ -564,6 +564,102 @@ xss:
 
 
 
+\ifkompendium\else
+\begin{Slide}{Fallgrop: likhet av array}
+\begin{REPL}
+scala> Vector.fill(5)(42) == Vector.fill(5)(42)
+res0: ???
+
+scala> Array.fill(5)(42) == Array.fill(5)(42)
+res1: ???
+\end{REPL}
+\end{Slide}
+\fi
+
+\begin{Slide}{Fallgrop: likhet av array}
+\begin{REPL}
+scala> Vector.fill(5)(42) == Vector.fill(5)(42)
+res0: Boolean = true
+
+scala> Array.fill(5)(42) == Array.fill(5)(42)
+res1: Boolean = false  // AAAARRGH!!! :(
+\end{REPL}
+Primitiva arrayer har en equals-metod som ger referenslikhet, \Alert{inte} innehållslikhet.
+\end{Slide}
+
+\ifkompendium\else
+\begin{Slide}{Kolla likhet av array-matris med nästlad while}
+\begin{REPL}
+scala> def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = {
+         var i = 0
+         var foundUnequal = false
+         while (???) {
+           var j = 0
+           while (???) {
+             if (xss(i)(j) != yss(i)(j)) ???
+             j += 1
+           }
+           i += 1
+         }
+         !foundUnequal
+       }
+
+scala> val (xss, yss) = (Array.fill(5,2)(42), Array.fill(5,2)(42))
+
+scala> isEqual(xss, yss)
+
+scala> yss(4)(1) = 0
+
+scala> isEqual(xss, yss)
+\end{REPL}
+\end{Slide}
+\fi
+
+
+\begin{Slide}{Kolla likhet av array-matris med nästlad while}
+\begin{REPL}
+scala> def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = {
+         var i = 0
+         var foundUnequal = false
+         while (i < xss.length && !foundUnequal) {
+           var j = 0
+           while (j < xss(i).length && !foundUnequal) {
+             if (xss(i)(j) != yss(i)(j)) foundUnequal = true
+             j += 1
+           }
+           i += 1
+         }
+         !foundUnequal
+       }
+
+scala> val (xss, yss) = (Array.fill(5,2)(42), Array.fill(5,2)(42))
+
+scala> isEqual(xss, yss)
+
+scala> yss(4)(1) = 0
+
+scala> isEqual(xss, yss)
+\end{REPL}
+\end{Slide}
+
+\begin{Slide}{Använd \code{deep} för test av innehållslikhet på arrayer}
+
+  I Scala kan du använda metoden \code{deep} på arrayer innan du jämför med \code{==}
+
+\begin{REPL}
+scala> val xs = Array(1,2,3)
+xs: Array[Int] = Array(1, 2, 3)
+
+scala> val ys = Array(1,2,3)
+ys: Array[Int] = Array(1, 2, 3)
+
+scala> xs.deep == ys.deep    // sköönt!! slipper uppfinna hjulet :)
+res0: Boolean = true
+
+\end{REPL}
+Funkar fint även på motsvarande nästlade strukturer: \\ \code{xss.deep == yss.deep} \\~\\ \pause
+{\small I Java finns följande hjälpmetod för innehållstest på arrayer med primitiva typer \code{java.util.Arrays.equals(xs, ys)} och för referenstyper finns \code{java.util.Arrays.deepEquals(xs, ys)}}
+\end{Slide}
 
 \begin{Slide}{Matris som Array med Array med heltal i Java}\SlideFontTiny
 \begin{CodeSmall}[language=Java]
@@ -588,23 +684,23 @@ public class ArrayMatrix {
 }
 \end{CodeSmall}
 \pause
-Övning: skriv en metod \code{fillRnd} som fyller en heltalsmatris med slumptal 1 till n:
+Övning: skriv en metod \code{fillRnd} som fyller en heltalsmatris med slumptal 1 till n:\\
 \pause
 \jcode|public static void fillRnd(int[][] m, int n){ /* ??? */ }| \\
 \pause
-Tips: använd en nästlad for-sats och: \\
-\jcode{(int) (Math.random * n + 1)   // (int) motsvarar Scalas asInstanceOf[Int]}
+Tips: använd en nästlad for-sats och detta uttryck: \\
+\jcode{(int) (Math.random() * n + 1) // (int) motsvarar Scalas asInstanceOf[Int]}
 
 \end{Slide}
 
 \begin{Slide}{Om veckans övningar}\SlideFontSmall
 \begin{itemize}
-\item Träna på att iterera i nästlade strukurer
+\item Träna på att iterera över nästlade strukurer
 
 \item Fortsätt jobba med Yatzy-exemplet
 
 \item träna på att skapa \Emph{imperativa} algoritmer: \\
-lös \code{isYatzy} med \code{while}-sats (kunde varit del av en tenta...)
+lös \code{isYatzy} med \code{while}-sats 
 
 \item Extrauppgift där du ska bygga ett enkelt yatzy-spel i terminalen (kunde varit en tentauppgift...)
 

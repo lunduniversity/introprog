@@ -66,8 +66,16 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning, calc}
-\usepackage{tkz-euclide}\usetkzobj{all}%https://tex.stackexchange.com/questions/96459/automatically-draw-and-labels-angles-of-a-triangle-in-tikz
+\usepackage{tkz-euclide}%\usetkzobj{all}%https://tex.stackexchange.com/questions/96459/automatically-draw-and-labels-angles-of-a-triangle-in-tikz
+
+
 \usepackage{pgfplots}
+%%%%%%%%%%%%% compatibility setting
+%https://tex.stackexchange.com/questions/81899/what-does-running-in-backwards-compatibility-mode-mean-and-what-should-i-fix-t
+%\pgfplotsset{compat=newest} 
+%\pgfplotsset{compat=1.13} 
+
+
 %https://www.sharelatex.com/blog/2013/08/29/tikz-series-pt3.html
 \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
 \tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=1cm, minimum height=1cm, text=white, text centered, draw=black, fill=blue!50!violet]

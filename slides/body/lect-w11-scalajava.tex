@@ -5,11 +5,40 @@
 
 
 \Subsection{Jämförelse Scala och Java}
-\begin{Slide}{Grundläggande likheter och skillnader}\SlideFontSmall
+
+\begin{Slide}{Vad gör en kompilator?}
+  \begin{minipage}{.52\textwidth}
+  %https://www.sharelatex.com/blog/2013/08/29/tikz-series-pt3.html
+  \begin{tikzpicture}[node distance=1.4cm,scale=0.8]
+    \node (input) [startstop] {Källkod};
+    \node(inptext) [right of=input, text width=2cm, scale=0.8,xshift=1.5cm]{För\\människor};
+    \node (compile) [process, below of=input] {Kompilator};
+    \node (output) [startstop, below of=compile] {Maskinkod};
+    \node(outtext) [right of=output, text width=2cm, scale=0.8,xshift=1.5cm]{För\\maskiner};
+    \draw [arrow] (input) -- (compile);
+    \draw [arrow] (compile) -- (output);
+    \end{tikzpicture}%
+
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  Kompilatorns stegvisa resultat:
+  \begin{itemize}\SlideFontSmall
+    \item \Emph{Syntaktisk analys}: textens \Alert{utformning} kontrolleras enligt en väldefinierad grammatik.
+    \item En \Emph{datastruktur} skapas som representerar kodens olika delar; ett s.k. abstrakt syntaxträd \Emph{AST}.
+    \item \Emph{Semantisk analys}: kodens \Alert{betydelse} kontrolleras i flera steg enligt språkets alla regler.
+    \item \Emph{Maskinkod} genereras, smarta \Alert{optimeringar} görs.
+  \end{itemize}
+\end{minipage}%
+
+\pause\vspace{1em}\SlideFontSmall Med statiskt typade språk (Scala, Java, C\#, C++, ...) kan fler kontroller ske under kompilering, jmf m dynamiskt typade språk (Python, Javascript, Clojure, Matlab, ...). I de senare släpps många typer av buggar vidare till körtid.
+\end{Slide}
+  
+
+\begin{Slide}{Grundläggande likheter och skillnader Java--Scala}\SlideFontSmall
 \Emph{Några likheter:}
 \begin{itemize}\SlideFontTiny
 \item Kompilerar till bytekod som kör på JVM på många olika plattformar
-\item Statisk typning: snabb maskinkod och kompilatorn hittar buggar vid kompilering
+\item Statisk typning: ger snabb maskinkod, kompilatorn kan ge stöd vid förändring av kod (s.k. refactoring) och hittar vissa buggar redan vid kompilering
 \end{itemize}
 
 \noindent \Emph{Liknande men} \Alert{viss skillnad:}
@@ -176,7 +205,7 @@
 
 \begin{Slide}{Huvudprogram i Scala och Java}
 \begin{multicols}{2}
-  \noindent\Emph{Scala}
+  \noindent\Emph{Scala 2}
 \begin{CodeSmall}[basicstyle=\footnotesize\ttfamily\SlideFontSize{6}{8},backgroundcolor=\color{white},
   frame=none]
 object Main {
@@ -198,6 +227,15 @@ public class JMain {
 }
 \end{CodeSmall}
 \end{multicols}
+
+\pause\vspace{1em}\noindent\Emph{Scala 3}
+\begin{CodeSmall}[basicstyle=\footnotesize\ttfamily\SlideFontSize{6}{8},backgroundcolor=\color{white},
+  frame=none]
+@main 
+def sumFirst(n: Int, xs: Int*): Unit = println(xs.take(n).sum)
+  
+\end{CodeSmall}
+
 \end{Slide}
 
 
@@ -289,7 +327,7 @@ for (int i = s.length()-1; i >= 0; i--) {
 }
 \end{CodeSmall}
 \end{multicols}
-I Scala är \code{s.indices} att föredra! Se nästa:
+I Scala är \code{s.indices} att föredra!
 \end{Slide}
 
 
@@ -460,7 +498,7 @@ class MutablePerson(var name: String) {
 
   def age_=(a: Int): Unit =
     if (a >= 0) _age = a else _age = 0  
-      // alternativ: kasta undantag?
+      // eller hellre kasta undantag?
 
   def isAdult: Boolean =
     age >= MutablePerson.AdultAge
@@ -655,6 +693,8 @@ var xs = Array(42, 43, 44)
 val n = xs.length
 
 var strings = new Array[String](42)
+// eller      Array.ofDim[String](42)
+// eller      Array.fill(42)(null: String)
 
 strings(0) = "first"
 
@@ -677,6 +717,8 @@ int[] xs2 = {42, 43, 44};
 int n = xs.length;  // EJ length()
 
 String[] strings = new String[42];
+
+
 
 strings[0] = "first";
 
@@ -748,6 +790,99 @@ Implementera:\\
 \end{Slide}
 
 
+\Subsection{Scanner}
+
+\begin{Slide}{Scanna filer och strängar med \texttt{java.util.Scanner}}\SlideFontTiny
+\setlength{\leftmargini}{0pt}
+\begin{itemize}
+\item I Scala kan man läsa från fil så här (se quickref sid 3 längst ner):
+
+\begin{Code}
+val names = scala.io.Source.fromFile("src/names.txt").getLines.toVector
+\end{Code}
+
+\item Klassen \code{java.util.Scanner} kan också läsa från fil (se Java Snabbref sid 4):
+
+
+\begin{Code}
+def readFromFile(fileName: String): Vector[String] = {
+  val file = new java.io.File(fileName)
+  val scan = new java.util.Scanner(file)
+  val buffer = scala.collection.mutable.ArrayBuffer.empty[String]
+  while (scan.hasNext) {
+    buffer += scan.next
+  }
+  scan.close
+  buffer.toVector
+}
+\end{Code}
+
+\item Med \code{new java.util.Scanner(System.in)} kan man även scanna tangentbordet.
+
+\item Med \code{new java.util.Scanner("hej 42")} kan man även scanna en sträng.
+
+\item Scanna \code{Int} och \code{Double} med metoderna \code{nextInt} och \code{nextDouble}. Se doc: \href{https://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html}{\SlideFontTiny docs.oracle.com/javase/8/docs/api/java/util/Scanner.html}
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Exempel: Scanner}
+\begin{REPL}
+scala> val scan = new java.util.Scanner("hej 42 42.0   42 slut")
+
+scala> scan.hasNext
+res0: Boolean = true
+
+scala> scan.hasNextInt
+res1: Boolean = false
+
+scala> scan.next
+res2: String = hej
+
+scala> scan.hasNextInt
+res3: Boolean = true
+
+scala> scan.nextInt
+res4: Int = 42
+
+scala> while (scan.hasNext) println(scan.next)
+42.0
+42
+slut
+\end{REPL}
+\end{Slide}
+
+
+
+\Subsection{\texttt{collection.JavaConverters}}
+
+\begin{Slide}{Hjälp att använda Java-samlingar i Scala med \texttt{JavaConverters}}\SlideFontSmall
+Med hjälp av \code{import scala.collection.JavaConverters._} \\
+får man smidig \Emph{interoperabilitet} med Java och dess standardbibliotek, \\
+speciellt metoderna \Alert{\code{asJava}} och \Alert{\code{asScala}}:
+\begin{REPL}
+scala> import scala.collection.JavaConverters._
+
+scala> Vector(1,2,3).asJava
+res0: java.util.List[Int] = [1, 2, 3]
+
+scala> val xs = new java.util.ArrayList[String]()
+xs: java.util.ArrayList[String] = []
+
+scala> xs.add("hej")
+res1: Boolean = true
+
+scala> xs.asScala
+res2: scala.collection.mutable.Buffer[String] = Buffer(hej)
+\end{REPL}
+
+\noindent Läs mer här: %
+\ifkompendium\\\fi%
+\scriptsize%
+\url{https://docs.scala-lang.org/overviews/collections/conversions-between-java-and-scala-collections.html}
+
+\end{Slide}
+
 
 
 
@@ -816,7 +951,7 @@ E remove(int pos);
 int size();
 \end{JavaSpec}
 Lär dig vad som finns om ArrayList i snabbreferensen för Java\\
-\SlideFontSmall Överkurs för den nyfikne: kolla implementation av ArrayList \href{http://www.docjar.com/html/api/java/util/ArrayList.java.html}{här}.
+\SlideFontSmall Överkurs för den nyfikne: kolla implementation av ArrayList här: \\ {\SlideFontTiny\url{http://www.docjar.com/html/api/java/util/ArrayList.java.html}}
 \end{Slide}
 
 
@@ -971,12 +1106,13 @@ For-each-sats fungerar även med primitiv array:
 
 
 \begin{Slide}{Generiska klasser (t.ex. ArrayList) med primitiva typer}
+Detta går tyvärr \Alert{INTE} i Java: \\
+  \sout{\texttt{ArrayList<int> list = new ArrayList<int>();}}
+  
+\pause
 \begin{itemize}\SlideFontSmall
-\item Men vad gör man om man vill ha element av primitiva typer, \\ så som \jcode{int} och \jcode{double}?
-Detta går alltså \Alert{INTE} i Java: \\
-\sout{\texttt{ArrayList<int> list = new ArrayList<int>();}}
+\item Hur gör man om man vill ha heltalselement (eller andra primitiva värden) i en generisk samling?
 
-\vspace{2em}
 \item Javas lösning på problemet består av två delar:
 \begin{itemize}\SlideFontSmall
 \item Klasser som packar in primitiva typer, \Eng{wrapper classes}
@@ -984,7 +1120,7 @@ Detta går alltså \Alert{INTE} i Java: \\
 \end{itemize}
 \end{itemize}
 \SlideFontTiny\vspace{1em}
-Detta kan bli ganska komplicerat och det finns fallgropar.\\
+Ofta fungerar det fint, men det finns fallgropar.\\
 (Om du är nyfiken på alla intrikata detaljer, se
 \href{https://docs.oracle.com/javase/tutorial/java/data/autoboxing.html}{Java tutorial} och   \href{https://docs.oracle.com/javase/specs/jls/se8/html/jls-5.html#jls-5.1.7}{Javaspecifikationen}.)
 \end{Slide}
@@ -1049,7 +1185,7 @@ Med papper och penna:
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{Exempel: Lista med heltal}
+\begin{Slide}{Exempel: Lista med heltal utan autoboxning}
 \lstinputlisting[language=Java, basicstyle=\small\ttfamily\SlideFontSize{6.7}{8.5},backgroundcolor=\color{white},frame=none
 ]{../compendium/examples/scalajava/generics/TestIntegerList.java}
 \SlideFontTiny Koden finns här: \href{https://github.com/lunduniversity/introprog/tree/master/compendium/examples/scalajava/generics/TestIntegerList.java}{compendium/examples/scalajava/TestIntegerList.java}
@@ -1061,8 +1197,8 @@ Med papper och penna:
 \begin{Slide}{Specialregler för wrapper-klasser}\SlideFontSmall
 
 \begin{itemize}
-\item Om ett \code{int}-värde förekommer där det behövs ett \code{Integer}-objekt, så lägger kompilatorn automatiskt ut kod som skapar ett \code{Integer}-objekt som packar in värdet.
-\item Om ett \code{Integer}-objekt förekommer där det behövs ett \code{int}-värde, lägger kompilatorn automatiskt ut kod som anropar metoden \code{intValue()}.
+\item Om ett \code{int}-värde förekommer där det behövs ett \code{Integer}-objekt, så lägger kompilatorn \Alert{automatiskt} ut kod som skapar ett \code{Integer}-objekt som packar in värdet.
+\item Om ett \code{Integer}-objekt förekommer där det behövs ett \code{int}-värde, lägger kompilatorn \Alert{automatiskt} ut kod som anropar metoden \code{intValue()}.
 \end{itemize}
 Samma gäller mellan alla primitiva typer och dess wrapper-klasser:
 
@@ -1135,36 +1271,6 @@ Läs receptet för att implementera equals i \Emph{Scala} här: \\
 \end{Slide}
 
 
-\Subsection{\texttt{collection.JavaConverters}}
-
-\begin{Slide}{Hjälp att använda Java-samlingar i Scala med \texttt{JavaConverters}}\SlideFontSmall
-Med hjälp av \code{import scala.collection.JavaConverters._} \\
-får man smidig \Emph{interoperabilitet} med Java och dess standardbibliotek, \\
-speciellt metoderna \Alert{\code{asJava}} och \Alert{\code{asScala}}:
-\begin{REPL}
-scala> import scala.collection.JavaConverters._
-
-scala> Vector(1,2,3).asJava
-res0: java.util.List[Int] = [1, 2, 3]
-
-scala> val xs = new java.util.ArrayList[String]()
-xs: java.util.ArrayList[String] = []
-
-scala> xs.add("hej")
-res1: Boolean = true
-
-scala> xs.asScala
-res2: scala.collection.mutable.Buffer[String] = Buffer(hej)
-\end{REPL}
-
-\noindent Läs mer här: %
-\ifkompendium\\\fi%
-\scriptsize%
-\url{https://docs.scala-lang.org/overviews/collections/conversions-between-java-and-scala-collections.html}
-
-\end{Slide}
-
-
 
 \Subsection{Fördjupning diverse}
 
@@ -1175,7 +1281,7 @@ Det går att använda villkorsuttryck i Java, men med syntax från språket C:
   \noindent\Emph{Scala}
 \begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8},backgroundcolor=\color{white},
   frame=none]
-var r = math.random
+var r = math.random()
 var answer = if (r > 0.5) 42 else 0
 \end{CodeSmall}
 
@@ -1251,14 +1357,14 @@ val b = try { 4 / 2 } catch {
   frame=none]
 int a;
 try {
-    a = 2 / 0
+    a = 2 / 0;
 } catch (ArithmeticException e) {
     a = 0;
 }
 
 int b;
 try {
-    b = 4 / 2
+    b = 4 / 2;
 } catch (ArithmeticException e) {
     b = 0;
 }

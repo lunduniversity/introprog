@@ -1,4 +1,4 @@
-// paste into kojo or run as script: scala timer1.scala
+// paste into kojo or run as script: scala timer1.sc 
 
 object timer {
   def now: Long = System.currentTimeMillis
@@ -13,4 +13,4 @@ timer.reset
 var i = 0L
 while (i < 1e8.toLong) { i += 1 }
 val t = timer.elapsedSeconds
-println("Räknade till " + i + " på " + t + " sekunder.")
+println(s"Räknade till $i på $t sekunder.")

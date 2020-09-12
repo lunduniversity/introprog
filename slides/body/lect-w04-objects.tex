@@ -23,7 +23,7 @@
   \item använda tidigare begrepp: uttryck, program och funktioner
 \end{itemize}
 
-\item Senaste versionen av kursbiblioteket \code{introprog} är $1.1.4$ och jar-filens namn är \href{http://cs.lth.se/pgk/lib}{\code{introprog_2.12-1.1.4.jar}} \\Se dokumentation här: \url{http://cs.lth.se/pgk/api}
+\item Senaste versionen av kursbiblioteket \code{introprog} är $\LibVersion$ och jar-filens namn är \href{http://cs.lth.se/pgk/lib}{\texttt{introprog\_2.12-\LibVersion.jar}} \\Se dokumentation här: \url{http://cs.lth.se/pgk/api}
 \end{itemize}
 \end{SlideExtra}
 \fi
@@ -294,6 +294,24 @@ object Highscore {
 {\SlideFontTiny Namnkrock mellan metoder och variabler uppkommer inte i Java m.fl. språk, där dessa finns i \emph{olika} namnrymder.
 Men i Scala har man valt att principen om \Emph{enhetlig access} ska gälla och alla medlemmar (både metoder och variabler) finns därmed i en gemensam namnrymd.}
 
+\end{Slide}
+
+\begin{Slide}{Principen om enhetlig access}\SlideFontSmall
+  \begin{itemize}
+    \item I Scala så ser access av attribut och anropa av metoder, som är deklarerade utan parameterlista, lika dana ut. 
+\begin{Code}
+object A1 { val a = 42 }  
+object A2 { def a = (41 + math.random()).round.toInt }
+\end{Code}
+\begin{REPLnonum}
+scala> A1.a
+scala> A2.a  
+\end{REPLnonum}
+    \item Många andra språk har olika syntax för access av attribut och anrop av metoder (t.ex. Java, där alla metodanrop måste ha parenteser).
+    \item Fördel: Det går lätt att ändra i implementationen och växla mellan att använda attribut och använda metoder utan att den kod som använder din implementation behöver ändras.
+    \item Nackdel: Det kan bli namnkrockar mellan metoder och attribut eftersom de finns i samm namnrymd.
+  \end{itemize}
+  
 \end{Slide}
 
 
@@ -582,11 +600,11 @@ res3: scala.collection.immutable.Vector[(String, Int)] =
 \begin{Slide}{Lata variabler och fördröjd initialisering}
 Med nyckelordet \code{lazy} före \code{val} sker ''\Emph{lat}'' evaluering av initialiseringsuttrycket. Motsatsen (det normala i Scala) kallas \Alert{strikt} evaluering.
 \begin{REPL}
-scala> val strikt = Vector.fill(1000000)(math.random)
+scala> val strikt = Vector.fill(1000000)(math.random())
 strikt: scala.collection.immutable.Vector[Double] =
  Vector(0.7583305221813246, 0.9016192590993339, 0.770022134260162, 0.15667718184929746, ...
 
-scala> lazy val lat = Vector.fill(1000000)(math.random)
+scala> lazy val lat = Vector.fill(1000000)(math.random())
 lat: scala.collection.immutable.Vector[Double] = <lazy>
 
 scala> lat
@@ -632,10 +650,10 @@ När allokeras variablerna?
 \begin{Code}[basicstyle=\ttfamily\fontsize{8}{11}\selectfont]
 object exempel {
   println("hej exempel")
-  val förAlltidSammaReferens  = { println("hej val"); math.random }
-  var kanÄndrasMedTilldelning = { println("hej var"); math.random }
-  def evaluerasVidVarjeAnrop  = { println("hej def"); math.random }
-  lazy val fördröjdInit  = { println("hej lazy val"); math.random }
+  val förAlltidSammaReferens  = { println("hej val"); math.random() }
+  var kanÄndrasMedTilldelning = { println("hej var"); math.random() }
+  def evaluerasVidVarjeAnrop  = { println("hej def"); math.random() }
+  lazy val fördröjdInit  = { println("hej lazy val"); math.random() }
 }
 \end{Code}
 \vspace{1em}\pause
@@ -718,17 +736,17 @@ Om vi vill ha flera bankkonton behöver vi en \Alert{klass} \Eng{class}.
 \begin{Slide}{Vad är en klass?}
 En klass kan användas för att skapa många objekt av samma typ. Varje upplaga har sitt eget tillstånd och kallas en \Emph{instans} av klassen (mer om detta nästa vecka).
 \begin{Code}
-class BankKonto(val kontonr: Long, var saldo: Int)  {  // deklarera en klass
+class Bankkonto(val kontonr: Long, var saldo: Int)  {  // deklarera en klass
   def ärSkuldsatt: Boolean = saldo < 0
 }
 \end{Code}
 \pause
 \begin{REPL}
-scala> val bk1 = new BankKonto(1234567L, 1000 )   // instansiera en klass
-bk1: BankKonto = BankKonto@5d7399f9
+scala> val bk1 = new Bankkonto(1234567L, 1000 )   // instansiera en klass
+bk1: Bankkonto = Bankkonto@5d7399f9
 
-scala> val bk2 = new BankKonto(6789012L, -200 )
-bk2: BankKonto = BankKonto@286855ea
+scala> val bk2 = new Bankkonto(6789012L, -200 )
+bk2: Bankkonto = Bankkonto@286855ea
 
 scala> bk1.saldo
 res0: Int = 1000
@@ -901,13 +919,13 @@ object A {
 \pause
 \item Kompilatorerna \code{scalac} och \code{javac} och programmen \code{scala} och \code{java} som kör igång JVM använder \Alert{en lista med filsökvägar} kallad \Emph{classpath} när de söker efter färdiga moduler.
 \pause
-\item Aktuellt bibliotek samt Scalas standardbibliotek läggs automatiskt på classpath.
+\item Aktuell katalog samt Scalas standardbibliotek läggs automatiskt på classpath.
 \item Med hjälp av optionen \code{-classpath} eller kortare \code{-cp} kan annan classpath anges.
-\item En lista med bibliotek separeras med kolon.\\(Windows: semikolon)
+\item En lista med kataloger separeras med kolon.\\(Windows: semikolon)
 \item Det går bra att lägga jar-filer till listan med filsökvägar classpath.
-\item Exempel: (punkt används för att ange aktuellt bibliotek)
+\item Exempel: (punkt används för att ange aktuell katalog)
 \begin{REPLnonum}
-scala -cp "introprog_2.12-1.1.4.jar:." Main
+scala -cp "introprog_2.13-1.1.4.jar:." Main
 \end{REPLnonum}
 \end{itemize}
 \end{Slide}
@@ -916,15 +934,15 @@ scala -cp "introprog_2.12-1.1.4.jar:." Main
 \begin{Slide}{Färdiga grafikmetoder i klassen \texttt{introprog.PixelWindow}}
 På labben ska du använda klassen \code{introprog.PixelWindow}
 \begin{itemize}
-\item Jarfilen \code{introprog_2.12-1.1.4.jar} innehåller paketet \code{introprog} som bl.a. innehåller klassen \code{PixelWindow}.
+\item Jarfilen \code{introprog_2.13-1.1.4.jar} innehåller paketet \code{introprog} som bl.a. innehåller klassen \code{PixelWindow}.
 %\item En \Emph{klass} är en ''mall'' för att göra \Emph{objekt}.
 \item Med \code{PixelWindow} kan man skapa ritfönster.
 %\item När man skapar ett objekt från en klass använder man nyckelordet \code{new}.
-\item Ladda ner \url{http://cs.lth.se/pgk/lib} och lägg sedan jar-filen i den katalog där du startar REPL med: \code{scala -cp introprog_2.12-1.1.4.jar}
+\item Ladda ner \url{http://cs.lth.se/pgk/lib} och lägg sedan jar-filen i den katalog där du startar REPL med: \code{scala -cp introprog_2.13-1.1.4.jar}
 \end{itemize}
 %\pause
 \begin{REPLnonum}
-> scala -cp introprog_2.12-1.1.4.jar
+> scala -cp introprog_2.13-1.1.4.jar
 scala> val w = new introprog.PixelWindow(300, 200, "hejsan")
 \end{REPLnonum}
 %\pause
@@ -969,7 +987,7 @@ libraryDependencies += "se.lth.cs" %% "introprog" % "1.1.4"
 Första gången du kör \code{compile}, \code{run} eller \code{console} i \code{sbt} kommer en jar-fil med paketet \code{introprog} automatiskt att laddas ner från webbplatsen \Emph{Sonatype Maven Central} där många öppenkällkodspaket finns fritt tillgängliga. \\~\\
 
 Jar-filen kommer automatiskt läggas i din hemkatalog här: \\
-\code{~/.ivy2/cache/se.lth.cs/introprog_2.12/jars}
+\code{~/.ivy2/cache/se.lth.cs/introprog_2.13/jars}
 \end{Slide}
 
 

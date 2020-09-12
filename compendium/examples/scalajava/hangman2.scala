@@ -24,7 +24,7 @@ object hangman {
     scala.util.Try {
       import scala.io.Source.fromURL   
       val words = fromURL(address, coding).getLines.toVector
-      val rnd = (math.random * words.size).toInt
+      val rnd = (math.random() * words.size).toInt
       words(rnd)
     }.toOption
 
@@ -51,6 +51,6 @@ object hangman {
       val runeberg = "http://runeberg.org/words/ord.ortsnamn.posten"
       val secret = download(runeberg, "ISO-8859-1").getOrElse("läckalånga")
       play(secret)
-    } else play(args((math.random * args.length).toInt))
+    } else play(args((math.random() * args.length).toInt))
   }  
 }

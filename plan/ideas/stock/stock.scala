@@ -35,7 +35,7 @@ object stock {
     result
   } 
   
-  def fixPeriod(d: String) = d.replaceAllLiterally(",",".")
+  def fixPeriod(d: String) = d.replace(",",".")
   
   def extractStockDouble(htmlSoup: String, valueId: String): Double = Try {
     fixPeriod(extractStock(htmlSoup, valueId)).toDouble
@@ -86,4 +86,4 @@ object stock {
     save("top.csv", Stock.heading+topStocks)   
     save("all.csv", Stock.heading+stocks.map(_.toCSV).mkString("\n"))   
   }
-}gos
+}

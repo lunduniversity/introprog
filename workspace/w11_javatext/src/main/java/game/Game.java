@@ -1,9 +1,19 @@
 package game;
 
 public class Game {
-    /** Start this game. Returns true if player wants to play a new game. */
-    public boolean run(){
-        System.out.println("TODO");
-        return false;
+    public Game(String playerName){
+
+    }
+
+    public String getPlayerName(){
+        return "";
+    }
+
+    public int getScore(){
+        return 0;
+    }
+
+    public void run(){
+        
     }
 }

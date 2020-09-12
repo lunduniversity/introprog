@@ -69,7 +69,7 @@ object mergesolu {
 
   def replaceAll(data: String, pairs: (String, String)*): String = {
     var result = data
-    for ((from, to) <- pairs) result = result.replaceAllLiterally(from, to)
+    for ((from, to) <- pairs) result = result.replace(from, to)
     result
   }
 
@@ -96,7 +96,7 @@ object mergesolu {
   }
 
   def load(fileName: String): String =
-    scala.io.Source.fromFile(fileName, "UTF-8").getLines.mkString("\n")
+    scala.io.Source.fromFile(fileName, "UTF-8").getLines().mkString("\n")
 
   def save(fileName: String, data: String) = {
     import java.nio.file.{Paths, Files}

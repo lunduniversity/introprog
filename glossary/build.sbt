@@ -1,1 +1,2 @@
-scalaVersion := "2.12.9"
+scalaVersion := "2.13.3"
+scalacOptions += "-deprecation"

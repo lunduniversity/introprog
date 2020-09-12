@@ -18,7 +18,7 @@ object AnyToHexString {
   def apply(a: Any): String = {
     val bytes = a.toString.getBytes("UTF-8")
     val digest = MessageDigest.getInstance("SHA-256").digest(bytes)
-    convertBytesToHex(digest)
+    convertBytesToHex(digest.toIndexedSeq)
     //DatatypeConverter.printHexBinary(digest)  // does not work in jdk11
   }
 }

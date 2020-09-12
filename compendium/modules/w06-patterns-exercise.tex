@@ -134,7 +134,7 @@ Exekveringsfel, uppstår av en viss input under körningen.
 
 Utgå från koden i uppgift \ref{task:vegomatch}\ref{subtask:vegomatch} och byt ut case-grenen för \code{'g'}-matchning till nedan variant med en gard med nyckelordet \code{if} (notera att det inte behövs parenteser runt villkoret):
 \begin{Code}
-    case 'g' if math.random > 0.5 => "gurka är gott ibland..."
+    case 'g' if math.random() > 0.5 => "gurka är gott ibland..."
 \end{Code}
 Kompilera om och kör programmet upprepade gånger med olika indata tills alla grenar i \code{match}-uttrycket har exekverats. Förklara vad som händer.
 
@@ -232,7 +232,7 @@ case object Klöver  extends Färg
 \Subtask Skapa en funktion \code{def parafärg(f: Färg): Färg} i en editor, som med hjälp av ett match-uttryck returnerar parallellfärgen till en färg. Parallellfärgen till \code{Hjärter} är \code{Ruter} och vice versa, medan parallellfärgen till \code{Klöver} är \code{Spader} och vice versa. Klistra in funktionen i REPL.
 \begin{REPL}
 scala> parafärg(Spader)
-scala> val xs = Vector.fill(5)(Färg.values((math.random * 4).toInt))
+scala> val xs = Vector.fill(5)(Färg.values((math.random() * 4).toInt))
 scala> xs.map(parafärg)
 \end{REPL}
 
@@ -641,7 +641,7 @@ scala> import scala.util.{Try, Success, Failure}
 scala> Try{pang}
 scala> Try{pang}.recover{case e: Throwable =>   "desarmerad bomb: " + e}
 scala> Try{"tyst"}.recover{case e: Throwable => "desarmerad bomb: " + e}
-scala> def kanskePang = if (math.random > 0.5) "tyst" else pang
+scala> def kanskePang = if (math.random() > 0.5) "tyst" else pang
 scala> def kanskeOk = Try{ kanskePang}
 scala> val xs = Vector.fill(100)(kanskeOk)
 scala> xs(13) match {
@@ -875,16 +875,16 @@ case class Tomat(vikt: Int, ärRutten: Boolean) extends Grönsak {
 }
 
 object Main{
-	def slumpvikt: Int = (math.random*500 + 100).toInt
+	def slumpvikt: Int = (math.random()*500 + 100).toInt
 
-	def slumprutten: Boolean = math.random > 0.8
+	def slumprutten: Boolean = math.random() > 0.8
 
 	def slumpgurka: Gurka = Gurka(slumpvikt, slumprutten)
 
 	def slumptomat: Tomat = Tomat(slumpvikt, slumprutten)
 
 	def slumpgrönsak: Grönsak =
-    if (math.random > 0.2) slumpgurka else slumptomat
+    if (math.random() > 0.2) slumpgurka else slumptomat
 
 	def main(args: Array[String]): Unit = {
 		val skörd = Vector.fill(args(0).toInt)(slumpgrönsak)
@@ -913,7 +913,7 @@ Slutligen ändras \code{def slumpgrönsak} till följande:
 
 \begin{Code}
 def slumpgrönsak: Grönsak = {    // välj t.ex. denna fördelning:
-  val rnd = math.random
+  val rnd = math.random()
   if (rnd > 0.5) slumpgurka      // 50% sannolikhet för gurka
   else if (rnd > 0.2) slumptomat // 30% sannolikhet för tomat
   else slumpbroccoli             // 20% sannolikhet för broccoli
@@ -938,7 +938,7 @@ def slumpgrönsak: Grönsak = {    // välj t.ex. denna fördelning:
 
 \Subtask \label{subtask:refequals} Vad händer nedan? Om du trycker TAB \emph{två} gånger efter ett metodnamn får du se metodens signatur. Vilken signatur har metoden \code{equals}?
 \begin{REPL}
-scala> class Gurka(val vikt: Int, ärÄtbar: Boolean)
+scala> class Gurka(val vikt: Int, val ärÄtbar: Boolean)
 scala> val g1 = new Gurka(42, true)
 scala> val g2 = g1
 scala> val g3 = new Gurka(42, true)
@@ -961,7 +961,7 @@ Det visar sig förvånande komplicerat att implementera innehållslikhet med met
 // fungerar fint om klassen är final och inte ärver något
 final class Gurka(val vikt: Int, ärÄtbar: Boolean) {
   override def equals(other: Any): Boolean = other match {
-    case that: Gurka => this.vikt == that.vikt
+    case that: Gurka => vikt == that.vikt && ärÄtbar == that.ärÄtbar
     case _ => false
   }
   override def hashCode: Int = (vikt, ärÄtbar).## //förklaras sen
@@ -977,9 +977,11 @@ scala> g1 == g3
 \end{REPL}
 \Subtask Hur märker man ovan att den överskuggade \code{equals} medför att \code{==} nu ger innehållslikhet? Jämför med deluppgift \ref{subtask:refequals}.
 
-I uppgift \ref{task:equals:Complex} får du prova på att följa det fullständiga receptet i 8 steg för att överskugga en \code{equals} enligt konstens alla regler. I efterföljande kurs kommer mer träning i att hantera innehållslikhet och hash-koder. I Scala får man ett objekts hash-kod med metoden \code{##}.\footnote{Om du är nyfiken på hash-koder, läs mer här:
-\href{https://en.wikipedia.org/wiki/Java_hashCode()}{en.wikipedia.org/wiki/Java\_hashCode()}.}
-
+I uppgift \ref{task:equals:Complex} får du prova på att följa det fullständiga receptet i 8 steg för att överskugga en \code{equals} enligt konstens alla regler. I efterföljande kurs kommer mer träning i att hantera innehållslikhet och hash-koder. I Scala får man ett objekts hash-kod med metoden \code{##}.%
+\footnote{Om du är nyfiken på hash-koder, läs mer här:
+\href{https://en.wikipedia.org/wiki/Hash_function}
+{en.wikipedia.org/wiki/Hash\_function}
+}
 
 
 \SOLUTION
@@ -1151,21 +1153,18 @@ res2: polynomial.Poly = -5x + y^4 + 3z^2
 
 
 
-\WHAT{Hash-koder.}
+% \WHAT{Hash-koder.}
 
-\QUESTBEGIN
+% \QUESTBEGIN
 
-\Task  \what~ Läs om hash-koder här: \href{https://en.wikipedia.org/wiki/Java_hashCode()}{en.wikipedia.org/wiki/Java\_hashCode()} \\
-Vad ger metoden \code{##} i scala.Any för resultat? Läs dokumentationen här: \\ \href{http://www.scala-lang.org/api/current/scala/Any.html}{www.scala-lang.org/api/current/scala/Any.html}
+% \Task  \what~ Läs om hash-funktioner här: \href{https://en.wikipedia.org/wiki/Hash_function}{en.wikipedia.org/wiki/Hash_function} \\
+% Vad ger metoden \code{##} i scala.Any för resultat? Läs dokumentationen här: \\ \href{http://www.scala-lang.org/api/current/scala/Any.html}{www.scala-lang.org/api/current/scala/Any.html}
 
-\SOLUTION
+% \SOLUTION
 
+% \TaskSolved \what I Scala får man ett objekts hash-kod med metoden \code{##}.
 
-\TaskSolved \what
-
-
-
-\QUESTEND
+% \QUESTEND
 
 
 

@@ -553,20 +553,20 @@ Använd oföränderliga tabeller med lämpliga nycklar och värden. Du kan anvä
 \AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\WHAT{Registrering med \code{groupBy} och \code{mapValues}.}
+\WHAT{Registrering med \code{groupBy}.}
 
 \QUESTBEGIN
 
-\Task \what~Vi ska nu utnyttja ett riktigt listigt trick för att via en enda kodrad implementera registrering med hjälp av samlingsmetoden \code{groupBy} och tabellmetoden \code{mapValues}.
+\Task \what~Vi ska nu utnyttja ett riktigt listigt trick för att via en enda kodrad implementera registrering med hjälp av samlingsmetoderna \code{groupBy} och \code{map}.
 
-\Subtask Läs om metoden \code{groupBy} i snabbreferensen. Du hittar den under rubriken \emph{''Methods in trait \code{Traversable[A]}''} eftersom \code{groupBy} fungerar på alla samlingar. Testa \code{groupBy} enligt nedan och beskriv vad som händer.
+\Subtask Läs om metoden \code{groupBy} i snabbreferensen. Du hittar den under rubriken \emph{''Methods in trait \code{Iterable[A]}''} eftersom \code{groupBy} fungerar på alla samlingar. Testa \code{groupBy} enligt nedan och beskriv vad som händer.
 
 \begin{REPL}
 scala> val xs = Vector(1, 1, 2, 2, 4, 4, 4).groupBy(x => x > 2)
 scala> val ys = Vector(1, 1, 2, 2, 4, 4, 4).groupBy(x => x)
 \end{REPL}
 
-\Subtask Skapa en funktion \code{freq} med nedan funktionshuvud som returnerar en tabell med antalet förekomster av olika heltal i \code{xs}. Testa \code{freq} på en sekvens av 1000 slumpvisa tärningskast och förklara hur funktionen \code{freq} fungerar. \emph{Tips:} Gör först \code{groupBy(???)} och sedan \code{mapValues(???)}.
+\Subtask Skapa en funktion \code{freq} med nedan funktionshuvud som returnerar en tabell med antalet förekomster av olika heltal i \code{xs}. Testa \code{freq} på en sekvens av 1000 slumpvisa tärningskast och förklara hur funktionen \code{freq} fungerar. \emph{Tips:} Gör först \code{groupBy(???)} och sedan \code{map(???)}.
 
 \begin{Code}
 def freq(xs: Vector[Int]): Map[Int, Int] = ???
@@ -601,9 +601,9 @@ ys: Map[Int,Vector[Int]] =
 
 \begin{Code}
 def freq(xs: Vector[Int]): Map[Int, Int] =
-  xs.groupBy(x => x).mapValues(_.size)
+  xs.groupBy(x => x).map(p => p._1 -> p._2.size)
 \end{Code}
-Förklaring: metoden \code{groupBy} skapar en tabell med par \code{k, v} där \code{v} är en sekvens med så många \code{k} som antalet gånger \code{k} förekommer i \code{xs}. Genom att omvandla alla värden \code{v} till storleken av \code{v} får vi en frekvenstabell.
+Förklaring: metoden \code{groupBy} skapar en tabell med par \code{k, v} där \code{v} är en sekvens med så många \code{k} som antalet gånger \code{k} förekommer i \code{xs}. Genom att omvandla alla värden \code{p._2} till storleken \code{p._2.size} får vi en frekvenstabell.
 
 \begin{REPL}
 scala> freq(kasta(1000))
@@ -695,7 +695,7 @@ Använd \code{IO}-modulen för att spara användarens poängresultat i ditt spel
 % \TaskSolved \what
 %
 %
-% \SubtaskSolved   \code{mittKonto.saldo = (math.random * 1000000).toInt}
+% \SubtaskSolved   \code{mittKonto.saldo = (math.random() * 1000000).toInt}
 %
 % \SubtaskSolved   Går ej eftersom val är oföränderlig, man får alltså ett Error.
 %
@@ -1434,7 +1434,7 @@ Använd \code{IO}-modulen för att spara användarens poängresultat i ditt spel
 % \Task  \what~  En \textbf{samling} \Eng{collection} är en datastruktur som samlar många objekt av samma typ. I \code{scala.collection} och \code{java.util} finns många olika samlingar med en uppsjö användbara metoder. De olika samlingarna i \code{scala.collection} är ordnade i en gemensam hierarki med många gemensamma metoder; därför har man nytta av det man lär sig om metoderna i en Scala-samling när man använder en annan samling. Vi har redan tidigare sett samlingen \code{Vector}:
 %
 % \begin{REPL}
-% scala> val tärningskast = Vector.fill(10000)((math.random * 6 + 1).toInt)
+% scala> val tärningskast = Vector.fill(10000)((math.random() * 6 + 1).toInt)
 % scala> tä   // tryck TAB
 % scala> tärningskast.  // tryck TAB
 % \end{REPL}
@@ -1444,7 +1444,7 @@ Använd \code{IO}-modulen för att spara användarens poängresultat i ditt spel
 % \Subtask Jämför överlappet mellan metoderna i \code{Vector} och \code{List} och uppskatta hur stor andel av metoderna som är gemensamma:
 % \begin{REPL}
 % scala> val myntkast =
-%          List.fill(10000)(if (math.random < 0.5) "krona" else "klave")
+%          List.fill(10000)(if (math.random() < 0.5) "krona" else "klave")
 % scala> my   // tryck TAB
 % scala> myntkast.  // tryck TAB
 % \end{REPL}
@@ -1549,7 +1549,7 @@ Använd \code{IO}-modulen för att spara användarens poängresultat i ditt spel
 % scala> val xs = (1 to 10).toVector
 % scala> val a = Vector("abra", "ka", "dabra")
 % scala> val b = Vector( "sim", "sala", "bim", "sala", "bim")
-% scala> val stor = Vector.fill(100000)(math.random)
+% scala> val stor = Vector.fill(100000)(math.random())
 % \end{REPL}
 % Undersök i REPL vad som händer nedan. Alla dessa metoder fungerar på alla samlingar som är indexerbara sekvenser. Givet deklarationerna ovan: vad har uttrycken nedan för värde och typ? Förklara vad som händer hälp av denna  översikt: \href{http://docs.scala-lang.org/overviews/collections/seqs}{docs.scala-lang.org/overviews/collections/seqs}
 %

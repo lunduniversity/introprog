@@ -49,8 +49,8 @@ protected short[][] computeIntensity(Color[][] pixels):
  * Faltar punkten p[i][j] med faltningskärnan kernel.
  *
  * @param p 		matris med talvärden
- * @param i 		radindex får den aktuella punkten
- * @param j 		kolonnindex får den aktuella punkten
+ * @param i 		radindex för den aktuella punkten
+ * @param j 		kolonnindex för den aktuella punkten
  * @param kernel	faltningskärnan, en 3x3-matris
  * @param weight	summan av elementen i kernel
  * @return 		resultatet av faltningen
@@ -67,8 +67,8 @@ class FilterList = ???
 /** Adds a filter to the FilterList */
 def addFilter(filter: ImageFilter): Unit = ???
 
-/** Applies all the filters on the given Image and draws it in SimpleWindow */
-def applyFilters(image: Image, sw: SimpleWindow): Unit = ???
+/** Applies all the filters on the given Image and draws it in a PixelWindow */
+def applyFilters(image: Image, w: PixelWindow): Unit = ???
 \end{ScalaSpec}
 
 \begin{ScalaSpec}{FilterChooser}
@@ -129,14 +129,14 @@ def getImage: BufferedImage;
 \begin{Code}
 val im = new Image(ImageUI.getImage)
 \end{Code}
-Använd \code{SimpleWindow} samt \code{image}-attributet från \code{Image}-objektet för att visa bilden.
+Använd \code{PixelWindow} samt \code{image}-attributet från \code{Image}-objektet för att visa bilden.
 
 \Task \textbf{Inverteringsfilter.} Skriv en klass \code{InvertFilter} som inverterar en bild dvs skapar en ''negativ'' kopia av bilden. Ljusa färger ska alltså bli mörka och mörka färger ska bli ljusa.
 Fundera över vad som kan menas med en inverterad eller negativ kopia: de nya RGB-värdena är inte ett dividerat med de gamla värdena (då skulle de nya värdena kunna bli flyttal) och inte de gamla värdena med ombytt tecken (då skulle de nya värdena bli negativa).
 
 \Task \textbf{Gråskalningsfilter.} Skriv en klass \code{GrayScaleFilter} som gör om bilden till en gråskalebild. Använd \code{ImageFilter}s \code{computeIntensity}-metod för att bestämma vilken intensitet varje pixel ska ha. Om intensiteten i en pixel till exempel är 105 så ska ett nytt \code{Color}-objekt med värdena (105, 105, 105) skapas.
 
-\Task \textbf{Krypteringsfilter.} Skriv en klass \code{XORCryptFilter} som krypterar bilden med xor-operatorn ˆ. Denna operator gör binär xor mellan bitarna i ett heltal. Exempelvis ger 8 ˆ 127 värdet 119. Om man gör xor igen med 127, alltså 119 ˆ 127, får man tillbaka värdet 8. Varje pixel krypteras genom att använda xor-operatorn med ursprungsvärdena för rött, grönt och blått tillsammans med ett slumpmässigt heltalsvärde som genereras av Scalas \code{Random}-klass. Använd \code{paramValue} för att ge \code{Random}-objektet ett seed. På så sätt kan du återskapa bilden genom att applicera krypteringsfiltret igen, med samma \code{paramValue}, på den numera krypterade bilden.
+\Task \textbf{Krypteringsfilter.} Skriv en klass \code{XORCryptFilter} som krypterar bilden med xor-operatorn ˆ. Denna operator gör binär xor mellan bitarna i ett heltal. Exempelvis ger 8 ˆ 127 värdet 119. Om man gör xor igen med 127, alltså 119 ˆ 127, får man tillbaka värdet 8. Varje pixel krypteras genom att använda xor-operatorn med ursprungsvärdena för rött, grönt och blått tillsammans med slumpmässiga heltalsvärden som genereras av Scalas \code{Random}-klass (tre nya slumptal för varje pixel). Låt användaren ge ett argument som seed för \code{Random}. På så sätt kan du återskapa bilden genom att applicera krypteringsfiltret igen, med samma parametervärde, på den numera krypterade bilden.
 
 \Task \textbf{Gaussfiltrer.} Gaussfiltrering är ett exempel på så kallad faltningsfiltrering. Filtreringen bygger på att man modifierar varje bildpunkt genom att titta på punkten och omgivande punkter.
 
@@ -195,7 +195,7 @@ Använd \code{ImageFilter}s \code{convolve}-metod för att utföra faltningen. M
 \end{pmatrix}
 \end{displaymath}
 
-Det kan vara intressant att prova med andra värden än 4 i mitten av faltningsmatrisen. Med värdet 0 får man en större utjämning eftersom man då inte alls tar hänsyn till den aktuella pixelns värde. Mata in detta värde i Parameter-rutan.
+Det kan vara intressant att prova med andra värden än 4 i mitten av faltningsmatrisen. Med värdet 0 får man en större utjämning eftersom man då inte alls tar hänsyn till den aktuella pixelns värde. Låt användaren mata in argument för mittvärdet via terminalen.
 
 Anmärkning: det kan ibland vara svårt att se någon skillnad mellan den filtrerade bilden och originalbilden. Om man vill ha en riktigt suddig bild så måste man använda en större matris som faltningskärna.
 
@@ -243,7 +243,7 @@ Y\_SOBEL =
 $$
 	Använd metoden \code{convolve} med vikten 1. Koefficienterna i matrisen $X\_SOBEL$ uttrycker derivering i x-led, i $Y\_SOBEL$ faltning i y-led. För att förklara varför koefficienterna ibland är 1 och ibland 2 måste man studera den bakomliggande teorin noggrant, men det gör vi inte här.
 	\item Om resultaten av faltningen i en punkt betecknas med \code{sx} och \code{sy} så får man en indikator på närvaron av en kontur med \code{math.abs(sx) + math.abs(sy)}. Absolutbelopp behöver man eftersom man har negativa koefficienter i faltningsmatriserna.
-	\item  Sätt pixeln till svart om indikatorn är större än tröskelvärdet, till vit annars. Tröskelvärdet bestäms av \code{paramValue}.
+	\item  Sätt pixeln till svart om indikatorn är större än tröskelvärdet, till vit annars. Låt tröskelvärdet bestämmas av ett argument som användaren kan ange.
 \end{enumerate}
 
 Skriv en klass \code{SobelFilter} som implementerar denna algoritm.
@@ -306,7 +306,7 @@ Som synes kommer en punkt med intensiteten 45 att få den nya intensiteten 0 och
 
 Det återstår nu att hitta lämpliga värden på \code{lowCut} och \code{highCut}. Detta är inte något som kan göras helt automatiskt, eftersom värdena beror på intensitetsfördelningen hos bildpunkterna. Man börjar med att beräkna bildens intensitetshistogram, dvs hur många punkter i bilden som har intensiteten 0, hur många som har intensiteten 1, . . . , till och med 255.
 
-I de flesta bildbehandlingsprogram kan man sedan titta på histogrammet och interaktivt bestämma värdena på \code{lowCut} och \code{highCut}. Så ska vi dock inte göra här. I stället bestämmer vi oss för ett procenttal \code{cutOff} (som bestäms av \code{paramValue}) och beräknar \code{lowCut} så att \code{cutOff} procent av punkterna i bilden har en intensitet som är mindre än \code{lowCut} och \code{highCut} så att \code{cutOff} procent av punkterna har en intensitet som är större än \code{highCut}.
+I de flesta bildbehandlingsprogram kan man sedan titta på histogrammet och interaktivt bestämma värdena på \code{lowCut} och \code{highCut}. Så ska vi dock inte göra här. I stället bestämmer vi oss för ett procenttal \code{cutOff}, som användaren kan ange som argument från terminalen, och som  beräknar \code{lowCut} så att \code{cutOff} procent av punkterna i bilden har en intensitet som är mindre än \code{lowCut} och \code{highCut} så att \code{cutOff} procent av punkterna har en intensitet som är större än \code{highCut}.
 
 Exempel: antag att en bild innehåller 100 000 pixlar och att \code{cutOff} är 1.5. Beräkna bildens intensitetshistogram i en array
 \begin{Code}
@@ -319,10 +319,10 @@ Sammanfattning av algoritmen:
 \begin{enumerate}
 	\item Beräkna intensiteten hos alla punkterna i bilden, lagra dem i en \code{short}-matris. Använd den färdigskrivna metoden \code{computeIntensity}.
 	\item Beräkna bildens intensitetshistogram.
-	\item Parametervärdet \code{paramValue} är det värde som ska användas som \code{cutOff}.
+	\item Argument från användaren användas som \code{cutOff}.
 	\item Beräkna \code{lowCut} och \code{highCut} enligt ovan.
 	\item Beräkna den nya intensiteten för varje pixel enligt interpolationsformeln och lagra de nya pixlarna i \code{outPixels}.
 \end{enumerate}
 Skriv en klass \code{ContrastFilter} som implementerar algoritmen. I katalogen \emph{images} kan bilden \emph{moon.jpg} vara lämplig att testa, eftersom den har låg kontrast. Anmärkning: om \code{cutOff} sätts = 0 så får man samma resultat av denna filtrering som man får av \code{GrayScaleFilter}. Detta kan man se genom att studera interpolationsformeln.
 
-\Task \textbf{Eget filter.} Skapa ett eget filter som utnyttjar att \code{apply}-metoden tar emot en array av värden. Till exempel så kan du skicka in en array med fem värden där de två första värdena representerar ett intesitetsintervall och de tre sista värdena representerar röd-, grön- och blåkomponenterna till en färg som ska stoppas in där intensiteten hamnar utanför det givna intervallet. Ett annat alternativ kan vara att använda sig av metoder i \code{SimpleWindow} för att välja specifika pixlar på originalbilden som sedan kan användas för att manipulera bilden i filtrets \code{apply}-metod. Valet är ditt!
+\Task \textbf{Eget filter.} Skapa ett eget filter som utnyttjar att \code{apply}-metoden tar emot en array av värden. Till exempel så kan du skicka in en array med fem värden där de två första värdena representerar ett intesitetsintervall och de tre sista värdena representerar röd-, grön- och blåkomponenterna till en färg som ska stoppas in där intensiteten hamnar utanför det givna intervallet. Ett annat alternativ kan vara att låta användaren välja specifika pixlar på originalbilden som sedan kan användas för att manipulera bilden i filtrets \code{apply}-metod. Valet är ditt!
