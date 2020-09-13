@@ -2,19 +2,19 @@
 %!TEX root = ../lect-w03.tex
 
 
-\ifkompendium\else
-\Subsection{Scala 2.12.10}
+% \ifkompendium\else
+% \Subsection{Scala 2.12.10}
 
-\begin{SlideExtra}{Scala 2.12.10}
-  Den 10:e September släpptes Scala 2.12.10 med viktigaste förbättringen att filtrering i Scaladoc nu fungerar igen. 
-  \\~\\
-  \url{https://www.scala-lang.org/news/2.12.10}
-  \\~\\ Du kan gärna installera 2.12.10 om du vill, men inte nödvändigt.
-  \\~\\ När du kollar api-dokumentationen för Scalas standardbibliotek så använd denna länk:\\ 
-  \url{https://www.scala-lang.org/api/2.12.10}
+% \begin{SlideExtra}{Scala 2.12.10}
+%   Den 10:e September släpptes Scala 2.12.10 med viktigaste förbättringen att filtrering i Scaladoc nu fungerar igen. 
+%   \\~\\
+%   \url{https://www.scala-lang.org/news/2.12.10}
+%   \\~\\ Du kan gärna installera 2.12.10 om du vill, men inte nödvändigt.
+%   \\~\\ När du kollar api-dokumentationen för Scalas standardbibliotek så använd denna länk:\\ 
+%   \url{https://www.scala-lang.org/api/2.12.10}
 
-\end{SlideExtra}
-\fi
+% \end{SlideExtra}
+% \fi
 
 \Subsection{Funktioner}
 
@@ -138,7 +138,7 @@ res2: Int = 43
 \begin{itemize}
 \item Genom att använda \Emph{namngivna argument} behöver man inte hålla reda på ordningen på parametrarna, bara man känner till parameternamnen.
 \item Namngivna argument går fint att \Alert{kombinera} med defaultargument.
-\begin{REPL}
+\begin{REPLnonum}[basicstyle=\SlideFontSize{7}{9}\ttfamily\color{white}]
 scala> def namn(förnamn: String,
                 efternamn: String,
                 förnamnFörst: Boolean = true,
@@ -148,42 +148,38 @@ scala> def namn(förnamn: String,
 
 scala> namn(ledtext = "Name", efternamn = "Coder", förnamn = "Kim")
 res0: String = Name: Kim Coder
-\end{REPL}
+\end{REPLnonum}
 \end{itemize}
 \end{Slide}
 
 
-\begin{Slide}{Enhetlig access med tom parameterlista}\SlideFontSmall
+\begin{Slide}{Enhetlig access}\SlideFontSmall
 \begin{itemize}
-\item Om en funktion \Emph{deklareras} med tom parameterlista \code{()}, eller helt utan parameterlista, så kan den \Emph{anropas} \Alert{utan parameterlista}.
+\item Om en funktion \Emph{deklareras} \Alert{med} tom parameterlista \code{()}, så ska den \Emph{anropas} \Alert{med} tom parameterlista.
 \begin{REPL}
 scala> def tomParameterLista() = 42
 
 scala> tomParameterLista()
-res2: Int = 42
+res1: Int = 42
 
 scala> tomParameterLista
-res3: Int = 42
+       ^ warning: Auto-application to `()` is deprecated. 
 \end{REPL}
 
-\item Denna flexibilitet är grunden för \Emph{enhetlig access}: namnet kan användas enhetligt oavsett om det är en funktion eller en variabel.
-\item Om parameterlista saknas får man \Alert{inte} använda \code{()} vid anrop:
+\item MEN om en parameterlös funktion deklareras \Emph{utan} () kan den användas enhetligt \Alert{oavsett} om namnet avser en funktion eller en variabel. 
+\item Denna regel är grunden för principen om \Emph{enhetlig access}: implementationen kan ändras utan att användande koden påverkas.
+\pause\item Om parameterlista saknas får man \Alert{inte} använda \code{()} vid anrop:
 
 \begin{REPL}
 scala> def ingenParameterLista = 42
-
-scala> ingenParameterLista
-res4: Int = 42
-
 scala> ingenParameterLista()
-<console>:13: error: Int does not take parameters
-       ingenParameterLista()
+        ^ error: Int does not take parameters
 \end{REPL}
 
 \end{itemize}
 \end{Slide}
 
-
+\Subsection{Hur ser det ut i minnet när funktioner anropas?}
 
 \begin{Slide}{Anropsstacken och objektheapen}\SlideFontSmall
 Minnet som innehåller ett programs data är uppdelat i två delar:
@@ -275,7 +271,7 @@ object BMI {
     safeDiv(weightKg, heightCm * heightCm) 
 
   def safeDiv(nominator: Int, denominator: Int): (Int, String) = 
-    if (denominator == 0) (nominator / denominator, "ok")
+    if (denominator == 0) (nominator / denominator, "ok")  // ser du buggen?
     else (0, "division by zero") 
 }
 \end{Code}
@@ -339,6 +335,8 @@ def gissaTalet(max: Int, min: Int = 1): Unit = {
 Lokala, nästlade funktionsdeklarationer är tyvärr inte tillåtna i Java.\footnote{\href{http://stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}{\SlideFontSize{8}{9}stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}}
 
 \end{Slide}
+
+\Subsection{En funktion är ett värde}
 
 \begin{Slide}{Funktioner är äkta värden i Scala}\SlideFontSmall
 \begin{itemize}
@@ -427,9 +425,11 @@ res1: scala.collection.immutable.Vector[Int] = Vector(0, 1, 2)
 Funktioner som tar andra funktioner som parametrar kallas \\ \Emph{högre ordningens funktioner}.
 \end{Slide}
 
+\Subsection{Äkta funktioner}
+
 \begin{Slide}{Äkta funktioner}
 \begin{itemize}\SlideFontSmall
-\item En \Emph{äkta} funktion är en funktion som ger ett resultat som \Alert{enbart} beror av dess argument. Detta är vi vana vid från funktioner i matematiken.
+\item En \Emph{äkta} \Eng{pure} funktion är en funktion som ger ett resultat som \Alert{enbart} beror av dess argument. Alltså som funktioner i matematiken.
 \item En äkta (matematisk) funktion är \Emph{referentiellt transparent} \Eng{referentially transparent}, vilket innebär att varje anrop kan bytas ut mot funktionskroppen där parametrarna ersatts med motsvarande argument.
 \item En äkta funktion har \Alert{inga sidoeffekter}, t.ex. utskrift, skriva/läsa filer,  eller uppdateringar av variabler \Alert{synliga utanför} funktionen.
 \item Exempel:
@@ -492,7 +492,7 @@ def rnd(n: Int): Int = (math.random() * n).toInt  // oäkta funktion
 %Eller: \href{https://www.youtube.com/watch?v=rvXxlXg_V-k}{\SlideFontSmall www.youtube.com/watch?v=rvXxlXg\_V-k}
 %\end{Slide}
 
-
+\Subsection{Anonyma funktioner}
 
 
 \begin{Slide}{Anonyma funktioner}
@@ -587,7 +587,7 @@ res23: Int = 120
 \end{Slide}
 
 
-\begin{Slide}{Predikat}
+\begin{Slide}{Predikat, med och utan namn}
 \begin{itemize}\SlideFontSmall
 \item En funktion som har \code{Boolean} som returtyp kallas för ett \Emph{predikat}. 
 \item Exempel:
@@ -598,7 +598,7 @@ def isTall(heightInMeters: Double, limit: Double = 1.78): Boolean =
   heightInMeters > limit
 \end{Code}
 \item Predikat ges ofta ett namn som börjar på \code{is} eller \code{has} så att man lätt kan se att det är ett predikat när man läser kod som anropar funktionen.
-\item Många av samlingsmetoderna i Scalas standardbibliotek tar predikat som funktionsargument. Exempel: 
+\item Många av samlingsmetoderna i Scalas standardbibliotek tar predikat som funktionsargument. Exempel med predikat som anonym funktion: 
 \begin{REPLnonum}
 scala> val parts = Vector(3, 1, 0, 5).partition(_ > 1)
 val parts: (Vector[Int], Vector[Int]) = 
@@ -609,7 +609,7 @@ val parts: (Vector[Int], Vector[Int]) =
 \end{Slide}
 
 
-  
+\Subsection{Skapa din egen kontrollstruktur}  
 
 \begin{Slide}{Hur fungerar egentligen \code{upprepa} i Kojo?}
 \begin{Code}[basicstyle=\ttfamily\SlideFontSize{14}{16}]
@@ -951,10 +951,11 @@ Läs labbinstruktioner:\url{http://cs.lth.se/pgk/compendium/}
 
 
 \begin{SlideExtra}{Tips inför ditt textspel.}
-\begin{Code}
+\begin{CodeSmall}
 "Yes".toLowerCase.startsWith("y")    // true
 "hejsan".contains("ejsa")            // true
 "42".toInt                           // 42
+"?".toIntOption.getOrElse(42)        // 42
 
 val i = 42
 s"Livets mening är $i!" // dollar $ före namn vid stränginterpolering med s""
@@ -969,10 +970,10 @@ math.random() < 0.8                  // true i 80% av fallen
 scala.util.Random.nextInt(42)      // ger slumptal mellan 0 och 41
 scala.io.StdIn.readLine("prompt>") // ger sträng som användaren skriver
 
-try { "?".toInt } catch { case e: Exception => 42 }  // förhindrar krasch
+val x = try { "?".toInt } catch { case e: Exception => 42 }  // förhindrar krasch
 Thread.sleep(1000)    // sova i 1000 milliskeunder
-\end{Code}
-Kolla snabbreferensen vad mer du kan göra med strängar!
+\end{CodeSmall}
+Kolla \Emph{snabbreferensen} vad mer du kan göra med strängar!
 \end{SlideExtra}
 
 \begin{SlideExtra}{Exempel på en början till ett textspel}
@@ -992,8 +993,8 @@ Kolla snabbreferensen vad mer du kan göra med strängar!
   \item Ha ett terminalfönster med en fristående scala REPL där du kan göra mindre undersökningar rad för rad.
   \item Börja enkelt och bygg vidare steg för steg.
   \item Bygg om koden allteftersom den växer genom att införa nya abstraktioner med väl valda namn (s.k. ''refaktorisering'') .
-  \item Fixa alla kompileringsfel eller körtidsfel innan du går vidare.
-  \item Fokusera på kodens läsbarhet.
+  \item Fixa \Alert{alla} kompileringsfel \code{||} körtidsfel \Emph{innan} du går vidare.
+  \item Fokusera på kodens \Alert{läsbarhet}.
 \end{itemize}
 
 \end{SlideExtra}
