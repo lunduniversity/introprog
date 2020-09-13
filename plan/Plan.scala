@@ -233,7 +233,7 @@ trait Plan {
 
   lazy val startLp2 = Date(2020, 11, 2)
 
-  lazy val ksdatum = Date(2020, 10, 27)
+  lazy val ksdatum = Date(2020, 10, 28)
 
   lazy val tentadatum = Date(2020, 1, 11)
 
