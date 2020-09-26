@@ -418,6 +418,27 @@ från Java 8 finns metoden \code{chars} som ger en \code{IntStream} och då kan 
 
 
 
+
+\Subsection{Klasser i Java}
+
+\begin{Slide}{Typisk utformning av Java-klass}
+Typisk ''anatomi'' av en Java-klass:
+\begin{Code}[language=Java]
+class Klassnamn {
+    attribut, normalt privata
+    konstruktorer, normalt publika
+    metoder: publika getters, och vid förändringsbara objekt även setters
+    metoder: privata abstraktioner för internt bruk
+    metoder: publika abstraktioner tänkta att användas av klientkoden
+}
+\end{Code}
+\href{http://www.oracle.com/technetwork/java/codeconventions-141855.html#1852}{\SlideFontSize{9}{8}www.oracle.com/technetwork/java/codeconventions-141855.html\#1852}
+\end{Slide}
+
+
+
+
+
 \begin{Slide}{Exempel: oföränderlig klass i Scala och Java}
 \ifkompendium
 \noindent\Emph{Scala:}
@@ -482,6 +503,92 @@ Gör \code{Person} + \code{JPerson} \Alert{förändringsbara}\\så att namnet oc
 \item åldern ska aldrig kunna bli negativ.
 \end{itemize}
 \end{Slide}
+
+
+\begin{Slide}{Exempel från tidigare vecka: Scala-klassen Complex}
+\scalainputlisting[basicstyle=\ttfamily\SlideFontSize{7}{9},numbers=left,numberstyle=\SlideFontSize{7}{7}\ttfamily\selectfont]{../compendium/examples/complex7.scala}
+{\SlideFontTiny Scala:~~\url{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/complex7.scala}}
+
+{\SlideFontTiny Java:~~~\url{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/JComplex.scala}}
+
+\end{Slide}
+  
+
+\begin{Slide}{Exempel: Motsvarande Java-klassen JComplex}\SlideFontTiny\SlideOnly{\vspace{-1em}}
+\javainputlisting[basicstyle=\SlideFontSize{5}{5.7}\ttfamily\selectfont,numbers=left,numberstyle=\SlideFontSize{5}{5}\ttfamily\selectfont]{../compendium/examples/JComplex.java}
+\end{Slide}
+
+  
+  
+
+
+\begin{Slide}{Exempel: Använda JComplex i Scala-kod}
+\begin{REPL}
+$ javac JComplex.java
+$ scala
+Welcome to Scala 2.12.9 (OpenJDK 64-Bit Server VM, Java 1.8.0_222).
+Type in expressions for evaluation. Or try :help.
+
+scala> val jc1 = new JComplex(3, 4)
+jc1: JComplex = 3.0 + 4.0i
+
+scala> val polarForm = (jc1.getR, jc1.getFi)
+polarForm: (Double, Double) = (5.0,0.6435011087932844)
+
+scala> val jc2 = new JComplex(1, 2)
+jc2: JComplex = 1.0 + 2.0i
+
+scala> jc1 add jc2
+res0: JComplex = 4.0 + 6.0i
+\end{REPL}
+\end{Slide}
+
+
+
+
+\begin{Slide}{Exempel: Använda JComplex i Java-kod}\SlideFontSmall
+\javainputlisting[basicstyle=\SlideFontSize{8}{10}\ttfamily\selectfont]{../compendium/examples/JComplexTest.java}
+\begin{itemize}
+\item I Java måste man skriva \Alert{tomma parentes-par} efter metodnamnet vid \Alert{anrop av parameterlösa metoder}.
+
+\item \Alert{Tupler finns inte} i Java, så det går inte på ett enkelt sätt att skapa par av värden som i Scala; ovan görs polär form till en sträng för utskrift.
+
+\item \Alert{Operatornotation för metoder finns inte} i Java, så man måste i Java använda punktnotation och skriva: \code{jc1.add(jc2)}
+\end{itemize}
+\end{Slide}
+  
+  
+  
+
+
+
+\begin{Slide}{Statiska medlemmar i Java}
+\begin{itemize}
+\item Man kan \Alert{inte} deklarera explicita singelobjekt i Java och det finns inget nyckelord \code{object}.
+
+\item I stället kan man deklarera \Emph{statiska medlemmar} i en klass med Java-nyckelordet \jcode{static}.
+
+\item Exempel på hur vi kan göra detta inuti klassen \code{JComplex}:
+
+\begin{Code}[language=Java,basicstyle=\SlideFontSize{10}{12}\ttfamily\selectfont]
+    public static char imSymbol = 'i';
+\end{Code}
+
+\item Effekten blir den samma som ett singelobjekt i Scala:
+\begin{itemize}
+\item Alla statiska medlemmar i en Java-klass allokeras automatiskt och hamnar i en egen singulär ''klassinstans'' som existerar oberoende av de dynamiska instanserna.
+\item De statiska medlemmarna accessas med punktnotation genom klassnamnet:
+\begin{Code}[language=Java,basicstyle=\SlideFontSize{11}{13}\ttfamily\selectfont]
+    JComplex.imSymbol = 'j';
+\end{Code}
+
+\end{itemize}
+
+
+\end{itemize}
+\end{Slide}
+
+
 
 
 \begin{Slide}{Exempel: förändringsbar klass i Scala och Java}
