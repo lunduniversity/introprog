@@ -20,7 +20,8 @@ Begreppet \Emph{klass} är en viktig abstraktionsmekanism inom \Emph{objekt-orie
 \begin{Slide}{Vad är en klass?}
 \begin{itemize}
 \item En klass är en mall för att skapa objekt.
-\item Objekt skapas med \code{new Klassnamn} och kallas för  \Emph{instanser} av klassen \code{Klassnamn}.
+\item Objekt kan skapas med \code{new Klassnamn}, vilket kallas \Emph{instansiering}. 
+\item Ett sådant objekt kallas för en \Emph{instans} av \code{Klassnamn}.
 \item En klass innehåller \Emph{medlemmar} \Eng{members}, som bl.a. kan vara:
   \begin{itemize}
   \item \Emph{attribut}, kallas även fält \Eng{field}: \code{val}, \code{lazy val}, \code{var}
@@ -47,7 +48,7 @@ En klass liknar en \Emph{stämpel}.
 
 \begin{itemize}
 \item En stämpel kan \Alert{tillverkas} -- motsvarar \Emph{deklaration} av klassen.
- \item Det händer inget förrän man \Alert{stämplar} -- motsvarar \code{new}.
+ \item Det händer inget förrän man \Alert{stämplar} -- motsvarar instansiering med \code{new}.
 \item Då skapas \Alert{avbildningar} av stämpeln -- motsvarar \Emph{allokering av ett objekt} som är en \Emph{instans} av klassen.
 \item Allokering kallas också \Emph{konstruktion} och funktionen/koden som gör själva allokeringen kallas \Emph{konstruktor}.
 \end{itemize}
@@ -173,7 +174,7 @@ En klass liknar en \Emph{stämpel}.
 \begin{Slide}{Singelobjekt jämfört med klass}\SlideFontSmall
 Vi har tidigare deklarerat \Emph{singelobjekt} som bara finns i \Alert{en} enda upplaga:
 \begin{REPLnonum}
-scala> object Björn { var ålder = 49; val längd = 178 }
+scala> object Björn { var ålder = 53; val längd = 178 }
 \end{REPLnonum}
 
 Med en \Emph{klass} kan man skapa \Alert{godtyckligt många} \Emph{instanser av klassen} med hjälp av nyckelordet \code{new} följt av klassens namn:
@@ -205,7 +206,7 @@ björn: Person = Person@7ae75ba6  // unikt id för instansen
 
 \begin{Slide}{Förändring av objektets tillstånd}
 \begin{REPLnonum}
-scala> björn.ålder = 51
+scala> björn.ålder = 53
 
 scala> björn.längd = 178
 björn: Person = Person@7ae75ba6
@@ -220,7 +221,7 @@ björn: Person = Person@7ae75ba6
  align=center, draw] (x) at (5.8cm, -1.2cm) {
  \begin{tabular}{r l}
  \multicolumn{2}{c}{\ttfamily\itshape Person@7ae75ba6}\\ \\
- \texttt{ålder} & \fbox{~51~} \\
+ \texttt{ålder} & \fbox{~53~} \\
  \texttt{längd} & \fbox{~178~}\\
  \end{tabular}
  };
@@ -235,7 +236,7 @@ björn: Person = Person@7ae75ba6
 \begin{REPLnonum}
 scala> class Person(var ålder: Int, var längd: Int)
 
-scala> val sandra = new Person(40, 166)
+scala> val sandra = new Person(42, 166)
 sandra: Person = Person@7878bbdb
 \end{REPLnonum}
 
@@ -248,7 +249,7 @@ sandra: Person = Person@7878bbdb
  align=center, draw] (x) at (5.8cm, -1.2cm) {
  \begin{tabular}{r l}
  \multicolumn{2}{c}{\ttfamily\itshape Person@7878bbdb}\\ \\
- \texttt{ålder} & \fbox{~40~} \\
+ \texttt{ålder} & \fbox{~42~} \\
  \texttt{längd} & \fbox{~166~}\\
  \end{tabular}
  };
@@ -537,7 +538,7 @@ error:
 \begin{Slide}{Kompanjonsobjekt med indirekt instansiering}\SlideFontSmall
 \setlength{\leftmargini}{0pt}
 \begin{itemize}
-\item Ett \Emph{kompanjonsobjekt} \Eng{companion object} är ett singelobjekt som ligger i samma kodfil som en klass och har \Alert{samma namn} som klassen.
+\item Ett \Emph{kompanjonsobjekt} \Eng{companion object} är ett singelobjekt som ligger i \Alert{samma kodfil} som en klass, och som har \Alert{samma namn} som klassen.
 
 \item Medlemmar i ett kompanjonsobjekt \Alert{får accessa privata} medlemmar i kompanjonsklassen (och vice versa) och kompanjonsobjektet får därför accessa privat konstruktor och kan göra \code{new}.
 \scalainputlisting[basicstyle=\ttfamily\SlideFontSize{7}{9}]{../compendium/examples/complex4.scala}
@@ -584,7 +585,7 @@ res2: Complex = 0.0 + -1.0i
 scala> new Complex(1)
 res3: Complex = 1.0 + 0.0i
 \end{REPL}
-\end{Slide}
+\end{Slide} 
 
 \begin{Slide}{Alternativa sätt att instansiera med fabriksmetod}
 Vi kan också erbjuda \Emph{alternativa} sätt att instansiera \Emph{indirekt} med fabriksmetoden \code{apply} i ett kompanjonsobjekt genom default-argument:
@@ -673,7 +674,11 @@ res0: Complex = 3.0 + 4.0j
 
 \Subsection{Case-klasser och fördelen med oföränderlighet}
 
-
+\ifkompendium\else
+\begin{frame}[plain]
+  \includegraphics[width=1.0\textwidth]{../img/mutant.png}
+\end{frame}
+\fi
 
 \begin{Slide}{Övning: en läskig mutant}\SlideFontSmall
 \begin{enumerate}
@@ -681,7 +686,7 @@ res0: Complex = 3.0 + 4.0j
 \vspace{0.5em}
 
 \item \begin{minipage}{0.5\textwidth}
-Skriv kod som deklarerar två variabler med namnet \code{fem1} och \code{fem2} som refererar till samma \code{Mutant}-instans.
+Deklarera två \code{val}-variabler som kallas \code{fem1} och \code{fem2} och som båda refererar till \Alert{samma} \code{Mutant}-instans.
 \end{minipage}
 \hfill\begin{minipage}{0.32\textwidth}
 \hfill\includegraphics[width=3.4cm]{../img/mutant.png}
@@ -745,17 +750,17 @@ Vi kan utan risk dela med oss av en referens till en oföränderlig klass -- ing
 
 \begin{Slide}{Vad är en konstruktor?}
 \begin{itemize}
-\item En \Emph{konstruktor} är den kod som exekveras när klasser instansieras med \code{new}.
+\item En \Emph{konstruktor} är den maskinkod som exekveras när klasser instansieras med \code{new}.
 
-\item Konstruktorn skapar nya objekt i minnet under körning när den anropas.
+\item Konstruktorn skapar ett nytt objekt i minnet vid varje anrop.
 
-\item I Scala \Alert{genererar} kompilatorn en \Emph{primärkonstruktor} med maskinkod som initialiserar alla attribut baserat på klassparametrar och \code{val}- och \code{var}-deklarationer.
+\item I Scala \Alert{genererar kompilatorn} en \Emph{primärkonstruktor} åt dig med maskinkod som initialiserar alla attribut baserat på klassparametrarna som du deklarerat.
 
 \pause
 
-\item I Java får man \Alert{explicit} skriva alla konstruktorer med speciell syntax och göra alla initialiseringar själv. Man kan ha många olika alternativa konstruktorer i Java.
+\item I Java (m.fl. språk) får man \Alert{explicit} skriva kod för konstruktorer med speciell syntax och göra alla initialiseringar av attribut själv. Man får ha många olika konstruktorer (t.ex. i stället för defaultargument).
 
-\item I Scala \Emph{kan} man också skriva egna alternativa s.k. \Emph{hjälpkonstruktorer}, men det är \Alert{ovanligt}, eftersom man har möjligheten med fabriksmetoder i kompanjonsobjekt och default-argument (saknas i Java).
+\item I Scala \Emph{kan} man också skriva egna alternativa s.k. \Emph{hjälpkonstruktorer}, men det är \Alert{ovanligt}, eftersom man har möjligheten med fabriksmetoder i kompanjonsobjekt och default-argument (saknas i Java, m.fl.).
 \end{itemize}
 \end{Slide}
 
@@ -866,108 +871,6 @@ scala> g = null         // instansen kommer att destrueras av skräpsamlaren
 \end{Slide}
 
 
-
-
-
-
-\Subsection{Klasser i Java}
-
-\begin{Slide}{Typisk utformning av Java-klass}
-Typisk ''anatomi'' av en Java-klass:
-\begin{Code}[language=Java]
-class Klassnamn {
-    attribut, normalt privata
-    konstruktorer, normalt publika
-    metoder: publika getters, och vid förändringsbara objekt även setters
-    metoder: privata abstraktioner för internt bruk
-    metoder: publika abstraktioner tänkta att användas av klientkoden
-}
-\end{Code}
-\href{http://www.oracle.com/technetwork/java/codeconventions-141855.html#1852}{\SlideFontSize{9}{8}www.oracle.com/technetwork/java/codeconventions-141855.html\#1852}
-\end{Slide}
-
-
-
-
-\begin{Slide}{Java-exempel: Klassen JComplex}\SlideFontTiny\SlideOnly{\vspace{-1em}}
-\javainputlisting[basicstyle=\SlideFontSize{5}{6}\ttfamily\selectfont]{../compendium/examples/JComplex.java}
-\end{Slide}
-
-
-
-
-\begin{Slide}{Exempel: Använda JComplex i Scala-kod}
-\begin{REPL}
-$ javac JComplex.java
-$ scala
-Welcome to Scala 2.12.9 (OpenJDK 64-Bit Server VM, Java 1.8.0_222).
-Type in expressions for evaluation. Or try :help.
-
-scala> val jc1 = new JComplex(3, 4)
-jc1: JComplex = 3.0 + 4.0i
-
-scala> val polarForm = (jc1.getR, jc1.getFi)
-polarForm: (Double, Double) = (5.0,0.6435011087932844)
-
-scala> val jc2 = new JComplex(1, 2)
-jc2: JComplex = 1.0 + 2.0i
-
-scala> jc1 add jc2
-res0: JComplex = 4.0 + 6.0i
-\end{REPL}
-\end{Slide}
-
-
-
-
-\begin{Slide}{Exempel: Använda JComplex i Java-kod}\SlideFontSmall
-\javainputlisting[basicstyle=\SlideFontSize{8}{10}\ttfamily\selectfont]{../compendium/examples/JComplexTest.java}
-\begin{itemize}
-\item I Java måste man skriva \Alert{tomma parentes-par} efter metodnamnet vid \Alert{anrop av parameterlösa metoder}.
-
-\item \Alert{Tupler finns inte} i Java, så det går inte på ett enkelt sätt att skapa par av värden som i Scala; ovan görs polär form till en sträng för utskrift.
-
-\item \Alert{Operatornotation för metoder finns inte} i Java, så man måste i Java använda punktnotation och skriva: \code{jc1.add(jc2)}
-\end{itemize}
-\end{Slide}
-
-
-
-
-
-
-
-
-
-
-\begin{Slide}{Statiska medlemmar i Java}
-\begin{itemize}
-\item Man kan \Alert{inte} deklarera explicita singelobjekt i Java och det finns inget nyckelord \code{object}.
-
-\item I stället kan man deklarera \Emph{statiska medlemmar} i en klass med Java-nyckelordet \jcode{static}.
-
-\item Exempel på hur vi kan göra detta inuti klassen \code{JComplex}:
-
-\begin{Code}[language=Java,basicstyle=\SlideFontSize{10}{12}\ttfamily\selectfont]
-    public static char imSymbol = 'i';
-\end{Code}
-
-\item Effekten blir den samma som ett singelobjekt i Scala:
-\begin{itemize}
-\item Alla statiska medlemmar i en Java-klass allokeras automatiskt och hamnar i en egen singulär ''klassinstans'' som existerar oberoende av de dynamiska instanserna.
-\item De statiska medlemmarna accessas med punktnotation genom klassnamnet:
-\begin{Code}[language=Java,basicstyle=\SlideFontSize{11}{13}\ttfamily\selectfont]
-    JComplex.imSymbol = 'j';
-\end{Code}
-
-\end{itemize}
-
-
-\end{itemize}
-\end{Slide}
-
-
-
 \Subsection{Referensen \texttt{this}}
 \begin{Slide}{Referensen \texttt{this}}\SlideFontSmall
 \begin{itemize}
@@ -996,24 +899,25 @@ res2: Int = 42
 
 \Subsection{Getters och setters}
 
-\begin{Slide}{Getters och setters i Java}\SlideFontSmall
+\begin{Slide}{Getters och setters}\SlideFontSmall
 \begin{itemize}
-\item I Java finns inget motsvarande nyckelord \code{val} som garanterar oföränderliga attributreferenser.\footnote{Det finns visserligen \jcode{final} men det är annorlunda som vi ska se senare.}
+\item I många språk t.ex. Java finns inget motsvarande nyckelord \code{val} som garanterar oföränderliga attributreferenser.
+% \footnote{Det finns visserligen \jcode{final} men det är annorlunda som vi ska se senare.}
 
-\item Därför gör man i Java nästan alltid attribut \Alert{privata} för att förhindra att de ändras på ett okontrollerat sätt.
+\item Därför gör man i dessa språk nästan alltid gör alla attribut \Alert{privata} för att förhindra att de ändras på ett okontrollerat sätt.
 
-\item Java följer inte principen om enhetlig access: åtkomst av metoder och variabler sker med olika syntax.
+% \item Många språk följer \Alert{inte} principen om enhetlig access: åtkomst av metoder och variabler sker med olika syntax.
 
-\item Därför är det normala i Java att införa metoder som kallas \Emph{getters} och \Emph{setters}, som används för att \Alert{indirekt} läsa och uppdatera \Emph{attribut}.
+\item Därför är det normalt att införa metoder som kallas \Emph{getters} och \Emph{setters}, som används för att \Alert{indirekt} läsa och uppdatera \Emph{attribut}.
 
-\item Dessa metoder känns igen genom Java-konventionen att de heter något som börjar med \Emph{get} respektive \Emph{set}.
+\item Dessa metoder känns i många språk igen genom konventionen att de heter något som börjar med \Emph{get} respektive \Emph{set}. (Men \Alert{ej} vanligt i Scala.)
 
-\item Med indirekt access av attribut kan man i Java åstadkomma \Emph{flexibilitet}, så att klassimplementationen kan ändras utan att ändra i klientkoden:
+\item Med \Emph{indirekt access} av attribut kan man åstadkomma \Emph{flexibilitet}, så att implementationen kan ändras utan att ändra i klientkoden:
 \begin{itemize}\SlideFontSmall
-\item man kan t.ex. i efterhand ändra representation av de privata attributen eftersom all access sker genom getters och setters.
+\item[--] man kan t.ex. i efterhand ändra representation av de privata attributen eftersom all access sker genom getters och setters.
 \end{itemize}
 
-\item Om klassen \Alert{inte} erbjuder en \Alert{setter} för privata attribut kan man åstadkomma \Emph{oföränderliga} datastrukturer där attributreferenserna inte förändras efter allokering.
+\item Man kan åstadkomma \Emph{oföränderliga} datastrukturer där attributreferenserna inte förändras efter allokering om klassen \Alert{inte} erbjuder en \Alert{setter} för privata attribut.
 \end{itemize}
 \end{Slide}
 
