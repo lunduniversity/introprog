@@ -7,18 +7,41 @@
 
 \ifkompendium
 \noindent  I ett match-uttryck kan man matcha på ett visst värde eller på en viss typ och match-uttryck används gärna istället för nästlade if-uttryck, då de ofta är lättare att läsa och begripa. Med match-uttryck kan man också göra \Emph{mönstermatchning} mot case-klass-instanser, t.ex. för att på ett smidigt sätt undersöka om attribut har speciella värden. Match-uttryck i Scala är en mer kraftfull variant av \code{switch}-satser som finns i många andra språk.  
-\else
-\begin{SlideExtra}{Vad är matchning?}
-\includegraphics[width=0.8\textwidth]{../img/plocklada.png}
-\end{SlideExtra}
 \fi
 
 \begin{Slide}{Vad är matchning?}
-Matchning gör man då man vill jämföra ett värde mot andra värden och hitta överensstämmelse \Eng{match}.
 
-\pause
+  \begin{itemize}
+    \item Matchning gör man då man vill jämföra ett värde mot andra värden och hitta överensstämmelse \Eng{match} enligt olika \Emph{mönster}.
+    \item Med mönster kan man \Alert{plocka isär} objekt i sina beståndsdelar.
+  \end{itemize}
+\end{Slide}
 
-\vspace{1em}\noindent Detta kan man t.ex. göra med nästlade if-else-satser/uttryck:
+\begin{Slide}{Plocka isär ett objekt i sina beståndsdelar med mönster}
+
+\begin{REPLnonum}
+scala> case class Point(x: Int, y: Int)
+
+scala> val p = Point(1, 2)      // konstruera en punkt
+val p: Point = Point(1,2)
+\end{REPLnonum}
+
+\pause 
+
+~\\
+\begin{REPLnonum}
+scala> val Point(x, y) = p      // plocka isär en punkt
+val x: Int = 1
+val y: Int = 2
+  
+\end{REPLnonum}
+\end{Slide}
+
+
+\begin{Slide}{Kolla om det passar med nästlade if-else-uttryck}
+Ett vanligt problem: \\ att kolla vilket bland många värden som passar \\~\\
+
+Kan göras med nästlade if-else-uttryck:
 
 \begin{Code}
 val g = scala.io.StdIn.readLine("grönsak:")
@@ -30,47 +53,19 @@ val smak =
 
 println(g + " är " + smak)
 \end{Code}
+      
 \end{Slide}
 
 
+\ifkompendium\else
+\begin{SlideExtra}{Matchning är ungefär som att passa klossar i en låda}
+\includegraphics[width=0.8\textwidth]{../img/plocklada.png}
+\end{SlideExtra}
+\fi
 
 
-\begin{Slide}{Javas switch-sats}\SlideFontSmall
-De flesta C-liknande språk (men inte Scala) har en \jcode{switch}-sats som man kan använda istället för (vissa) nästlade if-else-satser:
-\javainputlisting[basicstyle=\ttfamily\SlideFontSize{5}{6}\selectfont]{../compendium/examples/match/Switch.java}
-{\SlideFontTiny
-\code{switch} i Java har stora begränsningar (fungerar t.ex. bara på primitiva typer och några till, tex String); i framtiden planerar man att anamma en del av det \code{match} i Scala kan.
-}
-\end{Slide}
-
-
-
-
-\begin{Slide}{Javas switch-sats utan break}\SlideFontSmall
-Saknad \jcode{break}-sats ''faller igenom'' till efterföljande gren:
-
-\javainputlisting[basicstyle=\ttfamily\SlideFontSize{6}{7}\selectfont]{../compendium/examples/match/SwitchNoBreak.java}
-En glömd \jcode{break} kan ge svårhittad bugg...
-\end{Slide}
-
-\begin{Slide}{Javas switch-sats med glömd break}\SlideFontSmall
-
-\vspace{-0.5em}\javainputlisting[basicstyle=\ttfamily\SlideFontSize{5.5}{6.8}\selectfont]{../compendium/examples/match/SwitchForgotBreak.java}
-
-\vspace{-0.7em}\pause
-\begin{REPL}
-> java SwitchForgotBreak
-Skriv grönsak:
-gurka
-gott!
-gott!
-\end{REPL}
-
-\end{Slide}
-
-
-\begin{Slide}{Scalas \texttt{match}-uttryck}\SlideFontSmall
-Scala har ingen \code{switch}-sats men erbjuder i stället ett \code{match}-\Emph{uttryck} som är kraftfullare och ger ett värde.
+\begin{Slide}{Kolla om det passar med \texttt{match}-uttryck}\SlideFontSmall
+Scala har även ett kraftfullt \code{match}-\Emph{uttryck}:
 
 \begin{Code}
 val g = scala.io.StdIn.readLine("grönsak:")
@@ -82,15 +77,53 @@ val smak = g match {
 }
 println(g + " är " + smak)
 \end{Code}
-Och den ''faller inte igenom'' som Javas \code{switch}-sats!
 \begin{itemize}
 \pause\item Varje \code{case}-gren testas var för sig i tur och ordning uppifrån och ned.
-\pause\item Det som står mellan \code{case} och \code{=>} kallas ett \Emph{mönster} \Eng{pattern}
-\pause\item Sista default-grenen ovan kallas \Emph{wildcard-mönster}: \code{case _ => }
-\pause\item Ovan är exempel på matchning mot \Emph{konstant-mönster}, \\ i detta fallet tre stycken strängkonstantmönster.
-\pause\item Det finns många andra sätt att skriva mönster.
+\item Det som står mellan \code{case} och \code{=>} kallas ett \Emph{mönster} \Eng{pattern}
+\item Sista default-grenen ovan kallas \Emph{wildcard-mönster}: \code{case _ => }
+\item Ovan är exempel på matchning mot \Emph{konstant-mönster}, \\ i detta fallet tre stycken strängkonstantmönster.
+\item Det finns många andra sätt att skriva mönster.
 \end{itemize}
+% \pause Scalas \code{match} ''faller inte igenom'' som \code{switch}-satser som finns i många språk, t.ex. Java...
+
 \end{Slide}
+
+
+
+% \begin{Slide}{Javas switch-sats}\SlideFontSmall
+% De flesta C-liknande språk (men inte Scala) har en \jcode{switch}-sats som man kan använda istället för (vissa) nästlade if-else-satser:
+% \javainputlisting[basicstyle=\ttfamily\SlideFontSize{5}{6}\selectfont]{../compendium/examples/match/Switch.java}
+% {\SlideFontTiny
+% \code{switch} i Java har stora begränsningar (fungerar t.ex. bara på primitiva typer och några till, tex String); i framtiden planerar man att anamma en del av det \code{match} i Scala kan.
+% }
+% \end{Slide}
+
+
+
+
+% \begin{Slide}{Javas switch-sats utan break}\SlideFontSmall
+% Saknad \jcode{break}-sats ''faller igenom'' till efterföljande gren:
+
+% \javainputlisting[basicstyle=\ttfamily\SlideFontSize{6}{7}\selectfont]{../compendium/examples/match/SwitchNoBreak.java}
+% En glömd \jcode{break} kan ge svårhittad bugg...
+% \end{Slide}
+
+% \begin{Slide}{Javas switch-sats med glömd break}\SlideFontSmall
+
+% \vspace{-0.5em}\javainputlisting[basicstyle=\ttfamily\SlideFontSize{5.5}{6.8}\selectfont]{../compendium/examples/match/SwitchForgotBreak.java}
+
+% \vspace{-0.7em}\pause
+% \begin{REPL}
+% > java SwitchForgotBreak
+% Skriv grönsak:
+% gurka
+% gott!
+% gott!
+% \end{REPL}
+
+% \end{Slide}
+
+
 
 
 
