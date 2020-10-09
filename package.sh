@@ -1,7 +1,7 @@
 #workspace is published in repo (should be in release...)
 sbt eclipse
 rm -i lib/workspace.zip
-zip -9 -r lib/workspace.zip -x=*target* -x=*build.sbt -x=*.class -x="workspace/project/*" workspace
+zip -9 -r lib/workspace.zip -x=*target* -x=*.class -x="workspace/project/*" workspace
 
 # deprecated cslib will not change:
 # sbt cslib/package
