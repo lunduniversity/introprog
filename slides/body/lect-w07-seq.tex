@@ -106,13 +106,6 @@ res4: String = haj pod
   \item Långsam vid upprepad \Alert{indexering} på godtyckliga ställen.
   \end{itemize}
 
-\item \code{Array}
-  \begin{itemize}\SlideFontSmall
-  \item \Alert{Föränderlig}: \Emph{snabb indexering \& uppdatering}.
-  \item Kan \Alert{ej ändra storlek}; storlek ges vid allokering.
-  \item Har särställning i JVM: ger snabbast allokering och access.
-  \end{itemize}
-
 \item \code{ArrayBuffer}
   \begin{itemize}\SlideFontSmall
   \item \Alert{Föränderlig}: \Emph{snabb indexering \& uppdatering}.
@@ -125,10 +118,27 @@ res4: String = haj pod
   \item Snabb om du bygger upp sekvens genom många tillägg i början.
   \end{itemize}
 
+\item \code{Array} (använd fr.o.m. Scala 2.13 hellre \code{ArraySeq})
+  \begin{itemize}\SlideFontSmall
+  \item \Alert{Föränderlig}: \Emph{snabb indexering \& uppdatering}.
+  \item Kan \Alert{ej ändra storlek}; storlek ges vid allokering.
+  \item Har särställning i JVM: ger snabb allokering och access.
+  \end{itemize}
+
 \end{itemize}
 \end{Slide}
 
-
+\begin{Slide}{I stället för Array: \texttt{ArraySeq} (Scala >2.13)}
+Nytt i Scala 2.13:
+\begin{itemize}
+  \item \code{collection.mutable.ArraySeq} fungerar lika bra som, eller bättre än \code{Array}
+  \item \url{https://stackoverflow.com/questions/5028551/array-vs-arrayseq-comparison}
+  \item \code{collection.immutable.ArraySeq} fungerar som en Array som inte kan ändras
+  \item \code{WrappedArray} är från 2.13 \textit{deprecated} (på väg bort)
+\end{itemize}
+{\SlideFontTiny Fördjupning: Sammanfattning av prestanda för olika samlingar: \href{https://docs.scala-lang.org/overviews/collections-2.13/performance-characteristics.html}{docs.scala-lang.org/overviews/collections-2.13/performance-characteristics.html}
+}
+\end{Slide}
 
 \begin{Slide}{Vilken sekvenssamling ska jag välja?}\SlideFontSmall
 \vspace{-0.5em}
@@ -145,14 +155,6 @@ res4: String = haj pod
   \item[] du har en \Alert{rekursiv} sekvensalgoritm och/eller \Alert{mestadels jobbar i början}.
   \end{itemize}
 
-
-\item Välj \code{Array} om ...
-  \begin{itemize}\SlideFontTiny
-  \item[] det behövs av prestandaskäl och du \Alert{vet} storlek vid allokering:\\
-  \code{val xs = Array.fill(initSize)(initValue)     }  eller:
-  \code{val ys = new Array[String](1000)  // 1000 null-referenser}
-  \end{itemize}
-
 \item Välj \code{ArrayBuffer} om ...
   \begin{itemize}\SlideFontTiny
   \item[] det behövs av prestandaskäl och du \Alert{inte} vet storlek vid allokering:\\
@@ -164,9 +166,36 @@ res4: String = haj pod
   \item[] det behövs av prestandaskäl och du bara behöver lägga till i början:\\ \code{val xs = scala.collection.mutable.ListBuffer.empty[Int]}
   \end{itemize}
 
+\item Välj \code{Array} eller \code{ArraySeq} om ...
+  \begin{itemize}\SlideFontTiny
+  \item[] det verkligen behövs av prestandaskäl och du \Alert{vet} storlek vid allokering:\\
+  \code{val xs = Array.fill(initSize)(initValue)}
+  \end{itemize}
+
 \end{itemize}
 \end{Slide}
 
+\begin{Slide}{Några konstigheter med Array}
+\begin{itemize}
+\item Referenslikhet istf innehållslikhet: 
+\begin{REPLnonum}
+scala> Vector(1,2,3) == Vector(1,2,3)
+val res0: Boolean = true
+
+scala> Array(1,2,3) == Array(1,2,3)
+val res1: Boolean = false  // aaargh!!
+\end{REPLnonum}
+\item Special-syntax för att skapa utan explicit initialisering: \\
+{\SlideFontSmall\code{val xs = new Array[String](1000)  // 1000 null-referenser}}
+\item Fungerar inte lika bra med generiska typer:
+\begin{REPLnonum}
+scala> def box[T](x: T) = Vector[T](x)  //funkar fint
+
+scala> def abox[T](x: T) = Array[T](x)
+  error: No ClassTag available for T
+\end{REPLnonum}
+\end{itemize}
+\end{Slide}
 
 \begin{Slide}{Oföränderlig eller förändringsbar?}
 \begin{itemize}
@@ -174,8 +203,8 @@ res4: String = haj pod
 
 \item \Alert{Förändringsbar}: kan ändra elementreferenserna
   \begin{itemize}
-  \item Kan \Alert{ej ändra storlek} efter allokering: \\ \Emph{Array}: indexera och uppdatera varsomhelst
-  \item Kan ändra storlek efter allokering:
+  \item Kan \Alert{ej ändra storlek} efter allokering: \\ \Emph{Array} eller \Emph{ArraySeq}: indexera och uppdatera varsomhelst
+  \item Kan även ändra storlek efter allokering:
   \\\Alert{ArrayBuffer} eller \Alert{ListBuffer}
   %\\ Java: \Alert{ArrayList} eller \Alert{LinkedList}
   \end{itemize}
@@ -198,8 +227,8 @@ res4: String = haj pod
 \item \Alert{Sex} ofta återkommande programmeringsproblem som löses med en sekvensalgoritm:
 \begin{itemize}\SlideFontTiny
 \item \Emph{Kopiering} av alla element i en sekvens till en \Alert{ny} sekvens
-\item \Emph{Uppdatering} av sekvensen: ta bort, lägga till, byta ut enskilda element
-\item \Emph{Transformering}: applicera en \Alert{funktion} på alla element   
+\item \Emph{Uppdatering} av sekvensen: ta bort, lägga till, ändra \Emph{enskilda} element
+\item \Emph{Transformering}: applicera en \Alert{funktion} på \Emph{alla} element   
 \item \Emph{Filtrering}: urval av vissa element som uppfyller ett \Alert{villkor}
 \item \Emph{Sökning} efter ett element som uppfyller ett \Alert{sökkriterium}
 \item \Emph{Sortering} enligt någon \Alert{ordning}
@@ -223,7 +252,7 @@ res4: String = haj pod
 
 \begin{Slide}{Använda färdiga sekvenssamlingsmetoder}
 \begin{itemize}
-\item Standardbiblioteket i Scala innehåller flera olika samlingar som har sekvensegenskaper, t.ex. \code{Vector} och \code{Array}, som erbjuder olika möjligheter och har olika prestanda beroende på vad man vill göra med sekvenserna.
+\item Standardbiblioteket i Scala innehåller flera olika samlingar som har sekvensegenskaper, t.ex. \code{Vector} och \code{ArrayBuffer}, som erbjuder olika möjligheter och har olika prestanda beroende på vad man vill göra.
 
 \item Ofta kan man implementera sekvensalgoritmer genom anrop av en eller flera \Alert{färdiga} metoder.
 
@@ -239,13 +268,15 @@ res4: String = haj pod
 
 
 \begin{Slide}{Några användbara samlingsmetoder vid implementation av sekvensalgoritmer}
-\SlideFontSmall
+\SlideFontTiny
 \begin{tabular}{@{}l l}
 \code|xs map f|           & transformering, motsv. \code|for (x <- xs) yield f(x)| \\
 \code|xs map (x => x)|    & kopiering, motsv. \code|for (x <- xs) yield x| \\
 \code|xs filter p|        & filtrering, ta med x om p(x)\\
 \code|xs filterNot p|     & filtrering, ta med x om !p(x)\\
 \code|xs.distinct|        & filtrering, ta bort dubbletter \\
+\code|xs take n|          & ny sekvens med de första n elements, resten skippade\\ 
+\code|xs drop n|          & ny sekvens där de första n elements är skippade\\ 
 \code|xs takeWhile p|     & filtrera, ta med i början så länge p(x)  \\
 \code|xs dropWhile p|     & filtrera, skippa i början så länge p(x)  \\
 \code|xs indexOf x|       & sökning framifrån efter ett index som är x \\
@@ -253,12 +284,13 @@ res4: String = haj pod
 \code|xs.sorted|          & sortering med inbyggd (implicit) ordning \\
 \code|xs.sorted.reverse| & sortering i omvänd ordning \\
 \code|xs sortBy f|        & sortering i ordning enligt f(x)\\
+\code|xs sortWith lt|     & sortering enligt less than \code|lt: (A, A) => Boolean|\\
 \code|xs count p|         & räkna antalet element där p(x) är sant
 \end{tabular}
 
-\vspace{1em}%
-\Emph{Lär dig fler smidiga metoder i} \Alert{quickref} och genom docs:\\
-{\SlideFontTiny\url{https://docs.scala-lang.org/overviews/collections/introduction.html}}
+\vspace{0.5em}%
+\Emph{Lär dig fler smidiga metoder i} \Alert{quickref} och genom denna översikt:\\
+{\SlideFontTiny\href{https://docs.scala-lang.org/overviews/collections-2.13/introduction.html}{docs.scala-lang.org/overviews/collections-2.13/introduction.html}}
 \end{Slide}
 
 \begin{Slide}{Uppdaterad sekvens med kraftfulla metoden \texttt{patch}}
@@ -326,7 +358,7 @@ I själva verket skriver Scala-kompilatorn om for-uttryck med gard till anrop av
 \begin{Slide}{Vanliga sekvensproblem som funktionshuvuden}
 Indata och utdata för några vanliga sekvensproblem:
 \begin{Code}
-def copy(xs: Array[Int]): Array[Int] = ???
+def copy(xs: Vector[Int]): Vector[Int] = ???
 
 def filter(xs: Vector[Int], p: Int => Boolean): Vector[Int] = ???
 
@@ -343,7 +375,7 @@ def freq(xs: Vector[Int]): Vector[(Int, Int)] = ???  // (heltal, frekvens)
 
 \begin{Slide}{Implementation av sekvensproblem med \texttt{for}-uttryck och/eller färdiga samlingsmetoder}
 \begin{Code}
-def copy(xs: Array[Int]): Array[Int] = for (x <- xs) yield x
+def copy(xs: Vector[Int]): Vector[Int] = for (x <- xs) yield x
 
 def filter(xs: Vector[Int], p: Int => Boolean): Vector[Int] =
   for (x <- xs if p(x)) yield x
@@ -361,7 +393,7 @@ def freq(xs: Vector[Int]): Vector[(Int, Int)] = // mer om registrering snart
 
 \begin{Slide}{Implementation av sekvensproblem med \texttt{map}, \texttt{filter}}
 \begin{Code}
-def copy(xs: Array[Int]): Array[Int] = xs.map(x => x)
+def copy(xs: Vector[Int]): Vector[Int] = xs.map(x => x)
 
 def filter(xs: Vector[Int], p: Int => Boolean): Vector[Int] = xs.filter(p)
 
@@ -412,57 +444,57 @@ def freq(xs: Vector[Int]): Vector[(Int, Int)] = // mer om registrering snart
   
   {\SlideFontSmall Samlingen \Emph{\texttt{Vector}} är en \code{Seq} som är en \code{Iterable}. \\ \vspace{0.5em}\pause
   De konkreta samlingarna är uppdelade i dessa paket:\\
-  \code{scala.collection.immutable} \hfill som är \Emph{automatiskt} importerade\\
+  \code{scala.collection.immutable} \hfill där flera är \Emph{automatiskt} importerade\\
   \code{scala.collection.mutable}  \hfill som \Alert{måste importeras} explicit\\\pause
-  (undantag: primitiva \code{scala.Array} som är automatiskt synlig)
+  (undantag: primitiva \code{scala.Array})
   }
 \end{Slide}
   
 
 
 \begin{Slide}{Lämna det öppet: använd \texttt{Seq}}\SlideFontSmall
-  Typen \Emph{\code{Seq}} är supertyp till alla sekvenssamlingar i \code{scala.collection}.
-  \pause Exempel: kopiering av sekvens:
-  \begin{itemize}
-  \item Kopiering av \Alert{specifik} heltalssekvens:
-  \begin{Code}
-  def copyIntArray(xs: Array[Int]): Array[Int] = for (x <- xs) yield x
-  \end{Code}
-  
-  \item Kopiering som fungerar för alla heltalssekvenser:
-  \begin{Code}
-  def copyIntSeq(xs: Seq[Int]): Seq[Int] = for (x <- xs) yield x
-  \end{Code}
-  \end{itemize}
-  \pause
-  \begin{REPL}
-    scala> val xs = Array(1,2,3)
-    xs: Array[Int] = Array(1, 2, 3)
-  
-    scala> val ys = copyIntArray(xs)
-    ys: Array[Int] = Array(1, 2, 3)
-  
-    scala> val zs = copyIntSeq(xs)
-    zs: Seq[Int] = ArrayBuffer(1, 2, 3)
-  \end{REPL}
+Typen \Emph{\code{Seq}} är supertyp till alla sekvenssamlingar i \code{scala.collection}.
+\pause Exempel: kopiering av sekvens:
+\begin{itemize}
+\item Kopiering av \Alert{specifik} heltalssekvens:
+\begin{Code}
+def copyIntVector(xs: Vector[Int]): Vector[Int] = for (x <- xs) yield x
+\end{Code}
+
+\item Kopiering som fungerar för alla heltalssekvenser:
+\begin{Code}
+def copyIntSeq(xs: Seq[Int]): Seq[Int] = for (x <- xs) yield x
+\end{Code}
+\end{itemize}
+\pause
+\begin{REPL}
+scala> val xs = Vector(1,2,3)
+xs: Vector[Int] = Vector(1, 2, 3)
+
+scala> val ys = copyIntVector(xs)
+ys: Vector[Int] = Vector(1, 2, 3)
+
+scala> val zs = copyIntSeq(xs)
+val zs: Seq[Int] = Vector(1, 2, 3)
+\end{REPL}
 %  Någon lämplig specifik samling som är subtyp till \code{Seq[T]} väljs automatiskt. \\
- % (Mer om typparametrar och supertyper/subtyper senare i kursen.)
-  % \begin{Code}[basicstyle=\ttfamily]
-  % def varannanBaklänges[T](xs: Seq[T]): Seq[T] =
-  %   for (i <- xs.indices.reverse by -2) yield xs(i)
-  % \end{Code}
-  % Fungerar med alla sekvenssamlingar:
-  % \begin{REPLnonum}
-  % scala> varannanBaklänges(Vector(1,2,3,4,5))
-  % res0: Seq[Int] = Vector(5, 3, 1)
-  %
-  % scala> varannanBaklänges(List(1,2,3,4,5))
-  % res1: Seq[Int] = List(5, 3, 1)
-  %
-  % scala> varannanBaklänges(collection.mutable.ListBuffer(1,2))
-  % res2: Seq[Int] = Vector(2)
-  % \end{REPLnonum}
-  % Scalas standardbibliotek returnerar ofta lämpligaste specifika sekvenssamlingen som är subtyp till \texttt{Seq[T]}.
+% (Mer om typparametrar och supertyper/subtyper senare i kursen.)
+% \begin{Code}[basicstyle=\ttfamily]
+% def varannanBaklänges[T](xs: Seq[T]): Seq[T] =
+%   for (i <- xs.indices.reverse by -2) yield xs(i)
+% \end{Code}
+% Fungerar med alla sekvenssamlingar:
+% \begin{REPLnonum}
+% scala> varannanBaklänges(Vector(1,2,3,4,5))
+% res0: Seq[Int] = Vector(5, 3, 1)
+%
+% scala> varannanBaklänges(List(1,2,3,4,5))
+% res1: Seq[Int] = List(5, 3, 1)
+%
+% scala> varannanBaklänges(collection.mutable.ListBuffer(1,2))
+% res2: Seq[Int] = Vector(2)
+% \end{REPLnonum}
+% Scalas standardbibliotek returnerar ofta lämpligaste specifika sekvenssamlingen som är subtyp till \texttt{Seq[T]}.
 \end{Slide}
   
 \ifkompendium  
