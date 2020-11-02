@@ -258,8 +258,7 @@ Om du kan beräkna initialvärde direkt, använd \code{Vector.fill}:\\
 {\SlideFontTiny\code{def fill[A](n1: Int, n2: Int)(elem: => A): Vector[Vector[A]]}}
 \begin{REPL}
 scala> Vector.fill(2,5)(scala.util.Random.nextInt(6) + 1)
-res0:
-  scala.collection.immutable.Vector[scala.collection.immutable.Vector[Int]] =
+res0: Vector[Vector[Int]] =
   Vector(Vector(1, 2, 6, 2, 1), Vector(1, 4, 3, 3, 2))
 
 \end{REPL}
@@ -267,8 +266,7 @@ Om du kan beräkna initialvärde ur index, använd \code{Vector.tabulate}:\\
 {\SlideFontTiny\code{def tabulate[A](n1: Int, n2: Int)(f: (Int, Int) => A): Vector[Vector[A]]}}
 \begin{REPL}
 scala> Vector.tabulate(5,2)((x,y) => x + y + 1)
-res1:
-  scala.collection.immutable.Vector[scala.collection.immutable.Vector[Int]] =
+res1: Vector[Vector[Int]] =
   Vector(Vector(1,2), Vector(2,3), Vector(3,4), Vector(4,5), Vector(5,	6))
 
 \end{REPL}
@@ -309,22 +307,21 @@ Uppdatering av endimensionell struktur med \code{xs.updated}:\\
 {\SlideFontTiny\code{def updated[A](index: Int, elem: A): Vector[A]} }
 \begin{REPL}
 scala> var xs = Vector.tabulate(5)(x => x + 1)
-xs: scala.collection.immutable.Vector[Int] = Vector(1, 2, 3, 4, 5)
+xs: Vector[Int] = Vector(1, 2, 3, 4, 5)
 
 scala> xs = xs.updated(1, 42)
-xs: scala.collection.immutable.Vector[Int] = Vector(1, 42, 3, 4, 5)
+xs: Vector[Int] = Vector(1, 42, 3, 4, 5)
 \end{REPL}
 
 Uppdatering av nästlad struktur i två dimensioner:
 \begin{REPL}
 scala> var xss = Vector.tabulate(2, 5)((x,y) => x + y + 1)
-xss:
-  scala.collection.immutable.Vector[scala.collection.immutable.Vector[Int]] =
+xss: Vector[Vector[Int]] =
   Vector(Vector(1, 2, 3, 4, 5), Vector(2, 3, 4, 5, 6))
 
 scala> xss = xss.updated(0, xss(0).updated(1, 42))
 xss:
-  scala.collection.immutable.Vector[scala.collection.immutable.Vector[Int]] =
+  Vector[Vector[Int]] =
   Vector(Vector(1, 42, 3, 4, 5), Vector(2, 3, 4, 5, 6))
 \end{REPL}
 
@@ -501,8 +498,8 @@ scala> val xss = for (i <- 1 to 2) yield {
                    for (j <- 1 to 5) yield i + j + 1
                  }
 xss:
-  scala.collection.immutable.IndexedSeq[
-    scala.collection.immutable.IndexedSeq[Int]] =
+  IndexedSeq[
+    IndexedSeq[Int]] =
       ???
 
 \end{REPL}
@@ -510,7 +507,7 @@ Om man skriver så här får man en endimensionell struktur:
 \begin{REPL}
 scala> val xs = for (i <- 1 to 2; j <- 1 to 5) yield i + j + 1
 xs:
-  scala.collection.immutable.IndexedSeq[Int] =
+  IndexedSeq[Int] =
     ???
 
 \end{REPL}
@@ -523,8 +520,8 @@ scala> val xss = for (i <- 1 to 2) yield {
                    for (j <- 1 to 5) yield i + j + 1
                  }
 xss:
-  scala.collection.immutable.IndexedSeq[
-    scala.collection.immutable.IndexedSeq[Int]] =
+  IndexedSeq[
+    IndexedSeq[Int]] =
       Vector(Vector(3, 4, 5, 6, 7), Vector(4, 5, 6, 7, 8))
 
 \end{REPL}
@@ -532,7 +529,7 @@ Om man skriver så här får man en endimensionell struktur:
 \begin{REPL}
 scala> val xs = for (i <- 1 to 2; j <- 1 to 5) yield i + j + 1
 xs:
-  scala.collection.immutable.IndexedSeq[Int] =
+  IndexedSeq[Int] =
     Vector(3, 4, 5, 6, 7, 4, 5, 6, 7, 8)
 
 \end{REPL}
@@ -545,8 +542,8 @@ Iterera med \Emph{nästlade map-uttryck}:\\
 \begin{REPL}
 scala> val xss = (1 to 2).map(i => (1 to 5).map(j => i + j + 1))
 xss:
-  scala.collection.immutable.IndexedSeq[
-    scala.collection.immutable.IndexedSeq[Int]] =
+  IndexedSeq[
+    IndexedSeq[Int]] =
       ???
 \end{REPL}
 \end{Slide}
@@ -556,8 +553,8 @@ Iterera med \Emph{nästlade map-uttryck}:\\
 \begin{REPL}
 scala> val xss = (1 to 2).map(i => (1 to 5).map(j => i + j + 1))
 xss:
-  scala.collection.immutable.IndexedSeq[
-    scala.collection.immutable.IndexedSeq[Int]] =
+  IndexedSeq[
+    IndexedSeq[Int]] =
       Vector(Vector(3, 4, 5, 6, 7), Vector(4, 5, 6, 7, 8))
 \end{REPL}
 \end{Slide}
@@ -567,10 +564,10 @@ xss:
 \ifkompendium\else
 \begin{Slide}{Fallgrop: likhet av array}
 \begin{REPL}
-scala> Vector.fill(5)(42) == Vector.fill(5)(42)
+scala> Vector.fill(5, 2)(42) == Vector.fill(5, 2)(42)
 res0: ???
 
-scala> Array.fill(5)(42) == Array.fill(5)(42)
+scala> Array.fill(5, 2)(42) == Array.fill(5, 2)(42)
 res1: ???
 \end{REPL}
 \end{Slide}
@@ -578,13 +575,13 @@ res1: ???
 
 \begin{Slide}{Fallgrop: likhet av array}
 \begin{REPL}
-scala> Vector.fill(5)(42) == Vector.fill(5)(42)
+scala> Vector.fill(5, 2)(42) == Vector.fill(5, 2)(42)
 res0: Boolean = true
 
-scala> Array.fill(5)(42) == Array.fill(5)(42)
+scala> Array.fill(5, 2)(42) == Array.fill(5, 2)(42)
 res1: Boolean = false  // AAAARRGH!!! :(
 \end{REPL}
-Primitiva arrayer har en equals-metod som ger referenslikhet, \Alert{inte} innehållslikhet.
+Primitiva arrayer har en equals-metod som ger referenslikhet, \Alert{inte} innehållslikhet. Och det fungerar följaktligen ej heller på nästlade strukturer. 
 \end{Slide}
 
 \ifkompendium\else
@@ -593,10 +590,10 @@ Primitiva arrayer har en equals-metod som ger referenslikhet, \Alert{inte} inneh
 scala> def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = {
          var i = 0
          var foundUnequal = false
-         while (???) {
+         while (???) {                         // VILKET VILLKOR?
            var j = 0
-           while (???) {
-             if (xss(i)(j) != yss(i)(j)) ???
+           while (???) {                       // VILKET VILLKOR?
+             if (xss(i)(j) != yss(i)(j)) ???   // VAD SKA UPPDATERAS? 
              j += 1
            }
            i += 1
@@ -642,9 +639,9 @@ scala> isEqual(xss, yss)
 \end{REPL}
 \end{Slide}
 
-\begin{Slide}{Använd \code{deep} för test av innehållslikhet på arrayer}
+\begin{Slide}{Använd \code{sameElements} för test av innehållslikhet men bara på icke-nästlade arrayer}
 
-  I Scala kan du använda metoden \code{deep} på arrayer innan du jämför med \code{==}
+  I Scala kan du använda metoden \code{sameElements} på arrayer för innehållslikhet, men det funkar \Alert{INTE} på nästlade strukturer.
 
 \begin{REPL}
 scala> val xs = Array(1,2,3)
@@ -653,45 +650,47 @@ xs: Array[Int] = Array(1, 2, 3)
 scala> val ys = Array(1,2,3)
 ys: Array[Int] = Array(1, 2, 3)
 
-scala> xs.deep == ys.deep    // sköönt!! slipper uppfinna hjulet :)
+scala> xs.sameElements(ys)
 res0: Boolean = true
 
+scala> Array(Array(1)) sameElements Array(Array(1))  
+res1: Boolean = false
+
 \end{REPL}
-Funkar fint även på motsvarande nästlade strukturer: \\ \code{xss.deep == yss.deep} \\~\\ \pause
-{\small I Java finns följande hjälpmetod för innehållstest på arrayer med primitiva typer \code{java.util.Arrays.equals(xs, ys)} och för referenstyper finns \code{java.util.Arrays.deepEquals(xs, ys)}}
+\pause Använd i stället: \code{java.util.Arrays.deepEquals(xs, ys)} men det kan behövas \code{.asInstanceOf[Array[Object]]} på argumenten om kompilatorn inte klarar typkonverteringen.
 \end{Slide}
 
-\begin{Slide}{Matris som Array med Array med heltal i Java}\SlideFontTiny
-\begin{CodeSmall}[language=Java]
-public class ArrayMatrix {
+% \begin{Slide}{Matris som Array med Array med heltal i Java}\SlideFontTiny
+% \begin{CodeSmall}[language=Java]
+% public class ArrayMatrix {
 
-    public static void showMatrix(int[][] m){
-        System.out.println("\n--- showMatrix ---");
-        for (int row = 0; row < m.length; row++){
-            for (int col = 0; col < m[row].length; col++) {
-                System.out.print("[" + row + "]");
-                System.out.print("[" + col + "] = ");
-                System.out.print(m[row][col] + "; ");
-            }
-            System.out.println();
-        }
-    }
+%     public static void showMatrix(int[][] m){
+%         System.out.println("\n--- showMatrix ---");
+%         for (int row = 0; row < m.length; row++){
+%             for (int col = 0; col < m[row].length; col++) {
+%                 System.out.print("[" + row + "]");
+%                 System.out.print("[" + col + "] = ");
+%                 System.out.print(m[row][col] + "; ");
+%             }
+%             System.out.println();
+%         }
+%     }
 
-    public static void main(String[] args) {
-        int[][] xss = new int[10][5];
-        showMatrix(xss);
-    }
-}
-\end{CodeSmall}
-\pause
-Övning: skriv en metod \code{fillRnd} som fyller en heltalsmatris med slumptal 1 till n:\\
-\pause
-\jcode|public static void fillRnd(int[][] m, int n){ /* ??? */ }| \\
-\pause
-Tips: använd en nästlad for-sats och detta uttryck: \\
-\jcode{(int) (Math.random() * n + 1) // (int) motsvarar Scalas asInstanceOf[Int]}
+%     public static void main(String[] args) {
+%         int[][] xss = new int[10][5];
+%         showMatrix(xss);
+%     }
+% }
+% \end{CodeSmall}
+% \pause
+% Övning: skriv en metod \code{fillRnd} som fyller en heltalsmatris med slumptal 1 till n:\\
+% \pause
+% \jcode|public static void fillRnd(int[][] m, int n){ /* ??? */ }| \\
+% \pause
+% Tips: använd en nästlad for-sats och detta uttryck: \\
+% \jcode{(int) (Math.random() * n + 1) // (int) motsvarar Scalas asInstanceOf[Int]}
 
-\end{Slide}
+% \end{Slide}
 
 \begin{Slide}{Om veckans övningar}\SlideFontSmall
 \begin{itemize}
