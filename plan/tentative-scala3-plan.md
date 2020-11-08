@@ -13,7 +13,7 @@ tentative-scala3-progression.md
 | W08 | Lp2V1 | Generiska strukturer              | F15 F16 | generic     | --            |
 | W09 | Lp2V2 | Nästlade strukturer               | F17 F18 | nested      | life          |
 | W10 | Lp2V3 | Mängder, tabeller                 | F19 F20 | lookup      | words         |
-| W11 | Lp2V4 | Arv, kodgranskning                | F21 F22 | inheritance | peer_review   |
+| W11 | Lp2V4 | Arv, kodgranskning                | F21 F22 | inheritance | code_review   |
 | W12 | Lp2V5 | API-konstruktion, debugging       | F23 F24 | findbug     | snake         |
 | W13 | Lp2V6 | Kontextuella abstraktioner        | F25 F26 | typeclasses | projektarbete |
 | W14 | Lp2V7 | Repetition, sammanfattning        | F27 F28 | --          | redovisning   |
