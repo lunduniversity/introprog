@@ -16,5 +16,5 @@ tentative-scala3-progression.md
 | W11 | Lp2V4 | Arv, kodgranskning                | F21 F22 | inheritance | peer_review   |
 | W12 | Lp2V5 | API-konstruktion, debugging       | F23 F24 | findbug     | snake         |
 | W13 | Lp2V6 | Kontextuella abstraktioner        | F25 F26 | given       | projektarbete |
-| W14 | Lp2V7 | Repetition, sammanfattning        | F27 F28 |             | redovisning   |
+| W14 | Lp2V7 | Repetition, sammanfattning        | F27 F28 | --          | redovisning   |
 | T   | TP2   | TENTAMEN                          | --      | --          | --            |
