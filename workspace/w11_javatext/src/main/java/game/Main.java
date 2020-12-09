@@ -8,6 +8,7 @@ public class Main {
 
     private static void play() {
         System.out.print("Enter your name: ");
+        System.out.flush();
         String name = UserInterface.readString();
         Game game = new Game(name);
         game.run();
@@ -33,6 +34,7 @@ public class Main {
                     break;
                 case 3:
                     System.out.print("Enter the player name: ");
+                    System.out.flush();
                     UserInterface.showHighScores(playedGames, UserInterface.readString());
                     break;
                 case 4:
