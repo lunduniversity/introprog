@@ -1,7 +1,7 @@
 package lthopoly
 
 import scala.collection.mutable.{ArrayBuffer, Buffer}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object TextUI {
   private val log = new ArrayBuffer[String]
