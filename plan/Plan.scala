@@ -160,7 +160,7 @@ trait Plan {
       | for-sats i Java, for-each-sats i Java,
       | java.util.ArrayList,
       | autoboxing i Java, wrapperklasser i Java,
-      | samlingar i Java, scala.collection.JavaConverters,
+      | samlingar i Java, scala.jdk.CollectionConverters,
       | namnkonventioner för konstanter i Scala och Java,
       | kodläsbarhet, idiom, kodningsstandard,
       """.stripTrim),
