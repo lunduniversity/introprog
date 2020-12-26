@@ -1,7 +1,7 @@
 package lthopoly
 
 import lthopoly._
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object Main {
   def main(args: Array[String]): Unit = {

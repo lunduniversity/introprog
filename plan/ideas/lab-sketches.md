@@ -211,7 +211,7 @@ Byta namn till turtlegraphics?
 
 * Denna labb är extra lurig att utveckla. Ideer och förslag emottages tacksamt!
 
-* Tänk ut en design som gives där ett antal klasser är i Java som används från Scala. Största kodmängden i Java men en del i Scala och gärna använda  scala.collection.JavaConverters i scala-delen av koden. Uppgiften ska konfrontera labbande med javas autoboxing och javas primitiva arrayer och kanske även arraylist. Gärna arv och super och hela baletten. 
+* Tänk ut en design som gives där ett antal klasser är i Java som används från Scala. Största kodmängden i Java men en del i Scala och gärna använda  scala.jdk.CollectionConverters i scala-delen av koden. Uppgiften ska konfrontera labbande med javas autoboxing och javas primitiva arrayer och kanske även arraylist. Gärna arv och super och hela baletten. 
 
 * Uppgiften ska gå att dela upp uppgiften i ett team (om det funkar att detta är en teamlab, vilket är hypotesen). Ev. kan man kräva att en eller flera klasser ska implementeras både i Scala och Java för att göra det extra tydligt med skillnader och likheter.
 
