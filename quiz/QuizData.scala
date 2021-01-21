@@ -304,13 +304,6 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
-    QuizID("quiz-w07-abstract-collections") -> Vector(  //sequences
-      "Iterable " -> "bastyp för alla samlingar, har metoden \\code|foreach|",
-      "Iterable " -> "är traverserbar med hjälp av metoden \\code|iterator|",
-      "Seq      " ->  "bastyp för alla sekvenssamlingar, indexposition från 0",
-      "" -> ""
-    ).filter(_._1.trim.nonEmpty),
-
     QuizID("quiz-w07-seq-methods") -> Vector(  //sequences
       "\\code|x +: xs         |" -> "\\code|Vector(0, 1, 2, 3)                      |",
       "\\code|xs +: x         |" -> "\\code|error: value +: is not a member of Int  |",
