@@ -127,7 +127,7 @@ abstract class BlockGame(
 
   /** Erase all blocks to background color. */
   def clearWindow(): Unit = {
-    pixelWindow.clear
+    pixelWindow.clear()
     clearMessageArea()
     for (x <- blockBuffer.indices) {
       for (y <- blockBuffer(x).indices) {

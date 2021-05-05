@@ -14,7 +14,7 @@ object IO {
   def loadLines(fileName: String, enc: String = "UTF-8"): Vector[String] = {
     var result = Vector.empty[String]
     val source = scala.io.Source.fromFile(fileName, enc)
-    try result = source.getLines.toVector finally source.close()
+    try result = source.getLines().toVector finally source.close()
     result
   }
 
