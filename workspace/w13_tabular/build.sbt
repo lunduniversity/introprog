@@ -1,4 +1,4 @@
-scalaVersion        := "2.13.3"  // scalaide 4.7.0 is using 2.12.3
+scalaVersion        := "2.13.5"
 fork                := true // https://stackoverflow.com/questions/18676712
 connectInput        := true // http://www.scala-sbt.org/1.x/docs/Forking.html
 outputStrategy      := Some(StdoutOutput)

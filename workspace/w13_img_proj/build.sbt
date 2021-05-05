@@ -1,4 +1,4 @@
-scalaVersion := "2.13.3"
+scalaVersion := "2.13.5"
 scalacOptions := Seq("-unchecked", "-deprecation")
 javacOptions in (Compile,doc) ++= Seq(
   "-encoding",    "UTF-8", 
