@@ -7,8 +7,11 @@ scalaVersion := "2.13.5"
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
   version := "2021.0",
-  scalaVersion := "2.13.5"  
+  scalaVersion := "2.13.5",  
+  scalacOptions := Seq("-unchecked", "-deprecation")
 )
+
+
 
 // TODO: deprecate this lib:
 lazy val cslib = (project in file("cslib")).  // still used by w13_img_proj
