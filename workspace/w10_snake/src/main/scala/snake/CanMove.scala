@@ -3,7 +3,7 @@ package snake
 trait CanMove extends Entity {
   def move(): Unit
   var movesPerSecond: Double = 20.0
-  final def millisBetweenMoves(): Int =
+  final def millisBetweenMoves: Int =
     (1000 / movesPerSecond).round.toInt max 1
 
   private var _timestampLastMove: Long = System.currentTimeMillis
