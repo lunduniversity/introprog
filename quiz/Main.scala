@@ -1,6 +1,6 @@
 package genquiz
 
-object Main extends {
+object Main {
 
   import java.nio.file.{Paths, Files}
   import java.nio.charset.StandardCharsets.UTF_8
@@ -59,7 +59,7 @@ object Main extends {
         .sortBy(_._1.toLowerCase)
         .map{case (key, value) => s"$key\t$value"}
 
-      val conceptFile = "quiz/quiz-concepts.tsv"
+      val conceptFile = s"$currentDir../quiz/quiz-concepts.tsv"
       concepts.mkString("\n").save(conceptFile)
   }
 
