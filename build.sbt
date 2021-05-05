@@ -22,8 +22,6 @@ hello := println("""
 
     type 'gengloss' to generate glossary files
 
-    // deprecated: type 'eclipse' to generate eclipse workspace
-
     type 'projects' to see all sub-projects
 
     type 'project workspace' to change to sub-project workspace
@@ -48,25 +46,21 @@ lazy val commonSettings = Seq(
 lazy val plan = (project in file("plan")).settings(commonSettings: _*).
   settings(
     name := "plan",
-    //EclipseKeys.skipProject := true
   )
 
 lazy val quiz = (project in file("quiz")).settings(commonSettings: _*).
   settings(
     name := "quiz",
-    //EclipseKeys.skipProject := true
   )
 
 lazy val workspace = (project in file("workspace")).settings(commonSettings: _*).
   settings(
     name := "workspace",
-    //EclipseKeys.withSource := true
   )
 
 lazy val glossary = (project in file("glossary")).settings(commonSettings: _*).
   settings(
     name := "glossary",
-    //EclipseKeys.skipProject := true
   )
 
 
