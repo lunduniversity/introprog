@@ -79,14 +79,14 @@ build := Def.sequential(
 ).value
 
 lazy val gen = taskKey[Unit]("alias for plan/run")
-gen := (run in Compile in plan).toTask("").value
+gen := (plan/Compile/run).toTask("").value
 
 lazy val genquiz = taskKey[Unit]("alias for quiz/run")
-genquiz := (run in Compile in quiz).toTask("").value
+genquiz := (quiz/Compile/run).toTask("").value
 
 
 lazy val gengloss = taskKey[Unit]("alias for glossary/run")
-gengloss := (run in Compile in glossary).toTask("").value
+gengloss := (glossary/Compile/run).toTask("").value
 
 // ************** cmd util functions
 
@@ -217,9 +217,9 @@ lazy val root = (project in file(".")).
   settings(commonSettings: _*).
   settings(
     name := "introprog root",
-    onLoad in Global := {
+    Global/onLoad := {
       // https://www.scala-sbt.org/1.0/docs/offline/Howto-Startup.html
-      val old = (onLoad in Global).value
-      myStartupTransition compose old
+      val old = (Global/onLoad).value
+      myStartupTransition.compose(old)
     }
   )

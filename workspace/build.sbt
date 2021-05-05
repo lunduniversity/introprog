@@ -2,13 +2,12 @@ import sbt._
 import Process._
 import Keys._
 
-scalaVersion := "2.13.3"
+scalaVersion := "2.13.5"
 
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
-  version := "2020.1",
-  scalaVersion := "2.13.3"  // ScalaIDE is not ready for >2.12.3 yet
-  // check versions here: http://scala-ide.org/download/sdk.html
+  version := "2021.0",
+  scalaVersion := "2.13.5"  
 )
 
 // TODO: deprecate this lib:
@@ -17,7 +16,7 @@ lazy val cslib = (project in file("cslib")).  // still used by w13_img_proj
   settings(
     name := "cslib",
     version := "2017",
-    javacOptions in (Compile,doc) ++= Seq(
+    Compile/doc/javacOptions ++= Seq(
       "-encoding", "UTF-8", "-charset", "UTF-8", "-docencoding", "UTF-8")
   )
 
@@ -28,16 +27,16 @@ lazy val introprog_scalalib = (project in file("introprog")).
   settings(
     name := Name,
     version := Version,
-    fork in (Compile, console) := true,
+    Compile/console/fork := true,
     scalacOptions ++= Seq("-encoding", "UTF-8"),
-    scalacOptions in (Compile, doc) ++= Seq(
+    Compile/doc/scalacOptions ++= Seq(
       "-implicits",
       "-groups",
       "-doc-title", Name,
       "-doc-footer", "Dep. of Computer Science, Lund University, Faculty of Engineering LTH",
-      "-sourcepath", (baseDirectory in ThisBuild).value.toString,
+      "-sourcepath", (ThisBuild/baseDirectory).value.toString,
       "-doc-version", Version,
-      "-doc-root-content", (baseDirectory in ThisBuild).value.toString + "/src/rootdoc.txt",
+      "-doc-root-content", (ThisBuild/baseDirectory).value.toString + "/src/rootdoc.txt",
       "-doc-source-url", s"https://github.com/lunduniversity/introprog-scalalib/tree/master€{FILE_PATH}.scala"
     )
   )
@@ -46,28 +45,24 @@ lazy val w03_irritext =(project in file("w03_irritext")).
     settings(commonSettings: _*).
     settings(
       name := "w03_irritext",
-      //EclipseKeys.skipProject := true
     )
 
 lazy val w04_blockmole =(project in file("w04_blockmole")).
   settings(commonSettings: _*).
   settings(
     name := "w04_blockmole",
-    //EclipseKeys.skipProject := true
   ).dependsOn(introprog_scalalib)
 
 lazy val w06_blockbattle =(project in file("w06_blockbattle")).
   settings(commonSettings: _*).
   settings(
     name := "w06_blockbattle",
-    //EclipseKeys.skipProject := true
   ).dependsOn(introprog_scalalib)
 
 lazy val w07_shuffle =(project in file("w07_shuffle")).
   settings(commonSettings: _*).
   settings(
     name := "w07_shuffle",
-    //EclipseKeys.skipProject := true
   )
 
 lazy val w08_life =(project in file("w08_life")).
@@ -80,7 +75,6 @@ lazy val w09_words =(project in file("w09_words")).
   settings(commonSettings: _*).
   settings(
     name := "w09_words",
-    //EclipseKeys.skipProject := false
   )
 
 lazy val w10_snake =(project in file("w10_snake")).
@@ -127,9 +121,4 @@ lazy val workspace = (project in file(".")).
   settings(commonSettings: _*).
   settings(
     name := "workspace",
-    //EclipseKeys.withSource := true,
-    //EclipseKeys.skipProject := true,
-    //EclipseKeys.skipParents in ThisBuild := true
-    //EclipseKeys.relativizeLibs := true,
-    // https://github.com/typesafehub/sbteclipse/wiki/Using-sbteclipse
  )
