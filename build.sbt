@@ -3,7 +3,7 @@ import Process._
 import Keys._
 import complete.DefaultParsers._
 
-scalaVersion := "2.13.3"
+scalaVersion := "2.13.5"
 
 lazy val hello = taskKey[Unit]("Prints welcome message")
 hello := println("""
