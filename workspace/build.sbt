@@ -46,28 +46,28 @@ lazy val w03_irritext =(project in file("w03_irritext")).
     settings(commonSettings: _*).
     settings(
       name := "w03_irritext",
-      EclipseKeys.skipProject := true
+      //EclipseKeys.skipProject := true
     )
 
 lazy val w04_blockmole =(project in file("w04_blockmole")).
   settings(commonSettings: _*).
   settings(
     name := "w04_blockmole",
-    EclipseKeys.skipProject := true
+    //EclipseKeys.skipProject := true
   ).dependsOn(introprog_scalalib)
 
 lazy val w06_blockbattle =(project in file("w06_blockbattle")).
   settings(commonSettings: _*).
   settings(
     name := "w06_blockbattle",
-    EclipseKeys.skipProject := true
+    //EclipseKeys.skipProject := true
   ).dependsOn(introprog_scalalib)
 
 lazy val w07_shuffle =(project in file("w07_shuffle")).
   settings(commonSettings: _*).
   settings(
     name := "w07_shuffle",
-    EclipseKeys.skipProject := true
+    //EclipseKeys.skipProject := true
   )
 
 lazy val w08_life =(project in file("w08_life")).
@@ -80,7 +80,7 @@ lazy val w09_words =(project in file("w09_words")).
   settings(commonSettings: _*).
   settings(
     name := "w09_words",
-    EclipseKeys.skipProject := false
+    //EclipseKeys.skipProject := false
   )
 
 lazy val w10_snake =(project in file("w10_snake")).
@@ -127,9 +127,9 @@ lazy val workspace = (project in file(".")).
   settings(commonSettings: _*).
   settings(
     name := "workspace",
-    EclipseKeys.withSource := true,
-    EclipseKeys.skipProject := true,
-    EclipseKeys.skipParents in ThisBuild := true
+    //EclipseKeys.withSource := true,
+    //EclipseKeys.skipProject := true,
+    //EclipseKeys.skipParents in ThisBuild := true
     //EclipseKeys.relativizeLibs := true,
     // https://github.com/typesafehub/sbteclipse/wiki/Using-sbteclipse
  )
