@@ -3,8 +3,6 @@ import Process._
 import Keys._
 import complete.DefaultParsers._
 
-scalaVersion := "2.13.5"
-
 lazy val hello = taskKey[Unit]("Prints welcome message")
 hello := println("""
   ======= WELCOME to the sbt build of lunduniversity/introprog =========
@@ -33,13 +31,13 @@ hello := println("""
 """)
 
 lazy val myStartupTransition: State => State = { s: State =>
-  "hello" :: s
+  "hello" :: "scalaVersion" :: s
 }
 
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
   version := "v6-snapshot",
-  scalaVersion := "2.13.3",
+  scalaVersion := "2.13.5",
   scalacOptions ++= Seq("-deprecation", "-feature")
 )
 
@@ -207,7 +205,7 @@ pdfSlides := {
 }
 
 lazy val root = (project in file(".")).
-  aggregate(workspace, plan).
+  aggregate(workspace, plan, quiz, glossary).
   settings(commonSettings: _*).
   settings(
     name := "introprog root",

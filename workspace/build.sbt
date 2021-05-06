@@ -2,15 +2,12 @@ import sbt._
 import Process._
 import Keys._
 
-scalaVersion := "2.13.5"
-
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
   version := "2021.0",
   scalaVersion := "2.13.5",  
   scalacOptions := Seq("-unchecked", "-deprecation")
 )
-
 
 
 // TODO: deprecate this lib:
