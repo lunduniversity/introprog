@@ -1,4 +1,5 @@
-// paste into kojo or run as script: scala timer1.sc 
+// paste into kojo or REPL or in REPL type `:load timer1.sc`
+
 
 object timer {
   def now: Long = System.currentTimeMillis
