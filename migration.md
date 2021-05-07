@@ -1,0 +1,29 @@
+# Migration guide Scala 2 -> Scala 3
+
+## How to see current versions in all subprojects?
+In terminal on project top level run:
+```
+sh show-scala-versions.h
+```
+
+## How to migrate inside sbt?
+Start sbt in terminal on project top level and then:
+```
+sbt:introprog root> show w03_irritext/Compile/scalacOptions
+sbt:introprog root> set w03_irritext/Compile/scalacOptions := Seq("-deprecation","-rewrite","-new-syntax")
+sbt:introprog root> w03_irritext/compile
+sbt:introprog root> set w03_irritext/Compile/scalacOptions := Seq("-deprecation","-rewrite","-indent")
+sbt:introprog root> w03_irritext/compile
+```
+It is important to rewrite to `-new-syntax` before rewriting `-indent`.
+
+The rewritings can be reversed:
+```
+sbt:introprog root> show w03_irritext/Compile/scalacOptions
+sbt:introprog root> set w03_irritext/Compile/scalacOptions := Seq("-deprecation","-rewrite","-no-indent")
+sbt:introprog root> w03_irritext/compile
+sbt:introprog root> set w03_irritext/Compile/scalacOptions := Seq("-deprecation","-rewrite","-old-syntax")
+sbt:introprog root> w03_irritext/compile
+```
+
+It is important to revert rewritings to `-no-indent` before rewriting to `-old-syntax`.
