@@ -17,7 +17,7 @@ sbt:introprog root> w03_irritext/compile
 ```
 It is important to rewrite to `-new-syntax` before rewriting `-indent`.
 
-The rewritings can be reversed:
+The rewritings can be reverted:
 ```
 sbt:introprog root> show w03_irritext/Compile/scalacOptions
 sbt:introprog root> set w03_irritext/Compile/scalacOptions := Seq("-deprecation","-rewrite","-no-indent")
@@ -26,4 +26,4 @@ sbt:introprog root> set w03_irritext/Compile/scalacOptions := Seq("-deprecation"
 sbt:introprog root> w03_irritext/compile
 ```
 
-It is important to revert rewritings to `-no-indent` before rewriting to `-old-syntax`.
+It is important to revert to `-no-indent` before reverting to `-old-syntax`.
