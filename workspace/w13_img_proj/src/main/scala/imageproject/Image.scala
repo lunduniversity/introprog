@@ -6,8 +6,8 @@ import java.io.File
 import java.awt.Color
 
 class Image(val image: BufferedImage) {
-	val height = image.getHeight
-	val width = image.getWidth
+  val height = image.getHeight
+  val width = image.getWidth
 
   /** Returns a matrix of Color-objects that represents an image */
   def getColorMatrix: Array[Array[Color]] = {
