@@ -248,13 +248,14 @@
 
 \lstdefinelanguage{Scala}{
   morekeywords={abstract,case,catch,class,def,%
-    do,else,extends,false,final,finally,%
-    for,forSome,if,implicit,import,lazy,match,%
+    do,else,enum,export,extends,false,final,finally,%
+    for,given,if,implicit,import,lazy,match,%
     new,null,object,override,package,%
     private,protected,return,sealed,%
-    super,this,throw,trait,true,try,%
-    type,val,var,while,with,yield},
-  otherkeywords={=>,<-,<\%,<:,>:,@},
+    super,then,throw,trait,true,try,%
+    type,val,var,while,with,yield,%
+    as, derives, end, extension, infix, inline, opaque, open, transparent, using}, % soft keywords
+  otherkeywords={=>,<-,<:,>:,@,=>>,?=>},
   sensitive=true,
   morecomment=[l]{//},
   morecomment=[n]{/*}{*/},
