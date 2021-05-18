@@ -4,7 +4,7 @@ class BlockWindow(
   val nbrOfBlocks: (Int, Int),
   val title: String = "BLOCK WINDOW",
   val blockSize: Int = 14
-) {
+):
   import introprog.PixelWindow
 
   val pixelWindow = new PixelWindow(
@@ -22,24 +22,19 @@ class BlockWindow(
   ): Unit = pixelWindow.drawText(
       text, pos.x * blockSize, pos.y * blockSize, color, textSize)
 
-  def nextEvent(maxWaitMillis: Int = 10): BlockWindow.Event.EventType  = {
+  def nextEvent(maxWaitMillis: Int = 10): BlockWindow.Event.EventType  =
     import BlockWindow.Event._
     pixelWindow.awaitEvent(maxWaitMillis)
-    pixelWindow.lastEventType match {
+    pixelWindow.lastEventType match
       case PixelWindow.Event.KeyPressed   => KeyPressed(pixelWindow.lastKey)
       case PixelWindow.Event.WindowClosed => WindowClosed
       case _                              => Undefined
-    }
-  }
-}
 
-object BlockWindow {
+object BlockWindow:
   def delay(millis: Int): Unit = Thread.sleep(millis)
 
-  object Event {
+  object Event:
     trait EventType
     case class  KeyPressed(key: String) extends EventType
     case object WindowClosed            extends EventType
     case object Undefined               extends EventType
-  }
-}

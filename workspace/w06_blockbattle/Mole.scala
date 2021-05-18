@@ -6,7 +6,7 @@ class Mole(
   var dir: (Int, Int),
   val color: java.awt.Color,
   val keyControl: KeyControl
-){
+):
   var points = 0
 
   override def toString =
@@ -23,4 +23,3 @@ class Mole(
 
   /** Ger nästa position enligt riktningen dir utan att uppdatera pos */
   def nextPos: Pos = ???
-}

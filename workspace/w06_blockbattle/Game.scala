@@ -1,6 +1,6 @@
 package blockbattle
 
-object Game {
+object Game:
   val windowSize = (30, 50)
   val windowTitle = "EPIC BLOCK BATTLE"
   val blockSize = 14
@@ -9,12 +9,11 @@ object Game {
   object Color { ??? }
   /** Used with the different ranges and eraseBlocks */
   def backgroundColorAtDepth(y: Int): java.awt.Color = ???
-}
 
 class Game(
   val leftPlayerName: String  = "LEFT",
   val rightPlayerName: String = "RIGHT"
-) {
+):
  import Game._ // direkt tillgång till namn på medlemmar i kompanjon
 
  val window    = new BlockWindow(windowSize, windowTitle, blockSize)
@@ -30,11 +29,9 @@ class Game(
 
  def gameLoop(): Unit = ???
 
- def start(): Unit = {
+ def start(): Unit =
    println("Start digging!")
    println(s"$leftPlayerName ${leftMole.keyControl}")
    println(s"$rightPlayerName ${rightMole.keyControl}")
    drawWorld()
    gameLoop()
- }
-}
