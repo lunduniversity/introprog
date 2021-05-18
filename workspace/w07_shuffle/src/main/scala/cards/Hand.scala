@@ -29,9 +29,10 @@ case class Hand(cards: Vector[Card]):
 
   def category: Int = // TODO: add more tests when tally is implemented
     if isStraight && isFlush then Category.StraightFlush
-    else if isFlush then          Category.Flush
-    else if isStraight then       Category.Straight
-    else                       Category.HighCard
+    else if isFlush          then Category.Flush
+    else if isStraight       then Category.Straight
+    else                          Category.HighCard
+
 object Hand:
   def apply(cardSeq: Card*): Hand = new Hand(cardSeq.toVector)
   def from(deck: Deck): Hand = new Hand(deck.peek(5))

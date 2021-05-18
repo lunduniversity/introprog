@@ -22,6 +22,7 @@ class Deck private (val initCards: Vector[Card]):
 
   /** Randomly reorders the cards in this deck. */
   def shuffle(): Unit = ???
+
 object Deck:
   def empty: Deck = new Deck(Vector())
   def apply(cards: Seq[Card]): Deck = new Deck(cards.toVector)

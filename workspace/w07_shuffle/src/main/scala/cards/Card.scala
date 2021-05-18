@@ -10,6 +10,7 @@ case class Card(rank: Int, suit: Int):
   val suitChar:   Char   = suits(suit - 1)
 
   override def toString() = s"$rankString$suitChar "
+  
 object Card:
   val suitRange: Range = 1 to 4
   val rankRange: Range = 1 to 13
