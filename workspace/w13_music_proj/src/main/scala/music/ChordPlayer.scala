@@ -1,6 +1,6 @@
 package music
 
-object ChordPlayer {
+object ChordPlayer:
   
   case class Strike(
     velocity: Int         = 50,   // hur hårt anslag i Range(0, 128)
@@ -10,7 +10,6 @@ object ChordPlayer {
   )
 
   def play(chord: Chord, strike: Strike = Strike(), channel: Int = 0): Unit =
-    strike match { case Strike(v, d, s, a) =>
-      ???
-    }
-}
+    strike match 
+      case Strike(v, d, s, a) => ???
+

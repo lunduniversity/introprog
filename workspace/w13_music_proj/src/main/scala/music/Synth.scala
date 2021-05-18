@@ -1,10 +1,10 @@
 package music
 
-object Synth {
+object Synth:
   import javax.sound.midi._
   import GMInstruments._
 
-  val underlying: Synthesizer = {
+  val underlying: Synthesizer =
     println("Initializing javax.sound.MidiSystem ...")
     println(MidiSystem.getMidiDeviceInfo().mkString(" "))
     val synth = MidiSystem.getSynthesizer
@@ -12,7 +12,6 @@ object Synth {
     assert(synth.loadAllInstruments(synth.getDefaultSoundbank),
            "Loading MIDI instruments failed")
     synth
-  }
   resetInstruments() // assign some different instruments to channels
 
   def midiChannel(channel: Int): MidiChannel = underlying.getChannels.apply(channel)
@@ -20,13 +19,11 @@ object Synth {
 
   def instruments: Seq[Instrument] = underlying.getLoadedInstruments.toSeq
 
-  def changeInstrument(program: Int, channel: Int = 0): Unit = {
+  def changeInstrument(program: Int, channel: Int = 0): Unit =
     val patch = instruments.find(_.getPatch.getProgram == program).map(_.getPatch)
-    patch match {
+    patch match
       case Some(p) => midiChannel(channel).programChange(p.getBank, p.getProgram)
       case None => println(s"Instrument with program number $program not found")
-    }
-  }
 
   lazy val defaultInstruments = Vector(AcousticGrandPiano, AcousticGuitarNylon,
                                        AcousticBass, Trumpet, Flute)
@@ -53,7 +50,7 @@ object Synth {
                    spread:   Long        = 50,
                    after:    Long        = 0,
                    channel:  Int         = 0
-  ): Unit = {
+  ): Unit =
     delay(after)
     noteNumbers.foreach{ nbr =>
       noteOn(nbr, velocity, channel)
@@ -61,7 +58,6 @@ object Synth {
     }
     delay(duration)
     noteNumbers.foreach(noteOff(_, channel))
-  }
 
   def playConcurrently(noteNumbers: Seq[Int] = Vector(60),
                        velocity: Int         = 60,
@@ -69,14 +65,13 @@ object Synth {
                        spread:   Long        = 50,
                        after:    Long        = 0,
                        channel:  Int         = 0
-  ): Unit = {
+  ): Unit =
     import scala.concurrent.ExecutionContext.Implicits.global
     scala.concurrent.Future {
       playBlocking(noteNumbers, velocity, duration, spread, after, channel)
     }
-  }
 
-  object GMInstruments {
+  object GMInstruments:
     // These program numbers are defined as particular instruments by General MIDI.
     // They're often indexed from 1, but javax.sound.midi indexes them from 0.
     val AcousticGrandPiano = 0
@@ -207,5 +202,3 @@ object Synth {
     val Helicopter = 125
     val Applause = 126
     val Gunshot = 127
-  }
-}

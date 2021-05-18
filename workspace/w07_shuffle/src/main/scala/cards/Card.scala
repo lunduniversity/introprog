@@ -1,6 +1,6 @@
 package cards
 
-case class Card(rank: Int, suit: Int) {
+case class Card(rank: Int, suit: Int):
   import Card._
 
   require(rankRange.contains(rank), s"rank=$rank, must be in $rankRange")
@@ -10,11 +10,9 @@ case class Card(rank: Int, suit: Int) {
   val suitChar:   Char   = suits(suit - 1)
 
   override def toString() = s"$rankString$suitChar "
-}
-object Card {
+object Card:
   val suitRange: Range = 1 to 4
   val rankRange: Range = 1 to 13
   val suits: Vector[Char] = "♠♥♣♦".toVector
   val ranks: Vector[String] =
     "A" +: ((2 to 10).map(_.toString).toVector ++ Vector("J", "Q", "K"))
-}

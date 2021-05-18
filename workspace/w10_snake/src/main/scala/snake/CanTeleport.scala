@@ -1,6 +1,6 @@
 package snake
 
-trait CanTeleport extends Entity {
+trait CanTeleport extends Entity:
   def game: SnakeGame
 
   var pos = game.randomFreePos()
@@ -9,13 +9,10 @@ trait CanTeleport extends Entity {
 
   def teleportAfterSteps: Int
 
-  def update(): Unit = {
+  def update(): Unit =
     nbrOfStepsSinceLastTeleport += 1
-    if (nbrOfStepsSinceLastTeleport > teleportAfterSteps) reset()
-  }
+    if nbrOfStepsSinceLastTeleport > teleportAfterSteps then reset()
 
-  def reset(): Unit = {
+  def reset(): Unit =
     nbrOfStepsSinceLastTeleport = 0
     pos = game.randomFreePos()
-  }
-}

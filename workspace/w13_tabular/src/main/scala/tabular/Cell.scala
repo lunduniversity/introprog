@@ -5,8 +5,7 @@ sealed trait Cell { def value: String }
 case class Str(value: String) extends Cell
 case class Num(num: BigDecimal) extends Cell { def value = num.toString }
 
-object Cell {
-
+object Cell:
   /** Ger en Num om BigDecimal(s) lyckas annars en Str. */
   def apply(s: String): Cell =  ???
 
@@ -15,4 +14,3 @@ object Cell {
   def empty: Str = Str("")
 
   def zero: Num = Num(BigDecimal(0))
-}

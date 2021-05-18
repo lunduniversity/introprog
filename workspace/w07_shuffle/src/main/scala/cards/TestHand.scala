@@ -1,8 +1,8 @@
 package cards
 
-object TestHand {
+object TestHand:
 
-  def testCategorize(): Unit = {
+  def testCategorize(): Unit =
     println("\n*** TestHand.testCategorize:")
     val h = Hand(Card(1,1), Card(2,1), Card(3,1), Card(4,1), Card(5,1))
     println(h)
@@ -12,16 +12,14 @@ object TestHand {
     println(s"categoryRank:    ${h.category}")
     println(s"nameEnglish:     ${Hand.Category.Name.english(h.category)}")
     println(s"nameSwedish:     ${Hand.Category.Name.swedish(h.category)}")
-  }
 
-  def testTally(): Unit = {
-    def runTest(hand: Hand, expected: Vector[Int]): Unit = {
+  def testTally(): Unit =
+    def runTest(hand: Hand, expected: Vector[Int]): Unit =
       val actual = hand.tally
-      if (expected == actual)
+      if expected == actual then
         println(s"OK: $hand gives $actual")
       else
         println(s"Test failed: $hand gives $actual but should give $expected")
-    }
 
     println("\n*** TestHand.testTally:")
 
@@ -36,10 +34,7 @@ object TestHand {
 
     runTest(Hand(),
             Vector(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
-  }
 
-  def main(args: Array[String]): Unit = {
+  def main(args: Array[String]): Unit =
     testCategorize()
     testTally()
-  }
-}

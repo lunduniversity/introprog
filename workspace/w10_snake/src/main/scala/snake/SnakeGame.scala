@@ -4,7 +4,7 @@ import introprog.BlockGame
 abstract class SnakeGame(title: String) extends BlockGame(
   title, dim = (50, 30), blockSize = 15, background = Colors.Background,
   framesPerSecond = 50, messageAreaHeight = 3
-) {
+):
   var entities: Vector[Entity] = Vector.empty
 
   var players: Vector[Player] = Vector.empty
@@ -23,25 +23,22 @@ abstract class SnakeGame(title: String) extends BlockGame(
 
   def enterGameOverState(): Unit = ??? // meddela "game over"
 
-  def enterQuittingState(): Unit = {
+  def enterQuittingState(): Unit =
     println("Goodbye!")
     pixelWindow.hide()
     state = Quitting
-  }
 
   def randomFreePos(): Pos = ??? // dra slump-pos tills ledig plats, används av frukt
 
-  override def onKeyDown(key: String): Unit = {
+  override def onKeyDown(key: String): Unit =
     println(s"""key "$key" pressed""")
-    state match {
-      case Starting => if (key == " ") enterPlayingState()
+    state match
+      case Starting => if key == " " then enterPlayingState()
       case Playing => players.foreach(_.handleKey(key))
       case GameOver =>
-        if (key == " ") enterPlayingState()
-        else if(key == "Escape") enterQuittingState()
+        if key == " " then enterPlayingState()
+        else if key == "Escape" then enterQuittingState()
       case _ =>
-    }
-  }
 
   override def onClose(): Unit = enterQuittingState()
 
@@ -49,11 +46,9 @@ abstract class SnakeGame(title: String) extends BlockGame(
 
   override def gameLoopAction(): Unit = ???
 
-  def startGameLoop(): Unit = {
+  def startGameLoop(): Unit =
     pixelWindow.show()  // möjliggör omstart även om fönstret stängts...
     enterStartingState()
     gameLoop(stopWhen = state == Quitting)
-  }
 
   def play(playerNames: String*): Unit // abstrakt, implementeras i subklass
-}

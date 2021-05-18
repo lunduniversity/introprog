@@ -5,7 +5,7 @@ case class Table(
   headings: Vector[String],
   rows: Vector[Vector[Cell]],
   separator: Char
-){
+):
   val nRows = rows.length
   val nCols = rows.map(_.length).max
   val dim = (nRows, nCols)
@@ -36,7 +36,7 @@ case class Table(
 
   def values(heading: String): Vector[String] = col(heading).map(_.value)
 
-  def show: String = {
+  def show: String =
     def maxValueLength(heading: String): Int = col(heading).map(_.value.length).max
     val colSize = headings.map(h => maxValueLength(h) max h.length)
     val paddedHeadings = headings.map(h => h.padTo(colSize(indexOfHeading(h)), ' '))
@@ -46,13 +46,10 @@ case class Table(
       headings.indices.map(i => r(i).value.padTo(colSize(i),' ')).mkString("|","|","|")
     ).mkString("\n")
     s"$line\n$heading\n$line\n$paddedRows\n$line\n (nRows, nCols) == $dim\n"
-  }
 
   /** Strängvektor för varje rad i `rows`, kolumner skilda med `separator`. */
   def toLines(separator: Char): Vector[String] = ???
-}
 
-object Table {
+object Table:
   /** Skapa tabell från fil el. webbadress; kolumner skilda med `separator`. */
   def load(fileOrUrl: String, separator: Char): Table = ???
-}

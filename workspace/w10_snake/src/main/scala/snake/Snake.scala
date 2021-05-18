@@ -6,7 +6,7 @@ class Snake (
   val headColor: java.awt.Color,
   val tailColor: java.awt.Color,
   val game: SnakeGame
-) extends CanMove {
+) extends CanMove:
   var dir: Dir = initDir
 
   val initBody: List[Pos] = List(initPos + initDir, initPos)
@@ -39,4 +39,3 @@ class Snake (
 
   override def toString =  // bra vid println-debugging
     body.map(p => (p.x, p.y)).mkString(">:)", "~", s" going $dir")
-}

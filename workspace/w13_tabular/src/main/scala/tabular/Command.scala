@@ -3,7 +3,7 @@ package tabular
 import scala.util.Try
 import introprog.{IO, Dialog}
 
-object Command {
+object Command:
   var currentSeparator: Char = ','
 
   var currentTable: Option[Table] = None
@@ -26,11 +26,10 @@ object Command {
     |quit, Ctrl+D         Terminate app
     |""".stripMargin
 
-   def fromUser(): Vector[String] = {
+   def fromUser(): Vector[String] =
      // readLine can give null if Ctrl+D is typed by user (Linux, MacOS)
      val cmdOpt = Option(scala.io.StdIn.readLine("> ")) // None if null
      cmdOpt.map(_.split(' ').map(_.trim).toVector).getOrElse(Vector("quit"))
-   }
 
    def TODO = "TODO: Not yet implemented."
 
@@ -40,7 +39,7 @@ object Command {
 
    def listFiles(): String = IO.currentDir() +"\n"+ IO.list(IO.currentDir()).mkString(" ")
 
-   def doCommand(cmd: Vector[String]): String  = cmd match {
+   def doCommand(cmd: Vector[String]): String  = cmd match
      case Vector("") | Vector()            => shortHelpText
 
      case Vector("help")                   => longHelpText
@@ -52,15 +51,11 @@ object Command {
      case Vector("quit")                   => "quit"
 
      case _ => s"""Invalid command: ${cmd.mkString(" ")} \n$shortHelpText\n"""
-   }
 
-   def loopUntilQuit(): Unit = {
+   def loopUntilQuit(): Unit =
      println(shortHelpText)
      var quit = false
-     while (!quit) {
+     while !quit do
        val result = doCommand(fromUser())
-       if (result == "quit") quit = true else println(result)
-     }
+       if result == "quit" then quit = true else println(result)
      println("Goodbye!")
-   }
-}

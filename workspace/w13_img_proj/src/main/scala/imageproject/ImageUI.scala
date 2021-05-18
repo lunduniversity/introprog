@@ -10,7 +10,7 @@ import scala.util.Try
 import javax.imageio.ImageIO
 import java.util.Scanner
 
-object ImageUI {
+object ImageUI:
   
   val greeting = "Välj en av följande bilder genom att mata in en siffra\n"
   
@@ -22,10 +22,9 @@ object ImageUI {
   /** Lists the images from the images folder */
   var images = List[File]()
   val dir = new File(System.getProperty("user.dir") + "/images")
-  if (dir.exists && dir.isDirectory) {
+  if dir.exists && dir.isDirectory then
     images = dir.listFiles.filter(_.isFile).toList
     images = images.filter(file => extensions.exists(file.getName.endsWith(_)))
-  }
   
   /**
    *  Returns a chosen image from the images folder.
@@ -44,27 +43,22 @@ object ImageUI {
    *  8. shuttle.jpg
    *  Ditt val: 
    */
-   def getImage: BufferedImage = {
+  def getImage: BufferedImage =
     showFiles
     print("Ditt val: ")
     val i = scan.next()
     val result = Try(ImageIO.read(images(i.toInt)))
-    result match {
+    result match
       case Success(_) => 
         println("Bild " + images(i.toInt).getName + " laddad\n")
         result.get
       case Failure(e) => 
         println("Error; fel index, försök igen\n")
         getImage
-    }
-  }
   
-  private def showFiles: Unit = {
+  private def showFiles: Unit =
     println(greeting)
     var i = 0
-    for (file <- images) {
+    for file <- images do
       println(s"$i. ${file.getName}")
       i += 1
-    }
-  }
-}

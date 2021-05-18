@@ -1,6 +1,6 @@
 package life
 
-case class Life(cells: Matrix[Boolean]) {
+case class Life(cells: Matrix[Boolean]):
 
   /** Ger true om cellen på plats (row, col) är vid liv annars false.
     * Ger false om indexeringen är utanför universums gränser.
@@ -19,19 +19,17 @@ case class Life(cells: Matrix[Boolean]) {
   /** Skapar en ny Life-instans med nästa generation av universum.
     * Detta sker genom att applicera funktionen \code{rule} på cellerna.
     */
-  def evolved(rule: (Int, Int, Life) => Boolean = Life.defaultRule):Life = {
+  def evolved(rule: (Int, Int, Life) => Boolean = Life.defaultRule):Life =
     var nextGeneration = Life.empty(cells.dim)
-    cells.foreachIndex { (r,c) =>
+    cells.foreachIndex( (r,c) =>
       ???
-    }
+    )
     nextGeneration
-  }
 
   /** Radseparerad text där 0 är levande cell och - är död cell. */
   override def toString = ???
-}
 
-object Life {
+object Life:
   /** Skapar ett universum med döda celler. */
   def empty(dim: (Int, Int)): Life = ???
 
@@ -40,4 +38,3 @@ object Life {
 
   /** Implementerar reglerna enligt Conways Game of Life. */
   def defaultRule(row: Int, col: Int, current: Life): Boolean = ???
-}

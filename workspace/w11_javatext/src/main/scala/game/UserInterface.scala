@@ -1,6 +1,6 @@
 package game
 
-object UserInterface {
+object UserInterface:
   /** Prints the available choices, then reads an integer from the user */
   def readChoice(choices: Array[String]): Int = ???
 
@@ -12,5 +12,4 @@ object UserInterface {
 
   /** Prints scores achieved by a specific player in descending order */
   def showHighScores(scores: java.util.ArrayList[Game], player: String): Unit = ???
-}
 

@@ -1,6 +1,6 @@
 package life
 
-object Main {
+object Main:
   val help = """
     Welcome to GAME OF LIFE!
 
@@ -14,9 +14,7 @@ object Main {
 
   val dim = (30, 40)
 
-  def main(args: Array[String]): Unit = {
+  def main(args: Array[String]): Unit =
     println(help)
     //val w = new LifeWindow(dim._1, dim._2)
     //w.start()
-  }
-}

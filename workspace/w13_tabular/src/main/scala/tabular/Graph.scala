@@ -4,7 +4,7 @@ import introprog.PixelWindow
 import java.awt.Color
 
 /** An object for drawing graphs (bar charts, pie charts) from data. */
-object Graph {
+object Graph:
 
   val defaultColors = Vector(Color.pink, Color.blue, Color.green,
     Color.magenta, Color.orange, Color.red, Color.yellow, Color.cyan)
@@ -19,7 +19,7 @@ object Graph {
     barColors:  Seq[Color] = defaultColors,
     windowWidth:  Int = 600,
     windowHeight: Int = 400
-  ): Unit = {
+  ): Unit =
     val dataSorted = data.sortBy(_._2).reverse
     val (windowWidth, windowHeight) = (600, 400)
     val pw =
@@ -50,7 +50,7 @@ object Graph {
     )
 
     //Bars
-    for ((bar, index) <- dataSorted.zipWithIndex) {
+    for (bar, index) <- dataSorted.zipWithIndex do
       //pw.setLineColor(Color.RED)
       val x = graphX + barW + graphW * index / dataSorted.size
       val y = graphY - graphH * bar._2 / yMax
@@ -76,8 +76,6 @@ object Graph {
         y = y - lineHeight * 2,
         color = textColor
       )
-    }
-  }
 
   /** Create a pie chart from data with pairs of (label, frequency) */
   def pie(
@@ -89,7 +87,7 @@ object Graph {
     pieColors:  Seq[Color] = defaultColors,
     windowWidth:  Int = 500,
     windowHeight: Int = 500
-  ): Unit = {
+  ): Unit =
     val dataSorted = data.sortBy(_._2).reverse
     val sum = data.map(_._2).sum
     //Legend
@@ -112,7 +110,7 @@ object Graph {
     var index = 0
     var colorStart = 0
 
-    def addLegend(): Unit = {
+    def addLegend(): Unit =
       val y = windowHeight - padding + textHeight * (index + 1)
       val current = dataSorted(index)
       val percent = (current._2 * 1000.0 / sum + 0.5).toInt.toDouble / 10
@@ -127,18 +125,16 @@ object Graph {
         color = pieColors(index % pieColors.size),
         lineWidth = textHeight - 2
       )
-    }
 
     addLegend()
     val anglePrep = 2 * Math.PI / iterations
     val radius = side / 2
 
-    for (a <- 0 until iterations) {
-      if (a - colorStart > dataSorted(index)._2 * iterations / sum) {
+    for a <- 0 until iterations do
+      if a - colorStart > dataSorted(index)._2 * iterations / sum then
         index += 1
         colorStart = a
         addLegend()
-      }
       val angle = anglePrep * a
       val x = centerX + radius * Math.cos(angle)
       val y = centerY - radius * Math.sin(angle)
@@ -148,6 +144,3 @@ object Graph {
         color = pieColors(index % pieColors.size),
         lineWidth = 2
       )
-    }
-  }
-}

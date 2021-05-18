@@ -1,6 +1,6 @@
 package nlp
 
-case class Text(source: String){
+case class Text(source: String):
   lazy val words: Vector[String] = ???  // dela upp source i ord
 
   lazy val distinct: Vector[String] = words.distinct
@@ -19,22 +19,19 @@ case class Text(source: String){
   lazy val followFreq: Map[String, Map[String, Int]] = ??? //nästlad tabell
 
   lazy val follows: Map[String, String] =
-    followFreq.map { case (key, followMap) => 
+    followFreq.map( (key, followMap) => 
       val maxByFreq: (String, Int) = followMap.maxBy(_._2)
       val mostCommonFollower: String = maxByFreq._1
       (key, mostCommonFollower) 
-    }
+    )
     //eller kortare med samma resultat: (lättare eller svårare att läsa?)
     //  followFreq.map(kv => kv._1 -> kv._2.maxBy(_._2)._1)
-}
 
-object Text {
-  def fromFile(fileName: String, encoding: String = "UTF-8"): Text = {
+object Text:
+  def fromFile(fileName: String, encoding: String = "UTF-8"): Text =
     val source = scala.io.Source.fromFile(fileName, encoding).mkString
     Text(source)
-  }
-  def fromURL(url: String, encoding: String = "UTF-8"): Text = {
+  
+  def fromURL(url: String, encoding: String = "UTF-8"): Text =
     val source = scala.io.Source.fromURL(url, encoding).mkString
     Text(source)
-  }
-}
