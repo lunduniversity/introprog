@@ -1,2 +1,1 @@
-scalaVersion := "2.13.5"
-scalacOptions := Seq("-unchecked", "-deprecation")
+ThisBuild/scalaVersion := "3.0.0"

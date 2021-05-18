@@ -4,8 +4,8 @@ import Keys._
 
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
-  version := "2021.0",
-  scalaVersion := "2.13.5",  
+  version := "2021.0.1",
+  scalaVersion := "3.0.0",  
   scalacOptions := Seq("-unchecked", "-deprecation")
 )
 
@@ -27,7 +27,7 @@ lazy val introprog_scalalib = (project in file("introprog")).
   settings(
     name := Name,
     version := Version,
-    Compile/console/fork := true,
+    scalaVersion := "2.13.6",
     scalacOptions ++= Seq("-encoding", "UTF-8"),
     Compile/doc/scalacOptions ++= Seq(
       "-implicits",
