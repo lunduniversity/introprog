@@ -110,7 +110,13 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning, calc}
-\usepackage{tkz-euclide}\usetkzobj{all}%https://tex.stackexchange.com/questions/96459/automatically-draw-and-labels-angles-of-a-triangle-in-tikz
+\usepackage{tkz-euclide}
+%\usetkzobj{all} %%% AAAARGH Version clash, broken api :(
+  % Work-around: dont't use \tkzLabel \tkzMarkAngle, 
+  %  prev. used in w05-classes and lect-w05 but now replaced by a hack 
+%https://tex.stackexchange.com/questions/529550/latex-cant-find-file-tkz-obj-angles-tex
+%https://tex.stackexchange.com/questions/96459/automatically-draw-and-labels-angles-of-a-triangle-in-tikz
+
 \usepackage{pgfplots}
 
 %%%%%%%%%%%%% compatibility setting

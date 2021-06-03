@@ -99,7 +99,10 @@
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning, calc}
 %https://www.sharelatex.com/blog/2013/08/29/tikz-series-pt3.html
 \usepackage{tkz-euclide}
-\usetkzobj{all}
+%\usetkzobj{all} %%% AAAARGH Version clash, broken api :(
+  % Work-around: dont't use \tkzLabel \tkzMarkAngle, 
+  %  prev. used in w05-classes and lect-w05 but now replaced by a hack 
+%https://tex.stackexchange.com/questions/529550/latex-cant-find-file-tkz-obj-angles-tex
 %https://tex.stackexchange.com/questions/96459/automatically-draw-and-labels-angles-of-a-triangle-in-tikz
 % https://tex.stackexchange.com/questions/165877/latex-complains-that-tkzdrawarc-is-not-defined
 
