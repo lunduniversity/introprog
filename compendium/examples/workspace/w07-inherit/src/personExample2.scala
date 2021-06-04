@@ -12,8 +12,7 @@ object personExample2 {
                  val universitet: String,
                  val titel: String) extends Person with Akademiker with Examinerad
 
-  def main(args: Array[String]): Unit = {
+  def main(args: Array[String]): Unit =
     val f = new Forskare("B. Regnell", "Lunds universitet", "Professor Dr")
     println(s"${f.titel} ${f.namn}, ${f.universitet}")
-  }
 }

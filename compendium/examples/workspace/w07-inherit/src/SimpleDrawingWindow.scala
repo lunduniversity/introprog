@@ -1,11 +1,15 @@
-class SimpleDrawingWindow(title: String = "Untitled",
-                          size: (Int, Int) = (640, 400))
-  extends cslib.window.SimpleWindow(size._1, size._2, title)
-    with DrawingWindow {
+class SimpleDrawingWindow(
+  title: String = "Untitled", 
+  size: (Int, Int) = (640, 400),
+) extends 
+    introprog.PixelWindow(title = title, width = size._1, height = size._2) 
+    with DrawingWindow:
 
-  override def penTo(pt: (Double, Double)): Unit  =
-    moveTo(pt._1.round.toInt, pt._2.round.toInt)
+  private var penPos = (0.0, 0.0)
 
-  override def drawTo(pt: (Double, Double)): Unit =
-    lineTo(pt._1.round.toInt, pt._2.round.toInt)
-}
+  override def penTo(pt: (Double, Double)): Unit  = penPos = pt
+
+  override def drawTo(pt: (Double, Double)): Unit = 
+    line(penPos._1.round.toInt, penPos._2.round.toInt, 
+         pt._1.round.toInt, pt._2.round.toInt)
+    penPos = pt

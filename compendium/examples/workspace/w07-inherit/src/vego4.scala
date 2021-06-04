@@ -1,25 +1,20 @@
-object exempelVego4 {
+object exempelVego4:
 
-  trait Grönsak {
+  trait Grönsak:
     val skalningsmetod: String
     final val skalfaktor = 0.99  // en final medlem kan ej överskuggas
     var vikt: Double
     var ärSkalad: Boolean = false
 
-    def skala(): Unit = if (!ärSkalad) {
+    def skala(): Unit = if !ärSkalad then
       println(skalningsmetod)
       vikt = skalfaktor * vikt
       ärSkalad = true
-    }
-  }
 
-  class Gurka(var vikt: Double) extends Grönsak {
+  class Gurka(var vikt: Double) extends Grönsak:
     val skalningsmetod = "Skalas med skalare."
-  }
 
-  class Tomat(var vikt: Double) extends Grönsak {
+  class Tomat(var vikt: Double) extends Grönsak:
     val skalningsmetod = "Skållas."
 //  override val skalfaktor = 0.95 
 //  ger KOMPILERINGSFEL: "cannot override final member"
-  }
-}
