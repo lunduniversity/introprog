@@ -1,10 +1,9 @@
-object Polygon {
+object Polygon:
   type Pt = (Int, Int)
   type Pts = Vector[Pt]
   def apply(pts: Pt*) = new Polygon(pts.toVector)
-}
 
-case class Polygon(points: Polygon.Pts) {
+case class Polygon(points: Polygon.Pts):
   import Polygon.Pt
 
   def size = points.size // for convenience but not really necessary (why?)
@@ -17,4 +16,3 @@ case class Polygon(points: Polygon.Pts) {
     copy(points.patch(pos, Seq(), replaced))
 
   override def toString = points.mkString("Polygon(", "," ,")")
-}
