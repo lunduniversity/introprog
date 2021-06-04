@@ -1,15 +1,14 @@
 // En förenklad Scala-specifikation av extentaproblemet 2016-08-24 utan WorkPeriodList
 
-case class WorkPeriod(task: String, hour: Int, length: Int){
+case class WorkPeriod(task: String, hour: Int, length: Int):
   def collidesWith(wp: WorkPeriod): Boolean = ??? 
   
   override def toString = ???
-}
 
-class TimePlanner(val times: Seq[WorkPeriod]){ 
+class TimePlanner(val times: Seq[WorkPeriod]): 
   private val worker = scala.collection.mutable.Map.empty[String, Worker]
 
-  private class Worker(val name: String) { 
+  private class Worker(val name: String): 
     private val scheduled = scala.collection.mutable.Set.empty[Int]
     
     def schedule(nbr: Int): Unit = ???   
@@ -17,17 +16,15 @@ class TimePlanner(val times: Seq[WorkPeriod]){
     def isScheduled(nbr: Int): Boolean = ???
     
     def canWork(nbr: Int): Boolean = ???
-  }
 
   def addWorker(name: String): Unit = ???
   
   def scheduleWorker(name: String, nbr: Int): Unit = ???
   
   def availableTimes: Seq[WorkPeriod] = ???
-}
 
-object Test { 
-  def main(args: Array[String]) = {
+object Test: 
+  def main(args: Array[String]) =
     val times = Vector[WorkPeriod](
       WorkPeriod("Städa toaletter", 17, 2), //0
       WorkPeriod("Vakta entren", 17, 3),    //1
@@ -36,7 +33,7 @@ object Test {
       WorkPeriod("Städa toaletter", 19, 2), //4
       WorkPeriod("Vakta entren", 20, 2),    //5
       WorkPeriod("Plocka skräp", 22, 1)     //6
-    ).sortBy(wp => (wp.start, wp.task)) 
+    ).sortBy(wp => (wp.hour, wp.task)) 
     
     println(times.mkString("ARBETSPASS:\n ","\n  ","\n"))
     val planner = new TimePlanner(times)
@@ -60,5 +57,3 @@ object Test {
     }
  
     showAvailable("LEDIGA efter allokering:")
-  }
-}

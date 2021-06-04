@@ -1,37 +1,35 @@
 // En Java-orienterad Scala-specifikation av extentalösningen 2016-08-24
 
-class WorkPeriod(private val task: String, private val hour: Int, length: Int) {
+import scala.collection.mutable.ArrayBuffer // import krävs ej på tentan
+
+class WorkPeriod(private val task: String, private val hour: Int, length: Int):
   def collidesWith(wp: WorkPeriod): Boolean = ???
     
   def compareTo(wp: WorkPeriod): Int =  ???
   
   override def toString = ???
-}
 
-class WorkPeriodList {
+class WorkPeriodList:
   def add(task: String, hour: Int, length: Int): Unit =  ???
   
   def toSortedArray: Array[WorkPeriod] = ???
-}
 
-class Worker(val name: String, private val times: Array[WorkPeriod]) {
+class Worker(val name: String, private val times: Array[WorkPeriod]):
   def schedule(nbr: Int): Unit = ???  
   
   def isScheduled(nbr: Int): Boolean = ???
   
   def canWork(nbr: Int): Boolean = ???
-}
 
-class TimePlanner(private val times: Array[WorkPeriod]){ 
+class TimePlanner(private val times: Array[WorkPeriod]): 
   def addWorker(name: String): Boolean = ???
   
   def scheduleWorker(name: String, nbr: Int): Unit = ???
   
   def availableTimes: ArrayBuffer[WorkPeriod] = ???
-}
 
 object Test { //testprogram, ingår ej i tentan men kan hjälpa att fundera på
-  def main(args: Array[String]) = {
+  def main(args: Array[String]) =
     val wpl = new WorkPeriodList
     wpl.add("Städa toaletter", 17, 2)  // 0
     wpl.add("Vakta entren", 17, 3)     // 1
@@ -64,5 +62,4 @@ object Test { //testprogram, ingår ej i tentan men kan hjälpa att fundera på
     }
  
     showAvailable("LEDIGA efter allokering:")
-  }
 }

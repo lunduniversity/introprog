@@ -1,45 +1,41 @@
 // En förenklad Scala-variant av extentaproblemet 2016-08-24 utan WorkPeriodList
 
-case class WorkPeriod(task: String, hour: Int, length: Int){
+case class WorkPeriod(task: String, hour: Int, length: Int):
   val (start, finish) = (hour, hour + length)
   
   def collidesWith(wp: WorkPeriod): Boolean = wp.start < finish && wp.finish > start 
   
   override def toString = s"$task $start-$finish"
-}
 
-class TimePlanner(val times: Seq[WorkPeriod]){ 
+class TimePlanner(val times: Seq[WorkPeriod]): 
 
   private val worker = scala.collection.mutable.Map.empty[String, Worker]
 
-  private class Worker(val name: String) { 
+  private class Worker(val name: String): 
     private val scheduled = scala.collection.mutable.Set.empty[Int]
     
     def schedule(nbr: Int): Unit = scheduled += nbr   
     
     def isScheduled(nbr: Int): Boolean = scheduled.contains(nbr)
     
-    def canWork(nbr: Int): Boolean = {
+    def canWork(nbr: Int): Boolean =
       def clash(i: Int) = isScheduled(i) && times(i).collidesWith(times(nbr)) && i != nbr
       !times.indices.exists(clash) 
-    }
-  }
 
   def addWorker(name: String): Unit = worker += (name -> new Worker(name))
   
   def scheduleWorker(name: String, nbr: Int): Unit = 
     worker.get(name).foreach{ w => 
       val nbrIsFree = worker.values.forall(w => !w.isScheduled(nbr))
-      if (nbrIsFree && w.canWork(nbr)) w.schedule(nbr)
+      if nbrIsFree && w.canWork(nbr) then w.schedule(nbr)
     }    
   
   def availableTimes: Seq[WorkPeriod] = 
-    for (i <- times.indices if !worker.values.exists(_ isScheduled i)) 
+    for i <- times.indices if !worker.values.exists(_ isScheduled i) 
     yield times(i)
-}
 
-object Test { 
-  def main(args: Array[String]) = {
+object Test: 
+  def main(args: Array[String]) =
     val times = Vector[WorkPeriod](
       WorkPeriod("Städa toaletter", 17, 2), //0
       WorkPeriod("Vakta entren", 17, 3),    //1
@@ -72,5 +68,3 @@ object Test {
     }
  
     showAvailable("LEDIGA efter allokering:")
-  }
-}

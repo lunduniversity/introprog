@@ -2,82 +2,69 @@
 
 import scala.collection.mutable.ArrayBuffer // import krävs ej på tentan
  
-class WorkPeriod(private val task: String, private val hour: Int, length: Int) {
+class WorkPeriod(private val task: String, private val hour: Int, length: Int):
   private val start: Int = hour
   private val finish: Int = hour + length
 
   def collidesWith(wp: WorkPeriod): Boolean = wp.start < finish && wp.finish > start 
     
-  def compareTo(wp: WorkPeriod): Int = {
+  def compareTo(wp: WorkPeriod): Int =
     val timeResult = start - wp.start
-    if (timeResult == 0) task.compareTo(wp.task) else timeResult
-  }
+    if timeResult == 0 then task.compareTo(wp.task) else timeResult
   override def toString = s"$task $start-$finish"
-}
 
-class WorkPeriodList {
+class WorkPeriodList:
   private val times: ArrayBuffer[WorkPeriod] = ArrayBuffer.empty
   
-  def add(task: String, hour: Int, length: Int): Unit = {
+  def add(task: String, hour: Int, length: Int): Unit =
     val wp = new WorkPeriod(task, hour, length)
     var (i, foundGreater) = (0, false)
-    while (!foundGreater && i < times.size) {
-      if (times(i).compareTo(wp) > 0) foundGreater = true
+    while !foundGreater && i < times.size do
+      if times(i).compareTo(wp) > 0 then foundGreater = true
       else i += 1
-    } 
     times.insert(i, wp)
-  }
   
   def toSortedArray: Array[WorkPeriod] = times.toArray 
-}
 
-class Worker(val name: String, private val times: Array[WorkPeriod]) {
+class Worker(val name: String, private val times: Array[WorkPeriod]):
   private val scheduled = Array.fill(times.size)(false)
   
   def schedule(nbr: Int): Unit = scheduled.update(nbr, true)  
   
   def isScheduled(nbr: Int): Boolean = scheduled(nbr)
   
-  def canWork(nbr: Int): Boolean = {
+  def canWork(nbr: Int): Boolean =
     var (i, foundCollision) = (0, false)
-    while (!foundCollision && i < times.size) {
-      if (scheduled(i) && times(i).collidesWith(times(nbr)) && i != nbr) 
+    while !foundCollision && i < times.size do
+      if scheduled(i) && times(i).collidesWith(times(nbr)) && i != nbr then 
         foundCollision = true
       else i += 1
-    }
     !foundCollision
-  }    
-}
 
-class TimePlanner(private val times: Array[WorkPeriod]){ 
+class TimePlanner(private val times: Array[WorkPeriod]): 
   private val persons: ArrayBuffer[Worker] = ArrayBuffer.empty
   
-  def addWorker(name: String): Boolean = {
+  def addWorker(name: String): Boolean =
     val workerOpt = persons.find(w => w.name == name)
-    if (workerOpt.isEmpty) persons.append(new Worker(name, times))
+    if workerOpt.isEmpty then persons.append(new Worker(name, times))
     workerOpt.isDefined 
-  }
   
-  def scheduleWorker(name: String, nbr: Int): Unit = {
+  def scheduleWorker(name: String, nbr: Int): Unit =
     val workerOpt = persons.find(w => w.name == name)
     workerOpt.foreach{ worker => 
       val nbrIsFree = persons.forall(w => !w.isScheduled(nbr))
-      if (nbrIsFree && worker.canWork(nbr)) worker.schedule(nbr)
+      if nbrIsFree && worker.canWork(nbr) then worker.schedule(nbr)
     }    
-  }
   
-  def availableTimes: ArrayBuffer[WorkPeriod] = {
+  def availableTimes: ArrayBuffer[WorkPeriod] =
     val result: ArrayBuffer[WorkPeriod] = ArrayBuffer.empty
-    for (i <- times.indices) {
-      if (!persons.exists(_ isScheduled i))
+    for i <- times.indices do
+      if !persons.exists(_ isScheduled i) then
         result.append(times(i))
-    }
     result
-  }  
-}
 
-object Test { //testprogram, ingår ej i tentan men kan hjälpa att fundera på
-  def main(args: Array[String]) = {
+object Test: //testprogram, ingår ej i tentan men kan hjälpa att fundera på
+  def main(args: Array[String]) =
     val wpl = new WorkPeriodList
     wpl.add("Städa toaletter", 17, 2)  // 0
     wpl.add("Vakta entren", 17, 3)     // 1
@@ -110,5 +97,3 @@ object Test { //testprogram, ingår ej i tentan men kan hjälpa att fundera på
     }
  
     showAvailable("LEDIGA efter allokering:")
-  }
-}

@@ -2,38 +2,34 @@
 
 import scala.collection.mutable.ArrayBuffer // import krävs ej på tentan
  
-case class WorkPeriod(task: String, hour: Int, length: Int){
+case class WorkPeriod(task: String, hour: Int, length: Int):
   def collidesWith(wp: WorkPeriod): Boolean = ???
     
   def compareTo(wp: WorkPeriod): Int = ???
   
   override def toString = ???
-}
 
-class WorkPeriodList {
+class WorkPeriodList:
   def add(task: String, hour: Int, length: Int): Unit = ???
   
   def toSortedVector: Vector[WorkPeriod] = ???
-}
 
-class Worker(val name: String, val times: Vector[WorkPeriod]) {
+class Worker(val name: String, val times: Vector[WorkPeriod]):
   def schedule(nbr: Int): Unit = ???  
   
   def isScheduled(nbr: Int): Boolean = ???
   
   def canWork(nbr: Int): Boolean = ???
-}
 
-class TimePlanner(private val times: Vector[WorkPeriod]){ 
+class TimePlanner(private val times: Vector[WorkPeriod]): 
   def addWorker(name: String): Boolean = ???
   
   def scheduleWorker(name: String, nbr: Int): Unit = ???
   
   def availableTimes: Vector[WorkPeriod] = ???
-}
 
-object Test { 
-  def main(args: Array[String]) = {
+object Test: 
+  def main(args: Array[String]) =
     val wpl = new WorkPeriodList
     wpl.add("Städa toaletter", 17, 2)  // 0
     wpl.add("Vakta entren", 17, 3)     // 1
@@ -64,5 +60,3 @@ object Test {
       nbrs.foreach(nbr => planner.scheduleWorker(name, nbr))
     }
     showAvailable("LEDIGA efter allokering:")
-  }
-}
