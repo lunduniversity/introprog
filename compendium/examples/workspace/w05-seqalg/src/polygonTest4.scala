@@ -1,5 +1,5 @@
-object polygonTest4 {
-  def main(args: Array[String]): Unit = {
+object polygonTest4:
+  def main(args: Array[String]): Unit =
     val pw = new PolygonWindow(200,200)
     val poly = new PolygonVector
 
@@ -14,5 +14,3 @@ object polygonTest4 {
     poly.remove(0)
     println(poly)
     poly.draw(pw)
-  }
-}
