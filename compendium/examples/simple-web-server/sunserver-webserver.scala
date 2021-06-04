@@ -1,7 +1,7 @@
-// webserver.scala
-// compile in terminal with:   scalac webserver.scala
-// run in terminal with:       scala webserver.start
-package webserver
+// sunserver.scala
+// compile in terminal with:   scalac sunserver.scala
+// run in terminal with:       scala sunserver.start
+package sunserver
 
 import java.io.OutputStream
 import java.net.InetSocketAddress;
@@ -10,7 +10,7 @@ import com.sun.net.httpserver.{
   Headers, HttpExchange, HttpHandler, HttpServer
 }
 
-object Html {
+object Html:
   def minimalWebPage(body: String, title: String = "Min Sörver") = 
     s"""<!DOCTYPE html>
        |<html>
@@ -22,24 +22,21 @@ object Html {
        |</body>
        |</html>
        """.stripMargin
-}
 
-object start {
-  def main(args: Array[String]): Unit = {
+object start:
+  def main(args: Array[String]): Unit =
     val server = HttpServer.create(new InetSocketAddress(8080), 0)
     server.createContext("/", new BaklängesHandler)
     server.setExecutor(Executors.newCachedThreadPool)
     server.start
     println("Surfa till servern på http://localhost:8080/akrug" )
-  }
-}
 
-class BaklängesHandler extends HttpHandler {
-  def handle(exchange: HttpExchange ): Unit = {
+class BaklängesHandler extends HttpHandler:
+  def handle(exchange: HttpExchange ): Unit =
     val requestMethod: String = exchange.getRequestMethod();
-    if (requestMethod.equalsIgnoreCase("GET")) {
+    if requestMethod.equalsIgnoreCase("GET") then
       val uri = exchange.getRequestURI.toString
-      if (uri == "/killserver") {println("HACKAD :("); System.exit(1)}
+      if uri == "/killserver" then {println("HACKAD :("); System.exit(1)}
       println(s"GET URI='$uri'")
       val response = "BAKLÄNGES: " + uri.drop(1).reverse  
       val htmlResponse = 
@@ -51,6 +48,3 @@ class BaklängesHandler extends HttpHandler {
       val responseBody: OutputStream  = exchange.getResponseBody
       responseBody.write(htmlResponse.getBytes)
       responseBody.close
-    }
-  }
-}
