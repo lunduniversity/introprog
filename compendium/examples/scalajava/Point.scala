@@ -1,16 +1,15 @@
-class Point(val x: Int, val y: Int, save: Boolean = false) {
+class Point(val x: Int, val y: Int, save: Boolean = false):
   import Point._
   
-  if (save) saved.prepend(this)
+  if save then saved.prepend(this)
   
   def this() = this(0, 0)
   
   def distanceTo(that: Point) = distanceBetween(this, that)
   
   override def toString = s"Point($x, $y)"
-}
 
-object Point {
+object Point:
   import scala.collection.mutable.{ArrayBuffer, Buffer}
   
   private val saved: Buffer[Point] = ArrayBuffer.empty
@@ -20,4 +19,3 @@ object Point {
   
   def showSaved: Unit = 
     println(saved.mkString("Saved: ", ", ", "\n"))
-}

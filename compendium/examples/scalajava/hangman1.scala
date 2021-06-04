@@ -53,10 +53,11 @@ object Hangman {  // This is Java-like, non-idiomatic Scala code!
     private def makeGuess(): Char = {
         var scan: Scanner = new Scanner(System.in);
         var guess: String = "";
-        do {
+        while ({
            System.out.println("Gissa ett tecken: ");
            guess = scan.next();
-        } while (guess.length() > 1);
+           guess.length() > 1;
+        }) ()
         return Character.toLowerCase(guess.charAt(0));
     }
 
