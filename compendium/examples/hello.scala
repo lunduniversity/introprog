@@ -1,3 +1,2 @@
-object Hello {
-  def main(args: Array[String]): Unit = println("Hello world!")
-}
+@main
+def run = println("Hello world!")

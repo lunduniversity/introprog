@@ -1,5 +1,5 @@
 /** A class representing a square objects with position and side. */
-class Square private (val x: Int, val y: Int, val side: Int, private var numberOfMoves: Int) {
+class Square private (val x: Int, val y: Int, val side: Int, private var numberOfMoves: Int):
   /** The area of this Square */
   val area: Int = side*side
 
@@ -16,29 +16,25 @@ class Square private (val x: Int, val y: Int, val side: Int, private var numberO
     
   /** A string representation of this Square */
   override def toString: String = s"x: $x, y: $y, side: $side, #moved: $numberOfMoves"
-}
 
-object Square {
+object Square:
   private var created = Vector[Square]()
   
-  private def create(x: Int, y: Int, side: Int, nMoves: Int): Square = {
+  private def create(x: Int, y: Int, side: Int, nMoves: Int): Square =
     created :+= new Square(x, y, side, nMoves)    
     created.last    
-  }
   
   /** A square placed in origin with size 1 */
-  val unit: Square =  create(0, 0, 1, 0)
+  val unit: Square = create(0, 0, 1, 0)
 
   /** Constructs a new Square object at (x, y) with size side */
-  def apply(x: Int, y: Int, side: Int): Square = {
+  def apply(x: Int, y: Int, side: Int): Square =
     require(side >= 0, s"side must be positive: $side")
     create(x, y, side, 0)
-  }
 
   /** Constructs a new Square object at (0, 0) with side 1 */
   def apply(): Square = create(0, 0, 1, 0)
 
   /** Returns the total number of moves that have been made */
   def totalNumberOfMoves: Int = created.map(_.numberOfMoves).sum
-}
 

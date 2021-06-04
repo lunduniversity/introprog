@@ -1,13 +1,12 @@
 package numbers
 
-trait Number {
+trait Number:
   def reduce: Number = this
   def isZero: Boolean
   def isOne: Boolean
   def +(that: Number): Number = ???
-}
 
-object Number {
+object Number:
   def Zero = Nat(0)
   def One  = Nat(1)
   def Im(im: BigDecimal) = Complex(Real(0), Real(im))
@@ -15,66 +14,57 @@ object Number {
   def j                  = Complex(Real(0), Real(1))
   def Re(re: BigDecimal) = Complex(Real(re), Real(0))
   def Re(re: Real)       = Complex(re, Real(0))
-}
 
-trait AbstractComplex extends Number {
+trait AbstractComplex extends Number:
   def re: AbstractReal
   def im: AbstractReal
   def abs = Real(math.hypot(re.decimal.toDouble,im.decimal.toDouble))
   def fi =  Real(math.atan2(im.decimal.toDouble, re.decimal.toDouble))
   override def isZero: Boolean = re.decimal == 0 && im.decimal == 0
   override def isOne: Boolean = abs.decimal == 1.0
-  override def reduce: AbstractComplex = if (im.decimal == 0) re.reduce else this
-}
+  override def reduce: AbstractComplex = if im.decimal == 0 then re.reduce else this
 
 final case class Complex(re: Real, im: Real) extends AbstractComplex
 
-object Complex {
+object Complex:
   def apply(re: BigDecimal, im: BigDecimal) = new Complex(Real(re), Real(im))
-}
 
 final case class Polar(
     override val abs: Real,
     override val fi: Real
-  ) extends AbstractComplex {
+  ) extends AbstractComplex:
   override def re = Real(abs.decimal.toDouble * math.cos(fi.decimal.toDouble))
   override def im = Real(abs.decimal.toDouble * math.sin(fi.decimal.toDouble))
-}
 
-object Polar {
+object Polar:
   def apply(abs: BigDecimal, fi: BigDecimal) = new Polar(Real(abs), Real(fi))
-}
 
-trait AbstractReal extends AbstractComplex {
+trait AbstractReal extends AbstractComplex:
   def decimal: BigDecimal
   override def isZero = decimal == 0
   override def isOne = decimal == 1
   override def re = this
   override def im = Number.Zero
   override def reduce:  AbstractReal =
-    if (decimal == 0) Number.Zero else if (decimal == 1) Number.One else this
-}
+    if decimal == 0 then Number.Zero else if decimal == 1 then Number.One else this
 
 final case class Real(decimal: BigDecimal) extends AbstractReal
 
-trait AbstractRational extends AbstractReal {
+trait AbstractRational extends AbstractReal:
   def numerator: AbstractInteger
   def denominator: AbstractInteger
   override def decimal = BigDecimal(numerator.integ)
   override def isOne = numerator.integ == denominator.integ
   override def reduce: AbstractRational =
-    if (denominator.isOne) numerator.reduce else this // should use GCD
-}
+    if denominator.isOne then numerator.reduce else this // should use GCD
 
-final case class Frac(numerator: Integ, denominator: Integ) extends AbstractRational {
+final case class Frac(numerator: Integ, denominator: Integ) extends AbstractRational:
   require(denominator.integ != 0, "denominator must be non-zero")
-}
 
-object Frac {
+object Frac:
   def apply(n: BigInt, d: BigInt) = new Frac(Integ(n), Integ(d))
-}
 
-trait AbstractInteger extends AbstractRational {
+trait AbstractInteger extends AbstractRational:
   def integ: BigInt
   override def numerator = this
   override def denominator = Number.One
@@ -82,18 +72,14 @@ trait AbstractInteger extends AbstractRational {
   override def isOne = integ == 1
   override def decimal: BigDecimal = BigDecimal(integ)
   override def reduce: AbstractInteger =
-    if (isZero) Number.Zero else if (isOne) Number.One else this
-}
+    if isZero then Number.Zero else if isOne then Number.One else this
 
 final case class Integ(integ: BigInt) extends AbstractInteger
 
 trait AbstractNatural extends AbstractInteger
 
-final case class Nat(integ: BigInt) extends AbstractNatural{
-  require(integ >= 0, "natural numnbers must be non-negative")
-}
+final case class Nat(integ: BigInt) extends AbstractNatural:
+  require(integ >= 0, "natural numbers must be non-negative")
 
-object Syntax {
-  implicit class IntDecorator(i: Int){ def j = Number.Im(i) }
-  implicit class DoubleDecorator(d: Double){ def j = Number.Im(d) }
-}
+extension (i: Int)    def j = Number.Im(i)
+extension (d: Double) def j = Number.Im(d) 

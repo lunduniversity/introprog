@@ -1,4 +1,4 @@
-object exempel1 {
+object exempel1:
   // subtypning med inmixning och anonym klass
 
   class Bas(val i: Int){ def hello: String = "hej " + i }
@@ -9,9 +9,8 @@ object exempel1 {
   val b = new Bas(42)
   val b1 = new Bas(42) with Sub1 // anonym klass med inmixad trait
   val b2 = new Bas(42) with Sub2
-}
 
-object exempel2 {
+object exempel2:
   // arv av klass med parameter utan inmixning
 
   class Bas(val i: Int){ def hello: String = "hej " + i }
@@ -24,15 +23,13 @@ object exempel2 {
   val b = new Bas(42)
   val b1 = new Sub1(42)
   val b2 = new Sub2(42)
-}
 
-object exempel3 {
+object exempel3:
   // om man vill ha abstrakt bastyp, vilket är vanligast (?) och enklast (?):
 
-  trait Bas {
+  trait Bas:
     val i : Int
     def hello: String
-  }
 
   class Sub1(val i: Int) extends Bas { def hello: String = "goddag " + i }
   class Sub2(val i: Int) extends Bas { def hello: String = "tjena " + i }
@@ -40,6 +37,5 @@ object exempel3 {
   val b1 = new Sub1(42)
   val b2 = new Sub2(42)
 
-  // man kan instansiera Bas som anonym klass
+  // man kan en Bas-instans som en anonym klass
   val b = new Bas { val i = 42; val hello = "hejsan"} // anonym klass
-}

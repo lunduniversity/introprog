@@ -1,4 +1,4 @@
-class Snake private (initPos: (Int, Int), initDir: (Int, Int)){
+class Snake private (initPos: (Int, Int), initDir: (Int, Int)):
   private var pos = initPos
   
   private var dir = initDir
@@ -14,21 +14,18 @@ class Snake private (initPos: (Int, Int), initDir: (Int, Int)){
   def x = snake.head._1
   def y = snake.head._2
    
-  def grow: Snake = {
+  def grow: Snake =
     snake.prepend((x + dx, y + dy))
     this
-  }
   
-  def shrink: Snake = {
-    if (snake.size > 1) snake.remove(snake.size - 1)
+  def shrink: Snake =
+    if snake.size > 1 then snake.remove(snake.size - 1)
     this
-  }
   
   def isCollidingWith(other: Snake) = other.snake.contains(snake.head)
 
   override def toString = snake.mkString("Snake:", "~", s" going $dir")
-}
-object Snake {
+
+object Snake:
   def goingEastAt(x: Int, y: Int) = new Snake((x, y), (1, 0))
   def goingWestAt(x: Int, y: Int) = new Snake((x, y), (-1, 0))
-}
