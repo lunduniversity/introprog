@@ -9,17 +9,16 @@ val u1 = p1.pts(0)
 val u2 = p2.pts.apply(100)
 val u3 = moveAll(ps, 100, 100).drop(1).head
 val u4 = Point(100, 100).distanceTo()
-val u5 = {
+val u5 = 
   val z = Point()
   val pts = p1.pts ++ p2.pts
-  if (pts.length > 0) {
+  if pts.length > 0 then 
     var p = pts(0)
     var i = 1
-    while (i < pts.length) {
-      if (pts(i).distanceTo(z) > p.distanceTo(z))
-        p = pts(i)
+    while (i < pts.length) do
+      if pts(i).distanceTo(z) > p.distanceTo(z) 
+      then p = pts(i)
       i += 1
-    }
     p
-  } else z
-}
+  else z
+
