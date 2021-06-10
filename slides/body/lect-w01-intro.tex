@@ -196,7 +196,7 @@ Minnet innehåller endast \Alert{heltal} som \newline representerar \Emph{data} 
 \item \Emph{Syntax}: textens konkreta utseende
 \item \Emph{Semantik}: textens betydelse (vad maskinen gör/beräknar)
 \end{itemize}
-\item \Emph{Nyckelord}: ord med speciell betydelse, t.ex. \code{if}, \code{else}
+\item \Emph{Nyckelord}: ord med speciell betydelse, t.ex. \code{if}, \code{while}
 \item \Emph{Deklarationer}: definitioner av nya ord: \code{def gurka = 42}
 \item \Emph{Satser} är instruktioner som \Alert{gör} något: \code{print("hej")}
 \item \Emph{Uttryck} är instruktioner som beräknar ett \Alert{resultat}: \code{1 + 1}
@@ -244,10 +244,10 @@ Topplistor:
 
 \ifkompendium\else
 \begin{SlideExtra}{Redmonk Language Rankings: Github, Stackoverflow}
-\includegraphics[width=0.95\columnwidth]{../img/redmonk-Q320}
+\TODO\includegraphics[width=0.85\columnwidth]{../img/redmonk-Q320}
 \end{SlideExtra}
 \begin{SlideExtra}{Några språks utveckling över tid enl. PYPL}
-\includegraphics[width=0.95\columnwidth]{../img/pypl-06-20}
+\TODO\includegraphics[width=0.95\columnwidth]{../img/pypl-06-20}
 \end{SlideExtra}
 
 \fi
@@ -726,12 +726,12 @@ a >= b && (a != 1 || b != 1)
 
 \begin{Slide}{Alternativ med if-uttryck}
 \begin{itemize}
-\item Ett if-uttryck börjar med nyckelordet \code{if}, följt av ett logiskt uttryck inom parentes och två grenar.
+\item Ett if-uttryck börjar med nyckelordet \code{if}, följt av ett logiskt uttryck (villkor) inom parentes och två grenar.
 \begin{Code}
-def slumpgrönsak = if (math.random() < 0.8) "gurka" else "tomat"
+def slumpgrönsak = if math.random() < 0.8 then "gurka" else "tomat"
 \end{Code}
-\item Den ena grenen evalueras om uttrycket är \code{true}
-\item Den andra \code{else}-grenen evalueras om uttrycket är \code{false}
+\item Uttrycket efter \code{then} blir resultatet om villkoret är \code{true}
+\item Uttrycket efter \code{else} blir resultatet om villkoret är \code{false}
 \begin{REPLnonum}
 scala> slumpgrönsak
 res13: String = gurka
@@ -748,6 +748,15 @@ res15: String = tomat
 
 \Subsection{Satser}
 
+\begin{Slide}{Uttryck eller sats?}
+Skillnad mellan uttryck och sats:
+\begin{itemize}
+\item Ett uttryck ger ett \Emph{resultat}. Exempel: \code{1+1}
+\item En sats har en \Alert{effekt}. \\Exempel: utskrift, spara på fil, tilldela variabel nytt värde.
+\end{itemize}
+Skriv ett uttryck när du är intresserad av \Emph{värdet} som beräknas.\\
+Skriv en sats när du vill att något ska \Alert{göras}.\\~\\
+\end{Slide}
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \begin{Slide}{Variabeldeklaration och tilldelningssats}\SlideFontTiny
@@ -928,7 +937,7 @@ Används för att kontrollera (förändra) sekvensen och skapa \Emph{alternativa
 \begin{itemize}
 \item if-sats:
 \begin{Code}
-if (math.random() < 0.8) println("gurka") else println("tomat")
+if math.random() < 0.8 then println("gurka") else println("tomat")
 \end{Code}
 \end{itemize}
 
@@ -936,10 +945,34 @@ Olika sorters \Emph{loopar} för att repetera satser. Antalet repetitioner ges v
 \begin{itemize}
 \item \code{while}-sats: bra när man \Alert{inte vet hur många gånger} det kan bli.
 \begin{Code}
-while (math.random() < 0.8) println("gurka")
+while math.random() < 0.8 do println("gurka")
 \end{Code}
 
 \item \code{for}-sats: bra när man \Alert{vill ange antalet repetitioner}:
+\begin{Code}
+for i <- 1 to 10 do println(s"gurka nr $i")
+\end{Code}
+
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Scala-2-syntax för kontrollstrukturer fungerar i Scala 3}\SlideFontSmall
+I Scala 2 användes en ''gammal'' syntax för kontrollstrukturer som liknar mer C/C++/Java. Den är tillåten i Scala 3, men nya syntaxen är lättare att föredra.
+\begin{itemize}
+\item Scala-2-syntax för alternativ: parenteser men inget \code{then}
+\begin{Code}
+if (math.random() < 0.8) println("gurka") else println("tomat")
+\end{Code}
+\end{itemize}
+
+Scala-2-syntax för repetition:
+\begin{itemize}
+\item \code{while}-sats: parenteser men inget \code{do}
+\begin{Code}
+while (math.random() < 0.8) println("gurka")
+\end{Code}
+
+\item \code{for}-sats: parenteser men inget \code{do}
 \begin{Code}
 for (i <- 1 to 10) println(s"gurka nr $i")
 \end{Code}
@@ -947,24 +980,27 @@ for (i <- 1 to 10) println(s"gurka nr $i")
 \end{itemize}
 \end{Slide}
 
-%%%% GE mer detaljer eller överlåta till övning???
-%\begin{Slide}{if-sats}
-%\begin{itemize}
-%\item
-%\end{itemize}
-%\end{Slide}
-%
-%\begin{Slide}{while-sats}
-%\begin{itemize}
-%\item
-%\end{itemize}
-%\end{Slide}
-%
-%\begin{Slide}{for-sats}
-%\begin{itemize}
-%\item
-%\end{itemize}
-%\end{Slide}
+\begin{Slide}{Repetera många satser}
+Om du vill göra flera saker i sekvens inne i en repetition så kan du skriva flera satser inom \Emph{klammer-parenteser}:
+\begin{Code}
+while math.random() < 0.8 do {
+  println("gurka")
+  println("tomat)
+}
+println("Repetitionen är klar!")
+\end{Code}
+\pause
+Du kan efter vissa nyckelord (t.ex. \code{do}, \code{then}, \code{else}) välja bort klammer-parenteser \Eng{optional braces}. 
+\begin{Code}
+while math.random() < 0.8 do
+  println("gurka")
+  println("tomat)
+
+println("Repetitionen är klar!")
+\end{Code}
+Då är det \Emph{intenteringen} som avgör vilka satser som ingår. \\Detta fungerar i Scala 3 (men inte i Scala 2).
+\end{Slide}
+
 
 \begin{Slide}{Procedurer}\SlideFontSmall
 \begin{itemize}
