@@ -220,9 +220,8 @@ Vi ska i senare uppgifter undersöka hur typerna \code{Option} och \code{Some} f
 \Task  \what~  Skapa nedan kod i en editor, och klistra in i REPL med kommandot \code{:pa}. Notera nyckelordet \code{sealed} som används för att försegla en typ. En \textbf{förseglad typ} måste ha alla sina subtyper i en och samma kodfil.
 \begin{Code}
 sealed trait Färg
-object Färg {
+object Färg:
   val values = Vector(Spader, Hjärter, Ruter, Klöver)
-}
 case object Spader  extends Färg
 case object Hjärter extends Färg
 case object Ruter   extends Färg
@@ -251,12 +250,11 @@ scala> xs.map(parafärg)
 
 \SubtaskSolved
 \begin{Code}
-def parafärg(f: Färg): Färg = f match {
+def parafärg(f: Färg): Färg = f match:
   case Spader  => Klöver
   case Hjärter => Ruter
   case Ruter   => Hjärter
   case Klöver  => Spader
-}
 \end{Code}
 
 \SubtaskSolved
@@ -291,15 +289,13 @@ En förseglad supertyp innebär att programmeraren redan vid kompileringstid få
 \Subtask \emph{En case-gren som fångar allt}. En case-gren med en identifierare med liten begynnelsebokstav som saknar gard kommer att matcha allt. Prova nedan i REPL, men försök lista ut i förväg vad som kommer att hända. Vad händer?
 \begin{REPL}
 scala> val x = "urka"
-scala> x match {
+scala> x match
          case str if str.startsWith("g") => println("kanske gurka")
          case vadsomhelst => println("ej gurka: " + vadsomhelst)
-       }
 scala> val g = "gurka"
-scala> g match {
+scala> g match
          case str if str.startsWith("g") => println("kanske gurka")
          case vadsomhelst => println("ej gurka: " + vadsomhelst)
-       }
 \end{REPL}
 
 \Subtask \emph{Fallgrop med små begynnelsbokstäver.} Innan du provar nedan i REPL, försök gissa vad som kommer att hända. Vad händer? Hur lyder varningarna och vad innebär de?
@@ -307,11 +303,10 @@ scala> g match {
 scala> val any: Any = "varken tomat eller gurka"
 scala> case object Gurka
 scala> case object tomat
-scala> any match {
+scala> any match
          case Gurka => println("gurka")
          case tomat => println("tomat")
          case _ => println("allt annat")
-       }
 \end{REPL}
 
 \Subtask \emph{Använd backticks för att tvinga fram match på konstant värde.} Det finns en utväg om man inte vill att kompilatorn ska skapa en ny lokal variabel: använd specialtecknet \emph{backtick}, som skrivs \`{} och kräver speciella tangentbordstryck.\footnote{Fråga någon om du inte hittar hur man gör backtick \`{} på ditt tangentbord.}  Gör om föregående uppgift men omgärda nu identifieraren \code{tomat} i tomat-case-grenen med backticks, så här: \code{  case `tomat` => ...}
@@ -359,13 +354,13 @@ case `tomat` => println("tomat")
 \Task \what ~ Kör nedan i REPL. Vad skrivs ut? Förklara vad som händer.
 \begin{REPL}
 scala> val xss = Vector(Vector("hej"),Vector("på", "dej"),Vector("4","x","2"))
-scala> xss.map( _ match {
+scala> xss.map( _ match
   case Vector() => "tom"
   case Vector(a) => a.reverse
   case Vector(_, b) => b.reverse
   case Seq(a, "x", b) => a + b
   case _ => "ANNARS DETTA"
-} ).foreach(println)
+  ).foreach(println)
 \end{REPL}
 
 
@@ -409,10 +404,9 @@ scala> kanske = Some(42)
 scala> kanske.size
 scala> kanske.isEmpty
 scala> kanske.isDefined
-scala> def ökaOmFinns(opt: Option[Int]): Option[Int] = opt match {
+scala> def ökaOmFinns(opt: Option[Int]): Option[Int] = opt match
          case Some(i) => Some(i + 1)
          case None    => None
-       }
 scala> val annanKanske = ökaOmFinns(kanske)
 scala> def öka(i: Int) = i + 1
 scala> val merKanske = kanske.map(öka)
@@ -648,10 +642,9 @@ scala> Try{"tyst"}.recover{case e: Throwable => "desarmerad bomb: " + e}
 scala> def kanskePang = if (math.random() > 0.5) "tyst" else pang
 scala> def kanskeOk = Try{kanskePang}
 scala> val xs = Vector.fill(100)(kanskeOk)
-scala> xs(13) match {
+scala> xs(13) match
          case Success(x) => ":)"
          case Failure(e) => ":( " + e
-       }
 scala> xs(13).isSuccess
 scala> xs(13).isFailure
 scala> xs.count(_.isFailure)
@@ -864,21 +857,18 @@ scala> xs.map(_.toOption).flatten.size
 \begin{Code}
 package vegopoly
 
-trait Grönsak {
+trait Grönsak:
 	def vikt: Int
 	def ärRutten: Boolean
 	def ärÄtbar: Boolean
-}
 
-case class Gurka(vikt: Int, ärRutten: Boolean) extends Grönsak {
+case class Gurka(vikt: Int, ärRutten: Boolean) extends Grönsak:
   val ärÄtbar: Boolean = (!ärRutten && vikt > 100)
-}
 
-case class Tomat(vikt: Int, ärRutten: Boolean) extends Grönsak {
+case class Tomat(vikt: Int, ärRutten: Boolean) extends Grönsak:
   val ärÄtbar: Boolean = (!ärRutten && vikt > 50)
-}
 
-object Main{
+object Main:
 	def slumpvikt: Int = (math.random()*500 + 100).toInt
 
 	def slumprutten: Boolean = math.random() > 0.8
@@ -963,13 +953,11 @@ Det visar sig förvånande komplicerat att implementera innehållslikhet med met
 
 \begin{Code}
 // fungerar fint om klassen är final och inte ärver något
-final class Gurka(val vikt: Int, val ärÄtbar: Boolean) {
-  override def equals(other: Any): Boolean = other match {
+final class Gurka(val vikt: Int, val ärÄtbar: Boolean):
+  override def equals(other: Any): Boolean = other match
     case that: Gurka => vikt == that.vikt && ärÄtbar == that.ärÄtbar
     case _ => false
-  }
   override def hashCode: Int = (vikt, ärÄtbar).## //förklaras sen
-}
 \end{Code}
 \Subtask Vad händer nu nedan, där \code{Gurka} nu har en överskuggad \code{equals} med innehållslikhet?
 \begin{REPL}
@@ -1205,16 +1193,14 @@ res2: polynomial.Poly = -5x + y^4 + 3z^2
 
 \Task \label{task:equals:Complex} \what~   Nedan visas delar av klassen \code{Complex} som representerar ett komplext tal med realdel och imaginärdel. I stället för att, som man ofta gör i Scala, använda en case-klass och en \code{equals}-metod som automatiskt ger innehållslikhet, ska du träna på att implementera en egen \code{equals}.
 \begin{Code}
-class Complex(val re: Double, val im: Double) {
+class Complex(val re: Double, val im: Double):
   def abs: Double = math.hypot(re, im)
   override def toString = s"Complex($re, $im)"
   def canEqual(other: Any): Boolean = ???
   override def hashCode: Int  = ???
   override def equals(other: Any): Boolean = ???
-}
-case object Complex {
+case object Complex:
   def apply(re: Double, im: Double): Complex = new Complex(re, im)
-}
 \end{Code}
 Följ detta \textbf{recept}\footnote{Detta recept bygger på \url{http://www.artima.com/pins1ed/object-equality.html}} i 8 steg för att överskugga \code{equals} med innehållslikhet som fungerar även för klasser som inte är \code{final}:
 
@@ -1227,7 +1213,8 @@ Följ detta \textbf{recept}\footnote{Detta recept bygger på \url{http://www.art
 \item Inför metoden \code{equals} och var noga med att parametern har typen \code{Any}: \\ \code{override def equals(other: Any): Boolean}
 
 \item Implementera metoden \code{equals} med ett match-uttryck som börjar så här: \\
-\code|other match { ... } |
+%\code|other match { ... } |
+\code|other match |
 
 \item Match-uttrycket ska ha två grenar. Den första grenen ska ha ett typat mönster för den klass som ska jämföras: \\ \code{  case that: Complex =>}
 
@@ -1265,15 +1252,12 @@ Om du överskuggar en \textit{annan} equals än den standard-equals som finns i 
 
 \Task  \what~ Bygg vidare på exemplet nedan och överskugga equals vid arv, genom att följa receptet i uppgift \ref{task:equals:Complex}.
 \begin{Code}
-trait Number {
+trait Number:
   override def equals(other: Any): Boolean = ???
-}
-class Complex(re: Double, im: Double) extends Number {
+class Complex(re: Double, im: Double) extends Number:
   override def equals(other: Any): Boolean = ???
-}
-class Rational(numerator: Int, denominator: Int) extends Number {
+class Rational(numerator: Int, denominator: Int) extends Number:
   override def equals(other: Any): Boolean = ???
-}
 \end{Code}
 
 
