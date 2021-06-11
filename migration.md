@@ -30,7 +30,7 @@ Exercises are migrated manually (i.e. *not* using the Scala 3 compilers `-rewrit
 Exercises are located here [compendium/modules] prefixed with week and suffixed with `-exercise.tex`
 
 1. Study the syntactic differences between Scala 2 and Scala 3 here:
-https://docs.scala-lang.org/scala3/guides/migration/incompat-syntactic.html
+https://docs.scala-lang.org/scala3/guides/migration/incompat-syntactic.html   and the new coding style here: https://docs.scala-lang.org/scala3/guides/migration/tooling-syntax-rewriting.html
 
 2. Fork this repo and clone it locally, etc.
 
