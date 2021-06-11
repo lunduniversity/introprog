@@ -34,21 +34,23 @@ https://docs.scala-lang.org/scala3/guides/migration/incompat-syntactic.html   an
 
 2. Fork this repo and clone it locally, etc.
 
-2. Study how to make a contribution to this repo in Chapter 0 here on page 16 [http://cs.lth.se/pgk/compendium] 
+3. Make sure you can `sbt build` with a working local Latex installation (e.g. TexLive, on linux/WSL `sudo apt install texlive-full`) so that you get `pdflatex` on your path
 
-3. Locate the issue corresponding to the exercise you are migrating [here](https://github.com/lunduniversity/introprog/issues) called something like `Migrate exercise w01 expressions`
+4. Study how to make a contribution to this repo in Chapter 0 here on page 16 [http://cs.lth.se/pgk/compendium] 
 
-3. Focus on fixing these most common cases first:
+5. Locate the issue corresponding to the exercise you are migrating [here](https://github.com/lunduniversity/introprog/issues) called something like `Migrate exercise w01 expressions`
+
+6. Focus on fixing these most common cases first:
    1. Fix things that does not work anymore, e.g. calling `def f() = 42` with just `f` does not work anymore - you need to match the parenthesis at definition site with the call site.
    2. Use new control syntax: `if then`, `for do`, `for yield`, `while do`
    3. Make braces optional where sensible. One-liners can for space reasons or convenience still use braces.
    4. Avoid unnecessary braces in lambdas; this is legal in Scala 3: `table.map((k,v) => multiple line-breaks here)`
 
-4. Migrate both the task and the facit.
+7. Migrate both the task and the facit.
 
-5. Remember to check everything in the Scala 3 REPL before you commit.
+8. Remember to check everything in the Scala 3 REPL before you commit.
 
-6. When you make a Pull Request on a fix to an exercises, then mention `fix #999` in the title of the PR message where `#999` is replaced with the number of the corresponding migration issue. Then the issue will be automatically closed when the PR is merged.
+9. When you make a Pull Request on a fix to an exercises, then mention `fix #999` in the title of the PR message where `#999` is replaced with the number of the corresponding migration issue. Then the issue will be automatically closed when the PR is merged.
 
 ## How to see current versions in all subprojects?
 
