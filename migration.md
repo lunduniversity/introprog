@@ -15,7 +15,7 @@ See issues and progress here: https://github.com/lunduniversity/introprog/issues
 
 ## Installing Scala 3
 
-There are unfortunately no `.msi` files for Windows for Scala 3 on the [download page](https://www.scala-lang.org/download/scala3.html). Instead you can do one or more of the following:
+There are unfortunately there are neither `.msi` files for Windows nor `.deb` package for Linux, for Scala 3 on the [download page](https://www.scala-lang.org/download/scala3.html). Instead you can do one or more of the following:
 1. Download the Scala 3 [zip](https://github.com/lampepfl/dotty/releases/download/3.0.0/scala3-3.0.0.zip) on [github](https://github.com/lampepfl/dotty/releases) and make the binaries [available on your path](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/) so you can write `scala` and `scalac` in terminal.
 
 2. Use Coursier according to [here](https://get-coursier.io/docs/cli-installation) and then:
