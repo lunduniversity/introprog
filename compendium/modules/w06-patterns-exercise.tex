@@ -168,6 +168,7 @@ scala> val g = Gurka(100, true)
 scala> g match { case Gurka(v,rutten) => println("G" + v + rutten) }
 \end{REPL}
 
+%\TODO Tab två gånger fungerar inte i scala3-repl
 \Subtask Skriv sedan nedan i REPL och tryck TAB två gånger efter punkten. Vad har \code{unapply}-metoden för resultattyp?
 \begin{REPL}
 scala> Gurka.unapply   // Tryck TAB två gånger
@@ -220,7 +221,15 @@ Vi ska i senare uppgifter undersöka hur typerna \code{Option} och \code{Some} f
 
 \QUESTBEGIN
 
-\Task  \label{task:match-sealedtrait-caseobject} \what~  Skapa nedan kod i en editor och klistra in i REPL. Notera nyckelordet \code{sealed} som används för att försegla en typ. En \textbf{förseglad typ} måste ha alla sina subtyper i en och samma kodfil.
+\Task	\what~	Skriv nedan kodrader i en REPL en för en. Notera nyckelordet \code{sealed} som används för att försegla en typ. En \textbf{förseglad typ} måste ha alla sina subtyper i en och samma kodfil.
+\begin{REPL}
+scala> sealed trait Färg
+scala> case object Spader extends Färg
+\end{REPL}
+\Subtask Hur lyder felmeddelandet och varför sker det? Är det ett kompileringsfel eller ett körtidsfel?
+
+\Subtask  %\label{task:match-sealedtrait-caseobject}
+\what~  Skapa nu nedan kod i en editor och klistra in i REPL.
 \begin{Code}
 object Kortlek:
   sealed trait Färg
@@ -232,7 +241,7 @@ object Kortlek:
   case object Klöver extends Färg
 \end{Code}
 
-\Subtask \label{subtask:match-sealedtrait} Skapa en funktion \code{def parafärg(f: Färg): Färg} i en editor, som med hjälp av ett match-uttryck returnerar parallellfärgen till en färg. Parallellfärgen till \code{Hjärter} är \code{Ruter} och vice versa, medan parallellfärgen till \code{Klöver} är \code{Spader} och vice versa. Klistra in funktionen i REPL. Passa även på att skriva en \textbf{import-sats} för det yttre objektet Kortlek, så slipper medlemmarna av objektet kan nås enkelt.
+\Subtask \label{subtask:match-sealedtrait} Skapa en funktion \code{def parafärg(f: Färg): Färg} i en editor, som med hjälp av ett match-uttryck returnerar parallellfärgen till en färg. Parallellfärgen till \code{Hjärter} är \code{Ruter} och vice versa, medan parallellfärgen till \code{Klöver} är \code{Spader} och vice versa. Klistra in funktionen i REPL. Passa även på att skriva en \textbf{import-sats} för det yttre objektet \textbf{Kortlek}, så medlemmarna av objektet kan nås enkelt.
 \begin{REPL}
 scala> parafärg(Spader)
 scala> val xs = Vector.fill(5)(Färg.values((math.random() * 4).toInt))
@@ -251,6 +260,15 @@ scala> xs.map(parafärg)
 
 \TaskSolved \what
 
+\SubtaskSolved
+\begin{REPL}
+%Illegal inheritance from sealed trait Färg
+Cannot extend sealed trait Färg in a different source file
+\end{REPL}
+Felmeddelandet fås av att REPL:en behandlar varje inmatning individuellt och tillåter därför inte att subtypen \textbf{Spader} "förlänger" \Eng{extends} supertypen \textbf{Färg} eftersom denna var förseglad \Eng{sealed}. Mer om detta senare i kursen...
+
+\SubtaskSolved
+-
 
 \SubtaskSolved
 \begin{Code}
@@ -283,40 +301,40 @@ En förseglad supertyp innebär att programmeraren redan vid kompileringstid få
 \QUESTEND
 
 
-\WHAT{Mönstermatcha med nyttan av \code{enum}.}
+%\WHAT{Mönstermatcha med nyttan av \code{enum}.}
 
-\QUESTBEGIN
+%\QUESTBEGIN
 
-\Task	\what~ Vi ska nu undersöka och jämföra skillnad mellan nyckelorden \code{enum} och \code{sealed}. Skriv nedan kod i en REPL.
-\begin{Code}
-enum Färg:
-  case Spader, Hjärter, Ruter, Klöver
-\end{Code}
+%\Task	\what~ Vi ska nu undersöka och jämföra skillnad mellan nyckelorden \code{enum} och \code{sealed}. Skriv nedan kod i en REPL.
+%\begin{Code}
+%enum Färg:
+%  case Spader, Hjärter, Ruter, Klöver
+%\end{Code}
 
-\Subtask Skapa igen i en editor en funktion \code{def paraFärg(f: Färg): Färg}, nästintill likadan som den som vi skapade i deluppgift \ref{task:match-sealedtrait-caseobject} \ref{subtask:match-sealedtrait}. Funktionen ska återigen utnyttja match-uttryck för att returnera paralellfärgen till argumentet som ges. Klistra in funktionen i REPL.
-\begin{REPL}
-scala> parafärg(Färg.Ruter)
-scala> val xs = Vector.fill(5)(Färg.values((math.random() * 4).toInt))
-scala> xs.map(parafärg)
-\end{REPL}
-
-
-\SOLUTION
+%\Subtask Skapa igen i en editor en funktion \code{def paraFärg(f: Färg): Färg}, nästintill likadan som den som vi skapade i deluppgift \ref{task:match-sealedtrait-caseobject} %\ref{subtask:match-sealedtrait}. Funktionen ska återigen utnyttja match-uttryck för att returnera paralellfärgen till argumentet som ges. Klistra in funktionen i REPL.
+%\begin{REPL}
+%scala> parafärg(Färg.Ruter)
+%scala> val xs = Vector.fill(5)(Färg.values((math.random() * 4).toInt))
+%scala> xs.map(parafärg)
+%\end{REPL}
 
 
-\TaskSolved \what
-
-\SubtaskSolved
-\begin{Code}
-def parafärg(f: Färg): Färg = f match
-  case Färg.Spader  => Färg.Klöver
-  case Färg.Hjärter => Färg.Ruter
-  case Färg.Ruter   => Färg.Hjärter
-  case Färg.Klöver  => Färg.Spader
-\end{Code}
+%\SOLUTION
 
 
-\QUESTEND
+%\TaskSolved \what
+
+%\SubtaskSolved
+%\begin{Code}
+%def parafärg(f: Färg): Färg = f match
+%  case Färg.Spader  => Färg.Klöver
+%  case Färg.Hjärter => Färg.Ruter
+%  case Färg.Ruter   => Färg.Hjärter
+%  case Färg.Klöver  => Färg.Spader
+%\end{Code}
+
+
+%\QUESTEND
 
 
 \WHAT{Betydelsen av små och stora begynnelsebokstäver vid matchning.}
@@ -969,6 +987,7 @@ def slumpgrönsak: Grönsak = {    // välj t.ex. denna fördelning:
 
 \Task  \what~   Om man överskuggar den befintliga metoden \code{equals} så kommer metoden \code{==} att fungera annorlunda. Man kan då själv åstadkomma innehållslikhet i stället för referenslikhet. Vi börjar att studera den befintliga equals med referenslikhet.
 
+%\TODO tab två gånger fungerar inte i scala3-repl
 \Subtask \label{subtask:refequals} Vad händer nedan? Om du trycker TAB \emph{två} gånger efter ett metodnamn får du se metodens signatur. Vilken signatur har metoden \code{equals}?
 \begin{REPL}
 scala> class Gurka(val vikt: Int, val ärÄtbar: Boolean)
