@@ -196,7 +196,7 @@ Vi ska i senare uppgifter undersöka hur typerna \code{Option} och \code{Some} f
 \SubtaskSolved  G100true. Vid byte av plats: Gtrue100.\\
 \code{match} testar om kompanjonsobjektet \code{Gurka} är av typen \code{Gurka} med två parametervärden. De angivna parametrarna tilldelas namn, \code{vikt} får namnet \code{v} och \code{ärRutten} namnet \code{rutten} och skrivs sedan ut. Byts namnen dessa ges skrivs de ut i den omvända ordningen.
 
-\TODO % TAB+TAB fungerar inte i scala3-repl
+\TODO % TAB+TAB fungerar inte i scala3-repl så svaret till uppgiften är felaktig
 \SubtaskSolved  \code{Option[(Int, Boolean)]}
 
 \SubtaskSolved	\code{Gurka(100, true)}
@@ -582,7 +582,6 @@ Slutgiltligen är \code{Option} mer typsäkert än \code{null}. När du returner
 \QUESTBEGIN
 
 \Task  \what~  Om man vill signalera att ett fel eller en onormal situtation uppstått så kan man \textbf{kasta} \Eng{throw} ett \textbf{undantag} \Eng{exception}. Då avbryts programmet direkt med ett felmeddelande, om man inte väljer att \textbf{fånga} \Eng{catch} undantaget.
-\TODO %TAB+TAB funkar inte i scala3-repl
 \Subtask Vad händer nedan?
 \begin{REPL}
 scala> throw new Exception("PANG!")
@@ -696,7 +695,7 @@ scala> import scala.util.{Try, Success, Failure}
 scala> Try{pang}
 scala> Try{pang}.recover{case e: Throwable =>   "desarmerad bomb: " + e}
 scala> Try{"tyst"}.recover{case e: Throwable => "desarmerad bomb: " + e}
-scala> def kanskePang = if (math.random() > 0.5) "tyst" else pang
+scala> def kanskePang = if math.random() > 0.5 then "tyst" else pang
 scala> def kanskeOk = Try{kanskePang}
 scala> val xs = Vector.fill(100)(kanskeOk)
 scala> xs(13) match
@@ -935,14 +934,13 @@ object Main:
 	def slumptomat: Tomat = Tomat(slumpvikt, slumprutten)
 
 	def slumpgrönsak: Grönsak =
-    if (math.random() > 0.2) slumpgurka else slumptomat
+    if math.random() > 0.2 then slumpgurka else slumptomat
 
-	def main(args: Array[String]): Unit = {
+	def main(args: Array[String]): Unit = 
 		val skörd = Vector.fill(args(0).toInt)(slumpgrönsak)
 		val ätvärda = skörd.filter(_.ärÄtbar)
 		println("Antal skördade grönsaker: " + skörd.size)
 		println("Antal ätvärda grönsaker: " + ätvärda.size)
-	}
 \end{Code}
 
 \SubtaskSolved
@@ -961,12 +959,12 @@ def slumpbroccoli: Broccoli = Broccoli(slumpvikt, slumprutten)
 Slutligen ändras \code{def slumpgrönsak} till följande:
 
 \begin{Code}
-def slumpgrönsak: Grönsak = {    // välj t.ex. denna fördelning:
+def slumpgrönsak: Grönsak =     // välj t.ex. denna fördelning:
   val rnd = math.random()
   if rnd > 0.5 then slumpgurka      // 50% sannolikhet för gurka
   else if rnd > 0.2 then slumptomat // 30% sannolikhet för tomat
   else slumpbroccoli             // 20% sannolikhet för broccoli
-}
+
 \end{Code}
 
 \SubtaskSolved  Fördelarna med \code{match}-versionen, och mönstermatchning i sig, är att det är väldigt lätt att göra ändringar på hur matchningen sker. Detta innebär att det skulle vara väldigt lätt att ändra definitionen för ätbarheten. Skulle dock dessa inte ändras ofta utan snarare grönsaksutbudet så kan det polyformistiska alternativet vara att föredra. Detta eftersom det skulle implementeras och ändras lättare än mönstermatchningen vid byte av grönsaker.
