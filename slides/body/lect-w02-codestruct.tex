@@ -62,30 +62,35 @@ Mer om träd, grafer i \href{http://cs.lth.se/edaa40}{Diskreta strukturer.}
 \item \texttt{scala.collection.immutable.\Emph{Set}}, \texttt{scala.collection.\Alert{mutable}.\Emph{Set}}, mängd med unika element; ej i sekvens men snabb innehållstest.
 \item \texttt{scala.collection.immutable.\Emph{Map}}, \texttt{scala.collection.\Alert{mutable}.\Emph{Map}}, mängd med par av nyckel \& tillhörande värde, snabb access via nyckel.
 \item \texttt{scala.collection.\Alert{mutable}.\Emph{ArrayBuffer}}, förändringsbar sekvens kan ändra storlek.
-\item \texttt{scala.\Emph{Array}}, förändringsbar sekvens som \Alert{inte} kan ändra storlek. Alla element är lagrade efter varandra i minnet: snabbast access av alla samlingar.
+\item \texttt{scala.\Emph{Array}}, förändringsbar sekvens som \Alert{inte} kan ändra storlek. Alla element är lagrade efter varandra i minnet: snabbast access av alla samlingar, men har speciella begränsningar.
 \end{itemize}
 \end{itemize}
 \end{Slide}
 
 
-\begin{Slide}{Olika sätt att skapa datastrukturer}
-\begin{itemize}
+\begin{Slide}{Olika strukturer för att hantera data}
+\begin{itemize}\SlideFontSmall
 \item \Emph{Tupel} \Eng{tuple}
-  \begin{itemize}
-  \item samla $n$ st datavärden i element \Emph{\code{_1}}, \Emph{\code{_2}}, ...  \code{_}$n$
-  \item elementen kan vara av \Alert{olika} typ
-  \end{itemize}
+\begin{itemize}\SlideFontTiny
+\item samla flera datavärden t.ex. \code{(1, "hej", true)} i element \Emph{\code{_1}}, \Emph{\code{_2}}, \Emph{\code{_3}} 
+\item elementen kan vara av \Alert{olika} typ
+\end{itemize}
+\item \Emph{Enumeration} (även kallad \emph{uppräkning}) \Eng{enumeration}
+\begin{itemize}\SlideFontTiny
+\item Namnge uppräknade värden t.ex. \code+enum Color { case Red, Black }+
+\item Värdena har ordningsnummer och är alla av \Alert{samma} typ (här \code{Color})
+\end{itemize}
 \item \Emph{Klass} \Eng{class}
-  \begin{itemize}
-  \item samlar data i \Emph{attribut} med (väl valda!) namn
-  \item attributen kan vara av \Alert{olika} typ
-  \item definierar även \Emph{metoder} som använder attributen \\ (kallas även \Emph{operationer} på data)
-  \end{itemize}
+\begin{itemize}\SlideFontTiny
+\item samlar data i \Emph{attribut} med (väl valda!) namn
+\item attributen kan vara av \Alert{olika} typ
+\item definierar även \Emph{metoder} som använder attributen \\ (kallas även \Emph{operationer} på data)
+\end{itemize}
 
 \item \Emph{Färdig samling}
   \begin{itemize}
   \item speciella klasser som samlar data i element av \Alert{samma} typ
-  \item exempel: \code{scala.collection.immutable.Vector}
+  \item exempel: \code{scala.collection.immutable.}\Emph{\code{Vector}}
   \item har ofta \emph{många} färdiga \Emph{bra-att-ha-metoder}, \\ se snabbreferensen \url{http://cs.lth.se/pgk/quickref}
   \end{itemize}
 
@@ -186,13 +191,13 @@ Notera typen \code{Any} som betyder ''\Emph{vilken typ som helst}''. \footnote{(
 \begin{itemize}
 \item En \Emph{kontrollstruktur} påverkar i vilken ordning (sekvens) satser exekveras och uttryck evalueras.
 \begin{itemize}
-\item[] Exempel på inbyggda kontrollstrukturer:
-\\\vspace{0.5em}\code{for}-sats, \code{while}-sats, \code{for}-\code{yield}-uttryck
+\item[] Exempel på \Emph{inbyggda} kontrollstrukturer:
+\\\vspace{0.5em}\code{for}-\code{do}-sats \\ \code{while}-\code{do}-sats \\ \code{for}-\code{yield}-uttryck
 \end{itemize}
 
 \item[]
 
-\item I Scala kan man definiera \Emph{egna} kontrollstrukturer.
+\item I Scala kan man definiera \Alert{egna} kontrollstrukturer.
 \begin{itemize}
 \item[] Exempel: \code{upprepa} som du använt i Kojo
 \\\vspace{0.5em}\code|upprepa(4){fram; höger}|
@@ -231,11 +236,11 @@ hej
 \fi
 
 \begin{Slide}{Loopa genom elementen i en vektor}
-En \code{for}-\Emph{sats} som skriver ut alla element i en vektor:
+En \code{for}-\code{do}-\Emph{sats} som skriver ut alla element i en vektor:
 \begin{REPL}
 scala> val grönsaker = Vector("gurka","tomat","paprika","selleri")
 
-scala> for (g <- grönsaker) println(g)
+scala> for g <- grönsaker do println(g)
 gurka
 tomat
 paprika
@@ -250,7 +255,7 @@ Den stiliserade bakåtpilen \code{<-} betyder:\\Plocka ut varje element ur samli
 Ett \code{for}-\code{yield}-\Emph{uttryck} som \Emph{skapar en \Alert{ny} samling}.
 
 \begin{Code}[basicstyle=\ttfamily\fontsize{12}{14}\selectfont]
-for (g <- grönsaker) yield "god " + g
+for g <- grönsaker yield "god " + g
 \end{Code}
 
 \begin{REPL}
@@ -297,7 +302,7 @@ java.lang.OutOfMemoryError: GC overhead limit exceeded
 \begin{Slide}{Loopa med Range}
 \code{Range} används i for-loopar för att hålla reda på antalet rundor.
 \begin{REPLnonum}
-scala> for (i <- Range(0, 6)) print(" gurka " + i)
+scala> for i <- Range(0, 6) do print(" gurka " + i)
  gurka 0 gurka 1 gurka 2 gurka 3 gurka 4 gurka 5
 \end{REPLnonum}
 Du kan skapa en \code{Range} med \code{until} efter ett heltal:
@@ -306,7 +311,7 @@ scala> 1 until 7
 res1: scala.collection.immutable.Range =
   Range(1, 2, 3, 4, 5, 6)
 
-scala> for (i <- 1 until 7) print(" tomat " + i)
+scala> for i <- 1 until 7 do print(" tomat " + i)
  tomat 1 tomat 2 tomat 3 tomat 4 tomat 5 tomat 6
 
 \end{REPLnonum}
@@ -320,7 +325,7 @@ scala> 1 to 6
 res2: scala.collection.immutable.Range.Inclusive =
   Range(1, 2, 3, 4, 5, 6)
 
-scala> for (i <- 1 to 6) print(" gurka " + i)
+scala> for i <- 1 to 6 do print(" gurka " + i)
  gurka 1 gurka 2 gurka 3 gurka 4 gurka 5 gurka 6
 
 \end{REPLnonum}
@@ -419,6 +424,7 @@ Några viktiga skillnader:
 
 \ifkompendium\else
 \begin{SlideExtra}{Dags för kompilering i terminalen}
+  \TODO \\
   Nu ska du en skriva kod i en editor och kompilera i terminalen
   \begin{itemize}
     \item Installera rekommenderade editorn \Emph{VS Code} 
@@ -434,31 +440,40 @@ Några viktiga skillnader:
 \end{SlideExtra}
 \fi
 
-\begin{Slide}{Ett minimalt fristående program i Scala och Java}
-Nedan Scala-kod skrivs i en editor, spara med valfritt filnamn:
+\begin{Slide}{Ett minimalt fristående program i Scala}\SlideFontSmall
+Spara nedan Scala-kod i filen \code{hej.scala}:
 \begin{Code}
-// this is Scala
-
-object Hello {
-  def main(args: Array[String]): Unit = {
-    println("Hejsan scala-appen!")
-  }
-}
+@main def run = println("Hej Scala!")
 \end{Code}
 
-\pause
-\vspace{1em}
-Nedan Java-kod skrivs i en editor, filen \Alert{måste} heta \texttt{Hi.java}
+Spara i filen \code{hej.scala}, kompilera och kör i terminalen:
+\begin{REPL}
+> cat hej.scala
+@main def run = println("Hej Scala!")
 
-\begin{Code}[language=Java]
-// this is Java
+> scalac hej.scala
 
-public class Hi {
-    public static void main(String[] args) {
-        System.out.println("Hejsan Java-appen!");
-    }
-}
-\end{Code}
+> ls
+'hej$package.class'  'hej$package$.class'  'hej$package.tasty'   
+hej.scala   run.class   run.tasty
+
+> scala run 
+Hej Scala! 
+\end{REPL}
+
+% \pause
+% \vspace{1em}
+% Nedan Java-kod skrivs i en editor, filen \Alert{måste} heta \texttt{Hi.java}
+
+% \begin{Code}[language=Java]
+% // this is Java
+
+% public class Hi {
+%     public static void main(String[] args) {
+%         System.out.println("Hejsan Java-appen!");
+%     }
+% }
+% \end{Code}
 
 \end{Slide}
 
@@ -475,7 +490,7 @@ res0: Int = 4
 scala> var i = 0
 i: Int = 0
 
-scala> while (i < xs.size) { println(xs(i)); i = i + 1 }
+scala> while i < xs.size do { println(xs(i)); i = i + 1 }
 Hej
 på
 dej
@@ -485,20 +500,17 @@ dej
 
 
 \begin{Slide}{Loopa genom argumenten i ett Scala-huvudprogram}
-Skriv denna kod och spara i filen \texttt{helloargs.scala}
+Skriv och spara nedan kod i filen \texttt{helloargs.scala}
 \begin{REPLnonum}
 > code helloargs.scala
 \end{REPLnonum}
 \begin{Code}
-object HelloScalaArgs {
-  def main(args: Array[String]): Unit = {
+object HelloScalaArgs:
+  def main(args: Array[String]): Unit = 
     var i = 0
-    while (i < args.size) {
+    while i < args.size do:
       println(args(i))
       i = i + 1
-    }
-  }
-}
 \end{Code}
 Kompilera och kör:
 \begin{REPL}
@@ -511,38 +523,37 @@ tomat
 \end{Slide}
 
 
-\begin{Slide}{Loopa genom argumenten i ett Java-huvudprogram}
-\begin{REPLnonum}
-> code HelloJavaArgs.java
-\end{REPLnonum}
-\begin{Code}[language=Java]
-// this is Java
+% \begin{Slide}{Loopa genom argumenten i ett Java-huvudprogram}
+% \begin{REPLnonum}
+% > code HelloJavaArgs.java
+% \end{REPLnonum}
+% \begin{Code}[language=Java]
+% // this is Java
 
-public class HelloJavaArgs {
-    public static void main(String[] args) {
-    int i = 0;
-    while (i < args.length) {
-      System.out.println(args[i]);
-      i = i + 1;
-    }
-  }
-}
-\end{Code}
-Kompilera och kör:
-\begin{REPL}
-> javac HelloJavaArgs.java
-> java HelloJavaArgs hej gurka tomat
-hej
-gurka
-tomat
-\end{REPL}
-
-\end{Slide}
+% public class HelloJavaArgs {
+%     public static void main(String[] args) {
+%     int i = 0;
+%     while (i < args.length) {
+%       System.out.println(args[i]);
+%       i = i + 1;
+%     }
+%   }
+% }
+% \end{Code}
+% Kompilera och kör:
+% \begin{REPL}
+% > javac HelloJavaArgs.java
+% > java HelloJavaArgs hej gurka tomat
+% hej
+% gurka
+% tomat
+% \end{REPL}
+% \end{Slide}
 
 
 \begin{Slide}{För kännedom (överkurs): Scala-\textbf{skript}}
 \begin{itemize}
-\item Scala-kod kan köras som ett \Emph{skript}.\footnote{\SlideFontTiny Du får prova detta på övningen. Vi kommer mest att köra kompilerat i kursen, då Scala-skript saknar mekanism för inkludering av andra skript. Men det finns ett öppenkällkodsprojekt som löser det: \url{http://www.lihaoyi.com/Ammonite/}
+\item Scala-kod kan köras som ett \Emph{skript}.\footnote{\SlideFontTiny Du provar detta på övningen. Vi kommer mest att köra kompilerat i kursen, då Scala-skript saknar mekanism för inkludering av andra skript. Men det finns ett öppenkällkodsprojekt som löser det: \url{http://www.lihaoyi.com/Ammonite/}
 }
 \item Ett skript kompileras varje gång innan det körs och maskinkoden sparas inte som vid vanlig kompilering.
 \item Då behövs ingen \code{main} i ett \code{object}
@@ -552,7 +563,7 @@ tomat
 // spara nedan i filen 'myscript.scala'
 
 println("Hej alla mina argument:")
-for (arg <- args) println("Hej: " + arg)
+for arg <- args do println("Hej: " + arg)
 \end{Code}
 
 \begin{REPLnonum}
@@ -615,14 +626,12 @@ En \href{https://sv.wikipedia.org/wiki/Algoritm}{algoritm} är en sekvens av ins
 \begin{Code}
 import scala.io.StdIn.readLine
 
-object HighScore {
-  def main(args: Array[String]): Unit = {
-    val points = readLine("Hur mång poäng fick du?").toInt
-    val highscore = readLine("Vad var highscore före senaste spelet?").toInt
-    val msg = if (points > highscore) "GRATTIS!" else "Försök igen!"
-    println(msg)
-  }
-}
+@main 
+def run = 
+  val points = readLine("Hur många poäng fick du?").toInt
+  val highscore = readLine("Vad var highscore före senaste spelet?").toInt
+  val msg = if (points > highscore) "GRATTIS!" else "Försök igen!"
+  println(msg)
 \end{Code}
 \SlideFontSmall %(Mer om \code{import} senare.)\\
 \pause
@@ -631,34 +640,35 @@ object HighScore {
 \end{SlideExtra}
 
 
-\begin{SlideExtra}{HIGHSCORE implementerad i Java}
-\begin{Code}[language=Java]
-import java.util.Scanner;
+% \begin{SlideExtra}{HIGHSCORE implementerad i Java}
+% \begin{Code}[language=Java]
+% import java.util.Scanner;
 
-public class HighScore {
-    public static void main(String[] args){
-        Scanner scan = new Scanner(System.in);
-        System.out.println("Hur många poäng fick du?");
-        int points =  scan.nextInt();
-        System.out.println("Vad var highscore före senaste spelet?");
-        int highscore = scan.nextInt();
-        if (points > highscore) {
-            System.out.println("GRATTIS!");
-        } else {
-            System.out.println("Försök igen!");
-        }
-    }
-}
-\end{Code}
-\end{SlideExtra}
+% public class HighScore {
+%     public static void main(String[] args){
+%         Scanner scan = new Scanner(System.in);
+%         System.out.println("Hur många poäng fick du?");
+%         int points =  scan.nextInt();
+%         System.out.println("Vad var highscore före senaste spelet?");
+%         int highscore = scan.nextInt();
+%         if (points > highscore) {
+%             System.out.println("GRATTIS!");
+%         } else {
+%             System.out.println("Försök igen!");
+%         }
+%     }
+% }
+% \end{Code}
+% \end{SlideExtra}
+
 \fi
 
 \begin{Slide}{Algoritmexempel: N-FAKULTET}
 \begin{algorithm}[H]
- \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
+ \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Utdata}
 
  \Input{heltalet $n$}
- \Output{utskrift av produkten av de första $n$ positiva heltalen}
+ \Output{produkten av de första $n$ positiva heltalen}
  ~\\
  $prod \leftarrow 1$ \\
  $i \leftarrow 2$  \\
@@ -705,24 +715,27 @@ public class HighScore {
 \fi 
 
 \begin{Slide}{Mall för funktionsdefinitioner}
-\SlideFontSmall
 \code{def} funktionsnamn(parameterdeklarationer): returtyp = uttryck
 
-\pause\vspace{0.5em}\Emph{Exempel}:
+\pause\vspace{0.3em}\SlideFontSmall
+\Emph{Exempel}:
 
 \begin{Code}[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]
 def öka(i: Int): Int = i + 1
 \end{Code}
-\pause Returtypen kan härledas:
+\pause Returtypen kan härledas av kompilatorn:
 \begin{Code}[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]
 def öka(i: Int) = i + 1
 \end{Code}
-Men för att få hjälp av kompilatorn är det bra att ange returtyp!\\
-\pause Om flera parametrar använd kommatecken. Om flera satser använd\code|{}|
-\begin{Code}[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]
+Men för att få hjälp av kompilatorn är det bra att ange returtyp!
+
+\pause 
+
+Om flera parametrar använd kommatecken. Om flera satser använd indentering (och eventuell valfria klammerparenteser).
+\begin{Code}[basicstyle=\ttfamily\fontsize{8}{10}\selectfont]
 def isHighscore(points: Int, high: Int): Boolean = {
   val highscore: Boolean = points > high
-  if (highscore) println(":)") else print(":(")
+  if highscore then println(":)") else print(":(")
   highscore
 }
 \end{Code}
@@ -735,7 +748,7 @@ def isHighscore(points: Int, high: Int): Boolean = {
 def isHighscore(points: Int, high: Int): Boolean = points > high
 
 def printSmiley(isHappy: Boolean): Unit =
-  if (isHappy) println(":)") else print(":(")
+  if isHappy then println(":)") else print(":(")
 \end{Code}
 
 \pause\vspace{1em}
@@ -746,7 +759,7 @@ def printSmiley(isHappy: Boolean): Unit =
 \pause
 \begin{itemize}
   \item Denna bättre \code{isHighscore} är nu en \Emph{äkta funktion} som alltid ger samma svar för samma inparametrar och \Alert{saknar sidoeffekter}; dessa funktioner är ofta lättare att förstå.
-  \item Funktioner ger ett booleskt värde kallas för \Emph{predikat}.
+  \item Funktioner som ger ett booleskt värde kallas för \Emph{predikat}.
 \end{itemize}
 
 \end{Slide}
@@ -912,7 +925,7 @@ def kvadrat = upprepa(4){fram; höger}
 def stapel = {
   upprepa(10){kvadrat; hoppa}
   hoppa(-10*25)
-}
+} 
 
 def rutnät = upprepa(10){stapel; höger; fram; vänster}
 
@@ -930,7 +943,7 @@ rutnät
 \item Vi behöver kunna välja namn på saker i koden \textit{lokalt}, utan att det krockar med samma namn i andra delar av koden.
 \item Abstraktioner hjälper till att hantera och kapsla in komplexa delar så att de blir enklare att använda om och om igen.
 
-\item Exempel på \Emph{abstraktionsmekanismer} i Scala och Java:
+\item Exempel på \Emph{abstraktionsmekanismer} i Scala:
 \begin{itemize}
 
 \item \href{https://sv.wikipedia.org/wiki/Klass_\%28programmering\%29}{Klasser} är ''byggblock'' med kod som används för att skapa \href{https://sv.wikipedia.org/wiki/Objektorienterad_programmering\#Objekt}{objekt}, innehållande delar som hör ihop. \\ Nyckelord: \code{class} och \code{object}
@@ -989,7 +1002,7 @@ rutnät
 \draw [arrow] (output) -- (jvm);
 \end{tikzpicture}
 
-{\SlideFontTiny\vspace{1em} Katalogstrukturen för källkoden måste i Java motsvara paketstrukturen, \\men inte i Scala. Dock kräver många IDE att så görs även för Scala.}
+{\SlideFontTiny\vspace{1em} Katalogstrukturen för källkoden \Alert{måste} i många andra språk, t.ex. Java, motsvara paketstrukturen, men detta är inte nödvändigt i Scala.}
 \end{Slide}
 
 \begin{Slide}{Import}
@@ -1063,6 +1076,8 @@ Kommentarer påverkar inte hur en maskin exekverar koden, men hjälper människo
 \end{Slide}
 
 \begin{Slide}{scaladoc}
+\TODO{uppdatera till scala3doc, kanske vänta till senare och göra i sbt till snake-labben?}
+
 Programmet \texttt{scaladoc} läser källkod och skapar en webbsajt med dokumentation.
 
 \vspace{2em}
