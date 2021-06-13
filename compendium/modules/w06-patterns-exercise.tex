@@ -168,7 +168,7 @@ scala> val g = Gurka(100, true)
 scala> g match { case Gurka(v,rutten) => println("G" + v + rutten) }
 \end{REPL}
 
-%\TODO Tab två gånger fungerar inte i scala3-repl
+\TODO %Tab två gånger fungerar inte i scala3-repl
 \Subtask Skriv sedan nedan i REPL och tryck TAB två gånger efter punkten. Vad har \code{unapply}-metoden för resultattyp?
 \begin{REPL}
 scala> Gurka.unapply   // Tryck TAB två gånger
@@ -196,12 +196,10 @@ Vi ska i senare uppgifter undersöka hur typerna \code{Option} och \code{Some} f
 \SubtaskSolved  G100true. Vid byte av plats: Gtrue100.\\
 \code{match} testar om kompanjonsobjektet \code{Gurka} är av typen \code{Gurka} med två parametervärden. De angivna parametrarna tilldelas namn, \code{vikt} får namnet \code{v} och \code{ärRutten} namnet \code{rutten} och skrivs sedan ut. Byts namnen dessa ges skrivs de ut i den omvända ordningen.
 
+\TODO % TAB+TAB fungerar inte i scala3-repl
 \SubtaskSolved  \code{Option[(Int, Boolean)]}
-%TODO detta är inte längre fallet i scala3-repl
 
-%\SubtaskSolved  \code{Some((100, true))}, en \code{Option} med en tupel av parametrarna från g.
 \SubtaskSolved	\code{Gurka(100, true)}
-%TODO eventuellt skriv mer utförligt
 
 % \SubtaskSolved  \code{ärÄtvärd} testar om \code{Grönsak g} är av typen \code{Gurka(v, rutten)} eller \code{Tomat}. Dessa har sedan garder.\\ \code{Gurka} måste ha \code{vikt} över 100 och \code{ärRutten} vara \code{false} för att \code{case Gurka} ska returnera \code{true}.\\
 % \code{Tomat} måste ha \code{vikt} över 50 och \code{ärRutten} vara \code{false} för att \code{case Tomat} ska returnera \code{true}.\\
@@ -228,7 +226,7 @@ scala> case object Spader extends Färg
 \end{REPL}
 \Subtask Hur lyder felmeddelandet och varför sker det? Är det ett kompileringsfel eller ett körtidsfel?
 
-\Subtask  %\label{task:match-sealedtrait-caseobject}
+\Subtask  %\label{subtask:match-sealedtrait-caseobject}
 Skapa nu nedan kod i en editor och klistra in i REPL.
 \begin{Code}
 object Kortlek:
@@ -241,7 +239,8 @@ object Kortlek:
   case object Klöver extends Färg
 \end{Code}
 
-\Subtask \label{subtask:match-sealedtrait} Skapa en funktion \code{def parafärg(f: Färg): Färg} i en editor, som med hjälp av ett match-uttryck returnerar parallellfärgen till en färg. Parallellfärgen till \code{Hjärter} är \code{Ruter} och vice versa, medan parallellfärgen till \code{Klöver} är \code{Spader} och vice versa. Klistra in funktionen i REPL. Passa även på att skriva en \code{import-sats} för det yttre objektet \textbf{Kortlek}, så medlemmarna av objektet kan nås enkelt.
+\Subtask %\label{subtask:match-sealedtrait} 
+Skapa en funktion \code{def parafärg(f: Färg): Färg} i en editor, som med hjälp av ett match-uttryck returnerar parallellfärgen till en färg. Parallellfärgen till \code{Hjärter} är \code{Ruter} och vice versa, medan parallellfärgen till \code{Klöver} är \code{Spader} och vice versa. Klistra in funktionen i REPL. Passa även på att skriva en \code{import}-sats för det yttre objektet \textbf{Kortlek}, så medlemmarna av objektet kan nås enkelt.
 \begin{REPL}
 scala> parafärg(Spader)
 scala> val xs = Vector.fill(5)(Färg.values((math.random() * 4).toInt))
@@ -261,7 +260,7 @@ scala> xs.map(parafärg)
 \TaskSolved \what
 
 \SubtaskSolved
-%Illegal inheritance from sealed trait Färg
+\TODO %scala3-repl ger inte lika utförlig felmeddelande som gamla REPL, se över ifall "Illegal inheritance from sealed trait Färg" eller det nedan passar bäst. Även förklaringen till varför det blir ett fel måste granskas.
 \begin{REPL}
 Cannot extend sealed trait Färg in a different source file
 \end{REPL}
@@ -271,6 +270,7 @@ Felmeddelandet fås av att REPL:en behandlar varje inmatning individuellt och ti
 -
 
 \SubtaskSolved
+Förusatt att \code{import Kortlek._} har skrivits...
 \begin{Code}
 def parafärg(f: Färg): Färg = f match
   case Spader  => Klöver
@@ -582,7 +582,7 @@ Slutgiltligen är \code{Option} mer typsäkert än \code{null}. När du returner
 \QUESTBEGIN
 
 \Task  \what~  Om man vill signalera att ett fel eller en onormal situtation uppstått så kan man \textbf{kasta} \Eng{throw} ett \textbf{undantag} \Eng{exception}. Då avbryts programmet direkt med ett felmeddelande, om man inte väljer att \textbf{fånga} \Eng{catch} undantaget.
-
+\TODO %TAB+TAB funkar inte i scala3-repl
 \Subtask Vad händer nedan?
 \begin{REPL}
 scala> throw new Exception("PANG!")
@@ -943,15 +943,13 @@ object Main:
 		println("Antal skördade grönsaker: " + skörd.size)
 		println("Antal ätvärda grönsaker: " + ätvärda.size)
 	}
-}
 \end{Code}
 
 \SubtaskSolved
 Följande \code{case class} läggs till:
 \begin{Code}
-case class Broccoli(vikt: Int, ärRutten: Boolean) extends Grönsak {
+case class Broccoli(vikt: Int, ärRutten: Boolean) extends Grönsak:
   val ärÄtbar: Boolean = (!ärRutten && vikt > 80)
-}
 \end{Code}
 ~\\
 Därefter läggs följande till i \code{object Main} innan \code{def slumpgrönsak}:
@@ -965,8 +963,8 @@ Slutligen ändras \code{def slumpgrönsak} till följande:
 \begin{Code}
 def slumpgrönsak: Grönsak = {    // välj t.ex. denna fördelning:
   val rnd = math.random()
-  if (rnd > 0.5) slumpgurka      // 50% sannolikhet för gurka
-  else if (rnd > 0.2) slumptomat // 30% sannolikhet för tomat
+  if rnd > 0.5 then slumpgurka      // 50% sannolikhet för gurka
+  else if rnd > 0.2 then slumptomat // 30% sannolikhet för tomat
   else slumpbroccoli             // 20% sannolikhet för broccoli
 }
 \end{Code}
