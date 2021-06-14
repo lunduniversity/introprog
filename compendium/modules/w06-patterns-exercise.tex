@@ -219,7 +219,7 @@ scala> g match { case Gurka(v,rutten) => println("G" + v + rutten) }
 
 \QUESTBEGIN
 
-\Task	\what~	Skriv nedan kodrader i en REPL en för en. Notera nyckelordet \code{sealed} som används för att försegla en typ. En \textbf{förseglad typ} måste ha alla sina subtyper i en och samma kodfil.
+\Task	\label{task:match-sealedtrait} \what~	Skriv nedan kodrader i en REPL en för en. Notera nyckelordet \code{sealed} som används för att försegla en typ. En \textbf{förseglad typ} måste ha alla sina subtyper i en och samma kodfil.
 \begin{REPL}
 scala> sealed trait Färg
 scala> case object Spader extends Färg
@@ -265,7 +265,7 @@ Vi ska nu undersöka vad som händer om man glömmer en av case-grenarna i match
 \begin{REPL}
 Cannot extend sealed trait Färg in a different source file
 \end{REPL}
-Felmeddelandet fås av att REPL:en behandlar varje inmatning individuellt och tillåter därför inte att subtypen \code{Spader} förlänger \Eng{extends} supertypen \code{Färg} eftersom denna var förseglad \Eng{sealed}. Mer om detta senare i kursen...
+Felmeddelandet fås av att REPL:en behandlar varje inmatning individuellt och tillåter därför inte att subtypen \code{Spader} ärver från \Eng{extends} supertypen \code{Färg} eftersom denna var förseglad \Eng{sealed}. Mer om detta senare i kursen...
 
 \SubtaskSolved
 -
@@ -302,17 +302,17 @@ En förseglad supertyp innebär att programmeraren redan vid kompileringstid få
 \QUESTEND
 
 
-\WHAT{Mönstermatcha med nyttan av \code{enum}.}
+\WHAT{Mönstermatcha enumeration.}
 
 \QUESTBEGIN
-\TODO %Se gärna över denna frågan samt facit.
-\Task	\what~ Vi ska nu undersöka och jämföra skillnad mellan nyckelorden \code{enum} och \code{sealed}. Skriv nedan kod i en REPL.
+%\TODO %Se gärna över denna frågan samt facit.
+\Task	\what~ Vi ska nu undersöka och jämföra skillnad mellan nyckelorden \code{enum} och \code{sealed trait}. Skriv nedan kod i en REPL.
 \begin{Code}
 enum Färg:
   case Spader, Hjärter, Ruter, Klöver
 \end{Code}
 
-\Subtask Skapa med hjälp av en editor igen en funktion \code{def paraFärg(f: Färg): Färg}, nästintill likadan som den som vi skapade i deluppgift \ref{task:match-sealedtrait-caseobject} \ref{subtask:match-sealedtrait}. Funktionen ska återigen utnyttja match-uttryck för att returnera paralellfärgen till argumentet som ges. Tänk på att denna gången är \code{Färg} inget \code{sealed trait}, utan istället en \code{enum}. Klistra in funktionen i REPL.
+\Subtask Skapa med hjälp av en editor igen en funktion \code{def paraFärg(f: Färg): Färg}, nästintill likadan som den som vi skapade i deluppgift \ref{task:match-sealedtrait} \ref{subtask:match-sealedtrait}. Funktionen ska återigen utnyttja match-uttryck för att returnera paralellfärgen till argumentet som ges. Tänk på att denna gången är \code{Färg} inget \code{sealed trait}, utan istället en enumeration (\code{enum}). Klistra in funktionen i REPL.
 \begin{REPL}
 scala> parafärg(Färg.Ruter)
 scala> val xs = Vector.fill(5)(Färg.values((math.random() * 4).toInt))
@@ -328,7 +328,7 @@ Fundera på skillnader och likheter mellan att utnyttja \code{sealed trait} ihop
 
 
 \TaskSolved \what
-\TODO %Se över denna
+%\TODO %Se över denna
 \SubtaskSolved
 \begin{Code}
 def parafärg(f: Färg): Färg = f match
@@ -337,11 +337,11 @@ def parafärg(f: Färg): Färg = f match
   case Färg.Ruter   => Färg.Hjärter
   case Färg.Klöver  => Färg.Spader
 \end{Code}
-
+Likt uppgift \ref{task:match-sealedtrait} \ref{subtask:match-sealedtrait} så kan även här en \code{import}-sats skrivas för att nå medlemmarna i \code{Färg} utan punktnotation. Det är dock inte alltid fördelaktigt att importera medlemmar till den globala namnrymden, då det kan förekomma namnkrockar. Anta ett exempel där vi jobbar på ett program med grafiskt användargränssnitt där vi har en färg \code{Red} definerad. Anta också att vi nu till vårt program vill importera ytterligare en röd färg för kulörerna hjärter och ruter, denna också namngiven \code{Red}. I detta scenario hade det uppstått en namnkrock då \code{Red} redan är definerad så importeringen hade ej kunnat ske.
 
 \SubtaskSolved
 \TODO %Se över denna
-Vid mönstermatchning så fungerar \code{sealed trait} ihop med \code{case}-objekt i praktiken likadant som att använda sig av \code{enum}. Vi såg att i deluppgift \ref{subtask:match-forgetcase} så varnade REPL redan vid kompilering att denna funktionen inte var uttömd \Eng{exhaustive}. Detta gäller även vid användning av \code{enum} också.
+Vid mönstermatchning så fungerar \code{sealed trait} ihop med \code{case}-objekt i praktiken likadant som att använda sig av \code{enum}. Vi såg att i deluppgift \ref{task:match-sealedtrait} \ref{subtask:match-forgetcase} så varnade REPL redan vid kompilering att denna funktionen inte var uttömd \Eng{exhaustive}. Detta gäller även vid användning av \code{enum} också.
 
 \QUESTEND
 
@@ -992,8 +992,7 @@ def slumpgrönsak: Grönsak =     // välj t.ex. denna fördelning:
 
 \Task  \what~   Om man överskuggar den befintliga metoden \code{equals} så kommer metoden \code{==} att fungera annorlunda. Man kan då själv åstadkomma innehållslikhet i stället för referenslikhet. Vi börjar att studera den befintliga equals med referenslikhet.
 
-\TODO %tab två gånger fungerar inte i scala3-repl, issue #536
-\Subtask \label{subtask:refequals} Vad händer nedan? Om du trycker TAB \emph{två} gånger efter ett metodnamn får du se metodens signatur. Vilken signatur har metoden \code{equals}?
+\Subtask \label{subtask:refequals} Vad händer nedan? Anropa funktionen \code{equals} utan paranteser och utan argument för att se metodens signatur. Vilken signatur har metoden \code{equals}?
 \begin{REPL}
 scala> class Gurka(val vikt: Int, val ärÄtbar: Boolean)
 scala> val g1 = new Gurka(42, true)
@@ -1001,7 +1000,7 @@ scala> val g2 = g1
 scala> val g3 = new Gurka(42, true)
 scala> g1 == g2
 scala> g1 == g3
-scala> g1.equals  // tryck TAB två gånger
+scala> g1.equals  // anropa utan argument
 \end{REPL}
 
 \Subtask Rita minnessituationen efter rad 4.
