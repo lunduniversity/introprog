@@ -234,15 +234,16 @@ Minnet som innehåller ett programs data är uppdelat i två delar:
 
 \begin{Slide}{Aktiveringspost}\SlideFontSmall
 Nästlade anrop ger växande anropsstack.
-\begin{REPL}
-scala> :paste
-def h(x: Int, y: Int): Unit = { val z = x + y; println(z) }
-def g(a: Int, b: Int): Unit = { val x = 1; h(x + 1, a + b) }
-def f(): Unit = { val n = 5; g(n, 2 * n) }
+\begin{REPLsmall}
+scala> def h(x: Int, y: Int): Unit = { val z = x + y; println(z) }
+
+scala> def g(a: Int, b: Int): Unit = { val x = 1; h(x + 1, a + b) }
+
+scala> def f(): Unit = { val n = 5; g(n, 2 * n) }
 
 scala> f()
 
-\end{REPL}
+\end{REPLsmall}
 
 \pause
 \Alert{Stacken}
@@ -265,49 +266,57 @@ variabel & värde & Aktiveringspost för anrop av... \\ \hline \hline
 
 \begin{Slide}{Vad är en stack trace?}\SlideFontSmall
 När du letar buggar vid körtidsfel har du nytta av att \Alert{noga studera} \Emph{utskriften av anropsstacken} \Eng{stack trace}:
+% \begin{CodeSmall}
+% // Program i filen BMI.scala
+% object BMI: 
+%   def main(args: Array[String]): Unit = 
+%     println(bmi(args(0).toInt, args(1).toInt))
+
+%   def bmi(heightCm: Int, weightKg: Int) = 
+%     safeDiv(weightKg, heightCm * heightCm) 
+
+%   def safeDiv(nominator: Int, denominator: Int): (Int, String) = 
+%     if (denominator == 0) (nominator / denominator, "ok")  // ser du buggen?
+%     else (0, "division by zero") 
+% \end{CodeSmall}
+  
 \begin{Code}
-// Program i filen BMI.scala
-object BMI { 
-  def main(args: Array[String]): Unit = 
-    println(bmi(args(0).toInt, args(1).toInt))
+// Program i filen bmi.scala
 
-  def bmi(heightCm: Int, weightKg: Int) = 
-    safeDiv(weightKg, heightCm * heightCm) 
+@main 
+def bmi(heightCm: Int, weightKg: Int) = 
+  safeDiv(weightKg, heightCm * heightCm) 
 
-  def safeDiv(nominator: Int, denominator: Int): (Int, String) = 
-    if (denominator == 0) (nominator / denominator, "ok")  // ser du buggen?
-    else (0, "division by zero") 
-}
+def safeDiv(nominator: Int, denominator: Int): (Int, String) = 
+  if denominator == 0 then (nominator / denominator, "ok")  // ser du buggen?
+  else (0, "division by zero")
+
 \end{Code}
 \begin{REPL}
-> scalac BMI.scala 
-> scala BMI 0 68
-java.lang.ArithmeticException: / by zero
-  ... HÄR KOMMER STACK TRACE ... (Se nästa bild)
+> scalac bmi.scala 
+> scala bmi 0 42
+Exception in thread "main" java.lang.ArithmeticException: / by zero
+        // HÄR KOMMER STACK TRACE pga körtidsfel - se nästa bild
 \end{REPL}
 \end{Slide}
 
 \begin{Slide}{Hur läsa en stack trace?}
 \begin{REPL}
-  java.lang.ArithmeticException: / by zero
-       at BMI$.safeDiv(BMI.scala:8)
-       at BMI$.bmi(BMI.scala:5)
-       at BMI$.main(BMI.scala:2)
-       at BMI.main(BMI.scala)
-       at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-       at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-       at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-       at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-       at scala.reflect.internal.util.ScalaClassLoader.$anonfun$run$2(ScalaClassLoader.scala:105)
-  ...  
+Exception in thread "main" java.lang.ArithmeticException: / by zero
+        at bmi$package$.safeDiv(bmi.scala:8)
+        at bmi$package$.bmi(bmi.scala:5)
+        at bmi.main(bmi.scala:3)
+
 \end{REPL}
 \begin{itemize}\SlideFontSmall
   \item En \Emph{stack trace} skrivs ut efter en krasch p.g.a. körtidsfel.
-  \item Först kommer felet som orsakat kraschen. 
+  \item Körtidsfel känns igen med ordet \Alert{Exception}.
+  \item Först kommer en beskrivning av felet som orsakat kraschen, här: \\\code{java.lang.ArithmeticException: \ by zero} 
   \item Därefter visas anropsstacken.
   \item För varje funktionsanrop anges: \Emph{\texttt{klass.metod(kodfil:radnummer)}}
+  \item Main-funktioner läggs i ett singelobjekt i ett speciellt paket
   \item Singelobjekt i Scala kodas som en Java-klass med dollar-tecken efter namnet, eftersom det inte finns singelobjekt i JVM.
-  \item Efter anropet av din \code{main}-procedur ligger JVM-interna anrop (\code{java.base} etc.) som du inte behöver bry dig om.
+  %\item Efter anropet av din \code{main}-procedur ligger JVM-interna anrop (\code{java.base} etc.) som du inte behöver bry dig om. %% syns inte längre i Scala 3 stack trace
 \end{itemize}
 \end{Slide}
   
@@ -316,27 +325,26 @@ java.lang.ArithmeticException: / by zero
 Med lokala funktioner kan delproblem lösas med nästlade abstraktioner.
 
 \begin{CodeSmall}
-def gissaTalet(max: Int, min: Int = 1): Unit = {
+def gissaTalet(max: Int, min: Int = 1): Unit = 
   def gissat = io.StdIn.readLine(s"Gissa talet mellan $min och $max: ").toInt
 
   val hemlis = (math.random() * (max - min) + min).toInt
 
   def skrivLedtrådOmEjRätt(gissning: Int): Unit =
-    if (gissning > hemlis) println(s"$gissning är för stort :(")
-    else if (gissning < hemlis) println(s"$gissning är för litet :(")
+    if gissning > hemlis then println(s"$gissning är för stort :(")
+    else if gissning < hemlis then println(s"$gissning är för litet :(")
 
-  def inteRätt(gissning: Int): Boolean = {
+  def inteRätt(gissning: Int): Boolean = 
     skrivLedtrådOmEjRätt(gissning)
     gissning != hemlis
-  }
+  
 
-  def loop: Int = { var i = 1; while (inteRätt(gissat)){ i += 1 }; i }
+  def loop: Int = { var i = 1; while inteRätt(gissat) do i += 1; i }
 
   println(s"Du hittade talet $hemlis på $loop gissningar :)")
-}
 \end{CodeSmall}
 
-Lokala, nästlade funktionsdeklarationer är tyvärr inte tillåtna i Java.\footnote{\href{http://stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}{\SlideFontSize{8}{9}stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}}
+Lokala, nästlade funktionsdeklarationer är tyvärr inte tillåtna i många andra språk, t.ex. Java.\footnote{\href{http://stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}{\SlideFontSize{8}{9}stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}}
 
 \end{Slide}
 
