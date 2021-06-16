@@ -499,29 +499,52 @@ dej
 \end{Slide}
 
 
-\begin{Slide}{Loopa genom argumenten i ett Scala-huvudprogram}
-Skriv och spara nedan kod i filen \texttt{helloargs.scala}
+\begin{Slide}{Strängargument till i ett program med primitiv main}
+Skriv och spara nedan kod i filen \texttt{helloargs1scala}
 \begin{REPLnonum}
-> code helloargs.scala
+> code helloargs1.scala
 \end{REPLnonum}
 \begin{Code}
 object HelloScalaArgs:
-  def main(args: Array[String]): Unit = 
+  def main(args: Array[String]): Unit = // en primitiv main-metod utan @main
     var i = 0
     while i < args.size do:
       println(args(i))
       i = i + 1
 \end{Code}
-Kompilera och kör:
+En primitiv \code{main}-metod har ej \code{@main} och måste vara i ett objekt. \\
+Kompilera och kör med namnet på objektet:
 \begin{REPL}
-> scalac helloargs.scala
-> scala HelloScalaArgs hej gurka tomat
-hej
+> scalac helloargs1.scala
+> scala HelloScalaArgs morot gurka tomat
+morot
 gurka
 tomat
 \end{REPL}
 \end{Slide}
 
+\begin{Slide}{Typsäkra argument till i ett program med @main}
+Skriv och spara nedan kod i filen \texttt{helloargs2.scala}
+\begin{REPLnonum}
+> code helloargs2.scala
+\end{REPLnonum}
+\begin{Code}
+@main 
+def hej(heltal: Int, resten: String*): Unit = 
+  for i <- 0 until heltal do println(resten(i))
+\end{Code}
+Med \code{@main} behövs inget objekt.\\
+Kompilera och kör med namnet på \code{@main}-funktionen:
+\begin{REPL}
+> scalac helloargs2.scala
+> scala hej 2 morot gurka tomat
+morot
+gurka
+> scala hej aj morot gurka tomat
+Illegal command line: java.lang.NumberFormatException: For input string: "aj"
+\end{REPL}
+Med \code{@main} genereras automatiskt en primitiv main som kollar att argumenten har rätt typ.
+\end{Slide}
 
 % \begin{Slide}{Loopa genom argumenten i ett Java-huvudprogram}
 % \begin{REPLnonum}
