@@ -121,4 +121,4 @@ lazy val workspace = (project in file(".")).
   settings(commonSettings: _*).
   settings(
     name := "workspace",
- )
+ ).aggregate(cslib, introprog_scalalib, w03_irritext, w04_blockmole, w06_blockbattle, w07_shuffle, w08_life, w09_words, w10_snake, w11_javatext, w13_bank_proj, w13_img_proj, w13_music_proj, w13_tabular)
