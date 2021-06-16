@@ -68,17 +68,17 @@ object Swing {
     g.fillRect(0, 0, initWidth, initHeight)
 
     setBackground(initBackground)
-		setDoubleBuffered(true)
-		setPreferredSize(new java.awt.Dimension(initWidth, initHeight))
-		setMinimumSize(new java.awt.Dimension(initWidth, initHeight))
-		setMaximumSize(new java.awt.Dimension(initWidth, initHeight))
+    setDoubleBuffered(true)
+    setPreferredSize(new java.awt.Dimension(initWidth, initHeight))
+    setMinimumSize(new java.awt.Dimension(initWidth, initHeight))
+    setMaximumSize(new java.awt.Dimension(initWidth, initHeight))
 
     override def paintComponent(g: java.awt.Graphics): Unit = g.drawImage(img, 0, 0, this)
 
-  	override def imageUpdate(img: java.awt.Image, infoFlags: Int, x: Int, y: Int, width: Int, height: Int): Boolean = {
-  		repaint()
+    override def imageUpdate(img: java.awt.Image, infoFlags: Int, x: Int, y: Int, width: Int, height: Int): Boolean = {
+      repaint()
       true
-  	}
+    }
 
     /** Execute `action` in the Swing thread with graphics context as param. */
     def withGraphics(action: java.awt.Graphics2D => Unit) = runInSwingThread {
