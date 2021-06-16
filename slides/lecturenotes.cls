@@ -266,6 +266,17 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
       #1}%
 }{}
 
+\lstnewenvironment{REPLsmall}[1][]{%
+    \lstset{
+      basicstyle=\color{white}\ttfamily\fontsize{6}{8}\selectfont,      
+      language=,otherkeywords={},%
+      tabsize=2,
+      backgroundcolor=\color{black!80},
+      frame=single,
+      #1}%
+}{}
+
+
 \newcommand{\scalainputlisting}[2][]{\lstinputlisting[%
 language=Scala,%
 tabsize=2,#1]{#2}}
