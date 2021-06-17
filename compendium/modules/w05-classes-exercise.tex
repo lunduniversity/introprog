@@ -532,7 +532,7 @@ scala> g.vikt
 \QUESTBEGIN
 
 \Task \what~
-Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en koordinat både med ''vanliga'' kartesiska koordinatet\footnote{\url{https://sv.wikipedia.org/wiki/Kartesiskt_koordinatsystem}} och med polära koordinater%
+Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en koordinat både med ''vanliga'' kartesiska koordinater\footnote{\url{https://sv.wikipedia.org/wiki/Kartesiskt_koordinatsystem}} och med polära koordinater%
 \footnote{\url{https://sv.wikipedia.org/wiki/Pol\%C3\%A4ra\_koordinater}}.
 
 \Subtask Skapa kod med hjälp av en editor, t.ex. VS \code{code}, i filen  \code{Point.scala} enligt följande riktlinjer:
@@ -612,16 +612,15 @@ Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en k
 \Subtask \begin{Code}
 package graphics
 
-case class Point(x: Double, y: Double) {
+case class Point(x: Double, y: Double):
   val r: Double          = math.hypot(x, y)
   val theta: Double      = math.atan2(y, x)
   def negY: Point        = Point(x, -y)
   def +(p: Point): Point = Point(x + p.x, y + p.y)
-}
-object Point {
+
+object Point:
   def polar(r: Double, theta: Double): Point =
     Point(r * math.cos(theta), r * math.sin(theta))
-}
 \end{Code}
 
 \Subtask \TODO
@@ -636,7 +635,7 @@ object Point {
 
 
 
-\WHAT{Klasser,  instanser och skräp.}
+\WHAT{Klasser, instanser och skräp.}
 
 \QUESTBEGIN
 
@@ -649,16 +648,15 @@ case class Ben(ärTillVänster: Boolean)
 
 case class Huvud(harHår: Boolean = true)
 
-case class Rymdvarelse (
+case class Rymdvarelse(
       arm1:   Arm   = Arm(true),
       arm2:   Arm   = Arm(false),
       ben1:   Ben   = Ben(true),
       ben2:   Ben   = Ben(false),
       huvud1: Huvud = Huvud(harHår = false),
   var huvud2: Huvud = Huvud()
-) {
+):
   def ärSkallig = !huvud1.harHår && !huvud2.harHår
-}
 \end{Code}
 
 \Subtask Klistra in ovan rymdkod i REPL och evaluera nedan rader. Rita minnessituationen efter rad 5 och beskriv vad som händer.
@@ -683,7 +681,7 @@ scala> predator.ärSkallig
 
 \includegraphics[scale=0.65]{../img/w06-solutions/2b}
 
-\SubtaskSolved  Eftersom det inte längre finns någon referens som pekar på det objektet kommer skräpsamlaren att ta hand om det och det kommer förr eller senare skrivas över av något annat när platsen i minnet behövs. Objekt som inte har någon referens tills sig går inte att komma åt.
+\SubtaskSolved  Eftersom det inte längre finns någon referens som pekar på det objektet kommer skräpsamlaren att ta hand om det och det kommer förr eller senare skrivas över av något annat när platsen i minnet behövs. Objekt som inte har någon referens till sig går inte att komma åt.
 
 \QUESTEND
 
@@ -699,7 +697,7 @@ scala> predator.ärSkallig
 \Subtask Implementera nedan kvadrat med en editor och klistra in den i REPL.
 
 \begin{Code}
-case class Square(val x: Int = 0, val y: Int = 0, val side: Int = 1) {
+case class Square(val x: Int = 0, val y: Int = 0, val side: Int = 1):
   val area: Int = ???
 
   /** Creates a new Square moved to position (x + dx, y + dy) */
@@ -709,11 +707,10 @@ case class Square(val x: Int = 0, val y: Int = 0, val side: Int = 1) {
 
   /** Multiplies the side with factor and rounded to nearest integer */
   def scale(factor: Double): Square = ???
-}
-object Square {
+
+object Square:
   /** A Square at (0, 0) with side 1 */
   val unit: Square = ???
-}
 \end{Code}
 
 \Subtask Testa din kvadrat enligt nedan. Förklara vad som händer.
@@ -737,51 +734,49 @@ scala> Square.unit eq Square.unit
 \SubtaskSolved
 
 \begin{Code}
-case class Square(val x: Int = 0, val y: Int = 0, val side: Int = 1) {
-	val area: Int = side * side
+case class Square(val x: Int = 0, val y: Int = 0, val side: Int = 1):
+  val area: Int = side * side
 
-	def moved(dx: Int, dy: Int): Square = new Square(x + dx, y + dy, side)
+  def moved(dx: Int, dy: Int): Square = Square(x + dx, y + dy, side)
 
-	def isEqualSizeAs(that: Square): Boolean = this.side == that.side
+  def isEqualSizeAs(that: Square): Boolean = this.side == that.side
 
-	def scale(factor: Double): Square =
+  def scale(factor: Double): Square =
     Square(x, y, (side * factor).round.toInt)
-}
 
-object Square {
-	val unit: Square = Square()
-}
+object Square:
+  val unit: Square = Square()
 \end{Code}
 
 \SubtaskSolved
 \begin{REPL}
 scala> val (s1, s2) = (Square(), Square(1, 10, 1))
-s1: Square = Square(0,0,1)
-s2: Square = Square(1,10,1)
+val s1: Square = Square(0,0,1)
+val s2: Square = Square(1,10,1)
 
 scala> val s3 = s1 moved (1,-5)
-s3: Square = Square(1,-5,1)
+val s3: Square = Square(1,-5,1)
 
 scala> s1 isEqualSizeAs s3       // lika storlek
-res55: Boolean = true
+val res0: Boolean = true
 
 scala> s2 isEqualSizeAs s1       // lika storlek
-res56: Boolean = true
+val res1: Boolean = true
 
 scala> s1 isEqualSizeAs Square.unit   // s1 har sidan 1
-res57: Boolean = true
+val res2: Boolean = true
 
 scala> s2.scale(math.Pi) isEqualSizeAs s2  // olika storlek
-res58: Boolean = false
+val res3: Boolean = false
 
 scala> s2.scale(math.Pi) == s2.scale(math.Pi) // lika innehåll
-res59: Boolean = true
+val res4: Boolean = true
 
 scala> s2.scale(math.Pi) eq s2.scale(math.Pi)  // olika objekt
-res60: Boolean = false
+val res5: Boolean = false
 
 scala> Square.unit eq Square.unit   // samma objekt
-res61: Boolean = true
+val res6: Boolean = true
 \end{REPL}
 
 \QUESTEND
@@ -810,23 +805,22 @@ class MutablePoint3D(var x: Int, var y: Int, var z: Int = 0)
 > ls
 JMutablePoint3D.class  JMutablePoint3D.java
 > scala
-Welcome to Scala 2.12.6 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_121).
-Type in expressions for evaluation. Or try :help.
 
 scala> val p = new JMutablePoint3D(1,2)
-p: JMutablePoint3D = JMutablePoint3D@2cae9b8
+val p: JMutablePoint3D = JMutablePoint3D@625b215b
 
 scala> p.x
-<console>:13: error: value x is not a member of JPoint3D
+1 |p.x
+  |^^^
+  |value x is not a member of JMutablePoint3D
 
 scala> p.getZ
-res0: Int = 0
+val res0: Int = 0
 
 scala> p.setZ(3)
 
 scala> p.getZ
-res1: Int = 3
-
+val res1: Int = 3
 \end{REPL}
 
 \QUESTEND
