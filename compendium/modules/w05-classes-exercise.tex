@@ -282,17 +282,17 @@ class Point3D(val x: Int, val y: Int, val z: Int = 0)
 > ls
 JPoint3D.class  JPoint3D.java
 > scala
-Welcome to Scala 2.13.3 (OpenJDK 64-Bit Server VM, Java 11.0.8).
-Type in expressions for evaluation. Or try :help.
 
 scala> val p = new JPoint3D(1,2)
-p: JPoint3D = JPoint3D@53b1a3f8
+val p: JPoint3D = JPoint3D@53b1a3f8
 
 scala> p.x
-<console>:13: error: value x is not a member of JPoint3D
+1 |p.x
+  |^^^
+  |value x is not a member of JPoint3D
 
 scala> p.getX
-res0: Int = 1
+val res0: Int = 1
 \end{REPL}
 
 \QUESTEND
@@ -306,7 +306,7 @@ res0: Int = 1
 
 Alla klasser ska tillhöra \code{package blockbattle} och ligga i varsin egen fil med samma namn som klassen, t.ex. \code{Pos.scala}. När du har mer än en kodfil som du vill kompilera om upprepade gånger vid stegvis implementation och felsökning, underlättas ditt arbetet stort om du använder byggverktyget \code{sbt} som finns installerat på skolans datorer (se även Appendix~\ref{appendix:build}). Lägg en fil med namnet \code{build.sbt} i biblioteket där du jobbar t.ex. \code{~/pgk/w06/lab} med detta innehåll:
 \begin{Code}
-scalaVersion := "2.13.3"
+scalaVersion := "3.0.0"
 \end{Code}
 Då kan du i ett eget terminalfönster köra igång \code{sbt} och sedan kommandot \code{~compile}. Då kompileras din ändrade kod om automatiskt varje gång du sparar en scala-fil i detta bibliotek.
 \begin{REPLnonum}
@@ -316,24 +316,21 @@ sbt> ~compile
 
 \Subtask Under laborationen är det smidigt att kunna representera flyttbara positioner i ett pixelfönster. Implementera case-klassen \code{Pos} i ett nytt terminalfönster enligt nedan så att den fungerar enligt efterföljande REPL-tester.
 \scalainputlisting[basicstyle=\ttfamily\fontsize{11}{13}\selectfont]{../workspace/w06_blockbattle/Pos.scala}
-Om du använder \code{sbt} hamnar den kompilerade koden i \code{target/scala-2.13/classes}. Testa så att \code{Pos} fungerar med hjälp av REPL enligt nedan:
+Om du använder \code{sbt} hamnar den kompilerade koden i \code{target/scala-3.0.0/classes}. Testa så att \code{Pos} fungerar med hjälp av REPL enligt nedan:
 \begin{REPL}
 > cd ~/pgk/w06/lab
-> scala -cp target/scala-2.13/classes
-Welcome to Scala 2.13.3 (OpenJDK 64-Bit Server VM, Java 11.0.8).
-Type in expressions for evaluation. Or try :help.
+> scala -cp target/scala-3.0.0/classes
 
 scala> blockbattle.Pos(1,2)
-res0: blockbattle.Pos = Pos(1,2)
+val res0: blockbattle.Pos = Pos(1,2)
 
 scala> import blockbattle._
-import blockbattle._
 
 scala> val p = Pos(1,2)
-p: blockbattle.Pos = Pos(1,2)
+val p: blockbattle.Pos = Pos(1,2)
 
 scala> p.moved(0,1)
-res1: blockbattle.Pos = Pos(1,3)
+val res1: blockbattle.Pos = Pos(1,3)
 \end{REPL}
 
 \Subtask Under laborationen är det smidigt att kunna representera vilka tangenter som motsvarar de olika riktningar som en användare kan styra sin mullvad. Gör klart case-klassen \code{KeyControl} enligt nedan så att den fungerar enligt efterföljande REPL-tester.
@@ -347,37 +344,36 @@ res1: blockbattle.Pos = Pos(1,3)
 % \end{CodeSmall}
 \begin{REPL}
 scala> import blockbattle._
-import blockbattle._
 
 scala> val kc1 = KeyControl(right="d",left="a",up="w",down="s")
-kc1: blockbattle.KeyControl = KeyControl(a,d,w,s)
+val kc1: blockbattle.KeyControl = KeyControl(a,d,w,s)
 
 scala> val kc2 = KeyControl("Left","Right","Up","Down")
-kc2: blockbattle.KeyControl = KeyControl(Left,Right,Up,Down)
+val kc2: blockbattle.KeyControl = KeyControl(Left,Right,Up,Down)
 
 scala> kc2.left
-res2: String = Left
+val res0: String = Left
 
 scala> kc2.has("a")
-res3: Boolean = false
+val res1: Boolean = false
 
 scala> kc2.has("Up")
-res4: Boolean = true
+val res2: Boolean = true
 
 scala> kc1.direction("a")
-res5: (Int, Int) = (-1,0)
+val res3: (Int, Int) = (-1,0)
 
 scala> kc1.direction("s")
-res6: (Int, Int) = (0,1)
+val res4: (Int, Int) = (0,1)
 
 scala> kc1.direction("d")
-res7: (Int, Int) = (1,0)
+val res5: (Int, Int) = (1,0)
 
 scala> kc1.direction("w")
-res8: (Int, Int) = (0,-1)
+val res6: (Int, Int) = (0,-1)
 
 scala> Pos(1,2).moved(kc1.direction("a"))
-res9: blockbattle.Pos = Pos(0,2)
+val res7: blockbattle.Pos = Pos(0,2)
 \end{REPL}
 
 
@@ -424,7 +420,7 @@ sbt> ~compile
 \end{REPLnonum}
 Du kan köra ditt program med \code{sbt}-kommandot \code{run} och då hamnar \code{lib/introprog.jar} automatiskt på classpath. Du kan också köra igång ditt program ''manuellt'' med detta kommando (semikolon i Windows):
 \begin{REPLnonum}
-> scala -cp "lib/introprog.jar:target/scala-2.12/classes" blockbattle.Main
+> scala -cp "lib/introprog.jar:target/scala-3.0.0/classes" blockbattle.Main
 \end{REPLnonum}
 
 Gör klart klassen \code{BlockWindow} enligt nedan. Metoden \code{setBlock} ska med hjälp av metoden \code{pixelWindow.fill} fylla ett kvadratiskt område med sidan \code{blockSize} pixlar på en viss position \code{pos} i block-koordinater och med en viss färg \code{color}. Metoden \code{getBlock} ska med hjälp av metoden \code{pixelWindow.getPixel} ge färgen för övre vänstra hörnet i blocket på position \code{pos} i block-koordinater.
