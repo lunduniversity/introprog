@@ -159,9 +159,11 @@ Gardens krav måste uppfyllas för att det ska matcha som vanligt.
 
 \QUESTBEGIN
 
-\Task \label{task:match-caseclass} \what~   Scalas \code{match}-uttryck är extra kraftfulla om de används tillsammans med \code{case}-klasser: då kan attribut extraheras automatiskt och bindas till lokala variabler direkt i case-grenen som nedan exempel visar (notera att \code{v} och \code{rutten} inte behöver deklareras explicit). Detta kallas för \textbf{mönstermatchning}.
+%\Task \label{task:match-caseclass} \what~   Scalas \code{match}-uttryck är extra kraftfulla om de används tillsammans med \code{case}-klasser: då kan attribut extraheras automatiskt och bindas till lokala variabler direkt i case-grenen som nedan exempel visar (notera att \code{v} och \code{rutten} inte behöver deklareras explicit). Detta kallas för \textbf{mönstermatchning}.
 
-\Subtask \label{subtask:autobinding-match} Vad skrivs ut nedan? Varför? Prova att byta namn på \code{v} och \code{rutten}.
+\Task \label{task:match-caseclass} \what~   Scalas \code{match}-uttryck är extra kraftfulla om de används tillsammans med \code{case}-klasser: då kan attribut extraheras automatiskt och bindas till lokala variabler direkt i case-grenen som nedan exempel visar (notera att \code{v} och \code{rutten} inte behöver deklareras explicit). Detta kallas för \textbf{mönstermatchning}. 
+Vad skrivs ut nedan? Varför? Prova att byta namn på \code{v} och \code{rutten}.
+%\Subtask \label{subtask:autobinding-match} Vad skrivs ut nedan? Varför? Prova att byta namn på \code{v} och \code{rutten}.
 \begin{REPL}
 scala> case class Gurka(vikt: Int, ärRutten: Boolean)
 scala> val g = Gurka(100, true)
@@ -187,13 +189,11 @@ scala> g match { case Gurka(v,rutten) => println("G" + v + rutten) }
 % \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/vegomatch.scala}
 %
 
-%\SOLUTION
+\SOLUTION
 
 
-%\TaskSolved \what
-
-
-\SubtaskSolved  G100true. Vid byte av plats: Gtrue100.\\
+\TaskSolved \what \\
+G100true. Vid byte av plats: Gtrue100.\\
 \code{match} testar om kompanjonsobjektet \code{Gurka} är av typen \code{Gurka} med två parametervärden. De angivna parametrarna tilldelas namn, \code{vikt} får namnet \code{v} och \code{ärRutten} namnet \code{rutten} och skrivs sedan ut. Byts namnen dessa ges skrivs de ut i den omvända ordningen.
 
 %\TODO % TAB+TAB fungerar inte i scala3-repl så svaret till uppgiften är felaktig
@@ -207,7 +207,7 @@ scala> g match { case Gurka(v,rutten) => println("G" + v + rutten) }
 
 
 
-%\QUESTEND
+\QUESTEND
 
 
 
@@ -239,7 +239,7 @@ object Kortlek:
   case object Klöver extends Färg
 \end{Code}
 
-\Subtask \label{subtask:match-sealedtrait} 
+\Subtask \label{subtask:match-sealedtrait-function}
 Skapa en funktion \code{def parafärg(f: Färg): Färg} i en editor, som med hjälp av ett match-uttryck returnerar parallellfärgen till en färg. Parallellfärgen till \code{Hjärter} är \code{Ruter} och vice versa, medan parallellfärgen till \code{Klöver} är \code{Spader} och vice versa. Klistra in funktionen i REPL. Passa även på att skriva en \code{import}-sats för det yttre objektet \textbf{Kortlek}, så medlemmarna av objektet kan nås enkelt.
 \begin{REPL}
 scala> parafärg(Spader)
@@ -261,7 +261,6 @@ Vi ska nu undersöka vad som händer om man glömmer en av case-grenarna i match
 \TaskSolved \what
 
 \SubtaskSolved
-\TODO %scala3-repl ger inte lika utförlig felmeddelande som gamla REPL, se över ifall "Illegal inheritance from sealed trait Färg" eller det nedan passar bäst. Även förklaringen till varför det blir ett fel måste granskas.
 \begin{REPL}
 Cannot extend sealed trait Färg in a different source file
 \end{REPL}
@@ -312,7 +311,7 @@ enum Färg:
   case Spader, Hjärter, Ruter, Klöver
 \end{Code}
 
-\Subtask Skapa med hjälp av en editor igen en funktion \code{def paraFärg(f: Färg): Färg}, nästintill likadan som den som vi skapade i deluppgift \ref{task:match-sealedtrait} \ref{subtask:match-sealedtrait}. Funktionen ska återigen utnyttja match-uttryck för att returnera paralellfärgen till argumentet som ges. Tänk på att denna gången är \code{Färg} inget \code{sealed trait}, utan istället en enumeration (\code{enum}). Klistra in funktionen i REPL.
+\Subtask Skapa med hjälp av en editor igen en funktion \code{def paraFärg(f: Färg): Färg}, nästintill likadan som den som vi skapade i deluppgift \ref{task:match-sealedtrait}\ref{subtask:match-sealedtrait-function}. Funktionen ska återigen utnyttja match-uttryck för att returnera paralellfärgen till argumentet som ges. Tänk på att denna gången är \code{Färg} inget \code{sealed trait}, utan istället en enumeration (\code{enum}). Klistra in funktionen i REPL.
 \begin{REPL}
 scala> parafärg(Färg.Ruter)
 scala> val xs = Vector.fill(5)(Färg.values((math.random() * 4).toInt))
@@ -328,7 +327,6 @@ Fundera på skillnader och likheter mellan att utnyttja \code{sealed trait} ihop
 
 
 \TaskSolved \what
-%\TODO %Se över denna
 \SubtaskSolved
 \begin{Code}
 def parafärg(f: Färg): Färg = f match
@@ -337,20 +335,23 @@ def parafärg(f: Färg): Färg = f match
   case Färg.Ruter   => Färg.Hjärter
   case Färg.Klöver  => Färg.Spader
 \end{Code}
-Likt uppgift \ref{task:match-sealedtrait} \ref{subtask:match-sealedtrait} så kan även här en \code{import}-sats skrivas för att nå medlemmarna i \code{Färg} utan punktnotation. Det är dock inte alltid fördelaktigt att importera medlemmar till den globala namnrymden, då det kan förekomma namnkrockar. Anta ett exempel där vi jobbar på ett program med grafiskt användargränssnitt där vi har en färg \code{Red} definerad. Anta också att vi nu till vårt program vill importera ytterligare en röd färg för kulörerna hjärter och ruter, denna också namngiven \code{Red}. I detta scenario hade det uppstått en namnkrock då \code{Red} redan är definerad så importeringen hade ej kunnat ske.
+Likt uppgift \ref{task:match-sealedtrait}\ref{subtask:match-sealedtrait-function} så kan även här en \code{import}-sats skrivas för att nå medlemmarna i \code{Färg} utan punktnotation.
+Det är dock inte alltid fördelaktigt att importera medlemmar till den globala namnrymden, då det kan förekomma namnkrockar. Anta ett exempel där vi jobbar på ett program med grafiskt användargränssnitt där vi har en färg \code{Red} definerad.
+Anta också att vi nu till vårt program vill importera ytterligare en röd färg för kulörerna hjärter och ruter, denna också namngiven \code{Red}. I detta scenario hade det uppstått en namnkrock då \code{Red} redan är definerad så importeringen hade ej kunnat ske.
 
 \SubtaskSolved
-\TODO %Se över denna
-Vid mönstermatchning så fungerar \code{sealed trait} ihop med \code{case}-objekt i praktiken likadant som att använda sig av \code{enum}. Vi såg att i deluppgift \ref{task:match-sealedtrait} \ref{subtask:match-forgetcase} så varnade REPL redan vid kompilering att denna funktionen inte var uttömd \Eng{exhaustive}. Detta gäller även vid användning av \code{enum} också.
+Vid mönstermatchning så fungerar \code{sealed trait} ihop med \code{case}-objekt i praktiken likadant som att använda sig av \code{enum}. 
+Vi såg att i deluppgift \ref{task:match-sealedtrait}\ref{subtask:match-forgetcase} så varnade REPL redan vid kompilering att denna funktionen inte var uttömd \Eng{exhaustive}. Detta gäller även vid användning av \code{enum} också.
 
 \QUESTEND
+
 
 
 \WHAT{Betydelsen av små och stora begynnelsebokstäver vid matchning.}
 
 \QUESTBEGIN
 
-\Task  \what~  För att åstadkomma att namn kan bindas till variabler vid matchning utan att de behöver deklareras i förväg (som vi såg i uppgift \ref{task:match-caseclass}\ref{subtask:autobinding-match}) så har identifierare med liten begynnelsebokstav fått speciell betydelse: den tolkas av kompilatorn som att du vill att en variabel  binds till ett värde vid matchningen. En identifierare med stor begynnelsebokstav tolkas däremot som ett konstant värde (t.ex. ett case-objekt eller ett case-klass-mönster).
+\Task  \what~  För att åstadkomma att namn kan bindas till variabler vid matchning utan att de behöver deklareras i förväg (som vi såg i uppgift \ref{task:match-caseclass}) så har identifierare med liten begynnelsebokstav fått speciell betydelse: den tolkas av kompilatorn som att du vill att en variabel  binds till ett värde vid matchningen. En identifierare med stor begynnelsebokstav tolkas däremot som ett konstant värde (t.ex. ett case-objekt eller ett case-klass-mönster).
 
 \Subtask \emph{En case-gren som fångar allt}. En case-gren med en identifierare med liten begynnelsebokstav som saknar gard kommer att matcha allt. Prova nedan i REPL, men försök lista ut i förväg vad som kommer att hända. Vad händer?
 \begin{REPL}
