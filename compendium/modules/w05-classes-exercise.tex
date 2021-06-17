@@ -88,10 +88,10 @@ class  Punkt       { var x = 3; var y = 2 }
 
 ~\\ \emph{fel} & \emph{typ} & \emph{förklaring} \\\hline
 
-\code|error: not found: value|
-& kompileringsfel & det finns ingen instans med namnet \code|Punkt|\\
+\code|value is not a member of object|
+& kompileringsfel & det finns ingen instans med namnet \code|Punkt| \TODO{Förklara mer specifikt att detta fel ges då konstruktionsombudet ej innehåller variabeln x?}\\ %TODO
 
-\verb|error: not found: type|
+\verb|Not found: type|
 & kompileringsfel & det finns ingen klass som heter \code|Singelpunkt|\\
 
 \code|NullPointerException|
@@ -107,7 +107,7 @@ class  Punkt       { var x = 3; var y = 2 }
 
 \QUESTBEGIN
 
-\Task \what~Klassen punkt i föregående uppgift är inte så smidig att använda eftersom man först \emph{efter} instansiering kan ge attributen \code{x} och \code{y} de koordinatvärden man önskar och detta måste ske med explicita tilldelningssatser.
+\Task \what~Klassen Punkt i föregående uppgift är inte så smidig att använda eftersom man först \emph{efter} instansiering kan ge attributen \code{x} och \code{y} de koordinatvärden man önskar och detta måste ske med explicita tilldelningssatser.
 
 Detta problem kan du lösa med \emph{klassparametrar} som låter dig initialisera attributen med konstruktionsargument och på så sätt ange ett initialtillstånd direkt i samband med instansiering.
 
@@ -124,7 +124,7 @@ class Point(var x: Int, var y: Int)
 \input{generated/quiz-w05-class-param-taskrows-generated.tex}
 \end{ConceptConnections}
 
-\Subtask Vid tre tillfällen blir det fel. Varför? Är det kompileringsfel eller exekveringsfel?
+\Subtask Vid två tillfällen blir det fel. Varför? Är det kompileringsfel eller exekveringsfel?
 
 \SOLUTION
 
@@ -142,13 +142,10 @@ class Point(var x: Int, var y: Int)
 
   ~\\ \emph{fel} & \emph{typ} & \emph{förklaring} \\\hline
 
-  \code|error: not found: value|
-  & kompileringsfel & det finns ingen instans med namnet \code|Point|\\
-
-  \verb|error: not enough arguments|
+  \verb|missing argument for parameter|
   & kompileringsfel  & du måste ge argument vid konstruktion av klassen \code|Point| \\
 
-  \code|error: too many arguments|
+  \verb|too many arguments for constructor|
   & kompileringsfel & antalet argument stämmer ej överens med antalet klassparametrar\\
 
 \end{tabular}
@@ -201,16 +198,14 @@ class Point3D(val x: Int = 0, val y: Int = 0, z: Int = 0)
 \Task \what~\\Klistra in nedan klasser i REPL.
 
 \begin{Code}
-case class Pt(x: Int = 0, y: Int = 0) {
+case class Pt(x: Int = 0, y: Int = 0):
   def moved(dx: Int = 0, dy: Int = 0): Pt = Pt(x + dx, y + dy)
-}
 
-class MutablePt(private var p: (Int, Int) = (0, 0)) {
+class MutablePt(private var p: (Int, Int) = (0, 0)):
   def x: Int = p._1
   def y: Int = p._2
   def move(dx: Int = 0, dy: Int = 0) = { p = (x + dx, y + dy); this }
   override def toString = s"MPt($x,$y)"
-}
 \end{Code}
 
 \Subtask
@@ -220,9 +215,13 @@ Antag att uttrycken till vänster evalueras uppifrån och ned. Vilket REPL-svar 
 \input{generated/quiz-w05-case-class-taskrows-generated.tex}
 \end{ConceptConnections}
 
+\TODO \verb|Warning: Always false| visas inte i Scala 3, till skillnad från Scala 2.x. Ta bort?
+
 \Subtask Vilken returtyp kommer kompilatorn härleda för funktionen \code{MutablePt.move}?
 
 \Subtask Implementera en fabriksmetod \code{apply} i ett kompanjonsobjekt till klassen \code{MutablePt} som gör att du inte behöver skriva \code{new} när du skapar instanser.
+
+\TODO Ta bort ovanstående deluppgift? Behövs ej i Scala 3.
 
 \Subtask Vad kallas sådana metoder som \code{ def x } och \code{ def y } ovan?
 
