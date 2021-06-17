@@ -23,17 +23,18 @@ object TestBlockGame {
       drawTextInMessageArea("Press Enter to toggle random blocks.", 0,0)
 
     def showEscapeMessage(): Unit =
-      drawTextInMessageArea("Press Escape to clear window.", 25, 0)
+      drawTextInMessageArea("Press Esc to clear window.", 25, 0)
 
     override def onKeyDown(key: String): Unit = {
       print(s" Key down: $key")
       key match {
-        case "Escape" =>
+        case "Esc" =>
           clearWindow()
           drawCenteredText("ESCAPED TO BLACK SPACE!")
           showEnterMessage()
         case "Enter"  =>
           isDrawingRandomBlocks = !isDrawingRandomBlocks
+          showEnterMessage()
           showEscapeMessage()
         case _ =>
       }

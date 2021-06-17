@@ -192,6 +192,17 @@
       #1}%
 }{}
 
+\lstnewenvironment{REPLsmall}[1][]{%
+    \lstset{
+      basicstyle=\color{white}\ttfamily\fontsize{7}{9}\selectfont,      
+      language=,otherkeywords={},%
+      tabsize=2,
+      backgroundcolor=\color{black!80},
+      frame=single,
+      #1}%
+}{}
+
+
 \newif\ifkompendium
 \kompendiumfalse
 

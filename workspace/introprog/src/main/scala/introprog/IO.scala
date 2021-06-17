@@ -2,7 +2,13 @@ package introprog
 
 /** A module with input/output operations from/to the underlying file system. */
 object IO {
-  /** Load a string from a text file called `fileName` using encoding `enc`. */
+  /**
+    * Load a string from a text file called `fileName` using encoding `enc`.
+    *
+    * @param fileName the path of the file.
+    * @param enc the encoding of the file.
+    * @return the content loaded from the file.
+    * */
   def loadString(fileName: String, enc: String = "UTF-8"): String = {
     var result: String = ""
     val source = scala.io.Source.fromFile(fileName, enc)
@@ -10,7 +16,12 @@ object IO {
     result
   }
 
-  /** Load string lines from a text file called `fileName` using encoding `enc`. */
+  /**
+    * Load string lines from a text file called `fileName` using encoding `enc`.
+    *
+    * @param fileName the path of the file.
+    * @param enc the encoding of the file.
+    * */
   def loadLines(fileName: String, enc: String = "UTF-8"): Vector[String] = {
     var result = Vector.empty[String]
     val source = scala.io.Source.fromFile(fileName, enc)
@@ -18,49 +29,100 @@ object IO {
     result
   }
 
-  /** Save `text` to a text file called `fileName` using encoding `enc`. */
+  /**
+    * Save `text` to a text file called `fileName` using encoding `enc`.
+    *
+    * @param text the text to be written to the file.
+    * @param fileName the path of the file.
+    * @param enc the encoding of the file.
+    * */
   def saveString(text: String, fileName: String, enc: String = "UTF-8"): Unit = {
     val f = new java.io.File(fileName)
     val pw = new java.io.PrintWriter(f, enc)
     try pw.write(text) finally pw.close()
   }
 
-  /** Save `lines` to a text file called `fileName` using encoding `enc`. */
+  /**
+    * Save `lines` to a text file called `fileName` using encoding `enc`.
+    *
+    * @param lines the lines to written to the file.
+    * @param fileName the path of the file.
+    * @param enc the encoding of the file.
+    * */
   def saveLines(lines: Seq[String], fileName: String, enc: String = "UTF-8"): Unit =
     saveString(lines.mkString("\n"), fileName, enc)
 
-  /** Load a serialized object from a binary file called `fileName`. */
+  /**
+    * Load a serialized object from a binary file called `fileName`.
+    *
+    * @param fileName the path of the file.
+    * @return the serialized object.
+    * */
   def loadObject[T](fileName: String): T = {
     val f = new java.io.File(fileName)
     val ois = new java.io.ObjectInputStream(new java.io.FileInputStream(f))
     try ois.readObject.asInstanceOf[T] finally ois.close()
   }
 
-  /** Serialize `obj` to a binary file called `fileName`. */
+  /**
+    * Serialize `obj` to a binary file called `fileName`.
+    *
+    * @param obj the object to be serialized.
+    * @param fileName the path of the file.
+    * */
   def saveObject[T](obj: T, fileName: String): Unit = {
     val f = new java.io.File(fileName)
     val oos = new java.io.ObjectOutputStream(new java.io.FileOutputStream(f))
     try oos.writeObject(obj) finally oos.close()
   }
 
-  /** Test if a file with name `fileName` exists. */
+  /**
+    * Test if a file with name `fileName` exists.
+    *
+    * @param fileName the path of the file.
+    * @return true if the file exists else false.
+    * */
   def isExisting(fileName: String): Boolean = new java.io.File(fileName).exists
 
-  /** Create a directory with name `dir` if it does not exist. */
+  /**
+    * Create a directory with name `dir` if it does not exist.
+    *
+    * @param dir the path of the directory to be created.
+    * @return true if and only if the directory was created,
+    *         along with all necessary parent directories otherwise false.
+    * */
   def createDirIfNotExist(dir: String): Boolean = new java.io.File(dir).mkdirs()
 
-  /** Return the path name of the current user's home directory. */
+  /**
+    * Gets the path of the current user's home directory.
+    *
+    * @return the path of the current user's home directory.
+    * */
   def userDir(): String = System.getProperty("user.home")
 
-  /** Return the path name of the current working directory. */
+  /**
+    * Gets the path of the current working directory.
+    *
+    * @return the path of the current working directory.
+    * */
   def currentDir(): String =
     java.nio.file.Paths.get(".").toAbsolutePath.normalize.toString
 
-  /** Return a sequence of file names in the directory `dir`. */
+  /**
+    * Gets a sequence of file names in the directory `dir`.
+    *
+    * @param dir the path of the directory to be listed.
+    * @return a sequence of file names in the directory `dir
+    * */
   def list(dir: String = "."): Vector[String] =
     Option(new java.io.File(dir).list).map(_.toVector).getOrElse(Vector())
 
-  /** Change name of file `from`, DANGER: silently replaces existing `to`. */
+  /**
+    * Change name of file `from`, DANGER: silently replaces existing `to`.
+    *
+    * @param from the path of the file to be moved.
+    * @param to the path the file will be moved to.
+    * */
   def move(from: String, to: String): Unit = {
     import java.nio.file.{Files, Paths, StandardCopyOption}
     Files.move(Paths.get(from), Paths.get(to), StandardCopyOption.REPLACE_EXISTING)

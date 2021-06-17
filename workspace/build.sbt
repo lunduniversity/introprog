@@ -20,22 +20,22 @@ lazy val cslib = (project in file("cslib")).  // still used by w13_img_proj
       "-encoding", "UTF-8", "-charset", "UTF-8", "-docencoding", "UTF-8")
   )
 
-val Version = "1.1.4"
-val Name    = "introprog"
+val IntroprogLibVersion = "1.1.5"
+val IntroprogLibName    = "introprog"
 lazy val introprog_scalalib = (project in file("introprog")).
   settings(commonSettings: _*).
   settings(
-    name := Name,
-    version := Version,
-    scalaVersion := "2.13.6",
+    name := IntroprogLibName,
+    version := IntroprogLibVersion,
+    scalaVersion := "3.0.0",
     scalacOptions ++= Seq("-encoding", "UTF-8"),
-    Compile/doc/scalacOptions ++= Seq(
+    Compile/doc/scalacOptions ++= Seq( // TODO why docs here? scala3?
       "-implicits",
       "-groups",
-      "-doc-title", Name,
+      "-doc-title", IntroprogLibName,
       "-doc-footer", "Dep. of Computer Science, Lund University, Faculty of Engineering LTH",
       "-sourcepath", (ThisBuild/baseDirectory).value.toString,
-      "-doc-version", Version,
+      "-doc-version", IntroprogLibVersion,
       "-doc-root-content", (ThisBuild/baseDirectory).value.toString + "/src/rootdoc.txt",
       "-doc-source-url", s"https://github.com/lunduniversity/introprog-scalalib/tree/master€{FILE_PATH}.scala"
     )
@@ -100,7 +100,7 @@ lazy val w13_tabular =(project in file("w13_tabular")).
 settings(commonSettings: _*).
 settings(
   name := "w13_tabular"
-).dependsOn(introprog_scalalib) // TODO: remove this dependency when updated
+).dependsOn(introprog_scalalib) 
 
 
 lazy val w13_music_proj =(project in file("w13_music_proj")).
@@ -121,4 +121,4 @@ lazy val workspace = (project in file(".")).
   settings(commonSettings: _*).
   settings(
     name := "workspace",
- )
+ ).aggregate(cslib, introprog_scalalib, w03_irritext, w04_blockmole, w06_blockbattle, w07_shuffle, w08_life, w09_words, w10_snake, w11_javatext, w13_bank_proj, w13_img_proj, w13_music_proj, w13_tabular)
