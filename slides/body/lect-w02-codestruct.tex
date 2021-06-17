@@ -499,29 +499,52 @@ dej
 \end{Slide}
 
 
-\begin{Slide}{Loopa genom argumenten i ett Scala-huvudprogram}
-Skriv och spara nedan kod i filen \texttt{helloargs.scala}
+\begin{Slide}{Strängargument till i ett program med primitiv main}
+Skriv och spara nedan kod i filen \texttt{helloargs1scala}
 \begin{REPLnonum}
-> code helloargs.scala
+> code helloargs1.scala
 \end{REPLnonum}
 \begin{Code}
 object HelloScalaArgs:
-  def main(args: Array[String]): Unit = 
+  def main(args: Array[String]): Unit = // en primitiv main-metod utan @main
     var i = 0
     while i < args.size do:
       println(args(i))
       i = i + 1
 \end{Code}
-Kompilera och kör:
+En primitiv \code{main}-metod har ej \code{@main} och måste vara i ett objekt. \\
+Kompilera och kör med namnet på objektet:
 \begin{REPL}
-> scalac helloargs.scala
-> scala HelloScalaArgs hej gurka tomat
-hej
+> scalac helloargs1.scala
+> scala HelloScalaArgs morot gurka tomat
+morot
 gurka
 tomat
 \end{REPL}
 \end{Slide}
 
+\begin{Slide}{Typsäkra argument till i ett program med @main}
+Skriv och spara nedan kod i filen \texttt{helloargs2.scala}
+\begin{REPLnonum}
+> code helloargs2.scala
+\end{REPLnonum}
+\begin{Code}
+@main 
+def hej(heltal: Int, resten: String*): Unit = 
+  for i <- 0 until heltal do println(resten(i))
+\end{Code}
+Med \code{@main} behövs inget objekt.\\
+Kompilera och kör med namnet på \code{@main}-funktionen:
+\begin{REPL}
+> scalac helloargs2.scala
+> scala hej 2 morot gurka tomat
+morot
+gurka
+> scala hej aj morot gurka tomat
+Illegal command line: java.lang.NumberFormatException: For input string: "aj"
+\end{REPL}
+Med \code{@main} genereras automatiskt en primitiv main som kollar att argumenten har rätt typ.
+\end{Slide}
 
 % \begin{Slide}{Loopa genom argumenten i ett Java-huvudprogram}
 % \begin{REPLnonum}
@@ -806,19 +829,19 @@ Synlighetsregler:
 \end{enumerate}
 
 \begin{REPL}
-scala> { val lokaltNamn = 42; println(lokaltNamn) }
+scala> def a = { val lokaltNamn = 42; println(lokaltNamn) }
+scala> a 
 42
 
-scala> println(lokaltNamn)
-<console>:12: error: not found: value lokaltNamn
-       println(lokaltNamn)
+scala> println(lokaltNamn)                                                                                                                  
+1 |println(lokaltNamn)
+  |        ^^^^^^^^^^
+  |        Not found: lokaltNamn
 
-scala> { val x = 42; { val x = 76; println(x) }; println(x) }
-76
-42
-
-scala> { val x = 42; { val y = x + 1; println(y) } }
-43
+scala> def b = { val x = 42; { val x = 76; println(x) }; println(x) }
+scala> def c = { val x = 42; { val b = x + 1; println(b) } }
+scala> b  // vad händer?
+scala> c  // vad händer?
 \end{REPL}
 
 \end{Slide}
@@ -858,17 +881,20 @@ scala> öka(minParameter = ettArgument)
 \item Exempel på befintlig procedur: \code{println("hej")}
 \item Du \Emph{deklarerar egna procedurer} genom att ange \texttt{\Alert{Unit}} som returvärdestyp. Då ges värdet \texttt{\Alert{()}} som betyder ''inget''.
 \end{itemize}
-\begin{REPL}$%dummydollar 
+\begin{REPLsmall}$%dummydollar 
 scala> def hej(x: String): Unit = println(s"Hej på dej $x!")
-hej: (x: String)Unit
 
 scala> hej("Herr Gurka")
 Hej på dej Herr Gurka!
 
 scala> val x = hej("Fru Tomat")
 Hej på dej Fru Tomat!
-x: Unit = ()
-\end{REPL}
+
+scala> :type x 
+Unit
+
+scala> println(x)    // vad händer?
+\end{REPLsmall}
 \begin{itemize}
 \item Det som \Alert{görs} kallas (sido)\Emph{effekt}. Ovan är utskriften själva effekten.
 \item Funktioner kan också ha sidoeffekter. De kallas då \Alert{oäkta} funktioner.

@@ -65,12 +65,9 @@
   \item En funktion kan ha \Emph{parametrar} som deklareras i huvudet. 
   \item Kroppen ska vara ett uttryck (ev. ett block med flera uttryck).
   \item Parametrar binds till argument vid anrop.
-  \item Uttrycket i funktionens kropp evalueras vid varje anrop. 
-  \item Värdet av uttrycket blir funktionen returvärde. 
+  \item Uttrycket i funktionens kropp \Emph{evalueras} vid \Alert{varje anrop}. 
+  \item Värdet av uttrycket blir funktionen \Emph{returvärde}. 
 \end{itemize}
-
-
-
 
 \pause
 Exempel:
@@ -80,9 +77,8 @@ def öka(a: Int, b: Int): Int = a + b
 \pause
 \begin{REPLnonum}
 scala> öka(42, 1)
-res0: Int = 43
+val res0: Int = 43
 \end{REPLnonum}
-
 
 \end{Slide}
 
@@ -91,15 +87,15 @@ res0: Int = 43
 \begin{itemize}
 \item En parameter, och sedan två parametrar:
 \begin{REPL}
-scala> :paste
-  def öka(a: Int): Int = a + 1
-  def öka(a: Int, b: Int): Int = a + b
+scala> def öka(a: Int): Int = a + 1
+
+scala> def öka(a: Int, b: Int): Int = a + b
 
 scala> öka(1)
-res0: Int = 2
+val res0: Int = 2
 
 scala> öka(1,1)
-res1: Int = 2
+val res1: Int = 2
 
 \end{REPL}
 \item Båda funktionerna ovan kan finnas samtidigt! Trots att de har \Emph{samma namn} är de \Alert{olika funktioner}; kompilatorn kan skilja dem åt med hjälp av de \Alert{olika parameterlistorna}.
@@ -117,16 +113,15 @@ res1: Int = 2
 \item Vi kan ofta åstadkomma samma flexibilitet som vid överlagring, men med \Alert{en enda} funktion, om vi i stället använder \Emph{defaultargument}:
 \begin{REPLnonum}
 scala> def inc(a: Int, b: Int = 1) = a + b
-inc: (a: Int, b: Int)Int
 
 scala> inc(42, 2)
-res0: Int = 44
+val res0: Int = 44
 
 scala> inc(42, 1)
-res1: Int = 43
+val res1: Int = 43
 
 scala> inc(42)
-res2: Int = 43
+val res2: Int = 43
 
 \end{REPLnonum}
 \item Om ett argument utelämnas och parametern deklarerats med defaultargument så appliceras detta. Kompilatorn fyller alltså i argumentet åt oss, om det är entydigt vilken parameter som avses.
@@ -143,11 +138,11 @@ scala> def namn(förnamn: String,
                 efternamn: String,
                 förnamnFörst: Boolean = true,
                 ledtext: String = ""): String =
-         if (förnamnFörst) s"$ledtext: $förnamn $efternamn"
+         if förnamnFörst then s"$ledtext: $förnamn $efternamn"
          else s"$ledtext: $efternamn, $förnamn"
 
 scala> namn(ledtext = "Name", efternamn = "Coder", förnamn = "Kim")
-res0: String = Name: Kim Coder
+val res0: String = Name: Kim Coder
 \end{REPLnonum}
 \end{itemize}
 \end{Slide}
@@ -155,27 +150,31 @@ res0: String = Name: Kim Coder
 
 \begin{Slide}{Enhetlig access}\SlideFontSmall
 \begin{itemize}
-\item Om en funktion \Emph{deklareras} \Alert{med} tom parameterlista \code{()}, så ska den \Emph{anropas} \Alert{med} tom parameterlista.
-\begin{REPL}
-scala> def tomParameterLista() = 42
+\item Om en funktion \Emph{deklareras} \Alert{med} tom parameterlista \code{()} så ska den \Emph{anropas} \Alert{med} tom parameterlista.
+\begin{REPLsmall}
+scala> def tomParameterlista() = 42
 
-scala> tomParameterLista()
-res1: Int = 42
+scala> tomParameterlista()
+val res1: Int = 42
 
-scala> tomParameterLista
-       ^ warning: Auto-application to `()` is deprecated. 
-\end{REPL}
+scala> tomParameterlista                                                                                                                    
+1 |tomParameterlista
+  |^^^^^^^^^^^^^^^^^
+  |method tomParameterlista must be called with () argument
+\end{REPLsmall}
 
-\item MEN om en parameterlös funktion deklareras \Emph{utan} () kan den användas enhetligt \Alert{oavsett} om namnet avser en funktion eller en variabel. 
-\item Denna regel är grunden för principen om \Emph{enhetlig access}: implementationen kan ändras utan att användande koden påverkas.
-\pause\item Om parameterlista saknas får man \Alert{inte} använda \code{()} vid anrop:
+\item En parameterlös funktion deklarerad \Alert{utan} \code{()} ska anropas \Alert{utan} \code{()}. 
+\item Deklaration utan \code{()} är grunden för principen om \Emph{enhetlig access}: implementationen kan ändras från \code{val} till \code{def} eller från \code{def} till \code{val} \Emph{utan} att \Alert{användande} koden påverkas.
+\pause
+%\item Om parameterlista saknas får man alltså \Alert{inte} använda \code{()} vid anrop:
 
-\begin{REPL}
-scala> def ingenParameterLista = 42
-scala> ingenParameterLista()
-        ^ error: Int does not take parameters
-\end{REPL}
-
+\begin{REPLsmall}
+scala> def ingenParameterlista = 42
+scala> ingenParameterlista()
+1 |ingenParameterlista()
+  |^^^^^^^^^^^^^^^^^^^
+  |method ingenParameterlista does not take parameters
+\end{REPLsmall}
 \end{itemize}
 \end{Slide}
 
@@ -192,10 +191,10 @@ Minnet som innehåller ett programs data är uppdelat i två delar:
 \end{itemize}
 \item \Emph{Objektheapen}: I heapminnet\footnote{\href{https://en.wikipedia.org/wiki/Memory_management}{en.wikipedia.org/wiki/Memory\_management}}$^{,}$\footnote{Ej att förväxlas med datastrukturen heap  \href{https://sv.wikipedia.org/wiki/Heap}{sv.wikipedia.org/wiki/Heap}} sparas alla objekt (data) som allokeras under körning. Heapen städas då och då av \Emph{skräpsamlaren} \Eng{garbage collector}, och minne som inte används längre frigörs. \\\vspace{0.5em}
 %\href{http://stackoverflow.com/questions/1565388/increase-heap-size-in-java}{stackoverflow.com/questions/1565388/increase-heap-size-in-java}
-\href{https://stackoverflow.com/questions/1441373/increase-jvm-heap-size-for-scala}{stackoverflow.com/questions/1441373/increase-jvm-heap-size-for-scala}
-\begin{REPLnonum}
-scala -J-Xmx16g -J-XX:-UseGCOverheadLimit Main
-\end{REPLnonum}
+% \href{https://stackoverflow.com/questions/1441373/increase-jvm-heap-size-for-scala}{stackoverflow.com/questions/1441373/increase-jvm-heap-size-for-scala}
+% \begin{REPLnonum}
+% scala -J-Xmx16g -J-XX:-UseGCOverheadLimit Main
+% \end{REPLnonum}
 \end{itemize}
 \end{Slide}
 
@@ -230,15 +229,16 @@ scala -J-Xmx16g -J-XX:-UseGCOverheadLimit Main
 
 \begin{Slide}{Aktiveringspost}\SlideFontSmall
 Nästlade anrop ger växande anropsstack.
-\begin{REPL}
-scala> :paste
-def h(x: Int, y: Int): Unit = { val z = x + y; println(z) }
-def g(a: Int, b: Int): Unit = { val x = 1; h(x + 1, a + b) }
-def f(): Unit = { val n = 5; g(n, 2 * n) }
+\begin{REPLsmall}
+scala> def h(x: Int, y: Int): Unit = { val z = x + y; println(z) }
+
+scala> def g(a: Int, b: Int): Unit = { val x = 1; h(x + 1, a + b) }
+
+scala> def f(): Unit = { val n = 5; g(n, 2 * n) }
 
 scala> f()
 
-\end{REPL}
+\end{REPLsmall}
 
 \pause
 \Alert{Stacken}
@@ -261,49 +261,57 @@ variabel & värde & Aktiveringspost för anrop av... \\ \hline \hline
 
 \begin{Slide}{Vad är en stack trace?}\SlideFontSmall
 När du letar buggar vid körtidsfel har du nytta av att \Alert{noga studera} \Emph{utskriften av anropsstacken} \Eng{stack trace}:
+% \begin{CodeSmall}
+% // Program i filen BMI.scala
+% object BMI: 
+%   def main(args: Array[String]): Unit = 
+%     println(bmi(args(0).toInt, args(1).toInt))
+
+%   def bmi(heightCm: Int, weightKg: Int) = 
+%     safeDiv(weightKg, heightCm * heightCm) 
+
+%   def safeDiv(nominator: Int, denominator: Int): (Int, String) = 
+%     if (denominator == 0) (nominator / denominator, "ok")  // ser du buggen?
+%     else (0, "division by zero") 
+% \end{CodeSmall}
+  
 \begin{Code}
-// Program i filen BMI.scala
-object BMI { 
-  def main(args: Array[String]): Unit = 
-    println(bmi(args(0).toInt, args(1).toInt))
+// Program i filen bmi.scala
 
-  def bmi(heightCm: Int, weightKg: Int) = 
-    safeDiv(weightKg, heightCm * heightCm) 
+@main 
+def bmi(heightCm: Int, weightKg: Int) = 
+  safeDiv(weightKg, heightCm * heightCm) 
 
-  def safeDiv(nominator: Int, denominator: Int): (Int, String) = 
-    if (denominator == 0) (nominator / denominator, "ok")  // ser du buggen?
-    else (0, "division by zero") 
-}
+def safeDiv(nominator: Int, denominator: Int): (Int, String) = 
+  if denominator == 0 then (nominator / denominator, "ok")  // ser du buggen?
+  else (0, "division by zero")
+
 \end{Code}
 \begin{REPL}
-> scalac BMI.scala 
-> scala BMI 0 68
-java.lang.ArithmeticException: / by zero
-  ... HÄR KOMMER STACK TRACE ... (Se nästa bild)
+> scalac bmi.scala 
+> scala bmi 0 42
+Exception in thread "main" java.lang.ArithmeticException: / by zero
+        // HÄR KOMMER STACK TRACE pga körtidsfel - se nästa bild
 \end{REPL}
 \end{Slide}
 
 \begin{Slide}{Hur läsa en stack trace?}
 \begin{REPL}
-  java.lang.ArithmeticException: / by zero
-       at BMI$.safeDiv(BMI.scala:8)
-       at BMI$.bmi(BMI.scala:5)
-       at BMI$.main(BMI.scala:2)
-       at BMI.main(BMI.scala)
-       at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-       at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-       at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-       at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-       at scala.reflect.internal.util.ScalaClassLoader.$anonfun$run$2(ScalaClassLoader.scala:105)
-  ...  
+Exception in thread "main" java.lang.ArithmeticException: / by zero
+        at bmi$package$.safeDiv(bmi.scala:8)
+        at bmi$package$.bmi(bmi.scala:5)
+        at bmi.main(bmi.scala:3)
+
 \end{REPL}
 \begin{itemize}\SlideFontSmall
   \item En \Emph{stack trace} skrivs ut efter en krasch p.g.a. körtidsfel.
-  \item Först kommer felet som orsakat kraschen. 
+  \item Körtidsfel känns igen med ordet \Alert{Exception}.
+  \item Först kommer en beskrivning av felet som orsakat kraschen, här: \\\code{java.lang.ArithmeticException: \ by zero} 
   \item Därefter visas anropsstacken.
   \item För varje funktionsanrop anges: \Emph{\texttt{klass.metod(kodfil:radnummer)}}
+  \item Main-funktioner läggs i ett singelobjekt i ett speciellt paket
   \item Singelobjekt i Scala kodas som en Java-klass med dollar-tecken efter namnet, eftersom det inte finns singelobjekt i JVM.
-  \item Efter anropet av din \code{main}-procedur ligger JVM-interna anrop (\code{java.base} etc.) som du inte behöver bry dig om.
+  %\item Efter anropet av din \code{main}-procedur ligger JVM-interna anrop (\code{java.base} etc.) som du inte behöver bry dig om. %% syns inte längre i Scala 3 stack trace
 \end{itemize}
 \end{Slide}
   
@@ -312,27 +320,26 @@ java.lang.ArithmeticException: / by zero
 Med lokala funktioner kan delproblem lösas med nästlade abstraktioner.
 
 \begin{CodeSmall}
-def gissaTalet(max: Int, min: Int = 1): Unit = {
+def gissaTalet(max: Int, min: Int = 1): Unit = 
   def gissat = io.StdIn.readLine(s"Gissa talet mellan $min och $max: ").toInt
 
   val hemlis = (math.random() * (max - min) + min).toInt
 
   def skrivLedtrådOmEjRätt(gissning: Int): Unit =
-    if (gissning > hemlis) println(s"$gissning är för stort :(")
-    else if (gissning < hemlis) println(s"$gissning är för litet :(")
+    if gissning > hemlis then println(s"$gissning är för stort :(")
+    else if gissning < hemlis then println(s"$gissning är för litet :(")
 
-  def inteRätt(gissning: Int): Boolean = {
+  def inteRätt(gissning: Int): Boolean = 
     skrivLedtrådOmEjRätt(gissning)
     gissning != hemlis
-  }
+  
 
-  def loop: Int = { var i = 1; while (inteRätt(gissat)){ i += 1 }; i }
+  def loop: Int = { var i = 1; while inteRätt(gissat) do i += 1; i }
 
   println(s"Du hittade talet $hemlis på $loop gissningar :)")
-}
 \end{CodeSmall}
 
-Lokala, nästlade funktionsdeklarationer är tyvärr inte tillåtna i Java.\footnote{\href{http://stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}{\SlideFontSize{8}{9}stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}}
+Lokala, nästlade funktionsdeklarationer är tyvärr inte tillåtna i många andra språk, t.ex. Java.\footnote{\href{http://stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}{\SlideFontSize{8}{9}stackoverflow.com/questions/5388584/does-java-support-inner-local-sub-methods}}
 
 \end{Slide}
 
@@ -347,17 +354,44 @@ Lokala, nästlade funktionsdeklarationer är tyvärr inte tillåtna i Java.\foot
 \begin{REPLnonum}
 scala> def add(a: Int, b: Int) = a + b
 
-scala> val f = add _
-
-scala> f
-f: (Int, Int) => Int = <function2>
+scala> val f = add _ 
+val f: (Int, Int) => Int = Lambda7210/0x0000000841e4e040@1ce2db23
 
 scala> f(21, 21)
-res0: Int = 42
+val res0: Int = 42
 \end{REPLnonum}
-
 \item Ett funktionsvärde har en \Alert{typ} precis som alla värden: \\
 \code{f: (Int, Int) => Int}
+\pause
+\item Ett funktionsvärde har till skillnad från en funktionsdeklaration inget namn (variabeln \code{f} har ett namn men inte själva funktionen). Den kallas därför en \Emph{anonym} funktion eller \Alert{lambda} (mer om detta snart).
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Du kan vanligtvis skippa understreck}\SlideFontSmall
+\begin{itemize}\SlideFontSmall
+
+\item Nytt i Scala 3: Om det är otvetydigt att du vill skapa ett funktionsvärde så kan du skippa understreck:
+\begin{REPLnonum}
+scala> def add(a: Int, b: Int) = a + b
+
+scala> val f = add     // inget understreck behövs 
+val f: (Int, Int) => Int = Lambda7210/0x0000000841e4e040@1ce2db23
+\end{REPLnonum}
+
+\item Specialfall då understreck behövs: (se speciellt typen \code{() => Int})
+\begin{REPLsmall}
+scala> def a() = 42
+def a(): Int
+
+scala> val b = a
+1 |val b = a
+  |        ^
+  |        method a must be called with () argument
+
+scala> val b = a _
+val b: () => Int = Lambda7214/0x0000000841e50440@565d794
+\end{REPLsmall}
+\item Börja utan understreck och se om det funkar utan kompileringsfel...
 \end{itemize}
 \end{Slide}
 
@@ -370,16 +404,11 @@ scala> def öka(x: Int) = x + 1
 
 scala> def minska(x: Int) = x - 1
 
-scala> tvåGånger(42, öka _)
-res1: Int = 44
-
-scala> tvåGånger(42, minska _)
-res1: Int = 40
-\end{REPL}
-Om argumentets funktionstyp \Alert{kan härledas} av kompilatorn och \Alert{passar} med parametertypen så behövs ej understreck: \\
-\begin{REPL}
 scala> tvåGånger(42, öka)
-res1: Int = 44
+val res1: Int = 44
+
+scala> tvåGånger(42, minska)
+val res1: Int = 40
 \end{REPL}
 \end{Slide}
 
@@ -397,12 +426,12 @@ val xs = Vector(1, 2, 3)
 Metoden \Emph{\texttt{map}} fungerar på alla Scala-samlingar och tar \Emph{en funktion som argument} och applicerar denna funktion på alla element och \Alert{skapar en ny samling} med resultaten:
 \begin{REPL}
 scala> xs.map(öka)
-res0: ???
+val res0: ???   // vad blir resultatet?
 
 scala> xs.map(minska)
-res1: ???
+val res1: ???   // vad blir resultatet?
 \end{REPL}
-Funktioner som tar andra funktioner som parametrar kallas \\ \Emph{högre ordningens funktioner}.
+En funktion som har funktionsvärden som indata (eller utdata) kallas en\\ \Emph{högre ordningens funktion}  \Eng{higher-order function}.
 \end{Slide}
 
 
@@ -417,12 +446,12 @@ val xs = Vector(1, 2, 3)
 Metoden \Emph{\texttt{map}} fungerar på alla Scala-samlingar och tar \Emph{en funktion som argument} och applicerar denna funktion på alla element och \Alert{skapar en ny samling} med resultaten:
 \begin{REPL}
 scala> xs.map(öka)
-res0: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
+val res0: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
 
 scala> xs.map(minska)
-res1: scala.collection.immutable.Vector[Int] = Vector(0, 1, 2)
+val res1: scala.collection.immutable.Vector[Int] = Vector(0, 1, 2)
 \end{REPL}
-Funktioner som tar andra funktioner som parametrar kallas \\ \Emph{högre ordningens funktioner}.
+En funktion som har funktionsvärden som indata kallas en\\ \Emph{högre ordningens funktion}  \Eng{higher-order function}.
 \end{Slide}
 
 \Subsection{Äkta funktioner}
@@ -434,13 +463,13 @@ Funktioner som tar andra funktioner som parametrar kallas \\ \Emph{högre ordnin
 \item En äkta funktion har \Alert{inga sidoeffekter}, t.ex. utskrift, skriva/läsa filer,  eller uppdateringar av variabler \Alert{synliga utanför} funktionen.
 \item Exempel:
 \begin{Code}
-def add(x: Int, y: Int): Int = x + y            // äkta funktion
+def add(x: Int, y: Int): Int = x + y              // äkta funktion
 def rnd(n: Int): Int = (math.random() * n).toInt  // oäkta funktion
 \end{Code} 
 \begin{itemize}\SlideFontTiny
 
 \item Uttrycket \code{add(41, 1)} kan ersättas med 41 +1 som i sin tur kan ersättas med 42 utan att det påverkar resultatet. Resultatet av \code{add(41, 1)} blir \Emph{samma varje gång} funktionen appliceras med dessa argument
-\item Uttrycket \code{rnd(42)} kan \Alert{inte} bytas ut mot ett specifikt uttryck som säkert ger samma resultat varje gång. Alltså: ej referentiell transparens.
+\item Uttrycket \code{rnd(42)} kan \Alert{inte} bytas ut mot ett specifikt uttryck som säkert ger samma resultat varje gång. Alltså: \emph{ej referentiell transparens}.
 \end{itemize}  
 \end{itemize}  
 \end{Slide}
@@ -644,7 +673,8 @@ scala> def add(a: Int)(b: Int) = a + b
 scala> add(21)(21)
 res1: Int = 42
 \end{REPLnonum}
-Detta kallas multipla parameterlistor \Eng{multiple parameter lists}
+\Eng{multiple parameter lists}
+
 \href{http://docs.scala-lang.org/style/declarations.html#multiple-parameter-lists}{\SlideFontTiny docs.scala-lang.org/style/declarations.html\#multiple-parameter-lists}
 \end{Slide}
 
@@ -653,7 +683,7 @@ Detta kallas multipla parameterlistor \Eng{multiple parameter lists}
 \begin{Slide}{Värdeanrop och namnanrop}\SlideFontSmall
 Det vi sett hittills är \Emph{värdeanrop}: argumentet evalueras \Alert{först} innan dess \Alert{värde} \emph{sedan} appliceras:
 \begin{REPL}
-scala> def byValue(n: Int): Unit = for (i <- 1 to n) print(" " + n)
+scala> def byValue(n: Int): Unit = for i <- 1 to n do print(" " + n)
 
 scala> byValue(21 + 21)
  42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42
@@ -664,7 +694,7 @@ scala> byValue({print(" hej"); 21 + 21})
 \pause
 Men man kan med \code{=>} före parametertypen åstadkomma \Emph{namnanrop}: argumentet \Alert{''klistras in''} i stället för \Alert{namnet} och evalueras \Alert{varje gång} (kallas även \Emph{fördröjd evaluering}):
 \begin{REPL}
-scala> def byName(n: => Int): Unit = for (i <- 1 to n) print(" " + n)
+scala> def byName(n: => Int): Unit = for i <- 1 to n do print(" " + n)
 
 scala> byName({print(" hej"); 21 + 21})
  hej hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42 hej 42
@@ -698,7 +728,7 @@ scala> twice { print("hej"); print("san ") }
 \item Genom att \Alert{kombinera} \Emph{multipla parameterlistor} med \Emph{namnanrop} med \Emph{klammerparentes vid ensam parameter} kan vi skapa vår egen kontrollstruktur: \code{upprepa} \pause
 \begin{Code}
 upprepa(42){
-  if (math.random() < 0.5) print(" gurka")
+  if math.random() < 0.5 then print(" gurka")
   else print(" tomat")
 }
 \end{Code}
@@ -706,13 +736,8 @@ Hur då?
 \pause
  Till exempel så här:
 \begin{Code}
-def upprepa(n: Int)(block: => Unit) = {
-  for(i <- 0 until n) {
-    block
-  }
-}
-
-
+def upprepa(n: Int)(block: => Unit) = 
+  for i <- 0 until n do block
 \end{Code}
 
 \pause
@@ -730,36 +755,35 @@ Om en funktion har multipla parameterlistor kan man skapa \Emph{stegade funktion
 scala> def add(x: Int)(y: Int) = x + y
 
 scala> val öka = add(1) _
-öka: Int => Int = <function1>
+val öka: Int => Int = Lambda7339/0x0000000841eb7040@19c8add7
 
 scala> Vector(1,2,3).map(öka)
-res0:scala.collection.immutable.Vector[Int]= Vector(2, 3, 4)
+val res0: Vector[Int] = Vector(2, 3, 4)
 
 scala> Vector(1,2,3).map(add(2))
-res1:scala.collection.immutable.Vector[Int]= Vector(3, 4, 5)
+val res1: Vector[Int] = Vector(3, 4, 5)
 \end{REPLnonum}
 \end{Slide}
 
 
 \begin{Slide}{Funktion med fångad variabelrymd: \textit{closure}}
 \begin{Code}
-def f(x: Int): Int => Int = {
+def f(x: Int): Int => Int = 
   val a = 42 + x
   def g(y: Int): Int = y + a
-  g _
-}
+  g
 \end{Code}
-Funktionen \code{g} \Alert{fångar} den lokala variabeln \code{a} i ett s.k. \Emph{closure}.
+Funktionen \code{g} \Alert{fångar} den lokala variabeln \code{a} i ett \Emph{funktionsobjekt}.
 \pause
 \begin{REPLnonum}
 scala> val funkis = f(1)
-funkis: Int => Int = $$Lambda$$1061/726226084@498f1f63
+val funkis: Int => Int = Lambda7356/0x0000000841ed2840@1bda26bc
 
 scala> funkis(2)
-res0: Int = 45
+val res0: Int = 45
 \end{REPLnonum}
 \pause
-Ett \Emph{closure} sparar variabler i ett \Alert{persistent funktionsobjekt}. \\
+Ett funktionsobjekt med ''fångade'' variabler kallas \Alert{closure}. \\
 (Mer om funktioner som objekt senare.)
 \end{Slide}
 
@@ -778,7 +802,7 @@ Ett \Emph{closure} sparar variabler i ett \Alert{persistent funktionsobjekt}. \\
 \item namnanrop (fördröjd evaluering)
 \item egendefinierade kontrollstrukturer
 \item stegade funktioner (''Curry-funktioner'')
-\item fångad variablelrymd (''closure'')
+\item fångad variablelrymd i funktionsobjekt (''closure'')
 \end{enumerate}
 \end{SlideExtra}
 \fi
@@ -799,7 +823,7 @@ Ett \Emph{closure} sparar variabler i ett \Alert{persistent funktionsobjekt}. \\
 \item egendefinierade kontrollstrukturer
 \item namnanrop (fördröjd evaluering)
 \item stegade funktioner (''Curry-funktioner'')
-\item fångad variablelrymd (''closure'')
+\item fångad variablelrymd i funktionsobjekt (''closure'')
 \end{itemize}
 \item[] ...kan man i Java %\footnote{\SlideFontTiny\href{https://en.wikipedia.org/wiki/Java_version_history}{en.wikipedia.org/wiki/Java\_version\_history}}  
 endast göra: \Emph{överlagring} (''overloading'') och \Emph{anonyma funktioner} (''lambda'') där det senare har starka begränsningar. %\footnote{\SlideFontTiny\href{https://en.wikipedia.org/wiki/Anonymous_function\#Java_Limitations}{en.wikipedia.org/wiki/Anonymous\_function\#Java\_Limitations}}
@@ -825,10 +849,10 @@ endast göra: \Emph{överlagring} (''overloading'') och \Emph{anonyma funktioner
 
 \begin{REPLnonum}
 scala> def fakultet(n: Int): Int =
-         if (n < 2) 1 else n * fakultet(n - 1)
+         if n < 2 then 1 else n * fakultet(n - 1)
 
 scala> fakultet(5)
-res0: Int = 120
+val res0: Int = 120
 \end{REPLnonum}
 
 \item För varje nytt anrop läggs en ny aktiveringspost på stacken.
@@ -845,32 +869,28 @@ res0: Int = 120
 
 \begin{Slide}{Loopa med rekursion}
 \begin{Code}
-def gissaTalet(max: Int, min: Int = 1): Unit = {
+def gissaTalet(max: Int, min: Int = 1): Unit =
   def gissat = 
     io.StdIn.readLine(s"Gissa talet mellan [$min, $max]: ").toInt
 
   val hemlis = (math.random() * (max - min) + min).toInt
 
   def skrivLedtrådOmEjRätt(gissning: Int): Unit =
-    if (gissning > hemlis) println(s"$gissning är för stort :(")
+    if gissning > hemlis then println(s"$gissning är för stort :(")
     else if (gissning < hemlis) println(s"$gissning är för litet :(")
 
-  def ärRätt(gissning: Int): Boolean = {
+  def ärRätt(gissning: Int): Boolean = 
     skrivLedtrådOmEjRätt(gissning)
     gissning == hemlis
-  }
 
-  def loop(n: Int = 1): Int = if (ärRätt(gissat)) n else loop(n + 1)
+  def loop(n: Int = 1): Int = if ärRätt(gissat) then n else loop(n + 1)
 
   println(s"Du hittade talet $hemlis på ${loop()} gissningar :)")
-}
 \end{Code}
-
 \end{Slide}
 
 
 \begin{Slide}{Rekursiva datastrukturer}
-
 \begin{itemize}
 \item Datastrukturena Lista och Träd är exempel på datastrukturer som passar bra ihop med rekursion.
 \item Båda dessa datastrukturer kan beskrivas rekursivt:
