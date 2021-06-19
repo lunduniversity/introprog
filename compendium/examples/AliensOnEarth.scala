@@ -1,6 +1,6 @@
 object AliensOnEarth:
   def readChoice(msg: String, options: Vector[String]): String =
-    options.indices.foreach(i => println(i + ": " + options(i)))
+    options.indices.foreach(i => println(s"$i: ${options(i)}"))
     val selected = io.StdIn.readLine(msg).toInt
     options(selected)
 
