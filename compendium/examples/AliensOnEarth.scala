@@ -28,8 +28,7 @@ object AliensOnEarth:
       val points = playGame(alien = name)
       if points > 0 then println(s"Congratulations $name! :)")
       println(s"You got $points points.")
-    catch { case e: Exception =>
+    catch case e: Exception =>
       println(s"Game over. The Earth was hit by an asteroid. :(")
       if isAnswerYes("Do you want to trace the asteroid?") then
         e.printStackTrace()
-    }
