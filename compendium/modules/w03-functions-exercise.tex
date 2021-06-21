@@ -227,7 +227,6 @@ scala> val xs = Vector(3, 4, 5)
 \end{REPL}
 \noindent Para ihop nedan uttryck till vänster med det uttryck till höger som har samma värde. Om du undrar något, testa uttrycken och olika varianter av dem i REPL.
 
-\TODO Hur kan man ändra på dessa?
 \begin{ConceptConnections}
 \input{generated/quiz-w03-yield-map-taskrows-generated.tex}
 \end{ConceptConnections}
@@ -616,7 +615,6 @@ Den sista raden leder till många fler rekursiva anrop, så som basvillkoret och
 
 \Task\Uberkurs  \what~  Förklara vad som händer. Kan du hitta bevis för att kompilatorn kan optimera rekursionen till en vanlig loop?
 
-\TODO Scala 3s REPL känner inte igen lastException och :javap. Just nu är de borttagna och svaret använder istället felutskriftens stack trace och att det blir StackOverFlow med countdown2. Det gamla finns efter och är bortkommenterat.
 \begin{REPL}
 scala> def explode = throw Exception("BANG!!!")
 scala> explode
@@ -629,28 +627,12 @@ scala> def countdown2(n: Int): Unit =
 scala> countdown2(10)
 scala> countdown2(10000)
 \end{REPL}
-%scala> def explode = throw Exception("BANG!!!")
-%scala> explode
-%scala> lastException.printStackTrace
-%scala> def countdown(n: Int): Unit =
-%         if n == 0 then explode else countdown(n-1)
-%scala> countdown(10)
-%scala> countdown(10000)
-%scala> lastException.printStackTrace
-%scala> def countdown2(n: Int): Unit =
-%         if n == 0 then explode else {countdown2(n-1); print("no tailrec")}
-%scala> countdown2(10)
-%scala> countdown2(10000)
-%scala> lastException
-%scala> lastException.getStackTrace.size
-%scala> :javap countdown
-%scala> :javap countdown2
 
 \SOLUTION
 
 \TaskSolved \what~\code{countdown} är svansrekursiv eftersom det rekursiva anropet står \emph{sist} och kan då optimeras till en \code{while}-loop av kompilatorn. Det går fint att köra ända till det exploderar, även med 10000 anrop, och i felmeddelandet finns det endast ett anrop till \code{countdown}.
 
-\code{countdown2} är inte svansrekursiv eftersom den har ett uttryck \code{efter} det rekursiva anropet. I felutskriften syns alla rekursiva anrop till \code{countdown2} innan basvillkoret inträffade. Vid \code{countdown2(10000)} uppfylls inte basvillkoret innan det blir \code{StackOverflowError}. %Med \code{:javap} får man se maskinkoden och i den ser man ett \code{goto} i \code{countdown} som är den maskinkod som generas vid \code{while}-loopar, medan \code{countdown2} har maskinkodsinstruktionen \code{invokevirtual} och inget \code{goto} vilket indikerar att kompilatorn aldrig lyckades omforma den rekursiva repetitionen till en \code{while}-sats.
+\code{countdown2} är inte svansrekursiv eftersom den har ett uttryck \code{efter} det rekursiva anropet. I felutskriften syns alla rekursiva anrop till \code{countdown2} innan basvillkoret inträffade. Vid \code{countdown2(10000)} uppfylls inte basvillkoret innan det blir \code{StackOverflowError}.
 
 \QUESTEND
 

@@ -171,7 +171,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
     QuizID("quiz-w03-yield-map") -> Vector(  //programs
-      "\\code|for (i <- 1 to 3) yield öka(i)|" -> "\\code|Vector(2, 3, 4)|",
+      "\\code|for i <- 1 to 3 yield öka(i)|" -> "\\code|Vector(2, 3, 4)|",
       "\\code|Vector(2, 3, 4).map(i => öka(i))|" -> "\\code|xs|",
       "\\code|xs.map(öka)|" -> "\\code|Vector(4, 5, 6)|",
       "\\code|xs.map(öka).map(öka)|" -> "\\code|Vector(5, 6, 7)|",
