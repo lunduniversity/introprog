@@ -249,17 +249,17 @@ scala> val xs = Vector(3, 4, 5)
 
 \Task  \what~  Funktioner är \emph{äkta värden} i Scala\footnote{I likhet med t.ex. Javascript, men till skillnad från t.ex. Java.}. Det betyder att variabler kan ha funktioner som värden och funktionsvärden kan vara argument till funktioner som har funktionsparametrar\footnote{Funktioner som tar funktioner som argument kallas \emph{högre ordningens funktioner}}.
 
-\TODO Den här uppgiften kanske ska ändras mer nu när man kan skippa understrecket i alla fall nedanför i Scala 3. I kapitlet presenteras detta som "Nytt i Scala 3" så det kanske är värt att ha med att det inte fungerade i tidigare versioner?
-
   En funktion som har en heltalsparameter och ett heltalsresultat är av funktionstypen \code{Int => Int} (uttalas \emph{int-till-int}) och värdet av funktionen utgör ett objekt som har en metod som heter \code{apply} med motsvarande funktionstyp.
 
-\Subtask \label{subtask:funcval} Deklarera nedan funktioner och variabler i REPL. Notera understrecket på rad 3. Para sedan ihop nedan uttryck till vänster med det uttryck till höger som har samma värde. Om du undrar något, testa uttrycken och olika varianter av dem i REPL.
+\Subtask \label{subtask:funcval} Deklarera nedan funktioner och variabler i REPL. Para sedan ihop nedan uttryck till vänster med det uttryck till höger som skapar samma utskrift. Om du undrar något, testa uttrycken och olika varianter av dem i REPL.
 
 \begin{REPL}
-scala> def öka(x: Int): Int = x + 1
-scala> def app(x: Int, f: Int => Int): Int = f(x)
-scala> val f1 = öka _
-scala> var f2 = (x: Int) => x - 1
+scala> def hälsa(): Unit = println("Hej!")
+scala> def fleraAnrop(antal: Int, f: () => Unit): Unit =
+         for _ <- 1 to antal do f()
+scala> val f1 = () => hälsa()
+scala> var f2 = (s: String) => println(s)
+scala> val f3 = () => f2("Thunk")
 \end{REPL}
 
 \begin{ConceptConnections}
@@ -267,13 +267,15 @@ scala> var f2 = (x: Int) => x - 1
 \end{ConceptConnections}
 
 
-\Subtask Vilka typer har variablerna \code{f1} och \code{f2}?
+\Subtask Vilka typer har variablerna \code{f1}, \code{f2} och \code{f3}?
 
-\Subtask Går det att ge variabeln \code{f2} funktionsvärdet \code{öka} genom tilldelning?
+\Subtask Går det bra att skriva \code{f2 = f1}?
 
-\Subtask Går det bra att skriva \code{val f3 = öka} utan understreck?
+\Subtask Går det bra att skriva \code{val f4 = fleraAnrop}?
 
-\Subtask Går det bra att skriva \code{val f3: Int => Int = öka} utan understreck?
+\Subtask Går det bra att skriva \code{val f4 = hälsa}?
+
+\Subtask Går det bra att skriva \code{val f4: () => Unit = hälsa}?
 
 \SOLUTION
 
@@ -285,20 +287,15 @@ scala> var f2 = (x: Int) => x - 1
   \input{generated/quiz-w03-function-values-solurows-generated.tex}
 \end{ConceptConnections}
 
-\SubtaskSolved Båda har typen \code{Int => Int}
+\SubtaskSolved \code{f1} och \code{f3} är av typen \code{() => Unit} och \code{f2} av typen \code{String => Unit}.
+
+\SubtaskSolved  Nej. \code{f1} och \code{f2} är av två olika funktionstyper.
 
 \SubtaskSolved  Ja, det går fint.
 
-\SubtaskSolved  Ja, det fungerar i Scala 3. I tidigare versioner blev det kompileringsfel: \\
-\begin{REPL}
-scala> val f3 = öka
-<console>:12: error: missing argument list for method öka
-Unapplied methods are only converted to functions when
-a function type is expected. You can make this conversion
-explicit by writing 'öka _' or 'öka(_)' instead of 'öka'.
-\end{REPL}
+\SubtaskSolved  Nej. När funktionen inte har någon parameter behöver kompilatorn mer information för att vara säker på att det är ett funktionsvärde du vill ha.
 
-\SubtaskSolved  Ja, detta fungerarade även innan Scala 3. Nu med typinformationen på plats är kompilatorn säker på vad du vill göra.
+\SubtaskSolved Ja! Nu med typinformationen på plats är kompilatorn säker på vad du vill göra.
 
 \QUESTEND
 

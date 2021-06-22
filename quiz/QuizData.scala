@@ -180,11 +180,10 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
     QuizID("quiz-w03-function-values") -> Vector(  //programs
-      "\\code| öka(-1)     |" -> "\\code| 0     |",
-      "\\code| app(1, öka) |" -> "\\code| öka(1)|",
-      "\\code| app(5, f2)  |" -> "\\code| 4     |",
-      "\\code| f1(2)       |" -> "\\code| 3     |",
-      "\\code| f2(2)       |" -> "\\code| 1     |",
+      "\\code| fleraAnrop(1, hälsa) |" -> "\\code| f2(\"Hej!\")       |",
+      "\\code| fleraAnrop(3, hälsa) |" -> "\\code| fleraAnrop(3, f1)  |",
+      "\\code| fleraAnrop(2, f1)    |" -> "\\code| f2(\"Hej!\\nHej!\")|",
+      "\\code| fleraAnrop(1, f3)    |" -> "\\code| f3()               |",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
