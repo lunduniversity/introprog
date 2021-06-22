@@ -165,7 +165,7 @@ Summan av de 5001 första talen är: 12507501
 
 
 
-\WHAT{Scala-applikation med \code+main+-metod.}
+\WHAT{Scala-applikation med \code+@main+.}
 
 \QUESTBEGIN
 
@@ -178,17 +178,22 @@ Skriv nedan kod i filen:
 
 \scalainputlisting{examples/hello.scala}
 
-\Subtask Kompilera med \code{scalac hello.scala} och kör koden med \code{scala Hello}. Notera stor bokstav i klassnamnet. Vad heter filerna som kompilatorn skapar?
+\Subtask Kompilera med \code{scalac hello.scala} och kör koden med \code{scala run}. Notera namnet på funktionen (run) i anropet. Vad heter filerna som kompilatorn skapar?
 \begin{REPLnonum}
 > scalac hello.scala
 > ls
-> scala Hello
+> scala run
 \end{REPLnonum}
 
 \Subtask Hur ska du ändra i din kod så att kompilatorn ger följande felmeddelande: \\
-\texttt{Missing closing brace}
+\texttt{Syntax Error: '\}' expected, but eof found}?
 
-\Subtask Varför behövs \code{main}-metoden?
+\Subtask I Scala 3 är parenteser ibland frivilliga och koden struktureras istället i sammanhängande block med hjälp av indenteringar. Det går bra att byta mellan stilarna i samma fil om det gör koden mer lättläst. Ovan kod kan skrivas:
+
+\scalainputlisting{examples/hello_indent.scala}
+Vad händer om du tar bort indenteringen på den sista raden?
+
+\Subtask Varför behövs \code{@main}-annoteringen?
 
 \Subtask Vilket alternativ går snabbast att köra igång, ett skript eller en kompilerad applikation? Varför? Vilket alternativ kör snabbast när väl exekveringen är igång?
 
@@ -199,11 +204,20 @@ Skriv nedan kod i filen:
 \TaskSolved \what
 
 
-\SubtaskSolved  Filerna som kompilatorn skapat heter \code{Hello.class} och \verb+Hello\$.class+
+\SubtaskSolved  Filerna som kompilatorn skapat heter \code{hello$package$.class}, \code{hello$package.class}, \code{hello$package.tasty}, \code{run.class} och \code{run.tasty}.
 
-\SubtaskSolved  Felmeddelandet får du om du tar bort den sista krullparentesen.
+\SubtaskSolved  Felmeddelandet får du om du tar bort den sista krullparentesen. \texttt{eof} i felmeddelandet står för end-of-file och dyker ofta upp vid oparade parenteser.
 
-\SubtaskSolved Ett kompilerat program måste ha ett objekt med en \code{main}-metod eftersom exekveringsmiljön JVM förutsätter detta och anropar \code{main}-metoden när exekveringen startar.
+\SubtaskSolved  \texttt{Syntax Error: Expected a toplevel definition}. Utan parenteser är det indenteringarna som bestämmer vilka delar av koden som hör samman. När vi tar bort indenteringen på den sista raden tolkas satsen ligga utanför funktionen och vi får felmeddelande.
+
+\SubtaskSolved \code{@main} möjliggör kompilering och exekvering av ett program utan ett objekt. Den annoterar metoden med vilken exekveringen av programmet ska starta.
+
+Under huven skapar kompilatorn ett objekt med samma namn som metoden med
+en primitiv main. Ett kompilerat program måste ha ett objekt med en main-metod
+eftersom exekveringsmiljön JVM förutsätter detta och anropar main-metoden när
+exekveringen startar.
+
+Ett alternativ till \code{@main} som är kompatibelt med Scala 2 är att direkt definiera en primitiv main-metod i ett objekt.
 
 \SubtaskSolved
   Det går snabbare att köra i gång ett kompilerat program eftersom maskinkoden är sparad i en fil som kan köras igång direkt.  Ett kompilerat program kan bestå av många filer som samkompileras.
