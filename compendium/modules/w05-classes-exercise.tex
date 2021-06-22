@@ -219,9 +219,7 @@ Antag att uttrycken till vänster evalueras uppifrån och ned. Vilket REPL-svar 
 
 \Subtask Vilken returtyp kommer kompilatorn härleda för funktionen \code{MutablePt.move}?
 
-\Subtask Implementera en fabriksmetod \code{apply} i ett kompanjonsobjekt till klassen \code{MutablePt} som gör att du inte behöver skriva \code{new} när du skapar instanser.
-
-\TODO Ta bort ovanstående deluppgift? Behövs ej i Scala 3.
+\Subtask Vad är skillnaden mellan instansiering med automatiska apply-metoder och instansiering med \code|new|? Finns det något fall där \code|new| måste användas?
 
 \Subtask Vad kallas sådana metoder som \code{ def x } och \code{ def y } ovan?
 
@@ -243,16 +241,22 @@ MutablePt
 \end{REPL}
 
 \SubtaskSolved
+Instansiering med automatiska apply-metoder är godis som gör koden enklare att läsa och skriva. Detta är möjligt tack vare att det under huven vid kompilering skapas ett kompanjonsobjekt med tillhörande apply-metod, som instansierar objektet med \code|new|.
+
+Ett fall då \code|new| uttryckligen måste användas är vid implementering av egen apply-metod i ett kompanjonsobjekt. Om \code|new| inte används inuti apply-metoden, kommer samma metod att anropas rekursivt istället för att en ny instans skapas. Se följande exempel:
+
 \begin{Code}
-object MutablePt {
-  def apply(x: Int = 0, y: Int = 0): MutablePt = new MutablePt(x, y)
-}
+class Point3D(val x: Int, val y: Int, val z: Int)
+
+object Point3D:
+    var secretNumber = 42
+    def apply(x: Int, y: Int, z: Int): Point3D =
+        if secretNumber == 42 then
+            Point3D(x, y, z) // Koden kommer fastna i en evig loop.
+
+        else new Point3D(x, y, z) // Funkar eftersom new används.
 \end{Code}
 
-\begin{REPL}
-scala> MutablePt()
-res0: MutablePt = MPt(0,0)
-\end{REPL}
 
 
 \SubtaskSolved En metoder som avläser (delar av) ett objekts (privata) tillstånd utan att ändra det kallas en \emph{getter}.
