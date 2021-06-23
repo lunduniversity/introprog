@@ -1027,20 +1027,16 @@ val res5: Int = -1
 \Task  \what~Klistra in denna kod i REPL:
 
 \begin{Code}
-class Gurka8 private (private var _vikt: Int) {
-  def vikt = _vikt
-  def vikt_=(v: Int): Unit = {
-    require(v >= 0, "negativ vikt: " +v)
-    _vikt = v
-  }
-}
+class Gurka8 private (private var _vikt: Int):
+    def vikt = _vikt
+    def vikt_=(v: Int): Unit =
+        require(v >= 0, "negativ vikt: " +v)
+        _vikt = v
 
-object Gurka8 {
-  def apply(vikt: Int) = {
-    require(vikt >= 0, "negativ vikt: " + vikt)
-    new Gurka8(vikt)
-  }
-}
+object Gurka8:
+    def apply(vikt: Int) =
+        require(vikt >= 0, "negativ vikt: " + vikt)
+        new Gurka8(vikt)
 \end{Code}
 
 
@@ -1110,20 +1106,19 @@ Eftersom \code{42 - 1000} är mindre än noll kastar \code{require} ett undantag
 \Subtask Implementera klassen \code{Frog} enligt nedan kodskelett och ovan krav.
 
 \begin{Code}
-class Frog private (initX: Int = 0, initY: Int = 0) {
-  def x: Int = ???
-  def y: Int = ???
+class Frog private (initX: Int = 0, initY: Int = 0):
+    def x: Int = ???
+    def y: Int = ???
 
-  def jump(dx: Int, dy: Int): Unit = ???
-  def randomJump: Unit = ???
+    def jump(dx: Int, dy: Int): Unit = ???
+    def randomJump: Unit = ???
 
-  def distanceToStart: Double = ???
-  def distanceJumped: Double = ???
-  def distanceTo(that: Frog): Double = ???
-}
-object Frog {
-  def spawn(): Frog = ???
-}
+    def distanceToStart: Double = ???
+    def distanceJumped: Double = ???
+    def distanceTo(that: Frog): Double = ???
+
+object Frog:
+    def spawn(): Frog = ???
 \end{Code}
 \emph{Tips:}
 \begin{itemize} [nolistsep, noitemsep]
@@ -1150,137 +1145,123 @@ object Frog {
 
 \SubtaskSolved
 \begin{Code}
-class Frog private (initX: Int = 0, initY: Int = 0) {
-	private var _x: Int = initX
-	private var _y: Int = initY
-	private var _distanceJumped: Double = 0
+class Frog private (initX: Int = 0, initY: Int = 0):
+    private var _x: Int = initX
+    private var _y: Int = initY
+    private var _distanceJumped: Double = 0
 
-  def x: Int = _x
-  def y: Int = _y
+    def x: Int = _x
+    def y: Int = _y
 
-	def jump(dx: Int, dy: Int): Unit = {
-		_x += dx
-		_y += dy
-		_distanceJumped += math.hypot(dx, dy)
-	}
+    def jump(dx: Int, dy: Int): Unit =
+        _x += dx
+        _y += dy
+        _distanceJumped += math.hypot(dx, dy)
 
 
-	def randomJump: Unit = {
-		def rnd = util.Random.nextInt(10) + 1
-		jump(rnd, rnd)
-	}
+    def randomJump: Unit =
+        def rnd = util.Random.nextInt(10) + 1
+        jump(rnd, rnd)
 
-	def distanceToStart: Double = math.hypot(x,y)
-	def distanceJumped: Double = _distanceJumped
-	def distanceTo(f: Frog): Double = math.hypot(x - f.x, y - f.y)
-}
+    def distanceToStart: Double = math.hypot(x,y)
+    def distanceJumped: Double = _distanceJumped
+    def distanceTo(f: Frog): Double = math.hypot(x - f.x, y - f.y)
 
-object Frog {
-	def spawn(): Frog = new Frog()
-}
+object Frog:
+    def spawn(): Frog = Frog()
 \end{Code}
 
 \SubtaskSolved Exempel på testprogram:
 \begin{Code}
-object FrogTest {
-  def test(): Unit = {
-    val f1 = Frog.spawn()
-    assert(f1.x == 0 && f1.y == 0, "Test of spawn, reqt 1 & 4 failed.")
+object FrogTest:
+    def test(): Unit =
+        val f1 = Frog.spawn()
+        assert(f1.x == 0 && f1.y == 0, "Test of spawn,
+            reqt 1 & 4 failed.")
 
-    f1.jump(4,3)
-    assert(f1.x == 4 && f1.y == 3, "Test of jump, reqt 1 & 4 failed.")
+        f1.jump(4, 3)
+        assert(f1.x == 4 && f1.y == 3, "Test of jump,
+            reqt 1 & 4 failed.")
 
-    f1.jump(4,3)
-    assert(f1.distanceJumped == 10, "Test of jump, reqt 2 failed.")
+        f1.jump(4, 3)
+        assert(f1.distanceJumped == 10, "Test of jump, reqt 2 failed.")
 
-    f1.jump(-4,-3)
-    assert(f1.distanceToStart == 5, "Test of jump, reqt 3 failed.")
+        f1.jump(-4, -3)
+        assert(f1.distanceToStart == 5, "Test of jump, reqt 3 failed.")
 
-    for (x <- 1 to 10000) {
-      val f2 = Frog.spawn()
-    	f2.randomJump
-    	assert(f2.x > 0 && f2.x <= 10 && f2.y > 0 && f2.y <= 10,
-            "Test of randomJump, reqt 5 failed.")
-    }
-    println("Test Ok!")
-  }
-}
+        for x <- 1 to 10000 do
+            val f2 = Frog.spawn()
+            f2.randomJump
+            assert(f2.x > 0 && f2.x <= 10 && f2.y > 0 && f2.y <= 10,
+                "Test of randomJump, reqt 5 failed.")
+
+        println("Test Ok!")
 \end{Code}
 
 \SubtaskSolved  En metod som är en indirekt avläsning av attributvärden kallas getter.
 
 \SubtaskSolved
 \begin{Code}
+class Frog private (initX: Int = 0, initY: Int = 0):
+    private var _x: Int = initX
+    private var _y: Int = initY
+    private var _distanceJumped: Double = 0
 
-class Frog private (initX: Int = 0, initY: Int = 0) {
-	private var _x: Int = initX
-	private var _y: Int = initY
-	private var _distanceJumped: Double = 0
+    def jump(dx: Int, dy: Int): Unit =
+        _x += dx
+        _y += dy
+        _distanceJumped += math.hypot(dx, dy)
 
-	def jump(dx: Int, dy: Int): Unit = {
-		_x += dx
-		_y += dy
-		_distanceJumped += math.hypot(dx, dy)
-	}
+    def x: Int = _x
+    def x_=(newX: Int): Unit = // Setter för x
+        _distanceJumped += math.abs(x - newX)
+        _x = newX
 
-	def x: Int = _x
-  def x_= (newX: Int): Unit = { // Setter för x
-		_distanceJumped += math.abs(x - newX)
-		_x = newX
-	}
-
-  def y: Int = _y
-	def y_= (newY: Int): Unit = { // Setter för y
-		_distanceJumped += math.abs(y - newY)
-		_y = newY
-	}
+    def y: Int = _y
+    def y_=(newY: Int): Unit = // Setter för y
+        _distanceJumped += math.abs(y - newY)
+        _y = newY
 
 
-	def randomJump: Unit = {
-		def rnd = util.Random.nextInt(10) + 1
-		jump(rnd, rnd)
-	}
+    def randomJump: Unit =
+        def rnd = util.Random.nextInt(10) + 1
+        jump(rnd, rnd)
 
-	def distanceToStart: Double = math.hypot(x,y)
-	def distanceJumped: Double = _distanceJumped
-	def distanceTo(f: Frog): Double = math.hypot(x - f.x, y - f.y)
-}
+    def distanceToStart: Double = math.hypot(x,y)
+    def distanceJumped: Double = _distanceJumped
+    def distanceTo(f: Frog): Double = math.hypot(x - f.x, y - f.y)
 
-object Frog {
-	def spawn(): Frog = new Frog()
-}
-
+object Frog:
+    def spawn(): Frog = Frog()
 \end{Code}
 
 \SubtaskSolved
 \begin{Code}
-object frogSimulation {
-  def isAnyCollision(frogs: Vector[Frog]): Boolean = {
-    var found = false
-    frogs.indices.foreach { i =>  // generate all pairs (i,j)
-      for (j <- i + 1 until frogs.size)
-        if (!found) found = frogs(i).distanceTo(frogs(j)) <= 0.5
-    }
-    found
-  }
+object FrogSimulation:
+    def isAnyCollision(frogs: Vector[Frog]): Boolean =
+        var found = false
+        frogs.indices.foreach(i =>  // generate all pairs (i,j)
+            for j <- i + 1 until frogs.size do
+                if !found then
+                    found = frogs(i).distanceTo(frogs(j)) <= 0.5
+        )
+        found
 
-  def jumpUntilCrash(n: Int = 100, initDist: Int = 8): (Int, Double) = {
-    val frogs = Vector.fill(n)(Frog.spawn)
-    (0 until n).foreach(i => frogs(i).x = i * initDistance)
-    var count = 0
-    while (!isAnyCollision(frogs)) {
-      frogs(util.Random.nextInt(n)).randomJump
-    	count += 1
-    }
-    (count, frogs.map(_.distanceJumped).sum)
-  }
+    def jumpUntilCrash(n: Int = 100, initDist: Int = 8): (Int, Double)=
+        val frogs = Vector.fill(n)(Frog.spawn())
+        (0 until n).foreach(i => frogs(i).x = i * initDist)
+        var count = 0
+        while !isAnyCollision(frogs) do
+            frogs(util.Random.nextInt(n)).randomJump
+            count += 1
+        (count, frogs.map(_.distanceJumped).sum)
 
-  def run(nbrOfCrashTests: Int = 10) = for (i <- 1 to nbrOfCrashTests) {
-    val (n, dist) = jumpUntilCrash()
-    println(s"\nAntalet looprundor innan grodkrock: $n")
-    println(s"Totalt avstånd hoppat av alla grodor: $dist")
-  }
-}
+
+    def run(nbrOfCrashTests: Int = 10) =
+        for i <- 1 to nbrOfCrashTests do
+            val (n, dist) = jumpUntilCrash()
+            println(s"\nAntalet looprundor innan grodkrock: $n")
+            println(s"Totalt avstånd hoppat av alla grodor: $dist")
 \end{Code}
 
 \QUESTEND
@@ -1308,62 +1289,58 @@ object frogSimulation {
 
 \begin{CodeSmall}
 /** A mutable and expensive Square. */
-class Square private (val initX: Int, val initY: Int, val initSide: Int) {
-  private var nMoves = 0;
-  private var sumCost = 0.0;
+class Square private (val initX: Int, val initY: Int, val initSide: Int):
+    private var nMoves = 0
+    private var sumCost = 0.0
 
-  private var _x = initX;
-  private var _y = initY;
+    private var _x = initX
+    private var _y = initY
 
-  private var _side = initSide;
+    private var _side = initSide
 
-  private def addCost(): Unit = {
-   sumCost += ???
-  }
+    private def addCost(): Unit =
+        sumCost += ???
 
-  def x: Int = ???
-  def y: Int = ???
+    def x: Int = ???
+    def y: Int = ???
 
-  def side = ???
+    def side = ???
 
-  /** Scales the side of this square and rounds it to nearest integer */
-  def scale(factor: Double): Unit = ???
+    /** Scales the side of this square and rounds it to nearest integer */
+    def scale(factor: Double): Unit = ???
 
-  /** Moves this square to position (x + xd, y + dy) */
-  def move(dx: Int, dy: Int): Unit = ???
+    /** Moves this square to position (x + xd, y + dy) */
+    def move(dx: Int, dy: Int): Unit = ???
 
-  /** Moves this square to position (x, y) */
-  def moveTo(x: Int, y: Int): Unit = ???
+    /** Moves this square to position (x, y) */
+    def moveTo(x: Int, y: Int): Unit = ???
 
-  /** The accumulated cost of this Square */
-  def cost: Double = ???
+    /** The accumulated cost of this Square */
+    def cost: Double = ???
 
-  /** Returns the accumulated cost. Sets the accumulated cost to zero. */
-  def pay: Double = ???
+    /** Returns the accumulated cost. Sets the accumulated cost to zero. */
+    def pay: Double = ???
 
-  override def toString: String =
-    s"Square[($x, $y), side: $side, #moves: $nMoves times, cost: $sumCost]"
-}
+    override def toString: String =
+       s"Square[($x, $y), side: $side, #moves: $nMoves times, cost: $sumCost]"
 
 
-object Square {
-  private var created = Vector[Square]()
+object Square:
+    private var created = Vector[Square]()
 
-  /** Constructs a new Square object at (x, y) with size side */
-  def apply(x: Int, y: Int, side: Int): Square = {
-    require(side >= 0, s"side must be positive: $side")
-    ???
-  }
+    /** Constructs a new Square object at (x, y) with size side */
+    def apply(x: Int, y: Int, side: Int): Square =
+        require(side >= 0, s"side must be positive: $side")
+        ???
 
-  /** Constructs a new Square object at (0, 0) with side 1 */
-  def apply(): Square = ???
+    /** Constructs a new Square object at (0, 0) with side 1 */
+    def apply(): Square = ???
 
-  /** The total number of moves that have been made for all squares. */
-  def totalNumberOfMoves: Int = ???
+    /** The total number of moves that have been made for all squares. */
+    def totalNumberOfMoves: Int = ???
 
-  /** The total cost of all squares. */
-  def totalCost: Double = ???
-}
+    /** The total cost of all squares. */
+    def totalCost: Double = ???
 \end{CodeSmall}
 
 \Subtask Testa din kvadratprototyp i REPL. Använd t.ex. koden nedan:
@@ -1372,8 +1349,8 @@ scala> val xs = Vector.fill(10)(Square())
 scala> xs.foreach(_.move(2, 3))
 scala> xs.foreach(_.scale(2.9))
 scala> val (m, c) = (Square.totalNumberOfMoves, Square.totalCost)
-m: Int = 10
-c: Double = 36.055512754639885
+val m: Int = 10
+val c: Double = 36.055512754639885
 \end{REPL}
 
 \SOLUTION
@@ -1381,61 +1358,56 @@ c: Double = 36.055512754639885
 \TaskSolved \what~
 
 \begin{CodeSmall}
-class Square private (val initX: Int, val initY: Int, val initSide: Int) {
-  private var nMoves = 0;
-  private var sumCost = 0.0;
+class Square private (val initX: Int, val initY: Int, val initSide: Int):
+    private var nMoves = 0
+    private var sumCost = 0.0
 
-  private var _x = initX;
-  private var _y = initY;
+    private var _x = initX
+    private var _y = initY
 
-  private var _side = initSide;
+    private var _side = initSide
 
-  private def addCost(): Unit = {
-   sumCost += math.hypot(x - initX, y - initY) * side
-  }
+    private def addCost(): Unit =
+        sumCost += math.hypot(x - initX, y - initY) * side
 
-  def x: Int = _x
-  def y: Int = _y
+    def x: Int = _x
+    def y: Int = _y
 
-  def side = _side
+    def side = _side
 
-  def scale(factor: Double): Unit = { _side = (_side * factor).round.toInt }
+    def scale(factor: Double): Unit = _side = (_side * factor).round.toInt
 
-  def move(dx: Int, dy: Int): Unit = {
-    _x += dx; _y += dy;
-    nMoves += 1
-    addCost()
-  }
+    def move(dx: Int, dy: Int): Unit =
+        _x += dx; _y += dy
+        nMoves += 1
+        addCost()
 
-  def moveTo(x: Int, y: Int): Unit = {
-    _x = x; _y = y;
-    nMoves += 1
-    addCost()
-  }
+    def moveTo(x: Int, y: Int): Unit =
+        _x = x; _y = y
+        nMoves += 1
+        addCost()
 
-  def cost: Double = sumCost
+    def cost: Double = sumCost
 
-  def pay: Double = {val temp = sumCost; sumCost = 0; temp}
+    def pay: Double = {val temp = sumCost; sumCost = 0; temp}
 
-  override def toString: String =
-    s"Square[($x, $y), side: $side, #moves: $nMoves times, cost: $sumCost]"
-}
-object Square {
-  private var created = Vector[Square]()
+    override def toString: String =
+       s"Square[($x, $y), side: $side, #moves: $nMoves times, cost: $sumCost]"
 
-  def apply(x: Int, y: Int, side: Int): Square = {
-    require(side >= 0, s"side must be positive: $side")
-    val sq = (new Square(x, y, side))
-    created :+= sq
-    sq
-  }
+object Square:
+    private var created = Vector[Square]()
 
-  def apply(): Square = apply(0, 0, 1)
+    def apply(x: Int, y: Int, side: Int): Square =
+        require(side >= 0, s"side must be positive: $side")
+        val sq = (new Square(x, y, side))
+        created :+= sq
+        sq
 
-  def totalNumberOfMoves: Int = created.map(_.nMoves).sum
+    def apply(): Square = apply(0, 0, 1)
 
-  def totalCost: Double = created.map(_.cost).sum
-}
+    def totalNumberOfMoves: Int = created.map(_.nMoves).sum
+
+    def totalCost: Double = created.map(_.cost).sum
 \end{CodeSmall}
 
 \QUESTEND
