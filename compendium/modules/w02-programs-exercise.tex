@@ -1183,32 +1183,29 @@ typ: \code{scala.collection.immutable.Range}
 \Task  \what~ Bygg vidare på koden nedan och gör ett Sten-Sax-Påse-spel\footnote{\url{https://sv.wikipedia.org/wiki/Sten,_sax,_påse}}. Koden fungerar som den ska, förutom funktionen \code{winner} som fuskar till datorns fördel. Lägg även till en main-funktion så att programmet kan kompileras och köras i terminalen. Spelet blir roligare om du räknar antalet vinster och förluster. Du kan också göra så att datorn inte väljer med jämn fördelning.
 
 \begin{Code}
-object Game {
-  val choices = Vector("Sten", "Påse", "Sax")
-
-  def printChoices(): Unit =
-    for (i <- 1 to choices.size) println(i + ": " + choices(i - 1))
-
-  def userChoice(): Int = {
-    printChoices()
-    scala.io.StdIn.readLine("Vad väljer du? [1|2|3]<ENTER>:").toInt - 1
-  }
-
-  def computerChoice(): Int = (math.random() * 3).toInt
-
-  /** Ska returnera "Du", "Datorn", eller "Ingen" */
-  def winner(user: Int, computer: Int): String = "Datorn"
-
-  def play(): Unit = {
-    val u = userChoice()
-    val c = computerChoice()
-    println("Du valde " + choices(u))
-    println("Datorn valde " + choices(c))
-    val w = winner(u, c)
-    println(w + " är vinnare!")
-    if (w == "Ingen") play()
-  }
-}
+object Game:
+	val choices = Vector("Sten", "Påse", "Sax")
+	
+	def printChoices(): Unit =
+	  for i <- 1 to choices.size do println(s"$i: ${choices(i - 1)}")
+	
+	def userChoice(): Int =
+		printChoices()
+		scala.io.StdIn.readLine("Vad väljer du? [1|2|3]<ENTER>:").toInt - 1
+	
+	def computerChoice(): Int = (math.random() * 3).toInt
+	
+	/** Ska returnera "Du", "Datorn", eller "Ingen" */
+	def winner(user: Int, computer: Int): String = "Datorn"
+	
+	def play(): Unit =
+		val u = userChoice()
+		val c = computerChoice()
+		println(s"Du valde ${choices(u)}")
+		println(s"Datorn valde ${choices(c)}")
+		val w = winner(u, c)
+		println(s"$w är vinnare!")
+		if w == "Ingen" then play()
 \end{Code}
 
 % \begin{Code}[basicstyle=\ttfamily\footnotesize\selectfont]]
@@ -1250,26 +1247,25 @@ object Game {
 \TaskSolved \what~ En (lättbegriplig?) lösning som provar alla kombinationer:
 
 \begin{CodeSmall}
-  def winner(user: Int, computer: Int): String =
-    if      (choices(user) == "Sten" && choices(computer) == "Påse") "Datorn"
-    else if (choices(user) == "Sten" && choices(computer) == "Sax")  "Du"
-    else if (choices(user) == "Påse" && choices(computer) == "Sten") "Du"
-    else if (choices(user) == "Påse" && choices(computer) == "Sax")  "Datorn"
-    else if (choices(user) == "Sax"  && choices(computer) == "Sten") "Datorn"
-    else if (choices(user) == "Sax"  && choices(computer) == "Påse") "Du"
-    else "Ingen"
+def winner(user: Int, computer: Int): String =
+  if      choices(user) == "Sten" && choices(computer) == "Påse" then "Datorn"
+  else if choices(user) == "Sten" && choices(computer) == "Sax"  then "Du"
+  else if choices(user) == "Påse" && choices(computer) == "Sten" then "Du"
+  else if choices(user) == "Påse" && choices(computer) == "Sax"  then "Datorn"
+  else if choices(user) == "Sax"  && choices(computer) == "Sten" then "Datorn"
+  else if choices(user) == "Sax"  && choices(computer) == "Påse" then "Du"
+  else "Ingen"
 \end{CodeSmall}
 
 
 En klurigare lösning (och svårbegripligare?) med hjälp av modulo-räkning:
 
 \begin{Code}
-  def winner(user: Int, computer: Int): String = {
-     val result = (user - computer + 3) % 3
-     if (user == computer) "Ingen"
-     else if (result == 1) "Du"
-     else "Datorn"
-  }
+def winner(user: Int, computer: Int): String = 
+  val result = (user - computer + 3) % 3
+  if user == computer then "Ingen"
+  else if result == 1 then "Du"
+  else "Datorn"
 \end{Code}
 Moduloräkningen kräver att elementen i \code{choices} är i \emph{förlorar-över}-ordning, alltså Sten, Påse, Sax. Addition med 3 görs för att undvika negativa tal, som beter sig annorlunda i moduloräkning.
 
