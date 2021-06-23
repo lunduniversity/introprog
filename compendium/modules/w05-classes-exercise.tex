@@ -847,10 +847,9 @@ val res1: Int = 3
 
 \begin{Code}
 class Point private (val x: Int, val y: Int)
-object Point {
-  def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
-  val origo = apply()
-}
+object Point:
+    def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
+    val origo = apply()
 \end{Code}
 
 \Subtask Vad händer om du försöker instansiera Kim Kodkunnigs klass direkt med nyckelordet \code{new}?
@@ -865,23 +864,23 @@ object Point {
 
 \SubtaskSolved Det blir kompileringsfel eftersom konstruktorn är privat.
 \begin{REPL}
-scala> :paste
+scala> class Point private (val x: Int, val y: Int)
+     | object Point:
+     |     def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
+     |     val origo = apply()
+     |
+// defined class Point
+// defined object Point
 
-class Point private (val x: Int, val y: Int)
-object Point {
-  def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
-  val origo = apply()
-}
-
-scala> new Point(0,0)
-<console>:14: error: constructor Point in class Point cannot be accessed
+scala> new Point(0, 0)
+1 |new Point(0, 0)
+  |    ^^^^^
+  |constructor Point cannot be accessed as a member of Point from module class
 \end{REPL}
 
 \SubtaskSolved
 \begin{itemize}
   \item Genom att ha en privat konstruktor och bara göra indirekt instansiering via fabriksmetod är lätt ändra attributrepresentation i framtiden utan att befintlig kod behöver ändras.
-
-  \item Med en \code{apply}-metod i kompansjonsobjektet kan man instansiera genom att skriva \code{Point(1, 2)} utan new.
 
   \item Accessreglerna för kompanjonsobjekt är sådana att kompanjoner ser varandras privata delar.
 \end{itemize}
@@ -889,14 +888,13 @@ scala> new Point(0,0)
 \SubtaskSolved
 
 \begin{Code}
-class Point private (private val p: (Int, Int)) {
-  def x: Int = p._1
-  def y: Int = p._2
-}
-object Point {
-  def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
-  val origo = apply()
-}
+class Point private (private val p: (Int, Int)):
+    def x: Int = p._1
+    def y: Int = p._2
+
+object Point:
+    def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
+    val origo = apply()
 \end{Code}
 
 \QUESTEND
@@ -918,23 +916,19 @@ class Gurka2(val vikt: Int)
 
 class Gurka3(private val vikt: Int)
 
-class Gurka4(private val vikt: Int, kompis: Gurka4){
-  def kompisVikt = kompis.vikt
-}
+class Gurka4(private val vikt: Int, kompis: Gurka4):
+    def kompisVikt = kompis.vikt
 
-class Gurka5(private[this] val vikt: Int, kompis: Gurka5){
-  def kompisVikt = kompis.vikt
-}
+class Gurka5(private[this] val vikt: Int, kompis: Gurka5):
+    def kompisVikt = kompis.vikt
 
 class Gurka6 private (vikt: Int)
 
 class Gurka7 private (var vikt: Int)
-object Gurka7 {
-  def apply(vikt: Int) = {
-    require(vikt >= 0, "negativ vikt: " + vikt)
-    new Gurka7(vikt)
-  }
-}
+object Gurka7:
+    def apply(vikt: Int) =
+        require(vikt >= 0, "negativ vikt: " + vikt)
+        new Gurka7(vikt)
 \end{Code}
 
 \Subtask Undersök nedan vad nyckelorden \code{val} och \code{private} får för konsekvenser. Förklara vad som händer. Vilka rader ger vilka felmeddelanden?
@@ -961,64 +955,63 @@ scala> g.vikt
 
 \TaskSolved \what
 
-\SubtaskSolved \code{Gurka5} är trasig. Eftersom vikten i \code{Gurka5} är privat för instansen och inte klassen kan en instans inte accessa en annan instans vikt.
+\SubtaskSolved \code{Gurka5} är trasig. Eftersom vikten i \code{Gurka5} är privat för instansen och inte klassen, kan en instans inte accessa en annan instans vikt.
 \begin{REPL}
-  error: value vikt is not a member of Gurka5
-  def kompisVikt = kompis.vikt
+12 |    def kompisVikt = kompis.vikt
+   |                     ^^^^^^^^^^^
+   |value vikt cannot be accessed as a member of (Gurka5.this.kompis : Gurka5) from class Gurka5.
 \end{REPL}
 
 
 \SubtaskSolved
 \begin{REPL}
 scala> new Gurka1(42).vikt
-<console>:13: error: value vikt is not a member of Gurka1
-       new Gurka1(42).vikt
-                      ^
+1 |new Gurka1(42).vikt
+  |^^^^^^^^^^^^^^^^^^^
+  |value vikt cannot be accessed as a member of Gurka1 from module class
 
 scala> new Gurka2(42).vikt
-res64: Int = 42
+val res0: Int = 42
 
 scala> new Gurka3(42).vikt
-<console>:13: error: value vikt in class Gurka3 cannot be accessed in Gurka3
-       new Gurka3(42).vikt
-                      ^
+1 |new Gurka3(42).vikt
+  |^^^^^^^^^^^^^^^^^^^
+  |value vikt cannot be accessed as a member of Gurka3 from module class
 
 scala> val ingenGurka: Gurka4 = null
-ingenGurka: Gurka4 = null
+val ingenGurka: Gurka4 = null
 
 scala> new Gurka4(42, ingenGurka).kompisVikt
-java.lang.NullPointerException
-  at Gurka4.kompisVikt(<console>:13)
-  ... 36 elided
+java.lang.NullPointerException: Cannot invoke "rs$line$1$Gurka4.vikt()" bec...
+  at rs$line$1$Gurka4.kompisVikt(rs$line$1:8)
+  ... 38 elided
 
 scala> new Gurka4(42, new Gurka4(84, null)).kompisVikt
-res67: Int = 84
+val res2: Int = 84
 
 scala> new Gurka6(42)
-<console>:13: error: constructor Gurka6 in class Gurka6 cannot be accessed
-       new Gurka6(42)
-       ^
+1 |new Gurka6(42)
+  |    ^^^^^^
+  |constructor Gurka6 cannot be accessed as a member of Gurka6 from module...
 
 scala> new Gurka7(-42)
-<console>:14: error: constructor Gurka7 in class Gurka7 cannot be accessed
-       new Gurka7(-42)
-       ^
+1 |new Gurka7(-42)
+  |    ^^^^^^
+  |constructor Gurka7 cannot be accessed as a member of Gurka7 from module...
 
 scala> Gurka7(-42)
 java.lang.IllegalArgumentException: requirement failed: negativ vikt: -42
 
-
 scala> val g = Gurka7(42)
-g: Gurka7 = Gurka7@70717ed5
+val g: Gurka7 = Gurka7@51fd1c7c
 
 scala> g.vikt
-res71: Int = 42
+val res4: Int = 42
 
 scala> g.vikt = -1
-g.vikt: Int = -1
 
 scala> g.vikt
-res72: Int = -1
+val res5: Int = -1
 \end{REPL}
 
 \QUESTEND
