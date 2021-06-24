@@ -59,7 +59,7 @@ En funktion med en parameter definieras med följande syntax i Scala:
 
 % En funktion med två parametrar definieras med följande syntax i Scala: \vspace{0.5em} \\  \texttt{\code{def} \textit{namn}(\textit{parameter1}: \textit{Typ1}, \textit{parameter2}: \textit{Typ2}): \textit{Returtyp} = \textit{returvärde}}
 
-\Subtask Definiera en funktionen \code{öka} som har en heltalsparameter \code{x} och vars returvärde är argumentet plus 1. Defaultargument ska vara 1. Ange returtypen explicit.
+\Subtask Definiera funktionen \code{öka} som har en heltalsparameter \code{x} och vars returvärde är argumentet plus 1. Defaultargument ska vara 1. Ange returtypen explicit.
 
 \Subtask Vad har uttrycket \code{öka(öka(öka(öka())))} för värde?
 
@@ -139,7 +139,7 @@ scala> os.indices.foreach(i => println(i))
 scala> os.indexOf("w")
 scala> os.indexOf("gurka")
 scala> Vector("hej", "hejsan", "hej").indexOf("hej")
-scala> try { 1 / 0 } catch { case e: Exception=> println(e) }
+scala> try 1 / 0 catch case e: Exception => println(e)
 \end{REPL}
 Kolla även dokumentationen för \code{nextInt}, \code{readLine}, m.fl genom att söka
 här: \\ \url{http://www.scala-lang.org/api/current/index.html}
@@ -189,7 +189,7 @@ här: \\ \url{http://www.scala-lang.org/api/current/index.html}
 
 Vilka funktioner i objektet \code{inSearchOfPurity} nedan är äkta funktioner?
 \begin{Code}
-object inSearchOfPurity {
+object inSearchOfPurity:
   var x = 0
   val y = x
   def inc(i: Int): Int = i + 1
@@ -198,7 +198,6 @@ object inSearchOfPurity {
   def addY(i: Int): Int = y + i
   def isPalindrome(s: String): Boolean = s == s.reverse
   def rnd(min: Int, max: Int): Double = math.random() * max + min
-}
 \end{Code}
 
 
@@ -252,13 +251,15 @@ scala> val xs = Vector(3, 4, 5)
 
   En funktion som har en heltalsparameter och ett heltalsresultat är av funktionstypen \code{Int => Int} (uttalas \emph{int-till-int}) och värdet av funktionen utgör ett objekt som har en metod som heter \code{apply} med motsvarande funktionstyp.
 
-\Subtask \label{subtask:funcval} Deklarera nedan funktioner och variabler i REPL. Notera understrecket på rad 3. Para sedan ihop nedan uttryck till vänster med det uttryck till höger som har samma värde. Om du undrar något, testa uttrycken och olika varianter av dem i REPL.
+\Subtask \label{subtask:funcval} Deklarera nedan funktioner och variabler i REPL. Para sedan ihop nedan uttryck till vänster med det uttryck till höger som skapar samma utskrift. Om du undrar något, testa uttrycken och olika varianter av dem i REPL.
 
 \begin{REPL}
-scala> def öka(x: Int): Int = x + 1
-scala> def app(x: Int, f: Int => Int): Int = f(x)
-scala> val f1 = öka _
-scala> var f2 = (x: Int) => x - 1
+scala> def hälsa(): Unit = println("Hej!")
+scala> def fleraAnrop(antal: Int, f: () => Unit): Unit =
+         for _ <- 1 to antal do f()
+scala> val f1 = () => hälsa()
+scala> var f2 = (s: String) => println(s)
+scala> val f3 = () => f2("Thunk")
 \end{REPL}
 
 \begin{ConceptConnections}
@@ -266,13 +267,15 @@ scala> var f2 = (x: Int) => x - 1
 \end{ConceptConnections}
 
 
-\Subtask Vilka typer har variablerna \code{f1} och \code{f2}?
+\Subtask Vilka typer har variablerna \code{f1}, \code{f2} och \code{f3}?
 
-\Subtask Går det att ge variabeln \code{f2} funktionsvärdet \code{öka} genom tilldelning?
+\Subtask Går det bra att skriva \code{f2 = f1}?
 
-\Subtask Går det bra att skriva \code{val f3 = öka} utan understreck?
+\Subtask Går det bra att skriva \code{val f4 = fleraAnrop}?
 
-\Subtask Går det bra att skriva \code{val f3: Int => Int = öka} utan understreck?
+\Subtask Går det bra att skriva \code{val f4 = hälsa}?
+
+\Subtask Går det bra att skriva \code{val f4: () => Unit = hälsa}?
 
 \SOLUTION
 
@@ -284,20 +287,15 @@ scala> var f2 = (x: Int) => x - 1
   \input{generated/quiz-w03-function-values-solurows-generated.tex}
 \end{ConceptConnections}
 
-\SubtaskSolved Båda har typen \code{Int => Int}
+\SubtaskSolved \code{f1} och \code{f3} är av typen \code{() => Unit} och \code{f2} av typen \code{String => Unit}.
+
+\SubtaskSolved  Nej. \code{f1} och \code{f2} är av två olika funktionstyper.
 
 \SubtaskSolved  Ja, det går fint.
 
-\SubtaskSolved  Nej det blir kompileringsfel: \\
-\begin{REPL}
-scala> val f3 = öka
-<console>:12: error: missing argument list for method öka
-Unapplied methods are only converted to functions when
-a function type is expected. You can make this conversion
-explicit by writing 'öka _' or 'öka(_)' instead of 'öka'.
-\end{REPL}
+\SubtaskSolved  Nej. När funktionen inte har någon parameter behöver kompilatorn mer information för att vara säker på att det är ett funktionsvärde du vill ha.
 
-\SubtaskSolved  Ja, det går fint. Nu med typinformationen på plats är kompilatorn säker på vad du vill göra.
+\SubtaskSolved Ja! Nu med typinformationen på plats är kompilatorn säker på vad du vill göra.
 
 \QUESTEND
 
@@ -356,7 +354,7 @@ Vad har nedan uttryck för värden? Förklara vad som händer.
 
 \Subtask \code{sum(sum(42, 43), diff(100, sum(0, 0)))}
 
-\Subtask \code{sum(diff(Byte.MaxValue, Byte.MinValue),1)}
+\Subtask \code{sum(diff(Byte.MaxValue, Byte.MinValue), 1)}
 
 \SOLUTION
 
@@ -522,7 +520,7 @@ scala> println(bortkastad2)
 scala> def repeat(s: String)(n: Int): String = s * n
 scala> val song = repeat("doremi ")(3)
 scala> println(song)
-scala> val singLa = repeat("la") _
+scala> val singLa = repeat("la")
 scala> println(singLa(7))
 \end{REPL}
 
@@ -533,10 +531,10 @@ scala> println(singLa(7))
 \SubtaskSolved
 \begin{REPL}
 scala> def add2(a: Int)(b: Int) = a + b
-add2: (a: Int)(b: Int)Int
+def add2(a: Int)(b: Int): Int
 
 scala> add2(1)(1)
-res0: Int = 2
+val res0: Int = 2
 \end{REPL}
 
 \SubtaskSolved
@@ -544,7 +542,7 @@ res0: Int = 2
 
 \item Rad 3:
 \begin{REPLnonum}
-doremi doremi doremi
+doremi doremi doremi 
 \end{REPLnonum}
 
 \item Rad 5:
@@ -569,7 +567,8 @@ lalalalalalala
 \Subtask Förklara vad som händer nedan.
 
 \begin{REPL}
-scala> def countdown(x: Int): Unit = if (x > 0) {println(x); countdown(x -1)}
+scala> def countdown(x: Int): Unit = 
+         if x > 0 then {println(x); countdown(x - 1)}
 scala> countdown(10)
 scala> countdown(-1)
 scala> def finalCountdown(x: Byte): Unit =
@@ -581,10 +580,10 @@ scala> finalCountdown(Byte.MaxValue)
 
 \Subtask Förklara vad som händer nedan. Varför tar sista raden längre tid än näst sista raden?
 \begin{REPL}
-scala> def signum(a: Int): Int = if (a >= 0) 1 else -1
+scala> def signum(a: Int): Int = if a >= 0 then 1 else -1
 scala> def add(x: Int, y: Int): Int =
-         if (y == 0) x else add(x + 1, y - signum(y))
-scala> add(100,100)
+         if y == 0 then x else add(x + 1, y - signum(y))
+scala> add(100, 100)
 scala> add(Int.MaxValue, 0)
 scala> add(0, Int.MaxValue)
 \end{REPL}
@@ -594,7 +593,7 @@ scala> add(0, Int.MaxValue)
 \TaskSolved \what
 
 \SubtaskSolved
-\code{countdown} skriver ut x och gör ett rekursivt anrop med \code{x-1} som argument, men bara om basvillkoret \code{(x > 0)} är uppfyllt. Resultatet blir en ändlig  repetition.
+\code{countdown} skriver ut x och gör ett rekursivt anrop med \code{x - 1} som argument, men bara om basvillkoret \code{x > 0} är uppfyllt. Resultatet blir en ändlig  repetition.
 \code{finalCountdown} anropar sig själv rekursivt men saknar ett basvillkor som kan avbryta rekursionen, vilket genererar en oändlig repetition. Vid -128 blir det \emph{overflow} eftersom bitarna inte räcker till för större negativa tal och räkningen börjar om på 127. (Om minskar fördröjningen till \code{Thread.sleep(1)} blir det ganska snabbt \emph{stack overflow})
 
 \SubtaskSolved
@@ -614,29 +613,23 @@ Den sista raden leder till många fler rekursiva anrop, så som basvillkoret och
 \Task\Uberkurs  \what~  Förklara vad som händer. Kan du hitta bevis för att kompilatorn kan optimera rekursionen till en vanlig loop?
 
 \begin{REPL}
-scala> def explode = throw new Exception("BANG!!!")
+scala> def explode = throw Exception("BANG!!!")
 scala> explode
-scala> lastException.printStackTrace
 scala> def countdown(n: Int): Unit =
-         if (n == 0) explode else countdown(n-1)
+         if n == 0 then explode else countdown(n-1)
 scala> countdown(10)
 scala> countdown(10000)
-scala> lastException.printStackTrace
 scala> def countdown2(n: Int): Unit =
-         if (n == 0) explode else {countdown2(n-1); print("no tailrec")}
+         if n == 0 then explode else {countdown2(n-1); print("no tailrec")}
 scala> countdown2(10)
 scala> countdown2(10000)
-scala> lastException
-scala> lastException.getStackTrace.size
-scala> :javap countdown
-scala> :javap countdown2
 \end{REPL}
 
 \SOLUTION
 
-\TaskSolved \what~\code{countdown} är svansrekursiv eftersom det rekursiva anropet står \emph{sist} och kan då optimeras till en \code{while}-loop av kompilatorn. Det går fint att köra ända till det exploderar, även med 10000 anrop.
+\TaskSolved \what~\code{countdown} är svansrekursiv eftersom det rekursiva anropet står \emph{sist} och kan då optimeras till en \code{while}-loop av kompilatorn. Det går fint att köra ända till det exploderar, även med 10000 anrop, och i felmeddelandet finns det endast ett anrop till \code{countdown}.
 
-\code{countdown2} är inte svansrekursiv eftersom den har ett uttryck \code{efter} det rekursiva anropet. Med \code{:javap} får man se maskinkoden och i den ser man ett \code{goto} i \code{countdown} som är den maskinkod som generas vid \code{while}-loopar, medan \code{countdown2} har maskinkodsinstruktionen \code{invokevirtual} och inget \code{goto} vilket indikerar att kompilatorn aldrig lyckades omforma den rekursiva repetitionen till en \code{while}-sats.
+\code{countdown2} är inte svansrekursiv eftersom den har ett uttryck \code{efter} det rekursiva anropet. I felutskriften syns alla rekursiva anrop till \code{countdown2} innan basvillkoret inträffade. Vid \code{countdown2(10000)} uppfylls inte basvillkoret innan det blir \code{StackOverflowError}.
 
 \QUESTEND
 
@@ -646,19 +639,19 @@ scala> :javap countdown2
 
 \QUESTBEGIN
 
-\Task\Uberkurs  \what~  Du kan be kompilatorn att ge felmeddelande om den inte kan optimera koden till motsvarande en while-loop. Detta kan användas i de fall man vill vara helt säker på att kompilatorn kan optimera koden och det inte kan finnas risk för en överfull stack \Eng{stack overflow} på grund av för djup anropsnästling.
+\Task\Uberkurs  \what~  Du kan be kompilatorn att ge felmeddelande om den inte kan optimera koden till en motsvarande while-loop. Detta kan användas i de fall man vill vara helt säker på att kompilatorn kan optimera koden och det inte kan finnas risk för en överfull stack \Eng{stack overflow} på grund av för djup anropsnästling.
 
 Prova nedan rader i REPL och förklara vad som händer.
 \begin{REPL}
 scala> def countNoTailrec(n: Long): Unit =
-         if (n <= 0L) println("Klar! " + n) else {countNoTailrec(n-1L); ()}
+         if n <= 0L then println("Klar! " + n) else {countNoTailrec(n-1L); ()}
 scala> countNoTailrec(1000L)
 scala> countNoTailrec(100000L)
 scala> import scala.annotation.tailrec
 scala> @tailrec def countNoTailrec(n: Long): Unit =
-         if (n <= 0L) println("Klar! " + n) else {countNoTailrec(n-1L); ()}
+         if n <= 0L then println("Klar! " + n) else {countNoTailrec(n-1L); ()}
 scala> @tailrec def countTailrec(n: Long): Unit =
-         if (n <= 0L) println("Klar! " + n) else countTailrec(n-1L)
+         if n <= 0L then println("Klar! " + n) else countTailrec(n-1L)
 scala> countTailrec(1000L)
 scala> countTailrec(100000L)
 scala> countTailrec(Int.MaxValue.toLong * 2L)
@@ -666,6 +659,6 @@ scala> countTailrec(Int.MaxValue.toLong * 2L)
 
 \SOLUTION
 
-\TaskSolved \what~Första gången \code{countNoTailrec(100000L)}  anropas blir det \code{StackOverflowError}. Med annoteringen \code{@tailrec} får vi ett kompileringsfel eftersom kompilatorn inte kan optimera en icke svansrekursiv funktion. Om funktionen skrivs om kan kompilatorn optimera funktionen så att rekursionen byts ut mot en \code{while}-loop och vi kan köra så länge vi orkar utan att stacken flödar över. Och himla snabbt går det!!
+\TaskSolved \what~Första gången \code{countNoTailrec(100000L)} anropas blir det \code{StackOverflowError}. Med annoteringen \code{@tailrec} får vi ett kompileringsfel eftersom kompilatorn inte kan optimera en icke svansrekursiv funktion. Om funktionen skrivs om kan kompilatorn optimera funktionen så att rekursionen byts ut mot en \code{while}-loop och vi kan köra så länge vi orkar utan att stacken flödar över. Och himla snabbt går det!!
 
 \QUESTEND
