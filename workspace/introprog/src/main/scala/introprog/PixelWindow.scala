@@ -8,6 +8,35 @@ object PixelWindow {
   /** Idle waiting for `millis` milliseconds. */
   def delay(millis: Long): Unit = Thread.sleep(millis)
 
+  /** A map with string representations for special key codes. */
+  private val keyTextLookup: Map[Int, String] = {
+    import java.awt.event.KeyEvent._
+    Map(
+      VK_META       -> "Meta",
+      VK_WINDOWS    -> "Meta",
+      VK_CONTROL    -> "Ctrl",
+      VK_ALT        -> "Alt",
+      VK_ALT_GRAPH  -> "Alt Gr",
+      VK_SHIFT      -> "Shift",
+      VK_CAPS_LOCK  -> "Caps Lock",
+      VK_ENTER      -> "Enter",
+      VK_DELETE     -> "Delete",
+      VK_BACK_SPACE -> "Backspace",
+      VK_ESCAPE     -> "Esc",
+      VK_RIGHT      -> "Right",
+      VK_LEFT       -> "Left",
+      VK_UP         -> "Up",
+      VK_DOWN       -> "Down",
+      VK_PAGE_UP    -> "Page up",
+      VK_PAGE_DOWN  -> "Page down",
+      VK_HOME       -> "Home",
+      VK_END        -> "End",
+      VK_CLEAR      -> "Clear",
+      VK_TAB        -> "Tab",
+      VK_SPACE      -> " ",
+    )
+  }
+
   /** An object with integers representing events that can happen in a PixelWindow. */
   object Event {
     /** An integer representing a key down event.
@@ -138,7 +167,7 @@ class PixelWindow(
 
     case ke: java.awt.event.KeyEvent =>
       if (ke.getKeyChar == java.awt.event.KeyEvent.CHAR_UNDEFINED || ke.getKeyChar < ' ')
-        _lastKeyText = java.awt.event.KeyEvent.getKeyText(ke.getKeyCode)
+        _lastKeyText = PixelWindow.keyTextLookup.getOrElse(ke.getKeyCode, java.awt.event.KeyEvent.getKeyText(ke.getKeyCode))
       else _lastKeyText = ke.getKeyChar.toString
 
       ke.getID match {
@@ -146,8 +175,8 @@ class PixelWindow(
           _lastEventType = Event.KeyPressed
         case java.awt.event.KeyEvent.KEY_RELEASED =>
           _lastEventType = Event.KeyReleased
-          case _ =>
-            throw new IllegalArgumentException(s"Unknown KeyEvent: $e")
+        case _ =>
+          throw new IllegalArgumentException(s"Unknown KeyEvent: $e")
       }
 
     case we: java.awt.event.WindowEvent =>
@@ -157,14 +186,15 @@ class PixelWindow(
         case _ =>
           throw new IllegalArgumentException(s"Unknown WindowEvent: $e")
       }
-      case _ =>
-        throw new IllegalArgumentException(s"Unknown Event: $e")
+
+    case _ =>
+      throw new IllegalArgumentException(s"Unknown Event: $e")
   }
 
   /** Return `true` if `(x, y)` is inside windows borders else `false`. */
   def isInside(x: Int, y: Int): Boolean = x >= 0 && x < width && y >= 0 && y < height
 
-  private def requireInside(x: Int, y: Int): Unit = 
+  private def requireInside(x: Int, y: Int): Unit =
     require(isInside(x,y), s"(x=$x, y=$y) out of window bounds (0 until $width, 0 until $height)")
 
   /** Wait for next event until `timeoutInMillis` milliseconds.
@@ -193,7 +223,7 @@ class PixelWindow(
       g.fillRect(x, y, width, height)
     }
 
-  /** Set the color of the pixel at `(x, y)`. 
+  /** Set the color of the pixel at `(x, y)`.
     *
     * If (x, y) is outside of window bounds then an IllegalArgumentException is thrown.
     */
@@ -204,7 +234,7 @@ class PixelWindow(
     }
   }
 
-  /** Clear the pixel at `(x, y)` using the `background` class parameter. 
+  /** Clear the pixel at `(x, y)` using the `background` class parameter.
     *
     * If (x, y) is outside of window bounds then an IllegalArgumentException is thrown.
     */
@@ -215,7 +245,7 @@ class PixelWindow(
     }
   }
 
-  /** Return the color of the pixel at `(x, y)`. 
+  /** Return the color of the pixel at `(x, y)`.
     *
     * If (x, y) is outside of window bounds then an IllegalArgumentException is thrown.
     */
@@ -226,7 +256,7 @@ class PixelWindow(
 
   /** Set the PixelWindow frame title. */
   def setTitle(title: String): Unit = Swing { frame.setTitle(title) }
-  
+
   /** Show the window. Has no effect if the window is already visible. */
   def show(): Unit = Swing { frame.setVisible(true) }
 
@@ -264,6 +294,8 @@ class PixelWindow(
   private def initFrame(): Unit = Swing {
     Swing.init() // first time calls setPlatformSpecificLookAndFeel
     javax.swing.JFrame.setDefaultLookAndFeelDecorated(true)
+
+    frame.setFocusTraversalKeysEnabled(false);
 
     frame.addWindowListener(new java.awt.event.WindowAdapter {
       override def windowClosing(e: java.awt.event.WindowEvent): Unit = {

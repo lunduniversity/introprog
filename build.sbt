@@ -24,6 +24,8 @@ hello := println("""
 
     type 'project workspace' to change to sub-project workspace
 
+    type 'scalaVersion' to see all versions in (sub)projects
+
     type 'hello' to see this message
 
   =====================================================================
@@ -31,7 +33,7 @@ hello := println("""
 """)
 
 lazy val myStartupTransition: State => State = { s: State =>
-  "hello" :: "scalaVersion" :: s
+  "hello" :: s
 }
 
 lazy val commonSettings = Seq(

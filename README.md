@@ -1,6 +1,7 @@
 # lunduniversity/introprog
 
-[![Build Status](https://travis-ci.org/lunduniversity/introprog.svg?branch=master)](https://travis-ci.org/lunduniversity/introprog)
+![Build Status](https://github.com/lunduniversity/introprog/actions/workflows/main.yml/badge.svg)
+
 
 This is the repo of a course given by Lund University called "Introduction to Programming" using Scala and Java. The repo contains course material in Swedish and some English along with code examples and libraries used in exercises and labs.
 

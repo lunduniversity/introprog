@@ -150,8 +150,8 @@ trait Plan {
       | gränssnitt, interface i Java, programmeringsgränssnitt (api),
       """.stripTrim),
 
-    Module("Språkskillnader",
-      id = "scala-java", exercise = "scala-java", lab = "javatext", contents = """
+    Module("TODO: Flytta Java till appendix",
+      id = "java", exercise = "java", lab = "javatext", contents = """
       | syntaxskillnader mellan Scala och Java,
       | klasser i Scala och Java,
       | referensvariabler i Java, enkla värden i Java, primitiva typer i Java,
@@ -165,7 +165,7 @@ trait Plan {
       | kodläsbarhet, idiom, kodningsstandard,
       """.stripTrim),
 
-    Module("Sortering",
+    Module("TODO: Ändra från Sortering till annat",
         id = "sort", exercise = "sort", lab = "", contents = """
         | strängjämförelse, compareTo, implicit ordning,
         | binärsökning, algoritm: BINARY-SEARCH,
