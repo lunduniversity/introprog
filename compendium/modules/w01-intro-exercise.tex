@@ -62,9 +62,9 @@
 
 \begin{REPLnonum}
 > scala
-Welcome to Scala 2.13.3 (OpenJDK 64-Bit Server VM, Java 11.0.8).
+Welcome to Scala 3.0.0 (OpenJDK 64-Bit Server VM, Java 11.0.8).
 Type in expressions for evaluation. Or try :help.
-
+scala -version.
 scala>
 \end{REPLnonum}
 
@@ -251,15 +251,20 @@ res4: Int = -2147483648
 
 \Task \what
 
-\Subtask Antag att du har ett schackbräde med 64 rutor. Tänk dig att du börjar med att lägga ett enda riskorn på första rutan och sedan lägger dubbelt så många riskorn i en ny hög för varje efterföljande ruta: 1, 2, 4, 8, ...  etc. När du har gjort detta för alla rutor, hur många riskorn har du totalt lagt på schackbrädet?\footnote{\url{https://en.wikipedia.org/wiki/Wheat_and_chessboard_problem}}
+\Subtask Antag att du har ett schackbräde med 64 rutor. Tänk dig att du börjar med att lägga ett enda riskorn på första rutan och sedan 
+lägger dubbelt så många riskorn i en ny hög för varje efterföljande ruta: 1, 2, 4, 8, ...  etc. När du har gjort detta för alla rutor, 
+hur många riskorn har du totalt lagt på schackbrädet?\footnote{\url{https://en.wikipedia.org/wiki/Wheat_and_chessboard_problem}}
 
 \emph{Tips:} Du ska beräkna $2^{64} - 1$. Om du skriver \code{math.} i REPL och trycker TAB får du se inbyggda matematiska funktioner i Scalas standardbibliotek:
 \begin{REPLnonum}
 scala> math.    // Tryck TAB direkt efter punkten och betrakta listan
 \end{REPLnonum}
-Använd funktionen \code{math.pow} och lämpliga argument. Om du skriver \code{math.pow} och trycker TAB \emph{två gånger} får du se funktionshuvudet med parameterlistan.
+Använd funktionen \code{math.pow} och lämpliga argument. Om du anger \code{math.pow} eller \code{math.pow()} utan argument får du se funktionshuvudet med 
+parameterlistan.
 
-Om du surfar till \url{http://www.scala-lang.org/api/current/} och skriver \code{math} i sökrutan och sedan, efter att du klickat på \textbf{\texttt{\small scala.math}}, skriver \textbf{\texttt{\small pow}} i rutan längre ner, så filtreras sidan och du hittar dokumentationen av \code{ def pow } som du kan klicka på och läsa mer om.
+Om du surfar till \url{http://www.scala-lang.org/api/current/} och skriver \code{math} i sökrutan och sedan, efter att du klickat på 
+\textbf{\texttt{\small scala.math}}, skriver \textbf{\texttt{\small pow}} i rutan längre ner, så filtreras sidan och du hittar dokumentationen 
+av \code{ def pow } som du kan klicka på och läsa mer om.
 
 \Subtask Definiera funktionen \code{omkrets} nedan i REPL. Går det bra att utelämna returtyp-annoteringen? Varför? Finns det anledning att ha den kvar?
 \begin{Code}
@@ -400,20 +405,20 @@ res1: Int = 1
 
 \Subtask Så här kan en \code{for}-sats ser ut:
 \begin{Code}
-for (i <- 1 to 10) print(i + ", ")
+for i <- 1 to 10 do print(s"$i, ")
 \end{Code}
 Använd en \code{for}-sats för att skriva ut resultatet av 100 tärningskast med funktionen \code{roll} från uppgift \ref{exercise:expressions:roll}.
 
 \Subtask Så här kan en \code{foreach}-sats ser ut:
 \begin{Code}
-(1 to 10).foreach(i => print(i + ", "))
+(1 to 10).foreach(i => print(s"$i, "))
 \end{Code}
 Använd en \code{foreach}-sats för att skriva ut resultatet av 100 tärningskast med funktionen \code{roll} från uppgift \ref{exercise:expressions:roll}.
 
-\Subtask Så här kan en \code{while}-sats ser ut:
+\Subtask Så här kan en \code{while}-sats se ut:
 \begin{Code}
 var i = 1
-while (i <= 10) { print(i + ", "); i = i + 1 }
+while i <= 10 do { print(s"$i, "); i = i + 1 }
 \end{Code}
 Använd en \code{while}-sats för att skriva ut resultatet av 100 tärningskast med funktionen \code{roll} från uppgift \ref{exercise:expressions:roll}. Vad händer om du glömmer \code{i = i + 1} ?
 
@@ -424,19 +429,26 @@ Använd en \code{while}-sats för att skriva ut resultatet av 100 tärningskast 
 
 \SubtaskSolved
 \begin{Code}
-for (i <- 1 to 100) print(roll + ", ")
+for i <- 1 to 100 do print(s"$roll, ")
 \end{Code}
 
 \SubtaskSolved
 \begin{Code}
-(1 to 100).foreach(i => print(roll + ", "))
+(1 to 100).foreach(i => print(s"$roll, "))
 \end{Code}
 
 
 \SubtaskSolved
 \begin{Code}
 var i = 1
-while (i <= 100) { print(roll + ", "); i = i + 1 }
+while i <= 100 do { print(s"$roll, "); i = i + 1 }
+\end{Code}
+
+\begin{Code}
+var i = 1
+while i <= 100 do
+    print(s"$roll, ") 
+    i += 1
 \end{Code}
 
 
@@ -457,13 +469,13 @@ while (i <= 100) { print(roll + ", "); i = i + 1 }
 
 \Subtask Så här kan en \code{if}-sats se ut (notera dubbla likhetstecken):
 \begin{Code}
-if (roll == 3) println("TRE") else println("INTE TRE")
+if roll == 3 then println("TRE") else println("INTE TRE")
 \end{Code}
 Testa ovan i REPL. Skriv sedan en \code{for}-sats som kastar 100 tärningar och skriver ut strängen \code{"GRATTIS! "} om det blir en sexa, annars en ledsen smiley: \code{":("}
 
 \Subtask Så här kan ett \code{if}-uttryck se ut:
 \begin{Code}
-if (roll < 6) 0 else 1
+if roll < 6 then 0 else 1
 \end{Code}
 Testa ovan i REPL. Skriv sedan en \code{while}-sats som kastar 100 tärningar och räknar antalet sexor. Skriv ut antalet efter \code{while}-satsen.
 
@@ -473,6 +485,11 @@ Testa ovan i REPL. Skriv sedan en \code{while}-sats som kastar 100 tärningar oc
 
 \SubtaskSolved
 \begin{Code}
+for i <- 1 to 100 do 
+  if roll == 6 then print("GRATTIS! ") else print(":(")
+\end{Code}
+eller
+\begin{Code}
 for (i <- 1 to 100) if (roll == 6) print("GRATTIS! ") else print(":(")
 \end{Code}
 
@@ -480,10 +497,9 @@ for (i <- 1 to 100) if (roll == 6) print("GRATTIS! ") else print(":(")
 \begin{Code}
 var i = 1
 var n = 0
-while (i <= 100) {
-  if (roll == 6) n = n + 1
+while i <= 100 do
+  if roll == 6 then n = n + 1
   i = i + 1
-}
 println("Antalet sexor: " + n)
 \end{Code}
 
@@ -536,7 +552,9 @@ scala> p;p;p;p
 
 \SubtaskSolved
 \begin{itemize}
-\item Klammerparenteser används för att gruppera flera satser. Klammerparenteser behövs om man vill definiera en funktion som består av mer än en sats.
+\item Klammerparenteser används för att gruppera flera satser. 
+Klammerparenteser behövs om man vill definiera en funktion som består av mer än en sats. 
+Sedan scala 3 kan man istället använda indentering för att definera en funktion med flera rader och satser.
 
 \item Semikolon särskiljer flera satser. Semikolon behövs om man vill skriva många satser på samma rad.
 
@@ -640,9 +658,9 @@ scala> p;p;p;p
 
 \begin{REPL}
 scala> var monster = false
-scala> if (monster) println("akta dig!!!")
+scala> if monster then println("akta dig!!!")
 scala> monster = true
-scala> if (monster) println("akta dig!!!")
+scala> if monster then println("akta dig!!!")
 \end{REPL}
 
 \SOLUTION
@@ -934,19 +952,19 @@ var highscore = 0
 \SubtaskSolved
 \begin{Code}
 def updateHighscore(points: Int): Unit =
-  if (points > highscore) {
+  if points > highscore then
     highscore = points
     println("REKORD!")
-  } else println("GE INTE UPP!")
+  else println("GE INTE UPP!")
 \end{Code}
 
 \SubtaskSolved
 \begin{Code}
 def updateHighscore(points: Int): String =
-  if (points > highscore) {
+  if points > highscore then
     highscore = points
     "REKORD!"
-  } else "GE INTE UPP!"
+  else "GE INTE UPP!"
 \end{Code}
 
 
@@ -995,10 +1013,10 @@ res2: Boolean = true
 
 \Task \what~För varje rad nedan, beskriv vad som skrivs ut.  % Uppgift 18
 \begin{REPL}
-scala> if (!true) println("sant") else println("falskt")
-scala> if (!false) println("sant") else println("falskt")
-scala> def singlaSlant = if (math.random() < 0.5) "krona" else "klave"
-scala> for (i <- 1 to 5) print(s"$i:$singlaSlant ")
+scala> if !true then println("sant") else println("falskt")
+scala> if !false then println("sant") else println("falskt")
+scala> def singlaSlant = if math.random() < 0.5 then "krona" else "klave"
+scala> for i <- 1 to 5 do print(s"$i:$singlaSlant ")
 \end{REPL}
 
 \SOLUTION
@@ -1030,10 +1048,10 @@ scala> var frukt = "banan"
 
 Ange för varje rad nedan vad uttrycket har för värde och typ:
 \begin{REPLnonum}
-scala> if (grönsak == "tomat") "gott" else "inte gott"
-scala> if (frukt == "banan") "gott" else "inte gott"
-scala> if (true) grönsak else 42
-scala> if (false) grönsak else 42
+scala> if grönsak == "tomat" then "gott" else "inte gott"
+scala> if frukt == "banan" then "gott" else "inte gott"
+scala> if true then grönsak else 42
+scala> if false then grönsak else 42
 \end{REPLnonum}
 
 \SOLUTION
@@ -1042,16 +1060,16 @@ scala> if (false) grönsak else 42
 \TaskSolved \what~Notera typen \code{Any} på de sista två uttrycken.
 
 \begin{REPLnonum}
-scala> if (grönsak == "tomat") "gott" else "inte gott"
+scala> if grönsak == "tomat" then "gott" else "inte gott"
 res0: String = inte gott
 
-scala> if (frukt == "banan") "gott" else "inte gott"
+scala> if frukt == "banan" then "gott" else "inte gott"
 res1: String = gott
 
-scala> if (true) grönsak else 42
+scala> if true then grönsak else 42
 res2: Any = gurka
 
-scala> if (false) grönsak else 42
+scala> if false then grönsak else 42
 res3: Any = 42
 \end{REPLnonum}
 
@@ -1214,8 +1232,8 @@ scala> w = w + 1
 \Task \what~Vad blir resultatet av rad 3 och 4?
 
 \begin{REPL}
-scala> def lotto1 = if (math.random() > 0.5) print("vinst :) ")
-scala> def lotto2 = while (math.random() > 0.5) print("vinst :) ")
+scala> def lotto1 = if math.random() > 0.5 then print("vinst :) ")
+scala> def lotto2 = while math.random() > 0.5 do print("vinst :) ")
 scala> lotto1
 scala> lotto2
 \end{REPL}
@@ -1623,7 +1641,7 @@ $64$ &   &  \\
 \begin{REPL}
 scala> import Integer.{toBinaryString => toBin, toHexString => toHex}
 
-scala> for (i <- Seq(33, 42, 64)) println(s"$i \t ${toBin(i)} \t ${toHex(i)}")
+scala> for i <- Seq(33, 42, 64) do println(s"$i \t ${toBin(i)} \t ${toHex(i)}")
 33 	 100001 	 21
 42 	 101010 	 2a
 64 	 1000000 	 40
