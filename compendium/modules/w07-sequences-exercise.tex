@@ -1506,20 +1506,20 @@ public class DiceScanBuggy {
 \QUESTEND
 
 
-\WHAT{Arrays don't behave, but \code{WrappedArray}s do!}
+\WHAT{Arrays don't behave, but \code{ArraySeq}s do!}
 
 \QUESTBEGIN
 
 \Task \what~Även om \code{Array} är primitiv så finns smart krångel ''under huven'' i Scalas samlingsbibliotek för att arrayer ska bete sig nästan som ''riktiga'' samlingar. Därmed behöver man inte ägna sig åt olika typer av specialhantering, t.ex. s.k. boxning, wrapperklasser och typomvandlingar \Eng{type casting}, vilket man ofta behöver kämpa med som Java-programmerare.
 
-Dock finns fortfarande begränsningar och anomalier vad gäller till exempel likhetstest. Om du vill att en array ska bete sig som andra samlingar kan du enkelt ''wrappa'' den med metoden \code{toSeq} som vid anrop på arrayer ger en \code{WrappedArray}. Denna beter sig som en helt vanlig sekvenssamling utan att offra snabbheten hos en primitiv array.
+Dock finns fortfarande begränsningar och anomalier vad gäller till exempel likhetstest. Om du vill att en array ska bete sig som andra samlingar kan du enkelt ''wrappa'' den med metoden \code{toSeq} som vid anrop på arrayer ger en \code{ArraySeq}. Denna beter sig som en helt vanlig oföränderlig sekvenssamling utan att offra snabbheten hos en primitiv array.
 \begin{Code}
 val as = Array(1,2,3)
 val xs = as.toSeq
 \end{Code}
-\Subtask Hur fungerar likhetstest mellan två wrappade arrayer? Vad har \code{xs} ovan för typ? Går det att uppdatera en wrappad array?
+\Subtask Hur fungerar likhetstest mellan två \code{ArraySeq}s? Vad har \code{xs} ovan för typ? Går det att uppdatera en wrappad array?
 
-\Subtask Vilken typ av argumentsekvens du får tillgång till i kroppen för en funktion med repeterade parametrar?
+\Subtask Vilken typ av argumentsekvens får du tillgång till i kroppen för en funktion med repeterande parametrar?
 
 \Subtask\Uberkurs Läs här:
 \url{http://docs.scala-lang.org/overviews/collections/arrays.html}
@@ -1531,45 +1531,45 @@ och ge ett exempel på vad mer man inte kan göra med en array, förutom innehå
 
 \TaskSolved \what~
 
-\SubtaskSolved Vid repeterade parametrar får man en \code{WrappedArray}.
-
-\begin{REPL}
-scala> def f(xs: Int*) = xs
-f: (xs: Int*)Seq[Int]
-
-scala> println(f(1,2,3))
-WrappedArray(1, 2, 3)
-\end{REPL}
-
-
-\SubtaskSolved \code{xs} erbjuder innehållslikhet och har typen \code{Seq[Int]} med den underliggande typen \code{WrappedArray[Int]}. Det går inte att göra tilldelning av element i en \code{WrappedArray} eftersom metoden \code{update} saknas. Du får snabbt tillbaka en referens till den underliggande arrayen med \code{xs.toArray} utan att kopiering behöver ske.
+\SubtaskSolved \code{xs} erbjuder innehållslikhet och har typen \code{Seq[Int]} med den underliggande typen \code{ArraySeq[Int]}. Det går inte att göra tilldelning av element i en \code{ArraySeq} eftersom metoden \code{update} saknas, och den är oföränderlig. Den uppdateras därför inte när den urspringliga arrayen uppdateras.
 
 \begin{REPL}
 scala> val as1 = Array(1,2,3)
-as1: Array[Int] = Array(1, 2, 3)
+val as1: Array[Int] = Array(1, 2, 3)
 
 scala> val as2 = Array(1,2,3)
-as2: Array[Int] = Array(1, 2, 3)
+val as2: Array[Int] = Array(1, 2, 3)
 
 
 scala> val (xs1, xs2) = (as1.toSeq, as2.toSeq)
-xs1: Seq[Int] = WrappedArray(1, 2, 3)
-xs2: Seq[Int] = WrappedArray(1, 2, 3)
+val xs1: Seq[Int] = ArraySeq(1, 2, 3)
+val xs2: Seq[Int] = ArraySeq(1, 2, 3)
 
 scala> as1 == as2
-res0: Boolean = false
+val res0: Boolean = false
 
 scala> xs1 == xs2
-res4: Boolean = true
+val res1: Boolean = true
 
 scala> as1(0) = 42
 
 scala> xs1
-res1: Seq[Int] = WrappedArray(42, 2, 3)
+val res2: Seq[Int] = ArraySeq(1, 2, 3)
 
 scala> xs1(0) = 42
-<console>:13: error: value update is not a member of Seq[Int]
+value update is not a member of Seq[Int]
 \end{REPL}
+
+\SubtaskSolved Vid repeterade parametrar får man en \code{ArraySeq}.
+
+\begin{REPL}
+scala> def f(xs: Int*) = xs
+def f(xs: Int*): Seq[Int]
+
+scala> println(f(1,2,3))
+ArraySeq(1, 2, 3)
+\end{REPL}
+
 
 \SubtaskSolved Det går inte att ha en generisk array som funktionsresultat utan att bifoga kontextgränsen \code{ClassTag} i typparametern för att kompilatorn ska kunna generera kod för den typkonvertering som krävs under runtime av JVM. Se exempel här:\\
 \url{http://docs.scala-lang.org/overviews/collections/arrays.html}
