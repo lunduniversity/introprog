@@ -4,6 +4,7 @@
 %%%
 
 
+
 \Subsection{Valfria uppgifter om Java}
 \begin{Slide}{Övning \texttt{scalajava} och labb \texttt{javatext}}\SlideFontSmall
 %\Emph{Labbförberedelse:}
@@ -26,35 +27,32 @@
 \end{Slide}
 
 
-\Subsection{Jämförelse Scala och Java}
+\begin{Slide}{''Hello world!'' i Java.}
 
-% \begin{Slide}{Vad gör en kompilator?}
-%   \begin{minipage}{.52\textwidth}
-%   %https://www.sharelatex.com/blog/2013/08/29/tikz-series-pt3.html
-%   \begin{tikzpicture}[node distance=1.4cm,scale=0.8]
-%     \node (input) [startstop] {Källkod};
-%     \node(inptext) [right of=input, text width=2cm, scale=0.8,xshift=1.5cm]{För\\människor};
-%     \node (compile) [process, below of=input] {Kompilator};
-%     \node (output) [startstop, below of=compile] {Maskinkod};
-%     \node(outtext) [right of=output, text width=2cm, scale=0.8,xshift=1.5cm]{För\\maskiner};
-%     \draw [arrow] (input) -- (compile);
-%     \draw [arrow] (compile) -- (output);
-%     \end{tikzpicture}%
+\noindent Ett minimalt huvudprogram i Java:
+\begin{Code}[language=Java]
+public class Hello {
+    public static void main(String[] args) {
+        System.out.println("Hello world!");
+    }
+}
+\end{Code}
 
-% \end{minipage}%
-% \begin{minipage}{.5\textwidth}
-%   Kompilatorns stegvisa resultat:
-%   \begin{itemize}\SlideFontSmall
-%     \item \Emph{Syntaktisk analys}: textens \Alert{utformning} kontrolleras enligt en väldefinierad grammatik.
-%     \item En \Emph{datastruktur} skapas som representerar kodens olika delar; ett s.k. abstrakt syntaxträd \Emph{AST}.
-%     \item \Emph{Semantisk analys}: kodens \Alert{betydelse} kontrolleras i flera steg enligt språkets alla regler.
-%     \item \Emph{Maskinkod} genereras, smarta \Alert{optimeringar} görs.
-%   \end{itemize}
-% \end{minipage}%
+% Motsvarande i Scala:
+% \begin{Code}
+% object Hello:
+%   def main(args: Array[String]): Unit = println("Hello world!")
+% \end{Code}
 
-% \pause\vspace{1em}\SlideFontSmall Med statiskt typade språk (Scala, Java, C\#, C++, ...) kan fler kontroller ske under kompilering, jmf m dynamiskt typade språk (Python, Javascript, Clojure, Matlab, ...). I de senare släpps många typer av buggar vidare till körtid.
-% \end{Slide}
+% I Scala (men inte Java) går det även att skriva typsäkra main-funktioner på toppnivå med annoteringen \code{@main}.
+% \begin{Code}
+% @main def run(n: Int): Unit = println("Hello world!" * n)
+% \end{Code}
+\end{Slide}
+
   
+
+\Subsection{Jämförelse Scala och Java}
 
 \begin{Slide}{Grundläggande likheter och skillnader Java--Scala}\SlideFontSmall
 \Emph{Några likheter:}
@@ -100,6 +98,59 @@
 \end{Slide}
 
 
+
+\begin{Slide}{Huvudprogram i Scala och Java}
+\begin{multicols}{2}
+  \noindent\Emph{Scala 2}
+\begin{CodeSmall}[basicstyle=\footnotesize\ttfamily\SlideFontSize{6}{8},backgroundcolor=\color{white},
+  frame=none]
+object Main {
+  def main(args: Array[String]): Unit = {
+    println("Hello!")
+  }
+}
+\end{CodeSmall}
+
+\columnbreak
+
+\noindent\Emph{Java}
+\begin{CodeSmall}[language=Java,basicstyle=\footnotesize\ttfamily\SlideFontSize{6}{8},backgroundcolor=\color{white},
+  frame=none]
+public class JMain {
+  public static void main(String[] args){
+    System.out.println("Hello!");
+  }
+}
+\end{CodeSmall}
+\end{multicols}
+
+\pause\vspace{1em}\noindent\Emph{Scala 3}
+\begin{CodeSmall}[basicstyle=\footnotesize\ttfamily\SlideFontSize{6}{8},backgroundcolor=\color{white},
+  frame=none]
+@main 
+def sumFirst(n: Int, xs: Int*): Unit = println(xs.take(n).sum)
+  
+\end{CodeSmall}
+
+\end{Slide}
+
+\begin{Slide}{Grundtyper i Scala och primitiva typer Java}\SlideFontSmall
+\begin{table}[H]
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{l|l|l|l}
+\Alert{Grundtyp} i &  Antal                &      Omfång&\Alert{primitiv typ} i\\
+  \Emph{Scala} & bitar & minsta/största värde &\Emph{Java} \\ \hline
+\texttt{Byte}   &  8  & $-2^7$ ... $2^7-1$   & \texttt{byte} \\
+\texttt{Short}  &  16 & $-2^{15}$ ... $2^{15}-1$ & \texttt{short} \\
+\texttt{Char}   &  16 & $0$ ... $2^{16}-1$ & \texttt{char} \\
+\texttt{Int}    &  32 & $-2^{31}$ ... $2^{31}-1$ & \texttt{int} \\
+\texttt{Long}   &  64 & $-2^{63}$ ... $2^{63}-1$ & \texttt{long} \\
+\texttt{Float}  &  32 & ± $3.4028235 \cdot 10^{38}$  & \texttt{float} \\
+\texttt{Double} &  64 & ± $1.7976931348623157 \cdot 10^{308}$ & \texttt{double} \\
+\end{tabular}
+\end{table}
+\end{Slide}
+  
 
 
 \begin{Slide}{Några saker som finns i Scala men inte i Java}\SlideFontTiny
@@ -222,74 +273,47 @@
 \end{Slide}
 
 
-% \begin{Slide}{Javas switch-sats}\SlideFontSmall
-% De flesta C-liknande språk (men inte Scala) har en \jcode{switch}-sats som man kan använda istället för (vissa) nästlade if-else-satser:
-% \javainputlisting[basicstyle=\ttfamily\SlideFontSize{5}{6}\selectfont]{../compendium/examples/match/Switch.java}
-% {\SlideFontTiny
-% \code{switch} i Java har stora begränsningar (fungerar t.ex. bara på primitiva typer och några till, tex String); i framtiden planerar man att anamma en del av det \code{match} i Scala kan.
-% }
-% \end{Slide}
-
-
-% \begin{Slide}{Javas switch-sats utan break}\SlideFontSmall
-% Saknad \jcode{break}-sats ''faller igenom'' till efterföljande gren:
-
-% \javainputlisting[basicstyle=\ttfamily\SlideFontSize{6}{7}\selectfont]{../compendium/examples/match/SwitchNoBreak.java}
-% En glömd \jcode{break} kan ge svårhittad bugg...
-% \end{Slide}
-
-% \begin{Slide}{Javas switch-sats med glömd break}\SlideFontSmall
-
-% \vspace{-0.5em}\javainputlisting[basicstyle=\ttfamily\SlideFontSize{5.5}{6.8}\selectfont]{../compendium/examples/match/SwitchForgotBreak.java}
-
-% \vspace{-0.7em}\pause
-% \begin{REPL}
-% > java SwitchForgotBreak
-% Skriv grönsak:
-% gurka
-% gott!
-% gott!
-% \end{REPL}
-
-% \end{Slide}
-
-
-
-
-
-\begin{Slide}{Huvudprogram i Scala och Java}
-\begin{multicols}{2}
-  \noindent\Emph{Scala 2}
-\begin{CodeSmall}[basicstyle=\footnotesize\ttfamily\SlideFontSize{6}{8},backgroundcolor=\color{white},
-  frame=none]
-object Main {
-  def main(args: Array[String]): Unit = {
-    println("Hello!")
-  }
+\begin{Slide}{Javas switch-sats}\SlideFontSmall
+De flesta C-liknande språk (men inte Scala) har en \jcode{switch}-sats som man kan använda istället för (vissa) nästlade if-else-satser:
+\javainputlisting[basicstyle=\ttfamily\SlideFontSize{5}{6}\selectfont]{../compendium/examples/match/Switch.java}
+{\SlideFontTiny
+\code{switch} i Java har stora begränsningar (fungerar t.ex. bara på primitiva typer och några till, tex String); i framtiden planerar man att anamma en del av det \code{match} i Scala kan.
 }
-\end{CodeSmall}
+\end{Slide}
 
-\columnbreak
 
-\noindent\Emph{Java}
-\begin{CodeSmall}[language=Java,basicstyle=\footnotesize\ttfamily\SlideFontSize{6}{8},backgroundcolor=\color{white},
-  frame=none]
-public class JMain {
-  public static void main(String[] args){
-    System.out.println("Hello!");
-  }
-}
-\end{CodeSmall}
-\end{multicols}
+\begin{Slide}{Javas switch-sats utan break}\SlideFontSmall
+Saknad \jcode{break}-sats ''faller igenom'' till efterföljande gren:
 
-\pause\vspace{1em}\noindent\Emph{Scala 3}
-\begin{CodeSmall}[basicstyle=\footnotesize\ttfamily\SlideFontSize{6}{8},backgroundcolor=\color{white},
-  frame=none]
-@main 
-def sumFirst(n: Int, xs: Int*): Unit = println(xs.take(n).sum)
-  
-\end{CodeSmall}
+\javainputlisting[basicstyle=\ttfamily\SlideFontSize{6}{7}\selectfont]{../compendium/examples/match/SwitchNoBreak.java}
+En glömd \jcode{break} kan ge svårhittad bugg...
+\end{Slide}
 
+\begin{Slide}{Javas switch-sats med glömd break}\SlideFontSmall
+
+\vspace{-0.5em}\javainputlisting[basicstyle=\ttfamily\SlideFontSize{5.5}{6.8}\selectfont]{../compendium/examples/match/SwitchForgotBreak.java}
+
+\vspace{-0.7em}\pause
+\begin{REPL}
+> java SwitchForgotBreak
+Skriv grönsak:
+gurka
+gott!
+gott!
+\end{REPL}
+
+\end{Slide}
+
+
+\begin{Slide}{Regler för identifierare i Java}\footnotesize
+När kompilatorn ''läser''  \footnote{man säger ofta ''parsa'' i stället för ''läsa'' när kompilatorn tolkar koden} koden och och försöker hitta variabelnamn, antar den att du följer de entydiga syntaktiska reglerna för språket.  \\ \vskip1em För namn i Java gäller följande regler: %https://docs.oracle.com/javase/tutorial/java/nutsandbolts/variables.html
+\begin{itemize}
+\item Namn får inte vara \href{https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html}{reserverade ord}
+\item Stora och små bokstäver spelar roll \Eng{case sensistive} \\ \lstinline{int highScore;} och \lstinline{int highscore;} ger alltså två \textit{olika} variabler
+\item Namnet måste börja med en bokstav, ett understreck \_ eller ett dollartecken \$
+\item Namn får \textit{inte} innehålla blanktecken
+\item Namn får innehålla bokstäver, siffror, understreck \_ och dollartecken \$, men \textit{inte} andra specialtecken (alltså inte \lstinline~%&@!{(})/+-*~ etc.)
+\end{itemize}
 \end{Slide}
 
 
