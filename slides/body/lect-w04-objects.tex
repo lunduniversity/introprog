@@ -98,7 +98,7 @@ Olika saker man kan göra med objekt:
   \code{ref.medlem}
   \pause
   \item (\Emph{avallokera}): att frigöra minne för objekt som inte längre används;
-  detta \Alert{sker automatiskt} i Scala och Java, men i många andra språk,
+  detta \Alert{sker automatiskt} i Scala, men i många andra språk,
   t.ex. C++, får man själv hålla reda på avallokering,
   vilket är knepigt och det blir lätt svåra buggar.
 \end{itemize}
@@ -316,9 +316,9 @@ object A2 { def a = (41 + math.random()).round.toInt }
 scala> A1.a
 scala> A2.a  
 \end{REPLnonum}
-    \item Många andra språk har olika syntax för access av attribut och anrop av metoder (t.ex. Java, där alla metodanrop måste ha parenteser).
+    \item Många andra språk har olika syntax för access av attribut och anrop av metoder (t.ex. Java m.fl., där alla metodanrop måste ha parenteser).
     \item Fördel: Det går lätt att ändra i implementationen och växla mellan att använda attribut och använda metoder utan att den kod som använder din implementation behöver ändras.
-    \item Nackdel: Det kan bli namnkrockar mellan metoder och attribut eftersom de finns i samm namnrymd.
+    \item Nackdel: Det kan bli namnkrockar mellan metoder och attribut eftersom de finns i samma namnrymd.
   \end{itemize}
   
 \end{Slide}
@@ -423,11 +423,12 @@ res1: Int = -24000
       \item Liknar varandra; t.ex. kan man använda punktnotation och göra \code{import} på medlemmar i både singelobjekt och paket.
       \pause
       \item Skillnader:
-      \begin{itemize}
+      \begin{itemize} 
         \item paket medför att \Alert{underkataloger} för maskinkoden skapas vid kompilering
-        \item paket får inte i Scala 2 innehålla variabel- och funktions- deklarationer på topp-nivå; dessa  måste i Scala 2 ligga inuti singelobjekt eller klasser
+        \item objekt kan ärva medlemmar från klasser och traits (mer om det senare)
+        %\item paket får inte i Scala 2 innehålla variabel- och funktions- deklarationer på topp-nivå; dessa  måste i Scala 2 ligga inuti singelobjekt eller klasser
       \end{itemize}
-      \item I Scala 2 kan toppnivådekl. placeras i ett \code{package object}
+      %\item I Scala 2 kan toppnivådekl. placeras i ett \code{package object}
     \end{itemize}
   
   \end{itemize}
@@ -440,18 +441,16 @@ Denna kod ligger i filen f1.scala:
 \begin{Code}
 package mittpaket
 
-object A {
-  def main(args: Array[String]) : Unit = B.hej
-}
+object A: 
+  @main def run: Unit = B.hej
 \end{Code}
 
 Denna kod ligger i filen f2.scala:
 \begin{Code}
 package mittpaket
 
-object B {
+object B:
   def hej = println("hej mittpaket")
-}
 \end{Code}
 Singelobjekten \code{A} och \code{B} finns båda i namnrymden \code{mittpaket}.
 \end{Slide}
@@ -463,8 +462,9 @@ Paketdeklarationer medför att kompilatorn placerar bytekodfiler i en katalog me
 > ls
 f1.scala  f2.scala  mittpaket
 > ls mittpaket
-A.class  A$.class  B.class  B$.class
-> scala mittpaket.A
+A.class  'A$.class'   A.tasty   
+B.class  'B$.class'   B.tasty   run.class   run.tasty
+> scala mittpaket.run
 hej mittpaket
 \end{REPL}
 \pause
@@ -472,34 +472,19 @@ Idiom, syntax och semantik:
 \begin{itemize}
   \item Paketnamn brukar bestå av enbart små bokstäver.
   \item Om paketnamn innehåller punkt(er), skapas nästlade underpaket, exempel:  \code{p1.p2.p3} kompilerar kod till katalogen \code{p1/p2/p3}
-  \item Det är ovanligt, men man kan i Scala ha flera paket och även nästlade paket i \Alert{samma} kodfil
-  om man använder klammerparenteser, exempel:\\
+  \item Du kan ha flera paket och även nästlade paket i \Alert{samma} kodfil, genom att använda klammerparentes (eller kolon+indentering):\\
   \code|package p1 { object A; package p2 { object B }}|
 \end{itemize}
 \end{Slide}
 
 \begin{Slide}{Paket i REPL}
-Paket funkar inte i REPL direkt; använd \code{:paste -raw}
-
+Paket funkar inte i REPL:
 \begin{REPLnonum}
-scala> package mittpaket { object X { def hej = println("Hej") } }
-<console>:1: error: illegal start of definition
-       package mittpaket { object X { def hej = println("Hej") } }
-       ^
-
-scala> :paste -raw
-// Entering paste mode (ctrl-D to finish)
-
-package mittpaket { object X { def hej = println("Hej") } }
-
-// Exiting paste mode, now interpreting.
-
-
-scala> mittpaket.X.hej
-Hej
-
+scala> package mittpaket { def hej = println("Hej") }
+1 |package mittpaket { def hej = println("Hej") }
+  |^^^^^^^
+  |Illegal start of statement
 \end{REPLnonum}
-
 \end{Slide}
 
 
@@ -656,13 +641,12 @@ När allokeras variablerna?
 
 \begin{Slide}{Vad är skillnaden mellan \texttt{val}, \texttt{var}, \texttt{def} och \texttt{lazy val}?}
 \begin{Code}[basicstyle=\ttfamily\fontsize{8}{11}\selectfont]
-object exempel {
+object exempel:
   println("hej exempel")
-  val förAlltidSammaReferens  = { println("hej val"); math.random() }
-  var kanÄndrasMedTilldelning = { println("hej var"); math.random() }
-  def evaluerasVidVarjeAnrop  = { println("hej def"); math.random() }
-  lazy val fördröjdInit  = { println("hej lazy val"); math.random() }
-}
+  val förAlltidSammaReferens  = {println("hej val"); math.random()}
+  var kanÄndrasMedTilldelning = {println("hej var"); math.random()}
+  def evaluerasVidVarjeAnrop  = {println("hej def"); math.random()}
+  lazy val fördröjdInit = {println("hej lazy val"); math.random()}
 \end{Code}
 \vspace{1em}\pause
 Lat evaluering är en viktig princip inom funktionsprogrammering som möjliggör effektiva, oföränderliga datastrukturer där element allokeras först när de behövs. \\
@@ -690,9 +674,8 @@ Scala visar hur man kan \Alert{förena} \Eng{unify} \\ \Emph{objektorientering} 
 \textbf{En funktion är ett objekt som har en \code{apply}-metod.}
 \pause
 \begin{REPLnonum}
-scala> object öka {
+scala> object öka:
          def apply(x: Int) = x + 1
-       }
 
 scala> öka.apply(1)
 res0: Int = 2
@@ -709,10 +692,9 @@ Egentligen, mer precist:\\
 \textbf{En funktion är ett objekt \Alert{av funktionstyp} som har en \code{apply}-metod.}
 \pause
 \begin{REPLnonum}
-scala> object öka extends (Int => Int) {
+scala> object öka extends (Int => Int):
          def apply(x: Int) = x + 1
-       }
-
+ 
 scala> öka(1)
 res2: Int = 2
 
@@ -720,7 +702,7 @@ scala> Vector(1,2,3).map(öka)
 res3: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
 
 scala> öka.   // tryck TAB
-andThen   apply   compose   toString
+andThen   apply   compose   toString  ...
 \end{REPLnonum}
 Mer om \code{extends} senare i kursen... %extends (Int => Int skrivs om till Function1[Int, Int]
 \end{Slide}
@@ -731,12 +713,11 @@ Mer om \code{extends} senare i kursen... %extends (Int => Int skrivs om till Fun
 
 \begin{Slide}{Vad är en klass?}
 Singelobjekt finns bara i exakt EN upplaga:
-\begin{Code}[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]
-object mittBankkonto {
+\begin{Code}
+object mittBankkonto:
   val kontonr: Long        = 1234567L
   var saldo: Int           = 1000
   def ärSkuldsatt: Boolean = saldo < 0
-}
 \end{Code}
 Om vi vill ha flera bankkonton behöver vi en \Alert{klass} \Eng{class}.
 \end{Slide}
@@ -744,9 +725,8 @@ Om vi vill ha flera bankkonton behöver vi en \Alert{klass} \Eng{class}.
 \begin{Slide}{Vad är en klass?}
 En klass kan användas för att skapa många objekt av samma typ. Varje upplaga har sitt eget tillstånd och kallas en \Emph{instans} av klassen (mer om detta nästa vecka).
 \begin{Code}
-class Bankkonto(val kontonr: Long, var saldo: Int)  {  // deklarera en klass
+class Bankkonto(val kontonr: Long, var saldo: Int): // deklarera en klass
   def ärSkuldsatt: Boolean = saldo < 0
-}
 \end{Code}
 \pause
 \begin{REPL}
@@ -766,13 +746,13 @@ res1: Boolean = true
 
 \begin{Slide}{Använda klassen \code{Color}}\SlideFontSmall
 \begin{itemize}
-\item I JDK8 (Java Development Kit version 1.8) finns 217 paket (moduler) och 4240 färdiga klasser.
+\item I JDK (Java Development Kit) finns hundratals paket (moduler) och tusentals färdiga klasser.
 \footnote{\SlideFontTiny\url{https://stackoverflow.com/questions/3112882/}}
 
 \item En av dessa klasser heter \code{Color} och ligger i paketet \code{java.awt} och används för att representera RGB-färger med ett tal som beskriver andelen Rött, Grönt och Blått.
 \end{itemize}
 \begin{REPL}
-scala> val röd = new java.awt.Color(255, 0, 0)    //  en maximalt röd färg
+scala> val röd = java.awt.Color(255, 0, 0)    //  en maximalt röd färg
 
 scala> import java.awt.Color  // namnet Color tillgängligt i aktuell namnrymd
 
@@ -797,13 +777,12 @@ scala> Color.    // tryck TAB och se alla publika medlemmar
 \item Man kan importera \Alert{alla} namn i en viss modul (singelobjekt eller paket). Detta kallas på engelska för \emph{wildcard import}.
 
 \begin{itemize}\SlideFontTiny
-  \item Syntax Scala:  \code|import p1.p2._|
-  \item Syntax Java:~  \code|import p1.p2.*|
+  \item Syntax:  \code|import p1.p2.*|
 \end{itemize}
 
 \item Exempel:
 \begin{REPL}
-scala> import java.awt._  // importera ALLA namn i paketet awt
+scala> import java.awt.*  // importera ALLA namn i paketet awt
 \end{REPL}
 \item \Emph{Fördelar}:
 \begin{enumerate}\SlideFontTiny
@@ -823,31 +802,31 @@ scala> import java.awt._  // importera ALLA namn i paketet awt
 \begin{Slide}{Namnbyte vid import}
 \begin{itemize}
 \item Man kan undvika namnkrockar med \Emph{namnbyte vid import}.
-\item Syntax:  \code|import p1.p2.{befintligtNamn => nyttNamn}|
+\item Syntax:  \code|import p1.p2.befintligtNamn as nyttNamn|
 \item Exempel:
 \begin{REPL}
-scala> import java.awt.{Color => JColor} //importera och byt namn
+scala> import java.awt.Color as JColor //importera och byt namn
 
-scala> val grön = new JColor(0, 255, 0)  //skapa instans med nya namnet
+scala> val grön = JColor(0, 255, 0)  //skapa instans med nya namnet
 grön: java.awt.Color = java.awt.Color[r=0,g=255,b=0]
 \end{REPL}
-\item Detta går inte att göra i Java, men t.ex. i C\# och Kotlin.
+%\item Detta går inte att göra i Java, men t.ex. i C\# och Kotlin.
 \end{itemize}
 \end{Slide}
 
 \begin{Slide}{Exkludera (gömma) namn vid import}
 \begin{itemize}
 \item Man kan undvika namnkrockar vid import genom att exkludera vissa namn \Eng{import hiding}.
-\item Syntax:  \code|import p1.p2.{exkluderaMig => _}|
+\item Syntax:  \code|import p1.p2.exkluderaMig as _|
 \item Exempel:
 \begin{REPL}
-scala> import java.awt.{_, Event => _}  // importera allt UTOM Event
+scala> import java.awt.{Event as _, *}  // importera allt UTOM Event
 \end{REPL}
-\item Kan kombineras med namnbyte:
+\item Kan kombineras med namnbyte och allimport:
 \begin{REPL}
-scala> import java.awt.{_, Event => _, Color => JColor}
+scala> import java.awt.{Event as _, Color as JColor, *}
 \end{REPL}
-\item Detta går inte att göra i Java.
+%\item Detta går inte att göra i Java.
 \end{itemize}
 \end{Slide}
 
@@ -856,14 +835,12 @@ scala> import java.awt.{_, Event => _, Color => JColor}
 \item Man kan begränsa ''nedskräpningen'' av namnrymden genom att göra import-deklarationer så lokalt som möjligt, till exempel i ett objekt eller i en funktionskropp.
 \item Exempel:
 \begin{Code}
-object A {
-  def x = {
+object A:
+  def x = 
     import java.awt.Color
-    /* ... namnet Color syns bara lokalt i detta block */
-  }
-}
+    /* ... namnet Color syns bara lokalt i denna funktion */
 \end{Code}
-\item Detta går inte i Java, där import ska stå i början av filen.
+%\item Detta går inte i Java, där import ska stå i början av filen.
 \end{itemize}
 \end{Slide}
 
@@ -889,7 +866,7 @@ object A {
 \draw [arrow] (scaladoc) -- (output);
 \end{tikzpicture}
 
-\vspace{2em} För Java-kod finns motsvarande program som heter \code{javadoc}.
+%\vspace{2em} För Java-kod finns motsvarande program som heter \code{javadoc}.
 \end{Slide}
 
 \begin{Slide}{Använda dokumentation för färdiga klasser.}
@@ -927,7 +904,7 @@ object A {
 \begin{itemize}
   \item Hur hittar kompilatorn färdiga moduler?
 \pause
-\item Kompilatorerna \code{scalac} och \code{javac} och programmen \code{scala} och \code{java} som kör igång JVM använder \Alert{en lista med filsökvägar} kallad \Emph{classpath} när de söker efter färdiga moduler.
+\item Kompilatorerna \code{scalac} och \code{javac} och programmen \code{scala} och \code{java} som kör igång JVM använder \Alert{en lista med filsökvägar} kallad \Emph{classpath} när de söker efter kompilerad kod.
 \pause
 \item Aktuell katalog samt Scalas standardbibliotek läggs automatiskt på classpath.
 \item Med hjälp av optionen \code{-classpath} eller kortare \code{-cp} kan annan classpath anges.
@@ -941,7 +918,9 @@ scala -cp "introprog_2.13-1.1.4.jar:." Main
 \end{Slide}
 
 
-\begin{Slide}{Färdiga grafikmetoder i klassen \texttt{introprog.PixelWindow}}
+\begin{Slide}{Färdiga grafikmetoder i klassen \texttt{PixelWindow}}
+  \TODO -classpath funkar för tillfället inte med REPL - ska vi gå över helt till sbt och skippa övningar med classpath?
+  \\
 På labben ska du använda klassen \code{introprog.PixelWindow}
 \begin{itemize}
 \item Jarfilen \code{introprog_2.13-1.1.4.jar} innehåller paketet \code{introprog} som bl.a. innehåller klassen \code{PixelWindow}.
@@ -953,14 +932,14 @@ På labben ska du använda klassen \code{introprog.PixelWindow}
 %\pause
 \begin{REPLnonum}
 > scala -cp introprog_2.13-1.1.4.jar
-scala> val w = new introprog.PixelWindow(300, 200, "hejsan")
+scala> val w = introprog.PixelWindow(300, 200, "hejsan")
 \end{REPLnonum}
 %\pause
 Studera dokumentationen för \code{introprog.PixelWindow} här: \url{http://cs.lth.se/pgk/api/}
 \end{Slide}
 
 
-\Subsection{\texttt{sbt} för smidig omkompilering}
+\Subsection{Byggverktyget \texttt{sbt}}
 \begin{Slide}{Scala Build Tool: \texttt{sbt}}\SlideFontSmall
 \begin{itemize}
 \item Du kan låta \code{sbt} automatiskt sköta omkompilering och körning vid varje Ctrl+S med kommandot \code{~run}
@@ -976,11 +955,11 @@ Avsluta med Enter. Om flera \code{main} gör: \code{ ~runMain DettaMainObj}
 \item Lägg \code{.jar}-filer i en katalog \code{lib} så hamnar de automatiskt på classpath
 \item Om du vill: skapa en fil med namnet \code{build.sbt} som konfigurerar \code{sbt}
 \begin{Code}
-scalaVersion := "2.13.3"    // ange version av Scala-kompilatorn
+scalaVersion := "3.0.0"    // ange version av Scala-kompilatorn
 \end{Code}
 I filen \code{project/build.properties} kan du ange versionen på \code{sbt}:
 \begin{Code}
-sbt.version=1.3.13
+sbt.version=1.5.4
 \end{Code}
 Se Appendix F i kompendiet och \url{http://www.scala-sbt.org/}
 \end{itemize}
@@ -991,13 +970,10 @@ Se Appendix F i kompendiet och \url{http://www.scala-sbt.org/}
 \begin{Slide}{Använda \texttt{introprog} tillsammans med \texttt{sbt}}
 Lägg detta i filen \code{build.sbt}:
 \begin{Code}
-scalaVersion := "2.13.3"
-libraryDependencies += "se.lth.cs" %% "introprog" % "1.1.4"
+scalaVersion := "3.0.0"
+libraryDependencies += "se.lth.cs" %% "introprog" % "1.1.5"
 \end{Code}
 Första gången du kör \code{compile}, \code{run} eller \code{console} i \code{sbt} kommer en jar-fil med paketet \code{introprog} automatiskt att laddas ner från webbplatsen \Emph{Sonatype Maven Central} där många öppenkällkodspaket finns fritt tillgängliga. \\~\\
-
-Jar-filen kommer automatiskt läggas i din hemkatalog här: \\
-\code{~/.ivy2/cache/se.lth.cs/introprog_2.13/jars}
 \end{Slide}
 
 
