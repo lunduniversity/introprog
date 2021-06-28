@@ -88,10 +88,10 @@ class  Punkt       { var x = 3; var y = 2 }
 
 ~\\ \emph{fel} & \emph{typ} & \emph{förklaring} \\\hline
 
-\code|error: not found: value|
-& kompileringsfel & det finns ingen instans med namnet \code|Punkt|\\
+\code|value is not a member of object|
+& kompileringsfel & det finns ingen instans med namnet \code|Punkt|. (Det lite udda felmeddelandet syftar på att det i klassens autogenererade konstruktionsombud saknas en variabel med namnet \code|x|.)\\ % Footnote verkar inte funka, så förklaringen får tyvärr stå i själva tabellen.
 
-\verb|error: not found: type|
+\verb|Not found: type|
 & kompileringsfel & det finns ingen klass som heter \code|Singelpunkt|\\
 
 \code|NullPointerException|
@@ -107,7 +107,7 @@ class  Punkt       { var x = 3; var y = 2 }
 
 \QUESTBEGIN
 
-\Task \what~Klassen punkt i föregående uppgift är inte så smidig att använda eftersom man först \emph{efter} instansiering kan ge attributen \code{x} och \code{y} de koordinatvärden man önskar och detta måste ske med explicita tilldelningssatser.
+\Task \what~Klassen Punkt i föregående uppgift är inte så smidig att använda eftersom man först \emph{efter} instansiering kan ge attributen \code{x} och \code{y} de koordinatvärden man önskar och detta måste ske med explicita tilldelningssatser.
 
 Detta problem kan du lösa med \emph{klassparametrar} som låter dig initialisera attributen med konstruktionsargument och på så sätt ange ett initialtillstånd direkt i samband med instansiering.
 
@@ -124,7 +124,7 @@ class Point(var x: Int, var y: Int)
 \input{generated/quiz-w05-class-param-taskrows-generated.tex}
 \end{ConceptConnections}
 
-\Subtask Vid tre tillfällen blir det fel. Varför? Är det kompileringsfel eller exekveringsfel?
+\Subtask Vid två tillfällen blir det fel. Varför? Är det kompileringsfel eller exekveringsfel?
 
 \SOLUTION
 
@@ -142,13 +142,10 @@ class Point(var x: Int, var y: Int)
 
   ~\\ \emph{fel} & \emph{typ} & \emph{förklaring} \\\hline
 
-  \code|error: not found: value|
-  & kompileringsfel & det finns ingen instans med namnet \code|Point|\\
-
-  \verb|error: not enough arguments|
+  \verb|missing argument for parameter|
   & kompileringsfel  & du måste ge argument vid konstruktion av klassen \code|Point| \\
 
-  \code|error: too many arguments|
+  \verb|too many arguments for constructor|
   & kompileringsfel & antalet argument stämmer ej överens med antalet klassparametrar\\
 
 \end{tabular}
@@ -201,16 +198,14 @@ class Point3D(val x: Int = 0, val y: Int = 0, z: Int = 0)
 \Task \what~\\Klistra in nedan klasser i REPL.
 
 \begin{Code}
-case class Pt(x: Int = 0, y: Int = 0) {
+case class Pt(x: Int = 0, y: Int = 0):
   def moved(dx: Int = 0, dy: Int = 0): Pt = Pt(x + dx, y + dy)
-}
 
-class MutablePt(private var p: (Int, Int) = (0, 0)) {
+class MutablePt(private var p: (Int, Int) = (0, 0)):
   def x: Int = p._1
   def y: Int = p._2
   def move(dx: Int = 0, dy: Int = 0) = { p = (x + dx, y + dy); this }
   override def toString = s"MPt($x,$y)"
-}
 \end{Code}
 
 \Subtask
@@ -222,7 +217,7 @@ Antag att uttrycken till vänster evalueras uppifrån och ned. Vilket REPL-svar 
 
 \Subtask Vilken returtyp kommer kompilatorn härleda för funktionen \code{MutablePt.move}?
 
-\Subtask Implementera en fabriksmetod \code{apply} i ett kompanjonsobjekt till klassen \code{MutablePt} som gör att du inte behöver skriva \code{new} när du skapar instanser.
+\Subtask Vad är skillnaden mellan instansiering med automatiska apply-metoder och instansiering med \code|new|? Finns det något fall där \code|new| måste användas?
 
 \Subtask Vad kallas sådana metoder som \code{ def x } och \code{ def y } ovan?
 
@@ -244,19 +239,90 @@ MutablePt
 \end{REPL}
 
 \SubtaskSolved
+Instansiering med automatiska apply-metoder är godis som gör koden enklare att läsa och skriva. Detta är möjligt tack vare att det under huven vid kompilering skapas ett konstruktorombud \Eng{constructor proxy} vilket är ett kompanjonsobjekt med tillhörande apply-metod, som instansierar objektet med nyckelordet \code|new|.
+
+Ett fall då \code|new| uttryckligen måste användas är vid implementering av egen apply-metod i ett kompanjonsobjekt. Om \code|new| inte används inuti apply-metoden, kommer samma metod att anropas rekursivt istället för att en ny instans skapas. Se följande exempel:
+
 \begin{Code}
-object MutablePt {
-  def apply(x: Int = 0, y: Int = 0): MutablePt = new MutablePt(x, y)
-}
+class Point3D(val x: Int, val y: Int, val z: Int)
+
+object Point3D:
+  var secretNumber = 42
+  def apply(x: Int, y: Int, z: Int): Point3D =
+    if secretNumber == 42 then
+      Point3D(x, y, z) // Koden kommer fastna i en evig loop.
+
+    else new Point3D(x, y, z) // Funkar eftersom new används.
 \end{Code}
 
-\begin{REPL}
-scala> MutablePt()
-res0: MutablePt = MPt(0,0)
-\end{REPL}
 
 
 \SubtaskSolved En metoder som avläser (delar av) ett objekts (privata) tillstånd utan att ändra det kallas en \emph{getter}.
+
+\QUESTEND
+
+
+\WHAT{Innehållslikhet mellan olika typer.}
+
+\QUESTBEGIN
+
+\Task \what~Klistra in nedan klasser i REPL och undersök vad som händer.
+
+\begin{Code}
+class Gurka(val vikt: Int)
+
+class Bil(val typ: String)
+\end{Code}
+
+\begin{REPL}
+scala> class Gurka(val vikt: Int)
+     |
+     | class Bil(val typ: String)
+// defined class Gurka
+// defined class Bil
+
+scala> 42 == "Fyrtiotvå"
+
+scala> Gurka(50) == Bil("Sedan")
+
+\end{REPL}
+
+\Subtask Varför skiljer sig uttryckens resultat med varandra? Vilket resultat är att föredra?
+
+\Subtask Hur kan man ändra i koden för att få det föredragna resultatet?
+
+\SOLUTION
+
+\TaskSolved \what~
+\begin{REPL}
+scala> 42 == "Fyrtiotvå"
+1 |42 == "Fyrtiotvå"
+  |^^^^^^^^^^^^^^^^^
+  |Values of types Int and String cannot be compared with == or !=
+
+scala> Gurka(50) == Bil("Sedan")
+val res0: Boolean = false
+\end{REPL}
+
+\SubtaskSolved Likhetsjämförelser mellan primitiva typer typkollas av kompilatorn och kan därför ge kompileringsfel om två olika typer, som inte kan jämföras, jämförs. Detta gäller dock inte egendefinierade typer, vilket innebär att en likhetsjämförelse mellan olika egendefinierade typer alltid resulterar i \code|false|.
+
+Ett kompileringsfel som i fallet med de primitiva typerna är att föredra då det förbättrar typsäkerheten, vilket minskar risken för oupptäckta buggar.
+
+\SubtaskSolved Det går att få samma typkoll för egendefinierade typer som för primitiva typer genom en importering av \code|scala.language.strictEquality|.
+
+\begin{Code}
+import scala.language.strictEquality
+class Gurka(val vikt: Int)
+
+class Bil(val typ: String)
+\end{Code}
+
+\begin{REPL}
+scala> Gurka(50) == Bil("Sedan")
+1 |Gurka(50) == Bil("Sedan")
+  |^^^^^^^^^^^^^^^^^^^^^^^^^
+  |Values of types Gurka and Bil cannot be compared with == or !=
+\end{REPL}
 
 \QUESTEND
 
@@ -283,17 +349,17 @@ class Point3D(val x: Int, val y: Int, val z: Int = 0)
 > ls
 JPoint3D.class  JPoint3D.java
 > scala
-Welcome to Scala 2.13.3 (OpenJDK 64-Bit Server VM, Java 11.0.8).
-Type in expressions for evaluation. Or try :help.
 
 scala> val p = new JPoint3D(1,2)
-p: JPoint3D = JPoint3D@53b1a3f8
+val p: JPoint3D = JPoint3D@53b1a3f8
 
 scala> p.x
-<console>:13: error: value x is not a member of JPoint3D
+1 |p.x
+  |^^^
+  |value x is not a member of JPoint3D
 
 scala> p.getX
-res0: Int = 1
+val res0: Int = 1
 \end{REPL}
 
 \QUESTEND
@@ -307,7 +373,7 @@ res0: Int = 1
 
 Alla klasser ska tillhöra \code{package blockbattle} och ligga i varsin egen fil med samma namn som klassen, t.ex. \code{Pos.scala}. När du har mer än en kodfil som du vill kompilera om upprepade gånger vid stegvis implementation och felsökning, underlättas ditt arbetet stort om du använder byggverktyget \code{sbt} som finns installerat på skolans datorer (se även Appendix~\ref{appendix:build}). Lägg en fil med namnet \code{build.sbt} i biblioteket där du jobbar t.ex. \code{~/pgk/w06/lab} med detta innehåll:
 \begin{Code}
-scalaVersion := "2.13.3"
+scalaVersion := "3.0.0"
 \end{Code}
 Då kan du i ett eget terminalfönster köra igång \code{sbt} och sedan kommandot \code{~compile}. Då kompileras din ändrade kod om automatiskt varje gång du sparar en scala-fil i detta bibliotek.
 \begin{REPLnonum}
@@ -317,24 +383,21 @@ sbt> ~compile
 
 \Subtask Under laborationen är det smidigt att kunna representera flyttbara positioner i ett pixelfönster. Implementera case-klassen \code{Pos} i ett nytt terminalfönster enligt nedan så att den fungerar enligt efterföljande REPL-tester.
 \scalainputlisting[basicstyle=\ttfamily\fontsize{11}{13}\selectfont]{../workspace/w06_blockbattle/Pos.scala}
-Om du använder \code{sbt} hamnar den kompilerade koden i \code{target/scala-2.13/classes}. Testa så att \code{Pos} fungerar med hjälp av REPL enligt nedan:
+Om du använder \code{sbt} hamnar den kompilerade koden i \code{target/scala-3.0.0/classes}. Testa så att \code{Pos} fungerar med hjälp av REPL enligt nedan:
 \begin{REPL}
 > cd ~/pgk/w06/lab
-> scala -cp target/scala-2.13/classes
-Welcome to Scala 2.13.3 (OpenJDK 64-Bit Server VM, Java 11.0.8).
-Type in expressions for evaluation. Or try :help.
+> scala -cp target/scala-3.0.0/classes
 
 scala> blockbattle.Pos(1,2)
-res0: blockbattle.Pos = Pos(1,2)
+val res0: blockbattle.Pos = Pos(1,2)
 
 scala> import blockbattle._
-import blockbattle._
 
 scala> val p = Pos(1,2)
-p: blockbattle.Pos = Pos(1,2)
+val p: blockbattle.Pos = Pos(1,2)
 
 scala> p.moved(0,1)
-res1: blockbattle.Pos = Pos(1,3)
+val res1: blockbattle.Pos = Pos(1,3)
 \end{REPL}
 
 \Subtask Under laborationen är det smidigt att kunna representera vilka tangenter som motsvarar de olika riktningar som en användare kan styra sin mullvad. Gör klart case-klassen \code{KeyControl} enligt nedan så att den fungerar enligt efterföljande REPL-tester.
@@ -348,37 +411,36 @@ res1: blockbattle.Pos = Pos(1,3)
 % \end{CodeSmall}
 \begin{REPL}
 scala> import blockbattle._
-import blockbattle._
 
 scala> val kc1 = KeyControl(right="d",left="a",up="w",down="s")
-kc1: blockbattle.KeyControl = KeyControl(a,d,w,s)
+val kc1: blockbattle.KeyControl = KeyControl(a,d,w,s)
 
 scala> val kc2 = KeyControl("Left","Right","Up","Down")
-kc2: blockbattle.KeyControl = KeyControl(Left,Right,Up,Down)
+val kc2: blockbattle.KeyControl = KeyControl(Left,Right,Up,Down)
 
 scala> kc2.left
-res2: String = Left
+val res0: String = Left
 
 scala> kc2.has("a")
-res3: Boolean = false
+val res1: Boolean = false
 
 scala> kc2.has("Up")
-res4: Boolean = true
+val res2: Boolean = true
 
 scala> kc1.direction("a")
-res5: (Int, Int) = (-1,0)
+val res3: (Int, Int) = (-1,0)
 
 scala> kc1.direction("s")
-res6: (Int, Int) = (0,1)
+val res4: (Int, Int) = (0,1)
 
 scala> kc1.direction("d")
-res7: (Int, Int) = (1,0)
+val res5: (Int, Int) = (1,0)
 
 scala> kc1.direction("w")
-res8: (Int, Int) = (0,-1)
+val res6: (Int, Int) = (0,-1)
 
 scala> Pos(1,2).moved(kc1.direction("a"))
-res9: blockbattle.Pos = Pos(0,2)
+val res7: blockbattle.Pos = Pos(0,2)
 \end{REPL}
 
 
@@ -425,7 +487,7 @@ sbt> ~compile
 \end{REPLnonum}
 Du kan köra ditt program med \code{sbt}-kommandot \code{run} och då hamnar \code{lib/introprog.jar} automatiskt på classpath. Du kan också köra igång ditt program ''manuellt'' med detta kommando (semikolon i Windows):
 \begin{REPLnonum}
-> scala -cp "lib/introprog.jar:target/scala-2.12/classes" blockbattle.Main
+> scala -cp "lib/introprog.jar:target/scala-3.0.0/classes" blockbattle.Main
 \end{REPLnonum}
 
 Gör klart klassen \code{BlockWindow} enligt nedan. Metoden \code{setBlock} ska med hjälp av metoden \code{pixelWindow.fill} fylla ett kvadratiskt område med sidan \code{blockSize} pixlar på en viss position \code{pos} i block-koordinater och med en viss färg \code{color}. Metoden \code{getBlock} ska med hjälp av metoden \code{pixelWindow.getPixel} ge färgen för övre vänstra hörnet i blocket på position \code{pos} i block-koordinater.
@@ -537,7 +599,7 @@ scala> g.vikt
 \QUESTBEGIN
 
 \Task \what~
-Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en koordinat både med ''vanliga'' kartesiska koordinatet\footnote{\url{https://sv.wikipedia.org/wiki/Kartesiskt_koordinatsystem}} och med polära koordinater%
+Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en koordinat både med ''vanliga'' kartesiska koordinater\footnote{\url{https://sv.wikipedia.org/wiki/Kartesiskt_koordinatsystem}} och med polära koordinater%
 \footnote{\url{https://sv.wikipedia.org/wiki/Pol\%C3\%A4ra\_koordinater}}.
 
 \Subtask Skapa kod med hjälp av en editor, t.ex. VS \code{code}, i filen  \code{Point.scala} enligt följande riktlinjer:
@@ -617,16 +679,15 @@ Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en k
 \Subtask \begin{Code}
 package graphics
 
-case class Point(x: Double, y: Double) {
+case class Point(x: Double, y: Double):
   val r: Double          = math.hypot(x, y)
   val theta: Double      = math.atan2(y, x)
   def negY: Point        = Point(x, -y)
   def +(p: Point): Point = Point(x + p.x, y + p.y)
-}
-object Point {
+
+object Point:
   def polar(r: Double, theta: Double): Point =
     Point(r * math.cos(theta), r * math.sin(theta))
-}
 \end{Code}
 
 \Subtask \TODO
@@ -641,7 +702,7 @@ object Point {
 
 
 
-\WHAT{Klasser,  instanser och skräp.}
+\WHAT{Klasser, instanser och skräp.}
 
 \QUESTBEGIN
 
@@ -654,16 +715,15 @@ case class Ben(ärTillVänster: Boolean)
 
 case class Huvud(harHår: Boolean = true)
 
-case class Rymdvarelse (
+case class Rymdvarelse(
       arm1:   Arm   = Arm(true),
       arm2:   Arm   = Arm(false),
       ben1:   Ben   = Ben(true),
       ben2:   Ben   = Ben(false),
       huvud1: Huvud = Huvud(harHår = false),
   var huvud2: Huvud = Huvud()
-) {
+):
   def ärSkallig = !huvud1.harHår && !huvud2.harHår
-}
 \end{Code}
 
 \Subtask Klistra in ovan rymdkod i REPL och evaluera nedan rader. Rita minnessituationen efter rad 5 och beskriv vad som händer.
@@ -688,7 +748,7 @@ scala> predator.ärSkallig
 
 \includegraphics[scale=0.65]{../img/w06-solutions/2b}
 
-\SubtaskSolved  Eftersom det inte längre finns någon referens som pekar på det objektet kommer skräpsamlaren att ta hand om det och det kommer förr eller senare skrivas över av något annat när platsen i minnet behövs. Objekt som inte har någon referens tills sig går inte att komma åt.
+\SubtaskSolved  Eftersom det inte längre finns någon referens som pekar på det objektet kommer skräpsamlaren att ta hand om det och det kommer förr eller senare skrivas över av något annat när platsen i minnet behövs. Objekt som inte har någon referens till sig går inte att komma åt.
 
 \QUESTEND
 
@@ -704,7 +764,7 @@ scala> predator.ärSkallig
 \Subtask Implementera nedan kvadrat med en editor och klistra in den i REPL.
 
 \begin{Code}
-case class Square(val x: Int = 0, val y: Int = 0, val side: Int = 1) {
+case class Square(val x: Int = 0, val y: Int = 0, val side: Int = 1):
   val area: Int = ???
 
   /** Creates a new Square moved to position (x + dx, y + dy) */
@@ -714,11 +774,10 @@ case class Square(val x: Int = 0, val y: Int = 0, val side: Int = 1) {
 
   /** Multiplies the side with factor and rounded to nearest integer */
   def scale(factor: Double): Square = ???
-}
-object Square {
+
+object Square:
   /** A Square at (0, 0) with side 1 */
   val unit: Square = ???
-}
 \end{Code}
 
 \Subtask Testa din kvadrat enligt nedan. Förklara vad som händer.
@@ -742,51 +801,49 @@ scala> Square.unit eq Square.unit
 \SubtaskSolved
 
 \begin{Code}
-case class Square(val x: Int = 0, val y: Int = 0, val side: Int = 1) {
-	val area: Int = side * side
+case class Square(val x: Int = 0, val y: Int = 0, val side: Int = 1):
+  val area: Int = side * side
 
-	def moved(dx: Int, dy: Int): Square = new Square(x + dx, y + dy, side)
+  def moved(dx: Int, dy: Int): Square = Square(x + dx, y + dy, side)
 
-	def isEqualSizeAs(that: Square): Boolean = this.side == that.side
+  def isEqualSizeAs(that: Square): Boolean = this.side == that.side
 
-	def scale(factor: Double): Square =
+  def scale(factor: Double): Square =
     Square(x, y, (side * factor).round.toInt)
-}
 
-object Square {
-	val unit: Square = Square()
-}
+object Square:
+  val unit: Square = Square()
 \end{Code}
 
 \SubtaskSolved
 \begin{REPL}
 scala> val (s1, s2) = (Square(), Square(1, 10, 1))
-s1: Square = Square(0,0,1)
-s2: Square = Square(1,10,1)
+val s1: Square = Square(0,0,1)
+val s2: Square = Square(1,10,1)
 
 scala> val s3 = s1 moved (1,-5)
-s3: Square = Square(1,-5,1)
+val s3: Square = Square(1,-5,1)
 
 scala> s1 isEqualSizeAs s3       // lika storlek
-res55: Boolean = true
+val res0: Boolean = true
 
 scala> s2 isEqualSizeAs s1       // lika storlek
-res56: Boolean = true
+val res1: Boolean = true
 
 scala> s1 isEqualSizeAs Square.unit   // s1 har sidan 1
-res57: Boolean = true
+val res2: Boolean = true
 
 scala> s2.scale(math.Pi) isEqualSizeAs s2  // olika storlek
-res58: Boolean = false
+val res3: Boolean = false
 
 scala> s2.scale(math.Pi) == s2.scale(math.Pi) // lika innehåll
-res59: Boolean = true
+val res4: Boolean = true
 
 scala> s2.scale(math.Pi) eq s2.scale(math.Pi)  // olika objekt
-res60: Boolean = false
+val res5: Boolean = false
 
 scala> Square.unit eq Square.unit   // samma objekt
-res61: Boolean = true
+val res6: Boolean = true
 \end{REPL}
 
 \QUESTEND
@@ -815,23 +872,22 @@ class MutablePoint3D(var x: Int, var y: Int, var z: Int = 0)
 > ls
 JMutablePoint3D.class  JMutablePoint3D.java
 > scala
-Welcome to Scala 2.12.6 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_121).
-Type in expressions for evaluation. Or try :help.
 
 scala> val p = new JMutablePoint3D(1,2)
-p: JMutablePoint3D = JMutablePoint3D@2cae9b8
+val p: JMutablePoint3D = JMutablePoint3D@625b215b
 
 scala> p.x
-<console>:13: error: value x is not a member of JPoint3D
+1 |p.x
+  |^^^
+  |value x is not a member of JMutablePoint3D
 
 scala> p.getZ
-res0: Int = 0
+val res0: Int = 0
 
 scala> p.setZ(3)
 
 scala> p.getZ
-res1: Int = 3
-
+val res1: Int = 3
 \end{REPL}
 
 \QUESTEND
@@ -854,10 +910,9 @@ res1: Int = 3
 
 \begin{Code}
 class Point private (val x: Int, val y: Int)
-object Point {
+object Point:
   def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
   val origo = apply()
-}
 \end{Code}
 
 \Subtask Vad händer om du försöker instansiera Kim Kodkunnigs klass direkt med nyckelordet \code{new}?
@@ -872,23 +927,23 @@ object Point {
 
 \SubtaskSolved Det blir kompileringsfel eftersom konstruktorn är privat.
 \begin{REPL}
-scala> :paste
+scala> class Point private (val x: Int, val y: Int)
+     | object Point:
+     |   def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
+     |   val origo = apply()
+     |
+// defined class Point
+// defined object Point
 
-class Point private (val x: Int, val y: Int)
-object Point {
-  def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
-  val origo = apply()
-}
-
-scala> new Point(0,0)
-<console>:14: error: constructor Point in class Point cannot be accessed
+scala> new Point(0, 0)
+1 |new Point(0, 0)
+  |    ^^^^^
+  |constructor Point cannot be accessed as a member of Point from module class
 \end{REPL}
 
 \SubtaskSolved
 \begin{itemize}
   \item Genom att ha en privat konstruktor och bara göra indirekt instansiering via fabriksmetod är lätt ändra attributrepresentation i framtiden utan att befintlig kod behöver ändras.
-
-  \item Med en \code{apply}-metod i kompansjonsobjektet kan man instansiera genom att skriva \code{Point(1, 2)} utan new.
 
   \item Accessreglerna för kompanjonsobjekt är sådana att kompanjoner ser varandras privata delar.
 \end{itemize}
@@ -896,14 +951,13 @@ scala> new Point(0,0)
 \SubtaskSolved
 
 \begin{Code}
-class Point private (private val p: (Int, Int)) {
+class Point private (private val p: (Int, Int)):
   def x: Int = p._1
   def y: Int = p._2
-}
-object Point {
+
+object Point:
   def apply(x: Int = 0, y: Int = 0): Point = new Point(x, y)
   val origo = apply()
-}
 \end{Code}
 
 \QUESTEND
@@ -925,23 +979,19 @@ class Gurka2(val vikt: Int)
 
 class Gurka3(private val vikt: Int)
 
-class Gurka4(private val vikt: Int, kompis: Gurka4){
+class Gurka4(private val vikt: Int, kompis: Gurka4):
   def kompisVikt = kompis.vikt
-}
 
-class Gurka5(private[this] val vikt: Int, kompis: Gurka5){
+class Gurka5(private[this] val vikt: Int, kompis: Gurka5):
   def kompisVikt = kompis.vikt
-}
 
 class Gurka6 private (vikt: Int)
 
 class Gurka7 private (var vikt: Int)
-object Gurka7 {
-  def apply(vikt: Int) = {
+object Gurka7:
+  def apply(vikt: Int) =
     require(vikt >= 0, "negativ vikt: " + vikt)
     new Gurka7(vikt)
-  }
-}
 \end{Code}
 
 \Subtask Undersök nedan vad nyckelorden \code{val} och \code{private} får för konsekvenser. Förklara vad som händer. Vilka rader ger vilka felmeddelanden?
@@ -968,64 +1018,63 @@ scala> g.vikt
 
 \TaskSolved \what
 
-\SubtaskSolved \code{Gurka5} är trasig. Eftersom vikten i \code{Gurka5} är privat för instansen och inte klassen kan en instans inte accessa en annan instans vikt.
+\SubtaskSolved \code{Gurka5} är trasig. Eftersom vikten i \code{Gurka5} är privat för instansen och inte klassen, kan en instans inte accessa en annan instans vikt.
 \begin{REPL}
-  error: value vikt is not a member of Gurka5
-  def kompisVikt = kompis.vikt
+11 |  def kompisVikt = kompis.vikt
+   |                   ^^^^^^^^^^^
+   |value vikt cannot be accessed as a member of (Gurka5.this.kompis : Gurka5) from class Gurka5.
 \end{REPL}
 
 
 \SubtaskSolved
 \begin{REPL}
 scala> new Gurka1(42).vikt
-<console>:13: error: value vikt is not a member of Gurka1
-       new Gurka1(42).vikt
-                      ^
+1 |new Gurka1(42).vikt
+  |^^^^^^^^^^^^^^^^^^^
+  |value vikt cannot be accessed as a member of Gurka1 from module class
 
 scala> new Gurka2(42).vikt
-res64: Int = 42
+val res0: Int = 42
 
 scala> new Gurka3(42).vikt
-<console>:13: error: value vikt in class Gurka3 cannot be accessed in Gurka3
-       new Gurka3(42).vikt
-                      ^
+1 |new Gurka3(42).vikt
+  |^^^^^^^^^^^^^^^^^^^
+  |value vikt cannot be accessed as a member of Gurka3 from module class
 
 scala> val ingenGurka: Gurka4 = null
-ingenGurka: Gurka4 = null
+val ingenGurka: Gurka4 = null
 
 scala> new Gurka4(42, ingenGurka).kompisVikt
-java.lang.NullPointerException
-  at Gurka4.kompisVikt(<console>:13)
-  ... 36 elided
+java.lang.NullPointerException: Cannot invoke "rs$line$1$Gurka4.vikt()" bec...
+  at rs$line$1$Gurka4.kompisVikt(rs$line$1:8)
+  ... 38 elided
 
 scala> new Gurka4(42, new Gurka4(84, null)).kompisVikt
-res67: Int = 84
+val res2: Int = 84
 
 scala> new Gurka6(42)
-<console>:13: error: constructor Gurka6 in class Gurka6 cannot be accessed
-       new Gurka6(42)
-       ^
+1 |new Gurka6(42)
+  |    ^^^^^^
+  |constructor Gurka6 cannot be accessed as a member of Gurka6 from module...
 
 scala> new Gurka7(-42)
-<console>:14: error: constructor Gurka7 in class Gurka7 cannot be accessed
-       new Gurka7(-42)
-       ^
+1 |new Gurka7(-42)
+  |    ^^^^^^
+  |constructor Gurka7 cannot be accessed as a member of Gurka7 from module...
 
 scala> Gurka7(-42)
 java.lang.IllegalArgumentException: requirement failed: negativ vikt: -42
 
-
 scala> val g = Gurka7(42)
-g: Gurka7 = Gurka7@70717ed5
+val g: Gurka7 = Gurka7@51fd1c7c
 
 scala> g.vikt
-res71: Int = 42
+val res4: Int = 42
 
 scala> g.vikt = -1
-g.vikt: Int = -1
 
 scala> g.vikt
-res72: Int = -1
+val res5: Int = -1
 \end{REPL}
 
 \QUESTEND
@@ -1041,20 +1090,16 @@ res72: Int = -1
 \Task  \what~Klistra in denna kod i REPL:
 
 \begin{Code}
-class Gurka8 private (private var _vikt: Int) {
+class Gurka8 private (private var _vikt: Int):
   def vikt = _vikt
-  def vikt_=(v: Int): Unit = {
+  def vikt_=(v: Int): Unit =
     require(v >= 0, "negativ vikt: " +v)
     _vikt = v
-  }
-}
 
-object Gurka8 {
-  def apply(vikt: Int) = {
+object Gurka8:
+  def apply(vikt: Int) =
     require(vikt >= 0, "negativ vikt: " + vikt)
     new Gurka8(vikt)
-  }
-}
 \end{Code}
 
 
@@ -1124,7 +1169,7 @@ Eftersom \code{42 - 1000} är mindre än noll kastar \code{require} ett undantag
 \Subtask Implementera klassen \code{Frog} enligt nedan kodskelett och ovan krav.
 
 \begin{Code}
-class Frog private (initX: Int = 0, initY: Int = 0) {
+class Frog private (initX: Int = 0, initY: Int = 0):
   def x: Int = ???
   def y: Int = ???
 
@@ -1134,10 +1179,9 @@ class Frog private (initX: Int = 0, initY: Int = 0) {
   def distanceToStart: Double = ???
   def distanceJumped: Double = ???
   def distanceTo(that: Frog): Double = ???
-}
-object Frog {
+
+object Frog:
   def spawn(): Frog = ???
-}
 \end{Code}
 \emph{Tips:}
 \begin{itemize} [nolistsep, noitemsep]
@@ -1164,137 +1208,121 @@ object Frog {
 
 \SubtaskSolved
 \begin{Code}
-class Frog private (initX: Int = 0, initY: Int = 0) {
-	private var _x: Int = initX
-	private var _y: Int = initY
-	private var _distanceJumped: Double = 0
+class Frog private (initX: Int = 0, initY: Int = 0):
+  private var _x: Int = initX
+  private var _y: Int = initY
+  private var _distanceJumped: Double = 0
 
   def x: Int = _x
   def y: Int = _y
 
-	def jump(dx: Int, dy: Int): Unit = {
-		_x += dx
-		_y += dy
-		_distanceJumped += math.hypot(dx, dy)
-	}
+  def jump(dx: Int, dy: Int): Unit =
+    _x += dx
+    _y += dy
+    _distanceJumped += math.hypot(dx, dy)
 
 
-	def randomJump: Unit = {
-		def rnd = util.Random.nextInt(10) + 1
-		jump(rnd, rnd)
-	}
+  def randomJump: Unit =
+    def rnd = util.Random.nextInt(10) + 1
+    jump(rnd, rnd)
 
-	def distanceToStart: Double = math.hypot(x,y)
-	def distanceJumped: Double = _distanceJumped
-	def distanceTo(f: Frog): Double = math.hypot(x - f.x, y - f.y)
-}
+  def distanceToStart: Double = math.hypot(x,y)
+  def distanceJumped: Double = _distanceJumped
+  def distanceTo(f: Frog): Double = math.hypot(x - f.x, y - f.y)
 
-object Frog {
-	def spawn(): Frog = new Frog()
-}
+object Frog:
+  def spawn(): Frog = Frog()
 \end{Code}
 
 \SubtaskSolved Exempel på testprogram:
 \begin{Code}
-object FrogTest {
-  def test(): Unit = {
+object FrogTest:
+  def test(): Unit =
     val f1 = Frog.spawn()
     assert(f1.x == 0 && f1.y == 0, "Test of spawn, reqt 1 & 4 failed.")
 
-    f1.jump(4,3)
+    f1.jump(4, 3)
     assert(f1.x == 4 && f1.y == 3, "Test of jump, reqt 1 & 4 failed.")
 
-    f1.jump(4,3)
+    f1.jump(4, 3)
     assert(f1.distanceJumped == 10, "Test of jump, reqt 2 failed.")
 
-    f1.jump(-4,-3)
+    f1.jump(-4, -3)
     assert(f1.distanceToStart == 5, "Test of jump, reqt 3 failed.")
 
-    for (x <- 1 to 10000) {
+    for x <- 1 to 10000 do
       val f2 = Frog.spawn()
-    	f2.randomJump
-    	assert(f2.x > 0 && f2.x <= 10 && f2.y > 0 && f2.y <= 10,
-            "Test of randomJump, reqt 5 failed.")
-    }
+      f2.randomJump
+      assert(f2.x > 0 && f2.x <= 10 && f2.y > 0 && f2.y <= 10,
+        "Test of randomJump, reqt 5 failed.")
+
     println("Test Ok!")
-  }
-}
 \end{Code}
 
 \SubtaskSolved  En metod som är en indirekt avläsning av attributvärden kallas getter.
 
 \SubtaskSolved
 \begin{Code}
+class Frog private (initX: Int = 0, initY: Int = 0):
+  private var _x: Int = initX
+  private var _y: Int = initY
+  private var _distanceJumped: Double = 0
 
-class Frog private (initX: Int = 0, initY: Int = 0) {
-	private var _x: Int = initX
-	private var _y: Int = initY
-	private var _distanceJumped: Double = 0
+  def jump(dx: Int, dy: Int): Unit =
+    _x += dx
+    _y += dy
+    _distanceJumped += math.hypot(dx, dy)
 
-	def jump(dx: Int, dy: Int): Unit = {
-		_x += dx
-		_y += dy
-		_distanceJumped += math.hypot(dx, dy)
-	}
-
-	def x: Int = _x
-  def x_= (newX: Int): Unit = { // Setter för x
-		_distanceJumped += math.abs(x - newX)
-		_x = newX
-	}
+  def x: Int = _x
+  def x_=(newX: Int): Unit = // Setter för x
+    _distanceJumped += math.abs(x - newX)
+    _x = newX
 
   def y: Int = _y
-	def y_= (newY: Int): Unit = { // Setter för y
-		_distanceJumped += math.abs(y - newY)
-		_y = newY
-	}
+  def y_=(newY: Int): Unit = // Setter för y
+    _distanceJumped += math.abs(y - newY)
+    _y = newY
 
 
-	def randomJump: Unit = {
-		def rnd = util.Random.nextInt(10) + 1
-		jump(rnd, rnd)
-	}
+  def randomJump: Unit =
+    def rnd = util.Random.nextInt(10) + 1
+    jump(rnd, rnd)
 
-	def distanceToStart: Double = math.hypot(x,y)
-	def distanceJumped: Double = _distanceJumped
-	def distanceTo(f: Frog): Double = math.hypot(x - f.x, y - f.y)
-}
+  def distanceToStart: Double = math.hypot(x,y)
+  def distanceJumped: Double = _distanceJumped
+  def distanceTo(f: Frog): Double = math.hypot(x - f.x, y - f.y)
 
-object Frog {
-	def spawn(): Frog = new Frog()
-}
-
+object Frog:
+  def spawn(): Frog = Frog()
 \end{Code}
 
 \SubtaskSolved
 \begin{Code}
-object frogSimulation {
-  def isAnyCollision(frogs: Vector[Frog]): Boolean = {
+object FrogSimulation:
+  def isAnyCollision(frogs: Vector[Frog]): Boolean =
     var found = false
-    frogs.indices.foreach { i =>  // generate all pairs (i,j)
-      for (j <- i + 1 until frogs.size)
-        if (!found) found = frogs(i).distanceTo(frogs(j)) <= 0.5
-    }
+    frogs.indices.foreach(i =>  // generate all pairs (i,j)
+      for j <- i + 1 until frogs.size do
+        if !found then
+          found = frogs(i).distanceTo(frogs(j)) <= 0.5
+    )
     found
-  }
 
-  def jumpUntilCrash(n: Int = 100, initDist: Int = 8): (Int, Double) = {
-    val frogs = Vector.fill(n)(Frog.spawn)
-    (0 until n).foreach(i => frogs(i).x = i * initDistance)
+  def jumpUntilCrash(n: Int = 100, initDist: Int = 8): (Int, Double) =
+    val frogs = Vector.fill(n)(Frog.spawn())
+    (0 until n).foreach(i => frogs(i).x = i * initDist)
     var count = 0
-    while (!isAnyCollision(frogs)) {
+    while !isAnyCollision(frogs) do
       frogs(util.Random.nextInt(n)).randomJump
-    	count += 1
-    }
+      count += 1
     (count, frogs.map(_.distanceJumped).sum)
-  }
 
-  def run(nbrOfCrashTests: Int = 10) = for (i <- 1 to nbrOfCrashTests) {
-    val (n, dist) = jumpUntilCrash()
-    println(s"\nAntalet looprundor innan grodkrock: $n")
-    println(s"Totalt avstånd hoppat av alla grodor: $dist")
-  }
-}
+
+  def run(nbrOfCrashTests: Int = 10) =
+    for i <- 1 to nbrOfCrashTests do
+      val (n, dist) = jumpUntilCrash()
+      println(s"\nAntalet looprundor innan grodkrock: $n")
+      println(s"Totalt avstånd hoppat av alla grodor: $dist")
 \end{Code}
 
 \QUESTEND
@@ -1322,18 +1350,17 @@ object frogSimulation {
 
 \begin{CodeSmall}
 /** A mutable and expensive Square. */
-class Square private (val initX: Int, val initY: Int, val initSide: Int) {
-  private var nMoves = 0;
-  private var sumCost = 0.0;
+class Square private (val initX: Int, val initY: Int, val initSide: Int):
+  private var nMoves = 0
+  private var sumCost = 0.0
 
-  private var _x = initX;
-  private var _y = initY;
+  private var _x = initX
+  private var _y = initY
 
-  private var _side = initSide;
+  private var _side = initSide
 
-  private def addCost(): Unit = {
-   sumCost += ???
-  }
+  private def addCost(): Unit =
+    sumCost += ???
 
   def x: Int = ???
   def y: Int = ???
@@ -1357,17 +1384,15 @@ class Square private (val initX: Int, val initY: Int, val initSide: Int) {
 
   override def toString: String =
     s"Square[($x, $y), side: $side, #moves: $nMoves times, cost: $sumCost]"
-}
 
 
-object Square {
+object Square:
   private var created = Vector[Square]()
 
   /** Constructs a new Square object at (x, y) with size side */
-  def apply(x: Int, y: Int, side: Int): Square = {
+  def apply(x: Int, y: Int, side: Int): Square =
     require(side >= 0, s"side must be positive: $side")
     ???
-  }
 
   /** Constructs a new Square object at (0, 0) with side 1 */
   def apply(): Square = ???
@@ -1377,7 +1402,6 @@ object Square {
 
   /** The total cost of all squares. */
   def totalCost: Double = ???
-}
 \end{CodeSmall}
 
 \Subtask Testa din kvadratprototyp i REPL. Använd t.ex. koden nedan:
@@ -1386,8 +1410,8 @@ scala> val xs = Vector.fill(10)(Square())
 scala> xs.foreach(_.move(2, 3))
 scala> xs.foreach(_.scale(2.9))
 scala> val (m, c) = (Square.totalNumberOfMoves, Square.totalCost)
-m: Int = 10
-c: Double = 36.055512754639885
+val m: Int = 10
+val c: Double = 36.055512754639885
 \end{REPL}
 
 \SOLUTION
@@ -1395,37 +1419,34 @@ c: Double = 36.055512754639885
 \TaskSolved \what~
 
 \begin{CodeSmall}
-class Square private (val initX: Int, val initY: Int, val initSide: Int) {
-  private var nMoves = 0;
-  private var sumCost = 0.0;
+class Square private (val initX: Int, val initY: Int, val initSide: Int):
+  private var nMoves = 0
+  private var sumCost = 0.0
 
-  private var _x = initX;
-  private var _y = initY;
+  private var _x = initX
+  private var _y = initY
 
-  private var _side = initSide;
+  private var _side = initSide
 
-  private def addCost(): Unit = {
-   sumCost += math.hypot(x - initX, y - initY) * side
-  }
+  private def addCost(): Unit =
+    sumCost += math.hypot(x - initX, y - initY) * side
 
   def x: Int = _x
   def y: Int = _y
 
   def side = _side
 
-  def scale(factor: Double): Unit = { _side = (_side * factor).round.toInt }
+  def scale(factor: Double): Unit = _side = (_side * factor).round.toInt
 
-  def move(dx: Int, dy: Int): Unit = {
-    _x += dx; _y += dy;
+  def move(dx: Int, dy: Int): Unit =
+    _x += dx; _y += dy
     nMoves += 1
     addCost()
-  }
 
-  def moveTo(x: Int, y: Int): Unit = {
-    _x = x; _y = y;
+  def moveTo(x: Int, y: Int): Unit =
+    _x = x; _y = y
     nMoves += 1
     addCost()
-  }
 
   def cost: Double = sumCost
 
@@ -1433,23 +1454,21 @@ class Square private (val initX: Int, val initY: Int, val initSide: Int) {
 
   override def toString: String =
     s"Square[($x, $y), side: $side, #moves: $nMoves times, cost: $sumCost]"
-}
-object Square {
+
+object Square:
   private var created = Vector[Square]()
 
-  def apply(x: Int, y: Int, side: Int): Square = {
+  def apply(x: Int, y: Int, side: Int): Square =
     require(side >= 0, s"side must be positive: $side")
     val sq = (new Square(x, y, side))
     created :+= sq
     sq
-  }
 
   def apply(): Square = apply(0, 0, 1)
 
   def totalNumberOfMoves: Int = created.map(_.nMoves).sum
 
   def totalCost: Double = created.map(_.cost).sum
-}
 \end{CodeSmall}
 
 \QUESTEND
