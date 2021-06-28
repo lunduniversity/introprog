@@ -31,7 +31,7 @@ En klass liknar en \Emph{stämpel}.
 
 \begin{itemize}
 \item En stämpel kan \Alert{tillverkas} -- motsvarar \Emph{deklaration} av klassen.
- \item Det händer inget förrän man \Alert{stämplar} -- motsvarar instansiering med \code{new}.
+ \item Det händer inget förrän man \Alert{stämplar} -- motsvarar \Emph{instansiering}.
 \item Då skapas \Alert{avbildningar} av stämpeln -- motsvarar \Emph{allokering av ett objekt} som är en \Emph{instans} av klassen.
 \item Allokering kallas också \Emph{konstruktion} och funktionen/koden som gör själva allokeringen kallas \Emph{konstruktor}.
 \end{itemize}
@@ -42,9 +42,10 @@ En klass liknar en \Emph{stämpel}.
 
 \begin{Slide}{Vad är en klass?}
 \begin{itemize}
-\item En klass är en mall för att skapa objekt.
+\item En klass är en mall \Eng{template} för att skapa objekt.
 \item Objekt kan skapas med \code{new Klassnamn}, vilket kallas \Emph{instansiering}. 
-\item Ett sådant objekt kallas för en \Emph{instans} av \code{Klassnamn}.
+\item I Scala 3 är \code{new} valfritt, det räcker med \code{Klassnamn()}. 
+\item Ett objekt som skapats med en klassen \code{Klassnamn} som mall kallas för en \Emph{instans} av klassen \code{Klassnamn}.
 \item En klass innehåller \Emph{medlemmar} \Eng{members}, som bl.a. kan vara:
   \begin{itemize}
   \item \Emph{attribut}, kallas även fält \Eng{field}: \code{val}, \code{lazy val}, \code{var}
@@ -277,7 +278,7 @@ class Klassnamn(val attribut1: Int, attribut2: String){
 \item Parametrar initialiseras med de argument som ges vid \code{new}.
 \item Exempel: \Emph{instansiering} med argument för initialisering av klassparametrar
 \begin{Code}
-val instansReferens = new Klassnamn(42, "hej")
+val instansReferens = new Klassnamn(42, "hej")  // new är valfritt här 
 \end{Code}
 
 \item Parametrar som inte föregås av modifierare (t.ex. private val, val, var) blir \Emph{attribut} som är \code{ private[this] val } och bara är synliga i \Alert{denna} instans.
@@ -312,7 +313,7 @@ class Person(val givenName: String, val familyName: String, var age: Int = 0){
 }
 \end{Code}
 \begin{REPLnonum}[basicstyle=\SlideFontSize{7}{9}\ttfamily\color{white}]
-val p = new Person("Björn", "Regnell")
+val p = Person("Björn", "Regnell")
 println(p.name._1)
 p.age = 50
 \end{REPLnonum}
@@ -338,7 +339,7 @@ error: value a is not a member of C
 \begin{REPL}
 scala> class D(val a: Int){ def add(other: D): Int = a + other.a }
 
-scala> (new D(42)).add(new D(43))
+scala> D(42).add(D(43))
 res0: Int = 85
 \end{REPL}
 ...eftersom modifieraren \code{val} framför klassparameter ger publik synlighet.
@@ -382,17 +383,12 @@ case class InteHemlig(seMenInteRöra: Int) { // blir automatiskt val
 \begin{Slide}{Övning: Klassen Complex i Scala}\SlideFontSmall
 Implementera klassen \code{Complex} nedan som representerar komplexa tal:
 \begin{Code}
-  class Complex(val re: Double, val im: Double){
+  class Complex(val re: Double, val im: Double):
     def r  = ???  // absolutbeloppet
-
     def fi = ???  // vinkeln i radianer
-
     def +(other: Complex): Complex = ???  // resultatet av addition
-
     var imSymbol = 'i'  // symbol för imaginärdel, används i toString
-
     override def toString = ???  // en strängrepresentation av talet
-  }
 \end{Code}
 
 \begin{minipage}{0.3\textwidth}
@@ -710,7 +706,7 @@ Case-klasser är ett smidigt sätt att skapa \Emph{oföränderliga} datastruktur
 \begin{itemize}
 \item Klassparametrar blir automatiskt publika oföränderliga attribut\footnote{alltså \Alert{inte} \texttt{private[this] val } som i vanliga klasser.} och du slipper alltså skriva \code{val}
 \item Du får en automatisk \Emph{toString} med klassens namn och värdet av alla \code{val}-attribut som ges av klassparametrarna och du slipper alltså skriva en egen toString
-\item Du slipper skriva \code{new} eftersom du får ett automatiskt kompanjonsobjekt med en fabriksmetod \code{apply} för indirekt instansiering där alla klassparametrarnas \code{val}-attribut initialiseras.
+\item Du får ett automatiskt kompanjonsobjekt med en fabriksmetod \code{apply} för indirekt instansiering där alla klassparametrarnas \code{val}-attribut initialiseras.
 \pause
 \item ... och mer därtill men mer om det senare...
 \end{itemize}
@@ -758,9 +754,9 @@ Vi kan utan risk dela med oss av en referens till en oföränderlig klass -- ing
 
 \pause
 
-\item I Java (m.fl. språk) får man \Alert{explicit} skriva kod för konstruktorer med speciell syntax och göra alla initialiseringar av attribut själv. Man får ha många olika konstruktorer (t.ex. i stället för defaultargument).
+%\item I Java och många andra språk får man \Alert{explicit} skriva kod för konstruktorer med speciell syntax och göra alla initialiseringar av attribut själv, och det behövs många olika konstruktorer för att motsvara defaultargument.
 
-\item I Scala \Emph{kan} man också skriva egna alternativa s.k. \Emph{hjälpkonstruktorer}, men det är \Alert{ovanligt}, eftersom man har möjligheten med fabriksmetoder i kompanjonsobjekt och default-argument (saknas i Java, m.fl.).
+\item I Scala \Emph{kan} man också skriva egna alternativa s.k. \Emph{hjälpkonstruktorer}, men det är \Alert{ovanligt}, eftersom man har möjligheten med fabriksmetoder i kompanjonsobjekt och default-argument.
 \end{itemize}
 \end{Slide}
 
@@ -775,25 +771,24 @@ Fördjupning för kännedom:
 \end{itemize}
 
 \begin{Code}
-class Point(val x: Int, val y: Int, val z: Int){//ger primärkonstruktor
-  def this(x: Int, y: Int) = this(x, y, 0) //anropa primärkonstruktorn
-  def this(x: Int) = this(x, 0) //anropa hjälpkonstruktor
-}
+class Point(val x: Int, val y: Int, val z: Int): // primärkonstruktor
+  def this(x: Int, y: Int) = this(x, y, 0) // anropa primärkonstruktorn
+  def this(x: Int) = this(x, 0) // anropa hjälpkonstruktor
 \end{Code}
 
-{\SlideFontSmall Överlagrade hjälpkonstruktorer i Scala liknar användning av konstruktorer i Java, där man inte har default-argument och apply i kompanjonsobj. etc.}
+%{\SlideFontSmall Överlagrade hjälpkonstruktorer i Scala liknar användning av konstruktorer i Java, där man inte har default-argument och apply i kompanjonsobj. etc.}
 
 \end{Slide}
 
 \begin{Slide}{Användning av hjälpkonstruktor}
 \begin{REPL}
-scala> val p1 = new Point(1)
+scala> val p1 = Point(1)
 p1: Point = Point@21312342
 
-scala> val p2 = new Point(1, 2)
+scala> val p2 = Point(1, 2)
 p2: Point = Point@43254325
 
-scala> val p3 = new Point(1, 2, 3)
+scala> val p3 = Point(1, 2, 3)
 p3: Point = Point@346654
 \end{REPL}
 \pause
@@ -843,19 +838,18 @@ Använd alltså defaultargument hellre än hjälpkonstruktor.\\
 \begin{Slide}{Exempel: \texttt{null}}
 \begin{REPL}
 scala> class Gurka(val vikt: Int)
-defined class Gurka
 
 scala> var g: Gurka = null        // ingen instans allokerad än
-g: Gurka = null
+val g: Gurka = null
 
 scala> g.vikt
 java.lang.NullPointerException
 
-scala> g = new Gurka(42)          // instansen allokeras
-g: Gurka = Gurka@1ec7d8b3
+scala> g = Gurka(42)          // instansen allokeras
+val g: Gurka = Gurka@1ec7d8b3
 
 scala> g.vikt
-res0: Int = 42
+val res0: Int = 42
 
 scala> g = null         // instansen kommer att destrueras av skräpsamlaren
 \end{REPL}
@@ -877,19 +871,18 @@ scala> g = null         // instansen kommer att destrueras av skräpsamlaren
 \item Nyckelordet \code{this} ger en referens till den aktuella instansen.
 \begin{REPLnonum}
 scala> class Gurka(var vikt: Int){def jagSjälv = this}
-defined class Gurka
 
-scala> val g = new Gurka(42)
-g: Gurka = Gurka@5ae9a829
+scala> val g = Gurka(42)
+val g: Gurka = Gurka@5ae9a829
 
 scala> g.jagSjälv
-res0: Gurka = Gurka@5ae9a829
+val res0: Gurka = Gurka@5ae9a829
 
 scala> g.jagSjälv.vikt
-res1: Int = 42
+val res1: Int = 42
 
 scala> g.jagSjälv.jagSjälv.vikt
-res2: Int = 42
+val res2: Int = 42
 \end{REPLnonum}
 \item Referensen \code{this} används ofta för att komma runt ''namnkrockar'' där variabler med samma namn gör så att den ena variabeln inte syns.
 \end{itemize}
@@ -901,8 +894,8 @@ res2: Int = 42
 
 \begin{Slide}{Getters och setters}\SlideFontSmall
 \begin{itemize}
-\item I många språk t.ex. Java finns inget motsvarande nyckelord \code{val} som garanterar oföränderliga attributreferenser.
-\footnote{Det finns visserligen \jcode{final} men det är annorlunda som vi ska se senare.}
+\item I många språk (t.ex. Java, Python) finns inget motsvarande nyckelord \code{val} som garanterar oföränderliga attributreferenser.
+\footnote{Java har visserligen \jcode{final} men det är annorlunda som vi ska se senare.}
 
 \item Därför gör man i dessa språk nästan alltid alla attribut \Alert{privata} för att förhindra att de ändras på ett okontrollerat sätt.
 
@@ -957,10 +950,9 @@ value age is not a member of JPerson
 
 \begin{Slide}{Motsvarande JPerson men i Scala}
 Så här brukar man åstadkomma ungefär motsvarande i Scala: \\~
-\begin{Code}[basicstyle=\SlideFontSize{13}{15}\ttfamily\selectfont]
-class Person(val name: String) {
+\begin{Code}[basicstyle=\SlideFontSize{12}{15}\ttfamily\selectfont]
+class Person(val name: String):
   var age = 0
-}
 \end{Code}
 ~\\
 Notera att alla attribut här är \Emph{publika}.
@@ -982,9 +974,8 @@ Hur kan vi åstadkomma \Emph{motsvarande i Scala}? \\
 \pause
 Antag att vi började med nedan variant, men \Alert{ångrar} oss och sedan vill införa funktionalitet som förhindrat negativ ålder \Emph{utan att ändra i klientkod}:
 \begin{Code}
-class Person(val name: String) {
+class Person(val name: String):
   var age = 0
-}
 \end{Code}
 Om vi inför en ny metod \code{setAge} och gör attributet \code{age} privat så funkar det \Alert{inte} längre att skriva  \code{ p.age = 42 } och vi ''kvaddar'' klientkoden! \code{  :(}
 \end{Slide}
@@ -1002,23 +993,22 @@ En \Emph{setter} kan i Scala skapas med \textbf{procedur vars namn slutar med} \
 \item I Scala kan man utan att kvadda klientkod införa getter+setter så här:
 \end{itemize}
 \begin{Code}
-class Person(val name: String) { // ändrad implementation men samma access
+class Person(val name: String): // ändrad implementation men samma access
   private var myPrivateAge = 0
   def age = myPrivateAge         // getter
   def age_=(a: Int): Unit =      // setter
     if (a >= 0) myPrivateAge = a else myPrivateAge = 0
-}
 \end{Code}
 \pause\vspace{-0.5em}
 \begin{REPL}
-scala> val p = new Person("Björn")
-p: Person = Person@28ac3dc3
+scala> val p = Person("Björn")
+val p: Person = Person@28ac3dc3
 
 scala> p.age = 42      // najs syntax om getter parad med setter enl ovan
-p.age: Int = 42
+val p.age: Int = 42
 
 scala> p.age = -1      // nu förhindras negativ ålder
-p.age: Int = 0
+val p.age: Int = 0
 \end{REPL}
 \end{Slide}
 
