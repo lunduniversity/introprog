@@ -1,4 +1,3 @@
-object SumMinMax:
-  def main(args: Array[String]): Unit =
-    val ints = args.map(_.toInt)
-    println(ints.sum + " " + ints.min + " " + ints.max)
+@main
+def sumMinMax(args: Int*): Unit =
+  println(s"${args.sum} ${args.min} ${args.max}")

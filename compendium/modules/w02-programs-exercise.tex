@@ -112,7 +112,7 @@
 > code sum.scala
 \end{REPLnonum}
 
-\noindent Filen ska innehålla dessa tre rader:
+\noindent Filen ska innehålla följande rader:
 \scalainputlisting{examples/sum.scala}
 
 \noindent Spara filen och kör kommandot \code{scala sum.scala} i terminalen:
@@ -141,13 +141,15 @@
 Summan av de 1000 första talen är: 500500
 \end{REPL}
 
-\SubtaskSolved  Kompileringsfelet blir: \code{error: ')' expected but eof found}
+\SubtaskSolved  Kompileringsfelet blir: \code{')' expected, but eof found}
 
 \SubtaskSolved  Filen ska se ut så här:
 \begin{Code}
-val n = args(0).toInt
-val summa = (1 to n).sum
-println(s"Summan av de $n första talen är: $summa")
+@main
+def sum(args: String*): Unit =
+  val n = args(0).toInt
+  val summa = (1 to n).sum
+  println(s"Summan av de $n första talen är: $summa")
 \end{Code}
 
 Utskriften blir så här:
@@ -155,7 +157,7 @@ Utskriften blir så här:
 Summan av de 5001 första talen är: 12507501
 \end{REPL}
 
-\SubtaskSolved Körtidsfelet blir: \code{java.lang.ArrayIndexOutOfBoundsException: 0}\\(Anledningen är att arrayen \code{args} blir tom om programargument saknas och platsen med index $0$ därmed inte finns.)
+\SubtaskSolved Körtidsfelet blir: \code{java.lang.IndexOutOfBoundsException: 0}\\(Anledningen är att arrayen \code{args} blir tom om programargument saknas och platsen med index $0$ därmed inte finns.)
 
 \QUESTEND
 
@@ -163,7 +165,7 @@ Summan av de 5001 första talen är: 12507501
 
 
 
-\WHAT{Scala-applikation med \code+main+-metod.}
+\WHAT{Scala-applikation med \code+@main+.}
 
 \QUESTBEGIN
 
@@ -176,17 +178,24 @@ Skriv nedan kod i filen:
 
 \scalainputlisting{examples/hello.scala}
 
-\Subtask Kompilera med \code{scalac hello.scala} och kör koden med \code{scala Hello}. Notera stor bokstav i klassnamnet. Vad heter filerna som kompilatorn skapar?
+\Subtask Kompilera med \code{scalac hello.scala} och kör koden med \code{scala run}. Notera namnet på funktionen (run) i anropet. Vad heter filerna som kompilatorn skapar?
 \begin{REPLnonum}
 > scalac hello.scala
 > ls
-> scala Hello
+> scala run
 \end{REPLnonum}
 
 \Subtask Hur ska du ändra i din kod så att kompilatorn ger följande felmeddelande: \\
-\texttt{Missing closing brace}
+\texttt{Syntax Error: '\}' expected, but eof found}?
 
-\Subtask Varför behövs \code{main}-metoden?
+\Subtask I Scala 3 är parenteser ibland frivilliga och koden struktureras istället i sammanhängande block med hjälp av indenteringar. Det går bra att byta mellan stilarna i samma fil om det gör koden mer lättläst.
+
+Ovan kod kan skrivas:
+
+\scalainputlisting{examples/hello-indent.scala}
+Vad händer om du tar bort indenteringen på den sista raden?
+
+\Subtask Varför behövs \code{@main}-annoteringen?
 
 \Subtask Vilket alternativ går snabbast att köra igång, ett skript eller en kompilerad applikation? Varför? Vilket alternativ kör snabbast när väl exekveringen är igång?
 
@@ -197,16 +206,25 @@ Skriv nedan kod i filen:
 \TaskSolved \what
 
 
-\SubtaskSolved  Filerna som kompilatorn skapat heter \code{Hello.class} och \verb+Hello\$.class+
+\SubtaskSolved  Filerna som kompilatorn skapat heter \code{hello$package$.class}, \code{hello$package.class}, \code{hello$package.tasty}, \code{run.class} och \code{run.tasty}.
 
-\SubtaskSolved  Felmeddelandet får du om du tar bort den sista krullparentesen.
+\SubtaskSolved  Felmeddelandet får du om du tar bort den sista krullparentesen. \texttt{eof} i felmeddelandet står för end-of-file och dyker ofta upp vid oparade parenteser.
 
-\SubtaskSolved Ett kompilerat program måste ha ett objekt med en \code{main}-metod eftersom exekveringsmiljön JVM förutsätter detta och anropar \code{main}-metoden när exekveringen startar.
+\SubtaskSolved  \texttt{Syntax Error: Expected a toplevel definition}. Utan parenteser är det indenteringarna som bestämmer vilka delar av koden som hör samman. När vi tar bort indenteringen på den sista raden tolkas satsen ligga utanför funktionen och vi får felmeddelande.
+
+\SubtaskSolved \code{@main} möjliggör kompilering och exekvering av ett program utan ett objekt. Den annoterar metoden med vilken exekveringen av programmet ska starta.
+
+Under huven skapar kompilatorn ett objekt med samma namn som metoden med
+en primitiv main. Ett kompilerat program måste ha ett objekt med en main-metod
+eftersom exekveringsmiljön JVM förutsätter detta och anropar main-metoden när
+exekveringen startar.
+
+Ett alternativ till \code{@main} som är kompatibelt med Scala 2 är att direkt definiera en primitiv main-metod i ett objekt.
 
 \SubtaskSolved
   Det går snabbare att köra i gång ett kompilerat program eftersom maskinkoden är sparad i en fil som kan köras igång direkt.  Ett kompilerat program kan bestå av många filer som samkompileras.
 
-  När ett skript kör kompileras koden i skriptfilen före \emph{varje} körning och maskinkoden sparas inte mellan körningarna. Ett skript består bara av en enda text-fil som körs från början. Ingen main-metod behövs.
+  När ett skript kör kompileras koden i skriptfilen före \emph{varje} körning och maskinkoden sparas inte mellan körningarna. Ett skript består bara av en enda text-fil som körs från början.
 
   När väl exekveringen är igång sker exekveringen av maskinkoden exakt lika snabbt oberoende av om koden är genererad ur ett skript eller en förkompilerad app.
 
@@ -349,14 +367,14 @@ Skriv nedan kod i filen:
 
 \QUESTBEGIN
 
-\Task \what~Skriv ett program som skriver ut summa, min och max för en sekvens av heltal i \code{args}. Du kan förutsätta att programmet bara körs med heltal som programparametrar. \emph{Tips:} Med uttrycken \code{xs.sum} och \code{xs.min} och \code{xs.max} ges summan, minsta resp. största värde.
+\Task \what~Skriv ett program som skriver ut summa, min och max för en sekvens av heltal i \code{args}. Du kan förutsätta att programmet bara körs med heltal som programparametrar. \emph{Tips:} Med uttrycken \code{args.sum} och \code{args.min} och \code{args.max} ges summan, minsta resp. största värde.
 %Med uttrycket \code{xs.map(_.toInt)} ges en ny samling med alla element omgjorda till heltal.
 
 Exempel på körning i terminalen:
 \begin{REPL}
 > code sum-min-max.scala
 > scalac sum-min-max.scala
-> scala SumMinMax 1 2 42 3 4
+> scala sumMinMax 1 2 42 3 4
 52 1 42
 \end{REPL}
 
@@ -393,7 +411,7 @@ Exempel på körning i terminalen:
 \begin{REPL}
 scala> var x = 42; var y = 43
 scala> ???
-scala> println("x är " + x + ", y är " + y)
+scala> println(s"x är $x, y är $y") 
 x är 43, y är 42
 \end{REPL}
 
@@ -425,14 +443,14 @@ y = temp
 
 \QUESTBEGIN
 
-\Task \what~Skriva ett program som byter plats på första och sista elementet i \code{main}-parametern \code{args}. Bytet ska bara ske om det är minst två element i \code{args}. Oavsett om förändring skedde eller ej ska \code{args} sedan skrivas ut med blanktecken mellan argumenten.
+\Task \what~Skriva ett program som byter plats på första och sista elementet i parametern \code{args}. Bytet ska bara ske om det är minst två element i \code{args}. Oavsett om förändring skedde eller ej ska \code{args} sedan skrivas ut med blanktecken mellan argumenten.
   \emph{Tips:} Du kan komma åt sista elementet med \code{args(args.size - 1)}
 
 Exempel på körning i terminalen:
 \begin{REPL}
 > code swap-args.scala
 > scalac swap-args.scala
-> scala SwapFirstLastArg hej alla barn
+> scala swapFirstLastArg hej alla barn
 barn alla hej
 \end{REPL}
 
@@ -494,7 +512,7 @@ barn alla hej
 
 \Subtask Kör algoritmen steg för steg med penna och papper, där du skriver upp hur värdena för respektive variabel ändras. Det finns två buggar i algoritmen. Vilka? Rätta buggarna och testa igen genom att ''köra'' algoritmen med penna på papper och kontrollera så att algoritmen fungerar för $n=0$, $n=1$, och $n=5$. Vad händer om $n=-1$?
 
-\Subtask Skapa med hjälp av en editor filen \code{sumn.scala}. Implementera algoritmen SUM enligt den rättade pseudokoden och placera implementationen i en main-metod i ett objekt med namnet \code{sumn}. Du kan skapa indata \code{n} till algoritmen med denna deklaration i början av din main-metod: \\ \code{val n = args(0).toInt} \\ Vad ger applikationen för utskrift om du kör den med argumentet 8888?
+\Subtask Skapa med hjälp av en editor filen \code{sumn.scala}. Implementera algoritmen SUM enligt den rättade pseudokoden och placera implementationen i en \code{@main}-annoterad metod med namnet \code{sumn}. Du kan skapa indata \code{n} till algoritmen med denna deklaration i början av din metod: \\ \code{val n = args(0).toInt} \\eller direkt ha \code{n} som parameter till metoden. \\ Vad ger applikationen för utskrift om du kör den med argumentet 8888?
 
 \begin{REPLnonum}
 > scalac sumn.scala
@@ -506,7 +524,10 @@ barn alla hej
 scala> (1 to 8888).sum
 \end{REPLnonum}
 
-\Subtask Implementera algoritmen SUM enligt pseudokoden ovan, men nu i Java. Skapa filen \code{SumN.java} och använd koden från uppgift \ref{task:java} som mall för att deklarera den publika klassen \code{SumN} med en main-metod. Några tips om Java-syntax och standarfunktioner i Java:
+
+\Subtask \TODO{move to java appendix}
+
+Implementera algoritmen SUM enligt pseudokoden ovan, men nu i Java. Skapa filen \code{SumN.java} och använd koden från uppgift \ref{task:java} som mall för att deklarera den publika klassen \code{SumN} med en main-metod. Några tips om Java-syntax och standarfunktioner i Java:
 
 \begin{itemize}%[noitemsep, nolistsep]
 \item Alla satser i Java måste avslutas med semikolon.
@@ -530,8 +551,14 @@ Bugg: Eftersom man bara ökar summan med 1 varje gång, kommer resultatet att bl
 För -1, blir resultatet 0. Förklaring: i börjar på 1 och är alltså aldrig mindre än n som ju är -1. while-blocket genomförs alltså noll gånger, och efter att \code{sum} får sitt ursprungsvärde förändras den aldrig.
 
 \SubtaskSolved  39502716
+Såhär kan en implementation se ut:
 
-\SubtaskSolved  Såhär kan implementationen se ut:
+\scalainputlisting{examples/sumn.scala}
+
+
+\SubtaskSolved \TODO{move to java appendix} 
+
+Såhär kan implementationen se ut:
 \begin{Code}[language=Java]
 public class SumN {
   public static void main(String[] args) {
@@ -568,7 +595,7 @@ public class SumN {
  \SetKwInOut{Input}{Indata}\SetKwInOut{Output}{Resultat}
 
  \Input{Array $args$ med strängar som alla innehåller heltal}
- \Output{utskrift av största heltalet }
+ \Output{Utskrift av största heltalet }
  $max \leftarrow$ det minsta heltalet som kan uppkomma  \\
  $n \leftarrow $ antalet heltal \\
  $i \leftarrow 0$ \\
@@ -608,40 +635,13 @@ public class SumN {
 \SubtaskSolved  Bugg: \code{i} inkrementeras aldrig. Programmet fastnar i en oändlig loop. Fix: Lägg till en sats som ökar i med 1, i slutet av while-blocket.
 
 \SubtaskSolved  Så här kan implementationen se ut:
-\begin{Code}
-object Max {
-  def main(args: Array[String]): Unit = {
-    var max = Int.MinValue
-    val n = args.size
-    var i = 0
-    while(i < n) {
-      val x = args(i).toInt
-      if(x > max)  max = x
-      i += 1
-    }
-    println(max)
-  }
-}
-\end{Code}
+\scalainputlisting{examples/maxn.scala}
 
 \SubtaskSolved  Raden där max initieras ändras till \code{var max = args(0).toInt}
 
-\SubtaskSolved  För att inte få \code{java.lang.ArrayIndexOutOfBoundsException: 0} behövs en kontroll som säkerstället att inget görs om samlingen \code{args} är tom:
-object Max {
-  def main(args: Array[String]): Unit = if (args.size > 0) {
-    var max = args(0).toInt
-    val n = args.size
-    var i = 0
-    while(i < n) {
-      val x = args(i).toInt
-      if(x > max) {
-        max = x
-      }
-      i += 1
-    }
-    println(max)
-  } else println("Empty.")
-}
+\SubtaskSolved  För att inte få \code{java.lang.IndexOutOfBoundsException: 0} behövs en kontroll som säkerställer att inget görs om samlingen \code{args} är tom:
+
+\scalainputlisting{examples/maxn2.scala}
 
 
 \QUESTEND
@@ -695,17 +695,7 @@ def indexOfMin(xs: Array[Int]): Int = ???
 
 \SubtaskSolved
 
-\begin{Code}
-def indexOfMin(xs: Array[Int]): Int = {
-  var minPos = 0
-  var i = 1
-  while (i < xs.size) {
-    if (xs(i) < xs(minPos)) minPos = i
-    i += 1
-  }
-  if (xs.size > 0) minPos else -1
-}
-\end{Code}
+\scalainputlisting{examples/index-of-min.scala}
 
 
 \QUESTEND
@@ -1193,32 +1183,29 @@ typ: \code{scala.collection.immutable.Range}
 \Task  \what~ Bygg vidare på koden nedan och gör ett Sten-Sax-Påse-spel\footnote{\url{https://sv.wikipedia.org/wiki/Sten,_sax,_påse}}. Koden fungerar som den ska, förutom funktionen \code{winner} som fuskar till datorns fördel. Lägg även till en main-funktion så att programmet kan kompileras och köras i terminalen. Spelet blir roligare om du räknar antalet vinster och förluster. Du kan också göra så att datorn inte väljer med jämn fördelning.
 
 \begin{Code}
-object Game {
-  val choices = Vector("Sten", "Påse", "Sax")
-
-  def printChoices(): Unit =
-    for (i <- 1 to choices.size) println(i + ": " + choices(i - 1))
-
-  def userChoice(): Int = {
-    printChoices()
-    scala.io.StdIn.readLine("Vad väljer du? [1|2|3]<ENTER>:").toInt - 1
-  }
-
-  def computerChoice(): Int = (math.random() * 3).toInt
-
-  /** Ska returnera "Du", "Datorn", eller "Ingen" */
-  def winner(user: Int, computer: Int): String = "Datorn"
-
-  def play(): Unit = {
-    val u = userChoice()
-    val c = computerChoice()
-    println("Du valde " + choices(u))
-    println("Datorn valde " + choices(c))
-    val w = winner(u, c)
-    println(w + " är vinnare!")
-    if (w == "Ingen") play()
-  }
-}
+object Game:
+	val choices = Vector("Sten", "Påse", "Sax")
+	
+	def printChoices(): Unit =
+	  for i <- 1 to choices.size do println(s"$i: ${choices(i - 1)}")
+	
+	def userChoice(): Int =
+		printChoices()
+		scala.io.StdIn.readLine("Vad väljer du? [1|2|3]<ENTER>:").toInt - 1
+	
+	def computerChoice(): Int = (math.random() * 3).toInt
+	
+	/** Ska returnera "Du", "Datorn", eller "Ingen" */
+	def winner(user: Int, computer: Int): String = "Datorn"
+	
+	def play(): Unit =
+		val u = userChoice()
+		val c = computerChoice()
+		println(s"Du valde ${choices(u)}")
+		println(s"Datorn valde ${choices(c)}")
+		val w = winner(u, c)
+		println(s"$w är vinnare!")
+		if w == "Ingen" then play()
 \end{Code}
 
 % \begin{Code}[basicstyle=\ttfamily\footnotesize\selectfont]]
@@ -1260,26 +1247,25 @@ object Game {
 \TaskSolved \what~ En (lättbegriplig?) lösning som provar alla kombinationer:
 
 \begin{CodeSmall}
-  def winner(user: Int, computer: Int): String =
-    if      (choices(user) == "Sten" && choices(computer) == "Påse") "Datorn"
-    else if (choices(user) == "Sten" && choices(computer) == "Sax")  "Du"
-    else if (choices(user) == "Påse" && choices(computer) == "Sten") "Du"
-    else if (choices(user) == "Påse" && choices(computer) == "Sax")  "Datorn"
-    else if (choices(user) == "Sax"  && choices(computer) == "Sten") "Datorn"
-    else if (choices(user) == "Sax"  && choices(computer) == "Påse") "Du"
-    else "Ingen"
+def winner(user: Int, computer: Int): String =
+  if      choices(user) == "Sten" && choices(computer) == "Påse" then "Datorn"
+  else if choices(user) == "Sten" && choices(computer) == "Sax"  then "Du"
+  else if choices(user) == "Påse" && choices(computer) == "Sten" then "Du"
+  else if choices(user) == "Påse" && choices(computer) == "Sax"  then "Datorn"
+  else if choices(user) == "Sax"  && choices(computer) == "Sten" then "Datorn"
+  else if choices(user) == "Sax"  && choices(computer) == "Påse" then "Du"
+  else "Ingen"
 \end{CodeSmall}
 
 
 En klurigare lösning (och svårbegripligare?) med hjälp av modulo-räkning:
 
 \begin{Code}
-  def winner(user: Int, computer: Int): String = {
-     val result = (user - computer + 3) % 3
-     if (user == computer) "Ingen"
-     else if (result == 1) "Du"
-     else "Datorn"
-  }
+def winner(user: Int, computer: Int): String = 
+  val result = (user - computer + 3) % 3
+  if user == computer then "Ingen"
+  else if result == 1 then "Du"
+  else "Datorn"
 \end{Code}
 Moduloräkningen kräver att elementen i \code{choices} är i \emph{förlorar-över}-ordning, alltså Sten, Påse, Sax. Addition med 3 görs för att undvika negativa tal, som beter sig annorlunda i moduloräkning.
 
@@ -1294,18 +1280,17 @@ Moduloräkningen kräver att elementen i \code{choices} är i \emph{förlorar-ö
 \Task\Uberkurs \what~\\
 Klistra in nedan kod i REPL:
 \begin{Code}
-def time(block: => Unit): Double = {
+def time(block: => Unit): Double =
   val t = System.nanoTime
   block
   (System.nanoTime-t)/1e6  // ger millisekunder
-}
 \end{Code}
 
 \Subtask Skriv kod som gör detta i tur och ordning:
 \begin{enumerate}[nolistsep,noitemsep]
-  \item deklarerar en \code{val as} som är en \code{Array} fylld med en miljon heltalsnollor,
+  \item deklarerar en \code{val} \texttt{as} som är en \code{Array} fylld med en miljon heltalsnollor,
   \item deklarerar en \code{val vs} som är en \code{Vector} fylld med en miljon heltalsnollor,
-  \item kör \code{time(as :+ 0)} 10 gånger och räknar ut medelvärdet av tidmätningarna,
+  \item kör \texttt{time(as :+ 0)} 10 gånger och räknar ut medelvärdet av tidmätningarna,
   \item kör \code{time(vs :+ 0)} 10 gånger och räknar ut medelvärdet av tidmätningarna.
 \end{enumerate}
 
@@ -1317,26 +1302,28 @@ def time(block: => Unit): Double = {
 
 \SubtaskSolved Med en dator som har en \code{i7-4790K CPU @ 4.00GHz} blev det så här:
 \begin{REPL}
-scala> def time(block: => Unit): Double = {
+scala> def time(block: => Unit): Double =
      |   val t = System.nanoTime
      |   block
      |   (System.nanoTime - t)/1e6  // ger millisekunder
-     | }
+def time(block: => Unit): Double
 
 scala> val as = Array.fill(1e6.toInt)(0)
-as: Array[Int] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+val as: Array[Int] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+large output truncated, print value to show all
 
 scala> val vs = Vector.fill(1e6.toInt)(0)
-vs: scala.collection.immutable.Vector[Int] = Vector(0, 0, 0, 0, 0, ...
+val vs: Vector[Int] = Vector(0, 0, 0, 0, 0, ...
+large output truncated, print value to show all
 
-scala> val ast = (for (i <- 1 to 10) yield time(as :+ 0)).sum / 10.0
-res1: Double = 1.8719819999999998
+scala> val ast = (for i <- 1 to 10 yield time(as :+ 0)).sum / 10.0
+val ast: Double = 1.8719819999999998
 
-scala> val vst = (for (i <- 1 to 10) yield time(vs :+ 0)).sum / 10.0
-res2: Double = 0.006485099999999999
+scala> val vst = (for i <- 1 to 10 yield time(vs :+ 0)).sum / 10.0
+val vst: Double = 0.006485099999999999
 
 scala> ast / vst
-res3: Double = 288.6589258453995
+val res3: Double = 288.6589258453995
 
 \end{REPL}
 
@@ -1377,16 +1364,29 @@ scala> val sekvens = intervall.toArray
 
 \QUESTBEGIN
 
-\Task\Uberkurs  \what~  Kompilatorn genererar byte-kod, uttalas ''bajtkod'' \Eng{byte code}, som den virtuella maskinen tolkar och översätter till maskinkod medan programmet kör. Med kommandot \code{:javap} i REPL kan du undersöka byte-koden.
+\Task\Uberkurs  \what~  Kompilatorn genererar byte-kod, uttalas ''bajtkod'' \Eng{byte code}, som den virtuella maskinen tolkar och översätter till maskinkod medan programmet kör. 
+
+Skapa en fil plusxy.scala med följande rader:
+\begin{Code}
+@main
+def plusxy(x: Int, y: Int) = x + y
+\end{Code}
+Kompilera programmet med \code{scalac plusxy.scala}. Notera vilka filer kompilatorn har skapat med \code{ls}. Med kommandot \code{javap -v 'plusxy$package$.class'} kan du undersöka byte-koden direkt i terminalen.
 \begin{REPL}
-scala> def plusxy(x: Int, y: Int) = x + y
-scala> :javap plusxy
+> scalac plusxy.scala
+> ls
+> javap -v 'plusxy$package$.class'
 \end{REPL}
 
 \Subtask Leta upp raden \code{public int plusxy(int, int);} och studera koden efter \code{Code:} och försök gissa vilken instruktion som utför själva additionen.
 
-\Subtask Lägg till en parameter till: \\ \code{def plusxyz(x: Int, y: Int, z: Int) = x + y + z}
-\\ och studera byte-koden med \code{:javap plusxyz}. Vad skiljer byte-koden mellan \code{plusxy} och \code{plusxyz}?
+\Subtask Vad händer om vi lägger till en parameter? \\ 
+Skapa en ny fil \code{plusxyz.scala}:
+\begin{Code}
+@main
+def plusxyz(x: Int, y: Int, z: Int) = x + y + z
+\end{Code}
+Kompilera och studera därefter byte-koden med \code{javap -v 'plusxyz$package$.class'}. \\ Vad skiljer byte-koden mellan \code{plusxy} och \code{plusxyz}?
 
 \Subtask Läs om byte-kod här: \href{https://en.wikipedia.org/wiki/Java\_bytecode}{en.wikipedia.org/wiki/Java\_bytecode}. Vad betyder den inledande bokstaven i additionsinstruktionen?
 
@@ -1399,20 +1399,20 @@ scala> :javap plusxy
 \begin{REPL}
 public int plusxy(int, int);
   descriptor: (II)I
-  flags: ACC_PUBLIC
+  flags: (0x0001) ACC_PUBLIC
   Code:
     stack=2, locals=3, args_size=3
        0: iload_1
        1: iload_2
        2: iadd
        3: ireturn
+    LineNumberTable:
+      line 2: 0
     LocalVariableTable:
       Start  Length  Slot  Name   Signature
-          0       4     0  this   L;
+          0       4     0  this   Lplusxy$package$;
           0       4     1     x   I
           0       4     2     y   I
-    LineNumberTable:
-      line 11: 0
 \end{REPL}
 Det är instruktionen \code{iadd} som gör själva additionen.
 
@@ -1422,7 +1422,7 @@ Det är instruktionen \code{iadd} som gör själva additionen.
 \begin{REPL}
 public int plusxyz(int, int, int);
   descriptor: (III)I
-  flags: ACC_PUBLIC
+  flags: (0x0001) ACC_PUBLIC
   Code:
     stack=2, locals=4, args_size=4
        0: iload_1
@@ -1431,14 +1431,14 @@ public int plusxyz(int, int, int);
        3: iload_3
        4: iadd
        5: ireturn
+    LineNumberTable:
+      line 2: 0
     LocalVariableTable:
       Start  Length  Slot  Name   Signature
-          0       6     0  this   L;
+          0       6     0  this   Lplusxyz$package$;
           0       6     1     x   I
           0       6     2     y   I
           0       6     3     z   I
-    LineNumberTable:
-      line 11: 0
 \end{REPL}
 
 
