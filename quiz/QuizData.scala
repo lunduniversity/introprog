@@ -71,7 +71,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "skript         " -> "maskinkod sparas ej utan skapas vid varje körning",
       "objekt         " -> "samlar variabler och funktioner",
       "@main          " -> "där exekveringen av kompilerat program startar",
-      "programargument" -> "kan överföras via parametern args i en primitiv main",
+      "programargument" -> "kan överföras via parametern args till main",
       "datastruktur   " -> "många olika element i en helhet; elementvis åtkomst",
       "samling        " -> "datastruktur med element av samma typ",
       "sekvenssamling " -> "datastruktur med element i en viss ordning",
