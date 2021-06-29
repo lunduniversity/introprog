@@ -38,10 +38,10 @@ val y: Int = 2
 \end{Slide}
 
 
-\begin{Slide}{Kolla om det passar med nästlade if-else-uttryck}
+\begin{Slide}{Kolla om det passar med nästlade if-then-else-uttryck}
 Ett vanligt problem: \\ att kolla vilket bland många värden som passar \\~\\
 
-Kan göras med nästlade if-else-uttryck:
+Kan göras med nästlade if-then-else-uttryck:
 
 \begin{Code}
 val g = scala.io.StdIn.readLine("grönsak:")
@@ -65,17 +65,15 @@ println(g + " är " + smak)
 
 
 \begin{Slide}{Kolla om det passar med \texttt{match}-uttryck}\SlideFontSmall
-Scala har även ett kraftfullt \code{match}-\Emph{uttryck}:
+I stället för nästlade \code{if} kan du använda Scalas kraftfulla \code{match}-\Emph{uttryck}:
 
 \begin{Code}
-val g = scala.io.StdIn.readLine("grönsak:")
-val smak = g match {
-  case "gurka" => "gott!"
-  case "tomat" => "jättegott!"
+def g = scala.io.StdIn.readLine("Ange en grönsak: ")
+def smak = g match 
+  case "gurka"    => "gott!"
+  case "tomat"    => "jättegott!"
   case "broccoli" => "ganska gott..."
   case _ => "mindre gott..."
-}
-println(g + " är " + smak)
 \end{Code}
 \begin{itemize}
 \pause\item Varje \code{case}-gren testas var för sig i tur och ordning uppifrån och ned.
@@ -89,54 +87,15 @@ println(g + " är " + smak)
 \end{Slide}
 
 
-
-% \begin{Slide}{Javas switch-sats}\SlideFontSmall
-% De flesta C-liknande språk (men inte Scala) har en \jcode{switch}-sats som man kan använda istället för (vissa) nästlade if-else-satser:
-% \javainputlisting[basicstyle=\ttfamily\SlideFontSize{5}{6}\selectfont]{../compendium/examples/match/Switch.java}
-% {\SlideFontTiny
-% \code{switch} i Java har stora begränsningar (fungerar t.ex. bara på primitiva typer och några till, tex String); i framtiden planerar man att anamma en del av det \code{match} i Scala kan.
-% }
-% \end{Slide}
-
-
-
-
-% \begin{Slide}{Javas switch-sats utan break}\SlideFontSmall
-% Saknad \jcode{break}-sats ''faller igenom'' till efterföljande gren:
-
-% \javainputlisting[basicstyle=\ttfamily\SlideFontSize{6}{7}\selectfont]{../compendium/examples/match/SwitchNoBreak.java}
-% En glömd \jcode{break} kan ge svårhittad bugg...
-% \end{Slide}
-
-% \begin{Slide}{Javas switch-sats med glömd break}\SlideFontSmall
-
-% \vspace{-0.5em}\javainputlisting[basicstyle=\ttfamily\SlideFontSize{5.5}{6.8}\selectfont]{../compendium/examples/match/SwitchForgotBreak.java}
-
-% \vspace{-0.7em}\pause
-% \begin{REPL}
-% > java SwitchForgotBreak
-% Skriv grönsak:
-% gurka
-% gott!
-% gott!
-% \end{REPL}
-
-% \end{Slide}
-
-
-
-
-
 \begin{Slide}{Matchning med gard}
-Man kan stoppa in en s.k \Emph{gard} \Eng{guard} innan pilen \code{=>} för att villkora matchningen: (notera \code{if}, parenteser behövs ej)
+Man kan stoppa in en s.k \Emph{gard} \Eng{guard} innan pilen \code{=>} för att villkora matchningen: (notera \code{if} utan \code{then})
 \begin{Code}
-val g = scala.io.StdIn.readLine("grönsak:")
-def f = g match {
+def g = scala.io.StdIn.readLine("Ange en grönsak: ")
+def smak = g match 
   case "gurka" if math.random() > 0.5 => "gott ibland!"
   case "tomat" => "jättegott!"
   case "broccoli" => "ganska gott..."
   case _ => "mindre gott..."
-}
 \end{Code}
 \code{case}-grenen med gard ger bara en lyckad matchning \\ om uttrycket efter \code{if} är sant; annars provas nästa gren, etc.
 \end{Slide}
@@ -145,13 +104,12 @@ def f = g match {
 Om det finns ett namn efter \code{case} som börjar med liten begynnelsebokstav, blir detta namn en variabel som automatiskt binds till uttrycket före \code{match}:
 
 \begin{Code}
-val g = scala.io.StdIn.readLine("grönsak:")
-def f = g match {
+def g = scala.io.StdIn.readLine("Ange en grönsak: ")
+def smak = g match 
   case "gurka" if math.random() > 0.5 => "gott ibland!"
   case "tomat" => "jättegott!"
   case "broccoli" => "ganska gott..."
   case other => "smakar bakvänt: " + other.reverse
-}
 \end{Code}
 
 Ett enkelt variabelmönster, så som \\ \code{case other => ...} \\ i exemplet ovan, matchar \Emph{allt}! \\\code{other} får alltså värdet av \code{g} om \code{g} \Alert{inte} är \code{"gurka"}, \code{"tomat"}, \code{"broccoli"}.
@@ -162,23 +120,21 @@ Ett enkelt variabelmönster, så som \\ \code{case other => ...} \\ i exemplet o
 \begin{Slide}{Matchning med eller-mönster}\SlideFontSmall
 Om man har samma utfall för olika grenar kan dessa slås ihop och mönstret separeras med vertikalstreck: \code{|}
 \begin{Code}
-val g = scala.io.StdIn.readLine("grönsak:")
-def f = g match {
+def g = scala.io.StdIn.readLine("Ange en grönsak: ")
+def smak = g match 
   case "gurka" => "gott"
   case "tomat" => "gott"
   case "lök"   => "gott"
   case _ => "inte gott"
-}
 \end{Code}
 
 Mer koncist med eller-mönster:
 
 \begin{Code}
-val g = scala.io.StdIn.readLine("grönsak:")
-def f = g match {
+def g = scala.io.StdIn.readLine("grönsak:")
+def smak = g match 
   case "gurka" | "tomat" | "lök" => "gott"
   case _ => "inte gott"
-}
 \end{Code}
 
 
@@ -192,45 +148,52 @@ def f = g match {
 \begin{Slide}{Matchning med typade mönster}\SlideFontSmall
 Med en typannotering efter en variabel får man ett \Emph{typat mönster} \Eng{typed pattern}. Om matchningen lyckas blir värdet \Alert{omvandlat} till den specifika typen och binds till variabeln.
 \begin{Code}
-def f = if (math.random() < 0.5) 42 + math.random() 
-        else "gurka" + math.random()
+def f = 
+  if (math.random() < 0.5) 42 + math.random() else "gurka" + math.random()
 
-def g = f match {
+def g = f match 
   case x: Double => x.round.toInt
   case s: String => s.length
-}
 \end{Code}
-Vad har funktionen \code{f} för returtyp? \\ \pause
-Matchning mot specifika typer enl. ovan används i idiomatisk Scala hellre än \code{isInstanceOf} men man kan göra motsvarande ovan med if-uttryck:
+\code{f} får typen \code{Matchable} som är subtyp till \code{Any}. Vilken typ får \code{g}? \pause ~~\code{Int}\\
+Matchning mot specifika typer enl. ovan används i idiomatisk Scala hellre än \code{isInstanceOf} men man kan göra motsvarande ovan med detta if-uttryck:
 \begin{Code}
-def g2 = {
+def g2 =  
   val x = f
-  if (x.isInstanceOf[Double]) x.asInstanceOf[Double].round.toInt
-  else if (x.isInstanceOf[String]) x.asInstanceOf[String].length
-}.asInstanceOf[Int]
+  val y = 
+    if (x.isInstanceOf[Double]) x.asInstanceOf[Double].round.toInt
+    else if (x.isInstanceOf[String]) x.asInstanceOf[String].length
+  y.asInstanceOf[Int] // kan detta ge körtidsfel? kan kompilatorn kolla det?
 \end{Code}
 \end{Slide}
 
+\begin{Slide}{Typen \text{Matchable}}
+När ett uttryck inte kan ges en mer specifik typ så härleds \code{Matchable}, vilket visar att värdet kan undersökas med \code{match}.\footnote{Mer detaljer om varför \code{Matchable} behövs här: https://dotty.epfl.ch/docs/reference/other-new-features/matchable.html}
+\begin{REPLnonum}
+scala> def f = if math.random() > 0.5 then 42 else "hej"
+def f: Matchable
+\end{REPLnonum}
+%Eftersom typen \code{String} och typen \code{Double} inte har något annat gemensamt bli den mest specifika typen som kan härledas \code{Matchable}, som är nästan lika generell som topptypen \code{Any}.
+\end{Slide}
 
 \begin{Slide}{Konstruktormönster med case-klasser}\SlideFontSmall
 En basklass med gemensamma delar och två subtyper:
 \begin{Code}
-trait Grönsak {
+trait Grönsak:
   def vikt: Int
   def ärRutten: Boolean
-}
+
 case class Gurka(vikt: Int, ärRutten: Boolean) extends Grönsak
 case class Tomat(vikt: Int, ärRutten: Boolean) extends Grönsak
 \end{Code}
 \pause
 Tack vare case-klasserna kan man använda \Emph{konstruktormönster} \Eng{constructor pattern} för att kolla vad som finns \Alert{inuti} en instans:
 \begin{Code}
-def testa(g: Grönsak): String = g match {
+def testa(g: Grönsak): String = g match 
   case Gurka(v, false) => "gott, väger " + v
   case Gurka(_, true)  => "inte gott"
   case Tomat(v, r)     => (if (r) "inte " else "") + "gott, väger " + v
   case _ => "okänd grönsak: " + g
-}
 \end{Code}
 
 Konstruktormönster ''\Emph{plockar isär}'' det som matchas och binder variabler till de attribut som finns i case-klassens konstruktor.
@@ -240,31 +203,30 @@ Konstruktormönster ''\Emph{plockar isär}'' det som matchas och binder variable
 \begin{Slide}{Plocka isär samlingar med djupa mönster}
 Man kan plocka isär innehållet i en samling så här:
 \begin{Code}
-def visa(xs: Vector[Grönsak]): String = xs match {
+def visa(xs: Vector[Grönsak]): String = xs match
   case Vector()               => "tom grönsaksvektor"
-  case Vector(Gurka(v, true)) => "en rutten gurka som väger " + v
-  case Vector(g)              => "exakt en grönsak: " + g
+  case Vector(Gurka(v, true)) => s"en rutten gurka som väger $v"
+  case Vector(g)              => s"exakt en grönsak: $g"
   case Vector(g1, g2)         => s"exakt två grönsaker: $g1, $g2"
   case g +: gs                => s"först en $g och sedan svansen: $gs"
-}
 \end{Code}
-Övning: prova ovan i REPL. Vad händer om du byter ordning på andra och tredje mönstret ovan?
+Vad händer om du byter ordning på andra och tredje mönstret?
 \end{Slide}
 
 \begin{Slide}{Matchning på tupler}
 Det går fint att plocka isär tupler med mönstermatchning:\footnote{\url{https://youtu.be/aboZctrHfK8}}
 \begin{Code}
-val pair = ("hej", 42)
+var pair = ("hej", 42)
 
-pair match {
+pair match
   case (a, b) if b == 42 => s"livets mening är funnen: $a"
   case (_, b)            => s"fattas mening: $b"
-}
+
 \end{Code}
 
 \end{Slide}
 
-\begin{Slide}{Mönstermatchning och case-objekt}
+\begin{Slide}{Mönstermatchning och case-objekt}\SlideFontSmall
 En bastyp och specifika singelobjekt av gemensam typ:
 \begin{Code}
 trait Färg
@@ -273,44 +235,68 @@ case object Hjärter extends Färg
 case object Ruter   extends Färg
 case object Klöver  extends Färg
 
-def parallellFärg(f: Färg): Färg = f match {
+def parallellFärg(f: Färg): Färg = f match
   case Spader  => Klöver
   case Klöver  => Spader
   case Hjärter => Ruter
-}
 \end{Code}
 Vilken case-gren har vi glömt? Kan kompilatorn hjälpa oss?
 \pause
 \begin{REPL}
 scala> parallellFärg(Ruter)
-scala.MatchError: Ruter (of class Ruter)
-  at .parallellFärg(<console>:18)
-
+scala.MatchError: Ruter 
 \end{REPL}
 \Alert{Undantag vid körtid} \code{:(}
 \end{Slide}
 
-\begin{Slide}{Mönstermatchning och förseglade typer}
+\begin{Slide}{Mönstermatchning och förseglade typer}\SlideFontSmall
 Med nyckelordet \code{sealed} får vi en kompileringsvarning.
 \begin{Code}
-sealed trait Färg
+sealed trait Färg  //tryck först Alt+Enter i REPL för tolkning i ett svep
 case object Spader  extends Färg
 case object Hjärter extends Färg
 case object Ruter   extends Färg
 case object Klöver  extends Färg
 
-def parallellFärg(f: Färg): Färg = f match {
+def parallellFärg(f: Färg): Färg = f match 
   case Spader  => Klöver
   case Klöver  => Spader
   case Hjärter => Ruter
-}
 \end{Code}
 \begin{REPL}
-<console>:23: warning: match may not be exhaustive.
-It would fail on the following input: Ruter
-       def parallellFärg(f: Färg): Färg = f match {
+1 |def parallellFärg(f: Färg): Färg = f match 
+  |                                   ^
+  |                           match may not be exhaustive.
+  |
+  |                           It would fail on pattern case: Ruter
+def parallellFärg(f: Färg): Färg
 \end{REPL}
-\Emph{Varning vid kompilering} \code{:)}
+\Emph{Varning vid kompilering} \code{:)} ~~~Sista raden visar att det bara är en varning!
+\end{Slide}
+
+\begin{Slide}{Mönstermatcha enumeration}\SlideFontSmall
+I stället för \code{sealed trait ... case object ...} kan du använda en \Emph{enumeration} (ä.k. uppräkning, uppräknad datatyp, \Eng{enumeration}).
+\begin{Code}
+enum Färg:
+  case Spader, Hjärter, Ruter, Klöver
+  
+def parallellFärg(f: Färg): Färg = 
+  import Färg.*
+  f match 
+    case Spader  => Klöver
+    case Klöver  => Spader
+    case Hjärter => Ruter
+\end{Code}
+\pause
+\begin{REPL}
+def parallellFärg(f: Färg): Färg
+3 |  f match 
+  |  ^
+  |  match may not be exhaustive.
+  |
+  |  It would fail on pattern case: Ruter
+\end{REPL}
+\Emph{Även här får vi hjälpsam varning vid kompilering} \code{:)} 
 \end{Slide}
 
 \begin{Slide}{Stora/små begynnelsebokstäver vid matchning}
