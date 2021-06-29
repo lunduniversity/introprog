@@ -64,21 +64,18 @@
 \Task \what~I den tvådimensionella Underjorden bor Mullvaden och Masken. Masken har gömt sig för Mullvaden och befinner sig på en plats långt bort. Masken har även gjort delar av sin position osynlig för omvärlden:
 
 \begin{Code}
-object Underjorden {
+object Underjorden:
   var x = 0
   var y = 1
 
-  object Mullvaden {
+  object Mullvaden:
     var x = Underjorden.x + 10
     var y = Underjorden.y + 9
-  }
 
-  object Masken {
+  object Masken:
     private var x = Mullvaden.x
     var y = Mullvaden.y + 190
     def ärMullvadsmat: Boolean = ???
-  }
-}
 \end{Code}
 
 \Subtask Skapa ovan kod i filen \code{Underjorden.scala} med en editor och implementera predikatet  \code{ärMullvadsmat} så att det blir sant om mullvadens koordinater är samma som maskens.
@@ -88,8 +85,8 @@ object Underjorden {
  \Subtask Importera därefter allt i Mullvaden och sedan allt i Masken och tilldela \code{x} ett nytt värde enligt raderna 1--3 nedan. Vad ger uttrycken på raderna 4--6 nedan för värde? Förklara vad som händer i termer av namnöverskuggning och synlighet?
 
 \begin{REPL}
-scala> import Mullvaden._
-scala> import Masken._
+scala> import Mullvaden.*
+scala> import Masken.*
 scala> x = -1
 scala> Mullvaden.x
 scala> Masken.x
@@ -103,52 +100,49 @@ scala> Underjorden.x
 \SubtaskSolved
 
 \begin{Code}
-object Underjorden {
+object Underjorden:
   var x = 0
   var y = 1
 
-  object Mullvaden {
+  object Mullvaden:
     var x = Underjorden.x + 10
     var y = Underjorden.y + 9
-  }
 
-  object Masken {
+  object Masken:
     private var x = Mullvaden.x
     var y = Mullvaden.y + 190
     def ärMullvadsmat: Boolean = x == Mullvaden.x && y == Mullvaden.y
-  }
-}
 \end{Code}
 
 \SubtaskSolved
 
 \begin{REPL}
-scala> :paste underjorden.scala
-scala> import Underjorden._
+scala> :load Underjorden.scala
+scala> import Underjorden.*
 scala> Masken.ärMullvadsmat
-res0: Boolean = false
+val res0: Boolean = false
 scala> Masken.y = Mullvaden.y
 scala> Masken.ärMullvadsmat
-res1: Boolean = true
+val res1: Boolean = true
 \end{REPL}
 
 
 \SubtaskSolved
 
 \begin{REPL}
-scala> import Mullvaden._
-scala> import Masken._
+scala> import Mullvaden.*
+scala> import Masken.*
 scala> x = -1
 scala> Mullvaden.x
-res2: Int = -1
+val res2: Int = -1
 
 scala> Masken.x
-<console>:46: error:
-  variable x in object Masken cannot be accessed
-  in object Underjorden.Masken
+1 |Masken.x
+  |^^^^^^^^
+  |variable x cannot be accessed as a member of Underjorden.Masken.type from module class rs\$line\$9\$.
 
 scala> Underjorden.x
-res3: Int = 0
+val res3: Int = 0
 \end{REPL}
 
 \noindent \emph{Förklaring:} När importen av Maskens alla synliga medlemmar sker kommer de som ej är privata att överskugga andra medlemmar med samma namn. Det är Mullvadens \code{x}-variabel som tilldelas \code{-1} eftersom Maskens \code{x} är privat och ej syns utåt. Underjordens medlemmar blir överskuggade av Maskens \code{y} och Mullvadens \code{x} men man kan komma åt dem genom att använda punktnotation.
@@ -165,20 +159,17 @@ res3: Int = 0
 \Task \what~ Tupler sammanför flera olika värden i ett oföränderligt objekt. Nedan används tupler för att representera en 3D-punkt i underjorden med koordinater \code{(x, y, z)} av typen \code{(Int, Int, Double)}, där $z$-koordinaten anger hur djupt ner i underjorden punkten ligger. På en hemlig plats finns uppgången till överjorden.
 
 \begin{Code}
-object Underjorden3D {
+object Underjorden3D:
   private val hemlis = ("uppgången till överjorden", (0, 0, 0.0))
 
-  object Mullvaden {
+  object Mullvaden:
     var pos = (5, 3, math.random() * 10 + 1)
     def djup  = ???
-  }
 
-  object Masken {
+  object Masken:
     private var pos = (0, 0, 10.0)
     def ärMullvadsmat: Boolean = ???
     def ärRaktUnderUppgången: Boolean = ???
-  }
-}
 \end{Code}
 
 \Subtask Funktionen \code{djup} ska ge $z$-koordinaten för Mullvaden. Vilken typ har \code{djup}?
@@ -200,24 +191,21 @@ object Underjorden3D {
 
 \SubtaskSolved
 \begin{Code}
-object Underjorden3D {
+object Underjorden3D:
   private val hemlis = ("uppgången till överjorden", (3, 4, 0.0))
 
-  object Mullvaden {
+  object Mullvaden:
     var pos = (5, 3, math.random() * 10 + 1)
 
     def djup: Double  = pos._3
-  }
 
-  object Masken {
+  object Masken:
     private var pos = (0, 0, 10.0)
 
     def ärMullvadsmat: Boolean = pos == Mullvaden.pos
 
     def ärRaktUnderUppgången: Boolean =
       pos._1 == hemlis._2._1 && pos._2 == hemlis._2._2
-  }
-}
 \end{Code}
 
 \SubtaskSolved Noll-tupeln.
@@ -242,11 +230,10 @@ scala> z
 
 \Subtask Singelobjekt är lata. Initialiseringsordningen kan bli fel.
 \begin{Code}
-object test {
+object test:
   object zzz    { val a = { println("nu!"); 42} }
   object buggig { val a = b ; val b = 42        }
   object funkar { lazy val a = b; val b = 42    }
-}
 \end{Code}
 \noindent Klistra in modulen \code{test} i REPL. Vad ger kompilatorn för varning? Skrivs  \code{"nu!"} ut?
 
@@ -262,16 +249,16 @@ object test {
 \begin{REPL}
 scala> z
 nu!
-res19: Array[Int] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+val res19: Array[Int] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
 scala> z
-res20: Array[Int] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+val res20: Array[Int] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 \end{REPL}
 
 \SubtaskSolved Allokeringen av arrayen sker första gången \code{z} används (och inte vid deklarationen).
 \begin{REPL}
 scala> lazy val z = { println("nu!"); Array.fill(1e9.toInt)(0)}
-z: Array[Int] = <lazy>
+val z: Array[Int] = <lazy>
 
 scala> z
 nu!
@@ -287,25 +274,25 @@ warning: Reference to uninitialized value b
 
 \SubtaskSolved
 \begin{REPL}
-scala> import test._
-import test._
+scala> import test.*
+import test.*
 
 scala> zzz.a      // först när vi använder zzz skrivs "nu!"
 nu!               // detta skedde *inte* när vi importerade test
-res0: Int = 42
+val res0: Int = 42
 
 scala> buggig.a   // a blir 0 eftersom b inte är initialiserad
-res1: Int = 0
+val res1: Int = 0
 
 scala> funkar.a   // med lazy val unviker vi problemet
-res2: Int = 42
+val res2: Int = 42
 
 
 scala> zzz.a     // andra gången är init redan gjort och ingen "nu!"
-res3: Int = 42
+val res3: Int = 42
 \end{REPL}
 
-\SubtaskSolved \code{lazy val a = uttryck } innebär att initialiseringsuttrycket evalueras \emph{en} gång, men evalueringen skjuts på framtiden tills det eventuellt händer att namnet \code{a} används, medan \code{ def b = uttryck } innebär att funktionskroppens uttryck evalueras \emph{varje gång} namnet \code{b} (eventuellt) används.
+\SubtaskSolved \code{lazy val a = uttryck} innebär att initialiseringsuttrycket evalueras \emph{en} gång, men evalueringen skjuts på framtiden tills det eventuellt händer att namnet \code{a} används, medan \code{ def b = uttryck } innebär att funktionskroppens uttryck evalueras \emph{varje gång} namnet \code{b} (eventuellt) används.
 
 
 \QUESTEND
@@ -332,7 +319,7 @@ och leta efter beskrivningen av klassens konstruktor.
 
 \begin{REPL}
 > wget -O introprog_2.13-1.1.4.jar http://cs.lth.se/pgk/lib
-> scala -cp introprog_2.13-1.1.4.jar
+> scala -cp introprog_2.13-1.1.4.jar -repl
 Welcome to Scala 2.13.3 (OpenJDK 64-Bit Server VM, Java 11.0.8).
 Type in expressions for evaluation. Or try :help.
 
@@ -348,25 +335,25 @@ scala> // fortsätt så att en hel kvadrat ritas
 \begin{Code}
 package hello
 
-object Main {
+object Main:
   val w = new introprog.PixelWindow(400, 300, "HEJ")
 
   var color = java.awt.Color.red
 
   /** Kvadrat med övre hörnet i punkten p och storleken side pixlar. */
-  def square(p: (Int, Int))(side: Int): Unit = if (side > 0) {
-    val d = side - 1  // side == 1 ger en kvadrat som är en enda pixel
-    w.line(p._1,     p._2,     p._1 + d, p._2,     color)
-    w.line(p._1 + d, p._2,     p._1 + d, p._2 + d, color)
-    w.line(p._1 + d, p._2 + d, p._1,     p._2 + d, color)
-    ???
-  }
+  def square(p: (Int, Int))(side: Int): Unit =
+    if side > 0 then
+      // side == 1 ger en kvadrat som är en enda pixel
+      val d = side - 1  
 
-  def main(args: Array[String]): Unit = {
+      w.line(p._1,     p._2,     p._1 + d, p._2,     color)
+      w.line(p._1 + d, p._2,     p._1 + d, p._2 + d, color)
+      w.line(p._1 + d, p._2 + d, p._1,     p._2 + d, color)
+      ???
+
+  def main(args: Array[String]): Unit =
     println("Rita kvadrat:")
     square(300,100)(50)
-  }
-}
 \end{Code}
 
 \noindent
@@ -420,24 +407,24 @@ scala> w.lineTo(100, 100)
 \begin{Code}
 package hello
 
-object Main {
+object Main:
   val w = new introprog.PixelWindow(400, 300, "HEJ")
 
   var color = java.awt.Color.red
 
-  def square(p: (Int, Int))(side: Int): Unit = if (side > 0) {
-    val d = side - 1  // side == 1 ska ge en kvadrat som är en pixel stor
-    w.line(p._1,     p._2,     p._1 + d, p._2,     color)
-    w.line(p._1 + d, p._2,     p._1 + d, p._2 + d, color)
-    w.line(p._1 + d, p._2 + d, p._1,     p._2 + d, color)
-    w.line(p._1,     p._2 + d, p._1,     p._2,     color)
-  }
+  def square(p: (Int, Int))(side: Int): Unit =
+    if side > 0 then
+      // side == 1 ger en kvadrat som är en enda pixel
+      val d = side - 1  
+      
+      w.line(p._1,     p._2,     p._1 + d, p._2,     color)
+      w.line(p._1 + d, p._2,     p._1 + d, p._2 + d, color)
+      w.line(p._1 + d, p._2 + d, p._1,     p._2 + d, color)
+      w.line(p._1,     p._2 + d, p._1,     p._2,     color)
 
-  def main(args: Array[String]): Unit = {
+  def main(args: Array[String]): Unit =
     println("Rita kvadrat:")
     square(300,100)(50)
-  }
-}
 
 \end{Code}
 
@@ -464,11 +451,10 @@ Färgen $(153, 102, 51)$ innebär ganska mycket rött, lite mindre grönt och ä
 \Subtask
 På laborationen behöver du dessa tre brunaktiga färger och det är smidigt att samla dem i en egen namnrymd via ett singelobjekt som heter \code{Color} enligt nedan.
 \begin{Code}
-object Color {
+object Color:
   val mole   = new java.awt.Color( 51,  51,   0)
   val soil   = new java.awt.Color(153, 102,  51)
   val tunnel = new java.awt.Color(204, 153, 102)
-}
 \end{Code}
 \noindent Men vi vill helst göra import på \code{java.awt.Color} för att kunna använda klassens namn utan att upprepa hela sökvägen, trots att namnet krockar med namnet på vårt singelobjekt. Skriv om koden ovan med hjälp av namnbyte vid import så att färgerna kan skapas med \code{new JColor(...)}. Gör importen lokalt i singelobjektet \code{Color}.
 
@@ -490,12 +476,10 @@ scala> val w = new introprog.PixelWindow(400,300,"Tre nyanser av brunt")
 scala> type Pt = (Int, Int)
 scala> var color = java.awt.Color.red
 scala> def rak(p: Pt)(d: Int) = w.line(p._1, p._2, ???, ???, color)
-scala> def fyll(p: Pt)(s: Int) = for (i <- ???){ rak((p._1, ???))(s) }
+scala> def fyll(p: Pt)(s: Int) = for i <- ??? do rak((p._1, ???))(s)
 
-scala> :paste
-object Color {
- ???
-}
+scala> object Color:
+     |   ???
 
 scala> color = Color.soil
 scala> fyll(100,100)(75)
@@ -514,13 +498,12 @@ scala> fyll(150,150)(25)
 
 \SubtaskSolved
 \begin{Code}
-object Color {
-  import java.awt.{Color => JColor}
+object Color:
+  import java.awt.{Color as JColor}
 
   val mole   = new JColor( 51,  51,   0)
   val soil   = new JColor(153, 102,  51)
   val tunnel = new JColor(204, 153, 102)
-}
 \end{Code}
 
 \SubtaskSolved
@@ -528,15 +511,15 @@ object Color {
 \begin{CodeSmall}
 package hello
 
-object Color {
-  import java.awt.{Color => JColor}
+object Color:
+  import java.awt.{Color as JColor}
+
   val mole   = new JColor( 51, 51,    0)
   val soil   = new JColor(153, 102, 51)
   val tunnel = new JColor(204, 153, 102)
-}
 
 
-object Main {
+object Main:
   val w = new introprog.PixelWindow(width = 400, height = 300, title = "HEJ")
 
   type Pt = (Int, Int)
@@ -545,17 +528,17 @@ object Main {
 
   def rak(p:  Pt)(d: Int) = w.line(p._1, p._2, p._1 + d - 1, p._2, color)
 
-  def fyll(p: Pt)(s: Int) = for (i <- 0 until s){rak((p._1, p._2 + i))(s)}
+  def fyll(p: Pt)(s: Int) = for i <- 0 until s do rak((p._1, p._2 + i))(s)
 
-  def square(p: (Int, Int))(side: Int): Unit = if (side > 0) {
-    val d = side - 1  // side == 1 ska ge en kvadrat som är en pixel stor
-    w.line(p._1,     p._2,     p._1 + d, p._2,     color)
-    w.line(p._1 + d, p._2,     p._1 + d, p._2 + d, color)
-    w.line(p._1 + d, p._2 + d, p._1,     p._2 + d, color)
-    w.line(p._1,     p._2 + d, p._1,     p._2,     color)
-  }
+  def square(p: (Int, Int))(side: Int): Unit = 
+    if (side > 0) then
+      val d = side - 1  // side == 1 ska ge en kvadrat som är en pixel stor
+      w.line(p._1,     p._2,     p._1 + d, p._2,     color)
+      w.line(p._1 + d, p._2,     p._1 + d, p._2 + d, color)
+      w.line(p._1 + d, p._2 + d, p._1,     p._2 + d, color)
+      w.line(p._1,     p._2 + d, p._1,     p._2,     color)
 
-  def main(args: Array[String]): Unit = {
+  def main(args: Array[String]): Unit =
     import Color._
     color = soil
     fyll(100,100)(75)
@@ -563,8 +546,6 @@ object Main {
     fyll(100,100)(50)
     color = mole
     fyll(150,150)(25)
-  }
-}
 \end{CodeSmall}
 
 \SubtaskSolved Vid anropen av \code{rak} och \code{fyll} utnyttjas att man kan skippa tupelparenteserna om ett tupelargument är ensamt i sin parameterlista.
@@ -674,40 +655,33 @@ Kompilatorn fyller i \code{.apply} åt dig.
 
 \Subtask Vad skrivs ut om du med \code{Test()} anropar \code{apply}-metoden nedan?
 \begin{CodeSmall}
-object stringUtils {
-  object split {
+object stringUtils:
+  object split:
     def sentences(s: String): Array[String] = s.split('.')
     def words(s: String): Array[String] = s.split(' ').filter(_.nonEmpty)
-  }
 
-  object count {
+  object count:
     def letters(s: String):   Int = s.count(_.isLetter)
     def words(s: String):     Int = split.words(s).size
     def sentences(s: String): Int = split.sentences(s).size
-  }
 
-  object statistics {
+  object statistics:
     var history = ""
-    def printFreq(s: String = history): Unit = {
-      println("\n--- FREKVENSANALYS AV:\n" + s)
-      println("# bokstäver: " + count.letters(s))
-      println("# ord      : " + count.words(s))
-      println("# meningar : " + count.sentences(s))
-      history = (history + " " + s).trim
-    }
-  }
-}
+    def printFreq(s: String = history): Unit =
+      println(s"\n--- FREKVENSANALYS AV:\n\$s")
+      println(s"# bokstäver: \${count.letters(s)}")
+      println(s"# ord      : \${count.words(s)}")
+      println(s"# meningar : \${count.sentences(s)}")
+      history = (s"\$history \$s").trim
 
-object Test {
+object Test:
   import stringUtils._
-  def apply(): Unit = {
+  def apply(): Unit =
     val s1 = "Fem     myror är fler än fyra elefanter. Ät gurka."
     val s2 = "Galaxer i mina braxer. Tomat är gott. Päronsplitt."
     statistics.printFreq(s1)
     statistics.printFreq(s2)
     statistics.printFreq()
-  }
-}
 \end{CodeSmall}
 
 \Subtask Vilket av objekten i modulen \code{stringUtils} har tillstånd? Är det förändringsbart?
@@ -721,7 +695,7 @@ object Test {
 \SubtaskSolved
 \begin{REPLnonum}
 scala> "päronisglass".split('i')
-res0: Array[String] = Array(päron, sglass)
+val res0: Array[String] = Array(päron, sglass)
 \end{REPLnonum}
 
 \SubtaskSolved
@@ -804,7 +778,7 @@ def statistics(xs: Vector[Double]): (Int, Double, (Double, Double)) =
 
 \begin{REPL}
 scala> statistics(Vector(0, 2.5, 5))
-res10: (Int, Double, (Double, Double)) = (3,2.5,(0.0,5.0))
+val res10: (Int, Double, (Double, Double)) = (3,2.5,(0.0,5.0))
 \end{REPL}
 
 \QUESTEND
@@ -822,36 +796,26 @@ res10: (Int, Double, (Double, Double)) = (3,2.5,(0.0,5.0))
 \begin{Code}
 package gurka.tomat.banan
 
-package p1 {
-  package p11 {
-    object hello {
+package p1:
+  package p11:
+    object hello:
       def hello = println("Hej paket p1.p11!")
-    }
-  }
-  package p12 {
-    object hello {
+  package p12:
+    object hello:
       def hello = println("Hej paket p1.p12!")
-    }
-  }
-}
 
-package p2 {
-  package p21 {
-    object hello {
+package p2:
+  package p21:
+    object hello:
       def hello = println("Hej paket p2.p21!")
-    }
-  }
-}
 
-object Main {
-  def main(args: Array[String]): Unit = {
-    import p1._
+object Main:
+  def main(args: Array[String]): Unit =
+    import p1.*
     p11.hello.hello
     p12.hello.hello
-    import p2.{p21 => apelsin}
+    import p2.{p21 as apelsin}
     apelsin.hello.hello
-  }
-}
 \end{Code}
 
 \Subtask Vad skrivs ut när programmet körs?
@@ -938,25 +902,25 @@ lazy val zzz = snark
 \SubtaskSolved Vid varje anrop av \code{snark} sker en utskrift och en fördröjnig innan $42$ returneras, \code{42 + 42 == 84} vilket blir värdet av uttrycket.
 \begin{REPL}
 scala> snark + snark
-snark snark res1: Int = 84
+snark snark val res1: Int = 84
 \end{REPL}
 
 \SubtaskSolved Uttrycket \code{snark} evalueras direkt vid anropet och parametern \code{x} binds till värdet $42$ och i funktionskroppen beräknas $42+42$. Utskriften sker bara en gång.
 \begin{REPL}
 callByValue(snark)
-snark res2: Int = 84
+snark val res2: Int = 84
 \end{REPL}
 
 \SubtaskSolved Evalueringen av uttrycket \code{snark} fördröjs tills varje förekomst av parametern \code{x} i funktionskroppen. Utskriften sker två gånger.
 \begin{REPL}
 callByName(snark)
-snark snark res3: Int = 84
+snark snark val res3: Int = 84
 \end{REPL}
 
 \SubtaskSolved Evalueringen av uttrycket \code{zzz} fördröjs tills varje förekomst av parametern \code{x} i funktionskroppen. Utskriften sker en gång eftersom \code{val}-variabler tilldelas sitt värde en gång för alla vid den fördröjda initialiseringen.
 \begin{REPL}
 callByName(zzz)
-snark res4: Int = 84
+snark val res4: Int = 84
 \end{REPL}
 
 \QUESTEND
@@ -979,10 +943,10 @@ def görDettaTvåGånger(b: => Unit): Unit = { b; b }
 
 \Subtask Använd namnanrop i kombination med en uppdelad parameterlista och skapa din egen kontrollstruktur enligt nedan.\footnote{Det är så loopen \code{upprepa} i Kojo är definierad.}
 \begin{Code}
-def upprepa(n: Int)(block: => Unit): Unit = {
-   var i = 0
-   while (i < n) { ??? }
-}
+def upprepa(n: Int)(block: => Unit): Unit =
+  var i = 0
+  while i < n do 
+    ???
 \end{Code}
 
 \Subtask
@@ -991,10 +955,10 @@ Testa din kontrollstruktur i REPL. Låt upprepa 100 gånger att ett slumptal mel
 \Subtask Fördelen med \code{upprepa} är att den är koncis och lättanvänd. Men den är inte lika lätt att använda om man behöver tillgång till en loopvariabel. Implementera därför nedan kontrollstruktur.
 
 \begin{Code}
-def repeat(n: Int)(p: Int => Unit): Unit = {
-   var i = 0
-   while (i < n) { ??? }
-}
+def repeat(n: Int)(p: Int => Unit): Unit = 
+  var i = 0
+  while i < n do
+    ??? 
 \end{Code}
 
 \Subtask Använd \code{repeat} för att 100 gånger skriva ut loopvariabeln och ett slumpdecimaltal mellan 0 och 1.
@@ -1013,17 +977,18 @@ goddag
 
 \SubtaskSolved
 \begin{Code}
-def upprepa(n: Int)(block: => Unit): Unit = {
-   var i = 0
-   while (i < n) {block; i += 1}
-}
+def upprepa(n: Int)(block: => Unit): Unit =
+  var i = 0
+  while i < n do
+    block
+    i += 1
 \end{Code}
 
 \SubtaskSolved
 \begin{Code}
-upprepa(100){
+upprepa(100) {
   val tärningskast = (math.random() * 6 + 1).toInt
-  print(tärningskast + " ")
+  print(s"\$tärningskast ")
 }
 \end{Code}
 
@@ -1031,15 +996,16 @@ upprepa(100){
 \SubtaskSolved
 \begin{Code}
 def repeat(n: Int)(p: Int => Unit): Unit = {
-   var i = 0
-   while (i < n) {p(i); i += 1}
+  var i = 0
+  while (i < n) do
+    p(i); i += 1
 }
 \end{Code}
 
 \SubtaskSolved
 \begin{Code}
 repeat(100){ i =>
-  print(i + ": ")
+  print(s"\$i: ")
   println(math.random())
 }
 \end{Code}
@@ -1171,9 +1137,8 @@ res4: String = Påse
 \begin{Code}
 package hello
 
-object Main {
+object Main:
   def main(args: Array[String]): Unit = println("Hello package!")
-}
 \end{Code}
 
 \SubtaskSolved
