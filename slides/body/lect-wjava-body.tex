@@ -535,7 +535,56 @@ for (int i = s.length()-1; i >= 0; i--) {
 \end{Slide}
 
 
+\begin{Slide}{For-satser och arrayer i Java}\SlideFontSmall
+En for-sats i Java har följande struktur:
+\begin{Code}[language=Java, basicstyle=\fontsize{10}{12}\ttfamily\selectfont]
+for (initialisering; slutvillkor; inkrementering) {
+    sats1;
+    sats2;
+    ...
+}
+\end{Code}
+En primitiv heltals-array deklareras så här i Java:
+\begin{Code}[language=Java, basicstyle=\fontsize{9}{11}\ttfamily\selectfont]
+int[] xs = new int[42];  // rymmer 42 st heltal, init 0:or
+int[] ys = {10, 42, -1}; // initera med 3 st heltal
+\end{Code}
+Exempel på for-sats: fyll en array med 1:or
+\begin{Code}[language=Java, basicstyle=\fontsize{9}{11}\ttfamily\selectfont]
+for (int i = 0; i < xs.length; i = i + 1){ // vanligare: i++
+  xs[i] = 1;                             // indexera med [i]
+}
+\end{Code}
 
+\end{Slide}
+  
+\begin{Slide}{Implementation av SEQ-COPY i Java med \texttt{for}-sats}
+\begin{minipage}{0.55\textwidth}
+\vspace{-0.5em}
+\javainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/SeqCopyForJava.java}
+\end{minipage}
+\begin{minipage}{0.44\textwidth}\SlideFontTiny\vspace{-1.5em}\ifkompendium\small\fi
+~~~Lite syntax och semantik för Java:
+\begin{itemize}
+\item En Java-klass med enbart statiska medlemmar motsvarar ett singelobjekt i Scala.
+
+\item Typen kommer \Alert{före} namnet.
+
+\item Man \Alert{måste} skriva \code{return}.
+
+\item Man \Alert{måste} ha semikolon efter varje sats.
+
+\item Metodnamn \Alert{måste} följas av parenteser; om inga parametrar finns används \code{()}
+
+\item En array i Java är inget vanligt objekt, men har ett ''attribut'' \code{length} som ger antal element.
+
+\item \Emph{Övning}: skriv om med \code{while}-sats i stället; har samma syntax i Scala \& Java.
+
+\end{itemize}
+\end{minipage}
+
+\end{Slide}
+  
 
 
 \begin{Slide}{Element för element med speciell for-each-sats i Java}
@@ -574,7 +623,6 @@ från Java 8 finns metoden \code{chars} som ger en \code{IntStream} och då kan 
  \jcode{str.chars().forEachOrdered(i -> System.out.println((char) i));}
  }
 \end{Slide}
-
 
 
 
@@ -1737,3 +1785,64 @@ res3: Array[Int] = Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 
 
 \end{Slide}
+
+
+
+\Subsection{StringBuilder}
+
+\begin{Slide}{Förändringsbar eller oföränderlig?}
+\begin{itemize}
+\item Om den underliggande \Emph{oföränderliga} datastrukturen är \Alert{smart} implementerad så att den \Emph{återanvänder redan allokerade objekt} -- vilket ju är ofarligt eftersom de aldrig kommer att ändras -- så är oföränderlighet \Emph{minst lika snabbt} som förändring på plats.
+
+\item Det är först när man gör \Alert{väldigt många} upprepade ändringar på, för datastrukturen ogynnsam plats, som det blir långsamt.
+
+\item Hur många är ''väldigt många''?  \\ \pause $\rightarrow$ Det ska vi undersöka nu.
+
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{String eller StringBuilder?}
+\begin{itemize}
+\item Strängar i JVM är \Emph{oföränderliga}.
+
+\item Implementationen av sekvensdatastrukturen \code{java.lang.String} är \Alert{mycket effektivt} implementerad, där \Emph{redan allokerade objekt ofta kan återanvänds}.
+
+\item \Alert{MEN} väldigt många tillägg på slutet blir långsamt. Därför finns den föränderliga \code{StringBuilder} metoden \code{append} som är snabbare än \code{+} på \code{String} vid mycket stora strängar. (Hur stora?)
+
+\pause
+\item Undersök dokumentationen för \code{StringBuilder} här:
+{\SlideFontTiny\url{https://docs.oracle.com/javase/8/docs/api/java/lang/StringBuilder.html}}
+
+\pause
+\item För vilka teckensekvensalgoritmer är det lönt att använda \code{StringBuilder}? \\
+\pause $\rightarrow$ Det ska vi undersöka nu.
+
+\end{itemize}
+\end{Slide}
+
+\ifkompendium\else
+\begin{SlideExtra}{Timer}\SlideFontSmall
+\setlength{\leftmargini}{0pt}
+\begin{itemize}
+\item \href{https://docs.oracle.com/javase/8/docs/api/java/lang/System.html#currentTimeMillis--}{\code{System.currentTimeMillis}} ger tiden i millisekunder sedan januari 1970.
+
+\item Med \code|Timer.measure{ xxx }| nedan kan man mäta tiden det tar för xxx.
+
+\item Ett par \code{(elapsedMillis, result)} returneras som innehåller tiden det tar att köra blocket, samt resultatet av blocket.
+\end{itemize}
+\vspace{0em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.5}{8}\ttfamily\selectfont]{../compendium/examples/workspace/w05-seqalg/src/Timer.scala}
+\end{SlideExtra}
+
+
+\begin{SlideExtra}{NanananananananaNanananananananaBatman}\SlideFontTiny
+Prova denna kod:
+\href{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/workspace/w05-seqalg/src/NanananananananaNanananananananaBatman.scala}{compendium/examples/workspace/w05-seqalg/src/\\NanananananananaNanananananananaBatman.scala} \\
+
+medan du lyssnar till: \href{https://www.youtube.com/watch?v=oDc-1zfffMw}{www.youtube.com/watch?v=oDc-1zfffMw}
+
+\vspace{-0.7em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\ttfamily\SlideFontSize{4}{5}]{../compendium/examples/workspace/w05-seqalg/src/NanananananananaNanananananananaBatman.scala}
+\end{SlideExtra}
+\fi
+
+
+
