@@ -141,14 +141,14 @@ Scalas standardbibliotek har många användbara samlingar med enhetlig metodupps
 
 ~\\ \emph{fel} & \emph{typ} & \emph{förklaring} \\\hline
 
-\code|error: value +: is| \code|not a member of Int|
+\code|value +: is not| \code|a member of Int|
 & kompileringsfel
 & Operatorer som slutar med kolon är högerassociativa. Metodanropet \code|xs +: x| motsvarar med punktnotation \code|x.+:(xs)| och det finns ingen metod med namnet \code|+:| på heltal.\\\hline
 
 \code|IndexOutOfBoundsException|
 & körtidsfel & Det finns bara 3 element och index räknas från 0 i sekvenssamlingar.\\\hline
 
-\code|error: value tail is | \code|not a member of Int|
+\code|value tail is not| \code|a member of Int|
 & kompileringsfel
 & Metoden \code|head| ger första elementet och heltal saknar sekvenssamlingsmetoden \code|tail|.\\\hline
 
@@ -231,7 +231,7 @@ Använd denna algoritm:
 
 \renewcommand{\arraystretch}{1.5}
 \vspace{1em}\noindent\begin{tabular}{@{} p{0.4\textwidth} p{0.6\textwidth}}\hline
-\code|xs(0)| & \code|Mutant@66d766b9 | nya instanser får nya hexkoder \\ \hline
+\code|xs(0)| & \code|rs$line$5$Mutant@66d766b9 | nya instanser får nya hexkoder \\ \hline 
 \code|ys(0).int               | & \code|0 | eftersom \code|ys| innehåller samma instans som \code|xs|\\ \hline
 \code|zs(0).int               | & \code|5 | eftersom \code|!(xs(0) eq zs(0))| \\ \hline
 \code|xs(0) eq ys(0)          | & \code|true |  eftersom samma instans \\ \hline
@@ -245,15 +245,13 @@ Använd denna algoritm:
 
 \SubtaskSolved
 \begin{CodeSmall}
-def deepCopy(xs: Array[Mutant]): Array[Mutant] = {
+def deepCopy(xs: Array[Mutant]): Array[Mutant] =
   val result = Array.ofDim[Mutant](xs.length) //fylld med null-referenser
   var i = 0
-  while (i < xs.length) {
+  while i < xs.length do
     result(i) = new Mutant(xs(i).int) //kopia med samma innehåll på samma plats
     i += 1
-  }
   result
-}
 \end{CodeSmall}
 Det går också bra att skapa resultatarrayen med \code{new Array[Mutant](xs.length)}.
 Du kan också använda \code{size} i stället för \code{length}.
@@ -261,29 +259,28 @@ Du kan också använda \code{size} i stället för \code{length}.
 \SubtaskSolved
 \begin{REPL}
 scala> class Mutant(var int: Int = 0)
-defined class Mutant
+// defined class Mutant
 
-scala> :pa
-def deepCopy(xs: Array[Mutant]): Array[Mutant] = {
-  val result = Array.ofDim[Mutant](xs.length)
-  var i = 0
-  while (i < xs.length) {
-    result(i) = new Mutant(xs(i).int)
-    i += 1
-  }
-  result
-}
+scala> def deepCopy(xs: Array[Mutant]): Array[Mutant] =
+     |   val result = Array.ofDim[Mutant](xs.length)
+     |   var i = 0
+     |   while i < xs.length do
+     |     result(i) = new Mutant(xs(i).int)
+     |     i += 1
+     |   result
+
 scala> val xs = Array.fill(3)(new Mutant)
-xs: Array[Mutant] = Array(Mutant@46a123e4, Mutant@44bc2449, Mutant@3c28e5b6)
+xs: Array[Mutant] = Array(rs$line$2$Mutant@46a123e4, rs$line$2$Mutant@44bc2449,
+rs$line$2$Mutant@3c28e5b6)
 
 scala> val ys = deepCopy(xs)
-ys: Array[Mutant] = Array(Mutant@14b8a751, Mutant@7345f97d, Mutant@554566a8)
+ys: Array[Mutant] = Array(rs$line$2$Mutant@14b8a751, rs$line$2$Mutant@7345f97d,
+rs$line$2$Mutant@554566a8)
 
 scala> xs(0).int = 5
-xs(0).int: Int = 5
 
 scala> ys(0).int
-res0: Int = 0
+val res0: Int = 0
 \end{REPL}
 
 \SubtaskSolved Nej, eftersom elementen inte kan förändras kan man utan problem dela referenser mellan samlingar. Det finns inte någon möjlighet att det kan ske förändringar som påverkar flera samlingar samtidigt.
@@ -319,10 +316,12 @@ val buf = xs.toBuffer
 \begin{ConceptConnections}
 \input{generated/quiz-w07-seq-update-taskrows-generated.tex}
 \end{ConceptConnections}
+
+\smallskip
 \emph{Tips:} Läs om metoderna i snabbreferensen och undersök i REPL. Exempel:
 \begin{REPL}
-scala> Vector(1,2,3,4).patch(from = 1, patch = Vector(0,0), replaced = 3)
-res0: scala.collection.immutable.Vector[Int] = Vector(1, 0, 0)
+scala> Vector(1,2,3,4).patch(from = 1, other = Vector(0,0), replaced = 3)
+val res0: Vector[Int] = Vector(1, 0, 0)
 \end{REPL}
 
 \Subtask Implementera funktionen \code{insert} nedan med hjälp av sekvenssamlingsmetoden \code{patch}. \emph{Tips:} Ge argumentet \code{0} till parametern \code{replaced}.
@@ -349,47 +348,47 @@ def insert(xs: Array[Int], elem: Int, pos: Int): Array[Int] = ???
 
 \begin{Code}
 def insert(xs: Array[Int], elem: Int, pos: Int): Array[Int] =
-  xs.patch(from = pos, patch = Array(elem), replaced = 0)
+  xs.patch(from = pos, other = Array(elem), replaced = 0)
 \end{Code}
 
 \SubtaskSolved Pseudokoden nedan är skriven så att den kompilerar fast den är ofärdig.
 \begin{Code}
-def insert(xs: Array[Int], elem: Int, pos: Int): Array[Int] = {
+def insert(xs: Array[Int], elem: Int, pos: Int): Array[Int] = 
   val result = ??? /* ny array med plats för ett element mer än i xs */
   var i = 0
   while(???){/* kopiera elementen före plats pos och öka i */}
-  if (i < result.length) /* lägg elem i result på plats i */
+  if i < result.length then /* lägg elem i result på plats i */
   while(???){/* kopiera över resten */}
   result
-}
+
 \end{Code}
 
 \SubtaskSolved
 \begin{Code}
-def insert(xs: Array[Int], elem: Int, pos: Int): Array[Int] = {
+def insert(xs: Array[Int], elem: Int, pos: Int): Array[Int] = 
   val result = new Array[Int](xs.length + 1)
   var i = 0
-  while (i < pos && i < xs.length) { result(i) = xs(i); i += 1}
-  if (i < result.length) { result(i) = elem; i += 1 }
-  while (i < result.length && i > 0) { result(i) = xs(i - 1); i += 1}
+  while i < pos && i < xs.length do  { result(i) = xs(i); i += 1}
+  if i < result.length then { result(i) = elem; i += 1 }
+  while i < result.length && i > 0 do { result(i) = xs(i - 1); i += 1}
   result
-}
+
 \end{Code}
 \begin{REPL}
-scala> insert(Array(1,2),0,pos = -1)
-res2: Array[Int] = Array(0, 1, 2)
+scala> insert(Array(1, 2), 0, pos = -1)
+val res2: Array[Int] = Array(0, 1, 2)
 
-scala> insert(Array(1,2),0,pos = 0)
-res3: Array[Int] = Array(0, 1, 2)
+scala> insert(Array(1, 2), 0, pos = 0)
+val res3: Array[Int] = Array(0, 1, 2)
 
-scala> insert(Array(1,2),0,pos = 1)
-res4: Array[Int] = Array(1, 0, 2)
+scala> insert(Array(1, 2), 0, pos = 1)
+val res4: Array[Int] = Array(1, 0, 2)
 
-scala> insert(Array(1,2),0,pos = 2)
-res5: Array[Int] = Array(1, 2, 0)
+scala> insert(Array(1, 2), 0, pos = 2)
+val res5: Array[Int] = Array(1, 2, 0)
 
-scala> insert(Array(1,2),0,pos = 42)
-res7: Array[Int] = Array(1, 2, 0)
+scala> insert(Array(1, 2), 0, pos = 42)
+val res7: Array[Int] = Array(1, 2, 0)
 \end{REPL}
 
 \QUESTEND
@@ -443,19 +442,20 @@ När element som uppfyller predikatet saknas måste man bestämma vad som ska h�
 
 Din funktion ska fungera enligt nedan:
 \begin{REPL}
-scala> val xs = Vector("hej","på","dej")
+scala> val xs = Vector("hej", "på", "dej")
+val xs: Vector[String] = Vector(hej, på, dej)
 
 scala> indexOf(xs, _.contains('p'))
-res0: Int = 1
+val res0: Int = 1
 
 scala> indexOf(xs, _.contains('q'))
-res1: Int = -1
+val res1: Int = -1
 
 scala> indexOf(Vector(), _.contains('q'))
-res2: Int = -1
+val res2: Int = -1
 
 scala> indexOf(Vector("q"), _.length == 1)
-res3: Int = 0
+val res3: Int = 0
 \end{REPL}
 
 \SOLUTION
@@ -471,31 +471,27 @@ res3: Int = 0
 \SubtaskSolved Med en boolesk variabel \code{found}:
 
 \begin{Code}
-def indexOf(xs: Vector[String], p: String => Boolean): Int = {
+def indexOf(xs: Vector[String], p: String => Boolean): Int = 
   var found = false
   var i = 0
-  while (i < xs.length && !found) {
+  while i < xs.length && !found do
       found = p(xs(i))
       i += 1
-  }
-  if (found) i - 1 else -1
-}
+  if found then i - 1 else -1
 \end{Code}
 Eller utan \code{found}:
 \begin{Code}
-def indexOf(xs: Vector[String], p: String => Boolean): Int = {
+def indexOf(xs: Vector[String], p: String => Boolean): Int = 
   var i = 0
-  while (i < xs.length && !p(xs(i))) i += 1
-  if (i == xs.length) -1 else i
-}
+  while i < xs.length && !p(xs(i)) do i += 1
+  if i == xs.length then -1 else i
 \end{Code}
 Eller så kanske man vill börja bakifrån; lösningen nedan är nog enklare att fatta (?) och definitivt mer koncis, men uppfyller \emph{inte} kravet att returnera index för \emph{första} förekomsten som det står i uppgiften. Men om sammanhanget tillåter att vi returnerar \emph{något} index för vilket predikatet gäller, eller om man faktiskt har kravet att leta bakifrån, så funkar detta:
 \begin{Code}
-def indexOf(xs: Vector[String], p: String => Boolean): Int = {
+def indexOf(xs: Vector[String], p: String => Boolean): Int = 
   var i = xs.length - 1
-  while (i >= 0 && !p(xs(i))) i -= 1
+  while i >= 0 && !p(xs(i)) do i -= 1
   i
-}
 \end{Code}
 Eller så kan man göra på flera andra sätt. När du ska implementera algoritmer, både på programmeringstentan och i yrkeslivet som systemutvecklare, finns det ofta många olika sätt att lösa uppgiften på som har olika egenskaper, fördelar och nackdelar. Det viktiga är att lösningen fungerar så gott det går enligt kraven, att koden är begriplig för människor och att implementationen inte är så ineffektiv att användarna tröttnar i sin väntan på resultatet...
 
@@ -514,14 +510,13 @@ På veckans laboration ska du registrera förekomsten av olika kortkombinationer
 
 \Subtask Implementera nedan algoritm enligt pseudokoden:
 \begin{Code}
-def registreraTärningskast(xs: Seq[Int]): Vector[Int] = {
+def registreraTärningskast(xs: Seq[Int]): Vector[Int] = 
   val result = ??? /* Array med 6 nollor */
   xs.foreach{ x =>
     require(x >= 1 && x <= 6, "tärningskast ska vara mellan 1 & 6")
     ??? /* räkna förekomsten av x */
   }
   result.toVector
-}
 \end{Code}
 
 \Subtask Använd funktionen \code{kasta} nedan när du testar din registreringsalgoritm med en sekvenssamling innehållande minst $1000$ tärningskast.
@@ -535,23 +530,22 @@ def kasta(n: Int) = Vector.fill(n)(util.Random.nextInt(6) + 1)
 
 \SubtaskSolved
 \begin{Code}
-def registreraTärningskast(xs: Seq[Int]): Vector[Int] = {
+def registreraTärningskast(xs: Seq[Int]): Vector[Int] = 
   val result = Array.fill(6)(0)
   xs.foreach{ x =>
     require(x >= 1 && x <= 6, "tärningskast ska vara mellan 1 & 6")
     result(x - 1) += 1
   }
   result.toVector
-}
 \end{Code}
 
 \SubtaskSolved
 \begin{REPL}
 scala> registreraTärningskast(kasta(1000))
-res0: Vector[Int] = Vector(171, 163, 166, 152, 184, 164)
+val res0: Vector[Int] = Vector(171, 163, 166, 152, 184, 164)
 
 scala> registreraTärningskast(kasta(1000))
-res1: Vector[Int] = Vector(163, 161, 158, 174, 161, 183)
+val res1: Vector[Int] = Vector(163, 161, 158, 174, 161, 183)
 \end{REPL}
 
 \QUESTEND
@@ -592,7 +586,7 @@ Vi ska senare i kursen implementera egna sorteringsalgoritmer som träning, men 
 Det blir fel i uttrycket ovan som försöker sortera en sekvens med instanser av \code{Person} direkt med metoden \code{sorted}:
 \begin{REPL}
 scala> ps.sorted
-<console>:13: error: No implicit Ordering defined for Person.
+No implicit Ordering defined for Person.
 \end{REPL}
 Det blir fel eftersom kompilatorn inte hittar någon ordningsdefinition för dina egna klasser. Senare i kursen ska vi se hur vi kan skapa egna ordningar om man vill få \code{sorted} att fungera på sekvenser med instanser av egna klasser, men ofta räcker det fint med \code{sortBy} och \code{sortWith}.
 \QUESTEND
@@ -601,7 +595,6 @@ Det blir fel eftersom kompilatorn inte hittar någon ordningsdefinition för din
 \WHAT{Inbyggd metod för blandning.}
 
 \QUESTBEGIN
-
 \Task \what~På veckans laboration ska du implementera en egen blandningsalgoritm och använda den för att blanda en kortlek. Det finns redan en inbygg metod \code{shuffle} i singelobjektet \code{Random} i paketet \code{scala.util}.
 
 \Subtask Sök upp dokumentationen för \code{Random.shuffle} och studera funktionshuvudet. Det står en hel del invecklade saker om \code{CanBuildFrom} etc. Detta smarta krångel, som vi inte går närmare in på i denna kurs, är till för att metoden ska kunna returnera lämplig typ av samling. När du ser ett sådant funktionshuvud kan du anta att metoden fungerar fint med flera olika typer av lämpliga samlingar i Scalas standardbibliotek.
@@ -621,6 +614,7 @@ Klicka på \code{shuffle}-dokumentationen så att du ser hela texten. Vad säger
 scala> import scala.util.Random
 
 scala> val xs = Vector("Sten", "Sax", "Påse")
+val xs: Vector[String] = Vector(Sten, Sax, Påse)
 
 scala> (1 to 10).foreach(_ => println(Random.shuffle(xs).mkString(" ")))
 Sax Påse Sten
@@ -634,14 +628,14 @@ Sten Påse Sax
 Sax Påse Sten
 Sax Påse Sten
 
-scala> scala> (1 to 5).map(_ => Random.shuffle(1 to 6))
-res1: IndexedSeq[IndexedSeq[Int]] =
+scala> (1 to 5).map(_ => Random.shuffle(1 to 6))
+val res1: IndexedSeq[IndexedSeq[Int]] =
   Vector(Vector(5, 2, 1, 4, 3, 6), Vector(6, 5, 4, 2, 1, 3),
   Vector(3, 1, 4, 6, 5, 2), Vector(3, 2, 6, 5, 1, 4),
   Vector(5, 3, 4, 6, 1, 2))
 
 scala> (1 to 1000).map(_ => Random.shuffle(1 to 6).head).count(_ == 6)
-res2: Int = 168
+val res2: Int = 168
 \end{REPL}
 
 \QUESTEND
@@ -672,14 +666,16 @@ Prova denna syntax genom att ge en \code{xs} av typen \code{Vector[String]} som 
 
 \begin{REPL}
 scala> def stringSizes(xs: String*): Vector[Int] = xs.map(_.size).toVector
+def stringSizes(xs: String*): Vector[Int]
+
 scala> stringSizes("hej")
-res83: Vector[Int] = Vector(3)
+val res0: Vector[Int] = Vector(3)
 
 scala> stringSizes("hej", "på", "dej", "")
-res84: Vector[Int] = Vector(3, 2, 3, 0)
+val res1: Vector[Int] = Vector(3, 2, 3, 0)
 
 scala> stringSizes()
-res85: Vector[Int] = Vector()
+val res2: Vector[Int] = Vector()
 \end{REPL}
 
 \noindent Anrop med tom argumentlista ger en tom heltalssekvens.
@@ -688,12 +684,13 @@ res85: Vector[Int] = Vector()
 
 \begin{REPL}
 scala> val xs = Vector("hej","på","dej", "")
+val xs: Vector[String] = Vector(hej, på, dej, "")
 
 scala> stringSizes(xs: _*)
-res86: Vector[Int] = Vector(3, 2, 3, 0)
+val res0: Vector[Int] = Vector(3, 2, 3, 0)
 
 scala> stringSizes(Vector(): _*)
-res87: Vector[Int] = Vector()
+val res1: Vector[Int] = Vector()
 \end{REPL}
 Ja, det funkar fint med tom sekvens.
 
@@ -727,11 +724,10 @@ def registerCoinFlips(xs: Seq[Boolean]): (Int, Int) = ???
 
 \SubtaskSolved
 \begin{Code}
-def registerCoinFlips(xs: Seq[Boolean]): (Int, Int) = {
+def registerCoinFlips(xs: Seq[Boolean]): (Int, Int) = 
   val result = Array.fill(2)(0)
   xs.foreach(x => if (x) result(0) += 1 else result(1) += 1)
   (result(0), result(1))
-}
 \end{Code}
 
 \SubtaskSolved
@@ -767,16 +763,14 @@ lägg $x$ på sista platsen i $ys$
 \TaskSolved \what~
 
 \begin{Code}
-def copyAppend(xs: Array[Int], x: Int): Array[Int] = {
+def copyAppend(xs: Array[Int], x: Int): Array[Int] = 
   val ys = new Array[Int](xs.length + 1)
   var i = 0
-  while(i < xs.length) {
+  while i < xs.length do
     ys(i) = xs(i)
     i += 1
-  }
   ys(xs.length) = x
   ys
-}
 \end{Code}
 De två buggarna i algoritmen finns (1) i villkoret som ska vara strikt mindre än och (2) inne i loopen där uppräkningen av loppvariabeln saknas.
 
@@ -840,25 +834,23 @@ De två buggarna i algoritmen finns (1) i villkoret som ska vara strikt mindre �
 \TaskSolved \what
 
 \SubtaskSolved  \begin{Code}
-def seqReverseCopy(xs: Array[Int]): Array[Int] = {
+def seqReverseCopy(xs: Array[Int]): Array[Int] =
   val n = xs.length
   val ys = new Array[Int](n)
   var i = 0
-  while(i < n) {
-    ys(n-i-1) = xs(i)
+  while i < n do
+    ys(n - i - 1) = xs(i)
     i += 1
-  }
   ys
-}
 \end{Code}
 
 \SubtaskSolved  \begin{Code}
-def seqReverseCopy(xs: Array[Int]): Array[Int] = {
+def seqReverseCopy(xs: Array[Int]): Array[Int] = 
   val n = xs.length
   val ys = new Array[Int](n)
-  for(i <- n - 1 to 0 by -1) ys(n - i - 1) = xs(i)
+  for i <- (n - 1) to 0 by -1 do
+    ys(n - i - 1) = xs(i)
   ys
-}
 \end{Code}
 
 
@@ -900,13 +892,14 @@ def removeCopy(xs: Array[Int], pos: Int): Array[Int]
 \end{algorithm}
 
 \begin{Code}
-def removeCopy(xs: Array[Int], pos: Int): Array[Int] = {
+def removeCopy(xs: Array[Int], pos: Int): Array[Int] =
   val n = xs.size
   val ys = Array.fill(n - 1)(0)
-  for (i <- 0 until pos) ys(i) = xs(i)
-  for (i <- pos+1 until n) ys(i - 1) = xs(i)
+  for i <- 0 until pos do
+    ys(i) = xs(i)
+  for i <- (pos + 1) until n do
+    ys(i - 1) = xs(i)
   ys
-}
 \end{Code}
 
 \QUESTEND
@@ -941,11 +934,11 @@ def removeAndPad(xs: Array[Int], pos: Int, pad: Int = 0): Unit
 \end{algorithm}
 
 \begin{Code}
-def remove(xs: Array[Int], pos: Int, pad: Int = 0): Unit = {
+def remove(xs: Array[Int], pos: Int, pad: Int = 0): Unit =
   val n = xs.size
-  for (i <- pos+1 until n) xs(i - 1) = xs(i)
-  xs(n-1) = pad
-}
+  for i <- (pos + 1) until n do
+    xs(i - 1) = xs(i)
+  xs(n - 1) = pad
 \end{Code}
 
 \QUESTEND
@@ -996,14 +989,15 @@ def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int]
 \TaskSolved \what
 
 \SubtaskSolved  \begin{Code}
-def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int] = {
+def insertCopy(xs: Array[Int], x: Int, pos: Int): Array[Int] =
   val n = xs.size
   val ys = Array.ofDim[Int](n + 1)
-  for (i <- 0 until pos) ys(i) = xs(i)
+  for i <- 0 until pos do
+    ys(i) = xs(i)
   ys(pos) = x
-  for (i <- pos until n) ys(i + 1) = xs(i)
+  for i <- pos until n do
+    ys(i + 1) = xs(i)
   ys
-}
 \end{Code}
 
 \SubtaskSolved  \code{pos} måste vara \code{0}.
@@ -1053,12 +1047,12 @@ def insertDropLast(xs: Array[Int], x: Int, pos: Int): Unit
 \end{algorithm}
 
 \begin{Code}
-def insertDropLast(xs: Array[Int], x: Int, pos: Int): Unit = {
+def insertDropLast(xs: Array[Int], x: Int, pos: Int): Unit =
   val n = xs.size
   val ys = xs.clone
   xs(pos) = x
-  for (i <- pos + 1 until n) xs(i) = ys(i - 1)
-}
+  for i <- pos + 1 until n do
+    xs(i) = ys(i - 1)
 \end{Code}
 
 \QUESTEND
@@ -1108,7 +1102,7 @@ def insertDropLast(xs: Array[Int], x: Int, pos: Int): Unit = {
 \begin{REPL}
 scala> val xs = scala.collection.mutable.ListBuffer.empty[Int]
 scala> xs.prependAll(Vector(1, 1))
-scala> while (xs.head < 100) {xs.prepend(xs.take(2).sum); println(xs)}
+scala> while xs.head < 100 do {xs.prepend(xs.take(2).sum); println(xs)}
 scala> xs.reverse.toList
 \end{REPL}
 Talen i sekvensen som produceras på rad 4 ovan kallas Fibonacci-tal  \footnote{\href{https://sv.wikipedia.org/wiki/Fibonaccital}{sv.wikipedia.org/wiki/Fibonaccital}} och blir snabbt mycket stora.
@@ -1136,48 +1130,45 @@ Hur lång ska en Fibonacci-sekvens vara för att det sista elementet ska vara s�
 \SubtaskSolved
 
 \begin{Code}
-def fib(max: Long): List[Long] = {
+def fib(max: Long): List[Long] = 
   val xs = scala.collection.mutable.ListBuffer.empty[Long]
   xs.prependAll(Vector(1, 1))
-  while (xs.head < max) xs.prepend(xs.take(2).sum)
+  while xs.head < max do xs.prepend(xs.take(2).sum)
   xs.reverse.drop(1).toList
-}
-
 \end{Code}
 
 \SubtaskSolved
 
 \begin{REPL}
 scala> fib(Int.MaxValue).size
-res0: Int = 46
+val res0: Int = 46
 \end{REPL}
 
 \SubtaskSolved
 
 \begin{Code}
-def fibBig(max: BigInt): List[BigInt] = {
+def fibBig(max: BigInt): List[BigInt] =
   val xs = scala.collection.mutable.ListBuffer.empty[BigInt]
-  xs.prependAll(Vector(BigInt(1), BigInt(1))
-  while (xs.head < max) xs.prepend(xs.take(2).sum)
+  xs.prependAll(Vector(BigInt(1), BigInt(1)))
+  while xs.head < max do xs.prepend(xs.take(2).sum)
   xs.reverse.drop(1).toList
-}
 \end{Code}
 
 \begin{REPL}
 scala> fibBig(Long.MaxValue).size
-res4: Int = 92
+val res0: Int = 92
 
 scala> fibBig(BigInt(Long.MaxValue).pow(64)).size
-res8: Int = 5809
+val res1: Int = 5809
 
 scala> fibBig(BigInt(Long.MaxValue).pow(128)).last
-res9: BigInt = 466572805528355449194553611102863153950720005186045547177525242118545194247268198196024304108711020686545660707513547993668927474420737702772726410095432646683782038269206733583562623144723659044965174192994997081915291671203135284448809948278794870130243195729759407652514927641622448506112336858244040087748168546825439555497978038066584506772917257705338472345660520902622305735366348690501583267086607109594118454398543160294999638070938386822164561738531661786873174424857409631803971069795886028284195109247953151499404937810249349132907101567724032186422592145774126660328936577771749713614176045435526886758975994177511201005911748503347657112775964769397750819976041389533451539207673441658345632507479241970993525868183091563469584756527454807108...
+val res2: BigInt = 466572805528355449194553611102863153950720005186045547177525242118545194247268198196024304108711020686545660707513547993668927474420737702772726410095432646683782038269206733583562623144723659044965174192994997081915291671203135284448809948278794870130243195729759407652514927641622448506112336858244040087748168546825439555497978038066584506772917257705338472345660520902622305735366348690501583267086607109594118454398543160294999638070938386822164561738531661786873174424857409631803971069795886028284195109247953151499404937810249349132907101567724032186422592145774126660328936577771749713614176045435526886758975994177511201005911748503347657112775964769397750819976041389533451539207673441658345632507479241970993525868183091563469584756527454807108...
 
 scala> fibBig(BigInt(Long.MaxValue).pow(128)).last.toString.size
-res10: Int = 2428
+val res3: Int = 2428
 
 scala> fibBig(BigInt(Long.MaxValue).pow(256)).last.toString.size
-res11: Int = 4856
+val res4: Int = 4856
 
 scala> fibBig(BigInt(Long.MaxValue).pow(1024)).last.toString.size
 java.lang.OutOfMemoryError: Java heap space
@@ -1212,14 +1203,12 @@ java.lang.OutOfMemoryError: Java heap space
 
 \TaskSolved \what~
 \begin{Code}
-def reverseChars(xs: Array[Char]): Unit = {
+def reverseChars(xs: Array[Char]): Unit =
   val n = xs.length
-  for (i <- 0 to n / 2 - 1) {
+  for i <- 0 to (n/2 - 1) do
     val temp = xs(i)
     xs(i) = xs(n - i - 1)
     xs(n - i - 1) = temp
-  }
-}
 \end{Code}
 
 \QUESTEND
@@ -1250,16 +1239,14 @@ def isPalindrome(s: String): Boolean = s == s.reverse
 \SubtaskSolved
 
 \begin{Code}
-def isPalindrome(s: String): Boolean = {
+def isPalindrome(s: String): Boolean =
   val n = s.length
   var foundDiff = false
   var i = 0
-  while (i < n / 2 && !foundDiff)  {
+  while i < n/2 && !foundDiff do
     foundDiff = s(i) != s(n - i - 1)
     i += 1
-  }
   !foundDiff
-}
 \end{Code}
 
 \QUESTEND
@@ -1287,16 +1274,16 @@ scala> val xs = Vector.tabulate(10)(i => math.pow(2, i).toInt)
 xs: Vector[Int] = Vector(1, 2, 4, 8, 16, 32, 64, 128, 256, 512)
 
 scala> xs.forall(_ < 1024)
-res0: Boolean = true
+val res0: Boolean = true
 
 scala> xs.exists(_ == 3)
-res1: Boolean = false
+val res1: Boolean = false
 
 scala> xs.count(_ > 64)
-res2: Int = 3
+val res2: Int = 3
 
 scala> xs.zipWithIndex.take(5)
-res3: Vector[(Int, Int)] = Vector((1,0), (2,1), (4,2), (8,3), (16,4))
+val res3: Vector[(Int, Int)] = Vector((1,0), (2,1), (4,2), (8,3), (16,4))
 \end{REPL}
 \QUESTEND
 
@@ -1519,20 +1506,20 @@ public class DiceScanBuggy {
 \QUESTEND
 
 
-\WHAT{Arrays don't behave, but \code{WrappedArray}s do!}
+\WHAT{Arrays don't behave, but \code{ArraySeq}s do!}
 
 \QUESTBEGIN
 
 \Task \what~Även om \code{Array} är primitiv så finns smart krångel ''under huven'' i Scalas samlingsbibliotek för att arrayer ska bete sig nästan som ''riktiga'' samlingar. Därmed behöver man inte ägna sig åt olika typer av specialhantering, t.ex. s.k. boxning, wrapperklasser och typomvandlingar \Eng{type casting}, vilket man ofta behöver kämpa med som Java-programmerare.
 
-Dock finns fortfarande begränsningar och anomalier vad gäller till exempel likhetstest. Om du vill att en array ska bete sig som andra samlingar kan du enkelt ''wrappa'' den med metoden \code{toSeq} som vid anrop på arrayer ger en \code{WrappedArray}. Denna beter sig som en helt vanlig sekvenssamling utan att offra snabbheten hos en primitiv array.
+Dock finns fortfarande begränsningar och anomalier vad gäller till exempel likhetstest. Om du vill att en array ska bete sig som andra samlingar kan du enkelt ''wrappa'' den med metoden \code{toSeq} som vid anrop på arrayer ger en \code{ArraySeq}. Denna beter sig som en helt vanlig oföränderlig sekvenssamling utan att offra snabbheten hos en primitiv array.
 \begin{Code}
 val as = Array(1,2,3)
 val xs = as.toSeq
 \end{Code}
-\Subtask Hur fungerar likhetstest mellan två wrappade arrayer? Vad har \code{xs} ovan för typ? Går det att uppdatera en wrappad array?
+\Subtask Hur fungerar likhetstest mellan två \code{ArraySeq}s? Vad har \code{xs} ovan för typ? Går det att uppdatera en wrappad array?
 
-\Subtask Vilken typ av argumentsekvens du får tillgång till i kroppen för en funktion med repeterade parametrar?
+\Subtask Vilken typ av argumentsekvens får du tillgång till i kroppen för en funktion med repeterande parametrar?
 
 \Subtask\Uberkurs Läs här:
 \url{http://docs.scala-lang.org/overviews/collections/arrays.html}
@@ -1544,45 +1531,45 @@ och ge ett exempel på vad mer man inte kan göra med en array, förutom innehå
 
 \TaskSolved \what~
 
-\SubtaskSolved Vid repeterade parametrar får man en \code{WrappedArray}.
-
-\begin{REPL}
-scala> def f(xs: Int*) = xs
-f: (xs: Int*)Seq[Int]
-
-scala> println(f(1,2,3))
-WrappedArray(1, 2, 3)
-\end{REPL}
-
-
-\SubtaskSolved \code{xs} erbjuder innehållslikhet och har typen \code{Seq[Int]} med den underliggande typen \code{WrappedArray[Int]}. Det går inte att göra tilldelning av element i en \code{WrappedArray} eftersom metoden \code{update} saknas. Du får snabbt tillbaka en referens till den underliggande arrayen med \code{xs.toArray} utan att kopiering behöver ske.
+\SubtaskSolved \code{xs} erbjuder innehållslikhet och har typen \code{Seq[Int]} med den underliggande typen \code{ArraySeq[Int]}. Det går inte att göra tilldelning av element i en \code{ArraySeq} eftersom metoden \code{update} saknas, och den är oföränderlig. Den uppdateras därför inte när den urspringliga arrayen uppdateras.
 
 \begin{REPL}
 scala> val as1 = Array(1,2,3)
-as1: Array[Int] = Array(1, 2, 3)
+val as1: Array[Int] = Array(1, 2, 3)
 
 scala> val as2 = Array(1,2,3)
-as2: Array[Int] = Array(1, 2, 3)
+val as2: Array[Int] = Array(1, 2, 3)
 
 
 scala> val (xs1, xs2) = (as1.toSeq, as2.toSeq)
-xs1: Seq[Int] = WrappedArray(1, 2, 3)
-xs2: Seq[Int] = WrappedArray(1, 2, 3)
+val xs1: Seq[Int] = ArraySeq(1, 2, 3)
+val xs2: Seq[Int] = ArraySeq(1, 2, 3)
 
 scala> as1 == as2
-res0: Boolean = false
+val res0: Boolean = false
 
 scala> xs1 == xs2
-res4: Boolean = true
+val res1: Boolean = true
 
 scala> as1(0) = 42
 
 scala> xs1
-res1: Seq[Int] = WrappedArray(42, 2, 3)
+val res2: Seq[Int] = ArraySeq(1, 2, 3)
 
 scala> xs1(0) = 42
-<console>:13: error: value update is not a member of Seq[Int]
+value update is not a member of Seq[Int]
 \end{REPL}
+
+\SubtaskSolved Vid repeterade parametrar får man en \code{ArraySeq}.
+
+\begin{REPL}
+scala> def f(xs: Int*) = xs
+def f(xs: Int*): Seq[Int]
+
+scala> println(f(1,2,3))
+ArraySeq(1, 2, 3)
+\end{REPL}
+
 
 \SubtaskSolved Det går inte att ha en generisk array som funktionsresultat utan att bifoga kontextgränsen \code{ClassTag} i typparametern för att kompilatorn ska kunna generera kod för den typkonvertering som krävs under runtime av JVM. Se exempel här:\\
 \url{http://docs.scala-lang.org/overviews/collections/arrays.html}
@@ -1597,42 +1584,35 @@ scala> xs1(0) = 42
 
 \QUESTBEGIN
 
-\Task\Uberkurs  \what~ Jämför tidskomplexitet mellan List och Vector vid hantering i början och i slutet, baserat på efterföljande REPL-session i din egen körmiljö.  Körningen nedan gjordes på en Intel i7-4790K CPU @ 4.00GHz under Linux Ubuntu 14.04 med Scala 2.11.8 och JRE 1.8.0\_66, men du ska använda det du har på din dator.
+\Task\Uberkurs  \what~ Jämför tidskomplexitet mellan List och Vector vid hantering i början och i slutet, baserat på efterföljande REPL-session i din egen körmiljö.  Körningen nedan gjordes på en AMD Ryzen 7 5800X (16) @ 3.800GHz under Arch Linux 5.12.8-arch1-1 med Scala 3.0.0 och openjdk 11.0.11, men du ska använda det du har på din dator.
 
 Hur snabbt går nedan på din dator? När är List snabbast och när är Vector snabbast? Hur stor är skillnaderna i prestanda?
 \footnote{Denna typ av mätningar lär du dig mer om i LTH-kursen ''Utvärdering av programvarusystem'', som ges i slutet av årskurs 1 för Datateknikstudenter.}
 %sudo lshw -class processor
 
+
 \begin{CodeSmall}
 > head -5 /proc/cpuinfo
-processor	: 0
-vendor_id	: GenuineIntel
-cpu family	: 6
-model		: 60
-model name	: Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz
+processor    : 0
+vendor_id    : AuthenticAMD
+cpu family    : 25
+model        : 33
+model name    : AMD Ryzen 7 5800X 8-Core Processor
 
->scala
-Welcome to Scala 2.13.3 (OpenJDK 64-Bit Server VM, Java 11.0.8).
-Type in expressions for evaluation. Or try :help.
+scala> def time(n: Int)(block: => Unit): Double =                  
+     |   def now = System.nanoTime
+     |   var timestamp = now
+     |   var sum = 0L
+     |   var i = 0
+     |   while i < n do
+     |     block
+     |     sum = sum + (now - timestamp)
+     |     timestamp = now
+     |     i = i + 1
+     |   val average = sum.toDouble / n
+     |   println("Average time: " + average + " ns")
+     |   average
 
-scala> :pa
-// Entering paste mode (ctrl-D to finish)
-
-def time(n: Int)(block: => Unit): Double =  {
-  def now = System.nanoTime
-  var timestamp = now
-  var sum = 0L
-  var i = 0
-  while (i < n) {
-    block
-    sum = sum + (now - timestamp)
-    timestamp = now
-    i = i + 1
-  }
-  val average = sum.toDouble / n
-  println("Average time: " + average + " ns")
-  average
-}
 
 // Exiting paste mode, now interpreting.
 
@@ -1643,97 +1623,97 @@ scala> val n = 100000
 scala> val l = List.fill(n)(math.random())
 scala> val v = Vector.fill(n)(math.random())
 
-scala> (for(i <- 1 to 20) yield time(n){l.take(10)}).min
-Average time: 476.85004 ns
-Average time: 52.29291 ns
-Average time: 221.50289 ns
-Average time: 218.60302 ns
-Average time: 45.01888 ns
-Average time: 243.7818 ns
-Average time: 45.02228 ns
-Average time: 2132.03995 ns
-Average time: 52.83995 ns
-Average time: 46.7478 ns
-Average time: 51.8753 ns
-Average time: 70.57658 ns
-Average time: 45.26142 ns
-Average time: 95.16307 ns
-Average time: 43.84092 ns
-Average time: 55.24695 ns
-Average time: 84.06113 ns
-Average time: 42.04872 ns
-Average time: 50.9871 ns
-Average time: 122.80649 ns
-res0: Double = 42.04872
+scala> (for i <- 1 to 20 yield time(n){l.take(10)}).min
+average time: 97.66952 ns
+average time: 91.90033 ns
+average time: 79.88311 ns
+average time: 69.5963 ns
+average time: 69.69892 ns
+average time: 69.8033 ns
+average time: 69.7705 ns
+average time: 69.68491 ns
+average time: 69.54222 ns
+average time: 69.66051 ns
+average time: 69.73661 ns
+average time: 69.54112 ns
+average time: 69.69141 ns
+average time: 69.46341 ns
+average time: 69.4098 ns
+average time: 61.34162 ns
+average time: 41.1333 ns
+average time: 40.97051 ns
+average time: 40.9075 ns
+average time: 41.12321 ns
+val res0: Double = 40.9075
 
-scala> (for(i <- 1 to 20) yield time(n){v.take(10)}).min
-Average time: 429.23201 ns
-Average time: 257.70543 ns
-Average time: 271.02261 ns
-Average time: 198.8826 ns
-Average time: 161.67466 ns
-Average time: 190.5253 ns
-Average time: 112.82044 ns
-Average time: 82.45798 ns
-Average time: 81.17192 ns
-Average time: 129.28968 ns
-Average time: 104.86973 ns
-Average time: 80.33942 ns
-Average time: 81.64533 ns
-Average time: 92.22053 ns
-Average time: 78.5791 ns
-Average time: 84.55555 ns
-Average time: 78.88382 ns
-Average time: 77.25284 ns
-Average time: 83.62473 ns
-Average time: 72.39703 ns
-res1: Double = 72.39703
+scala> (for i <- 1 to 20 yield time(n){v.take(10)}).min
+average time: 84.56978 ns
+average time: 75.20167 ns
+average time: 57.16529 ns
+average time: 34.84469 ns
+average time: 34.38478 ns
+average time: 34.77709 ns
+average time: 34.77179 ns
+average time: 35.0506 ns
+average time: 34.7967 ns
+average time: 35.04258 ns
+average time: 34.82559 ns
+average time: 36.3673 ns
+average time: 34.91029 ns
+average time: 34.87239 ns
+average time: 34.51958 ns
+average time: 34.83949 ns
+average time: 34.56169 ns
+average time: 34.80719 ns
+average time: 34.84459 ns
+average time: 34.89468 ns
+val res1: Double = 34.38478
 
-scala> (for(i <- 1 to 20) yield time(1000){l.takeRight(10)}).min
-Average time: 264902.261 ns
-Average time: 225706.676 ns
-Average time: 228625.873 ns
-Average time: 230358.379 ns
-Average time: 229971.679 ns
-Average time: 237404.948 ns
-Average time: 242580.96 ns
-Average time: 242455.325 ns
-Average time: 242316.002 ns
-Average time: 242046.311 ns
-Average time: 242378.896 ns
-Average time: 242740.221 ns
-Average time: 242131.301 ns
-Average time: 242466.169 ns
-Average time: 242075.599 ns
-Average time: 242247.534 ns
-Average time: 242739.886 ns
-Average time: 241982.93 ns
-Average time: 242118.373 ns
-Average time: 241941.998 ns
-res2: Double = 225706.676
+scala> (for i <- 1 to 20 yield time(1000){l.takeRight(10)}).min
+average time: 131365.106 ns
+average time: 118632.787 ns
+average time: 118440.066 ns
+average time: 118687.567 ns
+average time: 118428.487 ns
+average time: 118871.686 ns
+average time: 118964.797 ns
+average time: 119030.236 ns
+average time: 119262.534 ns
+average time: 119228.344 ns
+average time: 119226.494 ns
+average time: 119310.933 ns
+average time: 119352.854 ns
+average time: 119121.913 ns
+average time: 119133.664 ns
+average time: 119015.193 ns
+average time: 119276.674 ns
+average time: 119224.882 ns
+average time: 119301.771 ns
+average time: 119444.401 ns
+val res2: Double = 118428.487
 
-scala> (for(i <- 1 to 20) yield time(1000){v.takeRight(10)}).min
-Average time: 661.737 ns
-Average time: 420.765 ns
-Average time: 225.867 ns
-Average time: 256.524 ns
-Average time: 235.596 ns
-Average time: 231.764 ns
-Average time: 154.279 ns
-Average time: 139.37 ns
-Average time: 139.183 ns
-Average time: 153.957 ns
-Average time: 142.883 ns
-Average time: 140.837 ns
-Average time: 154.178 ns
-Average time: 138.72 ns
-Average time: 202.93 ns
-Average time: 174.179 ns
-Average time: 175.98 ns
-Average time: 171.658 ns
-Average time: 177.097 ns
-Average time: 173.1 ns
-res3: Double = 138.72
+scala> (for i <- 1 to 20 yield time(1000){v.takeRight(10)}).min
+average time: 805.989 ns
+average time: 365.219 ns
+average time: 225.49 ns
+average time: 125.92 ns
+average time: 124.98 ns
+average time: 130.689 ns
+average time: 139.86 ns
+average time: 128.29 ns
+average time: 132.59 ns
+average time: 125.729 ns
+average time: 125.46 ns
+average time: 130.59 ns
+average time: 122.03 ns
+average time: 121.9 ns
+average time: 119.69 ns
+average time: 120.48 ns
+average time: 125.239 ns
+average time: 126.09 ns
+average time: 125.92 ns
+average time: 125.91 ns
+val res3: Double = 119.69
 
 \end{CodeSmall}
 
