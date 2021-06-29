@@ -13,7 +13,7 @@
 \end{SlideExtra}
 
 \begin{SlideExtra}{Undantag orsakar ingen krasch om inkapslad i en Try}
-\includegraphics[width=1.0\textwidth]{../img/bomb-shelter}  
+\hspace{0.3\textwidth}\includegraphics[width=0.6\textwidth,angle=-90,origin=c]{../img/bomb-shelter}  
 \end{SlideExtra}
 \fi
 
@@ -45,12 +45,12 @@ Undantag representerar ett fel eller ett onormalt tillstånd som upptäcks under
 \end{Slide}
 
 
-\begin{Slide}{Orsaka undantag \textit{indirekt} med \texttt{require} och \texttt{assert}}
+\begin{Slide}{Orsaka undantag indirekt med \texttt{require} och \texttt{assert}}
 
 \begin{itemize}\SlideFontSmall
-  \item Med funktionen \code{require(p)} skapas ett \code{new IllegalArgumentException("requirement failed")} \\ om \code{p} är \code{false}
+  \item Med funktionen \code{require(p)} skapas ett \code{IllegalArgumentException("requirement failed")} \\ om \code{p} är \code{false}
   \item \code{require} används om man vill begränsa vilka argument som är giltiga
-  \item Med funktionen \code{assert(p)} skapas ett \code{new AssertionError("assertion failed")} \\ om \code{p} är \code{false} 
+  \item Med funktionen \code{assert(p)} skapas ett \code{AssertionError("assertion failed")} \\ om \code{p} är \code{false} 
   \item \code{assert} används om man vill förhindra ogiltiga tillstånd
 \end{itemize}
 {
@@ -58,7 +58,7 @@ Undantag representerar ett fel eller ett onormalt tillstånd som upptäcks under
   \vfill\SlideFontTiny
   \fi
   Se implementationen av \code{require} här:\\
-\url{https://github.com/scala/scala/blob/v2.12.10/src/library/scala/Predef.scala#L266}
+\url{https://github.com/scala/scala/blob/v2.13.6/src/library/scala/Predef.scala#L315}
 }
 \end{Slide}
 
@@ -67,22 +67,20 @@ Man kan själv generera ett undantag med \code{throw}, vilket kallas att \Emph{k
 
 
 \begin{REPL}
-scala> def pang = throw new Exception("PANG!")
+scala> def pang = throw Exception("PANG!")
 pang: Nothing
 
 scala> pang
 java.lang.Exception: PANG!
-  at .pang(<console>:11)
-  ...
 
 \end{REPL}
 \pause
-Olika sätt att hantera undantag:
+Olika sätt att hantera undantag och förhindra att exekveringen avbryts:
 \begin{itemize}
-\item Scala: Man kan använda ett \code{try ... catch}-uttryck och ge ett \Emph{värde} i händelse av undantag.
-\item Java: Man kan använda en \code{try ... catch}-sats och \Alert{göra något} i händelse av undantag.
+\item \code{try catch}-uttryck omvandlar undantag till ngt lämpligt värde.
+%\item Java: Man kan använda en \code{try ... catch}-sats och \Alert{göra något} i händelse av undantag.
 
-\item Scala: Man kan \Emph{kapsla in} ett undantag med \Emph{\texttt{scala.util.Try}} och förhindra att exekveringen avbryts. (Finns ej i Java; att föredra i Scala.)
+\item \texttt{scala.util.Try} \Emph{kapslar in} kod som kan ge undantag.  %(Finns ej i Java; att föredra i Scala.)
 \end{itemize}
 \end{Slide}
 
@@ -122,10 +120,10 @@ import scala.util.{Try, Success, Failure}
 \end{Slide}
 
 \begin{Slide}{Hantera undantag med \texttt{Try}}
-\vspace{-0.5em}\begin{REPL}
+\vspace{-0.5em}\begin{REPLsmall}
 scala> def pang = throw new Exception("PANG!")
 
-scala> def kanskePang = if (math.random() < 0.5) 42 else pang
+scala> def kanskePang = if math.random() < 0.5 then 42 else pang
 
 scala> import scala.util.{Try, Success, Failure}
 
@@ -133,19 +131,22 @@ scala> def försök = Try { kanskePang }
 
 scala> val xs = Vector.fill(15){försök}
 
-scala> val trettonde = xs(12) match {
+scala> val trettonde = xs(12) match
          case Success(value) => value
          case Failure(e) => println(e); -1
-       }
 
-scala> (xs(12).isSuccess, xs(12).isFailure)
+scala> (xs(12).isSuccess, xs(12).isFailure) 
+
+scala> xs(12).getOrElse(0)
+
+scala> xs(12).toOption
 
 scala> försök.foreach(println)
 
 scala> försök.map(_ + 1)
 
-scala> for (Success(x) <- xs) yield x
-\end{REPL}
+scala> for Success(x) <- xs yield x
+\end{REPLsmall}
 \end{Slide}
 
 \Subsection{Hantera undantag med \texttt{try}-\texttt{catch}}
@@ -156,7 +157,7 @@ Man kan fånga undantag med ett \code{try ... catch}-uttryck:
 \begin{Code}
 def carola = 
   try 
-    if math.random() > 0.5 then throw new Exception("stormvind")
+    if math.random() > 0.5 then throw Exception("stormvind")
     42
   catch 
     case e: Exception =>
@@ -170,7 +171,8 @@ scala> Vector.fill(5)(carola)
 Fångad av en stormvind
 Fångad av en stormvind
 Fångad av en stormvind
-res0: scala.collection.immutable.Vector[Int] = Vector(-1, 42, 42, -1, -1)
+val res0: Vector[Int] = Vector(-1, 42, 42, -1, -1)
 \end{REPL}
-Gör uppg. 9-11 i övn. \code{patterns} som visar hur man fångar undantag i Scala och Java. Mer om undantag i fortsättningskursen.
+%Gör uppg. 9-11 i övn. \code{patterns} som visar hur man fångar undantag i Scala och Java. 
+%Mer om undantag i fortsättningskursen.
 \end{Slide}

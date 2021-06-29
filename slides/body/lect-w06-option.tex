@@ -24,9 +24,9 @@
 Olika sätt att hantera saknade värden:
 \begin{itemize}
 \item Hitta på ett specialvärde: exempel -1 för saknat värde
-\item \code{null} om värde saknas (vanligt i Java, mkt ovanligt i Scala)
+\item \code{null} om värde saknas (vanligt i Java m.fl. språk, mkt ovanligt i Scala)
 \item Använd en samling och låt tom samling representera saknat värde: \\
-\code{val sums = Vector(Vector(42), Vector(32), Vector(), Vector(21))}
+\code{val sums = Vector(Vector(42),Vector(32),Vector(),Vector(21))}
 
 \item \code{Option[A]} gemensam bastyp för: \\
   \code{None} som representerar \Alert{saknat värde}, och \\ \code{Some[A]} som representerar att \Emph{värde finns}
@@ -65,12 +65,12 @@ Olika sätt att hantera saknade värden:
 scala> var x: Option[Int] = Some(42)
 
 scala> x.isEmpty
-res0: Boolean = false
+val res0: Boolean = false
 
 scala> x = None
 
 scala> x.isEmpty
-res1: Boolean = true
+val res1: Boolean = true
 \end{REPL}
 \end{Slide}
 
@@ -78,18 +78,16 @@ res1: Boolean = true
 \begin{Slide}{Option för hantering av ev. saknade värden}\SlideFontSmall
 Alla vill inte berätta för Facebook vad de har för kön. \\ Förbättra Facebooks kod med ett litet Scala-program:
 \begin{Code}
-trait Gender
-case object Male   extends Gender
-case object Female extends Gender
-...
+enum Gender:
+  case Male, Female
 
 case class Person(name: String, gender: Option[Gender])
 \end{Code}
 \pause
 \begin{REPL}
-scala> val p1 = Person("Björn",  Some(Male))
-scala> val p2 = Person("Sandra", Some(Female))
-scala> val p3 = Person("Andro",  None)
+scala> val p1 = Person("Björn",  Some(Gender.Male))
+scala> val p2 = Person("Sandra", Some(Gender.Female))
+scala> val p3 = Person("Kim",  None)
 scala> val g2 = p2.gender
 scala> def show(g: Option[Gender]): String = g match {
          case Some(x) => x.toString
@@ -98,7 +96,7 @@ scala> def show(g: Option[Gender]): String = g match {
 scala> show(g2)
 scala> show(p3.gender)
 scala> val ps = Vector(p1,p2,p3)
-scala> ps.map(_.gender).map(show)
+scala> ps.map(_.gender).map(show)   // None ignoreras av map
 \end{REPL}
 \end{Slide}
 
