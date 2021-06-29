@@ -471,7 +471,7 @@ object Color:
 \end{minipage}
 
 \begin{REPL}
-> scala -cp introprog_2.13-1.1.4.jar
+> scala -cp introprog_2.13-1.1.4.jar -repl
 scala> val w = new introprog.PixelWindow(400,300,"Tre nyanser av brunt")
 scala> type Pt = (Int, Int)
 scala> var color = java.awt.Color.red
@@ -539,7 +539,7 @@ object Main:
       w.line(p._1,     p._2 + d, p._1,     p._2,     color)
 
   def main(args: Array[String]): Unit =
-    import Color._
+    import Color.*
     color = soil
     fyll(100,100)(75)
     color = tunnel
@@ -583,7 +583,7 @@ Ett testfönster öppnas när \code{main}-metoden körs. Klicka i fönstret på 
 
 \SubtaskSolved Kodraden nedan tar hand om knappnedtryckningsfallet:
 \begin{Code}
-case PixelWindow.Event.KeyPressed => println("lastKey == " + w.lastKey)
+case PixelWindow.Event.KeyPressed => println(s"lastKey == \$w.lastKey")
 \end{Code}
 
 \SubtaskSolved När pil-upp-knappen på tangentbordet trycks ned får \code{w.lastKey} strängvärdet \code{"Up"}. Följande skrivs ut av testprogrammet när pil-upp-tangenten trycks ned och släpps upp:
@@ -598,7 +598,7 @@ lastKey == Up
 \SubtaskSolved En loop som låter användaren rita linjer med musen:
 \begin{Code}
 var start = (0,0)
-while (w.lastEventType != PixelWindow.Event.WindowClosed) {
+while w.lastEventType != PixelWindow.Event.WindowClosed do
   w.awaitEvent(10)  // wait for next event for max 10 milliseconds
   w.lastEventType match {
     case PixelWindow.Event.MousePressed  =>
@@ -612,7 +612,6 @@ while (w.lastEventType != PixelWindow.Event.WindowClosed) {
     case _ =>
   }
   PixelWindow.delay(100) // wait for 0.1 seconds
-}
 \end{Code}
 
 \QUESTEND
@@ -675,7 +674,7 @@ object stringUtils:
       history = (s"\$history \$s").trim
 
 object Test:
-  import stringUtils._
+  import stringUtils.*
   def apply(): Unit =
     val s1 = "Fem     myror är fler än fyra elefanter. Ät gurka."
     val s2 = "Galaxer i mina braxer. Tomat är gott. Päronsplitt."
@@ -997,7 +996,7 @@ upprepa(100) {
 \begin{Code}
 def repeat(n: Int)(p: Int => Unit): Unit = {
   var i = 0
-  while (i < n) do
+  while i < n do
     p(i); i += 1
 }
 \end{Code}
@@ -1046,7 +1045,7 @@ scala> introprog.Dialog.selectColor()
 \Subtask Den valda färgen returneras efter att användaren tryckt \Button{OK}
 \begin{REPL}
 scala> introprog.Dialog.selectColor()
-res1: java.awt.Color = java.awt.Color[r=0,g=204,b=0]
+val res1: java.awt.Color = java.awt.Color[r=0,g=204,b=0]
 \end{REPL}
 
 
@@ -1079,7 +1078,7 @@ res1: java.awt.Color = java.awt.Color[r=0,g=204,b=0]
 
 \Subtask Använd funktionen \code{introprog.Dialog.select} för att be användaren välja mellan sten, sax och påse. Vad är returtypen?
 % \begin{REPL}
-% scala> import JOptionPane.{showOptionDialog => showOpt}
+% scala> import JOptionPane.{showOptionDialog as showOpt}
 % scala> def choice(msg: String, opt: Vector[String], title: String = "?") =
 %   showOpt(null, msg, title, 0, 0, null, opt.toArray[Object], opt(0))
 % \end{REPL}
@@ -1103,7 +1102,7 @@ name: String = Oddput Superkodare
 \SubtaskSolved Funktionen \code{select} returnerar en sträng med texten på knappen som användaren tryckte på.
 \begin{REPL}
 scala> introprog.Dialog.select("Vad väljer du?",Vector("Sten","Sax","Påse"))
-res4: String = Påse
+val res4: String = Påse
 \end{REPL}
 
 \QUESTEND
