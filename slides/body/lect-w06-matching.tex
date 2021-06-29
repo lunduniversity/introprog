@@ -187,13 +187,13 @@ case class Gurka(vikt: Int, ärRutten: Boolean) extends Grönsak
 case class Tomat(vikt: Int, ärRutten: Boolean) extends Grönsak
 \end{Code}
 \pause
-Tack vare case-klasserna kan man använda \Emph{konstruktormönster} \Eng{constructor pattern} för att kolla vad som finns \Alert{inuti} en instans:
+Tack vare case-klasserna kan man använda \Emph{konstruktormönster} \Eng{constructor pattern} för att se vad som finns \Alert{inuti} en instans:
 \begin{Code}
 def testa(g: Grönsak): String = g match 
   case Gurka(v, false) => "gott, väger " + v
   case Gurka(_, true)  => "inte gott"
-  case Tomat(v, r)     => (if (r) "inte " else "") + "gott, väger " + v
-  case _ => "okänd grönsak: " + g
+  case Tomat(v, r)     => (if r then "inte " else "") + s"gott, väger $v"
+  case _ => "okänd grönsak: $g"
 \end{Code}
 
 Konstruktormönster ''\Emph{plockar isär}'' det som matchas och binder variabler till de attribut som finns i case-klassens konstruktor.
@@ -226,11 +226,11 @@ pair match
 
 \end{Slide}
 
-\begin{Slide}{Mönstermatchning och case-objekt}\SlideFontSmall
+\begin{Slide}{Mönstermatchning och uppräkning med case-objekt}\SlideFontSmall
 En bastyp och specifika singelobjekt av gemensam typ:
 \begin{Code}
 trait Färg
-case object Spader  extends Färg
+case object Spader  extends Färg // funkar utan case men vi vill ha najs toString
 case object Hjärter extends Färg
 case object Ruter   extends Färg
 case object Klöver  extends Färg
@@ -252,7 +252,7 @@ scala.MatchError: Ruter
 \begin{Slide}{Mönstermatchning och förseglade typer}\SlideFontSmall
 Med nyckelordet \code{sealed} får vi en kompileringsvarning.
 \begin{Code}
-sealed trait Färg  //tryck först Alt+Enter i REPL för tolkning i ett svep
+sealed trait Färg //tryck Alt+Enter i REPL för tolkning av flera rader ett svep
 case object Spader  extends Färg
 case object Hjärter extends Färg
 case object Ruter   extends Färg
@@ -304,23 +304,21 @@ def parallellFärg(f: Färg): Färg
 \begin{REPL}
 scala> val livetsMening = 42
 
-scala> def ärLivetsMeningBuggig(svar: Int) = svar match {
+scala> def ärLivetsMeningBuggig(svar: Int) = svar match 
          case livetsMening => true    // lokalt namn som matchar allt!
          case _ => false
-       }
 
 scala> ärLivetsMeningBuggig(43)
-res0: Boolean = true
+val res0: Boolean = true
 
 scala> val LivetsMening = 42   // stor begynnelsebokstav
 
-scala> def ärLivetsMening(svar: Int) = svar match {
+scala> def ärLivetsMening(svar: Int) = svar match 
          case LivetsMening => true    // funkar fint!
          case _ => false
-       }
 
 scala> ärLivetsMening(43)
-res1: Boolean = false
+val res1: Boolean = false
 \end{REPL}
 \end{Slide}
 
@@ -331,13 +329,12 @@ Ett sätt att komma runt problemet med liten begynnelsebokstav: \\
 \begin{REPL}
 scala> val livetsMening = 42
 
-scala> def ärLivetsMeningBackTicks(svar: Int) = svar match {
+scala> def ärLivetsMeningBackTicks(svar: Int) = svar match 
          case `livetsMening` => true    // nu funkar det!
          case _ => false
-       }
 
 scala> ärLivetsMeningBackTicks(43)
-res2: Boolean = false
+val res2: Boolean = false
 \end{REPL}
 \end{Slide}
 
@@ -350,19 +347,19 @@ scala> case class Point(x: Int, y: Int)
 scala> val p = Point(0, 1)
 
 scala> val Point(x, y) = p          // konstruktormönster med case-klass
-x: ???
-y: ???
+val x: ???
+val y: ???
 
 scala> val (x, y, z) = (0, 1, 2)    // konstruktormönster med tupel
-x: ???
-y: ???
-z: ???
+val x: ???
+val y: ???
+val z: ???
 
 \end{REPL}
 Mönster i \Emph{for-satser}:
 \vspace{-0.25em}\begin{REPL}
-scala> val xs = for ((x, y) <- Vector((1,2), (3,4))) yield x
-xs: ???
+scala> val xs = for (x, y) <- Vector((1,2), (3,4)) yield x
+val xs: ???
 \end{REPL}
 
 \end{Slide}
@@ -375,58 +372,64 @@ scala> case class Point(x: Int, y: Int)
 scala> val p = Point(0, 1)
 
 scala> val Point(x, y) = p          // konstruktormönster med case-klass
-x: Int = 0
-y: Int = 1
+val x: Int = 0
+val y: Int = 1
 
 scala> val (x, y, z) = (0, 1, 2)    // konstruktormönster med tupel
-x: Int = 0
-y: Int = 1
-z: Int = 2
+val x: Int = 0
+val y: Int = 1
+val z: Int = 2
 
 \end{REPL}
 Mönster i \Emph{for-satser}:
 \vspace{-0.25em}\begin{REPL}
-scala> val xs = for ((x, y) <- Vector((1,2), (3,4))) yield x
-xs: scala.collection.immutable.Vector[Int] = Vector(1, 3)
+scala> val xs = for (x, y) <- Vector((1,2), (3,4)) yield x
+val xs: Vector[Int] = Vector(1, 3)
 \end{REPL}
 \end{Slide}
 
-\begin{Slide}{Fördjupning om mönster (ingår ej på tentan)}\SlideFontSmall
+\begin{Slide}{Fördjupning om mönster}\SlideFontSmall
 \begin{itemize}
 \item binda variabler till mönsterdelar med \code{@} \\
 \code{case Vector(xs@Vector(a), Vector(42)) => ...}
 
-\item sekvensmönster med \code{_} och \code{_*} 
+\item sekvensmönster med \code{_}, \code{xs*} och \code{_*} 
 \\ \code{case Vector(a, _, c) => ... }  matchar om 3 element, \_ kvittar
-\\ \code{case Vector(a, _*)   => ... }  matchar om minst ett element
+\\ \code{case Vector(a, svans*) => ... }  matchar om minst ett element
+\\ \code{case Vector(a, _*) => ... }  intresserad av första, svans kvittar
 
-\item partiella funktioner: \code|val pf: Int => Double = { case z if z != 0 => 1/z }|
+\item Partiella funktioner med \code{case} utan \code{match}: \code|val pf: Int => Double = { case z if z != 0 => 1/z }| \\ Notera att klammerparenteserna behövs för att skapa partiell funktion med \code{case} utan \code{match}. Funktionen är inte definierad för argumentet \code{0}:
 
-\item Läs mer om mönster här:  \href{http://www.artima.com/pins1ed/case-classes-and-pattern-matching.html}{\SlideFontTiny www.artima.com/pins1ed/case-classes-and-pattern-matching.html}
+\begin{REPLsmall}
+scala> pf(0)                         
+scala.MatchError: 0 
+\end{REPLsmall}
+Detta är användbart vid iterering över samling med \code{collect}: \\\code|xs.collect{ case (a,b) if a > 0 => a }|  
+\item Läs mer om mönster här: \\\url{https://docs.scala-lang.org/scala3/book/control-structures.html}
 
-\item För djupare förståelse av hur \code{case} fungerar, läs speciellt om \Emph{partiella funktioner} här: \href{http://www.artima.com/pins1ed/case-classes-and-pattern-matching.html\#15.7}{\SlideFontTiny www.artima.com/pins1ed/case-classes-and-pattern-matching.html\#15.7}
+% \item Läs mer om mönster här:  \href{http://www.artima.com/pins1ed/case-classes-and-pattern-matching.html}{\SlideFontTiny www.artima.com/pins1ed/case-classes-and-pattern-matching.html}
 
-\item Läs om extractors här: \href{http://www.artima.com/pins1ed/extractors.html}{\SlideFontTiny www.artima.com/pins1ed/extractors.html}
+% \item För djupare förståelse av hur \code{case} fungerar, läs speciellt om \Emph{partiella funktioner} här: \href{http://www.artima.com/pins1ed/case-classes-and-pattern-matching.html\#15.7}{\SlideFontTiny www.artima.com/pins1ed/case-classes-and-pattern-matching.html\#15.7}
+
+% \item Läs om extractors här: \href{http://www.artima.com/pins1ed/extractors.html}{\SlideFontTiny www.artima.com/pins1ed/extractors.html}
 
 \end{itemize}
 \end{Slide}
 
 
 \begin{Slide}{Fördjupning: metoden \texttt{unapply}}\SlideFontSmall
-När du deklarerar en case-klass kommer kompilatorn att \Alert{automatiskt generera en metod} med namnet \Emph{\texttt{unapply}} som kan plocka isär instansen.
+När du deklarerar en case-klass kommer kompilatorn att \Alert{automatiskt generera en metod} med namnet \Emph{\texttt{unapply}}.
 \begin{REPL}
 scala> case class Gurka(vikt: Int, ärRutten: Boolean)
 
-scala> Gurka.unapply // tryck TAB två gånger för att se metodhuvudet
- case def unapply(x$0: Gurka): Option[(Int, Boolean)]
+scala> Gurka.unapply // tryck ENTER för att se typen
+val res0: Gurka => Gurka = Lambda1914/0x00000008408cf840@b0e7bde
 
 scala> val g = Gurka(100, false)
 
 scala> Gurka.unapply(g)
-res0: Option[(Int, Boolean)] = Some((100,false))
+val res1: Gurka = Gurka(100,false)
 \end{REPL}
-Vi ska snart se hur \code{Option} kan hantera värden som \Emph{eventuellt} \Alert{saknas}. \\
-\pause
-
-{\SlideFontTiny\vspace{1em}\emph{Fördjupning:} Ett anrop av metoden \code{unapply} genereras av kompilatorn vid matchning och det är det som gör att case-klasser kan användas i konstruktormönster. Man kan skapa en egna s.k. extraktorer \Eng{extractors} som funkar i matchningar (se övn. 22).}
+Vad ska detta vara bra för? \\\pause
+\code{unapply} genereras av kompilatorn och används internt vid matchning och det är det som gör att case-klasser kan användas i konstruktormönster. \\Principen är generell: Man kan skapa en egna s.k. extraktorer \Eng{extractors} som funkar i matchningar genom att definiera en egen \code{unapply}.
 \end{Slide}

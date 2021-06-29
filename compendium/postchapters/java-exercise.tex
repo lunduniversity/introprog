@@ -173,9 +173,9 @@ Klassen \code{Point} nedan är en modell av en punkt som kan sparas på begäran
 
 \Subtask Starta REPL i samma bibliotek som du kompilerat kodfilerna. Testa så att klasserna \code{Point} och \code{JPoint} beter sig på samma vis enligt nedan. Skriv även testkod i REPL för att avläsa de attributvärden som har getters och undersök att allt funkar som det ska.
 \begin{REPLnonum}
-$ scalac Point.scala
-$ javac JPoint.java
-$ scala
+> scalac Point.scala
+> javac JPoint.java
+> scala
 scala> val (p, jp) = (new Point, new JPoint)
 scala> p.distanceTo(new Point(3, 4))
 scala> Point.showSaved
@@ -401,9 +401,92 @@ Båda blir föränderliga motsvarigheter. Det visas genom att de till hör \code
 \QUESTEND
 
 
+\WHAT{Hur fungerar en \jcode{switch}-sats i Java (och flera andra språk)?}
+
+\QUESTBEGIN
+
+\Task \label{task:switch} \what~   Det händer ofta att man vill testa om ett värde är ett av många olika alternativ. Då kan man använda en sekvens av många \code{if}-\code{else}, ett för varje alternativ. Men det finns ett annat sätt i Java och många andra språk: man kan använda \jcode{switch} som kollar flera alternativ i en och samma sats, se t.ex. \href{https://en.wikipedia.org/wiki/Switch_statement}{en.wikipedia.org/wiki/Switch\_statement}.
+
+\Subtask Skriv in nedan kod i en kodeditor. Spara med namnet \texttt{Switch.java} och kompilera filen med kommandot \texttt{javac Switch.java}. Kör den med \texttt{java Switch} och ange din favoritgrönsak som argument till programmet. Vad händer? Förklara hur \jcode{switch}-satsen fungerar.
+
+\javainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{9}{11}\selectfont]{examples/Switch.java}
+
+\Subtask \label{subtask:break} Vad händer om du tar bort \jcode{break}-satsen på rad 16?
 
 
-\ExtraTasks %%%%%%%%%%%%%%%%%%%
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  Beroende på första bokstaven i din favoritgrönsak får du olika svar såsom \textit{gurka är gott!} vid första bokstaven $g$.\\
+Javas \jcode{switch}-sats testar den första bokstaven på favoritgrönsaken genom att stegvis jämföra den med \jcode{case}-uttrycken. Om första bokstaven \jcode{firstChar} matchar bokstaven efter ett \jcode{case} körs koden efter kolonet till \jcode{switch}-satsens slut eller tills ett \jcode{break} avbryter \jcode{switch}-satsen.\\
+Matchar inte \jcode{firstChar} något \jcode{case} så finns även \jcode{default}, som körs oavsett vilken första bokstaven är, ett generellt fall.
+
+\SubtaskSolved  Om \jcode{case 't'} körs kommer både  \textit{tomat är gott!} och \textit{broccoli är gott!} skrivas ut, man säger att koden $"$faller igenom$"$. Utan \jcode{break}-satsen i Java körs koden i efterkommande \jcode{case} tills ett \jcode{break} avbryter exekveringen eller \jcode{switch}-satsen tar slut.
+
+
+
+\QUESTEND
+
+
+
+
+\WHAT{Fånga undantantag i Java med en \jcode{try}-\jcode{catch}-sats.}
+
+\QUESTBEGIN
+
+\Task \label{task:javatry} \what~   Det finns som vi såg i förra uppgiften inbyggt stöd i JVM för att hantera när program avbryts på oväntade sätt, t.ex. på grund av division med noll eller ej förväntade indata från användaren. Spara koden nedan\footnote{\url{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/TryCatch.java}} i en fil med namnet \texttt{TryCatch.java} och kompilera med \texttt{javac TryCatch.java} i terminalen.
+
+\javainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/TryCatch.java}
+
+\Subtask Förklara vad som händer när du kör programmet med olika indata:
+\begin{REPL}
+> java TryCatch 42
+> java TryCatch 0
+> java TryCatch safe 42
+> java TryCatch safe 0
+> java TryCatch
+\end{REPL}
+
+\Subtask Vad händer om du ''glömmer bort'' raden 15 och därmed missar att initialisera input? Hur lyder felmeddelandet? Är det ett körtidsfel eller kompileringsfel?
+
+%\Subtask Beskriv några skillnader och likheter i syntax och semantik mellan \code{try}-\code{catch} i Java respektive Scala.
+
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  \begin{enumerate}
+\item Eftersom första argumentet inte är strängen \textit{safe} görs en oskyddad division av 42 med 42 där slutsvaret 1 visas.
+\item Eftersom första argumentet inte är strängen \textit{safe} görs en oskyddad division av 42 med 0 som ger \code{ArithmeticException} eftersom ett tal inte kan delas med noll.
+\item Eftersom första argumentet är strängen \textit{safe} görs en skyddad division av 42 med 42 där slutsvaret 1 visas.
+\item Eftersom första argumentet är strängen \textit{safe} görs en skyddad division av 42 med 0. Denna gång fångas \code{ArithmeticException} av \code{try-catch}-satsen vilket ersätter den gamla division med en säker division med 1 där slutsvaret 42 visas.
+\item Eftersom inga argument givits kastas ett \code{ArrayIndexOutOfBoundsException} när programmet försöker anropa \code{equals} metoden hos en sträng som inte finns. Detta kunde också kontrollerats av en \code{try-catch}-sats.
+\end{enumerate}
+
+\SubtaskSolved  \begin{REPL}
+TryCatch.java:16: error: variable input might not have been initialized
+\end{REPL}
+Ett kompileringsfel uppstår på grund av risken att \code{input} inte blivit definierad vid division.
+
+% \SubtaskSolved  Den mest markanta skillnaden mellan språken är att Scala varken kräver att ett undantag fångas av en \code{catch} eller att ett undantag behöver deklareras innan det kastas med en \code{@throws}. Dessutom saknar \code{catch}-metoden hos Java de \code{match}-egenskaper Scala har. Inte heller returnerar \code{catch} hos Java något värde vilket gör det nödvändigt att definiera variabler för detta innan. I övrigt är semantiken och syntaxen väldigt lika mellan båda språken. De använder samma struktur och samma ord, dessutom har de en hel del \code{Exception} gemensamt.
+
+
+
+\QUESTEND
+
+
+
+
+%\ExtraTasks %%%%%%%%%%%%%%%%%%%
 
 
 \WHAT{Översätta från Java till Scala.}
@@ -498,7 +581,7 @@ object showInt {
 
 
 
-\AdvancedTasks %%%%%%%%%%%%%%%%%
+%\AdvancedTasks %%%%%%%%%%%%%%%%%
 
 
 \WHAT{Implementera innehållslikhet i Java.}
