@@ -54,7 +54,7 @@ trait Plan {
       | scala.util.Random, slumptalsfrö,
       """.stripTrim),
 
-    Module("Objekt",
+    Module("Objekt, inkapsling",
       id = "objects", exercise = "objects", lab = "blockmole", contents = """
       | modul, singelobjekt, paket, punktnotation, tillstånd, medlem, attribut, metod,
       | paket, import, filstruktur, jar, dokumentation, programlayout, JDK,
@@ -96,7 +96,7 @@ trait Plan {
       """.stripTrim), // equals -> sortering???
 
 
-    Module("Sekvenser",
+    Module("Sekvenser, enumerationer",
       id = "sequences", exercise = "sequences", lab = "shuffle", contents = """
       | översikt av Scalas samlingsbibliotek och samlingsmetoder,
       | klasshierarkin i scala.collection, Iterable,
@@ -137,7 +137,7 @@ trait Plan {
     """.stripTrim),
 
 
-   Module("Arv",
+   Module("Arv", 
       id = "inheritance", exercise = "inheritance", lab = "snake", contents = """
       | arv, polymorfism, trait, extends, asInstanceOf, with, inmixning,
       | supertyp, subtyp, bastyp, override,
