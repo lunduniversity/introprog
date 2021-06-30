@@ -4,9 +4,57 @@
 %%%
 
 \Subsection{Enumerationer}
-
+\SlideFontSmall
 \begin{Slide}{Enumerationer har en ordning}
-\begin{itemize}
-\item \TODO ...  valueOf  ,, values ... ordinal   ska vi också prata ADT?
-\end{itemize}
+En uppräkning av färger i en kortlek med \code{enum}:
+\begin{Code}
+enum Suit:
+  case Spade, Heart, Club, Diamond 
+\end{Code}
+Användbara metoder för att hantera elementens \Emph{ordningen}:
+\begin{REPLsmall}
+scala> Suit.Heart              // alla element är av typen Suit 
+val res5: Suit = Heart
+  
+scala> Suit.Spade.ordinal      // från element till heltal
+val res0: Int = 0
+
+scala> Suit.Club.ordinal
+val res1: Int = 2
+
+scala> Suit.fromOrdinal(3)    // från heltal till element
+val res2: Suit = Diamond
+
+scala> Suit.values            // alla element i ordning
+val res3: Array[Suit] = Array(Spade, Heart, Club, Diamond)
+
+scala> Suit.valueOf("Spade")  // från sträng till element
+val res4: Suit = Spade
+\end{REPLsmall}
+\end{Slide}
+
+\begin{Slide}{Enumerationer kan ha parametrar och medlemmar}
+Efter enumerationstypen kan du ha parametrar.\\Använd \code{val} om du vill ha extern synlighet:  
+\begin{Code}
+enum Color(val consoleColor: String): 
+  case Black extends Color(Console.BLUE)
+  case Red   extends Color(Console.RED)
+\end{Code}
+I kroppen kan du ha medlemmar, tex metoder:
+\begin{Code}
+enum Suit(val color: Color):
+  def show(isConsoleColor: Boolean = true): String = 
+    if isConsoleColor then color.consoleColor + toString + Console.RESET
+    else toString
+
+  case Spade   extends Suit(Color.Black)
+  case Heart   extends Suit(Color.Red)
+  case Club    extends Suit(Color.Black) 
+  case Diamond extends Suit(Color.Red)
+\end{Code}
+\begin{REPLsmall}
+scala> println(Suit.Club.show(isConsoleColor = false)) 
+Club
+\end{REPLsmall}
+  
 \end{Slide}
