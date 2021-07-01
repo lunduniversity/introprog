@@ -20,7 +20,7 @@ alt 1 labb v8
 | W11 | 23/11-27/11 | Lp2V4 | Kontextuella abstraktioner            | F21 F22 | *context*   | snake       |
 | W12 | 30/11-4/12  | Lp2V5 | TODO: ???                             | F23 F24 |             | --          |
 | W13 | 7/12-11/12  | Lp2V6 | TODO: ???                             | F25 F26 |             | Projekt     |
-| W14 | 14/12-18/12 | Lp2V7 | Repetition, tentaträning, projekt     | F27 F28 | examprep, extra | Muntligt prov|
+| W14 | 14/12-18/12 | Lp2V7 | Repetition, tentaträning              | F27 F28 | examprep, extra | Muntligt prov|
 | T   | 11/1        | TP2   | TENTAMEN                              | --      | --          | --          |
 
 alt 2 ingen lab v8
