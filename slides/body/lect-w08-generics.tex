@@ -8,9 +8,8 @@
 \begin{Slide}{Exempel: Icke-generisk case-klass med heltalsmatris}
   En \emph{icke-generisk} datastruktur har inga obundna typparametrar; alla typer är \Emph{konkreta} (alltså specifika). \\~\\ En icke-generisk case-class med en \code{Vector[Vector[Int]]}:
   \begin{Code}
-  case class Matrix(data: Vector[Vector[Int]]){
+  case class Matrix(data: Vector[Vector[Int]]):
     def apply(x: Int, y: Int): Int = data(x)(y)
-  }
   \end{Code}
 
   \begin{REPL}
@@ -29,9 +28,8 @@
   En \emph{generisk} datastruktur har minst en obunden \Emph{typparameter} som kan bindas  till ett \Alert{konkret} \Emph{typargument}.
   
   \begin{Code}
-  case class Matrix[T](data: Vector[Vector[T]]){
+  case class Matrix[T](data: Vector[Vector[T]]):
     def apply(x: Int, y: Int): T = data(x)(y)
-  }
   \end{Code}
   \code{Matrix} i exemplet ovan är en \Emph{generisk} case-class där \code{T} är obunden, eftersom \code{T} är en typparameter deklarerad inom \code{[]} \Alert{efter} klassens namn men \Alert{före} klassparameterlistan. \\
 
@@ -51,9 +49,9 @@
   \setlength{\leftmargini}{0pt}
 
 \begin{itemize}
-\item En \Emph{typparameter} gör det möjligt att ge ett \Emph{typargument}
-\item En \Emph{fri} typparameter kan bindas till vilken typ som helst
-\item Bindingen sker vid \Alert{kompileringstid}
+\item En \Emph{typparameter} gör det möjligt att ge ett \Emph{typargument}.
+\item En \Emph{fri} typparameter kan bindas till vilken typ som helst.
+\item Bindingen sker vid \Alert{kompileringstid}.
 \item En typparameter är \Emph{fri} om den \Alert{inte} fått något värde i omslutande deklarationer, annars \Emph{bunden}.
 \end{itemize}
 Exempel: \Emph{generisk} funktion:
@@ -63,14 +61,13 @@ def tnirp[A](x: A):Unit = println(x.toString.reverse) // A är fri
 \pause
 Exempel: \Emph{generisk} klass med generiska metoder:
 \begin{Code}
-class Cell[A](var value: A){                          // A är fri
+class Cell[A](var value: A):                          // A är fri
   def update(x: A): Unit = value = x                  // A är bunden
   def create[B](x: B = value): Cell[B] = new Cell(x)  // B är fri
-}
 \end{Code}
 \pause
 \begin{itemize}
-\item \Alert{Skuggning kan förekomma}: Om \code{create} i \code{Cell} hade använt namnet A på sin typparameter hade den \Emph{skuggat} klassens typparameter och tolkats som en  fri typparameter och metoden hade fungerat på samma sätt. (jämför med namnöverskuggning vid lokala variabler i nästlade block)
+\item \Alert{Skuggning kan förekomma}: Om \code{create} i \code{Cell} hade använt namnet A på sin typparameter hade den \Emph{skuggat} klassens typparameter och tolkats som en  fri typparameter, alltså en godtycklig typ och \Alert{inte} klassens typparameter. (jämför med namnöverskuggning vid \Emph{lokala} variabler i nästlade block)
 \end{itemize}
 
 \end{Slide}
@@ -88,7 +85,7 @@ scala> def skrikBaklänges(x: T): String = x.toString.toUpperCase.reverse
 scala> def skrikBaklänges[T](x: T): String = x.toString.toUpperCase.reverse
 
 scala> skrikBaklänges("gurka är gott")
-res0: ???
+val res0: ???
 
 \end{REPL}
 \end{Slide}
@@ -99,14 +96,15 @@ Vad händer här?
 \begin{REPL}
 
 scala> def skrikBaklänges(x: T): String = x.toString.toUpperCase.reverse
-<console>:11: error: not found: type T
-       def skrikBaklänges(x: T): String = x.toString.toUpperCase.reverse
+1 |def skrikBaklänges(x: T): String = x.toString.toUpperCase.reverse
+  |                      ^
+  |                      Not found: type T
                              ^
 
 scala> def skrikBaklänges[T](x: T): String = x.toString.toUpperCase.reverse
 
 scala> skrikBaklänges("gurka är gott")
-res0: ???
+val res0: ???
 \end{REPL}
 \end{Slide}
 \fi
@@ -116,16 +114,19 @@ Vad händer här?
 \begin{REPL}
 
 scala> def skrikBaklänges(x: T): String = x.toString.toUpperCase.reverse
-<console>:11: error: not found: type T
-       def skrikBaklänges(x: T): String = x.toString.toUpperCase.reverse
+1 |def skrikBaklänges(x: T): String = x.toString.toUpperCase.reverse
+  |                      ^
+  |                      Not found: type T
                              ^
 
 scala> def skrikBaklänges[T](x: T): String = x.toString.toUpperCase.reverse
 
 scala> skrikBaklänges("gurka är gott")
-res0: String = TTOG RÄ AKRUG
+val res0: String = TTOG RÄ AKRUG
 \end{REPL}
+Om ingen typparameter deklareras inom hakparenteser efter funktionens namns så vet inte kompilatorn vad \code{T} är för en typ. Men med en typparameter \code{[T]} efter funktionsnamnet tolkar kompilatorn funktionen som \Emph{generisk} och typen \code{T} bestäms av argumentets typ \Alert{vid anrop} och \code{T} kan bindas till godtycklig typ.
 \end{Slide}
+
 
 \ifkompendium\else
 \begin{Slide}{Exempel: Generisk case-klass}
@@ -133,26 +134,27 @@ res0: String = TTOG RÄ AKRUG
 scala> def skrikBaklänges[T](x: T): String = x.toString.toUpperCase.reverse
 
 scala> case class Grönsak(whatever: A)
-???
-
+1 |case class Grönsak(whatever: A)
+  |                             ^
+  |                             Not found: type A
 
 scala> case class Grönsak[A](whatever: A)
 
 scala> Grönsak("gurka")
-res1: ???
+val res1: ???
 
 scala> skrikBaklänges(Grönsak(42))
-res2: ???
+val res2: ???
 
 scala> Grönsak[Int](42)
-res3: ???
+val res3: ???
 
 scala> Grönsak[String](42)
 ???
 
 
 
-                       ^
+                        .
 \end{REPL}
 \end{Slide}
 \fi
@@ -162,73 +164,118 @@ scala> Grönsak[String](42)
 scala> def skrikBaklänges[T](x: T): String = x.toString.toUpperCase.reverse
 
 scala> case class Grönsak(whatever: A)
-<console>:11: error: not found: type A
-       case class Grönsak(whatever: A)
-                                    ^
+1 |case class Grönsak(whatever: A)
+  |                             ^
+  |                             Not found: type A
+
 scala> case class Grönsak[A](whatever: A)
 
 scala> Grönsak("gurka")
-res1: Grönsak[String] = Grönsak(gurka)
+val res1: Grönsak[String] = Grönsak(gurka)
 
 scala> skrikBaklänges(Grönsak(42))
-res2: String = )24(KASNÖRG
+val res2: String = )24(KASNÖRG
 
 scala> Grönsak[Int](42)
-res3: Grönsak[Int] = Grönsak(42)
+val res3: Grönsak[Int] = Grönsak(42)
 
 scala> Grönsak[String](42)
-<console>:14: error: type mismatch;
- found   : Int(42)
- required: String
-       Grönsak[String](42)
-                       ^
+1 |Grönsak[String](42)
+  |                ^^
+  |                Found:    (42 : Int)
+  |                Required: String
+
 \end{REPL}
 \end{Slide}
 
 
+\begin{Slide}{Typjoker \Eng{wildcard type}}\SlideFontSmall
+Generiska typer är normalt \Emph{invarianta} och kan därmed inte utan speciella åtgärder variera mellan mer eller mindre specifika typer. %(mer om varians senare).
+\begin{REPLsmall}
+scala> case class Box[A](a: A)
+
+scala> var xs = Vector.empty[Box[Any]]
+
+scala> def add[A](b: Box[A]): Unit = xs = xs :+ b
+-- Error:
+1 |def add[A](b: Box[A]): Unit = xs = xs :+ b
+  |                                         ^
+  |                                         Found:    (b : Box[A])
+  |                                         Required: Box[Any]
+\end{REPLsmall}  
+Till vår räddning: En \Emph{typjoker} \Eng{wildcard type} anges med ett frågetecken och betecknar en helt okänd typ, vars varians ej kontrolleras av kompilatorn.
+\begin{REPLsmall}
+scala> var xs = Vector.empty[Box[?]]
+
+scala> def add[A](b: Box[A]): Unit = xs = xs :+ b
+
+scala> add(Box(42)); add(Box("hej")); xs
+val res2: Vector[Box[?]] = Vector(Box(42), Box(hej))
+\end{REPLsmall}
+\end{Slide}
 
 
-\ifkompendium\else
-
-
-\begin{Slide}{Fördjupning: Fallgrop typradering \Eng{type erasure}}\SlideFontSmall
+\begin{Slide}{Fallgrop: Typradering \Eng{type erasure}}\SlideFontSmall
 Informationen om typerna i typparametrar raderas innan kodgenerering för JVM av prestandaskäl och \Alert{typparametrar saknas vid runtime} i bytekoden.
 \vspace{-0.25em}\begin{REPL}
 scala> def isIntVector[T](xs: Vector[T]) = xs.isInstanceOf[Vector[Int]]
-
-warning: non-variable type argument Int in Vector[Int]
-is unchecked since it is eliminated by erasure
+-- Warning:
+1 |def isIntVector[T](xs: Vector[T]) = xs.isInstanceOf[Vector[Int]]
+  |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |                the type test for Vector[Int] cannot be checked at runtime
+def isIntVector[T](xs: Vector[T]): Boolean
 
 scala> isIntVector(Vector("hej"))
 res42: Boolean = true  // AAAARGHH!! :(
 \end{REPL}
 Måste ''packa upp'' samlingen och typtesta alla element:
 \begin{REPL}
-scala> def isIntVector[T](xs: Vector[T]) =
-         xs.isInstanceOf[Vector[T]] && xs.forall(x => x.isInstanceOf[Int])
+scala> def isIntVector[T](xs: Vector[T]) = xs.forall(_.isInstanceOf[Int])
 
-scala> isIntVector(Vector(42,"hej"))
+scala> isIntVector(Vector("hej"))
 res43: Boolean = false  // FUNKAR :)
 
 \end{REPL}
-Ovan kan även lösas med \code{match}.
+(Ovan kan även lösas med \code{match}.)
 
 \end{Slide}
 
+\Subsection{Upptäcka och åtgärda buggar}
 
-
-\begin{Slide}{Typparametrar på tentan?}
+\begin{Slide}{Testning}
+\TODO 
 \begin{itemize}
-\item Det ingår att kunna använda färdiga generiska strukturer med specifika typer, t.ex. \code{Vector[Int]}
-
-\item Det ingår att kunna skapa abstraktioner med specifika typparametrar, t.ex. metoder eller klasser som tar en vektor med en specifik typ som parameter:\\
-\code{case class X(x: Vector[Int])}
-
-
-\item Det ingår \Alert{inte} på tentan att kunna skapa generiska metoder eller klasser, t.ex.: \\
-\code{def f[T](x: Vector[T]): Vector[T] = ???} \\
-Mer om generiska strukturer i fördjupningskursen!
+\item Slides om test ur appendix D
+\item Visa hur testramverket ska funka som du ska skapa på övning och använda på labb
+\item Visa hur en fördröjning kan skapas med en s.k. thunk 
 \end{itemize}
 \end{Slide}
 
-\fi
+
+\begin{Slide}{Avlusning}
+\TODO 
+\begin{itemize}
+\item Slides om debugging ur appendix D
+\item Visa hur printlndebugging
+\item Visa hur debugga i vs code
+\end{itemize}
+\end{Slide}
+
+% \ifkompendium\else
+
+
+% \begin{Slide}{Typparametrar på tentan?}
+% \begin{itemize}
+% \item Det ingår att kunna använda färdiga generiska strukturer med specifika typer, t.ex. \code{Vector[Int]}
+
+% \item Det ingår att kunna skapa abstraktioner med specifika typparametrar, t.ex. metoder eller klasser som tar en vektor med en specifik typ som parameter:\\
+% \code{case class X(x: Vector[Int])}
+
+
+% \item Det ingår \Alert{inte} på tentan att kunna skapa generiska metoder eller klasser, t.ex.: \\
+% \code{def f[T](x: Vector[T]): Vector[T] = ???} \\
+% Mer om generiska strukturer i fördjupningskursen!
+% \end{itemize}
+% \end{Slide}
+
+% \fi

@@ -334,12 +334,11 @@ Exempel: iterera med nästlad \code{for}-sats för utskrift av denna matris\\
 \code{val xss = Vector.tabulate(2,5)((x,y) => x + y + 1)}
 \pause
 \begin{REPL}
-scala> for (???) {
-         for (???) {
-           print(xss(i)(j) + " ")
-         }
+scala> for ??? do
+         for ??? do 
+           print(xss(i)(j))
+           print(" ")
          println
-       }
 
 1 2 3 4 5
 2 3 4 5 6
@@ -354,19 +353,23 @@ scala> for (???) {
   \code{val xss = Vector.tabulate(2,5)((x,y) => x + y + 1)}
 
   \begin{REPL}
-scala> for (i <- xss.indices) {
-         for (j <- xss(i).indices) {
-           print(xss(i)(j) + " ")
-         }
+scala> for i <- xss.indices do
+         for j <- xss(i).indices do 
+           print(xss(i)(j))
+           print(" ")
          println
-       }
 
 1 2 3 4 5
 2 3 4 5 6
 \end{REPL}
 Övning: skriv ut matrisen med nästlad \code{foreach}\\
 \pause
-\code|xss.foreach{xs => xs.foreach(x => print(x + " ")); println}|
+\begin{Code}
+xss.foreach(xs => 
+  xs.foreach(x => print(s"$x "))
+  println
+)
+\end{Code}
 \end{Slide}
 
 
@@ -410,12 +413,10 @@ Iterera med nästlad for-sats: (vad har xss för typ?)
 \begin{REPL}
 scala> val xss = Vector.fill(100)(roll(5))
 
-scala> for (???) {
-         for (???) {
+scala> for (???) do
+         for (???) do
            print(s"($i)($j) == ${xss(i)(j)} ")
-         }
          println(isYatzy(???))
-       }
 
 (0)(0) == 5 (0)(1) == 3 (0)(2) == 4 (0)(3) == 1 (0)(4) == 3 false
 (1)(0) == 3 (1)(1) == 3 (1)(2) == 6 (1)(3) == 3 (1)(4) == 1 false
@@ -438,12 +439,10 @@ Iterera med nästlad for-sats: (xss är en \code{Vector[Vector[Int]]})
 \begin{REPL}
 scala> val xss = Vector.fill(100)(roll(5))
 
-scala> for (i <- xss.indices) {
-         for (j <- xss(i).indices) {
+scala> for (i <- xss.indices) do 
+         for (j <- xss(i).indices) do
            print(s"($i)($j) == ${xss(i)(j)} ")
-         }
          println(isYatzy(xss(i)))
-       }
 
 (0)(0) == 5 (0)(1) == 3 (0)(2) == 4 (0)(3) == 1 (0)(4) == 3 false
 (1)(0) == 3 (1)(1) == 3 (1)(2) == 6 (1)(3) == 3 (1)(4) == 1 false
@@ -494,17 +493,17 @@ Iterera med \Emph{nästlad for-yield}:\\
 %Dynamisk typ: \code{Vector[Vector[[Int]]}
 
 \begin{REPL}
-scala> val xss = for (i <- 1 to 2) yield {
+scala> val xss = for (i <- 1 to 2) yield 
                    for (j <- 1 to 5) yield i + j + 1
-                 }
-xss: IndexedSeq[IndexedSeq[Int]] =
+                 
+val xss: IndexedSeq[IndexedSeq[Int]] =
       ???
 
 \end{REPL}
 \pause Om man skriver så här får man en endimensionell struktur:
 \begin{REPL}
 scala> val xs = for (i <- 1 to 2; j <- 1 to 5) yield i + j + 1
-xs: IndexedSeq[Int] =
+val xs: IndexedSeq[Int] =
     ???
 
 \end{REPL}
@@ -516,14 +515,14 @@ Iterera med \Emph{nästlad for-yield}:\\
 scala> val xss = for (i <- 1 to 2) yield {
                    for (j <- 1 to 5) yield i + j + 1
                  }
-xss: IndexedSeq[IndexedSeq[Int]] =
+val xss: IndexedSeq[IndexedSeq[Int]] =
     Vector(Vector(3, 4, 5, 6, 7), Vector(4, 5, 6, 7, 8))
 
 \end{REPL}
 \pause Om man skriver så här får man en endimensionell struktur:
 \begin{REPL}
 scala> val xs = for (i <- 1 to 2; j <- 1 to 5) yield i + j + 1
-xs: IndexedSeq[Int] =
+val xs: IndexedSeq[Int] =
     Vector(3, 4, 5, 6, 7, 4, 5, 6, 7, 8)
 
 \end{REPL}
@@ -555,10 +554,10 @@ xss: IndexedSeq[IndexedSeq[Int]] =
 \begin{Slide}{Fallgrop: likhet av array}
 \begin{REPL}
 scala> Vector.fill(5, 2)(42) == Vector.fill(5, 2)(42)
-res0: ???
+val res0: ???
 
 scala> Array.fill(5, 2)(42) == Array.fill(5, 2)(42)
-res1: ???
+val res1: ???
 \end{REPL}
 \end{Slide}
 \fi
@@ -566,10 +565,10 @@ res1: ???
 \begin{Slide}{Fallgrop: likhet av array}
 \begin{REPL}
 scala> Vector.fill(5, 2)(42) == Vector.fill(5, 2)(42)
-res0: Boolean = true
+val res0: Boolean = true
 
 scala> Array.fill(5, 2)(42) == Array.fill(5, 2)(42)
-res1: Boolean = false  // AAAARRGH!!! :(
+val res1: Boolean = false  // AAAARRGH!!! :(
 \end{REPL}
 Primitiva arrayer har en equals-metod som ger referenslikhet, \Alert{inte} innehållslikhet. Och det fungerar följaktligen ej heller på nästlade strukturer. 
 \end{Slide}
@@ -577,19 +576,19 @@ Primitiva arrayer har en equals-metod som ger referenslikhet, \Alert{inte} inneh
 \ifkompendium\else
 \begin{Slide}{Kolla likhet av array-matris med nästlad while}
 \begin{REPL}
-scala> def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = {
+scala> def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = 
          var i = 0
          var foundUnequal = false
-         while (???) {                         // VILKET VILLKOR?
+         while ??? do                          // VILKET VILLKOR?
            var j = 0
-           while (???) {                       // VILKET VILLKOR?
-             if (xss(i)(j) != yss(i)(j)) ???   // VAD SKA UPPDATERAS? 
+           while ??? do                        // VILKET VILLKOR?
+             if xss(i)(j) != yss(i)(j) then ???   // VAD SKA UPPDATERAS? 
              j += 1
-           }
+           end while
            i += 1
-         }
+         end while
          !foundUnequal
-       }
+       end def
 
 scala> val (xss, yss) = (Array.fill(5,2)(42), Array.fill(5,2)(42))
 
@@ -605,19 +604,18 @@ scala> isEqual(xss, yss)
 
 \begin{Slide}{Kolla likhet av array-matris med nästlad while}
 \begin{REPL}
-scala> def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = {
+scala> def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = 
          var i = 0
          var foundUnequal = false
-         while (i < xss.length && !foundUnequal) {
+         while i < xss.length && !foundUnequal do
            var j = 0
-           while (j < xss(i).length && !foundUnequal) {
+           while j < xss(i).length && !foundUnequal do
              if (xss(i)(j) != yss(i)(j)) foundUnequal = true
              j += 1
-           }
+           end while
            i += 1
-         }
+         end while
          !foundUnequal
-       }
 
 scala> val (xss, yss) = (Array.fill(5,2)(42), Array.fill(5,2)(42))
 
