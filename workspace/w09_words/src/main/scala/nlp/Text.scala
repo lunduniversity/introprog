@@ -25,13 +25,15 @@ case class Text(source: String):
       (key, mostCommonFollower) 
     )
     //eller kortare med samma resultat: (lättare eller svårare att läsa?)
-    //  followFreq.map(kv => kv._1 -> kv._2.maxBy(_._2)._1)
+    //  followFreq.map((k, v) => k -> v.maxBy(_._2)._1)
 
 object Text:
   def fromFile(fileName: String, encoding: String = "UTF-8"): Text =
-    val source = scala.io.Source.fromFile(fileName, encoding).mkString
-    Text(source)
+    val source = scala.io.Source.fromFile(fileName, encoding)
+    val txt = try source.mkString finally source.close()
+    Text(txt)
   
   def fromURL(url: String, encoding: String = "UTF-8"): Text =
-    val source = scala.io.Source.fromURL(url, encoding).mkString
-    Text(source)
+    val source = scala.io.Source.fromURL(url, encoding)
+    val txt = try source.mkString finally source.close()
+    Text(txt)

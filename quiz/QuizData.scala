@@ -399,7 +399,6 @@ object QuizData {  // to generate tables for a concept connection quizes in late
 
     QuizID("quiz-w09-mapops") -> Vector(  //maps
       "\\code|xs(2) + xs(4)                 |" -> "\\code|8                     |",
-      "\\code|ys(2) + ys(4)                 |" -> "\\verb|error: type mismatch  |",
       "\\code|ys(0)                         |" -> "\\code|(10, 11)              |",
       "\\code|xs(0)                         |" -> "\\code|NoSuchElementException|",
       "\\code|(xs + (0 -> 1)).apply(0)      |" -> "\\code|1                     |",

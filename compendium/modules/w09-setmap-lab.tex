@@ -9,7 +9,7 @@
 \end{Goals}
 
 \begin{Preparations}
-\item \DoExercise{\ExeWeekSEVEN}{09}
+\item \DoExercise{\ExeWeekNINE}{09}
 %\item Läs om integrerade utvecklingsmiljöer i appendix \ref{appendix:ide}.
 %\item Välj vilken IDE du vill använda på denna lab. %Om du inte vet vilken, välj \textbf{Eclipse} med ScalaIDE, som flest handledare känner väl till.
 %\item Bekanta dig med utvecklingsmiljön genom att skapa ett nytt projekt och gör ett ''Hello World''-program.
@@ -44,7 +44,7 @@ Dessa ofärdiga kodfiler ligger i paketet \code{nlp}:
 
   \item \href{https://github.com/lunduniversity/introprog/blob/master/workspace/w09_words/src/main/scala/nlp/Text.scala}{\texttt{Text.scala}} innehåller ett skelett till en klass som kan göra textbehandling genom att analysera ord i en text.
 
-  \item \href{}{\texttt{}} \href{https://github.com/lunduniversity/introprog/blob/master/workspace/w09_words/src/main/scala/nlp/Main.scala}{\texttt{Main.scala}} innehåller ett ofärdigt huvudprogramsexempel som du kan använda i laborationens senare del.
+  \item \href{}{\texttt{}} \href{https://github.com/lunduniversity/introprog/blob/master/workspace/w09_words/src/main/scala/nlp/Main.scala}{\texttt{Main.scala}} innehåller ett ofärdigt huvudprogram som du kan använda i laborationens senare del.
 \end{itemize}
 
 För att underlätta ditt arbetsflöde under det att du stegvis bygger upp din kod metod för metod, kan du med fördel använda byggverktyget \texttt{sbt} (se appendix \ref{appendix:build}) så här:
@@ -137,13 +137,13 @@ res4: Set[String] = Set(gurka, ingen, tomat)
 
 \begin{REPL}[basicstyle=\color{white}\ttfamily\fontsize{9}{11}\selectfont]
 scala> val piratbok = Text.fromURL("https://fileadmin.cs.lth.se/pgk/skattkammaron.txt")
-piratbok: nlp.Text = Text(Herr Trelawney, doktor Livesey och de övriga herrarna har bett mig att skriva ner alla omständigheter kring Skattkammarön, ...
+val piratbok: nlp.Text = Text(Herr Trelawney, doktor Livesey och de övriga herrarna har bett mig att skriva ner alla omständigheter kring Skattkammarön, ...
 
 scala> piratbok.words.size
-res0: Int = 69438
+val res0: Int = 69438
 
 scala> piratbok.wordFreq("pirat")
-res1: Int = 7
+val res1: Int = 7
 \end{REPL}
 Länkar till böcker i UTF-8-format som du kan använda i dina tester:
 \begin{itemize}%[nolistsep,noitemsep]
@@ -161,12 +161,12 @@ Länkar till böcker i UTF-8-format som du kan använda i dina tester:
 \Task Implementera metoden \code{ngrams} som ger en sekvens med alla ordföljder i $n$ steg. \emph{Tips:} På veckans övning ingick att undersöka hur metoden \code{sliding} fungerar, med vilken du kan skapa $n$-gram. Gör \code{toVector} på resultatet från \code{sliding}. Testa noga så att \code{ngrams} och \code{bigrams} fungerar korrekt innan du går vidare.
 \begin{REPL}
 scala> piratbok.ngrams(3).take(2)
-res1: scala.collection.immutable.Vector[Vector[String]] =
-Vector(Vector(herr, trelawney, doktor), Vector(trelawney, doktor, livesey))
+val res1: Vector[Vector[String]] =
+  Vector(Vector(herr, trelawney, doktor), Vector(trelawney, doktor, livesey))
 
 scala> piratbok.bigrams.take(2)
-res2: scala.collection.immutable.Vector[(String, String)] =
-Vector((herr,trelawney), (trelawney,doktor))
+val res2: Vector[(String, String)] =
+  Vector((herr,trelawney), (trelawney,doktor))
 \end{REPL}
 
 \Task Implementera \code{followFreq}, som ska innehålla en nyckel-värde-tabell där värdet i sin tur är en frekvenstabell över de ord som kommer efter nyckeln.
@@ -176,13 +176,13 @@ Genom att analysera alla ordpar kan vi få fram vilket som är det vanligaste or
 Implementera metoden followFreq genom att utgå från nedan pseudokod:
 \begin{Code}
 val result = scala.collection.mutable.Map.empty[String, FreqMapBuilder]
-for ((key, next) <- bigrams) {
-  if (/* key finns redan definierad i result */)
+for (key, next) <- bigrams do
+  if /* key finns redan definierad i result */ then
     /* på "platsen" result(key): lägg till next i frekvenstabellen */
   else
     /* lägg till (key -> ny frekvenstabell med next) i result*/
-}
-result.map(p => p._1 -> p._2.toMap).toMap // returnerar oföränderligt objekt
+end for
+result.map(p => p._1 -> p._2.toMap).toMap // toMap ger oföränderlig Map
 \end{Code}
 Skriv uttryck för att ta reda på följande:\Pen
 
@@ -284,10 +284,12 @@ bigrams
 
 \Subtask\Uberkurs Jämför prestanda mellan \code{followsFreq2} och \code{followsFreq}. Vilken är snabbast för stora texter? Är skillnaden stor?
 
-\Task\Uberkurs \emph{Gör \code{FreqMapBuilder} generisk.} Senare i kursen ska vi se hur man kan skapa s.k. generiska datastrukturer med hjälp av typparametrar. Denna uppgift går händelserna i förväg och tjuvkikar på hur en generisk klass kan se ut.
+\Task \emph{Gör \code{FreqMapBuilder} generisk.} Generiska strukturer, alltså sådana som har typparametrar, är ofta väsentligt mycket mer användbara. Om du gör \code{FreqMapBuilder} generisk genom att införa en typparameter i stället för att hårdkoda typen till \code{String} så kan du använda \code{FreqMapBuilder} med godtycklig elementtyp. 
 
 \Subtask Studera \code{FreqMapBuilder} och identifiera allt i den klassen som är specifikt för typen \code{String}.
 
 \Subtask Inför en typparameter \code{A} inom hakparenteser efter klassnamnet och använd sedan \code{A} i stället för \code{String} i alla metoder.
 
 \Subtask Testa så att din generiska frekvenstabellbyggare fungerar på sekvenser som innehåller annat än strängar.
+
+Detta funkar eftersom inget i \code{FreqMapBuilder} egentligen förutsätter att elementen som ska räknas är av sträng-typ (det räcker att det finns en vettig \code{equals} och \code{hashcode}).

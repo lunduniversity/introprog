@@ -161,13 +161,13 @@ Metoden \code{->} fungerar med alla typer och är en fabriksmetod för par. Meto
 \SubtaskSolved Ja, fabriksmetoden returnerar ett helt vanligt par:
 \begin{REPLnonum}
 scala> val härBorJag = "Skåne" -> "Lund"
-härBorJag: (String, String) = (Skåne,Lund)
+val härBorJag: (String, String) = (Skåne,Lund)
 
 scala> härBorJag._1
-res0: String = Skåne
+val res0: String = Skåne
 
 scala> härBorJag._2
-res1: String = Lund
+val res1: String = Lund
 \end{REPLnonum}
 
 
@@ -185,7 +185,7 @@ val huvudstad = Vector(
 \SubtaskSolved
 \begin{REPL}
 scala> huvudstad(3)._2
-res2: String = Lund
+val res2: String = Lund
 \end{REPL}
 
 \QUESTEND
@@ -219,10 +219,10 @@ def lookupIndex(xs: Vector[(String, String)])(key: String): Int =
 \SubtaskSolved
 \begin{REPL}
 scala> val i = lookupIndex(huvudstad)("Skåne")
-i: Int = 3
+val i: Int = 3
 
 scala> huvudstad(i)._2
-res2: String = Lund
+val res2: String = Lund
 \end{REPL}
 
 \noindent Eller med funktioner som återanvändbara dellösningar:
@@ -232,10 +232,10 @@ scala> val indexOf = lookupIndex(huvudstad) _
 scala> def capital(key: String) = huvudstad(indexOf(key))._2
 
 scala> capital("Skåne")
-res3: String = Lund
+val res3: String = Lund
 
 scala> capital("Sverige")
-res4: String = Stockholm
+val res4: String = Stockholm
 \end{REPL}
 
 \QUESTEND
@@ -274,10 +274,10 @@ Samlingen \code{Map} är en generalisering av en sekvens, där man kan ''indexer
 
 \begin{REPL}
 scala> telnr("Fröken Ur")
-res0: Long = 464690510
+val res0: Long = 464690510
 
 scala> :type telnr
-scala.collection.immutable.Map[String,Long]
+Map[String,Long]
 
 scala> :type telnr.toVector
 Vector[(String, Long)]
@@ -295,7 +295,7 @@ Vector[(String, Long)]
 
 \Subtask Skapa nedan variabler i REPL.
 \begin{Code}
-val follow = for (i <- 2 to 16 by 2) yield (i, i + 1)
+val follow = for i <- 2 to 16 by 2 yield (i, i + 1)
 val xs = follow.toMap
 val ys = xs.toVector
 \end{Code}
@@ -320,25 +320,26 @@ Hamnar mappningarna i \code{ys} i samma ordning som \code{follow}? Varför?
   \input{generated/quiz-w09-mapops-solurows-generated.tex}
 \end{ConceptConnections}
 
-\noindent \emph{Fördjupning}:  Felmeddelandet som rad 2 ovan orsakar är lurigt:
+%%% BELOW IS SOLVED IN SCALA 3 AND the err msg is better! :)
+% \noindent \emph{Fördjupning}:  Felmeddelandet som rad 2 ovan orsakar är lurigt:
 
-\begin{REPL}
-scala> ys(2)
-res22: (Int, Int) = (6,7)
+% \begin{REPL}
+% scala> ys(2)
+% val res22: (Int, Int) = (6,7)
 
-scala> ys(4)
-res23: (Int, Int) = (12,13)
+% scala> ys(4)
+% val res23: (Int, Int) = (12,13)
 
-scala> ys(2) + ys(4)
-<console>:13: error: type mismatch;
- found   : (Int, Int)
- required: String
-       ys(2) + ys(4)
+% scala> ys(2) + ys(4)
+% <console>:13: error: type mismatch;
+%  found   : (Int, Int)
+%  required: String
+%        ys(2) + ys(4)
 
-\end{REPL}
-Det går som förväntat inte att addera två tupler, men varför säger kompilatorn att en sträng krävs?!? Detta beror på att, i enlighet med hur det fungerar i Java, valde Scala-språkets konstruktörer att låta strängsammanfogning fungera med alla möjliga typer vilket gör att kompilatorn inte ger upp när metoden \code{+} inte finns för tupler, utan i stället gör ett misslyckat försök med strängsammanfogning.
+% \end{REPL}
+% Det går som förväntat inte att addera två tupler, men varför säger kompilatorn att en sträng krävs?!? Detta beror på att, i enlighet med hur det fungerar i Java, valde Scala-språkets konstruktörer att låta strängsammanfogning fungera med alla möjliga typer vilket gör att kompilatorn inte ger upp när metoden \code{+} inte finns för tupler, utan i stället gör ett misslyckat försök med strängsammanfogning.
 
-Det mest olyckliga med detta är inte att felmeddelanden ibland blir missvisande, utan att det i vissa situationer inte ens \emph{blir} något felmeddelande, trots att man av rent misstag råkat strängkonkatenera i stället för t.ex. lägga till ett element i en mängd eller en mappning i en tabell. Detta typosäkra beteendet av strängsammanfogning har kritiserats, men det är inte okontroversiellt att ändra detta nu när så många utvecklare skrivit så mycket Scala-kod som bygger på strängars förmåga att kunna lägga till vad som helst på slutet. Situationen i Scala är dock inte hopplös efter introduktionen av stränginterpolering i Scala 2.10, som möjliggör infogande av värden i strängar på ett typsäkert sätt.
+% Det mest olyckliga med detta är inte att felmeddelanden ibland blir missvisande, utan att det i vissa situationer inte ens \emph{blir} något felmeddelande, trots att man av rent misstag råkat strängkonkatenera i stället för t.ex. lägga till ett element i en mängd eller en mappning i en tabell. Detta typosäkra beteendet av strängsammanfogning har kritiserats, men det är inte okontroversiellt att ändra detta nu när så många utvecklare skrivit så mycket Scala-kod som bygger på strängars förmåga att kunna lägga till vad som helst på slutet. Situationen i Scala är dock inte hopplös efter introduktionen av stränginterpolering i Scala 2.10, som möjliggör infogande av värden i strängar på ett typsäkert sätt.
 \QUESTEND
 
 
@@ -354,14 +355,13 @@ Det mest olyckliga med detta är inte att felmeddelanden ibland blir missvisande
 Klassen använder en förändringsbar tabell internt. Efter att man har lagt till många strängar kan man med metoden \code{toMap} få en oföränderlig tabell för  uppslagning av frekvenser för specifika strängar. Läs i snabbreferensen om vilka extra metoder för uppdatering som erbjuds av \code{mutable.Map[K, V]}.
 
 \begin{Code}
-class FreqMapBuilder {
+class FreqMapBuilder:
   private val register = collection.mutable.Map.empty[String, Int]
   def toMap: Map[String, Int] = register.toMap
   def add(s: String): Unit = ???
-}
-object FreqMapBuilder {
+
+object FreqMapBuilder:
   def apply(xs: String*): FreqMapBuilder = ???
-}
 \end{Code}
 
 \noindent Implementera och testa \code{FreqMapBuilder}. \emph{Tips:} Du kan t.ex. använda metoderna \code{+=} och \code{getOrElse}.
@@ -370,19 +370,17 @@ object FreqMapBuilder {
 
 \TaskSolved \what~
 \begin{Code}
-class FreqMapBuilder {
+class FreqMapBuilder:
   private val register = scala.collection.mutable.Map.empty[String,Int]
   def toMap: Map[String, Int] = register.toMap
   def add(s: String): Unit =
     register += (s -> (register.getOrElse(s, 0) + 1))
-}
-object FreqMapBuilder {
-  def apply(xs: String*): FreqMapBuilder = {
+
+object FreqMapBuilder:
+  def apply(xs: String*): FreqMapBuilder = 
     val result = new FreqMapBuilder
     xs.foreach(result.add)
     result
-  }
-}
 \end{Code}
 
 \QUESTEND
@@ -413,20 +411,20 @@ scala> xs.sliding(10).toVector
 \SubtaskSolved
 \begin{REPL}
 scala> val xs = Vector("fem", "gurkor", "är", "fler", "än", "fyra", "tomater")
-xs: scala.collection.immutable.Vector[String] =
-Vector(fem, gurkor, är, fler, än, fyra, tomater)
+val xs: Vector[String] =
+  Vector(fem, gurkor, är, fler, än, fyra, tomater)
 
 scala> xs.sliding(2).toVector
-res9: Vector[scala.collection.immutable.Vector[String]] =
-Vector(Vector(fem, gurkor), Vector(gurkor, är), Vector(är, fler), Vector(fler, än), Vector(än, fyra), Vector(fyra, tomater))
+val res9: Vector[Vector[String]] =
+  Vector(Vector(fem, gurkor), Vector(gurkor, är), Vector(är, fler), Vector(fler, än), Vector(än, fyra), Vector(fyra, tomater))
 
 scala> xs.sliding(3).toVector
-res10: Vector[scala.collection.immutable.Vector[String]] =
-Vector(Vector(fem, gurkor, är), Vector(gurkor, är, fler), Vector(är, fler, än), Vector(fler, än, fyra), Vector(än, fyra, tomater))
+val res10: Vector[Vector[String]] =
+  Vector(Vector(fem, gurkor, är), Vector(gurkor, är, fler), Vector(är, fler, än), Vector(fler, än, fyra), Vector(än, fyra, tomater))
 
 scala> xs.sliding(10).toVector
-res11: Vector[scala.collection.immutable.Vector[String]] =
-Vector(Vector(fem, gurkor, är, fler, än, fyra, tomater))
+val res11: Vector[Vector[String]] =
+  Vector(Vector(fem, gurkor, är, fler, än, fyra, tomater))
 
 \end{REPL}
 \code{xs.sliding(n).toVector} skapar en sekvens som innehåller sekvenser av längden \code{n} som bildas genom att ta varje element och dess \code{n - 1} efterföljande element.
@@ -434,14 +432,14 @@ Vector(Vector(fem, gurkor, är, fler, än, fyra, tomater))
 \SubtaskSolved
 \begin{REPL}
 scala> xs.sliding(2).map(ys => ys(0) -> ys(1)).toMap
-res0: scala.collection.immutable.Map[String,String] =
-Map(är -> fler,
-    än -> fyra,
-    fyra -> tomater,
-    gurkor -> är,
-    fem -> gurkor,
-    fler -> än
-)
+val res0: Map[String,String] =
+  Map(är -> fler,
+      än -> fyra,
+      fyra -> tomater,
+      gurkor -> är,
+      fem -> gurkor,
+      fler -> än
+  )
 \end{REPL}
 Man kan använda tabellen till att slå upp vilket som är efterföljande ord. Det fungerar eftersom alla ord är unika. Om det funnits flera likadana ord med olika efterföljande ord så hade vi behövt skapa en tabell med nycklar som mappar till en samling som registrerar efterföljande ord. Detta ska vi göra på veckans laboration.
 
@@ -588,11 +586,11 @@ Resultatet av \code{xs.groupBy(f: K => V)} för en sekvens \code{xs} av typen \c
 
 \begin{REPL}
 scala> val xs = Vector(1, 1, 2, 2, 4, 4, 4).groupBy(x => x > 2)
-xs: Map[Boolean,Vector[Int]] =
+val xs: Map[Boolean,Vector[Int]] =
   Map(false -> Vector(1, 1, 2, 2), true -> Vector(4, 4, 4))
 
 scala> val ys = Vector(1, 1, 2, 2, 4, 4, 4).groupBy(x => x)
-ys: Map[Int,Vector[Int]] =
+val ys: Map[Int,Vector[Int]] =
   Map(2 -> Vector(2, 2), 4 -> Vector(4, 4, 4), 1 -> Vector(1, 1))
 \end{REPL}
 
@@ -607,7 +605,8 @@ Förklaring: metoden \code{groupBy} skapar en tabell med par \code{k, v} där \c
 
 \begin{REPL}
 scala> freq(kasta(1000))
-res0: Map[Int,Int] = Map(5 -> 163, 1 -> 174, 6 -> 161, 2 -> 169, 3 -> 167, 4 -> 166)
+val res0: Map[Int,Int] = 
+  Map(5 -> 163, 1 -> 174, 6 -> 161, 2 -> 169, 3 -> 167, 4 -> 166)
 
 scala> freq(kasta(1000)).toVector.sortBy(_._1).foreach(println)
 (1,183)
@@ -637,22 +636,18 @@ I implementationen av \code{IO} används \code{try ... finally} för att säkers
 \Subtask
 Kompilera och resta nedan med \code{introprog} på classpath, t.ex. med hjälp av \code{sbt}.
 \begin{Code}
-object Main {
-  import introprog.IO
+import introprog.IO
 
-  case class Player(name: String)
+case class Player(name: String)
 
-  def main(args: Array[String]): Unit = {
-    println("Test of output/input objects to/from disk:")
-    val highscores = Map(Player("Sandra") -> 42, Player("Björn") -> 5)
-    IO.saveObject(highscores,"highscores.ser")
-    val highscores2 = IO.loadObject[Map[Player, Int]]("highscores.ser")
-    val isSameContents = highscores2 == highscores
-    val testResult = if (isSameContents) "SUCCESS :)" else "FAILURE :("
-    println(testResult)
-  }
-
-}
+@main def run(): Unit = 
+  println("Test of output/input objects to/from disk:")
+  val highscores = Map(Player("Sandra") -> 42, Player("Björn") -> 5)
+  IO.saveObject(highscores,"highscores.ser")
+  val highscores2 = IO.loadObject[Map[Player, Int]]("highscores.ser")
+  val isSameContents = highscores2 == highscores
+  val testResult = if (isSameContents) "SUCCESS :)" else "FAILURE :("
+  println(testResult)
 \end{Code}
 
 \Subtask
