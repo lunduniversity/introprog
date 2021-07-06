@@ -135,9 +135,9 @@ m5: \code{Vector[Vector[Int]]}
 
 \Subtask Skapa nedan heltalsmatris i REPL. Vilken dimension får matrisen?
 \begin{REPL}
-val ds1 = for (i <- 1 to 1000) yield {
+scala> val ds1 = for (i <- 1 to 1000) yield 
             for (j <- 1 to 5) yield throwDie
-          }
+          
 \end{REPL}
 
 \Subtask Man kan också använda nedan varianter för att skapa en heltalsmatris. Vilken av varianterna \code{ds1} ... \code{ds6} tycker du är lättast att läsa och förstå? Prova respektive variant i REPL och ange vilken typ på \code{ds1} ... \code{ds6} som härleds av kompilatorn.
@@ -192,7 +192,7 @@ som ska ge en vektor med de tärningsvärden som gav yatzy, för kasten i matris
 \begin{REPL}
 scala> val dm = Vector(Vector(1,2,3,4,5),Vector(4,4,4,4,4),Vector(3,3,3,3,3))
 scala> yatzyPips(dm)
-res42: Vector[Int] = Vector(4, 3)
+val res42: Vector[Int] = Vector(4, 3)
 \end{REPL}
 
 \SOLUTION
@@ -263,126 +263,7 @@ def yatzyPips(xss: Vector[Vector[Int]]): Vector[Int] =
 
 
 
-\WHAT{Matriser med array i Java.}
 
-\QUESTBEGIN
-
-\Task \label{task:arraymatrix-java} \what~   Om man redan vid allokering vet hur många element en matris ska ha, använder man i Java gärna en array av arrayer. En heltalsmatris (en array av array av heltal) skrivs i Java med dubbla hakparentespar \jcode{int[][]} direkt efter typen. Vid allokering använder man nyckelordet \code{new} och antalet element i respektive dimension anges inom hakparenteserna; t.ex. så ger \jcode{new int[42][21]} en matris med 42 rader och 21 kolumner, vilket motsvarar att man i Scala skriver \code{Array.ofDim[Int](42,21)}%
-\footnote{
-Ett annat sätt att skriva detta i Scala där initialvärdet framgår explicit: \code{Array.fill(42,21)(0)}
-}. Alla element får defaultvärdet för typen, här \code{0} för heltal.
-
-\Subtask Skriv nedan program i en editor och spara koden i filen \texttt{JavaArrayTest.java} och kompilera med \texttt{javac JavaArrayTest.java} och kör i terminalen med \texttt{java JavaArrayTest} och undersök utskriften. Förklara vad som händer. Notera några skillnader i hur matriser används i Scala och Java.
-
-
-\begin{Code}[language=Java]
-public class JavaArrayTest {
-
-    public static void showMatrix(int[][] m){
-        System.out.println("\n--- showMatrix ---");
-        for (int row = 0; row < m.length; row++){
-            for (int col = 0; col < m[row].length; col++) {
-                System.out.print("[" + row + "]");
-                System.out.print("[" + col + "] = ");
-                System.out.print(m[row][col] + "; ");
-            }
-            System.out.println();
-        }
-    }
-
-    public static void main(String[] args) {
-        System.out.println("Hello JavaArrayTest!");
-        int[][] xss = new int[10][5];
-        showMatrix(xss);
-    }
-}
-\end{Code}
-
-\Subtask Implementera nedan metod \code{fillRnd} inuti klassen \code{JavaArrayTest}. Skriv kod som fyller matrisen \code{m} med slumptal mellan \code{1} och \code{n}.
-\begin{Code}[language=Java]
-    public static void fillRnd(int[][] m, int n){
-        /* ??? */
-    }
-\end{Code}
-\noindent \emph{Tips:} med detta uttryck skapas ett slumptal mellan 1 och 42 i Java:\\
-\jcode{(int) (Math.random() * 42 + 1);} \\
-där typkonverteringen \jcode{(int)} ger samma effekt som ett anrop av metoden \code{toInt} i Scala; alltså att dubbelprecisionsflyttal omvandlas till heltal genom avkortning av alla decimaler.
-
-
-Ändra huvudprogrammet så det anropar \jcode{fillRnd(xss, 6)}. %
-% \begin{Code}[language=Java]
-%     public static void main(String[] args) {
-%         System.out.println("Hello JavaArrayTest!");
-%         int[][] xss = new int[10][5];
-%         fillRnd(xss, 6);
-%         showMatrix(xss);
-%     }
-% \end{Code}
-Programmet ska ge en utskrift som liknar följande:
-\begin{REPL}
-Hello JavaArrayTest!
-
---- showMatrix ---
-[0][0] = 6; [0][1] = 2; [0][2] = 6; [0][3] = 3; [0][4] = 5;
-[1][0] = 2; [1][1] = 4; [1][2] = 6; [1][3] = 1; [1][4] = 1;
-[2][0] = 5; [2][1] = 4; [2][2] = 4; [2][3] = 1; [2][4] = 5;
-[3][0] = 4; [3][1] = 6; [3][2] = 6; [3][3] = 1; [3][4] = 3;
-[4][0] = 4; [4][1] = 6; [4][2] = 2; [4][3] = 3; [4][4] = 2;
-[5][0] = 2; [5][1] = 4; [5][2] = 5; [5][3] = 5; [5][4] = 3;
-[6][0] = 6; [6][1] = 5; [6][2] = 2; [6][3] = 4; [6][4] = 3;
-[7][0] = 1; [7][1] = 6; [7][2] = 1; [7][3] = 6; [7][4] = 2;
-[8][0] = 1; [8][1] = 1; [8][2] = 5; [8][3] = 3; [8][4] = 2;
-[9][0] = 1; [9][1] = 1; [9][2] = 1; [9][3] = 5; [9][4] = 4;
-
-\end{REPL}
-
-\SOLUTION
-
-\TaskSolved \what
-     %starts with: \label{task:arraymatrix-java} \%%%
-
-%6.a)
-\SubtaskSolved  Vid initialisering fylls alla element i \code{xss} med standardvärdet för typen, \code{0} i fallet med \code{int}. Den yttre \code{for}-loopen i \code{showMatrix()} itererar över raderna i \code{xss}. Den inre \code{for}-loopen itererar i sin tur längs med elementen på den aktuella raden och skriver ut rad, kolumn och innehåll. Efter varje rad sker en radbrytning, så att en rad i utskriften även motsvarar en rad i matrisen.\\
-Exempel på skillnader mellan användning av matriser i scala och java:
-\begin{itemize}
-\item åtkomst: \code{minArray(rad)(kolumn)} respektive \code{minArray[rad][kolumn]}
-\item typnamn: \code{Array[Array[elementTyp]]} respektive  \code{elementTyp[][]}
-\item allokering: \code{Array.ofDim[typ](xDim,yDim)} respektive \code{new typ[xDim][yDim]}
-\end{itemize}
-
-%6.b)
-\SubtaskSolved  \begin{Code}[language=Java]
-public class JavaArrayTest {
-
-	public static void showMatrix(int[][] m){
-		System.out.println("\n--- showMatrix ---");
-		for (int row = 0; row < m.length; row++){
-			for (int col = 0; col < m[row].length; col++) {
-				System.out.print("[" + row + "]");
-				System.out.print("[" + col + "] = ");
-				System.out.print(m[row][col] + ";");
-			} System.out.println();
-		}
-	}
-
-	public static void fillRnd(int[][] m, int n){
-		for (int row = 0; row < m.length; row++){
-			for (int col = 0; col < m[row].length; col++) {
-				m[row][col] = (int) (Math.random() * n + 1);
-			}
-		}
-	}
-
-	public static void main(String[] args) {
-    System.out.println("Hello JavaArrayTest!");
-		int[][] xss = new int[10][5];
-		fillRnd(xss, 6);
-		showMatrix(xss);
-	}
-}
-\end{Code}
-
-\QUESTEND
 
 
 
@@ -441,7 +322,7 @@ scala> val be = bm(0, 0)
 \Subtask Lägg till en metod \code{override def toString} som så att en instans av \code{Matrix} visas enligt följande:
 \begin{REPLnonum}
 scala> val dm = Matrix.fill(3,4)(42.0)
-dm: Matrix[Double] =
+val dm: Matrix[Double] =
 Matrix of dim (3,4):
 42.0 42.0 42.0 42.0
 42.0 42.0 42.0 42.0
@@ -463,14 +344,12 @@ Matrix of dim (3,4):
 \SubtaskSolved Generisk matris \code{Matrix[T]} för element av godtycklig typ \code{T}:
 
 \begin{CodeSmall}
-case class Matrix[T](data: Vector[Vector[T]]) {
+case class Matrix[T](data: Vector[Vector[T]]):
   def apply(row: Int, col: Int): T = data(row)(col)
-}
 
-object Matrix {
+object Matrix:
   def fill[T](dim: (Int, Int))(value: T): Matrix[T] =
     Matrix[T](Vector.fill(dim._1, dim._2)(value))
-}
 \end{CodeSmall}
 
 \SubtaskSolved Tack vare kompilatorns typinferens så får \code{bm} typen \code{Matrix[Boolean]}.
@@ -479,7 +358,7 @@ object Matrix {
 
 \noindent \SubtaskSolved \SubtaskSolved \SubtaskSolved \SubtaskSolved \SubtaskSolved är alla implementerade i koden nedan: \vspace{-0.5em}
 \begin{CodeSmall}
-case class Matrix[T](data: Vector[Vector[T]]) {
+case class Matrix[T](data: Vector[Vector[T]]):
   require(data.forall(row => row.length == data(0).length))
 
   val dim: (Int, Int) = (data.length, data(0).length)
@@ -490,15 +369,15 @@ case class Matrix[T](data: Vector[Vector[T]]) {
     Matrix(data.updated(row, data(row).updated(col, value)))
 
   def foreachIndex(f: (Int, Int) => Unit): Unit =
-    for (r <- data.indices; c <- data(r).indices) f(r, c)
+    for r <- data.indices; c <- data(r).indices do f(r, c)
 
   override def toString =
     s"""Matrix of dim $dim:\n${ data.map(_.mkString(" ")).mkString("\n") }"""
-}
-object Matrix {
+
+object Matrix:
   def fill[T](dim: (Int, Int))(value: T): Matrix[T] =
     Matrix[T](Vector.fill(dim._1, dim._2)(value))
-}
+
 \end{CodeSmall}
 
 \QUESTEND
@@ -519,27 +398,25 @@ object Matrix {
 
 \Subtask En imperativ implementation av \code{diceMatrixToString} från uppgift \ref{matrices:task:yatzy}\ref{matrices:subtask:diceMatrixToString} med hjälp av förändringsbara  \code{StringBuilder}\footnote{\url{https://www.scala-lang.org/api/2.12.9/scala/collection/mutable/StringBuilder.html}} visas nedan. Förklara hur nedan kod fungerar. Vad händer om \code{xss} är tom? Vad händer om \code{xss} bara innehåller tomma vektorer? Nämn en fördel och en nackdel med att använda \code{val sb: StringBuilder} och \code{append}, jämfört med en vanlig, oföränderlig \code{var s: String} och \code{+} för tillägg i slutet.
 \begin{Code}
-def diceMatrixToString(xss: Vector[Vector[Int]]): String = {
+def diceMatrixToString(xss: Vector[Vector[Int]]): String = 
   val sb = new StringBuilder()
-  for(m <- xss.indices) {
-    for(n <- xss(m).indices) {
+  for(m <- xss.indices) do
+    for(n <- xss(m).indices) do
       sb.append(xss(m)(n).toString)
-      if (n < xss(m).size - 1) sb.append(" ")
-      else if (m < xss.size - 1) sb.append("\n")
-    }
-  }
+      if n < xss(m).size - 1 then sb.append(" ")
+      else if m < xss.size - 1 then sb.append("\n")
+    end for
+  end for
   sb.toString
-}
 \end{Code}
 
-\Subtask Gör som träning en imperativ implementation av \code{filterYatzy} med en \code{for}-sats (alltså utan att använda \code{filter}, och utan att använda \code{yield}).
+\Subtask Gör som träning en imperativ implementation av \code{filterYatzy} med en \code{for}-\code{do}-sats (alltså utan att använda \code{filter}, och utan att använda \code{yield}).
 
 
-\Subtask Förklara hur nedan funktionella implementation av \code{filterYatzy} med \code{for}-uttryck fungerar. Tycker du din imperativa lösning är lättare eller svårare att läsa och förstå jämfört nedan funktionella lösning?
+\Subtask Förklara hur nedan funktionella implementation av \code{filterYatzy} med \code{for}-\code{yield}-uttryck fungerar. Tycker du din imperativa lösning är lättare eller svårare att läsa och förstå jämfört nedan funktionella lösning?
 \begin{CodeSmall}
-def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] = {
-  for (i <- xss.indices if isYatzy(xss(i))) yield xss(i)
-}.toVector
+def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] = 
+  (for i <- xss.indices if isYatzy(xss(i)) yield xss(i)).toVector
 \end{CodeSmall}
 
 
@@ -548,15 +425,14 @@ def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] = {
 \TaskSolved \what
 
 \SubtaskSolved  \begin{Code}
-def isYatzy(xs: Vector[Int]): Boolean = {
-	var foundDiff = false
-	var i = 0
-	while (i < xs.size && !foundDiff) {
-		foundDiff = xs(i) != xs(0)
-		i += 1
-	}
-	!foundDiff
-}
+def isYatzy(xs: Vector[Int]): Boolean = 
+  var foundDiff = false
+  var i = 0
+  while (i < xs.size && !foundDiff) do
+    foundDiff = xs(i) != xs(0)
+    i += 1
+  end while
+  !foundDiff
 \end{Code}
 
 
@@ -577,11 +453,10 @@ returneras.
 
 \SubtaskSolved
 \begin{Code}
-def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] = {
-	var result: Vector[Vector[Int]] = Vector()
-	for (i <- xss.indices if isYatzy(xss(i))) result = result :+ xss(i)
-	result
-}
+def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] = 
+  var result: Vector[Vector[Int]] = Vector()
+  for i <- xss.indices if isYatzy(xss(i)) do result = result :+ xss(i)
+  result
 \end{Code}
 
 \SubtaskSolved  Varje looprunda ger en vektor \code{xss(i)} om filtervillkoret är uppfyllt och resultatet av \code{for}-uttrycket blir en vektor med vektorer som är yatzyslag.
@@ -590,18 +465,27 @@ def filterYatzy(xss: Vector[Vector[Int]]): Vector[Vector[Int]] = {
 
 
 
-\WHAT{Strängtabell med rubrikrad.}
+\WHAT{Strängtabell med kolumnrubriker.}
 
 \QUESTBEGIN
 
 \Task  \what~  %Denna övning utgör en början på laboration \hyperref[section:lab:survey]{\texttt{survey}} i avsnitt \ref{section:lab:survey} på sidan \pageref{section:lab:survey}.
 
+\Subtask Implementera case-klassen \code{Table} enligt specifikationen nedan. Du kan förutsätta att alla rader har lika många kolumner som antalet element i \code{headings}, samt att alla rubrikerna i \code{headings} är unika. Parametern \code{sep} anger det tecken som används för att separera kolumner. Detta förutsätts också gälla för indatafiler som läses in med \code{fromFile}.
+
+\emph{Tips:}
+\begin{itemize}%[nolistsep,noitemsep]
+\item Värdet \code{indexOfHeading} kan skapas med hjälp av metoden \code{zipWithIndex} som fungerar på alla sekvenssamlingar, samt metoden \code{toMap} som fungerar på sekvenser av 2-tupler. Undersök först hur metoderna fungerar i REPL och sök upp deras dokumentation.
+\item Skapa en indatafil som du kan använda för att testa att \code{Table} fungerar.
+\end{itemize}
+
+
 \begin{CodeSmall}
 case class Table(
   data: Vector[Vector[String]],
   headings: Vector[String],
-  sep: String
-){
+  sep: Char
+):
   /** A 2-tuple with (number of rows, number of columns) in data */
   val dim: (Int, Int) = ???
 
@@ -625,23 +509,15 @@ case class Table(
 
   /** Headings and data with columns separated by sep */
   override lazy val toString: String = ???
-}
 
-object Table {
+object Table:
   /** Creates a new Table from fileName with columns split by sep */
-  def fromFile(fileName: String, separator: Char = ';'): Table = ???
-}
+  def fromFile(fileName: String, sep: Char = ';'): Table = ???
 \end{CodeSmall}
 
-\Subtask Implementera case-klassen \code{Table} enligt specifikationen ovan. Du kan förutsätta att alla rader har lika många kolumner som antalet element i \code{headings}, samt att alla rubrikerna i \code{headings} är unika. Detta förutsätts också gälla för indatafiler som läses in med \code{fromFile}.
+\Subtask Skapa med hjälp av \code{Table} ett program som kan köras från terminalen med \texttt{scala run infile.csv ';'} som ger en utskrift av antalet förekomster av olika värden i respektive kolumn (alltså en variant av registrering).
 
-\emph{Tips:}
-\begin{itemize}%[nolistsep,noitemsep]
-\item Värdet \code{indexOfHeading} kan skapas med hjälp av metoden \code{zipWithIndex} som fungerar på alla sekvenssamlingar, samt metoden \code{toMap} som fungerar på sekvenser av 2-tupler. Undersök först hur metoderna fungerar i REPL och sök upp deras dokumentation.
-\item Skapa en indatafil som du kan använda för att testa att \code{Table} fungerar.
-\end{itemize}
 
-\Subtask Skapa med hjälp av \code{Table} ett program som kan köras från terminalen med \texttt{scala regtable infile.csv ';'} som ger en utskrift av antalet förekomster av olika värden i respektive kolumn (alltså en variant av registrering).
 
 \SOLUTION
 
@@ -649,54 +525,50 @@ object Table {
 
 \SubtaskSolved  \begin{CodeSmall}
 case class Table(
-	data: Vector[Vector[String]],
-	headings: Vector[String],
-	sep: String){
+  data: Vector[Vector[String]],
+  headings: Vector[String],
+  sep: Char
+):
 
-	val dim: (Int, Int) = (data.size, headings.size)
+  val dim: (Int, Int) = (data.size, headings.size)
 
-	def apply(r: Int, c: Int): String = data(r)(c)
+  def apply(r: Int, c: Int): String = data(r)(c)
 
-	def row(r: Int): Vector[String]= data(r)
+  def row(r: Int): Vector[String]= data(r)
 
-	def col(c: Int): Vector[String] = data.map(r => r(c))
+  def col(c: Int): Vector[String] = data.map(r => r(c))
 
-	lazy val indexOfHeading: Map[String, Int] = headings.zipWithIndex.toMap
+  lazy val indexOfHeading: Map[String, Int] = headings.zipWithIndex.toMap
 
-	def col(h: String): Vector[String] = col(indexOfHeading(h))
+  def col(h: String): Vector[String] = col(indexOfHeading(h))
 
-	def values(h: String): Vector[String] = col(h).distinct.sorted
+  def values(h: String): Vector[String] = col(h).distinct.sorted
 
-	override def toString: String =
-		headings.mkString(sep) + "\n" +data.map(_.mkString(sep)).mkString("\n")
-}
-object Table {
-	def fromFile(fileName: String, separator: Char = ';'): Table = {
-		val lines = scala.io.Source.fromFile(fileName).getLines.toVector
-		val matrix= lines.map(_.split(separator).toVector)
-		new Table(matrix.tail, matrix.head, separator.toString)
-	}
-}
+  override def toString: String =
+    val s = sep.toString
+    headings.mkString(s) + "\n" +data.map(_.mkString(s)).mkString("\n")
+
+object Table:
+  def fromFile(fileName: String, sep: Char = ';'): Table = 
+    val lines = scala.io.Source.fromFile(fileName).getLines.toVector
+    val matrix= lines.map(_.split(sep).toVector)
+    new Table(matrix.tail, matrix.head, sep)
 \end{CodeSmall}
 
 \SubtaskSolved  \begin{CodeSmall}
-object RegTable {
- 	def main( args:Array[String]): Unit = {
-		val t = Table.fromFile(args(0), args(1)(1))
-		val counts: Vector[Vector[String]] =
- 			(0 until t.dim._2)
-				.map(i => t.values(t.headings(i))
-				.map(x => x + ": " + t.col(i).count(_ == x)))
-				.toVector
-
-    for (i <- 0 until t.dim._2) {
-      println(s"\nColumn: ${i + 1}, ${t.headings(i)}:")
-      for (j <- 0 until counts(i).length) {
-        println(counts(i)(j))
-      }
-    }
-  }
-}
+@main 
+def run(fileName: String, separator: String): Unit = 
+  require(separator.length == 1, "separator ska vara exakt ett tecken")
+  val t = Table.fromFile(fileName, separator.head)
+  val counts: Vector[Vector[String]] =
+    (0 until t.dim._2)
+      .map(i => t.values(t.headings(i))
+      .map(x => s"$x: ${t.col(i).count(_ == x)}"))
+      .toVector
+  for (i <- 0 until t.dim._2) do
+    println(s"\nColumn: ${i + 1}, ${t.headings(i)}:")
+    for (j <- 0 until counts(i).length) do
+      println(counts(i)(j))
 \end{CodeSmall}
 
 \QUESTEND
@@ -749,36 +621,36 @@ Bygg ett förenklat yatzy-spel i terminalen där användaren kan bestämma vilka
 % /** En skiss på en klass som kan användas till ett förenklat yatzy-spel */
 % case class YatzyRows(val rows: Vector[Vector[Int]]) {
 %
-% 	private def throwDie: Int = (math.random() * 6).toInt + 1
+%   private def throwDie: Int = (math.random() * 6).toInt + 1
 %
-% 	/** A new YatzyRows with a new row of 5 dice rolls appended to rows */
-% 	def roll: YatzyRows = new YatzyRows(rows :+ Vector.fill(5)(throwDie))
+%   /** A new YatzyRows with a new row of 5 dice rolls appended to rows */
+%   def roll: YatzyRows = new YatzyRows(rows :+ Vector.fill(5)(throwDie))
 %
-% 	/** A new YatzyRow with some indices of the last row re-rolled */
-% 	def reroll(indices: Vector[Int]): YatzyRows =
-% 		new YatzyRows(rows :+ rows(rows.length - 1).zipWithIndex.map {
-% 			case (x, i) => if (indices.contains(i)) throwDie else x
-% 		})
+%   /** A new YatzyRow with some indices of the last row re-rolled */
+%   def reroll(indices: Vector[Int]): YatzyRows =
+%     new YatzyRows(rows :+ rows(rows.length - 1).zipWithIndex.map {
+%       case (x, i) => if (indices.contains(i)) throwDie else x
+%     })
 % }
 % object YatzyRows {
 %
-% 	def isYatzy(xs: Vector[Int]): Boolean = xs.forall(_ == xs(0))
+%   def isYatzy(xs: Vector[Int]): Boolean = xs.forall(_ == xs(0))
 %
-% 	def isThreeOfAKind(xs: Vector[Int]): Boolean =
-% 		xs.exists(x => xs.count(_ == x) >= 3)
+%   def isThreeOfAKind(xs: Vector[Int]): Boolean =
+%     xs.exists(x => xs.count(_ == x) >= 3)
 %
-% 	def isFourOfAKind(xs: Vector[Int]): Boolean =
-% 		xs.exists(x => xs.count(_ == x) >= 4)
+%   def isFourOfAKind(xs: Vector[Int]): Boolean =
+%     xs.exists(x => xs.count(_ == x) >= 4)
 %
-% 	def isFullHouse(xs: Vector[Int]): Boolean =
-% 		xs.exists(x => xs.count(_ == x) == 3) &&
-% 		xs.exists(x => xs.count(_ == x) == 2)
+%   def isFullHouse(xs: Vector[Int]): Boolean =
+%     xs.exists(x => xs.count(_ == x) == 3) &&
+%     xs.exists(x => xs.count(_ == x) == 2)
 %
-% 	def isSmallStraight(xs: Vector[Int]): Boolean =
-% 		xs.forall(x => xs.count(_ == x) == 1) && !xs.exists(_ == 6)
+%   def isSmallStraight(xs: Vector[Int]): Boolean =
+%     xs.forall(x => xs.count(_ == x) == 1) && !xs.exists(_ == 6)
 %
-% 	def isLargeStraight(xs: Vector[Int]): Boolean =
-% 		xs.forall(x => xs.count(_ == x) == 1) && !xs.exists(_ == 1)
+%   def isLargeStraight(xs: Vector[Int]): Boolean =
+%     xs.forall(x => xs.count(_ == x) == 1) && !xs.exists(_ == 1)
 % }
 %
 % \end{CodeSmall}
@@ -908,9 +780,9 @@ def half(x: Double): Double = x / 2.0
 \Subtask Testa nedan generiska klass \code{Cell[T]} i REPL. Skapa instanser av klassen \code{Cell[T]} där typparametern \code{T} binds till olika konkreta typer och förklara vad som händer.
 
 \begin{REPL}
-scala> class Cell[T](var value: T){
+scala> class Cell[T](var value: T):
          override def toString = "Cell(" + value + ")"
-       }
+       
 scala> new Cell(42)
 scala> new Cell("hej")
 scala> new Cell(new Cell(math.Pi))
@@ -937,11 +809,10 @@ scala> a concat b
 
 %5.b)
 \SubtaskSolved  \begin{Code}
-class Cell[T](var value: T){
-	override def toString = "Cell(" + value + ")"
-	def concat[U](that: Cell[U]): Cell[String] =
-		new Cell(value.toString + that.value.toString)
-}
+class Cell[T](var value: T):
+  override def toString = "Cell(" + value + ")"
+  def concat[U](that: Cell[U]): Cell[String] = 
+    Cell(s"$value${that.value}")
 \end{Code}
 
 %5.c)
@@ -957,7 +828,7 @@ class Cell[T](var value: T){
 
 \begin{ScalaSpec}{Matrix[T]}
 /** En oföränderlig, generisk Matris-klass. */
-case class Matrix[T](data: Vector[Vector[T]]) {
+case class Matrix[T](data: Vector[Vector[T]]):
   require(???)  // garantera att alla rader har lika många kolumner
 
   /** Ger ett par med antal rader och kolumner. */
@@ -983,12 +854,10 @@ case class Matrix[T](data: Vector[Vector[T]]) {
 
   /** Ger en utskriftsvänlig strängrepresentation av matrisen. */
   override def toString = ???
-}
 
-object Matrix {
+object Matrix:
   /** Ger en matris med dimension dim där alla element har värdet value. */
   def fill[T](dim: (Int, Int))(value: T): Matrix[T] = ???
-}
 \end{ScalaSpec}
 
 \SOLUTION
@@ -997,7 +866,7 @@ object Matrix {
 \TaskSolved \what
 
 \begin{CodeSmall}
-case class Matrix[T](data: Vector[Vector[T]]) {
+case class Matrix[T](data: Vector[Vector[T]]):
   require(data.forall(row => row.size == data(0).size))
 
   val dim: (Int, Int) = (data.length, data(0).length)
@@ -1010,26 +879,26 @@ case class Matrix[T](data: Vector[Vector[T]]) {
   def foreach(f: T => Unit): Unit = data.foreach(_.foreach(f))
 
   def foreachIndex(f: (Int, Int) => Unit): Unit =
-    for (r <- data.indices; c <- data(r).indices) f(r, c)
+    for r <- data.indices; c <- data(r).indices do f(r, c)
 
   def map[U](f: T => U): Matrix[U] = Matrix(data.map(_.map(f)))
 
-  def mapIndex[U](f: (Int, Int) => U): Matrix[U] = {
+  def mapIndex[U](f: (Int, Int) => U): Matrix[U] =
     var result = Matrix.fill(dim)(f(0,0))
-    for (r <- data.indices; c <- data(r).indices) {
+    for 
+      r <- data.indices
+      c <- data(r).indices 
+    do
       result = result.updated(r, c)(f(r, c))
-    }
+    end for
     result
-  }
 
   override def toString =
     s"""Matrix of dim $dim:\n${ data.map(_.mkString(" ")).mkString("\n") }"""
-}
 
-object Matrix {
+object Matrix:
   def fill[T](dim: (Int, Int))(value: T): Matrix[T] =
     Matrix[T](Vector.fill(dim._1, dim._2)(value))
-}
 \end{CodeSmall}
 
 
