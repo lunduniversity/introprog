@@ -128,91 +128,62 @@ Om ingen typparameter deklareras inom hakparenteser efter funktionens namns så 
 \end{Slide}
 
 
-\ifkompendium\else
 \begin{Slide}{Exempel: Generisk case-klass}
-\vspace{-0.5em}\begin{REPL}
-scala> def skrikBaklänges[T](x: T): String = x.toString.toUpperCase.reverse
+\SlideFontSmall
+En generisk klass har en eller flera typparametrar efter klassnamnet:
+\begin{Code}
+case class Box[A](value: A)  
+\end{Code}
 
-scala> case class Grönsak(whatever: A)
-1 |case class Grönsak(whatever: A)
-  |                             ^
-  |                             Not found: type A
-
-scala> case class Grönsak[A](whatever: A)
-
-scala> Grönsak("gurka")
-val res1: ???
-
-scala> skrikBaklänges(Grönsak(42))
-val res2: ???
-
-scala> Grönsak[Int](42)
-val res3: ???
-
-scala> Grönsak[String](42)
-???
-
-
-
-                        .
+Kompilatorn härleder typparameterarnas typ utifrån givna värden. 
+\begin{REPL}
+scala> Box("gurka")  
+val res1: Box[String] = Box(gurka)
 \end{REPL}
-\end{Slide}
-\fi
 
-\begin{Slide}{Exempel: Generisk case-klass}
-\vspace{-0.5em}\begin{REPL}
-scala> def skrikBaklänges[T](x: T): String = x.toString.toUpperCase.reverse
-
-scala> case class Grönsak(whatever: A)
-1 |case class Grönsak(whatever: A)
-  |                             ^
-  |                             Not found: type A
-
-scala> case class Grönsak[A](whatever: A)
-
-scala> Grönsak("gurka")
-val res1: Grönsak[String] = Grönsak(gurka)
-
-scala> skrikBaklänges(Grönsak(42))
-val res2: String = )24(KASNÖRG
-
-scala> Grönsak[Int](42)
-val res3: Grönsak[Int] = Grönsak(42)
-
-scala> Grönsak[String](42)
-1 |Grönsak[String](42)
-  |                ^^
-  |                Found:    (42 : Int)
-  |                Required: String
-
+Du kan också ge typpparametern en typ explicit:
+\begin{REPL}
+scala> Box[Int](42)  // 
+val res3: Box[Int] = Box(42)
 \end{REPL}
-\end{Slide}
 
-
-\begin{Slide}{Typjoker \Eng{wildcard type}}\SlideFontSmall
-Generiska typer är normalt \Emph{invarianta} och kan därmed inte utan speciella åtgärder variera mellan mer eller mindre specifika typer. %(mer om varians senare).
-\begin{REPLsmall}
-scala> case class Box[A](a: A)
-
-scala> var xs = Vector.empty[Box[Any]]
-
-scala> def add[A](b: Box[A]): Unit = xs = xs :+ b
+Om typen inte stämmer får du hjälp av kompilatorn att hitta felet:
+\begin{REPL}
+scala> Box[String](42)
 -- Error:
-1 |def add[A](b: Box[A]): Unit = xs = xs :+ b
-  |                                         ^
-  |                                         Found:    (b : Box[A])
-  |                                         Required: Box[Any]
-\end{REPLsmall}  
-Till vår räddning: En \Emph{typjoker} \Eng{wildcard type} anges med ett frågetecken och betecknar en helt okänd typ, vars varians ej kontrolleras av kompilatorn.
-\begin{REPLsmall}
-scala> var xs = Vector.empty[Box[?]]
-
-scala> def add[A](b: Box[A]): Unit = xs = xs :+ b
-
-scala> add(Box(42)); add(Box("hej")); xs
-val res2: Vector[Box[?]] = Vector(Box(42), Box(hej))
-\end{REPLsmall}
+1 |Box[String](42)
+  |            ^^
+  |            Found:    (42 : Int)
+  |            Required: String
+\end{REPL}
 \end{Slide}
+
+
+
+% \begin{Slide}{Typjoker \Eng{wildcard type}}\SlideFontSmall
+% Generiska typer är normalt \Emph{invarianta} och kan därmed inte utan speciella åtgärder variera mellan mer eller mindre specifika typer. %(mer om varians senare).
+% \begin{REPLsmall}
+% scala> case class Box[A](a: A)
+
+% scala> var xs = Vector.empty[Box[Any]]
+
+% scala> def add[A](b: Box[A]): Unit = xs = xs :+ b
+% -- Error:
+% 1 |def add[A](b: Box[A]): Unit = xs = xs :+ b
+%   |                                         ^
+%   |                                         Found:    (b : Box[A])
+%   |                                         Required: Box[Any]
+% \end{REPLsmall}  
+% Till vår räddning: En \Emph{typjoker} \Eng{wildcard type} anges med ett frågetecken och betecknar en helt okänd typ, vars varians ej kontrolleras av kompilatorn.
+% \begin{REPLsmall}
+% scala> var xs = Vector.empty[Box[?]]
+
+% scala> def add[A](b: Box[A]): Unit = xs = xs :+ b
+
+% scala> add(Box(42)); add(Box("hej")); xs
+% val res2: Vector[Box[?]] = Vector(Box(42), Box(hej))
+% \end{REPLsmall}
+% \end{Slide}
 
 
 \begin{Slide}{Fallgrop: Typradering \Eng{type erasure}}\SlideFontSmall
