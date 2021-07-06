@@ -76,23 +76,22 @@ De konkreta samlingarna är uppdelade i dessa paket:\\
 
 
 \begin{Slide}{Metoden \texttt{iterator} ger en ''engångs-iterator''}\SlideFontSmall
-Med \code{iterator} kan man iterera med \code{while}, men endast \Alert{en   gång}; sedan är iteratorn ''förbrukad''. (Men man kan be om en ny.) Används för ''under huven'' i samlingsbiblioteket för att implementera andra metoder.
+Med \code{iterator} kan man iterera med \code{while}, men endast \Alert{en   gång}; sedan är iteratorn ''förbrukad''. (Men man kan be om en ny.) Används ''under huven'' i samlingsbiblioteket för att implementera andra metoder.
 \begin{REPL}
 scala> val xs = Vector(1,2,3,4)
-xs: scala.collection.immutable.Vector[Int] = Vector(1, 2, 3, 4)
+val xs: Vector[Int] = Vector(1, 2, 3, 4)
 
 scala> val it = xs.iterator
-it: scala.collection.immutable.VectorIterator[Int] = non-empty iterator
+val it: Iterator[Int] = <iterator>
 
-scala> while (it.hasNext) print(it.next)
+scala> while it.hasNext do print(it.next)
 1234
 
 scala> it.hasNext
-res1: Boolean = false
+val res0: Boolean = false
 
 scala> it.next
-java.util.NoSuchElementException: reached iterator end
-  at scala.collection.immutable.VectorIterator.next(Vector.scala:674)
+java.util.NoSuchElementException: next on empty iterator
 \end{REPL}
 \Emph{Normalt} behöver man \Alert{inte} använda \code{iterator}: det finns oftast färdiga metoder som gör det man vill, till exempel \code{foreach}, \code{map}, \code{sum}, \code{min} etc.
 \end{Slide}
@@ -253,28 +252,34 @@ Prova fler samlingsmetoder ur snabbreferensen: ~~\url{http://cs.lth.se/quickref}
 \item Exempel på en icke-tom sekvens med dubbletter:
 \begin{REPLnonum}
 scala> val xs = Vector(42, 0, 42, -9, 0, 13, 7)
-xs: scala.collection.immutable.Vector[Int] =
-  Vector(42, 0, 42, -9, 0, 13, 7)
+val xs: Vector[Int] = Vector(42, 0, 42, -9, 0, 13, 7)
 \end{REPLnonum}
 \pause
 \item \Emph{Indexering} ger ett element via dess ordningsnummer:
 \begin{REPL}
 scala> xs(2)
-res0: Int = 42
+val res0: Int = 42
 
 scala> xs.apply(2)
-res1: Int = 42
+val res1: Int = 42
 \end{REPL}
 \end{itemize}
 \end{Slide}
 
 
-\begin{Slide}{Strängar är implicit en \texttt{IndexedSeq[Char]}}\SlideFontSmall
-Det finns en så kallad \Emph{implicit konvertering} mellan \code{String} och \code{IndexedSeq[Char]} vilket gör att \Alert{alla samlingsmetoder på \texttt{Seq} även funkar på strängar} och även flera andra smidiga strängmetoder erbjuds \Alert{utöver} de som finns i \href{http://docs.oracle.com/javase/8/docs/api/java/lang/String.html}{\code{java.lang.String}} genom klassen \href{http://www.scala-lang.org/api/current/scala/collection/immutable/StringOps.html}{\code{StringOps}}.
+\begin{Slide}{En sträng är också en \texttt{IndexedSeq[Char]}}\SlideFontSmall
+Det sker vid behov \Emph{implicit konvertering} från \code{String} till \code{IndexedSeq[Char]}.
+\begin{REPLnonum}
+scala> val x: IndexedSeq[Char] = "hej"
+val x: IndexedSeq[Char] = hej
+\end{REPLnonum}
+
+Detta gör att \Alert{alla samlingsmetoder på \texttt{Seq} även funkar på strängar} och även flera andra smidiga strängmetoder erbjuds \Alert{utöver} de som finns i \href{https://www.scala-lang.org/api/current/scala/collection/StringOps.html}{\code{java.lang.String}} genom klassen \href{http://www.scala-lang.org/api/current/scala/collection/immutable/StringOps.html}{\code{StringOps}}.
 
 \vspace{0.5em}
 \begin{REPLnonum}
 scala> "hej".  //tryck på TAB och se alla strängmetoder
+JLine: do you wish to see all 248 possibilities (42 lines)?
 \end{REPLnonum}
 Detta är en stor fördel med Scala jämfört med många andra språk, som har strängar som inte kan allt som andra sekvenssamlingar kan.
 \end{Slide}
@@ -291,8 +296,7 @@ Detta är en stor fördel med Scala jämfört med många andra språk, som har s
 \item En mängd kan alltså inte innehålla dubbletter:
 \begin{REPLnonum}
 scala> Set(1,1,2,2,3,3,4,4,5,5)
-res0: scala.collection.immutable.Set[Int] =
-  Set(5, 1, 2, 3, 4)
+val res0: Set[Int] = HashSet(5, 1, 2, 3, 4)
 \end{REPLnonum}
 \pause
 \item En mängd är \Alert{inte}  en sekvens: du kan inte utgå från att elementen ligger i någon viss ordning, t.ex. den ordning som de ges vid konstruktion; en mängd har ej längd, men en \Emph{storlek}; metoden \code{size} ger antalet element men metoden \code{length} saknas.
@@ -316,7 +320,7 @@ scala> var xs = Set("gurka", "tomat", "banan", "pingvin")
 \item \Emph{Läsa}: avgöra medlemskap
 \begin{REPLnonum}
 scala> xs("gurka")
-res1: Boolean = true
+val res1: Boolean = true
 \end{REPLnonum}
 
 \item \Emph{Uppdatera}: lägg till element (händer inget om redan finns)
@@ -338,10 +342,10 @@ Vad händer här?
 \begin{REPLnonum}
 scala> val xs1 = Vector(1,2,3,4,5,6)
 scala> xs1.map(_ % 2).count(_ == 0)
-res0: Int = 3                          // antalet jämna tal
+val res0: Int = 3                          // antalet jämna tal
 scala> val xs2 = Set(1,2,3,4,5,6)
 scala> xs2.map(_ % 2).count(_ == 0)
-res1: Int = 1                          // varför?
+val res1: Int = 1                          // varför?
 \end{REPLnonum}
 \pause
 Mängdegenskaper ger att \code{xs2.map(_ % 2) == Set(0, 1)}\\
@@ -350,7 +354,7 @@ Fundera alltid noga på om du \Alert{riskerar att förlora duplikat} som du egen
 Använd \code{toSeq} på mängd om du behöver sekvensegenskaper:
 \begin{REPLnonum}
 scala> xs2.toSeq.map(_ % 2).count(_ == 0)
-res1: Int = 3         // med toSeq blir det som vi ville
+val res1: Int = 3         // med toSeq blir det som vi ville
 \end{REPLnonum}
 
 \end{Slide}
@@ -365,7 +369,7 @@ Med en \Alert{förändringsbar} mängd kan man stegvis utöka på plats.
 \begin{REPL}
 scala> val mängd = scala.collection.mutable.Set.empty[Int]
 
-scala> for (i <- 1 to 1000000) mängd += i
+scala> for i <- 1 to 1000000 do mängd += i
 
 scala> mängd.contains(-1)                     // samma som mängd(-1)
 \end{REPL}
@@ -373,13 +377,13 @@ En \Emph{mängd} är \Alert{snabb} på att avgöra om ett element \Alert{finns e
 \pause
 \\\vspace{0.5em}Men i en sekvens krävs linjärsökning vid innehållstest:
 \begin{REPL}
-scala> val sekvens = (1 to 1000000).toVector
+scala> val sekvens = (1 to 1_000_000).toVector
 
 scala> sekvens.contains(-1)   // kräver linjärsökning ända till slutet
 \end{REPL}
 \pause\SlideFontTiny Övning: Testa själv att mäta tidsskillnaden med hjälp av:
 \begin{Code}
-def nanos(b: => Unit) = { val t1 = System.nanoTime; b; System.nanoTime - t1 }
+def nanos(b: => Unit) = { val t0 = System.nanoTime; b; System.nanoTime - t0 }
 \end{Code}
 
 \end{Slide}
@@ -400,11 +404,10 @@ en \Emph{nyckel} av någon typ \code{K} och ett \Emph{värde} av någon typ \cod
 där \code{k} är en nyckel och \code{v} är ett värde:
 \begin{REPL}
 scala> val ålder = Map("Björn" -> 42, "Sandra" -> 35, "Kim" -> 19)
-ålder: scala.collection.immutable.Map[String,Int] =
-  Map(Björn -> 42, Sandra -> 35, Kim -> 19)
+val ålder: Map[String, Int] = Map(Björn -> 42, Sandra -> 35, Kim -> 19)
 \end{REPL}
 \item Tabellens nycklar utgör en mängd som ges av metoden \code{keySet};\\
-nycklarna är alltså \Alert{unika}.
+nycklarna är \Alert{unika}.
 \item Elementen utgör \Alert{inte en sekvens} och har ingen speciell ordning;
 \\en nyckel-värde-tabell har ej längd, men en \Emph{storlek};\\metoden \code{size} ger antalet element.
 \pause
@@ -417,9 +420,9 @@ nycklarna är alltså \Alert{unika}.
 \begin{itemize}
 \item En \Emph{nyckel-värde-tabell} \Eng{key-value table} är en slags generaliserad vektor där man kan ''indexera'' med godtycklig typ.
 
-\item Kallas även \href{https://sv.wikipedia.org/wiki/Hashtabell}{\Emph{hashtabell}} \Eng{hash table}, \Emph{lexikon} \Eng{dictionary} eller \Emph{mapp} \Eng{map} (men då blir det lätt sammanblandning med metoden \code{map}).
+\item Kallas även \href{https://sv.wikipedia.org/wiki/Hashtabell}{\Emph{hashtabell}} \Eng{hash table}, \Emph{lexikon} \Eng{Dictionary} eller \Emph{mapp} \Eng{Map} (det blir lätt sammanblandning med metoden \code{map}).
 
-\item Om man vet nyckeln kan man slå upp värdet \Alert{snabbt}, på liknande sätt som indexering sker i en vektor om man vet heltalsindex.
+\item Om man vet nyckeln kan man slå upp värdet \Alert{snabbt}, på liknande sätt som indexering sker i en vektor givet heltalsindex.
 
 \item Denna datastruktur är \Alert{mycket användbar} och fungerar som en slags databas i kombination med filtrering, registrering, etc.
 \end{itemize}
@@ -445,21 +448,22 @@ Några ofta förekommande metoder på tabeller:
 \end{itemize}
 \begin{REPL}
 scala> val färg = Map("gurka" -> "grön", "tomat"->"röd", "aubergine"->"lila")
-färg: scala.collection.immutable.Map[String,String] =
+val färg: Map[String, String] = 
   Map(gurka -> grön, tomat -> röd, aubergine -> lila)
 
 scala> färg("gurka")
-res0: String = grön
+val res0: String = grön
 
 scala> färg.keySet
-res1: scala.collection.immutable.Set[String] = Set(gurka, tomat, aubergine)
+val res1: Set[String] = Set(gurka, tomat, aubergine)
 
 scala> val ärGrönSak = färg.map(elem => (elem._1, elem._2 == "grön"))
-ärGrönSak: Map[String,Boolean] = Map(gurka -> true, tomat -> false, aubergine -> false)
+val ärGrönSak: Map[String,Boolean] = 
+  Map(gurka -> true, tomat -> false, aubergine -> false)
 
 scala> val baklängesFärg = färg.map(p => p._1 -> p._2.reverse)
-baklängesFärg: Map[String,String] = Map(gurka -> nörg, tomat -> dör, aubergine -> alil)
-
+val baklängesFärg: Map[String,String] = 
+  Map(gurka -> nörg, tomat -> dör, aubergine -> alil)
 \end{REPL}
 
 \end{Slide}
@@ -467,30 +471,24 @@ baklängesFärg: Map[String,String] = Map(gurka -> nörg, tomat -> dör, aubergi
 
 
 \begin{Slide}{Från sekvens av par till tabell}
-  \begin{REPL}
-  scala> val xs = Vector(("Kim",42), ("Pam", 42), ("Kim", 50), ("Pam", 50))
-  
-  xs: Vector[(String, Int)] =
-    Vector((Kim,42), (Pam,42), (Kim,50), (Pam,50))
-  
-  
-  scala> xs.toMap
-  
-  res0: Map[String,Int] = Map(Kim -> 50, Pam -> 50)  // inga dublettnycklar
-  
-  
-  scala> val grupperaEfterNamn = xs.groupBy(_._1)
-  
-  grupperaEfterNamn: Map[String,Vector[(String, Int)]] =
-    Map(Kim -> Vector((Kim,42), (Kim,50)), Pam -> Vector((Pam,42), (Pam,50)))
-  
-  
-  scala> val grupperaEfterÅlder = xs.groupBy(_._2)
-  
-  grupperaEfterÅlder: Map[Int,Vector[(String, Int)]] =
-    Map(50 -> Vector((Kim,50), (Pam,50)), 42 -> Vector((Kim,42), (Pam,42)))
-  \end{REPL}
-  \end{Slide}
+\begin{REPL}
+scala> val xs = Vector(("Kim",42), ("Pam", 42), ("Kim", 50), ("Pam", 50))
+val xs: Vector[(String, Int)] = 
+  Vector((Kim,42), (Pam,42), (Kim,50), (Pam,50))
+
+scala> xs.toMap
+val res0: Map[String, Int] = 
+  Map(Kim -> 50, Pam -> 50) // inga dublettnycklar
+
+scala> val grupperaEfterNamn = xs.groupBy(_._1)
+grupperaEfterNamn: Map[String,Vector[(String, Int)]] =
+  Map(Kim -> Vector((Kim,42), (Kim,50)), Pam -> Vector((Pam,42), (Pam,50)))
+
+scala> val grupperaEfterÅlder = xs.groupBy(_._2)
+grupperaEfterÅlder: Map[Int,Vector[(String, Int)]] =
+  Map(50 -> Vector((Kim,50), (Pam,50)), 42 -> Vector((Kim,42), (Pam,42)))
+\end{REPL}
+\end{Slide}
   
   
 
@@ -502,19 +500,19 @@ Både \code{Set} och \code{Map} finns i \Alert{förändringsbara} varianter med 
 scala> import scala.collection.mutable
 
 scala> val ms = mutable.Set.empty[Int]
-ms: scala.collection.mutable.Set[Int] = Set()
+val ms: scala.collection.mutable.Set[Int] = HashSet()
 
 scala> ms += 42
-res0: ms.type = Set(42)
+val res0: scala.collection.mutable.Set[Int] = HashSet(42)
 
-scala> ms += (1, 2, 3, 1, 2, 3); ms -= 1
-res1: ms.type = Set(2, 42, 3)
+scala> ms ++= Seq(1, 2, 3, 1, 2, 3)  // metoden ++= gör samma som addAll 
+val res1: scala.collection.mutable.Set[Int] = HashSet(1, 2, 3, 42)
 
-scala> ms.mkString("Mängd: ", ", ", " Antal: " + ms.size)
-res2: String = Mängd: 1, 2, 42, 3 Antal: 4
+scala> (ms diff Set(1)).mkString("Mängd: ", ", ", " Antal: " + ms.size)
+val res2: String = Mängd: 2, 3, 42 Antal: 4
 
 scala> val ordpar = mutable.Map.empty[String, String]
-scala> ordpar += ("hej" -> "svejs", "abra" -> "kadabra", "ada" -> "lovelace")
+scala> ordpar ++= Seq("hej" -> "svejs", "abra" -> "kadabra", "ada" -> "lovelace")
 scala> println(ordpar("abra"))
 kadabra
 \end{REPL}
@@ -525,24 +523,21 @@ kadabra
 \SlideFontSmall
 Om du vill implementera en imperativ algoritm med en föränderlig samling:\\
 Gör gärna detta \Alert{lokalt} i en \Alert{förändringsbar} samling och returnera sedan en \Emph{oföränderlig} samling, genom att köra t.ex. \code{toSet} på en mängd, eller \code{toMap} på en hashtabell, eller \code{toVector} på en \code{ArrayBuffer} eller \code{Array}.
-
-\begin{REPL}
-scala> :paste
-def kastaTärningTillsAllaUtfallUtomEtt(sidor: Int = 6) = {
+\begin{Code}
+def kastaTärningTillsAllaUtfallUtomEtt(sidor: Int = 6) = 
   val s = scala.collection.mutable.Set.empty[Int]
   var n = 0
-  while (s.size < sidor - 1) {
+  while s.size < sidor - 1 do
     s += (math.random() * sidor + 1).toInt
     n += 1
-  }
-  (n, s.toSet)
-}
+  (n, s.toSet)   // notera toSet som ger oföränderlig mängd
+\end{Code}
+\begin{REPL}
 scala> kastaTärningTillsAllaUtfallUtomEtt()
-res0: (Int, scala.collection.immutable.Set[Int]) = (13,Set(5, 1, 6, 2, 3))
-
+val res0: (Int, Set[Int]) = (13,HashSet(5, 1, 6, 2, 3))
 \end{REPL}
-I veckans uppgifter används detta mönster i en s.k. \Emph{builder}: \\ Först bygga upp en förändringsbar struktur i \code{FreqMapBuilder} steg för steg,  
-och sedan, när alla tillägg är gjorda, övergå till oföränderlig struktur \code{Map[String, Int]}. 
+I veckans uppgifter används detta i en s.k. \Emph{builder}: Först bygga upp en förändringsbar struktur i \code{FreqMapBuilder} steg för steg,  
+och sedan, då alla tillägg är gjorda, övergå till oföränderlig struktur \code{Map[String, Int]}. 
 \end{Slide}
 
 
@@ -551,15 +546,15 @@ Metoden \code{sliding(n)} skapar med ett ''glidande fönster'' en sekvens av
 delsekvenser av längd \code{n} genom att ''svepa fönstret'' från början till slut:
 \begin{REPL}
 scala> val xs = "fem myror är fler än fyra elefanter".split(' ').toVector
-xs: Vector[String] = Vector(fem, myror, är, fler, än, fyra, elefanter)
+val xs: Vector[String] = Vector(fem, myror, är, fler, än, fyra, elefanter)
 
 scala> xs.sliding(2).toVector
-res0: Vector[Vector[String]] =
+val res0: Vector[Vector[String]] =
   Vector(Vector(fem, myror), Vector(myror, är), Vector(är, fler),
       Vector(fler, än), Vector(än, fyra), Vector(fyra, elefanter))
 
 scala> xs.sliding(3).toVector
-res1: Vector[Vector[String]] =
+val res1: Vector[Vector[String]] =
   Vector(Vector(fem, myror, är), Vector(myror, är, fler),
     Vector(är, fler, än), Vector(fler, än, fyra),
       Vector(än, fyra, elefanter))
@@ -600,21 +595,24 @@ frekvens: Map[Int,Int] = Map(5 -> 1, 1 -> 1, 6 -> 2, 2 -> 2, 3 -> 1, 4 -> 2)
 \end{Slide}
 
 \begin{Slide}{Fler användbara samlingsmetoder}
-  Exempel att öva på: räkna bokstäver i ord.  \\
-  Undersök vad som händer i REPL:
-  \begin{Code}[basicstyle=\SlideFontSize{9}{13}\ttfamily]
-  val ord = "sex laxar i en laxask sju sjösjuka sjömän"
-  val uppdelad = ord.split(' ').toVector
-  val ordlängd = uppdelad.map(_.length)
-  val ordlängdMap = uppdelad.map(s => (s, s.size)).toMap
-  val grupperaEfterFörstaBokstav = uppdelad.groupBy(s => s(0))
-  val bokstäver = ord.toVector.filter(_ != ' ')
-  val antalX = bokstäver.count(_ == 'x')
-  val grupperade = bokstäver.groupBy(ch => ch)
-  val antal = grupperade.map(p => p._1 -> p._2.size)
-  val sorterat = antal.toVector.sortBy(_._2)
-  val vanligast = antal.maxBy(_._2)
-  \end{Code}
+Exempel att öva på: räkna bokstäver i ord.  \\
+Undersök vad som händer i REPL:
+\begin{Code}[basicstyle=\SlideFontSize{9}{13}\ttfamily]
+val ord = "sex laxar i en laxask sju sjösjuka sjömän"
+val uppdelad = ord.split(' ').toVector
+val ordlängd = uppdelad.map(_.length)
+val ordlängdMap = uppdelad.map(s => (s, s.size)).toMap
+val grupperaEfterFörstaBokstav = uppdelad.groupBy(s => s(0))
+val bokstäver = ord.toVector.filter(_ != ' ')
+val antalX = bokstäver.count(_ == 'x')
+val grupperade = bokstäver.groupBy(ch => ch)
+val antal = grupperade.map(p => p._1 -> p._2.size)
+//samma som ovan men utnyttjar "parameter untupling":
+val antal2 = grupperade.map((k,v) => k -> v.size) 
+val sorterat = antal.toVector.sortBy(_._2)
+val vanligast = antal.maxBy(_._2)
+\end{Code}
+%https://dotty.epfl.ch/docs/reference/other-new-features/parameter-untupling.html
 \end{Slide}
     
     
