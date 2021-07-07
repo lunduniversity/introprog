@@ -1,4 +1,4 @@
-object personExample2 {
+object personExample2:
 
   trait Person     { val namn: String }
   trait Akademiker { val universitet: String }
@@ -6,13 +6,12 @@ object personExample2 {
 
   class Student(val namn: String,
                 val universitet: String,
-                val program: String) extends Person with Akademiker
+                val program: String) extends Person, Akademiker
 
   class Forskare(val namn: String,
                  val universitet: String,
-                 val titel: String) extends Person with Akademiker with Examinerad
+                 val titel: String) extends Person, Akademiker, Examinerad
 
   def main(args: Array[String]): Unit =
     val f = new Forskare("B. Regnell", "Lunds universitet", "Professor Dr")
     println(s"${f.titel} ${f.namn}, ${f.universitet}")
-}

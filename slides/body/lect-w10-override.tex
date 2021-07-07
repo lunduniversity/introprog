@@ -70,11 +70,6 @@ En medlem M1 i en supertyp får överskuggas av en medlem M2 i en subtyp, enligt
 \end{Slide}
 
 
-\begin{Slide}{Fördjupning: Regler för överskuggning i Java}
-\url{http://docs.oracle.com/javase/tutorial/java/IandI/override.html}
-\end{Slide}
-
-
 \Subsection{\texttt{super}}
 
 \begin{Slide}{Att skilja på mitt och ditt med \texttt{super}}
@@ -113,7 +108,6 @@ res1: String = super pepino
 
 
 
-
 \Subsection{Trait eller abstrakt klass?}
 
 \begin{Slide}{Trait eller abstrakt klass?}
@@ -124,6 +118,7 @@ res1: String = super pepino
 \begin{itemize}
 \item ...du är osäker på vilket som är bäst. (Du kan alltid ändra till en abstrakt klass senare.)
 \item ...du vill kunna mixa in din trait tillsammans med andra traits.
+\item ...du vill göra din typ transparent vid typhärledning.
 %\item ...du vill skapa ett flexibelt gränssnitt som del i ett api.
 
 \end{itemize}
@@ -132,7 +127,7 @@ res1: String = super pepino
 
 \noindent Använd en \Alert{abstrakt klass} som supertyp om...
 \begin{itemize}
-\item ...du vill ge supertypen en parameter vid konstruktion. \footnote{I kommande Scala 3 kan traits ha parametrar.}
+%\item ...du vill ge supertypen en parameter vid konstruktion. \footnote{I kommande Scala 3 kan traits ha parametrar.}
 \item ...du vill ärva supertypen från klasser skrivna i Java.
 \item ...du vill minimera vad som behöver omkompileras vid ändringar.
 \end{itemize}
@@ -140,6 +135,111 @@ res1: String = super pepino
 
 \end{multicols}
 \end{Slide}
+
+
+
+% \begin{Slide}{Uppräknade värden med case-objekt}\SlideFontSmall
+% Vi kan använda case-objekt och arv för att representera olika färger.
+% \begin{Code}[language=,keywords={sealed,trait,object,case,class,extends}]
+% sealed trait Färg
+% case object Spader  extends Färg
+% case object Hjärter extends Färg
+% case object Ruter   extends Färg
+% case object Klöver  extends Färg
+
+% case class Kort(färg: Färg, valör: Int)
+% \end{Code}
+
+% Vi kan nu använda våra uppräknade färgvärden så här:
+% \begin{REPL}
+% scala> Kort(Ruter, 7)
+
+% scala> Kort(Spader, 1)
+% \end{REPL}
+% \begin{itemize}
+% \item Kompilatorn \Emph{garanterar} att vi bara använder exakt dessa färger.
+
+% \item Nyckelordet \code{sealed} förhindrar fler subtyper förutom de som finns här.
+
+% \item \code{case} före \code{object} ger en najs \code{toString} och möjliggör matchning \\
+% (mer om matchning i w10).
+
+% \end{itemize}
+
+% \end{Slide}
+
+% \begin{Slide}{Uppräknade värden i samling}\SlideFontSmall
+% Vi kan placera case-objekten i en samling som kan användas i loopar. \\ Ett lämpligt ställe för en sådan samling är i kompanjonsobjektet till \code{Färg}.
+% \begin{Code}
+% sealed trait Färg
+% object Färg {
+%      val values = Vector(Spader, Hjärter, Ruter, Klöver)
+% }
+% case object Spader extends Färg
+% case object Hjärter extends Färg
+% case object Ruter extends Färg
+% case object Klöver extends Färg
+% \end{Code}
+
+% \begin{REPL}
+% scala> val allaEss = for (f <- Färg.values) yield Kort(f, 1)
+% \end{REPL}
+% \end{Slide}
+
+% \begin{Slide}{Uppräknade värden med heltal}\SlideFontSmall
+% Vi kan använda heltalskonstanter för att representera olika färger.
+% \begin{Code}
+% object Färg {
+%   val Spader = 1
+%   val Hjärter = 2
+%   val Ruter = 3
+%   val Klöver = 4
+% }
+% \end{Code}
+% \begin{Code}[language=,keywords={case,class}]
+% case class Kort(färg: Int, valör: Int)
+% \end{Code}
+
+% Vi kan nu använda våra uppräknade färgvärden så här:
+% \begin{REPLnonum}
+% scala> import Färg._
+% scala> Kort(Ruter, 7)
+% \end{REPLnonum}
+% \pause Men kompilatorn \Alert{kan inte hindra} denna bugg:
+% \begin{REPLnonum}
+% scala> Kort(42, 7)
+% \end{REPLnonum}
+
+% \end{Slide}
+
+
+
+\begin{Slide}{Förseglade typer med \texttt{sealed}}\SlideFontSmall
+Med en \code{sealed} kan du skapa en \Emph{förseglad} datatyp, exempel uppräkning:
+\begin{Code}
+sealed trait Färg(val toInt: Int)
+object Färg:
+  val values = Vector(Spader, Hjärter, Ruter, Klöver)
+
+  case object Spader  extends Färg(0)
+  case object Hjärter extends Färg(1)
+  case object Ruter   extends Färg(2)
+  case object Klöver  extends Färg(3)
+\end{Code}
+Nyckelordet \code{sealed} förhindrar vidare subtypning av \code{Färg} och ger varning om matchning inte är fullständig, vilket är till stor hjälp för att förhindra buggar.
+
+\begin{REPL}
+scala> Färg.values(0) match { case Färg.Spader => "hej" }
+-- Warning:
+1 |Färg.values(0) match { case Färg.Spader => "hej" }
+     |^^^^^^^^^^^^^^
+     |match may not be exhaustive.
+     |
+     |It would fail on pattern case: Hjärter, Ruter, Klöver
+val res0: String = hej
+\end{REPL}
+\end{Slide}
+
 
 
 
@@ -172,4 +272,38 @@ res1: String = super pepino
 \end{tikzpicture}
 \fi
 
+\end{Slide}
+
+
+
+\Subsection{Datatyper}
+
+\begin{Slide}{Terminologi för datatyper}\SlideFontSmall
+\begin{itemize}
+\item Abstrakt datatyp \Eng{abstract data type}
+\begin{itemize}\SlideFontTiny
+\item Definieras av gränssnittet och beteendet -- implementationen är dold för användaren. 
+\item Fördelar: inkapsling, lokala ändringar, flexibilitet.
+\item Skapas i Scala t.ex. med klasser + privata medlemmar.
+\end{itemize} 
+\item Enumeration, ä.k. uppräkning \Eng{enumeration}
+\begin{itemize}\SlideFontTiny
+\item En speciellt enkel form av s.k. algebraisk datatyp som består av en uppräknad, ändlig sekvens av enkla värden som har en ordning.
+\item Skapas i Scala med 1) heltal, 2) \code{sealed trait} ... \code{case class} ... 3) \code{enum}
+\end{itemize} 
+\item Algebraisk datatyp \Eng{algebraic data type}
+\begin{itemize}\SlideFontTiny
+\item En datatyp som är sammansatt av delar som kan kombineras. 
+\item Två olika typer av algebraiska datatyper som kan kombineras:
+\begin{itemize}\SlideFontTiny
+\item \Alert{Och}-typ (ä.k. produkttyp), exempel: \\ \code|case class Person(namn: Int, ålder: Int)| \\består av attributen namn \Alert{OCH} ålder.
+\item \Emph{Eller}-typ (ä.k. summatyp), exempel: \code|enum Färg { case Röd, Svart}| \\kan vara röd \Emph{ELLER} svart.
+\end{itemize}  
+\end{itemize} 
+\end{itemize}     
+\end{Slide}
+
+
+\begin{Slide}{Algebraiska datatyper}
+     \TODO visa med både case classer och enum
 \end{Slide}

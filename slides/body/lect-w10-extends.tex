@@ -17,7 +17,7 @@
 \begin{Slide}{Vad är arv?}
 
 \begin{minipage}{0.4\textwidth}
-\raggedright Med arv kan man beskriva relationen \\
+\raggedright Arv \Eng{inheritance} beskriver relationen \\
 $X$ \Emph{är en} $Y$
 
 \end{minipage}
@@ -86,7 +86,7 @@ Mer om UML-diagram i pfk, OMD.\\
 \newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
 \begin{tikzpicture}[inner sep=0.5em]
 \node [umlclass, rectangle split parts = 2, xshift=0cm, text width=4cm] (AbstractRobot)  {
-           \textit{\textbf{\centerline{\TextBox{AbstractRobot}}}}
+           \textit{\textbf{\centerline{\TextBox{Robot}}}}
            \nodepart[]{second}\TextBox{\code{def work(): Unit}}
        };
 
@@ -164,7 +164,10 @@ Typen \textit{\textbf{\texttt{Grönsak}}} är en \Emph{bastyp} i nedan arvshiera
 \vspace{2em} Pilen ~ \tikz\draw[umlarrow] (0,0) -- (0,0.5); ~ betecknar \Emph{arv} och utläses ''\Alert{är en}''
 
 \pause
-{\vspace{1em}\SlideFontSmall Typerna \code{Tomat} och \code{Gurka} är \Emph{subtyper} till den \Emph{abstrakta} typen \code{Grönsak}.}
+{\vspace{1em}\SlideFontSmall 
+Typerna \code{Tomat} och \code{Gurka} är \Emph{subtyper} till den \Emph{abstrakta} typen \code{Grönsak}.\\
+En typ kallas abstrakt om den inte kan instansieras.
+}
 \end{center}
 \end{Slide}
 
@@ -239,25 +242,27 @@ Placera gemensamma medlemmar i bastypen:
 
 
 \begin{Slide}{Placera gemensamma delar i bastypen}
-
+\SlideFontSmall
 Vi inkluderar det gemensamma attributet \code{val vikt} som en \Emph{abstrakt medlem} i bastypen:
 
 \begin{Code}
-trait Grönsak { val vikt: Int }
+trait Grönsak:
+  val vikt: Int    // implementation saknas, inget =
 
 class Gurka(val vikt: Int) extends Grönsak
 
 class Tomat(val vikt: Int) extends Grönsak
 \end{Code}
 Nu vet kompilatorn att alla grönsaker har en vikt:
-\begin{REPL}
-scala> val grönsaker = Vector(new Gurka(200), new Tomat(42))
-grönsaker: scala.collection.immutable.Vector[Grönsak] =
+\begin{REPLsmall}
+scala> val grönsaker = Vector(new Gurka(200), new Tomat(42))   //funkar även utan new
+val grönsaker: Vector[Grönsak] =
   Vector(Gurka@3dc4ed6f, Tomat@2823b7c5)
 
 scala> grönsaker.map(_.vikt)
-res0: scala.collection.immutable.Vector[Int] = Vector(200, 42)
-\end{REPL}
+val res0: Vector[Int] = Vector(200, 42)
+\end{REPLsmall}
+Den abstrakta medlemmen \code{vikt} i den abstrakta typen \code{Grönsak} \Emph{implementeras} i en konkret subklass, här som en klassparameter.
 
 \end{Slide}
 
@@ -292,7 +297,7 @@ Den översta delen av typhierarkin i Scala:
 \end{center}
 \begin{itemize}\SlideFontSmall
 \item De numeriska typerna \code{Int}, \code{Double}, etc är subtyper till \Emph{\code{AnyVal}} och kallas \Emph{värdetyper} och lagras på ett speciellt, effektivt sätt i minnet.
-\item Alla dina egna klasser är subtyper till \Emph{\texttt{AnyRef}} och kallas \Emph{referenstyper} och kräver (direkt eller indirekt) konstruktion med \code{new}.
+\item Alla dina egna klasser är subtyper till \Emph{\texttt{AnyRef}} och kallas \Emph{referenstyper} och kan (direkt eller indirekt) konstrueras med \code{new}.
 \item \texttt{AnyRef} motsvaras av \Alert{\code{java.lang.Object}} i JVM.
 \end{itemize}
 \end{Slide}
@@ -369,14 +374,6 @@ Alla dina egna typer ingår underförstått i Scalas typhierarki:
 
 \item den \Alert{kan inte} ha klassparametrar eller konstruktorer.
 \end{itemize}
-
-\pause
-\item {\SlideFontSmall Jämförelse med Java:}
-\begin{itemize}\SlideFontTiny
-\item En Scala-trait liknar det som i Java kallas \jcode{interface}, men man kan göra mer med Scala-traits: färre begränsningar, fler abstraktionsmöjligheter.
-
-\item En Scala-trait med enbart abstrakta medlemmar kompileras till bytekod i JVM:en som kan användas från Java-kod precis som ett Java-interface.
-\end{itemize}
 \end{itemize}
 
 \end{Slide}
@@ -389,22 +386,24 @@ class Subtyp1 extends Bastyp { val y = 43 } // Subtyp1 ärver x, har även y
 class Subtyp2 extends Bastyp { val z = 44 } // Subtyp2 ärver x, har även z
 \end{Code}
 \pause\vspace{-0.5em}
-\begin{REPL}
+\begin{REPLsmall}
 scala> val a = new Subtyp1
-a: Subtyp1 = Subtyp1@51016012
+val a: Subtyp1 = Subtyp1@51016012
 
 scala> a.x
-res0: Int = 42
+val res0: Int = 42
 
 scala> a.y
-res1: Int = 43
+val res1: Int = 43
 
 scala> a.z
-<console>:15: error: value z is not a member of Subtyp1
+-- Error:
+  value z is not a member of Subtyp1
 
 scala> new Bastyp
-<console>:13: error: trait Bastyp is abstract; cannot be instantiated
-\end{REPL}
+--Error:
+  Bastyp is a trait; it cannot be instantiated
+\end{REPLsmall}
 
 \end{Slide}
 
@@ -418,25 +417,51 @@ class B extends X { val x = 43 }   // x ges en annan implementation
 \pause\vspace{-0.5em}
 \begin{REPL}
 scala> val a = new A
-a: A = A@5faeada1
+val a: A = A@5faeada1
 
-scala> val b = new B
-b: B = B@cb51256
+scala> val b = B()    // fungerar utan new men då behövs ()
+val b: B = B@cb51256
 
 scala> val xs = Vector(a,b)
-xs: scala.collection.immutable.Vector[X] = Vector(A@5faeada1, B@cb51256)
+val xs: Vector[X] = Vector(A@5faeada1, B@cb51256)
 
 scala> xs.map(_.x)
-res0: scala.collection.immutable.Vector[Int] = Vector(42, 43)
+val res0: Vector[Int] = Vector(42, 43)
 
 scala> class Y { val y: Int }
-  error: class Y needs to be abstract, since value y is not defined
-
-scala> trait Z(x: Int)
-  error: traits or objects may not have parameters
-
+-- Error: 
+  class Y needs to be abstract, since val y: Int in class Y is not defined
 \end{REPL}
 \end{Slide}
+
+\begin{Slide}{En trait kan ha parametrar}
+\begin{Code}
+trait X(val x: Int)
+class A extends X(42)  
+class B(y: Int) extends X(y) // värdet av y blir argument till x i X  
+\end{Code}
+\pause\vspace{-0.5em}
+\begin{REPL}
+scala> val a = A()
+val a: A = A@5faeada1
+
+scala> val b = B(43)
+val b: B = B@cb51256
+
+scala> val xs = Vector(a,b)
+val xs: Vector[X] = Vector(A@5faeada1, B@cb51256)
+
+scala> xs.map(_.x)
+val res0: Vector[Int] = Vector(42, 43)
+
+scala> b.y 
+--  Error: 
+  value y cannot be accessed as a member of (b : B)
+\end{REPL}
+\SlideFontTiny
+Hur kan vi göra medlemmen \code{y} synlig? \pause Gör det till en \code{val}-parameter.
+\end{Slide}
+  
 
 
 \ifkompendium
@@ -501,63 +526,64 @@ scala> trait Z(x: Int)
 \ifkompendium
 \vspace{-0.5em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{11}{13}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/vego4.scala}
 \else
-\vspace{-0.5em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6}{7.3}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/vego4.scala}
+\vspace{-0.5em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{7}{9}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/vego4.scala}
 \fi
 \end{Slide}
 
 
 \begin{Slide}{Protected ger synlighet begränsad till subtyper}
-\begin{REPL}
-scala> trait Super {
+\begin{REPLsmall}
+scala> trait Super:
          private val minHemlis = 42
          protected val vårHemlis = 42
-       }
 
 scala> class Sub extends Super { def avslöjad = minHemlis }
-error: not found: value minHemlis
+- Error: Not found: minHemlis
 
 scala> class Sub extends Super { def avslöjad = vårHemlis }
 
-scala> val s = new Sub
-s: Sub = Sub@2eee9593
+scala> val s = Sub()
+val s: Sub = Sub@2eee9593
 
 scala> s.avslöjad
-res0: Int = 42
+val res0: Int = 42
 
 scala> s.minHemlis
-error: value minHemlis is not a member of Sub
+-- Error: 
+  value minHemlis is not a member of Sub - did you mean s.vårHemlis?
 
 scala> s.vårHemlis
-error: Access to protected value vårHemlis not permitted
-\end{REPL}
+-- Error: 
+  Access to protected value vårHemlis not permitted because enclosing object
+  is not a subclass of trait Super where target is defined
+\end{REPLsmall}
 \end{Slide}
 
 
-\begin{Slide}{Filnamnsregler och -konventioner}
+\begin{Slide}{Filnamnsregler och -konventioner}\SlideFontSmall
 \begin{itemize}
-\item Java
-\begin{itemize}
-\item I Java får man bara ha \Alert{en enda} publik klass per kodfil.
-\item I Java måste kodfilen ha \Alert{samma namn} som den publika klassen, t.ex. \code{KlassensNamn.java}
+\item I flera språk, t.ex. Java, gäller dessa regler (men \Alert{inte} i Scala):
+\begin{itemize}\SlideFontTiny
+\item Det går bara ha \Alert{en enda} publik klass per kodfil.
+\item Kodfilen måste ha \Alert{samma namn} som den publika klassen, t.ex. \code{KlassensNamn.java}
 \end{itemize}
-\item Scala
-\begin{itemize}
+\item Scala är friare:
+\begin{itemize}\SlideFontTiny
 \item I Scala får man ha \Emph{många} klasser/traits/singelobjekt i samma kodfil.
-\item I Scala får man döpa kodfilerna \Emph{oberoende} av deras innehåll. \pause Dessa \Emph{konventioner} används:
-\begin{itemize}
+\item I Scala får man döpa kodfilerna \Emph{oberoende} av deras innehåll. \pause 
+\end{itemize}
+
+\item Dessa \Emph{konventioner} brukar användas i Scala:
+\begin{itemize}\SlideFontTiny
 \item Om en kodfil bara innehåller \Emph{en enda} klass/trait/singelobjekt ge filen samma namn som innehållet, t.ex. \code{KlassensNamn.scala}
-\item Om en kodfil innehåller \Emph{flera} saker, döp filen till något som återspeglar hela innehållet och använd \Emph{liten begynnelsebokstav}, t.ex. \code{drawing.scala} eller \code{bastypensNamn.scala}
+\item Om en kodfil innehåller \Emph{flera} saker, döp filen till något som återspeglar hela innehållet och använd \Emph{liten begynnelsebokstav}, t.ex. \code{drawing-utils.scala} eller \code{bastypensNamn.scala}
 \end{itemize}
-
-
-\end{itemize}
-
 \end{itemize}
 \end{Slide}
 
 
 \begin{Slide}{Klasser, arv och klassparametrar}\SlideFontTiny
-Klasser kan ärva klasser. Om superklassen har klassparametrar måste primärkonstruktor ges argument efter \code{extends}.
+Klasser kan ärva andra typer (klasser och traits). Om supertypen har klassparametrar måste subtypen ge argument efter \code{extends}.
 
 \ifkompendium
 \scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{10}{12}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/personExample1.scala}
@@ -569,12 +595,12 @@ Klasser kan ärva klasser. Om superklassen har klassparametrar måste primärkon
 
 \begin{Slide}{Statisk och dynamisk typ}\SlideFontSmall
 \begin{Code}
-    var p: Person = new Forskare("Robin Smith", "Lund", "Professor Dr")
+    var p: Person = Forskare("Robin Smith", "Lund", "Professor Dr")
 \end{Code}
 \begin{itemize}
 \item Den \Emph{statiska typen} för \code{p} är \code{Person} vilket gör att vi sedan kan låta \code{p} referera till andra instanser som är av typen Person.
 \begin{Code}
-p = new Student("Kim Robinson", "Lund", "Data")
+p = Student("Kim Robinson", "Lund", "Data")
 \end{Code}
 
 \pause
@@ -590,7 +616,8 @@ p = new Student("Kim Robinson", "Lund", "Data")
 
 \pause
 
-\item Man kan säga åt kompilatorn: \emph{''jag garanterar att p är av typen \code{EnVissTyp} så du kan omforma den till \code{EnVissTyp}''} med \\  \code{p.asInstanceOf[EnVissTyp]} \\ \pause (detta är inte så vanligt i normal Scala-kod)
+\item Man kan säga åt kompilatorn: \Alert{''jag garanterar att p är av typen \code{EnVissTyp} så du kan omforma den statiska typen till \code{EnVissTyp} och så får jag stå ut med körtidsfel om jag ljuger''} genom att göra typomvandling \Eng{type casting} med    
+\code{p.asInstanceOf[EnVissTyp]}   (detta är mycket ovanligt i normal Scala-kod)
 \end{itemize}
 \end{Slide}
 
@@ -598,15 +625,16 @@ p = new Student("Kim Robinson", "Lund", "Data")
 
 \ifkompendium
 \begin{Slide}{Inmixning}\SlideFontTiny
-Man kan ärva flera traits. Detta kallas inmixning \Eng{mix-in} och görs med \code{with}.
+Man kan ärva flera traits. Detta kallas \Emph{inmixning} \Eng{mix-in} och görs med en komma-separerad typ-lista efter \code{extends}.
 \scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{10}{12.5}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/personExample2.scala}
 \end{Slide}
 \else
 \begin{Slide}{Inmixning}\SlideFontTiny
-  Man kan ärva flera traits. Detta kallas inmixning \Eng{mix-in} och görs med \code{with}.
-  \scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6.4}{7.7}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/personExample2.scala}
+Man kan ärva flera traits. Detta kallas \Emph{inmixning} \Eng{mix-in} och görs med en komma-separerad typ-lista efter \code{extends}.
+\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{7}{9}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/personExample2.scala}
 \end{Slide}
 \fi
+
 
 
 \begin{Slide}{\texttt{isInstanceOf} och \texttt{asInstanceOf}}\SlideFontTiny
@@ -615,18 +643,49 @@ Testa körtidstyp med \code{isInstanceOf[Typ]}. Lova kompilatorn (och ta själv 
 \end{Slide}
 
 
+\begin{Slide}{Fördjupning: Intersektionstyp}\SlideFontSmall
+Vid inmixning blir supertypen en intersektionstyp \Eng{intersection type}, vilket indikeras med typoperatorn \code{&} i exemplet nedan:
+\begin{Code}
+trait Grönsak(val vikt: Int)
+trait HarSmak(val smak: String)
 
-\begin{Slide}{Polymorfism och dynamisk bindning}\SlideFontTiny
+object Gurka extends Grönsak(42), HarSmak("vattning")
+object Tomat extends Grönsak(43), HarSmak("syrlig")
+\end{Code} 
+\begin{REPLnonum}
+scala> Vector(Gurka, Tomat)
+val res0: Vector[Grönsak & HarSmak] = 
+  Vector(Gurka@560742f7, Tomat@3cc82e23)
+\end{REPLnonum}
+\end{Slide}
+  
+
+\begin{Slide}{Fördjupning: Transparent trait}\SlideFontSmall
+Du kan göra din trait \Emph{genomskinlig} vid typhärledning av supertypen för inmixningen med nyckelordet \code{transparent}:
+\begin{Code}
+trait Grönsak(val vikt: Int)
+transparent trait HarSmak(val smak: String)
+
+object Gurka extends Grönsak(42), HarSmak("vattning")
+object Tomat extends Grönsak(43), HarSmak("syrlig")
+\end{Code} 
+\begin{REPLnonum}
+scala> Vector(Gurka, Tomat)
+val res0: Vector[Grönsak] = 
+  Vector(Gurka@560742f7, Tomat@3cc82e23)
+\end{REPLnonum}
+\end{Slide}
+  
+
+\begin{Slide}{Viktig terminologi: Polymorfism och dynamisk bindning}\SlideFontTiny
 \begin{Code}[basicstyle=\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
 trait Robot { def work(): Unit }
 
-case class CleaningBot(name: String) extends Robot {
+case class CleaningBot(name: String) extends Robot:
   override def work(): Unit = println(" Städa Städa")
-}
 
-case class TalkingBot(name: String) extends Robot {
+case class TalkingBot(name: String) extends Robot:
   override def work(): Unit = println(" Prata Prata")
-}
 \end{Code}
 \Emph{Polymorfism} betyder ''många former''. Referenserna r och bot nedan kan ha olika ''former'', d.v.s de kan referera till olika sorters robotar. \\ \Emph{Dynamisk bindning} innebär att körtidstypen avgör vilken metod som körs.
 \begin{REPL}[numbers=left, basicstyle=\color{white}\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
@@ -645,7 +704,7 @@ TalkingBot(C3PO) Prata Prata
 \end{Slide}
 
 
-\begin{Slide}{Anonym klass}
+\begin{Slide}{Anonym klass}\SlideFontSmall
 Om man har en abstrakt typ med saknade implementationer kan man fylla i det som fattas i dessa i ett extra block som ''hängs på'' vid instansiering:
 \begin{REPL}
 scala> trait Grönsak { val vikt: Int }
@@ -657,108 +716,16 @@ scala> new Grönsak
        ^
 
 scala> new Grönsak { val vikt = 42 }
-res0: Grönsak = $anon$1@4e3f2908
+res0: Grönsak = anon1@4e3f2908
 \end{REPL}
 Man får då vad som kallas en \Emph{anonym klass}. (I detta fall en ganska konstig grönsak som inte är någon speciell sorts grönsak med som ändå har en vikt.)
+
+\vspace{0.5em}
+
+Den allra enklaste (och mest meningslösa) anonyma klassen är:
+\begin{REPLsmall}
+scala> new {}
+val res0: Object = anon1@5bb37371
+\end{REPLsmall}
 \end{Slide}
 
-
-\Subsection{Uppräknade värden}
-
-
-\begin{Slide}{Uppräknade värden med heltal}\SlideFontSmall
-Vi kan använda heltalskonstanter för att representera olika färger.
-\begin{Code}
-object Färg {
-  val Spader = 1
-  val Hjärter = 2
-  val Ruter = 3
-  val Klöver = 4
-}
-\end{Code}
-\begin{Code}[language=,keywords={case,class}]
-case class Kort(färg: Int, valör: Int)
-\end{Code}
-
-Vi kan nu använda våra uppräknade färgvärden så här:
-\begin{REPLnonum}
-scala> import Färg._
-scala> Kort(Ruter, 7)
-\end{REPLnonum}
-\pause Men kompilatorn \Alert{kan inte hindra} denna bugg:
-\begin{REPLnonum}
-scala> Kort(42, 7)
-\end{REPLnonum}
-
-\end{Slide}
-
-
-\begin{Slide}{Uppräknade värden med case-objekt}\SlideFontSmall
-Vi kan använda case-objekt för att representera olika färger.
-\begin{Code}[language=,keywords={sealed,trait,object,case,class,extends}]
-sealed trait Färg
-case object Spader  extends Färg
-case object Hjärter extends Färg
-case object Ruter   extends Färg
-case object Klöver  extends Färg
-
-case class Kort(färg: Färg, valör: Int)
-\end{Code}
-
-Vi kan nu använda våra uppräknade färgvärden så här:
-\begin{REPL}
-scala> Kort(Ruter, 7)
-
-scala> Kort(Spader, 1)
-\end{REPL}
-\begin{itemize}
-\item Kompilatorn \Emph{garanterar} att vi bara använder exakt dessa färger.
-
-\item Nyckelordet \code{sealed} förhindrar fler subtyper förutom de som finns här.
-
-\item \code{case} före \code{object} ger en najs \code{toString} och möjliggör matchning \\
-(mer om matchning i w10).
-
-\end{itemize}
-
-\end{Slide}
-
-\begin{Slide}{Uppräknade värden i samling}\SlideFontSmall
-Vi kan placera case-objekten i en samling som kan användas i loopar. \\ Ett lämpligt ställe för en sådan samling är i kompanjonsobjektet till \code{Färg}.
-\begin{Code}
-sealed trait Färg
-object Färg {
-  val values = Vector(Spader, Hjärter, Ruter, Klöver)
-}
-case object Spader extends Färg
-case object Hjärter extends Färg
-case object Ruter extends Färg
-case object Klöver extends Färg
-\end{Code}
-
-\begin{REPL}
-scala> val allaEss = for (f <- Färg.values) yield Kort(f, 1)
-\end{REPL}
-\end{Slide}
-
-
-\begin{Slide}{Uppräknade värden med heltalsomvandling}\SlideFontSmall
-Med en \code{sealed abstract class} och ett heltalsattrribut \code{toInt} som klassparameter kan vi erbjuda omvandling till heltal.
-\begin{Code}
-sealed abstract class Färg(val toInt: Int)
-object Färg {
-  val values = Vector(Spader, Hjärter, Ruter, Klöver)
-}
-case object Spader  extends Färg(0)
-case object Hjärter extends Färg(1)
-case object Ruter   extends Färg(2)
-case object Klöver  extends Färg(3)
-\end{Code}
-
-\begin{REPL}
-scala> Kort(Ruter, 1).färg.toInt
-res0: Int = 2
-\end{REPL}
-Nyckelordet \code{abstract} förhindrar instansiering av \code{Färg}. \\
-Nyckelordet \code{sealed} förhindrar vidare subtypning av \code{Färg}.
-\end{Slide}
