@@ -324,55 +324,78 @@ p.age = 50
 \setlength{\leftmargini}{0pt}
 
 \begin{itemize}
-\item Parametrar som inte föregås av modifierare (t.ex. private val, val, var) blir \Emph{attribut} som är \code{ private[this] val } och bara är synliga i \Alert{denna} instans.
-\item Exempel på konsekvensen av \code{private[this]}:
+\item Parametrar som \Emph{inte} föregås av någon modifierare alls (t.ex. \code{val}, \code{var} etc.) blir medlemmar som är bara är synliga i \Alert{denna} instans.
+\item Exempel på konsekvensen av \Emph{instansprivata} parametrar:
 \begin{REPL}[basicstyle=\SlideFontSize{6.7}{9}\ttfamily\color{white}]
 scala> class C(a: Int){ def add(other: C): Int = a + other.a }
-error: value a is not a member of C
-
-// betyder samma sak som:
-
-scala> class C(private[this] val a: Int){ def add(other: C): Int = a + other.a }
-error: value a is not a member of C
+-- Error:
+1 |class C(a: Int){ def add(other: C): Int = a + other.a }
+  |                                              ^^^^^^^
+  | value a cannot be accessed as a member of (other : C) from class C.
 \end{REPL}
 \item Men detta fungerar fint:
 \begin{REPL}
-scala> class D(val a: Int){ def add(other: D): Int = a + other.a }
+scala> class D(private val a: Int){ def add(other: D): Int = a + other.a }
 
 scala> D(42).add(D(43))
 res0: Int = 85
 \end{REPL}
-...eftersom modifieraren \code{val} framför klassparameter ger publik synlighet.
-\item Vad händer om du skriver \code{private val} framför klassparametern \code{a} ovan?
+...eftersom modifieraren \code{private val} ger en medlem som ''bara'' är \Emph{klassprivat} och ger därmed synlighet i \Alert{alla} \code{D}-instanser (men bara där; medlemmen är inte ens synlig i subtyper till \code{D}).
+\item Observera att modifierarlösaparametrar till case-klasser ger publik medlem.
 \end{itemize}
 \end{Slide}
 
 
-\begin{Slide}{\texttt{private} jämfört med \texttt{private[this]}}\SlideFontSmall
-\code{private[this]} är \Alert{ännu} mer privat än \code{private}
+\begin{Slide}{Styra användningen av infixa alfanumeriska operatorer}
+Från och med Scala 3.1 gäller följande:
+\begin{itemize}
+\item Metoder som har \Emph{alfanumeriska namn}, alltså namn med bokstäver och ev. siffror ger en \Alert{varning} vid operatornotation om de \Alert{inte} är deklarerade med nyckelordet \code{infix}.   
+\end{itemize}
+\pause
 \begin{Code}
-class Hemlis(private val hemlis: Int) {
-  def ärSammaSom(annan: Hemlis) = hemlis == annan.hemlis   // Funkar!
-}
-
-class Hemligare(private[this] val hemlis: Int) {
-  def ärSammaSom(annan: Hemligare) = hemlis == annan.hemlis //KOMPILERINGSFEL
-}
+case class Box(x: Int): // i Scala 3.0 kompilera med optionen "-source future"
+  def +(other: Box): Box = Box(x + other.x)    // operatornotation utan varning
+  def plus(other: Box) = Box(x + other.x)      // operatornotation ger varning
+  infix def add(other: Box) = Box(x + other.x) // operatornotation utan varning
 \end{Code}
-\pause Vad händer om man inte skriver ens \code{val}? \pause Olika för klass och s.k. case-klass:
-\begin{Code}
-class Hemligare(hemlis: Int) { // motsvarar private[this] val
-  def ärSammaSom(annan: Hemligare) = hemlis == annan.hemlis //KOMPILERINGSFEL
-}
-
-case class InteHemlig(seMenInteRöra: Int) { // blir automatiskt val
-  def ärSammaSom(annan: InteHemlig): Boolean =
-    seMenInteRöra == annan.seMenInteRöra
-}
-
-\end{Code}
-{\SlideFontTiny Vi ska lära mer om det godis man får på köpet med \code{case}-klasser om ett litet tag.}
+\begin{REPLsmall}
+> scala -source future // kör igång REPL med regler för framtida versioner
+scala> scala> Box(41) plus Box(1)
+-- Warning:
+1 |Box(41) plus Box(1)
+  |        ^^^^
+  |Alphanumeric method plus is not declared `infix`; it should not be used as infix operator.
+  |The operation can be rewritten automatically to `plus` under -deprecation -rewrite.
+  |Or rewrite to method syntax .plus(...) manually.
+val res0: Box = Box(42)
+\end{REPLsmall}
 \end{Slide}
+
+% \begin{Slide}{Klassprivat jämför med instansprivat}\SlideFontSmall
+% \code{private} ger klassprivat medlem, vilket inte är lika privat som en instansprivat medlem:
+% \begin{Code}
+% class Hemlis(private val hemlis: Int) {
+%   def ärSammaSom(annan: Hemlis) = hemlis == annan.hemlis   // Funkar!
+% }
+
+% class Hemligare(hemlis: Int) {
+%   def ärSammaSom(annan: Hemligare) = hemlis == annan.hemlis //KOMPILERINGSFEL
+% }
+% \end{Code}
+% \pause Vad händer om man inte skriver ens \code{val}? \pause Olika för klass och s.k. case-klass:
+% \begin{Code}
+% class Hemligare(hemlis: Int) { // motsvarar private[this] val
+%   def ärSammaSom(annan: Hemligare) = hemlis == annan.hemlis //KOMPILERINGSFEL
+% }
+
+% case class InteHemlig(seMenInteRöra: Int) { // blir automatiskt val
+%   def ärSammaSom(annan: InteHemlig): Boolean =
+%     seMenInteRöra == annan.seMenInteRöra
+% }
+
+% \end{Code}
+% {\SlideFontTiny Vi ska lära mer om det godis man får på köpet med \code{case}-klasser om ett litet tag.}
+% \end{Slide}
 
 
 
