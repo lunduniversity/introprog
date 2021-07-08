@@ -4,14 +4,6 @@
 %%%
 
 
-%\begin{Slide}{TODO: Begrepp att förklara}
-%  Tänk igenom ordningen:
-%  \begin{itemize}
-%    \item OO, arv, supertyp, subtyp, bastyp, polymorfism, ...
-%  \end{itemize}
-%\end{Slide}
-
-
 \Subsection{Överskuggingsregler, \texttt{override}}
 
 \begin{Slide}{Medlemmar, arv och överskuggning}\SlideFontTiny
@@ -23,7 +15,6 @@
 \item \code{lazy val}
 \item \code{var}
 \end{itemize}
-
 
 \columnbreak
 
@@ -99,7 +90,7 @@ res1: String = super pepino
 
 \pause
 \begin{tikzpicture}[overlay]
-     \node at (7.5,1.7) {\includegraphics[scale=0.5]{../img/ttsuper}};
+\node at (7.5,1.7) {\includegraphics[scale=0.5]{../img/ttsuper}};
 \end{tikzpicture}
 \href{https://youtu.be/NPhjiXskz34}{\small https://youtu.be/NPhjiXskz34}
 %\href{http://www.pepinadas.com/}{\small www.pepinadas.com/}
@@ -135,7 +126,7 @@ res1: String = super pepino
 \ifkompendium\else
 \pause
 \begin{tikzpicture}[overlay]
-     \node at (10.7,0.6) {\includegraphics[scale=0.36]{../img/ttsuper}};
+\node at (10.7,0.6) {\includegraphics[scale=0.36]{../img/ttsuper}};
 \end{tikzpicture}
 \fi
 
@@ -158,23 +149,109 @@ res1: String = super pepino
 \item En speciellt enkel form av s.k. algebraisk datatyp som består av en uppräknad, ändlig sekvens av enkla värden som har en ordning.
 \item Skapas i Scala med 1) heltal, 2) \code{sealed trait} ... \code{case class} ... 3) \code{enum}
 \end{itemize} 
-\item Algebraisk datatyp \Eng{algebraic data type}
+\item Algebraisk datatyp \Eng{algebraic data type}, förk. ADT
 \begin{itemize}\SlideFontTiny
 \item En datatyp som är sammansatt av delar som kan kombineras. 
 \item Två olika algebraiska datatyper som kan kombineras med varandra:
 \begin{itemize}\SlideFontTiny
-\item \Alert{Och}-typ (ä.k. produkttyp, record, struct), exempel: \\ \code|case class Person(namn: Int, ålder: Int)| \\består av attributen namn \Alert{OCH} ålder.
-\item \Emph{Eller}-typ (ä.k. summatyp), exempel: \code|enum Färg { case Röd, Svart}| \\kan vara antingen röd \Emph{ELLER} svart.
+\item \Alert{Och}-typ (ä.k. produkt, record, struct), exempel: \\ \code|case class Person(namn: String, ålder: Int)| \\består av attributen namn \Alert{OCH} ålder.
+\item \Emph{Eller}-typ (ä.k. summa, union), exempel: \code|enum Färg { case Röd, Svart}| \\kan vara antingen röd \Emph{ELLER} svart.
 \end{itemize}  
 \end{itemize} 
-\end{itemize}     
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{En case-klass är en produkt.}
+Klassen \code{Person} nedan har ett namn \Alert{och} en ålder.
+\begin{REPL}
+scala> case class Person(namn: String, ålder: Int)
+
+scala> Person("Kim",42)
+val res0: Person = Person(Kim,42)
+
+scala> res0.isInstanceOf[Product]
+val res1: Boolean = true
+
+scala> res0.product   // Tryck TAB
+productArity          productElement    productElementName
+productElementNames   productIterator   productPrefix
+          
+scala> res0.productElementNames.toVector
+val res2: Vector[String] = Vector(namn, ålder)
+
+scala> res0.productElement
+val res3: Int => Any = Lambda1981/0x00000008408f2840@44498af0
+
+scala> res0.productElement(0)
+val res4: Any = björn
+
+\end{REPL} 
 \end{Slide}
 
 
-\begin{Slide}{Algebraiska datatyper}
-     \TODO visa med både case classer och enum
+\begin{Slide}{Algebraisk datatyp, kombinerad produkt och summa}\SlideFontSmall
+Med trait, case-klass och objekt:
+\begin{Code}
+sealed trait PersonId // summan av två subtyper (Number eller Missing)
+object PersonId:  
+  case class Number(n: Long) extends PersonId  // produkt med ett element
+  case object Missing extends PersonId         // ett enkelt värde
+\end{Code}
+Motsvarande med \code{enum}:
+\begin{Code}
+enum PersonId:
+  case Number(n: Long)
+  case Missing     
+\end{Code}
+\begin{REPLsmall}
+scala> Vector.tabulate(10)(i => 
+         if i % 3 == 0 then PersonId.Missing else PersonNumber(i)
+       )
+val res0: Vector[Object] = Vector(Missing, PersonNumber(1), PersonNumber(2), Missing, 
+  PersonNumber(4), PersonNumber(5), Missing, PersonNumber(7), PersonNumber(8), Missing)
+\end{REPLsmall}
+
 \end{Slide}
 
-\begin{Slide}{Typunioner med eller-operator}
-     \TODO
+\begin{Slide}{Algebraisk datatyp med typparameter}\SlideFontSmall
+Denna ADT har ett fall som är en \Emph{generisk} case-klass:     
+\begin{Code}
+sealed trait Kanske[+A]   // +A ger s.k. covarians, mer om det senare
+object Kanske:
+  case class Någon[A](a: A) extends Kanske[A]
+  case object Ingen extends Kanske[Nothing]   
+\end{Code}
+Motsvarande med \code{enum}: (kompilatorn fyller i \code{extends ...} automatiskt)
+\begin{Code}
+enum Kanske[+A]:
+  case Någon(a: A)
+  case Ingen     
+\end{Code}
+Känner du igen denna? \pause Jämför inbyggda typen \code{Option}\\~\\Implementation av \code{getOrElse} med extensionsmetod, tips: använd \code{match} \pause
+\begin{Code}
+extension [A](k: Kanske[A]) def getOrElse(default: A):A = k match 
+  case Kanske.Någon(a) => a
+  case Kanske.Ingen => default
+\end{Code}     
+\end{Slide}
+
+\begin{Slide}{Typunioner med eller-operator}\SlideFontSmall
+En mycket enkel summa-typ kan skapas med typ-operatorn \code{|} 
+\begin{REPLsmall}
+scala> var x: Int | String = 42
+var x: Int | String = 42
+
+scala> x = "hej" 
+x: Int | String = hej
+
+scala> type IntOrErr = Int | String
+// defined alias type IntOrErr = Int | String
+
+scala> def div(nom: Int, denom: Int): IntOrErr = 
+         if denom != 0 then nom / denom else "div. by zero"
+\end{REPLsmall}
+Fördel jämfört med klass: rudimentärt enkelt.\\ Nackdelar: kan inte deklarera parametrar, medelemmar och allt annat som en klass kan; i viss mån kan detta kompensera med \code{extension} och \code{match}.\\ 
+{\SlideFontTiny Läs mer här:
+\url{https://dotty.epfl.ch/docs/reference/new-types/union-types.html}
+}
 \end{Slide}
