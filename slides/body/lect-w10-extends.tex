@@ -658,6 +658,36 @@ val res0: Vector[Grönsak & HarSmak] =
   Vector(Gurka@560742f7, Tomat@3cc82e23)
 \end{REPLnonum}
 \end{Slide}
+
+
+
+\begin{Slide}{Förseglade typer med \texttt{sealed}}\SlideFontSmall
+Med en \code{sealed} kan du skapa en \Emph{förseglad} datatyp, exempel uppräkning:
+\begin{Code}
+sealed trait Färg(val toInt: Int)
+object Färg:
+  val values = Vector(Spader, Hjärter, Ruter, Klöver)
+  
+  case object Spader  extends Färg(0)
+  case object Hjärter extends Färg(1)
+  case object Ruter   extends Färg(2)
+  case object Klöver  extends Färg(3)
+\end{Code}
+Nyckelordet \code{sealed} förhindrar vidare subtypning av \code{Färg} och ger varning om matchning inte är fullständig, vilket är till stor hjälp för att förhindra buggar.
+
+\begin{REPL}
+scala> Färg.values(0) match { case Färg.Spader => "hej" }
+-- Warning:
+1 |Färg.values(0) match { case Färg.Spader => "hej" }
+  |^^^^^^^^^^^^^^
+  |match may not be exhaustive.
+  |
+  |It would fail on pattern case: Hjärter, Ruter, Klöver
+val res0: String = hej
+\end{REPL}
+\end{Slide}
+  
+       
   
 
 \begin{Slide}{Fördjupning: Transparent trait}\SlideFontSmall
@@ -727,5 +757,63 @@ Den allra enklaste (och mest meningslösa) anonyma klassen är:
 scala> new {}
 val res0: Object = anon1@5bb37371
 \end{REPLsmall}
+\end{Slide}
+
+
+\begin{Slide}{Öppen klass}\SlideFontSmall
+\begin{itemize}
+\item Om man ärver en klass får man tillgång till alla medlemmar som inte är privata och kan byta till godtycklig implementation om typerna stämmer.
+\item Detta kan ibland vara riskabelt om den som skrivit klassen inte planerat för detta och dokumenterat hur klassen är tänkt att användas vid arv. 
+\item Därför kan du skapa \Emph{öppna klasser} med nyckelordet \code{open}.
+\begin{Code}
+open class Gurka(val vikt: Int, val pris: Double):
+  /** Override this if you want another alternative. */
+  def alternative: String = s"Det går precis lika bra med selleri!"  
+\end{Code}
+\item \code{open} krävs om du vill tillåta arv från en annan kodfil.
+\item Du kan komma runt detta krav med \code{import scala.language.adhocExtensions} 
+\end{itemize}  
+
+\url{https://youtu.be/aFmIS5qeetA?t=221}
+\end{Slide}
+
+
+\Subsection{Trait eller abstrakt klass?}
+
+\begin{Slide}{Trait eller abstrakt klass?}\SlideFontSmall
+Nyckelordet \code{abstract} behövs framför \code{class} om abstrakta medlemmar:
+\begin{REPLsmall}
+scala> class X { val x: Int }
+1 |class X { val x: Int }
+  |      ^
+  |      class X needs to be abstract, since val x: Int in class X is not defined 
+
+scala> abstract class X { val x: Int }
+// defined class X
+\end{REPLsmall}  
+Men går det inte lika bra med en trait? \pause Jo, det går ofta \href{https://youtu.be/aFmIS5qeetA?t=221}{lika bra med en trait}.
+
+\label{slideW07:traitorclass}
+\begin{multicols}{2}
+\noindent Använd en \Emph{trait} som supertyp om...
+\begin{itemize}
+\item ...du är osäker på vilket som är bäst. (Du kan alltid ändra till en abstrakt klass senare.)
+\item ...du vill kunna mixa in din trait tillsammans med andra traits.
+\item ...du vill göra din typ transparent vid typhärledning.
+%\item ...du vill skapa ett flexibelt gränssnitt som del i ett api.
+
+\end{itemize}
+
+\columnbreak
+
+\noindent Använd en \Alert{abstrakt klass} som supertyp om...
+\begin{itemize}
+\item ...du vill begränsa inmixning. 
+\item ...du vill ärva supertypen från klasser skrivna i Java.
+\item ...du vill minimera tid för omkompilering vid ändringar (spar tid vid stora projekt).
+\end{itemize}
+
+
+\end{multicols}
 \end{Slide}
 
