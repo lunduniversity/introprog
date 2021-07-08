@@ -20,7 +20,7 @@ alt 1 labb v8
 | W11 | 23/11-27/11 | Lp2V4 | *Kontextuella abstraktioner*          | F21 F22 | *given*     | snake1      |
 | W12 | 30/11-4/12  | Lp2V5 | Fördjupning                           | F23 F24 | extra       | project0    |
 | W13 | 7/12-11/12  | Lp2V6 | Repetition                            | F25 F26 | examprep    | project1    |
-| W14 | 14/12-18/12 | Lp2V7 | --                                    | F27 F28 | uppsamling  | *exam*      |
+| W14 | 14/12-18/12 | Lp2V7 | Reserv                                | F27 F28 | uppsamling  | *exam*      |
 | T   | 11/1        | TP2   | VALFRI TENTAMEN                       | --      | --          | --          |
 
 alt 2 ingen lab v8
