@@ -81,7 +81,7 @@ Mer om UML-diagram i pfk, OMD.\\
 
 \end{Slide}
 
-\begin{Slide}{Exempel: Robot}
+\begin{Slide}{Exempel: Robot som bastyp för två subtyper}
 \begin{center}
 \newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
 \begin{tikzpicture}[inner sep=0.5em]
@@ -103,7 +103,7 @@ Mer om UML-diagram i pfk, OMD.\\
 \draw[umlarrow] (MuteRobot.north) -- ++(0,0.5) -| (AbstractRobot.south);
 \end{tikzpicture}
 \end{center}
-Ibland utelämnar man attribut och/eller metoder för att minska på antalet detaljer och ge överblick.
+{\SlideFontSmall (Ibland utelämnar man attribut och/eller metoder för att minska antalet detaljer och ge överblick.)}
 \end{Slide}
 
 
@@ -372,7 +372,7 @@ Alla dina egna typer ingår underförstått i Scalas typhierarki:
 
 \item den \Alert{kan inte} instansieras direkt eftersom den är abstrakt.
 
-\item den \Alert{kan inte} ha klassparametrar eller konstruktorer.
+\item Från Scala 3 \Emph{kan} den ha \Emph{parametrar} (precis som klasser).
 \end{itemize}
 \end{itemize}
 
@@ -643,68 +643,7 @@ Testa körtidstyp med \code{isInstanceOf[Typ]}. Lova kompilatorn (och ta själv 
 \end{Slide}
 
 
-\begin{Slide}{Fördjupning: Intersektionstyp}\SlideFontSmall
-Vid inmixning blir supertypen en intersektionstyp \Eng{intersection type}, vilket indikeras med typoperatorn \code{&} i exemplet nedan:
-\begin{Code}
-trait Grönsak(val vikt: Int)
-trait HarSmak(val smak: String)
 
-object Gurka extends Grönsak(42), HarSmak("vattning")
-object Tomat extends Grönsak(43), HarSmak("syrlig")
-\end{Code} 
-\begin{REPLnonum}
-scala> Vector(Gurka, Tomat)
-val res0: Vector[Grönsak & HarSmak] = 
-  Vector(Gurka@560742f7, Tomat@3cc82e23)
-\end{REPLnonum}
-\end{Slide}
-
-
-
-\begin{Slide}{Förseglade typer med \texttt{sealed}}\SlideFontSmall
-Med en \code{sealed} kan du skapa en \Emph{förseglad} datatyp, exempel uppräkning:
-\begin{Code}
-sealed trait Färg(val toInt: Int)
-object Färg:
-  val values = Vector(Spader, Hjärter, Ruter, Klöver)
-  
-  case object Spader  extends Färg(0)
-  case object Hjärter extends Färg(1)
-  case object Ruter   extends Färg(2)
-  case object Klöver  extends Färg(3)
-\end{Code}
-Nyckelordet \code{sealed} förhindrar vidare subtypning av \code{Färg} och ger varning om matchning inte är fullständig, vilket är till stor hjälp för att förhindra buggar.
-
-\begin{REPL}
-scala> Färg.values(0) match { case Färg.Spader => "hej" }
--- Warning:
-1 |Färg.values(0) match { case Färg.Spader => "hej" }
-  |^^^^^^^^^^^^^^
-  |match may not be exhaustive.
-  |
-  |It would fail on pattern case: Hjärter, Ruter, Klöver
-val res0: String = hej
-\end{REPL}
-\end{Slide}
-  
-       
-  
-
-\begin{Slide}{Fördjupning: Transparent trait}\SlideFontSmall
-Du kan göra din trait \Emph{genomskinlig} vid typhärledning av supertypen för inmixningen med nyckelordet \code{transparent}:
-\begin{Code}
-trait Grönsak(val vikt: Int)
-transparent trait HarSmak(val smak: String)
-
-object Gurka extends Grönsak(42), HarSmak("vattning")
-object Tomat extends Grönsak(43), HarSmak("syrlig")
-\end{Code} 
-\begin{REPLnonum}
-scala> Vector(Gurka, Tomat)
-val res0: Vector[Grönsak] = 
-  Vector(Gurka@560742f7, Tomat@3cc82e23)
-\end{REPLnonum}
-\end{Slide}
   
 
 \begin{Slide}{Viktig terminologi: Polymorfism och dynamisk bindning}\SlideFontTiny
@@ -759,19 +698,126 @@ val res0: Object = anon1@5bb37371
 \end{REPLsmall}
 \end{Slide}
 
+\begin{Slide}{Fördjupning: Intersektionstyp}\SlideFontSmall
+Vid inmixning blir supertypen en intersektionstyp \Eng{intersection type}, vilket indikeras med typoperatorn \code{&} i exempel nedan:
+\begin{Code}
+trait Grönsak(val vikt: Int)
+trait HarSmak(val smak: String)
 
-\begin{Slide}{Öppen klass}\SlideFontSmall
+object Gurka extends Grönsak(42), HarSmak("vattning")
+object Tomat extends Grönsak(43), HarSmak("syrlig")
+\end{Code} 
+\begin{REPLnonum}
+scala> Vector(Gurka, Tomat)
+val res0: Vector[Grönsak & HarSmak] = 
+  Vector(Gurka@560742f7, Tomat@3cc82e23)
+\end{REPLnonum}
+Det går att skapa egna intersektionstyper med \code{with}:
+\begin{REPLsmall}
+scala> class X { val x = 42 }
+scala> trait Y { val y = "hej" }
+scala> val a: X & Y = new X         // -- Error: Found: X Required: X & Y
+scala> val b: X & Y = new X with Y  // Funkar! En anonym klass av typen X & Y
+\end{REPLsmall}
+\end{Slide}
+  
+
+
+\begin{Slide}{Hur förhindra subtypning?}
+Du kan förhindra subtypning på dessa sätt:  
+\begin{itemize}
+\item Med \code{final} skapar du en final klass som ej går att ärva:
+\begin{Code}
+final class Person(name: String)
+\end{Code}   
+\begin{REPLsmall}
+scala> object Björn extends Person("Björn")
+-- Error:
+1 |object Björn extends Person("Björn")
+  |       ^
+  |       object Björn cannot extend final class Person
+
+\end{REPLsmall}
+\item Med \code{sealed} kan du försegla en hel typhierarki:
+\begin{REPLsmall}
+scala> sealed trait T  // tryck Alt+TAB för att vänta med evaluering
+     | final class A extends T
+     | final class B extends T
+     |
+scala> new T{}
+-- Error:
+1 |new T{}
+|^
+|Cannot extend sealed trait T in a different source file
+\end{REPLsmall}
+Med en förseglad typhierarki kan du bara ärva bastypen inom samma kodfil. 
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Förseglade typer med \texttt{sealed}}\SlideFontSmall
+Med en \code{sealed} kan du skapa en \Emph{förseglad} uppräkning:
+\begin{Code}
+sealed trait Färg(val toInt: Int)
+object Färg:
+  val values = Vector(Spader, Hjärter, Ruter, Klöver)
+  
+  case object Spader  extends Färg(0)
+  case object Hjärter extends Färg(1)
+  case object Ruter   extends Färg(2)
+  case object Klöver  extends Färg(3)
+\end{Code}
+Nyckelordet \code{sealed} förhindrar vidare subtypning av \code{Färg} och \Alert{ger varning} om matchning inte är fullständig, vilket är hjälper dig att inte orsaka körtidsfel.
+
+\begin{REPL}
+scala> Färg.values(0) match { case Färg.Spader => "hej" }
+-- Warning:
+1 |Färg.values(0) match { case Färg.Spader => "hej" }
+  |^^^^^^^^^^^^^^
+  |match may not be exhaustive.
+  |
+  |It would fail on pattern case: Hjärter, Ruter, Klöver
+val res0: String = hej
+\end{REPL}
+\end{Slide}
+  
+        
+  
+
+\begin{Slide}{Fördjupning: Transparent trait}\SlideFontSmall
+Du kan göra din trait \Emph{genomskinlig} vid typhärledning av supertypen för inmixningen med nyckelordet \code{transparent}:
+\begin{Code}
+trait Grönsak(val vikt: Int)
+transparent trait HarSmak(val smak: String)
+
+object Gurka extends Grönsak(42), HarSmak("vattning")
+object Tomat extends Grönsak(43), HarSmak("syrlig")
+\end{Code} 
+\begin{REPLnonum}
+scala> Vector(Gurka, Tomat)
+val res0: Vector[Grönsak] = 
+  Vector(Gurka@560742f7, Tomat@3cc82e23)
+\end{REPLnonum}
+Vilken typ hade visats utan \code{transparent}? \pause \\ \code{Vector[Grönsak & HarSmak]}
+\end{Slide}
+
+
+\begin{Slide}{Öppen klass signalerar uppmuntrad subtypning}\SlideFontSmall
 \begin{itemize}
 \item Om man ärver en klass får man tillgång till alla medlemmar som inte är privata och kan byta till godtycklig implementation om typerna stämmer.
-\item Detta kan ibland vara riskabelt om den som skrivit klassen inte planerat för detta och dokumenterat hur klassen är tänkt att användas vid arv. 
-\item Därför kan du skapa \Emph{öppna klasser} med nyckelordet \code{open}.
+\item Detta kan vara riskabelt om den som skrivit klassen inte planerat för detta och noga dokumenterat hur klassen är tänkt att användas vid arv. 
+\item Genom att skapa \Emph{öppna klasser} med nyckelordet \code{open} signalerar du att klassen är tänkt att vara en supertyp vid arv.
 \begin{Code}
 open class Gurka(val vikt: Int, val pris: Double):
-  /** Override this if you want another alternative. */
+  /** Override this method if you want another alternative. */
   def alternative: String = s"Det går precis lika bra med selleri!"  
 \end{Code}
-\item \code{open} krävs om du vill tillåta arv från en annan kodfil.
-\item Du kan komma runt detta krav med \code{import scala.language.adhocExtensions} 
+\begin{REPLsmall}
+scala> object StorGurkan extends Gurka(1000, 1_000_000): // ärv på bäst du vill!
+         override def alternative = "kan kanske också funka med en betongpelare"
+\end{REPLsmall}
+\item \code{open} krävs om du vill tysta varning vid arv från en annan kodfil.
+\item Du kan även komma undan varningen med \code{import scala.language.adhocExtensions} 
 \end{itemize}  
 
 \url{https://youtu.be/aFmIS5qeetA?t=221}
