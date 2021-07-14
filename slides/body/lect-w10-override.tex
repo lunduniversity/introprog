@@ -35,29 +35,85 @@
 \begin{itemize}\SlideFontTiny
 \item När man överskuggar \Eng{override} en medlemmen med en annan medlem med samma namn i en subtyp, får denna medlem en (ny) implementation.
 
+\item Singelobjekt kan ej ärvas (och medlemmar i singelobjekt kan därmed ej överskuggas).
+
 \item När man konstruerar ett objektorienterat språk gäller det att man definierar sunda överskuggningsregler vid arv. Detta är förvånansvärt knepigt.
 
-\item Singelobjekt kan ej ärvas (och medlemmar i singelobjekt kan därmed ej överskuggas).
+\item Alla knepiga regler för överskuggning är svåra att lära sig utantill, men som tur är så hjälper kompilatorns felmeddelande dig att följa reglerna \code{:)}
 \end{itemize}
 \end{Slide}
 
 
 \begin{Slide}{Fördjupning: Regler för överskuggning i Scala} \SlideFontTiny
 \label{slideW07:overriderules}
-En medlem M1 i en supertyp får överskuggas av en medlem M2 i en subtyp, enligt dessa regler:
+En medlem M1 i en supertyp får överskuggas av en medlem M2 i en subtyp, enligt dessa regler: (se även \url{https://stackoverflow.com/questions/40057337})
 \begin{enumerate}
 \item M1 och M2 ska ha samma namn och typerna ska matcha.
-\item \code{def} får bytas ut mot: \code{def}, \code{val}, \code{var}, \code{lazy val}
-\item \code{val} får bytas ut mot: \code{val}, och om M1 är abstrakt mot en \code{lazy val}.
-\item \code{var} får bara bytas ut mot en \code{var}.
+\item \code{def} får bytas ut mot: \code{def}, \code{val}, och \code{lazy val}, och under speciella förutsättningar \code{var} (mer om att byta \code{def} mot \code{var} snart)
+\item \code{val} får bytas ut mot \code{val}. Om medlemmen i M1 som överskuggas är abstrakt så får en \code{val} även bytas mot en \code{lazy val}.
+\item En abstrakt \code{var} får bara bytas ut mot en \code{var}. En konkret \code{var} får ej bytas ut.
 \item \code{lazy val} får bara bytas ut mot en \code{lazy val}.
 \item Om en medlem i en supertyp är abstrakt \emph{behöver} man inte använda nyckelordet \code{override} i subtypen. (Men det är bra att göra det ändå så att kompilatorn hjälper dig att kolla att du verkligen överskuggar något.)
 \item Om en medlem i en supertyp är konkret \emph{måste} man använda nyckelordet \code{override} i subtypen, annars ges kompileringsfel.
 \item M1 får inte vara \code{final}.
-\item M1 får inte vara \code{private} eller \code{private[this]}, men kan vara \code{private[X]} om M2 också är \code{private[X]}, eller \code{private[Y]} om X innehåller Y.
+\item M1 får inte vara \code{private}, men kan vara \code{private[X]} om M2 också är \code{private[X]}, eller \code{private[Y]} om X är (en del av) Y.
 \item Om M1 är \code{protected} måste även M2 vara det.
 
 \end{enumerate}
+\end{Slide}
+
+\begin{Slide}{Fördjupning: Överskugga \texttt{var} med \texttt{var}}\SlideFontTiny
+Det krävs speciella förutsättningar för att överskugga en \code{var} med en \code{var}.
+\begin{itemize}
+\item En konkret medlem får \Alert{inte} bytas ut mot en \code{var} -- inte ens en konkret \code{var}:
+\begin{REPLsmall}
+scala> trait ConcreteVar { var x = 42 }
+scala> trait Sub extends ConcreteVar { override var x = 43 }
+-- Error:
+1 |trait Sub extends ConcreteVar { override var x = 43 }
+  |                                             ^
+  |             error overriding variable x in trait ConcreteVar of type Int;
+  |               variable x of type Int cannot override a mutable variable
+\end{REPLsmall}
+\item En abstrakt \code{var}-medlem får bytas ut mot en \code{var} om du \Alert{inte} skriver \code{override}:
+\begin{REPLsmall}
+scala> trait AbstractVar { var x: Int }
+scala> trait Sub extends AbstractVar { override var x = 43 }
+-- Error:
+1 |trait Sub extends AbstractVar { override var x = 43 }
+  |                                             ^
+  |             error overriding variable x in trait AbstractVar of type Int;
+  |               variable x of type Int cannot override a mutable variable
+scala> trait Sub extends AbstractVar { var x = 43 }   // funkar utan override
+// defined trait Sub
+\end{REPLsmall}
+\end{itemize}
+Undvik abstrakta \code{var}-medlemmar -- oftast bättre med abstrakt \code{def}.
+\end{Slide}
+
+\begin{Slide}{Fördjupning: Överskugga \texttt{def} med \texttt{var}}\SlideFontTiny
+\begin{itemize}
+\item En abstrakt \code{def}-medlem får bytas ut mot en \code{var} om du \Alert{inte} skriver \code{override}:
+\begin{REPLsmall}
+scala> trait AbstractDef { def x: Int }
+scala> trait Sub extends AbstractDef { override var x = 43 }
+-- Error:
+1 |trait Sub extends AbstractDef { override var x = 43 }
+  |                                             ^
+  |                                             setter x_= overrides nothing
+
+scala> trait Sub extends AbstractVar { var x = 43 }   // funkar om ej override
+\end{REPLsmall}
+Den abstrakta \code{def}-medlemmen blir då implementerad av en konkret getter. 
+\item Egentligen är en publik \code{var}-medlem en kombination av en getter och en setter. Du kan skapa konkret getter+setter och överskugga gettern explicit med \code{override} (notera att settern inte kan göra \code{override}, eftersom superklassen inte har någon motsvarande metod att byta ut -- jämför felmeddelande ovan):
+\begin{REPLsmall}
+scala> trait Sub2 extends AbstractDef:
+         private var myPrivateValue = 42
+         override def x: Int = myPrivateValue
+         def x_(newValue: Int): Unit = myPrivateValue = newValue
+\end{REPLsmall}
+Ovan fungerar fint eftersom vi nu har en giltig kombination av getter+setter.
+\end{itemize}
 \end{Slide}
 
 
