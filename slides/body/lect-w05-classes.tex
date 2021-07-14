@@ -281,8 +281,8 @@ class Klassnamn(val attribut1: Int, attribut2: String){
 val instansReferens = new Klassnamn(42, "hej")  // new är valfritt här 
 \end{Code}
 
-\item Parametrar som inte föregås av modifierare (t.ex. private val, val, var) blir \Emph{attribut} som är \code{ private[this] val } och bara är synliga i \Alert{denna} instans.
-\item Attribut i klasskroppen är \Emph{publika} (alltså synliga utåt) om inte \code{private} anges.
+\item Parametrar som inte föregås av modifierare (t.ex. private val, val, var) blir \Emph{attribut} som bara är synliga i \Alert{denna} instans.
+\item Attribut i klasskroppen är \Emph{publika} (alltså synliga utåt) om de inte är \code{private} (eller \code{protected} som begränsar synlighet till subtyper som vi ska se senare).
 \end{itemize}
 \end{Slide}
 
@@ -345,6 +345,27 @@ res0: Int = 85
 \end{itemize}
 \end{Slide}
 
+
+\begin{Slide}{Fördjupning: Styra synlighet med \texttt{private[X]}}
+Med hjälp av \code{private[X]} kan du begränsa synlighet till \code{X}, där \code{X} kan vara ett singelobjekt, en typ eller ett paket:
+\begin{REPLsmall}
+scala> object  X: 
+     |   object Y { private[X] var y = 42 }
+     |   def visaHemlis = Y.y  // y syns i X
+     | 
+// defined object X
+
+scala> X.Y.y
+-- Error:
+1 |X.Y.y
+  |^^^^^
+  |variable y cannot be accessed as a member of X.Y.type from module class rs$line$26.
+
+scala> X.visaHemlis
+val res0: Int = 42
+
+\end{REPLsmall}
+\end{Slide}
 
 \begin{Slide}{Styra användningen av infixa alfanumeriska operatorer}
 Från och med Scala 3.1 gäller följande:
@@ -887,6 +908,88 @@ scala> g = null         // instansen kommer att destrueras av skräpsamlaren
 \end{itemize}
 \end{Slide}
 
+\Subsection{Initialisering av attribut}
+\begin{Slide}{Problem med initialisering av attribut vid konstruktion}
+\begin{Code}
+class InitBug1:  
+  val HEJ = hej.toUpperCase
+  val hej = "hej"
+
+class InitBug2:
+  val b = a
+  val a = 10
+
+class InitBug3:
+  val hej2 = hej1
+  val hej1 = "hej"
+\end{Code}
+\begin{REPL}
+scala> val ib1 = new InitBug1
+scala> val ib2 = new InitBug2
+scala> ib2.b
+scala> val ib3 = new InitBug3
+scala> ib3.hej2
+\end{REPL}
+Vad händer?
+
+\end{Slide}
+
+\begin{Slide}{Vilka värden har attribut medan konstruktion pågår?}
+\begin{Code}
+class InitBug1:  
+  val HEJ = hej.toUpperCase
+  val hej = "hej"
+
+class InitBug2:
+  var b = a
+  var a = 10
+
+class InitBug3:
+  val hej2 = hej1
+  val hej1 = "hej"
+\end{Code}
+\begin{REPL}
+scala> val ib1 = new InitBug1   // java.lang.NullPointerException
+scala> val ib2 = new InitBug2
+scala> ib2.b                    // val res0: Int = 0  // WHAT????
+scala> val ib3 = new InitBug3
+scala> ib3.hej2                 // val res1: String = null  //WHAT???
+\end{REPL}
+Varför? Vad finns det för lösningar?
+
+\end{Slide}
+
+\begin{Slide}{Defaultvärden under pågående konstruktion}
+\begin{tabular}{r | l}
+\texttt{Int}    & \texttt{0} \\
+\texttt{Double} & \texttt{0.0} \\ \\
+\texttt{Float}  & \texttt{0.0F} \\ 
+\texttt{Long}   & \texttt{0L} \\ \\
+\texttt{Short}  & \texttt{0.toShort} \\
+\texttt{Byte}   & \texttt{0.toByte} \\
+\texttt{Char}   & \texttt{0.toChar} \\ \\
+Alla referenstyper, tex. \code|String| & \code|null| \\
+\end{tabular}
+\end{Slide}
+
+\begin{Slide}{Lösningar på initialiseringsproblem under konstruktion}
+\begin{itemize}
+  \item Ändra ordningen på attribut-deklarationer om möjligt
+  \item Använd om möjligt i stället \code{lazy val} (init sker senare)
+  \item Använd om möjligt i stället \code{def} (evaluering vid varje anrop)
+\end{itemize}
+Om du \Alert{verkligen} behöver hantera ett oinitialiserat värde:
+\begin{Code}
+class Box:
+  private var x: String = scala.compiletime.uninitialized // tydlig null-risk
+  def get: String = if x != null then x else ""          // glöm ej null-koll
+  def getOrElse(alt: String): String = if x != null then x else alt  
+  def set(value: String): Unit = x = value
+\end{Code}
+Försök att \Alert{undvika} detta eftersom det ger stor risk för buggar!\\
+{\SlideFontSmall (I ovan fiktiva exempel hade vi kunnat undvika detta enkelt genom att ge x startvärdet \code{""} i stället för null. En sådan lösing förutsätter att det finns en rimlig representation av ett saknat värde. Mer om hantering av saknade värden senare...)}
+
+\end{Slide}
 
 \Subsection{Referensen \texttt{this}}
 \begin{Slide}{Referensen \texttt{this}}\SlideFontSmall
