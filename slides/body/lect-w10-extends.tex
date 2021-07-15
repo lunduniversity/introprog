@@ -835,12 +835,10 @@ scala> class X { val x: Int }
   |      ^
   |      class X needs to be abstract, since val x: Int in class X is not defined 
 
-scala> abstract class X { val x: Int }
-// defined class X
+scala> abstract class X { val x: Int }  // fungerar!
 \end{REPLsmall}  
-Men går det inte lika bra med en trait? \pause Det går ofta \href{https://youtu.be/aFmIS5qeetA?t=221}{precis lika bra med en trait}.
-
-\label{slideW07:traitorclass}
+Men går det inte lika bra med en trait? \pause Det går ofta \href{https://youtu.be/aFmIS5qeetA?t=221}{precis lika bra med en trait}.%
+\label{slideW07:traitorclass}%
 \begin{multicols}{2}
 \noindent Använd en \Emph{trait} om...
 \begin{itemize}
@@ -855,13 +853,32 @@ Men går det inte lika bra med en trait? \pause Det går ofta \href{https://yout
 
 \noindent Använd en \Alert{abstrakt klass} om...
 \begin{itemize}
+\item ...du vill anropa konstruktor i supertyp.
 \item ...du vill begränsa inmixning. 
 \item ...du vill ärva supertypen från klasser skrivna i Java.
 \item ...du vill minimera tid för omkompilering vid ändringar (spar tid vid stora projekt).
 \end{itemize}
-
-
 \end{multicols}
+\end{Slide}
+
+\begin{Slide}{En trait får ej vidarebefodran av parametrar}\SlideFontSmall
+En trait får inte skicka vidare parametrar till en supertyp (det skulle bli knepiga problem annars vid inmixning):
+\begin{REPLnonum}
+scala> trait X(x: Int)
+// defined trait X
+
+scala> trait Y(y: Int) extends X(y)
+-- Error:
+1 |trait Y(y: Int) extends X(y)
+  |                        ^^^^
+  |  trait Y may not call constructor of trait X
+\end{REPLnonum}
+Men det funkar fint med en \code{abstract class} eller en \code{class} (som ju \Alert{inte} får vara inmixningar):
+\begin{REPLnonum}
+scala> abstract class Y(y: Int) extends X(y)                                                           
+// defined class Y
+\end{REPLnonum}
+{ \SlideFontTiny Mer detaljer här: \href{https://dotty.epfl.ch/docs/reference/other-new-features/trait-parameters.html}{dotty.epfl.ch/docs/reference/other-new-features/trait-parameters.html}}
 \end{Slide}
 
 
