@@ -17,7 +17,7 @@ alt 1 labb v8
 | W08 | 2/11-6/11   | Lp2V1 | Matriser, typparametrar,              | F15 F16 | matrices    | life        |
 | W09 | 9/11-13/11  | Lp2V2 | Mängder, tabeller, *testning*         | F17 F18 | lookup      | words       |
 | W10 | 16/11-20/11 | Lp2V3 | Arv, *granskningar*                   | F19 F20 | inheritance | snake0      |
-| W11 | 23/11-27/11 | Lp2V4 | *Kontextuella abstraktioner*          | F21 F22 | *given*     | snake1      |
+| W11 | 23/11-27/11 | Lp2V4 | *Kontextuella abstraktioner*          | F21 F22 | *context*   | snake1      |
 | W12 | 30/11-4/12  | Lp2V5 | Fördjupning                           | F23 F24 | extra       | project0    |
 | W13 | 7/12-11/12  | Lp2V6 | Repetition                            | F25 F26 | examprep    | project1    |
 | W14 | 14/12-18/12 | Lp2V7 | Reserv                                | F27 F28 | exam0       | exam1       |
