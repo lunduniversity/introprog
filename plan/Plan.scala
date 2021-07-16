@@ -75,7 +75,7 @@ trait Plan {
 //      | enkelt bash-skript för kompilering ???här eller i vecka 2???,
 //      | sbt tilde run ???här eller i vecka2???,
 
-    Module("Klasser, datamodeller",
+    Module("Klasser, datamodellering",
       id = "classes", exercise = "classes", lab = "", contents = """
       | applikationsdomän, datamodell, objektorientering, klass, instans, 
       | Any, isInstanceOf, toString,
@@ -145,7 +145,7 @@ trait Plan {
       | TODO: komposition (ä.k. aggregering)
       """.stripTrim),
 
-    Module("Kontextparametrar, api-design",
+    Module("Kontextparametrar, api",
       id = "context", exercise = "context", lab = "snake1", contents = """
       | TODO,
       | given, using, extension, ad hoc polymorfism, typklass,
