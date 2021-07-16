@@ -107,12 +107,15 @@ object Main extends App {
   val weekNumAlpha =  //as latex cannot have numbers in command names AARGH!!
     Vector("ONE","TWO","THREE","FOUR","FIVE","SIX","SEVEN", "",
            "EIGHT","NINE","TEN","ELEVEN","TWELVE","THIRTEEN","FOURTEEN", "")
-  def nameDefRow(week: Int, labName: String, exeName: String) =
-    s"""\\newcommand{\\ExeWeek${weekNumAlpha(week)}}{$exeName}\n""" +
-    s"""\\newcommand{\\LabWeek${weekNumAlpha(week)}}{$labName}\n"""
+  def nameDefRow(week: Int, modName: String, labName: String, exeName: String) =
+    s"""
+       |\\newcommand{\\ModWeek${weekNumAlpha(week)}}{$modName}
+       |\\newcommand{\\ExeWeek${weekNumAlpha(week)}}{$exeName}
+       |\\newcommand{\\LabWeek${weekNumAlpha(week)}}{$labName}
+       |""".stripMargin
 
   def namesOfWeek(w: Int) =
-    nameDefRow(w, weekPlan.column("Lab")(w), weekPlan.column("Övn")(w))
+    nameDefRow(w, weekPlan.column("Modul")(w), weekPlan.column("Lab")(w), weekPlan.column("Övn")(w))
   val nameDefs = (for (w <- weeks) yield namesOfWeek(w)).mkString("\n")
   nameDefs.prepend(texUtf).save(currentDir + "../compendium/generated/names-generated.tex")
 
