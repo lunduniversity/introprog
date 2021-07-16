@@ -120,8 +120,7 @@ trait Plan {
       id = "matrices", exercise = "matrices", lab = "life", contents = """
       | matris, nästlad samling, nästlad for-sats,
       | typparameter, generisk funktion, generisk klass, fri vs bunden typparameter,
-      | generisk samling som typparameter,
-      | matriser i Java vs Scala, allokering av nästlade arrayer i Scala och Java,
+      | generiska datastrukturer, generiska samlingar i Scala,
       """.stripTrim),
 
     Module("Mängder, tabeller",
@@ -133,7 +132,7 @@ trait Plan {
     | repetition inför kontrollskrivning,
     """.stripTrim),
 
-   Module("Arv", 
+   Module("Arv, komposition", 
       id = "inheritance", exercise = "inheritance", lab = "snake0", contents = """
       | arv, polymorfism, trait, extends, asInstanceOf, with, inmixning,
       | supertyp, subtyp, bastyp, override,
@@ -143,49 +142,44 @@ trait Plan {
       | accessregler vid arv, protected, final,
       | case-object, typer med uppräknade värden,
       | trait, abstrakt klass, inmixning,
-      | gränssnitt, interface i Java, programmeringsgränssnitt (api),
+      | TODO: komposition (ä.k. aggregering)
       """.stripTrim),
 
-    Module("TODO: Kontextuella abstraktioner",
+    Module("Kontextparametrar, api-design",
       id = "context", exercise = "context", lab = "snake1", contents = """
-      | syntaxskillnader mellan Scala och Java,
-      | klasser i Scala och Java,
-      | referensvariabler i Java, enkla värden i Java, primitiva typer i Java,
-      | referenstilldelning och värdetilldelning i Java,
-      | alternativ konstruktor i Scala och Java,
-      | for-sats i Java, for-each-sats i Java,
-      | java.util.ArrayList,
-      | autoboxing i Java, wrapperklasser i Java,
-      | samlingar i Java, scala.jdk.CollectionConverters,
-      | namnkonventioner för konstanter i Scala och Java,
-      | kodläsbarhet, idiom, kodningsstandard,
+      | TODO,
+      | given, using, extension, ad hoc polymorfism, typklass,
+      | programmeringsgränssnitt (api),
+      | api, kodläsbarhet, idiom, kodningsstandard,
+      | granskningar,
+      | riktlinjer för projektredovisning,
       """.stripTrim),
 
-    Module("TODO: Fördjupning",
-        id = "sort", exercise = "sort", lab = "", contents = """
+    Module("Fördjupning",
+        id = "extra", exercise = "extra", lab = "project0", contents = """
+        | TODO, TODO flytta ordningsgrejs till sekvensveckan!!!
         | strängjämförelse, compareTo, implicit ordning,
         | binärsökning, algoritm: BINARY-SEARCH,
         | sortering till ny vektor, sortering på plats,
         | insättningssortering, urvalssortering,
         | algoritm: INSERTION-SORT, algoritm: SELECTION-SORT,
         | Ordering[T], Ordered[T], Comparator[T], Comparable[T],
-        | riktlinjer för projektredovisning,
+        | tråd, jämlöpande exekvering,
+        | icke-blockerande anrop, callback,
+        | java.lang.Thread,
+        | java.util.concurrent.atomic.AtomicInteger,
+        | scala.concurrent.Future,
+        | kort om html+css+javascript+scala.js och webbprogrammering,
         """.stripTrim),
         //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
-    Module("Repetition, tentaträning, projekt", id = "examprep", exercise = "examprep", lab = "", contents = "göra extenta, förbereda projektredovisning, skapa dokumentation med scaladoc och javadoc"),
+    Module("Repetition", id = "examprep", exercise = "examprep", lab = "project1", contents = "göra extenta, förbereda projektredovisning, skapa dokumentation med scaladoc och javadoc"),
 
-    Module("Extra",
-      id = "extra", exercise = "extra", lab = "", contents = """
-      | tråd, jämlöpande exekvering,
-      | icke-blockerande anrop, callback,
-      | java.lang.Thread,
-      | java.util.concurrent.atomic.AtomicInteger,
-      | scala.concurrent.Future,
-      | kort om html+css+javascript+scala.js och webbprogrammering,
+    Module("Muntlig examen",
+      id = "munta", exercise = "Munta", lab = "Munta", contents = """
       """.stripTrim),
 
-    Module(name = "TENTAMEN", id = "", exercise = "", lab = "", contents = "")
+    Module(name = "VALFRI TENTAMEN", id = "", exercise = "", lab = "", contents = "")
   )
 
   lazy val contentsOfModule: Map[String, String] =
@@ -216,7 +210,7 @@ trait Plan {
   }
 
   lazy val labNumOfWeek =
-    "Lab01,--,Lab02,Lab03,--,Lab04,Lab05,--,Lab06,Lab07,Lab08,Lab09,--,Projekt,--,--,--".
+    "Lab01,--,Lab02,Lab03,--,Lab04,Lab05,--,Lab06,Lab07,Lab08,Lab09,Projekt0,Projekt1,Munta,--,--".
        split(',').toVector
 
   lazy val labOfWeek = for (w <- 0 until labNumOfWeek.size) yield {

@@ -92,13 +92,13 @@ object Main extends App {
 
   val labs = row("Lab").map(labRow).mkString("\n")
   labs
-    .prepend(texRoot("compendium2"))
+    .prepend(texRoot("compendium"))
     .prepend(texUtf)
     .save(currentDir+"../compendium/generated/labs-generated.tex")
 
   val exercises =
         row("Övn").
-        filterNot(Set("Uppsamling","Extenta").
+        filterNot(Set("Uppsamling","Extenta","Munta").
         contains(_)).
         map(exerciseRow).mkString("\n")
   exercises.prepend(texUtf).save(currentDir + "../compendium/generated/exercises-generated.tex")
