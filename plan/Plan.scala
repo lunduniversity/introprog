@@ -28,7 +28,7 @@ trait Plan {
       | logiska uttryck, de Morgans lagar, while-sats, for-sats,
       """.stripTrim),
 
-    Module("Program",
+    Module("Program, kontrollstrukturer",
       id = "programs", exercise = "programs", lab = "", contents = """
       | kompilerad app, skript, main i Scala, scalac,
       | utdata, println, indata, scala.io.StdIn.readLine,
@@ -41,8 +41,9 @@ trait Plan {
       | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX, algoritm: MININDEX,
       """.stripTrim),
 
-    Module("Funktioner",
+    Module("Funktioner, abstraktion",
       id = "functions", exercise = "functions", lab = "irritext", contents = """
+      | abstraktionsmekanism, funktion,
       | parameter, argument, returtyp, default-argument,
       | namngivna argument, parameterlista, funktionshuvud, funktionskropp,
       | applicera funktion på alla element i en samling,
@@ -74,9 +75,9 @@ trait Plan {
 //      | enkelt bash-skript för kompilering ???här eller i vecka 2???,
 //      | sbt tilde run ???här eller i vecka2???,
 
-    Module("Klasser",
+    Module("Klasser, datamodeller",
       id = "classes", exercise = "classes", lab = "", contents = """
-      | objektorientering, klass, instans, Point, Square, Complex,
+      | applikationsdomän, datamodell, objektorientering, klass, instans, 
       | Any, isInstanceOf, toString,
       | new, null, this,
       | accessregler, private, private[this],
@@ -86,13 +87,12 @@ trait Plan {
       | referenslikhet, innehållslikhet, eq, ==,
       """.stripTrim),
 
-    Module("Mönster, undantag",
+    Module("Mönster, felhantering",
       id = "patterns", exercise = "patterns", lab = "blockbattle", contents = """
       | mönstermatchning, match, Option, throw, try, catch, Try, unapply, sealed,
       | flatten, flatMap, partiella funktioner, collect,
       | wildcard-mönster, variabelbindning i mönster, sekvens-wildcard, bokstavliga mönster,
-      | implementera equals, hashcode, exempel: equals för klassen Complex, 
-      | switch-sats i Java,
+      | implementera equals, hashcode 
       """.stripTrim), // equals -> sortering???
 
 
@@ -116,9 +116,6 @@ trait Plan {
 
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
-/*    Module("Repetition, trösklar, luckor",
-      id = "rebootcamp", exercise = "reboot-init", lab = "reboot-check", contents = "REBOOT CAMP: identifiera dina egna lärandetrösklar och kunskapsluckor, kom-i-kapp med övningar och labbar, repetera, fördjupning för de som är redo, specialträning för behövande"), */
-
     Module("Matriser, typparametrar",
       id = "matrices", exercise = "matrices", lab = "life", contents = """
       | matris, nästlad samling, nästlad for-sats,
@@ -136,9 +133,8 @@ trait Plan {
     | repetition inför kontrollskrivning,
     """.stripTrim),
 
-
    Module("Arv", 
-      id = "inheritance", exercise = "inheritance", lab = "snake", contents = """
+      id = "inheritance", exercise = "inheritance", lab = "snake0", contents = """
       | arv, polymorfism, trait, extends, asInstanceOf, with, inmixning,
       | supertyp, subtyp, bastyp, override,
       | Scalas typhierarki, Any, AnyRef, Object, AnyVal, Null, Nothing,
@@ -150,8 +146,8 @@ trait Plan {
       | gränssnitt, interface i Java, programmeringsgränssnitt (api),
       """.stripTrim),
 
-    Module("TODO: Flytta Java till appendix",
-      id = "java", exercise = "java", lab = "javatext", contents = """
+    Module("TODO: Kontextuella abstraktioner",
+      id = "context", exercise = "context", lab = "snake1", contents = """
       | syntaxskillnader mellan Scala och Java,
       | klasser i Scala och Java,
       | referensvariabler i Java, enkla värden i Java, primitiva typer i Java,
@@ -165,7 +161,7 @@ trait Plan {
       | kodläsbarhet, idiom, kodningsstandard,
       """.stripTrim),
 
-    Module("TODO: Ändra från Sortering till annat",
+    Module("TODO: Fördjupning",
         id = "sort", exercise = "sort", lab = "", contents = """
         | strängjämförelse, compareTo, implicit ordning,
         | binärsökning, algoritm: BINARY-SEARCH,
