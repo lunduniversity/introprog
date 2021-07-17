@@ -12,7 +12,7 @@
 | W09 | 9/11-13/11  | Lp2V2 | Mängder, tabeller           | F17 F18 | lookup      | words       |
 | W10 | 16/11-20/11 | Lp2V3 | Arv, komposition            | F19 F20 | inheritance | snake0      |
 | W11 | 23/11-27/11 | Lp2V4 | Kontextparametrar, api      | F21 F22 | context     | snake1      |
-| W12 | 30/11-4/12  | Lp2V5 | Fördjupning                 | F23 F24 | extra       | Projekt0    |
+| W12 | 30/11-4/12  | Lp2V5 | Valfri fördjupning, Projekt | F23 F24 | extra       | Projekt0    |
 | W13 | 7/12-11/12  | Lp2V6 | Repetition                  | F25 F26 | examprep    | Projekt1    |
 | W14 | 14/12-18/12 | Lp2V7 | Muntlig examen              | F27 F28 | Munta       | Munta       |
 | T   | 11/1        | TP2   | VALFRI TENTAMEN             | --      | --          | --          |

@@ -155,7 +155,7 @@ trait Plan {
       | riktlinjer för projektredovisning,
       """.stripTrim),
 
-    Module("Fördjupning",
+    Module("Valfri fördjupning, Projekt",
         id = "extra", exercise = "extra", lab = "project0", contents = """
         | TODO, TODO flytta ordningsgrejs till sekvensveckan!!!
         | strängjämförelse, compareTo, implicit ordning,
