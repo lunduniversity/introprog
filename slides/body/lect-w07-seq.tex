@@ -497,9 +497,7 @@ val zs: Seq[Int] = Vector(1, 2, 3)
 % Scalas standardbibliotek returnerar ofta lämpligaste specifika sekvenssamlingen som är subtyp till \texttt{Seq[T]}.
 \end{Slide}
   
-\ifkompendium  
-
-\begin{Slide}{Fördjupning: implementation som generiska funktioner}
+\begin{Slide}{Implementation som generiska funktioner}
 Genom att generalisera funktionshuvudena blir våra lösningar användbara för \Alert{alla} sekvenser av typen \code{Seq[T]}.
 \begin{Code}
 def copy[T](xs: Seq[T]): Seq[T] = xs.map(x => x)
@@ -518,4 +516,56 @@ def freq[T](xs: Seq[T]): Seq[(T, Int)] =
 Standardbibliotekets metoder försöker ordna så att det blir samma konkreta typ in som ut, men ibland väljs annan lämplig konkret samling, t.ex. kan en \code{Array} ofta bli en \code{ArrayBuffer}.
 \end{Slide}
 
-\fi
+\begin{Slide}{Hjälp att använda Java-samlingar i Scala med \texttt{CollectionConverters}}\SlideFontSmall
+Med hjälp av \code{import scala.jdk.CollectionConverters._} \\
+får man smidig \Emph{interoperabilitet} med Java och dess standardbibliotek, \\
+speciellt metoderna \Alert{\code{asJava}} och \Alert{\code{asScala}}:
+\begin{REPL}
+scala> import scala.jdk.CollectionConverters._
+
+scala> Vector(1,2,3).asJava
+res0: java.util.List[Int] = [1, 2, 3]
+
+scala> val xs = new java.util.ArrayList[String]()
+xs: java.util.ArrayList[String] = []
+
+scala> xs.add("hej")
+res1: Boolean = true
+
+scala> xs.asScala
+res2: scala.collection.mutable.Buffer[String] = Buffer(hej)
+\end{REPL}
+
+\noindent Läs mer här: %
+\ifkompendium\\\fi%
+\scriptsize%
+\url{https://docs.scala-lang.org/overviews/collections-2.13/conversions-between-java-and-scala-collections.html}
+
+\end{Slide}
+
+
+\begin{Slide}{Fördjupning: Skapa generisk Array}\SlideFontTiny
+\begin{itemize}
+\item I JVM bytekod går det tyvärr \Alert{inte} att skapa en primitiv generisk array.
+
+\item Maskinkoden måste istället skapa en array av den mest generella referenstypen \code{Object} 
+och sedan \Alert{typtesta och typkonvertera under körtid}.\\ Se t.ex. Java-implementationen av \code{ArrayList}:\\\href{http://developer.classpath.org/doc/java/util/ArrayList-source.html}{http://developer.classpath.org/doc/java/util/ArrayList-source.html} %på rad 119
+\item[]
+\item Men det \Emph{\emph{går}} att skapa en generisk array i Scala (men inte i Java). Då behövs en \code{reflect.ClassTag} som möjliggör typinformation vid körtid för arrayer. \\
+\begin{REPLsmall}
+scala> def fyll[T](n: Int, x: T): Array[T] = Array.fill(n)(x)
+-- Error:
+1 |def fyll[T](n: Int, x: T): Array[T] = Array.fill(n)(x)
+  |                                                      ^
+  |  No ClassTag available for T
+
+scala> def fyll[T: reflect.ClassTag](n: Int, x: T): Array[T] = Array.fill(n)(x)
+
+scala> fyll(42, "hej")
+res2: Array[String] = Array(hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej)
+
+\end{REPLsmall}
+\item Kompilatorn skapar då maskinkod som automatiskt gör typkonverteringarna.
+
+\end{itemize}
+\end{Slide}

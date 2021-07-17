@@ -1617,8 +1617,6 @@ Läs receptet för att implementera equals i \Emph{Scala} här: \\
 
 
 
-\Subsection{Fördjupning diverse}
-
 
 \begin{Slide}{Villkorsuttryck i Java}\SlideFontSmall
 Det går att använda villkorsuttryck i Java, men med syntax från språket C:
@@ -1760,7 +1758,7 @@ på liknande sätt i Scala där gränssnittet \code{Seq} uppfylls av \code{Vecto
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{Skapa generisk Array}\SlideFontTiny
+\begin{Slide}{Det går inte att skapa generisk Array i Java}\SlideFontTiny
 \begin{itemize}
 \item I Java kan man \Alert{inte} skapa en primitiv array av godtycklig typ enligt generisk typparameter: \sout{\code{T[] xs = new T[42]}}
 
@@ -1771,20 +1769,19 @@ och sedan typtesta och typkonvertera under körtid; se t.ex. implementationen av
 \item[]
 \pause
 \item Detta går faktiskt att göra i Scala med hjälp av \code{reflect.ClassTag} \pause så här: \\
-\begin{REPLnonum}[basicstyle=\ttfamily\SlideFontSize{6}{8}\color{white}]
+\begin{REPLsmall}
 scala> def fyll[T](n: Int, x: T): Array[T] = Array.fill(n)(x)
-<console>:11: error: No ClassTag available for T
+-- Error:
+1 |def fyll[T](n: Int, x: T): Array[T] = Array.fill(n)(x)
+  |                                                      ^
+  |  No ClassTag available for T
 
 scala> def fyll[T: reflect.ClassTag](n: Int, x: T): Array[T] = Array.fill(n)(x)
-fyll: [T](x: T)(implicit evidence: scala.reflect.ClassTag[T])Array[T]
 
 scala> fyll(42, "hej")
 res2: Array[String] = Array(hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej, hej)
 
-scala> fyll(42, 1)
-res3: Array[Int] = Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-
-\end{REPLnonum}
+\end{REPLsmall}
 
 
 \end{itemize}
