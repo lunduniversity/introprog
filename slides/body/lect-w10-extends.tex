@@ -47,8 +47,6 @@ $X$ \Emph{är en} $Y$
 \end{itemize}
 \end{Slide}
 
-
-
 \begin{Slide}{Klassdiagram med UML (Unified Modeling Language)}
 \begin{center}
 \begin{tikzpicture}
@@ -103,9 +101,91 @@ Mer om UML-diagram i pfk, OMD.\\
 \draw[umlarrow] (MuteRobot.north) -- ++(0,0.5) -| (AbstractRobot.south);
 \end{tikzpicture}
 \end{center}
-{\SlideFontSmall (Ibland utelämnar man attribut och/eller metoder för att minska antalet detaljer och ge överblick.)}
+{\SlideFontSmall (Ibland utelämnar man attribut och/eller metoder i ett UML-diagram för att minska antalet detaljer i modellen och ge en överblick.)}
 \end{Slide}
 
+\begin{Slide}{Alternativ till arv: komposition}\SlideFontSmall
+\begin{itemize}
+\item Som alternativ till att klassen X ärver klassen Y kan man i stället använda \Emph{komposition} \Eng{composition}, som innebär att klassen X \Alert{har ett attribut} som \Emph{refererar} till klassen Y.  
+\end{itemize}
+
+\begin{multicols}{2}
+
+\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+
+\begin{center}
+
+Exempel på arv i \code{snake}-labben:\\SnakeGame \Alert{är} ett BlockGame\\~\\
+
+\tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3cm, rectangle split, rectangle split parts = 3]
+\begin{tikzpicture}[inner sep=0.5em,scale=0.8, every node/.style={transform shape}]
+
+  \node [umlclass, rectangle split parts = 1, xshift=0cm, yshift=5cm] (BaseType)  {
+              \textbf{\centerline{\TextBox{\code{BlockGame}}}}
+%              \nodepart[align=left]{second}\code{def x: T} \newline \code{def y: T}
+          };
+
+
+  \node [umlclass, rectangle split parts = 1, xshift=0cm, yshift=3.0cm] (SubType)  {
+              \textbf{\centerline{\TextBox{\code{SnakeGame}}}}
+%              \nodepart[align=left]{second}\code{val x: Int} \newline \code{val y: Int}
+          };
+
+\draw[umlarrow] (SubType.north) -- ++(0,0.5) -| (BaseType.south);
+\end{tikzpicture}
+
+\end{center}
+
+\columnbreak
+
+Ett alternativ vore \Emph{komposition}:\\SnakeGame \Alert{har} ett BlockGame\\~\\
+%\begin{center}
+%\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+\begin{tikzpicture}[inner sep=0.5em]
+\node [umlclass, rectangle split parts = 2, xshift=0cm, text width=4.8cm] (game)  {
+           \textbf{\centerline{\TextBox{SnakeGame}}}
+           \nodepart[]{second}\TextBox{\code{val blockGame: BlockGame}}
+       };
+\end{tikzpicture}
+%\end{center}
+
+\end{multicols}
+\begin{itemize}
+\item Komposition där \Emph{X har en Y} är ofta ett bättre alternativ än arv om: 
+\begin{enumerate} \SlideFontTiny
+\item det \emph{inte} finns en tydlig \Emph{X-är-en-Y}-relation 
+\item det \emph{inte} behövs en \Emph{gemensam bastyp} i en hierarki.
+\item det \emph{inte} är önskvärt ärva och exponera \emph{alla} Y:s medlemmar via X
+\end{enumerate}
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Exempel på komposition i snake-labben}
+
+\begin{multicols}{2}
+
+
+En \code{Player} \Emph{har en} \code{snake}.\\~\\
+
+\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+\begin{tikzpicture}[inner sep=0.5em]
+\node [umlclass, rectangle split parts = 2, xshift=0cm, text width=4cm] (game)  {
+           \textbf{\centerline{\TextBox{Player}}}
+           \nodepart[]{second}\TextBox{\code{val snake: Snake}}
+       };
+\end{tikzpicture}
+
+\columnbreak
+
+~\\~\\
+
+\begin{Code}
+class Player(val snake: Snake)
+\end{Code} 
+
+\end{multicols}
+
+\end{Slide}
 
 \begin{Slide}{Behovet av gemensam bastyp}\SlideFontSmall
 \begin{REPL}
