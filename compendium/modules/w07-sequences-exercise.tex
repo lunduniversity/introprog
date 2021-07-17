@@ -231,7 +231,7 @@ Använd denna algoritm:
 
 \renewcommand{\arraystretch}{1.5}
 \vspace{1em}\noindent\begin{tabular}{@{} p{0.4\textwidth} p{0.6\textwidth}}\hline
-\code|xs(0)| & \code|rs$line$5$Mutant@66d766b9 | nya instanser får nya hexkoder \\ \hline 
+\code|xs(0)| & \code|rs$line5$Mutant@66d766b9 | nya instanser får nya hexkoder \\ \hline 
 \code|ys(0).int               | & \code|0 | eftersom \code|ys| innehåller samma instans som \code|xs|\\ \hline
 \code|zs(0).int               | & \code|5 | eftersom \code|!(xs(0) eq zs(0))| \\ \hline
 \code|xs(0) eq ys(0)          | & \code|true |  eftersom samma instans \\ \hline
@@ -271,10 +271,10 @@ scala> def deepCopy(xs: Array[Mutant]): Array[Mutant] =
 
 scala> val xs = Array.fill(3)(new Mutant)
 xs: Array[Mutant] = Array(rs$line$2$Mutant@46a123e4, rs$line$2$Mutant@44bc2449,
-rs$line$2$Mutant@3c28e5b6)
+rs$line2$Mutant@3c28e5b6)
 
 scala> val ys = deepCopy(xs)
-ys: Array[Mutant] = Array(rs$line$2$Mutant@14b8a751, rs$line$2$Mutant@7345f97d,
+ys: Array[Mutant] = Array(rs$line$2$Mutant@14b8a751, rs$line2$Mutant@7345f97d,
 rs$line$2$Mutant@554566a8)
 
 scala> xs(0).int = 5
@@ -411,6 +411,48 @@ Ibland vill man att vettiga undantag ska kastas vid ogiltig indata eller andra f
 
 \end{framed}
 \fi
+
+\WHAT{Jämföra strängar i Scala.}
+
+\QUESTBEGIN
+
+\Task \label{task:string-order-operators} \what~  I Scala kan strängar jämföras med operatorerna \code{==}, \code{!=}, \code{<}, \code{<=}, \code{>}, \code{>=},  där likhet/olikhet avgörs av om alla tecken i strängen är lika eller inte, medan större/mindre avgörs av sorteringsordningen i enlighet med varje teckens Unicode-värde.\footnote{Överkurs: Alla tecken i en \code{java.lang.String} representeras enligt UTF-16-standarden (\href{https://en.wikipedia.org/wiki/UTF-16}{https://en.wikipedia.org/wiki/UTF-16}), vilket innebär att varje Unicode-kodpunkt \Eng{code point} lagras som antingen ett eller två 16-bitars heltal. Strängjämförelse i Scala och Java jämför egentligen inte varje tecken, utan varje 16-bitars heltal. Denna skillnad har ingen betydelse när en sträng bara innehåller tecken som tar upp ett 16-bitars heltal var, och praktiskt nog är nästan alla tecken som används vardagligen av den typen. De flesta tecken som kräver två 16-bitars heltal är sällsynta kinesiska tecken, sällsynta symboler, tecken från utdöda språk och emoji. Vi kommer att bortse från sådana tecken i den här kursen.}
+
+\Subtask Vad ger följande jämförelser för värde?
+\begin{REPL}
+scala> 'a' < 'b'
+scala> "aaa" < "aaaa"
+scala> "aaa" < "bbb"
+scala> "AAA" < "aaa"
+scala> "ÄÄÄ" < "ÖÖÖ"
+scala> "ÅÅÅ" < "ÄÄÄ"
+\end{REPL}
+Tyvärr så följer ordningen av ÄÅÖ inte svenska regler, men det ignorerar vi i fortsättningen för enkelhets skull; om du är intresserad av hur man kan fixa  detta, gör uppgift \ref{task:swedish-letter-ordering}.
+
+\Subtask\Pen Vilken av strängarna $s1$ och $s2$ kommer först (d.v.s. är ''mindre'') om $s1$ utgör början av $s2$ och $s2$ innehåller fler tecken än $s1$?
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved
+\begin{REPL}
+true
+true
+true
+true
+true
+false
+\end{REPL}
+
+\SubtaskSolved
+\emph{s1} kommer först.
+
+
+\QUESTEND
 
 
 
@@ -1091,6 +1133,35 @@ def insertDropLast(xs: Array[Int], x: Int, pos: Int): Unit =
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\WHAT{Fixa svensk sorteringsordning av ÄÅÖ.}
+
+\QUESTBEGIN
+
+\Task \label{task:swedish-letter-ordering} \what~   Svenska bokstäver kommer i, för svenskar, konstig ordning om man inte vidtar speciella åtgärder. Med hjälp av klassen \code{java.text.Collator} kan man få en \code{Comparator} för strängar som följer lokala regler för en massa språk på planeten jorden.
+
+\Subtask Verifiera att sorteringsordningen blir rätt i REPL enligt nedan.
+
+\begin{REPL}
+scala> val fel = Vector("ö","å","ä","z").sorted
+scala> val svColl = java.text.Collator.getInstance(new java.util.Locale("sv"))
+scala> val svOrd = Ordering.comparatorToOrdering(svColl)
+scala> val rätt = Vector("ö","å","ä","z").sorted(svOrd)
+\end{REPL}
+\Subtask Använd metoden ovan för att skriva ett program som skriver ut raderna i en textfil i korrekt svensk sorteringsordning. Programmet ska kunna köras med kommandot:\\\texttt{scala sorted -sv textfil.txt}
+
+\Subtask Läs mer här: \\
+\noindent{\href{http://stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}{\small stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}}
+
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+
+\QUESTEND
 
 
 
@@ -1289,221 +1360,7 @@ val res3: Vector[(Int, Int)] = Vector((1,0), (2,1), (4,2), (8,3), (16,4))
 
 
 
-\WHAT{Array och \code{for}-sats i Java.}
 
-\QUESTBEGIN
-
-\Task  \what~Ladda ner programet nedan från kursens GitHub-repo: \href{https://raw.githubusercontent.com/lunduniversity/introprog/master/compendium/examples/DiceReg.java}{\texttt{compendium/examples/DiceReg.java}}
-
-
-\Subtask
-Kompilera med \code{javac DiceReg.java} och kör med \code{java DiceReg 10000 42} och förklara vad som händer.
-
-\javainputlisting{examples/DiceReg.java}
-
-\Subtask Beskriv skillnaderna mellan Scala och Java, vad gäller syntaxen för array och \code{for}-sats. Beskriv några andra skillnader mellan språken som syns i programmet ovan.
-
-\Subtask Ändra i programmet ovan så att loop-variabeln \code{i} skrivs ut i varje runda i varje \code{for}-sats. Kompilera om och kör.
-
-\Subtask Skriv om programmet ovan genom att abstrahera huvudprogrammets delar till de statiska metoderna \code{parseArguments}, \code{registerPips} och \code{printReg} enligt nedan skelett. Spara programmet i filen \code{DiceReg2.java} och kompilera med \texttt{javac DiceReg2.java} i terminalen.
-
-\begin{Code}[language=Java]
-// DiceReg2.java
-import java.util.Random;
-
-public class DiceReg2 {
-    public static int[] diceReg = new int[6];
-    private static Random rnd = new Random();
-
-    public static int parseArguments(String[] args) {
-        // ???
-        return n;
-    }
-
-    public static void registerPips(int n){
-        // ???
-    }
-
-    public static void printReg() {
-        // ???
-    }
-
-    public static void main(String[] args) {
-        int n = parseArguments(args);
-        registerPips(n);
-        printReg();
-    }
-}
-\end{Code}
-
-\Subtask Starta Scala REPL i samma katalog som filen \texttt{DiceReg2.class} ligger i och kör nedan 7 rader i REPL och förklara vad som händer:
-\begin{REPL}
-scala> DiceReg2.main(Array("1000","42"))
-scala> DiceReg2.diceReg
-scala> DiceReg2.registerPips(1000)
-scala> DiceReg2.printReg
-scala> DiceReg2.registerPips(1000)
-scala> DiceReg2.printReg
-scala> DiceReg2.rnd
-\end{REPL}
-
-\SOLUTION
-
-\TaskSolved \what
-
-\SubtaskSolved Programmet simulerar 10000 tärningskast (med slumptalsfrö 42) och skriver ut förekomsten av respektive tärningskast.
-
-\begin{REPL}
-Rolling the dice 10000 times with seed 42
-Number of 1's: 1654
-Number of 2's: 1715
-Number of 3's: 1677
-Number of 4's: 1629
-Number of 5's: 1643
-Number of 6's: 1682
-\end{REPL}
-
-\SubtaskSolved  I Java används hakparenteser medan Scala har ''vanliga'' parenteser. En array i scala deklareras så här: \\
- \code{val scalaArray = Array.ofDim[Int](6)} \\
- vilket i java motsvarar: \code{int[] javaArray = new int[6];}
-
-\code{for}-sats i scala skrivs: \code|for(i <- 0 to n) {...}| medan i Java skrivs: \\ \code|for (int i = 0; i < n; i++) { ... }|.
-
-I Java måste semikolon skrivas efter varje sats och typen måste anges explicit vid varje variabeldeklaration.
-
-I scala behövs inte semikolon (förutom för att separera satser på samma rad) och typer kan ofta härledas i Scala av kompilatorn och behöver inte alltid skrivas explicit.
-
-\SubtaskSolved  Lägg till \code{System.out.println(i);} i for-looparna
-
-\SubtaskSolved  \begin{Code}[language=Java]
-// DiceReg2.java
-import java.util.Random;
-public class DiceReg2{
-	public static int[] diceReg = new int[6];
-	private static Random rnd = new Random();
-
-	public static int parseArguments(String[] args){
-		int n = 100;
-		if(args.length > 0) {
-			n = Integer.parseInt(args[0]);
-		}
-		if(args.length > 1) {
-			int seed = Integer.parseInt(args[1]);
-			rnd.setSeed(seed);
-		}
-		return n;
-	}
-
-	public static void registerPips(int n) {
-		for(int i = 0; i<n; i++) {
-			int pips = rnd.nextInt(6);
-			diceReg[pips]++;
-		}
-	}
-
-	public static void main(String[] args) {
-		int n = parseArguments(args);
-		registerPips(n);
-		printReg();
-	}
-}
-\end{Code}
-
-\SubtaskSolved
-
-\begin{REPL}
-  // Skriver ut förekomsten av 1000 tärningskast med slumptalsfrö 42.
-Number of 1's: 165
-Number of 2's: 163
-Number of 3's: 178
-Number of 4's: 183
-Number of 5's: 156
-Number of 6's: 155
-
-  // Skriver ut diceReg-attributet
-res1: Array[Int] = Array(165, 163, 178, 183, 156, 155)
-
-  // Skriver ut diceReg-attributet efter 1000 till kast.
-res2: Array[Int] = Array(329, 325, 349, 360, 324, 313)
-
-  // Skriver ut diceReg-attributet efter 1000 till kast.
-res3: Array[Int] = Array(498, 484, 531, 513, 485, 489)
-
-  // Det blir kompileringsfel då attributet rnd är privat
-<console>:11: error: value rnd is not a member of object DiceReg2
-	DiceReg2.rnd
-				    ^
-\end{REPL}
-
-\QUESTEND
-
-
-
-
-
-\WHAT{Läsa in sekvens av tal med \code{Scanner} i Java.}
-
-\QUESTBEGIN
-
-\Task  \what~  Läs i Java-delen av snabbreferensen om \code{java.util.Scanner}. Med \jcode{new Scanner(System.in)} skapas ett objekt som kan läsa in tal från teckensträngar som användaren skriver i terminalfönstret, så som visas i Java-programmet nedan:
-
-\javainputlisting{examples/DiceScanBuggy.java}
-Ladda ner programmet   \href{https://raw.githubusercontent.com/lunduniversity/introprog/master/compendium/examples/DiceReg.java}{\texttt{compendium/examples/DiceScanBuggy.java}}
-och kompilera och kör med indatasekvensen \texttt{1 2 3 4 -1} och notera hur registreringen sker.
-
-\Subtask Sök upp och läs JDK8-dokumentationen av \code{java.util.Scanner}. Vad gör \jcode{hasNextInt()} och \jcode{nextInt()}?
-
-
-\Subtask Programmet fungerar inte som det ska. Du behöver korrigera 3 saker för att programmet ska göra rätt. Rätta buggarna och spara det rättade programmet som \texttt{DiceScan.java}. Kompilera och testa det rättade programmet.
-
-\SOLUTION
-
-\TaskSolved \what
-
-\SubtaskSolved
-
-\code{hasNextInt()} kollar om det finns ett till tal och returnerar \code{true} eller \code{false}. \code{nextInt()} läser nästa tal.
-
-Se \url{https://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html#hasNextInt%28%29} och \\ \url{https://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html#nextInt%28%29 }.
-
-\SubtaskSolved
-
-\begin{Code}[language=Java,numbers=left]
-import java.util.Random;
-import java.util.Scanner;
-
-public class DiceScanBuggy {
-	public static int[] diceReg = new int[6];
-	public static Scanner scan = new Scanner(System.in);
-
-	public static void registerPips() {
-		System.out.println("Enter pips separated by blanks: ");
-		System.out.println("End with -1 and <Enter>.");
-		boolean isPips = true;
-		while(isPips && scan.hasNextInt()){
-			int pips = scan.nextInt();
-			if(pips >= 1 && pips <= 6) {
-				diceReg[pips-1]++;
-			} else {
-				isPips = false;
-			}
-		}
-	}
-
-	public static void printReg(){
-		for(int i = 1; i<7; i++) {
-		System.out.println("Number of " + i + "'s: " + diceReg[i-1]);
-		}
-	}
-
-	public static void main(String[] args) {
-		registerPips();
-		printReg();
-	}
-}
-\end{Code}
-
-\QUESTEND
 
 
 \WHAT{Arrays don't behave, but \code{ArraySeq}s do!}

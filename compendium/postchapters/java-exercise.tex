@@ -245,6 +245,313 @@ res2: Option[(String, Int)] = Some((Björn,49))
 
 
 
+\WHAT{Jämföra strängar i Java.}
+
+\QUESTBEGIN
+
+\Task  \what~  I Java kan man \textbf{inte} jämföra strängar med operatorerna \code{<}, \code{<=}, \code{>}, och \code{>=}. Dessutom ger operatorerna \code{==} och \code{!=} inte innehålls(o)likhet utan referens(o)likhet. Istället får man använda metoderna \code{equals} och \code{compareTo}, vilka också fungerar i Scala eftersom strängar i Scala och Java är av samma typ, nämligen \code{java.lang.String}.
+
+
+\Subtask Vad ger följande uttryck för värde?
+
+\begin{REPL}
+scala> "hej".getClass.getTypeName
+scala> "hej".equals("hej")
+scala> "hej".compareTo("hej")
+\end{REPL}
+
+
+\Subtask Studera dokumentationen för metoden \code{compareTo} i \code{java.lang.String}\footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/lang/String.html\#compareTo-java.lang.String-}{docs.oracle.com/javase/8/docs/api/java/lang/String.html\#compareTo-java.lang.String-}} och skriv minst 3 olika uttryck i Scala REPL som testar hur metoden fungerar i olika fall.
+
+\Subtask Studera dokumentationen \code{compareToIgnoreCase} \footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/lang/String.html\#compareToIgnoreCase-java.lang.String-}{docs.oracle.com/javase/8/docs/api/java/lang/String.html\#compareToIgnoreCase-java.lang.String-}} och skriv minst 3 olika stränguttryck i Scala REPL som testar hur metoden fungerar i olika fall.
+
+\Subtask Vad skriver följande Java-program ut?
+\javainputlisting{examples/StringEqTest.java}
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+\SubtaskSolved
+\begin{REPL}
+String = java.lang.String
+Boolean = true
+Int = 0
+\end{REPL}
+
+\SubtaskSolved
+Exempel på 3 olika uttryck för att testa \code{compareTo}:
+
+\begin{enumerate}
+\item
+Hej kommer först då \code{H < h}.
+\begin{REPLnonum}
+	"hej".compareTo("Hej")
+	res: Int = 32
+\end{REPLnonum}
+
+\item
+Dessa är ekvivalenta, så \code{compareTo} returnerar 0.
+\begin{REPLnonum}
+	"hej".compareTo("hej")
+	res: Int = 0
+\end{REPLnonum}
+
+\item
+\emph{h} kommer före \emph{ö}.
+\begin{REPLnonum}
+	"hej".compareTo("ö")
+	res: Int = -142
+\end{REPLnonum}
+\end{enumerate}
+
+\SubtaskSolved
+Exempel på 3 olika uttryck för att testa \code{compareToIgnoreCase}:
+
+\begin{enumerate}
+
+\item
+\begin{REPLnonum}
+	"hej".compareToIgnoreCase("HEj")
+	res: Int = 0
+\end{REPLnonum}
+
+\item
+\begin{REPLnonum}
+	"hej".compareToIgnoreCase("Ö")
+	res: Int = -142
+\end{REPLnonum}
+
+\item
+Samma som ovan, då Ö omvandlas till ö innan jämförelse.
+ \begin{REPLnonum}
+	"hej".compareToIgnoreCase("ö") \\ res: Int = -142
+\end{REPLnonum}
+\end{enumerate}
+
+\SubtaskSolved
+\begin{REPL}
+false
+true
+0
+\end{REPL}
+
+
+
+\QUESTEND
+
+
+
+
+
+\WHAT{Linjärsökning i Java.}
+
+\QUESTBEGIN
+
+\Task  \what~  Denna uppgift bygger vidare på uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W08}. Du ska göra en variant på linjärsökning som innebär att leta upp första yatzy-raden i en matris där varje rad innehåller utfallet av 5 tärningskast.
+
+\Subtask Du ska lägga till metoderna \code{isYatzy} och \code{findFirstYatzyRow} i klassen \code{ArrayMatrix} i uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W08} enligt nedan skiss. Vi börjar med metoden  \code{isYatzy} i denna deluppgift (nästa deluppgift handlar om \code{findFirstYatzyRow}). OBS! Det finns en bugg i \code{isYatzy} -- rätta buggen och testa så att den fungerar.
+
+\begin{Code}[language=Java]
+    public static boolean isYatzy(int[] dice){ /* has one bug! */
+        int col = 1;
+        boolean allSimilar = true;
+        while (col < dice.length && allSimilar) {
+          allSimilar = dice[0] == dice[col];
+        }
+        return allSimilar;
+    }
+
+    /** Finds first yatzy row in m; returns -1 if not found */
+    public static int findFirstYatzyRow(int[][] m){
+        int row = 0;
+        int result = -1;
+        while (???) {
+             /* linear search  */
+        }
+        return result;
+    }
+\end{Code}
+
+
+\Subtask Implementera \code{findFirstYatzyRow}. Skapa först pseudo-kod för linjärsökningsalgoritmen innan du skriver implementationen i Java.
+Testa ditt program genom att lägga till följande rader i huvudprogrammet.
+Metoden \code{fillRnd} ingår i uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W08}.
+\begin{Code}[language=Java]
+        int[][] yss = new int[2500][5];
+        fillRnd(yss, 6);
+        int i = findFirstYatzyRow(yss);
+        System.out.println("First Yatzy Index: " + i);
+\end{Code}
+
+
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved
+\begin{Code}[language=Java]
+public static boolean isYatzy(int[] dice){
+    int col = 1;
+    boolean allSimilar = true;
+    while(col < dice.length && allSimilar){
+        allSimilar = (dice[0] == dice[col]);
+        col++; //denna raden saknades
+    }
+    return allSimilar;
+}
+\end{Code}
+
+\SubtaskSolved
+
+\begin{Code}[language=Java]
+public static int findFirstYatzyRow(int[][] m){
+    int row = 0;
+    int result = -1;
+    while(row < m.length){
+        if(isYatzy(m[row])){
+           result = row;
+           break;
+        }
+        row++;
+    }
+    return result;
+}
+\end{Code}
+
+
+
+\QUESTEND
+
+
+\WHAT{Jämförelsestöd i Java.}
+
+\QUESTBEGIN
+
+\Task  \what~
+Java har motsvarigheter till Scalas \code{Ordering} och \code{Ordered}, som heter \code{java.util.Comparator} och \code{java.lang.Comparable}. I själva verket så är Scalas \code{Ordering} en subtyp till Javas \code{Comparator}, medan Scalas \code{Ordered} är en subtyp till Javas \code{Comparable}.
+\begin{itemize}[nolistsep, noitemsep]
+\item Javas \code{Comparator} och Scalas \code{Ordering} används för att skapa fristående ordningar som kan jämföra \emph{två olika} objekt. I Scala kan dessa göras implicit tillgängliga. I Javas samlingsbibliotek skickas instanser av \code{Comparator} med som explicita argument.
+\item Javas \code{Comparable} och Scalas \code{Ordered} används som supertyp för klasser som vill kunna jämföra ''sig själv'' med andra objekt och har \emph{en} naturlig ordningsdefinition.
+\end{itemize}
+
+\Subtask\Pen Sök upp dokumentationen för \code{java.util.Comparator}. Vilken abstrakt metod måste implementeras och vad gör den?
+
+\Subtask  I paketet \code{java.util.Arrays} finns en metod \code{sort} som tar en \code{Array[T]} och en \code{Comparable[T]}. Testa att använda dessa i REPL enligt nedan skiss. Starta om REPL så att ev. tidigare implicita ordningar för \code{Team} inte finns kvar.
+\begin{REPL}
+scala> import java.util.Comparator
+scala> val teamComparator = new Comparator[Team]{
+         def compare(o1: Team, o2: Team) = ???
+       }
+scala> val xs =
+         Array(Team("fnatic", 1499), Team("nip", 1473), Team("lumi", 1601))
+scala> java.util.Arrays.sort(xs.toArray, teamComparator)
+scala> xs
+\end{REPL}
+%\begin{Code}
+%// kod till facit
+%val teamComparator = new Comparator[Team]{
+%  def compare(o1: Team, o2: Team) = o2.rank - o1.rank
+%}
+%\end{Code}
+
+\Subtask I Scala finns en behändig metod \code{Ordering.comparatorToOrdering} som skapar en implicit tillgänglig ordning om man har en \code{java.util.Comparator}. Testa detta enligt nedan i REPL, med deklarationerna från föregående deluppgift.
+\begin{REPL}
+scala> implicit val teamOrd = Ordering.comparatorToOrdering(teamComparator)
+scala> xs.sorted
+\end{REPL}
+
+
+
+\Subtask\Pen Sök upp dokumentationen för \code{java.lang.Comparable}. Vilken abstrakt metod måste implementeras och vad gör den?
+
+\Subtask Gör så att klassen \code{Point} är \code{Comparable} och att punkter närmare origo sorteras före punkter som är längre ifrån origo enligt nedan skiss. I Scala är typer som är \code{Comparable} implicit även \code{Ordered}, varför sorteringen nedan funkar. Verfiera detta i REPL när du klurat ut hur implementera \code{compareTo}.
+
+\begin{Code}
+case class Point(x: Int, y: Int) extends Comparable[Point] {
+  def distanceFromOrigin: Double = ???
+  def compareTo(that: Point): Int = ???
+}
+\end{Code}
+\begin{REPL}
+scala> val xs = Seq(Point(10,10), Point(2,1), Point(5,3), Point(0,0))
+scala> xs.sorted
+\end{REPL}
+%\begin{Code}
+%// kod till facit
+%case class Point(x: Int, y: Int) extends Comparable[Point] {
+%  def distanceFromOrigin: Double = math.hypot(x, y)
+%  def compareTo(that: Point): Int =
+%    (distanceFromOrigin - that.distanceFromOrigin).round.toInt
+%}
+%\end{Code}
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved
+
+\SubtaskSolved  %% b
+\begin{Code}
+val teamComparator = new Comparator[Team]{
+  def compare(o1: Team, o2: Team) = o2.rank - o1.rank
+}
+\end{Code}
+
+
+\SubtaskSolved
+
+\SubtaskSolved
+
+\SubtaskSolved
+
+\begin{Code}
+case class Point(x: Int, y: Int) extends Comparable[Point] {
+  def distanceFromOrigin: Double = math.hypot(x, y)
+  def compareTo(that: Point): Int =
+    (distanceFromOrigin - that.distanceFromOrigin).round.toInt
+}
+\end{Code}
+
+
+\QUESTEND
+
+
+
+
+\WHAT{\texttt{java.util.Arrays.binarySearch}}
+
+\QUESTBEGIN
+
+\Task  \what~ I klassen \code{java.util.Arrays}\footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html}{docs.oracle.com/javase/8/docs/api/java/util/Arrays.html}} finns en statisk metod \code{binarySearch} som kan användas enligt nedan.
+\begin{REPL}
+scala> val xs = Array(5,1,3,42,-1)
+scala> java.util.Arrays.sort(xs)
+scala> xs
+scala> java.util.Arrays.binarySearch(xs, 42)
+scala> java.util.Arrays.binarySearch(xs, 43)
+\end{REPL}
+Skriv ett valfritt Javaprogram som testar \code{java.util.Arrays.binarySearch}. Använd en array av typen \code{int[]} med några heltal som först sorteras med \code{java.util.Arrays.sort}.  Skriv ut det som returneras från  \code{java.util.Arrays.binarySearch}  i olika fall genom att asöka efter tal som finns först, mitt i, sist och tal som saknas.
+\emph{Tips:} Man kan deklarera en array, allokera den och fylla den med värden så här i Java: \\
+\jcode|int[] xs = new int[]{5, 1, 3, 42, -1};|
+
+
+\SOLUTION
+
+\TaskSolved \what
+
+\QUESTEND
+
 
 \WHAT{Auto(un)boxing.}
 
@@ -720,5 +1027,222 @@ object showInt {
      %%%TODO number  7 %%%starts with: \TODO \emph{Gränssnitt i Scala %%%
 
 
+
+\QUESTEND
+
+
+\WHAT{Array och \code{for}-sats i Java.}
+
+\QUESTBEGIN
+
+\Task  \what~Ladda ner programet nedan från kursens GitHub-repo: \href{https://raw.githubusercontent.com/lunduniversity/introprog/master/compendium/examples/DiceReg.java}{\texttt{compendium/examples/DiceReg.java}}
+
+
+\Subtask
+Kompilera med \code{javac DiceReg.java} och kör med \code{java DiceReg 10000 42} och förklara vad som händer.
+
+\javainputlisting{examples/DiceReg.java}
+
+\Subtask Beskriv skillnaderna mellan Scala och Java, vad gäller syntaxen för array och \code{for}-sats. Beskriv några andra skillnader mellan språken som syns i programmet ovan.
+
+\Subtask Ändra i programmet ovan så att loop-variabeln \code{i} skrivs ut i varje runda i varje \code{for}-sats. Kompilera om och kör.
+
+\Subtask Skriv om programmet ovan genom att abstrahera huvudprogrammets delar till de statiska metoderna \code{parseArguments}, \code{registerPips} och \code{printReg} enligt nedan skelett. Spara programmet i filen \code{DiceReg2.java} och kompilera med \texttt{javac DiceReg2.java} i terminalen.
+
+\begin{Code}[language=Java]
+// DiceReg2.java
+import java.util.Random;
+
+public class DiceReg2 {
+    public static int[] diceReg = new int[6];
+    private static Random rnd = new Random();
+
+    public static int parseArguments(String[] args) {
+        // ???
+        return n;
+    }
+
+    public static void registerPips(int n){
+        // ???
+    }
+
+    public static void printReg() {
+        // ???
+    }
+
+    public static void main(String[] args) {
+        int n = parseArguments(args);
+        registerPips(n);
+        printReg();
+    }
+}
+\end{Code}
+
+\Subtask Starta Scala REPL i samma katalog som filen \texttt{DiceReg2.class} ligger i och kör nedan 7 rader i REPL och förklara vad som händer:
+\begin{REPL}
+scala> DiceReg2.main(Array("1000","42"))
+scala> DiceReg2.diceReg
+scala> DiceReg2.registerPips(1000)
+scala> DiceReg2.printReg
+scala> DiceReg2.registerPips(1000)
+scala> DiceReg2.printReg
+scala> DiceReg2.rnd
+\end{REPL}
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved Programmet simulerar 10000 tärningskast (med slumptalsfrö 42) och skriver ut förekomsten av respektive tärningskast.
+
+\begin{REPL}
+Rolling the dice 10000 times with seed 42
+Number of 1's: 1654
+Number of 2's: 1715
+Number of 3's: 1677
+Number of 4's: 1629
+Number of 5's: 1643
+Number of 6's: 1682
+\end{REPL}
+
+\SubtaskSolved  I Java används hakparenteser medan Scala har ''vanliga'' parenteser. En array i scala deklareras så här: \\
+ \code{val scalaArray = Array.ofDim[Int](6)} \\
+ vilket i java motsvarar: \code{int[] javaArray = new int[6];}
+
+\code{for}-sats i scala skrivs: \code|for(i <- 0 to n) {...}| medan i Java skrivs: \\ \code|for (int i = 0; i < n; i++) { ... }|.
+
+I Java måste semikolon skrivas efter varje sats och typen måste anges explicit vid varje variabeldeklaration.
+
+I scala behövs inte semikolon (förutom för att separera satser på samma rad) och typer kan ofta härledas i Scala av kompilatorn och behöver inte alltid skrivas explicit.
+
+\SubtaskSolved  Lägg till \code{System.out.println(i);} i for-looparna
+
+\SubtaskSolved  \begin{Code}[language=Java]
+// DiceReg2.java
+import java.util.Random;
+public class DiceReg2{
+	public static int[] diceReg = new int[6];
+	private static Random rnd = new Random();
+
+	public static int parseArguments(String[] args){
+		int n = 100;
+		if(args.length > 0) {
+			n = Integer.parseInt(args[0]);
+		}
+		if(args.length > 1) {
+			int seed = Integer.parseInt(args[1]);
+			rnd.setSeed(seed);
+		}
+		return n;
+	}
+
+	public static void registerPips(int n) {
+		for(int i = 0; i<n; i++) {
+			int pips = rnd.nextInt(6);
+			diceReg[pips]++;
+		}
+	}
+
+	public static void main(String[] args) {
+		int n = parseArguments(args);
+		registerPips(n);
+		printReg();
+	}
+}
+\end{Code}
+
+\SubtaskSolved
+
+\begin{REPL}
+  // Skriver ut förekomsten av 1000 tärningskast med slumptalsfrö 42.
+Number of 1's: 165
+Number of 2's: 163
+Number of 3's: 178
+Number of 4's: 183
+Number of 5's: 156
+Number of 6's: 155
+
+  // Skriver ut diceReg-attributet
+res1: Array[Int] = Array(165, 163, 178, 183, 156, 155)
+
+  // Skriver ut diceReg-attributet efter 1000 till kast.
+res2: Array[Int] = Array(329, 325, 349, 360, 324, 313)
+
+  // Skriver ut diceReg-attributet efter 1000 till kast.
+res3: Array[Int] = Array(498, 484, 531, 513, 485, 489)
+
+  // Det blir kompileringsfel då attributet rnd är privat
+<console>:11: error: value rnd is not a member of object DiceReg2
+	DiceReg2.rnd
+				    ^
+\end{REPL}
+
+\QUESTEND
+
+
+
+
+
+\WHAT{Läsa in sekvens av tal med \code{Scanner} i Java.}
+
+\QUESTBEGIN
+
+\Task  \what~  Läs i Java-delen av snabbreferensen om \code{java.util.Scanner}. Med \jcode{new Scanner(System.in)} skapas ett objekt som kan läsa in tal från teckensträngar som användaren skriver i terminalfönstret, så som visas i Java-programmet nedan:
+
+\javainputlisting{examples/DiceScanBuggy.java}
+Ladda ner programmet   \href{https://raw.githubusercontent.com/lunduniversity/introprog/master/compendium/examples/DiceReg.java}{\texttt{compendium/examples/DiceScanBuggy.java}}
+och kompilera och kör med indatasekvensen \texttt{1 2 3 4 -1} och notera hur registreringen sker.
+
+\Subtask Sök upp och läs JDK8-dokumentationen av \code{java.util.Scanner}. Vad gör \jcode{hasNextInt()} och \jcode{nextInt()}?
+
+
+\Subtask Programmet fungerar inte som det ska. Du behöver korrigera 3 saker för att programmet ska göra rätt. Rätta buggarna och spara det rättade programmet som \texttt{DiceScan.java}. Kompilera och testa det rättade programmet.
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved
+
+\code{hasNextInt()} kollar om det finns ett till tal och returnerar \code{true} eller \code{false}. \code{nextInt()} läser nästa tal.
+
+Se \url{https://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html#hasNextInt%28%29} och \\ \url{https://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html#nextInt%28%29 }.
+
+\SubtaskSolved
+
+\begin{Code}[language=Java,numbers=left]
+import java.util.Random;
+import java.util.Scanner;
+
+public class DiceScanBuggy {
+	public static int[] diceReg = new int[6];
+	public static Scanner scan = new Scanner(System.in);
+
+	public static void registerPips() {
+		System.out.println("Enter pips separated by blanks: ");
+		System.out.println("End with -1 and <Enter>.");
+		boolean isPips = true;
+		while(isPips && scan.hasNextInt()){
+			int pips = scan.nextInt();
+			if(pips >= 1 && pips <= 6) {
+				diceReg[pips-1]++;
+			} else {
+				isPips = false;
+			}
+		}
+	}
+
+	public static void printReg(){
+		for(int i = 1; i<7; i++) {
+		System.out.println("Number of " + i + "'s: " + diceReg[i-1]);
+		}
+	}
+
+	public static void main(String[] args) {
+		registerPips();
+		printReg();
+	}
+}
+\end{Code}
 
 \QUESTEND

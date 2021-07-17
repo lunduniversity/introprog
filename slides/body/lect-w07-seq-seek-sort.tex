@@ -1,0 +1,334 @@
+%!TEX encoding = UTF-8 Unicode
+%!TEX root = ../lect-w07.tex
+
+%%%
+
+\Subsection{Sökning och sortering}
+
+
+\begin{Slide}{Sökning}\SlideFontSmall
+
+\begin{itemize}
+\item \Emph{Sökning} återkommer i många skepnader: \\ i en datastruktur, vilken det än må vara, vill man ofta kunna \\ \Emph{hitta ett element med en viss egenskap}.
+
+\pause
+Några färdiga linjärsökningar i Scalas standardbibliotek:
+
+\begin{REPL}
+scala> Vector("gurka","tomat","broccoli").indexOf("tomat")
+res0: Int = 1
+
+scala> Vector("gurka","tomat","broccoli").indexWhere(_.contains("o"))
+res1: Int = 1
+
+scala> Vector("gurka","tomat","broccoli").find(_.contains("o"))
+res2: Option[String] = Some(tomat)
+\end{REPL}
+
+\pause
+\item Sökning efter ett visst index i en sekvens:
+
+\begin{itemize}\SlideFontTiny
+\item Indata: en sekvens och ett \Emph{sökkriterium}
+\item Utdata: index för första eftersökta element, annars -1
+\end{itemize}
+
+\pause
+\item Två typiska varianter av sökning i en sekvens:
+\begin{itemize}\SlideFontTiny
+\item Linjärsökning: börja från början och sök tills ett eftersökt element är funnet
+\item Binärsökning: antag sorterad sekvensen; börja i mitten, välj rätt halva ... 
+\end{itemize}
+\end{itemize}
+\end{Slide}
+
+%\Subsection{Linjärsökning}
+
+% \begin{Slide}{Linjärsökning: hitta index för elementet 42}
+% Skriv pseudokod för:\\ \code{def indexOf42(xs: Vector[Int]): Int = ???}
+% \pause
+% \begin{Code}
+% def indexOf42(xs: Vector[Int]): Int = {
+%   var i = /* index för första elementet */
+%   var found = false
+%   while (!found && /* index inom indexgräns */) {
+%     if (/* element på plats i är 42 */) found = true
+%     else i = /* nästa index */
+%   }
+%   if (/* hittat */) i else -1
+% }
+% \end{Code}
+% \end{Slide}
+%
+% \begin{Slide}{Linjärsökning: hitta index för elementet 42}
+% Implementera:\\ \code{def indexOf42(xs: Vector[Int]): Int = ???}
+% \pause
+% \begin{Code}
+% def indexOf42(xs: Vector[Int]): Int = {
+%   var i = 0
+%   var found = false
+%   while (!found && i < xs.length) {
+%     if (xs(i) == 42) found = true
+%     else i += 1
+%   }
+%   if (found) i else -1
+% }
+% \end{Code}
+% \end{Slide}
+
+\begin{Slide}{Linjärsökning: hitta index för elementet x}
+Implementera \code{indexOf}:
+\begin{Code}
+def indexOf(xs: Vector[Int], x: Int): Int = ???
+\end{Code}
+Utdata: index \code{i} där \code{xs(i) == x}\\Om värde saknas. returnera \code{-1}
+\pause
+\begin{Code}
+def indexOf(xs: Vector[Int], x: Int): Int = {
+  var i = 0
+  var found = false
+  while (!found && i < xs.length) {
+    if (xs(i) == x) found = true
+    else i += 1
+  }
+  if (found) i else -1
+}
+\end{Code}
+(Är du nyfiken på binärsökning, se fördjupningsveckan.)
+\end{Slide}
+
+% \begin{Slide}{Linjärsökning: hitta index för elementet p(x)}\SlideFontSmall
+% Implementera:\\ \code{def indexWhere(xs: Vector[Int], p: Int => Boolean): Int = ???}
+% \pause
+% \begin{Code}
+% def indexWhere(xs: Vector[Int], p: Int => Boolean): Int = {
+%   var i = 0
+%   var found = false
+%   while (!found && i < xs.length) {
+%     if (p(xs(i))) found = true
+%     else i += 1
+%   }
+%   if (found) i else -1
+% }
+% \end{Code}
+% \end{Slide}
+%
+% \begin{Slide}{Linjärsökning: generalisera till godtycklig typ}\SlideFontSmall
+% Implementera:\\ \code{def indexWhere[T](xs: Vector[T], p: T => Boolean): Int = ???}
+% \pause
+% \begin{Code}
+% def indexWhere[T](xs: Vector[T], p: T => Boolean): Int = {
+%   var i = 0
+%   var found = false
+%   while (!found && i < xs.length) {
+%     if (p(xs(i))) found = true
+%     else i += 1
+%   }
+%   if (found) i else -1
+% }
+% \end{Code}
+% \end{Slide}
+%
+% \begin{Slide}{Linjärsökning: generalisera till godtycklig typ}\SlideFontSmall
+% Typinferensen fungerar bättre om stegad funktion:\\
+% \code{def indexWhere[T](xs: Vector[T])(p: T => Boolean): Int}
+% \begin{Code}
+% def indexWhere[T](xs: Vector[T])(p: T => Boolean): Int = {
+%   var i = 0
+%   var found = false
+%   while (!found && i < xs.length) {
+%     if (p(xs(i))) found = true
+%     else i += 1
+%   }
+%   if (found) i else -1
+% }
+% \end{Code}
+% \end{Slide}
+%
+%
+% \begin{Slide}{Linjärsökning: generalisera till godtycklig sekvens}\SlideFontSmall
+% Implementera:\\ \code{def indexWhere[T](xs: Seq[T])(p: T => Boolean): Int = ???}
+% \pause
+% \begin{Code}
+% def indexWhere[T](xs: Seq[T])(p: T => Boolean): Int = {
+%   var i = 0
+%   var found = false
+%   while (!found && i < xs.length) {
+%     if (p(xs(i))) found = true
+%     else i += 1
+%   }
+%   if (found) i else -1
+% }
+% \end{Code}
+% \end{Slide}
+%
+% \begin{Slide}{Linjärsökning: generalisera till godtycklig sekvens}\SlideFontSmall
+% Implementera:\\ \code{def find[T](xs: Seq[T])(p: T => Boolean): Option[T] = ???}
+% \pause
+% \begin{Code}
+% def find[T](xs: Seq[T])(p: T => Boolean): Option[T] = {
+%   var i = 0
+%   var found = false
+%   while (!found && i < xs.length) {
+%     if (p(xs(i))) found = true
+%     else i += 1
+%   }
+%   if (found) Some(xs(i)) else None
+% }
+% \end{Code}
+% \end{Slide}
+
+\begin{Slide}{Sortering}
+\Emph{Problem}: Vi har en osorterad sekvens med heltal. Vi vill ordna denna osorterade sekvens i en sorterad sekvens från minst till störst.
+\pause
+
+\vspace{1em}\noindent
+En \emph{generalisering} av problement: \\ \vspace{1em}
+
+\noindent Vi har många element av godtycklig typ och en \Emph{ordningsrelation} som säger vad vi menar med att ett element är \emph{mindre än} eller \emph{större än eller lika med} ett annat element. \\ 
+
+\vspace{1em}\noindent Vi vill lösa problemet att ordna elementen i sekvens så att för varje element på plats $i$ så är efterföljande element på plats $i + 1$ större eller lika med elementet på plats $i$.
+
+% \end{Slide}
+
+% \begin{Slide}{Insättningssortering \& Urvalssortering}
+\begin{itemize}
+\item Insättningssortering \Emph{lösningsidé}: Ta ett element i taget från den osorterade listan och \Alert{sätt in} det på \Alert{rätt plats} i den sorterade listan och upprepa till det inte finns fler osorterade element.
+% \pause
+% \item Urvalsssortering \Emph{lösningsidé}: \Alert{Välj ut} det minsta kvarvarande elementet i den osorterade listan och placera det \Alert{sist} i den sorterade listan och upprepa till det inte finns fler osorterade element.
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Det finns många olika sorteringsalgoritmer}
+\begin{itemize}
+\item Visualisering av 15 olika sorteringsalgoritmer på 6 min:\\{\SlideFontSmall\url{https://www.youtube.com/watch?v=kPRA0W1kECg}}
+\item Olika sorteringsalgoritmer har olika tids- \& minneskomplexitet: i bästa fall, i värsta fall, i medeltal, för nästan sorterad, etc.
+\\{\SlideFontSmall\url{https://en.wikipedia.org/wiki/Sorting_algorithm}}
+\item Olika sorteringsalgoritmer lämpar sig olika väl för parallellisering på många kärnor.
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Bogo sort}
+\begin{Code}
+def bogoSort(xs: Vector[Int]) = 
+  var result = xs
+  while result != result.sorted do
+    result = scala.util.Random.shuffle(result)
+  end while
+  result
+}
+\end{Code}
+När blir denna färdig? \pause \\~\\
+Antal jämförelser i medeltal vid $n$ element: $ n \cdot n!$ \\~\\
+\url{https://en.wikipedia.org/wiki/Bogosort}
+
+\end{Slide}
+
+
+\begin{Slide}{Sortera till ny vektor med insättningssortering: pseudo-kod}
+
+{\SlideFontSmall Det är nog lättare att förstå \Emph{insertion sort} om man sorterar till en ny vektor. \\ Vi ska sedan se hur man sorterar ''på plats'' \Eng{in place} i en  array.\\} \vspace{0.5em}
+
+\noindent \Emph{Indata}: en osorterad vektor med heltal \\
+\Emph{Utdata}: en ny, sorterad vektor med heltal
+\begin{Code}
+def insertionSort(xs: Vector[Int]): Vector[Int] = 
+  val sorted = /* tom ArrayBuffer */
+  for /* alla element i xs */ do
+     /* linjärsök rätt position i sorted */
+     /* sätt in element på rätt plats i sorted */
+  end for
+  sorted.toVector
+\end{Code}
+\end{Slide}
+
+
+\begin{Slide}{Sortera till ny vektor med insättningssortering: implementation} % i Scala}
+\begin{Code}
+def insertionSort(xs: Vector[Int]): Vector[Int] = 
+  val sorted = scala.collection.mutable.ArrayBuffer.empty[Int]
+  for elem <- xs do
+     // linjärsök rätt position i sorted:
+     var pos = 0
+     while pos < sorted.length && sorted(pos) < elem do
+       pos += 1
+     end while
+     // sätt in element på rätt plats i sorted:
+     sorted.insert(pos, elem)
+  end for
+  sorted.toVector
+end insertionSort
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Sorter till ny samling med godtyckligt ordningspredikat}
+\begin{CodeSmall}
+def sortWith(xs: Vector[Int])(lt: (Int, Int) => Boolean ): Vector[Int] = 
+  val sorted = scala.collection.mutable.ArrayBuffer.empty[Int]
+  for elem <- xs do  // insertion sort using lt as "less than"
+     var pos = 0
+     while pos < sorted.length && lt(sorted(pos), elem) do
+       pos += 1
+     end while
+     sorted.insert(pos, elem)
+  end for
+  sorted.toVector
+end sortWith
+\end{CodeSmall}
+\pause
+\begin{REPL}
+scala> val xs = Vector(1,2,1,2,12,42,1)
+
+scala> sortWith(xs)(_ < _)
+val res0: Vector[Int] = Vector(1, 1, 1, 2, 2, 12, 42)
+
+scala> sortWith(xs)(_ > _)
+val res1: Vector[Int] = Vector(42, 12, 2, 2, 1, 1, 1)
+\end{REPL}
+\end{Slide}
+
+
+\begin{Slide}{Insättningssortering på plats -- pseudo-kod}
+\Emph{Indata:} en array med heltal\\
+\Emph{Utdata:} samma array, men nu sorterad\\
+\begin{Code}
+def insertionSortInPlace(xs: Array[Int]): Unit = 
+  for i <- 1 until xs.length do  //från ANDRA till sista
+    var j = i
+    while j > 0 && xs(j - 1) > xs(j) do
+      /* byt plats på xs(j) och xs(j - 1) */
+      j -= 1;  // stega bakåt
+\end{Code}
+\pause
+Se animering här: \href{https://sv.wikipedia.org/wiki/Ins\%C3\%A4ttningssortering}{Insättningssortering på wikipedia}\\
+Gå igenom alla specialfall och kolla så att detta fungerar!
+\end{Slide}
+
+\begin{Slide}{Insättningssortering på plats -- implementation} %, Scala}
+\begin{Code}
+def insertionSortInPlaceSwap(xs: Array[Int]): Unit = 
+  def swap(i: Int, j: Int): Unit = 
+    val temp = xs(i)
+    xs(i) = xs(j)
+    xs(j) = temp
+  end swap 
+
+  for i <- 1 until xs.length do  //från ANDRA till sista
+    var j = i
+    while j > 0 && xs(j - 1) > xs(j) do
+      swap(j, j - 1)
+      j -= 1;  // stega bakåt
+    end while
+  end for
+end insertionSortInPlaceSwap
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Checklista vid granskning av sekvensalgoritmer}
+\begin{itemize}
+\item Fungerar algoritmen för en tom sekvens?
+\item Fungerar algoritmen för en sekvens med endast ett element?
+\item Fungerar algoritmen för för osorterad sekvens med (minst) två element?
+\item Vad händer om sekvensen redan är sorterad?
+\end{itemize}
+\end{Slide}

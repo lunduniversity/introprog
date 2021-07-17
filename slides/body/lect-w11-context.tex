@@ -13,10 +13,101 @@
 \end{itemize}
 \end{Slide}
 
+\begin{Slide}{Kontextgränser}
+\TODO T: Ordering  ; utgå från w12 fördjupning om implicit ordning och flytta hit???
+\end{Slide}
 
 
 
 
+
+\begin{Slide}{Fördjupning: sortera samlingar implicit ordning}
+\TODO migrera 
+\begin{REPL}
+scala> case class Gurka(namn: String, vikt: Int)
+defined class Gurka
+
+scala> val xs = Vector(Gurka("a", 100), Gurka("b", 50), Gurka("c", 100))
+
+scala> xs.sorted
+<console>:15: error: No implicit Ordering defined for Gurka.
+       xs.sorted
+          ^
+\end{REPL}
+\pause
+Detta kan fixas genom att tillhandahålla en \Emph{implicit} ordning för \code{Gurka}:
+\begin{Code}
+implicit object minGurkOrdning extends Ordering[Gurka] {
+  def compare(x: Gurka, y: Gurka): Int =
+    if (x == y) 0
+    else if (x.vikt < y.vikt) -1
+    else 1
+}
+\end{Code}
+\end{Slide}
+
+
+\begin{Slide}{Fördjupning: sortera samlingar implicit ordning}
+\TODO migrera 
+
+\begin{REPL}
+scala> case class Gurka(namn: String, vikt: Int)
+defined class Gurka
+
+scala> val xs = Vector(Gurka("a", 100), Gurka("b", 50), Gurka("c", 100))
+
+scala> implicit object minGurkOrdning extends Ordering[Gurka] {
+         def compare(x: Gurka, y: Gurka): Int =
+           if (x == y) 0
+           else if (x.vikt < y.vikt) -1
+           else 1
+       }
+
+scala> xs.sorted
+res0: scala.collection.immutable.Vector[Gurka] =
+        Vector(Gurka(b,50), Gurka(a,100), Gurka(c,100))
+\end{REPL}
+{\SlideFontTiny Se exempel på olika bekvämare sätt att definiera en ordning för dina egna typer: \\
+\url{https://stackoverflow.com/questions/19345030/}}
+\end{Slide}
+
+
+\Subsection{Applikationsprogrammeringsgränssnitt (api)}
+\begin{Slide}{Vad är ett bra api?}
+\TODO \url{https://stackoverflow.com/questions/469161/how-do-you-define-a-good-or-bad-api}  
+\end{Slide}
+
+\Subsection{Fördjupning: Varians}
+
+\begin{Slide}{\TODO Varians}
+  \TODO Varians
+\end{Slide}
+
+\begin{Slide}{Typjoker \Eng{wildcard type}}\SlideFontSmall
+Generiska typer är normalt \Emph{invarianta} och kan därmed inte utan speciella åtgärder variera mellan mer eller mindre specifika typer. %(mer om varians senare).
+\begin{REPLsmall}
+scala> case class Box[A](a: A)
+
+scala> var xs = Vector.empty[Box[Any]]
+
+scala> def add[A](b: Box[A]): Unit = xs = xs :+ b
+-- Error:
+1 |def add[A](b: Box[A]): Unit = xs = xs :+ b
+  |                                         ^
+  |                                         Found:    (b : Box[A])
+  |                                         Required: Box[Any]
+\end{REPLsmall}  
+Till vår räddning: En \Emph{typjoker} \Eng{wildcard type} anges med ett frågetecken och betecknar en helt okänd typ, vars varians ej kontrolleras av kompilatorn.
+\begin{REPLsmall}
+scala> var xs = Vector.empty[Box[?]]
+
+scala> def add[A](b: Box[A]): Unit = xs = xs :+ b
+
+scala> add(Box(42)); add(Box("hej")); xs
+val res2: Vector[Box[?]] = Vector(Box(42), Box(hej))
+\end{REPLsmall}
+Använd bara typpjoker om det verkligen behövs, eftersom ingen typkontroll alls sker.
+\end{Slide}
 
 
 

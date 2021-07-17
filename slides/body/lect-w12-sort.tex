@@ -65,18 +65,6 @@ Antal jämförelser i medeltal vid många mätningar: $ O(n \cdot n!) $
 
 
 
-\begin{Slide}{Det finns många olika sorteringsalgoritmer}
-\begin{itemize}
-\item Visualisering av 15 olika sorteringsalgoritmer på 6 min:\\{\SlideFontSmall\url{https://www.youtube.com/watch?v=kPRA0W1kECg}}
-\item Olika sorteringsalgoritmer har olika tids- \& minneskomplexitet: i bästa fall, i värsta fall, i medeltal, för nästan sorterad, etc.
-\\{\SlideFontSmall\url{https://en.wikipedia.org/wiki/Sorting_algorithm}}
-\item Olika sorteringsalgoritmer lämpar sig olika väl för parallellisering på många kärnor.
-\end{itemize}
-\end{Slide}
-
-
-
-
 \begin{Slide}{Insättnings- och urvalssortering}
 \Emph{Insertion sort}
 \begin{itemize}
@@ -492,68 +480,21 @@ res1: scala.collection.immutable.Vector[Gurka] =
 
 
 
-\begin{Slide}{Fördjupning: sortera samlingar implicit ordning}
-\begin{REPL}
-scala> case class Gurka(namn: String, vikt: Int)
-defined class Gurka
 
-scala> val xs = Vector(Gurka("a", 100), Gurka("b", 50), Gurka("c", 100))
+% \begin{Slide}{Vad kommer (inte) på tentan?}
+% Detta \Emph{kan} komma på tentan:
+% \begin{itemize}
+% \item Använda färdiga söknings- och sorteringsfunktioner på samlingar av specifik typ
+% \item Implementera egen linjärsökning i samlingar av specifik typ
+% \item Implementera egen binärsökning i samlingar av specifik typ
+% \item Implementera egen sortering till ny samling av specifik typ (du får själv välja algoritm, lämpligen insättnings- eller urvalssortering)
 
-scala> xs.sorted
-<console>:15: error: No implicit Ordering defined for Gurka.
-       xs.sorted
-          ^
-\end{REPL}
-\pause
-Detta kan fixas genom att tillhandahålla en \Emph{implicit} ordning för \code{Gurka}:
-\begin{Code}
-implicit object minGurkOrdning extends Ordering[Gurka] {
-  def compare(x: Gurka, y: Gurka): Int =
-    if (x == y) 0
-    else if (x.vikt < y.vikt) -1
-    else 1
-}
-\end{Code}
-\end{Slide}
-
-
-\begin{Slide}{Fördjupning: sortera samlingar implicit ordning}
-\begin{REPL}
-scala> case class Gurka(namn: String, vikt: Int)
-defined class Gurka
-
-scala> val xs = Vector(Gurka("a", 100), Gurka("b", 50), Gurka("c", 100))
-
-scala> implicit object minGurkOrdning extends Ordering[Gurka] {
-         def compare(x: Gurka, y: Gurka): Int =
-           if (x == y) 0
-           else if (x.vikt < y.vikt) -1
-           else 1
-       }
-
-scala> xs.sorted
-res0: scala.collection.immutable.Vector[Gurka] =
-        Vector(Gurka(b,50), Gurka(a,100), Gurka(c,100))
-\end{REPL}
-{\SlideFontTiny Se exempel på olika bekvämare sätt att definiera en ordning för dina egna typer: \\
-\url{https://stackoverflow.com/questions/19345030/}}
-\end{Slide}
-
-
-\begin{Slide}{Vad kommer (inte) på tentan?}
-Detta \Emph{kan} komma på tentan:
-\begin{itemize}
-\item Använda färdiga söknings- och sorteringsfunktioner på samlingar av specifik typ
-\item Implementera egen linjärsökning i samlingar av specifik typ
-\item Implementera egen binärsökning i samlingar av specifik typ
-\item Implementera egen sortering till ny samling av specifik typ (du får själv välja algoritm, lämpligen insättnings- eller urvalssortering)
-
-\end{itemize}
-Detta kommer \Alert{inte} på tentan:
-\begin{itemize}
-\item Implementera generisk sökning
-\item Implementera generisk sortering
-\item Implementera sortering ''på plats''
-\item Bogo sort
-\end{itemize}
-\end{Slide}
+% \end{itemize}
+% Detta kommer \Alert{inte} på tentan:
+% \begin{itemize}
+% \item Implementera generisk sökning
+% \item Implementera generisk sortering
+% \item Implementera sortering ''på plats''
+% \item Bogo sort
+% \end{itemize}
+% \end{Slide}

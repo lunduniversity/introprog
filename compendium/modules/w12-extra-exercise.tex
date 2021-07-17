@@ -7,17 +7,12 @@
 \Exercise{\ExeWeekTWELVE}\label{exe:W12}
 
 \begin{Goals}
-\item Sökning och sortering: \\ \TODO flytta lämpliga saker om sökning och soprteringsordning till sekvensveckan
+\item Sökning och sortering: 
 \begin{itemize}
-\item Förstå hur sorteringsordningen är definierad för strängar.
-\item Förstå skillnaderna mellan strängjämförelser i Scala och Java, samt kunna jämföra strängar med jämförelsoperatorer i Scala och med \code{compareTo} i Java.
-\item Kunna sortera sekvenssamlingar innehållande objekt av grundtyper med hjälp av inbyggda och egendefinierade sorteringsordningar med metoderna \code{sorted}, \code{sortBy} och \code{sortWith}.
-\item Kunna använda inbyggda linjärsöknings- och binärsökningsmetoder.
-\item Kunna implementera en egen sökalgoritm med linjärsökning och binärsökning.
+\item Kunna använda inbyggda sökmetoder.
 \item Förstå när binärsökning är lämplig och möjlig.
-\item Kunna implementera en enkel sorteringsalgoritm, t.ex. insättningssortering eller urvalssortering, både till ny samling och på plats.
-\item Känna till hur implicita sorteringsordningar används för grundtyperna och egendefinierade typer.
-\item Känna till existensen av, funktionen hos, och relationen mellan klasserna \code{Ordering} och \code{Comparator}, samt  \code{Ordered} och \code{Comparable}.
+\item Kunna implementera binärsökning.
+\item Kunna implementera urvalssortering, både till ny samling och på plats.
 \end{itemize}
 \item Trådar och jämlöpande exekvering:
 \begin{itemize}
@@ -52,278 +47,18 @@
 
 
 
-
-\WHAT{Jämföra strängar i Scala.}
-
-\QUESTBEGIN
-
-\Task \label{task:string-order-operators} \what~  I Scala kan strängar jämföras med operatorerna \code{==}, \code{!=}, \code{<}, \code{<=}, \code{>}, \code{>=},  där likhet/olikhet avgörs av om alla tecken i strängen är lika eller inte, medan större/mindre avgörs av sorteringsordningen i enlighet med varje teckens Unicode-värde.\footnote{Överkurs: Alla tecken i en \code{java.lang.String} representeras enligt UTF-16-standarden (\href{https://en.wikipedia.org/wiki/UTF-16}{https://en.wikipedia.org/wiki/UTF-16}), vilket innebär att varje Unicode-kodpunkt \Eng{code point} lagras som antingen ett eller två 16-bitars heltal. Strängjämförelse i Scala och Java jämför egentligen inte varje tecken, utan varje 16-bitars heltal. Denna skillnad har ingen betydelse när en sträng bara innehåller tecken som tar upp ett 16-bitars heltal var, och praktiskt nog är nästan alla tecken som används vardagligen av den typen. De flesta tecken som kräver två 16-bitars heltal är sällsynta kinesiska tecken, sällsynta symboler, tecken från utdöda språk och emoji. Vi kommer att bortse från sådana tecken i den här kursen.}
-
-\Subtask Vad ger följande jämförelser för värde?
-\begin{REPL}
-scala> 'a' < 'b'
-scala> "aaa" < "aaaa"
-scala> "aaa" < "bbb"
-scala> "AAA" < "aaa"
-scala> "ÄÄÄ" < "ÖÖÖ"
-scala> "ÅÅÅ" < "ÄÄÄ"
-\end{REPL}
-Tyvärr så följer ordningen av ÄÅÖ inte svenska regler, men det ignorerar vi i fortsättningen för enkelhets skull; om du är intresserad av hur man kan fixa  detta, gör uppgift \ref{task:swedish-letter-ordering}.
-
-\Subtask\Pen Vilken av strängarna $s1$ och $s2$ kommer först (d.v.s. är ''mindre'') om $s1$ utgör början av $s2$ och $s2$ innehåller fler tecken än $s1$?
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved
-\begin{REPL}
-true
-true
-true
-true
-true
-false
-\end{REPL}
-
-\SubtaskSolved
-\emph{s1} kommer först.
-
-
-\QUESTEND
-
-
-
-
-
-\WHAT{Jämföra strängar i Java. \TODO Flytta till Appendix Java}
-
-\QUESTBEGIN
-
-\Task  \what~  I Java kan man \textbf{inte} jämföra strängar med operatorerna \code{<}, \code{<=}, \code{>}, och \code{>=}. Dessutom ger operatorerna \code{==} och \code{!=} inte innehålls(o)likhet utan referens(o)likhet. Istället får man använda metoderna \code{equals} och \code{compareTo}, vilka också fungerar i Scala eftersom strängar i Scala och Java är av samma typ, nämligen \code{java.lang.String}.
-
-
-\Subtask Vad ger följande uttryck för värde?
-
-\begin{REPL}
-scala> "hej".getClass.getTypeName
-scala> "hej".equals("hej")
-scala> "hej".compareTo("hej")
-\end{REPL}
-
-
-\Subtask Studera dokumentationen för metoden \code{compareTo} i \code{java.lang.String}\footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/lang/String.html\#compareTo-java.lang.String-}{docs.oracle.com/javase/8/docs/api/java/lang/String.html\#compareTo-java.lang.String-}} och skriv minst 3 olika uttryck i Scala REPL som testar hur metoden fungerar i olika fall.
-
-\Subtask Studera dokumentationen \code{compareToIgnoreCase} \footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/lang/String.html\#compareToIgnoreCase-java.lang.String-}{docs.oracle.com/javase/8/docs/api/java/lang/String.html\#compareToIgnoreCase-java.lang.String-}} och skriv minst 3 olika stränguttryck i Scala REPL som testar hur metoden fungerar i olika fall.
-
-\Subtask Vad skriver följande Java-program ut?
-\javainputlisting{examples/StringEqTest.java}
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-\SubtaskSolved
-\begin{REPL}
-String = java.lang.String
-Boolean = true
-Int = 0
-\end{REPL}
-
-\SubtaskSolved
-Exempel på 3 olika uttryck för att testa \code{compareTo}:
-
-\begin{enumerate}
-\item
-Hej kommer först då \code{H < h}.
-\begin{REPLnonum}
-	"hej".compareTo("Hej")
-	res: Int = 32
-\end{REPLnonum}
-
-\item
-Dessa är ekvivalenta, så \code{compareTo} returnerar 0.
-\begin{REPLnonum}
-	"hej".compareTo("hej")
-	res: Int = 0
-\end{REPLnonum}
-
-\item
-\emph{h} kommer före \emph{ö}.
-\begin{REPLnonum}
-	"hej".compareTo("ö")
-	res: Int = -142
-\end{REPLnonum}
-\end{enumerate}
-
-\SubtaskSolved
-Exempel på 3 olika uttryck för att testa \code{compareToIgnoreCase}:
-
-\begin{enumerate}
-
-\item
-\begin{REPLnonum}
-	"hej".compareToIgnoreCase("HEj")
-	res: Int = 0
-\end{REPLnonum}
-
-\item
-\begin{REPLnonum}
-	"hej".compareToIgnoreCase("Ö")
-	res: Int = -142
-\end{REPLnonum}
-
-\item
-Samma som ovan, då Ö omvandlas till ö innan jämförelse.
- \begin{REPLnonum}
-	"hej".compareToIgnoreCase("ö") \\ res: Int = -142
-\end{REPLnonum}
-\end{enumerate}
-
-\SubtaskSolved
-\begin{REPL}
-false
-true
-0
-\end{REPL}
-
-
-
-\QUESTEND
-
-
-
-
-
-\WHAT{Sortering med inbyggda sorteringsmetoder.}
-
-\QUESTBEGIN
-
-\Task  \what~  För grundtyperna (\code{Int}, \code{Double}, \code{String}, etc.) finns en fördefinierad ordning som gör så att färdiga sorteringsmetoder fungerar på alla samlingar i \code{scala.collection}. Även jämförelseoperatorerna i uppgift \ref{task:string-order-operators} fungerar enligt den fördefinierade ordningsdefinitionen för alla grundtyper. Denna ordningsdefinition är \textit{implicit tillgänglig} vilket betyder att kompilatorn hittar ordningsdefinitionen utan att vi explicit måste ange den. Detta fungerar i Scala även med primitiva \code{Array}.
-
-\Subtask Testa metoden \code{sorted} på några olika samlingar. Förklara vad som händer. Hur lyder felmeddelandet på sista raden? Varför blir det fel?
-
-\begin{REPL}
-scala> Vector(1.1, 4.2, 2.4, 42.0, 9.9).sorted
-scala> val xs = (100000 to 1 by -1).toArray
-scala> xs.sorted
-scala> xs.map(_.toString).sorted
-scala> xs.map(_.toByte).sorted.distinct
-scala> case class Person(firstName: String, familyName: String)
-scala> val ps = Vector(Person("Robin", "Finkodare"), Person("Kim","Fulhack"))
-scala> ps.sorted
-\end{REPL}
-
-\Subtask Om man har en samling med egendefinierade klasser eller man vill ha en annan sorteringsordning får man definiera ordningen själv. Ett helt generellt sätt att göra detta på  illustreras i uppgift \ref{task:custom-ordering}, men de båda hjälpmetoderna \code{sortWith} och \code{sortBy} räcker i de flesta fall. Hur de används illustreras nedan. Metoden \code{sortBy} kan användas om man tar fram ett värde av grundtyp och är nöjd med den inbyggda sorteringsordningen.
-
-Metoden \code{sortWith} används om man vill skicka med ett eget jämförelsepredikat som ordnar två element; funktionen ska returnera \code{true} om det första elementet ska vara först, annars \code{false}.
-
-\begin{REPL}
-scala> case class Person(firstName: String, familyName: String)
-scala> val ps = Vector(Person("Robin", "Finkodare"), Person("Kim","Fulhack"))
-scala> ps.sortBy(_.firstName)
-scala> ps.sortBy(_.familyName)
-scala> ps.sortBy  // tryck TAB två gånger för att se signaturen
-scala> ps.sortWith((p1, p2) => p1.firstName > p2.firstName)
-scala> ps.sortWith  // tryck TAB två gånger för att se signaturen
-scala> Vector(9,5,2,6,9).sortWith((x1, x2) => x1 % 2 > x2 % 2)
-\end{REPL}
-Vad har metoderna \code{sortWith} och \code{sortBy} för signaturer?
-
-\Subtask Lägg till attributet \code{age: Int} i case-klassen \code{Person} ovan och lägg till fler personer med olika namn och ålder i en vektor och sortera den med \code{sortBy} och \code{sortWith} för olika attribut. Välj själv några olika sätt att sortera på.
-
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved
-\begin{enumerate}
-\item Returnerar en sorterad \code{Vector} av \code{double}-värden
-\item Skapar en variabel xs och sparar en \code{Array} med \code{Int}-värden mellan 100000 till 1.
-\item Sorterar \code{xs = 1,2,3...}
-\item Konverterar xs till en \code{Array} av \code{String}-värden och sorterar dem lexikografiskt: \code{xs = "1", "10", "100"} etc.
-\item Konverterar xs till en \code{Array} av \code{Byte}-värden (max 127, min -128) och sorterar dem, samt tar bort dubletter: \code{xs = -128, -127, -1...}
-\item Skapar en ny klass \code{Person} som tar 2 \code{String}-argument i konstruktorn
-\item Sparar en Vector med två \code{Person}-objekt i en variabel ps
-\item Försöker kalla på \code{sorted}-metoden för klassen \code{Person}. Eftersom vi skrivit denna klass själva och inte berättat för Scala hur \code{Person}-objekt ska sorteras, resulterar detta i ett felmeddelande.
-\end{enumerate}
-
-\SubtaskSolved
-
-\begin{enumerate}
-\item ---
-\item ---
-\item Sorterar \code{Person}-objekten i ps med avseende på värdet i \code{firstName}
-\item Sorterar \code{Person}-objekten i ps med avseende på värdet i \code{familyName}
-\item \code{sortBy} tar en funktion f som argument. f ska ta ett argument av typen \code{Person} och returnera en generisk typ B.
-\item Sortera \code{Person}-objekten i ps med avseende på \code{firstName} i sjunkande ordning (omvänt från tidigare alltså)
-\item \code{sortWith} tar en funktion lt som argument. lt ska i sin tur ta två argument av typen \code{Person} och returnera ett booleskt värde.
-\item Sorterar en vektor så att värdena som är minst delbara med 2 hamnar först, och de mest delbara med 2 hamnar sist. Detta delar alltså upp udda och jämna tal.
-\end{enumerate}
-
-\SubtaskSolved
-Klassens signatur blir då:
-\begin{REPLnonum}
-case class Person(firstName: String, lastName: String, age: Int)
-\end{REPLnonum}
-
-Lägg in dem i en vektor:
-\begin{REPLnonum}
-val ps2 = Vector(Person("a", "asson", 34), Person("asson", "assonson", 1234),
-Person("anna", "Book", 2))
-\end{REPLnonum}
-
-Sortera dem på olika sätt:
-\begin{enumerate}
-\item
-Vektorn blir sorterad med avseende på personernas ålder i stigande ordning
-\begin{REPLnonum}
-scala> ps2.sortWith((p1, p2) => p1.age < p2.age)
-res40: scala.collection.immutable.Vector[Person] = Vector(Person(anna,Book,2),
-Person(a,asson,34), Person(asson,assonson,1234))
-\end{REPLnonum}
-
-\item
-Sorterar vektorn med avseende på namn, men också med avseende på ålder (i sjunkande ordning). För att komma före någon i ordningen måste alltså både namnet komma före, och åldern vara högre.
-\begin{REPLnonum}
-scala> ps2.sortWith((p1, p2) => (p1.firstName < p2.firstName) &&
-(p1.age > p2.age))
-res42: scala.collection.immutable.Vector[Person] = Vector(Person(a,asson,34),
-Person(asson,assonson,1234), Person(anna,Book,2))
-\end{REPLnonum}
-\end{enumerate}
-
-
-
-\QUESTEND
-
-
-
-
-
-
 \WHAT{Tidmätning.}
 
 \QUESTBEGIN
 
 \Task \label{task:timed} \what~  I kommande uppgifter kommer du att ha nytta av funktionen \code{timed} enligt nedan.
 \begin{Code}
-def timed[T](code: => T): (T, Long) = {
+def timed[T](code: => T): (T, Long) = 
   val now = System.nanoTime
   val result = code
   val elapsed = System.nanoTime - now
   println("\ntime: " + (elapsed / 1e6) + " ms")
   (result, elapsed)
-}
 \end{Code}
 \Subtask Klistra in \code{timed} i REPL och testa så att den fungerar, genom att mäta hur lång tid nedan uttryck tar att exekvera.
 \begin{REPL}
@@ -805,96 +540,6 @@ Binärsökningen var ca 23 gånger snabbare på en i7-3770K @ 3.50Hz och ca 63 g
 
 
 
-
-\WHAT{Linjärsökning i Java.}
-
-\QUESTBEGIN
-
-\Task  \what~  Denna uppgift bygger vidare på uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W08}. Du ska göra en variant på linjärsökning som innebär att leta upp första yatzy-raden i en matris där varje rad innehåller utfallet av 5 tärningskast.
-
-\Subtask Du ska lägga till metoderna \code{isYatzy} och \code{findFirstYatzyRow} i klassen \code{ArrayMatrix} i uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W08} enligt nedan skiss. Vi börjar med metoden  \code{isYatzy} i denna deluppgift (nästa deluppgift handlar om \code{findFirstYatzyRow}). OBS! Det finns en bugg i \code{isYatzy} -- rätta buggen och testa så att den fungerar.
-
-\begin{Code}[language=Java]
-    public static boolean isYatzy(int[] dice){ /* has one bug! */
-        int col = 1;
-        boolean allSimilar = true;
-        while (col < dice.length && allSimilar) {
-          allSimilar = dice[0] == dice[col];
-        }
-        return allSimilar;
-    }
-
-    /** Finds first yatzy row in m; returns -1 if not found */
-    public static int findFirstYatzyRow(int[][] m){
-        int row = 0;
-        int result = -1;
-        while (???) {
-             /* linear search  */
-        }
-        return result;
-    }
-\end{Code}
-
-
-\Subtask Implementera \code{findFirstYatzyRow}. Skapa först pseudo-kod för linjärsökningsalgoritmen innan du skriver implementationen i Java.
-Testa ditt program genom att lägga till följande rader i huvudprogrammet.
-Metoden \code{fillRnd} ingår i uppgift \ref{task:arraymatrix-java} i kapitel \ref{chapter:W08}.
-\begin{Code}[language=Java]
-        int[][] yss = new int[2500][5];
-        fillRnd(yss, 6);
-        int i = findFirstYatzyRow(yss);
-        System.out.println("First Yatzy Index: " + i);
-\end{Code}
-
-
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved
-\begin{Code}[language=Java]
-public static boolean isYatzy(int[] dice){
-    int col = 1;
-    boolean allSimilar = true;
-    while(col < dice.length && allSimilar){
-        allSimilar = (dice[0] == dice[col]);
-        col++; //denna raden saknades
-    }
-    return allSimilar;
-}
-\end{Code}
-
-\SubtaskSolved
-
-\begin{Code}[language=Java]
-public static int findFirstYatzyRow(int[][] m){
-    int row = 0;
-    int result = -1;
-    while(row < m.length){
-        if(isYatzy(m[row])){
-           result = row;
-           break;
-        }
-        row++;
-    }
-    return result;
-}
-\end{Code}
-
-
-
-\QUESTEND
-
-
-
-
-
-
-
 \WHAT{Insättningssortering.}
 
 \QUESTBEGIN
@@ -1098,17 +743,17 @@ def isSorted(xs: Vector[Int]): Boolean =
 
 \Task  \what~ Implementera och testa sortering på plats i en array med heltal med \footnote{\href{https://en.wikipedia.org/wiki/Insertion_sort}{en.wikipedia.org/wiki/Insertion\_sort}}.
 
-\Subtask Implementera och testa funktionen nedan i Scala med följande signatur:
+Implementera och testa funktionen nedan i Scala med följande signatur:
 \begin{Code}
   def insertionSort(xs: Array[Int]): Unit
 \end{Code}
 Placera metoden i ett objekt med lämpligt namn, samt skapa ett huvudprogram med testkod. Kompilera och kör från terminalen. Börja med att skriva sorteringsalgoritmen i pseudokod.
 
-\Subtask Implementera och testa metoden nedan i Java med följande signatur:
-\begin{Code}[language=Java]
-  public static void insertionSort(int[] xs)
-\end{Code}
-Placera metoden i en klass med lämpligt namn, samt skapa ett huvudprogram med testkod. Börja med att skriva sorteringsalgoritmen i pseudokod.
+% \Subtask Implementera och testa metoden nedan i Java med följande signatur:
+% \begin{Code}[language=Java]
+%   public static void insertionSort(int[] xs)
+% \end{Code}
+% Placera metoden i en klass med lämpligt namn, samt skapa ett huvudprogram med testkod. Börja med att skriva sorteringsalgoritmen i pseudokod.
 
 \SOLUTION
 
@@ -1116,42 +761,36 @@ Placera metoden i en klass med lämpligt namn, samt skapa ett huvudprogram med t
 \TaskSolved \what
 
 
-\SubtaskSolved
-
 \begin{Code}
-def insertionSort(xs: Array[Int]): Unit = {
-
-  for(elem <- 1 until xs.length if xs.length > 0){
+def insertionSort(xs: Array[Int]): Unit = 
+  for elem <- 1 until xs.length if xs.length > 0 do
     var pos = elem
-    while(pos > 0 && xs(pos) < xs(pos - 1)){
+    while pos > 0 && xs(pos) < xs(pos - 1) do
       val temp = xs(pos -1)
       xs(pos -1) = xs(pos)
       xs(pos) = temp
       pos -= 1
-    }
-  }
-}
 \end{Code}
 
-\SubtaskSolved
+% \SubtaskSolved
 
-\begin{Code}[language=Java]
-public static void insertionSort(int[] xs) {
+% \begin{Code}[language=Java]
+% public static void insertionSort(int[] xs) {
 
-    if (xs.length < 1)
-        return;
+%     if (xs.length < 1)
+%         return;
 
-    for (int i = 1; i < xs.length; i++) {
-        int pos = i;
+%     for (int i = 1; i < xs.length; i++) {
+%         int pos = i;
 
-        for (; pos > 0 && xs[pos] < xs[pos - 1]; pos--) {
-            int temp = xs[pos - 1];
-            xs[pos - 1] = xs[pos];
-            xs[pos] = temp;
-        }
-    }
-}
-\end{Code}
+%         for (; pos > 0 && xs[pos] < xs[pos - 1]; pos--) {
+%             int temp = xs[pos - 1];
+%             xs[pos - 1] = xs[pos];
+%             xs[pos] = temp;
+%         }
+%     }
+% }
+% \end{Code}
 
 
 
@@ -1217,427 +856,11 @@ def selectionSort(xs: Seq[String]): Seq[String] = {
 
 
 
-\WHAT{Typklasser och implicita parametrar.}
 
-\QUESTBEGIN
 
-\Task  \what~  I Scala finns möjligheter till avancerad funktionsprogrammering med s.k. \textbf{typklasser}, som definierar generella beteenden som fungerar för befintliga typer utan att implementationen av dessa befintliga typer behöver ändras. Vi nosar i denna uppgift på hur implicita argument kan användas för att skapa typklasser, illustrerat med hjälp av implicita ordningarna, som är en typisk och användbar tillämpning av konceptet typklasser.
 
-\Subtask \emph{Implicit parameter och implicit värde.} Med nyckelordet \code{implicit} framför en parameter öppnar man för möjligheten att låta kompilatorn ge argumentet ''automatiskt'' om den kan hitta ett värde med passande typ som också är deklarerat med \code{implicit}, så som visas nedan.
-\begin{REPL}
-scala> def add(x: Int)(implicit y: Int) = x + y
-scala> add(1)(2)
-scala> add(1)
-scala> implicit val ngtNamn = 42
-scala> add(1)
-\end{REPL}
-Vad blir felmeddelandet på rad 3 ovan? Varför fungerar det på rad 5 utan fel?
 
-\Subtask \emph{Typklasser.} Genom att kombinera koncepten implicita värden, generiska klasser och implicita parametrar får man möjligheten att göra typklasser, så som \code{CanCompare} nedan, som vi kan få att fungera för befintliga typer utan att de behöver ändras.
 
-Vad händer nedan? Vilka rader ger felmeddelande? Varför?
-
-\begin{REPL}
-scala> trait CanCompare[T] { def compare(a: T, b: T): Int }
-scala> def sort2[T](a: T, b: T)(implicit cc: CanCompare[T]): (T, T) =
-         if (cc.compare(a, b) > 0) (b, a) else (a, b)
-scala> sort2(42, 41)
-scala> implicit object intComparator extends CanCompare[Int]{
-         override def compare(a: Int, b: Int): Int = a - b
-       }
-scala> sort2(42, 41)
-scala> sort2(42.0, 41.0)
-\end{REPL}
-
-\Subtask Definiera ett implicit objekt som gör så att \code{sort2} fungerar för värden av typen \code{Double}.
-
-\Subtask Definiera ett implicit objekt som gör så att \code{sort2} fungerar för värden av typen \code{String}.
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-\SubtaskSolved ---
-
-
-\SubtaskSolved ---
-
-
-\SubtaskSolved
-Tänk på att det fortfarande måste returneras en Int.
-
-
-\SubtaskSolved
-Undersök i Javas API hur metoden \code{compareTo} är implementerad för strängar.
-
-\QUESTEND
-
-
-
-
-
-\WHAT{Användning av implicit ordning.}
-
-\QUESTBEGIN
-
-\Task \label{task:implicit-ordering} \what~  Vi ska nu göra \code{isSorted} från uppgift \ref{task:isSorted} mer generellt användbar genom att möjliggöra att implicita ordningsfunktioner finns tillgängliga för olika typer.
-
-\Subtask  Med signaturen  \code{isSorted(xs: Vector[Int]): Boolean} så
-fungerar sorteringstestet bara för samlingar av typen \code{Vector[Int]}.
-
-Om vi i stället använder
-\code{isSorted(xs: Seq[Int]): Boolean} fungerar den för alla samlingar med heltal, även \code{Array} och \code{List}. Testa nedan funktion i REPL med heltalssekvenser av olika typ.
-\begin{Code}
-def isSorted(xs: Seq[Int]): Boolean = xs == xs.sorted
-\end{Code}
-
-\Subtask Det blir problem med nedan försök att göra \code{isSorted} generisk. Hur lyder felmeddelandet? Vad saknas enligt felmeddelandet?
-\begin{REPLnonum}
-scala> def isSorted[T](xs: Seq[T]): Boolean = xs == xs.sorted
-\end{REPLnonum}
-
-\Subtask Vi vill gärna att \code{isSorted} ska fungera för godtyckliga typer T som har en ordningsdefinition. Detta kan göras med nedan funktion där typparametern \code{[T:Ordering]} betyder att \code{isSorted} är definierad för alla samlingar där typen \code{T} har en implicit ordning \code{Ordering[T]}. Speciellt gäller detta för alla grundtyperna \code{Int}, \code{Double}, \code{String}, etc., som alla har implicit tillgänglig \code{Ordering[Int]} etc.
-\begin{Code}
-def isSorted[T:Ordering](xs: Seq[T]): Boolean = xs == xs.sorted
-\end{Code}
-Testa metoden ovan i REPL enligt nedan.
-\begin{REPL}
-scala> isSorted(Vector(1,2,3))
-scala> isSorted(Array(1,2,3,1))
-scala> isSorted(Vector("A","B","C"))
-scala> isSorted(List("A","B","C","A"))
-scala> case class Person(firstName: String, familyName: String)
-scala> val persons = Vector(Person("Kim", "Finkodare"), Person("Robin","Fulhack"))
-scala> isSorted(persons)
-\end{REPL}
-Vad ger sista raden för felmeddelande? Varför?
-
-
-\Subtask \emph{Implicita ordningar.} En typparameter på formen \code{[T:Ordering]} kallas kontextgräns \Eng{context bound} och föranleder kompilatorn att expandera funktionshuvudet för \code{isSorted} med en extra parameterlista som har en implicit parameter. I stället för att använda \code{[T:Ordering]} kan vi själva lägga till den implicita parametern som motsvarar kontextgränsen. Då får vi också tillgång till ett namn på den implicita ordningen och kan använda det namnet i funktionskroppen och anropa metoder som är medlemmar av typen \code{Ordering}.
-
-\begin{CodeSmall}
-def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean =
-  xs.zip(xs.tail).forall(x => ord.lteq(x._1, x._2))
-\end{CodeSmall}
-
-Objekt av typen \code{Ordering} har jämförelsemetoder som t.ex. \code{lteq} (förk. \emph{less than or equal}) och \code{gt} (förk. \emph{greater than}).
-
-Det finns fördefinierade implicita objekt \code{Ordering[T]} för alla grundtyper, alltså t.ex. \code{Ordering[Int]}, \code{Ordering[String]}, etc.
-Testa så att kompilatorn hittar ordningen för samlingar med värden av några grundtyper. Kontrollera även enligt nedan att det fortfarande blir problem för egendefinierade klasser, t.ex. \code{Person}  (detta ska vi råda bot på i uppgift \ref{task:custom-ordering}).
-\begin{REPL}
-scala> isSorted(Vector(1,2,3))
-scala> isSorted(Array(1,2,3,1))
-scala> isSorted(Vector("A","B","C"))
-scala> isSorted(List("A","B","C","A"))
-scala> class Person(firstName: String, familyName: String)
-scala> val persons = Vector(Person("Kim", "Finkodare"), Person("Robin","Fulhack"))
-scala> isSorted(persons)
-\end{REPL}
-
-\Subtask \emph{Importera implicita ordningsoperatorer från en \code{Ordering}.} Om man gör import på ett \code{Ordering}-objekt får man tillgång till implicita konverteringar som gör att jämförelseoperatorerna fungerar. Testa nedan variant av \code{isSorted} på olika sekvenstyper och verifiera att \code{<=}, \code{>}, etc., nu fungerar enligt nedan.
-\begin{CodeSmall}
-def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean = {
-  import ord._
-  xs.zip(xs.tail).forall(x => x._1 <= x._2)
-}
-\end{CodeSmall}
-
-
-\SOLUTION
-
-
-\TaskSolved \what ---
-
-\QUESTEND
-
-
-
-
-
-
-\WHAT{Skapa egen implicit ordning med \code{Ordering}.}
-
-\QUESTBEGIN
-
-\Task \label{task:custom-ordering} \what~
-
-\Subtask Ett sätt att skapa en egen, specialanpassad ordning är att mappa dina objekt till typer som redan har en implicit ordning. Med hjälp av metoden \code{by} i objektet \code{scala.math.Ordering} kan man skapa ordningar genom bifoga en funktion \code{T => S} där \code{T} är typen för de objekt du vill ordna och \code{S} är någon annan typ, t.ex. \code{String} eller \code{Int}, där det redan finns en implicit ordning.
-\begin{REPL}
-scala> case class Team(name: String, rank: Int)
-scala> val xs =
-         Vector(Team("fnatic", 1499), Team("nip", 1473), Team("lumi", 1601))
-scala> xs.sorted  // Hur lyder felmeddelandet? Varför blir det fel?
-scala> val teamNameOrdering = Ordering.by((t: Team) => t.name)
-scala> xs.sorted(teamNameOrdering)   //explicit ordning
-scala> implicit val teamRankOrdering = Ordering.by((t: Team) => t.rank)
-scala> xs.sorted   // Varför funkar det nu?
-\end{REPL}
-
-\Subtask Vill man sortera i omvänd ordning kan man använda
-\code{Ordering.fromLessThan} som tar en funktion \code{(T, T) => Boolean} vilken ska ge \code{true} om första parametern ska komma före, annars \code{false}. Om vi vill sortera efter \code{rank} i omvänd ordning kan vi göra så här:
-\begin{REPL}
-scala> val highestRankFirst =
-         Ordering.fromLessThan[Team]((t1, t2) => t1.rank > t2.rank)
-scala> xs.sorted(highestRankFirst)
-\end{REPL}
-
-\Subtask Om du har en case-klass med flera fält och vill ha en fördefinierad implicit sorteringsordning samt även erbjuda en alternativ sorteringsordning kan du placera olika ordningsdefinitioner i ett kompanjonsobjekt; detta är nämligen ett av de ställen där kompilatorn söker efter eventuella implicita värden innan den ger upp att leta.
-\begin{Code}
-case class Team(name: String, rank: Int)
-object Team {
-  implicit val highestRankFirst = Ordering.fromLessThan[Team]{
-    (t1, t2) => t1.rank > t2.rank
-  }
-  val nameOrdering = Ordering.by((t: Team) => t.name)
-}
-\end{Code}
-\begin{REPL}
-scala> :pa
-// Exiting paste mode, now interpreting.
-case class Team(name: String, rank: Int)
-object Team {
-  implicit val highestRankFirst =
-    Ordering.fromLessThan[Team]{(t1, t2) => t1.rank > t2.rank}
-  val nameOrdering = Ordering.by((t: Team) => t.name)
-}
-scala> val xs =
-         Vector(Team("fnatic", 1499), Team("nip", 1473), Team("lumi", 1601))
-scala> xs.sorted
-scala> xs.sorted(Team.nameOrdering)
-\end{REPL}
-
-
-
-\Subtask Det går också med kompanjonsobjektet ovan att få jämförelseoperatorer att fungera med din case-klass, genom att importera medlemmarna i lämpligt ordningsobjekt. Verifiera att så är fallet enligt nedan:
-\begin{REPL}
-scala> Team("fnatic",1499) < Team("gurka", 2)  // Vilket fel? Varför?
-scala> import Team.highestRankFirst._
-scala> Team("fnatic",1499) < Team("gurka", 2)  // Inget fel? Varför?
-\end{REPL}
-
-
-\SOLUTION
-
-
-\TaskSolved \what ---
-
-\QUESTEND
-
-
-
-
-
-
-\WHAT{Specialanpassad ordning genom att ärva från \code{Ordered}.}
-
-\QUESTBEGIN
-
-\Task  \what~  Om det finns \emph{en} väldefinierad, specifik ordning som man vill ska gälla för sina case-klass-instanser kan man göra den ordnad genom att låta case-klassen mixa in traiten \code{Ordered} och implementera den abstrakta metoden \code{compare}.
-
-\begin{Background}
-En trait som används på detta sätt kallas \textbf{gränssnitt} \Eng{interface}, och om man \emph{implementerar} ett gränssnitt så uppfyller man ett ''kontrakt'', som i detta fall innebär att man implementerar det som krävs av ordnade objekt, nämligen att de har en konkret \code{compare}-metod. Du lär dig mer om gränssnitt i kommande kurser.
-\end{Background}
-
-\Subtask Implementera case-klassen \code{Team} så att den är en subtyp till \code{Ordered} enligt nedan skiss. Högre rankade lag ska komma före lägre rankade lag. Metoden \code{compare} ska ge ett heltal som är negativt om \code{this} kommer före \code{that}, noll om de ordnas lika, annars positivt.
-
-\begin{Code}
-case class Team(name: String, rank: Int) extends Ordered[Team]{
-  override def compare(that: Team): Int = ???
-}
-\end{Code}
-\emph{Tips:} Du kan anropa metoden \code{compare} på alla grundtyper, t.ex. \code{Int}, eftersom de är implicit ordnade. Genom att negera uttrycket blir ordningen den omvända.
-\begin{REPL}
-scala> -(2.compare(1))
-\end{REPL}
-
-\Subtask Testa att  din case-klass nu uppfyller det som krävs för att vara ordnad.
-\begin{REPL}
-scala> Team("fnatic",1499) < Team("gurka", 2)
-\end{REPL}
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-Tänk på att för att sortering i omvänd ordning (alltså högst rank först) ska fungera så måste jämförelsen returnera \code{false}.
-
-\begin{CodeSmall}
-case class  Team(name: String, rank: Int) extends Ordered[Team]{
-  override def compare(that: Team): Int = -rank.compare(that.rank)
-}
-\end{CodeSmall}
-
-
-
-\QUESTEND
-
-
-
-
-
-\WHAT{Jämförelsestöd i Java.}
-
-\QUESTBEGIN
-
-\Task  \what~
-Java har motsvarigheter till \code{Ordering} och \code{Ordered}, som heter \code{java.util.Comparator} och \code{java.lang.Comparable}. I själva verket så är Scalas \code{Ordering} en subtyp till Javas \code{Comparator}, medan Scalas \code{Ordered} är en subtyp till Javas \code{Comparable}.
-\begin{itemize}[nolistsep, noitemsep]
-\item Javas \code{Comparator} och Scalas \code{Ordering} används för att skapa fristående ordningar som kan jämföra \emph{två olika} objekt. I Scala kan dessa göras implicit tillgängliga. I Javas samlingsbibliotek skickas instanser av \code{Comparator} med som explicita argument.
-\item Javas \code{Comparable} och Scalas \code{Ordered} används som supertyp för klasser som vill kunna jämföra ''sig själv'' med andra objekt och har \emph{en} naturlig ordningsdefinition.
-\end{itemize}
-
-\Subtask\Pen Sök upp dokumentationen för \code{java.util.Comparator}. Vilken abstrakt metod måste implementeras och vad gör den?
-
-\Subtask  I paketet \code{java.util.Arrays} finns en metod \code{sort} som tar en \code{Array[T]} och en \code{Comparable[T]}. Testa att använda dessa i REPL enligt nedan skiss. Starta om REPL så att ev. tidigare implicita ordningar för \code{Team} inte finns kvar.
-\begin{REPL}
-scala> import java.util.Comparator
-scala> val teamComparator = new Comparator[Team]{
-         def compare(o1: Team, o2: Team) = ???
-       }
-scala> val xs =
-         Array(Team("fnatic", 1499), Team("nip", 1473), Team("lumi", 1601))
-scala> java.util.Arrays.sort(xs.toArray, teamComparator)
-scala> xs
-\end{REPL}
-%\begin{Code}
-%// kod till facit
-%val teamComparator = new Comparator[Team]{
-%  def compare(o1: Team, o2: Team) = o2.rank - o1.rank
-%}
-%\end{Code}
-
-\Subtask I Scala finns en behändig metod \code{Ordering.comparatorToOrdering} som skapar en implicit tillgänglig ordning om man har en \code{java.util.Comparator}. Testa detta enligt nedan i REPL, med deklarationerna från föregående deluppgift.
-\begin{REPL}
-scala> implicit val teamOrd = Ordering.comparatorToOrdering(teamComparator)
-scala> xs.sorted
-\end{REPL}
-
-
-
-\Subtask\Pen Sök upp dokumentationen för \code{java.lang.Comparable}. Vilken abstrakt metod måste implementeras och vad gör den?
-
-\Subtask Gör så att klassen \code{Point} är \code{Comparable} och att punkter närmare origo sorteras före punkter som är längre ifrån origo enligt nedan skiss. I Scala är typer som är \code{Comparable} implicit även \code{Ordered}, varför sorteringen nedan funkar. Verfiera detta i REPL när du klurat ut hur implementera \code{compareTo}.
-
-\begin{Code}
-case class Point(x: Int, y: Int) extends Comparable[Point] {
-  def distanceFromOrigin: Double = ???
-  def compareTo(that: Point): Int = ???
-}
-\end{Code}
-\begin{REPL}
-scala> val xs = Seq(Point(10,10), Point(2,1), Point(5,3), Point(0,0))
-scala> xs.sorted
-\end{REPL}
-%\begin{Code}
-%// kod till facit
-%case class Point(x: Int, y: Int) extends Comparable[Point] {
-%  def distanceFromOrigin: Double = math.hypot(x, y)
-%  def compareTo(that: Point): Int =
-%    (distanceFromOrigin - that.distanceFromOrigin).round.toInt
-%}
-%\end{Code}
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved
-
-\SubtaskSolved  %% b
-\begin{Code}
-val teamComparator = new Comparator[Team]{
-  def compare(o1: Team, o2: Team) = o2.rank - o1.rank
-}
-\end{Code}
-
-
-\SubtaskSolved
-
-\SubtaskSolved
-
-\SubtaskSolved
-
-\begin{Code}
-case class Point(x: Int, y: Int) extends Comparable[Point] {
-  def distanceFromOrigin: Double = math.hypot(x, y)
-  def compareTo(that: Point): Int =
-    (distanceFromOrigin - that.distanceFromOrigin).round.toInt
-}
-\end{Code}
-
-
-\QUESTEND
-
-
-
-
-
-
-\WHAT{Fixa svensk sorteringsordning av ÄÅÖ.}
-
-\QUESTBEGIN
-
-\Task \label{task:swedish-letter-ordering} \what~   Svenska bokstäver kommer i, för svenskar, konstig ordning om man inte vidtar speciella åtgärder. Med hjälp av klassen \code{java.text.Collator} kan man få en \code{Comparator} för strängar som följer lokala regler för en massa språk på planeten jorden.
-
-\Subtask Verifiera att sorteringsordningen blir rätt i REPL enligt nedan.
-
-\begin{REPL}
-scala> val fel = Vector("ö","å","ä","z").sorted
-scala> val svColl = java.text.Collator.getInstance(new java.util.Locale("sv"))
-scala> val svOrd = Ordering.comparatorToOrdering(svColl)
-scala> val rätt = Vector("ö","å","ä","z").sorted(svOrd)
-\end{REPL}
-\Subtask Använd metoden ovan för att skriva ett program som skriver ut raderna i en textfil i korrekt svensk sorteringsordning. Programmet ska kunna köras med kommandot:\\\texttt{scala sorted -sv textfil.txt}
-
-\Subtask Läs mer här: \\
-\noindent{\href{http://stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}{\small stackoverflow.com/questions/24860138/sort-list-of-string-with-localization-in-scala}}
-
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-
-\QUESTEND
-
-
-
-
-
-
-\WHAT{\texttt{java.util.Arrays.binarySearch}}
-
-\QUESTBEGIN
-
-\Task  \what~ I klassen \code{java.util.Arrays}\footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html}{docs.oracle.com/javase/8/docs/api/java/util/Arrays.html}} finns en statisk metod \code{binarySearch} som kan användas enligt nedan.
-\begin{REPL}
-scala> val xs = Array(5,1,3,42,-1)
-scala> java.util.Arrays.sort(xs)
-scala> xs
-scala> java.util.Arrays.binarySearch(xs, 42)
-scala> java.util.Arrays.binarySearch(xs, 43)
-\end{REPL}
-Skriv ett valfritt Javaprogram som testar \code{java.util.Arrays.binarySearch}. Använd en array av typen \code{int[]} med några heltal som först sorteras med \code{java.util.Arrays.sort}.  Skriv ut det som returneras från  \code{java.util.Arrays.binarySearch}  i olika fall genom att asöka efter tal som finns först, mitt i, sist och tal som saknas.
-\emph{Tips:} Man kan deklarera en array, allokera den och fylla den med värden så här i Java: \\
-\jcode|int[] xs = new int[]{5, 1, 3, 42, -1};|
-
-
-\SOLUTION
-
-\TaskSolved \what
-
-\QUESTEND
 
 
 
