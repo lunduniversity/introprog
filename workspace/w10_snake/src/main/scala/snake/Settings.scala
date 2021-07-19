@@ -1,6 +1,4 @@
 package snake
-
-package snake
 import java.awt.Color
 
 class Settings(configs: Map[String, String]):
