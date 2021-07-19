@@ -1,14 +1,16 @@
 package snake
 
-case class Player(
-  name: String,
-  left: String, down: String, right: String, up: String, // control keys
-  snake: Snake
+class Player(
+  var name: String, 
+  var keyMap: Player.KeyMap, 
+  val snake: Snake,
+  var points: Int = 0,    // TODO: count points when e.g. eating apple
 ):
-  def handleKey(key: String): Unit = // mutate snake dir if control key
-    key.toUpperCase match
-      case `left`  => snake.dir = West
-      case `right` => snake.dir = East
-      case `down`  => snake.dir = South
-      case `up`    => snake.dir = North
-      case _       =>
+  def handleKey(key: String): Unit = 
+    ??? // om key ingår i keyMap så uppdatera snake.dir
+
+object Player:
+  enum KeyMap(left: String, right: String, up: String, down: String):
+    val dir = Map(left -> West, right -> East, up -> North, down -> South) 
+    case Letters extends KeyMap("A", "D", "W", "S")
+    case Arrows extends KeyMap("LEFT", "RIGHT", "UP", "DOWN")
