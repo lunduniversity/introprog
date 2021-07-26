@@ -18,12 +18,13 @@ See issues and progress here: https://github.com/lunduniversity/introprog/issues
 [Unfortunately](https://github.com/lampepfl/dotty/issues/12502) there are neither `.msi` files for Windows nor `.deb` package for Linux, for Scala 3 on the [download page](https://www.scala-lang.org/download/scala3.html). Instead you can do one or more of the following:
 1. Use [`sbt`](https://www.scala-sbt.org/download.html) with at least `sbt.version=1.5.4` in `project/build.properties` and `scalaVersion := "3.0.1"` in `build.sbt` and you can launch the REPL with `sbt console`
 
-2. Use Coursier according to [here](https://get-coursier.io/docs/cli-installation) and then:
+2. Use [scala-runners](https://github.com/dwijnand/scala-runners).
+
+3. Use Coursier according to [here](https://get-coursier.io/docs/cli-installation) and then:
   `cs install scala3-compiler` and `cs install scala3-repl` to get `scala3-compiler` and `scala3-repl` on your path
 
-3. Download the latest Scala 3 zip on [github](https://github.com/lampepfl/dotty/releases) and make the binaries available on your path so you can write `scala` and `scalac` in terminal.
+4. Download the latest Scala 3 zip on [github](https://github.com/lampepfl/dotty/releases) and make the binaries available on your path so you can write `scala` and `scalac` in terminal.
 
-4. Use [scala-runners](https://github.com/dwijnand/scala-runners).
 
 ## Migrating exercises
 
