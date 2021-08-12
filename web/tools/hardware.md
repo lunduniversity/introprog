@@ -2,9 +2,7 @@
 
 Vid undervisning på campus rekommenderas LTH:s [Linux-datorer](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/). Ta gärna med ett eget tangentbord och en egen mus och koppla in i skolans datorer så minskar du smittrisken. 
 
-Om du får [sjukdoms-symptom](https://www.lth.se/covid19/) ska du studera hemifrån tills du varit [symptomfri i minst 2 dagar](https://www.youtube.com/watch?v=D3k39LNFcsw&feature=youtu.be). 
-
-Du behöver då en bra arbetsplats och en dator med Linux (t.ex. Ubuntu 20.04), Windows 10 eller Apple macOS. Det är bra att ha en ergonomisk kontorsstol vid ett bekvämt skrivbord, ett flyttbart tangentbord, en separat mus och en höj-och-sänkbar skärm.
+När du studerar hemma behöver du en bra arbetsplats och en dator med Linux (t.ex. Ubuntu 20.04), Windows 10 eller macOS. Det är bra att ha en ergonomisk kontorsstol vid ett bekvämt skrivbord, ett flyttbart tangentbord, en separat mus och en höj-och-sänkbar skärm.
 
 ### Dator
 
