@@ -1,17 +1,18 @@
 ## Hårdvara
 
-Vid undervisning på campus rekommenderas LTH:s [Linux-datorer](http://www.student.lth.se/datorsupport/datorsalar-och-schema/datorsalar/e-huset/). Ta gärna med ett eget tangentbord och en egen mus och koppla in i skolans datorer så minskar du smittrisken. 
+Vid undervisning på campus rekommenderas LTH:s [Linux-datorer](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/). Ta gärna med ett eget tangentbord och en egen mus och koppla in i skolans datorer så minskar du smittrisken. 
 
-Om du får [sjukdoms-symptom](https://www.lth.se/covid19/) ska du studera hemifrån tills du varit [symptomfri i minst 2 dagar](https://www.youtube.com/watch?v=D3k39LNFcsw&feature=youtu.be). Du behöver då en bra arbetsplats och en dator med Linux (Ubuntu), Windows 10 eller macOS. Det är bra att ha en ergonomisk kontorsstol vid ett bekvämt skrivbord, ett flyttbart tangentbord, en separat mus och en höj-och-sänkbar skärm.
+Om du får [sjukdoms-symptom](https://www.lth.se/covid19/) ska du studera hemifrån tills du varit [symptomfri i minst 2 dagar](https://www.youtube.com/watch?v=D3k39LNFcsw&feature=youtu.be). 
+
+Du behöver då en bra arbetsplats och en dator med Linux (t.ex. Ubuntu 20.04), Windows 10 eller Apple macOS. Det är bra att ha en ergonomisk kontorsstol vid ett bekvämt skrivbord, ett flyttbart tangentbord, en separat mus och en höj-och-sänkbar skärm.
 
 ### Dator
 
 När du ska programmera är det bra med en dator med minst 8GB RAM och 2.5GHz CPU. Du kan t.ex. köpa dator här: [Compliq i Lund](https://www.compliq.se/bygga-dator/), [Webbhallen i Malmö](https://www.webhallen.com/se/store/22-Malmo-Triangeln), [Inet i Malmö](https://www.inet.se/info/243/inet-malmo)
 
-Både [Lenovo](https://www.lenovo.com/se/sv/studentrabatt/) och [Dell](https://www.dell.com/sv-se/shop/dell-advantage/cp/students) har studentrabatt och säljer både stationära och bärbara datorer. De har även datorer med Linux förinstallerat (speciella konfigurationer av [bärbara XPS13](https://www.dell.com/se/offentlig/p/xps-13-linux/pd) resp. [bärbara Thinkpad och stationära Thinkstation](https://techworld.idg.se/2.2524/1.735625/lenovo-linux)).
+Både [Lenovo](https://www.lenovo.com/se/sv/studentrabatt/) och [Dell](https://www.dell.com/sv-se/shop/dell-advantage/cp/students) har studentrabatt och säljer både stationära och bärbara datorer. De har även datorer med [Linux förinstallerat](https://news.itsfoss.com/best-linux-laptops-2021/).
 
-Om du letar efter en toksnabb fläktlös stationär dator rekommenderas senaste modellen av [Siago](https://www.atlastsolutions.com/sigao/) som kan fås med Ubuntu förinstallerat. Om du inte vill beställa från webben utan köpa i lokal butik, så ta kontakt med [Compliq i Lund](https://www.compliq.se/kontakta-oss/) och fråga om de kan beställa en åt dig.
-
+Om du letar efter en bra stationär dator rekommenderas senaste modellen av [Siago](https://www.atlastsolutions.com/sigao/) som är fläktlös och därmed helt tyst. Sigao kan fås med Ubuntu eller Windows förinstallerat.
 
 ### Headset-adapter
 
