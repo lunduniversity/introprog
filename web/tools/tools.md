@@ -2,7 +2,7 @@ I denna kurs använder vi programmeringsspråket **Scala** och exekveringsmiljö
 
 ## Programmera på LTH:s datorer
 
-På LTH:s Linux-datorer finns de verktyg vi använder i kursen förinstallerade:
+På LTH:s [Linuxdatorer i E-huset](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/) finns alla de verktyg vi använder i kursen förinstallerade:
 
 * Rekommenderad kodeditor: VS Code startas med kommandot `code`
 * Scala REPL; kommando: `scala`
