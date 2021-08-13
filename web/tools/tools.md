@@ -75,7 +75,7 @@ Version 11 rekommenderas, men andra versioner kan ev. också fungera. Om utskrif
         * Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
 
 * Linux/Ubuntu/WSL: Öppna terminalfönster och kör:
-    `sudo apt-get install openjdk-11-jdk`
+    `sudo apt install openjdk-11-jdk`
 
 
 
