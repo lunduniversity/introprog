@@ -17,7 +17,35 @@ På LTH:s Linux-datorer finns de verktyg vi använder i kursen förinstallerade:
 
 ### Installera Kojo
 
-Följ instruktioner här: http://www.kogics.net/kojo-download
+Följ instruktioner här: [http://www.kogics.net/kojo-download](http://www.kogics.net/kojo-download)
+
+### Installera Java Development Kit (JDK)
+
+#### Kontrollera om du redan har JDK
+
+Du kanske redan har JDK installerat. Kontrollera detta genom att i ett terminalfönster skriva (observera avslutande c:et):
+
+```
+javac -version
+```
+
+Version 11 rekommenderas, men andra versioner kan också fungera. Om utskriften säger att `javac` saknas, installera då OpenJDK enl. nedan.
+
+Du kanske redan har enbart Java Runtime Environment (JRE) installerad, men inte JDK. Då saknar du programmeringsverktygen som ingår i JDK och du behöver installera JDK enl. nedan. Du kan kolla om du har JRE genom att skriva java -version (alltså utan c efter java). Eller så har du redan JDK installerad men inte rätt bibliotek i din PATH; fråga någon om hjälp eller sök information om hur du uppdaterar PATH i ditt operativsystem.
+
+#### Installera OpenJDK
+
+Läs instruktioner noga i appendix i kompendiet innan du sätter igång.
+
+* Windows/Mac: Installera OpenJDK här [https://adoptopenjdk.net/](https://adoptopenjdk.net/)
+  * Välj att ladda ner OpenJDK **version 11**  (LTS) HotSpot **för ditt operativsystem**.
+  * I hämtade filer dubbelklicka för installation med förifyllda val.
+  * Starta om din dator.
+  * Starta terminalfönster och kontrollera enligt ovan att `javac` och `java` ger rätt version.
+    * Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
+
+* Linux: Öppna terminalfönster och kör:
+    `sudo apt-get install openjdk-11-jdk`
 
 ## Hårdvara
 
