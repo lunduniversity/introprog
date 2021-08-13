@@ -42,7 +42,7 @@ Många av de programmeringsverktyg vi använder körs via ett terminalfönster. 
 * **MacOS**: Följ instruktioner här: [https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/](https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/)
 
 
-## Installera kodeditor
+### Installera kodeditor
 
 * [**VS Code**](https://code.visualstudio.com/): rekommenderas i kursen, öppen källkod, alla plattformar. Installera tillägget **Scala Metals** via editorns tilläggshanterare (Extensions Ctrl+Shift+X), skriv i sök-rutan: *Metals*
 
@@ -82,7 +82,7 @@ Du kanske redan har enbart Java Runtime Environment (JRE) installerad, men inte 
 
 
 
-## Installera byggverktyget `sbt`
+### Installera byggverktyget `sbt`
 
 Installera Scala Build Tool `sbt`: 
 
@@ -98,7 +98,7 @@ brew install sbt@1
 
 Läs mer om hur du använder `sbt` i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/). 
 
-## Gör `scala` och `scalac` tillgängligt i terminalen
+### Gör `scala` och `scalac` tillgängligt i terminalen
 
 Tyvärr finns inget färdigt installationsprogram för nya Scala 3 än, så filerna som kör igång `scala` och `scalac` i terminalen behöver laddas ner och installeras manuellt. Stegen beskrivs nedan. Fråga någon om hjälp hur du gör för att uppdatera din PATH.
 
