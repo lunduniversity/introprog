@@ -99,7 +99,7 @@ Läs mer om hur du använder `sbt` i Appendix i [kompendiet](https://cs.lth.se/p
 
 ### Gör `scala` och `scalac` tillgängligt i terminalen
 
-Tyvärr finns inget färdigt installationsprogram för nya Scala 3 än, så filerna som kör igång `scala` och `scalac` i terminalen behöver laddas ner och installeras manuellt. Stegen beskrivs nedan.
+Tyvärr finns inget färdigt installationsprogram för nya Scala 3 än, så filerna som kör igång `scala` och `scalac` i terminalen behöver laddas ner och installeras manuellt. Stegen beskrivs nedan. Fråga någon om hjälp vid behov.
 
 * Linux/Ubuntu/WSL: 
     * Kopiera och klistra in dessa kommando rad för rad i terminalen:
