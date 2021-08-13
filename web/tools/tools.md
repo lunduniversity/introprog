@@ -1,3 +1,13 @@
+I denna kurs använder vi programmeringsspråket Scala version 3 och exekveringsmiljön OpenJDK version 11, samt bland annat byggverktyget `sbt` och editorn `vscode`. Läs om hur du använder dessa och andra programmeringsverktyg i **Appendix** i [kompendiet](https://cs.lth.se/pgk/compendium/). Verktygen finns förinstallerade på LTH:s [Linuxdatorer i E-huset](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/). Instruktioner om hur du installerar dessa verktyg på din egen dator finns i Appendix i kompendiet och nedan.
+
+## Programmera på LTH:s datorer
+
+TODO
+
+## Programmera på din egen dator 
+
+TODO
+
 ## Hårdvara
 
 Vid undervisning på campus rekommenderas LTH:s [Linux-datorer](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/). Ta gärna med ett eget tangentbord och en egen mus och koppla in i skolans datorer så minskar du smittrisken. 
