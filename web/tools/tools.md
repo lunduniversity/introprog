@@ -74,10 +74,9 @@ Du kanske redan har enbart Java Runtime Environment (JRE) installerad, men inte 
     2. I hämtade filer dubbelklicka för installation med förifyllda val.
     3. Starta om din dator.
     4. Starta terminalfönster och kontrollera enligt ovan att `javac` och `java` ger rätt version.
-
         * Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
 
-* Linux: Öppna terminalfönster och kör:
+* Linux/Ubuntu/WSL: Öppna terminalfönster och kör:
     `sudo apt-get install openjdk-11-jdk`
 
 
