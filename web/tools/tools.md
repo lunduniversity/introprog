@@ -127,7 +127,7 @@ Vid undervisning på campus rekommenderas LTH:s [Linux-datorer](https://www.lth.
 
 När du studerar hemma behöver du en bra arbetsplats och en dator med Linux (t.ex. Ubuntu 20.04), Windows 10 eller Mac. Det är bra att ha en ergonomisk kontorsstol vid ett bekvämt skrivbord, ett flyttbart tangentbord, en separat mus och en höj-och-sänkbar skärm.
 
-### Dator
+### Köpa egen dator
 
 När du ska programmera är det bra med en dator med minst 8GB RAM och 2.5GHz CPU. Du kan t.ex. köpa dator här: [Compliq i Lund](https://www.compliq.se/bygga-dator/), [Webbhallen i Malmö](https://www.webhallen.com/se/store/22-Malmo-Triangeln), [Inet i Malmö](https://www.inet.se/info/243/inet-malmo)
 
