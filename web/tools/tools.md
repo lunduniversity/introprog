@@ -39,7 +39,7 @@ Många av de programmeringsverktyg vi använder körs via ett terminalfönster. 
     * Om du har en uppdaterad version av **Windows 10** och en någorlunda modern dator så rekommenderas **WSL2** som ger dig tillgång till Linux/Ubuntu direkt under Windows, följ instruktioner här och välj Ubuntu 20.04 (fråga ngn om hjälp om du kör fast):  [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
     * Du kan också köra den befintliga cmd-terminalen som inte kräver någon installation, följ instruktioner här [https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/](https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/) 
 
-* **MacOS**: Följ instruktioner här: [https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/](https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/)
+* **Mac**: Följ instruktioner här: [https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/](https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/)
 
 
 ### Installera kodeditor
@@ -89,7 +89,7 @@ Installera Scala Build Tool `sbt`:
 
 * Linux/Ubuntu/WSL2: Klistra in terminalkommandona rad för rad under rubriken "Linux (deb)" här: [http://www.scala-sbt.org/download.html](http://www.scala-sbt.org/download.html)
 
-* MacOS: Se till att du har admin-rätt på din dator. Installera Homebrew (om du inte redan gjort det) genom att följa instruktionen härifrån http://brew.sh/ dvs kopiera långa kommandot som börjar med /usr/bin/ruby med Cmd+C och klistra in med Cmd+V i terminalen. Skriv sedan detta i terminalen:
+* Mac: Se till att du har admin-rätt på din dator. Installera Homebrew (om du inte redan gjort det) genom att följa instruktionen härifrån http://brew.sh/ dvs kopiera långa kommandot som börjar med /usr/bin/ruby med Cmd+C och klistra in med Cmd+V i terminalen. Skriv sedan detta i terminalen:
 ```
 brew update
 brew install sbt@1
@@ -114,7 +114,7 @@ Tyvärr finns inget färdigt installationsprogram för nya Scala 3 än, så file
     ```
     * Starta ett **nytt** terminalfönster och testa att skriva `scala -version` och om allt gått bra ska du få en utskrift som börjar med "Scala compiler version".
 
-* MacOS: Gör som för Linux ovan men byt ut `wget ` mot `curl -O `  (notera *stora* bokstaven O). Du ska alltså köra detta kommando i stället for `wget` ovan:
+* Mac: Gör som för Linux ovan men byt ut `wget ` mot `curl -O `  (notera *stora* bokstaven O). Du ska alltså köra detta kommando i stället for `wget` ovan:
 ```
 curl -O https://github.com/lampepfl/dotty/releases/download/$VER/scala3-$VER.zip
 ``` 
@@ -127,7 +127,7 @@ curl -O https://github.com/lampepfl/dotty/releases/download/$VER/scala3-$VER.zip
 
 Vid undervisning på campus rekommenderas LTH:s [Linux-datorer](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/). Ta gärna med ett eget tangentbord och en egen mus och koppla in i skolans datorer så minskar du smittrisken. 
 
-När du studerar hemma behöver du en bra arbetsplats och en dator med Linux (t.ex. Ubuntu 20.04), Windows 10 eller macOS. Det är bra att ha en ergonomisk kontorsstol vid ett bekvämt skrivbord, ett flyttbart tangentbord, en separat mus och en höj-och-sänkbar skärm.
+När du studerar hemma behöver du en bra arbetsplats och en dator med Linux (t.ex. Ubuntu 20.04), Windows 10 eller Mac. Det är bra att ha en ergonomisk kontorsstol vid ett bekvämt skrivbord, ett flyttbart tangentbord, en separat mus och en höj-och-sänkbar skärm.
 
 ### Dator
 
