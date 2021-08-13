@@ -13,9 +13,11 @@ På LTH:s Linux-datorer finns de verktyg vi använder i kursen förinstallerade:
 * Exekveringsmijlön JVM med tillhörande utvecklingsbibliotek (OpenJDK); kommando: `java`
 * Utvecklingsmiljön IntelliJ IDEA med Scala-plugin; kommando: `idea`
 
+
 ## Programmera på din egen dator 
 
 Du behöver följande verktyg på din egen dator: Kojo, OpenJDK, sbt, VS Code med tillägget Scala (Metals). Läs om dessa i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) och följ instruktioner nedan om hur du installation verktygen på din egen dator.   
+
 
 ### Installera Kojo
 
@@ -25,6 +27,7 @@ Vi använder utvecklingsmiljön Kojo på första labben. Kojo är utvecklat spec
 
 [//]: #(LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen.)
 
+
 ### Starta terminalfönster
 
 Många av de programmeringsverktyg vi använder körs via ett terminalfönster. Du startar ett terminalfönster såhär:
@@ -33,13 +36,14 @@ Många av de programmeringsverktyg vi använder körs via ett terminalfönster. 
 
 * **Windows**: 
 
-  * För Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started) 
+    * För Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started) 
 
-  * Om du har en uppdaterad version av **Windows 10** och en någorlunda modern dator så rekommenderas **WSL2** som ger dig tillgång till Linux/Ubuntu direkt under Windows, följ instruktioner här och välj Ubuntu 20.04 (fråga ngn om hjälp om du kör fast):  [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+    * Om du har en uppdaterad version av **Windows 10** och en någorlunda modern dator så rekommenderas **WSL2** som ger dig tillgång till Linux/Ubuntu direkt under Windows, följ instruktioner här och välj Ubuntu 20.04 (fråga ngn om hjälp om du kör fast):  [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 
-  * Om du i stället vill köra den befintliga cmd-terminalen som inte kräver någon installation, följ instruktioner här [https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/](https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/) 
+    * Om du i stället vill köra den befintliga cmd-terminalen som inte kräver någon installation, följ instruktioner här [https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/](https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/) 
 
 * **MacOS**: Följ instruktioner här: [https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/](https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/)
+
 
 ### Installera Java Development Kit (JDK)
 
