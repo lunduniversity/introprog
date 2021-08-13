@@ -15,14 +15,35 @@ På LTH:s Linux-datorer finns de verktyg vi använder i kursen förinstallerade:
 
 ## Programmera på din egen dator 
 
+Du behöver följande verktyg på din egen dator: Kojo, OpenJDK, sbt, VS Code med tillägget Scala (Metals). Läs om dessa i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) och följ instruktioner nedan om hur du installation verktygen på din egen dator.   
+
 ### Installera Kojo
 
 Följ instruktioner här: [http://www.kogics.net/kojo-download](http://www.kogics.net/kojo-download)
 
+Vi använder utvecklingsmiljön Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera. Kojo används på [Vattenhallen Science Center](https://www.vattenhallen.lu.se/upplevelser/programmering/). 
+
+[//]: #(LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen.)
+
+### Starta terminalfönster
+
+Många av de programmeringsverktyg vi använder körs via ett terminalfönster. Du startar ett terminalfönster såhär:
+
+* **Linux/Ubuntu**: Tryck Ctrl+Alt+T eller tryck på Windows-tangenten och sök efter "Terminal". 
+
+* **Windows**: 
+
+  * För Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started) 
+
+  * Om du har en uppdaterad version av **Windows 10** och en någorlunda modern dator så rekommenderas **WSL2** som ger dig tillgång till Linux/Ubuntu direkt under Windows, följ instruktioner här och välj Ubuntu 20.04 (fråga ngn om hjälp om du kör fast):  [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+
+  * Om du i stället vill köra den befintliga cmd-terminalen som inte kräver någon installation, följ instruktioner här [https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/](https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/) 
+
+* **MacOS**: Följ instruktioner här: [https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/](https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/)
+
 ### Installera Java Development Kit (JDK)
 
-#### Kontrollera om du redan har JDK
-
+**Kontrollera om du redan har JDK: **
 Du kanske redan har JDK installerat. Kontrollera detta genom att i ett terminalfönster skriva (observera avslutande c:et):
 
 ```
@@ -33,15 +54,15 @@ Version 11 rekommenderas, men andra versioner kan också fungera. Om utskriften 
 
 Du kanske redan har enbart Java Runtime Environment (JRE) installerad, men inte JDK. Då saknar du programmeringsverktygen som ingår i JDK och du behöver installera JDK enl. nedan. Du kan kolla om du har JRE genom att skriva java -version (alltså utan c efter java). Eller så har du redan JDK installerad men inte rätt bibliotek i din PATH; fråga någon om hjälp eller sök information om hur du uppdaterar PATH i ditt operativsystem.
 
-#### Installera OpenJDK
-
-Läs instruktioner noga i appendix i kompendiet innan du sätter igång.
+**Installera OpenJDK: **  Läs även instruktionerna i appendix i kompendiet innan du sätter igång.
 
 * Windows/Mac: Installera OpenJDK här [https://adoptopenjdk.net/](https://adoptopenjdk.net/)
-  * Välj att ladda ner OpenJDK **version 11**  (LTS) HotSpot **för ditt operativsystem**.
-  * I hämtade filer dubbelklicka för installation med förifyllda val.
-  * Starta om din dator.
-  * Starta terminalfönster och kontrollera enligt ovan att `javac` och `java` ger rätt version.
+ 
+  1. Välj att ladda ner OpenJDK **version 11**  (LTS) HotSpot **för ditt operativsystem**.
+  2. I hämtade filer dubbelklicka för installation med förifyllda val.
+  3. Starta om din dator.
+  4. Starta terminalfönster och kontrollera enligt ovan att `javac` och `java` ger rätt version.
+
     * Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
 
 * Linux: Öppna terminalfönster och kör:
