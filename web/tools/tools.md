@@ -28,6 +28,17 @@ Vi använder utvecklingsmiljön Kojo på första labben. Kojo är utvecklat spec
 [//]: #(LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen.)
 
 
+### Installera kodeditor
+
+* [**VS Code**](https://code.visualstudio.com/): rekommenderas i kursen, öppen källkod, alla plattformar. Installera tillägget **Scala Metals** via editorns tilläggshanterare (Extensions Ctrl+Shift+X), skriv i sök-rutan: *Metals*
+
+* [Atom](https://atom.io/): öppen källkod, alla plattformar, paketet Scala Metals finns att installera i editorns tilläggshanterare.
+
+* [Sublime Text](http://www.sublimetext.com/): stängd källkod, alla plattformar, paketet Scala Metals finns att installera i editorns tilläggshanterare.
+
+Läs mer om vad du kan göra med en kodeditor i appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) 
+
+
 ### Starta terminalfönster
 
 Många av de programmeringsverktyg vi använder körs via ett terminalfönster. Du startar ett terminalfönster såhär:
@@ -40,17 +51,6 @@ Många av de programmeringsverktyg vi använder körs via ett terminalfönster. 
     * Du kan också köra den befintliga cmd-terminalen som inte kräver någon installation, följ instruktioner här [https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/](https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/) 
 
 * **Mac**: Följ instruktioner här: [https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/](https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/)
-
-
-### Installera kodeditor
-
-* [**VS Code**](https://code.visualstudio.com/): rekommenderas i kursen, öppen källkod, alla plattformar. Installera tillägget **Scala Metals** via editorns tilläggshanterare (Extensions Ctrl+Shift+X), skriv i sök-rutan: *Metals*
-
-* [Atom](https://atom.io/): öppen källkod, alla plattformar, paketet Scala Metals finns att installera i editorns tilläggshanterare.
-
-* [Sublime Text](http://www.sublimetext.com/): stängd källkod, alla plattformar, paketet Scala Metals finns att installera i editorns tilläggshanterare.
-
-Läs mer om vad du kan göra med en kodeditor i appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) 
 
 
 ### Installera Java Development Kit (JDK)
