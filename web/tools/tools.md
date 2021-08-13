@@ -44,13 +44,13 @@ Många av de programmeringsverktyg vi använder körs via ett terminalfönster. 
 
 ## Installera kodeditor
 
-I kurskompendiets appendix finns en beskrivning av vad en kodeditor. Här finns länkar till några populära editorer: 
-
 * [**VS Code**](https://code.visualstudio.com/): rekommenderas i kursen, öppen källkod, alla plattformar. Installera tillägget **Scala Metals** via editorns tilläggshanterare (Extensions Ctrl+Shift+X), skriv i sök-rutan: *Metals*
 
 * [Atom](https://atom.io/): öppen källkod, alla plattformar, paketet Scala Metals finns att installera i editorns tilläggshanterare.
 
 * [Sublime Text](http://www.sublimetext.com/): stängd källkod, alla plattformar, paketet Scala Metals finns att installera i editorns tilläggshanterare.
+
+Läs mer om vad du kan göra med en kodeditor i appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) 
 
 
 ### Installera Java Development Kit (JDK)
@@ -66,7 +66,7 @@ Version 11 rekommenderas, men andra versioner kan också fungera. Om utskriften 
 
 Du kanske redan har enbart Java Runtime Environment (JRE) installerad, men inte JDK. Då saknar du programmeringsverktygen som ingår i JDK och du behöver installera JDK enl. nedan. Du kan kolla om du har JRE genom att skriva java -version (alltså utan c efter java). Eller så har du redan JDK installerad men inte rätt bibliotek i din PATH; fråga någon om hjälp eller sök information om hur du uppdaterar PATH i ditt operativsystem.
 
-**Installera OpenJDK: **  Läs även instruktionerna i appendix i kompendiet innan du sätter igång.
+**Installera OpenJDK: **  Läs även instruktionerna i appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) innan du sätter igång.
 
 * Windows/Mac: Installera OpenJDK här [https://adoptopenjdk.net/](https://adoptopenjdk.net/)
  
