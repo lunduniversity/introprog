@@ -1,8 +1,17 @@
-I denna kurs använder vi programmeringsspråket Scala version 3 och exekveringsmiljön OpenJDK version 11, samt bland annat byggverktyget `sbt` och editorn `vscode`. Läs om hur du använder dessa och andra programmeringsverktyg i **Appendix** i [kompendiet](https://cs.lth.se/pgk/compendium/). Verktygen finns förinstallerade på LTH:s [Linuxdatorer i E-huset](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/). Instruktioner om hur du installerar dessa verktyg på din egen dator finns i Appendix i kompendiet och nedan.
+I denna kurs använder vi programmeringsspråket Scala och exekveringsmiljön OpenJDK, samt byggverktyget `sbt` och editorn `vscode`. Läs om hur du använder dessa och andra programmeringsverktyg i **Appendix** i [kompendiet](https://cs.lth.se/pgk/compendium/). Verktygen finns förinstallerade på LTH:s [Linuxdatorer i E-huset](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/). Instruktioner om hur du installerar dessa verktyg på din egen dator finns i Appendix i kompendiet och nedan.
 
 ## Programmera på LTH:s datorer
 
-TODO
+På LTH:s Linux-datorer finns de verktyg vi använder i kursen förinstallerade:
+
+* Rekommenderad kodeditor: VS code startas med kommandot `code`
+* Scala REPL; kommando: `scala`
+* Utvecklingsmiljön Kojo; kommando: `kojo`
+* Scala-kompilatorn; kommando: `scalac`
+* Byggverktyget sbt; kommando: `sbt`
+* Java-kompilatorn; kommando: `javac`
+* Exekveringsmijlön JVM med tillhörande utvecklingsbibliotek (OpenJDK); kommando: `java`
+* Utvecklingsmiljön IntelliJ IDEA med Scala-plugin; kommando: `idea`
 
 ## Programmera på din egen dator 
 
