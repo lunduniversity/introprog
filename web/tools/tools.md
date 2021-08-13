@@ -4,7 +4,7 @@ I denna kurs använder vi programmeringsspråket **Scala** och exekveringsmiljö
 
 På LTH:s Linux-datorer finns de verktyg vi använder i kursen förinstallerade:
 
-* Rekommenderad kodeditor: VS code startas med kommandot `code`
+* Rekommenderad kodeditor: VS Code startas med kommandot `code`
 * Scala REPL; kommando: `scala`
 * Utvecklingsmiljön Kojo; kommando: `kojo`
 * Scala-kompilatorn; kommando: `scalac`
@@ -42,6 +42,17 @@ Många av de programmeringsverktyg vi använder körs via ett terminalfönster. 
 * **MacOS**: Följ instruktioner här: [https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/](https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/)
 
 
+## Installera kodeditor
+
+I kurskompendiets appendix finns en beskrivning av vad en kodeditor. Här finns länkar till några populära editorer: 
+
+* [**VS Code**](https://code.visualstudio.com/): rekommenderas i kursen, öppen källkod, alla plattformar. Installera tillägget **Scala Metals** via editorns tilläggshanterare (Extensions Ctrl+Shift+X), skriv i sök-rutan: *Metals*
+
+* [Atom](https://atom.io/): öppen källkod, alla plattformar, paketet Scala Metals finns att installera i editorns tilläggshanterare.
+
+* [Sublime Text](http://www.sublimetext.com/): stängd källkod, alla plattformar, paketet Scala Metals finns att installera i editorns tilläggshanterare.
+
+
 ### Installera Java Development Kit (JDK)
 
 **Kontrollera om du redan har JDK: **
@@ -59,15 +70,56 @@ Du kanske redan har enbart Java Runtime Environment (JRE) installerad, men inte 
 
 * Windows/Mac: Installera OpenJDK här [https://adoptopenjdk.net/](https://adoptopenjdk.net/)
  
-  1. Välj att ladda ner OpenJDK **version 11**  (LTS) HotSpot **för ditt operativsystem**.
-  2. I hämtade filer dubbelklicka för installation med förifyllda val.
-  3. Starta om din dator.
-  4. Starta terminalfönster och kontrollera enligt ovan att `javac` och `java` ger rätt version.
+    1. Välj att ladda ner OpenJDK **version 11**  (LTS) HotSpot **för ditt operativsystem**.
+    2. I hämtade filer dubbelklicka för installation med förifyllda val.
+    3. Starta om din dator.
+    4. Starta terminalfönster och kontrollera enligt ovan att `javac` och `java` ger rätt version.
 
-    * Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
+        * Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
 
 * Linux: Öppna terminalfönster och kör:
     `sudo apt-get install openjdk-11-jdk`
+
+
+
+## Installera byggverktyget `sbt`
+
+Installera Scala Build Tool `sbt`: 
+
+* Windows: Ladda ner och kör [https://github.com/sbt/sbt/releases/download/v1.5.5/sbt-1.5.5.msi](https://github.com/sbt/sbt/releases/download/v1.5.5/sbt-1.5.5.msi)
+
+* Linux/Ubuntu/WSL2: Klistra in terminalkommandona rad för rad under rubriken "Linux (deb)" här: [http://www.scala-sbt.org/download.html](http://www.scala-sbt.org/download.html)
+
+* MacOS: Se till att du har admin-rätt på din dator. Installera Homebrew (om du inte redan gjort det) genom att följa instruktionen härifrån http://brew.sh/ dvs kopiera långa kommandot som börjar med /usr/bin/ruby med Cmd+C och klistra in med Cmd+V i terminalen. Skriv sedan detta i terminalen:
+```
+brew update
+brew install sbt@1
+```
+
+Läs mer om hur du använder `sbt` i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/). 
+
+## Gör `scala` och `scalac` tillgängligt i terminalen
+
+Tyvärr finns inget färdigt installationsprogram för nya Scala 3 än, så filerna som kör igång `scala` och `scalac` i terminalen behöver laddas ner och installeras manuellt. Stegen beskrivs nedan. Fråga någon om hjälp hur du gör för att uppdatera din PATH.
+
+* Linux/Ubuntu/WSL/MacOS: 
+    * Kopiera och klistra in dessa kommando rad för rad i terminalen:
+    ```
+    mkdir -p ~/scala && cd ~/scala
+    VER=3.0.1
+    wget https://github.com/lampepfl/dotty/releases/download/$VER/scala3-$VER.zip
+    unzip scala3-$VER.zip
+    sudo mkdir -p /usr/local/bin
+    sudo ln -s ~/scala/scala3-$VER/bin/sca* /usr/local/bin/.
+    rm scala3-$VER.zip
+    ```
+    * Starta ett **nytt** terminalfönster och testa att skriva `scala -version` och om allt gått bra ska du få en utskrift som börjar med "Scala compiler version".
+
+* MacOS: Gör som för linux men byt ut `wget ` mot `curl -O `  (notera *stora* bokstaven O)
+ 
+* Windows: TODO
+
+
 
 ## Hårdvara
 
