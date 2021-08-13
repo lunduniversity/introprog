@@ -62,9 +62,7 @@ Du kanske redan har JDK installerat. Kontrollera detta genom att i ett terminalf
 javac -version
 ```
 
-Version 11 rekommenderas, men andra versioner kan också fungera. Om utskriften säger att `javac` saknas, installera då OpenJDK enl. nedan.
-
-Du kanske redan har enbart Java Runtime Environment (JRE) installerad, men inte JDK. Då saknar du programmeringsverktygen som ingår i JDK och du behöver installera JDK enl. nedan. Du kan kolla om du har JRE genom att skriva java -version (alltså utan c efter java). Eller så har du redan JDK installerad men inte rätt bibliotek i din PATH; fråga någon om hjälp eller sök information om hur du uppdaterar PATH i ditt operativsystem.
+Version 11 rekommenderas, men andra versioner kan ev. också fungera. Om utskriften säger att `javac` saknas, installera då OpenJDK enl. nedan.
 
 **Installera OpenJDK: **  Läs även instruktionerna i appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) innan du sätter igång.
 
