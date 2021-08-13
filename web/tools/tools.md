@@ -102,7 +102,7 @@ Läs mer om hur du använder `sbt` i Appendix i [kompendiet](https://cs.lth.se/p
 
 Tyvärr finns inget färdigt installationsprogram för nya Scala 3 än, så filerna som kör igång `scala` och `scalac` i terminalen behöver laddas ner och installeras manuellt. Stegen beskrivs nedan. Fråga någon om hjälp hur du gör för att uppdatera din PATH.
 
-* Linux/Ubuntu/WSL/MacOS: 
+* Linux/Ubuntu/WSL: 
     * Kopiera och klistra in dessa kommando rad för rad i terminalen:
     ```
     mkdir -p ~/scala && cd ~/scala
