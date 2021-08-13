@@ -1,1 +1,1 @@
-pandoc -i tools.md -o tools.html
+pandoc -i tools/tools.md -o tools/tools.html
