@@ -234,8 +234,8 @@ object QuizData {  // to generate tables for a concept connection quizes in late
 
     QuizID("quiz-w05-class-instance") -> Vector(  //programs
       "\\code|Singelpunkt.x               |" -> "\\code|1|",
-      "\\code|Punkt.x                     |" -> "\\code|error: not found: value|",
-      "\\code|val p  = new Singelpunkt    |" -> "\\verb|error: not found: type|",
+      "\\code|Punkt.x                     |" -> "\\code|value is not a member of object|",
+      "\\code|val p  = new Singelpunkt    |" -> "\\verb|Not found: type|",
       "\\code|val p1 = new Punkt          |" -> "\\verb|p1: Punkt = Punkt@27a1a53c|",
       "\\code|val p2 = new Punkt          |" -> "\\verb|p2: Punkt = Punkt@51ab04bd|",
       "\\code|{ p1.x = 1; p2.x }          |" -> "\\code|3|",
@@ -245,34 +245,32 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
     QuizID("quiz-w05-class-param") -> Vector(  //programs
-      "\\code|val p1 = Point(1, 2)        |" -> "\\code|error: not found: value|",
-      "\\code|val p2 = new Point          |" -> "\\code|error: not enough arguments|",
-      "\\code|val p1 = new Point(1, 2)    |" -> "\\verb|p1: Point = Point@30ef773e|",
+      "\\code|val p1 = Point(1, 2)        |" -> "\\code|p1: Point = Point@30ef773e|",
+      "\\code|val p2 = new Point          |" -> "\\code|missing argument for parameter|",
       "\\code|val p2 = new Point(3, 4)    |" -> "\\verb|p2: Point = Point@218cf600|",
       "\\code|p2.x - p1.x                 |" -> "\\code|2|",
       "\\code|(new Point(0, 1)).y         |" -> "\\code|1|",
-      "\\code|new Point(0, 1, 2)          |" -> "\\code|error: too many arguments|",
+      "\\code|new Point(0, 1, 2)          |" -> "\\code|too many arguments for constructor|",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
     QuizID("quiz-w05-class-arg") -> Vector(  //programs
       "\\code|val p1 = new Point3D        |" -> "\\verb|p1: Point3D = Point3D@2eb37eee|",
       "\\code|val p2 = new Point3D(y = 1) |" -> "\\verb|p2: Point3D = Point3D@65a9e8d7|",
-      "\\code|(new Point3D(z = 2)).z      |" -> "\\code|error: not found: value|",
-      "\\code|p2.y = 0                    |" -> "\\code|error: reassignment to val|",
+      "\\code|(new Point3D(z = 2)).z      |" -> "\\code|value cannot be accessed|",
+      "\\code|p2.y = 0                    |" -> "\\code|Reassignment to val|",
       "\\code|p2.y == 0                   |" -> "\\code|false|",
       "\\code|p1.x == (new Point3D).x     |" -> "\\code|true|",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
     QuizID("quiz-w05-case-class") -> Vector(  //programs
-      "\\code|val p1 = new Pt(1,2)        |" -> "\\code|Pt(1,2)|",
-      "\\code|val p2 = Pt(y=3)            |" -> "\\code|Pt(0,3)|",
-      "\\code|val p3 = new MutablePt(5, 6)|" -> "\\code|MPt(5,6)|",
-      "\\code|val p4 = Mutable()          |" -> "\\code|error: not found: value|",
-      "\\code|p2.moved(dx=1) == Pt(1, 3)  |" -> "\\code|true|",
-      "\\code|p3.move(dy=1) == new MutablePt(5,7)|" -> "\\code|false|",
-      "\\code|p2 == p3                      |" -> "\\verb|warning: always false|",
+      "\\code|val p1 = new Pt(1, 2)         |" -> "\\code|Pt(1, 2)|",
+      "\\code|val p2 = Pt(y = 3)            |" -> "\\code|Pt(0, 3)|",
+      "\\code|val p3 = new MutablePt(5, 6)  |" -> "\\code|MPt(5, 6)|",
+      "\\code|val p4 = Mutable()            |" -> "\\code|Not found|",
+      "\\code|p2.moved(dx = 1) == Pt(1, 3)  |" -> "\\code|true|",
+      "\\code|p3.move(dy = 1) == new MutablePt(5, 7)|" -> "\\code|false|",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
