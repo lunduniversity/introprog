@@ -245,12 +245,12 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
     QuizID("quiz-w05-class-param") -> Vector(  //programs
-      "\\code|val p1 = Point(1, 2)        |" -> "\\code|p1: Point = Point@30ef773e|",
-      "\\code|val p2 = Point()            |" -> "\\code|missing argument for parameter|",
+      "\\code|val p1 = Point(1, 2)        |" -> "\\verb|p1: Point = Point@30ef773e|",
+      "\\code|val p2 = Point()            |" -> "\\verb|missing argument for parameter|",
       "\\code|val p2 = Point(3, 4)        |" -> "\\verb|p2: Point = Point@218cf600|",
       "\\code|p2.x - p1.x                 |" -> "\\code|2|",
       "\\code|Point(0, 1).y               |" -> "\\code|1|",
-      "\\code|Point(0, 1, 2)              |" -> "\\code|too many arguments for constructor|",
+      "\\code|Point(0, 1, 2)              |" -> "\\verb|too many arguments for constructor|",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
@@ -265,9 +265,9 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
     QuizID("quiz-w05-case-class") -> Vector(  //programs
-      "\\code|val p1 = Pt(1, 2)             |" -> "\\code|Pt(1, 2)|",
-      "\\code|val p2 = Pt(y = 3)            |" -> "\\code|Pt(0, 3)|",
-      "\\code|val p3 = MutablePt(5, 6)      |" -> "\\code|MPt(5, 6)|",
+      "\\code|val p1 = Pt(1, 2)             |" -> "\\code|Pt(1,2)|",
+      "\\code|val p2 = Pt(y = 3)            |" -> "\\code|Pt(0,3)|",
+      "\\code|val p3 = MutablePt(5, 6)      |" -> "\\code|MPt(5,6)|",
       "\\code|val p4 = Mutable()            |" -> "\\code|Not found|",
       "\\code|p2.moved(dx = 1) == Pt(1, 3)  |" -> "\\code|true|",
       "\\code|p3.move(dy = 1) == MutablePt(5, 7)|" -> "\\code|false|",
