@@ -254,6 +254,19 @@ class PixelWindow(
     Swing.await { new java.awt.Color(canvas.img.getRGB(x, y)) }
   }
 
+  import java.awt.image.BufferedImage
+  /**
+    * Returns a screenshot of the window
+    * SLOW! creates image one pixel at a time
+    */
+  def getImage(): BufferedImage = {
+    val img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    (0 until width).map(w => (0 until height).map(h => 
+      img.setRGB(w, h, getPixel(w, h).getRGB())
+    ))
+    img
+  }
+
   /** Set the PixelWindow frame title. */
   def setTitle(title: String): Unit = Swing { frame.setTitle(title) }
 
@@ -289,6 +302,29 @@ class PixelWindow(
       g.drawString(text, x, y + size)
     }
   }
+
+  
+  /** Draw `image` at `(x, y)` scaled to `(width, height)`. */
+  def drawImage(
+    image: BufferedImage,
+    x: Int,
+    y: Int,
+    width: Int,
+    height: Int
+  ) = {
+    canvas.withGraphics { g =>
+      g.drawImage(image, x, y, width, height, null)
+    }
+  }
+  /** Draw `image` at `(x, y)` unscaled. */
+  def drawImage(image: BufferedImage, x: Int, y: Int) = {
+    canvas.withGraphics{ g => 
+      g.drawImage(image, x, y, image.getWidth(), image.getHeight(), null)
+    }
+  }
+
+
+
 
   /** Create the underlying window and add listeners for event management. */
   private def initFrame(): Unit = Swing {

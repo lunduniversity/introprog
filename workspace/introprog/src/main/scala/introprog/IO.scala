@@ -127,4 +127,35 @@ object IO {
     import java.nio.file.{Files, Paths, StandardCopyOption}
     Files.move(Paths.get(from), Paths.get(to), StandardCopyOption.REPLACE_EXISTING)
   }
+
+    /**
+    * DANGER: silently deletes `fileName`.
+    *
+    * @param fileName the path the file that will be deleted.
+    * */
+  def delete(fileName: String): Unit = {
+    import java.nio.file.{Files, Paths, StandardCopyOption}
+    Files.delete(Paths.get(fileName))
+  }
+
+    /**
+    * Loads an image from file
+    *
+    * @param fileName the path the image that will be loaded.
+    * @return BufferedImage
+    * */
+  def loadImage(fileName: String): java.awt.image.BufferedImage = 
+    javax.imageio.ImageIO.read(new java.io.File(fileName))
+  
+    /**
+    * save an image to file
+    *
+    * @param fileName the path to save to image to.
+    * @param image the image to save
+    * @return true on success
+    * */
+  def saveImage(fileName: String, image: java.awt.image.BufferedImage) : Boolean = {
+    javax.imageio.ImageIO.write(image, "png", new java.io.File(fileName))
+  }
+
 }
