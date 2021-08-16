@@ -219,13 +219,13 @@ trait Plan {
     else labNumOfWeek(w)
   }
 
-  lazy val startLp1 = Date(2020, 8, 31)
+  lazy val startLp1 = Date(2021, 8, 30)
 
-  lazy val startLp2 = Date(2020, 11, 2)
+  lazy val startLp2 = Date(2021, 11, 1)
 
-  lazy val ksdatum = Date(2020, 10, 28)
+  lazy val ksdatum = Date(2021, 10, 27)
 
-  lazy val tentadatum = Date(2020, 1, 11)
+  lazy val tentadatum = Date(2022, 1, 8)
 
   def weeksOf(date: Date, n: Int): Seq[String] =
     for (week <- 0 until n) yield date.addDays(week*7).workWeek
