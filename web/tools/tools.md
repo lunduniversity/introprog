@@ -112,9 +112,9 @@ Tyvärr finns inget färdigt installationsprogram för nya Scala 3 än, så file
     ```
     * Starta ett **nytt** terminalfönster och testa att skriva `scala -version` och om allt gått bra ska du få en utskrift som börjar med "Scala compiler version".
 
-* Mac: Gör som för Linux ovan men byt ut `wget ` mot `curl -O `  (notera *stora* bokstaven O). Du ska alltså köra detta kommando i stället for `wget` ovan:
+* Mac: Gör som för Linux ovan men byt ut `wget ` mot `curl -OL `  (notera *stora* bokstaven O). Du ska alltså köra detta kommando i stället for `wget` ovan:
 ```
-curl -O https://github.com/lampepfl/dotty/releases/download/$VER/scala3-$VER.zip
+curl -OL https://github.com/lampepfl/dotty/releases/download/$VER/scala3-$VER.zip
 ``` 
  
 * Windows: TODO
