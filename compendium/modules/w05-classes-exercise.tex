@@ -262,71 +262,6 @@ object Point3D:
 \QUESTEND
 
 
-\WHAT{Innehållslikhet mellan olika typer.}
-
-\QUESTBEGIN
-
-\Task \what~Klistra in nedan klasser i REPL och undersök vad som händer.
-
-\begin{Code}
-class Gurka(val vikt: Int)
-
-class Bil(val typ: String)
-\end{Code}
-
-\begin{REPL}
-scala> class Gurka(val vikt: Int)
-     |
-     | class Bil(val typ: String)
-// defined class Gurka
-// defined class Bil
-
-scala> 42 == "Fyrtiotvå"
-
-scala> Gurka(50) == Bil("Sedan")
-
-\end{REPL}
-
-\Subtask Varför skiljer sig uttryckens resultat med varandra? Vilket resultat är att föredra?
-
-\Subtask Hur kan man ändra i koden för att få det föredragna resultatet?
-
-\SOLUTION
-
-\TaskSolved \what~
-\begin{REPL}
-scala> 42 == "Fyrtiotvå"
-1 |42 == "Fyrtiotvå"
-  |^^^^^^^^^^^^^^^^^
-  |Values of types Int and String cannot be compared with == or !=
-
-scala> Gurka(50) == Bil("Sedan")
-val res0: Boolean = false
-\end{REPL}
-
-\SubtaskSolved Likhetsjämförelser mellan primitiva typer typkollas av kompilatorn och kan därför ge kompileringsfel om två olika typer, som inte kan jämföras, jämförs med varandra. Detta gäller dock inte egendefinierade typer, vilket innebär att en likhetsjämförelse mellan olika egendefinierade typer alltid resulterar i \code|false|.
-
-Ett kompileringsfel som i fallet med de primitiva typerna är att föredra då det förbättrar typsäkerheten, vilket minskar risken för oupptäckta buggar.
-
-\SubtaskSolved Det går att få samma typkoll för egendefinierade typer som för primitiva typer genom att importera \code|scala.language.strictEquality|.
-
-\begin{Code}
-import scala.language.strictEquality
-class Gurka(val vikt: Int)
-
-class Bil(val typ: String)
-\end{Code}
-
-\begin{REPL}
-scala> Gurka(50) == Bil("Sedan")
-1 |Gurka(50) == Bil("Sedan")
-  |^^^^^^^^^^^^^^^^^^^^^^^^^
-  |Values of types Gurka and Bil cannot be compared with == or !=
-\end{REPL}
-
-\QUESTEND
-
-
 \WHAT{Oföränderlig Java-klass.}
 
 \QUESTBEGIN
@@ -900,6 +835,69 @@ val res1: Int = 3
 \clearpage
 
 \AdvancedTasks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\WHAT{Innehållslikhet mellan olika typer.}
+
+\QUESTBEGIN
+
+\Task \what~Klistra in nedan klasser i REPL och undersök vad som händer.
+
+\begin{Code}
+class Gurka(val vikt: Int)
+
+class Bil(val typ: String)
+\end{Code}
+
+\begin{REPL}
+scala> class Gurka(val vikt: Int)
+     |
+     | class Bil(val typ: String)
+// defined class Gurka
+// defined class Bil
+
+scala> 42 == "Fyrtiotvå"
+
+scala> Gurka(50) == Bil("Sedan")
+
+\end{REPL}
+
+Finns det något resultat som är problematiskt, och i så fall, varför?
+
+
+\SOLUTION
+
+\TaskSolved \what~
+\begin{REPL}
+scala> 42 == "Fyrtiotvå"
+1 |42 == "Fyrtiotvå"
+  |^^^^^^^^^^^^^^^^^
+  |Values of types Int and String cannot be compared with == or !=
+
+scala> Gurka(50) == Bil("Sedan")
+val res0: Boolean = false
+\end{REPL}
+
+Det andra uttrycket är problematiskt eftersom det alltid kommer resultera i \code|false|, då klasserna \code|Gurka| och \code|Bil| är två ojämförbara typer som inte bör jämföras med avseende på innehållslikhet. Detta försämrar typsäkerheten vilket ökar risken för svårupptäckta buggar där fel typer jämförs.
+
+Likhetsjämförelser som sker mellan primitiva typer typkollas av kompilatorn och kan därför ge kompileringsfel om två olika typer, såsom \code|Int| och \code|String|, jämförs med varandra. Detta gäller dock i regel inte egendefinierade typer, vilket alltså innebär att en likhetsjämförelse mellan olika egendefinierade typer alltid resulterar i \code|false|.
+
+Det är emellertid möjligt att få samma typkoll för egendefinierade typer som för primitiva typer genom att importera \code|scala.language.strictEquality|.
+
+\begin{Code}
+import scala.language.strictEquality
+class Gurka(val vikt: Int)
+
+class Bil(val typ: String)
+\end{Code}
+
+\begin{REPL}
+scala> Gurka(50) == Bil("Sedan")
+1 |Gurka(50) == Bil("Sedan")
+  |^^^^^^^^^^^^^^^^^^^^^^^^^
+  |Values of types Gurka and Bil cannot be compared with == or !=
+\end{REPL}
+
+\QUESTEND
 
 
 \WHAT{Attributrepresentation. Privat konstruktor. Fabriksmetod.}
