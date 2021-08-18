@@ -85,7 +85,7 @@ Installera Scala Build Tool `sbt`:
 
 * Windows: Ladda ner och kör [https://github.com/sbt/sbt/releases/download/v1.5.5/sbt-1.5.5.msi](https://github.com/sbt/sbt/releases/download/v1.5.5/sbt-1.5.5.msi)
 
-* Linux/Ubuntu/WSL2: Klistra in terminalkommandona rad för rad under rubriken "Linux (deb)" här: [http://www.scala-sbt.org/download.html](http://www.scala-sbt.org/download.html)
+* Linux/Ubuntu/WSL: Klistra in terminalkommandona rad för rad under rubriken "Linux (deb)" här: [http://www.scala-sbt.org/download.html](http://www.scala-sbt.org/download.html)
 
 * Mac: Se till att du har admin-rätt på din dator. Installera Homebrew (om du inte redan gjort det) genom att följa instruktionen härifrån http://brew.sh/ dvs kopiera långa kommandot som börjar med /usr/bin/ruby med Cmd+C och klistra in med Cmd+V i terminalen. Skriv sedan detta i terminalen:
 ```
@@ -112,9 +112,9 @@ Tyvärr finns inget färdigt installationsprogram för nya Scala 3 än, så file
     ```
     * Starta ett **nytt** terminalfönster och testa att skriva `scala -version` och om allt gått bra ska du få en utskrift som börjar med "Scala compiler version".
 
-* Mac: Gör som för Linux ovan men byt ut `wget ` mot `curl -O `  (notera *stora* bokstaven O). Du ska alltså köra detta kommando i stället for `wget` ovan:
+* Mac: Gör som för Linux ovan men byt ut `wget ` mot `curl -OL `  (notera *stora* bokstaven O). Du ska alltså köra detta kommando i stället for `wget` ovan:
 ```
-curl -O https://github.com/lampepfl/dotty/releases/download/$VER/scala3-$VER.zip
+curl -OL https://github.com/lampepfl/dotty/releases/download/$VER/scala3-$VER.zip
 ``` 
  
 * Windows: TODO
