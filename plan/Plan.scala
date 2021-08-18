@@ -21,29 +21,26 @@ trait Plan {
       | sekvens, alternativ, repetition, abstraktion, editera, kompilera, exekvera, datorns delar,
       | virtuell maskin,
       | litteral, värde, uttryck, identifierare, variabel, typ, tilldelning, namn, val, var, def,
-      | definera och anropa funktion, funktionshuvud, funktionskropp, procedur,
-      | inbyggda grundtyper, Int, Long, Short, Double, Float, Byte, Char, String,
+      | definiera och anropa funktion, funktionshuvud, funktionskropp, procedur,
+      | inbyggda grundtyper, 
       | println, typen Unit, enhetsvärdet (), stränginterpolatorn s,
-      | if, else, true, false, MinValue, MaxValue, aritmetik, slumptal, math.random,
-      | logiska uttryck, de Morgans lagar, while-sats, for-sats,
+      | aritmetik, slumptal, logiska uttryck, de Morgans lagar, if, true, false, while, for,
       """.stripTrim),
 
     Module("Program, kontrollstrukturer",
       id = "programs", exercise = "programs", lab = "", contents = """
-      | kompilerad app, skript, main i Scala, scalac,
-      | utdata, println, indata, scala.io.StdIn.readLine,
-      | programargument, args i main,
-      | main i Java, javac, java.lang.System.out.println,
+      | huvudprogram, program-argument, indata, scala.io.StdIn.readLine,
+      | kontrollstruktur,
       | iterera över element i samling, for-uttryck, yield, map, foreach,
       | samling, sekvens, indexering, Array, Vector,
       | intervall, Range,
-      | algoritm vs implementation, pseudokod,
-      | algoritm: SWAP, algoritm: SUM, algoritm: MIN/MAX, algoritm: MININDEX,
+      | algoritm, implementation, pseudokod,
+      | algoritmexempel: SWAP, SUM, MIN/MAX, MIN-INDEX,
       """.stripTrim),
 
     Module("Funktioner, abstraktion",
       id = "functions", exercise = "functions", lab = "irritext", contents = """
-      | abstraktionsmekanism, funktion,
+      | abstraktion, funktion,
       | parameter, argument, returtyp, default-argument,
       | namngivna argument, parameterlista, funktionshuvud, funktionskropp,
       | applicera funktion på alla element i en samling,
@@ -58,7 +55,7 @@ trait Plan {
     Module("Objekt, inkapsling",
       id = "objects", exercise = "objects", lab = "blockmole", contents = """
       | modul, singelobjekt, paket, punktnotation, tillstånd, medlem, attribut, metod,
-      | paket, import, filstruktur, jar, dokumentation, programlayout, JDK,
+      | paket, import, filstruktur, jar, dokumentation, JDK,
       | import, selektiv import, namnbyte vid import,
       | tupel, multipla returvärden,
       | block, lokal variabel, skuggning,
@@ -119,7 +116,7 @@ trait Plan {
     Module("Matriser, typparametrar",
       id = "matrices", exercise = "matrices", lab = "life", contents = """
       | matris, nästlad samling, nästlad for-sats,
-      | typparameter, generisk funktion, generisk klass, fri vs bunden typparameter,
+      | typparameter, generisk funktion, generisk klass, fri och bunden typparameter,
       | generiska datastrukturer, generiska samlingar i Scala,
       """.stripTrim),
 
@@ -134,48 +131,29 @@ trait Plan {
 
    Module("Arv, komposition", 
       id = "inheritance", exercise = "inheritance", lab = "snake0", contents = """
-      | arv, polymorfism, trait, extends, asInstanceOf, with, inmixning,
+      | arv, komposition, polymorfism, trait, extends, asInstanceOf, with, inmixning
       | supertyp, subtyp, bastyp, override,
       | Scalas typhierarki, Any, AnyRef, Object, AnyVal, Null, Nothing,
       | topptyp, bottentyp, referenstyper, värdetyper,
-      | Shape som bastyp till Rectangle och Circle,
       | accessregler vid arv, protected, final,
-      | case-object, typer med uppräknade värden,
-      | trait, abstrakt klass, inmixning,
-      | TODO: komposition (ä.k. aggregering)
+      | trait, abstrakt klass, 
       """.stripTrim),
 
     Module("Kontextparametrar, api",
       id = "context", exercise = "context", lab = "snake1", contents = """
-      | TODO,
       | given, using, extension, ad hoc polymorfism, typklass,
-      | programmeringsgränssnitt (api),
-      | api, kodläsbarhet, idiom, kodningsstandard,
-      | granskningar,
-      | riktlinjer för projektredovisning,
+      | api, kodläsbarhet, granskningar
       """.stripTrim),
 
     Module("Valfri fördjupning, Projekt",
         id = "extra", exercise = "extra", lab = "project0", contents = """
-        | TODO, TODO flytta ordningsgrejs till sekvensveckan!!!
-        | strängjämförelse, compareTo, implicit ordning,
-        | binärsökning, algoritm: BINARY-SEARCH,
-        | sortering till ny vektor, sortering på plats,
-        | insättningssortering, urvalssortering,
-        | algoritm: INSERTION-SORT, algoritm: SELECTION-SORT,
-        | Ordering[T], Ordered[T], Comparator[T], Comparable[T],
-        | tråd, jämlöpande exekvering,
-        | icke-blockerande anrop, callback,
-        | java.lang.Thread,
-        | java.util.concurrent.atomic.AtomicInteger,
-        | scala.concurrent.Future,
-        | kort om html+css+javascript+scala.js och webbprogrammering,
+        | välj valfritt fördjupningsområde, påbörja projekt,
         """.stripTrim),
         //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
-    Module("Repetition", id = "examprep", exercise = "examprep", lab = "project1", contents = "göra extenta, förbereda projektredovisning, skapa dokumentation med scaladoc och javadoc"),
+    Module("Repetition", id = "examprep", exercise = "examprep", lab = "project1", contents = "träna på extentor, redovisa projekt"),
 
-    Module("Muntlig examen",
+    Module("Muntligt prov",
       id = "munta", exercise = "Munta", lab = "Munta", contents = """
       """.stripTrim),
 
