@@ -129,33 +129,89 @@ object IO {
   }
 
     /**
-    * DANGER: silently deletes `fileName`.
+    * Deletes `fileName`.
     *
     * @param fileName the path the file that will be deleted.
     * */
   def delete(fileName: String): Unit = {
-    import java.nio.file.{Files, Paths, StandardCopyOption}
+    import java.nio.file.{Files, Paths}
     Files.delete(Paths.get(fileName))
   }
 
     /**
-    * Loads an image from file
+    * Load image from file.
     *
-    * @param fileName the path the image that will be loaded.
-    * @return BufferedImage
+    * @param fileName the path to the image that will be loaded.
     * */
-  def loadImage(fileName: String): java.awt.image.BufferedImage = 
-    javax.imageio.ImageIO.read(new java.io.File(fileName))
-  
+  def loadImage(fileName: String): Image = 
+    loadImage(java.io.File(fileName))
+
     /**
-    * save an image to file
+    * Load image from file.
     *
-    * @param fileName the path to save to image to.
-    * @param image the image to save
-    * @return true on success
+    * @param file the file that will be loaded.
     * */
-  def saveImage(fileName: String, image: java.awt.image.BufferedImage) : Boolean = {
-    javax.imageio.ImageIO.write(image, "png", new java.io.File(fileName))
-  }
+  def loadImage(file: java.io.File): Image = 
+    Image(javax.imageio.ImageIO.read(file))
+
+    /**
+    * Save `img` to file as `JPEG`. Does not restore color of transparent pixels.
+    *
+    * @param image the image to save.
+    * @param fileName the path to save the image to, `path/file.jpg` or just `path/file`
+    * @param compression the compression factor to use `(0.0-1.0)`.
+    * */
+  def saveJPEG(img: Image, fileName: String, compression: Double) : Unit = 
+    require(compression <= 1.0 && compression >= 0.0, "compression must be within 0.0 and 1.0")
+    import javax.imageio.{stream, ImageIO, IIOImage, ImageWriteParam}
+    import javax.imageio.plugins.jpeg.JPEGImageWriteParam
+    import java.awt.image.BufferedImage
+    //set compression values
+    val jpegParams = JPEGImageWriteParam(null);
+    jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+    jpegParams.setCompressionQuality(compression.toFloat);
+    //create writer
+    val writer = ImageIO.getImageWritersByFormatName("jpg").next();
+    // specifies where the jpg image has to be written
+    val path = if fileName.endsWith(".jpg") then fileName else s"$fileName.jpg"
+    writer.setOutput(new stream.FileImageOutputStream(
+      java.io.File(path)))
+    // writes the file with given compression level 
+    // from JPEGImageWriteParam instance
+    writer.write(
+      null, 
+      IIOImage(
+        (if img.hasAlpha then img.withoutAlpha else img).underlying, //remove alpha channel
+        null, 
+        null)
+      ,jpegParams) //add compression details
+
+
+  /**
+  * Save `img` to file as `JPEG` with a compression ratio of 0.75.
+  * Restore color of transparent pixels.
+  * @param img the image to save.
+  * @param fileName the path to save the image to, `path/file.jpg` or just `path/file`.
+  * */
+  def saveJPEG(img: Image, fileName: String) : Unit = 
+    import javax.imageio.ImageIO
+    import java.io.File
+    if !ImageIO.write(img.underlying, "jpg", File(if fileName.endsWith(".jpg") then fileName else s"$fileName.jpg")) then
+    throw java.io.IOException("no appropriate writer is found")
+
+  /**
+  * Save `img` to file as `PNG`.
+  *
+  * @param img the image to save.
+  * @param fileName the path to save the image to, `path/file.png` or just `path/file`.
+  * */
+  def savePNG(img: Image, fileName: String) : Unit = 
+    import javax.imageio.ImageIO
+    import java.io.File
+    if !ImageIO.write(img.underlying, "png", File(if fileName.endsWith(".png") then fileName else s"$fileName.png")) then
+    throw java.io.IOException("no appropriate writer is found")
+
+
+  
 
 }
