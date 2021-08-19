@@ -35,7 +35,7 @@ trait Plan {
       | samling, sekvens, indexering, Array, Vector,
       | intervall, Range,
       | algoritm, implementation, pseudokod,
-      | algoritmexempel: SWAP, SUM, MIN/MAX, MIN-INDEX,
+      | algoritmexempel: SWAP, SUM, MIN-MAX, MIN-INDEX,
       """.stripTrim),
 
     Module("Funktioner, abstraktion",
