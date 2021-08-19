@@ -20,7 +20,7 @@ lazy val cslib = (project in file("cslib")).  // still used by w13_img_proj
       "-encoding", "UTF-8", "-charset", "UTF-8", "-docencoding", "UTF-8")
   )
 
-val IntroprogLibVersion = "1.1.5"
+val IntroprogLibVersion = "1.2.0"
 val IntroprogLibName    = "introprog"
 lazy val introprog_scalalib = (project in file("introprog")).
   settings(commonSettings: _*).
