@@ -9,127 +9,153 @@ En digital bild består av ett rutnät (en matris) av pixlar. Varje pixel har en
 
 Det finns olika system för hur man färgsätter de olika pixlarna. T.ex. så används CMYK-systemet (cyan, magenta, gul, svart) vid blandning av färg som ska tryckas på papper eller annat material. På en dator däremot används vanligtvis RGB-systemet. RGB-systemet har tre grundfärger: röd, grön och blå. Mättnaden av varje grundfärg anges av ett heltal som vi i fortsättningen förutsätter ligger i intervallet [0, 255]. 0 anger ''ingen färg'' och 255 anger ''maximal färg''. Man kan därmed representera 256 × 256 × 256 = 16 777 216 olika färgnyanser. Man kan också representera gråskalor; det gör man med färger som har samma värde på alla tre grundfärgerna: (0, 0, 0) är helt svart, (255, 255, 255) är helt vitt.
 
+I detta projektet använder vi oss av \code{introprog.Image} för att representera en bild. Läs på om klasserna i introprog här: \url{https://fileadmin.cs.lth.se/pgk/api/api/introprog.html}
 
 \subsection{Uppgiften}
-Du ska skriva ett program där du implementerar olika filter som ska manipulera en given bild på ett flertal olika sätt. Filterklasserna ska ärva från en abstrakt \code{ImageFilter}-klass som är skriven i Java. \code{ImageFilter}-klassen hittar du i paketet \code{cslib} som finns i kursens workspace här:
-\url{https://github.com/lunduniversity/introprog/tree/master/workspace/cslib/src/main/java/cslib/images}
+Du ska skriva ett program där du implementerar olika filter som ska manipulera en given bild på ett flertal olika sätt. 
+Filterklasserna ska ärva från en abstrakt \code{ImageFilter}-klass.
 
-Följande specifikation beskriver java-klassen \code{ImageFilter}:
+Följande specifikation beskriver klassen \code{ImageFilter}:
 
-\begin{JavaSpec}{abstract class ImageFilter}
+\begin{ScalaSpec}{abstract class ImageFilter}
 /**
- * Skapar ett filterobjekt med ett givet namn och antalet argument.
- */
-protected ImageFilter(String name, int nbrOfArgs);
-
-/**
- * Tar reda på filtrets namn.
- */
-public String getName();
-
-/**
-  * Tar reda på antalet argument filtret behöver till apply-metoden.
-  */
-public int getNumberOfArguments();
-
-/**
- * Filtrerar bilden i matrisen inPixels och returnerar resultatet i
- * en ny matris. Utnyttjar eventuellt värdena i args.
- */
-public abstract Color[][] apply(Color[][] inPixels, double[] args);
-
-
-/**
- * Beräknar intensiteten hos alla pixlarna i pixels,
- * returnerar resultatet i en ny matris.
- */
-protected short[][] computeIntensity(Color[][] pixels):
-
-/**
- * Faltar punkten p[i][j] med faltningskärnan kernel.
- *
- * @param p 		matris med talvärden
- * @param i 		radindex för den aktuella punkten
- * @param j 		kolonnindex för den aktuella punkten
- * @param kernel	faltningskärnan, en 3x3-matris
- * @param weight	summan av elementen i kernel
- * @return 		resultatet av faltningen
- */
-protected short convolve(short[][] p, int i, int j,
-			short[][] kernel, int weight);
-\end{JavaSpec}
-
-Utöver filterklasserna ska du även skapa ett program där du kan välja ett variabelt antal filter och sedan applicera dessa på en bild. För att åstadkomma detta ska du implementera klasserna \code{FilterChooser}, som hanterar val av filter, och \code{FilterList} som representerar vilka filter som ska användas. Klasserna har följande specifikationer:
-
-\begin{ScalaSpec}{FilterList}
-class FilterList = ???
-
-/** Adds a filter to the FilterList */
-def addFilter(filter: ImageFilter): Unit = ???
-
-/** Applies all the filters on the given Image and draws it in a SimpleWindow */
-def applyFilters(image: Image, sw: SimpleWindow): Unit = ???
-\end{ScalaSpec}
-
-\begin{ScalaSpec}{FilterChooser}
-/** Creates a FilterChooser with all the available filters */
-class FilterChooser(filters: Array[ImageFilter]) = ???
-
-/** Shows which filters are available and lets the user choose filters
-*   until an escape sequence has been given and returns a FilterList which
-*   contain the chosen filters
-*   Example:
-*   0. för Blått-filter
-*   2. för Kontrast-filter
-*   3. för Gauss-filter
-*   4. för Sobel-filter
-*   5. om du inte vill ha fler filter
+* Create a filter object with a given name and argument descriptions.
+* @param name
+*            the name of the filter.
+* @param args
+*            optional array of strings with argument descriptions.
 */
-def chooseFilters(): FilterList = ???
-\end{ScalaSpec}
+abstract class ImageFilter(val name: String, val argDescriptions: String*);
 
-Studera Scala-koden som är given här: \url{https://github.com/lunduniversity/introprog/tree/master/workspace/w13_img_proj}
-Till din hjälp får du en \code{Image}-klass som representerar en bild samt ett \code{ImageUI} som hjälper dig att ladda in en JPEG bild.
-
-\begin{ScalaSpec}{Image}
-class Image(val image: BufferedImage);
-
-/** Returns a matrix of Color-objects that represents an image */
-def getColorMatrix: Array[Array[Color]];
-
-/** Updates the image in accordance with the given Color-matrix */
-def updateImage(pixels: Array[Array[Color]]): Unit;
-\end{ScalaSpec}
-
-
-\begin{ScalaSpec}{ImageUI}
-object ImageUI;
-
-/** Returns a chosen image from the images folder.
-*   Prints:
-*
-*   Välj en av följande bilder genom att mata in en siffra
-*
-*   0. boy.jpg
-*   1. car.jpg
-*   2. duck.jpg
-*   3. facade.jpg
-*   4. jay.jpg
-*   5. moon.jpg
-*   6. obidos.jpg
-*   7. sgrada.jpg
-*   8. shuttle.jpg
-*   Ditt val:
+/**
+The number of args this filter needs.
 */
-def getImage: BufferedImage;
+def nbrOfArgs: Int;
+
+/**
+* Apply the filter on `img` and return the result as a new 
+* Image using the arguments in `args`.
+* 
+* @param img
+*            the original image.
+* @param args
+*            arguments
+* @return 
+*			 the resulting image.
+*/
+def apply(img: Image, args: Double*): Image;
+
+/**
+* Calculate the intensity in each pixel of `img`.
+* 
+* @param img
+*           the image
+* @return intensitymatrix, values ranging from 0 to 255
+*/
+protected def computeIntensity(img: Image): Array[Array[Short]] = 
+   val intensity : Array[Array[Short]];
+
+/**
+* Convolute `p[i][j]` with the convolutionkernel `kernel`.
+* 
+* @param p
+*            matrix with numbervalues
+* @param i
+*            current row index
+* @param j
+*            current coloumn index
+* @param kernel
+*            convolutionkernel, a 3x3-matrix
+* @param weight
+*            the sum of the element in `kernel`
+* @return result of the convolution
+*/
+protected def convolve(p: Array[Array[Short]], i: Int, j: Int, 
+kernel: Array[Array[Short]], weight: Int): Short;
+
+\end{ScalaSpec}
+
+Utöver filterklasserna ska du även skapa ett program som låter användaren välja en bild som olika filter sedan kan appliceras på.
+För att åstadkomma detta ska du implementera klassen \code{ImageEditor}, som hanterar applicering av filter samt ritar bilden med hjälp av \code{PixelWindow}.
+
+
+
+\code{ImageEditor}-klassen ska använda sig av en Stack[Image] för att hantera historiken. 
+Läs dokumentationen här: \url{https://www.scala-lang.org/api/2.13.6/scala/collection/mutable/Stack.html}
+
+\begin{ScalaSpec}{class ImageEditor}
+class ImageEditor(filters: Array[ImageFilter]);
+
+val history = ???
+
+/** 
+ * Show which filters are available and let the user choose a filter to apply. 
+ * Draw edited image in PixelWindow.
+ * User can then add more filters, undo, save image or exit.
+ *  
+ *  Example: 
+ *  0. för Blått-filter
+ *	2. för Kontrast-filter
+ * 	3. för Gauss-filter
+ *	4. för Sobel-filter
+ *	a. AVBRYT
+ *	s. SPARA
+ *	z. UNDO
+*/
+def edit(im: Image): Unit = ???
+
+/**Ask for arguments if required and apply filter with index `i`*/
+private def applyFilter(index: Int) = ???
+\end{ScalaSpec}
+
+Studera Scala-koden som är given här: \url{https://github.com/lunduniversity/introprog/tree/master/workspace/w13_photo}
+Till din hjälp får du ett \code{ImageChooser}-objekt som hjälper dig att ladda in en bild. 
+I projektet används flera klasser från kursens introprog bibliotek. Särskilt används \code{Image, PixelWindow, IO}.
+Du hittar dokumentationen till klasserna här: \url{https://fileadmin.cs.lth.se/pgk/api/api/introprog.html}
+
+\begin{ScalaSpec}{object ImageChooser}
+	object ImageChooser;
+	
+	/**
+	* Returns a chosen image from the images folder.
+	* Prints:	
+	*
+	*	Välj en av följande bilder genom att mata in en siffra
+	*
+	*	0. boy.jpg
+	*	1. car.jpg
+	*	2. duck.jpg
+	*	3. jay.jpg
+	*	4. moon.jpg
+	*	5. shuttle.jpg
+	*	Ditt val: 
+	*/
+	def getImage: Image;
 \end{ScalaSpec}
 
 
-\Task \textbf{Blåfilter.} Skriv en klass \code{BlueFilter} som skapar en blå version av bilden. Det vill säga skapa ett filter där varje pixel bara innehåller den blå komponenten. Testa filtret genom att skapa ett \code{ImageProcessing}-object som ska innehålla en \code{main}-metod (\code{ImageProcessing} ska användas och utökas i senare uppgifter). Använd \code{ImageUI} för att välja en bild på följande sätt:
+\Task \textbf{Blåfilter.} Skriv en klass \code{BlueFilter} som skapar en blå version av bilden. 
+Det vill säga skapa ett filter där varje pixel bara innehåller den blå komponenten. 
+Testa filtret genom att skapa ett \code{Application}-object som ska innehålla en 
+\code{main}-metod (\code{Application} ska användas och utökas i senare uppgifter). 
+Använd \code{ImageChooser} för att välja en bild på följande sätt:
 \begin{Code}
-val im = new Image(ImageUI.getImage)
+	val im = ImageChooser.getImage
 \end{Code}
-Använd \code{SimpleWindow} samt \code{image}-attributet från \code{Image}-objektet för att visa bilden.
+\begin{enumerate}
+	\item Visa bilden genom att i \code{imageEditor.edit()} använda \code{pixelWindow.drawImage()}. 
+	\item Alla \code{Filter}-klasser kan placeras i samma fil \code{Filters.scala}.
+	\item Om du har problem med att ärva från den abstrakta \code{ImageFilter}-klassen kan du använda dig av detta exempel som endast kopierar bilden.
+\end{enumerate}
+\begin{ScalaSpec}{class IdentityFilter}
+	class IdentityFilter(name: String) extends ImageFilter(name):
+	
+	  def apply(im: Image, args: Double*): Image = 
+		val outIm = Image.ofDim(im.width, im.height)
+		outIm.updated((i, j) => im(i, j))
+	\end{ScalaSpec}
+
+
 
 \Task \textbf{Inverteringsfilter.} Skriv en klass \code{InvertFilter} som inverterar en bild dvs skapar en ''negativ'' kopia av bilden. Ljusa färger ska alltså bli mörka och mörka färger ska bli ljusa.
 Fundera över vad som kan menas med en inverterad eller negativ kopia: de nya RGB-värdena är inte ett dividerat med de gamla värdena (då skulle de nya värdena kunna bli flyttal) och inte de gamla värdena med ombytt tecken (då skulle de nya värdena bli negativa).
@@ -181,8 +207,8 @@ Man fortsätter med att flytta K ett steg åt höger och beräknar på motsvaran
 Skriv en klass \code{GaussFilter} som implementerar denna algoritm. Varje färg ska behandlas separat. Gör på följande sätt:
 \begin{enumerate}
 	\item Bilda tre \code{short}-matriser och lagra pixlarnas red-, green- och blue-komponenter i matriserna.
-	\item Utför faltningen av de tre komponenterna för varje element och lagra ett nytt \code{Color}-objekt i \code{outPixels} för varje punkt.
-	\item Elementen i ramen behandlas inte, men i \code{outPixels} måste också dessa element få värden. Enklast är att flytta över dessa element oförändrade från \code{inPixels} till \code{outPixels}. Man kan också sätta dem till \code{Color.WHITE}, men då kommer den filtrerade bilden att se något mindre ut.
+	\item Utför faltningen av de tre komponenterna för varje element och updatera outIm med de uträknade värdena.
+	\item Elementen i ramen behandlas inte, men i \code{outIm} måste också dessa element få värden. Enklast är att flytta över dessa element oförändrade från \code{im} till \code{outIm}. Man kan också sätta dem till \code{Color.WHITE}, men då kommer den filtrerade bilden att se något mindre ut.
 \end{enumerate}
 
 Använd \code{ImageFilter}s \code{convolve}-metod för att utföra faltningen. Metoden behöver en faltningsmatris, \code{kernel}, som input och ska anropas med red-, green- och blue-matrisen. Faltningsmatrisen kan vara ett attribut i klassen och ska ha följande utseende:
@@ -257,11 +283,9 @@ Skriv en klass \code{SobelFilter} som implementerar denna algoritm.
 \end{figure}
 
 
-\Task Implementera \code{FilterList} enligt specifikationerna ovan.
+\Task Implementera \code{ImageEditor} enligt specifikationerna ovan.
 
-\Task Implementera \code{FilterChooser} enligt specifikationerna ovan.
-
-\Task Knyt ihop allt i \code{ImageProcessing}-objektet som du skapade innan. Utskrifterna ska se ut på följande sätt:\newline
+\Task Knyt ihop allt i \code{Application}-objektet som du skapade innan. Utskrifterna ska se ut på följande sätt:\newline
 
 {\setlength{\parindent}{0cm}
 
@@ -270,26 +294,38 @@ Skriv en klass \code{SobelFilter} som implementerar denna algoritm.
 0. boy.jpg\newline
 1. car.jpg\newline
 2. duck.jpg\newline
-3. facade.jpg\newline
-4. jay.jpg\newline
-5. moon.jpg\newline
-6. obidos.jpg\newline
-7. sgrada.jpg\newline
-8. shuttle.jpg\newline
+3. jay.jpg\newline
+4. moon.jpg\newline
+5. shuttle.jpg\newline
 Ditt val: \textbf{1}\newline
 Bild car.jpg laddad\newline
-0. för Vanligt-filter\newline
-1. för Blått-filter\newline
-2. för Krypterat-filter\newline
-3. för Inverterat-filter\newline
-4. för Grått-filter\newline
-5. för Kontrast-filter\newline
-6. för Gauss-filter\newline
-7. för Sobel-filter\newline
-8. om du inte vill använda fler filter\newline
-Välj ett filter \textbf{1}\newline
-Välj ett filter \textbf{8}\newline
-Välja ny bild? (y/n) \textbf{n}\newline
+\textit{//Bilden visas i ett PixelWindow}\newline
+
+Välj ett alternativ\newline
+
+0. för Blåfilter\newline
+1. för Inverterat\newline
+2. för Krypterat\newline
+3. för Inverterat\newline
+4. för Grått\newline
+5. för Kontrast\newline
+6. för Gauss\newline
+7. för Sobel\newline
+8. för Intervall\newline
+9. för Change\newline
+a. AVBRYT\newline
+s. SPARA\newline
+z. UNDO\newline
+
+Ditt val: \textbf{6}\newline
+Till detta filter behöver du ange [1] argument.\newline
+
+Ange argument för Gauss: \newline
+Argument 1: [Styrka (0-50) där 0 är max]: \textbf{0}\newline
+\textit{//Bilden uppdateras och ritas i samma PixelWindow}\newline
+
+Välj ett alternativ\newline
+...
 }
 
 Tänk på att användaren kan mata in otillåtna värden. Detta ska hanteras på lämpligt sätt.
@@ -321,8 +357,8 @@ Sammanfattning av algoritmen:
 	\item Beräkna bildens intensitetshistogram.
 	\item Argument från användaren användas som \code{cutOff}.
 	\item Beräkna \code{lowCut} och \code{highCut} enligt ovan.
-	\item Beräkna den nya intensiteten för varje pixel enligt interpolationsformeln och lagra de nya pixlarna i \code{outPixels}.
+	\item Beräkna den nya intensiteten för varje pixel enligt interpolationsformeln och lagra de nya pixlarna i \code{outIm}.
 \end{enumerate}
 Skriv en klass \code{ContrastFilter} som implementerar algoritmen. I katalogen \emph{images} kan bilden \emph{moon.jpg} vara lämplig att testa, eftersom den har låg kontrast. Anmärkning: om \code{cutOff} sätts = 0 så får man samma resultat av denna filtrering som man får av \code{GrayScaleFilter}. Detta kan man se genom att studera interpolationsformeln.
 
-\Task \textbf{Eget filter.} Skapa ett eget filter som utnyttjar att \code{apply}-metoden tar emot en array av värden. Till exempel så kan du skicka in en array med fem värden där de två första värdena representerar ett intesitetsintervall och de tre sista värdena representerar röd-, grön- och blåkomponenterna till en färg som ska stoppas in där intensiteten hamnar utanför det givna intervallet. Ett annat alternativ kan vara att använda sig av metoder i \code{SimpleWindow} för att välja specifika pixlar på originalbilden som sedan kan användas för att manipulera bilden i filtrets \code{apply}-metod. Valet är ditt!
+\Task \textbf{Eget filter.} Skapa ett eget filter som utnyttjar att \code{apply}-metoden tar emot en sekvens av värden. Till exempel så kan du skicka in en array med fem värden där de två första värdena representerar ett intesitetsintervall och de tre sista värdena representerar röd-, grön- och blåkomponenterna till en färg som ska stoppas in där intensiteten hamnar utanför det givna intervallet. Ett annat alternativ kan vara att använda sig av metoder i \code{PixelWindow} för att välja specifika pixlar på originalbilden som sedan kan användas för att manipulera bilden i filtrets \code{apply}-metod. Valet är ditt!
