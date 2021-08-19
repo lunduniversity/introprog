@@ -39,7 +39,7 @@ lazy val myStartupTransition: State => State = { s: State =>
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
   version := "2021.0.1",
-  scalaVersion := "3.0.0",
+  scalaVersion := "3.0.1",
   scalacOptions ++= Seq("-deprecation", "-feature")
 )
 
