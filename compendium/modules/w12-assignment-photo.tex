@@ -7,7 +7,7 @@
 
 En digital bild består av ett rutnät (en matris) av pixlar. Varje pixel har en färg, och om man har många pixlar flyter de samman för ögat så att de tillsammans skapar en bild.
 
-Det finns olika system för hur man färgsätter de olika pixlarna. T.ex. så används CMYK-systemet (cyan, magenta, gul, svart) vid blandning av färg som ska tryckas på papper eller annat material. På en dator däremot används vanligtvis RGB-systemet. RGB-systemet har tre grundfärger: röd, grön och blå. Mättnaden av varje grundfärg anges av ett heltal som vi i fortsättningen förutsätter ligger i intervallet [0, 255]. 0 anger ''ingen färg'' och 255 anger ''maximal färg''. Man kan därmed representera 256 × 256 × 256 = 16 777 216 olika färgnyanser. Man kan också representera gråskalor; det gör man med färger som har samma värde på alla tre grundfärgerna: (0, 0, 0) är helt svart, (255, 255, 255) är helt vitt.
+Det finns olika system för hur man färgsätter de olika pixlarna. T.ex. så används CMYK-systemet (cyan, magenta, gul, svart) vid blandning av färg som ska tryckas på papper eller annat material. På en dator, däremot, används vanligtvis RGB-systemet. RGB-systemet har tre grundfärger: röd, grön och blå. Mättnaden av varje grundfärg anges av ett heltal som vi i fortsättningen förutsätter ligger i intervallet [0, 255]. 0 anger ''ingen färg'' och 255 anger ''maximal färg''. Man kan därmed representera 256 × 256 × 256 = 16 777 216 olika färgnyanser. Man kan också representera gråskalor; det gör man med färger som har samma värde på alla tre grundfärgerna: (0, 0, 0) är helt svart, (255, 255, 255) är helt vitt.
 
 I detta projektet använder vi oss av \code{introprog.Image} för att representera en bild. Läs på om klasserna i introprog här: 
 \url{https://cs.lth.se/pgk/api/}
@@ -19,60 +19,60 @@ Filterklasserna ska ärva från en abstrakt \code{ImageFilter}-klass.
 Följande specifikation beskriver klassen \code{ImageFilter}:
 
 \begin{ScalaSpec}{abstract class ImageFilter}
-/**
-* Create a filter object with a given name and argument descriptions.
-* @param name
-*            the name of the filter.
-* @param args
-*            optional array of strings with argument descriptions.
-*/
-abstract class ImageFilter(val name: String, val argDescriptions: String*);
+	/**
+	* Create a filter object with a given name and argument descriptions.
+	* @param name
+	*            the name of the filter.
+	* @param args
+	*            optional array of strings with argument descriptions.
+	*/
+	abstract class ImageFilter(val name: String, val argDescriptions: String*):
 
-/**
-The number of args this filter needs.
-*/
-def nbrOfArgs: Int;
+		/**
+		The number of args this filter needs.
+		*/
+		def nbrOfArgs: Int
 
-/**
-* Apply the filter on `img` and return the result as a new 
-* Image using the arguments in `args`.
-* 
-* @param img
-*            the original image.
-* @param args
-*            arguments
-* @return 
-*			 the resulting image.
-*/
-def apply(img: Image, args: Double*): Image;
+		/**
+		* Apply the filter on `img` and return the result as a new 
+		* Image using the arguments in `args`.
+		* 
+		* @param img
+		*            the original image.
+		* @param args
+		*            arguments
+		* @return 
+		*			 the resulting image.
+		*/
+		def apply(img: Image, args: Double*): Image
 
-/**
-* Calculate the intensity in each pixel of `img`.
-* 
-* @param img
-*           the image
-* @return intensitymatrix, values ranging from 0 to 255
-*/
-protected def computeIntensity(img: Image): Array[Array[Short]] = 
-   val intensity : Array[Array[Short]];
+		/**
+		* Calculate the intensity in each pixel of `img`.
+		* 
+		* @param img
+		*           the image
+		* @return intensitymatrix, values ranging from 0 to 255
+		*/
+		protected def computeIntensity(img: Image): Array[Array[Short]] = 
+		   val intensity: Array[Array[Short]]
 
-/**
-* Convolute `p[i][j]` with the convolutionkernel `kernel`.
-* 
-* @param p
-*            matrix with numbervalues
-* @param i
-*            current row index
-* @param j
-*            current coloumn index
-* @param kernel
-*            convolutionkernel, a 3x3-matrix
-* @param weight
-*            the sum of the element in `kernel`
-* @return result of the convolution
-*/
-protected def convolve(p: Array[Array[Short]], i: Int, j: Int, 
-kernel: Array[Array[Short]], weight: Int): Short;
+		/**
+		* Convolute `p[i][j]` with the convolutionkernel `kernel`.
+		* 
+		* @param p
+		*            matrix with numbervalues
+		* @param i
+		*            current row index
+		* @param j
+		*            current coloumn index
+		* @param kernel
+		*            convolutionkernel, a 3x3-matrix
+		* @param weight
+		*            the sum of the element in `kernel`
+		* @return result of the convolution
+		*/
+		protected def convolve(p: Array[Array[Short]], i: Int, j: Int, 
+		kernel: Array[Array[Short]], weight: Int): Short
 
 \end{ScalaSpec}
 
@@ -82,56 +82,56 @@ För att åstadkomma detta ska du implementera klassen \code{ImageEditor}, som h
 
 
 \code{ImageEditor}-klassen ska använda sig av en Stack[Image] för att hantera historiken. 
-Läs dokumentationen här: \url{https://www.scala-lang.org/api/2.13.6/scala/collection/mutable/Stack.html}
+Läs dokumentationen här: \url{https://www.scala-lang.org/api/3.0.1/scala/collection/mutable/Stack.html}
 
 \begin{ScalaSpec}{class ImageEditor}
-class ImageEditor(filters: Array[ImageFilter]);
+	class ImageEditor(filters: Array[ImageFilter]):
 
-val history = ???
+		val history = ???
 
-/** 
- * Show which filters are available and let the user choose a filter to apply. 
- * Draw edited image in PixelWindow.
- * User can then add more filters, undo, save image or exit.
- *  
- *  Example: 
- *  0. för Blått-filter
- *	2. för Kontrast-filter
- * 	3. för Gauss-filter
- *	4. för Sobel-filter
- *	a. AVBRYT
- *	s. SPARA
- *	z. UNDO
-*/
-def edit(im: Image): Unit = ???
+		/** 
+		 * Show which filters are available and let the user choose a filter to apply. 
+		 * Draw edited image in PixelWindow.
+		 * User can then add more filters, undo, save image or exit.
+		 *  
+		 *  Example: 
+		 *  0. för Blått-filter
+		 *	2. för Kontrast-filter
+		 * 	3. för Gauss-filter
+		 *	4. för Sobel-filter
+		 *	a. AVBRYT
+		 *	s. SPARA
+		 *	z. UNDO
+		*/
+		def edit(im: Image): Unit = ???
 
-/**Ask for arguments if required and apply filter with index `i`*/
-private def applyFilter(index: Int) = ???
+		/**Ask for arguments if required and apply filter with index `i`*/
+		private def applyFilter(index: Int) = ???
 \end{ScalaSpec}
 
 Studera Scala-koden som är given här: \url{https://github.com/lunduniversity/introprog/tree/master/workspace/w13_photo}
 Till din hjälp får du ett \code{ImageChooser}-objekt som hjälper dig att ladda in en bild. 
-I projektet används flera klasser från kursens introprog bibliotek. Särskilt används \code{Image, PixelWindow, IO}.
+I projektet används flera klasser från kursens introprog-bibliotek. Särskilt används \code{Image, PixelWindow} och \code{IO}.
 Du hittar dokumentationen till klasserna här: \url{https://cs.lth.se/pgk/api/} och du kan läsa koden här: \url{https://github.com/lunduniversity/introprog-scalalib}
 
 \begin{ScalaSpec}{object ImageChooser}
-	object ImageChooser;
-	
-	/**
-	* Returns a chosen image from the images folder.
-	* Prints:	
-	*
-	*	Välj en av följande bilder genom att mata in en siffra
-	*
-	*	0. boy.jpg
-	*	1. car.jpg
-	*	2. duck.jpg
-	*	3. jay.jpg
-	*	4. moon.jpg
-	*	5. shuttle.jpg
-	*	Ditt val: 
-	*/
-	def getImage: Image;
+	object ImageChooser:
+
+		/**
+		* Returns a chosen image from the images folder.
+		* Prints:	
+		*
+		*	Välj en av följande bilder genom att mata in en siffra
+		*
+		*	0. boy.jpg
+		*	1. car.jpg
+		*	2. duck.jpg
+		*	3. jay.jpg
+		*	4. moon.jpg
+		*	5. shuttle.jpg
+		*	Ditt val: 
+		*/
+		def getImage: Image
 \end{ScalaSpec}
 
 
@@ -151,15 +151,15 @@ Använd \code{ImageChooser} för att välja en bild på följande sätt:
 \begin{ScalaSpec}{class IdentityFilter}
 	class IdentityFilter(name: String) extends ImageFilter(name):
 	
-	  def apply(im: Image, args: Double*): Image = 
-		val outIm = Image.ofDim(im.width, im.height)
-		outIm.update((i, j) => im(i, j))
-		outIm
-	\end{ScalaSpec}
+		def apply(im: Image, args: Double*): Image = 
+			val outIm = Image.ofDim(im.width, im.height)
+			outIm.update((i, j) => im(i, j))
+			outIm
+\end{ScalaSpec}
 
 
 
-\Task \textbf{Inverteringsfilter.} Skriv en klass \code{InvertFilter} som inverterar en bild dvs skapar en ''negativ'' kopia av bilden. Ljusa färger ska alltså bli mörka och mörka färger ska bli ljusa.
+\Task \textbf{Inverteringsfilter.} Skriv en klass \code{InvertFilter} som inverterar en bild, dvs skapar en ''negativ'' kopia av bilden. Ljusa färger ska alltså bli mörka och mörka färger ska bli ljusa.
 Fundera över vad som kan menas med en inverterad eller negativ kopia: de nya RGB-värdena är inte ett dividerat med de gamla värdena (då skulle de nya värdena kunna bli flyttal) och inte de gamla värdena med ombytt tecken (då skulle de nya värdena bli negativa).
 
 \Task \textbf{Gråskalningsfilter.} Skriv en klass \code{GrayScaleFilter} som gör om bilden till en gråskalebild. Använd \code{ImageFilter}s \code{computeIntensity}-metod för att bestämma vilken intensitet varje pixel ska ha. Om intensiteten i en pixel till exempel är 105 så ska ett nytt \code{Color}-objekt med värdena (105, 105, 105) skapas.
@@ -334,7 +334,7 @@ Tänk på att användaren kan mata in otillåtna värden. Detta ska hanteras på
 
 \subsection{Frivilliga extrauppgifter}
 
-\Task \textbf{Kontrastfilter.} Om man applicerar kontrastfiltrering på en färgbild så kommer bilden att konverteras till en gråskalebild. (Man kan naturligtvis förbättra kontrasten i en färgbild och få en färgbild som resultat. Då behandlar man de tre färgkanalerna var för sig.) Många bilder lider av alltför låg kontrast. Det beror på att bilden inte utnyttjar hela det tillgängliga området 0–255 för intensiteten. Man får en bild med bättre kontrast om man ''töjer ut'' intervallet enligt följande formel (linjär interpolation):
+\Task \textbf{Kontrastfilter.} Om man applicerar kontrastfiltrering på en färgbild så kommer bilden att konverteras till en gråskalebild (Man kan naturligtvis förbättra kontrasten i en färgbild och få en färgbild som resultat. Då behandlar man de tre färgkanalerna var för sig). Många bilder lider av alltför låg kontrast. Det beror på att bilden inte utnyttjar hela det tillgängliga området 0–255 för intensiteten. Man får en bild med bättre kontrast om man ''töjer ut'' intervallet enligt följande formel (linjär interpolation):
 
 \begin{Code}
 val newIntensity = 255 * (intensity - 45) / (225 - 45)
