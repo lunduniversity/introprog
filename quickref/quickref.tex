@@ -103,13 +103,14 @@
 \usepackage{upquote} %http://tex.stackexchange.com/questions/145416/how-to-have-straight-single-quotes-in-lstlistings
 \lstdefinelanguage{Scala}{
   morekeywords={abstract,case,catch,class,def,%
-    do,else,extends,false,final,finally,%
-    for,forSome,if,implicit,import,lazy,match,%
+    do,else,enum,export,extends,false,final,finally,%
+    for,given,if,implicit,import,lazy,match,%
     new,null,object,override,package,%
     private,protected,return,sealed,%
-    super,this,throw,trait,true,try,%
-    type,val,var,while,with,yield},
-  otherkeywords={=>,<-,<\%,<:,>:,@},
+    super,then,throw,trait,true,try,%
+    type,val,var,while,with,yield,%
+    as, derives, end, extension, infix, inline, opaque, open, transparent, using}, % soft keywords
+  otherkeywords={=>,<-,<:,>:,@,=>>,?=>},
   sensitive=true,
   morecomment=[l]{//},
   morecomment=[n]{/*}{*/},
@@ -238,7 +239,7 @@ A compilation unit (here hello.scala) consists of a sequence of packagings, impo
 \vspace{0.1em}
 \head{Definitions and declarations}\Newline
 {\small\renewcommand{\arraystretch}{0.95}
-A \textbf{definition} binds a name to a value/implementation, while a \textbf{declaration} just introduces a name (and type) of an abstract member. Below \code|defsAndDecl| denotes a list of definitions and/or declarations.
+A \textbf{definition} binds a name to a value/implementation, while a \textbf{declaration} just introduces a name (and type) of an abstract member. Below \code|defsAndDecl| denotes a list of definitions and/or declarations. Template bodies \code|{ ... }| are optional, can be replace by \code{:} that opens an indentation region. Function bodies \code{=} also open indentation region
 \newcommand{\MoveUp}{\\[-0.9em]}
 \newcommand{\FirstColWidth}{0.65cm}
 \begin{tabular}{@{}p{\FirstColWidth} l l}\\
@@ -264,11 +265,11 @@ Function
 & \code|(a: Int, b: Int) => a + b| & \Comment{Anonymous function value, ''lambda''.}\\
 & \code|val g: (Int, Int) => Int = (a, b) => a + b| & \Comment{Types can be omitted in lambda if inferable.}\\
 
-& \multicolumn{2}{l}{\code|f _| \hspace{4.8em} \Comment{Replacing a parameter list with a space and underscore gives the function itself as a value.}}\\
+%& \multicolumn{2}{l}{\code|f _| \hspace{4.8em} \Comment{Replacing a parameter list with a space and underscore gives the function itself as a value.}}\\
 
-& \multicolumn{2}{l}{\code|val inc = add(1) _ | \hspace{-4.25em} \Comment{\hspace{6em} Partially applied function add(1) of add above, where inc is of type Int => Int}}\\
+& \multicolumn{2}{l}{\code|val inc = add(1) | \hspace{-4.25em} \Comment{\hspace{6em} Partially applied function add(1) of add above, where inc is of type Int => Int}}\\
 
-& \multicolumn{2}{l}{\code|def addAll(xs: Int*) = xs.sum |  \Comment{\hspace{0.42em} Repeated parameters: addAll(1,2,3) or addAll(Seq(1,2,3): \_*) }}\\
+& \multicolumn{2}{l}{\code|def addAll(xs: Int*) = xs.sum |  \Comment{\hspace{0.42em} Repeated parameters: addAll(1,2,3) or addAll(Seq(1,2,3)*) }}\\
 
 & \multicolumn{2}{l}{\code|def twice(block: => Unit) = \{ block; block \}| \Comment{\hspace{0.5em} Call-by-name argument evaluated later.}}\\
 \end{tabular}
@@ -280,7 +281,7 @@ Object
 
 \begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
 Class
-& \code|class C(parameters) { defsAndDecl }| & \hspace{-3.2em}\Comment{A template for objects, which are allocated with \textbf{new}.} \\
+& \code|class C(parameters) { defsAndDecl }| & \hspace{-3.2em}\Comment{A template for objects to be allocated with \textbf{new} or apply.} \\
 & \code|case class C(parameters) { defsAndDecl }| & \Comment{Case class parameters become val members,} \\
 & \multicolumn{2}{l}{\Comment{other case class goodies: equals, copy, hashcode, unapply, nice toString, companion object with apply factory.}}\\
 \end{tabular}
@@ -288,7 +289,7 @@ Class
 \begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
 Trait
 & \code|trait T { defsAndDecl }| & \hspace{-1.1em}\Comment{A trait is like an abstract class, but can be mixed in; can't have parameters.}\\
-& \code|class C extends D with T| & \hspace{-0.9em}\Comment{A class can only \textbf{extend} one class but mix in many traits using \textbf{with}.}\\
+& \code|class C extends D, T| & \hspace{-0.9em}\Comment{A class can only \textbf{extend} one class but mix in many traits separated with \code{,}}\\
 \end{tabular}
 
 \begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
@@ -298,8 +299,9 @@ Type
 
 \begin{tabular}{@{}p{\FirstColWidth} l @{}l}\MoveUp
 Import
-& \code|import path.to.module.name | & \Comment{Makes name directly visible. Underscore imports all.}\\
-& \code|import path.to.{a, b => x, c => _} | & \Comment{Import several names, b renamed to x, c not imported.}\\
+& \code|import path.to.name | & \Comment{Makes name directly visible. Can be renamed using \textbf{as}}\\
+& \code|import path.to.* |   & \Comment{Whildcard \code{*} imports all.}\\
+& \code|import path.to.{a, b as x, c as _} | & \Comment{Import several names, b renamed to x, c not imported.}\\
 \end{tabular}
 }% end small
 
@@ -307,9 +309,9 @@ Import
 {\small
 \begin{tabular}{@{}l @{}l l}
 \textbf{Modifier} & \textbf{applies to} & \textbf{semantics}\\ \hline \\[-0.7em]
-\code|private[this] | & definitions, declarations & \Comment{Restricts access to this instance only; also private[p] for package p.} \\
+%\code|private[this] | & definitions, declarations & \Comment{Restricts access to this instance only; also private[p] for package p.} \\
 \code|private| & definitions, declarations & \Comment{Restricts access to directly enclosing class and its companion.}\\
-\code|protected| & definitions& \Comment{Restricts access to subtypes and companion.}\\
+\code|protected|~~ & definitions& \Comment{Restricts access to subtypes and companion.}\\
 \code|override| & definitions, declarations & \Comment{Mandatory if overriding  a concrete definition in a parent class.}\\
 \code|abstract| & class definitions & \Comment{Abstract classes cannot be instantiated (redundant for traits).}\\
 \code|final| &  definitions & \Comment{Final members cannot be overridden, final classes cannot be extended.}\\
@@ -323,16 +325,15 @@ Import
 \vspace{1.0em}\head{Special methods}\Newline
 {\small
 \begin{tabular}{@{}l @{}l}
-\code|class A(initX: Int = 0) {| & \Comment{\textbf{primary constructor}: new A(1) or using default arg: new A()} \\
+\code|class A(initX: Int = 0):| & \Comment{primary constructor: \textbf{new} optional, A(1), default arg: A()} \\
 \code|  private var _x = initX| & \Comment{private member only visible in A and its companion} \\
-\code|  def x: Int = _x| & \Comment{\textbf{getter} for private field \_x (name chosen to avoid clash with x)} \\
-\code|  def x_=(i: Int): Unit = { _x = i } | & \Comment{special \textbf{setter} assignment syntax: val a = new A(1); a.x = 2} \\
+\code|  def x: Int = _x| & \Comment{getter for private field \_x (name chosen to avoid clash with x)} \\
+\code|  def x_=(i: Int): Unit = | & \Comment{special setter syntax to update attribute using assignment:} \\
+\code|    _x = i  | & \Comment{val a = A(1); a.x = 2} \\
 \code|  | & \Comment{} \\
-\code|}| & \\
-\code|object A {| & \Comment{\textbf{companion object} if same name and in same code file} \\
-\code|  def apply(i: Int = 0) = new A(i) |  & \Comment{\textbf{factory method} makes new unnecessary:  A.apply(1), A(1), A()} \\
+\code|object A: | & \Comment{companion object if same name and in same code file} \\
+\code|  def apply(i: Int = 0) = new A(i) |  & \Comment{factory method, apply is optional:  A.apply(1), A(1), A()} \\
 \code|  val a = A(1)._x | & \Comment{private members can be accessed in companion} \\
-\code|}|  \\
 \end{tabular}
 
 
