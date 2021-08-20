@@ -93,7 +93,8 @@
 \usepackage[labelfont=bf]{caption}  % to get bold faced table and figure captions
 %https://tex.stackexchange.com/questions/55337/how-to-use-figure-inside-a-minipage
 
-
+\usepackage{footmisc} % to reference footnotes: 
+%https://tex.stackexchange.com/questions/167380/how-to-refer-to-a-footnote
 
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, shapes.symbols, arrows, matrix, shapes, positioning, calc}
