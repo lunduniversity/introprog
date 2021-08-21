@@ -463,7 +463,7 @@ Empty tuple, unit value& \code|()|  &  \Comment{the only value of type Unit}  & 
 \end{tabular}
 }% small
 
-\vspace{0.1em}{\small Matching with typed variable pattern \code| x match { case a: Int => a; case _ => 0}| is preferred over \\explicit isInstanceOf tests and casts: \code{ if (x.isInstanceOf[Int]) x.asInstanceOf[Int] else 0}}
+\vspace{0.1em}{\small \Comment{Matching with type pattern} \code| x match { case a: Int => a; case _ => 0 }| \Comment{is preferred over} \\ \Comment{explicit instance test and casting:} \code{ if x.isInstanceOf[Int] then x.asInstanceOf[Int] else 0}}
 
 \vspace{0.5em}\head{Enumerations}
 
@@ -474,9 +474,9 @@ Empty tuple, unit value& \code|()|  &  \Comment{the only value of type Unit}  & 
 \code|  case Red, Green, Blue| & \Comment{Array of values:} \texttt{Color.values(Col.Red.ordinal) == Col.Red} \\
 %\vspace*{-0.5em}
 & \Comment{value from String:} \code|Color.valueOf("Red") == Color.Red| \\ 
-\code|enum Bin(val toInt: Int):| &  \Comment{parameteized enum, val is needed for class param to be externally visible.}\\
-\code|  case T extends Bin(1)| & \Comment{get parameter from val:} \code|Bin.T.toInt == 1|\\
-\code|  case F extends Bin(0)| & \Comment{you can also define members (def, val, etc) inside enums}\\
+\code|enum Bin(val toInt: Int):| &  \Comment{\textbf{parameterized enum} val is needed for class param to be externally visible.}\\
+\code|  case F extends Bin(-1)| & \Comment{get parameter from case value:} \code|Bin.F.toInt == -1|\\
+\code|  case T extends Bin(1)| & \Comment{you can also define case members (def, val, etc) inside enums}\\
 
 \end{tabular}
 }% small
@@ -523,14 +523,15 @@ Empty tuple, unit value& \code|()|  &  \Comment{the only value of type Unit}  & 
 \code|val b = Box(0) |
 & \Comment{same as (with explicit type parameters):~~~val b: Box\textbf{[Int]} = new Box\textbf{[Int]}(0)}\\
 
-\code|val p = b.pair(new Box("zero"))  |
+\code|val p = b.pair(Box("zero"))  |
 & \Comment{the type of p is (Box[Int], Box[String])}\\
 
 \end{tabular}
 }% small
 
-\vspace{0.5em}{\small
-Generic types are erased before JVM runtime except for Array, so a reflect.ClassTag is needed when constructing arrays from generic type parameters: \code|  def mkArray[A:reflect.ClassTag](a: A) = Array[A](a)|
+\vspace{0.0em}{\small
+\Comment{+ covariance, - contravariance :} \code|class Box[+T](x: T){ def pair[U >: T](y: U) = (x, y) }| \\
+ClassTag needed for generic array constr.: \code|def mkArr[A:reflect.ClassTag](a: A) = Array[A](a)|
 }%end small
 
 
@@ -571,20 +572,21 @@ Generic types are erased before JVM runtime except for Array, so a reflect.Class
 {\small\renewcommand{\arraystretch}{1.0}
 {\textbf{Try[T]} is like a collection with \textbf{Success[T]} or \textbf{Failure[E]}.\hfill\code|import scala.util.{Try, Success, Failure}|}
 
-\begin{tabular}{@{}l @{\hspace{-4.8em}}l}
+\begin{tabular}{@{}l @{\hspace{-4.8em}}r}
 \code|Try{ ...; ...; expr1 }.getOrElse(expr2)| & \Comment{evaluates to expr1 if successful or expr2 if exception} \\
 
-\code|Try{...; expr1}.recover{ case e: Throwable => expr2 }| & \hspace{5em}\Comment{expr2 if exception else Success(expr1)} \\
+\code|Try(expr1).recover{ case e: Throwable => expr2 }| & \hspace{5em}\Comment{Success(expr2) if exception else Success(expr1)} \\
 \end{tabular}
-\code|Try(1/0) match {case Success(x) => x; case Failure(e) => 0}| \Comment{~~e here ArithmeticException}
+\code|Try(1/0) match { case Success(x) => x; case Failure(e) => 0 }| %\Comment{~~e is ArithmeticException}
 }
 
 
 
-\vspace{0.5em}\head{Reading/writing from file, and standard in/out, string interpolation:}\Newline
+\vspace{0.5em}\head{Reading/writing from file, and standard in/out:}\Newline
 {\small
-\Comment{\textbf{Read} string of lines from \textbf{file} (fromFile gives BufferedSource, getLines gives Iterator[String]; also fromURL):}
-\code|val s = scala.io.Source.fromFile("f.txt", "UTF-8").getLines.mkString("\n")|
+\Comment{\textbf{Read} string of lines from \textbf{file}, \code|fromFile| gives BufferedSource, \code|getLines| gives Iterator[String]}
+\code|val source = scala.io.Source.fromFile("f.txt", "UTF-8")|  ~~~~\Comment{or \code|fromURL(adr, enc)|}
+\code|val lines = try source.getLines.mkString("\n") finally source.close|
 }
 
 
@@ -593,7 +595,7 @@ Generic types are erased before JVM runtime except for Array, so a reflect.Class
 \code|val input = scala.io.StdIn.readLine("> ") | \Comment{} \\ 
 \code|println(s"you wrote $input after > using ${input.length} chars")| 
 
-\vspace{0.5em}\textbf{Write} string to \textbf{file} after \textbf{import java.nio.file.\{Path, Paths, Files\}; import java.nio.charset.StandardCharsets.UTF\_8}\vspace{-0.5em}
+\vspace{0.25em}\Comment{\textbf{Write} string to \textbf{file} after} import java.nio.file.\{Path, Paths, Files\}; import java.nio.charset.StandardCharsets.UTF\_8\vspace{-0.4em}
 \begin{Code}
 def save(fileName: String, data: String): Path =
     Files.write(Paths.get(fileName), data.getBytes(UTF_8))
