@@ -416,7 +416,7 @@ Self reference  & \code|this|  &  \Comment{refers to the object being defined} &
 Supertype reference & \code|super.m|  &  \Comment{refers to member m of supertype} & other special chars & \textbf{highest} \\ %\cline{4-5}
 Non-referable reference & \code|null|  &  \multicolumn{3}{l}{\hspace{-0.7em}\Comment{refers to null object of type Null} }\\
 \multicolumn{5}{l}{\hspace{-0.7em}Uninitialized ~~\Comment{mutable AnyRef field set to null}~~~\code|var x: String = scala.compiletime.uninitialized|} \\
-Assignment operator & \code|x += 1|  &  \multicolumn{3}{l}{\Comment{expanded to x = x + 1 and works for all symbolic infix operators ending with =}} \\
+Assignment operator & \code|x += 1|  &  \multicolumn{3}{l}{\hspace{-0.7em}\Comment{expands to~~\code|x = x + 1|~~if no method += is available, works for all operators}} \\
 \vspace{-0.4em}\\
 Empty tuple, unit value& \code|()|  &  \Comment{the only value of type Unit}  & \multicolumn{2}{l}{\textbf{Integer division and reminder:}} \\
 2-tuple value   & \code|(1, "hello")| &  \Comment{same as Tuple2(1, "hello")} & \multicolumn{2}{l}{\code|a / b|  \Comment{~no decimals if a, b Int, Short, Byte }}   \\ \vspace{0.5em}
@@ -428,7 +428,7 @@ Empty tuple, unit value& \code|()|  &  \Comment{the only value of type Unit}  & 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\clearpage\vspace*{-2.0em}\head{Pattern matching, type tests and extractors}\vspace{0.5em}
+\clearpage\vspace*{-2.5em}\head{Pattern matching, type tests and extractors}\vspace{0.5em}
 
 \vspace{0.25em}\renewcommand{\arraystretch}{1.0}
 {\small%
@@ -465,9 +465,21 @@ Empty tuple, unit value& \code|()|  &  \Comment{the only value of type Unit}  & 
 
 \vspace{0.1em}{\small Matching with typed variable pattern \code| x match { case a: Int => a; case _ => 0}| is preferred over \\explicit isInstanceOf tests and casts: \code{ if (x.isInstanceOf[Int]) x.asInstanceOf[Int] else 0}}
 
-\vspace{0.5em}\head{Enumerations}\vspace{0.75em}
+\vspace{0.5em}\head{Enumerations}
 
-TODO
+\vspace{0.9em}\renewcommand{\arraystretch}{1.0}
+{\small%
+\begin{tabular}{@{}l @{\hspace{0.3em}}l}
+\code|enum Col:| & \Comment{Col is a sealed class, values in companion of type Col:}~~\code|Col.Red| ~ \Comment{etc.}   \\
+\code|  case Red, Green, Blue| & \Comment{Array of values:} \texttt{Color.values(Col.Red.ordinal) == Col.Red} \\
+%\vspace*{-0.5em}
+& \Comment{value from String:} \code|Color.valueOf("Red") == Color.Red| \\ 
+\code|enum Bool(val toInt: Int):| &  \\
+\code|  case T extends Bool(1)| & \Comment{Paramereized enum, get parameter from val:} \code|Bool.P.toInt|\\
+\code|  case F extends Bool(0)| & \\
+
+\end{tabular}
+}% small
 
 %\vspace{0.25em}{\small The \textbf{unapply} method can be used in \textbf{extractor} pattern matching (to avoid extra class \& instance), e.g.:}
 %
@@ -592,7 +604,7 @@ def save(fileName: String, data: String): Path =
 
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\vspace*{-1.5em}\head{The Scala Type System}%\Newline
+\vspace*{-2.5em}\head{The Scala Type System}%\Newline
 \vspace{-0.5em}\includegraphics[width=1.05\textwidth,trim=12mm 0 0 0cm]{../img/hierarchy.pdf}
 
 {\small \renewcommand{\arraystretch}{1.01}
@@ -632,7 +644,9 @@ def save(fileName: String, data: String): Path =
 \Newline\vspace{-5.0em}{\small
 Some methods in \code{math} same as in \code{java.lang.Math}:\\
 \code{hypot(x, y) sin(x) cos(x) tan(x)}\\
-\code{pow(x, y) sqrt(x) log(x) toRadians(x)}
+\code{pow(x, y) sqrt(x) log(x) toRadians(x)}\\
+\code|floorMod(x, y)| \Comment{similar to x \% y but always positive}
+
 }\Newline\vspace{1em}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -682,7 +696,7 @@ Some methods in \code{math} same as in \code{java.lang.Math}:\\
 }
 
 \vspace{-0.75em} 
-{\small \texttt{Array} has efficient \code{update}, but strange with generics. Special \code{Array} allocation syntax: \code{new Array[Int](n)}  ~~~Prefer \code{ArraySeq} (mutable or immutable, a "normal" collection better with generics) or \code{IArray} (prevents mutability)}
+{\small \texttt{Array} has efficient \code{update}, but strange with generics. Special \code{Array} allocation syntax: \code{new Array[Int](n)}  ~~~Prefer \code{ArraySeq} (a "normal" collection, better with generics) or \code{IArray} (an Array that cannot be updated)}
 
 % \vspace{-0.5em}{\small Concrete implementations of \textbf{Set} include HashSet, ListSet and BitSet; collection.\textbf{SortedSet} is implemented by TreeSet.\\
 % Concrete implementations of \textbf{Map} include HashMap and ListMap; collection.\textbf{SortedMap} is implemented by TreeMap.
