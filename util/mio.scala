@@ -4,7 +4,7 @@
   * or just paste the whole source file in the REPL using for example
   * `:pa util/mio.scala` where `util` is the path to `mio.scala`
   */
-object mio {
+object mio:
   import java.nio.file.{Path, Paths, Files}
   import java.nio.charset.StandardCharsets.UTF_8
 
@@ -20,16 +20,14 @@ object mio {
 
   def ls(dir: String): Unit = listFiles(dir).foreach(println)
 
-  def currentDir: Path =  Paths.get("").toAbsolutePath
+  def currentDir: Path = Paths.get("").toAbsolutePath
 
   def pwd: Unit = println(currentDir)
 
-  def save(data: String,
-           fileName: String = "untitled.txt"): Unit = {
-      println("Saving to file: " + Paths.get(fileName).toAbsolutePath)
-      Files.write(Paths.get(fileName), data.getBytes(UTF_8))
-  }
-
+  def save(data: String, fileName: String = "untitled.txt"): Unit = 
+    println("Saving to file: " + Paths.get(fileName).toAbsolutePath)
+    Files.write(Paths.get(fileName), data.getBytes(UTF_8))
+  
   def isDir(name: String): Boolean = (new java.io.File(name)).isDirectory
 
   private lazy val console = new jline.console.ConsoleReader
@@ -41,4 +39,4 @@ object mio {
   /** Run `ls` if args is empty or else run ls on each dir in args. */
   def main(args: Array[String]): Unit =
    if (args.isEmpty) ls else args.foreach(ls)
-}
+

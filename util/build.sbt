@@ -7,7 +7,7 @@ libraryDependencies += "jline" % "jline" % "2.14.2"
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
   version := "16.1",
-  scalaVersion := "2.11.8"
+  scalaVersion := "3.0.1"
 )
 
 lazy val util = (project in file(".")). 
