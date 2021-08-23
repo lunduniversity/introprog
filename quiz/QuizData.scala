@@ -114,17 +114,17 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ).filter(_._1.trim.nonEmpty),
 
     QuizID("quiz-w02-collection-methods") -> Vector(  //programs
-      "\\code|val xs = Vector(2)          |" -> "ny referens till sekvens av längd 1",
-      "\\code|val ys = Array.fill(9)(0)   |" -> "ny referens till förändringsbar sekvens med nollor",
-      "\\code|Vector.fill(9)(' ')         |" -> "ny oföränderlig sekvens med blanktecken",
-      "\\code|xs(0)                       |" -> "förkortad skrivning av \\code|apply(0)|",
-      "\\code|xs.apply(0)                 |" -> "indexering, ger första elementet",
-      "\\code|xs :+ 0                     |" -> "ny samling med en nolla tillagd på slutet",
-      "\\code|0 +: xs                     |" -> "ny samling med en nolla tillagd i början",
-      "\\code|ys.mkString                 |" -> "ny sträng med alla element intill varandra",
-      "\\code|ys.mkString(\",\")          |" -> "ny sträng med komma mellan elementen",
-      "\\code|xs.map(_.toString)          |" -> "ny samling, elementen omgjorda till strängar",
-      "\\code|xs map (_.toInt)            |" -> "ny samling, elementen omgjorda till heltal",
+      "\\code|val xs = Vector(2)       |" -> "ny referens till sekvens av längd 1",
+      "\\code|val ys = Array.fill(9)(0)|" -> "ny referens till förändringsbar sekvens",
+      "\\code|Vector.fill(9)(' ')      |" -> "ny oföränderlig sekvens med blanktecken",
+      "\\code|xs(0)                    |" -> "förkortad skrivning av \\code|apply(0)|",
+      "\\code|xs.apply(0)              |" -> "indexering, ger första elementet",
+      "\\code|xs :+ 0                  |" -> "ny samling med en nolla tillagd på slutet",
+      "\\code|0 +: xs                  |" -> "ny samling med en nolla tillagd i början",
+      "\\code|ys.mkString              |" -> "ny sträng med alla element intill varandra",
+      "\\code|ys.mkString(\",\")       |" -> "ny sträng med komma mellan elementen",
+      "\\code|xs.map(_.toString)       |" -> "ny samling, elementen omgjorda till strängar",
+      "\\code|xs map (_.toInt)         |" -> "ny samling, elementen omgjorda till heltal",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
