@@ -16,7 +16,7 @@ På LTH:s [Linuxdatorer i E-huset](https://www.lth.se/lthin/datorsalar/vaara-dat
 
 ## Programmera på din egen dator 
 
-Du behöver följande verktyg på din egen dator: Kojo, OpenJDK, sbt, VS Code med tillägget Scala (Metals). Läs om dessa i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) och följ instruktioner nedan om hur du installation verktygen på din egen dator.   
+Du behöver följande verktyg på din egen dator: Kojo, OpenJDK, sbt, VS Code med tillägget Scala (Metals). Läs om dessa i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) och följ instruktionerna nedan om hur du installerar verktygen på din egen dator.
 
 
 ### Installera Kojo
