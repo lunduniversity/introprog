@@ -87,12 +87,13 @@ Installera Scala Build Tool `sbt`:
 
 * Linux/Ubuntu/WSL: Klistra in terminalkommandona rad för rad under rubriken "Linux (deb)" här: [http://www.scala-sbt.org/download.html](http://www.scala-sbt.org/download.html)
 
-* Mac: Se till att du har admin-rätt på din dator. Installera Sdkman (Software Development Kit Manager). Öppna en terminal och kopiera följande, en rad i taget:
+* Mac: Se till att du har admin-rätt på din dator. Installera `sdkman` (Software Development Kit Manager) och därefter `sbt` enligt nedan. 
+   * Öppna en terminal och kopiera följande, en rad i taget:
    ```
    curl -s "https://get.sdkman.io" | bash
    source "$HOME/.sdkman/bin/sdkman-init.sh"
    ```
-   Installera nu `sbt` genom att skriva:
+   * Installera nu `sbt` genom att skriva:
    ```
    sdk install sbt
    ```
