@@ -87,11 +87,16 @@ Installera Scala Build Tool `sbt`:
 
 * Linux/Ubuntu/WSL: Klistra in terminalkommandona rad för rad under rubriken "Linux (deb)" här: [http://www.scala-sbt.org/download.html](http://www.scala-sbt.org/download.html)
 
-* Mac: Se till att du har admin-rätt på din dator. Installera Homebrew (om du inte redan gjort det) genom att följa instruktionen härifrån http://brew.sh/ dvs kopiera långa kommandot som börjar med /usr/bin/ruby med Cmd+C och klistra in med Cmd+V i terminalen. Skriv sedan detta i terminalen:
-```
-brew update
-brew install sbt@1
-```
+* Mac: Se till att du har admin-rätt på din dator. Installera `sdkman` (Software Development Kit Manager) och därefter `sbt` enligt nedan. 
+    * Öppna en terminal och kopiera följande, en rad i taget:
+    ```
+    curl -s "https://get.sdkman.io" | bash
+    source "$HOME/.sdkman/bin/sdkman-init.sh"
+    ```
+    * Installera nu `sbt` genom att skriva:
+    ```
+    sdk install sbt
+    ```
 
 Läs mer om hur du använder `sbt` i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/). 
 
