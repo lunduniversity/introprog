@@ -125,7 +125,7 @@ curl -OL https://github.com/lampepfl/dotty/releases/download/$VER/scala3-$VER.zi
 * Windows: För att ladda ner och installera Scala så att `scalac` och `scala` blir tillgängligt i terminalen i Windows, gör så här:
     * Installera OpenJDK enligt instruktioner ovan. 
     * Ladda ned filen install-scala.bat via länken [https://cs.lth.se/pgk/scala-windows](https://cs.lth.se/pgk/scala-windows) och spara den t.ex. i Downloads och dubbel-klicka på den. Ett terminalfönster öppnas och kör igång nedladdning och uppdatering av path. När den är klar är det bara att starta en ny terminal och köra `scala`.
-        * För att installera en specifik version av scala så kan man i terminalen ge in versionsnummer som argument, t.ex:
+        * För att installera en specifik version av scala så kan man i terminalen ge versionsnummer som argument, t.ex:
             ```
             install-scala.bat 3.1.0-RC1
             ```
