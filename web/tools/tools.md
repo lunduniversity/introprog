@@ -124,7 +124,11 @@ curl -OL https://github.com/lampepfl/dotty/releases/download/$VER/scala3-$VER.zi
  
 * Windows: För att ladda ner och installera Scala så att `scalac` och `scala` blir tillgängligt i terminalen i Windows, gör så här:
     * Installera OpenJDK enligt instruktioner ovan. 
-    * TODO: Ladda ner denna bat-fil TODO-ADD-LINK och dubbel-klicka på den. Ett terminalfönster öppnas och kör igång nedladdning. När de den är kommer ..........TODO
+    * Ladda ned [denna bat-fil](#TODO) och dubbel-klicka på den. Ett terminalfönster öppnas och kör igång nedladdning. När den är klar är det bara att starta en ny terminal och köra `scala`.
+        * För att installera en specifik version av scala så kan man skicka in versionsnummer, t.ex:
+            ```
+            install-scala.bat 3.1.0-RC1
+            ```
     * Om du har tillräckligt ny Windows-maskin rekommenderas även WSL (se ovan under "Starta terminalfönster") som gör att du kan köra Linux/Ubuntu under Windows och då installera oven verktyg enligt instruktioner för Linux. 
     * Det finns också några lovande alternativ under utveckling som ska göra det ännu enklare att komma igång med Scala, där `scala-cli` rekommenderas:
         * `scala-cli` är ett nytt program som enkelt och smidigt kan kompilera och göra igång scala-program och REPL. Installera [msi-filen som är specifik för Windows](https://github.com/VirtuslabRnD/scala-cli/releases/download/nightly/scala-cli-x86_64-pc-win32.msi) och läs mer om hur man använder `scala-cli` i terminalen här: [https://virtuslabrnd.github.io/scala-cli/](https://virtuslabrnd.github.io/scala-cli/) 
