@@ -112,7 +112,7 @@ Tyvärr finns inget färdigt installationsprogram för nya Scala 3 än, så file
     wget https://github.com/lampepfl/dotty/releases/download/$VER/scala3-$VER.zip
     unzip scala3-$VER.zip
     sudo mkdir -p /usr/local/bin
-    sudo ln -s ~/scala/scala3-$VER/bin/sca* /usr/local/bin/.
+    sudo ln -sf ~/scala/scala3-$VER/bin/sca* /usr/local/bin/.
     rm scala3-$VER.zip
     ```
     * Starta ett **nytt** terminalfönster och testa att skriva `scala -version` och om allt gått bra ska du få en utskrift som börjar med "Scala compiler version".
