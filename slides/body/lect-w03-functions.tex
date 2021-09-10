@@ -164,10 +164,6 @@ scala> tomParameterlista
 \end{REPLsmall}
 
 \item En parameterlös funktion deklarerad \Alert{utan} \code{()} ska anropas \Alert{utan} \code{()}. 
-\item Deklaration utan \code{()} är grunden för principen om \Emph{enhetlig access}: implementationen kan ändras från \code{val} till \code{def} eller från \code{def} till \code{val} \Emph{utan} att \Alert{användande} koden påverkas.
-\pause
-%\item Om parameterlista saknas får man alltså \Alert{inte} använda \code{()} vid anrop:
-
 \begin{REPLsmall}
 scala> def ingenParameterlista = 42
 scala> ingenParameterlista()
@@ -175,6 +171,11 @@ scala> ingenParameterlista()
   |^^^^^^^^^^^^^^^^^^^
   |method ingenParameterlista does not take parameters
 \end{REPLsmall}
+
+\item Deklaration utan \code{()} möjliggör \Emph{enhetlig access}: implementationen kan ändras från \code{val} till \code{def} eller tvärtom, \Emph{utan} att \Alert{användandet} påverkas.
+\pause
+%\item Om parameterlista saknas får man alltså \Alert{inte} använda \code{()} vid anrop:
+
 \end{itemize}
 \end{Slide}
 
@@ -230,11 +231,11 @@ Minnet som innehåller ett programs data är uppdelat i två delar:
 \begin{Slide}{Aktiveringspost}\SlideFontSmall
 Nästlade anrop ger växande anropsstack.
 \begin{REPLsmall}
-scala> def h(x: Int, y: Int): Unit = { val z = x + y; println(z) }
+scala> def h(x: Int, y: Int) = { val z = x + y; println(z) }
 
-scala> def g(a: Int, b: Int): Unit = { val x = 1; h(x + 1, a + b) }
+scala> def g(a: Int, b: Int) = { val x = 1; h(x + 1, a + b) }
 
-scala> def f(): Unit = { val n = 5; g(n, 2 * n) }
+scala> def f() = { val n = 5; g(n, 2 * n) }
 
 scala> f()
 
@@ -275,7 +276,7 @@ När du letar buggar vid körtidsfel har du nytta av att \Alert{noga studera} \E
 %     else (0, "division by zero") 
 % \end{CodeSmall}
   
-\begin{Code}
+\begin{Code}[numbers=left]
 // Program i filen bmi.scala
 
 @main 
@@ -479,7 +480,7 @@ def rnd(n: Int): Int = (math.random() * n).toInt  // oäkta funktion
   \begin{itemize}
     \item Funktioner vars värden på något sätt beror av slumpen är \Alert{inte} äkta funktioner.
     \item Även om samma argument ges vid upprepad applicering, så kan ju resultatet bli olika.
-    \item Studera dokumentationen för \code{scala.util.Random} här:\\ \href{https://www.scala-lang.org/api/2.13.3/scala/util/Random.html}{\SlideFontSmall https://www.scala-lang.org/api/2.13.3/scala/util/Random.html}
+    \item Studera dokumentationen för \code{scala.util.Random} här:\\ \href{https://www.scala-lang.org/api/current/scala/util/Random.html}{\SlideFontSmall https://www.scala-lang.org/api/current/scala/util/Random.html}
     \item Du har nytta av funktionen \code{Random.nextInt} och slumptalsfrö \Eng{random seed} i veckans uppgifter.
   \end{itemize}
 
@@ -495,13 +496,13 @@ def rnd(n: Int): Int = (math.random() * n).toInt  // oäkta funktion
 
 \begin{Code}
   val seed = 42
-  val rnd = new util.Random(seed) // SAMMA sekvens varje körning
+  val rnd = util.Random(seed) // skapa ny slumpgenerator med frö 42
   val r = rnd.nextInt(6) // ger slumptal mellan 0 till och med 5
 \end{Code}
 \pause
 \item Om man \Alert{inte} ger ett \Emph{frö} så sätts fröet till ''\emph{a value very likely to be distinct from any other invocation of this constructor}''. Då vet vi inte vilket fröet blir och det blir olika varje gång man kör programmet.
 \begin{Code}
-  val rnd = new util.Random // OLIKA sekvens varje körning
+  val rnd = util.Random() // OLIKA frö varje körning
   val r = rnd.nextInt(6) // ger slumptal mellan 0 till och med 5
 \end{Code}
 \pause
