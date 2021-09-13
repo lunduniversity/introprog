@@ -102,7 +102,19 @@ Läs mer om hur du använder `sbt` i Appendix i [kompendiet](https://cs.lth.se/p
 
 ### Gör `scala` och `scalac` tillgängligt i terminalen
 
-* Linux/Ubuntu/WSL/Mac: Installera Scala via `sdkman` genom att skriva:  
+* Linux/Ubuntu/WSL: Scala installeras lättast med `sdkman`
+    * Öppna en terminal och kopiera följande, en rad i taget:
+    ```
+    curl -s "https://get.sdkman.io" | bash
+    source "$HOME/.sdkman/bin/sdkman-init.sh"
+    ```
+    * Installera nu Scala via `sdkman`
+    ```
+    sdk install scala
+    ```  
+    Starta ett **nytt** terminalfönster och testa att skriva `scala -version` och om allt gått bra ska du få en utskrift som börjar med "Scala compiler version".
+    
+* Mac: Installera Scala via `sdkman` genom att skriva:  
     ```
     sdk install scala
     ```  
