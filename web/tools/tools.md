@@ -102,25 +102,11 @@ Läs mer om hur du använder `sbt` i Appendix i [kompendiet](https://cs.lth.se/p
 
 ### Gör `scala` och `scalac` tillgängligt i terminalen
 
-Tyvärr finns inget färdigt installationsprogram för nya Scala 3 än, så filerna som kör igång `scala` och `scalac` i terminalen behöver laddas ner och installeras manuellt. Stegen beskrivs nedan. Fråga någon om hjälp vid behov.
-
-* Linux/Ubuntu/WSL: 
-    * Kopiera och klistra in dessa kommando rad för rad i terminalen:
+* Linux/Ubuntu/WSL/Mac: Installera Scala via `sdkman` genom att skriva:  
     ```
-    mkdir -p ~/scala && cd ~/scala
-    VER=3.0.1
-    wget https://github.com/lampepfl/dotty/releases/download/$VER/scala3-$VER.zip
-    unzip scala3-$VER.zip
-    sudo mkdir -p /usr/local/bin
-    sudo ln -sf ~/scala/scala3-$VER/bin/sca* /usr/local/bin/.
-    rm scala3-$VER.zip
-    ```
-    * Starta ett **nytt** terminalfönster och testa att skriva `scala -version` och om allt gått bra ska du få en utskrift som börjar med "Scala compiler version".
-
-* Mac: Gör som för Linux ovan men byt ut `wget ` mot `curl -OL `  (notera *stora* bokstaven O). Du ska alltså köra detta kommando i stället for `wget` ovan:
-```
-curl -OL https://github.com/lampepfl/dotty/releases/download/$VER/scala3-$VER.zip
-``` 
+    sdk install scala
+    ```  
+    Starta ett **nytt** terminalfönster och testa att skriva `scala -version` och om allt gått bra ska du få en utskrift som börjar med "Scala compiler version".
  
 * Windows: För att ladda ner och installera Scala så att `scalac` och `scala` blir tillgängligt i terminalen i Windows, gör så här:
     * Installera OpenJDK enligt instruktioner ovan. 
