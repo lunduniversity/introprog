@@ -79,48 +79,25 @@ Version 11 rekommenderas, men andra versioner kan ev. också fungera. Om utskrif
 
 
 
-### Installera byggverktyget `sbt`
-
-Installera Scala Build Tool `sbt`: 
-
-* Windows: Ladda ner och kör [https://github.com/sbt/sbt/releases/download/v1.5.5/sbt-1.5.5.msi](https://github.com/sbt/sbt/releases/download/v1.5.5/sbt-1.5.5.msi)
-
-* Linux/Ubuntu/WSL: Klistra in terminalkommandona rad för rad under rubriken "Linux (deb)" här: [http://www.scala-sbt.org/download.html](http://www.scala-sbt.org/download.html)
-
-* Mac: Se till att du har admin-rätt på din dator. Installera `sdkman` (Software Development Kit Manager) och därefter `sbt` enligt nedan. 
-    * Öppna en terminal och kopiera följande, en rad i taget:
-    ```
-    curl -s "https://get.sdkman.io" | bash
-    source "$HOME/.sdkman/bin/sdkman-init.sh"
-    ```
-    * Installera nu `sbt` genom att skriva:
-    ```
-    sdk install sbt
-    ```
-
-Läs mer om hur du använder `sbt` i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/). 
-
 ### Gör `scala` och `scalac` tillgängligt i terminalen
 
-* Linux/Ubuntu/WSL: Scala installeras lättast med `sdkman`
-    * Öppna en terminal och kopiera följande, en rad i taget:
+* **Linux/Ubuntu/WSL/MacOS**: Scala installeras lättast med **sdkman**:
+    * Testa att nedladdningsprogrammet `curl` finns på ditt system genom att skriva `curl --version` i terminalen. Om `curl` saknas så installera detta i terminalen genom att skriva:
+    ```
+    sudo apt install curl
+    ```
+    * Om du inte redan gjort det, installera **sdkman** genom att öppna ett terminalfönster och kopiera och klistra in följande, en rad i taget:
     ```
     curl -s "https://get.sdkman.io" | bash
     source "$HOME/.sdkman/bin/sdkman-init.sh"
     ```
-    * Installera nu Scala via `sdkman`
+    * Installera Scala med kommandot `sdk` så här:
     ```
     sdk install scala
     ```  
-    Starta ett **nytt** terminalfönster och testa att skriva `scala -version` och om allt gått bra ska du få en utskrift som börjar med "Scala compiler version".
+    * Starta ett *nytt* terminalfönster och testa att skriva `scala -version` och om allt gått bra ska du få en utskrift som börjar med "Scala compiler version".
     
-* Mac: Installera Scala via `sdkman` genom att skriva:  
-    ```
-    sdk install scala
-    ```  
-    Starta ett **nytt** terminalfönster och testa att skriva `scala -version` och om allt gått bra ska du få en utskrift som börjar med "Scala compiler version".
- 
-* Windows: För att ladda ner och installera Scala så att `scalac` och `scala` blir tillgängligt i terminalen i Windows, gör så här:
+* **Windows**: För att ladda ner och installera Scala så att `scalac` och `scala` blir tillgängligt i terminalen i Windows, gör så här:
     * Installera OpenJDK enligt instruktioner ovan. 
     * Ladda ned filen install-scala.bat via länken [https://cs.lth.se/pgk/scala-windows](https://cs.lth.se/pgk/scala-windows) och spara den t.ex. i Downloads och dubbel-klicka på den. Ett terminalfönster öppnas och kör igång nedladdning och uppdatering av path. När den är klar är det bara att starta en ny terminal och köra `scala`.
         * För att installera en specifik version av scala så kan man i terminalen ge versionsnummer som argument, t.ex:
@@ -131,6 +108,23 @@ Läs mer om hur du använder `sbt` i Appendix i [kompendiet](https://cs.lth.se/p
     * Det finns också några lovande alternativ under utveckling som ska göra det ännu enklare att komma igång med Scala, där `scala-cli` rekommenderas:
         * `scala-cli` är ett nytt program som enkelt och smidigt kan kompilera och göra igång scala-program och REPL. Installera [msi-filen som är specifik för Windows](https://github.com/VirtuslabRnD/scala-cli/releases/download/nightly/scala-cli-x86_64-pc-win32.msi) och läs mer om hur man använder `scala-cli` i terminalen här: [https://virtuslabrnd.github.io/scala-cli/](https://virtuslabrnd.github.io/scala-cli/) 
         * [Coursier](https://get-coursier.io/docs/cli-installation#windows) är ett avancerat system för installation och nedladdning som i sin tur kan installera kommandot `scala3-compiler` och `scala3-repl`. Kompilerade program måste tyvärr i skrivande stund köras direkt med `java`-kommandot, se längre ned i detta ärende: [https://github.com/coursier/coursier/issues/2058](https://github.com/coursier/coursier/issues/2058) 
+
+
+### Installera byggverktyget `sbt`
+
+Installera Scala Build Tool `sbt`: 
+
+* **Linux/Ubuntu/WSL/MacOS**: 
+  * Installera **sdkman** om du inte redan gjort det (se ovan).
+  * Installera genom att skriva detta kommando i terminalen:
+    ```
+    sdk install sbt
+    ```
+  * Starta ett *nytt* terminalfönster och testa att skriva `sbt -version` och om allt gått bra ska du efter ett tag få en utskrift som börjar med "sbt version". 
+
+* **Windows**: Ladda ner och kör [https://github.com/sbt/sbt/releases/download/v1.5.5/sbt-1.5.5.msi](https://github.com/sbt/sbt/releases/download/v1.5.5/sbt-1.5.5.msi)
+
+Läs mer om hur du använder `sbt` i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/). 
 
 
 
