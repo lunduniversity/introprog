@@ -115,12 +115,12 @@ Version 11 rekommenderas, men andra versioner kan ev. också fungera. Om utskrif
 Installera Scala Build Tool `sbt`: 
 
 * **Linux/Ubuntu/WSL/MacOS**: 
-  * Installera **sdkman** om du inte redan gjort det (se ovan).
-  * Installera genom att skriva detta kommando i terminalen:
-    ```
-    sdk install sbt
-    ```
-  * Starta ett *nytt* terminalfönster och testa att skriva `sbt -version` och om allt gått bra ska du efter ett tag få en utskrift som börjar med "sbt version". 
+    * Installera **sdkman** om du inte redan gjort det (se ovan).
+    * Installera genom att skriva detta kommando i terminalen:
+      ```
+      sdk install sbt
+      ```
+    * Starta ett *nytt* terminalfönster och testa att skriva `sbt -version` och om allt gått bra ska du efter ett tag få en utskrift som börjar med "sbt version". 
 
 * **Windows**: Ladda ner och kör [https://github.com/sbt/sbt/releases/download/v1.5.5/sbt-1.5.5.msi](https://github.com/sbt/sbt/releases/download/v1.5.5/sbt-1.5.5.msi)
 
