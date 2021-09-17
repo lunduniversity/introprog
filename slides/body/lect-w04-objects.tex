@@ -6,7 +6,7 @@
 \begin{itemize}
 \item Övning \texttt{objects} innehåller bland annat:
 \begin{itemize}
-\item hur man kan kapsla in funktioner och variabler i singelobjekt (kallas även moduler)
+\item hur man kan kapsla in funktioner och variabler i singelobjekt
 \item hur man kan skapa namnrymder, hantera namnöverskuggning, och använda punktnotation
 %\item skapa objekt med hjälp av tupler
 %\item lat initialisering
@@ -105,9 +105,8 @@ Olika saker man kan göra med objekt:
 \end{Slide}
 
 
-\begin{Slide}{Allokera objekt}\SlideFontSmall
-Det finns flera olika sätt att skapa objekt:
-\begin{itemize}
+\begin{Slide}{Olika sätt att allokera objekt}\SlideFontSmall
+\begin{enumerate}
 
 \item Använda en \Emph{färdig funktion} som skapar ett objekt åt oss, t.ex. \code{apply}:
 \begin{Code}
@@ -116,22 +115,25 @@ Vector.apply(1,2,3)  // explicit apply
 \end{Code}
 {\SlideFontTiny En funktion som skapar objekt kallas \Alert{fabriksmetod} \Eng{factory method}.\vspace{0.5em}}
 
-\item Använda \code{new} (mer om detta senare: då behövs en klass):
+\item Göra \code{new} på en klass (mer om klasser senare):
 \begin{Code}
-new introprog.PixelWindow(title = "Hej!") // skapa fönsterobjekt
+new introprog.PixelWindow() // skapa ett fönsterobjekt
 \end{Code}
-{\SlideFontSmall Med \code{new} kan man skapa \Alert{många upplagor} av samma typ av objekt.\vspace{0.5em}}
+{
+\SlideFontSmall Med \code{new} kan man skapa \Alert{många upplagor} av samma typ av objekt.\\
+I Scala 3 kan \code{new} ofta utelämnas: \code{introprog.PixelWindow()}
+}
 
 \item Deklarera ett \Emph{singelobjekt} med nyckelordet \code{object}
 \begin{itemize}\SlideFontSmall
   \item Ett singelobjekt finns i exakt \Alert{en} upplaga.
-  \item Det allokeras \Alert{automatiskt} första gången man refererar objektet; \\
+  \item Allokeras \Alert{automatiskt} första gången man refererar objektet; \\
   man behöver inte, och kan inte, skriva \code{new}.
   \pause
   \item Medlemmar i ett Scala-singelobjekt liknar \jcode{static}-medlemmar i en Java/C++/C\#-klass.
 \end{itemize}
 \item Använda en \Emph{tupel}, exempel: \code{val p = (200, 300)}
-\end{itemize}
+\end{enumerate}
 \end{Slide}
 
 \Subsection{Singelobjekt}
@@ -149,18 +151,19 @@ object Highscore {
   def isHighscore(points: Int): Boolean = points > highscore
 }
 \end{Code}
-\end{itemize}
+\item Krullparenteser är valfria i Scala 3:\\~~~du kan använda kolon och indentering i stället.
 \pause
-{\SlideFontTiny Tanken är ofta att abstraktionen ska vara användbar i annan kod, för att underlätta när man bygger applikationer, och kallas då även ett API (Application Programming Interface). Exempel: ett highscore-API}
+\item Tanken är ofta att abstraktioner ska vara användbar i annan kod, för att underlätta när man bygger applikationer, och kallas då ett \Emph{API} (Application Programming Interface). Exempel: ett highscore-API.
+\end{itemize}
 \end{Slide}
 
 
 \begin{Slide}{Allokering: minne reserveras med plats för data}
 \begin{Code}
-object Highscore {
+object Highscore:
   var highscore = 0
   def isHighscore(points: Int): Boolean = points > highscore
-}
+
 \end{Code}
 \pause
 \begin{tikzpicture}[font=\large\sffamily]
@@ -197,7 +200,7 @@ scala> Highscore.highscore = 42
 \begin{tikzpicture}[font=\large\sffamily]
 \matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=0.8cm}}] (mat)
 {
-\texttt{HighScore}   &  \makebox(10,10){ }\\
+\texttt{Highscore}   &  \makebox(10,10){ }\\
 %\texttt{g2}   &  \makebox(16,12){ }\\
 };
 \node[cloud, cloud puffs=13.0, cloud ignores aspect, minimum width=2cm, minimum height=3.8cm,
@@ -220,12 +223,16 @@ scala> Highscore.highscore = 42
 \begin{Slide}{Punktnotation och operatornotation}
 Punktnotation där metodanropet har \Alert{ett} enda argument:\\~\\
 \code{objekt.metod(argument)}
-\\~\\kan även skrivas med \Emph{operatornotation}:\\~\\
+\\~\\kan även skrivas med infix \Emph{operatornotation}:\\~\\
 \code{objekt metod argument}
 \\~\\Exempel:\\
-\code{1 + 2}\\
+\code{1 + 2}\\\pause\vspace{0.5em}
 \code{Highscore isHighscore 1000}
-
+\pause 
+{
+\SlideFontSmall
+\\\vspace{0.5em}Operatornotation med metoder vars namn börjar med bokstäver kommer efter Scala 3.1 kräva deklaration med \code{infix} före \code{def}, men du kan redan nu använda \code{infix def} för att visa att de är tänkta att användas så.
+}
 \end{Slide}
 
 
@@ -242,10 +249,9 @@ object Game {
 
   val highscore = 42   // ett annat värde än Game.Highscore.highscore
 
-  object Highscore {
+  object Highscore:
     var highscore = 0  // ett annat värde än Game.highscore
     def isHighscore(points: Int): Boolean = points > highscore
-  }
 }
 \end{Code}
 
@@ -258,12 +264,11 @@ Med nyckelordet \code{private} döljs interna delar för omvärlden.
 Privata medlemmar kan bara refereras \emph{inifrån} objektet.
 Denna princip kallas \Emph{inkapsling} \Eng{encapsulation}.
 \begin{CodeSmall}
-object Highscore {
+object Highscore:
   private var myHighscore = 0        // namnet myHighscore syns ej utåt
   def highscore: Int = myHighscore   // en s.k. getter ger ett attributvärde
   def isHighscore(points: Int): Boolean = points > myHighscore
-  def update(points: Int): Unit = if (isHighscore(points)) myHighscore = points
-}
+  def update(points: Int): Unit = if isHighscore(points) then myHighscore = points
 \end{CodeSmall}
 \pause
 Varför har man nytta av detta?
@@ -290,12 +295,11 @@ Nackdelar:
 \end{itemize}
 
 \begin{CodeSmall}
-object Highscore {
+object Highscore:
   private var _highscore = 0
   def highscore: Int = _highscore
   def isHighscore(points: Int): Boolean = points > _highscore
-  def update(points: Int): Unit = if (isHighscore(points)) _highscore = points
-}
+  def update(points: Int): Unit = if isHighscore(points) then _highscore = points
 \end{CodeSmall}
 
 \pause
@@ -327,11 +331,10 @@ scala> A2.a
 
 \begin{Slide}{Exempel: singelobjektet med förändringsbart tillstånd} \SlideFontSmall
 \begin{Code}[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]
-object mittBankkonto {
+object mittBankkonto:
   val kontonr: Long        = 1234567L
   var saldo: Int           = 1000
   def ärSkuldsatt: Boolean = saldo < 0
-}
 \end{Code}
 \begin{REPLnonum}
 scala> mittBankkonto.saldo -= 25000
@@ -348,11 +351,10 @@ res0: Boolean = true
 \begin{Slide}{Exempel: tillstånd, attribut}
 Ett objekts \Emph{tillstånd} är den samlade uppsättningen av värden av alla de attribut som finns i objektet.
 \begin{Code}[basicstyle=\ttfamily\fontsize{9}{11}\selectfont]
-object mittBankkonto {
+object mittBankkonto
   val kontonr: Long        = 1234567L
   var saldo: Int           = 1000
   def ärSkuldsatt: Boolean = saldo < 0
-}
 \end{Code}
 \begin{tikzpicture}[font=\large\sffamily]
 \matrix [matrix of nodes, row sep=0, column 2/.style={nodes={rectangle,draw,minimum width=0.8cm}}] (mat)
