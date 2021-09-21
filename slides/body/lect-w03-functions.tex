@@ -351,11 +351,11 @@ Lokala, nästlade funktionsdeklarationer är tyvärr inte tillåtna i många and
 \item En funktion är ett \Alert{äkta värde}.
 \item Vi kan till exempel tilldela en variabel ett funktionsvärde.
 \pause
-\item Med hjälp av blank+understreck efter funktionsnamnet får vi funktionen som ett \Alert{värde} (inga argument appliceras än):
+\item Med vanlig tilldelning får vi funktionen som ett \Alert{värde} (inga argument appliceras än):
 \begin{REPLnonum}
 scala> def add(a: Int, b: Int) = a + b
 
-scala> val f = add _ 
+scala> val f = add
 val f: (Int, Int) => Int = Lambda7210/0x0000000841e4e040@1ce2db23
 
 scala> f(21, 21)
@@ -368,18 +368,18 @@ val res0: Int = 42
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{Du kan vanligtvis skippa understreck}\SlideFontSmall
+\begin{Slide}{Det finns ett undantag}\SlideFontSmall
 \begin{itemize}\SlideFontSmall
 
-\item Nytt i Scala 3: Om det är otvetydigt att du vill skapa ett funktionsvärde så kan du skippa understreck:
+\item Om funktionen har en eller flera parametrar så kommer kompilatorn automatiskt göra om det till ett funktionsvärde:
 \begin{REPLnonum}
 scala> def add(a: Int, b: Int) = a + b
 
-scala> val f = add     // inget understreck behövs 
+scala> val f = add        // funkar som vanligt
 val f: (Int, Int) => Int = Lambda7210/0x0000000841e4e040@1ce2db23
 \end{REPLnonum}
 
-\item Specialfall då understreck behövs: (se speciellt typen \code{() => Int})
+\item Specialfall då funktionen saknar parametrar så finns det två alternativ: (se speciellt typen \code{() => Int})
 \begin{REPLsmall}
 scala> def a() = 42
 def a(): Int
@@ -389,10 +389,12 @@ scala> val b = a
   |        ^
   |        method a must be called with () argument
 
-scala> val b = a _
+scala> val b = () => a()       // alternativ 1
 val b: () => Int = Lambda7214/0x0000000841e50440@565d794
+
+scala> val b: () => Int = a    // alternativ 2
+val b: () => Int = Lambda1306/0x0000000100752040@29699283
 \end{REPLsmall}
-\item Börja utan understreck och se om det funkar utan kompileringsfel...
 \end{itemize}
 \end{Slide}
 
