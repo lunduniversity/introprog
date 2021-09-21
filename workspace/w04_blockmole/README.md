@@ -20,7 +20,7 @@ Om du kör i Windows Powershell eller Cmd byt kolon mot semikolon i kommandona o
 
 Du kan också använda `sbt` som beskrivs i Appendix "Byggverktyg" i kompendiet. Lägg då jar-filen i en underkatalog kallad `lib` *eller* låt `sbt` automatiskt ladda ner biblioteket från Sonatype Maven Central genom att använda följande text i en fil `build.sbt`:
 
-    scalaVersion := "2.12.9"
-    libraryDependencies += "se.lth.cs" %% "introprog" % "1.1.3"
+    scalaVersion := "3.0.1"
+    libraryDependencies += "se.lth.cs" %% "introprog" % "1.2.0"
 
 Se vidare dokumentationen för `introprog` här: http://fileadmin.cs.lth.se/pgk/api/
