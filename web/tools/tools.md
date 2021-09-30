@@ -123,6 +123,7 @@ Installera Scala Build Tool `sbt`:
     * Starta ett *nytt* terminalfönster och testa att skriva `sbt -version` och om allt gått bra ska du efter ett tag få en utskrift som börjar med "sbt version". 
 
 * **Windows**: Ladda ner och kör [https://github.com/sbt/sbt/releases/download/v1.5.5/sbt-1.5.5.msi](https://github.com/sbt/sbt/releases/download/v1.5.5/sbt-1.5.5.msi)
+    * Innan du börjar använda sbt i en Windowsterminal rekommenderas det att skriva `chpcp 65001` för att särskilda tecken (t.ex. ÅÄÖ) ska fungera som de ska. 
 
 Läs mer om hur du använder `sbt` i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/). 
 
