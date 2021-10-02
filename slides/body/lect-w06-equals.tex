@@ -83,11 +83,31 @@ Om du överskuggar equals vill du nog börja med
 \end{Slide}
 
 
-\begin{Slide}{Fördjupning: Multiversell likhet i Scala 3}
+\begin{Slide}{Fördjupning: Säkrare likhetstest i Scala 3}
+\SlideFontSmall
 \begin{itemize}
-  \item \Alert{Problem}: \code{equals} tar värden av vilken typ som helst.
-  \item I Scala 3 finns möjlighet att få typ-säker likhetstest.
-  \item Läs mer här om du är nyfiken och vill prova: \url{https://docs.scala-lang.org/scala3/reference/contextual/multiversal-equality.html}
+\item \Alert{Problem}: \code{equals} tar värden av vilken typ som helst.
+\item Detta kallas \Alert{universell likhet}.
+\item[]
+\begin{REPLsmall}
+scala> case class Hund(namn: String)
+scala> case class Katt(namn: String)
+scala> Hund("bob") == Katt("bob") // knasig jämförelse; kan aldrig bli sant
+val res0: Boolean = false         // men kompilatorn låter dig göra likhetstestet
+\end{REPLsmall}  
+\item I Scala 3 kan du få typsäker likhetstest med~~\code{derives CanEqual}
+\item Detta kalla \Emph{multiversell likhet}.
+\item[]
+\begin{REPLsmall}
+scala> case class Hund(namn: String) derives CanEqual
+scala> Hund("bob") == Katt("bob")   // tack kompilatorn för fel:
+-- Error:
+1 |Hund("bob") == Katt("bob")
+  |^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |Values of types Hund and Katt cannot be compared with == or !=
+\end{REPLsmall}  
+\item Du \Emph{slipper} skriva \code{derives CanEqual} om du gör: \\ \code{import scala.language.strictEquality}
+\item Läs mer här: \url{https://docs.scala-lang.org/scala3/reference/contextual/multiversal-equality.html}
 
 \end{itemize}
 
