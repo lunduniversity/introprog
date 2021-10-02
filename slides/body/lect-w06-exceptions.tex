@@ -176,3 +176,34 @@ val res0: Vector[Int] = Vector(-1, 42, 42, -1, -1)
 %Gör uppg. 9-11 i övn. \code{patterns} som visar hur man fångar undantag i Scala och Java. 
 %Mer om undantag i fortsättningskursen.
 \end{Slide}
+
+\Subsection{För- och nackdelar med undantag}
+
+\begin{Slide}{Unvik undantag om det går}
+\SlideFontSmall
+\Emph{Fördelar} med undantag: 
+\begin{itemize}
+\item Vid allvarliga fel då det inte är mycket att göra än att starta om, t.ex. \code{OutOfMemoryException}, är det bra att få veta vad som är fel.
+\item Onormala fall som uppkommer sällan kan hanteras separat (t.ex. i huvudprogrammet) utan att koden för normalfallet blir tillkrånglad. 
+\end{itemize}
+\Alert{Nackdelar} med undantag: 
+\begin{itemize}
+\item Ett slags ''goto'' som gör exekveringsflödet svårt att följa.
+\item Skapa stack-trace tar tid; undantag som sker ofta påverkar prestanda.
+\end{itemize}
+\pause Exempel: undantagslösa \code{toIntOption} är både säker och snabb!
+\begin{REPLsmall}
+scala> def time(op: => Unit): Long = {val t0 = System.nanoTime; op; System.nanoTime - t0}
+
+scala> def min(op: => Unit, n: Int = 1000): Long = Seq.fill(n)(time(op)).drop(n / 20).min
+
+scala> min(util.Try("hello".toInt))
+val res0: Long = 3549
+
+scala> min(try "hello".toInt catch (_: Throwable) => ())
+val res1: Long = 3046
+
+scala> min("hello".toIntOption)
+val res2: Long = 157
+\end{REPLsmall}
+\end{Slide}
