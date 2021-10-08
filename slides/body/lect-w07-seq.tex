@@ -19,8 +19,8 @@
    \item är av en viss \Alert{typ} (t.ex. heltal).
   \end{itemize}
   \pause
-\item En sekvens kan innehålla \Alert{dubbletter}.
-\item En sekvens kan vara \Alert{tom} och ha längden noll.
+\item En sekvens kan innehålla flera element som är lika.
+\item En sekvens kan vara \Alert{tom} och har då längden noll.
 \item Exempel på en icke-tom sekvens med dubbletter:
 \begin{REPLnonum}
 scala> val xs = Vector(42, 0, 42, -9, 0, 13, 7)
@@ -251,8 +251,9 @@ scala> def abox[T](x: T) = Array[T](x)
 
 
 \begin{Slide}{Använda färdiga sekvenssamlingsmetoder}
-\begin{itemize}
+\begin{itemize}\SlideFontSmall
 \item Standardbiblioteket i Scala innehåller flera olika samlingar som har sekvensegenskaper, t.ex. \code{Vector} och \code{ArrayBuffer}, som erbjuder olika möjligheter och har olika prestanda beroende på vad man vill göra.
+\item Scala 3 använder samma samlingsbibliotek som i Scala 2.13, se intro:  \url{https://docs.scala-lang.org/overviews/collections-2.13/introduction.html} 
 
 \item Ofta kan man implementera sekvensalgoritmer genom anrop av en eller flera \Alert{färdiga} metoder.
 
@@ -270,27 +271,27 @@ scala> def abox[T](x: T) = Array[T](x)
 \begin{Slide}{Några användbara samlingsmetoder vid implementation av sekvensalgoritmer}
 \SlideFontTiny
 \begin{tabular}{@{}l l}
-\code|xs map f|           & transformering, motsv. \code|for (x <- xs) yield f(x)| \\
-\code|xs map (x => x)|    & kopiering, motsv. \code|for (x <- xs) yield x| \\
-\code|xs filter p|        & filtrering, ta med x om p(x)\\
-\code|xs filterNot p|     & filtrering, ta med x om !p(x)\\
+\code|xs.map(f)|           & transformering, motsv. \code|for x <- xs yield f(x)| \\
+\code|xs.map(x => x)|    & kopiering, motsv. \code|for x <- xs yield x| \\
+\code|xs.filter(p)|        & filtrering, ta med x om p(x)\\
+\code|xs.filterNot(p)|     & filtrering, ta med x om !p(x)\\
 \code|xs.distinct|        & filtrering, ta bort dubbletter \\
-\code|xs take n|          & ny sekvens med de första n elements, resten skippade\\ 
-\code|xs drop n|          & ny sekvens där de första n elements är skippade\\ 
-\code|xs takeWhile p|     & filtrera, ta med i början så länge p(x)  \\
-\code|xs dropWhile p|     & filtrera, skippa i början så länge p(x)  \\
-\code|xs indexOf x|       & sökning framifrån efter ett index som är x \\
-\code|xs lastIndexOf x|   & sökning bakifrån efter ett index som är x \\
-\code|xs.sorted|          & sortering med inbyggd (implicit) ordning \\
-\code|xs.sorted.reverse| & sortering i omvänd ordning \\
-\code|xs sortBy f|        & sortering i ordning enligt f(x)\\
-\code|xs sortWith lt|     & sortering enligt less than \code|lt: (A, A) => Boolean|\\
-\code|xs count p|         & räkna antalet element där p(x) är sant
+\code|xs.take(n)|          & ny sekvens med de första n elements, resten skippade\\ 
+\code|xs.drop(n)|          & ny sekvens där de första n elements är skippade\\ 
+\code|xs.takeWhile(p)|     & filtrera, ta med i början så länge p(x)  \\
+\code|xs.dropWhile(p)|     & filtrera, skippa i början så länge p(x)  \\
+\code|xs.find(p)|       & sök framifrån efter första element x där p(x) är sant\\
+\code|xs.indexOf(x)|       & sök framifrån efter index för element som är samma som x \\
+\code|xs.lastIndexOf(x)|   & sök bakifrån efter index för element som är samma som x \\
+\code|xs.sorted|          & sortera med inbyggd (implicit given) ordning \\
+\code|xs.sorted.reverse| & sortera i omvänd ordning \\
+\code|xs.sortBy(f)|        & sortera i ordning enligt f(x)\\
+\code|xs.sortWith(lt)|     & sortera enligt ''less than''-funktionen \code|lt: (A, A) => Boolean|\\
+\code|xs.count(p)|         & räkna antalet element där p(x) är sant
 \end{tabular}
 
 \vspace{0.5em}%
-\Emph{Lär dig fler smidiga metoder i} \Alert{quickref} och genom denna översikt:\\
-{\SlideFontTiny\href{https://docs.scala-lang.org/overviews/collections-2.13/introduction.html}{docs.scala-lang.org/overviews/collections-2.13/introduction.html}}
+\Emph{Lär dig fler smidiga metoder i} \Alert{quickref}
 \end{Slide}
 
 \begin{Slide}{Uppdaterad sekvens med kraftfulla metoden \texttt{patch}}
@@ -323,12 +324,12 @@ I ett for-uttryck kan man ha en \Emph{gard} \Eng{guard} i form av ett booleskt u
 
 Syntaxen är så här: (parenteser behövs ej runt gard-uttrycket)
 \begin{Code}[basicstyle=\ttfamily\SlideFontSize{12}{14}]
-for (x <- xs if uttryck1) yield uttryck2
+for x <- xs if uttryck1 yield uttryck2
 \end{Code}
 \pause
 Exempel:
 \begin{REPLnonum}
-scala> val udda = for (x <- 1 to 6 if x % 2 == 1) yield x
+scala> val udda = for x <- 1 to 6 if x % 2 == 1 yield x
 \end{REPLnonum}
 \pause
 \code{udda} blir \code{Vector(1, 3, 5)}
@@ -348,7 +349,7 @@ xs.filter(_ % 2 == 1)
 \pause
 uttryckets resultat blir \code{Vector(1, 3, 5)}, vilket motsvarar:
 \begin{Code}[basicstyle=\ttfamily\SlideFontSize{10}{13}]
-for (x <- xs if x % 2 == 1) yield x
+for x <- xs if x % 2 == 1 yield x
 \end{Code}
 \pause
 I själva verket skriver Scala-kompilatorn om for-uttryck med gard till anrop av metoden \code{filter} före kodgenerering sker.
@@ -375,18 +376,18 @@ def freq(xs: Vector[Int]): Vector[(Int, Int)] = ???  // (heltal, frekvens)
 
 \begin{Slide}{Implementation av sekvensproblem med \texttt{for}-uttryck och/eller färdiga samlingsmetoder}
 \begin{Code}
-def copy(xs: Vector[Int]): Vector[Int] = for (x <- xs) yield x
+def copy(xs: Vector[Int]): Vector[Int] = for x <- xs yield x
 
 def filter(xs: Vector[Int], p: Int => Boolean): Vector[Int] =
-  for (x <- xs if p(x)) yield x
+  for x <- xs if p(x) yield x
 
 def findIndices(xs: Vector[Int], p: Int => Boolean): Vector[Int] =
-  (for (i <- xs.indices if p(xs(i))) yield i).toVector
+  (for i <- xs.indices if p(xs(i)) yield i).toVector
 
 def sort(xs: Vector[Int]): Vector[Int] = xs.sorted // mer om sortering sen
 
 def freq(xs: Vector[Int]): Vector[(Int, Int)] = // mer om registrering snart
-  for (x <- xs.distinct) yield (x, xs.count(_ == x))
+  for x <- xs.distinct yield x -> xs.count(_ == x)
 \end{Code}
 Övning: Hur implementera dessa med \code{map} och \code{filter} och/eller andra färdiga samlingsmetoder?
 \end{Slide}
@@ -403,7 +404,7 @@ def findIndices(xs: Vector[Int], p: Int => Boolean): Vector[Int] =
 def sort(xs: Vector[Int]): Vector[Int] = xs.sorted // mer om sortering sen
 
 def freq(xs: Vector[Int]): Vector[(Int, Int)] = // mer om registrering snart
-  xs.distinct.map(x => (x, xs.count(_ == x)))
+  xs.distinct.map(x => x -> xs.count(_ == x))
 \end{Code}
 %Fördjupningsövning: Hur göra dessa metoder generiska för alla sekvenssamlingar av typen \code{Seq[T]}?
 \end{Slide}
@@ -458,12 +459,12 @@ Typen \Emph{\code{collection.immutable.Seq}} är supertyp till alla sekvenssamli
 \begin{itemize}
 \item Kopiering av \Alert{specifik} heltalssekvens:
 \begin{Code}
-def copyIntVector(xs: Vector[Int]): Vector[Int] = for (x <- xs) yield x
+def copyIntVector(xs: Vector[Int]): Vector[Int] = for x <- xs yield x
 \end{Code}
 
 \item Kopiering som fungerar för alla oföränderliga heltalssekvenser:
 \begin{Code}
-def copyIntSeq(xs: Seq[Int]): Seq[Int] = for (x <- xs) yield x
+def copyIntSeq(xs: Seq[Int]): Seq[Int] = for x <- xs yield x
 \end{Code}
 \end{itemize}
 \pause
@@ -481,7 +482,7 @@ val zs: Seq[Int] = Vector(1, 2, 3)
 % (Mer om typparametrar och supertyper/subtyper senare i kursen.)
 % \begin{Code}[basicstyle=\ttfamily]
 % def varannanBaklänges[T](xs: Seq[T]): Seq[T] =
-%   for (i <- xs.indices.reverse by -2) yield xs(i)
+%   for i <- xs.indices.reverse by -2 yield xs(i)
 % \end{Code}
 % Fungerar med alla sekvenssamlingar:
 % \begin{REPLnonum}
