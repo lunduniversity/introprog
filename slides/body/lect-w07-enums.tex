@@ -55,6 +55,47 @@ Club
 \end{REPLsmall}
 \end{Slide}
 
+\begin{Slide}{Enum kan bli fullfjädrade case-klasser}
+Vill du kunna göra mönster-matching på enum-värden så behövs parametrar på alternativen för att det ska bli motsvarande case-klasser: 
+\begin{Code}
+enum Veg:
+  def taste: String
+  case Tomato(taste: String)
+  case Banana(taste: String)
+\end{Code}
+Ovan expanderas automatiskt av kompilatorn till motsvarande detta:
+\begin{Code}
+trait Veg:
+  def taste: String
+object Veg:
+  case class Tomato(taste: String) extends Veg
+  case class Banana(taste: String) extends Veg
+\end{Code}
+\end{Slide}
+
+\begin{Slide}{Enum och mönster-matchning}
+\SlideFontSmall
+Med parametrar på varje fall och en abstrakt medlem för varje attribut... 
+\begin{Code}
+enum Veg:
+  def taste: String
+  case Tomato(taste: String)
+  case Banana(taste: String)
+\end{Code}
+...så gör den automatiska expansionen till case-klasser att detta fungerar fint: 
+\begin{REPLsmall}
+scala> val v: Veg = Veg.Tomato("najs") // notera typen : Veg
+val v: Veg = Tomato(najs)
+
+scala> v.taste  // funkar eftersom Veg har en taste
+val res0: String = najs
+
+scala> v match { case Veg.Tomato(t) => t case _ => "bad!" }
+val res1: String = najs
+\end{REPLsmall}
+Den abstrakta medlemmen \code{def taste: String} behövs för att attributet ska synas via referenser som är av den mindre specifika typen \code{Veg}.\\(Mer om abstrakta medlemmar i veckan om arv.)
+
+\end{Slide}
 
 
 \begin{Slide}{Fördelar med \texttt{\textbf{enum}} jämfört med uppräkning med heltal}
