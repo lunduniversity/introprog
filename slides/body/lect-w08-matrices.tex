@@ -353,11 +353,13 @@ scala> for ??? do
   \code{val xss = Vector.tabulate(2,5)((x,y) => x + y + 1)}
 
   \begin{REPL}
-scala> for i <- xss.indices do
-         for j <- xss(i).indices do 
-           print(xss(i)(j))
+scala> for xs <- xss do
+         for x <- xs do 
+           print(x)
            print(" ")
-         println
+         end for
+         println()
+       end for
 
 1 2 3 4 5
 2 3 4 5 6
@@ -365,10 +367,10 @@ scala> for i <- xss.indices do
 Övning: skriv ut matrisen med nästlad \code{foreach}\\
 \pause
 \begin{Code}
-xss.foreach(xs => 
-  xs.foreach(x => print(s"$x "))
-  println
-)
+xss.foreach { xs => 
+  xs.foreach { x => print(x); print(" ") }
+  println()
+}
 \end{Code}
 \end{Slide}
 
@@ -413,24 +415,24 @@ Iterera med nästlad for-sats: (vad har xss för typ?)
 \begin{REPL}
 scala> val xss = Vector.fill(100)(roll(5))
 
-scala> for (???) do
-         for (???) do
-           print(s"($i)($j) == ${xss(i)(j)} ")
-         println(isYatzy(???))
+scala> for (i <- ???) do 
+         for (j <- ???) do
+           print(s"($i)($j): ${xss(i)(j)} ")
+         println(s" YATZY: ${isYatzy(xss(i))}")
 
-(0)(0) == 5 (0)(1) == 3 (0)(2) == 4 (0)(3) == 1 (0)(4) == 3 false
-(1)(0) == 3 (1)(1) == 3 (1)(2) == 6 (1)(3) == 3 (1)(4) == 1 false
-(2)(0) == 3 (2)(1) == 4 (2)(2) == 2 (2)(3) == 2 (2)(4) == 1 false
-(3)(0) == 5 (3)(1) == 2 (3)(2) == 6 (3)(3) == 5 (3)(4) == 1 false
-(4)(0) == 4 (4)(1) == 6 (4)(2) == 4 (4)(3) == 1 (4)(4) == 4 false
-(5)(0) == 3 (5)(1) == 4 (5)(2) == 6 (5)(3) == 5 (5)(4) == 1 false
-(6)(0) == 4 (6)(1) == 6 (6)(2) == 2 (6)(3) == 2 (6)(4) == 6 false
-(7)(0) == 2 (7)(1) == 5 (7)(2) == 3 (7)(3) == 6 (7)(4) == 2 false
-(8)(0) == 4 (8)(1) == 4 (8)(2) == 6 (8)(3) == 1 (8)(4) == 4 false
-(9)(0) == 3 (9)(1) == 3 (9)(2) == 3 (9)(3) == 3 (9)(4) == 3 true
-(10)(0) == 1 (10)(1) == 2 (10)(2) == 4 (10)(3) == 3 (10)(4) == 3 false
-(11)(0) == 6 (11)(1) == 5 (11)(2) == 4 (11)(3) == 1 (11)(4) == 5 false
-(12)(0) == 3 (12)(1) == 6 (12)(2) == 6 (12)(3) == 4 (12)(4) == 2 false
+(0)(0): 3 (0)(1): 6 (0)(2): 4 (0)(3): 4 (0)(4): 6  YATZY: false
+(1)(0): 4 (1)(1): 1 (1)(2): 5 (1)(3): 2 (1)(4): 6  YATZY: false
+(2)(0): 1 (2)(1): 3 (2)(2): 5 (2)(3): 6 (2)(4): 2  YATZY: false
+(3)(0): 2 (3)(1): 1 (3)(2): 1 (3)(3): 5 (3)(4): 4  YATZY: false
+(4)(0): 4 (4)(1): 4 (4)(2): 1 (4)(3): 6 (4)(4): 5  YATZY: false
+(5)(0): 3 (5)(1): 3 (5)(2): 2 (5)(3): 3 (5)(4): 6  YATZY: false
+(6)(0): 3 (6)(1): 6 (6)(2): 1 (6)(3): 1 (6)(4): 4  YATZY: false
+(7)(0): 6 (7)(1): 2 (7)(2): 4 (7)(3): 4 (7)(4): 3  YATZY: false
+(8)(0): 1 (8)(1): 5 (8)(2): 4 (8)(3): 2 (8)(4): 4  YATZY: false
+(9)(0): 1 (9)(1): 1 (9)(2): 3 (9)(3): 6 (9)(4): 6  YATZY: false
+(10)(0): 2 (10)(1): 5 (10)(2): 2 (10)(3): 4 (10)(4): 5  YATZY: false
+(11)(0): 3 (11)(1): 4 (11)(2): 2 (11)(3): 5 (11)(4): 6  YATZY: false
+...
 \end{REPL}
 \end{Slide}
 
@@ -441,22 +443,22 @@ scala> val xss = Vector.fill(100)(roll(5))
 
 scala> for (i <- xss.indices) do 
          for (j <- xss(i).indices) do
-           print(s"($i)($j) == ${xss(i)(j)} ")
-         println(isYatzy(xss(i)))
+           print(s"($i)($j): ${xss(i)(j)} ")
+         println(s" YATZY: ${isYatzy(xss(i))}")
 
-(0)(0) == 5 (0)(1) == 3 (0)(2) == 4 (0)(3) == 1 (0)(4) == 3 false
-(1)(0) == 3 (1)(1) == 3 (1)(2) == 6 (1)(3) == 3 (1)(4) == 1 false
-(2)(0) == 3 (2)(1) == 4 (2)(2) == 2 (2)(3) == 2 (2)(4) == 1 false
-(3)(0) == 5 (3)(1) == 2 (3)(2) == 6 (3)(3) == 5 (3)(4) == 1 false
-(4)(0) == 4 (4)(1) == 6 (4)(2) == 4 (4)(3) == 1 (4)(4) == 4 false
-(5)(0) == 3 (5)(1) == 4 (5)(2) == 6 (5)(3) == 5 (5)(4) == 1 false
-(6)(0) == 4 (6)(1) == 6 (6)(2) == 2 (6)(3) == 2 (6)(4) == 6 false
-(7)(0) == 2 (7)(1) == 5 (7)(2) == 3 (7)(3) == 6 (7)(4) == 2 false
-(8)(0) == 4 (8)(1) == 4 (8)(2) == 6 (8)(3) == 1 (8)(4) == 4 false
-(9)(0) == 3 (9)(1) == 3 (9)(2) == 3 (9)(3) == 3 (9)(4) == 3 true
-(10)(0) == 1 (10)(1) == 2 (10)(2) == 4 (10)(3) == 3 (10)(4) == 3 false
-(11)(0) == 6 (11)(1) == 5 (11)(2) == 4 (11)(3) == 1 (11)(4) == 5 false
-(12)(0) == 3 (12)(1) == 6 (12)(2) == 6 (12)(3) == 4 (12)(4) == 2 false
+(0)(0): 3 (0)(1): 6 (0)(2): 4 (0)(3): 4 (0)(4): 6  YATZY: false
+(1)(0): 4 (1)(1): 1 (1)(2): 5 (1)(3): 2 (1)(4): 6  YATZY: false
+(2)(0): 1 (2)(1): 3 (2)(2): 5 (2)(3): 6 (2)(4): 2  YATZY: false
+(3)(0): 2 (3)(1): 1 (3)(2): 1 (3)(3): 5 (3)(4): 4  YATZY: false
+(4)(0): 4 (4)(1): 4 (4)(2): 1 (4)(3): 6 (4)(4): 5  YATZY: false
+(5)(0): 3 (5)(1): 3 (5)(2): 2 (5)(3): 3 (5)(4): 6  YATZY: false
+(6)(0): 3 (6)(1): 6 (6)(2): 1 (6)(3): 1 (6)(4): 4  YATZY: false
+(7)(0): 6 (7)(1): 2 (7)(2): 4 (7)(3): 4 (7)(4): 3  YATZY: false
+(8)(0): 1 (8)(1): 5 (8)(2): 4 (8)(3): 2 (8)(4): 4  YATZY: false
+(9)(0): 1 (9)(1): 1 (9)(2): 3 (9)(3): 6 (9)(4): 6  YATZY: false
+(10)(0): 2 (10)(1): 5 (10)(2): 2 (10)(3): 4 (10)(4): 5  YATZY: false
+(11)(0): 3 (11)(1): 4 (11)(2): 2 (11)(3): 5 (11)(4): 6  YATZY: false
+...
 \end{REPL}
 \end{Slide}
 
@@ -574,22 +576,23 @@ Primitiva arrayer har en equals-metod som ger referenslikhet, \Alert{inte} inneh
 \end{Slide}
 
 \ifkompendium\else
-\begin{Slide}{Kolla likhet av array-matris med nästlad while}
+\begin{Slide}{Övning: Kolla likhet av array (uppfinner hjulet)}
+\begin{Code}
+def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = 
+  var i = 0
+  var foundUnequal = false
+  while ??? do                          // VILKET VILLKOR?
+    var j = 0
+    while ??? do                        // VILKET VILLKOR?
+      if xss(i)(j) != yss(i)(j) then ???   // VAD SKA UPPDATERAS? 
+      j += 1
+    end while
+    i += 1
+  end while
+  !foundUnequal
+end isEqual
+\end{Code}
 \begin{REPL}
-scala> def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = 
-         var i = 0
-         var foundUnequal = false
-         while ??? do                          // VILKET VILLKOR?
-           var j = 0
-           while ??? do                        // VILKET VILLKOR?
-             if xss(i)(j) != yss(i)(j) then ???   // VAD SKA UPPDATERAS? 
-             j += 1
-           end while
-           i += 1
-         end while
-         !foundUnequal
-       end def
-
 scala> val (xss, yss) = (Array.fill(5,2)(42), Array.fill(5,2)(42))
 
 scala> isEqual(xss, yss)
@@ -602,28 +605,30 @@ scala> isEqual(xss, yss)
 \fi
 
 
-\begin{Slide}{Kolla likhet av array-matris med nästlad while}
+\begin{Slide}{Övning: Kolla likhet av array (uppfinner hjulet)}
+\begin{Code}
+def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = 
+  var i = 0
+  var foundUnequal = false
+  while i < xss.length && !foundUnequal do
+    var j = 0
+    while j < xss(i).length && !foundUnequal do
+      if (xss(i)(j) != yss(i)(j)) foundUnequal = true
+      j += 1
+    end while
+    i += 1
+  end while
+  !foundUnequal
+end isEqual
+\end{Code}
 \begin{REPL}
-scala> def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = 
-         var i = 0
-         var foundUnequal = false
-         while i < xss.length && !foundUnequal do
-           var j = 0
-           while j < xss(i).length && !foundUnequal do
-             if (xss(i)(j) != yss(i)(j)) foundUnequal = true
-             j += 1
-           end while
-           i += 1
-         end while
-         !foundUnequal
-
 scala> val (xss, yss) = (Array.fill(5,2)(42), Array.fill(5,2)(42))
 
-scala> isEqual(xss, yss)
+scala> isEqual(xss, yss)  // true
 
 scala> yss(4)(1) = 0
 
-scala> isEqual(xss, yss)
+scala> isEqual(xss, yss)  // false
 \end{REPL}
 \end{Slide}
 
