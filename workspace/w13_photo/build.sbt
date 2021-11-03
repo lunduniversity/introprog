@@ -1,2 +1,2 @@
-scalaVersion := "3.0.1"
-libraryDependencies += "se.lth.cs" %% "introprog-scalalib" % "1.2.0"
+scalaVersion := "3.1.0"
+libraryDependencies += "se.lth.cs" %% "introprog-scalalib" % "1.3.1"

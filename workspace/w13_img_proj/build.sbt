@@ -1,6 +1,8 @@
-ThisBuild/scalaVersion := "3.0.1"
+ThisBuild/scalaVersion := "3.1.0"
 
 scalacOptions := Seq("-unchecked", "-deprecation")
+
+libraryDependencies += "se.lth.cs" %% "introprog" % "1.3.1"
 
 Compile/doc/javacOptions ++= Seq(
   "-encoding",    "UTF-8", 

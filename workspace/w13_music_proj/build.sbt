@@ -1,4 +1,4 @@
-ThisBuild/scalaVersion := "3.0.1"
+ThisBuild/scalaVersion := "3.1.0"
 fork                := true // https://stackoverflow.com/questions/18676712
 connectInput        := true // http://www.scala-sbt.org/1.x/docs/Forking.html
 outputStrategy      := Some(StdoutOutput)

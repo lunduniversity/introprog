@@ -4,8 +4,8 @@ import Keys._
 
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
-  version := "2021.0.1",
-  scalaVersion := "3.0.1",  
+  version := "2021.0.2",
+  scalaVersion := "3.1.0",  
   scalacOptions := Seq("-unchecked", "-deprecation")
 )
 
@@ -20,14 +20,14 @@ lazy val cslib = (project in file("cslib")).  // still used by w13_img_proj
       "-encoding", "UTF-8", "-charset", "UTF-8", "-docencoding", "UTF-8")
   )
 
-val IntroprogLibVersion = "1.2.0"
+val IntroprogLibVersion = "1.3.1"
 val IntroprogLibName    = "introprog"
 lazy val introprog_scalalib = (project in file("introprog")).
   settings(commonSettings: _*).
   settings(
     name := IntroprogLibName,
     version := IntroprogLibVersion,
-    scalaVersion := "3.0.1",
+    scalaVersion := "3.0.1", // stick to 3.0.1 for backward and forward compatibility
     scalacOptions ++= Seq("-encoding", "UTF-8"),
     Compile/doc/scalacOptions ++= Seq( // TODO why docs here? scala3?
       "-implicits",
