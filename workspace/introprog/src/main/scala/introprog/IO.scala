@@ -1,7 +1,7 @@
 package introprog
 
 /** A module with input/output operations from/to the underlying file system. */
-object IO {
+object IO:
   /**
     * Load a string from a text file called `fileName` using encoding `enc`.
     *
@@ -9,12 +9,11 @@ object IO {
     * @param enc the encoding of the file.
     * @return the content loaded from the file.
     * */
-  def loadString(fileName: String, enc: String = "UTF-8"): String = {
+  def loadString(fileName: String, enc: String = "UTF-8"): String =
     var result: String = ""
     val source = scala.io.Source.fromFile(fileName, enc)
     try result = source.mkString finally source.close()
     result
-  }
 
   /**
     * Load string lines from a text file called `fileName` using encoding `enc`.
@@ -22,12 +21,11 @@ object IO {
     * @param fileName the path of the file.
     * @param enc the encoding of the file.
     * */
-  def loadLines(fileName: String, enc: String = "UTF-8"): Vector[String] = {
+  def loadLines(fileName: String, enc: String = "UTF-8"): Vector[String] =
     var result = Vector.empty[String]
     val source = scala.io.Source.fromFile(fileName, enc)
     try result = source.getLines().toVector finally source.close()
     result
-  }
 
   /**
     * Save `text` to a text file called `fileName` using encoding `enc`.
@@ -36,11 +34,10 @@ object IO {
     * @param fileName the path of the file.
     * @param enc the encoding of the file.
     * */
-  def saveString(text: String, fileName: String, enc: String = "UTF-8"): Unit = {
+  def saveString(text: String, fileName: String, enc: String = "UTF-8"): Unit =
     val f = new java.io.File(fileName)
     val pw = new java.io.PrintWriter(f, enc)
     try pw.write(text) finally pw.close()
-  }
 
   /**
     * Save `lines` to a text file called `fileName` using encoding `enc`.
@@ -58,11 +55,10 @@ object IO {
     * @param fileName the path of the file.
     * @return the serialized object.
     * */
-  def loadObject[T](fileName: String): T = {
+  def loadObject[T](fileName: String): T =
     val f = new java.io.File(fileName)
     val ois = new java.io.ObjectInputStream(new java.io.FileInputStream(f))
     try ois.readObject.asInstanceOf[T] finally ois.close()
-  }
 
   /**
     * Serialize `obj` to a binary file called `fileName`.
@@ -70,11 +66,10 @@ object IO {
     * @param obj the object to be serialized.
     * @param fileName the path of the file.
     * */
-  def saveObject[T](obj: T, fileName: String): Unit = {
+  def saveObject[T](obj: T, fileName: String): Unit =
     val f = new java.io.File(fileName)
     val oos = new java.io.ObjectOutputStream(new java.io.FileOutputStream(f))
     try oos.writeObject(obj) finally oos.close()
-  }
 
   /**
     * Test if a file with name `fileName` exists.
@@ -123,20 +118,18 @@ object IO {
     * @param from the path of the file to be moved.
     * @param to the path the file will be moved to.
     * */
-  def move(from: String, to: String): Unit = {
+  def move(from: String, to: String): Unit =
     import java.nio.file.{Files, Paths, StandardCopyOption}
     Files.move(Paths.get(from), Paths.get(to), StandardCopyOption.REPLACE_EXISTING)
-  }
 
     /**
     * Deletes `fileName`.
     *
     * @param fileName the path the file that will be deleted.
     * */
-  def delete(fileName: String): Unit = {
+  def delete(fileName: String): Unit =
     import java.nio.file.{Files, Paths}
     Files.delete(Paths.get(fileName))
-  }
 
     /**
     * Load image from file.
@@ -214,4 +207,3 @@ object IO {
 
   
 
-}

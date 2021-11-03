@@ -20,7 +20,7 @@ abstract class BlockGame(
   var framesPerSecond: Int = 50,
   val messageAreaHeight: Int = 2,
   val messageAreaBackground: Color = Color.gray.darker.darker
-) {
+):
   import introprog.PixelWindow
 
   /** Called when a key is pressed. Override if you want non-empty action.
@@ -85,78 +85,63 @@ abstract class BlockGame(
     * It draws only updated blocks aiming at the desired frame rate.
     * It calls each `onXXX` method if a corresponding event is detected.
     */
-  protected def gameLoop(stopWhen: => Boolean): Unit = while (!stopWhen) {
+  protected def gameLoop(stopWhen: => Boolean): Unit = while !stopWhen do
     import PixelWindow.Event
     val t0 = System.currentTimeMillis
     pixelWindow.awaitEvent(MaxWaitForEventMillis.toLong)
-    while (pixelWindow.lastEventType != PixelWindow.Event.Undefined) {
-      pixelWindow.lastEventType match {
+    while pixelWindow.lastEventType != PixelWindow.Event.Undefined do
+      pixelWindow.lastEventType match
         case Event.KeyPressed    => onKeyDown(pixelWindow.lastKey)
         case Event.KeyReleased   => onKeyUp(pixelWindow.lastKey)
         case Event.WindowClosed  => onClose()
         case Event.MousePressed  => onMouseDown(pixelWindow.lastMousePos)
         case Event.MouseReleased => onMouseUp(pixelWindow.lastMousePos)
         case _ =>
-      }
       pixelWindow.awaitEvent(1)
-    }
     gameLoopAction()
     drawUpdatedBlocks()
     val elapsed = System.currentTimeMillis - t0
-    if ((gameLoopDelayMillis - elapsed) < MaxWaitForEventMillis) {
+    if (gameLoopDelayMillis - elapsed) < MaxWaitForEventMillis then
       onFrameTimeOverrun(elapsed)
-    }
     Thread.sleep((gameLoopDelayMillis - elapsed) max 0)
-  }
 
   /** Draw updated blocks and carry out post-update actions if any. */
-  private def drawUpdatedBlocks(): Unit = {
-    for (x <- blockBuffer.indices) {
-      for (y <- blockBuffer(x).indices) {
-        if (isBufferUpdated(x)(y)) {
+  private def drawUpdatedBlocks(): Unit =
+    for x <- blockBuffer.indices do
+      for y <- blockBuffer(x).indices do
+        if isBufferUpdated(x)(y) then
           val pwx = x * blockSize
           val pwy = y * blockSize
           pixelWindow.fill(pwx, pwy, blockSize, blockSize, blockBuffer(x)(y))
           isBufferUpdated(x)(y) = false
-        }
-      }
-    }
     toDoAfterBlockUpdates.foreach(_.apply())
     toDoAfterBlockUpdates.clear()
-  }
 
   /** Erase all blocks to background color. */
-  def clearWindow(): Unit = {
+  def clearWindow(): Unit =
     pixelWindow.clear()
     clearMessageArea()
-    for (x <- blockBuffer.indices) {
-      for (y <- blockBuffer(x).indices) {
+    for x <- blockBuffer.indices do
+      for y <- blockBuffer(x).indices do
           blockBuffer(x)(y) = background
-      }
-    }
-  }
 
   /** Paint a block in color `c` at (`x`,`y`) in block coordinates. */
-  def drawBlock(x: Int, y: Int, c: Color): Unit = {
-    if (blockBuffer(x)(y) != c) {
+  def drawBlock(x: Int, y: Int, c: Color): Unit =
+    if blockBuffer(x)(y) != c then
       blockBuffer(x)(y) = c
       isBufferUpdated(x)(y) = true
-    }
-  }
 
   /** Erase the block at (`x`,`y`) to `background` color. */
-  def eraseBlock(x: Int, y: Int): Unit = {
-    if (blockBuffer(x)(y) != background) {
+  def eraseBlock(x: Int, y: Int): Unit =
+    if blockBuffer(x)(y) != background then
       blockBuffer(x)(y) = background
       isBufferUpdated(x)(y) = true
-    }
-  }
 
   /** Write `msg` in `color` in the middle of the window.
     * The drawing is postponed until the end of the current game loop
     * iteration and thus the text drawn on top of any updated blocks.
     */
-  def drawCenteredText(msg: String, color: Color = pixelWindow.foreground, size: Int = blockSize): Unit = {
+  def drawCenteredText(msg: String, color: Color = pixelWindow.foreground, size: Int = blockSize): Unit =
     toDoAfterBlockUpdates.append( () =>
       pixelWindow.drawText(
         msg,
@@ -165,17 +150,15 @@ abstract class BlockGame(
         size
       )
     )
-  }
 
  /** Write `msg` in `color` in the message area at ('x','y') in block coordinates. */
-  def drawTextInMessageArea(msg: String, x: Int, y: Int, color: Color = pixelWindow.foreground, size: Int = blockSize): Unit = {
+  def drawTextInMessageArea(msg: String, x: Int, y: Int, color: Color = pixelWindow.foreground, size: Int = blockSize): Unit =
     require(y < messageAreaHeight && y >= 0, s"not in message area: y = $y")
     require(x < dim._1 * blockSize && x >= 0, s"not in message area: x = $x")
     pixelWindow.drawText(msg, x * blockSize, (y + dim._2) * blockSize, color, size)
-  }
 
   /** Clear a rectangle in the message area in block coordinates. */
-  def clearMessageArea(x: Int = 0, y: Int = 0, width: Int = dim._1, height: Int = messageAreaHeight): Unit = {
+  def clearMessageArea(x: Int = 0, y: Int = 0, width: Int = dim._1, height: Int = messageAreaHeight): Unit =
     require(y < messageAreaHeight && y >= 0, s"not in message area: y = $y")
     require(x < dim._1 * blockSize && x >= 0, s"not in message area: x = $x")
     pixelWindow.fill(
@@ -183,5 +166,3 @@ abstract class BlockGame(
       width * blockSize, messageAreaHeight * blockSize + blockSize / 2,
       messageAreaBackground
     )
-  }
-}

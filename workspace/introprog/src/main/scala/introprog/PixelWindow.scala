@@ -1,7 +1,7 @@
 package introprog
 
 /** A module with utilities for event handling in `PixelWindow` instances. */
-object PixelWindow {
+object PixelWindow:
   /** Immediately exit running application, close all windows, kills all threads. */
   def exit(): Unit = System.exit(0)
 
@@ -9,7 +9,7 @@ object PixelWindow {
   def delay(millis: Long): Unit = Thread.sleep(millis)
 
   /** A map with string representations for special key codes. */
-  private val keyTextLookup: Map[Int, String] = {
+  private val keyTextLookup: Map[Int, String] =
     import java.awt.event.KeyEvent._
     Map(
       VK_META       -> "Meta",
@@ -35,10 +35,9 @@ object PixelWindow {
       VK_TAB        -> "Tab",
       VK_SPACE      -> " ",
     )
-  }
 
   /** An object with integers representing events that can happen in a PixelWindow. */
-  object Event {
+  object Event:
     /** An integer representing a key down event.
     *
     * This value is returned by [[introprog.PixelWindow.lastEventType]] when
@@ -87,7 +86,7 @@ object PixelWindow {
     val Undefined     = 0
 
     /** Returns a descriptive text for each `event`. */
-    def show(event: Int): String = event match {
+    def show(event: Int): String = event match
       case KeyPressed    => "KeyPressed"
       case KeyReleased   => "KeyReleased"
       case MousePressed  => "MousePressed"
@@ -96,9 +95,6 @@ object PixelWindow {
       case Undefined     => "Undefined"
       case _             =>
         throw new IllegalArgumentException(s"Unknown event number: $event")
-    }
-  }
-}
 
 /** A window with a canvas for pixel-based drawing.
   *
@@ -153,43 +149,39 @@ class PixelWindow(
   initFrame()  // initialize listeners, show frame, etc.
 
   /** Event dispatching, translating internal AWT events to exposed events. */
-  private def handleEvent(e: java.awt.AWTEvent): Unit = e match {
+  private def handleEvent(e: java.awt.AWTEvent): Unit = e match
     case me: java.awt.event.MouseEvent =>
       _lastMousePos = (me.getX, me.getY)
-      me.getID match {
+      me.getID match
         case java.awt.event.MouseEvent.MOUSE_PRESSED =>
           _lastEventType = Event.MousePressed
         case java.awt.event.MouseEvent.MOUSE_RELEASED =>
             _lastEventType = Event.MouseReleased
         case _ =>
           throw new IllegalArgumentException(s"Unknown MouseEvent: $e")
-      }
 
     case ke: java.awt.event.KeyEvent =>
-      if (ke.getKeyChar == java.awt.event.KeyEvent.CHAR_UNDEFINED || ke.getKeyChar < ' ')
+      if ke.getKeyChar == java.awt.event.KeyEvent.CHAR_UNDEFINED || ke.getKeyChar < ' ' then
         _lastKeyText = PixelWindow.keyTextLookup.getOrElse(ke.getKeyCode, java.awt.event.KeyEvent.getKeyText(ke.getKeyCode))
       else _lastKeyText = ke.getKeyChar.toString
 
-      ke.getID match {
+      ke.getID match
         case java.awt.event.KeyEvent.KEY_PRESSED =>
           _lastEventType = Event.KeyPressed
         case java.awt.event.KeyEvent.KEY_RELEASED =>
           _lastEventType = Event.KeyReleased
         case _ =>
           throw new IllegalArgumentException(s"Unknown KeyEvent: $e")
-      }
 
     case we: java.awt.event.WindowEvent =>
-      we.getID match {
+      we.getID match
         case java.awt.event.WindowEvent.WINDOW_CLOSING =>
           _lastEventType = Event.WindowClosed
         case _ =>
           throw new IllegalArgumentException(s"Unknown WindowEvent: $e")
-      }
 
     case _ =>
       throw new IllegalArgumentException(s"Unknown Event: $e")
-  }
 
   /** Return `true` if `(x, y)` is inside windows borders else `false`. */
   def isInside(x: Int, y: Int): Boolean = x >= 0 && x < width && y >= 0 && y < height
@@ -201,10 +193,9 @@ class PixelWindow(
     *
     * If time is out, `lastEventType` is `Undefined`.
     */
-  def awaitEvent(timeoutInMillis: Long = 1): Unit = {
+  def awaitEvent(timeoutInMillis: Long = 1): Unit =
     val e = eventQueue.poll(timeoutInMillis, java.util.concurrent.TimeUnit.MILLISECONDS)
-    if (e != null) handleEvent(e) else _lastEventType = Event.Undefined
-  }
+    if e != null then handleEvent(e) else _lastEventType = Event.Undefined
 
   /** Draw a line from (`x1`, `y1`) to (`x2`, `y2`) using `color` and `lineWidth`. */
   def line(x1: Int, y1: Int, x2: Int, y2: Int, color: java.awt.Color = foreground, lineWidth: Int = 1): Unit =
@@ -227,32 +218,29 @@ class PixelWindow(
     *
     * If (x, y) is outside of window bounds then an IllegalArgumentException is thrown.
     */
-  def setPixel(x: Int, y: Int, color: java.awt.Color = foreground): Unit = {
+  def setPixel(x: Int, y: Int, color: java.awt.Color = foreground): Unit =
     requireInside(x, y)
     canvas.withImage { img =>
       img.setRGB(x, y, color.getRGB)
     }
-  }
 
   /** Clear the pixel at `(x, y)` using the `background` class parameter.
     *
     * If (x, y) is outside of window bounds then an IllegalArgumentException is thrown.
     */
-  def clearPixel(x: Int, y: Int): Unit = {
+  def clearPixel(x: Int, y: Int): Unit =
     requireInside(x, y)
     canvas.withImage { img =>
       img.setRGB(x, y, background.getRGB)
     }
-  }
 
   /** Return the color of the pixel at `(x, y)`.
     *
     * If (x, y) is outside of window bounds then an IllegalArgumentException is thrown.
     */
-  def getPixel(x: Int, y: Int): java.awt.Color = {
+  def getPixel(x: Int, y: Int): java.awt.Color =
     requireInside(x, y)
     Swing.await { new java.awt.Color(canvas.img.getRGB(x, y)) }
-  }
 
 
   /** Return image of PixelWindow. */
@@ -293,7 +281,7 @@ class PixelWindow(
     size: Int = 16,
     style: Int = java.awt.Font.BOLD,
     fontName: String = java.awt.Font.MONOSPACED
-  ) = {
+  ) =
     canvas.withGraphics { g =>
       import java.awt.RenderingHints._
       // https://docs.oracle.com/javase/tutorial/2d/text/renderinghints.html
@@ -303,18 +291,27 @@ class PixelWindow(
       g.setColor(color)
       g.drawString(text, x, y + size)
     }
-  }
 
   
-  /** Draw `img` at `(x, y)` scaled to `(width, height)`. */
+  /** Draw `img` at `(x, y)` scaled to `(width, height)` and rotated `(angle)` radians clockwise. 
+    *
+    * If angle is 0 then no rotation is applied.
+    */
   def drawImage(
     img: Image,
     x: Int,
     y: Int,
     width: Int,
-    height: Int
+    height: Int,
+    angle: Double = 0
   ): Unit = 
-    canvas.withGraphics(_.drawImage(img.underlying, x, y, width, height, null))
+    if angle == 0 then
+      canvas.withGraphics(_.drawImage(img.underlying, x, y, width, height, null))
+    else 
+      val at = new java.awt.geom.AffineTransform()
+      at.translate(x, y)
+      at.rotate(angle, width/2, height/2)
+      canvas.withGraphics(_.drawImage(img.scaled(width, height).underlying, at, null))
   
   /** Draw `img` at `(x, y)` unscaled. */
   def drawImage(img: Image, x: Int, y: Int): Unit = 
@@ -327,7 +324,6 @@ class PixelWindow(
       yy <- 0 until matrix(xx).length
     do
       setPixel(xx+x, yy+y, matrix(xx)(yy))
-
 
 
   /** Create the underlying window and add listeners for event management. */

@@ -1,12 +1,12 @@
 package introprog.examples
 
 /** Example of serializing objects to and from binary files on disk. */
-object TestIO {
+object TestIO:
   import introprog.IO
 
   case class Person(name: String)
 
-  def main(args: Array[String]): Unit = {
+  def main(args: Array[String]): Unit =
     println("Test of IO of serializable objects to/from disk:")
     val highscores = Map(Person("Sandra") -> 42, Person("Björn") -> 5)
 
@@ -17,14 +17,13 @@ object TestIO {
     val highscores2 = IO.loadObject[Map[Person, Int]]("highscores.ser")
 
     val isSameContents = highscores2 == highscores
-    val testResult = if (isSameContents) "SUCCESS :)" else "FAILURE :("
+    val testResult = if isSameContents then "SUCCESS :)" else "FAILURE :("
     assert(isSameContents, s"$highscores != $highscores2")
     println(s"$highscores == $highscores2\n$testResult")
 
     testImageLoadAndDraw()
-  }
 
-  def testImageLoadAndDraw(): Unit = {
+  def testImageLoadAndDraw(): Unit =
     import introprog.*
     import java.awt.Color
     import java.awt.Color.*
@@ -32,7 +31,7 @@ object TestIO {
     val wSize = (4*128, 3*128)
     val w =  new PixelWindow(wSize._1, wSize._2, "DrawImage");
     val w2 = new PixelWindow(wSize._1, wSize._2, "DrawMatrix")
-    val w3 = new PixelWindow(wSize._1, wSize._2, "SaveLoadAsJpeg")
+    val w3 = new PixelWindow((wSize._1*1.5).toInt, (wSize._2*1.5).toInt, "SaveLoadAsJpeg")
     w.setPosition(0,0)
     w2.setPosition(wSize._1, 0)
     w3.setPosition(0, wSize._2+50)
@@ -63,18 +62,21 @@ object TestIO {
     var im = w2.getImage
     IO.saveJPEG(im, "screenshot.jpg", 0.2) 
     im = IO.loadImage("screenshot.jpg")
-    w3.drawImage(im, 0, 0)
+
+    
+    for i <- 0 to 200 do
+      w3.clear()
+      w3.drawImage(im, 0, 0, (im.width*0.5).toInt, (im.height*0.5).toInt, Math.toRadians(i*2))
+      Thread.sleep(100/6)
 
 
     println("Windows should be identical and display 7 flags each.")
-    println("Close all widows and press enter to quit.")
+    println("Press enter to quit.")
     val _ = scala.io.StdIn.readLine()
     IO.delete("screenshot.png")
     IO.delete("screenshot.jpg")
     PixelWindow.exit()
-  }
 
 // for file extension choice see:
 // https://stackoverflow.com/questions/10433214/file-extension-for-a-serialized-object
 
-}

@@ -1,19 +1,17 @@
 package introprog
 
 /** A module with utilities for creating standard GUI dialogs. */
-object Dialog {
+object Dialog:
   import javax.swing.{JFileChooser, JOptionPane, JColorChooser}
 
   Swing.init() // get platform-specific look and feel
 
   /** Show a file choice dialog starting in `startDir` with confirm `button` text. */
-  def file(button: String = "Open", startDir: String = "~"): String = {
+  def file(button: String = "Open", startDir: String = "~"): String =
     val fs = new JFileChooser(new java.io.File(startDir))
-    fs.showDialog(null, button) match {
+    fs.showDialog(null, button) match
       case JFileChooser.APPROVE_OPTION => Option(fs.getSelectedFile.toString).getOrElse("")
       case _ => ""
-    }
-  }
 
   /** Show a dialog with a `message` text. */
   def show(message: String): Unit = JOptionPane.showMessageDialog(null, message)
@@ -45,4 +43,3 @@ object Dialog {
     default: java.awt.Color = java.awt.Color.red
   ): java.awt.Color =
     Option(JColorChooser.showDialog(null, message, default)).getOrElse(default)
-}
