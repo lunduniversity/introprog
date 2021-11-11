@@ -126,7 +126,6 @@ trait Plan {
     | nyckel-värde-tabell, Map, mutable.Map,
     | hash code, java.util.HashMap, java.util.HashSet,
     | persistens, serialisering, textfiler, Source.fromFile, java.nio.file,
-    | repetition inför kontrollskrivning,
     """.stripTrim),
 
    Module("Arv, komposition", 
