@@ -8,23 +8,26 @@
 
 \begin{Slide}{Repetition: Typparametrar och generiska strukturer}
 \begin{itemize}\SlideFontSmall
-\item Med hjälp av \Emph{typparametrar} \Eng{type parameters} kan man skapa \Emph{generiska strukturer} \Eng{generic structures}.
-\item Typparametrar skriv inom hakparenteser, exempelvis: \code{ [T, U] }
-\item Generiska strutkurer fungerar för \emph{olika} typer, okända vid \Alert{deklaration}. 
+\item Med hjälp av \Emph{typparametrar} \Eng{type parameters} kan du skapa \Emph{generiska strukturer} \Eng{generic structures}.
+\item Typparametrar skrivs inom hakparenteser, exempelvis: \code{ [T, U] }
+\item Generiska strukturer fungerar för \emph{olika} typer, \Alert{okända} vid \Emph{deklaration}. 
 \begin{Code}
 case class Pair[A, B](a: A, b: B):  // [] gör att A, B är obundna (fria)
   def swap: Pair[B, A] = Pair(b, a) // A och B bundna då swap saknar []
 \end{Code}
-\item Kompilatorns säkerställer korrekt \Alert{användning} under kompilering.
-\item På användningsplatsen (vid anrop eller instansiering) binds typparametrar med hjälp av typsystemets härledningsregler. 
+\pause
+\item Kompilatorn säkerställer \Alert{korrekt} \Emph{användning} redan vid \emph{kompilering}.
+\item På användningsplatsen i koden (vid anrop eller instansiering) \Emph{binds} typparametrar till ''verkliga'' typer enligt typsystemets regler. 
 \begin{REPL}
-scala> Pair("hej", 42)
-val res0: Pair[String, Int] = Pair(hej,42)
+scala> val p = Pair("hej", 42)
+val p: Pair[String, Int] = Pair(hej,42)
 
-scala> res0.swap
-val res1: Pair[Int, String] = Pair(42,hej)
+scala> p.swap
+val res0: Pair[Int, String] = Pair(42,hej)
 \end{REPL}
-\item Skriver du inte typerna inom \code{[]} så försöker kompilatorn \Emph{härleda} dem.
+\pause
+\item Skriver du inte ut typerna försöker kompilatorn \Emph{härleda} \Eng{infer} dem.
+\item Klassen \code{Pair} kallas även \Emph{typkonstruktor} \Eng{type constructor} då den ''verkliga'' typen skapas först vid användning \code{Pair[String, Int]}.
 \end{itemize}
 \end{Slide}
 
@@ -128,16 +131,67 @@ val res0: Double = 99.0
 
 \begin{Slide}{Vad är varians?}
 \begin{center}
-Är en kattbur också en djurbur?
+\textbf{Är en kattbur också en djurbur??}
 
 \includegraphics[width=0.75\textwidth]{../img/pet-carrier.jpg}  
 
-Om vi tillåter \Emph{varians} så kan vi göra generiska typer mer flexibla.
+Om vi tillåter \Emph{varians} så blir generiska strukturer mer \Alert{flexibla}.
 \end{center}
 \end{Slide}
 
-\begin{Slide}{Varians}
-  \TODO Varians \\ Fördjupa dig om varians här: \url{https://docs.scala-lang.org/scala3/book/types-variance.html}
+\begin{Slide}{Varför behövs varians?}\SlideFontSmall
+\begin{Code}
+trait Djur
+case class Katt() extends Djur
+case class Hund() extends Djur
+
+case class Bur[A](a: A)
+\end{Code}
+\pause
+Nedan fungerar inte! Buren ovan är \Emph{invariant} (oflexibel i sin typparameter).
+\begin{REPL}
+scala> val djurbur: Bur[Djur] = Bur[Katt](Katt())
+-- Error:
+1 |val djurbur: Bur[Djur] = Bur[Katt](Katt())
+  |                   ^^^^^^^^^^^^^^^^^
+  |                   Found:    Bur[Katt]
+  |                   Required: Bur[Djur]
+\end{REPL}
+\pause
+Varför fungerar detta??
+\begin{REPL}
+scala> val djur: Vector[Djur] = Vector[Katt](Katt())
+val djur: Vector[Djur] = Vector(Katt())
+\end{REPL}
+\pause \code{Vector} är deklarerad som kovariant och därmed mer flexibel!
+\end{Slide}
+
+
+\begin{Slide}{Kovarians \Eng{covariance}}
+\begin{itemize}\SlideFontSmall
+\item För en \Emph{kovariant} typkonstruktor \code{F} gäller att: 
+\item[] \textbf{om} \code{ T <: U } \textbf{så} \code{ F[T] <: F[U] }~(subtypsflexibel ''på samma håll'')
+\item I Scala skapar du en kovariant typkonstruktor med \code{+} före typparametern:
+\begin{Code}
+trait Djur
+case class Katt() extends Djur
+case class Hund() extends Djur
+
+case class Bur[+A](a: A)  // kovariant tack vare + före A
+\end{Code}
+\pause
+\item Nu funkar det \code{:)}
+\begin{REPL}
+scala> val djurbur: Bur[Djur] = Bur[Katt](Katt())
+val djurbur: Bur[Djur] = Bur(Katt())
+\end{REPL}
+\item En kattbur är nu en \Alert{subtyp} till djurbur!
+\pause
+\item \Emph{Oföränderliga} samlingar görs ofta kovarianta, t.ex Vector, Option.
+\item Enumerationer med \code{enum} görs ofta kovarianta:
+\item[] \code|enum Bur[+T] { case Bebodd(x: T); case Tom }|
+\end{itemize}
+
 \end{Slide}
 
 
@@ -149,15 +203,73 @@ Om vi tillåter \Emph{varians} så kan vi göra generiska typer mer flexibla.
 
 \begin{Slide}{Kontravarians}
 \begin{center}
-Är en djurveterinär också en kattveterinär?
+En djurveterinär är en kattveterinär!?
 
 \includegraphics[width=0.75\textwidth]{../img/cat-vet.jpg}  
 
-Ibland vill vi ha relationen på andra hållet.
+Ibland vill vi ha variansen på andra hållet.
 \end{center}
 \end{Slide}
 
+\begin{Slide}{Kontravarians \Eng{contravariance}}
+\begin{itemize}\SlideFontSmall
+\item För en \Emph{kontravariant} typkonstruktor \code{F} gäller att: 
+\item[] \textbf{om} \code{ T <: U } \textbf{så} \code{ F[U] <: F[F] }~(subtypsflexibel ''på fel håll'')
+\item I Scala skapar du en kovariant typkonstruktor med \code{-} före typparametern:
+\begin{Code}
+trait Djur 
+case class Katt() extends Djur
+case class Hund() extends Djur
 
+class Veterinär[-A]:
+  def behandla(x: A) = println(s"frisk: " + x)  // kontravariant med -
+\end{Code}
+\pause
+\item Nu funkar det ''baklänges'' (men inte på andra hållet):
+\begin{REPLsmall}
+scala> val kattveterinär: Veterinär[Katt] = Veterinär[Djur]()
+val kattveterinär: Veterinär[Katt] = Veterinär@77b6d94c
+
+scala> val kattveterinär: Veterinär[Djur] = Veterinär[Katt]()
+-- Error:
+1 |val kattveterinär: Veterinär[Djur] = Veterinär[Katt]()
+  |                                     ^^^^^^^^^^^^^^^^^
+  |                                     Found:    Veterinär[Katt]
+  |                                     Required: Veterinär[Djur]
+\end{REPLsmall}
+\end{itemize}
+
+\end{Slide}
+
+\begin{Slide}{Variansproblem}
+\begin{itemize}\SlideFontSmall
+\item En typparameter kan \Emph{inte} vara kovariant om den sedan används som typ parametertyp för metoder (så kallad \emph{kontravariant position}):
+\begin{Code}
+trait Djur
+case class Katt() extends Djur
+case class Hund() extends Djur
+\end{Code}
+\begin{REPLsmall}
+scala> case class Bur[+A](a: A): 
+         def bytTill(x: A): Bur[A] = Bur(x)
+-- Error:
+2 |  def bytTill(x: A): Bur[A] = Bur(x)
+  |          ^^^^
+  |  covariant type A occurs in contravariant position in type A of parameter x
+\end{REPLsmall}
+\item Här måste typen tillåtas variera med hjälp av en \Emph{undre gräns}:
+\begin{Code}
+case class Bur[+A](a: A): 
+  def bytTill[B >: A](x: B): Bur[B] = Bur(x)
+\end{Code}
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{När använda vilken slags varians?}
+\begin{itemize}
+\item 
+\end{itemize}
+\end{Slide}
 
 
 \begin{Slide}{Typjoker \Eng{wildcard type}}\SlideFontSmall
@@ -185,6 +297,12 @@ val res2: Vector[Box[?]] = Vector(Box(42), Box(hej))
 \end{REPLsmall}
 Använd bara typpjoker om det verkligen behövs, eftersom ingen typkontroll alls sker.
 \end{Slide}
+
+
+\begin{Slide}{Mer om varians för den nyfikne}
+Fördjupa dig om varians här:\\\url{https://docs.scala-lang.org/scala3/book/types-variance.html}
+\end{Slide}
+
 
 
 \Subsection{Kontextuella abstraktioner}
