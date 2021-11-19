@@ -4,44 +4,124 @@
 %%%
 
 
-\Subsection{Varians och typgränser}
+\Subsection{Att sätta gränser för typer}
+
+\begin{Slide}{Olika sätt att begränsa typer}
+Det finns i Scala flera olika sätt att att begränsa vilka typer du vill tillåta. En översikt av några möjligheter:
+\begin{itemize}
+  \item Ge \Emph{övre} gräns för typparametrar \Eng{lower bound}
+  \item Ge \Emph{undre} gräns för typparametrar \Eng{upper bound}
+  \item Ge en \Emph{kontextgräns} för typparametrar i relation till givna typer \Eng{context bound}
+  \item Begränsa möjlig inmixning vid deklaration av en trait med en \Emph{egentyp} \Eng{self type} 
+\end{itemize}
+\end{Slide}
 
 \begin{Slide}{Övre och undre typgränser}
-Med typoperatorer går det att begränsa vilka typer som kan bindas till en typparametrar:
+Med typoperatorerna \code{<:} och \code{>:} går det att begränsa vilka typer som kan bindas till en typparameter i generiska strukturer. Antag att \code{T} är en typparameter och \code{U} och \code{L} är konkreta typer. 
 \begin{itemize}
-  \item \code{U} är en övre gräns \Eng{upper bound} för \code{T} skrivs \code{T <: U} 
-  \item \code{L} är en undre gräns \Eng{lower bound} för \code{T} skrivs \code{T >: L} 
+  \item med \code{T <: U} blir \code{U} en övre gräns \Eng{upper bound} för \code{T}  
+  \item med \code{T >: L} blir \code{L} en undre gräns \Eng{lower bound} för \code{T}  
+  \item Minnesregel för typgränser: kolon på slutet.
 \end{itemize} 
-och undre gräns \code{>:} (kolon på slutet) går det att begränsa vilka typer som kan bindas till typparametrars värde:
+\pause
+Exempel: 
+\begin{Code}
+  trait Grönsak { def vikt: Int }
+
+  def f[T <: Grönsak](x: T): Int = x.vikt
+\end{Code}
+
+Notera att kompilatorn använder den övre typgränsen för att konstatera att metoden \code{vikt} är tillgänglig via den generiska parametern \code{x}.
+
 \end{Slide}
 
 \begin{Slide}{Exempel på övre och undre typgränser}
 
 \begin{Code}
-trait Djur
+class Djur
 class Katt extends Djur 
 class Hund extends Djur
-class Polishund extends Hund
+class Robothund extends Hund
 
-def testUpper[T <: Hund](x: T) = println(x)
-def testLower[T >: Hund](x: T) = println(x)
+def testUpperBound[T <: Hund](x: T) = println(x)
+def testLowerBound[T >: Hund](x: T) = println(x)
 \end{Code}
 
 \begin{REPL}
-scala> testUpper[Katt](Katt())
+scala> testUpperBound[Katt](Katt())
 -- Error:
-1 |testUpper[Katt](Katt())
+1 |testUpperBound[Katt](Katt())
   |          ^
   |          Type argument Katt does not conform to upper bound Hund
 
-scala> testLower[Polishund](Polishund())
+scala> testLowerBound[Robothund](Robothund())
 -- Error:
-1 |testLower[Polishund](Polishund())
+1 |testLowerBound[Robothund](Robothund())
   |          ^
-  |          Type argument Polishund does not conform to lower bound Hund
+  |          Type argument Robothund does not conform to lower bound Hund
 \end{REPL}
 
 \end{Slide}
+
+\begin{Slide}{Typbegränsning med egentyp \Eng{self type}}\SlideFontSmall
+\begin{itemize}\SlideFontTiny
+  \item Det går att få ett explicit, valfritt namn, t.ex. \code{self},  på ''min egen typ'' genom att skriva~\code{ self => }~i kroppen på en trait eller klass. 
+  \item Detta kallas \Emph{egentyp} \Eng{self type}. 
+  \item Användbart vid inmixning: du kan begränsa egentypen med en typannotering.
+\begin{Code}
+trait Grönsak { def vikt: Int }
+trait KanSkalas:
+  self: Grönsak =>
+  def viktEfterSkalning = 0.99 * vikt 
+\end{Code}
+\begin{REPLsmall}
+scala> val g = new Grönsak with KanSkalas { val vikt = 100 }
+val g: Grönsak & KanSkalas = anon1@70a91d72
+                                                                                    
+scala> g.viktEfterSkalning
+val res0: Double = 99.0
+\end{REPLsmall}
+\item Även om \code{KanSkalas} \Alert{inte} gör \code{extends} så är \Emph{ändå} \code{vikt} tillgänglig i dess kropp, eftersom vi kräver att den egna typen är en \code{Grönsak}.
+\item Kan användas för att göra s.k. \Emph{beroendeinjektion} \Eng{dependency injection}.\\\url{https://en.wikipedia.org/wiki/Dependency_injection}
+\end{itemize}
+
+\end{Slide}
+
+
+
+\Subsection{Flexibla generiska typer: varians}
+
+\begin{Slide}{Varians}
+  \TODO Varians \\ \url{https://docs.scala-lang.org/scala3/book/types-variance.html}
+\end{Slide}
+
+\begin{Slide}{Typjoker \Eng{wildcard type}}\SlideFontSmall
+Generiska typer är normalt \Emph{invarianta} och kan därmed inte utan speciella åtgärder variera mellan mer eller mindre specifika typer. %(mer om varians senare).
+\begin{REPLsmall}
+scala> case class Box[A](a: A)
+
+scala> var xs = Vector.empty[Box[Any]]
+
+scala> def add[A](b: Box[A]): Unit = xs = xs :+ b
+-- Error:
+1 |def add[A](b: Box[A]): Unit = xs = xs :+ b
+  |                                         ^
+  |                                         Found:    (b : Box[A])
+  |                                         Required: Box[Any]
+\end{REPLsmall}  
+Till vår räddning: En \Emph{typjoker} \Eng{wildcard type} anges med ett frågetecken och betecknar en helt okänd typ, vars varians ej kontrolleras av kompilatorn.
+\begin{REPLsmall}
+scala> var xs = Vector.empty[Box[?]]
+
+scala> def add[A](b: Box[A]): Unit = xs = xs :+ b
+
+scala> add(Box(42)); add(Box("hej")); xs
+val res2: Vector[Box[?]] = Vector(Box(42), Box(hej))
+\end{REPLsmall}
+Använd bara typpjoker om det verkligen behövs, eftersom ingen typkontroll alls sker.
+\end{Slide}
+
+
 
 \Subsection{Kontextuella abstraktioner}
 
@@ -117,37 +197,6 @@ res0: scala.collection.immutable.Vector[Gurka] =
 \href{https://stackoverflow.com/questions/469161/how-do-you-define-a-good-or-bad-api}{https://stackoverflow.com/questions/469161/how-do-you-define-a-good-or-bad-api}  
 \end{Slide}
 
-\Subsection{Fördjupning: Varians}
-
-\begin{Slide}{Varians}
-  \TODO Varians \\ \url{https://docs.scala-lang.org/scala3/book/types-variance.html}
-\end{Slide}
-
-\begin{Slide}{Typjoker \Eng{wildcard type}}\SlideFontSmall
-Generiska typer är normalt \Emph{invarianta} och kan därmed inte utan speciella åtgärder variera mellan mer eller mindre specifika typer. %(mer om varians senare).
-\begin{REPLsmall}
-scala> case class Box[A](a: A)
-
-scala> var xs = Vector.empty[Box[Any]]
-
-scala> def add[A](b: Box[A]): Unit = xs = xs :+ b
--- Error:
-1 |def add[A](b: Box[A]): Unit = xs = xs :+ b
-  |                                         ^
-  |                                         Found:    (b : Box[A])
-  |                                         Required: Box[Any]
-\end{REPLsmall}  
-Till vår räddning: En \Emph{typjoker} \Eng{wildcard type} anges med ett frågetecken och betecknar en helt okänd typ, vars varians ej kontrolleras av kompilatorn.
-\begin{REPLsmall}
-scala> var xs = Vector.empty[Box[?]]
-
-scala> def add[A](b: Box[A]): Unit = xs = xs :+ b
-
-scala> add(Box(42)); add(Box("hej")); xs
-val res2: Vector[Box[?]] = Vector(Box(42), Box(hej))
-\end{REPLsmall}
-Använd bara typpjoker om det verkligen behövs, eftersom ingen typkontroll alls sker.
-\end{Slide}
 
 
 
