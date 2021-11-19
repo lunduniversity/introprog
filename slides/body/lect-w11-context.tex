@@ -12,7 +12,7 @@
 \item Typparametrar skrivs inom hakparenteser, exempelvis: \code{ [T, U] }
 \item Generiska strukturer fungerar för \emph{olika} typer, \Alert{okända} vid \Emph{deklaration}. 
 \begin{Code}
-case class Pair[A, B](a: A, b: B):  // [] gör att A, B är obundna (fria)
+case class Pair[A, B](a: A, b: B):  // A coh B är obundna (fria) inom []
   def swap: Pair[B, A] = Pair(b, a) // A och B bundna då swap saknar []
 \end{Code}
 \pause
@@ -171,7 +171,7 @@ val djur: Vector[Djur] = Vector(Katt())
 \begin{itemize}\SlideFontSmall
 \item För en \Emph{kovariant} typkonstruktor \code{F} gäller att: 
 \item[] \textbf{om} \code{ T <: U } \textbf{så} \code{ F[T] <: F[U] }~(subtypsflexibel ''på samma håll'')
-\item I Scala skapar du en kovariant typkonstruktor med \code{+} före typparametern:
+\item I Scala kan du få en kovariant typkonstruktor med \code{+} före typparametern:
 \begin{Code}
 trait Djur
 case class Katt() extends Djur
@@ -188,8 +188,8 @@ val djurbur: Bur[Djur] = Bur(Katt())
 \item En kattbur är nu en \Alert{subtyp} till djurbur!
 \pause
 \item \Emph{Oföränderliga} samlingar görs ofta kovarianta, t.ex Vector, Option.
-\item Enumerationer med \code{enum} görs ofta kovarianta:
-\item[] \code|enum Bur[+T] { case Bebodd(x: T); case Tom }|
+\item Enumerationer med blir mer flexibla om du gör dem kovarianta:
+\item[] \code|enum Toalett[+T] { case Upptagen(x: T); case Ledig }|
 \end{itemize}
 
 \end{Slide}
@@ -214,8 +214,8 @@ Ibland vill vi ha variansen på andra hållet.
 \begin{Slide}{Kontravarians \Eng{contravariance}}
 \begin{itemize}\SlideFontSmall
 \item För en \Emph{kontravariant} typkonstruktor \code{F} gäller att: 
-\item[] \textbf{om} \code{ T <: U } \textbf{så} \code{ F[U] <: F[F] }~(subtypsflexibel ''på fel håll'')
-\item I Scala skapar du en kovariant typkonstruktor med \code{-} före typparametern:
+\item[] \textbf{om} \code{ T <: U } \textbf{så} \code{ F[U] <: F[T] }~(subtypsflexibel ''på fel håll'')
+\item Du skapar en kontravariant typkonstruktor med \code{-} före typparametern:
 \begin{Code}
 trait Djur 
 case class Katt() extends Djur
@@ -241,9 +241,9 @@ scala> val kattveterinär: Veterinär[Djur] = Veterinär[Katt]()
 
 \end{Slide}
 
-\begin{Slide}{Variansproblem}
+\begin{Slide}{Variansproblem -- tack kompilatorn!}
 \begin{itemize}\SlideFontSmall
-\item En typparameter kan \Emph{inte} vara kovariant om den sedan används som typ parametertyp för metoder (så kallad \emph{kontravariant position}):
+\item En typkonstruktor kan \Alert{inte} vara kovariant om typparametern används som parametertyp för metoder (så kallad \emph{kontravariant position}):
 \begin{Code}
 trait Djur
 case class Katt() extends Djur
@@ -257,45 +257,60 @@ scala> case class Bur[+A](a: A):
   |          ^^^^
   |  covariant type A occurs in contravariant position in type A of parameter x
 \end{REPLsmall}
-\item Här måste typen tillåtas variera med hjälp av en \Emph{undre gräns}:
+\item Här måste typen tillåtas variera ''uppåt'' med hjälp av en \Emph{undre gräns}:
 \begin{Code}
 case class Bur[+A](a: A): 
   def bytTill[B >: A](x: B): Bur[B] = Bur(x)
 \end{Code}
+\begin{REPLsmall}
+scala> Bur[Katt](Katt()).bytTill(Hund())
+val res1: Bur[Djur] = Bur(Hund())
+\end{REPLsmall}
 \end{itemize}
 \end{Slide}
 
 \begin{Slide}{När använda vilken slags varians?}
-\begin{itemize}
-\item 
+\begin{itemize}\SlideFontSmall
+\item Oföränderliga generiska klasser som har metoder som är \Emph{producenter} av nya oföränderliga generiska typer passar ofta bäst som \Emph{kovarianta}, t.ex. \code{Vector[+T]}, \code{Option[+T]} . 
+\item Typkonstruktorer som har metoder som är \Alert{konsumenter} av generiska värden passar ofta bäst som \Emph{kovarianta}, t.ex. \code{Veterinär[-T]} 
+\item En oföränderlig typkonstruktor med flera parametrar kan vara \Emph{både} kovariant \Emph{och} kontravariant, t.ex. \code{Function1[-A, +B]} \\-- detta är den egentliga typen bakom ''syntaktiska sockret'' \code{A => B}\\
+(ett parametervärde\code{:A} \emph{konsumeras} och ett returtvärde\code{:B} \emph{produceras})
+\item \Alert{Förändringsbara} strukturer måste vara \Emph{invarianta}, annars väntar kaos!\\
+\pause Antag att det finns en \code{Bur} som kan ändras på plats via metoden \code{bytTill} \emph{och samtidigt} vore kovariant (varning för känsliga kodare): 
+\begin{REPLsmall}
+ejscala> val kattBur: Bur[Katt] = Bur(Katt())
+
+ejscala> val djurBur: Bur[Djur] = kattBur   // en kovariant referens till samma Bur
+
+ejscala> djurBur.bytTill(Hund())            // en djurbur kan innehålla hundar
+
+ejscala> val katt: Katt = kattBur.släppUt   // KAOS! en typosäker hundkatt :(
+\end{REPLsmall}
 \end{itemize}
 \end{Slide}
 
 
 \begin{Slide}{Typjoker \Eng{wildcard type}}\SlideFontSmall
-Generiska typer är normalt \Emph{invarianta} och kan därmed inte utan speciella åtgärder variera mellan mer eller mindre specifika typer. %(mer om varians senare).
-\begin{REPLsmall}
-scala> case class Box[A](a: A)
+\Emph{Invarianta} klasser har oflexibel typparameter, vilket begränsar användningen. %(mer om varians senare).
+\begin{REPL}
+scala> class Box[A](val value: A)
 
-scala> var xs = Vector.empty[Box[Any]]
-
-scala> def add[A](b: Box[A]): Unit = xs = xs :+ b
+scala> val b: Box[Any] = Box[Int](42)
 -- Error:
-1 |def add[A](b: Box[A]): Unit = xs = xs :+ b
-  |                                         ^
-  |                                         Found:    (b : Box[A])
-  |                                         Required: Box[Any]
-\end{REPLsmall}  
-Till vår räddning: En \Emph{typjoker} \Eng{wildcard type} anges med ett frågetecken och betecknar en helt okänd typ, vars varians ej kontrolleras av kompilatorn.
-\begin{REPLsmall}
-scala> var xs = Vector.empty[Box[?]]
-
-scala> def add[A](b: Box[A]): Unit = xs = xs :+ b
-
-scala> add(Box(42)); add(Box("hej")); xs
-val res2: Vector[Box[?]] = Vector(Box(42), Box(hej))
-\end{REPLsmall}
-Använd bara typpjoker om det verkligen behövs, eftersom ingen typkontroll alls sker.
+1 |val b: Box[Any] = Box[Int](42)
+  |                  ^^^^^^^^^^^^
+  |                  Found:    Box[Int]
+  |                  Required: Box[Any]
+\end{REPL}  
+Tveksam räddning: En \Emph{typjoker} \Eng{wildcard type} skrivs med ett frågetecken och ger en helt okänd typ  som \Alert{ej kontrolleras av kompilatorn}.
+\begin{REPL}
+scala> var whatever: Box[?] = Box[Int](42)
+var whatever: Box[?] = Box@70d7a49b
+                                                                                    
+scala> whatever = Box("hej")
+whatever: Box[?] = Box@43120a77
+\end{REPL}
+Använd bara typpjoker om det \emph{verkligen} behövs.
 \end{Slide}
 
 
@@ -373,7 +388,7 @@ res0: scala.collection.immutable.Vector[Gurka] =
 \end{Slide}
 
 
-\Subsection{Applikationsprogrammeringsgränssnitt (api)}
+\Subsection{Applikationsprogrammerings-gränssnitt (api)}
 \begin{Slide}{Vad är ett bra api?}
 \TODO Beskriv kvalitetsegenskaper hos ett bra api\\
 \href{https://stackoverflow.com/questions/469161/how-do-you-define-a-good-or-bad-api}{https://stackoverflow.com/questions/469161/how-do-you-define-a-good-or-bad-api}  
