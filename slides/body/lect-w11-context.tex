@@ -4,6 +4,31 @@
 %%%
 
 
+\Subsection{Generiska strukturer}
+
+\begin{Slide}{Repetition: Typparametrar och generiska strukturer}
+\begin{itemize}\SlideFontSmall
+\item Med hjälp av \Emph{typparametrar} \Eng{type parameters} kan man skapa \Emph{generiska strukturer} \Eng{generic structures}.
+\item Typparametrar skriv inom hakparenteser, exempelvis: \code{ [T, U] }
+\item Generiska strutkurer fungerar för \emph{olika} typer, okända vid \Alert{deklaration}. 
+\begin{Code}
+case class Pair[A, B](a: A, b: B):  // [] gör att A, B är obundna (fria)
+  def swap: Pair[B, A] = Pair(b, a) // A och B bundna då swap saknar []
+\end{Code}
+\item Kompilatorns säkerställer korrekt \Alert{användning} under kompilering.
+\item På användningsplatsen (vid anrop eller instansiering) binds typparametrar med hjälp av typsystemets härledningsregler. 
+\begin{REPL}
+scala> Pair("hej", 42)
+val res0: Pair[String, Int] = Pair(hej,42)
+
+scala> res0.swap
+val res1: Pair[Int, String] = Pair(42,hej)
+\end{REPL}
+\item Skriver du inte typerna inom \code{[]} så försöker kompilatorn \Emph{härleda} dem.
+\end{itemize}
+\end{Slide}
+
+
 \Subsection{Att sätta gränser för typer}
 
 \begin{Slide}{Olika sätt att begränsa typer}
@@ -11,27 +36,31 @@ Det finns i Scala flera olika sätt att att begränsa vilka typer du vill tillå
 \begin{itemize}
   \item Ge \Emph{övre} gräns för typparametrar \Eng{lower bound}
   \item Ge \Emph{undre} gräns för typparametrar \Eng{upper bound}
-  \item Ge en \Emph{kontextgräns} för typparametrar i relation till givna typer \Eng{context bound}
-  \item Begränsa möjlig inmixning vid deklaration av en trait med en \Emph{egentyp} \Eng{self type} 
+  \item Ge en \Emph{kontextgräns} för typparametrar i relation till implicit givna typer \Eng{context bound}
+  \item Begränsa möjlig inmixning vid deklaration av en trait med en explicit \Emph{egentyp} \Eng{self type} 
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{Övre och undre typgränser}
-Med typoperatorerna \code{<:} och \code{>:} går det att begränsa vilka typer som kan bindas till en typparameter i generiska strukturer. Antag att \code{T} är en typparameter och \code{U} och \code{L} är konkreta typer. 
+\begin{Slide}{Övre och undre typgränser}\SlideFontSmall
+Med typoperatorerna \code{<:} och \code{>:} går det att begränsa vilka typer som kan bindas till en typparameter i en generiska struktur. 
+
+\vspace{0.5em}Antag att \code{T} är en obunden typparameter medan \code{U} och \code{L} är bundna. 
 \begin{itemize}
-  \item med \code{T <: U} blir \code{U} en övre gräns \Eng{upper bound} för \code{T}  
-  \item med \code{T >: L} blir \code{L} en undre gräns \Eng{lower bound} för \code{T}  
+  \item med \code{T <: U} blir \code{U} en övre gräns \Eng{upper bound} för \code{T}\\(en ''högsta'' möjliga typ i  typhierarkin) 
+  \item med \code{T >: L} blir \code{L} en undre gräns \Eng{lower bound} för \code{T}\\(en ''lägsta'' möjliga i  typhierarkin) 
   \item Minnesregel för typgränser: kolon på slutet.
+  \item Alla typer \code{T} är implicit \code{T >: Nothing <: Any}
 \end{itemize} 
 \pause
-Exempel: 
+
+\vspace{0.5em}Exempel: 
 \begin{Code}
   trait Grönsak { def vikt: Int }
 
   def f[T <: Grönsak](x: T): Int = x.vikt
 \end{Code}
 
-Notera att kompilatorn använder den övre typgränsen för att konstatera att metoden \code{vikt} är tillgänglig via den generiska parametern \code{x}.
+Kompilatorn använder den övre typgränsen för att konstatera att metoden \code{vikt} är tillgänglig via den generiska parametern \code{x}.
 
 \end{Slide}
 
@@ -98,21 +127,38 @@ val res0: Double = 99.0
 \fi 
 
 \begin{Slide}{Vad är varians?}
-
 \begin{center}
 Är en kattbur också en djurbur?
 
 \includegraphics[width=0.75\textwidth]{../img/pet-carrier.jpg}  
 
-Om vi tillåter \Emph{varians} kan vi göra generiska typer mer flexibla.
-
+Om vi tillåter \Emph{varians} så kan vi göra generiska typer mer flexibla.
 \end{center}
-
 \end{Slide}
 
 \begin{Slide}{Varians}
-  \TODO Varians \\ \url{https://docs.scala-lang.org/scala3/book/types-variance.html}
+  \TODO Varians \\ Fördjupa dig om varians här: \url{https://docs.scala-lang.org/scala3/book/types-variance.html}
 \end{Slide}
+
+
+\ifkompendium\else
+\begin{SlideSimple}{Kontravarians}
+\hspace*{-1cm}\includegraphics[width=1.2\textwidth]{../img/cat-vet.jpg}  
+\end{SlideSimple}
+\fi 
+
+\begin{Slide}{Kontravarians}
+\begin{center}
+Är en djurveterinär också en kattveterinär?
+
+\includegraphics[width=0.75\textwidth]{../img/cat-vet.jpg}  
+
+Ibland vill vi ha relationen på andra hållet.
+\end{center}
+\end{Slide}
+
+
+
 
 \begin{Slide}{Typjoker \Eng{wildcard type}}\SlideFontSmall
 Generiska typer är normalt \Emph{invarianta} och kan därmed inte utan speciella åtgärder variera mellan mer eller mindre specifika typer. %(mer om varians senare).
@@ -139,7 +185,6 @@ val res2: Vector[Box[?]] = Vector(Box(42), Box(hej))
 \end{REPLsmall}
 Använd bara typpjoker om det verkligen behövs, eftersom ingen typkontroll alls sker.
 \end{Slide}
-
 
 
 \Subsection{Kontextuella abstraktioner}
