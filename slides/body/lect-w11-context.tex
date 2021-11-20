@@ -322,12 +322,160 @@ Fördjupa dig om varians här:\\\url{https://docs.scala-lang.org/scala3/book/typ
 
 \Subsection{Kontextuella abstraktioner}
 
- 
-\begin{Slide}{Kontextuella abstraktioner: \texttt{given}, \texttt{using}}\SlideFontSmall
-\begin{itemize}\SlideFontTiny
-\item \TODO \code{given} \code{using}
+
+\begin{Slide}{Sammanhanget är avgörande när du kodar!}
+\begin{itemize}\SlideFontSmall
+  \item \Emph{Kontexten}, alltså sammanhanget, styr vilka namn som syns var.
+  \pause
+  \item \textbf{Objektorientering} skapar sammanhang med:
+  \begin{itemize}\SlideFontTiny
+    \item \Emph{Namnrymder} (moduler)
+    \item \Emph{Tillstånd}  (instanser, attribut)
+    \item \Emph{Subtypspolymorfism} (arv, dynamisk bindning)
+  \end{itemize} 
+  \pause
+  \item \textbf{Funktionsprogrammering} skapar sammanhang med:
+  \begin{itemize}\SlideFontTiny
+    \item \Emph{Parametrar} (till ''äkta'' funktioner)
+    \item \Emph{Funktionsvärden} (högre ordningens funktioner)
+    \item \Emph{Parametrisk polymorfism} (generiska strukturer, typparametrar)
+  \end{itemize}
+  \pause
+  \item \textbf{Kombinationen} av OO och FP är \Emph{extra} kraftfull och flexibel!
+  \pause
+  \item Men det finns \Alert{svårigheter}:
+  \begin{itemize}\SlideFontTiny
+    \item OO: svårt att resonera om ändrade tillstånd och vad som egentligen ärvs
+    \item FP: kan bli många parametrar som måste upprepas vid nästlade anrop
+  \end{itemize} 
+  \pause
+  \item Till vår räddning, fler coola FP-grejer: 
+  \begin{itemize}\SlideFontTiny
+    \item \Emph{Kontextuella abstraktioner}: möjliggör (på annat ställe) \Emph{givna} värden som finns \emph{implicit} (alltså underförstått, utan att vi behöver explicit skriva ut dem).
+    \item \Emph{Ad hoc polymorfism}: möjliggör olika implementationer beroende på typ, \emph{statiskt} härledda och utan att det behöver finnas en arvsrelation  
+  \end{itemize} 
 \end{itemize}
 \end{Slide}
+
+\begin{Slide}{Repetition: default-argument}\SlideFontSmall
+\begin{itemize}\SlideFontSmall
+\item Vi har tidigare sett att kompilatorn, med \Emph{default-argument}, kan \Alert{fylla i} värden, som vi inte måste skriva, vid funktionsanrop:
+\begin{REPLnonum}
+scala> def f(x: Int, y: Int = 42) = x + y
+def f(x: Int, y: Int): Int
+
+scala> f(1,2)        // explicit givet y-värde
+val res0: Int = 3
+
+scala> f(1)          // vi kan också skippa y-värdet  
+val res1: Int = 43   // då används default-argumentet
+\end{REPLnonum}
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Repetition: uppdelade parameterlistor}\SlideFontSmall
+\begin{itemize}\SlideFontSmall
+\item Vi har tidigare sett uppdelade parameterlistor, som möjliggör stegvis applicering (s.k. Curry-funktioner):
+\begin{REPLsmall}
+scala> def f(x: Int)(y: Int = 42) = x + y
+def f(x: Int)(y: Int): Int
+
+scala> scala> val g = f(1)  // en ny funktion utan default-arg
+val g: Int => Int = Lambda1352/0x08406d0840@dbc7e0a
+
+scala> f(1)()   // y-värdet fylls i av kompilatorn
+val res4: Int = 43
+\end{REPLsmall}
+\pause
+\item  Kan vi ta detta ett steg till och \Alert{frikoppla} deklarationen av funktionen \Emph{från} det givna värdet, och ge detta på annan plats baserat på typen?
+\pause 
+\item I Scala 3 görs detta med nyckelorden \code{given} resp. \code{using}\\(i Scala 2 (över)användes nyckelordet \code{implicit})
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Kontextuella abstraktioner med \texttt{given}, \texttt{using}}\SlideFontSmall
+\Emph{Kontextuell abstraktion} \Eng{contextual abstraction} i Scala:
+\begin{itemize}\SlideFontSmall
+\item Nyckelordet \code{given} anger ett ''kanonisk'' värde av en viss typ.
+\item Värdet \Alert{framkallas} vid anrop med \code{using}-parameter av given typ.
+\end{itemize}
+\begin{Code}
+object MinKontext:
+  given String = "tagen för givet"
+  def framkalla(using s: String) = s
+\end{Code}
+\vspace{-0.9em}
+\begin{REPLsmall}
+scala> MinKontext.framkalla
+val res0: String = ta denna
+
+scala> MinKontext.framkalla(using "explicit")
+val res1: String = explicit
+
+scala> given String = "ta denna för givet i stället"
+lazy val given_String: String
+
+scala> MinKontext.framkalla
+val res2: String = ta denna för givet i stället
+
+scala> import MinKontext.given String    // speciell import-syntax för givna värden
+
+scala> MinKontext.framkalla
+val res3: String = tagen för givet
+\end{REPLsmall}
+\end{Slide}
+
+\begin{Slide}{Framkalla värde med \texttt{summon}}\SlideFontSmall
+I standardbiblioteket för Scala 3 finns en generisk variant av metoden \code{framkalla} i föregående exempel, som är definierad så här:
+\begin{Code}
+def summon[T](using x: T) = x 
+\end{Code}
+Funktionen \code{summon} kan användas för att testa vilket värde kompilatorn framkallar i en viss kontext:
+\begin{Code}
+object MinKontext:
+  given String = "tagen för givet"
+\end{Code}
+\vspace{-0.9em}
+\begin{REPLsmall}
+scala> summon[String]
+-- Error:
+1 |summon[String]
+  |              ^
+  | no implicit argument of type String was found for parameter x of 
+  | method summon in object Predef. The following import might fix the problem:
+  | import MinKontext.given_String
+
+scala> import MinKontext.given    // importerar alla givna värden i MinKontext
+
+scala> summon[String]
+val res0: String = tagen för givet
+\end{REPLsmall}
+\end{Slide}
+
+\begin{Slide}{Prioritetsordning vid framkallning av givna värden}\SlideFontSmall
+\begin{itemize}\SlideFontSmall
+\item Det får inte vara tvetydigt vilket implicit värde som ska väljas.
+\item Därför letar kompilatorn efter ett givet värde enligt denna prioritering:
+\begin{enumerate}\SlideFontTiny
+\item \code{given} och \code{import given ...} i aktuell namnrymd \Eng{current scope} 
+\item Explicita \code{using}-argument
+\item Implicit framkallade \code{using}-argument 
+\item \code{given}-värden i \Emph{kompanjonsobjekt} för den använda typen.
+\item ... (fler knepiga regler som vi inte går in på här)
+\end{enumerate}
+\item Om flera givna värden kan framkallas för flera typer som ingår i en gemensam arvhierarki så väljer kompilatorn det givna värdet som är av den \emph{mest specifika} typen.
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Ad hoc polymorfism, ''typklasser''}\SlideFontSmall
+\begin{itemize}\SlideFontSmall
+\item Kan göras i Scala genom att kombinera parametrisk polymorfism med kontextuella abstraktioner.
+\item \TODO \code{Ordning[T]} 
+\end{itemize}
+\end{Slide}
+
 
 \begin{Slide}{Kontextgränser}
 \TODO \code{T: Ordering}
