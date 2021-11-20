@@ -221,8 +221,8 @@ trait Djur
 case class Katt() extends Djur
 case class Hund() extends Djur
 
-class Veterinär[-A]:
-  def behandla(x: A) = println(s"frisk: " + x)  // kontravariant med -
+class Veterinär[-A]:                            // kontravariant med -
+  def behandla(x: A) = println(s"frisk: " + x)  
 \end{Code}
 \pause
 \item Nu funkar det ''baklänges'' (men inte på andra hållet):
@@ -280,11 +280,11 @@ val res1: Bur[Djur] = Bur(Hund())
 \begin{REPLsmall}
 ejscala> val kattBur: Bur[Katt] = Bur(Katt())
 
-ejscala> val djurBur: Bur[Djur] = kattBur   // en kovariant referens till samma Bur
+ejscala> val djurBur: Bur[Djur] = kattBur  // en kovariant referens till samma Bur
 
-ejscala> djurBur.bytTill(Hund())            // en djurbur kan innehålla hundar
+ejscala> djurBur.bytTill(Hund())           // en djurbur kan innehålla hundar
 
-ejscala> val katt: Katt = kattBur.släppUt   // KAOS! en typosäker hundkatt :(
+ejscala> val katt: Katt = kattBur.släppUt  // KAOS! typosäkert hundkatt-monster :(
 \end{REPLsmall}
 \end{itemize}
 \end{Slide}
@@ -553,12 +553,24 @@ val res1: Option[java.awt.Color] = Some(java.awt.Color[r=120,g=10,b=0])
 
 
 
-\begin{Slide}{Ännu smidigare användning med extensionsmetod}
+\begin{Slide}{Ännu smidigare användning med extensionsmetod}\SlideFontSmall
+Kombinera kontextgräns med extensionsmetod och få smidig punktnotation.
 \begin{Code}
-extension [T](s: String)(using p: Parser[T]) def parse = p.fromString(s)
+extension [T: Parser](s: String) 
+  def parseOrElse(default: T): T = 
+    summon[Parser[T]].fromString(s).getOrElse(default)
  
 \end{Code}
-  
+\begin{REPL}
+scala> "12".parseOrElse(42)
+val res2: Int = 12
+
+scala> "gurka".parseOrElse(42)
+val res3: Int = 42
+
+scala> "Color(100,100,0)".parseOrElse(java.awt.Color.black)
+val res4: java.awt.Color = java.awt.Color[r=100,g=100,b=0]
+\end{REPL}
 \end{Slide}
 
 
