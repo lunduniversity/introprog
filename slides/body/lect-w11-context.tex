@@ -399,7 +399,7 @@ val res4: Int = 43
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{Givna värden som alternativ till default-argument}
+\begin{Slide}{Givna värden som alternativ till default-argument}\SlideFontSmall
 Exmpel på användning av \code{using} och \code{given}:
 \begin{REPL}
 scala> def f(x: Int)(using y: Int) = x + y
@@ -420,7 +420,7 @@ lazy val given_Int: Int
 scala> f(1)       // kompilatorn kan nu framkalla givet värde av typen Int
 val res0: Int = 43
 \end{REPL}
-Det går också att ge det givna värdet ett namn:\\
+Det går också att ge det givna värdet ett namn vid behov, men ofta onödigt:\\
 \code{given blabla: Int = 42}
 \end{Slide}
 
@@ -428,13 +428,13 @@ Det går också att ge det givna värdet ett namn:\\
 \begin{Slide}{Kontextuella abstraktioner med \texttt{given}, \texttt{using}}\SlideFontSmall
 \Emph{Kontextuell abstraktion} \Eng{contextual abstraction} i Scala:
 \begin{itemize}\SlideFontSmall
-\item Nyckelordet \code{given} anger ett ''kanonisk'' värde av en viss typ.
-\item Värdet \Alert{framkallas} vid anrop med \code{using}-parameter av given typ.
+\item Nyckelordet \code{given} anger ett \Emph{givet värde} av en viss typ.
+\item Värdet \Alert{framkallas} vid anrop med \Emph{kontextparameter} av given typ.
 \end{itemize}
 \begin{Code}
 object MinKontext:
   given String = "tagen för givet"
-  def framkalla(using s: String) = s
+  def framkalla(using s: String) = s  //kontextparametrar märks med using
 \end{Code}
 \vspace{-0.9em}
 \begin{REPLsmall}
@@ -487,16 +487,16 @@ val res0: String = tagen för givet
 \begin{Slide}{Prioritetsordning vid framkallning av givna värden}\SlideFontSmall
 \begin{itemize}\SlideFontSmall
 \item Det får inte vara tvetydigt vilket implicit värde som ska väljas.
-\item Därför letar kompilatorn efter ett givet värde enligt denna prioritering:
+\item Därför väljer kompilatorn ett givet värde enligt denna prioritering:
 \begin{enumerate}\SlideFontTiny
+\item \Emph{Explicita} argument till kontextparametrar märkta med \code{using}
 \item \code{given} och \code{import given ...} i aktuell namnrymd \Eng{current scope} 
-\item Explicita \code{using}-argument
-\item Implicit framkallade \code{using}-argument 
 \item \code{given}-värden i \Emph{kompanjonsobjekt} för den använda typen.
 \item ... (fler knepiga regler som vi inte går in på här)
 \end{enumerate}
 \item Om flera givna värden kan framkallas för flera typer som ingår i en gemensam arvshierarki så väljer kompilatorn det givna värdet som är av den \emph{mest specifika} typen.
 \end{itemize}
+Framkallning av givna värden vid anrop med kontextparametrar har flera namn på engelska: \emph{to summon}, eller \emph{term inference}, eller \emph{implicit reolution}. 
 \end{Slide}
 
 \begin{Slide}{Ad hoc polymorfism, ''typklasser''}\SlideFontSmall
@@ -511,7 +511,7 @@ trait Parser[T]:
   def fromString(value: String): Option[T]
 
 object Parser:
-  given Parser[Int] with  // with behövs vid abstrakt typ
+  given Parser[Int] with  // with behövs för givna instanser om abstrakt typ
     def fromString(value: String): Option[Int] = value.toIntOption   
 \end{Code}
 \begin{REPL}
@@ -520,6 +520,21 @@ scala> def parse[T](s: String)(using p: Parser[T]) = p.fromString(s)
 scala> parse[Int]("12")
 val res0: Option[Int] = Some(12)
 \end{REPL}
+\end{Slide}
+
+\begin{Slide}{Parameternamnet kan skippas efter \texttt{using}}
+\begin{itemize}
+\item Eftersom namnet på det givna värdet ofta inte behövs\\ -- det är ju typen som är det viktiga för framkallningen, \\ så kan du skippa parameternamnet:%
+
+\begin{Code}[basicstyle=\ttfamily\SlideFontSize{10}{14}\selectfont]
+def parse[T](s: String)(using Parser[T]) = 
+  summon[Parser[T]].fromString(s)
+\end{Code}
+\item Framkallningen kan vid behov istället%
+\footnote{Ett vanligt parameternamn är annars \code{ev} som är en förkortning av \emph{evidence}, vilket anspelar på att kompilatorn -- om koden kompilerar utan fel -- har hittat ett giltigt \emph{bevis} för att det givna värdet verkligen existerar \textbf{vid anrop}.}
+ göras med \code{summon}%
+
+\end{itemize}
 \end{Slide}
 
 
@@ -547,8 +562,17 @@ val res1: Option[java.awt.Color] = Some(java.awt.Color[r=120,g=10,b=0])
 \end{Slide}
 
 
-\begin{Slide}{Kontextgränser}
-\TODO \code{T: Parser}
+\begin{Slide}{Kontextgränser}\SlideFontSmall
+Denna form av \code{using}-parametrar...
+\begin{Code}
+def parse[T](s: String)(using p: Parser[T]) = ???
+\end{Code}
+...där en typkonstruktor för typparametern ska framkallas är så pass vanlig att Scala erbjuder ett kortare och mer lättläst skrivsätt:
+\begin{Code}
+def parse[T: Parser](s: String) = ???
+\end{Code}
+Om \code{F[A]} är en typkonstruktor och du skriver \code{[T: F]} så blir \code{F} en så kallad \Emph{kontextgräns} \Eng{context boundary}. 
+Kompilatorn expandera detta automatiskt till kontextparametern \code{(using F[T])}
 \end{Slide}
 
 
@@ -571,6 +595,7 @@ val res3: Int = 42
 scala> "Color(100,100,0)".parseOrElse(java.awt.Color.black)
 val res4: java.awt.Color = java.awt.Color[r=100,g=100,b=0]
 \end{REPL}
+Extensionsmetoder kan skrivas i efterhand på valfri plats och även göras tillgängliga med import.
 \end{Slide}
 
 
@@ -578,55 +603,52 @@ val res4: java.awt.Color = java.awt.Color[r=100,g=100,b=0]
 
 
 
-\begin{Slide}{Sortera samlingar: saknad implicit ordning}
-\TODO migrera till Scala 3, implicit -> given
-\begin{REPL}
+\begin{Slide}{Sortera samlingar: med given ordning}\SlideFontSmall
+\begin{REPLsmall}
 scala> case class Gurka(namn: String, vikt: Int)
-defined class Gurka
-
+                                                                                                                                            
 scala> val xs = Vector(Gurka("a", 100), Gurka("b", 50), Gurka("c", 100))
-
+val xs: Vector[Gurka] = Vector(Gurka(a,100), Gurka(b,50), Gurka(c,100))
+                                                                                                                                            
 scala> xs.sorted
-<console>:15: error: No implicit Ordering defined for Gurka.
-       xs.sorted
-          ^
-\end{REPL}
+-- Error:
+1 |xs.sorted
+  | ^
+  | No implicit Ordering defined for B
+  | where: B is a type variable with constraint >: Gurka
+
+\end{REPLsmall}
 \pause
-Detta kan fixas genom att tillhandahålla en \Emph{implicit} ordning för \code{Gurka}:
+Detta kan fixas genom att tillhandahålla en given ordning för \code{Gurka}:
 \begin{Code}
-implicit object minGurkOrdning extends Ordering[Gurka] {
+given Ordering[Gurka] with
   def compare(x: Gurka, y: Gurka): Int =
-    if (x == y) 0
-    else if (x.vikt < y.vikt) -1
+    if (x == y) then 0 
+    else if x.vikt < y.vikt then -1 
     else 1
-}
 \end{Code}
-\end{Slide}
-
-
-\begin{Slide}{Sortera samlingar: given implicit ordning}
-\TODO migrera till Scala 3
-
 \begin{REPL}
-scala> case class Gurka(namn: String, vikt: Int)
-defined class Gurka
-
-scala> val xs = Vector(Gurka("a", 100), Gurka("b", 50), Gurka("c", 100))
-
-scala> implicit object minGurkOrdning extends Ordering[Gurka] {
-         def compare(x: Gurka, y: Gurka): Int =
-           if (x == y) 0
-           else if (x.vikt < y.vikt) -1
-           else 1
-       }
-
-scala> xs.sorted
-res0: scala.collection.immutable.Vector[Gurka] =
-        Vector(Gurka(b,50), Gurka(a,100), Gurka(c,100))
+scala> xs.sorted   // nu funkar det :)
+val res0: Vector[Gurka] = Vector(Gurka(b,50), Gurka(a,100), Gurka(c,100))
 \end{REPL}
-{\SlideFontTiny Se exempel på olika bekvämare sätt att definiera en ordning för dina egna typer: \\
-\url{https://stackoverflow.com/questions/19345030/}}
 \end{Slide}
+
+\begin{Slide}{Sortera samlingar med ännu smidigare given ordning}\SlideFontSmall
+
+\begin{Code}
+given Ordering[Gurka] = Ordering.fromLessThan((g1, g2) => g1.vikt < g1.vikt)
+\end{Code}
+
+
+\begin{itemize}
+  \item Det är vanligt att man vill ge ordningar.
+  \item Därför finns en smidig hjälpmetod i kompanjonsobjektet för typklassen \code{Ordering} som heter \code{fromLessThan}
+  \item Den tar som inparameter en funktion som tar två instanser och returnerar en boolean som är true om den första är ''mindre'' (alltså kommer före) enligt valfri definition. 
+  \item Den returnerar en \code{Ordering} som kan erbjudas som ett givet värde.
+\end{itemize}
+
+\end{Slide}
+
 
 
 \Subsection{Applikationsprogrammerings-gränssnitt (api)}
