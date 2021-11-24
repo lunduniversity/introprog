@@ -95,31 +95,6 @@ scala> testLowerBound[Robothund](Robothund())
 
 \end{Slide}
 
-\begin{Slide}{Typbegränsning med egentyp \Eng{self type}}\SlideFontSmall
-\begin{itemize}\SlideFontTiny
-  \item Det går att få ett explicit, valfritt namn, t.ex. \code{self},  på ''mig själv'', alltså denna instans, genom att skriva~\code{ self => }~i kroppen på en trait eller klass. 
-  \item En typbegränsning på den egna instansen kallas \Emph{egentyp} \Eng{self type}. 
-  \item Användbart vid inmixning: du kan begränsa med vad denna trait får mixas in.
-\begin{Code}
-trait Grönsak { def vikt: Int }
-trait KanSkalas:
-  self: Grönsak =>
-  def viktEfterSkalning = 0.99 * vikt 
-\end{Code}
-\begin{REPLsmall}
-scala> val g = new Grönsak with KanSkalas { val vikt = 100 }
-val g: Grönsak & KanSkalas = anon1@70a91d72
-                                                                                    
-scala> g.viktEfterSkalning
-val res0: Double = 99.0
-\end{REPLsmall}
-\item Även om \code{KanSkalas} \Alert{inte} gör \code{extends} så är \Emph{ändå} \code{vikt} tillgänglig i dess kropp, eftersom vi kräver att den egna typen är en \code{Grönsak}.
-\item Kan användas för att göra s.k. \Emph{beroendeinjektion} \Eng{dependency injection}.\\\url{https://en.wikipedia.org/wiki/Dependency_injection}
-\end{itemize}
-
-\end{Slide}
-
-
 
 \Subsection{Flexibla generiska typer: varians}
 
@@ -667,6 +642,29 @@ given Ordering[Gurka] = Ordering.fromLessThan((g1, g2) => g1.vikt < g1.vikt)
 
 \end{Slide}
 
+\begin{Slide}{Typbegränsning med egentyp \Eng{self type}}\SlideFontSmall
+\begin{itemize}\SlideFontTiny
+  \item Det går att gå ett explicit, valfritt namn, t.ex. \code{self},  på ''mig själv'', alltså denna instans, genom att skriva~\code{ self => }~i kroppen på en trait eller klass. 
+  \item En typbegränsning på den egna instansen kallas \Emph{egentyp} \Eng{self type}. 
+  \item Användbart vid inmixning: du kan begränsa med vad denna trait får mixas in.
+\begin{Code}
+trait Grönsak { def vikt: Int }
+trait KanSkalas:
+  self: Grönsak =>
+  def viktEfterSkalning = 0.99 * vikt 
+\end{Code}
+\begin{REPLsmall}
+scala> val g = new Grönsak with KanSkalas { val vikt = 100 }
+val g: Grönsak & KanSkalas = anon1@70a91d72
+                                                                                    
+scala> g.viktEfterSkalning
+val res0: Double = 99.0
+\end{REPLsmall}
+\item Även om \code{KanSkalas} \Alert{inte} gör \code{extends} så är \Emph{ändå} \code{vikt} tillgänglig i dess kropp, eftersom vi kräver att den egna typen är en \code{Grönsak}.
+\item Kan användas för att göra s.k. \Emph{beroendeinjektion} \Eng{dependency injection}.\\\url{https://en.wikipedia.org/wiki/Dependency_injection}
+\end{itemize}
+
+\end{Slide}
 
 
 \Subsection{Vad är ett bra api?}
