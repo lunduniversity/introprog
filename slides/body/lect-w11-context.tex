@@ -424,7 +424,27 @@ Det går också att ge det givna värdet ett namn vid behov, men ofta onödigt:\
 \code{given blabla: Int = 42}
 \end{Slide}
 
+\begin{Slide}{Kan vi inte använda default-argument som förändras?}
+\begin{itemize}\SlideFontSmall
+\item Vi skulle kunna använda ett default-värde som är ett namn på en variabel;
+\begin{REPLsmall}
+scala> var ctx = 42
+var ctx: Int = 42
 
+scala> def f(x: Int = ctx) = x + 1
+def f(x: Int): Int
+
+scala> f()
+val res0: Int = 43
+
+scala> ctx = 0
+
+scala> f()                                                                      
+val res1: Int = 1
+\end{REPLsmall} 
+\item Men här utgörs kontexten av referensen till ett föränderligt värde vid \Alert{körtid} som måste synas i aktuell namnrymd och \emph{inte} som för givna värden där det som fylls i baseras på \emph{typen} vid \Emph{kompileringstid} i en speciell \Emph{implicit namnrymd} \Eng{implicit scope}.
+\end{itemize}
+\end{Slide}
 \begin{Slide}{Kontextuella abstraktioner med \texttt{given}, \texttt{using}}\SlideFontSmall
 \Emph{Kontextuell abstraktion} \Eng{contextual abstraction} i Scala:
 \begin{itemize}\SlideFontSmall
@@ -483,7 +503,8 @@ val res0: String = tagen för givet
 
 \begin{Slide}{Prioritetsordning vid framkallning av givna värden}\SlideFontSmall
 \begin{itemize}\SlideFontSmall
-\item Det får inte vara tvetydigt vilket implicit värde som ska väljas.
+\item Det kan finnas flera \Alert{olika} givna värden av \Emph{samma} typ.
+\item Men då får det ju inte vara tvetydigt vilket implicit värde som ska väljas.
 \item Därför väljer kompilatorn ett givet värde enligt denna prioritering:
 \begin{enumerate}\SlideFontTiny
 \item \Emph{Explicita} argument till kontextparametrar märkta med \code{using}
