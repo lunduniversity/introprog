@@ -12,7 +12,7 @@
 \item Typparametrar skrivs inom hakparenteser, exempelvis: \code{ [T, U] }
 \item Generiska strukturer fungerar för \emph{olika} typer, \Alert{okända} vid \Emph{deklaration}. 
 \begin{Code}
-case class Pair[A, B](a: A, b: B):  // A coh B är obundna (fria) inom []
+case class Pair[A, B](a: A, b: B):  // A och B är obundna (fria) inom []
   def swap: Pair[B, A] = Pair(b, a) // A och B bundna då swap saknar []
 \end{Code}
 \pause
@@ -94,31 +94,6 @@ scala> testLowerBound[Robothund](Robothund())
 \end{REPL}
 
 \end{Slide}
-
-\begin{Slide}{Typbegränsning med egentyp \Eng{self type}}\SlideFontSmall
-\begin{itemize}\SlideFontTiny
-  \item Det går att få ett explicit, valfritt namn, t.ex. \code{self},  på ''min egen typ'' genom att skriva~\code{ self => }~i kroppen på en trait eller klass. 
-  \item Detta kallas \Emph{egentyp} \Eng{self type}. 
-  \item Användbart vid inmixning: du kan begränsa egentypen med en typannotering.
-\begin{Code}
-trait Grönsak { def vikt: Int }
-trait KanSkalas:
-  self: Grönsak =>
-  def viktEfterSkalning = 0.99 * vikt 
-\end{Code}
-\begin{REPLsmall}
-scala> val g = new Grönsak with KanSkalas { val vikt = 100 }
-val g: Grönsak & KanSkalas = anon1@70a91d72
-                                                                                    
-scala> g.viktEfterSkalning
-val res0: Double = 99.0
-\end{REPLsmall}
-\item Även om \code{KanSkalas} \Alert{inte} gör \code{extends} så är \Emph{ändå} \code{vikt} tillgänglig i dess kropp, eftersom vi kräver att den egna typen är en \code{Grönsak}.
-\item Kan användas för att göra s.k. \Emph{beroendeinjektion} \Eng{dependency injection}.\\\url{https://en.wikipedia.org/wiki/Dependency_injection}
-\end{itemize}
-
-\end{Slide}
-
 
 
 \Subsection{Flexibla generiska typer: varians}
@@ -424,7 +399,27 @@ Det går också att ge det givna värdet ett namn vid behov, men ofta onödigt:\
 \code{given blabla: Int = 42}
 \end{Slide}
 
+\begin{Slide}{Kan vi inte använda default-argument som förändras?}
+\begin{itemize}\SlideFontSmall
+\item Vi skulle kunna använda ett default-värde som är ett namn på en variabel;
+\begin{REPLsmall}
+scala> var ctx = 42
+var ctx: Int = 42
 
+scala> def f(x: Int = ctx) = x + 1
+def f(x: Int): Int
+
+scala> f()
+val res0: Int = 43
+
+scala> ctx = 0
+
+scala> f()                                                                      
+val res1: Int = 1
+\end{REPLsmall} 
+\item Men här utgörs kontexten av referensen till ett föränderligt värde vid \Alert{körtid} som måste synas i aktuell namnrymd och \emph{inte} som för givna värden där det som fylls i baseras på \emph{typen} vid \Emph{kompileringstid} i en speciell \Emph{implicit namnrymd} \Eng{implicit scope}.
+\end{itemize}
+\end{Slide}
 \begin{Slide}{Kontextuella abstraktioner med \texttt{given}, \texttt{using}}\SlideFontSmall
 \Emph{Kontextuell abstraktion} \Eng{contextual abstraction} i Scala:
 \begin{itemize}\SlideFontSmall
@@ -436,7 +431,7 @@ object MinKontext:
   given String = "tagen för givet"
   def framkalla(using s: String) = s  //kontextparametrar märks med using
 \end{Code}
-\vspace{-0.9em}
+\pause\vspace{-0.9em}
 \begin{REPLsmall}
 scala> MinKontext.framkalla(using "explicit")
 val res0: String = explicit
@@ -483,7 +478,8 @@ val res0: String = tagen för givet
 
 \begin{Slide}{Prioritetsordning vid framkallning av givna värden}\SlideFontSmall
 \begin{itemize}\SlideFontSmall
-\item Det får inte vara tvetydigt vilket implicit värde som ska väljas.
+\item Det kan finnas flera \Alert{olika} givna värden av \Emph{samma} typ.
+\item Men då får det ju inte vara tvetydigt vilket implicit värde som ska väljas.
 \item Därför väljer kompilatorn ett givet värde enligt denna prioritering:
 \begin{enumerate}\SlideFontTiny
 \item \Emph{Explicita} argument till kontextparametrar märkta med \code{using}
@@ -646,6 +642,29 @@ given Ordering[Gurka] = Ordering.fromLessThan((g1, g2) => g1.vikt < g1.vikt)
 
 \end{Slide}
 
+\begin{Slide}{Typbegränsning med egentyp \Eng{self type}}\SlideFontSmall
+\begin{itemize}\SlideFontTiny
+  \item Det går att gå ett explicit, valfritt namn, t.ex. \code{self},  på ''mig själv'', alltså denna instans, genom att skriva~\code{ self => }~i kroppen på en trait eller klass. 
+  \item En typbegränsning på den egna instansen kallas \Emph{egentyp} \Eng{self type}. 
+  \item Användbart vid inmixning: du kan begränsa med vad denna trait får mixas in.
+\begin{Code}
+trait Grönsak { def vikt: Int }
+trait KanSkalas:
+  self: Grönsak =>
+  def viktEfterSkalning = 0.99 * vikt 
+\end{Code}
+\begin{REPLsmall}
+scala> val g = new Grönsak with KanSkalas { val vikt = 100 }
+val g: Grönsak & KanSkalas = anon1@70a91d72
+                                                                                    
+scala> g.viktEfterSkalning
+val res0: Double = 99.0
+\end{REPLsmall}
+\item Även om \code{KanSkalas} \Alert{inte} gör \code{extends} så är \Emph{ändå} \code{vikt} tillgänglig i dess kropp, eftersom vi kräver att den egna typen är en \code{Grönsak}.
+\item Kan användas för att göra s.k. \Emph{beroendeinjektion} \Eng{dependency injection}.\\\url{https://en.wikipedia.org/wiki/Dependency_injection}
+\end{itemize}
+
+\end{Slide}
 
 
 \Subsection{Vad är ett bra api?}
@@ -700,8 +719,13 @@ given Ordering[Gurka] = Ordering.fromLessThan((g1, g2) => g1.vikt < g1.vikt)
    \item ...
 \end{itemize}
 \end{itemize}
-
 \end{Slide}
+\begin{SlideSimple}{Köpa ett api för 55 miljarder?}
+\hspace*{-0.7cm}\includegraphics[width=1.1\textwidth]{../img/ericsson-buy-api.png}
+
+{ \vspace{2em} Sydsvenskan 2021-11-23 }
+\end{SlideSimple}
+
 
 
 
