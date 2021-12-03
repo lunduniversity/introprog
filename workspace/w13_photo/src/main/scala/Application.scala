@@ -13,4 +13,4 @@ object Application:
   private def continue: Boolean = ???
       
   /**Get rid of text in terminal window*/
-  def clearScreen() = print("\u001b[2J")
+  def clearScreen() = print("\u001b[2J\u001b[;H")
