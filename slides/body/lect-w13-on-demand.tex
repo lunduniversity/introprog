@@ -659,22 +659,24 @@ Exempel på saker som du kan lägga in tid för i din julpluggkalender:
 
 \begin{Slide}{Scala då, nu och i framtiden}\SlideFontSmall
 
-{\SlideFontSize{7}{10}\url{
-https://en.wikipedia.org/wiki/Scala_(programming_language)#Versions
-}}
+% {\SlideFontSize{7}{10}\url{
+% https://en.wikipedia.org/wiki/Scala_(programming_language)#Versions
+% }}
 
 \begin{itemize}
 \item Scala 1.0 (2003) första pre-release
 \item Scala 2.0-2.9 (2006-2011) pionjärer: Twitter, LinkedIn, The Guardian, ...
 \item Scala 2.10 (2013) brett genombrott, viktiga språkutvidgningar
 \item Scala 2.11 (2014) allmän industriell spridning, stabilitet, prestanda, \\
-{\SlideFontSize{7}{10}\url{
-https://en.wikipedia.org/wiki/Scala_(programming_language)#Companies
-}}
+% {\SlideFontSize{7}{10}\url{
+% https://en.wikipedia.org/wiki/Scala_(programming_language)#Companies
+% }}
 \item Scala 2.12 (2016) fokus på prestanda, snabbare bytekod med lambda i JVM Java 8
 \item Scala 2.13 (2019) fokus på standardbiblioteket och \code{scala.collection}, migreringsverktyg för Scala 3
-\item Scala 3.0~~(2021): \Alert{stort} \Emph{tekniksprång} med många nya språkkonstruktioner %:\\enum, top-level defs, @main, trait params, given, export, creator applications, ...,\\ "uppstädning" + förenklingar baserat på lärdomar från Scala 2.
+\item Scala 3 (2021): \Alert{stort} \Emph{tekniksprång} med många nya språkkonstruktioner %:\\enum, top-level defs, @main, trait params, given, export, creator applications, ...,\\ "uppstädning" + förenklingar baserat på lärdomar från Scala 2.
 \end{itemize}
+
+Läs mer om historik här: \url{https://en.wikipedia.org/wiki/Scala_(programming_language)}
 \end{Slide}
 
 \begin{Slide}{Scala 3}\SlideFontSmall
@@ -683,11 +685,6 @@ https://en.wikipedia.org/wiki/Scala_(programming_language)#Companies
   \item Nya språkkonstruktioner, t.ex.  optional braces, if then else, while do, enum, top-level defs, @main, trait params, extension methods, given, using, export, creator applications, union types, intersection types,  ...,
   \item \Emph{Tasty}: nytt format för kodträd som kompletterar bytekod och möjliggör omkompilering i efterhand och korsvis användning Scala 2 \& 3. \\
   \item Formell bas för Scala: DOT (en algebra för dependent object types)
-\item Flera ''backends'' som breddar Scalas användningsområde:
-\begin{itemize}\SlideFontTiny
-  \item \href{http://www.scala-js.org/}{scala-js.org}: dela kod+kompetens mellan backend och frontend
-  \item \href{http://scala-native.org}{scala-native.org}: kör Scala kompilerat direkt ''på metallen''
-\end{itemize}
 \item Några viktiga Scala-ramverk för stordata, massiv parallellism, AI:
 \begin{itemize}\SlideFontTiny
   \item \href{https://akka.io/}{Akka} ramverk för skalbara parallella arkitekturer
@@ -695,13 +692,62 @@ https://en.wikipedia.org/wiki/Scala_(programming_language)#Companies
   \item \href{https://en.wikipedia.org/wiki/Apache_Kafka}{Apache Kafka} för hantering av strömmande data (initierad av LinkedIn)
   \item \href{https://www.playframework.com/}{Play framework} för moderna, skalbara webbappar
 \end{itemize}
+\item Flera ''backends'' som breddar Scalas användningsområde:
+\begin{itemize}\SlideFontTiny
+  \item \href{http://www.scala-js.org/}{scala-js.org}: dela kod+kompetens mellan backend och frontend
+  \item \href{http://scala-native.org}{scala-native.org}: kör Scala kompilerat direkt ''på metallen''
+\end{itemize}
 \end{itemize}
 \end{Slide}
 
 
-% \begin{Slide}{Roadmap för Scala 3.0}
-%   \includegraphics[width=0.9\textwidth]{../img/w14/scala-dotty-roadmap-odersky.jpeg}
-% \end{Slide}
+\begin{Slide}{Scala på JVM, Scala JS, Scala Native}
+\begin{multicols}{3}
+
+\begin{tikzpicture}[node distance=1.4cm]
+\node (input) [startstop] {Scala-kod};
+\node (compile) [process, below of=input] {\texttt{scalac}};
+\node (output) [startstop, below of=compile] {byte-kod};
+\node (interp) [process, below of=output] {JVM};
+%\node (output2) [startstop, below of=interp] {maskinkod};
+\draw [arrow] (input) -- (compile);
+\draw [arrow] (compile) -- (output);
+\draw [arrow] (output) -- (interp);
+%\draw [arrow] (interp) -- (output2);
+\end{tikzpicture}
+
+
+\columnbreak %---------
+
+%https://www.sharelatex.com/blog/2013/08/29/tikz-series-pt3.html
+\begin{tikzpicture}[node distance=1.4cm]
+\node (input) [startstop] {Scala-kod};
+\node (compile) [process, below of=input] {\texttt{Scala JS}};
+\node (output) [startstop, below of=compile] {Javascript-kod};
+\node (interp) [process, below of=output] {Browser | NodeJS};
+%\node (output2) [process, right of=interp, minimum size=6mm] {NodeJS};
+\draw [arrow] (input) -- (compile);
+\draw [arrow] (compile) -- (output);
+\draw [arrow] (output) -- (interp);
+%\draw [arrow] (interp) -- (output2);
+\end{tikzpicture}
+
+\columnbreak
+
+\begin{tikzpicture}[node distance=1.4cm]
+\node (input) [startstop] {Scala-kod};
+\node (compile) [process, below of=input] {\texttt{Scala Native}};
+\node (output) [startstop, below of=compile] {Mellankod (IR)};
+\node (interp) [process, below of=output] {LLVM \& clang};
+\node (output2) [startstop, below of=interp] {maskinkod};
+\draw [arrow] (input) -- (compile);
+\draw [arrow] (compile) -- (output);
+\draw [arrow] (output) -- (interp);
+\draw [arrow] (interp) -- (output2);
+\end{tikzpicture}
+
+\end{multicols} 
+\end{Slide}
 
 
 
