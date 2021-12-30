@@ -526,7 +526,7 @@ grupperaEfterÅlder: Map[Int,Vector[(String, Int)]] =
 \end{Slide}
   
   
-\begin{Slide}{Övning: Implementera en \texttt{MultiMap}}
+\begin{Slide}{Övning: Implementera en \texttt{Multimap}}
 \begin{itemize}
 \item En \Emph{multimap} är en speciell nyckel-värde-tabell där värdena utgör en samling (ofta en mängd).
 \item En multimap samlar alla värden som har samma nyckel.
@@ -536,26 +536,26 @@ grupperaEfterÅlder: Map[Int,Vector[(String, Int)]] =
 scala> val m = Map(1 -> 2, 1 -> 3, 2 -> 1, 2 -> 2)  // senaste värdet gäller
 val m: Map[Int, Int] = Map(1 -> 3, 2 -> 2)
 
-scala> val mm = MultiMap(1 -> 2, 1 -> 3, 2 -> 1, 2 -> 2)  // värdena samlas
-val mm: MultiMap[Int, Int] = MultiMap(1 -> Set(2, 3), 2 -> Set(1, 2))
+scala> val mm = Multimap(1 -> 2, 1 -> 3, 2 -> 1, 2 -> 2)  // värdena samlas
+val mm: Multimap[Int, Int] = Multimap(1 -> Set(2, 3), 2 -> Set(1, 2))
 \end{REPL}
 Övning: Implementera en multimap som fungerar som ovan, med hjälp av en case-klass med attributet \code{toMap} som är en oföränderlig nyckel-värde-tabell där värdena är en mängd. \\Tips: Använd\code{groupBy}
 \end{Slide}
 
-\begin{Slide}{Lösning: \texttt{MultiMap}}
+\begin{Slide}{Lösning: \texttt{Multimap}}
 \begin{CodeSmall}
-case class MultiMap[K, V] private (toMap: Map[K,Set[V]]):
+case class Multimap[K, V] private (toMap: Map[K,Set[V]]):
   def apply(k: K): Set[V] = toMap(k)
   
-  def +(kv: (K, V)): MultiMap[K, V] = kv match 
-    case (k, v) if toMap.isDefinedAt(k) => MultiMap(toMap.updated(k, toMap(k) + v))
-    case (k, v) => MultiMap(toMap + (k -> Set(v)))
+  def +(kv: (K, V)): Multimap[K, V] = kv match 
+    case (k, v) if toMap.isDefinedAt(k) => Multimap(toMap.updated(k, toMap(k) + v))
+    case (k, v) => Multimap(toMap + (k -> Set(v)))
   
-  override def toString = toMap.mkString("MultiMap(",", ",")")
+  override def toString = toMap.mkString("Multimap(",", ",")")
 
-object MultiMap:
-  def apply[K, V](kvs: (K,V)*): MultiMap[K, V] = 
-    new MultiMap(kvs.groupBy(_._1).map((k,xs) => k -> xs.map(_._2).toSet))
+object Multimap:
+  def apply[K, V](kvs: (K,V)*): Multimap[K, V] = 
+    new Multimap(kvs.groupBy(_._1).map((k,xs) => k -> xs.map(_._2).toSet))
 \end{CodeSmall}
 \end{Slide}
 
