@@ -1,6 +1,9 @@
 //> using lib "taggy:taggy:0.0.1,url=https://github.com/bjornregnell/taggy/releases/download/v0.0.1/taggy_3-0.0.1.jar"
 //> using scala "3.nightly"
+
 //  run in terminal> scala-cli run .
+//  you can get scala-cli from here: https://scala-cli.virtuslab.org/install
+//  after running the slides are generated in target/out.pdf
 
 import scala.language.experimental.fewerBraces
 import taggy.*
