@@ -19,5 +19,8 @@ def slides = document("Informationsmöte om programmering för Ekosystemteknik")
       p("Konceptuell grund för vidare studier, obl. f. D+C")
       //p("Lämplig för de med extra intresse och hög ambition")
       p("Språk: **Scala**")
-      p("Läses med fördel tillsammans med\\\\ EDAA60 Datorer och datoranvändning ''dod'', 3hp\\\\som ger kunskap om linux och terminalkommanndo")
+      p("""Läses med fördel tillsammans med\\\\ 
+           EDAA60 Datorer och datoranvändning ''dod'', 3hp\\\\
+           som ger kunskap om linux och terminalkommanndo""")
       p("https://cs.lth.se/pgk")
+    p("*Valfri fortsättning:* **EDAA01** Programmering fördjupningskurs")
