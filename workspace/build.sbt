@@ -5,7 +5,7 @@ import Keys._
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
   version := "2021.0.2",
-  scalaVersion := "3.1.0",  
+  scalaVersion := "3.1.2",  
   scalacOptions := Seq("-unchecked", "-deprecation")
 )
 
@@ -27,7 +27,9 @@ lazy val introprog_scalalib = (project in file("introprog")).
   settings(
     name := IntroprogLibName,
     version := IntroprogLibVersion,
-    scalaVersion := "3.0.1", // stick to 3.0.1 for backward and forward compatibility
+    scalaVersion := "3.0.2", // stick to latest 3.0 for backward and forward compatibility
+      // when sbt 1.7 is released start using scalaOutputVersion
+      //     https://scala-lang.org/blog/2022/04/12/scala-3.1.2-released.html
     scalacOptions ++= Seq("-encoding", "UTF-8"),
     Compile/doc/scalacOptions ++= Seq( // TODO why docs here? scala3?
       "-implicits",
