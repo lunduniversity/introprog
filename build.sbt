@@ -84,6 +84,13 @@ gengloss := (glossary/Compile/run).toTask("").value
 
 // ************** cmd util functions
 
+def showTail(fileName: String, n: Int = 40): Unit = { 
+  // this method was created as tail does not work on windows
+  println(s"--- Last $n lines of $fileName: ")
+  val lines = sbt.io.IO.readLines(new java.io.File(fileName))
+  println(lines.takeRight(n).mkString("\n"))
+}
+
 def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-console.log"): Unit = {
   println(s" ******* Compiling $texFile to pdf *******")
   val cmd = scala.sys.process.Process(
@@ -99,7 +106,8 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
   if (exitValue != 0) {
     println("*** ############ ERROR LOG STARTS HERE ############### ***")
     //Process(Seq("cat", cmdOutputFile.getName), workDir).run
-    scala.sys.process.Process(Seq("tail", "-40", cmdOutputFile.getName), workDir).run
+    //scala.sys.process.Process(Seq("tail", "-40", cmdOutputFile.getName), workDir).run
+    showTail(s"$cmdOutputFile")
     sys.error(s"\n*** ERROR: pdflatex exit code: $exitValue\nSee COMPLETE pdflatex output in: $cmdOutputFile")
   } else println(s"         Log file: $cmdOutputFile")
 }
