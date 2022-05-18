@@ -42,30 +42,15 @@ The main directories are:
 
 ## How to build this repo
 
-### With sbt
+* Install sbt: https://www.scala-sbt.org/download.html
 
-If you like to use the [scala build tool, sbt](http://www.scala-sbt.org) it is easy to build everything in this repo:
-
-* Install sbt: http://www.scala-sbt.org/release/docs/Setup.html
-
-* Download this repo: https://github.com/lunduniversity/introprog/archive/master.zip (or make a fork and then a clone as explained [below](https://github.com/lunduniversity/introprog#how-to-contribute-to-this-repo))
-
-* Unpack the zip in some suitable directory named introprog.
+* Download and unpack this repo: https://github.com/lunduniversity/introprog/archive/master.zip or make a fork and then a clone as explained [below](https://github.com/lunduniversity/introprog#how-to-contribute-to-this-repo)
 
 * run these sbt commands in a terminal window in the introprog directory:
   * `sbt compile` to compile all sources
   * `sbt gen` to generate the planning files, alias for `sbt plan/run`
   * `sbt pdf` to make slides and compendium using pdflatex
   * `sbt build` run both the commands `gen` and `pdf` in sequence
-
-### Without sbt
-
-* **Workspace** You can import the different sub projects in the `workspace` directory into your favorite IDE, e.g. Eclipse or IntelliJ, and build them there after importing each of them from within the IDE.
-
-* **Plan** You can compile and run the Main.scala object in the `plan` directory using the command `scala Main` in terminal after you have manually compiled all `.scala` files.
-
-* **Latex** You can build the `.tex` files to `.pdf` with `pdflatex` in terminal or using your favourite Latex editor, e.g. texworks.
-
 
 
 ## How to contribute to this repo
