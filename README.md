@@ -54,7 +54,6 @@ If you like to use the [scala build tool, sbt](http://www.scala-sbt.org) it is e
 
 * run these sbt commands in a terminal window in the introprog directory:
   * `sbt compile` to compile all sources
-  * `sbt eclipse` to make eclipse project files
   * `sbt gen` to generate the planning files, alias for `sbt plan/run`
   * `sbt pdf` to make slides and compendium using pdflatex
   * `sbt build` run both the commands `gen` and `pdf` in sequence
