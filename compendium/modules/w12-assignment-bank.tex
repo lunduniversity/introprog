@@ -66,101 +66,13 @@ Kraven för bankapplikationen återfinns här nedan. För att bli godkänd på d
 \end{itemize}
 
 \subsection{Design}
-Nedan följer specifikationerna för de olika klasserna bankapplikationen måste innehålla:
+Nedan följer beskriving av medlemmar som de olika klasserna bankapplikationen måste innehålla. Dessa påbörjade klasser finns i kursens workspace, tillsammans med de färdigskrivna klasserna \code{HistoryEntry} och \code{Date} samt \code{BankEvent} med tillhörande subtyper: \url{https://github.com/lunduniversity/introprog/tree/master/workspace/w13_bank_proj}
 
-\begin{ScalaSpec}{Customer}
-/**
- * Describes a customer of a bank with provided name and id.
- */
-case class Customer(name: String, id: Long) {
-	override def toString(): String = ???
-}
-\end{ScalaSpec}
+\scalainputlisting[basicstyle=\ttfamily\fontsize{10}{13}\selectfont]{../workspace/w13_bank_proj/src/main/scala/bank/Customer.scala}
 
+\scalainputlisting[basicstyle=\ttfamily\fontsize{10}{13}\selectfont]{../workspace/w13_bank_proj/src/main/scala/bank/BankAccount.scala}
 
-\begin{ScalaSpec}{BankAccount}
-/**
- * Creates a new bank account for the customer provided.
- * The account is given a unique account number and initially
- * has a balance of 0 kr.
- */
-class BankAccount(val holder: Customer) {
-  val accountNumber: Int = ???
-
-  /**
-   * Deposits the provided amount in this account.
-   */
-  def deposit(amount: BigInt): Unit = ???
-
-  /**
-   * Returns the balance of this account.
-   */
-  def balance: BigInt = ???
-
-  /**
-   * Withdraws the provided amount from this account,
-   * if there is enough money in the account. Returns true
-   * if the transaction was successful, otherwise false.
-   */
-  def withdraw(amount: BigInt): Boolean = ???
-
-  override def toString(): String = ???
-}
-\end{ScalaSpec}
-
-
-\begin{ScalaSpec}{Bank}
-/**
- * Creates a new bank with no accounts and no history.
- */
-class Bank() {
- /**
-   * Returns a list of every bank account in the bank.
-   * The returned list is sorted in alphabetical order based
-   * on customer name.
-   */
-  def allAccounts(): Vector[BankAccount] = ???
-
-  /**
-   * Returns the account holding the provided account number.
-   */
-  def findByNumber(accountNbr: Int): Option[BankAccount] = ???
-
-  /**
-   * Returns a list of every account belonging to
-   * the customer with the provided id.
-   */
-  def findAccountsForHolder(id: Long): Vector[BankAccount] = ???
-
-  /**
-   * Returns a list of all customers whose names match
-   * the provided name pattern.
-   */
-  def findByName(namePattern: String): Vector[Customer] = ???
-
-  /**
-   * Executes an event in the bank.
-   * Returns a string describing whether the
-   * event was successful or failed.
-   */
-  def doEvent(event: BankEvent): String = ???
-
-  /**
-   * Returns a log of all changes to the bank's state.
-   */
-  def history(): Vector[HistoryEntry] = ???
-
-  /**
-   * Resets the bank to the state it had at the provided date.
-   * Returns a string describing whether the event was
-   * successful or failed.
-   */
-  def returnToState(returnDate: Date): String = ???
-}
-\end{ScalaSpec}
-
-
-Till din hjälp innehåller kursens workspace de färdigskrivna klasserna \code{HistoryEntry} och \code{Date} samt \code{BankEvent} med tillhörande subtyper.
+\scalainputlisting[basicstyle=\ttfamily\fontsize{10}{13}\selectfont]{../workspace/w13_bank_proj/src/main/scala/bank/Bank.scala}
 
 
 \subsection{Tips}
@@ -181,7 +93,7 @@ event match {
 
 \item För att läsa ifrån en fil kan man t.ex. använda sig av \code{Source} som finns tillgänglig i \code{scala.io.Source}.
 
-\item Var noggrann med att testerna klarar alla tänkbara fall, och tänk på att fler fall än dem som givits i exempel kan förekomma vid rättning.
+\item Var noggrann med att dina tester innehåller fler fall än de som givits i exempel (se \ref{bank:exempel}), vilka kan behövas för mer omfattande testning och avlusning och efterfrågas på redovisningen.
 \end{itemize}
 
 \subsection{Obligatoriska uppgifter}
@@ -215,15 +127,15 @@ event match {
 
 Gör först klart projektets obligatoriska delar. Därefter kan du, om du vill, utöka ditt program enligt följande.
 
-\Task Skriv en eller flera av klasserna \code{Customer} och \code{BankAccount} i Java istället och använd dig av dessa i din Scala-kod.
+\Task Implementera ett nytt menyalternativ som skriver ut all kontohistorik för en given person. I historiken ska finnas typ av händelse med tillhörande parametrar, dåvarande saldo vid händelsen, såväl som datumet för händelsen. (Du kan ha nytta av denna funktion när du testar ditt program.)
 
-\Task Implementera ett nytt menyalternativ som skriver ut all kontohistorik för en given person. I historiken ska finnas typ av händelse med tillhörande parametrar, dåvarande saldo vid händelsen, såväl som datumet för händelsen.
+\Task Skriv en eller flera av klasserna \code{Customer} och \code{BankAccount} i Java istället och använd dig av dessa i din Scala-kod. (Detta är en nyttig uppgift som förberedelse inför efterkommande fördjupningskurs, som har Java som huvudspråk.)
 
 \subsection{Exempel på historikfil}
 
 I workspace-katalogen för denna projektuppgift medföljer en historikfil. Inläsning och utskrift ska ske med dess format. Varje rad representerar en händelse, och formatet för en rad är: \textbf{År  Månad  Dag  Timme  Minut  BankEventTyp  Argument}. De olika sorternas \code{BankEvent} representeras med följande bokstäver: D för \code{Deposit}, W för \code{Withdraw}, T för \code{Transfer}, N för \code{NewAccount} och E för \code{DeleteAccount}.
 
-\subsection{Exempel på körning av programmet}
+\subsection{Exempel på körning av programmet}\label{bank:exempel}
 
 Nedan visas möjliga exempel på körning av programmet. Data som matas in av användaren är markerad i fetstil.
 Ditt program måste inte se identiskt ut, men den övergripande strukturen såväl som resultat av körningen ska vara densamma.
