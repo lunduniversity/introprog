@@ -1750,16 +1750,14 @@ java.lang.ArithmeticException: integer overflow
 
 
 
-\WHAT{Dekorera \code{Int} med extra operatorer.}
+\WHAT{Extra operatorer för exakt multiplikation.}
 
 \QUESTBEGIN
 
-\Task\Uberkurs \what\footnote{En utmanande överkursuppgift som visar Scalas kraftfullhet. Se fördjupningslänkar i facit.}\\Kim Kodmagiker tycker att \code{Math.multiplyExact} är för krångligt att skriva och utökar därför typen \code{Int} med en extra operator:
+\Task\Uberkurs \what~Kim Kodmagiker tycker att \\\code{Math.multiplyExact} är för krångligt att skriva och utökar därför typen \code{Int} med en extra operator:
 
 \begin{Code}
-implicit class IntDecorator(val i: Int) extends AnyVal {
-  def *!(j: Int) = Math.multiplyExact(i,j)
-}
+extension (i: Int) def *!(j: Int) = Math.multiplyExact(i,j)
 \end{Code}
 
 \Subtask Klistra in koden ovan i REPL och prova den extra operatorn.
@@ -1786,30 +1784,20 @@ java.lang.ArithmeticException: integer overflow
 
 \end{REPL}
 
-Kort förklaring:
-\begin{itemize}
-\item \code{implicit class MinDekorator(x: Typ)} gör så att operationer i dekoratorklassen \code{MinDekorator} automatiskt görs tillgängliga på värden av typen \code{Typ}.%
-\footnote{Fördjupning: \url{http://docs.scala-lang.org/overviews/core/implicit-classes.html}}
-
-\item \code{extends AnyVal} gör så att kompilatorn försöker generera maskinkod som blir lika effektiv som vid direkt användning av det underliggande värdet.%
-\footnote{Fördjupning: \url{http://docs.scala-lang.org/overviews/core/value-classes.html}}
-\end{itemize}
-
 
 \SubtaskSolved
 
 \begin{Code}
-implicit class IntDecorator(val i: Int) extends AnyVal{
+extension (i: Int) 
   def *!(j: Int) = Math.multiplyExact(i,j)
   def +!(j: Int) = Math.addExact(i,j)
   def -!(j: Int) = Math.subtractExact(i,j)
-}
 \end{Code}
 
 
 \SubtaskSolved Det blir lätt väldigt kryptiskt med namn som består av flera specialtecken. Om du \emph{verkligen} vill ha sådana operatorer är det \emph{mycket} lämpligt att också erbjuda varianter i klartext:
 \begin{Code}
-implicit class IntDecorator(val i: Int) extends AnyVal{
+extension (i: Int)
   def mulExact(j: Int) = Math.multiplyExact(i,j)
   def *!(j: Int) = i mulExact j
 
@@ -1818,7 +1806,6 @@ implicit class IntDecorator(val i: Int) extends AnyVal{
 
   def subExact(j: Int) = Math.subtractExact(i,j)
   def -!(j: Int) = i subExact j
-}
 
 \end{Code}
 
