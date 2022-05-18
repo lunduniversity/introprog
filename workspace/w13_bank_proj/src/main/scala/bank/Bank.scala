@@ -1,5 +1,7 @@
 package bank
 
+import time.Date
+
 /**
  * A bank with no accounts and no history.
  */
