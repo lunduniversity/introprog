@@ -13,6 +13,6 @@
 | W10 | Arv, komposition            | arv, komposition, polymorfism, trait, extends, asInstanceOf, with, inmixning supertyp, subtyp, bastyp, override, Scalas typhierarki, Any, AnyRef, Object, AnyVal, Null, Nothing, topptyp, bottentyp, referenstyper, värdetyper, accessregler vid arv, protected, final, trait, abstrakt klass |
 | W11 | Kontextparametrar, api      | given, using, extension, ad hoc polymorfism, typklass, api, kodläsbarhet, granskningar |
 | W12 | Valfri fördjupning, Projekt | välj valfritt fördjupningsområde, påbörja projekt |
-| W13 | Repetition                  | träna på extentor, redovisa projekt |
+| W13 | Repetition                  | träna på extentor, redovisa projekt, träna inför muntligt prov |
 | W14 | Muntligt prov               |  |
 | T   | VALFRI TENTAMEN             |  |

@@ -150,7 +150,8 @@ trait Plan {
         """.stripTrim),
         //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
-    Module("Repetition", id = "examprep", exercise = "examprep", lab = "project1", contents = "träna på extentor, redovisa projekt"),
+    Module("Repetition", id = "examprep", exercise = "examprep", lab = "project1", 
+      contents = "träna på extentor, redovisa projekt, träna inför muntligt prov"),
 
     Module("Muntligt prov",
       id = "munta", exercise = "Munta", lab = "Munta", contents = """
@@ -196,13 +197,13 @@ trait Plan {
     else labNumOfWeek(w)
   }
 
-  lazy val startLp1 = Date(2021, 8, 30)
+  lazy val startLp1 = Date(2022, 8, 29)
 
-  lazy val startLp2 = Date(2021, 11, 1)
+  lazy val startLp2 = Date(2022, 10, 31)
 
-  lazy val ksdatum = Date(2021, 10, 27)
+  lazy val ksdatum = Date(2022, 10, 26)
 
-  lazy val tentadatum = Date(2022, 1, 8)
+  lazy val tentadatum = Date(2023, 1, 7)
 
   def weeksOf(date: Date, n: Int): Seq[String] =
     for (week <- 0 until n) yield date.addDays(week*7).workWeek
