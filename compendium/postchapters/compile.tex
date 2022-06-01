@@ -49,8 +49,8 @@ En integrerad utvecklingsmiljö \Eng{integrated development environment, IDE}, s
 \begin{longtable}{@{}r | p{0.8\textwidth}}
 \textit{Editor} & \textit{Beskrivning} \\ \hline
 
-VS Code & Öppen, fri och gratis. Finns för Linux, Windows, \& Mac. Är förinstallerad på LTH:s Linux-datorer och startas med kommandot \verb+code+. Öppenkällkodsprojektet startades av Microsoft och har en aktiv gemenskap med många utvecklare och många användbara tillägg \Eng{extensions}. Sök efter tillägget \textit{Scala Syntax (official)} och klicka ''install'' så får du syntaxfärgning för Scala. Med paketet \textit{Scala (Metals)} får du många extra IDE-funktioner.
-\newline \url{https://code.visualstudio.com/} \newline \url{https://scalameta.org/metals/docs/editors/vscode.html}\\
+VS Code & Öppen, fri och gratis. Finns för Linux, Windows, \& Mac. Är förinstallerad på LTH:s Linux-datorer och startas med kommandot \verb+code+. Öppenkällkodsprojektet startades av Microsoft och har en aktiv gemenskap med många utvecklare och många användbara tillägg \Eng{extensions}. Sök efter tillägget \texttt{scalameta.metals} och installera så får du syntaxfärgning och många andra IDE-funktioner för Scala.
+\newline \url{https://code.visualstudio.com/} \newline \url{https://scalameta.org/metals/docs/editors/vscode/#installation}\\
 
 Atom & Öppen, fri och gratis. Finns för Linux, Windows, \& Mac. Är förinstallerad på LTH:s Linux-datorer och startas med kommandot \verb+atom+. Öppenkällkodsprojektet startades av Github och har en aktiv gemenskap med många utvecklare och många användbara paket \Eng{packages}. Sök efter paketet \verb+language-scala+ och klicka ''install'' så får du syntaxfärgning för Scala. Med paketet \verb+ide-scala+ får du många extra IDE-funktioner.
 \newline \url{https://atom.io/} \newline \url{https://scalameta.org/metals/docs/editors/atom.html}\\
@@ -140,7 +140,7 @@ Då ska något som liknar följande skrivas ut, där \texttt{x} och \texttt{y} �
 \texttt{javac \JDKVersion.x.y}\\
 Om utskriften säger att \texttt{javac} saknas, installera JDK enl. nedan.
 
-Vi använder alltså JDK \JDKVersion~i kursen. Det går också bra att använda den äldre JDK 8, men JDK 9 eller 10 fungerar inte med alla verktyg vi använder och senare versioner än \JDKVersion~ kan också ge problem. Läs mer under ''Verktyg'' på kurshemsidan.
+Vi använder alltså JDK \JDKVersion~i kursen. Det går också bra att använda de äldre versionerna JDK 8 och JDK 11, men JDK 9 eller 10 fungerar inte med alla verktyg vi använder och senare versioner än \JDKVersion~ kan också ge problem. Läs mer under ''Verktyg'' på kurshemsidan.
 
 %Du kanske redan har enbart Java Runtime Environment (JRE) installerad, men inte JDK. Då saknar du Javakompilatorn \texttt{javac} m.m. och behöver installera JDK, se nedan. Du kan kolla om du har JRE genom att skriva \texttt{java -version} (alltså utan \texttt{c} efter \texttt{java}). Eller så har du redan JDK installerad men inte rätt katalog i din PATH. 
 
@@ -150,9 +150,9 @@ Vi använder alltså JDK \JDKVersion~i kursen. Det går också bra att använda 
 
 \subsection{Installera JDK}\label{appendix:compile:install-jdk}
 
-Det finns flera JDK-distributioner att välja mellan, varav OpenJDK och Oracle JDK är två exempel. Vi använder OpenJDK \JDKVersion~i kursen, som enklast installeras via \\ \url{https://adoptopenjdk.net/}. % För att installera JDK på din egen dator behöver du gå igenom flera steg, varav vissa behöver anpassas efter det operativsystem du kör, enligt nedan.
+Det finns flera JDK-distributioner att välja mellan, varav OpenJDK och Oracle JDK är två exempel. Vi använder OpenJDK i kursen, som kan installeras via \\ \url{https://adoptium.net/temurin/releases/?version=17}. 
 
-På kurshemsidan under ''Verktyg'' finns detaljerade instruktioner om hur du gör: \\ \url{http://cs.lth.se/pgk/verktyg}
+Om du installerar alla Scala-verktyg med hjälp av Coursier enligt instruktioner på kurshemsidan under ''Verktyg'', \url{http://cs.lth.se/pgk/verktyg} så kommer JDK att installeras automatiskt (om du inte redan har JDK). % För att installera JDK på din egen dator behöver du gå igenom flera steg, varav vissa behöver anpassas efter det operativsystem du kör, enligt nedan.
 
 %
 %
@@ -255,6 +255,9 @@ I Scala REPL får du se typinformation för variabler och metoder, vilket är ti
 Du startar Scala REPL med kommandot \texttt{scala} och skriver Scala-kod efter prompten \texttt{scala>} och kompilering+exekvering sker när du trycker Enter.
 \begin{REPLnonum}
 > scala
+Welcome to Scala 3.1.2 (17.0.2, Java OpenJDK 64-Bit Server VM).
+Type in expressions for evaluation. Or try :help.
+                                                                                                                               
 scala> 41 + 1
 val res0: Int = 42
 \end{REPLnonum}
@@ -275,17 +278,85 @@ Många av de kortkommandon som fungerar i terminalens kommandoskal, fungerar ock
 Med kommandot \texttt{:help} får du se en lista med specialkommandon för Scala REPL:
 
 \begin{REPLsmall}
-scala> :help                                                                    
 The REPL has several commands available:
 
-:help               print this summary
-:load <path>        interpret lines in a file
-:quit               exit the interpreter
-:type <expression>  evaluate the type of the given expression
-:doc <expression>   print the documentation for the given expression
-:imports            show import history
-:reset              reset the repl to its initial state, forgetting all session entries
+:help                    print this summary
+:load <path>             interpret lines in a file
+:quit                    exit the interpreter
+:type <expression>       evaluate the type of the given expression
+:doc <expression>        print the documentation for the given expression
+:imports                 show import history
+:reset [options]         reset the repl to its initial state, forgetting all session entries
+:settings <options>      update compiler options, if possible
+
+
 \end{REPLsmall}
+
+Du kan också starta Scala REPL med hjälpa av kommandot \code{scala-cli repl .} med ett blanktecken och en punkt på slutet. Punkten gör att alla \code{.scala}-filer som finns i aktuell katalog kompileras av Scala CLI och görs tillgänglig för användning i REPL.  
+
+\subsection{Scala Command Line Interface (Scala CLI)}\label{appendix:compile:scala-cli}
+
+Det finns sedan 2022 ett nytt smidigt kommandoradsgränssnitt \Eng{command line interface} för att kompilera, exekvera och paketera Scala-program som kallas \emph{Scala CLI}. Om du installerar Scala-verktygen enligt instruktioner på kurshemsidan under ''Verktyg'', \url{http://cs.lth.se/pgk/verktyg} så medföljer Scala CLI. 
+
+Här finns några användbara kommandon:
+\begin{itemize}
+\item Kör igång REPL i aktuell katalog med dina Scala- och Java-program automatiskt kompilerade och tillgängliggjorda i REPL. Med optionen \code{-S} anger du vilken version av Scala du vill köra:\\
+\code{scala-cli repl . -S 3}
+
+\item Kompilera alla Scala- och Java-program i aktuell katalog och se eventuella felmeddelanden. Med hjälp av \code{--watch} (kan förkortas till \code{-w}) så kompileras alla filer automatiskt vid ändring:\\
+\code{scala-cli compile . -S 3 --watch}
+
+\item Kör Scala- och Java-program i aktuell katalog med start av den topp-nivå-\code{def} som är märkt \code{@main} (om det finns flera får du en frågan om vilken \code{@main def} du vill köra).:\\
+\code{scala-cli run . -S 3}
+
+\item I stället för att ange Scala-version med optionen \code{-S} på kommandoraden kan du inuti ditt program, på första raden, skriva denna ''magiska'' kommentar:\\ 
+\code{//> using scala "3.1.2"} \\
+Då kommer Scala CLI att automatiskt välja (och vid behov ladda ned) önskad version av Scala-kompilatorn (notera \code{>} efter \texttt{//}):
+
+\item Skapa en exekverbar fil:\\
+\texttt{scala-cli package . -S 3}
+
+\item Om du skriver \texttt{scala-cli help} så får du se vad du mer kan göra:
+
+\begin{REPLsmall}
+> scala-cli help
+
+Scala CLI is a command-line tool to interact with the Scala language. It lets you compile, run, test, and 
+package your Scala code.
+
+Other commands:
+  export                                    Export current project to sbt or Mill
+  help                                      Print help message
+  install completions, install-completions  Installs completions into your shell
+  github secret create, gh secret create
+  github secret list, gh secret list
+  setup-ide                                 Generate a BSP file that you can import into your IDE
+  shebang                                   Like `run`, but more handy from shebang scripts
+  update                                    Update scala-cli - it works only for installation script
+
+Doctor commands:
+  doctor  Print details about this application
+
+Main commands:
+  clean                  Clean the workspace
+  compile                Compile Scala code
+  doc                    Generate Scaladoc documentation
+  fmt, format, scalafmt  Format Scala code
+  console, repl          Fire-up a Scala REPL
+  package                Compile and package Scala code
+  publish
+  publish local
+  run                    Compile and run Scala code.
+  test                   Compile and test Scala code
+
+Miscellaneous commands:
+  about    Print details about this application
+  version  Print `scala-cli` version
+
+See 'scala-cli <command> --help' to read about a specific subcommand. To see full help run 'scala-cli <command> --help-full'.
+To run another Scala CLI version, specify it with '--cli-version' before any other argument, like 'scala-cli --cli-version <version> args'.
+\end{REPLsmall}
+\end{itemize}
 
 
 % \begin{table}
