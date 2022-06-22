@@ -1,13 +1,13 @@
-I denna kurs använder vi programmeringsspråket **Scala** och exekveringsmiljön **OpenJDK**, samt byggverktyget `sbt` och editorn `vscode`. Läs om hur du använder dessa och andra programmeringsverktyg i **Appendix** i [kompendiet](https://cs.lth.se/pgk/compendium/). Verktygen finns förinstallerade på LTH:s [Linuxdatorer i E-huset](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/). Instruktioner om hur du installerar dessa verktyg på din egen dator finns i Appendix i kompendiet och nedan.
+I denna kurs använder vi programmeringsspråket **Scala** och olika programmeringsverktyg. Läs om hur du använder dessa programmeringsverktyg i **Appendix** i [kompendiet](https://cs.lth.se/pgk/compendium/). Verktygen finns förinstallerade på LTH:s [Linuxdatorer i E-huset](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/). Instruktioner om hur du installerar dessa verktyg på din egen dator finns nedan.
 
 ## Programmera på LTH:s datorer
 
 På LTH:s [Linuxdatorer i E-huset](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/) finns alla de verktyg vi använder i kursen förinstallerade:
 
 * Rekommenderad kodeditor: VS Code startas med kommandot `code`
-* Scala REPL; kommando: `scala`
+* Scala REPL; kommando: `scala` eller `scala-cli repl .`
 * Utvecklingsmiljön Kojo; kommando: `kojo`
-* Scala-kompilatorn; kommando: `scalac`
+* Scala-kompilatorn; kommando: `scalac` eller `scala-cli compile .`
 * Byggverktyget sbt; kommando: `sbt`
 * Java-kompilatorn; kommando: `javac`
 * Exekveringsmijlön JVM med tillhörande utvecklingsbibliotek (OpenJDK); kommando: `java`
@@ -16,28 +16,7 @@ På LTH:s [Linuxdatorer i E-huset](https://www.lth.se/lthin/datorsalar/vaara-dat
 
 ## Programmera på din egen dator 
 
-Du behöver följande verktyg på din egen dator: Kojo, OpenJDK, sbt, VS Code med tillägget Scala (Metals). Läs om dessa i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) och följ instruktionerna nedan om hur du installerar verktygen på din egen dator.
-
-
-### Installera Kojo
-
-Följ instruktioner här: [http://www.kogics.net/kojo-download](http://www.kogics.net/kojo-download)
-
-Vi använder utvecklingsmiljön Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera. Kojo används på [Vattenhallen Science Center](https://www.vattenhallen.lu.se/upplevelser/programmering/). 
-
-LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen här: [https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/](https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/)
-
-
-### Installera kodeditor
-
-* [**VS Code**](https://code.visualstudio.com/): rekommenderas i kursen, öppen källkod, alla plattformar. Installera tillägget **Scala Metals** via editorns tilläggshanterare (Extensions Ctrl+Shift+X), skriv i sök-rutan: *Metals*
-
-* [Atom](https://atom.io/): öppen källkod, alla plattformar, paketet Scala Metals finns att installera i editorns tilläggshanterare.
-
-* [Sublime Text](http://www.sublimetext.com/): stängd källkod, alla plattformar, paketet Scala Metals finns att installera i editorns tilläggshanterare.
-
-Läs mer om vad du kan göra med en kodeditor i appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) 
-
+Du behöver installera detta på din egen dator: OpenJDK, Scala, och VS Code med tillägget Scala (Metals). Läs mer om dessa verktyg i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) och följ instruktionerna nedan om hur du installerar verktygen på din egen dator.
 
 ### Starta terminalfönster
 
@@ -47,86 +26,92 @@ Många av de programmeringsverktyg vi använder körs via ett terminalfönster. 
 
 * **Windows**: 
     * För Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started) 
-    * Om du har en uppdaterad version av **Windows 10** och en någorlunda modern dator så rekommenderas **WSL2** som ger dig tillgång till Linux/Ubuntu direkt under Windows, följ instruktioner här och välj Ubuntu 20.04 (fråga ngn om hjälp om du kör fast):  [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-    * Du kan också köra den befintliga cmd-terminalen som inte kräver någon installation, följ instruktioner här [https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/](https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/) 
+    * Om du har en uppdaterad version av Windows 10 eller 11 och en någorlunda modern dator så rekommenderas **WSL**, helst version 2, som ger dig tillgång till Linux/Ubuntu direkt under Windows. För att installera WSL behöver du starta  **PowerShell** med admin-rättigheter så här: tryck på windows-knappen, skriv `powershell` och högerklicka och välj run as administrator. Följ vidare instruktioner här och välj att installera Ubuntu 22.04 (fråga ngn om hjälp om du kör fast):  [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10) När du installerat WSL följ instruktionerna under Linux-rubrikerna nedan för att installera kursens programmeringsverktyg under WSL/Ubuntu.
+    * Du kan också köra den befintliga men antika cmd-terminalen direkt i Windows som inte kräver någon installation, följ instruktioner här [https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/](https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/) och läs mer här om vilka kommando som finns i cmd här: [https://ss64.com/nt/](https://ss64.com/nt/)
 
 * **Mac**: Följ instruktioner här: [https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/](https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/)
 
 
-### Installera Java Development Kit (JDK)
 
-**Kontrollera om du redan har JDK: **
+### Installera Java Development Kit (OpenJDK)
+
 Du kanske redan har JDK installerat. Kontrollera detta genom att i ett terminalfönster skriva (observera avslutande c:et):
 
 ```
 javac -version
 ```
 
-Version 11 rekommenderas, men andra versioner kan ev. också fungera. Om utskriften säger att `javac` saknas, installera då OpenJDK enl. nedan.
+Om utskriften säger att `javac` saknas eller anger en annan version än version 17 eller 11, installera då OpenJDK enl. nedan.
 
-**Installera OpenJDK: **  Läs även instruktionerna i appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) innan du sätter igång.
-
-* Windows/Mac: Installera OpenJDK här [https://adoptopenjdk.net/](https://adoptopenjdk.net/)
- 
-    1. Välj att ladda ner OpenJDK **version 11**  (LTS) HotSpot **för ditt operativsystem**.
-    2. I hämtade filer dubbelklicka för installation med förifyllda val.
-    3. Starta om din dator.
-    4. Starta terminalfönster och kontrollera enligt ovan att `javac` och `java` ger rätt version.
-        * Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
+**Installera OpenJDK:** Läs även instruktionerna i appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) innan du sätter igång.
 
 * Linux/Ubuntu/WSL: Öppna terminalfönster och kör:
-    `sudo apt install openjdk-11-jdk`
+```
+sudo apt install openjdk-17-jdk openjdk-17-source
+```
+
+* Windows/Mac: Installera OpenJDK för ditt system härifrån: [https://adoptium.net/](https://adoptium.net/)
+ 
+    1. Välj att ladda ner OpenJDK **version 17**  (LTS) HotSpot **för ditt operativsystem**. 
+    2. Dubbelklicka på filen som laddas ned för att starta installationen. Om du får en varning ska du köra ändå genom att klicka på "Mer information" eller liknande. Under installationen välj alla dessa åtgärder: Update PATH, Associate .jar, Set JAVA_HOME, JavaSoft registry key. 
+    3. Starta om din dator.
+    4. Starta terminalfönster och kontrollera enligt ovan att `javac -version` ger rätt version. Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
 
 
+### Installera Scala med tillhörande verktyg
 
-### Gör `scala` och `scalac` tillgängligt i terminalen
+Scala med tillhörande verktyg installeras enklast med hjälp av det officiella installationsverktyget Coursier enligt nedan. Du får då bl.a. följande terminalverktyg som du kan läsa om i kompendiet: `scala`, `scalac`, `scala-cli`, `scaladoc`, `sbt`. 
 
-* **Linux/Ubuntu/WSL/MacOS**: Scala installeras lättast med **sdkman**:
-    * Testa att nedladdningsprogrammet `curl` finns på ditt system genom att skriva `curl --version` i terminalen. Om `curl` saknas så installera detta i terminalen genom att skriva:
-    ```
-    sudo apt install curl
-    ```
-    * Om du inte redan gjort det, installera **sdkman** genom att öppna ett terminalfönster och kopiera och klistra in följande, en rad i taget:
-    ```
-    curl -s "https://get.sdkman.io" | bash
-    source "$HOME/.sdkman/bin/sdkman-init.sh"
-    ```
-    * Installera Scala med kommandot `sdk` så här:
-    ```
-    sdk install scala
-    ```  
-    * Starta ett *nytt* terminalfönster och testa att skriva `scala -version` och om allt gått bra ska du få en utskrift som börjar med "Scala compiler version".
-    
-* **Windows**: För att ladda ner och installera Scala så att `scalac` och `scala` blir tillgängligt i terminalen i Windows, gör så här:
+* **Linux/Ubuntu/WSL**: 
     * Installera OpenJDK enligt instruktioner ovan. 
-    * Ladda ned filen install-scala.bat via länken [https://cs.lth.se/pgk/scala-windows](https://cs.lth.se/pgk/scala-windows) och spara den t.ex. i Downloads och dubbel-klicka på den. Ett terminalfönster öppnas och kör igång nedladdning och uppdatering av path. När den är klar är det bara att starta en ny terminal och köra `scala`.
-        * För att installera en specifik version av scala så kan man i terminalen ge versionsnummer som argument, t.ex:
-            ```
-            install-scala.bat 3.1.0-RC1
-            ```
-    * Om du har tillräckligt ny Windows-maskin rekommenderas även WSL (se ovan under "Starta terminalfönster") som gör att du kan köra Linux/Ubuntu under Windows och då installera ovan verktyg enligt instruktioner för Linux. 
-    * Det finns också några lovande alternativ under utveckling som ska göra det ännu enklare att komma igång med Scala, där `scala-cli` rekommenderas:
-        * `scala-cli` är ett nytt program som enkelt och smidigt kan kompilera och göra igång scala-program och REPL. Installera [msi-filen som är specifik för Windows](https://github.com/VirtuslabRnD/scala-cli/releases/download/nightly/scala-cli-x86_64-pc-win32.msi) och läs mer om hur man använder `scala-cli` i terminalen här: [https://virtuslabrnd.github.io/scala-cli/](https://virtuslabrnd.github.io/scala-cli/) 
-        * [Coursier](https://get-coursier.io/docs/cli-installation#windows) är ett avancerat system för installation och nedladdning som i sin tur kan installera kommandot `scala3-compiler` och `scala3-repl`. Kompilerade program måste tyvärr i skrivande stund köras direkt med `java`-kommandot, se längre ned i detta ärende: [https://github.com/coursier/coursier/issues/2058](https://github.com/coursier/coursier/issues/2058) 
+    * Testa om nedladdningsprogrammet `curl` finns på ditt system genom att skriva `curl --version` i terminalen. Om `curl` saknas så installera detta i terminalen genom att skriva: `sudo apt install curl`
+    * Installera Scala-verktygen med detta långa terminalkommando på en och samma rad som slutar med `./cs setup`:
+    ```
+    curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
+    ```
+    * Starta ett *nytt* terminalfönster och testa att skriva `scala -version` och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
+    
+* **Windows**: 
+    * Installera OpenJDK enligt instruktioner ovan. 
+    * Ladda ned filen [`cs-x86_64-pc-win32.zip`](https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-win32.zip) och spara den på valfritt ställe och dubbel-klicka på den när nedladdningen är klar. Följ instruktionerna och svara jakande. Om du får varningar så kör ändå genom att klicka "Mer information" eller liknande.
+    * Starta om din dator.
+    * Testa att skriva `scala -version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
+    * Om du har en tillräckligt ny Windows-maskin rekommenderas även WSL (se ovan under "Starta terminalfönster") som gör att du kan köra Linux/Ubuntu under Windows och då installera Scala-verktyg enligt instruktioner för Linux. 
+
+* **MacOS**: 
+    * Installera OpenJDK enligt instruktioner ovan. 
+    * Installera Scala-verktygen med detta långa terminalkommando på en och samma rad som slutar med `./cs setup`:
+    ```
+    curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-apple-darwin.gz | gzip -d > cs && chmod +x cs && (xattr -d com.apple.quarantine cs || true) && ./cs setup
+    ```
+    * Starta ett *nytt* terminalfönster och testa att skriva `scala -version` och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
 
 
-### Installera byggverktyget `sbt`
 
-Installera Scala Build Tool `sbt`: 
+### Installera kod-editorn VS Code och tillägget Scala Metals
 
-* **Linux/Ubuntu/WSL/MacOS**: 
-    * Installera **sdkman** om du inte redan gjort det (se ovan).
-    * Installera genom att skriva detta kommando i terminalen:
-      ```
-      sdk install sbt
-      ```
-    * Starta ett *nytt* terminalfönster och testa att skriva `sbt -version` och om allt gått bra ska du efter ett tag få en utskrift som börjar med "sbt version". 
+1. Installera **VS Code** för ditt system här: [https://code.visualstudio.com/Download](https://code.visualstudio.com/Download) 
+2. Installera tillägget **Scala Metals**. Du kan antingen göra detta via tilläggshanterare (Extensions) inne i VS Code eller via terminalen. 
+    - Inifrån VS Code: Tryck Ctrl+Shift+X och skriv i sök-rutan: ` Scala Metals`, markera tillägget *Scala (Metals)* och klicka *Install*. 
+    - I terminalen skriv: `code --install-extension scalameta.metals --force`
 
-* **Windows**: Ladda ner och kör [https://github.com/sbt/sbt/releases/download/v1.5.5/sbt-1.5.5.msi](https://github.com/sbt/sbt/releases/download/v1.5.5/sbt-1.5.5.msi)
-    * Innan du kör igång med sbt i en Windowsterminal är det bra att skriva `chcp 65001` för att särskilda tecken (t.ex. ÅÄÖ) ska fungera som de ska. 
+Läs mer om vad du kan göra med en kodeditor i appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) 
 
-Läs mer om hur du använder `sbt` i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/). 
 
+### Installera Kojo
+
+Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera. Kojo används på [Vattenhallen Science Center](https://www.vattenhallen.lu.se/upplevelser/programmering/). 
+
+
+Det finns 3 olika sätt att köra Kojo:
+
+1. Använd kodbiblioteket [`kojo-lib`](https://github.com/litan/kojo-lib) (rekommenderas). Fungerar med nya Scala 3. Se instruktioner i kompendiet. Ingen extra installation behövs.
+
+2. Kojo-Desktop: en nybörjarvänlig utvecklingsmiljö med lättanvänd editor. Använder gamla Scala 2. Följ installationsinstruktioner för ditt system här: [http://www.kogics.net/kojo-download](http://www.kogics.net/kojo-download)
+
+3. Kör Kojo i din webbläsare. Använder gamla Scala 2 och en begränsad uppsättning av de kommandon som finns i Kojo Desktop. Skriv och kör din kod direkt här: [http://kojo.lu.se/](http://kojo.lu.se/)
+
+LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen här: [https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/](https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/)
 
 
 ## Hårdvara
@@ -139,7 +124,7 @@ När du studerar hemma behöver du en bra arbetsplats och en dator med Linux (t.
 
 När du ska programmera är det bra med en dator med minst 8GB RAM och 2.5GHz CPU. Du kan t.ex. köpa dator här: [Compliq i Lund](https://www.compliq.se/bygga-dator/), [Webbhallen i Malmö](https://www.webhallen.com/se/store/22-Malmo-Triangeln), [Inet i Malmö](https://www.inet.se/info/243/inet-malmo)
 
-Både [Lenovo](https://www.lenovo.com/se/sv/studentrabatt/) och [Dell](https://www.dell.com/sv-se/shop/dell-advantage/cp/students) har studentrabatt och säljer både stationära och bärbara datorer. De har även datorer med [Linux förinstallerat](https://news.itsfoss.com/best-linux-laptops-2021/).
+Både [Lenovo](https://www.lenovo.com/se/sv/studentrabatt/) och [Dell](https://www.dell.com/sv-se/shop/dell-advantage/cp/students) har studentrabatt och säljer både stationära och bärbara datorer.
 
 Om du letar efter en bra stationär dator rekommenderas senaste modellen av [Siago](https://www.atlastsolutions.com/sigao/) som är fläktlös och därmed helt tyst. Sigao kan fås med Ubuntu eller Windows förinstallerat.
 
