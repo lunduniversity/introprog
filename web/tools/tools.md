@@ -122,7 +122,7 @@ När du studerar hemma behöver du en bra arbetsplats och en dator med Linux (t.
 
 ### Köpa egen dator
 
-När du ska programmera är det bra med en dator med minst 8GB RAM och 2.5GHz CPU. Du kan t.ex. köpa dator här: [Compliq i Lund](https://www.compliq.se/bygga-dator/), [Webbhallen i Malmö](https://www.webhallen.com/se/store/22-Malmo-Triangeln), [Inet i Malmö](https://www.inet.se/info/243/inet-malmo)
+När du ska programmera är det bra med en dator med minst 8GB RAM och 2.5GHz CPU. Du kan t.ex. köpa dator här: [Compliq i Lund](https://www.compliq.se/bygga-dator/), [Webbhallen i Malmö](https://www.webhallen.com/se/store/30-Malmo-City), [Inet i Malmö](https://www.inet.se/info/243/inet-malmo)
 
 Både [Lenovo](https://www.lenovo.com/se/sv/studentrabatt/) och [Dell](https://www.dell.com/sv-se/shop/dell-advantage/cp/students) har studentrabatt och säljer både stationära och bärbara datorer.
 
