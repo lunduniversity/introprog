@@ -26,8 +26,8 @@ Många av de programmeringsverktyg vi använder körs via ett terminalfönster. 
 
 * **Windows**: 
     * För Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started) 
-    * Om du har en uppdaterad version av Windows 10 eller 11 och en någorlunda modern dator så rekommenderas **WSL**, helst version 2, som ger dig tillgång till Linux/Ubuntu direkt under Windows. För att installera WSL behöver du starta  **PowerShell** med admin-rättigheter så här: tryck på windows-knappen, skriv `powershell` och högerklicka och välj run as administrator. Följ vidare instruktioner här och välj att installera Ubuntu 22.04 (fråga ngn om hjälp om du kör fast):  [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10) När du installerat WSL följ instruktionerna under Linux-rubrikerna nedan för att installera kursens programmeringsverktyg under WSL/Ubuntu.
     * Du kan också köra den befintliga men antika cmd-terminalen direkt i Windows som inte kräver någon installation, följ instruktioner här [https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/](https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/) och läs mer här om vilka kommando som finns i cmd här: [https://ss64.com/nt/](https://ss64.com/nt/)
+    * Om du har en uppdaterad version av Windows 10 eller 11 så rekommenderas också **WSL**, helst version 2, som ger dig tillgång till Linux/Ubuntu direkt under Windows i ett separat filsystem. För att installera WSL behöver du starta  **PowerShell** med admin-rättigheter så här: tryck på windows-knappen, skriv `powershell` och högerklicka och välj run as administrator. Följ vidare instruktioner här och välj att installera Ubuntu 22.04 (fråga ngn om hjälp om du kör fast):  [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10) När du installerat WSL följ instruktionerna under **Linux-rubrikerna** nedan för att installera kursens programmeringsverktyg under WSL/Ubuntu. Det finns även andra sätt att köra Linux t.ex. med VirtualBox eller Dual Boot (kräver att du har minst 25GB extra utrymme på disken och att du krymper din Windows-partition och slår på legacy boot i BIOS) eller att du helt ersätter Windows med Ubuntu - fråga någon medstudent som vet hur det går till om råd och hjälp om du vill installera Ubuntu "på riktigt". 
 
 * **Mac**: Följ instruktioner här: [https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/](https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/)
 
@@ -55,7 +55,7 @@ sudo apt install openjdk-17-jdk openjdk-17-source
     1. Välj att ladda ner OpenJDK **version 17**  (LTS) HotSpot **för ditt operativsystem**. 
     2. Dubbelklicka på filen som laddas ned för att starta installationen. Om du får en varning ska du köra ändå genom att klicka på "Mer information" eller liknande. Under installationen välj alla dessa åtgärder: Update PATH, Associate .jar, Set JAVA_HOME, JavaSoft registry key. 
     3. Starta om din dator.
-    4. Starta terminalfönster och kontrollera enligt ovan att `javac -version` ger rätt version. Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
+    4. Starta terminalfönster och kontrollera att `javac -version` ger rätt version. Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
 
 
 ### Installera Scala med tillhörande verktyg
