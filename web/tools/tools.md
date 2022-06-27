@@ -39,7 +39,7 @@ Många av de programmeringsverktyg vi använder körs via ett terminalfönster. 
 Du kanske redan har JDK installerat. Kontrollera detta genom att i ett terminalfönster skriva (observera avslutande c:et):
 
 ```
-javac -version
+javac --version
 ```
 
 Om utskriften säger att `javac` saknas eller anger en annan version än version 17 eller 11, installera då OpenJDK enl. nedan.
@@ -56,7 +56,7 @@ sudo apt install openjdk-17-jdk openjdk-17-source
     1. Välj att ladda ner OpenJDK **version 17**  (LTS) HotSpot **för ditt operativsystem**. 
     2. Dubbelklicka på filen som laddas ned för att starta installationen. Om du får en varning ska du köra ändå genom att klicka på "Mer information" eller liknande. Under installationen välj alla dessa åtgärder: Update PATH, Associate .jar, Set JAVA_HOME, JavaSoft registry key. 
     3. Starta om din dator.
-    4. Starta terminalfönster och kontrollera att `javac -version` ger rätt version. Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
+    4. Starta terminalfönster och kontrollera att `javac --version` ger rätt version. Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
 
 
 ### Installera Scala med tillhörande verktyg
@@ -70,13 +70,13 @@ Scala med tillhörande verktyg installeras enklast med hjälp av det officiella 
     ```
     curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
     ```
-    * Starta ett *nytt* terminalfönster och testa att skriva `scala -version` och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
+    * Starta ett *nytt* terminalfönster och testa att skriva `scala --version` och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
     
 * **Windows**: 
     * Installera OpenJDK enligt instruktioner ovan. 
     * Ladda ned filen [`cs-x86_64-pc-win32.zip`](https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-win32.zip) och spara den på valfritt ställe och dubbel-klicka på den när nedladdningen är klar. Följ instruktionerna och svara jakande. Om du får varningar så kör ändå genom att klicka "Mer information" eller liknande.
     * Starta om din dator.
-    * Testa att skriva `scala -version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
+    * Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
     * Om du har en tillräckligt ny Windows-maskin rekommenderas även WSL (se ovan under "Starta terminalfönster") som gör att du kan köra Linux/Ubuntu under Windows och då installera Scala-verktyg enligt instruktioner för Linux. 
 
 * **MacOS**: 
@@ -85,7 +85,7 @@ Scala med tillhörande verktyg installeras enklast med hjälp av det officiella 
     ```
     curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-apple-darwin.gz | gzip -d > cs && chmod +x cs && (xattr -d com.apple.quarantine cs || true) && ./cs setup
     ```
-    * Starta ett *nytt* terminalfönster och testa att skriva `scala -version` och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
+    * Starta ett *nytt* terminalfönster och testa att skriva `scala --version` och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
 
 
 
