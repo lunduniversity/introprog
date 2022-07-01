@@ -341,11 +341,11 @@ basicstyle=\ttfamily\fontsize{10}{12}\selectfont,%
             language=Scala,#1]{#3}}
 
 \lstnewenvironment{Code}[1][]{%
-    \lstset{#1}%
+    \lstset{language=Scala,#1}%
 }{}
 
 \lstnewenvironment{CodeSmall}[1][]{%
-    \lstset{basicstyle=\ttfamily\fontsize{10}{12}\selectfont,#1}%
+    \lstset{language=Scala,basicstyle=\ttfamily\fontsize{10}{12}\selectfont,#1}%
 }{}
 
 \lstnewenvironment{REPL}[1][]{%
