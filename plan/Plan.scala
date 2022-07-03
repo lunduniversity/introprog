@@ -138,9 +138,9 @@ trait Plan {
       | trait, abstrakt klass, 
       """.stripTrim),
 
-    Module("Kontextparametrar, api",
+    Module("Kontextuella abstraktioner, api",
       id = "context", exercise = "context", lab = "snake1", contents = """
-      | given, using, extension, ad hoc polymorfism, typklass,
+      | givet värde, kontextparameter, kontextgräns, generiska extensionsmetoder, ad hoc polymorfism, typklass,
       | api, kodläsbarhet, granskningar
       """.stripTrim),
 
