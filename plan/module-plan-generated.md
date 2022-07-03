@@ -14,5 +14,5 @@
 | W11 | Kontextuella abstraktioner, api | givet värde, kontextparameter, kontextgräns, generiska extensionsmetoder, ad hoc polymorfism, typklass, api, kodläsbarhet, granskningar |
 | W12 | Valfri fördjupning, Projekt     | välj valfritt fördjupningsområde, påbörja projekt |
 | W13 | Repetition                      | träna på extentor, redovisa projekt, träna inför muntligt prov |
-| W14 | Muntligt prov                   |  |
+| W14 | MUNTLIGT PROV                   |  |
 | T   | VALFRI TENTAMEN                 |  |

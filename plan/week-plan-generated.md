@@ -14,5 +14,5 @@
 | W11 | 21/11-25/11 | Lp2V4 | Kontextuella abstraktioner, api | F21 F22 | context     | snake1      |
 | W12 | 28/11-2/12  | Lp2V5 | Valfri fördjupning, Projekt     | F23 F24 | extra       | Projekt0    |
 | W13 | 5/12-9/12   | Lp2V6 | Repetition                      | F25 F26 | examprep    | Projekt1    |
-| W14 | 12/12-16/12 | Lp2V7 | Muntligt prov                   | F27 F28 | Munta       | Munta       |
+| W14 | 12/12-16/12 | Lp2V7 | MUNTLIGT PROV                   | F27 F28 | Munta       | Munta       |
 | T   | 7/1         | TP2   | VALFRI TENTAMEN                 | --      | --          | --          |

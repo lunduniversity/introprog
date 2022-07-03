@@ -153,7 +153,7 @@ trait Plan {
     Module("Repetition", id = "examprep", exercise = "examprep", lab = "project1", 
       contents = "träna på extentor, redovisa projekt, träna inför muntligt prov"),
 
-    Module("Muntligt prov",
+    Module("MUNTLIGT PROV",
       id = "munta", exercise = "Munta", lab = "Munta", contents = """
       """.stripTrim),
 
