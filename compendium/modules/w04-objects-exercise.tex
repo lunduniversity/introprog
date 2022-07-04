@@ -299,7 +299,65 @@ val res3: Int = 42
 
 
 
+\WHAT{Extensionsmetoder.}
+
+\QUESTBEGIN
+
+\Task \what~Extensionsmetoder möjliggör punktnotation på värden av befintliga typer.
+
+\Subtask Skapa extensionsmetod på heltal som möjliggör inkrementering. 
+\begin{REPLnonum}
+scala> 42.inc
+val res0: Int = 43
+\end{REPLnonum} 
+
+\Subtask Skapa extensionsmetod på heltal som möjliggör dekrementering.
+\begin{REPLnonum}
+scala> 42.dec
+val res1: Int = 41
+\end{REPLnonum}
+
+\Subtask Sammanför extensionsmetoderna i så att de blir \emph{kollektiva}, alltså under en och samma \code{extension}. Använd även \code{math.incrementExact} och \code{math.decrementExact} efter att du söka upp dokumentationen för dessa här: \url{https://docs.oracle.com/en/java/javase/17/docs/api/}
+
+\Subtask Vad är fördelen med  \code{math.incrementExact} och \code{math.decrementExact}?
+
+
 \WHAT{Jar-fil. Classpath. Paket.}
+
+\SOLUTION
+
+\TaskSolved \what~
+
+\SubtaskSolved 
+\begin{REPLnonum}
+scala> extension (i: Int) def inc = i + 1
+\end{REPLnonum}
+
+\SubtaskSolved 
+\begin{REPLnonum}
+scala> extension (i: Int) def dec = i - 1
+\end{REPLnonum}
+
+\SubtaskSolved 
+\begin{Code}
+extension (i: Int) 
+  def inc = math.incrementExact(i)
+  def dec = math.decrementExact(i)
+\end{Code}
+
+\SubtaskSolved Med  \code{math.incrementExact} och \code{math.decrementExact} ges exception om vi går över gränsen:
+\begin{REPLnonum}
+scala> math.incrementExact(Int.MaxValue)
+java.lang.ArithmeticException: integer overflow
+  at java.base/java.lang.Math.incrementExact(Math.java:1023)
+  at scala.math.incrementExact(package.scala:418)
+  ... 34 elided
+\end{REPLnonum}
+
+
+\QUESTEND
+
+
 
 \QUESTBEGIN
 
@@ -687,6 +745,17 @@ object Test:
 
 \Subtask Vilket av objekten i modulen \code{stringUtils} har tillstånd? Är det förändringsbart?
 
+\Subtask Ändra metoderna i singelobjektet \code{count} så att de blir extensionsmetoder och kan anropas så här:
+\begin{REPLnonum}
+scala> import stringUtils.count
+
+scala>  val s = "Hejsan hoppsan. Gurka är gott."
+val s: String = Hejsan hoppsan. Gurka är gott.
+                                                                                                                               
+scala>  (s.nbrOfLetters, s.nbrOfWords, s.nbrOfSentences)
+val res0: (Int, Int, Int) = (24,5,2)
+\end{REPLnonum}
+
 
 \SOLUTION
 
@@ -723,6 +792,16 @@ Fem     myror är fler än fyra elefanter. Ät gurka. Galaxer i mina braxer. Tom
 \end{REPLnonum}
 
 \SubtaskSolved  Objektet \code{statistics} har ett förändringsbart tillstånd i variabeln \code{history}. Tillståndet ändras vid anrop av \code{printFreq}.
+
+\SubtaskSolved
+\begin{Code}
+  object count:
+    extension (s: String)
+      def nbrOfLetters:Int = s.count(_.isLetter)
+      def nbrOfWords:Int = split.words(s).size
+      def nbrOfSentences: Int = split.sentences(s).size  
+\end{Code}
+
 
 \QUESTEND
 
