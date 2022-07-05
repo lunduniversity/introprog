@@ -11,13 +11,7 @@ This is on-going work, and the first instance of the course was given in 2016 at
 
 ## How to use this repo
 
-* Download latest published version of the on-line course material from the [course homepage at Lund University](https://cs.lth.se/pgk/download/):
-
-  - [compendium1.pdf](https://fileadmin.cs.lth.se/pgk/compendium1.pdf)  with lectures and assignments for the first half of the course, formatted for print.
-
-  - [compendium2.pdf](https://fileadmin.cs.lth.se/pgk/compendium2.pdf)  with lectures and assignments for the second half of the course, formatted for print.
-
-  - [compendium.pdf](https://fileadmin.cs.lth.se/pgk/compendium.pdf)  with both parts above in one pdf formatted for easy screen readability and Ctrl+F search.
+* Download latest stable version of the on-line course material from the [course homepage at Lund University](https://cs.lth.se/pgk/download/)
 
 * Use a cached version or re-compile the latest snapshot version, possibly in an inconsistent state under update, of the most recent version of the course material via LaTeX.Online (if your click triggers a re-compile it may take a while before the pdf is ready; if the server is not responding then try again later):
 
@@ -31,7 +25,7 @@ This is on-going work, and the first instance of the course was given in 2016 at
 
 * Build it locally using `sbt build` as explained in "How to build" below.
 
-* Download a stable, but possibly old, released version of the course material on the [release page](https://github.com/lunduniversity/introprog/releases) that is updated before each course instance starts in late august each year.
+* Download a stable, but possibly old, released version course material on the [release page](https://github.com/lunduniversity/introprog/releases) frozen at time of printing. The release page is updated at least before the start of each course instance in August each year.
 
 
 ## Contents of this repo
