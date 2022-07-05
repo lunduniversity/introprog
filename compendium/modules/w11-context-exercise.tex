@@ -4,10 +4,7 @@
 
 \ifPreSolution
 
-
 \Exercise{\ExeWeekELEVEN}\label{exe:W11}
-
-\TODO övningar på given using, extensionsmetoder, typklasser, Ordering etc.
 
 \begin{Goals}
 \item \TODO Fler mål här!
@@ -31,6 +28,8 @@
 \fi
 
 
+
+
 \WHAT{Användning av givna värden.}
 
 \QUESTBEGIN
@@ -50,6 +49,119 @@
 
 
 \QUESTEND
+
+\AdvancedTasks %%%%%%%%%%%
+
+
+\WHAT{Varians och typgränser.}
+
+\QUESTBEGIN
+
+\Task  \what~ Koden nedan är en modell av husdjur på Jorden med följande innebörd: Husdjur kan vara friska eller sjuka och föds i normalfallet friska. Det kan finnas många katter och hundar, som alla är olika slags husdjur.
+
+\begin{Code}
+trait Pet(var isHealthy: Boolean = true)
+class Cat extends Pet()
+class Dog extends Pet()
+
+\end{Code}
+
+\Subtask Prova nedan i REPL och förklara vad som händer.
+\begin{REPLnonum}
+scala> val v: Vector[Pet] = Vector[Cat](Cat())
+
+scala> val s: Set[Pet] = Set[Cat](Cat())
+
+scala> :settings -explain
+
+scala> val s: Set[Pet] = Set[Cat](Cat())
+\end{REPLnonum} 
+
+\Subtask Det ska finnas veterinärer som kan behandla husdjur och göra dem friska. Varför fungerar inte nedan kod? Är det ett kompileringsfel eller körtidsfel?
+
+\begin{Code}
+class Vet[-A]:
+  def treat(x: A): Unit = x.isHealthy = true
+\end{Code}
+
+\Subtask Inför en typgräns i veterinärens typparametern som åtgärdar felet.
+
+\Subtask Skriv valfri kod som visar 1) att kompilatorn tillåter kattveterinärer att behandla katter men 2) förhindrar att kattveterinärer får behandla godtyckliga husdjur och att 3) en veterinär som har komptens att behandla godtyckliga husdjur kan behandla både katter och hundar. Förklara varför kompilatorn tillåter/förhindrar detta.
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+\SubtaskSolved 
+\begin{itemize}
+  \item Samlingen \code{Vector} är kovariant och därmed flexibel i sin typparameter. Kompilatorn betraktar \code{Vector[Cat]} som en subtyp till \code{Vector[Pet]} eftersom \code{Cat} är en subtyp till \code{Pet}. 
+  \item Samlingen \code{Set} är invariant och därmed inte flexibel i sin typparameter. \code{Set[Cat]} är alltså \emph{inte} en subtyp till \code{Set[Pet]} \emph{även} om \code{Cat} är en subtyp till \code{Pet}.  
+  \item Med \code{:settings -explain} ger kompilatorn en längre utskrift som förklarar den bevisföring som skedde under kompileringens typkontroll.
+\end{itemize}
+
+
+
+\SubtaskSolved Det blir kompileringsfel då metoden \code{isHealthy} ej existerar för godtycklig typ.
+
+\SubtaskSolved
+\begin{Code}
+class Vet[-A <: Pet]:
+  def treat(x: A): Unit = x.isHealthy = true
+\end{Code}
+
+\SubtaskSolved Veterinären \code{Vet} är flexibel i sin typparameter och minustecknet anger kontravarians och därmed att \code{Vet[Pet]} är en subtyp till \code{Vet[Cat]} då \code{Cat} är en subtyp till \code{Pet}. 
+\begin{REPL}
+scala> val pinkPanther = Cat()
+val pinkPanther: Cat = Cat@33e7ece5
+
+scala> val somePet: Pet = Cat()
+val somePet: Pet = Cat@57f1cb96
+
+scala> val catVet = Vet[Cat]()
+val catVet: Vet[Cat] = Vet@1060e784
+
+scala> pinkPanther.isHealthy = false
+
+scala> catVet.treat(pinkPanther)
+
+scala> pinkPanther.isHealthy
+val res2: Boolean = true
+
+scala> somePet.isHealthy = false
+
+scala> catVet.treat(somePet)
+-- [E007] Type Mismatch Error: --------------
+1 |catVet.treat(somePet)
+  |             ^^^^^^^
+  |             Found:    (somePet : Pet)
+  |             Required: Cat
+
+scala> val powerVet = Vet[Pet]()
+val powerVet: Vet[Pet] = Vet@2eb90ae9
+
+scala> pinkPanther.isHealthy = false
+
+scala> powerVet.treat(pinkPanther)
+
+scala> pinkPanther.isHealthy
+val res3: Boolean = true
+
+scala> val pluto = Dog()
+val pluto: Dog = Dog@6f27db5d
+
+scala> pluto.isHealthy = false
+
+scala> powerVet.treat(pluto)
+
+scala> pluto.isHealthy
+val res4: Boolean = true
+
+\end{REPL}
+
+\QUESTEND
+
+
 
 
 \WHAT{Typklasser och kontextparametrar.}
