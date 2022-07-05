@@ -3,35 +3,36 @@
 ![Build Status](https://github.com/lunduniversity/introprog/actions/workflows/main.yml/badge.svg)
 
 
-This is the repo of a course given by Lund University called "Introduction to Programming" using Scala and Java. The repo contains course material in Swedish and some English along with code examples and libraries used in exercises and labs.
+This is the repo of a course given by Lund University called "Introduction to Programming" using Scala. The repo contains course material in Swedish and some English along with code examples and libraries used in exercises and labs.
 
 Course homepage (in Swedish): http://cs.lth.se/pgk/
 
-This is on-going work, and the first instance of the course was given in 2016 at Lund University. A new instance of the course is given each fall semester.
+This is on-going work, and the first instance of the course was given in 2016 at Lund University. A new instance of the course is given each fall semester. In 2021 the course migrated to Scala 3.
 
 ## How to use this repo
 
-* Download a stable, but possibly old, released version of the course material on the [release page](https://github.com/lunduniversity/introprog/releases) that is updated before each course instance starts in late august each year.
-
 * Download latest published version of the on-line course material from the [course homepage at Lund University](https://cs.lth.se/pgk/download/):
 
-  - [compendium1.pdf](https://fileadmin.cs.lth.se/pgk/compendium1.pdf)  with lectures and assignments for the first half of the course, formatted for print
+  - [compendium1.pdf](https://fileadmin.cs.lth.se/pgk/compendium1.pdf)  with lectures and assignments for the first half of the course, formatted for print.
 
-  - [compendium2.pdf](https://fileadmin.cs.lth.se/pgk/compendium2.pdf)  with lectures and assignments for the second half of the course, formatted for print
+  - [compendium2.pdf](https://fileadmin.cs.lth.se/pgk/compendium2.pdf)  with lectures and assignments for the second half of the course, formatted for print.
 
-  - [compendium.pdf](https://fileadmin.cs.lth.se/pgk/compendium.pdf)  with both parts above in one pdf formatted for easy screen readability
+  - [compendium.pdf](https://fileadmin.cs.lth.se/pgk/compendium.pdf)  with both parts above in one pdf formatted for easy screen readability and Ctrl+F search.
 
-* Build it locally using `sbt bulild` as explained in more detail below in [How to build](https://github.com/lunduniversity/introprog#how-to-build-this-repo)
+* Use a cached version or re-compile the latest snapshot version, possibly in an inconsistent state under update, of the most recent version of the course material via LaTeX.Online (if your click triggers a re-compile it may take a while before the pdf is ready; if the server is not responding then try again later):
 
-* Use a cached version or re-compile the very latest snapshot version, possibly in an inconsistent state under update, of the most recent build of the course material via LaTeX.Online (if your click triggers a re-compile it may take a while before the pdf is ready; if the server is not responding, try later):
+  - [compendium1.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium1.tex&command=pdflatex)  with lectures and assignments for the first half of the course, formatted for print.
 
-  - [compendium1.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium1.tex&command=pdflatex)  with lectures and assignments for the first half of the course, formatted for print
+  - [compendium2.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium2.tex&command=pdflatex)  with lectures and assignments for the second half of the course, formatted for print.
 
-  - [compendium2.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium2.tex&command=pdflatex)  with lectures and assignments for the second half of the course, formatted for print
-
-  - [compendium.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium.tex&command=pdflatex)  with both parts above in one pdf formatted for easy screen readability
+  - [compendium.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium.tex&command=pdflatex)  with both parts above in one pdf formatted for easy screen readability and Ctrl+F search.
 
   - Thanks to [LaTeX.Online](https://latexonline.cc) for their amazing cloud service!
+
+* Build it locally using `sbt build` as explained in "How to build" below.
+
+* Download a stable, but possibly old, released version of the course material on the [release page](https://github.com/lunduniversity/introprog/releases) that is updated before each course instance starts in late august each year.
+
 
 ## Contents of this repo
 
