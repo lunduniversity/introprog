@@ -78,7 +78,7 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 %https://tex.stackexchange.com/questions/81899/what-does-running-in-backwards-compatibility-mode-mean-and-what-should-i-fix-t
 %\pgfplotsset{compat=newest} 
 %\pgfplotsset{compat=1.13} 
-\pgfplotsset{compat=1.15} 
+\pgfplotsset{compat=1.14} 
 
 
 %https://www.sharelatex.com/blog/2013/08/29/tikz-series-pt3.html
