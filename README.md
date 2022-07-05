@@ -11,21 +11,27 @@ This is on-going work, and the first instance of the course was given in 2016 at
 
 ## How to use this repo
 
-* Download a stable, but possibly old, released version of the course material on the [release page](https://github.com/lunduniversity/introprog/releases)
+* Download a stable, but possibly old, released version of the course material on the [release page](https://github.com/lunduniversity/introprog/releases) that is updated before each course instance starts in late august each year.
 
-* Download the current course material from the [course homepage at Lund University](http://cs.lth.se/pgk/litteratur/)
+* Download latest published version of the on-line course material from the [course homepage at Lund University](https://cs.lth.se/pgk/download/):
 
-* Download the very latest snapshot version, possibly in an inconsistent state under update, of the most recent build of the course material via LaTeX.Online:
+  - [compendium1.pdf](https://fileadmin.cs.lth.se/pgk/compendium1.pdf)  with lectures and assignments for the first half of the course, formatted for print
 
-  - [compendium1.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium1.tex&command=pdflatex)  with lectures and assigmnets for the first half of the course, formatted for print
+  - [compendium2.pdf](https://fileadmin.cs.lth.se/pgk/compendium2.pdf)  with lectures and assignments for the second half of the course, formatted for print
 
-  - [compendium2.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium2.tex&command=pdflatex)  with lectures and assigmnets for the second half of the course, formatted for print
+  - [compendium.pdf](https://fileadmin.cs.lth.se/pgk/compendium.pdf)  with both parts above in one pdf formatted for easy screen readability
+
+* Build it locally using `sbt bulild` as explained in more detail below in [How to build](https://github.com/lunduniversity/introprog#how-to-build-this-repo)
+
+* Use a cached version or re-compile the very latest snapshot version, possibly in an inconsistent state under update, of the most recent build of the course material via LaTeX.Online (if your click triggers a re-compile it may take a while before the pdf is ready; if the server is not responding, try later):
+
+  - [compendium1.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium1.tex&command=pdflatex)  with lectures and assignments for the first half of the course, formatted for print
+
+  - [compendium2.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium2.tex&command=pdflatex)  with lectures and assignments for the second half of the course, formatted for print
 
   - [compendium.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium.tex&command=pdflatex)  with both parts above in one pdf formatted for easy screen readability
 
-  - Thanks to [LaTeX.Online](https://latexonline.cc) for their cloud service!
-
-* Download the [workspace](https://github.com/lunduniversity/introprog/blob/master/lib/workspace.zip) to be used with your favorite code editor and IDE. See instructions in appendices in `compendium.pdf` above.
+  - Thanks to [LaTeX.Online](https://latexonline.cc) for their amazing cloud service!
 
 ## Contents of this repo
 
@@ -40,7 +46,7 @@ The main directories are:
 * `refs` extra readings, background material
 * `teachers` information for teachers
 
-## How to build this repo
+## How to build
 
 * Install sbt: https://www.scala-sbt.org/download.html
 
@@ -53,7 +59,7 @@ The main directories are:
   * `sbt build` run both the commands `gen` and `pdf` in sequence
 
 
-## How to contribute to this repo
+## How to contribute
 
 ### Fork and clone
 
@@ -153,13 +159,11 @@ Here are some other inspiring style guides that illustrate the variety in what d
 
 # License
 
-Copyright &copy; 2015-2018. Dept. of Computer Science at Lund University, Lund, Sweden.
+This work is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).
+
+Copyright &copy; 2015-2022 [Bjorn Regnell](https://github.com/bjornregnell) 
 
 Contributors: https://github.com/lunduniversity/introprog/blob/master/contributors.tex
-
-This work is licensed under a
-Creative Commons Attribution-ShareAlike 4.0 International License.
-
 
 You are free to:
 
@@ -172,6 +176,3 @@ Under the following terms:
 * Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
 *  ShareAlike — If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
 * No additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
-
-
-See http://creativecommons.org/licenses/by-sa/4.0/
