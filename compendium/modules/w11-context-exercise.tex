@@ -30,15 +30,43 @@
 
 
 
-\WHAT{Användning av givna värden.}
+\WHAT{Lösning på konfigurationsproblemet med hjälp av givna värden.}
 
 \QUESTBEGIN
 
-\Task  \what~  \TODO ...
+\Task  \what~ Antag att vi vill kunna konfigurera beteendet hos en funktion för att göra den mer flexibel. Nedan visas tre principiellt olika sätt att göra detta på för en funktion \code{greet} som skriver ut en hälsning: 1) en globalt åtkomlig variabel, 2) defaultargument, samt 3) kontextuell abstraktion med \code{given} och \code{using}.
 
-\Subtask \TODO ... 
+\begin{Code}
+object GlobalVariable:
+  case class GreetConfig(greeting: String, receiver: String)
+  object GreetConfig:
+    val default = GreetConfig(greeting = "Hello", receiver = "World")
+    var config = default
+  
+  def greet() = 
+    s"${GreetConfig.config.greeting} ${GreetConfig.config.receiver}!"
 
+object DefaultArgs:
+  case class GreetConfig(greeting: String, receiver: String)
+  object GreetConfig:
+    val default = GreetConfig(greeting = "Hello", receiver = "World")
+  
+  def greet(config: GreetConfig = GreetConfig.default) =
+    s"${config.greeting} ${config.receiver}!"
 
+object GivenValue:
+  case class GreetConfig(greeting: String, receiver: String)
+  object GreetConfig:
+    given default: GreetConfig = GreetConfig("Hello", "World")
+  
+  def greet(using g: GreetConfig) = s"${g.greeting} ${g.receiver}"
+\end{Code}
+
+\Subtask Skriv kod som testar de olika varianterna ovan. Visa speciellt hur du först kan ge en konfiguration som skiljer sig från \code{default} och hur du sedan kan återgå till \code{default} igen. Notera  vilka lösningar som medger anropa av \code{greet} med eller utan efterföljande \code{()}?
+
+\Subtask Vad är för- och nackdelar med de olika varianterna ovan? Diskutera speciellt vilken/vilka lösningar som medger flera lokala konfigurationer utan att de påverkar varandra.
+
+\Subtask Förklara vad som händer vid anrop av \code{summon[GivenValue.GreetConfig]}. Hur är summon implementerad?
 
 \SOLUTION
 
