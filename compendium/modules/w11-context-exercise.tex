@@ -57,7 +57,7 @@
 
 \QUESTBEGIN
 
-\Task  \what~ Koden nedan är en modell av husdjur på Jorden med följande innebörd: Husdjur kan vara friska eller sjuka och föds i normalfallet friska. Det kan finnas många katter och hundar, som alla är olika slags husdjur.
+\Task  \what~ Koden nedan är en modell av husdjur med följande innebörd: Husdjur kan vara friska eller sjuka och föds i normalfallet friska. Det kan finnas många katter och hundar, vilka alla är olika slags husdjur.
 
 \begin{Code}
 trait Pet(var isHealthy: Boolean = true)
@@ -66,7 +66,7 @@ class Dog extends Pet()
 
 \end{Code}
 
-\Subtask Förändras koden nedan så att efterföljande REPL-sats ej ger kompileringsfel?
+\Subtask Förändra koden nedan så att efterföljande REPL-sats \emph{inte} ger kompileringsfel?
 \begin{Code}
 case class Box[A](x: A)
 \end{Code}
@@ -74,7 +74,7 @@ case class Box[A](x: A)
 scala> val b: Box[Any] = Box[Cat](Cat())
 \end{REPLnonum}
 
-\Subtask Prova nedan i REPL och förklara vad som händer.
+\Subtask Prova nedan i REPL och förklara vad som händer.      
 \begin{REPLnonum}
 scala> val v: Vector[Pet] = Vector[Cat](Cat())
 
@@ -84,6 +84,7 @@ scala> :settings -explain
 
 scala> val s: Set[Pet] = Set[Cat](Cat())
 \end{REPLnonum} 
+\emph{Ledtråd:} I Scalas standardbibliotek så är ärver \code{Set[T]} funktionstypen \code{T => Boolean} som är deklarerad kontravariant i sin inparameter.
 
 \Subtask Det ska finnas veterinärer som kan behandla husdjur och göra dem friska. Varför fungerar inte nedan kod? Är det ett kompileringsfel eller körtidsfel?
 
@@ -105,12 +106,13 @@ class Vet[-A]:
 \begin{Code}
 case class Box[+A](x: A)
 \end{Code}
-Kompilatorn tillämpar reglerna för kovarians: en \code{Box[Cat]} är en suptyp till \code{Box[Any] då \code{Cat} är en subtyp till \code{Any}.
+Kompilatorn tillämpar reglerna för kovarians eftersom typparametern har ett plustecken framför sig: \code{Box[Cat]} är en suptyp till \code{Box[Any]} om \code{Cat} är en subtyp till \code{Any}, vilket den ju är eftersom alla typer är subtyp till \code{Any}. 
 
-\SubtaskSolved 
+\SubtaskSolved Förklaringen till beteendet har med olika varians att göra:
 \begin{itemize}
-  \item Samlingen \code{Vector} är kovariant och därmed flexibel i sin typparameter. Kompilatorn betraktar \code{Vector[Cat]} som en subtyp till \code{Vector[Pet]} eftersom \code{Cat} är en subtyp till \code{Pet}. 
-  \item Samlingen \code{Set} är invariant och därmed inte flexibel i sin typparameter. \code{Set[Cat]} är alltså \emph{inte} en subtyp till \code{Set[Pet]} \emph{även} om \code{Cat} är en subtyp till \code{Pet}.  
+  \item Samlingen \code{Vector} är kovariant och därmed flexibel i sin typparameter (liksom andra oföränderliga sekvenser i Scalas standardbibliotek). Kompilatorn betraktar därmed \code{Vector[Cat]} som en subtyp till \code{Vector[Pet]} eftersom \code{Cat} är en subtyp till \code{Pet}. På platser i koden där en \code{Vector[Pet]} krävs så anses \code{Vector[Cat]} överensstämma med \Eng{conforms to} \code{Vector[Pet]} och får därmed duga på dessa platser.
+  \item En mängd har en apply-metod från elemttypen till \code{Boolean} som ger innehållstest. Av det skälet har man låtit \code{Set[T]} ärva \code{Function1[T, Boolean]} som är deklarerad kontravariant i \code{T}, så att en mängd kan användas där en \code{T => Boolean} förväntas. Även om det skulle vara praktiskt om Set[T] vore kovariant i \code{T}, i likhet med \code{Vector}, \code{List}, \code{Seq} etc, så kan inte \code{T} vara både kovariant och kontravariant på en och samma gång. Man har därför valt att göra \code{Set} invariant och därmed är mängder ej flexibla i sin typparameter. \code{Set[Cat]} är alltså \emph{inte} en subtyp till \code{Set[Pet]} \emph{även} om \code{Cat} är en subtyp till \code{Pet}, vilket ger kompileringsfel i uppgiftens exempel. 
+  Se även \url{https://stackoverflow.com/questions/676615/why-is-scalas-immutable-set-not-covariant-in-its-type}  
   \item Med \code{:settings -explain} ger kompilatorn en längre utskrift som förklarar den bevisföring som skedde under kompileringens typkontroll.
 \end{itemize}
 
@@ -118,13 +120,14 @@ Kompilatorn tillämpar reglerna för kovarians: en \code{Box[Cat]} är en suptyp
 
 \SubtaskSolved Det blir kompileringsfel då metoden \code{isHealthy} ej existerar för godtycklig typ.
 
-\SubtaskSolved
+\SubtaskSolved Lägg till en övre gräns som garanterar att metoden \code{isHealthy} finns för alla typer som kan bindas till typparametern \code{A}:
 \begin{Code}
 class Vet[-A <: Pet]:
   def treat(x: A): Unit = x.isHealthy = true
 \end{Code}
+Kompilatorn garanterar alltså att typparametern \code{A} är ''mindre än eller lika med'' \code{Pet}.
 
-\SubtaskSolved Veterinären \code{Vet} är flexibel i sin typparameter och minustecknet anger kontravarians och därmed att \code{Vet[Pet]} är en subtyp till \code{Vet[Cat]} då \code{Cat} är en subtyp till \code{Pet}. 
+\SubtaskSolved Veterinären \code{Vet} är flexibel i sin typparameter och minustecknet anger kontravarians och därmed att \code{Vet[Pet]} är en subtyp till \code{Vet[Cat]} då \code{Cat} är en subtyp till \code{Pet}. Detta kan demonstreras med nedan exempel:
 \begin{REPL}
 scala> val pinkPanther = Cat()
 val pinkPanther: Cat = Cat@33e7ece5
