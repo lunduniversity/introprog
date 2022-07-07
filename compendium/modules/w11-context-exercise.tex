@@ -27,6 +27,129 @@
 
 \fi
 
+\WHAT{Kontextparameter.}
+
+\QUESTBEGIN
+
+\Task  \what~Deklarera följande funktioner som tar ett heltal som kontextparameter. Skapa även en \code{given}-deklaration som erbjuder det givna heltalsvärdet noll:
+\begin{REPLnonum}
+scala> def f(using i: Int) = i + 1
+
+scala> def g(x: Int)(using y: Int) = x + y
+\end{REPLnonum}
+
+\Subtask Anropa funktionerna \code{f} och \code{g} med ett explicit givet argument som skiljer sig från det givna heltalsvärdet med hjälp av \code{using} i anropet. Vad händer om du utelämnar \code{using}?
+
+\Subtask Anropa funktionerna \code{f} och \code{g} utan att ange \code{using}-argument. Förklara vad som händer. 
+
+\Subtask Går det att blanda vanliga parametrar och kontextparametrar i samma parameterlista? Om inte vad händer?
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved
+\begin{REPLnonum}
+scala> given Int = 0
+val res0: Int = 83
+
+scala> f(using 41)
+val res1: Int = 42
+
+scala> g(41)(using 42)
+val res2: Int = 83
+\end{REPLnonum}
+\noindent 
+Om man glömmer \code{using} vid explicit kontextargument blir det kompileringsfel. Kompilatorn blir ''förvirrad'' och tror att du försöker ge ett ''vanligt'' argument till en (i detta fallet) icke-existerande ''vanlig'' parameterlista.  
+\begin{REPLnonum}
+scala> f(41)
+-- [E050] Type Error: ----------------------------------------------
+1 |f(41)
+  |^
+  |method f does not take more parameters
+  |
+  | longer explanation available when compiling with `-explain`
+1 error found
+
+scala> :setting -explain
+
+scala> f(41)
+-- [E050] Type Error: ----------------------------------------------
+1 |f(41)
+  |^
+  |method f does not take more parameters
+  |-----------------------------------------------------------------
+    | Explanation (enabled by `-explain`)
+  |- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  | You have specified more parameter lists than defined in the 
+    method definition(s).
+   -----------------------------------------------------------------
+   1 error found
+
+scala> g(41)(42)
+-- [E050] Type Error: ----------------------------------------------
+1 |g(41)(42)
+  |^^^^^
+  |method g does not take more parameters
+  |-----------------------------------------------------------------
+    | Explanation (enabled by `-explain`)
+  |- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  | You have specified more parameter lists than defined in the 
+    method definition(s).
+   -----------------------------------------------------------------
+   1 error found
+
+\end{REPLnonum}
+
+\SubtaskSolved Det givna värdet \code{0} binds till motsvarande kontextparameter, som ska vara deklarerad i en egen parameterlista som börjar med \code{using}.
+\begin{REPLnonum}
+scala> f
+val res3: Int = 1
+
+scala> g(42)
+val res4: Int = 42
+\end{REPLnonum}
+
+\SubtaskSolved Nej, det blir kompileringsfel om man försöker blanda vanliga parametrar och kontextparametrar i en och samma parameterlista:
+\begin{REPLnonum}
+scala> def h(i: Int, using j: Int) = i + j
+-- [E040] Syntax Error: ---------------------------------------------
+1 |def h(i: Int, using j: Int) = i + j
+  |                    ^
+  |                    ':' expected, but identifier found
+\end{REPLnonum}
+Det är ett medvetet val att kräva separata parameterlistor, så att det inte ska uppstå förvirring om huruvida en vanlig parameter eller kontextparameter avses. 
+
+\QUESTEND
+
+
+
+\WHAT{Flera olika givna värden i lokal kontext.}
+
+\QUESTBEGIN
+
+\Task  \what~
+\begin{Code}
+object Counter:
+  case class Delta(value: Int)
+  object Delta:
+    given default: Delta = Delta(0)
+
+  var x: Int = 0
+  def inc(using dx: Delta) = x + dx.value
+  def dec(using dx: Delta) = x - dx.value
+\end{Code}
+
+\Subtask
+\TODO uppgifter med flera olika givens i lokal kontext
+
+\SOLUTION
+
+\TaskSolved \what
+\SubtaskSolved \TODO
+
+\QUESTEND
+
 
 
 
@@ -66,7 +189,7 @@ object GivenValue:
 
 \Subtask Vad är för- och nackdelar med de olika varianterna ovan? Diskutera speciellt vilken/vilka lösningar som medger flera lokala konfigurationer utan att de påverkar varandra.
 
-\Subtask Förklara vad som händer vid anrop av \code{summon[GivenValue.GreetConfig]}. Hur är summon implementerad?
+\Subtask Förklara vad som händer vid anrop av \code{summon[GivenValue.GreetConfig]}. 
 
 \SOLUTION
 
@@ -75,6 +198,9 @@ object GivenValue:
 
 \SubtaskSolved  \TODO ...
 
+\SubtaskSolved  \TODO ...
+
+\SubtaskSolved  \TODO ...
 
 \QUESTEND
 
@@ -203,6 +329,7 @@ scala> pluto.isHealthy
 val res4: Boolean = true
 
 \end{REPL}
+
 
 \QUESTEND
 
