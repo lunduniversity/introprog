@@ -106,7 +106,7 @@ Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjä
 
 Det finns 3 olika sätt att köra Kojo:
 
-1. Använd kodbiblioteket kojolib (rekommenderas), som fungerar fint med nya Scala 3. Ingen extra installation behövs om du laddar ner filen [https://fileadmin.cs.lth.se/kojolib.scala](https://fileadmin.cs.lth.se/kojolib.scala) och kör enligt instruktioner i kompendiet, t.ex. med `scala-cli repl .` 
+1. Använd kodbiblioteket **kojolib** (rekommenderas), som fungerar fint med nya Scala 3. Ladda ner filen [https://fileadmin.cs.lth.se/kojolib.scala](https://fileadmin.cs.lth.se/kojolib.scala) och kör enl. instruktioner i kompendiet, t.ex. med `scala-cli repl .` 
 
 2. Kojo Desktop: en nybörjarvänlig utvecklingsmiljö med lättanvänd editor. Använder gamla Scala 2. Följ installationsinstruktioner för ditt system här: [http://www.kogics.net/kojo-download](http://www.kogics.net/kojo-download)
 
