@@ -366,7 +366,7 @@ val res0: Double = 99.0
   \item Till vår räddning, fler coola FP-grejer: 
   \begin{itemize}\SlideFontTiny
     \item \Emph{Kontextuella abstraktioner}: möjliggör (på annat ställe) \Emph{givna} värden som finns \emph{implicit} (alltså underförstått, utan att vi behöver explicit skriva ut dem).
-    \item \Emph{Ad hoc polymorfism}: möjliggör olika implementationer beroende på typ, \emph{statiskt} härledda och utan att det behöver finnas en arvsrelation  
+    \item \Emph{Ad hoc polymorfism}: möjliggör olika implementationer beroende på typ, \emph{statiskt} härledda och utan att det behöver finnas en arvsrelation.
   \end{itemize} 
 \end{itemize}
 \end{Slide}
@@ -404,7 +404,7 @@ val res4: Int = 43
 \pause
 \item  Kan vi ta detta ett steg till och \Alert{frikoppla} deklarationen av funktionen \Emph{från} det givna värdet, och ge detta på annan plats baserat på typen?
 \pause 
-\item I Scala 3 görs detta med nyckelorden \code{given} resp. \code{using}\\(i Scala 2 (över)användes nyckelordet \code{implicit})
+\item I Scala 3 görs detta med nyckelorden \code{given} resp. \code{using}\\(i Scala 2 användes gamla nyckelordet \code{implicit})
 \end{itemize}
 \end{Slide}
 
@@ -526,53 +526,41 @@ val res0: String = tagen för givet
 Framkallning av givna värden vid anrop med kontextparametrar har flera namn på engelska: \emph{to summon}, eller \emph{term inference}, eller \emph{implicit resolution}. 
 \end{Slide}
 
-\begin{Slide}{Ad hoc polymorfism, ''typklasser''}\SlideFontSmall
-\begin{itemize}\SlideFontSmall
-\item Ad hoc polymorfism innebär att en abstrakt typkonstruktor ges olika konkreta implementationer för olika typer och appliceras automatiskt. 
+\begin{Slide}{Ad hoc polymorfism med typklasser}\SlideFontTiny
+\begin{itemize}\SlideFontTiny
+\item Med Ad hoc polymorfism kan det finnas \emph{olika} implementationer för \emph{olika} typer \emph{utan} användning av arv (\code{extends}). 
 \item Uppfanns i språket ML och vidareutvecklades i språket Haskell.
-\item I Haskell kallas Ad hoc polymorfism för ''typklasser''. \\(En förvirrande term; Haskell är inte objekt-orienterat...)
-\item Ad hoc polymorfism / Typklasser görs i Scala genom att \Emph{kombinera} parametrisk polymorfism med kontextuella abstraktioner.
+\item I Haskell kallas mekanismen för Ad hoc polymorfism för \Emph{typklass}. %\\(En förvirrande term; Haskell är inte objekt-orienterat...)
+\item Typklasser skapas i Scala genom att \Emph{kombinera} parametrisk polymorfism (typparametrar) med kontextuella abstraktioner (given-using).
+\item En \Emph{typklass i Scala} är en tillståndslös \code{trait} med minst en typparameter och minst en abstrakt metod.
 \end{itemize}
-\begin{Code}
-trait Parser[T]:
+\begin{CodeSmall}
+trait Parser[T]:   // en typklass för att tolka och omvandla strängar till godtycklig typ 
   def fromString(value: String): Option[T]
 
-object Parser:
-  given Parser[Int] with  // with behövs för givna instanser om abstrakt typ
+object Parser:             // olika implementationer erbjuds som givna värden
+  given Parser[Int] with   // nyckelordet with behövs då given implementerar abstrakt metod
     def fromString(value: String): Option[Int] = value.toIntOption   
-\end{Code}
-\begin{REPL}
-scala> def parse[T](s: String)(using p: Parser[T]) = p.fromString(s)
-
-scala> parse[Int]("12")
-val res0: Option[Int] = Some(12)
-\end{REPL}
-\end{Slide}
-
-\begin{Slide}{Parameternamnet kan skippas efter \texttt{using}}
-\begin{itemize}
-\item Eftersom namnet på det givna värdet ofta inte behövs\\ -- det är ju typen som är det viktiga för framkallningen, \\ så kan du skippa parameternamnet:%
-
-\begin{Code}[basicstyle=\ttfamily\SlideFontSize{10}{14}\selectfont]
-def parse[T](s: String)(using Parser[T]) = 
-  summon[Parser[T]].fromString(s)
-\end{Code}
-\item Framkallningen kan vid behov istället%
-\footnote{Ett vanligt parameternamn är annars \code{ev} som är en förkortning av \emph{evidence}, vilket anspelar på att kompilatorn -- om koden kompilerar utan fel -- har hittat ett giltigt \emph{bevis} för att det givna värdet verkligen existerar \textbf{vid anrop}.}
- göras med \code{summon}%
-
+\end{CodeSmall}
+\begin{itemize}\SlideFontTiny
+\item Den specifika implementationen framkallas via en kontextuell parameter:
 \end{itemize}
+\begin{REPLsmall}
+scala> def parseOrElse[T](s: String)(using p: Parser[T]) = p.fromString(s)
+
+scala> parseOrElse[Int]("12")
+val res0: Option[Int] = Some(12)
+\end{REPLsmall}
 \end{Slide}
 
-
-\begin{Slide}{Hur få ''typklassen'' \texttt{Parser} att funka för fler typer?}
+\begin{Slide}{Hur få typklassen \texttt{Parser} att funka för fler typer?}
 \begin{REPL}
-scala> parse[java.awt.Color]("Color(120,10,0)")
+scala> parseOrElse[java.awt.Color]("Color(120,10,0)")
 -- Error:
-1 |parse[java.awt.Color]("Color(120,10,0)")
+1 |parseOrElse[java.awt.Color]("Color(120,10,0)")
   |                                        ^
   | no implicit argument of type Parser[java.awt.Color] was found 
-  | for parameter p of method parse
+  | for parameter p of method parseOrElse
 \end{REPL}
 \begin{Code}
 given Parser[java.awt.Color] with
@@ -583,20 +571,44 @@ given Parser[java.awt.Color] with
       case _ => None
 \end{Code}
 \begin{REPL}
-scala> parse[java.awt.Color]("Color(120,10,0)")
+scala> parseOrElse[java.awt.Color]("Color(120,10,0)")
 val res1: Option[java.awt.Color] = Some(java.awt.Color[r=120,g=10,b=0])
 \end{REPL}
 \end{Slide}
 
 
-\begin{Slide}{Kontextgränser}\SlideFontSmall
+\begin{Slide}{Namnet på kontextparametrar kan utelämnas}\SlideFontSmall
+\begin{itemize}\SlideFontSmall
+\item Namnet på det givna värdet behövs ofta inte -- det är ju \emph{typen} som är det viktiga.
+\item Därför är det tillåtet att utelämna parameternamnet vid \code{using}. 
+\item Det givna värdet kan istället framkallas med \code{summon} vid behov:%
+\begin{Code}
+def parseOrElse[T](s: String)(using Parser[T]) = 
+  summon[Parser[T]].fromString(s)
+\end{Code}
+% \pause
+% \item Om du placerar en \code{apply} i typklassens kompanjonsobjekt som gör samma jobb som \code{summon} så kan du skriva detta ännu kortare:
+% \begin{CodeSmall}
+% def parseOrElse[T](s: String)(using Parser[T]) = Parser[T].fromString(s)
+% \end{CodeSmall}
+% \item En sådan ''framkallnings-apply'' kan se ut så här:
+% \begin{CodeSmall}
+% object Parser:
+%   def apply[T](using p: Parser[T]) = p
+% \end{CodeSmall}
+\end{itemize}
+
+\end{Slide}
+
+
+\begin{Slide}{Kontextgräns}\SlideFontSmall
 Denna form av \code{using}-parametrar...
 \begin{Code}
-def parse[T](s: String)(using p: Parser[T]) = ???
+def parseOrElse[T](s: String)(using Parser[T]) = ???
 \end{Code}
-...där en typkonstruktor för typparametern ska framkallas är så pass vanlig att Scala erbjuder ett kortare och mer lättläst skrivsätt:
+...är så vanliga att Scala har ett kortare skrivsätt som kallas \Emph{kontextgräns}:
 \begin{Code}
-def parse[T: Parser](s: String) = ???
+def parseOrElse[T: Parser](s: String) = ???
 \end{Code}
 Om \code{F[A]} är en typkonstruktor och du skriver \code{[T: F]} så blir \code{F} en så kallad \Emph{kontextgräns} \Eng{context boundary}. 
 Kompilatorn expandera detta automatiskt till kontextparametern \code{(using F[T])}
@@ -604,7 +616,7 @@ Kompilatorn expandera detta automatiskt till kontextparametern \code{(using F[T]
 
 
 
-\begin{Slide}{Ännu smidigare användning med extensionsmetod}\SlideFontSmall
+\begin{Slide}{Ännu smidigare typklass med extensionsmetod}\SlideFontSmall
 Kombinera kontextgräns med extensionsmetod och få smidig punktnotation.
 \begin{Code}
 extension [T: Parser](s: String) 
@@ -626,17 +638,42 @@ Extensionsmetoder kan skrivas i efterhand på valfri plats och även göras till
 \end{Slide}
 
 
+% \begin{Slide}{Typklass med samlade smidigheter}\SlideFontSmall
+% Om vi samlar ihop alla smidighetstrick får vi ett typiskt typklassexempel: 
+% \begin{CodeSmall}
+% trait Parser[T]: 
+%   def fromString(value: String): Option[T]
 
+%   extension (s: String) 
+%     def parseOrElse(default: T): T = fromString(s).getOrElse(default)
+
+% object Parser:
+%   given intParser: Parser[Int] with 
+%     def fromString(value: String): Option[Int] = value.toIntOption   
+
+%   given colorParser: Parser[java.awt.Color] with
+%     def fromString(value: String): Option[java.awt.Color] =
+%       val trimmed = value.trim.stripPrefix("Color(").stripSuffix(")")
+%       trimmed.split(",").map(_.toIntOption) match
+%         case Array(Some(r), Some(g), Some(b)) => Some(java.awt.Color(r, g, b))
+%         case _ => None
+% \end{CodeSmall}
+% \begin{REPLsmall}
+% scala> import Parser.intParser
+% scala> "12".parse
+% val res0: Option[Int] = Some(12)
+% \end{REPLsmall}
+% \end{Slide}
 
 
 
 \begin{Slide}{Sortera samlingar med given ordning}\SlideFontSmall
 \begin{REPLsmall}
 scala> case class Gurka(namn: String, vikt: Int)
-                                                                                                                                            
+
 scala> val xs = Vector(Gurka("a", 100), Gurka("b", 50), Gurka("c", 100))
 val xs: Vector[Gurka] = Vector(Gurka(a,100), Gurka(b,50), Gurka(c,100))
-                                                                                                                                            
+
 scala> xs.sorted
 -- Error:
 1 |xs.sorted
@@ -672,6 +709,7 @@ given Ordering[Gurka] = Ordering.fromLessThan((g1, g2) => g1.vikt < g1.vikt)
   \item Därför finns en smidig hjälpmetod i kompanjonsobjektet för typklassen \code{Ordering} som heter \code{fromLessThan}
   \item Den tar som inparameter en funktion som tar två instanser och returnerar en boolean som är true om den första är ''mindre'' (alltså kommer före) enligt valfri definition. 
   \item Den returnerar en \code{Ordering} som kan erbjudas som ett givet värde.
+  \item Prova gärna detta på veckans fördjupningsövningar.
 \end{itemize}
 
 \end{Slide}
