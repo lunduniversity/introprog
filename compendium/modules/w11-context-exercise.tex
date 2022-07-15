@@ -84,7 +84,6 @@ scala> f(41)
   | You have specified more parameter lists than defined in the 
     method definition(s).
    -----------------------------------------------------------------
-   1 error found
 
 scala> g(41)(42)
 -- [E050] Type Error: ----------------------------------------------
@@ -97,9 +96,8 @@ scala> g(41)(42)
   | You have specified more parameter lists than defined in the 
     method definition(s).
    -----------------------------------------------------------------
-   1 error found
-
 \end{REPLnonum}
+Det är inte vanligt att ange \code{using}-parametrar explicit; det vanligaste är att låta kompilatorn framkalla ett givet värde.
 
 \SubtaskSolved Det givna värdet \code{0} binds till motsvarande kontextparameter, som ska vara deklarerad i en egen parameterlista som börjar med \code{using}.
 \begin{REPLnonum}
@@ -128,25 +126,38 @@ Det är ett medvetet val att kräva separata parameterlistor, så att det inte s
 
 \QUESTBEGIN
 
-\Task  \what~
+\Task \what~Olika värden beroende på kontext.
 \begin{Code}
-object Counter:
-  case class Delta(value: Int)
-  object Delta:
-    given default: Delta = Delta(1)
+case class Delta(value: Int)
+object Delta:
+  given default: Delta = Delta(1)
 
-  var x: Int = 0
-  def inc(using dx: Delta) = x + dx.value
-  def dec(using dx: Delta) = x - dx.value
+def inc(x: Int)(using dx: Delta) = x + dx.value
+
+object Context1:
+  val a = inc(1)
+
+object Context2:
+  given Delta = Delta(42)
+  val a = inc(1)
+
 \end{Code}
 
-\Subtask
-\TODO uppgifter med flera olika givens i lokal kontext
+\Subtask Vilket värde har \code{Context1.a}? 
+
+\Subtask Vilket värde har \code{Context2.a}? 
+
+\Subtask Förklara vad som händer.
 
 \SOLUTION
 
 \TaskSolved \what
-\SubtaskSolved \TODO
+
+\SubtaskSolved 2
+
+\SubtaskSolved 43
+
+\SubtaskSolved När kompilatorn försöker framkalla ett givet värde att automatiskt använda som argument till \code{using}-parametern \code{dx}, så letar den i den kontext som är närmast anropet först. Om det finns ett givet värdet i kompanjonsobjektet för parametertypen så tar kompilatorn detta i sista hand, om inget annat givet värde hittas närmare anropet.
 
 \QUESTEND
 
@@ -160,13 +171,13 @@ object Counter:
 \Task  \what~ Antag att vi vill kunna konfigurera beteendet hos en funktion för att göra den mer flexibel. Nedan visas tre principiellt olika sätt att göra detta på för en funktion \code{greet} som skriver ut en hälsning: 1) en globalt åtkomlig variabel, 2) defaultargument, samt 3) kontextuell abstraktion med \code{given} och \code{using}.
 
 \begin{Code}
-object GlobalVariable:
+object GlobalVar:
   case class GreetConfig(greeting: String, receiver: String)
   object GreetConfig:
     val default = GreetConfig(greeting = "Hello", receiver = "World")
     var config = default
   
-  def greet() = 
+  def greetMsg = 
     s"${GreetConfig.config.greeting} ${GreetConfig.config.receiver}!"
 
 object DefaultArgs:
@@ -174,33 +185,129 @@ object DefaultArgs:
   object GreetConfig:
     val default = GreetConfig(greeting = "Hello", receiver = "World")
   
-  def greet(config: GreetConfig = GreetConfig.default) =
+  def greetMsg(config: GreetConfig = GreetConfig.default) =
     s"${config.greeting} ${config.receiver}!"
 
-object GivenValue:
+object GivenVal:
   case class GreetConfig(greeting: String, receiver: String)
   object GreetConfig:
     given default: GreetConfig = GreetConfig("Hello", "World")
   
-  def greet(using g: GreetConfig) = s"${g.greeting} ${g.receiver}"
+  def greetMsg(using g: GreetConfig) = s"${g.greeting} ${g.receiver}"
 \end{Code}
 
-\Subtask Skriv kod som testar de olika varianterna ovan. Visa speciellt hur du först kan ge en konfiguration som skiljer sig från \code{default} och hur du sedan kan återgå till \code{default} igen. Notera  vilka lösningar som medger anropa av \code{greet} med eller utan efterföljande \code{()}?
+\Subtask Skriv kod som testar de olika varianterna ovan. Visa speciellt hur du kan använda default-konfigurationen och därefter ge en konfiguration som skiljer sig från \code{default}. 
 
 \Subtask Vad är för- och nackdelar med de olika varianterna ovan? Diskutera speciellt vilken/vilka lösningar som medger flera lokala konfigurationer utan att de påverkar varandra.
 
-\Subtask Förklara vad som händer vid anrop av \code{summon[GivenValue.GreetConfig]}. 
+\Subtask Förklara vad som händer vid anrop av \code{summon[GivenVal.GreetConfig]}. 
+
+\Subtask Vad händer om du försöker framkalla ett givet värde för en typ som inte har något sådant?
+
+\Subtask Måste det givna värdet vara unikt?
 
 \SOLUTION
 
 
-\TaskSolved \what
+\TaskSolved \what\\
 
-\SubtaskSolved  \TODO ...
+\noindent Nedan visas test av de tre olika lösningarna som givits i uppg. \SubtaskSolved
 
-\SubtaskSolved  \TODO ...
+\noindent Efter varje test diskuteras tillhörande för- och nackdelar, som efterfrågas i uppg. \SubtaskSolved
 
-\SubtaskSolved  \TODO ...
+\begin{Code}
+def testGlobalVar(useDefault: Boolean = true) = 
+  import GlobalVar.*
+  if useDefault then println(greetMsg) else 
+    GreetConfig.config = GreetConfig("Godmorgon", "världen")
+    println(greetMsg)
+\end{Code}
+Eftersom \code{config} här är en förändringsbar variabel, så kan en ändring på ett ställe påverka helt andra delar av programmet, vilket ibland kan vara en fördel, men ofta en nackdelen eftersom det kan vara svårt att förstå vad som händer bara genom att läsa en enskild del av programmet -- en förändring av \code{config} kan ju ske varsomhelst. Det är lätt att glömma ändra till baka till default-värdet, om det är det som förväntas.
+\begin{REPL}
+scala> testGlobalVar(); testGlobalVar(false); testGlobalVar()
+Hello World!
+Godmorgon världen!
+Godmorgon världen!
+\end{REPL}
+
+\begin{Code}[numbers=left]
+def testDefaultArgs(useDefault: Boolean = true) =
+  import DefaultArgs.*
+  if useDefault then println(greetMsg()) else 
+    println(greetMsg(GreetConfig("Godmorgon","världen")))
+\end{Code}
+Här sker ingen tillståndsförändring och default-användning är enkel, men det går inte enkelt att göra avsteg från default som  gäller i en lokal kontext; vid \emph{varje} enskilt anrop behöver du explicit ange alla de argument som inte ska vara default, så som visas på rad 4 ovan. Ändring av default har bara lokal påverkan. Om alla argument ska följa default, så gäller det att inte glömma anropa med tomt parentespar: \code{greetMsg()}. (Vad händer annars?)
+\begin{REPL}
+scala> testDefaultArgs(); testDefaultArgs(false); testDefaultArgs()
+Hello World!
+Godmorgon världen!
+Hello World!
+\end{REPL}
+Med kontextparametrar är flexibiliteten större; \code{using}-parametrar låter användaren själv styra vad som gäller i olika sammanhang och själva anropet blir enkelt oavsett om det är default-värdet eller andra, i den lokala kontexten, givna värden som önskas. Ändring av default har bara lokal påverkan, men den har påverkan på godtyckligt många anrop i den lokala kontexten --  argument som skiljer sig kan alltså vara givna en gång utan att behöva upprepas vid varje anrop. Vid anrop där man vill låta kompilatorn framkallar givna värden för kontextparametern ska inga parenteser användas, och anropen bli därmed korta och enkla.
+\begin{Code}
+def testGivenVal(using GivenVal.GreetConfig) = 
+  println(GivenVal.greetMsg)
+\end{Code}
+
+\begin{REPL}
+scala> testGivenVal
+Hello World
+
+scala> def localContext =
+         import GivenVal.*
+         given GreetConfig = GreetConfig("Godmorgon","världen")
+         testGivenVal
+
+scala> localContext
+Godmorgon världen
+
+scala> testGivenVal
+Hello World
+\end{REPL}
+
+
+\SubtaskSolved  Kompilatorn framkallar ett givet värde i den lokala kontexten:
+\begin{REPL}
+scala> summon[GivenVal.GreetConfig]
+val res0: GivenVal.GreetConfig = GreetConfig(Hello,World)
+\end{REPL}
+Kompilatorn följer denna prioritetsordning i sökandet efter ett unikt givet värde:
+\begin{enumerate}[nolistsep,noitemsep]
+\item \textbf{Explicita} argument till kontextparametrar märkta med \code{using}
+\item \code{given} och \code{import given ...} i aktuell namnrymd \Eng{current scope} 
+\item \code{given}-värden i \textbf{kompanjonsobjekt} för den använda typen.
+\end{enumerate}
+Om flera givna värden kan framkallas för typer som ingår i en gemensam arvshierarki så väljer kompilatorn det givna värdet som är av den \emph{mest specifika} typen.\\
+
+\SubtaskSolved Det blir kompileringsfel om kompilatorn inte hittar ett givet värde för den typ som avses.
+
+\begin{REPL}
+scala> summon[Long]
+-- Error: ----------------------------------------------------------------
+1 |summon[Long]
+  |            ^
+  |            no given instance of type Long was found for parameter x of 
+               method summon in object Predef
+1 error found
+\end{REPL}
+
+\SubtaskSolved Ja! Det får \emph{inte} vara tvetydigt vilket givet värde som ska framkallas:
+\begin{REPL}
+scala> def tvetydigt =
+     |   given a: Int = 42
+     |   given b: Int = 43
+     |   summon[Int]
+     | 
+-- Error: ------------------------------------------------------------------
+4 |  summon[Int]
+  |             ^
+  |ambiguous given instances: both given instance b and given instance a 
+  |match type Int of parameter x of method summon in object Predef
+1 error found
+
+\end{REPL}
+Läs mer om kontexuella abstraktioner här:\\\url{https://docs.scala-lang.org/scala3/reference/contextual/}
+
 
 \QUESTEND
 
