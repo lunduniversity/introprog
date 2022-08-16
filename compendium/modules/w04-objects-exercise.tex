@@ -1095,32 +1095,107 @@ repeat(100){ i =>
 \QUESTEND
 
 
+\WHAT{Hur klara sig utan \code{do while} i Scala 3?} 
+
+\QUESTBEGIN
+
+\Task  \what~I många språk finns en konstruktion med följande syntax: \code{do <satser> while <villkor>} där \code{<satser>} görs minst en gång innan sanningsvärdet för <villkor> testas. Denna ''bakvända while'' används inte så ofta, men kan vara smidig om man vill köra en repetition minst en gång. 
+
+Denna konstruktion finns i Scala 2 men inte i Scala 3 eftersom nyckelordet \code{do} i Scala 3 används vid valfria klammerparenteser och indenteringssyntax i ''vanliga while''. Ett skäl att det kan anses ok att ta bort \code{do <satser> while <villkor>} är att en ''bakvänd while'' ändå alltid går att skriva om till en ''vanlig while'' genom att inkludera satserna som ska göras minst en gång i ett block på villkorets plats och låta satserna i loopen vara tomma värdet, alltså :
+\begin{Code}
+while 
+<satser>
+<villkor>
+do ()  
+\end{Code}
+
+\Subtask Nedan funkar i Scala 2, men vad händer om du försöker göra detta i Scala 3:
+\begin{REPLnonum}
+> scala-cli repl -S 2
+Welcome to Scala 2.13.8 (OpenJDK 64-Bit Server VM, Java 17.0.3).
+Type in expressions for evaluation. Or try :help.
+
+scala> var i = 0
+var i: Int = 0
+
+scala> do i += 1 while (i < 10)
+
+scala> i
+val res20: Int = 10
+\end{REPLnonum}
+
+\Subtask Skriv om ''bakvända'' \code{do while} till en motsvarande ''vanlig'' \code{while do} som fungerar i Scala 3.
+
+
+\SOLUTION
+
+\TaskSolved \what
+
+\SubtaskSolved Det blir kompileringsfel:
+\begin{REPLnonum}
+> scala-cli repl -S 3
+Welcome to Scala 3.1.3 (17.0.3, Java OpenJDK 64-Bit Server VM).
+Type in expressions for evaluation. Or try :help.
+                                                                                    
+scala> var i = 0
+var i: Int = 0
+                                                                                    
+scala> do i += 1 while (i < 10)
+-- [E103] Syntax Error: ----------------------------------------
+1 |do i += 1 while (i < 10)
+  |^^
+  |Illegal start of statement
+\end{REPLnonum}
+
+\SubtaskSolved 
+\begin{REPLnonum}
+> scala-cli repl -S 3
+Welcome to Scala 3.1.3 (17.0.3, Java OpenJDK 64-Bit Server VM).
+Type in expressions for evaluation. Or try :help.
+
+scala> var i = 0
+var i: Int = 0
+
+scala> while
+     |   i += 1
+     |   i < 10
+     | do ()
+
+scala> i
+val res0: Int = 10
+\end{REPLnonum}
+
+
+
+\QUESTEND
+
+
 \WHAT{Postfixa operatorer för inkrementering och dekrementering.}
 
 \QUESTBEGIN
 
-\Task \what~Gör så att det går att använda operatorerna \code{++} och \code{--} på heltal så här:
+\Task \what~I många språk, t.ex. Java, C++, C, går det att skriva \code{i++} och \code{i--} om man vill räkna upp eller ner heltalsvariabeln \code{i}. Använd Scalas extensionsmetoder för att göra så att det går att använda operatorerna \code{++} och \code{--} på heltal, enligt nedan:
 \begin{REPLnonum}
 scala> 42.++
 val res0: Int = 43
-                                                                                                                               
+
 scala> 42.--
 val res1: Int = 41
-                                                                                                                               
+
 scala> import language.postfixOps    // tillåter postfix operatornotation
-                                                                                                                               
+
 scala> 43 ++
 val res2: Int = 44
-                                                                                                                               
+
 scala> 43 --
 val res3: Int = 42
 
 scala> val i = 42
 val i: Int = 42
-                                                                                                                               
+
 scala> i++
 val res4: Int = 43
-                                                                                                                               
+
 scala> i--
 val res5: Int = 41
 \end{REPLnonum}
