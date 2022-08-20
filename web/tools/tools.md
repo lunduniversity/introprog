@@ -132,7 +132,7 @@ LTH-studenter med programmeringskunskaper och intresse för pedagogik är välko
 
 Vid undervisning på campus rekommenderas LTH:s [Linux-datorer](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/). Ta gärna med ett eget tangentbord och en egen mus och koppla in i skolans datorer så minskar du smittrisken. 
 
-När du studerar hemma behöver du en bra arbetsplats och en dator med Linux (t.ex. Ubuntu 20.04), Windows 10 eller Mac. Det är bra att ha en ergonomisk kontorsstol vid ett bekvämt skrivbord, ett flyttbart tangentbord, en separat mus och en höj-och-sänkbar skärm.
+När du studerar hemma behöver du en bra arbetsplats och en dator med Linux (t.ex. Ubuntu), Windows eller MacOS. Det är bra att ha en ergonomisk kontorsstol vid ett bekvämt skrivbord, ett flyttbart tangentbord, en separat mus och en höj-och-sänkbar skärm.
 
 ### Köpa egen dator
 
