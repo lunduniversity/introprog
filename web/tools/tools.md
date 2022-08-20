@@ -18,6 +18,8 @@ På LTH:s [Linuxdatorer i E-huset](https://www.lth.se/lthin/datorsalar/vaara-dat
 
 Du behöver installera detta på din egen dator: OpenJDK, Scala, och VS Code med tillägget Scala (Metals). Läs mer om dessa verktyg i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) och följ instruktionerna nedan om hur du installerar verktygen på din egen dator.
 
+(Om du redan använder SDKMAN och vill fortsätta med det så läs längre ner under "För dig som helst använder SDKMAN".)
+
 ### Starta terminalfönster
 
 Många av de programmeringsverktyg vi använder körs via ett terminalfönster. Du startar ett terminalfönster såhär:
@@ -42,7 +44,7 @@ Du kanske redan har JDK installerat. Kontrollera detta genom att i ett terminalf
 javac --version
 ```
 
-Om utskriften säger att `javac` saknas eller anger en annan version än version 17 eller 11, installera då OpenJDK enl. nedan.
+Om utskriften säger att `javac` saknas eller anger en annan version än version 17 eller 11, installera då OpenJDK enl. nedan. 
 
 **Installera OpenJDK:** Läs även instruktionerna i appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) innan du sätter igång.
 
@@ -89,7 +91,16 @@ Scala med tillhörande verktyg installeras enklast med hjälp av det officiella 
     * Starta om din dator.
     * Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
 
+### För dig som helst använder SDKMAN
 
+[https://sdkman.io/](https://sdkman.io/) är ett populärt installationsverktyg för att enkelt installera och hantera olika versioner av allehanda programmeringsverktyg för Linux/WSL/MacOS/GitBash/Cygwin. För dig som hellre vill använda SDKMAN i stället så går det utmärkt att installera allt ovan med hjälp av nedan kommando (om du har [installerat SDKMAN](https://sdkman.io/install)):
+```
+sdk install java 17.0.4-tem
+sdk install scala
+sdk install scalacli
+sdk install sbt
+```
+*Tips:* Det är viktigt att du noterar hur du har installerat olika grejer på din dator, speciellt om du blandar olika metoder. Om du behöver uppdatera eller avinstallera så blir det lätt förvirring om du glömt hur du installerat och försöker uppdatera/avinstallera med annan metod än du installerat etc.
 
 ### Installera kod-editorn VS Code och tillägget Scala Metals
 
