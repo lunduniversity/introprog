@@ -66,6 +66,7 @@ Varför behövs klasser?
 \item Med klasser kan du skapa \Alert{nya} typer (utöver \code{Int}, \code{String} ...) som bättre representerar domänens data.
 \item Med klasser implementerar du modeller som representerar väsentliga \Emph{attribut} ur applikationsdomänen. 
 \item Med \Emph{metoder} (funktioner i klasser) kan du skapa och behandla domänens data.
+\item Datamodellering i Scala görs ofta med \code{case}-klasser och \Emph{oföränderliga} instanser.
 \end{itemize}
 % \TODO förklara nyttan med att göra otillåtna tillstånd omöjliga att representera, begrepp skapar ett nytt domänspecifikt språk
 \end{Slide}
@@ -338,7 +339,7 @@ scala> p.age = 50
 Kan vi få se något som är finare än \code{Person@783dc0e7} ?
 \end{Slide}
 
-\begin{Slide}{Skapa najs toString}
+\begin{Slide}{Skapa egen najs toString}
 \begin{Code}[basicstyle=\SlideFontSize{6.9}{9}\ttfamily]
 class Person(
   val givenName: String, 
@@ -382,7 +383,34 @@ scala> D(42).add(D(43))
 res0: Int = 85
 \end{REPL}
 ...eftersom modifieraren \code{private val} ger en medlem som ''bara'' är \Emph{klassprivat} och ger därmed synlighet i \Alert{alla} \code{D}-instanser (men bara där; medlemmen är inte ens synlig i subtyper till \code{D}).
-\item Observera att modifierarlösaparametrar till case-klasser ger publik medlem.
+\end{itemize}
+
+\end{Slide}
+
+\begin{Slide}{Case-klasser är som vanliga klasser med extra godis}
+\SlideFontTiny
+Med \code{case} framför \code{class} får du en massa \Emph{godis} på köpet, bland annat detta:
+\begin{itemize}\SlideFontTiny
+\item En najs \code{toString}-metod med klassens namn och dess attributvärden.
+\begin{REPLsmall}
+scala> case class Person(name: String, age: Int)
+
+scala> val p = Person("Björn", 55)
+
+scala> p.toString
+val res0: String = Person(Björn,55)
+
+\end{REPLsmall}
+\item Parameter till case-klass blir automatiskt ett publikt oföränderligt attribut, alltså en \code{val}-medlem utan att du behöver skriva något.
+\begin{REPLsmall}
+scala> p.age
+val res1: Int = 55
+\end{REPLsmall}
+\item En \code{copy}-metod med alla attribut som parametrar och instansens attributvärden som default-argument. Den gör det smidigt att skapa förändrade kopior där några attribut ändrats och andra förblir som innan.  
+\begin{REPLsmall}
+scala> p.copy(age = p.age + 1)
+val res2: Person = Person(Björn,56)
+\end{REPLsmall}
 \end{itemize}
 \end{Slide}
 
