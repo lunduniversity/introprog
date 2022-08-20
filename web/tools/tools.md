@@ -70,7 +70,7 @@ Scala med tillhörande verktyg installeras enklast med hjälp av det officiella 
     ```
     curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
     ```
-    * Starta ett *nytt* terminalfönster och testa att skriva `scala --version` och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
+    * Starta om din dator och skriv i ett nytt terminalfönster `scala --version` och om allt gått bra så ska du då få en utskrift som börjar med "Scala code runner version 3".
     
 * **Windows**: 
     * Installera OpenJDK enligt instruktioner ovan. 
