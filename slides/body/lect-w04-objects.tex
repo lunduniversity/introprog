@@ -879,13 +879,46 @@ scala> import java.awt.{Event as _, Color as JColor, *}
 \begin{Code}
 object A:
   def x = 
-    import java.awt.Color
-    /* ... namnet Color syns bara lokalt i denna funktion */
+    import java.awt.Color.RED
+    /* ... namnet RED syns bara lokalt i denna funktion */
 \end{Code}
 %\item Detta går inte i Java, där import ska stå i början av filen.
 \end{itemize}
 \end{Slide}
 
+\begin{Slide}{Export}
+\begin{itemize}\SlideFontSmall
+  \item \code{import} ger direkt synlighet \Emph{lokalt} inuti en namnrymd
+  \item Med \code{export} kan du göra \emph{motsatsen} till import: \\
+göra medlemmar direkt synliga \Alert{utanför} en namnrymd.
+\end{itemize}
+
+\begin{CodeSmall}
+object A:
+  import java.awt.Color.*   // gör så att färger syns direkt inuti detta objekt
+  def test = RED            // färgen RED syns direkt i lokala namnrymden
+
+object B:
+  export java.awt.Color.*   // RED blir medlem som syns utåt via B.RED
+  export math.{sin, cos}    // sin och cos blir metoder i B
+\end{CodeSmall}
+
+\begin{REPLsmall}
+scala> A.RED
+-- [E008] Not Found Error: ---------------------------------------------
+1 |A.RED
+  |^^^^^
+  |value RED is not a member of object A
+
+scala> B.RED
+val res0: java.awt.Color = java.awt.Color[r=255,g=0,b=0]
+
+scala> (B.cos(0), B.sin(0))
+val res1: (Double, Double) = (1.0,0.0)
+\end{REPLsmall}
+\end{Slide}
+
+\Subsection{Dokumentation}
 
 \begin{Slide}{Skapa dokumentation}
 \code{scaladoc} är ett program som tar Scala-kod som indata och skapar en webbsajt med dokumentation.
@@ -908,6 +941,7 @@ object A:
 \draw [arrow] (scaladoc) -- (output);
 \end{tikzpicture}
 
+\vspace*{1em}Läs mer i Appendix E: Dokumentation.
 %\vspace{2em} För Java-kod finns motsvarande program som heter \code{javadoc}.
 \end{Slide}
 
