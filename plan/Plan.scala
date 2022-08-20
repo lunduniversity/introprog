@@ -56,7 +56,7 @@ trait Plan {
       id = "objects", exercise = "objects", lab = "blockmole", contents = """
       | modul, singelobjekt, punktnotation, tillstånd, medlem, attribut, metod,
       | paket, filstruktur, jar, dokumentation, JDK,
-      | import, selektiv import, namnbyte vid import,
+      | import, selektiv import, namnbyte vid import, export,
       | tupel, multipla returvärden,
       | block, lokal variabel, skuggning,
       | lokal funktion,
