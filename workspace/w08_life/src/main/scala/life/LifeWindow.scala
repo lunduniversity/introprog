@@ -9,7 +9,7 @@ object LifeWindow:
   // lägg till fler användbara konstanter här tex färger etc.
 
 class LifeWindow(rows: Int, cols: Int):
-  import LifeWindow._ // importera namn från kompanjon
+  import LifeWindow.* // importera namn från kompanjon
 
   var life = Life.empty(rows, cols)
   val window: PixelWindow = ???

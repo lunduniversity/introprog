@@ -1,4 +1,4 @@
-import shapes2._
+import shapes2.*
 
 object shapesTest2:
   def main(args: Array[String]): Unit =

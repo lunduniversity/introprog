@@ -1,5 +1,5 @@
 class Point(val x: Int, val y: Int, save: Boolean = false):
-  import Point._
+  import Point.*
   
   if save then saved.prepend(this)
   

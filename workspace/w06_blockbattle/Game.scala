@@ -14,7 +14,7 @@ class Game(
   val leftPlayerName: String  = "LEFT",
   val rightPlayerName: String = "RIGHT"
 ):
- import Game._ // direkt tillgång till namn på medlemmar i kompanjon
+ import Game.* // direkt tillgång till namn på medlemmar i kompanjon
 
  val window    = new BlockWindow(windowSize, windowTitle, blockSize)
  val leftMole: Mole  = ???

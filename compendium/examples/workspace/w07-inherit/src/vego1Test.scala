@@ -1,4 +1,4 @@
-import exempelVego1._
+import exempelVego1.*
 
 object vego1Test:
   def main(args: Array[String]): Unit =
