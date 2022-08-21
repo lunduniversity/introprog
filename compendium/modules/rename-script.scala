@@ -2,7 +2,7 @@
 // $ sbt
 // > project plan
 // > console
-// scala> :paste compendium/modules/rename-script.scala
+// scala> :load compendium/modules/rename-script.scala
 
 val here = "compendium/modules"
 
