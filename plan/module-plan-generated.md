@@ -11,7 +11,7 @@
 | W08 | Matriser, typparametrar | matris, nästlad samling, nästlad for-sats, typparameter, generisk funktion, generisk klass, fri och bunden typparameter, generiska datastrukturer, generiska samlingar i Scala |
 | W09 | Mängder, tabeller | innehållstest, mängd, Set, mutable.Set, nyckel-värde-tabell, Map, mutable.Map, hash code, java.util.HashMap, java.util.HashSet, persistens, serialisering, textfiler, Source.fromFile, java.nio.file |
 | W10 | Arv, komposition | arv, komposition, polymorfism, trait, extends, asInstanceOf, with, inmixning supertyp, subtyp, bastyp, override, Scalas typhierarki, Any, AnyRef, Object, AnyVal, Null, Nothing, topptyp, bottentyp, referenstyper, värdetyper, accessregler vid arv, protected, final, trait, abstrakt klass |
-| W11 | Fördjupning: Kontextuella abstraktioner, mer om typparametrar | över- och undre typgräns, varians, kontravarians, kovarians, typjoker, egentyp, givet värde (given), kontextparameter (using), generiska extensionsmetoder, ad hoc polymorfism, kontextgräns, typklass, api, kodläsbarhet, granskningar |
+| W11 | Kontextuella abstraktioner, avancerade typbegrepp | över- och undre typgräns, varians, kontravarians, kovarians, typjoker, egentyp, givet värde (given), kontextparameter (using), generiska extensionsmetoder, ad hoc polymorfism, kontextgräns, typklass, api, kodläsbarhet, granskningar |
 | W12 | Valfri fördjupning, Projekt | välj valfritt fördjupningsområde, påbörja projekt |
 | W13 | Repetition | träna på extentor, redovisa projekt, träna inför muntligt prov |
 | W14 | MUNTLIGT PROV |  |

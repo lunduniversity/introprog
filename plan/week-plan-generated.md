@@ -11,7 +11,7 @@
 | W08 | 31/10-4/11  | Lp2V1 | Matriser, typparametrar | F15 F16 | matrices    | life        |
 | W09 | 7/11-11/11  | Lp2V2 | Mängder, tabeller | F17 F18 | lookup      | words       |
 | W10 | 14/11-18/11 | Lp2V3 | Arv, komposition | F19 F20 | inheritance | snake0      |
-| W11 | 21/11-25/11 | Lp2V4 | Fördjupning: Kontextuella abstraktioner, mer om typparametrar | F21 F22 | context     | snake1      |
+| W11 | 21/11-25/11 | Lp2V4 | Kontextuella abstraktioner, avancerade typbegrepp | F21 F22 | context     | snake1      |
 | W12 | 28/11-2/12  | Lp2V5 | Valfri fördjupning, Projekt | F23 F24 | extra       | Projekt0    |
 | W13 | 5/12-9/12   | Lp2V6 | Repetition | F25 F26 | examprep    | Projekt1    |
 | W14 | 12/12-16/12 | Lp2V7 | MUNTLIGT PROV | F27 F28 | Munta       | Munta       |
