@@ -247,8 +247,7 @@ Hello World!
 \end{REPL}
 Med kontextparametrar är flexibiliteten större; \code{using}-parametrar låter användaren själv styra vad som gäller i olika sammanhang och själva anropet blir enkelt oavsett om det är default-värdet eller andra, i den lokala kontexten, givna värden som önskas. Ändring av default har bara lokal påverkan, men den har påverkan på godtyckligt många anrop i den lokala kontexten --  argument som skiljer sig kan alltså vara givna en gång utan att behöva upprepas vid varje anrop. Vid anrop där man vill låta kompilatorn framkallar givna värden för kontextparametern ska inga parenteser användas, och anropen bli därmed korta och enkla.
 \begin{Code}
-def testGivenVal(using GivenVal.GreetConfig) = 
-  println(GivenVal.greetMsg)
+def testGivenVal(using g: GivenVal.GreetConfig) = println(g.greetMsg)
 \end{Code}
 
 \begin{REPL}
@@ -492,37 +491,34 @@ val res4: Boolean = true
 
 \QUESTBEGIN
 
-\Task  \what~  I Scala finns möjligheter till avancerad funktionsprogrammering med s.k. \textbf{typklasser} (ä.k. \emph{ad hoc polymorfism}). En typklass definierar generella beteenden som fungerar för godtyckliga befintliga typer utan att implementationen av dessa behöver ändras. Vi nosar i denna uppgift på hur implicita argument kan användas för att skapa typklasser, illustrerat med hjälp av givna ordningarna vid sortering.
+\Task  \what~  I Scala finns möjligheter till avancerad funktionsprogrammering med s.k. \textbf{typklasser} (ä.k. \emph{ad hoc polymorfism}). En typklass definierar generella beteenden som fungerar för godtyckliga befintliga typer utan att implementationen av dessa behöver ändras. Vi nosar i denna uppgift på hur kontextuella abstraktioner kan användas för att skapa typklasser i Scala, illustrerat med hjälp av givna ordningarna vid sortering.
 
-\Subtask \emph{Kontextuell parameter och givet värde.} Med nyckelordet \code{given} framför en parameter öppnar man för möjligheten att låta kompilatorn ge argumentet ''automatiskt'' om den kan hitta ett värde med passande typ som också är deklarerat med \code{implicit}, så som visas nedan.
-\begin{REPL}
-scala> def add(x: Int)(using y: Int) = x + y
-scala> add(1)(2)
-scala> add(1)
-scala> given ngtNamn = 42
-scala> add(1)
-\end{REPL}
-Vad blir felmeddelandet på rad 3 ovan? Varför fungerar det på rad 5 utan fel?
+Genom att kombinera koncepten givna värden, generiska klasser och kontextparametrar får man möjligheten till ad hoc polymorfism, exemplifierat med typklassen \code{CanCompare} nedan, som vi kan få att fungera för befintliga typer \emph{utan} att de behöver ändras. Speciellt så har vi ju inte möjligheten att lägga till metoder på befintliga typer i standardbiblioteket, efter som det inte är våran egen kod.
 
-\Subtask \emph{Typklasser.} Genom att kombinera koncepten implicita värden, generiska klasser och implicita parametrar får man möjligheten att göra typklasser, så som \code{CanCompare} nedan, som vi kan få att fungera för befintliga typer utan att de behöver ändras.
 
+\Subtask 
 Vad händer nedan? Vilka rader ger felmeddelande? Varför?
 
 \begin{REPL}
-scala> trait CanCompare[T] { def compare(a: T, b: T): Int }
-scala> def sort2[T](a: T, b: T)(implicit cc: CanCompare[T]): (T, T) =
-         if (cc.compare(a, b) > 0) (b, a) else (a, b)
-scala> sort2(42, 41)
-scala> implicit object intComparator extends CanCompare[Int]{
+scala> trait CanCompare[T]:
+         def compare(a: T, b: T): Int
+
+scala> def sort[T](a: T, b: T)(using cc: CanCompare[T]): (T, T) =
+         if cc.compare(a, b) > 0 then (b, a) else (a, b)
+
+scala> sort(42, 41)
+
+scala> given intComparator: CanCompare[Int] with
          override def compare(a: Int, b: Int): Int = a - b
-       }
-scala> sort2(42, 41)
-scala> sort2(42.0, 41.0)
+
+scala> sort(42, 41)
+
+scala> sort(42.0, 41.0)
 \end{REPL}
 
-\Subtask Definiera ett implicit objekt som gör så att \code{sort2} fungerar för värden av typen \code{Double}.
+\Subtask Definiera ett givet värde som gör så att \code{sort} fungerar för värden av typen \code{Double}.
 
-\Subtask Definiera ett implicit objekt som gör så att \code{sort2} fungerar för värden av typen \code{String}.
+\Subtask Definiera ett givet värde som gör så att \code{sort} fungerar för värden av typen \code{String}. \emph{Tips:} Du har nytta av de befintliga jämförelseoperatorerna på strängar, men tänk på att \code{compare} fortfarande måste returnera ett heltal även vid jämförelse av strängar.
 
 
 \SOLUTION
@@ -530,18 +526,13 @@ scala> sort2(42.0, 41.0)
 
 \TaskSolved \what
 
-\SubtaskSolved ---
+\SubtaskSolved \TODO
 
 
-\SubtaskSolved ---
+\SubtaskSolved \TODO
 
 
-\SubtaskSolved
-Tänk på att det fortfarande måste returneras en Int.
-
-
-\SubtaskSolved
-Undersök i Javas API hur metoden \code{compareTo} är implementerad för strängar.
+\SubtaskSolved \TODO
 
 \QUESTEND
 
@@ -549,17 +540,16 @@ Undersök i Javas API hur metoden \code{compareTo} är implementerad för strän
 
 
 
-\WHAT{Användning av implicit ordning.}
+\WHAT{Användning av given ordning.}
 
 \QUESTBEGIN
 
-\Task \label{task:implicit-ordering} \what~  Vi ska nu göra \code{isSorted} från uppgift \ref{task:isSorted} mer generellt användbar genom att möjliggöra att implicita ordningsfunktioner finns tillgängliga för olika typer.
-
-\Subtask  Med signaturen  \code{isSorted(xs: Vector[Int]): Boolean} så
-fungerar sorteringstestet bara för samlingar av typen \code{Vector[Int]}.
+\Task \label{task:implicit-ordering} \what~  Vi ska nu skapa en funktion \code{isSorted} som är generellt användbar genom att göra givna ordningsfunktioner tillgängliga för olika typer. Funktionen  \code{def isSorted(xs: Vector[Int]): Boolean = ???} fungerar bara för samlingar av typen \code{Vector[Int]}.
 
 Om vi i stället använder
-\code{isSorted(xs: Seq[Int]): Boolean} fungerar den för alla samlingar med heltal, även \code{Array} och \code{List}. Testa nedan funktion i REPL med heltalssekvenser av olika typ.
+\code{def isSorted(xs: Seq[Int]): Boolean = ???} fungerar den för olika samlingar med heltal, även \code{Vector} och \code{List}. 
+
+\Subtask  Testa nedan funktion i REPL med heltalssekvenser av olika typ.
 \begin{Code}
 def isSorted(xs: Seq[Int]): Boolean = xs == xs.sorted
 \end{Code}
@@ -569,33 +559,33 @@ def isSorted(xs: Seq[Int]): Boolean = xs == xs.sorted
 scala> def isSorted[T](xs: Seq[T]): Boolean = xs == xs.sorted
 \end{REPLnonum}
 
-\Subtask Vi vill gärna att \code{isSorted} ska fungera för godtyckliga typer T som har en ordningsdefinition. Detta kan göras med nedan funktion där typparametern \code{[T:Ordering]} betyder att \code{isSorted} är definierad för alla samlingar där typen \code{T} har en implicit ordning \code{Ordering[T]}. Speciellt gäller detta för alla grundtyperna \code{Int}, \code{Double}, \code{String}, etc., som alla har implicit tillgänglig \code{Ordering[Int]} etc.
+\Subtask Vi vill gärna att \code{isSorted} ska fungera för godtyckliga typer T som har en ordningsdefinition. Detta kan göras med nedan funktion där den speciella typparametern \code{[T:Ordering]} betyder att \code{isSorted} är definierad för alla samlingar där typen \code{T} har en given ordning \code{Ordering[T]}. Speciellt gäller detta för alla grundtyperna \code{Int}, \code{Double}, \code{String}, etc., som alla har specifika implementationer av typklassen \code{Ordering}.
 \begin{Code}
 def isSorted[T:Ordering](xs: Seq[T]): Boolean = xs == xs.sorted
 \end{Code}
 Testa metoden ovan i REPL enligt nedan.
 \begin{REPL}
 scala> isSorted(Vector(1,2,3))
-scala> isSorted(Array(1,2,3,1))
+scala> isSorted(List(1,2,3,1))
 scala> isSorted(Vector("A","B","C"))
 scala> isSorted(List("A","B","C","A"))
 scala> case class Person(firstName: String, familyName: String)
-scala> val persons = Vector(Person("Kim", "Finkodare"), Person("Robin","Fulhack"))
+scala> val persons = Vector(Person("Kim", "Finkodare"), Person("Voldemort","Fulhackare"))
 scala> isSorted(persons)
 \end{REPL}
 Vad ger sista raden för felmeddelande? Varför?
 
 
-\Subtask \emph{Implicita ordningar.} En typparameter på formen \code{[T:Ordering]} kallas kontextgräns \Eng{context bound} och föranleder kompilatorn att expandera funktionshuvudet för \code{isSorted} med en extra parameterlista som har en implicit parameter. I stället för att använda \code{[T:Ordering]} kan vi själva lägga till den implicita parametern som motsvarar kontextgränsen. Då får vi också tillgång till ett namn på den implicita ordningen och kan använda det namnet i funktionskroppen och anropa metoder som är medlemmar av typen \code{Ordering}.
+\Subtask \emph{Implicita ordningar.} En typparameter på formen \code{[T:Ordering]} kallas kontextgräns \Eng{context bound} och föranleder kompilatorn att automatiskt expandera funktionshuvudet för \code{isSorted} med en kontextparameter. I stället för att använda \code{[T:Ordering]} kan vi själva lägga till en kontextparameter som motsvarar kontextgränsen. Då får vi också tillgång till ett namn, här nedan \code{ord}, på den implicita ordningen och kan använda det namnet i funktionskroppen och anropa metoder som är medlemmar av typklassen \code{Ordering}. (Namnet på kontextparametern kan också utelämnas, men då får vi istället gå omvägen via inbyggda funktionen \code{summon[T]} för att be kompilatorn leta upp den givna instansen för den typparameter som ges vid anropet.)
 
 \begin{CodeSmall}
-def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean =
+def isSorted[T](xs: Seq[T])(using ord: Ordering[T]): Boolean =
   xs.zip(xs.tail).forall(x => ord.lteq(x._1, x._2))
 \end{CodeSmall}
 
 Objekt av typen \code{Ordering} har jämförelsemetoder som t.ex. \code{lteq} (förk. \emph{less than or equal}) och \code{gt} (förk. \emph{greater than}).
 
-Det finns fördefinierade implicita objekt \code{Ordering[T]} för alla grundtyper, alltså t.ex. \code{Ordering[Int]}, \code{Ordering[String]}, etc.
+Det finns givna ordningar för alla grundtyper i standardbiblioteket, alltså t.ex. \code{Ordering[Int]}, \code{Ordering[String]}, etc.
 Testa så att kompilatorn hittar ordningen för samlingar med värden av några grundtyper. Kontrollera även enligt nedan att det fortfarande blir problem för egendefinierade klasser, t.ex. \code{Person}  (detta ska vi råda bot på i uppgift \ref{task:custom-ordering}).
 \begin{REPL}
 scala> isSorted(Vector(1,2,3))
@@ -609,7 +599,7 @@ scala> isSorted(persons)
 
 \Subtask \emph{Importera implicita ordningsoperatorer från en \code{Ordering}.} Om man gör import på ett \code{Ordering}-objekt får man tillgång till implicita konverteringar som gör att jämförelseoperatorerna fungerar. Testa nedan variant av \code{isSorted} på olika sekvenstyper och verifiera att \code{<=}, \code{>}, etc., nu fungerar enligt nedan.
 \begin{CodeSmall}
-def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean = {
+def isSorted[T](xs: Seq[T])(given ord: Ordering[T]): Boolean = {
   import ord._
   xs.zip(xs.tail).forall(x => x._1 <= x._2)
 }
@@ -619,7 +609,7 @@ def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean = {
 \SOLUTION
 
 
-\TaskSolved \what ---
+\TaskSolved \what --- \TODO
 
 \QUESTEND
 
@@ -634,45 +624,35 @@ def isSorted[T](xs: Seq[T])(implicit ord: Ordering[T]): Boolean = {
 
 \Task \label{task:custom-ordering} \what~
 
-\Subtask Ett sätt att skapa en egen, specialanpassad ordning är att mappa dina objekt till typer som redan har en implicit ordning. Med hjälp av metoden \code{by} i objektet \code{scala.math.Ordering} kan man skapa ordningar genom bifoga en funktion \code{T => S} där \code{T} är typen för de objekt du vill ordna och \code{S} är någon annan typ, t.ex. \code{String} eller \code{Int}, där det redan finns en implicit ordning.
+\Subtask Ett sätt att skapa en egen, specialanpassad ordning för dina egna klasser är att mappa dina objekt till typer som redan har en implicit ordning. Med hjälp av metoden \code{by} i objektet \code{scala.math.Ordering} kan man skapa ordningar genom att bifoga en funktion \code{T => S} där \code{T} är typen för de objekt du vill ordna och \code{S} är någon annan typ, t.ex. \code{String} eller \code{Int}, där det redan finns en given ordning.
 \begin{REPL}
 scala> case class Team(name: String, rank: Int)
 scala> val xs =
          Vector(Team("fnatic", 1499), Team("nip", 1473), Team("lumi", 1601))
 scala> xs.sorted  // Hur lyder felmeddelandet? Varför blir det fel?
-scala> val teamNameOrdering = Ordering.by((t: Team) => t.name)
-scala> xs.sorted(teamNameOrdering)   //explicit ordning
-scala> implicit val teamRankOrdering = Ordering.by((t: Team) => t.rank)
+scala> val teamNameOrdering: Ordering[Team] = Ordering.by(t => t.name)
+scala> xs.sorted(using teamNameOrdering)   //explicit ordning
+scala> given Ordering[Team] = Ordering.by(t => t.rank)
 scala> xs.sorted   // Varför funkar det nu?
 \end{REPL}
 
 \Subtask Vill man sortera i omvänd ordning kan man använda
 \code{Ordering.fromLessThan} som tar en funktion \code{(T, T) => Boolean} vilken ska ge \code{true} om första parametern ska komma före, annars \code{false}. Om vi vill sortera efter \code{rank} i omvänd ordning kan vi göra så här:
 \begin{REPL}
-scala> val highestRankFirst =
-         Ordering.fromLessThan[Team]((t1, t2) => t1.rank > t2.rank)
-scala> xs.sorted(highestRankFirst)
+scala> val highestRankFirst: Ordering[Team] =
+         Ordering.fromLessThan((t1, t2) => t1.rank > t2.rank)
+scala> xs.sorted(using highestRankFirst)
 \end{REPL}
 
-\Subtask Om du har en case-klass med flera fält och vill ha en fördefinierad implicit sorteringsordning samt även erbjuda en alternativ sorteringsordning kan du placera olika ordningsdefinitioner i ett kompanjonsobjekt; detta är nämligen ett av de ställen där kompilatorn söker efter eventuella implicita värden innan den ger upp att leta.
+\Subtask Om du har en case-klass med flera fält och vill ha en fördefinierad implicit sorteringsordning samt \emph{även} erbjuda en alternativ sorteringsordning, så kan du placera en default ordningsdefinition i ett kompanjonsobjekt; detta är nämligen ett av de ställen där kompilatorn söker sist efter eventuella implicita värden innan den ger upp att leta.
 \begin{Code}
 case class Team(name: String, rank: Int)
-object Team {
-  implicit val highestRankFirst = Ordering.fromLessThan[Team]{
-    (t1, t2) => t1.rank > t2.rank
-  }
-  val nameOrdering = Ordering.by((t: Team) => t.name)
-}
+object Team:
+  given highestRankFirst: Ordering[Team] = 
+    Ordering.fromLessThan((t1, t2) => t1.rank > t2.rank)
+  val nameOrdering: Ordering[Team] = Ordering.by(t => t.name)
 \end{Code}
 \begin{REPL}
-scala> :pa
-// Exiting paste mode, now interpreting.
-case class Team(name: String, rank: Int)
-object Team {
-  implicit val highestRankFirst =
-    Ordering.fromLessThan[Team]{(t1, t2) => t1.rank > t2.rank}
-  val nameOrdering = Ordering.by((t: Team) => t.name)
-}
 scala> val xs =
          Vector(Team("fnatic", 1499), Team("nip", 1473), Team("lumi", 1601))
 scala> xs.sorted
@@ -684,7 +664,7 @@ scala> xs.sorted(Team.nameOrdering)
 \Subtask Det går också med kompanjonsobjektet ovan att få jämförelseoperatorer att fungera med din case-klass, genom att importera medlemmarna i lämpligt ordningsobjekt. Verifiera att så är fallet enligt nedan:
 \begin{REPL}
 scala> Team("fnatic",1499) < Team("gurka", 2)  // Vilket fel? Varför?
-scala> import Team.highestRankFirst._
+scala> import Team.highestRankFirst.given
 scala> Team("fnatic",1499) < Team("gurka", 2)  // Inget fel? Varför?
 \end{REPL}
 
@@ -692,7 +672,16 @@ scala> Team("fnatic",1499) < Team("gurka", 2)  // Inget fel? Varför?
 \SOLUTION
 
 
-\TaskSolved \what ---
+\TaskSolved \what 
+
+\SubtaskSolved \TODO
+
+\SubtaskSolved \TODO
+
+\SubtaskSolved \TODO
+
+\SubtaskSolved \TODO
+
 
 \QUESTEND
 
@@ -701,11 +690,11 @@ scala> Team("fnatic",1499) < Team("gurka", 2)  // Inget fel? Varför?
 
 
 
-\WHAT{Specialanpassad ordning genom att ärva från \code{Ordered}.}
+\WHAT{Specialanpassad ordning genom att ärva från \code{Ordered}}
 
 \QUESTBEGIN
 
-\Task  \what~  Om det finns \emph{en} väldefinierad, specifik ordning som man vill ska gälla för sina case-klass-instanser kan man göra den ordnad genom att låta case-klassen mixa in traiten \code{Ordered} och implementera den abstrakta metoden \code{compare}.
+\Task  \what~  Om det finns \emph{en} väldefinierad, specifik ordning som man vill ska gälla för sina case-klass-instanser kan man göra den ordnad genom att låta case-klassen mixa in traiten \code{Ordered} och implementera den abstrakta metoden \code{compare}. (Detta illustrerar användning av subtypspolymorfism (d.v.s arv) i stället för ad hoc polymorfism med typklasser.)
 
 \begin{Background}
 En trait som används på detta sätt kallas \textbf{gränssnitt} \Eng{interface}, och om man \emph{implementerar} ett gränssnitt så uppfyller man ett ''kontrakt'', som i detta fall innebär att man implementerar det som krävs av ordnade objekt, nämligen att de har en konkret \code{compare}-metod. Du lär dig mer om gränssnitt i kommande kurser.
@@ -714,146 +703,152 @@ En trait som används på detta sätt kallas \textbf{gränssnitt} \Eng{interface
 \Subtask Implementera case-klassen \code{Team} så att den är en subtyp till \code{Ordered} enligt nedan skiss. Högre rankade lag ska komma före lägre rankade lag. Metoden \code{compare} ska ge ett heltal som är negativt om \code{this} kommer före \code{that}, noll om de ordnas lika, annars positivt.
 
 \begin{Code}
-case class Team(name: String, rank: Int) extends Ordered[Team]{
+case class Team(name: String, rank: Int) extends Ordered[Team]:
   override def compare(that: Team): Int = ???
-}
 \end{Code}
-\emph{Tips:} Du kan anropa metoden \code{compare} på alla grundtyper, t.ex. \code{Int}, eftersom de är implicit ordnade. Genom att negera uttrycket blir ordningen den omvända.
-\begin{REPL}
+\emph{Tips:} Du kan anropa metoden \code{compare} på alla grundtyper, t.ex. \code{Int}, eftersom de implementerar gränssnittet \code{Oredered}. Genom att negera uttrycket blir ordningen den omvända. 
+
+\begin{REPLnonum}
 scala> -(2.compare(1))
-\end{REPL}
+\end{REPLnonum}
 
 \Subtask Testa att  din case-klass nu uppfyller det som krävs för att vara ordnad.
-\begin{REPL}
+\begin{REPLnonum}
 scala> Team("fnatic",1499) < Team("gurka", 2)
-\end{REPL}
+\end{REPLnonum}
 
 
+\Subtask Diskutera med handledare eller kursare skillnader och likheter mellan gränssnitt och typklasser, med ledning av denna och föregående uppgifter.
 \SOLUTION
 
 
 \TaskSolved \what
 
+\SubtaskSolved
 
-Tänk på att för att sortering i omvänd ordning (alltså högst rank först) ska fungera så måste jämförelsen returnera \code{false}.
-
-\begin{CodeSmall}
-case class  Team(name: String, rank: Int) extends Ordered[Team]{
+\begin{Code}
+case class  Team(name: String, rank: Int) extends Ordered[Team]:
   override def compare(that: Team): Int = -rank.compare(that.rank)
-}
-\end{CodeSmall}
+\end{Code}
 
+\SubtaskSolved
 
+\begin{REPLnonum}
+scala> Team("fnatic",1499) < Team("gurka", 2)
+val res1: Boolean = true
+\end{REPLnonum}
+
+\SubtaskSolved Ad hoc polymorfism är mer flexibel. \TODO{mer diskussion om likheter och skillnader här...}
 
 \QUESTEND
 
 
 
-\WHAT{Sortering med inbyggda sorteringsmetoder.}
+% \WHAT{Sortering med inbyggda sorteringsmetoder.}
 
-\QUESTBEGIN
+% \QUESTBEGIN
 
-\Task  \what~  För grundtyperna (\code{Int}, \code{Double}, \code{String}, etc.) finns en fördefinierad ordning som gör så att färdiga sorteringsmetoder fungerar på alla samlingar i \code{scala.collection}. Även jämförelseoperatorerna i uppgift \ref{task:string-order-operators} fungerar enligt den fördefinierade ordningsdefinitionen för alla grundtyper. Denna ordningsdefinition är \textit{implicit tillgänglig} vilket betyder att kompilatorn hittar ordningsdefinitionen utan att vi explicit måste ange den. Detta fungerar i Scala även med primitiva \code{Array}.
+% \Task  \what~  För grundtyperna (\code{Int}, \code{Double}, \code{String}, etc.) finns en fördefinierad ordning som gör så att färdiga sorteringsmetoder fungerar på alla samlingar i \code{scala.collection}. Även jämförelseoperatorerna i uppgift \ref{task:string-order-operators} fungerar enligt den fördefinierade ordningsdefinitionen för alla grundtyper. Denna ordningsdefinition är \textit{implicit tillgänglig} vilket betyder att kompilatorn hittar ordningsdefinitionen utan att vi explicit måste ange den. Detta fungerar i Scala även med primitiva \code{Array}.
 
-\Subtask Testa metoden \code{sorted} på några olika samlingar. Förklara vad som händer. Hur lyder felmeddelandet på sista raden? Varför blir det fel?
+% \Subtask Testa metoden \code{sorted} på några olika samlingar. Förklara vad som händer. Hur lyder felmeddelandet på sista raden? Varför blir det fel?
 
-\begin{REPL}
-scala> Vector(1.1, 4.2, 2.4, 42.0, 9.9).sorted
-scala> val xs = (100000 to 1 by -1).toArray
-scala> xs.sorted
-scala> xs.map(_.toString).sorted
-scala> xs.map(_.toByte).sorted.distinct
-scala> case class Person(firstName: String, familyName: String)
-scala> val ps = Vector(Person("Robin", "Finkodare"), Person("Kim","Fulhack"))
-scala> ps.sorted
-\end{REPL}
+% \begin{REPL}
+% scala> Vector(1.1, 4.2, 2.4, 42.0, 9.9).sorted
+% scala> val xs = (100000 to 1 by -1).toArray
+% scala> xs.sorted
+% scala> xs.map(_.toString).sorted
+% scala> xs.map(_.toByte).sorted.distinct
+% scala> case class Person(firstName: String, familyName: String)
+% scala> val ps = Vector(Person("Robin", "Finkodare"), Person("Kim","Fulhack"))
+% scala> ps.sorted
+% \end{REPL}
 
-\Subtask Om man har en samling med egendefinierade klasser eller man vill ha en annan sorteringsordning får man definiera ordningen själv. Ett helt generellt sätt att göra detta på  illustreras i uppgift \ref{task:custom-ordering}, men de båda hjälpmetoderna \code{sortWith} och \code{sortBy} räcker i de flesta fall. Hur de används illustreras nedan. Metoden \code{sortBy} kan användas om man tar fram ett värde av grundtyp och är nöjd med den inbyggda sorteringsordningen.
+% \Subtask Om man har en samling med egendefinierade klasser eller man vill ha en annan sorteringsordning får man definiera ordningen själv. Ett helt generellt sätt att göra detta på  illustreras i uppgift \ref{task:custom-ordering}, men de båda hjälpmetoderna \code{sortWith} och \code{sortBy} räcker i de flesta fall. Hur de används illustreras nedan. Metoden \code{sortBy} kan användas om man tar fram ett värde av grundtyp och är nöjd med den inbyggda sorteringsordningen.
 
-Metoden \code{sortWith} används om man vill skicka med ett eget jämförelsepredikat som ordnar två element; funktionen ska returnera \code{true} om det första elementet ska vara först, annars \code{false}.
+% Metoden \code{sortWith} används om man vill skicka med ett eget jämförelsepredikat som ordnar två element; funktionen ska returnera \code{true} om det första elementet ska vara först, annars \code{false}.
 
-\begin{REPL}
-scala> case class Person(firstName: String, familyName: String)
-scala> val ps = Vector(Person("Robin", "Finkodare"), Person("Kim","Fulhack"))
-scala> ps.sortBy(_.firstName)
-scala> ps.sortBy(_.familyName)
-scala> ps.sortBy  // tryck TAB två gånger för att se signaturen
-scala> ps.sortWith((p1, p2) => p1.firstName > p2.firstName)
-scala> ps.sortWith  // tryck TAB två gånger för att se signaturen
-scala> Vector(9,5,2,6,9).sortWith((x1, x2) => x1 % 2 > x2 % 2)
-\end{REPL}
-Vad har metoderna \code{sortWith} och \code{sortBy} för signaturer?
+% \begin{REPL}
+% scala> case class Person(firstName: String, familyName: String)
+% scala> val ps = Vector(Person("Robin", "Finkodare"), Person("Kim","Fulhack"))
+% scala> ps.sortBy(_.firstName)
+% scala> ps.sortBy(_.familyName)
+% scala> ps.sortBy  // tryck TAB två gånger för att se signaturen
+% scala> ps.sortWith((p1, p2) => p1.firstName > p2.firstName)
+% scala> ps.sortWith  // tryck TAB två gånger för att se signaturen
+% scala> Vector(9,5,2,6,9).sortWith((x1, x2) => x1 % 2 > x2 % 2)
+% \end{REPL}
+% Vad har metoderna \code{sortWith} och \code{sortBy} för signaturer?
 
-\Subtask Lägg till attributet \code{age: Int} i case-klassen \code{Person} ovan och lägg till fler personer med olika namn och ålder i en vektor och sortera den med \code{sortBy} och \code{sortWith} för olika attribut. Välj själv några olika sätt att sortera på.
-
-
-
-\SOLUTION
-
-
-\TaskSolved \what
-
-
-\SubtaskSolved
-\begin{enumerate}
-\item Returnerar en sorterad \code{Vector} av \code{double}-värden
-\item Skapar en variabel xs och sparar en \code{Array} med \code{Int}-värden mellan 100000 till 1.
-\item Sorterar \code{xs = 1,2,3...}
-\item Konverterar xs till en \code{Array} av \code{String}-värden och sorterar dem lexikografiskt: \code{xs = "1", "10", "100"} etc.
-\item Konverterar xs till en \code{Array} av \code{Byte}-värden (max 127, min -128) och sorterar dem, samt tar bort dubletter: \code{xs = -128, -127, -1...}
-\item Skapar en ny klass \code{Person} som tar 2 \code{String}-argument i konstruktorn
-\item Sparar en Vector med två \code{Person}-objekt i en variabel ps
-\item Försöker kalla på \code{sorted}-metoden för klassen \code{Person}. Eftersom vi skrivit denna klass själva och inte berättat för Scala hur \code{Person}-objekt ska sorteras, resulterar detta i ett felmeddelande.
-\end{enumerate}
-
-\SubtaskSolved
-
-\begin{enumerate}
-\item ---
-\item ---
-\item Sorterar \code{Person}-objekten i ps med avseende på värdet i \code{firstName}
-\item Sorterar \code{Person}-objekten i ps med avseende på värdet i \code{familyName}
-\item \code{sortBy} tar en funktion f som argument. f ska ta ett argument av typen \code{Person} och returnera en generisk typ B.
-\item Sortera \code{Person}-objekten i ps med avseende på \code{firstName} i sjunkande ordning (omvänt från tidigare alltså)
-\item \code{sortWith} tar en funktion lt som argument. lt ska i sin tur ta två argument av typen \code{Person} och returnera ett booleskt värde.
-\item Sorterar en vektor så att värdena som är minst delbara med 2 hamnar först, och de mest delbara med 2 hamnar sist. Detta delar alltså upp udda och jämna tal.
-\end{enumerate}
-
-\SubtaskSolved
-Klassens signatur blir då:
-\begin{REPLnonum}
-case class Person(firstName: String, lastName: String, age: Int)
-\end{REPLnonum}
-
-Lägg in dem i en vektor:
-\begin{REPLnonum}
-val ps2 = Vector(Person("a", "asson", 34), Person("asson", "assonson", 1234),
-Person("anna", "Book", 2))
-\end{REPLnonum}
-
-Sortera dem på olika sätt:
-\begin{enumerate}
-\item
-Vektorn blir sorterad med avseende på personernas ålder i stigande ordning
-\begin{REPLnonum}
-scala> ps2.sortWith((p1, p2) => p1.age < p2.age)
-res40: scala.collection.immutable.Vector[Person] = Vector(Person(anna,Book,2),
-Person(a,asson,34), Person(asson,assonson,1234))
-\end{REPLnonum}
-
-\item
-Sorterar vektorn med avseende på namn, men också med avseende på ålder (i sjunkande ordning). För att komma före någon i ordningen måste alltså både namnet komma före, och åldern vara högre.
-\begin{REPLnonum}
-scala> ps2.sortWith((p1, p2) => (p1.firstName < p2.firstName) &&
-(p1.age > p2.age))
-res42: scala.collection.immutable.Vector[Person] = Vector(Person(a,asson,34),
-Person(asson,assonson,1234), Person(anna,Book,2))
-\end{REPLnonum}
-\end{enumerate}
+% \Subtask Lägg till attributet \code{age: Int} i case-klassen \code{Person} ovan och lägg till fler personer med olika namn och ålder i en vektor och sortera den med \code{sortBy} och \code{sortWith} för olika attribut. Välj själv några olika sätt att sortera på.
 
 
 
-\QUESTEND
+% \SOLUTION
+
+
+% \TaskSolved \what
+
+
+% \SubtaskSolved
+% \begin{enumerate}
+% \item Returnerar en sorterad \code{Vector} av \code{double}-värden
+% \item Skapar en variabel xs och sparar en \code{Array} med \code{Int}-värden mellan 100000 till 1.
+% \item Sorterar \code{xs = 1,2,3...}
+% \item Konverterar xs till en \code{Array} av \code{String}-värden och sorterar dem lexikografiskt: \code{xs = "1", "10", "100"} etc.
+% \item Konverterar xs till en \code{Array} av \code{Byte}-värden (max 127, min -128) och sorterar dem, samt tar bort dubletter: \code{xs = -128, -127, -1...}
+% \item Skapar en ny klass \code{Person} som tar 2 \code{String}-argument i konstruktorn
+% \item Sparar en Vector med två \code{Person}-objekt i en variabel ps
+% \item Försöker kalla på \code{sorted}-metoden för klassen \code{Person}. Eftersom vi skrivit denna klass själva och inte berättat för Scala hur \code{Person}-objekt ska sorteras, resulterar detta i ett felmeddelande.
+% \end{enumerate}
+
+% \SubtaskSolved
+
+% \begin{enumerate}
+% \item ---
+% \item ---
+% \item Sorterar \code{Person}-objekten i ps med avseende på värdet i \code{firstName}
+% \item Sorterar \code{Person}-objekten i ps med avseende på värdet i \code{familyName}
+% \item \code{sortBy} tar en funktion f som argument. f ska ta ett argument av typen \code{Person} och returnera en generisk typ B.
+% \item Sortera \code{Person}-objekten i ps med avseende på \code{firstName} i sjunkande ordning (omvänt från tidigare alltså)
+% \item \code{sortWith} tar en funktion lt som argument. lt ska i sin tur ta två argument av typen \code{Person} och returnera ett booleskt värde.
+% \item Sorterar en vektor så att värdena som är minst delbara med 2 hamnar först, och de mest delbara med 2 hamnar sist. Detta delar alltså upp udda och jämna tal.
+% \end{enumerate}
+
+% \SubtaskSolved
+% Klassens signatur blir då:
+% \begin{REPLnonum}
+% case class Person(firstName: String, lastName: String, age: Int)
+% \end{REPLnonum}
+
+% Lägg in dem i en vektor:
+% \begin{REPLnonum}
+% val ps2 = Vector(Person("a", "asson", 34), Person("asson", "assonson", 1234),
+% Person("anna", "Book", 2))
+% \end{REPLnonum}
+
+% Sortera dem på olika sätt:
+% \begin{enumerate}
+% \item
+% Vektorn blir sorterad med avseende på personernas ålder i stigande ordning
+% \begin{REPLnonum}
+% scala> ps2.sortWith((p1, p2) => p1.age < p2.age)
+% res40: scala.collection.immutable.Vector[Person] = Vector(Person(anna,Book,2),
+% Person(a,asson,34), Person(asson,assonson,1234))
+% \end{REPLnonum}
+
+% \item
+% Sorterar vektorn med avseende på namn, men också med avseende på ålder (i sjunkande ordning). För att komma före någon i ordningen måste alltså både namnet komma före, och åldern vara högre.
+% \begin{REPLnonum}
+% scala> ps2.sortWith((p1, p2) => (p1.firstName < p2.firstName) &&
+% (p1.age > p2.age))
+% res42: scala.collection.immutable.Vector[Person] = Vector(Person(a,asson,34),
+% Person(asson,assonson,1234), Person(anna,Book,2))
+% \end{REPLnonum}
+% \end{enumerate}
+
+
+
+% \QUESTEND
 
 
 
