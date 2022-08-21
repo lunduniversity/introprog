@@ -313,6 +313,49 @@ Läs mer om kontexuella abstraktioner här:\\\url{https://docs.scala-lang.org/sc
 
 \QUESTEND
 
+
+\ExtraTasks
+
+
+\WHAT{Kontextparameter och givet värde.}
+
+\QUESTBEGIN
+
+\Task  \what~Prova nedan i REPL.
+\begin{REPL}
+scala> def add(x: Int)(using y: Int) = x + y
+scala> add(1)(using 2)
+scala> add(1)
+scala> given ngtNamn = 42
+scala> add(1)
+\end{REPL}
+\Subtask Vad blir felmeddelandet på rad 3 ovan? 
+
+\Subtask Varför fungerar det på rad 5 utan fel?
+
+\Subtask Definiera och testa en motsvarande funktion \code{sub} som kan subtrahera ett givet värde.
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+\SubtaskSolved 
+\begin{REPL}
+scala> add(1)
+-- Error: ------------------------------------------------------------------
+1 |add(1)
+  |      ^
+  |    no given instance of type Int was found for parameter y of method add
+1 error found
+\end{REPL}
+
+\SubtaskSolved Nu finns ett givet värde som kompilatorn automatiskt kan fylla i på platsen vid anropet.
+
+\SubtaskSolved \code{def sub(x: Int)(using y: Int) = x - y}
+
+\QUESTEND
+
 \AdvancedTasks %%%%%%%%%%%
 
 
@@ -449,14 +492,14 @@ val res4: Boolean = true
 
 \QUESTBEGIN
 
-\Task  \what~  I Scala finns möjligheter till avancerad funktionsprogrammering med s.k. \textbf{typklasser}, som definierar generella beteenden som fungerar för befintliga typer utan att implementationen av dessa befintliga typer behöver ändras. Vi nosar i denna uppgift på hur implicita argument kan användas för att skapa typklasser, illustrerat med hjälp av implicita ordningarna, som är en typisk och användbar tillämpning av konceptet typklasser.
+\Task  \what~  I Scala finns möjligheter till avancerad funktionsprogrammering med s.k. \textbf{typklasser} (ä.k. \emph{ad hoc polymorfism}). En typklass definierar generella beteenden som fungerar för godtyckliga befintliga typer utan att implementationen av dessa behöver ändras. Vi nosar i denna uppgift på hur implicita argument kan användas för att skapa typklasser, illustrerat med hjälp av givna ordningarna vid sortering.
 
-\Subtask \emph{Implicit parameter och implicit värde.} Med nyckelordet \code{implicit} framför en parameter öppnar man för möjligheten att låta kompilatorn ge argumentet ''automatiskt'' om den kan hitta ett värde med passande typ som också är deklarerat med \code{implicit}, så som visas nedan.
+\Subtask \emph{Kontextuell parameter och givet värde.} Med nyckelordet \code{given} framför en parameter öppnar man för möjligheten att låta kompilatorn ge argumentet ''automatiskt'' om den kan hitta ett värde med passande typ som också är deklarerat med \code{implicit}, så som visas nedan.
 \begin{REPL}
-scala> def add(x: Int)(implicit y: Int) = x + y
+scala> def add(x: Int)(using y: Int) = x + y
 scala> add(1)(2)
 scala> add(1)
-scala> implicit val ngtNamn = 42
+scala> given ngtNamn = 42
 scala> add(1)
 \end{REPL}
 Vad blir felmeddelandet på rad 3 ovan? Varför fungerar det på rad 5 utan fel?
