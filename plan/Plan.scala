@@ -27,7 +27,7 @@ trait Plan {
       | aritmetik, slumptal, logiska uttryck, de Morgans lagar, if, true, false, while, for,
       """.stripTrim),
 
-    Module("Program, kontrollstrukturer",
+    Module("Program och kontrollstrukturer",
       id = "programs", exercise = "programs", lab = "", contents = """
       | huvudprogram, program-argument, indata, scala.io.StdIn.readLine,
       | kontrollstruktur,
@@ -38,7 +38,7 @@ trait Plan {
       | algoritmexempel: SWAP, SUM, MIN-MAX, MIN-INDEX,
       """.stripTrim),
 
-    Module("Funktioner, abstraktion",
+    Module("Funktioner och abstraktion",
       id = "functions", exercise = "functions", lab = "irritext", contents = """
       | abstraktion, funktion,
       | parameter, argument, returtyp, default-argument,
@@ -52,7 +52,7 @@ trait Plan {
       | scala.util.Random, slumptalsfrö,
       """.stripTrim),
 
-    Module("Objekt, inkapsling",
+    Module("Objekt och inkapsling",
       id = "objects", exercise = "objects", lab = "blockmole", contents = """
       | modul, singelobjekt, punktnotation, tillstånd, medlem, attribut, metod,
       | paket, filstruktur, jar, dokumentation, JDK,
@@ -72,7 +72,7 @@ trait Plan {
 //      | enkelt bash-skript för kompilering ???här eller i vecka 2???,
 //      | sbt tilde run ???här eller i vecka2???,
 
-    Module("Klasser, datamodellering",
+    Module("Klasser och datamodellering",
       id = "classes", exercise = "classes", lab = "", contents = """
       | applikationsdomän, datamodell, objektorientering, klass, instans, 
       | Any, isInstanceOf, toString,
@@ -84,7 +84,7 @@ trait Plan {
       | referenslikhet, innehållslikhet, eq, ==,
       """.stripTrim),
 
-    Module("Mönster, felhantering",
+    Module("Mönster och felhantering",
       id = "patterns", exercise = "patterns", lab = "blockbattle", contents = """
       | mönstermatchning, match, Option, throw, try, catch, Try, unapply, sealed,
       | flatten, flatMap, partiella funktioner, collect,
@@ -93,7 +93,7 @@ trait Plan {
       """.stripTrim), // equals -> sortering???
 
 
-    Module("Sekvenser, enumerationer",
+    Module("Sekvenser och enumerationer",
       id = "sequences", exercise = "sequences", lab = "shuffle", contents = """
       | översikt av Scalas samlingsbibliotek och samlingsmetoder,
       | klasshierarkin i scala.collection, Iterable,
@@ -113,14 +113,14 @@ trait Plan {
 
     Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
-    Module("Matriser, typparametrar",
+    Module("Nästlade och generiska strukturer",
       id = "matrices", exercise = "matrices", lab = "life", contents = """
       | matris, nästlad samling, nästlad for-sats,
       | typparameter, generisk funktion, generisk klass, fri och bunden typparameter,
       | generiska datastrukturer, generiska samlingar i Scala,
       """.stripTrim),
 
-    Module("Mängder, tabeller",
+    Module("Mängder och tabeller",
     id = "setmap", exercise = "lookup", lab = "words", contents = """
     | innehållstest, mängd, Set, mutable.Set,
     | nyckel-värde-tabell, Map, mutable.Map,
@@ -128,7 +128,7 @@ trait Plan {
     | persistens, serialisering, textfiler, Source.fromFile, java.nio.file,
     """.stripTrim),
 
-   Module("Arv, komposition", 
+   Module("Arv och komposition", 
       id = "inheritance", exercise = "inheritance", lab = "snake0", contents = """
       | arv, komposition, polymorfism, trait, extends, asInstanceOf, with, inmixning
       | supertyp, subtyp, bastyp, override,
@@ -138,7 +138,7 @@ trait Plan {
       | trait, abstrakt klass, 
       """.stripTrim),
 
-    Module("Kontextuella abstraktioner, avancerade typbegrepp",
+    Module("Kontextuella abstraktioner och varians",
       id = "context", exercise = "context", lab = "snake1", contents = """
       | över- och undre typgräns, varians, kontravarians, kovarians, typjoker, egentyp,
       | givet värde (given), kontextparameter (using), generiska extensionsmetoder, ad hoc polymorfism, kontextgräns, typklass,
