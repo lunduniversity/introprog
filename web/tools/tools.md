@@ -4,7 +4,7 @@ I denna kurs använder vi programmeringsspråket **Scala** och olika programmeri
 
 På LTH:s [Linuxdatorer i E-huset](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/) finns alla de verktyg vi använder i kursen förinstallerade:
 
-* Rekommenderad kodeditor: VS Code startas med kommandot `code` men innan du kör VS Code *första* gången: installera Scala-tillägg för VS Code med detta terminalkommando: `code --install-extension scalameta.metals --force`
+* Rekommenderad kodeditor: VS Code startas med kommandot `code`. (Tillägget `Scala Metals` är förinstallerat.)  
 * Scala REPL; kommando: `scala` eller `scala-cli repl .`
 * Utvecklingsmiljön Kojo; kommando: `kojo`
 * Scala-kompilatorn; kommando: `scalac` eller `scala-cli compile .`
@@ -107,7 +107,7 @@ sdk install sbt
 
 1. Installera **VS Code** för ditt system här: [https://code.visualstudio.com/Download](https://code.visualstudio.com/Download) 
 2. Installera tillägget **Scala Metals**. Du kan antingen göra detta via tilläggshanterare (Extensions) inne i VS Code eller via terminalen. 
-    - Inifrån VS Code: Tryck Ctrl+Shift+X och skriv i sök-rutan: ` Scala Metals`, markera tillägget *Scala (Metals)* och klicka *Install*. 
+    - Inifrån VS Code: Tryck Ctrl+Shift+X och skriv i sök-rutan: `Scala Metals`, markera tillägget *Scala (Metals)* och klicka *Install*. 
     - I terminalen skriv: `code --install-extension scalameta.metals --force`
 3. Om du kör WSL har du nytta av tillägget "Remote - WSL", sök bland tillägg (Ctrl+Shift+X) och klicka "Install", eller skriv i terminalen  `code --install-extension ms-vscode-remote.remote-wsl  --force`
 
