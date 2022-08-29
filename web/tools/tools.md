@@ -72,6 +72,7 @@ Scala med tillhörande verktyg installeras enklast med hjälp av det officiella 
     ```
     curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
     ```
+    * Svara ja med stort Y på ev. fråga om att addera coursier till din path. 
     * Starta om din dator.
     * Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
     
