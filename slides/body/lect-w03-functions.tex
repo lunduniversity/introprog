@@ -914,53 +914,53 @@ def gissaTalet(max: Int, min: Int = 1): Unit =
 \end{itemize}
 \end{Slide}
 
-\Subsection{Automatisera kompilering: byggverktyg}
+\Subsection{Automatisera kompilering}
 
-\begin{Slide}{Bygga applikationer}
+\begin{Slide}{Kompilera om det som ändrats vid varje sparning}
 \begin{itemize}
   \item Den kreativa programmeringsprocessen innehåller många korta cykler av koda, ändra, testa.
-  \item Det blir många omkompileringar och då vill man gärna slippa skriva samma kommando om och om igen. En lösning är att skapa ett skript, t.ex. i språket \Emph{bash}, som kör kompileringen.
-  \item  Om man bara gör en liten ändring vill man bara kompilera om det som ändrats och inte kompilera om rubbet varje gång. En lösning på detta problem är att använda ett \Emph{byggverktyg}, t.ex. Scala Build Tool (\code{sbt}), se Appendix F.
+  \item Det blir \Alert{många omkompileringar} och då vill man gärna slippa skriva samma kommando om och om igen. %En lösning är att skapa ett skript, t.ex. i språket \Emph{bash}, som kör kompileringen.
+  \item Vid \Emph{varje liten ändring} vill man \Alert{kompilera om} det som ändrats och se om det fortfarande kompilerar utan fel. 
+  \item Då kan du använda:\\\code{scala-cli compile . --watch}\\Ändringar bevakas och kompileras om direkt.
+  \item  Du kan också använda ett s.k. \Emph{byggverktyg},\\t.ex. Scala Build Tool (\code{sbt}), se Appendix F.
 
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{Bash-skript för kompilering}\SlideFontSmall
-\begin{itemize}
-  \item Det gamla skriptspråket \Emph{bash} funkar i Linux och MacOS.
-  \item Bash är smidigt för enkla program som använder terminalkommando, men syntaxen är knepig och det finns många fallgropar.
-  \item I ett bash-skript kan du t.ex. kompilera och köra ett program. Exempel i filen \code{build.sh} nedan:
-\begin{Code}
-scalac mitt-program.scala && scala MinMain
-\end{Code}
-Med pil-upp kan du enkelt kompilera om efter varje ändring:
-\begin{REPLnonum}
-> sh build.sh
-\end{REPLnonum}
-  \item Det går att få \Emph{bash} och ubuntu-terminalen att funka i Windows 10 med WSL (Windows Linux Subsystem) där du kan välja Ubuntu 18.04 LTS: \\
-  {\SlideFontTiny\url{https://docs.microsoft.com/en-us/windows/wsl/install-win10}}
-\end{itemize}
-{\noindent   Det finns dock stora begränsningar med WSL och om du vill ha Linux ''på riktigt'' rekommenderas att du installera Ubuntu med dual-boot: \SlideFontTiny\url{https://linoxide.com/distros/install-ubuntu-18-04-dual-boot-windows-10/}}
-\end{Slide}
+% \begin{Slide}{Bash-skript för kompilering}\SlideFontSmall
+% \begin{itemize}
+%   \item Det gamla skriptspråket \Emph{bash} funkar i Linux och MacOS.
+%   \item Bash är smidigt för enkla program som använder terminalkommando, men syntaxen är knepig och det finns många fallgropar.
+%   \item I ett bash-skript kan du t.ex. kompilera och köra ett program. Exempel i filen \code{build.sh} nedan:
+% \begin{Code}
+% scalac mitt-program.scala && scala MinMain
+% \end{Code}
+% Med pil-upp kan du enkelt kompilera om efter varje ändring:
+% \begin{REPLnonum}
+% > sh build.sh
+% \end{REPLnonum}
+%   \item Det går att få \Emph{bash} och ubuntu-terminalen att funka i Windows 10 med WSL (Windows Linux Subsystem) där du kan välja Ubuntu 18.04 LTS: \\
+%   {\SlideFontTiny\url{https://docs.microsoft.com/en-us/windows/wsl/install-win10}}
+% \end{itemize}
+% {\noindent   Det finns dock stora begränsningar med WSL och om du vill ha Linux ''på riktigt'' rekommenderas att du installera Ubuntu med dual-boot: \SlideFontTiny\url{https://linoxide.com/distros/install-ubuntu-18-04-dual-boot-windows-10/}}
+% \end{Slide}
 
 \begin{Slide}{Scala Build Tool: \texttt{sbt}}
 \begin{itemize}
-  \item Ett byggverktyg, t.ex. \code{sbt}, kan användas för att kompilera, testköra, ladda ner, paketer, distribuera programbibliotek och applikationer.
-  \item Det är mycket enkelt att använda \code{sbt} för att kompilera och köra om ditt program varje gång du sparar din fil, tex. med \code{Ctrl+S} så här:
+  \item Ett \Emph{byggverktyg}, exempelvis \code{sbt}, kan användas för att kompilera, testköra, ladda ner, paketera och distribuera kodbibliotek och applikationer.
+  \item Du behöver en fil som heter \code{build.sbt} som innehåller:\\\code{scalaVersion := "3.1.3"}
+  \item Det är enkelt att använda \code{sbt} för att kompilera om ditt program varje gång du gör \code{Ctrl+S}:
 \begin{REPLnonum}
 > sbt
-sbt> ~run   // tecknet ~ ger omkörning vid ändring
+sbt> ~compile   // med ~ görs omkompilering vid ändring
 \end{REPLnonum}
 Tecknet \code{~} kallas \emph{tilde} och skrivs med högra Alt-tangenten nere och två tryck på tangenten bredvid Enter.
-  \item LTH:s datorer har \code{sbt} förinstallerat. Ladda ner till din dator: \\
-  \url{https://www.scala-sbt.org/download.html}
-  \item Läs mer om byggverktyg i Appendix F.
+
+  \item Läs mer om \code{sbt} i Appendix F och här: \\\url{https://www.scala-sbt.org}
 
 \end{itemize}
 
 \end{Slide}
-
-
 
 
 \ifkompendium\else
@@ -1020,9 +1020,9 @@ Kolla \Emph{snabbreferensen} vad mer du kan göra med strängar!
 
 \begin{SlideExtra}{Jobba så här}
 \begin{itemize}
-  \item Skriv koden i en editor.
-  \item Ha ett terminalfönster med \code{sbt} där du kör \code{~compile} eller \code{~run} så att din kod kompileras eller körs om varje gång du sparar.
-  \item Ha ett terminalfönster med en fristående scala REPL där du kan göra mindre undersökningar rad för rad.
+  \item Skriv koden i editorn vs code som du startar med \code{code .}
+  \item Ha ett terminalfönster öppet och kör \code{scala-cli} med \code{--watch} så att din kod kompileras vid varje sparning.
+  \item Ha ett annat terminalfönster där du kör REPL så att du kan göra mindre undersökningar rad för rad, medan du tänker.
   \item Börja enkelt och bygg vidare steg för steg.
   \item Bygg om koden allteftersom den växer genom att införa nya abstraktioner med väl valda namn (s.k. ''refaktorisering'') .
   \item Fixa \Alert{alla} kompileringsfel \code{||} körtidsfel \Emph{innan} du går vidare.
