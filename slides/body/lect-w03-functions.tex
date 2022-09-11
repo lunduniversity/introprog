@@ -90,8 +90,8 @@ Dessa abstraktionsmekanismer blir \Emph{extra kraftfulla} om de \Alert{kombinera
   \item En funktion har ett \Emph{huvud} och efter \code{=} kommer dess \Emph{kropp}.
   \item En \Alert{namngiven} funktion \Emph{deklareras} med nyckelordet \code{def}
   \item En funktion kan ha \Emph{parametrar} som deklareras i huvudet. 
-  \item Kroppen ska vara ett uttryck (ev. ett block med flera uttryck).
-  \item Parametrar binds till argument vid anrop.
+  \item \Alert{Kroppen} ska vara ett \Emph{uttryck} (ev. ett block med flera uttryck).
+  \item \Emph{Parametrar} binds till \Emph{argument} vid \Alert{anrop}.
   \item Uttrycket i funktionens kropp \Emph{evalueras} vid \Alert{varje anrop}. 
   \item Värdet av uttrycket blir funktionen \Emph{returvärde}. 
 \end{itemize}
@@ -128,7 +128,7 @@ val res1: Int = 2
 \item Båda funktionerna ovan kan finnas samtidigt! Trots att de har \Emph{samma namn} är de \Alert{olika funktioner}; kompilatorn kan skilja dem åt med hjälp av de \Alert{olika parameterlistorna}.
 
 \item Detta kallas \Emph{överlagring} \Eng{overloading} av funktioner.
-\item Överlagring ger flexibilitet i användningen; vi slipper hitta på nytt namn så som \code{öka2} vid 2 parametrar.
+\item Överlagring ger \Alert{flexibilitet i användningen}; vi slipper hitta på nytt namn så som \code{öka2} vid 2 parametrar.
 \end{itemize}
 \end{Slide}
 
@@ -389,13 +389,13 @@ Lokala, nästlade funktionsdeklarationer är tyvärr inte tillåtna i många and
 \begin{Slide}{Funktioner är äkta värden i Scala}\SlideFontSmall
 \begin{itemize}
 \item En funktion är ett \Alert{äkta värde}.
-\item Vi kan till exempel tilldela en variabel ett funktionsvärde.
+\item Vi kan till exempel tilldela en variabel ett \Emph{funktionsvärde}.
 \pause
-\item Med hjälp av blank+understreck efter funktionsnamnet får vi funktionen som ett \Alert{värde} (inga argument appliceras än):
+\item Med hjälp enbart funktionsnamnet får vi funktionen som ett \Alert{värde} (inga argument appliceras än):
 \begin{REPLnonum}
 scala> def add(a: Int, b: Int) = a + b
 
-scala> val f = add _ 
+scala> val f = add  
 val f: (Int, Int) => Int = Lambda7210/0x0000000841e4e040@1ce2db23
 
 scala> f(21, 21)
@@ -405,34 +405,6 @@ val res0: Int = 42
 \code{f: (Int, Int) => Int}
 \pause
 \item Ett funktionsvärde har till skillnad från en funktionsdeklaration inget namn (variabeln \code{f} har ett namn men inte själva funktionen). Den kallas därför en \Emph{anonym} funktion eller \Alert{lambda} (mer om detta snart).
-\end{itemize}
-\end{Slide}
-
-\begin{Slide}{Du kan vanligtvis skippa understreck}\SlideFontSmall
-\begin{itemize}\SlideFontSmall
-
-\item Nytt i Scala 3: Om det är otvetydigt att du vill skapa ett funktionsvärde så kan du skippa understreck:
-\begin{REPLnonum}
-scala> def add(a: Int, b: Int) = a + b
-
-scala> val f = add     // inget understreck behövs 
-val f: (Int, Int) => Int = Lambda7210/0x0000000841e4e040@1ce2db23
-\end{REPLnonum}
-
-\item Specialfall då understreck behövs: (se speciellt typen \code{() => Int})
-\begin{REPLsmall}
-scala> def a() = 42
-def a(): Int
-
-scala> val b = a
-1 |val b = a
-  |        ^
-  |        method a must be called with () argument
-
-scala> val b = a _
-val b: () => Int = Lambda7214/0x0000000841e50440@565d794
-\end{REPLsmall}
-\item Börja utan understreck och se om det funkar utan kompileringsfel...
 \end{itemize}
 \end{Slide}
 
@@ -677,6 +649,35 @@ val parts: (Vector[Int], Vector[Int]) =
 \item Studera snabbreferensen och försök hitta samlingsmetoder som tar predikat som funktionsargument. \url{http://cs.lth.se/pgk/quickref} \\I anropsexempel med predikat-argument används bokstaven \code{p}.
 \end{itemize}  
 \end{Slide}
+
+\begin{Slide}{Funktionsvärde vid tom parameterlista: använd ''thunk''}\SlideFontSmall
+\begin{itemize}\SlideFontSmall
+
+\item Om du vill ha funktionen som ett värde så skriv bara namnet och inte parameterlistan (samma exempel som tidigare):
+\begin{REPLsmall}
+scala> def add(a: Int, b: Int) = a + b
+
+scala> val f = add     // inget anrop sker 
+val f: (Int, Int) => Int = Lambda7210/0x0000000841e4e040@1ce2db23
+\end{REPLsmall}
+
+\item Vid \Alert{tom parameterlista} behövs anonym funktion som \Emph{fördröjer anrop}: 
+\begin{REPLsmall}
+scala> def a() = 42
+def a(): Int
+
+scala> val b = a
+1 |val b = a
+  |        ^
+  |        method a must be called with () argument
+
+scala> val b = () => a()   // anonym funktion, fördröjd evaluering
+val b: () => Int = Lambda7214/0x0000000841e50440@565d794
+\end{REPLsmall}
+\item Notera typen: \code{() => Int} ~~Ett sådant funktionsvärde kallas \Alert{thunk}\\ \url{https://en.wikipedia.org/wiki/Thunk} 
+\end{itemize}
+\end{Slide}
+
 
 
 \Subsection{Skapa din egen kontrollstruktur}  
