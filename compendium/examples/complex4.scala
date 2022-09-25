@@ -6,6 +6,6 @@ class Complex private (val re: Double, val im: Double):
   override def toString = s"$re + $im$imSymbol"
 
 object Complex:
-  def apply(re: Double, im: Double) = new Complex(re, im)
+  def apply(re: Double, im: Double) = new Complex(re, im) // new behövs här
   def real(re: Double)              = new Complex(re, 0)
   def imag(im: Double)              = new Complex(0, im)

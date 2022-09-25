@@ -219,10 +219,9 @@ björn: Person = Person@7ae75ba6  // unikt id för instansen
 
 \begin{Slide}{Förändring av objektets tillstånd}
 \begin{REPLnonum}
-scala> björn.ålder = 54
+scala> björn.ålder = 55
 
 scala> björn.längd = 178
-björn: Person = Person@7ae75ba6
 \end{REPLnonum}
 
 \begin{tikzpicture}[font=\large\sffamily]
@@ -249,7 +248,7 @@ björn: Person = Person@7ae75ba6
 \begin{REPLnonum}
 scala> class Person(var ålder: Int, var längd: Int)
 
-scala> val sandra = new Person(42, 166)
+scala> val sandra = new Person(43, 166)
 sandra: Person = Person@7878bbdb
 \end{REPLnonum}
 
@@ -262,7 +261,7 @@ sandra: Person = Person@7878bbdb
  align=center, draw] (x) at (5.8cm, -1.2cm) {
  \begin{tabular}{r l}
  \multicolumn{2}{c}{\ttfamily\itshape Person@7878bbdb}\\ \\
- \texttt{ålder} & \fbox{~42~} \\
+ \texttt{ålder} & \fbox{~43~} \\
  \texttt{längd} & \fbox{~166~}\\
  \end{tabular}
  };
@@ -282,7 +281,7 @@ sandra: Person = Person@7878bbdb
 class Klassnamn(val attribut1: Int, attribut2: String):  //klassparametrar
   val attribut3: Double = 42.0              //publikt oföränderligt attribut
   private var attribut4: Boolean = false    //privat medlem syns inte utåt
-  def metod(parameter: Int) = attribut1 + 1 //funktion i klass kallas metod
+  def metod(parameter: Int) = attribut1 + 1 //funktion i objekt kallas metod
   lazy val attr5 = Vector.fill(100000)(42.0)     //fördröjd initialisering
 \end{Code}
 
@@ -356,7 +355,7 @@ val p: Person = najs toString
 scala> println(p.name._1)
 Björn
 
-scala> p.age = 50 
+scala> p.age = 55 
 
 \end{REPLnonum}
 Vad vill du se i stället för \code{"najs toString"}?\\Övning: Visa instansens tillstånd med stränginterpolatorn \code{s"?"} 
@@ -437,16 +436,16 @@ val res0: Int = 42
 \end{Slide}
 
 \begin{Slide}{Styra användningen av infixa alfanumeriska operatorer}
-Från och med Scala 3.1 gäller följande:
+I framtiden komme följande gälla:
 \begin{itemize}
 \item Metoder som har \Emph{alfanumeriska namn}, alltså namn med bokstäver och ev. siffror ger en \Alert{varning} vid operatornotation om de \Alert{inte} är deklarerade med nyckelordet \code{infix}.   
 \end{itemize}
 \pause
 \begin{Code}
 case class Box(x: Int): // i Scala 3.0 kompilera med optionen "-source future"
-  def +(other: Box): Box = Box(x + other.x)    // operatornotation utan varning
-  def plus(other: Box) = Box(x + other.x)      // operatornotation ger varning
-  infix def add(other: Box) = Box(x + other.x) // operatornotation utan varning
+  def +(other: Box): Box = Box(x + other.x)    // utan varning
+  def plus(other: Box) = Box(x + other.x)      // ger varning (i framtiden)
+  infix def add(other: Box) = Box(x + other.x) // utan varning
 \end{Code}
 \begin{REPLsmall}
 > scala -source future -repl // kör igång REPL med regler för framtida versioner
@@ -493,7 +492,7 @@ val res0: Box = Box(42)
 %% Nej komplexa tal som vektor med polära koordinater ingår i matte 4 som är krav för LTH: %%%
 
 
-\begin{Slide}{Övning: Klassen Complex i Scala}\SlideFontSmall
+\begin{Slide}{Övning: Klassen Complex}\SlideFontSmall
 Implementera klassen \code{Complex} nedan som representerar komplexa tal:
 \begin{Code}
   class Complex(val re: Double, val im: Double):
@@ -534,17 +533,17 @@ Implementera klassen \code{Complex} nedan som representerar komplexa tal:
 \end{Slide}
 
 
-\begin{Slide}{Exempel: Klassen Complex i Scala}\SlideFontSmall
+\begin{Slide}{Exempel: Klassen Complex}\SlideFontSmall
 \scalainputlisting[basicstyle=\ttfamily\SlideFontSize{7}{9}]{../compendium/examples/complex1.scala}
 %Klassparametrarna är parametrar till den s.k. \Emph{primärkonstruktorn}.
 \begin{REPL}
-scala> val z = new Complex(3, 4)  // konstruktion av instans av Complex
+scala> val z1 = new Complex(3, 4)  // konstruktion av instans av Complex
 z: Complex = 3.0 + 4.0i
 
-scala> val polärForm = (c1.r, c1.fi)
+scala> val polärForm = (z1.r, z1.fi)
 polärForm: (Double, Double) = (5.0,0.6435011087932844)
 
-scala> val z2 = new Complex(1, 2)
+scala> val z2 = Complex(1, 2)   // new behövs inte i Scala 3
 z2: Complex = 1.0 + 2.0i
 
 scala> z1 + z2
@@ -650,9 +649,12 @@ error:
 \item Ett \Emph{kompanjonsobjekt} \Eng{companion object} är ett singelobjekt som ligger i \Alert{samma kodfil} som en klass, och som har \Alert{samma namn} som klassen.
 
 \item Medlemmar i ett kompanjonsobjekt \Alert{får accessa privata} medlemmar i kompanjonsklassen (och vice versa) och kompanjonsobjektet får därför accessa privat konstruktor och kan göra \code{new}.
+
+\item Fabriksmetod + privat konstruktor: tillåt \Alert{enbart} \Emph{indirekt instansiering}.
+ 
 \scalainputlisting[basicstyle=\ttfamily\SlideFontSize{7}{9}]{../compendium/examples/complex4.scala}
 
-\item Fabriksmetoder i kompanjonsobjektet ovan och privat konstruktor gör att vi \Alert{enbart} tillåter \Emph{indirekt instansiering}.
+\item \code{new} behövs för att förhindra rekursivt anrop av \code{apply} och stack overflow
 \end{itemize}
 \end{Slide}
 
@@ -979,6 +981,21 @@ scala> g = null         // instansen kommer att destrueras av skräpsamlaren
 \end{Slide}
 
 \Subsection{Initialisering av attribut}
+
+\begin{Slide}{Defaultvärden under pågående konstruktion}
+\begin{tabular}{r | l}
+\texttt{Int}    & \texttt{0} \\
+\texttt{Double} & \texttt{0.0} \\ \\
+\texttt{Float}  & \texttt{0.0F} \\ 
+\texttt{Long}   & \texttt{0L} \\ \\
+\texttt{Short}  & \texttt{0.toShort} \\
+\texttt{Byte}   & \texttt{0.toByte} \\
+\texttt{Char}   & \texttt{0.toChar} \\ \\
+\texttt{Boolean}   & \texttt{false} \\ \\
+Alla referenstyper, tex. \code|String| & \code|null| \\
+\end{tabular}
+\end{Slide}
+
 \begin{Slide}{Problem med initialisering av attribut vid konstruktion}
 \begin{Code}
 class InitBug1:  
@@ -1004,6 +1021,7 @@ Vad händer?
 
 \end{Slide}
 
+
 \begin{Slide}{Vilka värden har attribut medan konstruktion pågår?}
 \begin{Code}
 class InitBug1:  
@@ -1027,19 +1045,6 @@ scala> ib3.hej2                 // val res1: String = null  //WHAT???
 \end{REPL}
 Varför? Vad finns det för lösningar?
 
-\end{Slide}
-
-\begin{Slide}{Defaultvärden under pågående konstruktion}
-\begin{tabular}{r | l}
-\texttt{Int}    & \texttt{0} \\
-\texttt{Double} & \texttt{0.0} \\ \\
-\texttt{Float}  & \texttt{0.0F} \\ 
-\texttt{Long}   & \texttt{0L} \\ \\
-\texttt{Short}  & \texttt{0.toShort} \\
-\texttt{Byte}   & \texttt{0.toByte} \\
-\texttt{Char}   & \texttt{0.toChar} \\ \\
-Alla referenstyper, tex. \code|String| & \code|null| \\
-\end{tabular}
 \end{Slide}
 
 \begin{Slide}{Hur undvika initialiseringsproblem vid konstruktion?}
@@ -1147,7 +1152,7 @@ value age is not a member of JPerson
 \end{Slide}
 
 
-\begin{Slide}{Motsvarande JPerson men i Scala}
+\begin{Slide}{Motsvarande JPerson i Scala}
 Så här brukar man åstadkomma ungefär motsvarande i Scala: \\~
 \begin{Code}[basicstyle=\SlideFontSize{12}{15}\ttfamily\selectfont]
 class Person(val name: String):
@@ -1196,7 +1201,7 @@ class Person(val name: String): // ändrad implementation men samma access
   private var myPrivateAge = 0
   def age = myPrivateAge         // getter
   def age_=(a: Int): Unit =      // setter
-    if (a >= 0) myPrivateAge = a else myPrivateAge = 0
+    if a >= 0 then myPrivateAge = a else myPrivateAge = 0
 \end{Code}
 \pause\vspace{-0.5em}
 \begin{REPL}

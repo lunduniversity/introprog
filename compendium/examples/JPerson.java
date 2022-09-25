@@ -1,11 +1,10 @@
 public class JPerson {
     private String name;
-    private int age;
+    private int age = 0;
     
     public JPerson(String name){
         //namnkrock fixas med this
         this.name = name;  
-        age = 0;
     }
     
     public String getName(){
