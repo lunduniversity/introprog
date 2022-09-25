@@ -1,6 +1,6 @@
 class Complex private (val re: Double, val im: Double):
   def r  = math.hypot(re, im)
-  def fi = math.atan2(re, im)
+  def fi = math.atan2(im, re)
   def +(other: Complex) = new Complex(re + other.re, im + other.im)
   override def toString = s"$re + $im${Complex.imSymbol}"
 
