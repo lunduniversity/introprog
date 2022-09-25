@@ -210,7 +210,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "överlagring       " -> "metoder med samma namn men olika parametertyper",
       "namnskuggning     " -> "lokalt namn döljer samma namn i omgivande block",
       "namnrymd          " -> "omgivning där är alla namn är unika",
-      "uniform access    " -> "ändring mellan def och val påverkar ej användning",
+      "enhetlig access   " -> "ändring mellan def och val påverkar ej användning",
       "punktnotation     " -> "används för att komma åt icke-privata delar",
       "typalias          " -> "alternativt namn på typ som ofta ökar läsbarheten",
       "         " -> "",
