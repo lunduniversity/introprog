@@ -38,7 +38,7 @@ val y: Int = 2
 \end{Slide}
 
 
-\begin{Slide}{Kolla om det passar med nästlade if-then-else-uttryck}
+\begin{Slide}{Kolla om det passar med nästlade if-uttryck}
 Ett vanligt problem: \\ att kolla vilket bland många värden som passar \\~\\
 
 Kan göras med nästlade if-then-else-uttryck:
@@ -114,7 +114,7 @@ val smak = g match
   case other => "smakar bakvänt: " + other.reverse
 \end{Code}
 
-Ett enkelt variabelmönster, så som \\ \code{case other => ...} \\ i exemplet ovan, matchar \Emph{allt}! \\\code{other} får alltså värdet av \code{g} om \code{g} \Alert{inte} är \code{"gurka"}, \code{"tomat"}, \code{"broccoli"}.
+Ett \Alert{enkelt} \Emph{variabelmönster}, så som \\ \code{case other => ...} \\ i exemplet ovan, matchar \Alert{allt}! \\\code{other} får alltså värdet av \code{g} om \code{g} \Alert{inte} är \code{"gurka"}, \code{"tomat"}, \code{"broccoli"}.
 
 \end{Slide}
 
@@ -397,32 +397,52 @@ val y: Int = 1
 val z: Int = 2
 
 \end{REPL}
-Mönster i \Emph{for-satser}:
+Mönster i \Emph{for-uttryck}:
 \vspace{-0.25em}\begin{REPL}
 scala> val xs = for (x, y) <- Vector((1,2), (3,4)) yield x
 val xs: Vector[Int] = Vector(1, 3)
 \end{REPL}
 \end{Slide}
 
-\begin{Slide}{Fördjupning om mönster}\SlideFontSmall
+\begin{Slide}{Mönsterdelar och variabelt antal argument}\SlideFontSmall
+Met två olika specialtecken går det att
 \begin{itemize}
-\item binda variabler till mönsterdelar med \code{@} \\
+\item binda variabler till \Emph{mönsterdelar} med \code{@} \\
 \code{case Vector(xs@Vector(a), Vector(42)) => ...}
 
-\item sekvensmönster med \code{_}, \code{xs*} och \code{_*} 
+\item matcha \Emph{variabelt antal argument}  med \code{*}  
 \\ \code{case Vector(a, _, c) => ... }  matchar om 3 element, \_ kvittar
 \\ \code{case Vector(a, svans*) => ... }  matchar om minst ett element
 \\ \code{case Vector(a, _*) => ... }  intresserad av första, svans kvittar
+\end{itemize}
+%Läs mer om mönster här: \url{https://docs.scala-lang.org/scala3/book/taste-control-structures.html#match-expressions}
+\end{Slide}
 
-\item Partiella funktioner med \code{case} utan \code{match}:\\ \code|val pf: Int => Double = { case z if z != 0 => 1.0 / z }| \\ Notera att klammerparenteserna behövs för att skapa partiell funktion med \code{case} utan \code{match}. Funktionen är inte definierad för argumentet \code{0}:
+
+\begin{Slide}{Partiella funktioner och metoden \texttt{collect}}\SlideFontSmall
+\begin{itemize}
+\item En \Alert{partiell} \Emph{funktion} är, till skillnad från en \Alert{total} \Emph{funktion}, inte definierad för alla parametervärden.
+\item Partiella funktioner kan skapas med \code{case} utan \code{match}:
+\begin{Code}
+val pf: PartialFunction[Int, Double] = case z if z != 0 => 1.0 / z  
+\end{Code}
+\item  Funktionen är inte definierad för argumentet \code{0}:
 
 \begin{REPLsmall}
 scala> pf(0)                         
 scala.MatchError: 0 
 \end{REPLsmall}
-Detta är användbart t.ex. vid iterering över samling med \code{collect}: \\\code|xs.collect{ case (a,b) if a > 0 => a }|  
-\item Läs mer om mönster här: \\\url{https://docs.scala-lang.org/scala3/book/control-structures.html}
+\item 
+Detta är användbart tillsammans med samlingsmetoden \code{collect} som  applicerar en partiell funktion endast på definierade värden: 
+\begin{REPLsmall}
+scala> Vector(1, 2, 0, 4).collect(pf)
+val res0: Vector[Double] = Vector(1.0, 0.5, 0.25)
 
+scala> Vector(1 -> 2, 0 -> 3, 42 -> 0).collect{ case (a,b) if a > 0 => a } 
+val res1: Vector[Int] = Vector(1, 42)
+
+\end{REPLsmall}
+Notera att \Alert{krullparentes behövs} vid ensamt \code{case} som argument.
 % \item Läs mer om mönster här:  \href{http://www.artima.com/pins1ed/case-classes-and-pattern-matching.html}{\SlideFontTiny www.artima.com/pins1ed/case-classes-and-pattern-matching.html}
 
 % \item För djupare förståelse av hur \code{case} fungerar, läs speciellt om \Emph{partiella funktioner} här: \href{http://www.artima.com/pins1ed/case-classes-and-pattern-matching.html\#15.7}{\SlideFontTiny www.artima.com/pins1ed/case-classes-and-pattern-matching.html\#15.7}
