@@ -3,7 +3,109 @@
 
 %%%
 
-\Subsection{Matchning}
+\Subsection{Typhierarkier i Scala}
+
+\begin{Slide}{Bastypen för alla typer: \texttt{Any}}
+\SlideFontSmall
+Scalas typsystem är \Alert{fullständigt}:
+\begin{itemize}\SlideFontSmall
+  \item Alla värden har en typ.
+  \item Alla typer är subtyper till bastypen \code{Any}
+  \item Typen \code{Any} kallas därför \Emph{topptyp} 
+  \item Alla objekt har grundläggande metoder så som \code{toString} och \code{==}
+\begin{Code}
+abstract class Any:
+  def getClass
+  def isInstanceOf
+  def asInstanceOf
+  def ==
+  def !=
+  def ##
+  def equals
+  def hashCode
+  def toString
+
+trait Matchable extends Any
+\end{Code}
+\end{itemize}
+
+Det kommer mer om abstrakta klasser och traits i veckan om arv.
+\end{Slide}
+
+\begin{Slide}{Alla typer är subtyper till \texttt{Any}}\SlideFontSmall\ifkompendium\footnotesize\fi
+\vspace{-0.0em}\begin{center}
+\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+\tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=2cm, rectangle split, rectangle split parts = 3]
+\begin{tikzpicture}[inner sep=0.5em]
+\node [umlclass, rectangle split parts = 1, xshift=0cm] (Any)  {
+            \textit{\textbf{\centerline{\TextBox{\code{Any}}}}}
+        };
+
+\node [umlclass, rectangle split parts = 1, yshift=-1.5cm] (Matchable)  {
+            \textit{\textbf{\centerline{\TextBox{\code{Matchable}}}}}
+        };
+
+
+
+\node [umlclass, rectangle split parts = 1]  at (-2.5cm,-3.25cm) (SubType1) {
+            \textbf{\centerline{\TextBox{\code{AnyVal}}}}
+            % \nodepart[]{second} \TextBox{\code{val x: A}}
+        };
+
+\node [umlclass, rectangle split parts = 1] at (2.5cm,-3.25cm) (SubType2)  {
+            \textbf{\centerline{\TextBox{\code{AnyRef}}}}
+        };
+
+\draw[umlarrow] (Matchable.north) -- ++(0,0.5) -| (Any.south);
+\draw[umlarrow] (SubType1.north) -- ++(0,0.5) -| (Matchable.south);
+\draw[umlarrow] (SubType2.north) -- ++(0,0.5) -| (Matchable.south);
+\end{tikzpicture}
+\end{center}
+\begin{itemize}
+  \item Alla \Emph{värdetyper}, t.ex. \code{Int}, \code{Double}, \code{Boolean}, är subtyper till \code{AnyVal}
+  \item Alla \Emph{referenstyper} t.ex. \code{String} är subtyper till \code{AnyRef}
+  \item Värden av typen \code{Matchable} kan användas vid s.k mönstermatchning. 
+  \item (Det finns även s.k. opaka typer som inte kan mönstermatchas.)
+\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Dina egna referenstyper är subtyper till \texttt{AnyRef}}\SlideFontSmall
+Alla typer du skapar är subtyper till \code{AnyRef} utan att du behöver skriva det.
+\begin{Code}
+trait Grönsak:                                 // din egen bastyp
+  def vikt: Int
+
+case class Gurka(vikt: Int) extends Grönsak    // din egen subtyp
+case class Tomat(vikt: Int) extends Grönsak    // en annan subtyp
+\end{Code}
+\SlideFontSmall\ifkompendium\footnotesize\fi
+\vspace{-0.0em}\begin{center}
+\newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
+\tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=2cm, rectangle split, rectangle split parts = 3]
+\begin{tikzpicture}[inner sep=0.5em]
+\node [umlclass, rectangle split parts = 1, yshift=-1.5cm] (Base)  {
+            \textit{\textbf{\centerline{\TextBox{\code{Grönsak}}}}}
+        };
+
+
+
+\node [umlclass, rectangle split parts = 1]  at (-2.5cm,-3.5cm) (SubType1) {
+            \textbf{\centerline{\TextBox{\code{Gurka}}}}
+            % \nodepart[]{second} \TextBox{\code{val x: A}}
+        };
+
+\node [umlclass, rectangle split parts = 1] at (2.5cm,-3.5cm) (SubType2)  {
+            \textbf{\centerline{\TextBox{\code{Tomat}}}}
+        };
+
+\draw[umlarrow] (SubType1.north) -- ++(0,0.5) -| (Base.south);
+\draw[umlarrow] (SubType2.north) -- ++(0,0.5) -| (Base.south);
+\end{tikzpicture}
+\end{center}
+Det kommer mer om typhierarkier och \code{extends} i veckan om arv.
+\end{Slide}
+
+\Subsection{Mönstermatchning}
 
 \ifkompendium
 \noindent  I ett match-uttryck kan man matcha på ett visst värde eller på en viss typ och match-uttryck används gärna istället för nästlade if-uttryck, då de ofta är lättare att läsa och begripa. Med match-uttryck kan man också göra \Emph{mönstermatchning} mot case-klass-instanser, t.ex. för att på ett smidigt sätt undersöka om attribut har speciella värden. Match-uttryck i Scala är en mer kraftfull variant av \code{switch}-satser som finns i många andra språk.  
