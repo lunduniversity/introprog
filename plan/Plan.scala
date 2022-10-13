@@ -103,8 +103,6 @@ trait Plan {
       | registrering, algoritm: SEQ-REGISTER,
       | linjärsökning, algoritm: LINEAR-SEARCH,
       | tidskomplexitet, minneskomplexitet,
-      | sekvenser i Java vs Scala, for-sats i Java,
-      | java.util.Scanner,
       | översikt strängmetoder, StringBuilder,
       | ordning, inbyggda sökmetoder, find, indexOf, indexWhere,
       | inbyggda sorteringsmetoder, sorted, sortWith, sortBy,
