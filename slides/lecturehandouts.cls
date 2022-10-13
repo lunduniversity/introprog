@@ -19,7 +19,6 @@
 \setbeamercolor{palette quaternary}{bg=mygreen!50!black}
 
 \usepackage{xcolor}
-\usepackage{microtype}
 
 \definecolor{mygreen}{rgb}{0,0.5,0}
 \definecolor{mylinkcolor}{rgb}{0,0,0.6}
