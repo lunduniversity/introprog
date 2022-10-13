@@ -14,24 +14,24 @@ class Game(
   val leftPlayerName: String  = "LEFT",
   val rightPlayerName: String = "RIGHT"
 ):
- import Game.* // direkt tillgång till namn på medlemmar i kompanjon
+  import Game.* // direkt tillgång till namn på medlemmar i kompanjon
 
- val window    = new BlockWindow(windowSize, windowTitle, blockSize)
- val leftMole: Mole  = ???
- val rightMole: Mole = ???
+  val window    = new BlockWindow(windowSize, windowTitle, blockSize)
+  val leftMole: Mole  = ???
+  val rightMole: Mole = ???
 
- def drawWorld(): Unit = ???
+  def drawWorld(): Unit = ???
 
- /** Use to erase old points, e.g updated score */
- def eraseBlocks(x1: Int, y1: Int, x2: Int, y2: Int): Unit = ???
+  /** Use to erase old points, e.g updated score */
+  def eraseBlocks(x1: Int, y1: Int, x2: Int, y2: Int): Unit = ???
 
- def update(mole: Mole): Unit = ???  // update, draw new, erase old
+  def update(mole: Mole): Unit = ???  // update, draw new, erase old
 
- def gameLoop(): Unit = ???
+  def gameLoop(): Unit = ???
 
- def start(): Unit =
-   println("Start digging!")
-   println(s"$leftPlayerName ${leftMole.keyControl}")
-   println(s"$rightPlayerName ${rightMole.keyControl}")
-   drawWorld()
-   gameLoop()
+  def start(): Unit =
+    println("Start digging!")
+    println(s"$leftPlayerName ${leftMole.keyControl}")
+    println(s"$rightPlayerName ${rightMole.keyControl}")
+    drawWorld()
+    gameLoop()
