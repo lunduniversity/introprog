@@ -103,8 +103,6 @@ trait Plan {
       | registrering, algoritm: SEQ-REGISTER,
       | linjärsökning, algoritm: LINEAR-SEARCH,
       | tidskomplexitet, minneskomplexitet,
-      | sekvenser i Java vs Scala, for-sats i Java,
-      | java.util.Scanner,
       | översikt strängmetoder, StringBuilder,
       | ordning, inbyggda sökmetoder, find, indexOf, indexWhere,
       | inbyggda sorteringsmetoder, sorted, sortWith, sortBy,
@@ -128,7 +126,7 @@ trait Plan {
     | persistens, serialisering, textfiler, Source.fromFile, java.nio.file,
     """.stripTrim),
 
-   Module("Arv och komposition", 
+    Module("Arv och komposition", 
       id = "inheritance", exercise = "inheritance", lab = "snake0", contents = """
       | arv, komposition, polymorfism, trait, extends, asInstanceOf, with, inmixning
       | supertyp, subtyp, bastyp, override,
@@ -179,8 +177,8 @@ trait Plan {
     Vector("F15 F16","F17 F18","F19 F20","F21 F22","F23 F24", "F25 F26", "F27 F28", "--")
 
   lazy val exerciseNumOfWeek =
-    ("Övn01,Övn02,Övn03,Övn04,Övn05,Övn06,Övn07,--," +
-     "Övn08,Övn09,Övn10,Övn11,Övn12,Övn13,Övn14,--,--").split(',').toVector
+    ( "Övn01,Övn02,Övn03,Övn04,Övn05,Övn06,Övn07,--," +
+      "Övn08,Övn09,Övn10,Övn11,Övn12,Övn13,Övn14,--,--").split(',').toVector
 
   lazy val exerciseOfWeek = for (w <- 0 until exerciseNumOfWeek.size) yield {
     if (exerciseNumOfWeek(w).startsWith("Ö") && modules(w).exercise != "")
@@ -189,8 +187,8 @@ trait Plan {
   }
 
   lazy val labNumOfWeek =
-    "Lab01,--,Lab02,Lab03,--,Lab04,Lab05,--,Lab06,Lab07,Lab08,Lab09,Projekt0,Projekt1,Munta,--,--".
-       split(',').toVector
+    "Lab01,--,Lab02,Lab03,--,Lab04,Lab05,--,Lab06,Lab07,Lab08,Lab09,Projekt0,Projekt1,Munta,--,--"
+      .split(',').toVector
 
   lazy val labOfWeek = for (w <- 0 until labNumOfWeek.size) yield {
     if (labNumOfWeek(w).startsWith("L") && modules(w).lab != "")
