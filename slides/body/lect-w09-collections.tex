@@ -539,7 +539,7 @@ val m: Map[Int, Int] = Map(1 -> 3, 2 -> 2)
 scala> val mm = Multimap(1 -> 2, 1 -> 3, 2 -> 1, 2 -> 2)  // värdena samlas
 val mm: Multimap[Int, Int] = Multimap(1 -> Set(2, 3), 2 -> Set(1, 2))
 \end{REPL}
-Övning: Implementera en multimap som fungerar som ovan, med hjälp av en case-klass med attributet \code{toMap} som är en oföränderlig nyckel-värde-tabell där värdena är en mängd. \\Tips: Använd\code{groupBy}
+Övning: Implementera en multimap som fungerar som ovan, med hjälp av en case-klass med attributet \code{toMap} som är en oföränderlig nyckel-värde-tabell där värdena är en mängd. \\Tips: Använd~\code{groupBy}
 \end{Slide}
 
 \begin{Slide}{Lösning: \texttt{Multimap}}
@@ -587,16 +587,53 @@ kadabra
 \end{Slide}
 
 
-\begin{Slide}{Föränderlig lokalt, returnera oföränderlig}
+\begin{Slide}{Övning: Förändringsbar lokalt, returnera oföränderlig}
+\SlideFontSmall
+Om du vill implementera en imperativ algoritm med en föränderlig samling:\\
+Gör gärna detta \Alert{lokalt} i en \Alert{förändringsbar} samling och returnera sedan en \Emph{oföränderlig} samling, genom att köra t.ex. \code{toSet} på en mängd, eller \code{toMap} på en hashtabell, eller \code{toVector} på en \code{ArrayBuffer} eller \code{Array}.\\~\\
+Exempel där lösningen har nytta av lokal förändring på plats:
+\begin{Code}
+def kastaTärningTillsAllaUtfallUtomEtt(sidor: Int = 6): (Int, Set[Int]) = ???
+\end{Code}
+\begin{REPL}
+scala> kastaTärningTillsAllaUtfallUtomEtt()
+val res0: (Int, Set[Int]) = (13,HashSet(5, 1, 6, 2, 3))
+\end{REPL}
+\end{Slide}
+
+
+\begin{Slide}{Övning: Förändringsbar lokalt, returnera oföränderlig}
 \SlideFontSmall
 Om du vill implementera en imperativ algoritm med en föränderlig samling:\\
 Gör gärna detta \Alert{lokalt} i en \Alert{förändringsbar} samling och returnera sedan en \Emph{oföränderlig} samling, genom att köra t.ex. \code{toSet} på en mängd, eller \code{toMap} på en hashtabell, eller \code{toVector} på en \code{ArrayBuffer} eller \code{Array}.
 \begin{Code}
-def kastaTärningTillsAllaUtfallUtomEtt(sidor: Int = 6) = 
-  val s = scala.collection.mutable.Set.empty[Int]
+def kastaTärningTillsAllaUtfallUtomEtt(sidor: Int = 6): (Int, Set[Int]) = 
+  /* 
+    låt s vara en tom förändringsbar heltalsmängd
+    låt n vara noll
+    så länge mängden s är mindre än sidor - 1 gör:
+      lägg till ett nytt tärningskast i s
+      uppdatera n så att vi räknar hur många slumptal som dragits
+  */
+  (n, s.toSet)   // notera toSet som ger oföränderlig mängd
+\end{Code}
+\begin{REPL}
+scala> kastaTärningTillsAllaUtfallUtomEtt()
+val res0: (Int, Set[Int]) = (13,HashSet(5, 1, 6, 2, 3))
+\end{REPL}
+\end{Slide}
+
+
+\begin{Slide}{Lösning: Förändringsbar lokalt, returnera oföränderlig}
+\SlideFontSmall
+Om du vill implementera en imperativ algoritm med en föränderlig samling:\\
+Gör gärna detta \Alert{lokalt} i en \Alert{förändringsbar} samling och returnera sedan en \Emph{oföränderlig} samling, genom att köra t.ex. \code{toSet} på en mängd, eller \code{toMap} på en hashtabell, eller \code{toVector} på en \code{ArrayBuffer} eller \code{Array}.
+\begin{Code}
+def kastaTärningTillsAllaUtfallUtomEtt(sidor: Int = 6): (Int, Set[Int]) = 
+  val s = scala.collection.mutable.Set.empty[Int] //förändringsbar lokalt
   var n = 0
   while s.size < sidor - 1 do
-    s += (math.random() * sidor + 1).toInt
+    s += util.Random.nextInt(sidor) + 1 
     n += 1
   (n, s.toSet)   // notera toSet som ger oföränderlig mängd
 \end{Code}
