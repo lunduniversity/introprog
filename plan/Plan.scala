@@ -138,7 +138,7 @@ trait Plan {
 
     Module("Kontextuella abstraktioner och varians",
       id = "context", exercise = "context", lab = "snake1", contents = """
-      | över- och undre typgräns, varians, kontravarians, kovarians, typjoker, egentyp,
+      | övre- och undre typgräns, varians, kontravarians, kovarians, typjoker, egentyp,
       | givet värde (given), kontextparameter (using), generiska extensionsmetoder, ad hoc polymorfism, kontextgräns, typklass,
       | api, kodläsbarhet, granskningar
       """.stripTrim),
