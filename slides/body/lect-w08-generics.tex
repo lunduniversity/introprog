@@ -50,24 +50,25 @@
 
 \begin{itemize}
 \item En \Emph{typparameter} gör det möjligt att ge ett \Emph{typargument}.
-\item En \Emph{fri} typparameter kan bindas till vilken typ som helst.
 \item Detta kallas \Emph{parametrisk polymorfism} \Eng{paramteric polymorphism}.
+\item Exempel: \Emph{generisk} \Alert{funktion}:
+\begin{Code}
+def tnirp[A](x: A):Unit = println(x.toString.reverse)
+\end{Code}
+\pause
+\item En \Emph{fri} typparameter kan bindas till vilken typ som helst.
 \item Bindingen av typargument till typparametrar sker vid \Alert{kompileringstid}.
-\item En typparameter är \Emph{fri} om den \Alert{inte} fått något värde i omslutande deklarationer, annars \Emph{bunden}. Exempel: \Emph{generisk} funktion:
-\end{itemize}
+\item En typparameter är \Emph{fri} om den \Alert{inte} fått något värde, annars \Emph{bunden}. 
+\pause
+\item Exempel: \Emph{generisk} \Alert{klass} med \Emph{generiska} \Alert{metoder}:
 \begin{Code}
-def tnirp[A](x: A):Unit = println(x.toString.reverse) // A är fri
+class Cell[A](   // [A] är fri (måste bindas vid användning) 
+    var value: A):                              // A är bunden
+  def update(a: A): Unit = value = a            // A är bunden
+  def replaced[B](b: B): Cell[B] = new Cell(b)  // första [B] är fri
 \end{Code}
 \pause
-Exempel: \Emph{generisk} klass med generiska metoder:
-\begin{Code}
-class Cell[A](var value: A):                            // A är fri
-  def update(x: A): Unit = value = x                    // A är bunden
-  def replaced[B](x: B = value): Cell[B] = new Cell(x)  // B är fri
-\end{Code}
-\pause
-\begin{itemize}
-\item \Alert{Skuggning kan förekomma}: Om \code{replaced} i \code{Cell} hade använt namnet A på sin typparameter hade den \Emph{skuggat} klassens typparameter och tolkats som en  fri typparameter, alltså en godtycklig typ och \Alert{inte} klassens typparameter. (jämför med namnöverskuggning vid \Emph{lokala} variabler i nästlade block)
+\item \Alert{Skuggning kan förekomma}: Om \code{replaced} i \code{Cell} hade använt namnet A på sin typparameter hade den \Emph{skuggat} klassens typparameter och tolkats som en  fri typparameter, alltså en godtycklig typ och \Alert{inte} klassens typparameter. (jämför  namnöverskuggning vid \Emph{lokala} namn i nästlade block)
 \end{itemize}
 
 \end{Slide}
