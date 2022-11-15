@@ -193,26 +193,32 @@ res1: String = super pepino
 
 \Subsection{Algebraiska datatyper}
 
-\begin{Slide}{Terminologi för datatyper}\SlideFontSmall
+\begin{Slide}{Vad är en algebraisk datatyp?}%\SlideFontSmall
 \begin{itemize}
-\item Abstrakt datatyp \Eng{abstract data type}
-\begin{itemize}\SlideFontTiny
-\item Definieras av gränssnittet och beteendet -- implementationen är dold för användaren. 
-\item Fördelar: inkapsling, lokala ändringar, flexibilitet.
-\item Skapas i Scala t.ex. med klasser + privata medlemmar.
-\end{itemize} 
-\item Enumeration, ä.k. uppräkning \Eng{enumeration}
-\begin{itemize}\SlideFontTiny
-\item En speciellt enkel form av s.k. algebraisk datatyp som består av en uppräknad, ändlig sekvens av enkla värden som har en ordning.
-\item Skapas i Scala med 1) heltal, 2) \code{sealed trait} ... \code{case class} ... 3) \code{enum}
-\end{itemize} 
-\item Algebraisk datatyp \Eng{algebraic data type}, förk. ADT
-\begin{itemize}\SlideFontTiny
+% \item Abstrakt datatyp \Eng{abstract data type}
+% \begin{itemize}\SlideFontTiny
+% \item Definieras av gränssnittet och beteendet -- implementationen är dold för användaren. 
+% \item Fördelar: inkapsling, lokala ändringar, flexibilitet.
+% \item Skapas i Scala t.ex. med klasser + privata medlemmar.
+% \end{itemize} 
+% \item Enumeration, ä.k. uppräkning \Eng{enumeration}
+% \begin{itemize}\SlideFontTiny
+% \item En speciellt enkel form av s.k. algebraisk datatyp som består av en uppräknad, ändlig sekvens av enkla värden som har en ordning.
+% \item Skapas i Scala med 1) heltal, 2) \code{sealed trait} ... \code{case class} ... 3) \code{enum}
+% \end{itemize} 
+\item Algebraisk datatyp \Eng{algebraic data type}, förk. ADT:
+\begin{itemize}%\SlideFontTiny
 \item En datatyp som är sammansatt av delar som kan kombineras. 
-\item Två olika algebraiska datatyper som kan kombineras med varandra:
-\begin{itemize}\SlideFontTiny
+\item Två olika slags algebraiska datatyper som kan kombineras med varandra:
+\begin{itemize}%\SlideFontTiny
 \item \Alert{Och}-typ (ä.k. produkt, record, struct), exempel: \\ \code|case class Person(namn: String, ålder: Int)| \\består av attributen namn \Alert{OCH} ålder.
-\item \Emph{Eller}-typ (ä.k. summa, union), exempel: \code|enum Färg { case Röd, Svart}| \\kan vara antingen röd \Emph{ELLER} svart.
+\item \Emph{Eller}-typ (ä.k. summa, union), exempel: \code|enum Färg { case Röd, Svart}| \\kan vara antingen Röd \Emph{ELLER} Svart.
+\begin{Code}
+sealed trait Grönsak { val vikt: Int }
+case class Gurka(vikt: Int) extends Grönsak
+case class Tomat(vikt: Int) extends Grönsak
+\end{Code}
+En \code{Grönsak} är antingen en \code{Gurka} \Emph{ELLER} en \code{Tomat}
 \end{itemize}  
 \end{itemize} 
 \end{itemize}
@@ -254,19 +260,19 @@ object PersonId:
   case class Number(n: Long) extends PersonId  // produkt med ett element
   case object Missing extends PersonId         // ett enkelt värde
 \end{Code}
-Motsvarande med \code{enum}:
+\pause Motsvarande med \code{enum}:
 \begin{Code}
 enum PersonId:
   case Number(n: Long)
   case Missing     
 \end{Code}
-\begin{REPLsmall}
-scala> Vector.tabulate(10)(i => 
-         if i % 3 == 0 then PersonId.Missing else PersonNumber(i)
-       )
-val res0: Vector[Object] = Vector(Missing, PersonNumber(1), PersonNumber(2), Missing, 
-  PersonNumber(4), PersonNumber(5), Missing, PersonNumber(7), PersonNumber(8), Missing)
-\end{REPLsmall}
+% \begin{REPLsmall}
+% scala> Vector.tabulate(10)(i => 
+%          if i % 3 == 0 then PersonId.Missing else PersonNumber(i)
+%        )
+% val res0: Vector[Object] = Vector(Missing, PersonNumber(1), PersonNumber(2), Missing, 
+%   PersonNumber(4), PersonNumber(5), Missing, PersonNumber(7), PersonNumber(8), Missing)
+% \end{REPLsmall}
 
 \end{Slide}
 
