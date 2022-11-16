@@ -154,40 +154,6 @@ res1: String = super pepino
 
 
 
-\begin{Slide}{Terminologi och nyckelord vid arv}
-
-\SlideFontSize{7.5}{10}
-\begin{tabular}{r  l}
-\Emph{subtyp}           & en typ som ärver en supertyp\\
-\Emph{supertyp}         & en typ som ärvs av en subtyp\\
-\Emph{bastyp}           & en typ som är rot i ett arvsträd\\
-\Emph{abstrakt medlem}  & en medlem som saknar implementation\\
-\Emph{konkret medlem}   & en medlem som ej saknar implementation\\
-\Emph{abstrakt typ}     & en typ som kan ha abstrakta medlemmar; kan ej instansieras\\
-\Emph{konkret typ}      & en typ som ej har abstrakta medlemmar; kan instansieras\\
-\code|class|            & en konkret typ som \Alert{kan ej ha abstrakta medlemmar}\\
-\code|abstract class|   & en abstrakt typ som \Emph{kan ha abstrakta medlemmar}\\
-\code|trait|            & är en abstrakt typ som \Emph{kan mixas in} \\
-\code|extends|          & står före en supertyp, medför arv av supertypens medlemmar\\
-\code|override|         & en medlem överskuggar (byter ut) en medlem i en superttyp\\
-\code|protected|        & gör en medlem synlig i subtyper till denna typ (jmf \code|private|)\\
-\code|final gurka|      & gör medlemen gurka final: förhindrar överskuggning\\
-\code|final class|      & gör klassen final: förhindrar vidare subtypning\\
-\code|sealed|           & förseglad trait/klass: enbart subtyper i denna kodfil, koll av match\\
-\code|open class|       & berätta att den är tänkt att ärvas, \code|open| krävs för arv i annan kodfil\\   
-\code|transparent trait|& gör typen osynlig vid typhärledning\\
-\code|super.gurka|      & refererar till supertypens medlem \code|gurka| (jmf \code|this|)\\
-
-\end{tabular}
-
-\ifkompendium\else
-\pause
-\begin{tikzpicture}[overlay]
-\node at (9.5,2) {\includegraphics[scale=0.46]{../img/ttsuper}};
-\end{tikzpicture}
-\fi
-
-\end{Slide}
 
 
 \begin{Slide}{Fördjupning: Intersektionstyp}\SlideFontSmall
@@ -233,6 +199,59 @@ Fördel jämfört med klass: rudimentärt enkelt.\\ Nackdelar: kan inte deklarer
 {\SlideFontTiny Läs mer här:
 \url{https://dotty.epfl.ch/docs/reference/new-types/union-types.html}
 }
+\end{Slide}
+
+\begin{Slide}{Fördjupning: Transparent trait}\SlideFontSmall
+Du kan göra din trait \Emph{genomskinlig} vid typhärledning av supertypen för inmixningen med nyckelordet \code{transparent}:
+\begin{Code}
+trait Grönsak(val vikt: Int)
+transparent trait HarSmak(val smak: String)
+
+object Gurka extends Grönsak(42), HarSmak("vattning")
+object Tomat extends Grönsak(43), HarSmak("syrlig")
+\end{Code} 
+\begin{REPLnonum}
+scala> Vector(Gurka, Tomat)
+val res0: Vector[Grönsak] = 
+  Vector(Gurka@560742f7, Tomat@3cc82e23)
+\end{REPLnonum}
+Vilken typ hade visats utan \code{transparent}? \pause \\ \code{Vector[Grönsak & HarSmak]}
+\end{Slide}
+
+
+\begin{Slide}{Terminologi och nyckelord vid arv}
+
+\SlideFontSize{7.5}{10}
+\begin{tabular}{r  l}
+\Emph{subtyp}           & en typ som ärver en supertyp\\
+\Emph{supertyp}         & en typ som ärvs av en subtyp\\
+\Emph{bastyp}           & en typ som är rot i ett arvsträd\\
+\Emph{abstrakt medlem}  & en medlem som saknar implementation\\
+\Emph{konkret medlem}   & en medlem som ej saknar implementation\\
+\Emph{abstrakt typ}     & en typ som kan ha abstrakta medlemmar; kan ej instansieras\\
+\Emph{konkret typ}      & en typ som ej har abstrakta medlemmar; kan instansieras\\
+\code|class|            & en konkret typ som \Alert{kan ej ha abstrakta medlemmar}\\
+\code|abstract class|   & en abstrakt typ som \Emph{kan ha abstrakta medlemmar}\\
+\code|trait|            & är en abstrakt typ som \Emph{kan mixas in} \\
+\code|extends|          & står före en supertyp, medför arv av supertypens medlemmar\\
+\code|override|         & en medlem överskuggar (byter ut) en medlem i en superttyp\\
+\code|protected|        & gör en medlem synlig i subtyper till denna typ (jmf \code|private|)\\
+\code|final gurka|      & gör medlemen gurka final: förhindrar överskuggning\\
+\code|final class|      & gör klassen final: förhindrar vidare subtypning\\
+\code|sealed|           & förseglad trait/klass: enbart subtyper i denna kodfil, koll av match\\
+\code|open class|       & berätta att den är tänkt att ärvas, \code|open| krävs för arv i annan kodfil\\   
+\code|transparent trait|& gör typen osynlig vid typhärledning\\
+\code|super.gurka|      & refererar till supertypens medlem \code|gurka| (jmf \code|this|)\\
+
+\end{tabular}
+
+\ifkompendium\else
+\pause
+\begin{tikzpicture}[overlay]
+\node at (9.5,2) {\includegraphics[scale=0.46]{../img/ttsuper}};
+\end{tikzpicture}
+\fi
+
 \end{Slide}
 
 
