@@ -4,7 +4,7 @@
 %%%
 
 
-\Subsection{Generiska strukturer}
+\Subsection{Fördjupning: mer om generiska strukturer}
 
 \begin{Slide}{Repetition: Typparametrar och generiska strukturer}
 \begin{itemize}\SlideFontSmall
@@ -32,13 +32,11 @@ val res0: Pair[Int, String] = Pair(42,hej)
 \end{Slide}
 
 
-\Subsection{Att sätta gränser för typer}
-
 \begin{Slide}{Olika sätt att begränsa typer}
 Det finns i Scala flera olika sätt att att begränsa vilka typer du vill tillåta. En översikt av några möjligheter:
 \begin{itemize}
-  \item Ge \Emph{övre} gräns för typparametrar \Eng{lower bound}
-  \item Ge \Emph{undre} gräns för typparametrar \Eng{upper bound}
+  \item Ge \Emph{övre} gräns för typparametrar \Eng{upper bound}
+  \item Ge \Emph{undre} gräns för typparametrar \Eng{lower bound}
   \item Ge en \Emph{kontextgräns} för typparametrar i relation till implicit givna typer \Eng{context bound}
   \item Begränsa möjlig inmixning vid deklaration av en trait med en explicit \Emph{egentyp} \Eng{self type} 
 \end{itemize}
@@ -96,7 +94,7 @@ scala> testLowerBound[Robothund](Robothund())
 \end{Slide}
 
 
-\Subsection{Flexibla generiska typer: varians}
+\Subsection{Varians: flexibla typparametrar}
 
 \ifkompendium\else
 \begin{SlideSimple}{Vad är varians?}
@@ -240,6 +238,7 @@ scala> case class Bur[+A](a: A):
   |          ^^^^
   |  covariant type A occurs in contravariant position in type A of parameter x
 \end{REPLsmall}
+\pause
 \item Här måste typen tillåtas variera ''uppåt'' med hjälp av en \Emph{undre gräns}:
 \begin{Code}
 case class Bur[+A](a: A): 
@@ -255,8 +254,8 @@ val res1: Bur[Djur] = Bur(Hund())
 \begin{Slide}{När använda vilken slags varians?}
 \begin{itemize}\SlideFontTiny
 \item Oföränderliga generiska klasser som har metoder som är \Emph{producenter} av nya oföränderliga generiska typer passar ofta bäst som \Emph{kovarianta}, t.ex. \code{Vector[+T]}, \code{Option[+T]} . 
-\item En typkonstruktor av \code{T}, som har metoder som är \Alert{konsumenter} av \code{T}, kan vara flexibel i \code{T} om den är \Emph{kontravariant}, t.ex. \code{Veterinär[-T]}. Den kan också vara kovariant om konsumerande metoder vidgar inparametertypen till \code{B} där \code{B >: T}
-\item En typkonstruktor med flera parametrar kan vara \Emph{både} kontravariant \Emph{och} kovariant, t.ex. \code{Function1[-A, +B]} \\-- detta är den egentliga typen bakom ''syntaktiska sockret'' \code{A => B}\\
+\item En typkonstruktor av \code{T}, som har metoder som är \Alert{konsumenter} av \code{T}, kan vara \Emph{kontravariant}, t.ex. \code{Veterinär[-T]}. \\Den kan också vara \Emph{kovariant} om konsumerande metoder \Alert{vidgar} inparametertypen till \code{B} där \code{B >: T}
+\item En typkonstruktor med flera parametrar kan vara \Emph{både} kontravariant \Emph{och} kovariant, t.ex. \code{Function1[-A, +B]} \\-- detta är den egentliga typen av det ''syntaktiska sockret'' \code{A => B}\\
 (ett parametervärde\code{:A} \emph{konsumeras} och ett returtvärde\code{:B} \emph{produceras})
 \item \Alert{Förändringsbara} strukturer måste vara \Emph{invarianta}, annars väntar \Alert{kaos}!\\
 \pause Antag att det finns en \code{Bur} som kan ändras på plats via metoden \code{bytTill} \emph{och samtidigt} vore kovariant (varning för känsliga kodare): 
@@ -265,7 +264,7 @@ ejscala> val kattBur: Bur[Katt] = Bur(Katt())
 
 ejscala> val djurBur: Bur[Djur] = kattBur  // en kovariant referens till samma Bur
 
-ejscala> djurBur.bytTill(Hund())           // en djurbur kan innehålla hundar
+ejscala> djurBur.bytTill(Hund())           // ändra på plats
 
 ejscala> val katt: Katt = kattBur.släppUt  // KAOS! typosäkert hundkatt-monster :(
 \end{REPLsmall}
@@ -435,7 +434,7 @@ Det går också att ge det givna värdet ett namn vid behov, men ofta onödigt:\
 
 \begin{Slide}{Kan vi inte använda default-argument som förändras?}
 \begin{itemize}\SlideFontSmall
-\item Vi skulle kunna använda ett default-värde som är ett namn på en variabel;
+\item Vi skulle kunna använda ett default-värde som är en variabel:
 \begin{REPLsmall}
 scala> var ctx = 42
 var ctx: Int = 42
