@@ -416,7 +416,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "körtidstyp"         -> "kan vara mer specifik än den statiska typen",
       "dynamisk bindning"  -> "körtidstypen avgör vilken metod som körs",
       "polymorfism"        -> "kan ha många former, t.ex. en av flera subtyper",
-      "trait"              -> "är abstrakt, kan mixas in, kan ej ha parametrar",
+      "trait"              -> "är abstrakt, kan mixas in, kan ha parametrar",
       "inmixning"          -> "tillföra egenskaper med \\code|with| och en trait",
       "överskuggad medlem" -> "medlem i subtyp ersätter medlem i supertyp",
       "anonym klass"       -> "klass utan namn, utvidgad med extra implementation",
