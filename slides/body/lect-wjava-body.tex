@@ -208,24 +208,6 @@ public class HighScore {
 \end{Slide}
 
 
-\begin{Slide}{Grundtyper i Scala och primitiva typer Java}\SlideFontSmall
-\begin{table}[H]
-\renewcommand{\arraystretch}{1.4}
-\begin{tabular}{l|l|l|l}
-\Alert{Grundtyp} i &  Antal                &      Omfång&\Alert{primitiv typ} i\\
-  \Emph{Scala} & bitar & minsta/största värde &\Emph{Java} \\ \hline
-\texttt{Byte}   &  8  & $-2^7$ ... $2^7-1$   & \texttt{byte} \\
-\texttt{Short}  &  16 & $-2^{15}$ ... $2^{15}-1$ & \texttt{short} \\
-\texttt{Char}   &  16 & $0$ ... $2^{16}-1$ & \texttt{char} \\
-\texttt{Int}    &  32 & $-2^{31}$ ... $2^{31}-1$ & \texttt{int} \\
-\texttt{Long}   &  64 & $-2^{63}$ ... $2^{63}-1$ & \texttt{long} \\
-\texttt{Float}  &  32 & ± $3.4028235 \cdot 10^{38}$  & \texttt{float} \\
-\texttt{Double} &  64 & ± $1.7976931348623157 \cdot 10^{308}$ & \texttt{double} \\
-\end{tabular}
-\end{table}
-\end{Slide}
-  
-
 
 \begin{Slide}{Några saker som finns i Scala men inte i Java}\SlideFontTiny
 \ifkompendium\else
@@ -280,11 +262,11 @@ public class HighScore {
 
 \item \Alert{Enhetlig} användning av samlingar \Emph{inkl. Array} (förutom innehållslikhet för Array)
 
-\item Implicita värden och klasser
+\item Kontextuella abstraktioner \code{given} \code{using}
 
-\item Mer precis synlighetsreglering, \code{private[this]}, \code{private[mypackage]}
+\item Mer precis synlighet \code{private[mypack]}
 
-\item Flexibilitet och namnändring vid \code{import}
+\item Namnändring vid \code{import}
 
 \item Flexibel filstruktur och filnamngivning
 
@@ -292,9 +274,7 @@ public class HighScore {
 
 \item Typ-alias och abstrakta typer med \code{type}
 
-\item Implicita värden \Eng{implicits values}
-
-\item Extensionsmetoder \Eng{extension methods}
+\item Extensionsmetoder \code{extension}
 
 \item ...
 \end{itemize}
@@ -311,9 +291,7 @@ public class HighScore {
 \begin{itemize}
 \item[\textbf{\texttt{+}}] Snabbare kompilering
 
-\item[\textbf{\texttt{+}}] Uppräknade typer med {\texttt{\bfseries{\color{eclipsepurple}{enum}}}} (kommer i Scala 3)
-
-\item[\textbf{\texttt{+}}] Mer omfattande IDE-stöd (kommer i Scala 3)
+\item[\textbf{\texttt{+}}] Mognare verktygsstöd
 
 \item Variabeldeklaration utan initialisering
 
@@ -335,7 +313,7 @@ public class HighScore {
 
 \item Hoppa ut ur loop med \jcode{break} \\ \href{https://docs.oracle.com/javase/tutorial/java/nutsandbolts/branch.html}{\SlideFontSize{6}{8.5}docs.oracle.com/javase/tutorial/}
 
-\item \jcode{switch} ''faller igenom'' utan \jcode{break}
+\item \jcode{switch} ''faller igenom'' om du glömmer skriva \jcode{break}
 
 \item Kontrollerade undantag \Eng{checked exceptions} och \jcode{throws}
 
@@ -349,21 +327,25 @@ public class HighScore {
 
 \begin{Slide}{Begränsningar med funktionsprogrammering i Java}
 \begin{itemize}\SlideFontTiny
-\item[] Av dessa funktionsprogrammeringskoncept i Scala...
+\item[] Av alla dessa funktionsprogrammeringskoncept i Scala...
 \begin{itemize}\SlideFontSize{6}{8}
-\item överlagring
+\item \Emph{överlagring}
+\item \Emph{anonyma funktioner}
+\item mönstermatchning
+\item funktioner etc. på toppnivå
 \item utelämna tom parameterlista (enhetlig access)
 \item defaultargument
 \item namngivna argument
 \item lokala funktioner
 \item funktioner som äkta värden
-\item anonyma funktioner
 \item klammerparentes vid ensam paramenter
 \item multipla parameterlistor
 \item egendefinierade kontrollstrukturer
 \item namnanrop (fördröjd evaluering)
 \item stegade funktioner (''Curry-funktioner'')
 \item fångad variablelrymd i funktionsobjekt (''closure'')
+\item ad hoc polymorfism (''typklasser'')
+\item kontextuella abstraktioner
 \end{itemize}
 \item[] ...kan man i Java %\footnote{\SlideFontTiny\href{https://en.wikipedia.org/wiki/Java_version_history}{en.wikipedia.org/wiki/Java\_version\_history}}  
 endast göra: \Emph{överlagring} (''overloading'') och \Emph{anonyma funktioner} (''lambda'') där det senare har starka begränsningar. %\footnote{\SlideFontTiny\href{https://en.wikipedia.org/wiki/Anonymous_function\#Java_Limitations}{en.wikipedia.org/wiki/Anonymous\_function\#Java\_Limitations}}
@@ -379,6 +361,23 @@ endast göra: \Emph{överlagring} (''overloading'') och \Emph{anonyma funktioner
 
 \end{Slide}
 
+\begin{Slide}{Grundtyper i Scala och primitiva typer Java}\SlideFontSmall
+\begin{table}[H]
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{l|l|l|l}
+\Alert{Grundtyp} i &  Antal                &      Omfång&\Alert{primitiv typ} i\\
+  \Emph{Scala} & bitar & minsta/största värde &\Emph{Java} \\ \hline
+\texttt{Byte}   &  8  & $-2^7$ ... $2^7-1$   & \texttt{byte} \\
+\texttt{Short}  &  16 & $-2^{15}$ ... $2^{15}-1$ & \texttt{short} \\
+\texttt{Char}   &  16 & $0$ ... $2^{16}-1$ & \texttt{char} \\
+\texttt{Int}    &  32 & $-2^{31}$ ... $2^{31}-1$ & \texttt{int} \\
+\texttt{Long}   &  64 & $-2^{63}$ ... $2^{63}-1$ & \texttt{long} \\
+\texttt{Float}  &  32 & ± $3.4028235 \cdot 10^{38}$  & \texttt{float} \\
+\texttt{Double} &  64 & ± $1.7976931348623157 \cdot 10^{308}$ & \texttt{double} \\
+\end{tabular}
+\end{table}
+\end{Slide}
+  
 
 
 \begin{Slide}{Javas switch-sats}\SlideFontSmall
@@ -660,9 +659,9 @@ från Java 8 finns metoden \code{chars} som ger en \code{IntStream} och då kan 
 %\Subsection{Klasser i Java}
 
 \begin{Slide}{Typisk utformning av Java-klass}
-Typisk ''anatomi'' av en Java-klass:
+Typisk ''anatomi'' hos en Java-klass:
 \begin{Code}[language=Java]
-class Klassnamn {
+public class Klassnamn {
     attribut, normalt privata
     konstruktorer, normalt publika
     metoder: publika getters, och vid förändringsbara objekt även setters
@@ -830,7 +829,7 @@ res0: JComplex = 4.0 + 6.0i
 
 
 
-\begin{Slide}{Exempel: förändringsbar klass i Scala och Java}
+\begin{Slide}{Exempel: Förändringsbar klass i Scala och Java}
 \ifkompendium
 \noindent\Emph{Scala:}
 \else  
@@ -904,53 +903,53 @@ public class JMutablePerson {
 
 \ifkompendium\pagebreak\fi
 
-\begin{Slide}{Övning: Implementera dessa specifikationer}
-\ifkompendium\else  
-\begin{multicols}{2}
-\fi
-{\hskip-0.31em\colorbox{black!70}{\parbox{\dimexpr0.44\textwidth-20\fboxsep-1.9\fboxrule\relax}{\fontsize{7}{8}\selectfont\color{white}{\textit{Specification} \textbf{Vegetable}}}}}
+% \begin{Slide}{Övning: Implementera dessa specifikationer}
+% \ifkompendium\else  
+% \begin{multicols}{2}
+% \fi
+% {\hskip-0.31em\colorbox{black!70}{\parbox{\dimexpr0.44\textwidth-20\fboxsep-1.9\fboxrule\relax}{\fontsize{7}{8}\selectfont\color{white}{\textit{Specification} \textbf{Vegetable}}}}}
 
-\ifkompendium\else
-\vspace{-2em}
-\fi
+% \ifkompendium\else
+% \vspace{-2em}
+% \fi
 
-\begin{CodeSmall}
-/** Representerar en grönsak. */
-class Vegetable(val name: String):
-  /** Returnerar nuvarande vikt i gram. */
-  def weight: Int = ???
+% \begin{CodeSmall}
+% /** Representerar en grönsak. */
+% class Vegetable(val name: String):
+%   /** Returnerar nuvarande vikt i gram. */
+%   def weight: Int = ???
 
-  /** Ändrar vikten till w gram.
-   *  w ska vara positiv, blir annars 0 */
-  def weight_=(w: Int): Unit = ???
-\end{CodeSmall}
+%   /** Ändrar vikten till w gram.
+%    *  w ska vara positiv, blir annars 0 */
+%   def weight_=(w: Int): Unit = ???
+% \end{CodeSmall}
 
-\ifkompendium\else
-\columnbreak
-\fi
+% \ifkompendium\else
+% \columnbreak
+% \fi
 
-\begin{JavaSpec}{class JVegetable}
-/** Skapar en grönsak. */
-JVegetable(String name);
+% \begin{JavaSpec}{class JVegetable}
+% /** Skapar en grönsak. */
+% JVegetable(String name);
 
-/** Returnerar namnet. */
-String getName();
+% /** Returnerar namnet. */
+% String getName();
 
-/** Returnerar nuvarande vikt i gram. */
-int getWeight();
+% /** Returnerar nuvarande vikt i gram. */
+% int getWeight();
 
-/** Ändrar vikten till weight gram.
- *  w ska vara positiv, blir annars 0 */
-void setWeight(int weight);
-\end{JavaSpec}
-\ifkompendium\else
-\end{multicols}
-\pause\SlideFontTiny
-\fi
-\noindent Fördjupning:\\ Kasta undantaget \code{IllegalArgumentException} vid försök till negativ vikt.\\
-Läs om undantag i Java här: \href{https://docs.oracle.com/javase/tutorial/essential/exceptions/index.html}{docs.oracle.com/javase/tutorial/essential/exceptions/}
+% /** Ändrar vikten till weight gram.
+%  *  w ska vara positiv, blir annars 0 */
+% void setWeight(int weight);
+% \end{JavaSpec}
+% \ifkompendium\else
+% \end{multicols}
+% \pause\SlideFontTiny
+% \fi
+% \noindent Fördjupning:\\ Kasta undantaget \code{IllegalArgumentException} vid försök till negativ vikt.\\
+% Läs om undantag i Java här: \href{https://docs.oracle.com/javase/tutorial/essential/exceptions/index.html}{docs.oracle.com/javase/tutorial/essential/exceptions/}
 
-\end{Slide}
+% \end{Slide}
 
 
 
@@ -993,7 +992,7 @@ object Person:
 
 
 
-%\Subsection{Array}
+\Subsection{Array i Java}
 
 \begin{Slide}{Repetition: Den primitiva typen Array i JVM}
 \begin{itemize}
@@ -1248,7 +1247,7 @@ res2: scala.collection.mutable.Buffer[String] = Buffer(hej)
 \end{itemize}
 Det finns dock vissa nackdelar med \code{ArrayList} i Java\\(som inte gäller för \code{ArrayBuffer} i Scala):
 \begin{itemize}
-\item Fungerar \Alert{inte} rakt av med primitiva typer \code{int}, \code{double}, \code{char}, ... \\ (men det finns sätt komma runt detta, tack vare s.k. wrapper-klasser och autoboxing; mer om detta snart)
+\item Fungerar \Alert{inte} rakt av med primitiva typer \code{int}, \code{double}, \code{char}, ... \\ (men det finns sätt komma runt detta, tack vare s.k. wrapper-klasser och autoboxning; mer om detta snart)
 
 \item Namnet \code{ArrayList} är inte helt lyckat, eftersom ordet ''lista'' normalt används för länkade snarare än array-liknande strukturer.
 \end{itemize}
@@ -1270,11 +1269,9 @@ public class Polygon {
 Det behövs inget attribut \code{n} eftersom vi inte själva behöver hålla reda på antalet allokerade platser: allokering, insättning, och utökning av antalet platser sköts helt automatiskt av \code{ArrayList}-klassen vid behov.
 \end{Slide}
 
-\begin{Slide}{Viktiga operationer på ArrayList (Urval)}
-\begin{JavaSpec}{class ArrayList}
-/** Skapar en ny lista */
-ArrayList<E>();
-
+\begin{Slide}{Några viktiga operationer på ArrayList<E>}
+\SlideFontTiny\url{https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/ArrayList.html}
+\begin{Code}[numberstyle=,language=Java]
 /** Tar reda på elementet på plats pos */
 E get(int pos);
 
@@ -1289,9 +1286,9 @@ E remove(int pos);
 
 /** Tar reda på antalet element i listan */
 int size();
-\end{JavaSpec}
+\end{Code}
 Lär dig vad som finns om ArrayList i snabbreferensen för Java\\
-\SlideFontSmall Överkurs för den nyfikne: kolla implementation av ArrayList här: \\ {\SlideFontTiny\url{http://www.docjar.com/html/api/java/util/ArrayList.java.html}}
+Överkurs för den nyfikne: kolla implementation av ArrayList här: \\ \url{http://www.docjar.com/html/api/java/util/ArrayList.java.html}
 \end{Slide}
 
 
@@ -1441,7 +1438,7 @@ For-each-sats fungerar även med primitiv array:
 
 
 
-%\Subsection{Autoboxing}
+\Subsection{Autoboxning i Java}
 
 
 
@@ -1560,14 +1557,14 @@ Samma gäller mellan alla primitiva typer och dess wrapper-klasser:
 
 
 
-\begin{Slide}{Exempel: Lista med heltal och autoboxing}
+\begin{Slide}{Exempel: Lista med heltal och autoboxning}
 \lstinputlisting[language=Java, basicstyle=\small\ttfamily\SlideFontSize{6}{8}
 ,backgroundcolor=\color{white},
   frame=none]{../compendium/examples/scalajava/generics/TestIntegerListAutoboxing.java}
 \SlideFontTiny Koden finns här: \href{https://github.com/lunduniversity/introprog/tree/master/compendium/examples/scalajava/generics/TestIntegerList.java}{scalajava/generics/TestIntegerListAutoboxing.java}
 \end{Slide}
 
-\begin{Slide}{Fallgropar vid autoboxing}
+\begin{Slide}{Fallgropar vid autoboxning}
 \begin{itemize}
 \item Jämförelser med \code{==} och \code{!=} \\
 \href{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/scalajava/generics/TestPitfall1.java}
@@ -1579,7 +1576,7 @@ Samma gäller mellan alla primitiva typer och dess wrapper-klasser:
 \end{itemize}
 \end{Slide}
 
-%\Subsection{Equals}
+\Subsection{Equals i Java}
 
 \begin{Slide}{Referenslikhet eller innehållslikhet i Scala och Java}\SlideFontSmall
 Det finns två \Alert{principiellt olika} sorters \Emph{likhet}:
@@ -1646,7 +1643,7 @@ Det går att använda villkorsuttryck i Java, men med syntax från språket C:
 \begin{CodeSmall}[basicstyle=\ttfamily\SlideFontSize{6}{8},backgroundcolor=\color{white},
   frame=none]
 var r = math.random()
-var answer = if (r > 0.5) 42 else 0
+var answer = if r > 0.5 then 42 else 0
 \end{CodeSmall}
 
 \columnbreak
@@ -1695,6 +1692,7 @@ double z = (double) y;
 \end{CodeSmall}
 \end{multicols}
 
+\pause {\SlideFontTiny Detta görs ju i Scala bäst med \code{match} och typmönster!}
 
 \end{Slide}
 
