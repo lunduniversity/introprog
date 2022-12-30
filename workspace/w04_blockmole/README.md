@@ -14,7 +14,7 @@ Kompilera filen `hello-window.scala` i linuxterminal med detta kommando:
 
 Kör i linuxterminal med detta kommando:
 
-    scala -cp "introprog.jar:." Main
+    scala -cp "introprog.jar:." run
 
 Om du kör i Windows Powershell eller Cmd byt kolon mot semikolon i kommandona ovan.
 
