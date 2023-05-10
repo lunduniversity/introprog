@@ -1,5 +1,7 @@
 # Migration guide Scala 2 -> Scala 3
 
+NOTE: This guide is deprecated and will not be updated, as all Scala 2 code is migrated to Scala 3 in this repo.
+
 ## Currently already completed migrations
 
 * All code in [compendium/examples] has been migrated using `-rewrite`
