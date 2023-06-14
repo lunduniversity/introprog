@@ -1,3 +1,6 @@
+//> using scala 3.3
+//> using option -unchecked -deprecation
+
 import introprog.PixelWindow
 
 @main
