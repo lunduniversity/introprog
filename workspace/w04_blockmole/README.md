@@ -4,6 +4,19 @@ Laboration `blockmole` utvecklar du helt från början med en kodeditor och komp
 http://cs.lth.se/pgk/kompendium
 
 Om du försöker köra filen `hello-window.scala` med `scala-cli run .` så får du följande felmeddelande:
+```
+Compiling project (Scala 3.3.0, JVM)
+[error] ./hello-window.scala:4:8
+[error] Not found: introprog
+[error] import introprog.PixelWindow
+[error]        ^^^^^^^^^
+[error] ./hello-window.scala:11:3
+[error] Not found: introprog
+[error]   introprog.examples.TestPixelWindow.main(Array())
+[error]   ^^^^^^^^^
+Error compiling project (Scala 3.3.0, JVM)
+Compilation failed
+```
 
 Det beror på att paketet `introprog` saknas på classpath. Följ instruktionerna nedan för att göra `introprog` tillgänglig, först som en nedladdad jar-fil och sedan som ett externt beroende med automatisk nedladdning.
 
