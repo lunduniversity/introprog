@@ -1,3 +1,5 @@
+//> using scala 3
+
 @main def run = println("Hej Scala-app!") // en @main-funktion
 
 object Hello {
