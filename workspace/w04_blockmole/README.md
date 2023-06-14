@@ -3,7 +3,7 @@
 Laboration `blockmole` utvecklar du helt från början med en kodeditor och kompilering i terminalen. Du hittar laborationsuppgifterna i kompendiet:
 http://cs.lth.se/pgk/kompendium
 
-Använd `hello-window.scala` och prova kompilering med en jar-fil på classpath med optionen `--jar` enligt nedan:
+Använd `hello-window.scala` och prova kompilering tillsammans med en jar-fil på classpath med optionen `--jar` enligt nedan:
 
 * Ladda ner introprog-biblioteket härifrån: http://cs.lth.se/pgk/lib och kalla filen för `introprog.jar` du kan klicka på länken ovan, eller om du kör Linux skriva följande i terminalen:
 
