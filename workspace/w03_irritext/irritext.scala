@@ -1,3 +1,5 @@
+//> using scala 3.3
+
 import scala.io.StdIn.readLine
 
 def printDead(): Unit = println("Du är nu DÖÖÖÖÖÖD! Tack och hej :(")
@@ -32,5 +34,6 @@ def play(): Unit =
 @main 
 def run: Unit =
   printWelcomeMessage()
+  Thread.sleep(2000) // vänta 2 sekunder
   play()
   if isDead then printDead() else printSolved(points)
