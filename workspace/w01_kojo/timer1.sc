@@ -10,6 +10,7 @@ object timer {
 }
 
 // HUVUDPROGRAM:
+  
 timer.reset
 var i = 0L
 while (i < 1e8.toLong) { i += 1 }
