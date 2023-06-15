@@ -1,14 +1,48 @@
 name: Build
-on: [push]
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
 jobs:
-  Test:
-    runs-on: ubuntu-20.04
+  Compile-and-Build:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-20.04]
+    runs-on: ${{ matrix.os }}
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
+
       - name: Setup dependencies
-        run: sudo apt-get update && sudo apt-get install texlive-full texlive-latex-extra texlive-lang-all -y
+        run: |
+          sudo apt-get update &&
+          sudo apt-get install texlive-full texlive-latex-extra texlive-lang-all -y
         shell: bash
-      - name: SBT Build
-        run: sbt "about;scalaVersion;workspace/compile;build"
+
+      - name: Get SBT info
+        run: sbt about
         shell: bash
+
+      - name: Check Scala version
+        run: sbt scalaVersion
+        shell: bash
+
+      - name: Compile workspace
+        run: sbt workspace/compile
+        shell: bash
+
+      - name: Build
+        run: sbt build
+        shell: bash
+
+#       If the path is correctly set
+#       this will upload generated pdfs as artifacts
+#       maybe we just want the compendium?
+#       - name: Upload PDF artifacts
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: PDF
+#           path: ./*.pdf
