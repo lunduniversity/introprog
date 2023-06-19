@@ -28,25 +28,42 @@ Använd `hello-window.scala` och prova kompilering tillsammans med en egen-händ
 
   wget -O introprog.jar http://cs.lth.se/pgk/lib
 
-* Kompilera filen `hello-window.scala` i linuxterminal med detta kommando:
+* Kompilera filen `hello-window.scala` med detta kommando:
 
     scala-cli compile . --jar introprog.jar 
 
-Kör i linuxterminal med detta kommando:
+Kör med detta kommando:
 
     scala-cli run . --jar introprog.jar
 
-Se vidare dokumentationen för `introprog` här: http://fileadmin.cs.lth.se/pgk/api/
+Se dokumentationen för `introprog` här: http://fileadmin.cs.lth.se/pgk/api/
 
 ## Använda externt beroende med automatisk nedladdning
 
-I stället för att själv ladda ner en jar-fil kan du, om den finns publicerad som öppen källkod på Maven Central, använda `//> using dep` för att lägga till jar-filen som ett externt beroende (eng. dependency, förkortat "dep"). Då kommer scala-cli att automatiskt att första gången ladda ned och lägga till jar-filen på classpath om du kör med `scala-cli run .` 
+I stället för att själv ladda ner en jar-fil kan du, om den finns publicerad som öppen källkod på Maven Central, använda `//> using dep` för att lägga till jar-filen som ett externt beroende (eng. dependency, förkortat "dep") enligt nedan - notera dubbla kolon på två ställen. 
 
 ``` 
 //> using dep se.lth.cs::introprog::1.3.1
 ```
 
-Du kan också, i stället för en magisk kommentar inne i din kodfil, ange beroendet som en option i terminalen: 
+Då kommer scala-cli att automatiskt att (om det inte redan är gjort) ladda ned och sparar undan jar-filen på ett speciellt ställe i din hemkatalog. När du kompilerar och kör så lägger scala-cli automatiskt till jar-filen på classpath.
+
+    scala-cli run . 
+
+
+Du kan också, i stället för en magisk kommentar inne i din kodfil, ange beroendet som en option direkt i terminalen: 
 
     scala-cli run . --dep se.lth.cs::introprog::1.3.1
 
+## Ange optioner till Scala-compilatorn
+
+I filen `hello-window-scala` finns även denna magiska kommentar:
+
+    //> using option -unchecked -deprecation -Wunused:all -Wvalue-discard
+
+Med hjälp av `//> using option` kan du ge optioner till Scala-kompilatorn. Här är några användbara optioner:
+
+* `-unchecked` Extra varningar för flera fall av osäker kod. 
+* `-deprecation` Förklaring vid användning utgående funktioner.
+* `-Wunused:all` Varning om deklarationer ej används. 
+* `-Wvalue-discard` Varning vid förlorat värde.
