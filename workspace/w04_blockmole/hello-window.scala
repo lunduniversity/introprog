@@ -1,5 +1,5 @@
 //> using scala 3.3
-//> using option -unchecked -deprecation
+//> using option -unchecked -deprecation -Wunused:all -Wvalue-discard
 
 import introprog.PixelWindow
 
