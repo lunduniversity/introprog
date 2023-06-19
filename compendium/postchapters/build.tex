@@ -54,7 +54,10 @@ Efter kritik om att \sbt~är komplicerat så har flera alternativa byggverktyg f
 
 \section{Scala Command Line Interface \texttt{scala-cli}}\label{appendix:build:scala-cli}
 
-Scala CLI är det officiella byggverktyget för enkla Scala-projekt och medföljer installationen av Scala. 
+\href{https://scala-cli.virtuslab.org/}{Scala CLI} utvecklas av \href{https://virtuslab.com/}{Virtuslab} som öppen källkod och är sedan 2023 det officiella byggverktyget för enkla Scala-projekt och medföljer \href{https://www.scala-lang.org/download/}{installationen av Scala}. Scala CLI kördes tidigare med kommandot \code{scala-cli}, men är numera liktydigt med kommandot \code{scala} i terminalen.
+
+\subsection{Grundläggande byggfunktioner i Scala CLI}
+
 De grundläggande funktionerna sammanfattas nedan (se även Appendix \ref{appendix:compile:scala-cli}):
 
 \begin{table}[H]
@@ -71,7 +74,7 @@ De grundläggande funktionerna sammanfattas nedan (se även Appendix \ref{append
 \end{tabular}
 \end{table}
 
-	
+\subsection{Använda optioner för att styra Scala CLI}
 
 \noindent Det finns en mängd olika optioner som du kan lägga till för att styra vad Scala CLI ska göra. Se exempel nedan och förklaringar i efterföljande tabell:
 \begin{REPLsmall}
@@ -85,15 +88,22 @@ scala-cli run . -S 3.3 -O -unchecked --dep se.lth.cs::introprog::1.3.1 -w
 \texttt{-{}-watch} & Upprepa kommando vid sparad ändring. Optionen \texttt{-{}-watch} förkortas med \texttt{-w} \\
 \texttt{-{}-jar introprog.jar} & Lägg till en jar-fil på classpath. \\
 \texttt{-{}-dep se.lth.cs::introprog::1.3.1} & Lägg till ett beroende på classpath. \\
-\texttt{-{}-scalac-option -unchecked} & Lägg till en kompilator-option.  Optionen \texttt{-{}-scalac-option} kan förkortas med \texttt{-O}\\
+\texttt{-{}-scalac-option -unchecked} & Lägg till en kompilator-option som ger extra varningar vid osäker kod.  Optionen \texttt{-{}-scalac-option} kan förkortas med \texttt{-O}\\
 \end{tabular}
 \end{table}
 
+\noindent Fördelen med att explicit ange en viss Scala-version är att byggprocessen blir \emph{upprepningsbar} även på en annan dator som kanske råkar har en annan Scala-version installerad. Det går att ''spika fast'' Scala-versionen till en ännu mer precis version, t.ex. \code{3.2.2}. Om inte den versionen av kompilatorn finns installerad på datorn så kommer Scala CLI att automatiskt ladda ner och använda den explicit efterfrågade versionen under byggandet.
 
-\noindent Scala CLI kan skapa dokumentation baserat på dokumentationskommentarer (se vidare Appendix \ref{appendix:doc}), enligt nedan. Med optionen \code{--ouput} kan du ange destinationskatalog och med \code{--force} så skrivs ev. gammal dokumentation över.
+Det går också att be om den absolut mest rykande färska kompilatorversionen om man vill använda det allra senaste i Scala-språkets utveckling med \code{3.nigthly}. Speciellt kräver s.k. experimentella funktioner att du använder \code{nightly}-versionen\footnote{\url{https://stackoverflow.com/questions/40622878/how-do-i-use-a-nightly-build-of-scala}}. 
+
+\subsection{Generera dokumentation med Scala CLI}
+
+Scala CLI kan också skapa dokumentation baserat på dokumentationskommentarer (se vidare Appendix \ref{appendix:doc}), enligt nedan. Med optionen \code{--ouput} kan du ange destinationskatalog och med \code{--force} så skrivs ev. gammal dokumentation över.
 \begin{REPLsmall}
 scala-cli doc . --output apidoc --force
 \end{REPLsmall}
+
+\subsection{Paketering av exekverbar fil med Scala CLI}
 
 \noindent Scala CLI kan även paketera din kod i exekverbara filer så här:
 \begin{REPLsmall}
@@ -110,14 +120,26 @@ scala-cli package . --output myapp
 \end{tabular}
 \end{table}
 
+\subsection{Optioner som användningsdirektiv i ''magiska'' kommentarer}
 
+\noindent I stället för att använda optioner i terminalen så kan du ge dessa som s.k. användningsdirektiv \Eng{using directives} i ''magiska'' kommentarer som börjar med \code{//> using} i början av valfri kod-fil. 
 
-\noindent I stället för att använda optioner i terminalen så kan du ge dessa som s.k. användningsdirektiv \Eng{using directives} i ''magiska'' kommentarer som borjar med \code{//> using} i valfri kod-fil. Om du har flera kodfiler i samma katalog brukar man skapa en speciell fil som heter \code{project.scala} och samla alla dessa magiska kommentarer där. Här visas ett exempel hur det kan se ut:
+Om du har flera kodfiler i samma katalog brukar man skapa en speciell fil som vanligtvis kallas \code{project.scala} och i den samla alla användningsdirektiv som styr byggandet. Här visas ett exempel hur det kan se ut:
 \begin{Code}
 //> using scala 3.3
 //> using option -unchecked -deprecation -Wunused:all -Wvalue-discard
 //> using dep se.lth.cs::introprog::1.3.1
 \end{Code}
+
+\noindent De kompilatoroptioner som föreslås för att få extra varningar ovan har följande betydelser:
+\begin{table}[H]
+\begin{tabular}{l p{8.5cm}}
+\texttt{-unchecked} & Extra varningar för flera fall av osäker kod. \\
+\texttt{-deprecation} & Förklaring vid användning utgående funktioner. \\
+\texttt{-Wunused:all} & Varning om deklarationer ej används. \\
+\texttt{-Wvalue-discard} & Varning vid förlorat värde. \\
+\end{tabular}
+\end{table}
 
 \noindent Du hittar mer information om Scala CLI här: \url{https://scala-cli.virtuslab.org/}
 
