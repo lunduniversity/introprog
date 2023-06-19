@@ -64,6 +64,6 @@ I filen `hello-window-scala` finns även denna magiska kommentar:
 Med hjälp av `//> using option` kan du ge optioner till Scala-kompilatorn. Här är några användbara optioner:
 
 * `-unchecked` Extra varningar för flera fall av osäker kod. 
-* `-deprecation` Förklaring vid användning utgående funktioner.
+* `-deprecation` Förklaring vid användning av utgående funktioner.
 * `-Wunused:all` Varning om deklarationer ej används. 
 * `-Wvalue-discard` Varning vid förlorat värde.
