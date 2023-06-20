@@ -56,6 +56,20 @@ Efter kritik om att \sbt~är komplicerat så har flera alternativa byggverktyg f
 
 Utvecklingen av \href{https://scala-cli.virtuslab.org/}{Scala CLI} påbörjades 2022 av \href{https://virtuslab.com/}{Virtuslab}. Scala CLI blev 2023 det officiella byggverktyget för enkla Scala-projekt och medföljer \href{https://www.scala-lang.org/download/}{installationen av Scala}. Scala CLI kan även installeras separat och köras med kommandot \code{scala-cli}, men blir under 2023 liktydigt med kommandot \code{scala} i terminalen.\footnote{I skrivande stund har gamla \code{scala}-kommandot ännu inte uppgraderats, men det förväntas ske innan höstterminen startar. När så väl sker kan alla förekomster av \code{scala-cli} i detta stycke ersättas med det kortare kommandot \code{scala}.}
 
+Efter nyinstallation av Scala CLI kan du ange följande kommando för att, en gång för alla, få tillgång till kompletteringar av optioner med Tab-tangenten i terminalen:
+\begin{REPLsmall}
+scala-cli install-completions 
+\end{REPLsmall}
+
+Innan du börjar skriva källkod i en ny katalog i VS Code kan du konfigurera VS Code att vara redo för att använda Scala CLI som byggverktyg i aktuell katalog med följande kommando (vänta med att öppna VS Code till efter att du kört kommandot): 
+\begin{REPLsmall}
+mkdir minNyaKatalog
+cd minNyaKatalog
+scala-cli setup-ide . 
+code .
+\end{REPLsmall}
+	
+
 \subsection{Grundläggande byggfunktioner i Scala CLI}
 
 De grundläggande funktionerna sammanfattas nedan (se även Appendix \ref{appendix:compile:scala-cli}):
@@ -69,7 +83,9 @@ De grundläggande funktionerna sammanfattas nedan (se även Appendix \ref{append
 \texttt{scala-cli compile .} & Kompilera alla kodfiler i aktuell katalog. \\
 \texttt{scala-cli run hello.scala} & Kompilera koden i filen \texttt{hello.scala} och kör igång eventuellt huvudprogram om kompileringen gick bra. \\
 \texttt{scala-cli run .} & Kompilera och kör alla kodfiler i aktuell katalog. \\
-\texttt{scala-cli package .} & Kompilera och kör alla kodfiler i aktuell katalog. \\
+\texttt{scala-cli run . -{}-list-main-class} & Lista alla huvudprogram. \\
+\texttt{scala-cli run . -M mypkg.myMain} & Kör ett specifikt huvudprogram. Förk. \texttt{-M} kan även skrivas \texttt{-{}-main-class}\\
+\texttt{scala-cli package .} & Paketera all kompilerade kodfiler i en körbar fil. \\
 \\
 \end{tabular}
 \end{table}
@@ -105,7 +121,7 @@ scala-cli doc . --output apidoc --force
 
 \subsection{Paketering av exekverbar fil med Scala CLI}
 
-\noindent Scala CLI kan även paketera din kod i exekverbara filer så här:
+\noindent Scala CLI kan paketera din kod i en exekverbar fil så här:
 \begin{REPLsmall}
 scala-cli package . --output myapp
 \end{REPLsmall}
