@@ -1,1 +1,0 @@
-Skriv till exempel `scala-cli run . -M cards.PokerProbability` för att köra main metoden från PokerProbability.scala
