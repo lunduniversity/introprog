@@ -13,4 +13,4 @@ object Player:
   enum KeyMap(left: String, right: String, up: String, down: String):
     val dir = Map(left -> West, right -> East, up -> North, down -> South) 
     case Letters extends KeyMap("A", "D", "W", "S")
-    case Arrows extends KeyMap("LEFT", "RIGHT", "UP", "DOWN")
+    case Arrows extends KeyMap("Left", "Right", "Up", "Down")

@@ -45,7 +45,7 @@ abstract class SnakeGame(settings: Settings) extends introprog.BlockGame(
       case Starting => if key == " " then enterPlayingState()
 
       case Playing =>
-        if key == "Escape" then
+        if key == "Esc" then
           println(s"Toggle pause: isPaused == $isPaused")
           isPaused = !isPaused
         else
@@ -53,7 +53,7 @@ abstract class SnakeGame(settings: Settings) extends introprog.BlockGame(
 
       case GameOver =>
         if key == " " then enterPlayingState()
-        else if key == "Escape" then enterQuittingState()
+        else if key == "Esc" then enterQuittingState()
 
       case _ =>
 
@@ -89,5 +89,5 @@ abstract class SnakeGame(settings: Settings) extends introprog.BlockGame(
     gameLoop(stopWhen = state == Quitting)
 
   /** Implement this with a call to start with specific players and entities. */
-  def play(): Unit
+  def play(playerNames: String*): Unit
 
