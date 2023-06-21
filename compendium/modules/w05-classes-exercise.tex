@@ -268,21 +268,21 @@ object Point3D:
 
 \Task\label{exe:classes:labprep}  \what~I nästa laboration ska du bygga vidare på \code{blockmole}-labben och göra ett spel för två spelare där varje spelare styr sin \emph{egen} instans av en \code{blockmole}. Vi måste då göra om \code{Mole} så att den blir en klass i stället för ett singelobjekt. Gör färdigt klasserna nedan och testa noggrant så att de fungerar. 
 
-Alla klasser ska tillhöra \code{package blockbattle} och ligga i varsin egen fil med samma namn som klassen, t.ex. \code{Pos.scala}. När du har mer än en kodfil som du vill kompilera om upprepade gånger vid stegvis implementation och felsökning, underlättas ditt arbetet stort om du använder byggverktyget \code{sbt} som finns installerat på skolans datorer (se även Appendix~\ref{appendix:build}). Lägg en fil med namnet \code{build.sbt} i katalogen där du jobbar, t.ex. \code{~/pgk/w06/lab}, med detta innehåll:
-\begin{Code}
-scalaVersion := "3.2.2"
-\end{Code}
-Då kan du i ett eget terminalfönster köra igång \code{sbt} och sedan kommandot \code{~compile}. Då kompileras din ändrade kod om automatiskt varje gång du sparar en scala-fil i denna katalog.
+Alla klasser ska tillhöra \code{package blockbattle} och ligga i varsin egen fil med samma namn som klassen, t.ex. \code{Pos.scala}. 
+
+Tips: Ha ett separat terminalfönster igång och kör Scala CLI med ändringsbevakning enligt nedan kommano. Då kompileras din ändrade kod om automatiskt varje gång du sparar en scala-fil i aktuell katalog.
 \begin{REPLnonum}
->sbt
-sbt> ~compile
+scala-cli compile . --watch
 \end{REPLnonum}
+Optionen \code{--watch} kan skrivas kortare med \code{-w} i stället.
 
 \Subtask Under laborationen är det smidigt att kunna representera flyttbara positioner i ett pixelfönster. Implementera case-klassen \code{Pos} i ett nytt terminalfönster enligt nedan så att den fungerar enligt efterföljande REPL-tester.
 \scalainputlisting[basicstyle=\ttfamily\fontsize{11}{13}\selectfont]{../workspace/w06_blockbattle/Pos.scala}
 Testa så att \code{Pos} fungerar med hjälp av REPL enligt nedan:
 \begin{REPL}
-sbt> console
+> scala-cli repl .
+Welcome to Scala 3.3.0 (17.0.6, Java OpenJDK 64-Bit Server VM).
+Type in expressions for evaluation. Or try :help.
 
 scala> blockbattle.Pos(1,2)
 val res0: blockbattle.Pos = Pos(1,2)
@@ -341,7 +341,7 @@ val res7: blockbattle.Pos = Pos(0,2)
 \end{REPL}
 
 
-\Subtask Gör klart klassen \code{Mole} enligt nedan. Mole är en klass som representerar en blockmullvad med föränderliga attribut för position, riktning och poäng. Varje instans har även oföränderliga attribut som håller reda på dess namn, dess färg och vilka tangenter som kan användas för att styra mullvaden. Implementera klassens medlemmar en i taget och testa noga med lämpliga testfall efter varje tillägg/buggfix. Skapa ett huvudprogram t.ex. i filen \code{Main.scala} med dina tester som skapar instanser och skriver ut attribut etc. När du kör \code{~run} i sbt så kommer huvudprogrammet att automatiskt köras om efter automatisk omkompilering av de ändrade delarna varje gång du sparar någon \code{.scala}-fil.
+\Subtask Gör klart klassen \code{Mole} enligt nedan. Mole är en klass som representerar en blockmullvad med föränderliga attribut för position, riktning och poäng. Varje instans har även oföränderliga attribut som håller reda på dess namn, dess färg och vilka tangenter som kan användas för att styra mullvaden. Implementera klassens medlemmar en i taget och testa noga med lämpliga testfall efter varje tillägg/buggfix. Skapa ett huvudprogram t.ex. i filen \code{Main.scala} med dina tester som skapar instanser och skriver ut attribut etc. 
 \scalainputlisting[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w06_blockbattle/Mole.scala}
 % \begin{CodeSmall}
 % class Mole(
@@ -374,18 +374,17 @@ val res7: blockbattle.Pos = Pos(0,2)
 
 \Subtask Under laborationen behöver du en klass \code{blockbattle.BlockWindow} som med hjälp av \code{introprog.PixelWindow} erbjuder blockgrafik. Varje instans av \code{BlockWindow} ska ha ett attribut som refererar till en \code{PixelWindow}-instans. Detta kallas \textbf{aggregering} \Eng{aggregation}.\footnote{\url{https://en.wikipedia.org/wiki/Object\_composition\#Aggregation}}
 
-För att det ska gå att kompilera och testa din \code{BlockWindow}-klass behöver du ha \code{introprog}-paketet på classpath. Med byggverktyget \code{sbt} hamnar alla jar-filer som ligger i katalogen \texttt{lib} automatiskt på classpath när du gör \code{compile}, \code{run}, etc. Skapa katalogen \code{lib} och ladda ner filen \url{https://fileadmin.cs.lth.se/introprog.jar} via din webbläsare eller med kommandot \code{curl} nedan (notera att det är stora bokstaven \code{O} och inte en nolla i optionen \code{-sLO}):
+För att det ska gå att kompilera och testa din \code{BlockWindow}-klass behöver du ha \code{introprog}-paketet på classpath. Ladda ner filen \url{https://fileadmin.cs.lth.se/introprog.jar} via din webbläsare eller med kommandot \code{curl} nedan (notera att det är stora bokstaven \code{O} och inte en nolla i optionen \code{-sLO}):
 
 \begin{REPLnonum}
-> mkdir lib
-> curl -o lib/introprog.jar -sLO  https://fileadmin.cs.lth.se/introprog.jar
-> sbt
-sbt> ~compile
+curl -o introprog.jar -sLO  https://fileadmin.cs.lth.se/introprog.jar
+scala-cli run . --jar introprog.jar
 \end{REPLnonum}
-Du kan köra ditt program med \code{sbt}-kommandot \code{run} och då hamnar \code{lib/introprog.jar} automatiskt på classpath. Du kan också köra igång ditt program ''manuellt'' med detta kommando (semikolon i Windows):
-\begin{REPLnonum}
-> scala -cp "lib/introprog.jar:target/scala-3.0.1/classes" blockbattle.Main
-\end{REPLnonum}
+Då hamnar \code{lib/introprog.jar} automatiskt på classpath. 
+% Du kan också köra igång ditt program ''manuellt'' med detta kommando (semikolon i Windows):
+% \begin{REPLnonum}
+% > scala -cp "lib/introprog.jar:target/scala-3.0.1/classes" blockbattle.Main
+% \end{REPLnonum}
 
 Gör klart klassen \code{BlockWindow} enligt nedan. Metoden \code{setBlock} ska med hjälp av metoden \code{pixelWindow.fill} fylla ett kvadratiskt område med sidan \code{blockSize} pixlar på en viss position \code{pos} i block-koordinater och med en viss färg \code{color}. Metoden \code{getBlock} ska med hjälp av metoden \code{pixelWindow.getPixel} ge färgen för övre vänstra hörnet i blocket på position \code{pos} i block-koordinater.
 \scalainputlisting[basicstyle=\ttfamily\fontsize{10}{12}\selectfont]{../workspace/w06_blockbattle/BlockWindow.scala}
