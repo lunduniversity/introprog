@@ -68,8 +68,10 @@ object Synth:
     channel:  Int         = 0
   ): Unit =
     import scala.concurrent.ExecutionContext.Implicits.global
-    val _ = scala.concurrent.Future:
+
+    val _ = scala.concurrent.Future{
       playBlocking(noteNumbers, velocity, duration, spread, after, channel)
+    }
 
   object GMInstruments:
     // These program numbers are defined as particular instruments by General MIDI.
