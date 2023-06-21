@@ -9,8 +9,7 @@ object Synth:
     println(MidiSystem.getMidiDeviceInfo().mkString(" "))
     val synth = MidiSystem.getSynthesizer
     synth.open
-    assert(synth.loadAllInstruments(synth.getDefaultSoundbank),
-           "Loading MIDI instruments failed")
+    assert(synth.loadAllInstruments(synth.getDefaultSoundbank), "Loading MIDI instruments failed")
     synth
   resetInstruments() // assign some different instruments to channels
 
@@ -25,8 +24,8 @@ object Synth:
       case Some(p) => midiChannel(channel).programChange(p.getBank, p.getProgram)
       case None => println(s"Instrument with program number $program not found")
 
-  lazy val defaultInstruments = Vector(AcousticGrandPiano, AcousticGuitarNylon,
-                                       AcousticBass, Trumpet, Flute)
+  lazy val defaultInstruments = 
+    Vector(AcousticGrandPiano, AcousticGuitarNylon, AcousticBass, Trumpet, Flute)
 
   def resetInstruments(): Unit = defaultInstruments.zipWithIndex.foreach {
     case (program, channel) => changeInstrument(program, channel)
@@ -44,12 +43,13 @@ object Synth:
 
   def delay(millis: Long): Unit = Thread.sleep(millis)
 
-  def playBlocking(noteNumbers: Seq[Int] = Vector(60),
-                   velocity: Int         = 60,
-                   duration: Long        = 300,
-                   spread:   Long        = 50,
-                   after:    Long        = 0,
-                   channel:  Int         = 0
+  def playBlocking(
+    noteNumbers: Seq[Int] = Vector(60),
+    velocity: Int         = 60,
+    duration: Long        = 300,
+    spread:   Long        = 50,
+    after:    Long        = 0,
+    channel:  Int         = 0
   ): Unit =
     delay(after)
     noteNumbers.foreach{ nbr =>
@@ -59,12 +59,13 @@ object Synth:
     delay(duration)
     noteNumbers.foreach(noteOff(_, channel))
 
-  def playConcurrently(noteNumbers: Seq[Int] = Vector(60),
-                       velocity: Int         = 60,
-                       duration: Long        = 300,
-                       spread:   Long        = 50,
-                       after:    Long        = 0,
-                       channel:  Int         = 0
+  def playConcurrently(
+    noteNumbers: Seq[Int] = Vector(60),
+    velocity: Int         = 60,
+    duration: Long        = 300,
+    spread:   Long        = 50,
+    after:    Long        = 0,
+    channel:  Int         = 0
   ): Unit =
     import scala.concurrent.ExecutionContext.Implicits.global
     scala.concurrent.Future {
