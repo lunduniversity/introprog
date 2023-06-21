@@ -690,7 +690,52 @@ Lat evaluering är en viktig princip inom funktionsprogrammering som möjliggör
 \end{Slide}
 
 
+\begin{Slide}{Be kompilatorn att varna vid initialiseringsproblem}
+\SlideFontSmall
+Initialisering i fel ordning kan ge oväntade överraskningar:
+\begin{REPLsmall}
+scala> { val b = a; val a = 42 }
+val b: Int = 0   // default-värdet för Int är noll och a har ännu inte fått värdet 42
+val a: Int = 42
 
+scala> :settings -Ysafe-init
+
+scala> { val b = a; val a = 42 }
+1 warning found
+-- Warning: ------------------------------------------
+1 |{ val b = a; val a = 42 }
+  |                 ^
+  |                 Access non-initialized value a.
+val b: Int = 0
+val a: Int = 42
+\end{REPLsmall}
+Med kompilator-optionen \code{-Ysafe-init} får du en välbehövlig varning. \\
+Skriv såhär, t.ex. i \code{project.scala}, om du vill ha denna option påslagen:
+\begin{CodeSmall}
+//> using option -Ysafe-init
+\end{CodeSmall}
+\end{Slide}
+
+\begin{Slide}{Be kompilatorn ge fler bra varningar}\SlideFontSmall
+Slå på mer utförliga meddelanden och varningar:
+\begin{CodeSmall}
+//> using option -unchecked -deprecation -Wunused:all -Wvalue-discard -Ysafe-init
+\end{CodeSmall}
+\begin{tabular}{l p{8.5cm}}
+\texttt{-unchecked} & Extra varningar vid flera fall av osäker kod. \\
+\texttt{-deprecation} & Förklaring vid användning av utgående funktioner. \\
+\texttt{-Wunused:all} & Varning om deklarationer ej används. \\
+\texttt{-Wvalue-discard} & Varning vid förlorat värde. \\
+\texttt{-Ysafe-init} & Varna vid användning av ännu ej initialiserade variabler. \\
+\end{tabular}
+
+\pause\vspace*{1em}
+Om du tycker vissa varningar är irriterande kan du slå av dem med \code{@annotation.nowarn} 
+\begin{CodeSmall}
+scala> { val b = a; @annotation.nowarn val a = 42 }
+\end{CodeSmall}
+  
+\end{Slide}
 
 \Subsection{Funktioner är objekt}
 
@@ -1067,7 +1112,7 @@ scala> val w = introprog.PixelWindow(300, 200, "hejsan")
 > scala-cli repl . --jar introprog.jar
 Welcome to Scala 3.1.3 (17.0.3, Java OpenJDK 64-Bit Server VM).
 Type in expressions for evaluation. Or try :help.
-                                                                                                                               
+
 scala> introprog.Dialog.show("hello introprog")
 \end{REPLsmall}
 \item Du kan istället låta \code{scala-cli} \Emph{automatiskt} ladda ner ett färdigt kodbibliotek som är publicerat på Maven Central och lägga det på classpath med optionen \code{--dep} som är en förkortning av \emph{dependency}. Notera antalet kolon i adressen till kodbiblioteket:
@@ -1075,7 +1120,7 @@ scala> introprog.Dialog.show("hello introprog")
 > scala-cli repl . --dep se.lth.cs::introprog:1.3.1
 Welcome to Scala 3.1.3 (17.0.3, Java OpenJDK 64-Bit Server VM).
 Type in expressions for evaluation. Or try :help.
-                                                                                                                               
+
 scala> introprog.Dialog.show("hello introprog")
 \end{REPLsmall}
 \end{itemize}

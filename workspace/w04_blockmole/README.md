@@ -67,3 +67,4 @@ Med hjälp av `//> using option` kan du ge optioner till Scala-kompilatorn. Här
 * `-deprecation` Förklaring vid användning av utgående funktioner.
 * `-Wunused:all` Varning om deklarationer ej används. 
 * `-Wvalue-discard` Varning vid förlorat värde.
+* `-Ysafe-init` Varna vid användning av ännu ej initialiserade variabler. 
