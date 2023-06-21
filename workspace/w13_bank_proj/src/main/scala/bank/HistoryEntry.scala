@@ -20,5 +20,7 @@ object HistoryEntry:
   def fromLogFormat(str: String): HistoryEntry =
     val xs = str.split(' ')
     val (date, event) = xs.splitAt(5)
-    HistoryEntry(Date.fromLogFormat(date.mkString(" ")),
-                 BankEvent.fromLogFormat(event.mkString(" ")))
+    HistoryEntry(
+      date = Date.fromLogFormat(date.mkString(" ")),
+      event = BankEvent.fromLogFormat(event.mkString(" "))
+    )
