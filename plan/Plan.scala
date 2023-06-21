@@ -73,7 +73,7 @@ trait Plan {
 //      | sbt tilde run ???här eller i vecka2???,
 
     Module("Klasser och datamodellering",
-      id = "classes", exercise = "classes", lab = "", contents = """
+      id = "classes", exercise = "classes", lab = "blockbattle0", contents = """
       | applikationsdomän, datamodell, objektorientering, klass, instans, 
       | Any, isInstanceOf, toString,
       | new, null, this,
@@ -85,7 +85,7 @@ trait Plan {
       """.stripTrim),
 
     Module("Mönster och felhantering",
-      id = "patterns", exercise = "patterns", lab = "blockbattle", contents = """
+      id = "patterns", exercise = "patterns", lab = "blockbattle1", contents = """
       | mönstermatchning, match, Option, throw, try, catch, Try, unapply, sealed,
       | flatten, flatMap, partiella funktioner, collect,
       | wildcard-mönster, variabelbindning i mönster, sekvens-wildcard, bokstavliga mönster,
@@ -187,7 +187,7 @@ trait Plan {
   }
 
   lazy val labNumOfWeek =
-    "Lab01,--,Lab02,Lab03,--,Lab04,Lab05,--,Lab06,Lab07,Lab08,Lab09,Projekt0,Projekt1,Munta,--,--"
+    "Lab01,--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab7,Lab08,Lab09,Lab10,Projekt0,Projekt1,Munta,--,--"
       .split(',').toVector
 
   lazy val labOfWeek = for (w <- 0 until labNumOfWeek.size) yield {
