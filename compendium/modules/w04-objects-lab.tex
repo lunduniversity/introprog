@@ -78,26 +78,22 @@ I mindre program fungerar det bra att samla alla funktioner i ett singelobjekt, 
 \begin{Code}
 package blockmole
 
-object Color {
+object Color:
   // Skapar olika färger som behövs i övriga moduler
-}
 
-object BlockWindow {
+
+object BlockWindow:
   // Har ett introprog.PixelWindow och ritar blockgrafik
-}
 
-object Mole { // Representerar en blockmullvad som kan gräva
+object Mole: // Representerar en blockmullvad som kan gräva
   def dig(): Unit = println("Här ska det grävas!")
-}
 
-object Main {
+object Main:
   def drawWorld(): Unit = println("Ska rita ut underjorden!")
 
-  def main(args: Array[String]): Unit = {
+  @main def run = 
     drawWorld()
     Mole.dig()
-  }
-}
 \end{Code}
 
 \noindent Skapa programskelettet ovan i filen \code{blockmole.scala} och se till att koden kompilerar utan fel och går att köra med utskrifter som förväntat.
@@ -113,13 +109,12 @@ Lägg in en importdeklaration med namnbytet direkt efter paketdeklarationen. Vi 
 \Subtask
 Skapa sedan nedan färger i objektet \code{Color}:
 \begin{Code}
-object Color {
+object Color:
   val black  = new JColor(  0,   0,   0)
   val mole   = new JColor( 51,  51,   0)
   val soil   = new JColor(153, 102,  51)
   val tunnel = new JColor(204, 153, 102)
   val grass  = new JColor( 25, 130,  35)
-}
 \end{Code}
 
 
@@ -142,9 +137,8 @@ object Color {
 
 För att testa fönstret, lägg till en enkel testritning genom att i proceduren \code{drawWorld} använda \code{BlockWindow.window}, till exempel:
 \begin{Code}
-  def drawWorld(): Unit = {
+  def drawWorld(): Unit = 
     BlockWindow.window.line(100, 10, 200, 20)
-  }
 \end{Code}
 Kompilera och kör och säkerställ att allt fungerar som förväntat.
 
@@ -167,11 +161,10 @@ Koordinatsystem i \code{BlockWindow} ska ha kvadratiska, \emph{stora} bildpunkte
 \begin{Code}
   type Pos = (Int, Int)
 
-  def block(pos: Pos)(color: JColor = JColor.gray): Unit = {
+  def block(pos: Pos)(color: JColor = JColor.gray): Unit = 
     val x = ??? //räkna ut blockets x-koordinat i pixelfönstret
     val y = ??? //räkna ut blockets y-koordinat i pixelfönstret
     window.fill(???)
-  }
 \end{Code}
 Säkerställ att koden kompilerar utan fel.
 
@@ -190,7 +183,7 @@ För att testa din procedur, anropa funktionen \code{BlockWindow.block} några g
 \Task \emph{Skapa rektangelprocedur och underjorden.} Du ska nu skriva en procedur med namnet \code{rectangle} som ritar en rektangel med hjälp av proceduren \code{block}. Sen ska du använda \code{rectangle} i \code{Main.drawWorld} för att rita upp mullvadens underjordiska värld.
 
 \Subtask
-Lägg till proceduren \code{rectangle} i grafikmodulen. Procedurhuvudet ska ha följande parametrar uppdelade i tre olika paramterlistor:
+Lägg till proceduren \code{rectangle} i grafikmodulen. Procedurhuvudet ska ha följande parametrar uppdelade i tre olika paramterlistor, samt returtyp \code{Unit}:
 \begin{Code}
 (leftTop: Pos)(size: (Int, Int))(color: JColor = JColor.gray)
 \end{Code}
@@ -200,11 +193,9 @@ Parametern \code{leftTop} anger blockkoordinaten för rektangelns övre vänstra
 Använd denna nästlade repetition för att rita ut rektangeln:
 
 \begin{Code}
-for (y <- ???) {
-	for (x <- ???) {
+for y <- ??? do
+	for x <- ??? do
 		block(x, y)(color)
-	}
-}
 \end{Code}
 
 \Subtask\Pen
@@ -215,10 +206,9 @@ I vilken ordning ritas blocken i rektangeln ut (lodrätt eller vågrätt)? Om du
 \Subtask Lägg följande kod i \code{Main.drawWorld} så att programmet ritar ut underjorden (det vill säga en massa jord där blockmullvaden kan gräva sina tunnlar) och även lite gräs.
 
 \begin{Code}
-def drawWorld(): Unit = {
+def drawWorld(): Unit = 
   BlockWindow.rectangle(0, 0)(size = (30, 4))(Color.grass)
   BlockWindow.rectangle(0, 4)(size = (30, 46))(Color.soil)
-}
 \end{Code}
 
 \Subtask Anropa \code{Main.drawWorld} i \code{Main.main} och testa att det fungerar. Om någon del av fönstret förblir svart istället för att få gräsfärg eller jordfärg, kontrollera att \code{block} och \code{rectangle} är korrekt implementerade.
@@ -232,14 +222,12 @@ Lägg till denna funktion i \code{BlockWindow}:
 \begin{Code}
   val maxWaitMillis = 10
 
-  def waitForKey(): String = {
+  def waitForKey(): String = 
     window.awaitEvent(maxWaitMillis)
-    while (window.lastEventType != PixelWindow.Event.KeyPressed) {
+    while window.lastEventType != PixelWindow.Event.KeyPressed do
       window.awaitEvent(maxWaitMillis) // skip other events
-    }
     println(s"KeyPressed: " + window.lastKey)
     window.lastKey
-  }
 \end{Code}
 \noindent Det finns olika sorters händelser som ett \code{PixelWindow} kan reagera på, till exempel tangenttryckningar och musklick.
 Funktionen som du precis lagt in väntar på en händelse i ditt \code{PixelWindow} med hjälp av (\code{window.awaitEvent}) ända tills det kommer en tangenttryckning (\code{KEY_EVENT}).
@@ -248,20 +236,19 @@ När det kommit en tangenttryckning anropas \code{window.lastKey} för att ta re
 \Subtask
 Utöka proceduren \code{Mole.dig} enligt nedan:
 \begin{Code}
-  def dig(): Unit = {
+  def dig(): Unit = 
     var x = BlockWindow.windowSize._1 / 2
     var y = BlockWindow.windowSize._2 / 2
     var quit = false
-    while (!quit) {
+    while !quit do
       BlockWindow.block(x, y)(Color.mole)
       val key = BlockWindow.waitForKey()
-      if      (key == "w") ???
-      else if (key == "a") ???
-      else if (key == "s") ???
-      else if (key == "d") ???
-      else if (key == "q") quit = true
-    }
-  }
+      if      key == "w" then ???
+      else if key == "a" then ???
+      else if key == "s" then ???
+      else if key == "d" then ???
+      else if key == "q" then quit = true
+    end while
 \end{Code}
 
 \Subtask Fyll i alla \code{???} så att \code{'w'} styr mullvaden ett steg uppåt, \code{'a'} ett steg åt vänster, \code{'s'} ett steg nedåt och \code{'d'} ett steg åt höger.
@@ -310,16 +297,15 @@ Låt mullvaden fortsätta gräva även om man inte trycker ned någon tangent. T
 Skapa en ny metod \code{BlockWindow.waitForKeyNonBlocking} som möjliggör tangentbordsavläsning som ej blockerar exekveringen enligt nedan:
 
 \begin{Code}
-  def waitForKeyNonBlocking(): String  = {
+  def waitForKeyNonBlocking(): String  = 
     import PixelWindow.Event.{KeyPressed, Undefined}
 
     window.awaitEvent(maxWaitMillis)
-    while (window.lastEventType != KeyPressed  &&
-           window.lastEventType != Undefined) {
-      window.awaitEvent(maxWaitMillis)
-    }
-    if (window.lastEventType == KeyPressed) window.lastKey else ""
-  }
+    while 
+      window.lastEventType != KeyPressed  &&
+      window.lastEventType != Undefined) 
+    do window.awaitEvent(maxWaitMillis)
+    if window.lastEventType == KeyPressed then window.lastKey else ""
 \end{Code}
 
 \Subtask
@@ -339,11 +325,11 @@ Skapa en ny metod \code{Mole.keepOnDigging} som från början är en kopia av me
 
 \item Anropa \code{waitForKeyNonBlocking} i stället för \code{waitForKey} och kolla efter knapptryckning enligt nedan kodskelett. Fyll i de saknade delarna så att blockmullvaden rör sig ett steg i rätt riktning i varje looprunda.
 \begin{Code}
-      if      (key == "w") { dy = -1; dx = 0 }
-      else if (key == "a") { ??? }
-      else if (key == "s") { ??? }
-      else if (key == "d") { ??? }
-      else if (key == "q") { quit = true }
+      if      key == "w" then { dy = -1; dx = 0 }
+      else if key == "a" then { ??? }
+      else if key == "s" then { ??? }
+      else if key == "d" then { ??? }
+      else if key == "q" then { quit = true }
       y += ???
       x += ???
 \end{Code}
@@ -379,15 +365,14 @@ Skapa en ny metod \code{Mole.keepOnDigging} som från början är en kopia av me
 
 %\begin{figure}
 \begin{Code}
-object Worm {
+object Worm:
   import BlockWindow.Pos
 
-  def nextRandomPos(): Pos = {
+  def nextRandomPos(): Pos = 
     import scala.util.Random.nextInt
     val x = nextInt(BlockWindow.windowSize._1)
     val y = nextInt(BlockWindow.windowSize._2 - 7) + 7
     (x, y)
-  }
 
   var pos = nextRandomPos()
 
@@ -400,15 +385,15 @@ object Worm {
   val teleportProbability = 0.02
 
   def randomTeleport(notHere: Pos): Unit =
-    if (math.random() < Worm.teleportProbability) {
+    if math.random() < Worm.teleportProbability then
       erase()
       while
         pos = nextRandomPos()
         pos == notHere
       do ()
       draw()
-    }
-}
+    
+end Worm
 \end{Code}
 %\end{figure}
 
