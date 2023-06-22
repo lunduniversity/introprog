@@ -435,22 +435,33 @@ Några viktiga skillnader:
 
 \Subsection{Fristående applikation}
 
-\ifkompendium\else
-\begin{SlideExtra}{Kompilering i terminalen}
-  Nu ska du en skriva kod i en editor, kompilera i terminalen och köra ditt program som en \Emph{fristående applikation}. Då behövs:
+\begin{Slide}{Kompilering i terminalen}
+  När du ska skriva kod i en editor, kompilera i terminalen och köra ditt program som en \Emph{fristående applikation}, så behövs: 
   \begin{itemize}
-    \item En editor, \Emph{VS Code} rekommenderas
+    \item En editor: \Emph{VS Code} med tillägget \Alert{Scala (Metals)}
     \item Körmiljön \Emph{OpenJDK} 
-    \item Scala-kompilatorn: direkt med \Alert{\texttt{scalac}} eller via \code{scala-cli}
+    \item Kommandoverktyg för terminalen: \Alert{\texttt{scala-cli}}
     \item Se instruktioner här: \url{http://cs.lth.se/pgk/verktyg}
+    \item Läs mer i Appendix C.
     \item Tips om du kör Windows: installera %\href{https://docs.microsoft.com/en-us/windows/terminal/get-started}
     {nya Windows Terminal}
 
   \end{itemize}
     Be om hjälp i \texttt{\#frågor-och-svar}-textkanalen på vår Discord-server eller fråga handledare på resurstid.
   
-\end{SlideExtra}
-\fi
+\end{Slide}
+
+\begin{Slide}{Scala Command Line Interface (CLI)}
+\begin{itemize}
+\item Utvecklingen av ett nytt kommandogränssnitt \Eng{Command Line Interface (CLI)} för Scala startades 2022 i ett öppenkällkodsprojekt som leds av Virtuslab. 
+\item Under 2023 ersätter \Alert{\texttt{scala-cli}} det gamla \Emph{\texttt{scala}}-kommandot.\footnote{I skrivande stund så har skiftet ännu inte skett. När det sker kan du ersätta alla förekomster av \code{scala-cli} med det kortare \code{scala}.}
+\item Läs mer i Appendix C och F, samt här: \url{https://scala-cli.virtuslab.org/}
+\item Du kan se vad Scala CLI kan göra via hjälp-optionen:
+\begin{REPLnonum}
+> scala-cli help
+\end{REPLnonum}
+\end{itemize}
+\end{Slide}
 
 \begin{Slide}{Ett minimalt fristående program i Scala}\SlideFontSmall
 Spara nedan Scala-kod i filen \code{hej.scala}:
@@ -463,16 +474,15 @@ Spara i filen \code{hej.scala}, kompilera och kör i terminalen:
 > cat hej.scala
 @main def run = println("Hej Scala!")
 
-> scalac hej.scala
-
-> ls
-'hej$package.class'  'hej$package$.class'  'hej$package.tasty'   
-hej.scala   run.class   run.tasty
-
-> scala run 
+> scala-cli run hej.scala 
 Hej Scala! 
 \end{REPL}
 
+Innan körning kompileras dina kodfiler. Du kan se maskinkoden här: 
+\begin{REPL}
+> ls .scala-build/*/classes/main
+'hej$package.class'  'hej$package$.class'  'hej$package.tasty'   run.class   run.tasty
+\end{REPL}
 \end{Slide}
 
 
@@ -511,10 +521,9 @@ object HelloScalaArgs:
       i = i + 1
 \end{Code}
 En primitiv \code{main}-metod har ej \code{@main} och måste vara i ett objekt. \\
-Kompilera och kör med namnet på objektet:
+Kompilera och kör med programargument efter \code{--}
 \begin{REPL}
-> scalac helloargs1.scala
-> scala HelloScalaArgs morot gurka tomat
+> scala-cli run helloargs1.scala -- morot gurka tomat
 morot
 gurka
 tomat
@@ -528,17 +537,16 @@ Skriv och spara nedan kod i filen \texttt{helloargs2.scala}
 > code helloargs2.scala
 \end{REPLnonum}
 \begin{Code}
-@main def hej(heltal: Int, resten: String*): Unit = 
+@main def hej(heltal: Int, resten: String*): Unit =  // notera * efter String
   for i <- 0 until heltal do println(resten(i))
 \end{Code}
 Med \code{@main} behövs inget objekt.\\
-Kompilera och kör med namnet på \code{@main}-funktionen:
+Kompilera och kör med programargument efter \code{--}
 \begin{REPL}
-> scalac helloargs2.scala
-> scala hej 2 morot gurka tomat
+> scala-cli run helloargs2.scala -- 2 morot gurka tomat
 morot
 gurka
-> scala hej aj morot gurka tomat
+> scala-cli run helloargs2.scala -- aj morot gurka tomat
 Illegal command line: java.lang.NumberFormatException: For input string: "aj"
 \end{REPL}
 Med \code{@main} genereras automatiskt en primitiv main som kollar att argumenten har rätt typ.
@@ -547,24 +555,26 @@ Med \code{@main} genereras automatiskt en primitiv main som kollar att argumente
 
 \begin{Slide}{För kännedom: Scala-\textbf{skript}}
 \begin{itemize}
+  \SlideFontSmall
   \item 
-\SlideFontSmall
-Scala-kod kan köras som ett \Emph{skript}.\footnote{\SlideFontTiny Vi kommer inte använda skript i kursen, som tyvärr ej kan inkludera flera kodfiler.
+Scala-kod kan köras som ett \Emph{skript}.\footnote{\SlideFontTiny En nackdel med Scala-skript är att de ej kan inkludera skript i andra kodfiler.
 }
-Ett skript kompileras varje gång innan det körs och maskinkoden sparas \emph{inte} som vid vanlig kompilering. 
+\item Ett skript finns i en enda fristående fil med ändelsen \code{.sc}
+\item Skript behöver inget huvudprogram. 
+\item Skript har automatiskt alla programargument i strängsekvensen \code{args}
 
 \begin{Code}
-// spara detta i filen 'myscript.scala'
-@main def Huvudprogram(args: String*) =
-  println("Hej alla mina argument:")
-  for arg <- args do println("Hej: " + arg)
+// spara detta i filen 'myscript.sc'
+println("Hej alla mina argument:")
+for a <- args do println(s"Hej: $a") 
 \end{Code}
-Inkludera \code{.scala} i filnamnet om du vill köra som skript.  
 \begin{REPLnonum}
-> scala myscript.scala ett två tre
+> scala-cli run myscript.sc -- ett två tre
+Hej alla mina argument:
+Hej: ett
+Hej: två
+Hej: tre
 \end{REPLnonum}
-\item
-Det är lätt hänt att av misstag skriva \code{scala Huvudprogram.scala}, när du egentligen vill köra ett redan kompilerat program. Då ska \emph{inte} filändelsen \code{.scala} anges.
 \end{itemize}
 \end{Slide}
 
@@ -940,15 +950,16 @@ rutnät
 
 
 
-\begin{Slide}{Filer med källkod och maskinkod}
+\begin{Slide}{Från källkod till maskinkod med JVM}
 \begin{tikzpicture}[node distance=1.5cm]
-\node (input) [startstop] {\texttt{Hello.scala}};
-\node(inptext) [right of=input, text width=5cm, scale=1.2,xshift=3.5cm]{Källkodsfil};
+\node (input) [startstop] {\texttt{hello.scala}};
+\node(inptext) [right of=input, text width=5.5cm, scale=1.2,xshift=3.5cm]{Källkodsfil};
 \node (compile) [process, below of=input] {\texttt{scalac}};
-\node (output) [startstop, below of=compile] {\texttt{Hello.class}};
-\node(outtext) [right of=output, text width=5cm, scale=1.2,xshift=3.5cm]{\texttt{.class}-fil med maskinkod};
+\node(comptext) [right of=compile, text width=7.2cm, scale=1.0,xshift=4.5cm]{Kompilatorn skapar \textit{abstrakt} maskinkod (s.k. bytekod)};
+\node (output) [startstop, below of=compile] {\texttt{hello.class}};
+\node(outtext) [right of=output, text width=5.5cm, scale=1.2,xshift=3.5cm]{\texttt{.class}-fil med bytekod};
 \node (jvm) [process, below of=output] {JVM};
-\node(jvmtext) [right of=jvm, text width=5.5cm, scale=0.8,xshift=4.5cm]{\textit{Java Virtual Machine}\\Översätter till maskinkod\\ som passar din specifika CPU\\medan programmet kör};
+\node(jvmtext) [right of=jvm, text width=7.2cm, scale=1.0,xshift=4.5cm]{\textit{Java Virtual Machine}\\Översätter bytekod till \textit{konkret}\\ maskinkod som passar din specifika CPU \textbf{under körning} (s.k. interpretering)};
 \draw [arrow] (input) -- (compile);
 \draw [arrow] (compile) -- (output);
 \draw [arrow] (output) -- (jvm);
@@ -959,28 +970,42 @@ rutnät
 
 
 \begin{Slide}{Paket}\SlideFontSmall
+
+\begin{Code}
+package greeting
+
+@main def run = println("Hello world!")
+\end{Code}
+
 \begin{itemize}
-\item Paket ger struktur åt kodfilerna. Bra om man har många kodfiler.
+\item Paket \Eng{package} ger struktur åt koden och skapar namnrymder. 
 
-\item Maskinkoden placeras av kompilatorn i kataloger enligt paketstrukturen.
+\item Paket kan vara \Emph{nästlade}: ofta finns paket i paket i paket.
 
+\item Paket är speciellt bra om man har mycket kod i många kodfiler. 
+
+\item Kompilatorn placerar maskinkoden i kataloger enligt paketstrukturen.%
+\footnote{\SlideFontTiny Katalogstrukturen för källkoden \emph{måste} i många andra språk, t.ex. Java, \emph{exakt motsvara paketstrukturen}, men detta är inte nödvändigt i Scala -- alla Scala-kodfiler kan ligga i samma katalog på toppnivå eller i underkatalog med valfritt namn, oavsett hur din kod använder \code{package}.} 
+\item[] Är du nyfiken, kolla underkataloger i \code{.scala-build}:
+\begin{REPLsmall}
+ls -R .scala-build
+\end{REPLsmall}
 
 \end{itemize}
 
-\vspace{1em}
-\begin{tikzpicture}[node distance=1.5cm,scale=0.8, every node/.style={transform shape}]
-\node (input) [startstop] {\texttt{greeting/Hello.scala}};
-\node(inptext) [right of=input, text width=4cm, scale=1.2,xshift=4.5cm]{\lstinline{package greeting}\\\lstinline{object Hello  ... }};
-\node (compile) [process, below of=input] {\texttt{scalac  greeting/Hello.scala}};
-\node (output) [startstop, below of=compile] {\texttt{greeting/Hello.class}};
-\node(outtext) [right of=output, text width=4cm, scale=1.2,xshift=4.5cm]{Paketens maskinkod hamnar i katalog med samma namn som paketnamnet};
-\node (jvm) [process, below of=output] {\texttt{scala greeting.Hello}};
-\draw [arrow] (input) -- (compile);
-\draw [arrow] (compile) -- (output);
-\draw [arrow] (output) -- (jvm);
-\end{tikzpicture}
+% \vspace{1em}
+% \begin{tikzpicture}[node distance=1.5cm,scale=0.8, every node/.style={transform shape}]
+% \node (input) [startstop] {\texttt{greeting/Hello.scala}};
+% \node(inptext) [right of=input, text width=4cm, scale=1.2,xshift=4.5cm]{\lstinline{package greeting}\\\lstinline{object Hello  ... }};
+% \node (compile) [process, below of=input] {\texttt{scalac  greeting/Hello.scala}};
+% \node (output) [startstop, below of=compile] {\texttt{greeting/Hello.class}};
+% \node(outtext) [right of=output, text width=4cm, scale=1.2,xshift=4.5cm]{Paketens maskinkod hamnar i katalog med samma namn som paketnamnet};
+% \node (jvm) [process, below of=output] {\texttt{scala greeting.Hello}};
+% \draw [arrow] (input) -- (compile);
+% \draw [arrow] (compile) -- (output);
+% \draw [arrow] (output) -- (jvm);
+% \end{tikzpicture}
 
-{\SlideFontTiny\vspace{1em} Katalogstrukturen för källkoden \Alert{måste} i många andra språk, t.ex. Java, motsvara paketstrukturen, men detta är inte nödvändigt i Scala.}
 \end{Slide}
 
 \begin{Slide}{Import}
@@ -1008,26 +1033,39 @@ Man säger att det importerade namnet hamnar \Emph{\textit{in scope}}.
 
 
 \begin{Slide}{Jar-filer}
-\texttt{jar}-filer liknar \texttt{zip}-filer och används för att packa ihop maskinkod i en enda fil för enkel distribution och körning.
+\begin{itemize}
+\item 
+\texttt{jar}-filer liknar \texttt{zip}-filer och används för att sammanföra många kompilerade kodfiler i \Emph{en komprimerad fil} för enkel distribution och körning.
+\item Du använder jar-filer med optionen \code{--jar}
+\begin{REPLsmall}
+scala-cli run . --jar introprog.jar
+\end{REPLsmall}
+\item Du kan skapa egna jar-filer med \texttt{scala-cli package} 
+\begin{REPLsmall}
+scala-cli package . --library --output myapp.jar
+scala-cli run --jar myapp.jar
+\end{REPLsmall}
+Läs mer om jar-filer i Appendix F.
+\end{itemize}
 
-\vspace{2em}
-\begin{tikzpicture}[node distance=1.5cm,scale=0.8, every node/.style={transform shape}]
-\node (input) [startstop] {\texttt{greeting/}};
-\node(inptext) [right of=input, text width=4cm, scale=1.2,xshift=4.5cm]{en katalog med filer};
-\node (jar) [process, below of=input]
-{\texttt{jar cvf minjarfil.jar greeting}};
+% \vspace{2em}
+% \begin{tikzpicture}[node distance=1.5cm,scale=0.8, every node/.style={transform shape}]
+% \node (input) [startstop] {\texttt{greeting/}};
+% \node(inptext) [right of=input, text width=4cm, scale=1.2,xshift=4.5cm]{en katalog med filer};
+% \node (jar) [process, below of=input]
+% {\texttt{jar cvf minjarfil.jar greeting}};
 
-\node (output) [startstop, below of=compile] {\texttt{minjarfil.jar}};
+% \node (output) [startstop, below of=compile] {\texttt{minjarfil.jar}};
 
-\node(outtext) [right of=output, text width=4cm, scale=1.2,xshift=4.5cm]{En jar-fil med alla filer inpackade};
+% \node(outtext) [right of=output, text width=4cm, scale=1.2,xshift=4.5cm]{En jar-fil med alla filer inpackade};
 
-\node (jvm) [process, below of=output] {\texttt{scala -cp minjarfil.jar}};
+% \node (jvm) [process, below of=output] {\texttt{scala -cp minjarfil.jar}};
 
-\node(outtextjvm) [right of=jvm, text width=4cm, scale=1.2,xshift=4.5cm]{Lägg jar-filen till \\ ''classpath''};
-\draw [arrow] (input) -- (jar);
-\draw [arrow] (jar) -- (output);
-\draw [arrow] (output) -- (jvm);
-\end{tikzpicture}
+% \node(outtextjvm) [right of=jvm, text width=4cm, scale=1.2,xshift=4.5cm]{Lägg jar-filen till \\ ''classpath''};
+% \draw [arrow] (input) -- (jar);
+% \draw [arrow] (jar) -- (output);
+% \draw [arrow] (output) -- (jvm);
+% \end{tikzpicture}
 \end{Slide}
 
 \Subsection{Dokumentation}
@@ -1061,7 +1099,7 @@ Scala CLI kan ta dokumentationskommentarerna i källkoden och skapa en webbsajt 
 
 \node (input) [startstop] {\texttt{.}};
 
-\node(inptext) [right of=input, text width=4cm, scale=1.2,xshift=4.5cm]{Din katalog med \texttt{.scala}-filer};
+\node(inptext) [right of=input, text width=4cm, scale=1.2,xshift=4.5cm]{Aktuell katalog med \texttt{.scala}-filer};
 
 \node (scaladoc) [process, below of=input]
 {\texttt{scala-cli doc .}};
