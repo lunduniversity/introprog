@@ -67,8 +67,8 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ),
 
     QuizID("quiz-w02-concepts") -> Vector(  //programs
-      "kompilerad     " -> "maskinkod sparad och kan köras igen utan kompilering",
-      "skript         " -> "maskinkod sparas ej utan skapas vid varje körning",
+      "kompilera      " -> "maskinkod sparas, kan köras igen utan omkompilering",
+      "skript         " -> "maskinkod sparas ej, skapas vid varje körning, filtyp .sc",
       "objekt         " -> "samlar variabler och funktioner",
       "@main          " -> "där exekveringen av kompilerat program startar",
       "programargument" -> "kan överföras via parametern args till main",
