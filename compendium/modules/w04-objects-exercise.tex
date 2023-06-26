@@ -404,18 +404,17 @@ och leta efter beskrivningen av klassens konstruktor.
 \Subtask Ladda ner senaste utgåvan av jar-filen med \code{introprog}-paketet här: \\\url{https://github.com/lunduniversity/introprog-scalalib/releases}
 \\ Spara filen som heter \LibJar~(eller senare version) på lämplig plats. 
 
-\Subtask Testa \code{PixelWindow} i REPL enligt nedan. Använd optionen \texttt{-cp} med jar-filens namn som argumentet. Optionen \code{cp} är en förkortning av \emph{classpath} och med den gör du så att maskinkoden för introprog-paketet blir synlig i REPL.  Skriv kod som ritar en kvadrat med sidan $100$ och som har sitt vänstra, övre hörn i punkten $(100,100)$, genom att fortsätta på nedan påbörjade kod (anpassa namnet på jar-filen efter den version som du laddat ned): 
+\Subtask Testa \code{PixelWindow} i REPL enligt nedan. Använd optionen \texttt{--jar} med jar-filens namn som argumentet. Skriv kod som ritar en kvadrat med sidan $100$ och som har sitt vänstra, övre hörn i punkten $(100,100)$, genom att fortsätta på nedan påbörjade kod (anpassa namnet på jar-filen efter den version som du laddat ned): 
 
 \begin{REPL}
-> scala -cp introprog_3-1.3.1.jar
-scala> val w = new introprog.PixelWindow(400,300,"HEJ")
+> scala-cli repl --jar introprog_3-1.3.1.jar
+scala> val w = introprog.PixelWindow(400,300,"HEJ")
 scala> w.line(100, 100, 200, 100)
 scala> w.line(200, 100, 200, 200)
 scala> // fortsätt så att en hel kvadrat ritas
 \end{REPL}
 
-\Subtask Studera dokumentationen av metoden \code{line} i \code{PixelWindow} här:\\ \url{http://cs.lth.se/pgk/api/}
-\\ Skriv sedan nedan program med en editor i filen \code{hello-window.scala} och fyll i de saknade delarna så att en röd kvadrat ritas ut.
+\Subtask Skriv nedan program med en editor i filen \code{hello-window.scala} och fyll i de saknade delarna så att en röd kvadrat ritas ut, med ledning av dokumentationen:\\\url{http://cs.lth.se/pgk/api/}
 
 \begin{Code}
 package hello
@@ -440,20 +439,41 @@ object Main:
     println("Rita kvadrat:")
     square(300,100)(50)
 \end{Code}
+Kör programmet med
+\begin{REPLnonum}
+> scala-cli run hello-window.scala --jar introprog_3-1.3.1.jar
+Found several main classes. Which would you like to run?
+[0] hello.Main
+[1] introprog.examples.TestBlockGame
+[2] introprog.examples.TestIO
+[3] introprog.examples.TestPixelWindow
+\end{REPLnonum}
+Det finns, förutom  ditt eget huvudprogram vid namn \code{hello.Main}, flera exempel-huvudprogram i paketet \code{introprog.examples}. När flera huvudprogram detekteras får du frågan vilket du vill köra. Välj ditt eget huvudprogram.
 
-\noindent
-När du kompilerar ditt program, behöver du lägga \LibJar~till classpath.
-När du sedan ska köra ditt program behöver du förutom  \LibJar~också lägga \emph{aktuell} katalog till classpath. Om man vill ha flera saker på classpath behövs en lista med sökvägar inom citationstecken och ett kolon som separator\footnote{Kolon används i Linux och macOS, medan Windows använder semikolon.}, till exempel \code{"sökväg1:sökväg2:sökväg3"}.
-Aktuell katalog (där katalogen \code{hello} med dina kompilerade byte-kodfiler finns) anges med en punkt.
+\Subtask Du kan slippa frågan om du explicit pekar ut huvudprogrammet genom att lägga till optionen \code{--main-class}. Prova det!
 
-Använd följande kommando (om du kör Windows så använd semikolon i stället för kolon). Du kan behöva anpassa jar-filens namn om det finns en senare version:
-\begin{REPL}
-> code .     #skapa filen hello-window.scala med koden ovan
-> scalac -cp introprog_3-1.3.1.jar hello-window.scala
-> ls hello
-> scala -cp "introprog_3-1.3.1.jar:." hello.Main
-\end{REPL}
-\noindent Du ska nu få upp ett fönster med en liten, röd kvadrat till höger i fönstret.
+\Subtask Du kan slippa själv ladda ner \code{introprog} med hjälp av optionen \code{--dep} vid körning i terminalen, vilket beskrivs i bibliotekets \code{README.md} på github här: \\\url{https://github.com/lunduniversity/introprog-scalalib} \\Prova det!
+
+\Subtask Du kan också lägga in beroendet inne i din kodfil med en magisk kommentar, vilket även det beskrivs i ovan nämna \code{README.md}. Prova det!
+
+
+% Nedan behövs inte med scala-cli men var nödvändigt med gamla scala och scalac och även java, javac, jar
+%Om man vill ha flera saker på classpath behövs en lista med sökvägar inom citationstecken och ett kolon som separator\footnote{Kolon används i Linux och macOS, medan Windows använder semikolon.}, till exempel \code{"sökväg1:sökväg2:sökväg3"}.
+%Aktuell katalog (där katalogen \code{hello} med dina kompilerade byte-kodfiler finns) anges med en punkt.
+%\noindent
+%När du kompilerar ditt program, behöver du lägga \LibJar~till classpath.
+%När du sedan ska köra ditt program behöver du förutom  \LibJar~också lägga \emph{aktuell} katalog till classpath. 
+
+% Använd följande kommando (om du kör Windows så använd semikolon i stället för kolon). Du kan behöva anpassa jar-filens namn om det finns en senare version:
+% \begin{REPL}
+% > code .     #skapa filen hello-window.scala med koden ovan
+% > scalac -cp introprog_3-1.3.1.jar hello-window.scala
+% > ls hello
+% > scala -cp "introprog_3-1.3.1.jar:." hello.Main
+% \end{REPL}
+% \noindent Du ska nu få upp ett fönster med en liten, röd kvadrat till höger i fönstret.
+
+
 
 
 \SOLUTION
@@ -475,11 +495,16 @@ val w1 = new introprog.PixelWindow()
 val w2 = new introprog.PixelWindow(100, 200, "Mitt fina nya fönster")
 \end{Code}
 
-\SubtaskSolved --
+\SubtaskSolved 
+Du kan även ladda ner senaste \code{introprog} så här:
+\begin{REPLnonum}
+curl -o introprog_3-1.3.1.jar -sLO https://fileadmin.cs.lth.se/introprog.jar 
+\end{REPLnonum}
+
 
 \SubtaskSolved
 \begin{REPL}
-> scala -cp introprog_3-1.3.1.jar
+> scala repl --jar introprog_3-1.3.1.jar
 scala> val w = new introprog.PixelWindow(400,300,"HEJ")
 scala> w.line(100, 100, 200, 100)
 scala> w.line(200, 100, 200, 200)
@@ -512,7 +537,22 @@ object Main:
 
 \end{Code}
 
+\SubtaskSolved 
+\begin{REPLnonum}
+> scala-cli run hello-window.scala --jar introprog_3-1.3.1.jar --main-class hello.Main
+\end{REPLnonum}
 
+\SubtaskSolved 
+\begin{REPLnonum}
+> scala-cli run hello-window.scala --dep se.lth.cs::introprog:1.3.1 --main-class hello.Main
+\end{REPLnonum}
+
+
+\SubtaskSolved 
+\begin{Code}
+//> using scala 3.3
+//> using lib se.lth.cs::introprog:1.3.1
+\end{Code}
 \QUESTEND
 
 
@@ -555,7 +595,7 @@ object Color:
 \end{minipage}
 
 \begin{REPL}
-> scala -cp introprog_3-1.2.0.jar -repl
+> scala-cli repl --dep se.lth.cs::introprog:1.3.1
 scala> val w = new introprog.PixelWindow(400,300,"Tre nyanser av brunt")
 scala> type Pt = (Int, Int)
 scala> var color = java.awt.Color.red
@@ -655,10 +695,10 @@ object Main:
 
 \Subtask Via dokumentationen för av singelobjektet \code{introprog.examples.TestPixelWindow} kan du komma åt koden som implementerar objektet genom att klicka på länken \code{Source} ovanför sökrutan. Vilken rad i huvudprogrammet i \code{main}-metoden tar hand om fallet att en knappnedtryckningshändelse har inträffat?
 
-\Subtask Testa huvudprogrammet i \code{TestPixelWindow} med följande kommando där första argumentet lägger \code{introprog}-paketet på classpath och andra argumentet pekar ut vilken klass som innehåller den \code{main}-metod som ska köras.:
-\begin{REPLnonum}
-> scala -cp introprog_3-1.2.0.jar introprog.examples.TestPixelWindow
-\end{REPLnonum}
+\Subtask Kör med \texttt{scala-cli run .} (där punkten står för aktuell katalog) huvudprogrammet i \code{TestPixelWindow} med optionerna\\
+\texttt{-{}-main-class introprog.examples.TestPixelWindow} och \\
+\texttt{-{}-dep se.lth.cs::introprog:1.3.1} 
+
 Ett testfönster öppnas när \code{main}-metoden körs. Klicka i fönstret på olika ställen och tryck på olika tangenter och observera vad som skrivs ut. Vad skrivs ut när pil-upp-tangenten trycks ned och släpps upp?
 
 \Subtask Med inspiration från implementationen av \code{TestPixelWindow}, skriv ett program som ritar gröna linjer mellan positionerna för varje musknapp-nedtryck och musknapp-uppsläpp som användaren gör. \\\emph{Tips:} När musknappen trycks ned så spara undan positionen i en variabel med namnet \code{start}. När musknappen släpps upp, rita linjen från den sparade positionen till \code{w.lastMousePos}.
@@ -900,7 +940,7 @@ val res10: (Int, Double, (Double, Double)) = (3,2.5,(0.0,5.0))
 
 \Task \what~
 
-\Subtask Koden nedan ligger i filen \code{paket.scala}. Rita en bild av katalogstrukturen som skapas i aktuellt bibliotek när nedan kod kompileras med: \code{scalac paket.scala}
+\Subtask Koden nedan ligger i filen \code{paket.scala}. Rita en bild av katalogstrukturen som skapas i aktuellt bibliotek i underkatalogen \code{main} i \code{.scala-build} när nedan kod kompileras med: \code{scala-cli compile paket.scala}
 \begin{Code}
 package gurka.tomat.banan
 
@@ -938,22 +978,23 @@ object Main:
 
 \begin{REPL}
 > code paket.scala
-> scalac paket.scala
+> scala-cli paket.scala
 > find . -type d         # linuxkommando som listar alla subkataloger
-.
-./gurka
-./gurka/tomat
-./gurka/tomat/banan
-./gurka/tomat/banan/p1
-./gurka/tomat/banan/p1/p11
-./gurka/tomat/banan/p1/p12
-./gurka/tomat/banan/p2
-./gurka/tomat/banan/p2/p21
+./.scala-build/project_103be31561-3d0d386400/classes
+./.scala-build/project_103be31561-3d0d386400/classes/main
+./.scala-build/project_103be31561-3d0d386400/classes/main/gurka
+./.scala-build/project_103be31561-3d0d386400/classes/main/gurka/tomat
+./.scala-build/project_103be31561-3d0d386400/classes/main/gurka/tomat/banan
+./.scala-build/project_103be31561-3d0d386400/classes/main/gurka/tomat/banan/p2
+./.scala-build/project_103be31561-3d0d386400/classes/main/gurka/tomat/banan/p2/p21
+./.scala-build/project_103be31561-3d0d386400/classes/main/gurka/tomat/banan/p1
+./.scala-build/project_103be31561-3d0d386400/classes/main/gurka/tomat/banan/p1/p12
+./.scala-build/project_103be31561-3d0d386400/classes/main/gurka/tomat/banan/p1/p11
 \end{REPL}
 
 \SubtaskSolved
 \begin{REPL}
-> scala gurka.tomat.banan.Main
+> scala-cli run paket.scala --main-class gurka.tomat.banan.Main
 Hej paket p1.p11!
 Hej paket p1.p12!
 Hej paket p2.p21!
@@ -1255,7 +1296,7 @@ extension (i: Int)
 % scala> välj()
 % \end{REPL}
 \begin{REPL}
-> scala -cp introprog_3-1.3.1.jar
+> scala-cli repl --dep se.lth.cs::introprog:1.3.1
 scala> introprog.Dialog.selectColor()
 \end{REPL}
 
@@ -1345,11 +1386,11 @@ val res4: String = Påse
 
 \Task\Uberkurs  \what~
 
-\Subtask Skriv kommandot \code{jar} i terminalen och undersök vad det finns för optioner. Se speciellt ''Example 1.'' i hjälputskriften. Vilket kommando ska du använda för att packa ihop flera filer i en enda jar-fil? Notera att man (konstigt nog) inte ska ha streck före optionerna när man använder kommandot \code{jar} enligt exempel 1.
+\Subtask Skriv kommandot \code{jar} i terminalen och undersök med \code{jar --help} vad det finns för optioner. Vilka optioner ska du använda för skapa \Eng{create} en jar i en namngiven fil \Eng{file} med utförlig \Eng{verbose} utskrift om vad som händer? 
 
-\Subtask Skapa med en editor i filen \code{hello.scala} ett enkelt program som skriver ut \texttt{"Hello package!"} eller liknande. Koden ska ligga i paketet \code{hello} och innehålla ett object \code{Main} med en \code{main}-metod.
+\Subtask Skapa med en editor i filen \code{hello.scala} ett enkelt program som skriver ut \texttt{"Hello package!"} eller liknande. Koden ska ligga i paketet \code{hello} och innehålla ett object \code{Main} med en \code{main}-metod. Kompilera din fil med optionen \code{--destination .} så att din kod hamnar i aktuell katalog i stället för i \code{.scala-build}.
 
-\Subtask Skriv kommando i terminalen som förpackar koden i en jar-fil med namnet \code{my.jar} och kör igång REPL med jar-filen på classpath. Anropa din \code{main}-funktion i REPL genom att ange sökvägen \textit{\texttt{paketnamn.objektnamn.metodnamn}} med en tom array som argument.
+\Subtask Skriv ett jar-kommando i terminalen som förpackar koden i en jar-fil med namnet \code{my.jar} och kör igång REPL med jar-filen på classpath. Anropa din \code{main}-funktion i REPL genom att ange sökvägen \textit{\texttt{paketnamn.objektnamn.metodnamn}} med en tom array som argument.
 
 \Subtask Med vilket kommando kan du köra det kompilerade och jar-förpackade programmet direkt i terminalen (alltså utan att dra igång REPL)?
 
@@ -1359,7 +1400,7 @@ val res4: String = Påse
 
 \SubtaskSolved
 
-\texttt{jar cvf \textit{<namn på skapad jar-fil> <namn på det som ska packas>}}
+\texttt{jar --create --verbose --file \textit{<namn på skapad jar-fil> <namn på det som ska packas>}}
 
 \SubtaskSolved
 \begin{Code}
@@ -1369,18 +1410,22 @@ object Main:
   def main(args: Array[String]): Unit = println("Hello package!")
 \end{Code}
 
+\begin{REPLnonum}
+scala-cli compile hello.scala --destination .
+\end{REPLnonum}
+
 \SubtaskSolved
 \begin{REPL}
-> scalac hello.scala
-> jar cvf my.jar hello
+> jar -c -v -f my.jar hello
 > ls
-> scala -cp my.jar
+> scala-cli repl --jar my.jar
 scala> hello.Main.main(Array())
+Hello package!
 \end{REPL}
 
 \SubtaskSolved
 \begin{REPL}
-> scala -cp my.jar hello.Main
+> scala-cli run --jar my.jar  --main-class hello.Main
 \end{REPL}
 
 \QUESTEND
