@@ -1,9 +1,4 @@
-/** An object with many useful input/output methods.
-  * Run as scala script: `scala mio.scala`
-  * Compile it with `scalac mio.scala` to put it on your classpath,
-  * or just load the whole source file in the REPL: 
-  * `:load util/mio.scala` where `util` is the path to `mio.scala`
-  */
+/** An object with many useful input/output methods. */
 object mio:
   import java.nio.file.{Path, Paths, Files}
   import java.nio.charset.StandardCharsets.UTF_8

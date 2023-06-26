@@ -7,12 +7,6 @@
    $ sbt "run --all"
    $ sbt "run --init w07"
 
-   Or compile and run manually in terminal:
-   $ scalac solucheck.scala
-   $ scala solucheck w01 
-   $ scala solucheck --all
-   $ scala solucheck -- init w07  
-
 */
 
 object solucheck {

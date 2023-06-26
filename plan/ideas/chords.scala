@@ -1,6 +1,3 @@
-// compile with scalac chords.scala
-// run with scala chords.Main
-
 package chords
 
 import scala.util.{Try, Success, Failure}

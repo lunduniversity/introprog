@@ -1,6 +1,3 @@
-// sunserver.scala
-// compile in terminal with:   scalac sunserver.scala
-// run in terminal with:       scala sunserver.start
 package sunserver
 
 import java.io.OutputStream
