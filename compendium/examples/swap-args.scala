@@ -1,8 +1,7 @@
-@main
-def swapFirstLastArg(args: String*): Unit =
+@main def swapFirstLastArg(args: String*): Unit =
   val xs = args.toArray
-  if xs.size > 1 then
+  if xs.length > 1 then
     val temp = xs(0)
-    xs(0) = xs(xs.size - 1)
-    xs(xs.size - 1) = temp
+    xs(0) = xs(xs.length - 1)
+    xs(xs.length - 1) = temp
   println(xs.mkString(" "))

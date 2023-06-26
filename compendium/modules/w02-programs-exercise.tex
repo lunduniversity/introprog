@@ -12,7 +12,7 @@
 \begin{Preparations}
 \item \StudyTheory{02}
 \item Bekanta dig med grundläggande terminalkommandon, se appendix~\ref{appendix:terminal}.
-\item Bekanta dig med den editor du vill använda, se appendix~\ref{appendix:compile}.
+\item Bekanta dig med VS Code, se appendix~\ref{appendix:compile}.
 \item Hämta given kod via \href{https://github.com/lunduniversity/introprog/tree/master/workspace/}{kursen github-plats} eller via hemsidan under \href{https://cs.lth.se/pgk/download/}{Download}.
 
 \end{Preparations}
@@ -22,12 +22,6 @@
 \ExerciseSolution{\ExeWeekTWO}
 
 \fi
-
-
-% TODO fundera på detta:
-% terminalkommando
-% scalac -> hello world; scala som script; javac
-% paket, import, jar, main,
 
 
 
@@ -97,11 +91,6 @@
 
 
 
-
-
-
-
-
 \WHAT{Skapa och köra ett Scala-skript.}
 
 \QUESTBEGIN
@@ -111,24 +100,24 @@
 \Subtask Skapa en fil med namn \texttt{sum.scala} i katalogen \code{hello} som du skapade i föregående uppgift med hjälp av en editor, t.ex. VS \code{code}.
 \begin{REPLnonum}
 > cd hello
-> code sum.scala
+> code sum.sc
 \end{REPLnonum}
 
 \noindent Filen ska innehålla följande rader:
-\scalainputlisting{examples/sum.scala}
+\scalainputlisting{examples/sum.sc}
 
-\noindent Spara filen och kör kommandot \code{scala sum.scala} i terminalen:
+\noindent Spara filen och kör kommandot \code{scala-cli run sum.sc} i terminalen:
 \begin{REPLnonum}
-> scala sum.scala
+> scala-cli run sum.sc
 \end{REPLnonum}
 
 \noindent Vad blir summan av de $1000$ första talen?
 
-\Subtask Ändra i filen \code{sum.scala} så att högerparentesen på sista raden saknas. Spara filen (Ctrl+S) och kör skriptfilen igen i terminalen (pil-upp). Hur lyder felmeddelandet? Är det ett körtidsfel eller ett kompileringsfel?
+\Subtask Ändra i filen \code{sum.sc} så att högerparentesen på sista raden saknas. Spara filen (Ctrl+S) och kör skriptfilen igen i terminalen (pil-upp). Hur lyder felmeddelandet? Är det ett körtidsfel eller ett kompileringsfel?
 
-\Subtask Ändra i \code{sum.scala} så att det i stället för \code{1000} står \code{args(0).toInt} efter \code{val n =} och spara och kör om ditt program med argumentet 5001 så här:
+\Subtask Ändra i \code{sum.sc} så att det i stället för \code{1000} står \code{args(0).toInt} efter \code{val n =} och spara och kör om ditt program med argumentet 5001 så här:
 \begin{REPL}
-> scala sum.scala 5001
+> scala-cli run sum.sc -- 5001
 \end{REPL}
 \noindent Vad blir summan av de $5001$ första talen?
 
@@ -147,11 +136,9 @@ Summan av de 1000 första talen är: 500500
 
 \SubtaskSolved  Filen ska se ut så här:
 \begin{Code}
-@main
-def sum(args: String*): Unit =
-  val n = args(0).toInt
-  val summa = (1 to n).sum
-  println(s"Summan av de $n första talen är: $summa")
+val n = args(0).toInt
+val summa = (1 to n).sum
+println(s"Summan av de $n första talen är: $summa")
 \end{Code}
 
 Utskriften blir så här:
@@ -159,11 +146,13 @@ Utskriften blir så här:
 Summan av de 5001 första talen är: 12507501
 \end{REPL}
 
-\SubtaskSolved Körtidsfelet blir: \code{java.lang.IndexOutOfBoundsException: 0}\\(Anledningen är att arrayen \code{args} blir tom om programargument saknas och platsen med index $0$ därmed inte finns.)
+\SubtaskSolved Körtidsfelet blir: 
+\begin{REPLnonum}
+java.lang.ArrayIndexOutOfBoundsException: Index 0 out of bounds for length 0
+\end{REPLnonum}
+Eftersom rrayen \code{args} är tom om programargument saknas så finns ej platsen med index $0$.
 
 \QUESTEND
-
-
 
 
 
@@ -180,26 +169,23 @@ Skriv nedan kod i filen:
 
 \scalainputlisting{examples/hello.scala}
 
-\Subtask Kompilera med \code{scalac hello.scala} och kör koden med \code{scala run}. Notera namnet på funktionen (run) i anropet. Vad heter filerna som kompilatorn skapar?
+\Subtask Kompilera med \code{scala-cli compile hello.scala}. Vad heter filerna som kompilatorn skapar?
 \begin{REPLnonum}
-> scalac hello.scala
-> ls
-> scala run
+> scala-cli compile hello.scala
+> ls .scala-build/project*/classes/main/ 
 \end{REPLnonum}
 
 \Subtask Hur ska du ändra i din kod så att kompilatorn ger följande felmeddelande: \\
 \texttt{Syntax Error: '\}' expected, but eof found}?
 
-\Subtask I Scala 3 är parenteser ibland frivilliga och koden struktureras istället i sammanhängande block med hjälp av indenteringar. Det går bra att byta mellan stilarna i samma fil om det gör koden mer lättläst.
+\Subtask I Scala är klammerparenteser valfria \Eng{optional braces} och koden struktureras istället i sammanhängande block med hjälp av indenteringar\footnote{Valfria klammerparenteser och signifikant indentering kom med nya Scala 3. I gamla Scala 2 var klammerparenteser nödvändiga om flera satser ska kombineras och indenteringen påverkade inte betydelsen.}. Det går bra att byta mellan stilarna i samma fil om du tycker detta gör koden mer lättläst.
 
 Ovan kod kan skrivas:
 
 \scalainputlisting{examples/hello-indent.scala}
 Vad händer om du tar bort indenteringen på den sista raden?
 
-\Subtask Varför behövs \code{@main}-annoteringen?
-
-\Subtask Vilket alternativ går snabbast att köra igång, ett skript eller en kompilerad applikation? Varför? Vilket alternativ kör snabbast när väl exekveringen är igång?
+\Subtask Vad betyder \code{@main}-annoteringen?
 
 
 \SOLUTION
@@ -207,28 +193,30 @@ Vad händer om du tar bort indenteringen på den sista raden?
 
 \TaskSolved \what
 
+\SubtaskSolved  Kompilatorn har skapat 5 filer i underkataloger till \code{.scala-build} som heter:
+\begin{REPLnonum}
+'hello$package.class'  'hello$package$.class'  'hello$package.tasty'
+run.class   run.tasty
+\end{REPLnonum}
 
-\SubtaskSolved  Filerna som kompilatorn skapat heter \code{hello$package$.class}, \code{hello$package.class}, \code{hello$package.tasty}, \code{run.class} och \code{run.tasty}.
+\SubtaskSolved  Felmeddelandet får du om du tar bort den sista krullparentesen. \texttt{eof} i felmeddelandet står för end-of-file. Detta felmeddelande är vanligt vid oparade parenteser, men kompilatorn har ofta extra svårt att ge bra felmeddelande om en av parenteserna i ett parentespar saknas och det kan hända att den pekar ut felaktig rad för positionen där det som saknas borde stå.
 
-\SubtaskSolved  Felmeddelandet får du om du tar bort den sista krullparentesen. \texttt{eof} i felmeddelandet står för end-of-file och dyker ofta upp vid oparade parenteser.
+\SubtaskSolved  \texttt{Syntax Error: Expected a toplevel definition}. Utan klammerparenteser så är det indenteringarna som bestämmer vilka delar av koden som hör samman. Om du tar bort indenteringen på den sista raden med utskrift-satsen så tolkar kompilatorn detta som att denna ligger \emph{utanför} main-funktionen och du får ett felmeddelande eftersom det inte är tillåtet att ha ensamma satser på toppnivå. (Det går dock bra att ha ensamma satser i ett skript med \code{.sc} i slutet av namnet på kodfilen. )
 
-\SubtaskSolved  \texttt{Syntax Error: Expected a toplevel definition}. Utan parenteser är det indenteringarna som bestämmer vilka delar av koden som hör samman. När vi tar bort indenteringen på den sista raden tolkas satsen ligga utanför funktionen och vi får felmeddelande.
+\SubtaskSolved Annoteringen \code{@main} berättar för kompilatorn att funktionen är ett huvudprogram kan utgöra en startpunkt för exekveringen. 
 
-\SubtaskSolved \code{@main} möjliggör kompilering och exekvering av ett program utan ett objekt. Den annoterar metoden med vilken exekveringen av programmet ska starta.
+Under huven skapar kompilatorn ett objekt med samma namn som ditt huvudprogram. I det objektet genererar kompilatorn i sin tur 
+en metod med namnet \code{main} som tar en sträng-array som parameter och har returtypen \code{Unit}. Ett kompilerat program måste ha minst ett objekt med exakt en sådan main-metod
+eftersom exekveringsmiljön JVM förutsätter detta och anropar en sådan main-metoden med en sträng-array innehållande eventuella programargument när exekveringen startar.
 
-Under huven skapar kompilatorn ett objekt med samma namn som metoden med
-en primitiv main. Ett kompilerat program måste ha ett objekt med en main-metod
-eftersom exekveringsmiljön JVM förutsätter detta och anropar main-metoden när
-exekveringen startar.
+Ett alternativ till \code{@main} är att definiera en s.k. \emph{primitiv} main-metod i ett singelobjekt. (Detta är nödvändigt i gamla Scala 2, innan den enklare \code{@main}.annoteringen kom i Scala 3.)
 
-Ett alternativ till \code{@main} som är kompatibelt med Scala 2 är att direkt definiera en primitiv main-metod i ett objekt.
-
-\SubtaskSolved
-  Det går snabbare att köra i gång ett kompilerat program eftersom maskinkoden är sparad i en fil som kan köras igång direkt.  Ett kompilerat program kan bestå av många filer som samkompileras.
-
-  När ett skript kör kompileras koden i skriptfilen före \emph{varje} körning och maskinkoden sparas inte mellan körningarna. Ett skript består bara av en enda text-fil som körs från början.
-
-  När väl exekveringen är igång sker exekveringen av maskinkoden exakt lika snabbt oberoende av om koden är genererad ur ett skript eller en förkompilerad app.
+\begin{Code}
+object Hello:
+  def main(args: Array[String]): Unit = 
+    val message = "Hello world!"
+    println(message)
+\end{Code}
 
 
 \QUESTEND
@@ -375,16 +363,21 @@ Ett alternativ till \code{@main} som är kompatibelt med Scala 2 är att direkt 
 Exempel på körning i terminalen:
 \begin{REPL}
 > code sum-min-max.scala
-> scalac sum-min-max.scala
-> scala sumMinMax 1 2 42 3 4
+> scala-cli run sum-min-max.scala -- 1 2 42 3 4
 52 1 42
 \end{REPL}
+Vad blir det för felmeddelande om du ger argumentet \code{hej} när ett heltal förväntas? 
 
 \SOLUTION
 
 \TaskSolved \what~
 
 \scalainputlisting{examples/sum-min-max.scala}
+
+\begin{REPLnonum}
+> scala-cli run sum-min-max.scala -- hej
+Illegal command line: java.lang.NumberFormatException: For input string: "hej"
+\end{REPLnonum}
 
 \QUESTEND
 
@@ -429,9 +422,13 @@ Kopiera värdet från y till x.
 Kopiera värdet från temp till y.
 \end{Code}
 
+
 \SubtaskSolved
+
+Du behöver deklarera en temporär variabel där du kan spara undan ett av värdena, så det inte skrivs över vid första tilldelningen.
+
 \begin{Code}
-var temp = x
+val temp = x
 x = y
 y = temp
 \end{Code}
@@ -445,14 +442,13 @@ y = temp
 
 \QUESTBEGIN
 
-\Task \what~Skriva ett program som byter plats på första och sista elementet i parametern \code{args}. Bytet ska bara ske om det är minst två element i \code{args}. Oavsett om förändring skedde eller ej ska \code{args} sedan skrivas ut med blanktecken mellan argumenten.
-  \emph{Tips:} Du kan komma åt sista elementet med \code{args(args.size - 1)}
+\Task \what~Skriv ett program som byter plats på första och sista elementet i parametern \code{args}. Bytet ska bara ske om det är minst två element i \code{args}. Oavsett om förändring skedde eller ej ska \code{args} sedan skrivas ut med blanktecken mellan argumenten.
+  \emph{Tips:} Du kan komma åt sista elementet med \code{args(args.length - 1)}
 
 Exempel på körning i terminalen:
 \begin{REPL}
 > code swap-args.scala
-> scalac swap-args.scala
-> scala swapFirstLastArg hej alla barn
+> scala-cli run swap-args.scala -- hej alla barn
 barn alla hej
 \end{REPL}
 
@@ -517,8 +513,7 @@ barn alla hej
 \Subtask Skapa med hjälp av en editor filen \code{sumn.scala}. Implementera algoritmen SUM enligt den rättade pseudokoden och placera implementationen i en \code{@main}-annoterad metod med namnet \code{sumn}. Du kan skapa indata \code{n} till algoritmen med denna deklaration i början av din metod: \\ \code{val n = args(0).toInt} \\eller direkt ha \code{n} som parameter till metoden. \\ Vad ger applikationen för utskrift om du kör den med argumentet 8888?
 
 \begin{REPLnonum}
-> scalac sumn.scala
-> scala sumn 8888
+scala-cli sumn.scala -- 8888
 \end{REPLnonum}
 
 \noindent Kontrollera att din implementation räknar rätt genom att jämföra svaret med detta uttrycks värde, evaluerat i Scala REPL:
@@ -614,13 +609,12 @@ Såhär kan en implementation se ut:
 \Subtask Implementera algoritmen MAX (utan bugg) som en Scala-applikation. Tips:
 \begin{itemize}[noitemsep, nolistsep]
 \item Det minsta \code{Int}-värdet som någonsin kan uppkomma: \code{Int.MinValue}
-\item Antalet element i $args$ ges av: \code{args.size}
+\item Antalet element i $args$ ges av: \code{args.length} eller \code{args.size}
 \end{itemize}
 
 \begin{REPL}
 > code maxn.scala
-> scalac maxn.scala
-> scala maxn 7 42 1 -5 9
+> scala-cli maxn.scala -- 7 42 1 -5 9
 42
 \end{REPL}
 
@@ -1189,7 +1183,7 @@ object Game:
 	val choices = Vector("Sten", "Påse", "Sax")
 	
 	def printChoices(): Unit =
-	  for i <- 1 to choices.size do println(s"$i: ${choices(i - 1)}")
+    for i <- 1 to choices.size do println(s"$i: ${choices(i - 1)}")
 	
 	def userChoice(): Int =
 		printChoices()
@@ -1372,11 +1366,13 @@ Skapa en fil plusxy.scala med:
 \begin{Code}
 @main def plusxy(x: Int, y: Int) = x + y
 \end{Code}
-Kompilera programmet med \code{scalac plusxy.scala}. Notera vilka filer kompilatorn har skapat med \code{ls}. Med kommandot \code{javap -v 'plusxy$package$.class'} kan du undersöka byte-koden direkt i terminalen.
+Kompilera programmet med 
+\begin{REPLnonum}
+scala-cli compile plusxy.scala
+\end{REPLnonum} 
+Navigera med \code{cd .scala-build/} och vidare ner med \code{ls} och \code{cd} så djupt du kan komma i katalogstrukturen tills du befinner dig i katalogen \code{main}. Notera vilka filer kompilatorn har skapat med \code{ls}. Med kommandot \code{javap -v 'plusxy$package$.class'} kan du undersöka byte-koden direkt i terminalen.
 \begin{REPL}
-> scalac plusxy.scala
-> ls
-> javap -v 'plusxy$package$.class'
+javap -v 'plusxy$package$.class'
 \end{REPL}
 
 \Subtask Leta upp raden \code{public int plusxy(int, int);} och studera koden efter \code{Code:} och försök gissa vilken instruktion som utför själva additionen.
@@ -1449,16 +1445,16 @@ public int plusxyz(int, int, int);
 
 
 
-\WHAT{Skillnaden mellan krullpareneteser och vanliga parenteser}
+% \WHAT{Skillnaden mellan krullpareneteser och vanliga parenteser}
 
-\QUESTBEGIN
+% \QUESTBEGIN
 
-\Task  \what~ Läs om krullparenteser och vanliga parenteser på stack overflow: \\ \href{http://stackoverflow.com/questions/4386127/what-is-the-formal-difference-in-scala-between-braces-and-parentheses-and-when}{stackoverflow.com/questions/4386127/what-is-the-formal-difference-in-scala-between-braces-and-parentheses-and-when} och prova själv i REPL hur du kan blanda dessa olika slags parenteser på olika vis.
+% \Task  \what~ Läs om krullparenteser och vanliga parenteser på stack overflow: \\ \href{http://stackoverflow.com/questions/4386127/what-is-the-formal-difference-in-scala-between-braces-and-parentheses-and-when}{stackoverflow.com/questions/4386127/what-is-the-formal-difference-in-scala-between-braces-and-parentheses-and-when} och prova själv i REPL hur du kan blanda dessa olika slags parenteser på olika vis.
 
-\SOLUTION
+% \SOLUTION
 
-\TaskSolved \what~
+% \TaskSolved \what~
 
-\SubtaskSolved Prova själv i REPL.
+% \SubtaskSolved Prova själv i REPL.
 
-\QUESTEND
+% \QUESTEND

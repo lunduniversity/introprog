@@ -1,4 +1,3 @@
-@main
-def run(): Unit =
+@main def run(): Unit =
   val message = "Hello world!"
   println(message)
