@@ -156,6 +156,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "slumptalsfrö      " -> "ger återupprepningsbar sekvens av pseudoslumptal",
       "anonym funktion   " -> "funktion utan namn; kallas även lambda",
       "rekursiv funktion " -> "en funktion som anropar sig själv",
+      "stack trace"        -> "lista anropskedja vid körtidsfel",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
