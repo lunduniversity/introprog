@@ -95,7 +95,7 @@
 | skyddad medlem      | är endast synlig i subtyper |
 | slumptalsfrö        | ger återupprepningsbar sekvens av pseudoslumptal |
 | sortering           | algoritm som ordnar element i en viss ordning |
-| stack trace         | anropskedja skrivs ut efter körtidsfel |
+| stack trace         | lista anropskedja vid körtidsfel |
 | sträng              | en sekvens av tecken |
 | subtyp              | en typ som är mer specifik |
 | supertyp            | en typ som är mer generell |
