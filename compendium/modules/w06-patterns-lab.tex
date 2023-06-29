@@ -156,13 +156,15 @@ Du ska implementera minst ett (gärna flera) av dessa krav:
 
  \item \textbf{Dela upp din kod i funktioner.} Din kod blir lättare att läsa och ändra i om du delar upp den i många små funktioner med bra namn. I \code{Game}-klassen ovan finns exempel på några användbara funktioner. Allteftersom du utvidgar ditt program kan du lägga till fler funktioner som t.ex. heter \code{showPoints}, \code{gameOver}, etc.
 
+\item \textbf{Tänk igenom den övergripande strukturen.} Programmet du ska skriva i denna laboration är större än det du gjort tidigare. Det är därför viktigt att tänka igenom strukturen på ditt program, vilka klasser som har hand om vad och hur de samarbetar. Diskutera gärna med handledare om du är osäker på hur de koddelar du utvecklat i föregående veckas övning \ref{exe:classes:labprep}, klasserna \code{Pos}, \code{KeyControl}, \code{Mole} och \code{BlockWindow}, är tänkt at samverka. Var noga med att testa så de olika klasserna och deras metoder fungerar var för sig.     
+
 \item \textbf{Utformning av \texttt{gameLoop()}}. I ett spel behövs en s.k. spel-loop \Eng{game loop} som upprepar den kod som ska köras vid varje ny skärmbild, ofta kallad \emph{frame}. I varje runda i spel-loopen sker uppdatering av data och ritning i spelfönstret, samt en lämplig fördröjning. En skiss på en typisk spel-loop visas nedan:
 \begin{CodeSmall}
   var quit = false
   val delayMillis = 80
 
-  def gameLoop(): Unit = {
-    while(!quit) {
+  def gameLoop(): Unit = 
+    while !quit do
       val t0 = System.currentTimeMillis
       handleEvents()    // ändrar riktning vid tangenttryck etc.
       update(leftMole)  // flyttar, ritar, suddar, etc.
@@ -170,26 +172,26 @@ Du ska implementera minst ett (gärna flera) av dessa krav:
 
       val elapsedMillis = (System.currentTimeMillis - t0).toInt
       Thread.sleep((delayMillis - elapsedMillis) max 0)
-    }
-  }
+    end while
+  end gameLoop
 \end{CodeSmall}
 
 \item \textbf{Hantering av händelser.} Ett \code{BlockWindow}, som du implementerade i uppgift \ref{exe:classes:labprep} i övning \texttt{\ExeWeekFIVE}, kan via anrop av \code{nextEvent} ge   \code{KeyPressed(key)} vid knapptryck och \code{WindowClosed} vid fönsterstängning. Om ingen händelse finns att behandla returneras \code{Undefined}. Använd en loop som betar av alla händelser tills \code{Undefined} påträffas, enligt nedan:
 
 \begin{CodeSmall}
-  def handleEvents(): Unit = {
+  def handleEvents(): Unit = 
     var e = window.nextEvent()
-    while (e != BlockWindow.Event.Undefined) {
-      e match {
+    while e != BlockWindow.Event.Undefined do
+      e match 
         case BlockWindow.Event.KeyPressed(key) =>
           ???  // ändra riktning på resp. mullvad
 
         case BlockWindow.Event.WindowClosed =>
           ???  // avsluta spel-loopen
-      }
+      
       e = window.nextEvent()
-    }
-  }
+    end while
+  end handleEvent
 \end{CodeSmall}
 
 \item \textbf{Flimmerfri grafik.} För att minska mängden flimmer \Eng{flicker} är det bäst att i varje iteration i spel-loopen (1) bara rita om det som ändrats för att minimera tiden som spenderas på att rita, och (2) vid ändringar rita nya delar före att gamla delar raderas. För att slippa mullvadsflimmer kan du ''\emph{rita först -- sudda sen}'' enligt nedan.\footnote{Inom spelutveckling använder man oftast istället så kallad \emph{double buffering} (eller till och med \emph{triple buffering}) för att få helt flimmerfri grafik. Det ligger dock bortom kursen och stöds inte av \code{PixelWindow}.}
