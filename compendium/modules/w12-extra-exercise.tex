@@ -881,7 +881,7 @@ end selectionSort
 % \QUESTEND
 
 
-\subsection{Upgifter om trådar och jämlöpande exekvering}
+\subsection{Uppgifter om trådar och jämlöpande exekvering}
 
 \WHAT{Trådar.}
 
@@ -898,7 +898,6 @@ En tråd körs igång med metoden \code{start} och då anropas automatiskt \code
 def zzz = { print("zzzzzz"); Thread.sleep(5000); println(" VAKEN!")}
 zzz
 val t2 = new Thread{ override def run = zzz }
-t2.run
 t2.run; println("Gomorron!")
 t2.start; println("Gomorron!")
 t2.start
@@ -908,8 +907,8 @@ t2.start
 
 \Subtask Skapa två trådar med överskuggade \code{run}-metoder och kör igång dem samtidigt enligt nedan. Vilken ordning skrivs hälsningarna ut efter rad 3 resp. rad 4 nedan? Förklara vad som händer.
 \begin{REPL}
-val g = new Thread{ override def run = for (i <- 1 to 100) print("Gurka ") }
-val t = new Thread{ override def run = for (i <- 1 to 100) print("Tomat ") }
+val g = new Thread{ override def run = for i <- 1 to 100 do print("Gurka ") }
+val t = new Thread{ override def run = for i <- 1 to 100 do print("Tomat ") }
 g.run; t.run
 g.start; t.start
 \end{REPL}
@@ -954,42 +953,50 @@ ibland(print("zzz ")); ibland(print("snark ")); ibland(println("hej!"))
 \Task \label{task:racecondition} \what~   Skriv klasserna \code{Bank} och \code{Kund} i en editor och klistra sedan in koden i REPL.
 
 \begin{Code}
-class Bank {
-  private var saldo = 0;
-  def visaSaldo: Unit = println("saldo: " + saldo)
-  def sättIn: Unit = { saldo += 1 }
-  def taUt: Unit   = { saldo -= 1 }
-}
+class Bank:
+  private var _saldo = 0;
+  def saldo: Int = _saldo
+  def sättIn(): Unit = _saldo += 1 
+  def taUt(): Unit   = _saldo -= 1 
+end Bank
 
-class Kund(bank: Bank) {
-  def slösaSpara = {bank.taUt; Thread.sleep(1); bank.sättIn}
-}
+class Kund(bank: Bank):
+  def slösaSpara(): Unit = 
+    bank.taUt()
+    Thread.sleep(1)
+    bank.sättIn()
+  end slösaSpara
+end Kund
 \end{Code}
 
 \Subtask Använd funktionen \code{ibland} från föregående uppgift och kör nedan rader i REPL. Resultatet av jämlöpande variabeluppdatering blir här heltokigt och leder till mycket upprörda bankkunder och -ägare. Förklara vad som händer.
 
 \begin{REPL}
 val bank = new Bank
-bank.visaSaldo
-bank.sättIn
-bank.visaSaldo
-bank.taUt
-bank.visaSaldo
+println(bank.saldo)
+bank.sättIn()
+println(bank.saldo)
+bank.taUt()
+println(bank.saldo)
 
 val bamse = new Kund(bank)
 val skutt = new Kund(bank)
 
-bamse.slösaSpara
-skutt.slösaSpara
-bank.visaSaldo
+bamse.slösaSpara()
+skutt.slösaSpara()
+println(bank.saldo)
 
-def ofta(block: => Unit) = new Thread {
-  override def run = while(true) { block; Thread.sleep(1) }
+def ofta(block: => Unit) = new Thread { // varje millisekund
+  override def run = while true do { block;  Thread.sleep(1)} 
 }.start
 
-ofta(bamse.slösaSpara); ofta(skutt.slösaSpara)
+ofta(bamse.slösaSpara()); ofta(skutt.slösaSpara())
 
-ibland(bank.visaSaldo)
+def ibland(block: => Unit) = new Thread {  // varje 600 ms
+  override def run = while(true) do { block; Thread.sleep(600) }
+}.start
+
+ibland(println(bank.saldo))
 \end{REPL}
 
 
@@ -999,7 +1006,7 @@ ibland(bank.visaSaldo)
 \TaskSolved \what
      %%%TODO number  2 %%%starts with: \emph{Jämlöpande variabeluppdat%%%
 
-\SubtaskSolved  I \code{slösaSpara} hämtas saldot, ändras och placeras tillbaka i minnet -  fördröjs -  upprepas. Om \code{bamse} blir klar med att ladda, ändra och lagra innan skutt gör detsamma med den muterbara variablen hade det inte varit perfekt. Problemet ligger i  när en tråd laddar och innan den kan lagra det förändrade värdet laddar den andra tråden samma värde. Bara en av dessa trådar vinner racet och får lagra sitt ändrade tal. \code{skutt} och \code{bamse} blir alltså upprörda för att inte alla dess uttag och insättningar registreras.
+\SubtaskSolved  I \code{slösaSpara} hämtas saldot, ändras och placeras tillbaka i minnet -  fördröjs -  upprepas. Om \code{bamse} blir klar med att ladda, ändra och lagra innan skutt gör detsamma blir det problem, då de tävlar om vem som får uppdatera \Eng{race contiion}. Problemet innan en tråd kan lagra det förändrade värdet laddar den andra tråden det gamla värdet. Bara en av dessa trådar vinner racet och får lagra sitt ändrade tal och den andra ändringen går förlorad. \code{skutt} och \code{bamse} blir alltså upprörda för att inte alla dess uttag och insättningar registreras.
 
 
 \QUESTEND
@@ -1017,30 +1024,32 @@ ibland(bank.visaSaldo)
 
 Använd funktionerna \code{ofta} och \code{ibland} från tidigare uppgifter.
 \begin{Code}
-class SäkerBank {
+class SäkerBank:
   import java.util.concurrent.atomic.AtomicInteger
-  private var saldo = new AtomicInteger
-  def visaSaldo: Unit = println(s"saldo: ${saldo.get}")
-  def sättIn: Unit = { saldo.incrementAndGet }
-  def taUt: Unit   = { saldo.decrementAndGet }
-}
+  private var _saldo = new AtomicInteger
+  def saldo: Int = _saldo.get
+  def sättIn(): Unit = _saldo.incrementAndGet()
+  def taUt(): Unit   = _saldo.decrementAndGet()
+end SäkerBank
 
-class SäkerKund(bank: SäkerBank) {
-  def slösaSpara = {bank.taUt; Thread.sleep(1); bank.sättIn}
-}
+class SäkerKund(bank: SäkerBank):
+  def slösaSpara = 
+    bank.taUt()
+    Thread.sleep(1)
+    bank.sättIn()
+  end slösaSpara
+end SäkerKund
+
 \end{Code}
 \begin{REPL}
-val säkerBank = new SäkerBank
-val farmor = new SäkerKund(säkerBank)
-val vargen = new SäkerKund(säkerBank)
+val sb = new SäkerBank
+val farmor = new SäkerKund(sb)
+val vargen = new SäkerKund(sb)
 
 ofta(farmor.slösaSpara); ofta(vargen.slösaSpara)
 
-ibland(säkerBank.visaSaldo)
+ibland(println(sb.saldo))
 \end{REPL}
-
-
-
 
 
 \SOLUTION
@@ -1049,7 +1058,7 @@ ibland(säkerBank.visaSaldo)
 \TaskSolved \what
      %%%TODO number  3 %%%starts with: \emph{Jämlöpande exekvering med%%%
 
-Nu är \code{farmor} garanterad att kunna ladda saldot, ta ut pengar/ändra och lagra innan \code{vargen} kan överskriva resultatet. I \code{slösaSpara} pausas tråden i en millisekund så \code{vargen} kan fortfarande ta ut pengar innan \code{farmor} hinner sätta in pengar igen. Dock kommer alla uttag och insättningar registreras eftersom operationerna är atomära.
+Nu är \code{farmor}-tråden garanterad att kunna ladda saldot, ta ut pengar/ändra och lagra innan \code{vargen}-tråden kan skriva över resultatet. I \code{slösaSpara} pausas tråden i en millisekund så \code{vargen}-tråden kan hinna ta ut pengar innan \code{farmor}-sätter hinner sätta in pengar igen och saldot blir negativt. Dock kommer alla uttag och insättningar registreras eftersom operationerna är atomära och saldot kommer återställas till noll, utan att insättningar går förlorade.
 
 
 \QUESTEND
@@ -1150,11 +1159,11 @@ HELLO WORLD!
 
 \begin{REPL}
 scala> def ladda(url: String) = scala.io.Source.fromURL(url).getLines.toVector
-scala> def slöladda(url: String) = {
+scala> def slöladda(url: String) = 
          val delay = (math.random() * 1000 + 2000).toInt
          val delaySite = s"http://deelay.me/$delay/"
          ladda(delaySite+url)
-      }
+       end slöladda
 scala> ladda("http://fileadmin.cs.lth.se/pgk/mini.html")
 scala> def seg = slöladda("http://fileadmin.cs.lth.se/pgk/mini.html")
 scala> val laddningar = Vector.fill(10)(seg)
@@ -1165,21 +1174,21 @@ scala> laddningar(0)
 \begin{REPL}
 scala> import scala.concurrent._
 scala> import ExecutionContext.Implicits.global
-scala> val f = Future{ seg }
+scala> val f = Future(seg)
 scala> f   // kolla om den är klar annars prova igen senare
 scala> f
 \end{REPL}
 
 \Subtask Ladda indata utan att blockera \Eng{non-blocking input}. Förklara vad som händer nedan.
 \begin{REPL}
-scala> val nonblock = Future{ Vector.fill(10)(seg) }
-scala> nonblock   // kolla igen senare om ej klar
-scala> nonblock
+scala> val nonBlocking = Future(Vector.fill(10)(seg))
+scala> nonBlocking   // kolla igen senare om ej klar
+scala> nonBlocking
 \end{REPL}
 
 \Subtask Ladda indata separat i olika parallella trådar. Förklara vad som händer nedan. Kör uttrycket på rad 3 nedan upprepade gånger i snabb följd efter varandra med pil-upp+Enter i REPL.
 \begin{REPL}
-scala> val para = Vector.fill(10)(Future{ seg })
+scala> val para = Vector.fill(10)(Future(seg))
 scala> para
 scala> para.map(_.isCompleted)
 scala> para.map(_.isCompleted) // studera hur de blir färdiga en efter en
@@ -1189,7 +1198,7 @@ scala> para(0)
 \Subtask Registrera en callback med metoden \code{onComplete}. Förklara vad som händer nedan.
 
 \begin{REPL}
-scala> val action = Vector.fill(10)(Future{ seg })
+scala> val action = Vector.fill(10)(Future(seg))
 scala> action(0).onComplete(xs => println(s"ready:$xs"))
 scala> // vänta tills laddning på plats 0 är klar
 \end{REPL}
@@ -1198,8 +1207,8 @@ scala> // vänta tills laddning på plats 0 är klar
 \begin{REPL}
 scala> def lycka  = { Thread.sleep(3000); println(":)") }
 scala> def olycka = { Thread.sleep(3000); 42 / 0; lycka }
-scala> Future{ lycka  }.onFailure{ case e => println(s":( $e") }
-scala> Future{ olycka }.onFailure{ case e => println(s":( $e") }
+scala> Future(lycka ).onFailure{ case e => println(s":( $e") }
+scala> Future(olycka).onFailure{ case e => println(s":( $e") }
 \end{REPL}
 
 
@@ -1216,15 +1225,15 @@ scala> Future{ olycka }.onFailure{ case e => println(s":( $e") }
 
 \SubtaskSolved  Varje sida fördröjs med mellan 2 upp till 3 sekunder (2000-3000 millisekunder). Så i medeltal tar det 2.5 sekunder för varje sida att laddas. Vektorn måste fyllas innan exekveringen kan fortsätta. Därför laddas alla 10 stycken sidor in innan man kan se första websidan. Det tar därför i medeltal 2.5 x 10 = 25 sekunder.
 
-\SubtaskSolved  \code{f} ger en Vektor fylld med strängar där varje element ges av en rad på hemsidan. Då \code{f} körs i bakgrunden kan programmet fortlöpa medan innehållet räknas ut. Du kan därför skriva \code{f} i REPL:n men det är inte säkert att proccessen är klar och det slutgilltiga resultatet visas.
+\SubtaskSolved  \code{f} ger en Vektor fylld med strängar där varje element ges av en rad på hemsidan. Då \code{f} körs i bakgrunden kan programmet fortlöpa medan innehållet räknas ut. Du kan därför skriva \code{f} i REPL:n men det är inte säkert att processen är klar och det slutgiltiga resultatet visas.
 
 \SubtaskSolved  Samma som ovan, förutom att det blir en vektor där varje element är i sig en vektor med strängar.
 
-\SubtaskSolved  Laddar in datan parallelt så nedladdingen sker samtidigt, men det går olika snabbt pga metoden seg.
+\SubtaskSolved  Ladda data parallellt så att nedladdningen sker samtidigt, men det går olika snabbt pga metoden seg.
 
 \SubtaskSolved  Eftersom datan laddas i parallella trådar utan blockering blir de inte klara i ordning, utan i den ordningen tråden körs klart. Till slut blir alla klara och resultatet visar en vektor med \code{true} värden.
 
-\SubtaskSolved  Metoden \code{lycka} är väldefinerad och kastar därför inga undantag. Den skriver alltid ut \code{:)}. Metoden \code{olycka} är inte väldefinerad då division med 0 ger \\\code{java.lang.ArithmeticException}. Detta fångas upp vid callbacken och det skrivs ut \code{:(} samt det specifierade undantaget.
+\SubtaskSolved  Metoden \code{lycka} är väldefinerad och kastar därför inga undantag. Den skriver alltid ut \code{:)}. Metoden \code{olycka} är inte väldefinierad då division med 0 ger \\\code{java.lang.ArithmeticException}. Detta fångas upp vid callbacken och det skrivs ut \code{:(} samt det specificerade undantaget.
 
 \ExtraTasks %%%%%%%%%%%%
 
@@ -1245,17 +1254,17 @@ scala> Future{ olycka }.onFailure{ case e => println(s":( $e") }
 \begin{Code}
 def isPrime(n: BigInt): Boolean = ???
 
-def nextPrime(start: BigInt): BigInt = {
+def nextPrime(start: BigInt): BigInt = 
   var i = start
-  while (!isPrime(i)) { i += 1 }
+  while !isPrime(i) do i += 1 
   i
-}
+end nextPrime
 
-def randomBigInt(nDigits: Int): BigInt = {
+def randomBigInt(nDigits: Int): BigInt = 
    def rndChar = ('0' + (math.random() * 10).toInt).toChar
    val str = Array.fill(nDigits)(rndChar).mkString
    BigInt(str)
-}
+randomBigInt
 \end{Code}
 
 \SOLUTION
@@ -1265,20 +1274,20 @@ def randomBigInt(nDigits: Int): BigInt = {
   %%%TODO number  6 %%%
 
 \begin{Code}
-def isPrime(n: BigInt): Boolean = n match {
+def isPrime(n: BigInt): Boolean = n match 
   case _ if (n <= 1) => false
   case _ if (n <= 3) => true
   case _ if n % 2 == 0 || n % 3 == 0 => false
   case _ =>
     var i = BigInt(5)
-    while (i * i < n) {
+    while i * i < n do
       if (n % i == 0 || n % (i + 2) == 0) false
       i += 6
-    }
+    end while
     true
-}
+end isPrime
 
-import scala.concurrent._
+import scala.concurrent.*
 import ExecutionContext.Implicits.global
 
 val primes = Vector.fill(10)(Future{nextPrime(randomBigInt(16))})
@@ -1371,42 +1380,48 @@ Använd några av dessa tillsammans med \code{scala.concurrent.Future}.
 
 \Task  \what~
 
-\Subtask Skriv in\footnote{Eller ladda ner här: \href{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/simple-web-server/webserver.scala}{github.com/lunduniversity/introprog/blob/master/compendium/examples/simple-web-server/webserver.scala}} nedan kod i en editor och spara i en fil med namn \texttt{webserver.scala} och kompilera och kör med \texttt{scala webserver.start} och beskriv vad som händer när du med din webbläsare surfar till adressen: \\ \url{http://localhost:8089/abbasillen}
+\Subtask Skriv in\footnote{Eller ladda ner här: \href{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/simple-web-server/webserver.scala}{github.com/lunduniversity/introprog/blob/master/compendium/examples/simple-web-server/webserver.scala}} nedan kod i en editor och spara i en fil med namn \texttt{webserver.scala} och kompilera och kör med \texttt{scala-cli run webserver.scala} och beskriv vad som händer när du med din webbläsare surfar till adressen: \\ \url{http://localhost:8089/abbasillen}
 
 \scalainputlisting[numbers=left,basicstyle=\ttfamily\fontsize{11}{12}\selectfont]{examples/simple-web-server/webserver.scala}
 
 \Subtask Du ska nu skapa en webbserver som gör något lite mer intressant. Den ska svara med det 13:e Fibonacci-talet\footnote{\href{https://sv.wikipedia.org/wiki/Fibonaccital}{https://sv.wikipedia.org/wiki/Fibonaccital}} om du surfar till \url{http://localhost:8089/fib/13}.
 Spara din webbserver från föregående deluppgift under det nya namnet \texttt{fibserver.scala} och använd koden nedan och lägg till och ändra så att din server kan svara med Fibonaccital. Vi börjar med att räkna ut Fibonaccital i funktionen \code{compute.fib} nedan på ett onödigt processorkrävande sätt med exponentiell tidskomplexitet så att webbservern verkligen får jobba, för att i senare deluppgifter implementera \code{compute.fib} med linjär tidskomplexitet och därmed undvika onödig planetuppvärmning.
 \begin{CodeSmall}
-  object compute {
-    def fib(n: BigInt): BigInt = {
-      if (n < 0) 0 else
-      if (n == 1 || n == 2) 1
-      else fib(n - 1) + fib(n -2)
-    }
-  }
+// lägg till nedan i webserver.scala från 
+//    https://github.com/lunduniversity/introprog/blob/master/compendium/examples/simple-web-server/webserver.scala
 
-  def fibResponse(num: String) = Try { num.toInt } match {
-    case Success(n) => html.page(s"fib($n) == " + compute.fib(n))
-    case Failure(e) => html.page(s"FEL $e: skriv heltal, inte $num")
-  }
+object compute:
+  def fib(n: BigInt): BigInt = 
+    if n < 0 then 0 else
+    if n == 1 || n == 2 then 1
+    else fib(n - 1) + fib(n -2)
+  end fib
+end compute
 
-  def errorResponse(uri:String) = html.page("FATTAR NOLL: " + uri)
+def fibResponse(num: String) = 
+  num.toIntOption match 
+    case Some(n) => html.page(s"fib($n) == " + compute.fib(n))
+    case None    => html.page(s"FEL: skriv ett heltal, inte $num")
 
-  def handleRequest(cmd: String, uri: String, socket: Socket): Unit = {
+def errorResponse(uri:String) = html.page(s"Error: $uri </br> use /fib/heltal")
+
+
+// ändra handleRequest i start i webserver.scala till
+  def handleRequest(cmd: String, uri: String, socket: Socket): Unit = 
     val os = socket.getOutputStream
-    val parts = uri.split('/').drop(1) // skip initial slash
-    val response: String = (parts.head, parts.tail) match {
-      case (head, Array(num)) => fibResponse(num)
-      case _                  => errorResponse(uri)
-    }
+    val afterSlash = uri.toString.drop(1) // skip initial slash
+    println(s"afterSlash:$afterSlash")
+    val response: String = 
+      if afterSlash.startsWith("fib/") then fibResponse(afterSlash.stripPrefix("fib/"))
+      else errorResponse(uri)
     os.write(html.header(response.size).getBytes("UTF-8"))
     os.write(response.getBytes("UTF-8"))
     os.close
     socket.close
-  }
+  end handleRequest
 \end{CodeSmall}
-Kör i terminalen med \texttt{scala fibserver.start} och beskriv vad som händer i din webbläsare när du surfar till servern.
+
+Kör i terminalen med \texttt{scala-cli run webserver.scala} och beskriv vad som händer i din webbläsare när du surfar till servern.
 
 
 %%%\textbf{KOD TILL FACIT:}
@@ -1517,128 +1532,128 @@ Lösningsförslag:
 
 
 
-\WHAT{}
+% \WHAT{}
 
-\QUESTBEGIN
+% \QUESTBEGIN
 
-\Task  \what~ Utöka din server med fler beräkningsintensiva funktioner. Exempelvis primtalsberäkningar eller beräkningar av valfritt antal decimaler av $\pi$ eller $e$. Utnyttja gärna det du lärt dig i  matematiken om summor och serieutvecklingar.
+% \Task  \what~ Utöka din server med fler beräkningsintensiva funktioner. Exempelvis primtalsberäkningar eller beräkningar av valfritt antal decimaler av $\pi$ eller $e$. Utnyttja gärna det du lärt dig i  matematiken om summor och serieutvecklingar.
 
-\SOLUTION
+% \SOLUTION
 
 
-\TaskSolved \what
- %%%TODO number  10 %%%
+% \TaskSolved \what
+%  %%%TODO number  10 %%%
 
----
+% ---
 
 
-\QUESTEND
+% \QUESTEND
 
 
 
 
 
 
-\WHAT{}
+% \WHAT{}
 
-\QUESTBEGIN
+% \QUESTBEGIN
 
-\Task  \what~ Läs mer om \code{Future} och jämlöpande exekvering i Scala här:\\
-\href{http://alvinalexander.com/scala/future-example-scala-cookbook-oncomplete-callback}{alvinalexander.com/scala/future-example-scala-cookbook-oncomplete-callback}
+% \Task  \what~ Läs mer om \code{Future} och jämlöpande exekvering i Scala här:\\
+% \href{http://alvinalexander.com/scala/future-example-scala-cookbook-oncomplete-callback}{alvinalexander.com/scala/future-example-scala-cookbook-oncomplete-callback}
 
-\SOLUTION
+% \SOLUTION
 
 
-\TaskSolved \what
- %%%TODO number  11 %%%
+% \TaskSolved \what
+%  %%%TODO number  11 %%%
 
----
+% ---
 
 
-\QUESTEND
+% \QUESTEND
 
 
 
 
 
 
-\WHAT{}
+% \WHAT{}
 
-\QUESTBEGIN
+% \QUESTBEGIN
 
-\Task  \what~ Läs mer om jämlöpande exekvering och multitrådade program i Java här: \href{http://www.tutorialspoint.com/java/java_multithreading.htm}{www.tutorialspoint.com/java/java\_multithreading.htm}  \\
-\noindent När man skriver program med jämlöpande exekvering finns det många fallgropar; det kan bli kapplöpning \Eng{race conditions} om gemensamma resurser och dödläge \Eng{deadlock} där inget händer för att trådar väntar på varandra. Mer om detta i senare kurser.
+% \Task  \what~ Läs mer om jämlöpande exekvering och multitrådade program i Java här: \href{http://www.tutorialspoint.com/java/java_multithreading.htm}{www.tutorialspoint.com/java/java\_multithreading.htm}  \\
+% \noindent När man skriver program med jämlöpande exekvering finns det många fallgropar; det kan bli kapplöpning \Eng{race conditions} om gemensamma resurser och dödläge \Eng{deadlock} där inget händer för att trådar väntar på varandra. Mer om detta i senare kurser.
 
 
-\SOLUTION
+% \SOLUTION
 
 
-\TaskSolved \what
- %%%TODO number  12 %%%
+% \TaskSolved \what
+%  %%%TODO number  12 %%%
 
----
+% ---
 
 
-\QUESTEND
+% \QUESTEND
 
 
 
 
 
 
-\WHAT{Studera dokumentationen i \code{scala.concurrent}.}
+% \WHAT{Studera dokumentationen i \code{scala.concurrent}.}
 
-\QUESTBEGIN
+% \QUESTBEGIN
 
-\Task  \what~\Pen
+% \Task  \what~\Pen
 
-\Subtask Studera dokumentationen för \code{scala.concurrent.Future}\footnote{\href{http://www.scala-lang.org/api/current/scala/concurrent/Future.html}{http://www.scala-lang.org/api/current/scala/concurrent/Future.html}}. Hur samverkar \code{Future} med \code{Try} och \code{Option}? Vilka vanliga samlingsmetoder känner du igen?
+% \Subtask Studera dokumentationen för \code{scala.concurrent.Future}\footnote{\href{http://www.scala-lang.org/api/current/scala/concurrent/Future.html}{http://www.scala-lang.org/api/current/scala/concurrent/Future.html}}. Hur samverkar \code{Future} med \code{Try} och \code{Option}? Vilka vanliga samlingsmetoder känner du igen?
 
-\Subtask Studera dokumentationen för \code{scala.concurrent.duration.Duration}\footnote{\href{http://www.scala-lang.org/api/current/scala/concurrent/duration/Duration.html}{www.scala-lang.org/api/current/scala/concurrent/duration/Duration.html}}. Vilka tidsenheter kan användas?
+% \Subtask Studera dokumentationen för \code{scala.concurrent.duration.Duration}\footnote{\href{http://www.scala-lang.org/api/current/scala/concurrent/duration/Duration.html}{www.scala-lang.org/api/current/scala/concurrent/duration/Duration.html}}. Vilka tidsenheter kan användas?
 
-\Subtask Vid import av \code{scala.concurrent.duration.* } dekoreras de numeriska klasserna med metoder för att skapa instanser av klassen \code{Duration}. Detta möjligörs med hjälp av klassen \code{scala.concurrent.duration.DurationConversions}. Studera dess dokumentation och testa att i REPL skapa några tidsperioder med metoderna på \code{Int}.
+% \Subtask Vid import av \code{scala.concurrent.duration.* } dekoreras de numeriska klasserna med metoder för att skapa instanser av klassen \code{Duration}. Detta möjligörs med hjälp av klassen \code{scala.concurrent.duration.DurationConversions}. Studera dess dokumentation och testa att i REPL skapa några tidsperioder med metoderna på \code{Int}.
 
 
 
-\SOLUTION
+% \SOLUTION
 
 
-\TaskSolved \what
- %%%TODO number  13 %%%
+% \TaskSolved \what
+%  %%%TODO number  13 %%%
 
-\SubtaskSolved
+% \SubtaskSolved
 
-\SubtaskSolved
+% \SubtaskSolved
 
-\SubtaskSolved
+% \SubtaskSolved
 
 
-\QUESTEND
+% \QUESTEND
 
 
 
 
 
 
-\WHAT{}
+% \WHAT{}
 
-\QUESTBEGIN
+% \QUESTBEGIN
 
-\Task  \what~ Fördjupa dig inom webbteknologi.
+% \Task  \what~ Fördjupa dig inom webbteknologi.
 
-\Subtask Lär dig om HTML, CSS och JavaScript här: \url{https://developer.mozilla.org/en-US/docs/Learn}
+% \Subtask Lär dig om HTML, CSS och JavaScript här: \url{https://developer.mozilla.org/en-US/docs/Learn}
 
-\Subtask Lär dig om Scala.JS här: \url{http://www.scala-js.org/}\SOLUTION
+% \Subtask Lär dig om Scala.JS här: \url{http://www.scala-js.org/}\SOLUTION
 
 
-\TaskSolved \what
- %%%TODO number  14 %%%
+% \TaskSolved \what
+%  %%%TODO number  14 %%%
 
-\SubtaskSolved  ---
+% \SubtaskSolved  ---
 
-\SubtaskSolved  ---
+% \SubtaskSolved  ---
 
-\SubtaskSolved  ---
+% \SubtaskSolved  ---
 
-\SubtaskSolved  ---
-\QUESTEND
+% \SubtaskSolved  ---
+% \QUESTEND

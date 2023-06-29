@@ -25,22 +25,25 @@ object compute:
     else fib(n - 1) + fib(n -2)
 
 object start:
-  def fibResponse(num: String) = Try { num.toInt } match 
-    case Success(n) => html.page(s"fib($n) == " + compute.fib(n))
-    case Failure(e) => html.page(s"FEL $e: skriv heltal, inte $num")
+  def fibResponse(num: String) = 
+    num.toIntOption match 
+      case Some(n) => html.page(s"fib($n) == " + compute.fib(n))
+      case None    => html.page(s"FEL: skriv ett heltal, inte $num")
 
-  def errorResponse(uri:String) = html.page("FATTAR NOLL: " + uri)
+  def errorResponse(uri:String) = html.page(s"Error: $uri </br> use /fib/heltal")
 
-  def handleRequest(cmd: String, uri: String, socket: Socket): Unit =
+  def handleRequest(cmd: String, uri: String, socket: Socket): Unit = 
     val os = socket.getOutputStream
-    val parts = uri.split('/').drop(1) // skip initial slash
-    val response: String = (parts.head, parts.tail) match
-      case (head, Array(num)) => fibResponse(num)
-      case _                  => errorResponse(uri)
+    val afterSlash = uri.toString.drop(1) // skip initial slash
+    println(s"afterSlash:$afterSlash")
+    val response: String = 
+      if afterSlash.startsWith("fib/") then fibResponse(afterSlash.stripPrefix("fib/"))
+      else errorResponse(uri)
     os.write(html.header(response.size).getBytes("UTF-8"))
     os.write(response.getBytes("UTF-8"))
-    os.close 
+    os.close
     socket.close
+  end handleRequest
   
   def serverLoop(server: ServerSocket): Unit =
     println(s"http://localhost:${server.getLocalPort}/hej")

@@ -29,6 +29,7 @@ object start:
     os.write(response.getBytes("UTF-8"))
     os.close 
     socket.close
+  end handleRequest
   
   def serverLoop(server: ServerSocket): Unit =
     println(s"http://localhost:${server.getLocalPort}/hej")
