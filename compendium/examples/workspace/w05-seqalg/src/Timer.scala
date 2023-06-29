@@ -3,7 +3,8 @@ object Timer:
 
   def elapsedMillis: Long = System.currentTimeMillis - startTime
 
-  def reset: Unit = { startTime = System.currentTimeMillis }
+  def reset: Unit = 
+    startTime = System.currentTimeMillis
 
   def measure[T](block: => T): (Long, T) =
     reset

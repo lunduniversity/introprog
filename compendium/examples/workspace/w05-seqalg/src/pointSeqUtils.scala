@@ -1,4 +1,4 @@
-object pointSeqUtils {
+object pointSeqUtils:
   type Pt = (Int, Int)  // a type alias to make the code more concise
 
   def primitiveInsertCopy(pts: Array[Pt], pos: Int, pt: Pt): Array[Pt] =
@@ -21,4 +21,3 @@ object pointSeqUtils {
   def insertCopy(pts: Array[Pt], pos: Int, pt: Pt) = pts.patch(pos, Array(pt), 0)
 
   def removeCopy(pts: Array[Pt], pos: Int) = pts.patch(pos, Array.empty[Pt], 1)
-}

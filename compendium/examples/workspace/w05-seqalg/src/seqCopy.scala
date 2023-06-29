@@ -1,4 +1,4 @@
-object seqCopy {
+object seqCopy:
 
   def arrayCopy(xs: Array[Int]): Array[Int] =
     val result = new Array[Int](xs.length)
@@ -14,4 +14,3 @@ object seqCopy {
     if xs sameElements ys then "OK!" else "ERROR!"
 
   def main(args: Array[String]): Unit = println(test)
-}

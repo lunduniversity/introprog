@@ -115,10 +115,9 @@ scala> udda.search(udda.last)
 scala> udda.search(udda.last + 1)
 scala> udda.reverse.search(udda(0))
 scala> def lin(x: Int, xs: Seq[Int]) = xs.indexOf(x)
-scala> def bin(x: Int, xs: Seq[Int]) = xs.search(x) match {
+scala> def bin(x: Int, xs: Seq[Int]) = xs.search(x) match 
          case Found(i) => i
          case InsertionPoint(i) => -i
-       }
 scala> timed{ lin(udda.last, udda) }
 scala> timed{ bin(udda.last, udda) }
 \end{REPL}
@@ -174,10 +173,10 @@ res20: collection.Searching.SearchResult = InsertionPoint(0)
 //ordning, så den kan inte hitta elementet udda(0) = 1 när listan är inverterad.
 
 scala> def lin(x: Int, xs: Seq[Int]) = xs.indexOf(x)
-scala> def bin(x: Int, xs: Seq[Int]) = xs.search(x) match {
+scala> def bin(x: Int, xs: Seq[Int]) = xs.search(x) match 
 	case Found(i) => i
 	case InsertionPoint(i) => -i
-}
+
 //Definierar en metod bin som använder sig av metoden search på en sekvens.
 //Den ser sedan till med hjälp av "pattern matching" att bara returnera positionen
 //i, och inte ett objekt av typen Found eller InsertionPoint.
@@ -279,24 +278,22 @@ x: Option[courses.Course] = Some(Course(EDAF05,Algoritmer, datastrukturer och
 
 \SubtaskSolved
 \begin{Code}
-def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = {
+def linearSearch[T](xs: Seq[T])(p: T => Boolean): Int = 
    var i = 0
    while(i < xs.length && !p(xs(i))) i += 1
    if (i < xs.length) i else -1
-}
 \end{Code}
 
 \SubtaskSolved
 
 \begin{Code}
-def rndCode: String = {
+def rndCode: String = 
    //randomizes from 0 to n (inclusive)
    def rnd(n: Int) = (math.random() * (n + 1)).toInt
 
    def letter = (rnd('Z' - 'A') + 'A').toChar
    def dig = ('0' + rnd(9)).toChar
    Seq(letter, letter, letter, letter, dig, dig).mkString
-}
 \end{Code}
 
 \SubtaskSolved
@@ -494,23 +491,18 @@ println(elapsedLin / elapsedBin)
 
 \SubtaskSolved
 \begin{Code}
-def binarySearch(xs: Seq[String], key: String): Int = {
-
+def binarySearch(xs: Seq[String], key: String): Int = 
   var (low, high) = (0, xs.size - 1)
   var found = false
   var mid = -1
 
-  while (low <= high && !found) {
+  while (low <= high && !found) do
     mid = (low + high) / 2
-    if (xs(mid) == key) found = true
-    else if (xs(mid) < key) low = mid + 1
+    if xs(mid) == key then found = true
+    else if xs(mid) < key then low = mid + 1
     else high = mid - 1
-  }
-  if (found)
-    mid
-  else
-    -(low + 1)
-}
+  end while
+  if found then  mid else -(low + 1)
 \end{Code}
 
 \SubtaskSolved
@@ -592,15 +584,14 @@ res3: Seq[Int] = Vector(1, 1, 2, 3, 4, 5)
 \SubtaskSolved
 
 \begin{Code}
-def insertionSort(xs: Seq[Int]): Seq[Int] = {
+def insertionSort(xs: Seq[Int]): Seq[Int] = 
   val result = scala.collection.mutable.ArrayBuffer.empty[Int]
-  for (e <- xs) {
+  for e <- xs do
     var pos = 0
-    while (pos < result.size && result(pos) < e) pos += 1
+    while pos < result.size && result(pos) < e do pos += 1
     result.insert(pos,e)
-  }
+  end for
   result.toVector
-}
 \end{Code}
 
 \QUESTEND
@@ -619,11 +610,10 @@ def insertionSort(xs: Seq[Int]): Seq[Int] = {
 
 Implementera enligt nedan skiss.  \emph{Tips:} Du har nytta av en modifierad variant av lösningen till uppgift \ref{task:minindex} i kapitel \ref{chapter:W02}.
 \begin{Code}
-def selectionSortInPlace(xs: Array[String]): Unit = {
+def selectionSortInPlace(xs: Array[String]): Unit = 
   def indexOfMin(startFrom: Int): Int = ???
   def swapIndex(i1: Int, i2: Int): Unit = ???
-  for (i <- 0 to xs.size - 1) swapIndex(i, indexOfMin(i))
-}
+  for i <- 0 to xs.size - 1 do swapIndex(i, indexOfMin(i))
 \end{Code}
 
 
@@ -636,26 +626,25 @@ def selectionSortInPlace(xs: Array[String]): Unit = {
 
 
 \begin{Code}
-def selectionSortInPlace(xs: Array[String]): Unit = {
-
-  def indexOfMin(startFrom: Int): Int = {
+def selectionSortInPlace(xs: Array[String]): Unit = 
+  def indexOfMin(startFrom: Int): Int = 
     var minPos = startFrom
     var i = startFrom + 1
-    while (i < xs.size) {
+    while (i < xs.size) do
       if (xs(i) < xs(minPos)) minPos = i
       i += 1
-    }
+    end while
     minPos
-  }
+  end indexOfMin
 
-  def swapIndex(i1: Int, i2: Int): Unit = {
+  def swapIndex(i1: Int, i2: Int): Unit = 
     val temp = xs(i1)
     xs(i1) = xs(i2)
     xs(i2) = temp
-  }
+  end swapIndex  
 
-  for (i <- 0 to xs.size - 1) swapIndex(i, indexOfMin(i))
-}
+  for i <- 0 to xs.size - 1 do swapIndex(i, indexOfMin(i))
+end selectionSortInPlace
 \end{Code}
 
 
@@ -683,9 +672,7 @@ scala> def isSorted(xs: Vector[Int]): Boolean = xs == xs.sorted
 
 Denna lösning är dock relativt långsam för stora samlingar. Man behöver ju inte först sortera  för att avgöra om det är sorterat (om man inte ändå hade tänkt sortera av andra skäl), det räcker att kolla att elementen är i växande ordning.
 
-\Subtask\Pen  Om \code{xs} har $n$ element, ungefär hur många jämförelser kommer i värsta fall att ske med \code{isSorted} ovan om man alltså först ska sortera och sedan jämföra den osorterade och den sorterade samlingen element för element? Metoden \code{sorted} använder algoritmen Timsort. Sök upp värstafallsprestandan för Timsort på Wikipedia.\footnote{\href{https://en.wikipedia.org/wiki/Timsort}{en.wikipedia.org/wiki/Timsort}}
-
-\Subtask\label{subtask:issorted} Implementera en effektivare variant av \code{isSorted} som använder en \code{while}-sats och kollar att elementen är i växande ordning.
+\Subtask\label{subtask:issorted} Implementera en effektivare variant av \code{isSorted} som använder en \code{while}-sats och kollar att elementen är i växande ordning. Din algoritm ska sluta söka så fort osorterade element hittats.
 
 \Subtask\Pen Vad blir antalet jämförelser i värstafallet med metoden i deluppgift \ref{subtask:issorted} om du har $n$ element?
 
@@ -699,29 +686,37 @@ Denna lösning är dock relativt långsam för stora samlingar. Man behöver ju 
 
 
 
-\SubtaskSolved
+\SubtaskSolved Det tar i värsta fall $O(n*log(n))$ för timsort att sortera listan med $n$ element. Sedan krävs $n$ stycken jämförelser mellan den sorterade och osorterade listan. Det totala antalet jämförelser i värstafallet uppgår därför till max $n + n*log(n)$. För $10^6$ element blir det ca $10^7$ jämförelser.
+\begin{REPLnonum}
+scala> val n = 1E6
+val n: Double = 1000000.0
 
-Det tar i värsta fall $O(n*log(n))$ för timsort att sortera listan med $n$ element. Sedan krävs $n$ stycken jämförelser mellan den sorterade och osorterade listan. Det totala antalet jämförelser i värstafallet uppgår därför till $n + n*log(n)$.
+scala> def worstCase(n: Double) = n + n * math.log(n)
+def worstCase(n: Double): Double
 
-\SubtaskSolved
+scala> println(s"i värsta fall med n=$n så blir det ${worstCase(n)} jämförelser")
+i värsta fall med n=1000000.0 så blir det 1.4815510557964273E7 jämförelser
+\end{REPLnonum}
 
-En mer effektiv version av \code{isSorted} som stoppar direkt när den upptäcker att ett element inte är sorterat.
-
+\SubtaskSolved En mer effektiv version av \code{isSorted} som avbryter sökningen när ett osorterat element upptäcks:
 \begin{Code}
-def isSorted(xs: Vector[Int]): Boolean = {
-
-  if(xs.length > 1){
-    for(i <- 0 until xs.length-1 if xs(i) > xs(i+1)){
-      return false
-    }
-  }
-  true
-}
+def isSorted(xs: Vector[Int]): Boolean = 
+  if xs.length > 1 then
+    var i = 0
+    var result = true
+    while i < xs.length-1 && result do 
+      if xs(i) > xs(i+1) then result = false
+      i += 1
+    end while
+    result
+  else true
+end isSorted
 \end{Code}
 
-\SubtaskSolved
+\SubtaskSolved I värsta fall behöver man göra $n - 1$ parvisa jämförelser, om alla ligger i sorterad ordning utom den sista.
 
-2-tupeln är av typen \code{(Int, Int)}.
+
+\SubtaskSolved 2-tupeln är av typen \code{(Int, Int)}.
 
 \begin{Code}
 def isSorted(xs: Vector[Int]): Boolean =
@@ -770,6 +765,9 @@ def insertionSort(xs: Array[Int]): Unit =
       xs(pos -1) = xs(pos)
       xs(pos) = temp
       pos -= 1
+    end while
+  end for
+end insertionSort
 \end{Code}
 
 % \SubtaskSolved
@@ -809,19 +807,18 @@ def insertionSort(xs: Array[Int]): Unit =
 
 \Task  \what~ Implementera och testa sortering till ny sekvens med urvalssortering\footnote{\href{https://en.wikipedia.org/wiki/Selection_sort}{en.wikipedia.org/wiki/Selection\_sort}} i Scala, enligt nedan skiss.  Du har nytta av lösningen till uppgift \ref{task:minindex} i kapitel \ref{chapter:W02}.
 \begin{Code}
-def selectionSort(xs: Seq[String]): Seq[String] = {
+def selectionSort(xs: Seq[String]): Seq[String] = 
   def indexOfMin(xs: Seq[String]): Int = ???
   val unsorted = xs.toBuffer
   val result = scala.collection.mutable.ArrayBuffer.empty[String]
   /*
-  så länge unsorted inte är tom {
+  så länge unsorted inte är tom 
     minPos = indexOfMin(unsorted)
     elem   = unsorted.remove(minPos)
     result.append(elem)
-  }
   */
   result.toVector
-}
+end selectionSort
 \end{Code}
 
 
@@ -833,19 +830,17 @@ def selectionSort(xs: Seq[String]): Seq[String] = {
 
 
 \begin{Code}
-def selectionSort(xs: Seq[String]): Seq[String] = {
+def selectionSort(xs: Seq[String]): Seq[String] = 
   def indexOfMin(xs: Seq[String]): Int = xs.indexOf(xs.min)
   val unsorted = xs.toBuffer
   val result = scala.collection.mutable.ArrayBuffer.empty[String]
-
-  while (!unsorted.isEmpty) {
+  while !unsorted.isEmpty do
     val minPos = indexOfMin(unsorted)
     val elem = unsorted.remove(minPos)
     result.append(elem)
-  }
-
+  end while
   result.toVector
-}
+end selectionSort
 \end{Code}
 
 
