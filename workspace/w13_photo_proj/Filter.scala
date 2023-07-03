@@ -34,7 +34,17 @@ object Filter:
       val result = Image.ofDim(im.width, im.height)
       result.updated((x, y) => im(x, y)) // just copy all pixels
 
+object Gauss extends Filter:
+  val name = "Gauss"
+  override val argDescriptions = Seq("Strength (0.0 - 50.0) where 0.0 is strongest")
 
+  def gauss(s: Short): Matrix = Matrix(3,3)(
+      2, 4, 2, 
+      4, s, 4, 
+      2, 4, 2
+  )
+
+  def apply(im: Image, args: Double*): Image = ???
 
 
 
