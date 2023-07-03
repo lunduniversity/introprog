@@ -57,6 +57,43 @@ scala> m.row(0)
 val res2: Array[Short] = Array(1, 42, 3)
 \end{REPLsmall}
 
+\subsection{Användargränssnitt}
+
+När appen startar så visas fönstrrt i fig. \ref{photo:fig:main-window}, som implementeras av givna koden i \code{Main.scala}. Med hjälp av \code{Button.scala} skapas en kolumn med knappar som är klickbara. Studera koden i \code{Main.scala} och \code{Button.scala} så du förstår vad som händer. Ännu öppnas inget ImageEditor-fönster, men det ska du påbörja i näst uppgift.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.4\textwidth]{../img/w12-assignment-photo/photo-main.png}
+\caption{Photo-applikationens startfönster.}
+\label{photo:fig:main-window}
+\end{figure}
+
+\Task \textbf{\code{ImageEditor}}. Do ska skapa en kodfil \code{ImageEditor.scala} som innehåller en klass med samma namn som implementerar ett bildredigeringsfönster med en kolumn med knappar till vänster och en bild inläst från fil till höger, så som visas i fig. \ref{photo:fig:editor-one-filter}. Följande krav på användargränssnittet ska implementeras:
+
+\begin{itemize}
+\item Vid tryck på Exit-knappen ska en varningsfråga ''Ok to Exit without save?'' ges med hjälp av \code{introprog.Dialog.isOK} och användaren ges möjlighet att ångra avslut.
+\item Vid tryck på Open-knappen så ska en filöppningsdialog visas med hjälp av \code{introprog.Dialog.file}. Om det i aktuell katalog finns en underkatalog vid namn \code{images} så ska filbläddringen börja där, annars i aktuell katalog. 
+\item Efter OK på filöppningen ska en bild öppnas i ett bildredigeringsfönster enligt fig. \ref{photo:fig:editor-one-filter} med knapparna Save, Undo, Close, plus en knapp för varje filter, till vänster om bilden. Fönstrets höjd och bredd ska avpassas så att hela bilden och alla knappar får plats.
+\item Huvudfönstret och alla bildredigeringsfönster ska fungera parallellt. Detta kan du åstadkomma genom att händelseloopen i \code{ImageEditor}-klassen körs som argument till metoden \code{runInParallell} enligt nedan: 
+\begin{CodeSmall}
+  def runInParallell(block: => Unit) = 
+    new Thread{ override def run(): Unit = block }.start
+
+  def startEventLoop(): Unit = runInParallell {
+    // implementera initialisering och händelseloop här, 
+    // i likhet med huvudfönstret 
+  }
+\end{CodeSmall}
+\item TODO: Mer krav här
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{../img/w12-assignment-photo/photo-duck.png}
+\caption{Bildredigeringsfönstret, innan fler filter (utöver identitetsfiltret) implementerats. Varje filter som implementeras ska ha en motsvarande knapp.}
+\label{photo:fig:editor-one-filter}
+\end{figure}
+  
 
 
 \subsection{Filter}
