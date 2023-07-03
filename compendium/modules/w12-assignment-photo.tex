@@ -4,16 +4,62 @@
 \Assignment{photo}
 
 \subsection{Bakgrund}
+Detta projekt innebär att du ska implementera en egen bilbehandlingsapplikation, en mycket förenklad variant av \emph{Phtotoshop} eller \emph{Gimp}. 
 
-En digital bild består av ett rutnät (en matris) av pixlar. Varje pixel har en färg, och om man har många pixlar flyter de samman för ögat så att de tillsammans skapar en bild.
+En digital bild består av ett rutnät, en s.k. matris \Eng{matrix}, av pixlar, var och en med en viss färg. Om man har många små pixlar bredvid varandra i ett rutnät, så flyter de samman för ögat och betraktaren upplever en bild.
 
-Det finns olika system för hur man färgsätter de olika pixlarna. T.ex. så används CMYK-systemet (cyan, magenta, gul, svart) vid blandning av färg som ska tryckas på papper eller annat material. På en dator, däremot, används vanligtvis RGB-systemet. RGB-systemet har tre grundfärger: röd, grön och blå. Mättnaden av varje grundfärg anges av ett heltal som vi i fortsättningen förutsätter ligger i intervallet [0, 255]. 0 anger ''ingen färg'' och 255 anger ''maximal färg''. Man kan därmed representera 256 × 256 × 256 = 16 777 216 olika färgnyanser. Man kan också representera gråskalor; det gör man med färger som har samma värde på alla tre grundfärgerna: (0, 0, 0) är helt svart, (255, 255, 255) är helt vitt.
+Bilder kan manipuleras genom applicering av olika s.k. \emph{filter}, som förändrar bildens pixlar på ett intressanta sätt. Du ska, utifrån given matematisk teori, implementera olika filter med hjälp av speciella matrisoperationer.
 
-I detta projektet använder vi oss av \code{introprog.Image} för att representera en bild. Läs på om klasserna i introprog här: 
+
+Det finns olika system för hur man färgsätter pixlar. T.ex. så används CMYK-systemet (cyan, magenta, gul, svart) vid blandning av färg som ska tryckas på papper eller annat material. På en dator, däremot, används vanligtvis RGB-systemet, som har de tre grundfärgerna röd, grön och blå. Mättnaden av varje grundfärg anges av ett heltal som vi i fortsättningen förutsätter ligger i intervallet [0, 255]. 0 anger ''ingen färg'' och 255 anger ''maximal färg''. Man kan därmed representera 256 × 256 × 256 = 16 777 216 olika färgnyanser. Man kan också representera gråskalor; det gör man med färger som har samma värde på alla tre 
+grundfärgerna: (0, 0, 0) är helt svart, (255, 255, 255) är helt vitt. 
+
+I detta projekt kommer vi skapa matriser av heltal för att beräkna intressanta egenskaper hos en bild, till exempel intensiteten för varje pixel. 
+För att spara plats vid bearbetning av stora bilder så använder vi, heltalsmatriser med typen \code{Short}, som använder 16 bitar i minnet, i ståället för \code{Int}, som använder 64 bitar i minnet. 
+
+\subsection{Förberedelser}
+
+I detta projekt har du nytta av följande delar av \href{https://github.com/lunduniversity/introprog-scalalib}{\texttt{introprog-scalalib}} och \code{java.awt}:
+
+\begin{itemize}
+\item \code{introprog.Image} för bildhantering.
+\item \code{introprog.PixelWindow} och \code{introprog.Dialog} för användarinteraktion.
+\item \code{introprog.IO} för filhantering.
+\item \code{java.awt.Color} för hantering av pixelfärger.
+\end{itemize}
+Läs noga dokumentationen för klasserna i introprog här och gör egna experiment i REPL så du förstår hur de kan användas: 
 \url{https://cs.lth.se/pgk/api/}\\
-Hämta given kod via \href{https://github.com/lunduniversity/introprog/tree/master/workspace/}{kursen github-plats} eller via hemsidan under \href{https://cs.lth.se/pgk/download/}{Download}.
+Läs om klassen \code{java.awt.Color} här:\\\url{https://docs.oracle.com/en/java/javase/11/docs/api/java.desktop/java/awt/Color.html}
+Hämta och studera noga den kod som är given för detta projekt här:\\
+\url{https://github.com/lunduniversity/introprog/tree/master/workspace/}
 
-\subsection{Uppgiften}
+\subsection{Matris med värden av typen \code{Short}}
+
+\Task \textbf{\code{Matrix}}.
+I den givna kodfilen \code{Matrix.scala} finns hjälp-funktioner för att skapa och uppdatera matriser med värden av typen \code{Short}, för att spara minne vid stora bilder.  
+
+Gör klart saknade implementationer och testa noga i REPL så att allt fungerar som det ska innan du går vidare. \emph{Tips:} Du har nytta av \code{Array.tabulate}. 
+\begin{REPLsmall}
+scala> import photo.*
+
+scala> val m = Matrix(3,3)(1,2,3,4,5,6,7,8,9) // en 3x3-matiris med Short-värden
+val m: photo.Matrix = Array(Array(1, 4, 7), Array(2, 5, 8), Array(3, 6, 9))
+
+scala> m(0,1)
+val res0: Short = 4
+
+scala> m(1,0) = 42
+
+scala> m
+val res1: photo.Matrix = Array(Array(1, 4, 7), Array(42, 5, 8), Array(3, 6, 9))
+
+scala> m.row(0)
+val res2: Array[Short] = Array(1, 42, 3)
+\end{REPLsmall}
+
+
+
+\subsection{Filter}
 Du ska skriva ett program där du implementerar olika filter som ska manipulera en given bild på ett flertal olika sätt. 
 Filterklasserna ska ärva från en abstrakt \code{ImageFilter}-klass.
 
@@ -153,9 +199,9 @@ Använd \code{ImageChooser} för att välja en bild på följande sätt:
 	class IdentityFilter(name: String) extends ImageFilter(name):
 	
 		def apply(im: Image, args: Double*): Image = 
-			val outIm = Image.ofDim(im.width, im.height)
-			outIm.update((i, j) => im(i, j))
-			outIm
+			val result = Image.ofDim(im.width, im.height)
+			result.update((i, j) => im(i, j))
+			result
 \end{ScalaSpec}
 
 
@@ -210,8 +256,8 @@ Man fortsätter med att flytta K ett steg åt höger och beräknar på motsvaran
 Skriv en klass \code{GaussFilter} som implementerar denna algoritm. Varje färg ska behandlas separat. Gör på följande sätt:
 \begin{enumerate}
 	\item Bilda tre \code{short}-matriser och lagra pixlarnas red-, green- och blue-komponenter i matriserna.
-	\item Utför faltningen av de tre komponenterna för varje element och updatera outIm med de uträknade värdena.
-	\item Elementen i ramen behandlas inte, men i \code{outIm} måste också dessa element få värden. Enklast är att flytta över dessa element oförändrade från \code{im} till \code{outIm}. Man kan också sätta dem till \code{Color.WHITE}, men då kommer den filtrerade bilden att se något mindre ut.
+	\item Utför faltningen av de tre komponenterna för varje element och updatera result med de uträknade värdena.
+	\item Elementen i ramen behandlas inte, men i \code{result} måste också dessa element få värden. Enklast är att flytta över dessa element oförändrade från \code{im} till \code{result}. Man kan också sätta dem till \code{Color.WHITE}, men då kommer den filtrerade bilden att se något mindre ut.
 \end{enumerate}
 
 Använd \code{ImageFilter}s \code{convolve}-metod för att utföra faltningen. Metoden behöver en faltningsmatris, \code{kernel}, som input och ska anropas med red-, green- och blue-matrisen. Faltningsmatrisen kan vara ett attribut i klassen och ska ha följande utseende:
@@ -362,7 +408,7 @@ Sammanfattning av algoritmen:
 	\item Beräkna bildens intensitetshistogram.
 	\item Argument från användaren användas som \code{cutOff}.
 	\item Beräkna \code{lowCut} och \code{highCut} enligt ovan.
-	\item Beräkna den nya intensiteten för varje pixel enligt interpolationsformeln och lagra de nya pixlarna i \code{outIm}.
+	\item Beräkna den nya intensiteten för varje pixel enligt interpolationsformeln och lagra de nya pixlarna i \code{result}.
 \end{enumerate}
 Skriv en klass \code{ContrastFilter} som implementerar algoritmen. I katalogen \emph{images} kan bilden \emph{moon.jpg} vara lämplig att testa, eftersom den har låg kontrast. Anmärkning: om \code{cutOff} sätts = 0 så får man samma resultat av denna filtrering som man får av \code{GrayScaleFilter}. Detta kan man se genom att studera interpolationsformeln.
 
