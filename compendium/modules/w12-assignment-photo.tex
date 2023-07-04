@@ -59,7 +59,7 @@ val res2: Array[Short] = Array(1, 42, 3)
 
 \subsection{Användargränssnitt}
 
-När appen startar så visas fönstrrt i fig. \ref{photo:fig:main-window}, som implementeras av givna koden i \code{Main.scala}. Med hjälp av \code{Button.scala} skapas en kolumn med knappar som är klickbara. Studera koden i \code{Main.scala} och \code{Button.scala} så du förstår vad som händer. Ännu öppnas inget ImageEditor-fönster, men det ska du påbörja i näst uppgift.
+När appen startar så visas ett fönster enligt fig. \ref{photo:fig:main-window}, implementerat av givna koden i \code{Main.scala}. Med hjälp av givna \code{Button.scala} skapas en kolumn med knappar som är klickbara. Studera koden i \code{Main.scala} och \code{Button.scala} noga så att du förstår vad som händer. Ännu öppnas inget ImageEditor-fönster, men det ingår i näst uppgift.
 
 \begin{figure}[H]
 \centering
@@ -68,194 +68,116 @@ När appen startar så visas fönstrrt i fig. \ref{photo:fig:main-window}, som i
 \label{photo:fig:main-window}
 \end{figure}
 
-\Task \textbf{\code{ImageEditor}}. Följande krav på användargränssnittet ska implementeras: 
+\Task \textbf{\code{ImageEditor}}. Följande krav ska implementeras: 
 
 \begin{itemize}
 \item Du ska skapa en kodfil \code{ImageEditor.scala} som innehåller en klass med samma namn som implementerar ett bildredigeringsfönster med en kolumn med knappar till vänster och en bild inläst från fil till höger, så som visas i fig. \ref{photo:fig:editor-one-filter}. 
-\item Vid tryck på Exit-knappen ska en varningsfråga ''Ok to Exit without save?'' ges med hjälp av \code{introprog.Dialog.isOK} och användaren ges möjlighet att ångra avslut.
-\item Vid tryck på Open-knappen så ska en filöppningsdialog visas med hjälp av \code{introprog.Dialog.file}. Om det i aktuell katalog finns en underkatalog vid namn \code{images} så ska filbläddringen börja där, annars i aktuell katalog. 
+\item Vid tryck på Exit-knappen ska en varningsfråga ''Ok to Exit without save?'' ges med hjälp av \code{introprog.Dialog.isOK} och användaren ska kunna ångra avslut.
+\item Vid tryck på Open-knappen ska en fil väljas med hjälp av \code{introprog.Dialog.file}. Om det i aktuell katalog finns en underkatalog vid namn \code{images} så ska filbläddringen börja där, annars i aktuell katalog. 
 \item Efter OK på filöppningen ska en bild öppnas i ett bildredigeringsfönster enligt fig. \ref{photo:fig:editor-one-filter} med knapparna Save, Undo, Close, plus en knapp för varje filter, till vänster om bilden. Fönstrets höjd och bredd ska avpassas så att hela bilden och alla knappar får plats.
-\item Huvudfönstret och alla bildredigeringsfönster ska fungera parallellt. Detta kan du åstadkomma genom att händelseloopen i \code{ImageEditor}-klassen körs som argument till metoden \code{runInParallell} enligt nedan: 
-\begin{CodeSmall}
-  def runInParallell(block: => Unit) = 
-    new Thread{ override def run(): Unit = block }.start
 
-  def startEventLoop(): Unit = runInParallell {
-    // implementera initialisering och händelseloop här
-  }
-\end{CodeSmall}
-\item TODO: Mer krav här, inkl history och path etc
-\end{itemize}
-
-\begin{figure}[H]
+\begin{figure}
 \centering
 \includegraphics[width=0.8\textwidth]{../img/w12-assignment-photo/photo-duck.png}
 \caption{Bildredigeringsfönstret, innan fler filter (utöver identitetsfiltret) implementerats. Varje filter som implementeras ska ha en motsvarande knapp.}
 \label{photo:fig:editor-one-filter}
 \end{figure}
-  
+
+\item Huvudfönstret och alla bildredigeringsfönster ska fungera parallellt. Detta ska du åstadkomma genom att händelseloopen i \code{ImageEditor}-klassen körs som argument till metoden \code{runInParallell} enligt nedan: 
+\begin{CodeSmall}
+  def runInParallell(block: => Unit) = 
+    new Thread{ override def run(): Unit = block }.start
+
+  def startEventLoop(): Unit = runInParallell:
+    // initialisering och händelseloop här
+\end{CodeSmall}
+
+\item Det ska gå att göra Undo i flera steg och återställa alla bilder före applicering av filter i tur och ordning. \emph{Tips:} Inför i attributet \code{var history: Vector[Image]} som från början innehåller den ursprungliga bilden.
+
+\item Fönstrets titel ska innehålla namnet \code{ImageEditor} och de två sista delarna av den sökväg \Eng{path} som öppnats, enligt exempel i fig. \ref{photo:fig:editor-one-filter}, eftersom en fullständig sökväg t.ex. \texttt{/home/userxyz/workspace/photo/images/duck.jpg} riskerar att inte få plats i fönstrets titelbalk.
+
+\item Vid Save ska fråga om filnamn ställas med \code{introprog.Dialog.file} och kontroller göras om filen redan finns eller ej, och om den finns ska en fråga med \code{introprog.Dialog.isOK} ställas om den ska skrivas över eller ej.
+
+\item Alla implementerade filter ska ha en knapp som applicerar filtret och sparar resultatet i historiken så att filtret kan ångras med Undo. Om filtret har argument så ska en informativ dialog öppnas där användaren kan ange argument via \code{introprog.Dialog.input}. Filterknapparna ska vara sorterade i bokstavsordning efter filtrets namn, se fig. \ref{photo:fig:photo-jay-sobel}.
+\end{itemize}
+
+
 
 
 \subsection{Filter}
-Du ska skriva ett program där du implementerar olika filter som ska manipulera en given bild på ett flertal olika sätt. 
-Filterklasserna ska ärva från en abstrakt \code{ImageFilter}-klass.
 
-Följande specifikation beskriver klassen \code{ImageFilter}:
+Du ska bygga vidare på givna koden i \code{Filter.scala} som visas nedan. Du ska implementera och testa ett antal olika filter som ändrar bilder på intressanta sätt med hjälp av olika matrisalgoritmer.
 
-\begin{ScalaSpec}{abstract class ImageFilter}
-	/**
-	* Create a filter object with a given name and argument descriptions.
-	* @param name
-	*            the name of the filter.
-	* @param args
-	*            optional array of strings with argument descriptions.
-	*/
-	abstract class ImageFilter(val name: String, val argDescriptions: String*):
+\scalainputlisting[basicstyle=\ttfamily\fontsize{9.5}{11}\selectfont]{../workspace/w13_photo_proj/Filter.scala}
 
-		/**
-		The number of args this filter needs.
-		*/
-		def nbrOfArgs: Int
+\noindent \code{Filter.scala} innehåller en bastyp för alla filter med ett antal medlemmar som alla filter ska implementera, enligt nedan krav. Det finns ett färdigimplementerat filter, \code{Identity}, som kan användas för testsyften; detta filter gör inget annat än kopierar alla bildpunkter till en ny bild och har således ingen editerande effekt.
 
-		/**
-		* Apply the filter on `img` and return the result as a new 
-		* Image using the arguments in `args`.
-		* 
-		* @param img
-		*            the original image.
-		* @param args
-		*            arguments
-		* @return 
-		*			 the resulting image.
-		*/
-		def apply(img: Image, args: Double*): Image
+\begin{itemize}
+\item Metoden \code{apply} ska returnera en ny bilden där filtret applicerats, utan att förändra inparameter-bilden. 
 
-		/**
-		* Calculate the intensity in each pixel of `img`.
-		* 
-		* @param img
-		*           the image
-		* @return intensitymatrix, values ranging from 0 to 255
-		*/
-		protected def computeIntensity(img: Image): Array[Array[Short]] = 
-		   val intensity: Array[Array[Short]]
+\item Ett filter ska kunna ha noll eller flera argument av typen \code{Double} som kan påverka vad som händer när filtret appliceras. Varje sådant argument ska i tur och ordning ha en kort, instruktiv beskrivning i sekvensen \code{argDescription}.
 
-		/**
-		* Convolute `p[i][j]` with the convolutionkernel `kernel`.
-		* 
-		* @param p
-		*            matrix with numbervalues
-		* @param i
-		*            current row index
-		* @param j
-		*            current coloumn index
-		* @param kernel
-		*            convolutionkernel, a 3x3-matrix
-		* @param weight
-		*            the sum of the element in `kernel`
-		* @return result of the convolution
-		*/
-		protected def convolve(p: Array[Array[Short]], i: Int, j: Int, 
-		kernel: Array[Array[Short]], weight: Int): Short
+\item Metoden \code{intensity} ska beräkna en s.k. \emph{intensitetsmatris} och behövs vid implementeringen av gråskale-, Gauss- och Sobel-filtren. Hur en intensitetsmatris beräknas beskrivs nedan. 
 
-\end{ScalaSpec}
+\item Metoden \code{convolve} ska göra en s.k. faltning (medelvärdesbildning i matriser) och behövs vid implementering av Gauss- och Sobel-filtren. Hur en faltning görs beskrivs nedan.
 
-Utöver filterklasserna ska du även skapa ett program som låter användaren välja en bild som olika filter sedan kan appliceras på.
-För att åstadkomma detta ska du implementera klassen \code{ImageEditor}, som hanterar applicering av filter samt ritar bilden med hjälp av \code{PixelWindow}.
+\item Alla implementerade filter ska finnas i sekvensen \code{byIndex}, som används i tabellen \code{byName}. Dessa behövs för att skapa alla filterknappar och applicera respektive filter.
+\end{itemize}
+
+\noindent Du ska implementera och testa alla filter i uppgifterna nedan, ett i taget. Uppgifterna är ordnade i stigande svårighetsgrad.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{../img/w12-assignment-photo/photo-jay-sobel.png}
+\caption{Bildredigeringsfönstret med alla filter implementerade. Ett kontruförstärkande så kallat Sobel-filter är applicerat med tröskelvärde 150.}
+\label{photo:fig:photo-jay-sobel}
+\end{figure}
 
 
+\Task \textbf{Blåfilter.} Skapa ett filter i ett singelobjekt med namn \code{Blue} som vid applicering ger en blå version av bilden, där varje pixel bara innehåller den blå komponenten. \emph{Tips:} Du har nytta av metoden \code{getBlue} i klassen \code{java.awt.Color}. 
 
-\code{ImageEditor}-klassen ska använda sig av en Stack[Image] för att hantera historiken. 
-Läs dokumentationen här: \url{https://www.scala-lang.org/api/current/scala/collection/mutable/Stack.html}
+\Task \textbf{Negativ.} Skapa ett filter \code{Invert} som inverterar en bild, dvs skapar en ''negativ'' kopia av bilden. Ljusa färger ska alltså bli mörka och mörka färger ska bli ljusa.
+Fundera över vad som kan menas med en inverterad eller negativ kopia. \emph{Tips:} Även de nya RGB-värdena ska vara i heltal i intervallet 0 -- 255. De nya RGB-värdena beräknas \emph{inte} med något divisionsuttryck över de gamla värdena (då skulle de nya värdena bli decimaltal och inte heltal i intervallet 0 -- 255). 
 
-\begin{ScalaSpec}{class ImageEditor}
-	class ImageEditor(filters: Array[ImageFilter]):
+\Task \textbf{Gråskalefilter.} Skapa ett filter \code{GrayScale} som gör om bilden till en gråskalebild. Implementera först \code{intensity}-metoden i \code{trait Filter} genom att bilda medelvärdet av alla tre RGB-komponenterna. Använd sedan intensiteten för varje pixel för att bestämma gråskalenivån. Om intensiteten i en pixel till exempel är 105 så ska den nya gråskale-pixeln var ett \code{Color}-objekt med RGB-värdena (105, 105, 105).
 
-		val history = ???
+\Task \textbf{Kryptering.} Skapa ett filter \code{XOrCrypto} som krypterar bilden med xor-operatorn ˆ. Denna operator gör binär xor mellan bitarna i ett heltal. Exempelvis ger 8 ˆ 127 värdet 119. Om man gör xor igen med 127, alltså 119 ˆ 127, får man tillbaka värdet 8. Varje pixel krypteras genom att använda xor-operatorn med ursprungsvärdena för rött, grönt och blått tillsammans med slumpmässiga heltalsvärden som genereras ur en ny instans av \code{scala.util.Random}. Tre nya slumptal ska dras för varje pixels RGB-komponent ur samma Random-instans. Låt användaren ge ett argument som du använder som slumptalsfrö vid skapande av \code{Random}-instansen. På så sätt kan du återskapa bilden genom att applicera krypteringsfiltret igen, med samma argument, på den numera krypterade bilden.
 
-		/** 
-		 * Show which filters are available and let the user choose a filter to apply. 
-		 * Draw edited image in PixelWindow.
-		 * User can then add more filters, undo, save image or exit.
-		 *  
-		 *  Example: 
-		 *  0. för Blått-filter
-		 *	2. för Kontrast-filter
-		 * 	3. för Gauss-filter
-		 *	4. för Sobel-filter
-		 *	a. AVBRYT
-		 *	s. SPARA
-		 *	z. UNDO
-		*/
-		def edit(im: Image): Unit = ???
+Om filtrets \code{argDescriptions}-sekvens är icke-tom så ska \code{ImageEditor} fråga efter varje argument i tur och ordning och visa varje beskrivning i dialogrutan. Användarens indata görs om till ett decimaltal av typen \code{Double} före att argumenten används i metoden \code{apply}. Bestäm själv hur du vill hantera defaultvärden och felhantering om användaren anger en sträng som inte går att göra om till en \code{Double}. \emph{Tips:} Du har nytta av \code{toDoubleOption} och \code{getOrElse}.
 
-		/**Ask for arguments if required and apply filter with index `i`*/
-		private def applyFilter(index: Int) = ???
-\end{ScalaSpec}
+\begin{CodeSmall}
+  object XOrCrypto extends Filter:
+    val name = "Encrypt"
+    override val argDescriptions = Seq("Encryption key")
 
-Studera Scala-koden som är given här: \url{https://github.com/lunduniversity/introprog/tree/master/workspace/w13_photo_proj/}
-Till din hjälp får du ett \code{ImageChooser}-objekt som hjälper dig att ladda in en bild. 
-I projektet används flera klasser från kursens introprog-bibliotek. Särskilt används \code{Image, PixelWindow} och \code{IO}.
-Du hittar dokumentationen till klasserna här: \url{https://cs.lth.se/pgk/api/} och du kan läsa koden här: \url{https://github.com/lunduniversity/introprog-scalalib}
+    def apply(im: Image, args: Double*): Image = ???
+\end{CodeSmall}
 
-\begin{ScalaSpec}{object ImageChooser}
-	object ImageChooser:
+\begin{REPLnonum}
+scala> Seq(8, 127, 8 ^ 127).map(_.toBinaryString)
+val res0: Seq[String] = List(1000, 1111111, 1110111)
 
-		/**
-		* Returns a chosen image from the images folder.
-		* Prints:	
-		*
-		*	Välj en av följande bilder genom att mata in en siffra
-		*
-		*	0. boy.jpg
-		*	1. car.jpg
-		*	2. duck.jpg
-		*	3. jay.jpg
-		*	4. moon.jpg
-		*	5. shuttle.jpg
-		*	Ditt val: 
-		*/
-		def getImage: Image
-\end{ScalaSpec}
+scala> 8 ^ 127
+val res1: Int = 119
 
+scala> 119 ^ 127
+val res2: Int = 8
+\end{REPLnonum}
 
-\Task \textbf{Blåfilter.} Skriv en klass \code{BlueFilter} som skapar en blå version av bilden. 
-Det vill säga skapa ett filter där varje pixel bara innehåller den blå komponenten. 
-Testa filtret genom att skapa ett \code{Application}-object som ska innehålla en 
-\code{main}-metod (\code{Application} ska användas och utökas i senare uppgifter). 
-Använd \code{ImageChooser} för att välja en bild på följande sätt:
-\begin{Code}
-	val im = ImageChooser.getImage
-\end{Code}
-\begin{enumerate}
-	\item Visa bilden genom att i \code{imageEditor.edit()} använda \code{pixelWindow.drawImage()}. 
-	\item Alla \code{Filter}-klasser kan placeras i samma fil \code{Filters.scala}.
-	\item Om du har problem med att ärva från den abstrakta \code{ImageFilter}-klassen kan du använda dig av detta exempel som endast kopierar bilden.
-\end{enumerate}
-\begin{ScalaSpec}{class IdentityFilter}
-	class IdentityFilter(name: String) extends ImageFilter(name):
-	
-		def apply(im: Image, args: Double*): Image = 
-			val result = Image.ofDim(im.width, im.height)
-			result.update((i, j) => im(i, j))
-			result
-\end{ScalaSpec}
+\begin{figure}
+\centering
+\includegraphics[width=0.85\textwidth]{../img/w12-assignment-photo/photo-xor.png}
+\caption{Krypteringsfilter före applicering, under pågående inmatning av nyckel. }
+\label{photo:fig:photo-xor}
+\end{figure}
+  
 
+\Task \textbf{Gaussfilter.} Ett Gaussfilter gör bilden lite mindre skarp. Gaussfiltrering är ett exempel på så kallad \emph{faltningsfiltrering}. Faltning \Eng{convolution} är en slags lokal medelvärdesbildning. Nya pixlar skapas genom att kombinera varje pixel med dess omgivande pixlar enligt en speciell matrisalgoritm.
 
-
-\Task \textbf{Inverteringsfilter.} Skriv en klass \code{InvertFilter} som inverterar en bild, dvs skapar en ''negativ'' kopia av bilden. Ljusa färger ska alltså bli mörka och mörka färger ska bli ljusa.
-Fundera över vad som kan menas med en inverterad eller negativ kopia: de nya RGB-värdena är inte ett dividerat med de gamla värdena (då skulle de nya värdena kunna bli flyttal) och inte de gamla värdena med ombytt tecken (då skulle de nya värdena bli negativa).
-
-\Task \textbf{Gråskalningsfilter.} Skriv en klass \code{GrayScaleFilter} som gör om bilden till en gråskalebild. Använd \code{ImageFilter}s \code{computeIntensity}-metod för att bestämma vilken intensitet varje pixel ska ha. Om intensiteten i en pixel till exempel är 105 så ska ett nytt \code{Color}-objekt med värdena (105, 105, 105) skapas.
-
-\Task \textbf{Krypteringsfilter.} Skriv en klass \code{XORCryptFilter} som krypterar bilden med xor-operatorn ˆ. Denna operator gör binär xor mellan bitarna i ett heltal. Exempelvis ger 8 ˆ 127 värdet 119. Om man gör xor igen med 127, alltså 119 ˆ 127, får man tillbaka värdet 8. Varje pixel krypteras genom att använda xor-operatorn med ursprungsvärdena för rött, grönt och blått tillsammans med slumpmässiga heltalsvärden som genereras av Scalas \code{Random}-klass (tre nya slumptal för varje pixel). Låt användaren ge ett argument som seed för \code{Random}. På så sätt kan du återskapa bilden genom att applicera krypteringsfiltret igen, med samma parametervärde, på den numera krypterade bilden.
-
-\Task \textbf{Gaussfiltrer.} Gaussfiltrering är ett exempel på så kallad faltningsfiltrering. Filtreringen bygger på att man modifierar varje bildpunkt genom att titta på punkten och omgivande punkter.
-
-För detta utnyttjar man en så kallad faltningskärna K som är en liten kvadratisk heltalsmatris. Man placerar K över varje element i intensitetsmatrisen och multiplicerar varje element i K med motsvarande element i intensitetsmatrisen. Man summerar produkterna och dividerar summan med summan av elementen i K för att få det nya värdet på intensiteten i punkten. Divisionen med summan gör man för att de nya intensiteterna ska hamna i rätt intervall.
-
+För att åstadkomma detta utnyttjar man en så kallad \emph{faltningskärna} K som är en liten kvadratisk heltalsmatris. Man placerar K över varje element i intensitetsmatrisen och multiplicerar varje element i K med motsvarande element i intensitetsmatrisen. Man summerar produkterna och dividerar summan med summan av elementen i K för att få det nya värdet på intensiteten i punkten (alltså ett slags medelvärde). Divisionen görs för att den nya intensiteten ska hamna i rätt intervall (0 -- 255).
 Exempel:
 
+\vspace{1em}
 \begin{minipage}{5cm}
 \begin{displaymath}
 \mathit{intensity} = \left(
@@ -281,38 +203,44 @@ K = \left(
 \end{displaymath}
 \end{minipage}
 
-Här är summan av elementen i $K$ $1+1+4+1+1 = 8$. För att räkna ut det nya värdet på intensiteten i punkten med index \code{(1)(1)} (det nuvarande värdet är 3) beräknar man:
+\vspace{2em}\noindent Här är summan av elementen i $K$ $1+1+4+1+1 = 8$. För att räkna ut det nya värdet på intensiteten i punkten \code{(1, 1)} med det nuvarande värdet är 3, beräknar man följande:
 
 \begin{displaymath}
 \mathit{newintensity} = \frac{0 \cdot 5 + 1 \cdot 4 + 0 \cdot 2 + 1 \cdot 4 + 4 \cdot 3 + 1 \cdot 4 + 0 \cdot 9 + 1 \cdot 8 + 0 \cdot 7}{8} = \frac{32}{8} = 4
 \end{displaymath}
 
 
-Man fortsätter med att flytta K ett steg åt höger och beräknar på motsvarande sätt ett nytt värde för elementet med index \code{(1)(2)} (där det nuvarande värdet är 4 och det nya värdet blir 5). Därefter gör man på samma sätt för alla element utom för ”ramen” dvs elementen i matrisens ytterkanter.
+\noindent Man fortsätter med att flytta K ett steg åt höger och beräknar på motsvarande sätt ett nytt värde för elementet med index \code{(1)(2)} (där det nuvarande värdet är 4 och det nya värdet blir 5). Därefter gör man på samma sätt för alla element utom för ”ramen” dvs elementen i matrisens ytterkanter.
 
-Skriv en klass \code{GaussFilter} som implementerar denna algoritm. Varje färg ska behandlas separat. Gör på följande sätt:
+Implementera och testa noga först metoden\\
+\code{convolve(p: Matrix, x: Int, y: Int, kernel: Matrix, weight: Int): Short}\\ i \code{trait Filter} som alltså ska ge den normerade produktsumman av \code{kernel} och punkterna i närheten av \code{(x,y)} i matrisen \code{p} normerat med \code{weight}. \code{Tips:} Du har nytta av metoderna \code{round} och \code{toShort}.
+
+\begin{REPLnonum}
+scala> import photo.*
+
+scala> val p = Matrix(4,4)(5,4,2,8,4,3,4,9,9,8,7,7,8,6,6,5)
+val p: photo.Matrix = Array(Array(5, 4, 9, 8), Array(4, 3, 8, 6), Array(2, 4, 7, 6), Array(8, 9, 7, 5))
+
+scala> val K = Matrix(3,3)(0,1,0,1,4,1,0,1,0)
+val K: photo.Matrix = Array(Array(0, 1, 0), Array(1, 4, 1), Array(0, 1, 0))
+
+scala> Filter.convolve(p, 1, 1, K, K.flatten.sum)
+val res0: Short = 4
+\end{REPLnonum}
+
+Skapa därefter ett filter \code{Gauss} som gör en faltning med hjälp av \code{convolve} för varje färgkomponent separat. Gör på följande sätt:
 \begin{enumerate}
 	\item Bilda tre \code{short}-matriser och lagra pixlarnas red-, green- och blue-komponenter i matriserna.
-	\item Utför faltningen av de tre komponenterna för varje element och updatera result med de uträknade värdena.
-	\item Elementen i ramen behandlas inte, men i \code{result} måste också dessa element få värden. Enklast är att flytta över dessa element oförändrade från \code{im} till \code{result}. Man kan också sätta dem till \code{Color.WHITE}, men då kommer den filtrerade bilden att se något mindre ut.
+	\item Utför faltningen av de tre komponenterna för varje element och uppdatera \code{result} med de uträknade värdena.
+	\item Elementen i ramen behandlas inte, men i \code{result} måste också dessa element få värden. Enklast är att flytta över dessa element oförändrade från \code{im} till \code{result}. (Man kan också sätta dem till \code{Color.BLACK}, men då kommer den filtrerade bilden att se något mindre ut.)
 \end{enumerate}
 
-Använd \code{ImageFilter}s \code{convolve}-metod för att utföra faltningen. Metoden behöver en faltningsmatris, \code{kernel}, som input och ska anropas med red-, green- och blue-matrisen. Faltningsmatrisen kan vara ett attribut i klassen och ska ha följande utseende:
+Använd nedan \code{kernel} enligt $K$ ovan och låt \code{weight} vara summan av alla element i $K$. 
 
-\begin{displaymath}
-\begin{pmatrix}
-  0 & 1 & 0 \\
-  1 & 4 & 1 \\
-  0 & 1 & 0 \\
-\end{pmatrix}
-\end{displaymath}
-
-Det kan vara intressant att prova med andra värden än 4 i mitten av faltningsmatrisen. Med värdet 0 får man en större utjämning eftersom man då inte alls tar hänsyn till den aktuella pixelns värde. Låt användaren mata in argument för mittvärdet via terminalen.
-
-Anmärkning: det kan ibland vara svårt att se någon skillnad mellan den filtrerade bilden och originalbilden. Om man vill ha en riktigt suddig bild så måste man använda en större matris som faltningskärna.
+Det kan vara intressant att prova med andra värden än 4 i mitten av faltningsmatrisen. Med värdet 0 får man en större utjämning eftersom man då inte alls tar hänsyn till den aktuella pixelns värde. Låt användaren mata in argument för mittvärdet, mellan 0 och 50, och beskriv detta i \code{argDescriptions}. \footnote{Det kan ibland vara svårt att se någon skillnad mellan den Gauss-filtrerade bilden och originalbilden. Om man vill ha en riktigt suddig bild så måste man använda en större matris som faltningskärna. Prova gärna detta som extrauppgift. }
 
 
-\Task  \textbf{Sobelfiltrer.} Sobelfiltrering är, precis som Gaussfiltrering, en typ av faltningsfiltrering. Med Sobelfiltrering får man dock motsatt effekt i jämförelse med Gaussfiltrering, dvs man förstärker konturer i en bild. I princip deriverar man bilden i x- och y-led och sammanställer resultatet.
+\Task  \textbf{Sobelfilter.} Sobelfiltrering är, precis som Gaussfiltrering, en typ av faltningsfiltrering. Med Sobelfiltrering får man dock motsatt effekt i jämförelse med Gaussfiltrering, dvs man förstärker konturer i en bild. I princip deriverar man bilden i x- och y-led och sammanställer resultatet.
 
 \begin{figure}[H]
 \includegraphics[width=0.9\textwidth]{../img/w12-assignment-photo/derivatabild2.pdf}
@@ -320,7 +248,7 @@ Anmärkning: det kan ibland vara svårt att se någon skillnad mellan den filtre
 \label{fig:photo:sobelfilter:derivatabild}
 \end{figure}
 
-I figur~\ref{fig:photo:sobelfilter:derivatabild} visas en funktion $f$ (heldragen linje) och funktionens derivata $f'$ (streckad linje). Vi ser att där funktionen gör ett ''hopp'' så får derivatan ett stort värde. Om funktionen representerar intensiteten hos pixlarna längs en linje i x-led eller y-led så motsvarar ''hoppen'' en kontur i bilden. Om man sedan bestämmer sig för att pixlar där derivatans värde överstiger ett visst tröskelvärde ska vara svarta och andra pixlar vita så får man en bild med bara konturer.
+I figur~\ref{fig:photo:sobelfilter:derivatabild} visas en funktion $f$ (heldragen linje) och funktionens derivata $f'$ (streckad linje). Vi ser att där funktionen gör ett ''hopp'' så får derivatan ett stort värde. Om funktionen representerar intensiteten hos pixlarna längs en linje i x-led eller y-led så motsvarar ''hoppen'' en kontur i bilden. Om man sedan bestämmer sig för att pixlar där derivatans värde överstiger ett visst tröskelvärde ska vara svarta och andra pixlar vita så får man en bild med starka konturer.
 
 Nu är ju intensiteten hos pixlarna inte en kontinuerlig funktion som man kan derivera enligt vanliga matematiska regler. Men man kan approximera derivatan, till exempel med följande formel:
 
@@ -328,93 +256,38 @@ Nu är ju intensiteten hos pixlarna inte en kontinuerlig funktion som man kan de
 f'(x) \approx \frac{f(x+h) - f(x-h)}{2h}
 \end{displaymath}
 
-(Om man här låter $h$ gå mot noll så får man definitionen av derivatan.) Uttryckt i Scala och matrisen \code{intensity} så får man:
+Om man låter $h$ gå mot noll så får man definitionen av derivatan.
+Efter ytterligare teoretiska utredningar så kan man visa att det går att uttrycka derivering i en matris med hjälp av faltning enligt följande:
+% 
+% Uttryckt i Scala och matrisen \code{m: Matrix} så får man:
 
-\begin{Code}
-val derivative = (intensity(i)(j+1) - intensity(i)(j-1)) / 2
-\end{Code}
-
-Allt detta kan man uttrycka med hjälp av faltning.
-
+% \begin{Code}
+% val derivative = (m(x, y + 1) - m(x, y-1)) / 2
+% \end{Code}
 \begin{enumerate}
-	\item Beräkna intensitetsmatrisen med metoden \code{computeIntensity}.
-	\item Falta varje punkt i intensitetsmatrisen med två kärnor:
+	\item Beräkna intensitetsmatrisen med metoden \code{intensity}.
+	\item För varje punkt i intensitetsmatrisen gör två faltningar med dessa kärnor:
 $$
-X\_SOBEL =
+SobelX =
 \begin{pmatrix}
   -1 & 0 & 1 \\
   -2 & 0 & 2 \\
   -1 & 0 & 1 \\
 \end{pmatrix}
-Y\_SOBEL =
+~\hspace{3em}~
+SobelY =
 \begin{pmatrix}
   -1 & -2 & -1 \\
   0 & 0 & 0 \\
   1 & 2 & 1 \\
 \end{pmatrix}
 $$
-	Använd metoden \code{convolve} med vikten 1. Koefficienterna i matrisen $X\_SOBEL$ uttrycker derivering i x-led, i $Y\_SOBEL$ faltning i y-led. För att förklara varför koefficienterna ibland är 1 och ibland 2 måste man studera den bakomliggande teorin noggrant, men det gör vi inte här.
+	Använd metoden \code{convolve} med vikten 1. Koefficienterna i matrisen $SobelX$ uttrycker derivering i x-led, medan $SobelY$ uttrycker derivering i y-led. För att förklara varför koefficienterna ibland är 1, ibland 2, ibland positiva och ibland negativa, måste man studera den bakomliggande teorin noggrant, men det gör vi inte här.
 	\item Om resultaten av faltningen i en punkt betecknas med \code{sx} och \code{sy} så får man en indikator på närvaron av en kontur med \code{math.abs(sx) + math.abs(sy)}. Absolutbelopp behöver man eftersom man har negativa koefficienter i faltningsmatriserna.
 	\item  Sätt pixeln till svart om indikatorn är större än tröskelvärdet, till vit annars. Låt tröskelvärdet bestämmas av ett argument som användaren kan ange.
 \end{enumerate}
+\noindent Skapa ett filter \code{Sobel} som implementerar konturförstärkning med ovan algoritm. Se exempel i fig. \ref{photo:fig:photo-jay-sobel}. Du ska låta användaren ge tröskelvärdet med argumentbeskrivningen \code{"Threshold (0.0 - 255.0)"}.
 
-Skriv en klass \code{SobelFilter} som implementerar denna algoritm.
-
-\begin{figure}[H]
-\begin{center}
-\includegraphics[width=0.6\textwidth]{../img/w12-assignment-photo/sobeljay.png}
-\caption { Exempel på en bild där ett Sobelfilter applicerats med ett parametervärde på 150.}
-\label{fig:photo:sobelfilter:sobel}
-\end{center}
-\end{figure}
-
-
-\Task Implementera \code{ImageEditor} enligt specifikationerna ovan.
-
-\Task Knyt ihop allt i \code{Application}-objektet som du skapade innan. Utskrifterna ska se ut på följande sätt:\newline
-
-{\setlength{\parindent}{0cm}
-
- Välj en av följande bilder genom att mata in en siffra\newline
-
-0. boy.jpg\newline
-1. car.jpg\newline
-2. duck.jpg\newline
-3. jay.jpg\newline
-4. moon.jpg\newline
-5. shuttle.jpg\newline
-Ditt val: \textbf{1}\newline
-Bild car.jpg laddad\newline
-\textit{//Bilden visas i ett PixelWindow}\newline
-
-Välj ett alternativ\newline
-
-0. för Blåfilter\newline
-1. för Inverterat\newline
-2. för Krypterat\newline
-3. för Inverterat\newline
-4. för Grått\newline
-5. för Kontrast\newline
-6. för Gauss\newline
-7. för Sobel\newline
-8. för Intervall\newline
-9. för Change\newline
-a. AVBRYT\newline
-s. SPARA\newline
-z. UNDO\newline
-
-Ditt val: \textbf{6}\newline
-Till detta filter behöver du ange [1] argument.\newline
-
-Ange argument för Gauss: \newline
-Argument 1: [Styrka (0-50) där 0 är max]: \textbf{0}\newline
-\textit{//Bilden uppdateras och ritas i samma PixelWindow}\newline
-
-Välj ett alternativ\newline
-...
-}
-
-Tänk på att användaren kan mata in otillåtna värden. Detta ska hanteras på lämpligt sätt.
 
 \Task \input{modules/w12-assignment-add-docs-task.tex}
 
@@ -441,7 +314,7 @@ Beräkna \code{lowCut} så att \code{histogram(0)} + \ldots + \code{histogram(lo
 
 Sammanfattning av algoritmen:
 \begin{enumerate}
-	\item Beräkna intensiteten hos alla punkterna i bilden, lagra dem i en \code{short}-matris. Använd den färdigskrivna metoden \code{computeIntensity}.
+	\item Beräkna intensitetsmatrisen.
 	\item Beräkna bildens intensitetshistogram.
 	\item Argument från användaren användas som \code{cutOff}.
 	\item Beräkna \code{lowCut} och \code{highCut} enligt ovan.
@@ -449,4 +322,4 @@ Sammanfattning av algoritmen:
 \end{enumerate}
 Skriv en klass \code{ContrastFilter} som implementerar algoritmen. I katalogen \emph{images} kan bilden \emph{moon.jpg} vara lämplig att testa, eftersom den har låg kontrast. Anmärkning: om \code{cutOff} sätts = 0 så får man samma resultat av denna filtrering som man får av \code{GrayScaleFilter}. Detta kan man se genom att studera interpolationsformeln.
 
-\Task \textbf{Eget filter.} Skapa ett eget filter som utnyttjar att \code{apply}-metoden tar emot en sekvens av värden. Till exempel så kan du skicka in en array med fem värden där de två första värdena representerar ett intesitetsintervall och de tre sista värdena representerar röd-, grön- och blåkomponenterna till en färg som ska stoppas in där intensiteten hamnar utanför det givna intervallet. Ett annat alternativ kan vara att använda sig av metoder i \code{PixelWindow} för att välja specifika pixlar på originalbilden som sedan kan användas för att manipulera bilden i filtrets \code{apply}-metod. Valet är ditt!
+\Task \textbf{Eget filter.} Skapa ett eget filter som utnyttjar att \code{apply}-metoden tar emot en sekvens av värden. Till exempel så kan du skicka in en array med fem värden där de två första värdena representerar ett intensitetsintervall och de tre sista värdena representerar röd-, grön- och blå-komponenterna till en färg som ska stoppas in där intensiteten hamnar utanför det givna intervallet. Ett annat alternativ kan vara att använda sig av metoder i \code{PixelWindow} för att välja specifika pixlar på originalbilden som sedan kan användas för att manipulera bilden i filtrets \code{apply}-metod. Valet är ditt!

@@ -23,16 +23,8 @@ private def initMainWindow(): Unit =
   mainButtons.foreach(_.draw(mainWindow))
 end initMainWindow
 
-
 def doExit(isWindowClosed: Boolean): Unit = 
-  if introprog.Dialog.isOK("Ok to Exit without save?") then 
-    println("Goodbye!")
-    System.exit(0)
-  else 
-    println("Aborting exit...")
-    if isWindowClosed then initMainWindow()
-  end if
-end doExit
+  println("TODO Exit; if exit is canceled after check and window was closed then re-init main window")
 
 def doOpen(): Unit = 
   println(s"TODO Open selected image i ImageEditor in /$DefaultStartDir if exists else in current")
