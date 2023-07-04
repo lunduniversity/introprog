@@ -304,25 +304,25 @@ val newIntensity = 255 * (intensity - 45) / (225 - 45)
 
 Som synes kommer en punkt med intensiteten 45 att få den nya intensiteten 0 och en punkt med intensiteten 225 att få den nya intensiteten 255. Mellanliggande punkter sprids ut jämnt över intervallet \code{[0, 255]}. För punkter med en intensitet mindre än 45 sätter man den nya intensiteten till 0, för punkter med en intensitet större än 225 sätter man den nya intensiteten till 255. Vi kallar intervallet där de flesta pixlarna finns för \code{[lowCut, highCut]}. De punkter som har intensitet mindre än \code{lowCut} sätter man till 0, de som har intensitet större än \code{highCut} sätter man till 255. För de övriga punkterna interpolerar man med formeln ovan (45 ersätts med \code{lowCut}, 225 med \code{highCut}).
 
-Det återstår nu att hitta lämpliga värden på \code{lowCut} och \code{highCut}. Detta är inte något som kan göras helt automatiskt, eftersom värdena beror på intensitetsfördelningen hos bildpunkterna. Man börjar med att beräkna bildens intensitetshistogram, dvs hur många punkter i bilden som har intensiteten 0, hur många som har intensiteten 1, . . . , till och med 255.
+Det återstår nu att hitta lämpliga värden på \code{lowCut} och \code{highCut}. Detta är inte något som kan göras enkelt, eftersom värdena beror på intensitetsfördelningen hos bildpunkterna. Man börjar därför med att först beräkna bildens intensitetshistogram, dvs hur många punkter i bilden som har intensiteten 0, hur många som har intensiteten 1, . . . , till och med 255.
 
 I de flesta bildbehandlingsprogram kan man sedan titta på histogrammet och interaktivt bestämma värdena på \code{lowCut} och \code{highCut}. Så ska vi dock inte göra här. I stället bestämmer vi oss för ett procenttal \code{cutOff}, som användaren kan ange som argument från terminalen, och som  beräknar \code{lowCut} så att \code{cutOff} procent av punkterna i bilden har en intensitet som är mindre än \code{lowCut} och \code{highCut} så att \code{cutOff} procent av punkterna har en intensitet som är större än \code{highCut}.
 
-Exempel: antag att en bild innehåller 100 000 pixlar och att \code{cutOff} är 1.5. Beräkna bildens intensitetshistogram i en array
-\begin{Code}
-val histogram = Array[Int](256)
-\end{Code}
+\vspace{1em}
 
-Beräkna \code{lowCut} så att \code{histogram(0)} + \ldots + \code{histogram(lowCut)} = 0.015 * 100000 (så nära det går att komma, det blir troligen inte exakt likhet). Beräkna \code{highCut} på liknande sätt.
+\noindent \textbf{Exempel}: antag att en bild innehåller 100 000 pixlar och att \code{cutOff} är 1.5. Beräkna bildens intensitetshistogram i en genom registrering varje intensitet i en heltals-array \\  \code{val histogram = Array.ofDIm[Int](256)}\\och beräkna \code{lowCut} så att \\\code{histogram(0)} + \ldots + \code{histogram(lowCut)} = 0.015 * 100000 \\så nära det går att komma, det blir troligen inte exakt likhet. Beräkna \code{highCut} på liknande sätt.
 
-Sammanfattning av algoritmen:
+\vspace{1em}
+
+
+\noindent Sammanfattning av algoritmen:
 \begin{enumerate}
 	\item Beräkna intensitetsmatrisen.
 	\item Beräkna bildens intensitetshistogram.
 	\item Argument från användaren användas som \code{cutOff}.
-	\item Beräkna \code{lowCut} och \code{highCut} enligt ovan.
+	\item Beräkna \code{lowCut} och \code{highCut} enligt exempel ovan.
 	\item Beräkna den nya intensiteten för varje pixel enligt interpolationsformeln och lagra de nya pixlarna i \code{result}.
 \end{enumerate}
-Skriv en klass \code{ContrastFilter} som implementerar algoritmen. I katalogen \emph{images} kan bilden \emph{moon.jpg} vara lämplig att testa, eftersom den har låg kontrast. Anmärkning: om \code{cutOff} sätts = 0 så får man samma resultat av denna filtrering som man får av \code{GrayScaleFilter}. Detta kan man se genom att studera interpolationsformeln.
+Skapa ett filter \code{Contrast} som implementerar algoritmen. I katalogen \emph{images} kan bilden \emph{moon.jpg} vara lämplig att testa, eftersom den har låg kontrast. Anmärkning: om \code{cutOff} sätts = 0 så får man samma resultat av denna filtrering som man får av \code{GrayScale}. Detta kan man se genom att studera interpolationsformeln.
 
 \Task \textbf{Eget filter.} Skapa ett eget filter som utnyttjar att \code{apply}-metoden tar emot en sekvens av värden. Till exempel så kan du skicka in en array med fem värden där de två första värdena representerar ett intensitetsintervall och de tre sista värdena representerar röd-, grön- och blå-komponenterna till en färg som ska stoppas in där intensiteten hamnar utanför det givna intervallet. Ett annat alternativ kan vara att använda sig av metoder i \code{PixelWindow} för att välja specifika pixlar på originalbilden som sedan kan användas för att manipulera bilden i filtrets \code{apply}-metod. Valet är ditt!
