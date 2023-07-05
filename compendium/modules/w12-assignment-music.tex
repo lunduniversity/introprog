@@ -215,34 +215,49 @@ music> ! g 0 2 2 0 0 0
 Play Guitar((0,2,2,0,0,0)) Chord(E3,B3,E4,G4,B4,E5)
 \end{REPL}
 
-\noindent\emph{Tips och förslag:} Du kan i stället för \code{scala.io.StdIn.readLine} använda \code{jline} och då får du kommandohistorik med pil upp samt Ctrl+A, Ctrl+E etc. helt automatiskt. Gör helt enkelt så här i \code{Main} i stället för vanliga \code{readLine}:
-\begin{CodeSmall}
-  val console = new jline.console.ConsoleReader // skapa kommandoläsare
-  console.setExpandEvents(false) // stäng av hantering av specialtecken
-  def readLine(): String = console.readLine("music> ")
-\end{CodeSmall}
-Du behöver då lägga till jar-filen\footnote{\url{https://repo1.maven.org/maven2/jline/jline/2.14.6/jline-2.14.6.jar}} med \code{jline} till ditt bygge. Om du använder sbt kan du göra det enkelt med denna rad i filen \code{build.sbt}:
-\begin{CodeSmall}
-libraryDependencies += "jline" % "jline" % "2.14.6"
-\end{CodeSmall}
-Lägg till nedan rader i din \code{build.sbt} så att ditt program körs i en separat JVM, annars blir det konstiga initialiseringsfel av MIDI-systemet om du kör med \code{sbt run}.
+% \noindent\emph{Tips och förslag:} Du kan i stället för \code{scala.io.StdIn.readLine} använda \code{jline} och då får du kommandohistorik med pil upp samt Ctrl+A, Ctrl+E etc. helt automatiskt. Gör helt enkelt så här i \code{Main} i stället för vanliga \code{readLine}:
+% \begin{CodeSmall}
+%   val console = new jline.console.ConsoleReader // skapa kommandoläsare
+%   console.setExpandEvents(false) // stäng av hantering av specialtecken
+%   def readLine(): String = console.readLine("music> ")
+% \end{CodeSmall}
+% Du behöver då lägga till jar-filen\footnote{\url{https://repo1.maven.org/maven2/jline/jline/2.14.6/jline-2.14.6.jar}} med \code{jline} till ditt bygge. Om du använder sbt kan du göra det enkelt med denna rad i filen \code{build.sbt}:
+% \begin{CodeSmall}
+% libraryDependencies += "jline" % "jline" % "2.14.6"
+% \end{CodeSmall}
+% Lägg till nedan rader i din \code{build.sbt} så att ditt program körs i en separat JVM, annars blir det konstiga initialiseringsfel av MIDI-systemet om du kör med \code{sbt run}.
 
-\begin{CodeSmall}
-fork                := true // https://stackoverflow.com/questions/18676712
-connectInput        := true // http://www.scala-sbt.org/1.x/docs/Forking.html
-outputStrategy      := Some(StdoutOutput)
-\end{CodeSmall}
+% \begin{CodeSmall}
+% fork                := true // https://stackoverflow.com/questions/18676712
+% connectInput        := true // http://www.scala-sbt.org/1.x/docs/Forking.html
+% outputStrategy      := Some(StdoutOutput)
+% \end{CodeSmall}
 
 
-\Task Bygg vidare på terminalappen \code{music} och implementera fler kommandon. Du kan t.ex. skapa ett kommando som låter användare definierar egna namn på kommandon som sedan enkelt kan köras med hjälp av det definierade namnet.
+\Task Skapa ett kommando som låter användare definierar egna namn på kommandon som sedan enkelt kan köras med hjälp av det definierade namnet. Vid definition med tidigare existerande namn så ska den gamla definitionen ersättas
 \begin{REPL}
-music> def Em ! g 0 2 2 0 0 0
-defined Em: ! g 0 2 2 0 0 0
+music> def Em = ! g 0 2 2 0 0 0
+defined Em = ! g 0 2 2 0 0 0
 music> Em
 Play Guitar((0,2,2,0,0,0)) Chord(E3,B3,E4,G4,B4,E5)
 \end{REPL}
+Det ska fungera att föra nästlade def-kommando. Testa att definiera en hel låt som i sin tur består av definierade ackord.
 
 \Task \input{modules/w12-assignment-add-docs-task.tex}
+
+
+\subsection{Valfria uppgifter}
+
+\Task Gör så att definitioner sparas mellan körningar.
+
+\Task Implementera fler valfria kommandon. Du kan t.ex. 
+\begin{itemize} 
+\item skapa kommando som ritar en grepptabell för gitarrackord eller fingersättning på piano med \code{introprog.PixelWindow}.
+\item skapa kommando för att göra drumbeats, t.ex. \code{drum mygrove x x o x} för 2 hihat + basatrumma + 1 hihat och \code{start mygrove} och \code{stop mygrove} för uppspelning av beat i bakgrunden med \code{playConcurrently}. Se i \code{Synth.scala} för vilka instrument som ger trumljud med ledning av deras namn \\\code{music.Synth.instruments.map(_.getName)}, t.ex \code{Standard Kit} eller \code{Synth Drum}. Använd kanal 10 för att spela upp trumljuden.
+\end{itemize}
+
+\Task Använd öppen-källkodsprokjektet \code{jline} i stället för \code{scala.io.StdIn.readLine} för att automatiskt få pil-upp-historik, Ctrl+A Ctrl+K etc. Se exempel på användning av \code{jline} här: \url{https://github.com/bjornregnell/termut}
+
 
 % ...
 %
