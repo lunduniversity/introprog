@@ -18,7 +18,6 @@ case class Button(text: String, pos: (Int,Int), size: (Int, Int), fontSize: Int,
   def isClickInside(clickedPos: (Int, Int)): Boolean = 
     (pos._1 to (pos._1 + size._1)).contains(clickedPos._1) &&
     (pos._2 to (pos._2 + size._2)).contains(clickedPos._2)
-end Button
 
 object Button:
   val Size = (200, 40)
