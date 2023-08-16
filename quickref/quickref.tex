@@ -315,9 +315,9 @@ Import
 \code|final| &  definitions & \Comment{Final members cannot be overridden, final classes cannot be extended.}\\
 \code|protected|~~ & definitions& \Comment{Restricts access to subtypes and companion.}\\
 \code|lazy| & val definitions & \Comment{Delays initialization of val, initialized when first referenced.}\\
-\code|infix| & def definitions & \Comment{Allow alpha-numeric functions in operator notation without warning.}\\
+\code|infix| & def definitions & \Comment{Allow alpha-numeric function names in operator notation without warning.}\\
 \code|abstract| & class definitions & \Comment{Abstract classes cannot be instantiated (redundant for traits).}\\
-\code|sealed| & class definitions & \Comment{Restricts direct inheritance to classes in the same source file.}\\
+\code|sealed| & class definitions & \Comment{Restricts direct inheritance to classes in the same compilation unit.}\\
 \code|open| & class definitions & \Comment{Signal intent to be used in inheritance hierarchy. Silences warning.} \\
 \end{tabular}
 }
@@ -325,15 +325,15 @@ Import
 \clearpage\vspace*{-2.0em}\head{Constructors and special methods (getters, setters, apply, update), Companion object}\Newline
 {\small
 \begin{tabular}{@{}l @{}l}
-\code|class A(initX: Int = 0):| & \Comment{\textbf{primary constructor}, new is optional creating objects: A(1), default arg: A()} \\
+\code|class A(initX: Int = 0):| & \Comment{\textbf{primary constructor}, object creation (new is optional): new A(1), A(1), A()} \\
 \code|  private var _x = initX| & \Comment{private member only visible in A and its companion object} \\
 \code|  def x: Int = _x| & \Comment{getter for private field \_x (name with \_ chosen to avoid clash with x)} \\
 \code|  def x_=(i: Int): Unit = | & \Comment{special setter syntax to update attribute using assignment:} \\
 \code|    _x = i  | & \Comment{val a = A(1); a.x = 2} \\ \vspace{0.4em}
-\code|end A| & \Comment{optional end marker checked by compiler, also allowed: \texttt{end class}} \\
+\code|end A| & \Comment{optional end marker checked by compiler} \\
 \code|object A: | & \Comment{becomes a \textbf{companion object} if same name and in same code file} \\
 \code|  def apply(i: Int = 0) = |  & \Comment{apply is optional: A.apply(1), A(1), A()} \\
-\code|    new A(i) |  & \Comment{new is needed here to avoid recursive calls} \\
+\code|    new A(i) |  & \Comment{\code|new| is needed here to avoid recursive calls} \\
 \code|  val y = A(1)._x | & \Comment{private members can be accessed in companion} \\
 \end{tabular}
 
@@ -360,7 +360,7 @@ class IntVec(private val xs: Array[Int]):
 \Comment{Special syntax for \textbf{update} and \textbf{apply}:} \\
 v(0) = 0~\Comment{expanded to} v.update(0,0)\\
 v(0)\hspace{1.5em}\Comment{expanded to} v.apply(0)\\
-\Comment{where} val v = new IntVec(Array(1,2,3)) \\
+\Comment{where} val v = IntVec(Array(1,2,3)) \\
 
 }%
 \end{minipage}
@@ -394,14 +394,14 @@ try       &  \code|val resultOfUnsafeExpr =  |  & \Comment{Evaluate function f: 
 \vspace{0.25em}\renewcommand{\arraystretch}{1.05}
 \begin{tabular}{@{}l @{\hspace{-1.6em}}r @{\hspace{0.6em}}l | r l}
 
-Evaluation order   & \code|(1 + 2) * 3| & \Comment{parenthesis control order} & \multicolumn{2}{l}{\hspace{-0.2em}\textbf{Precedence} of operators beginning with:}\\
+Evaluation order   & \code|(1 + 2) * 3| & \Comment{parenthesis control order} & \multicolumn{2}{l}{\hspace{-0.2em}\textbf{Precedence} of operators starting with:}\\
 
 Method application & \code|1.+(2)|  &  \Comment{call method + on object 1} & all letters & \textbf{lowest}\\
 
 Operator notation  & \code|1 + 2|  &   \Comment{same as 1.+(2)} & \code+|+ \\
 
 Conjunction  & \code|c1 && c2|  &  \Comment{true if both c1 \textbf{and} c2 true}  & \code|^|  \\
-Disjunction  & \code+c1 || c2+  &  \Comment{true if c1 \textbf{or} c2 true}  & \code|&|  \\
+Disjunction  & \code+c1 || c2+  &  \Comment{true if at least one of c1 \textbf{or} c2 true}  & \code|&|  \\
 Negation  & \code|!c|          &  \Comment{logical \textbf{not}, false if c is true}  & \code|=  !| \\
 
 Function application  & \code|f(1, 2, 3)|  &   \Comment{same as f.apply(1,2,3)} & \code|<  >|\\
@@ -419,7 +419,7 @@ Non-referable reference & \code|null|  &  \multicolumn{3}{l}{\hspace{-0.7em}\Com
 Assignment operator & \code|x += 1|  &  \multicolumn{3}{l}{\hspace{-0.7em}\Comment{expands to~~\code|x = x + 1|~~if no method += is available, works for all operators}} \\
 \vspace{-0.4em}\\
 Empty tuple, unit value& \code|()|  &  \Comment{the only value of type Unit}  & \multicolumn{2}{l}{\textbf{Integer division and remainder:}} \\
-2-tuple value   & \code|(1, "hello")| &  \Comment{same as Tuple2(1, "hello")} & \multicolumn{2}{l}{\code|a / b|  \Comment{~no decimals if a, b Int, Short, Byte }}   \\ \vspace{0.5em}
+2-tuple value   & \code|(1, "hello")| &  \Comment{same as Tuple2(1, "hello")} & \multicolumn{2}{l}{\code|a / b|  \Comment{~no decimals if  Int, Short, Byte }}   \\ \vspace{0.5em}
 2-tuple type    & \code|(Int, String)| & \Comment{same as Tuple2[Int, String]} & \multicolumn{2}{l}{\code|a \% b|  \Comment{~fulfills: (a / b) * b + (a \% b) == a}} \\
 \multicolumn{5}{l}{\hspace{-0.7em}Tuple prepend~~~\code|3 *: (1.0, '!')| ~\Comment{of type \texttt{Int\,*:\,Double\,*:\,Char\,*:\,EmptyTuple}~~same as (Int, Double, Char)}}\\
 \multicolumn{5}{l}{\hspace{-0.7em}Methods on tuples:~~\code|apply drop take head tail zip toArray toIArray toList| }
@@ -523,7 +523,7 @@ Empty tuple, unit value& \code|()|  &  \Comment{the only value of type Unit}  & 
 \code|val b = Box(0) |
 & \Comment{same as (with explicit type parameters):~~~val b: Box\textbf{[Int]} = new Box\textbf{[Int]}(0)}\\
 
-\code|val p: (Box[Int], Box[char]) = b.pair(Box('!'))  |
+\code|val p: (Box[Int], Box[Char]) = b.pair(Box('!'))  |
 & \Comment{\textbf{type bounds} \code|>:| supertype~~\code|<:| subtype}\\
 
 \end{tabular}
@@ -550,13 +550,13 @@ ClassTag needed for generic array constr.: \code|def mkArr[A:reflect.ClassTag](a
 \multicolumn{2}{l}{\hspace{-0.62em}\code|val opt: Option[String] = if math.random() > 0.9 then Some("bingo") else None|} \\
 
 \code|opt.getOrElse(expr)|
-& \Comment{x: T if opt == Some[T](x) else expr}\\
+& \Comment{if opt == Some[T] then x else expr}\\
 
-\code|opt.map(x => ... }|
-& \Comment{apply x => ... to x if opt is Some(x) else None}\\
+\code|opt.map(f}|
+& \Comment{if opt == Some(x) then f(x) else None}\\
 
 \code|opt.get|
-& \Comment{x: T if Some[T](x) else throws NoSuchElementException}\\
+& \Comment{if opt == Some[T] then x else throws NoSuchElementException}\\
 \end{tabular}
 
 \begin{tabular}{@{}l @{\hspace{1.0em}}r}

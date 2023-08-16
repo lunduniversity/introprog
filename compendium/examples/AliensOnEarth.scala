@@ -1,7 +1,7 @@
 object AliensOnEarth:
   def readChoice(msg: String, options: Vector[String]): String =
     options.indices.foreach(i => println(s"$i: ${options(i)}"))
-    val selected = io.StdIn.readLine(msg).toInt
+    val selected = scala.io.StdIn.readLine(msg).toInt
     options(selected)
 
   def isAnswerYes(msg: String): Boolean =
