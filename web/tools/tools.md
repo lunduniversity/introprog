@@ -2,7 +2,7 @@ I denna kurs använder vi programmeringsspråket **Scala** och olika programmeri
 
 ## Programmera på LTH:s datorer
 
-På LTH:s [Linuxdatorer i E-huset](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/) finns alla de verktyg vi använder i kursen förinstallerade:
+På LTH:s [Linuxdatorer i E-huset](https://fileadmin.cs.lth.se/cs/Bilder/Salar/Datorsalar_E-huset.pdf) finns alla de verktyg vi använder i kursen förinstallerade:
 
 * Rekommenderad kodeditor: VS Code startas med kommandot `code .` (Tillägget `Scala Metals` är förinstallerat.)  
 * Scala REPL: `scala` eller `scala-cli repl .`
@@ -12,6 +12,8 @@ På LTH:s [Linuxdatorer i E-huset](https://www.lth.se/lthin/datorsalar/vaara-dat
 * Java-kompilatorn: `javac`
 * Exekveringsmijlön JVM med tillhörande utvecklingsbibliotek (OpenJDK): `java`
 * Utvecklingsmiljön IntelliJ IDEA med Scala-plugin: `idea`
+
+Mer info [om skolans datorer här](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/) och [hur du använder Linux](http://fileadmin.cs.lth.se/cs/Education/EDAA60/general/unix-x.pdf) och [hur du använder bash](https://github.com/RehanSaeed/Bash-Cheat-Sheet).
 
 
 ## Programmera på din egen dator 
@@ -23,15 +25,22 @@ Många av de programmeringsverktyg vi använder körs via ett terminalfönster. 
 
 Scala med tillhörande verktyg installeras med hjälp av det officiella installationsverktyget Coursier enligt nedan. Du får då bl.a. följande terminalverktyg som du kan läsa om i kompendiet: `scala`, `scalac`, `scala-cli`, `scaladoc`, `sbt`. 
 
-Om du kör MacOS eller Linux/Ubuntu/WSL så kan du gärna i stället använda den smidiga pakethanteraren SDKMAN, läs mer nedan under rubriken "SDKMAN för dig med MacOS eller Linux/Ubuntu/WSL".
+Om du kör MacOS eller Linux/Ubuntu/WSL så kan du gärna i stället använda den smidiga pakethanteraren SDKMAN, läs mer nedan under rubriken ["SDKMAN för dig med MacOS eller Linux/Ubuntu/WSL"](#sdkman).
+
+* Hoppa till [Windows](#windows)
+* Hoppa till [MacOS](#macos)
+* Hoppa till [Linux/Ubuntu/WSL](#linux)
+* Hoppa till [VS Code](#editor)
+* Hoppa till [Kojo](#kojo)
+
 
 ### Windows
 
 #### Terminalfönster i Windows
 
-* För Windows reUbuntu/kommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started) 
+* För terminal i Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started) 
 * Du kan också köra den befintliga men antika cmd-terminalen direkt i Windows som inte kräver någon installation, följ instruktioner här [https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/](https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/) och läs mer om vilka kommando som finns i cmd här: [https://ss64.com/nt/](https://ss64.com/nt/)
-* Om du har en uppdaterad version av Windows 10 eller 11 så rekommenderas också **WSL**, helst version 2, som ger dig tillgång till Linux/Ubuntu direkt under Windows i ett separat filsystem. För att installera WSL behöver du starta  **PowerShell** med admin-rättigheter så här: tryck på windows-knappen, skriv `powershell` och högerklicka och välj run as administrator. Följ vidare instruktioner här och välj att installera Ubuntu 22.04 (fråga ngn om hjälp om du kör fast):  [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10) När du installerat WSL följ instruktionerna under **Linux-rubrikerna** nedan för att installera kursens programmeringsverktyg under WSL/Ubuntu. 
+* Om du har en uppdaterad version av Windows 10 eller 11 och är en va Windows användare så kan du köra **WSL**, helst version 2, som ger dig tillgång till Linux/Ubuntu direkt under Windows i ett separat filsystem. För att installera WSL behöver du starta  **PowerShell** med admin-rättigheter så här: tryck på windows-knappen, skriv `powershell` och högerklicka och välj run as administrator. Följ vidare instruktioner här och välj att installera Ubuntu 22.04 (fråga ngn om hjälp om du kör fast):  [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10) När du installerat WSL följ instruktionerna under **Linux-rubrikerna** nedan för att installera kursens programmeringsverktyg under WSL/Ubuntu. 
 * Det finns även andra sätt att installera Linux/Ubuntu, t.ex. med [VirtualBox](https://ubuntu.com/tutorials/how-to-run-ubuntu-desktop-on-a-virtual-machine-using-virtualbox#1-overview) (kräver snabb dator och rejät med RAM) eller [Dual Boot](https://medium.com/linuxforeveryone/how-to-install-ubuntu-20-04-and-dual-boot-alongside-windows-10-323a85271a73) (kräver att du har minst 25GB extra utrymme på disken, gärna mer, och att du krymper din Windows-partition och slår på legacy boot i BIOS), eller att du helt [ersätter Windows med Ubuntu](https://ubuntu.com/tutorials/install-ubuntu-desktop) (enklaste sättet och funkar fint även på äldre och klenare datorer). Fråga någon medstudent som vet hur det går till om råd och hjälp om du vill installera Ubuntu "på riktigt". 
 
 #### Installera OpenJDK i Windows
@@ -56,7 +65,8 @@ Om du kör MacOS eller Linux/Ubuntu/WSL så kan du gärna i stället använda de
 * Starta om din dator.
 * Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
 * Om du har en tillräckligt ny Windows-maskin rekommenderas även WSL (se ovan under "Starta terminalfönster") som gör att du kan köra Linux/Ubuntu under Windows och då installera Scala-verktyg enligt instruktioner för Linux. 
-* Installera VS Code med tillägget "Scala (Metals)" och Kojo enligt instruktioner nedan.
+* Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner [nedan](#editor)
+* Installera Kojo enligt instruktioner [nedan](#kojo).
 
 
 ### MacOS
@@ -65,9 +75,9 @@ Om du kör MacOS eller Linux/Ubuntu/WSL så kan du gärna i stället använda de
 
 * Följ instruktioner här: [https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/](https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/)
 
-* Apple har på grund av licensregler bestämt att inte längre inkludera senaste versionen terminalskalet bash MacOS och har i stället gått över till zsh. Alla instruktioner i pgk och dod förutsätter bash. Följ instruktionerna om hur du får igång bash på MacOS här: https://www.howtogeek.com/444596/how-to-change-the-default-shell-to-bash-in-macos-catalina/
+* Apple har på grund av licensregler bestämt att inte längre inkludera senaste versionen terminalskalet bash i MacOS och har i stället gått över till zsh. Alla instruktioner i pgk och dod förutsätter bash. Följ instruktionerna om hur du får igång bash på MacOS här: [https://www.howtogeek.com/444596/how-to-change-the-default-shell-to-bash-in-macos-catalina/](https://www.howtogeek.com/444596/how-to-change-the-default-shell-to-bash-in-macos-catalina/)
 
-* Det är bra om du installerar en nya version enligt instruktioner här, men det är inte strikt nödvändigt: https://www.shell-tips.com/mac/upgrade-bash/  
+* Det är bra om du installerar en nya version enligt instruktioner här, men det är inte strikt nödvändigt: [https://www.shell-tips.com/mac/upgrade-bash/](https://www.shell-tips.com/mac/upgrade-bash/) 
 
 #### Installera OpenJDK i MacOS
 
@@ -96,7 +106,7 @@ curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-apple-darwin
 * Installera VS Code med tillägget "Scala (Metals)" och Kojo enligt instruktioner nedan.
 
 
-### Linux/Ubuntu/WSL
+### Linux
 
 #### Starta terminalfönster i Linux/Ubuntu/WSL
 
@@ -128,10 +138,12 @@ curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz 
 * Testa att skriva `scala --version` och `scala-cli --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
 * Installera VS Code med tillägget "Scala (Metals)" och Kojo enligt instruktioner nedan.
 
-### SDKMAN för dig med MacOS eller Linux/Ubuntu/WSL
+### SDKMAN
+#### SDKMAN för dig med MacOS eller Linux/Ubuntu/WSL
 
-[https://sdkman.io/](https://sdkman.io/) är ett populärt installationsverktyg för att enkelt installera och hantera olika versioner av allehanda programmeringsverktyg för Ubuntu/Linux/WSL/MacOS. För dig som hellre vill använda SDKMAN i stället så går det utmärkt att installera Scala-verktugen ovan med hjälp av nedan kommando ett i taget i tur och ornding (om du har [installerat SDKMAN](https://sdkman.io/install)):
+[https://sdkman.io/](https://sdkman.io/) är ett populärt installationsverktyg för att enkelt installera och hantera olika versioner av allehanda programmeringsverktyg för Ubuntu/Linux/WSL/MacOS. För dig som hellre vill använda SDKMAN i stället så går det utmärkt att installera Scala-verktugen ovan med hjälp av nedan kommando ett i taget i tur och ornding (om du har [installerat SDKMAN](https://sdkman.io/install)) och svara med stort Y på eventuella frågor om att göra nya versionen default:
 ```
+sdk update
 sdk install java 17.0.8-tem
 sdk install scala
 sdk install scalacli
@@ -139,7 +151,8 @@ sdk install sbt
 ```
 *Tips:* Det är viktigt att du noterar HUR du har installerat olika grejer på din dator, speciellt om du blandar olika metoder. Om du behöver uppdatera eller avinstallera så blir det lätt förvirring om du glömt hur du installerat och försöker uppdatera/avinstallera med annan metod än du installerat etc.
 
-### Installera kod-editorn VS Code och tillägget Scala Metals i Windows/MacOS/Linux/Ubuntu/WSL
+### Editor
+#### Installera kod-editorn VS Code och tillägget Scala Metals i Windows/MacOS/Linux/Ubuntu/WSL
 
 1. Installera **VS Code** för ditt system här: [https://code.visualstudio.com/Download](https://code.visualstudio.com/Download) 
 2. Installera tillägget **Scala Metals**. Du kan antingen göra detta via tilläggshanterare (Extensions) inne i VS Code eller via terminalen. 
@@ -157,10 +170,10 @@ sdk install sbt
 
 Läs mer om vad du kan göra med en VS Code och andra verktyg i appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) 
 
+### Kojo
+#### Installera Kojo i Windows/MacOS/Linux/Ubuntu/WSL
 
-### Installera Kojo i Windows/MacOS/Linux/Ubuntu/WSL
-
-Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera. Kojo används på [Vattenhallen Science Center](https://www.vattenhallen.lu.se/upplevelser/programmering/). 
+Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera. 
 
 Det finns 3 olika sätt att köra Kojo:
 
@@ -170,7 +183,7 @@ Det finns 3 olika sätt att köra Kojo:
 
 3. Kör Kojo i din webbläsare. Använder gamla Scala 2 och en begränsad uppsättning av de kommandon som finns i Kojo Desktop. Skriv och kör din kod direkt här: [http://kojo.lu.se/](http://kojo.lu.se/)
 
-LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen här: [https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/](https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/)
+Kojo används på [Vattenhallen Science Center](https://www.vattenhallen.lu.se/upplevelser/programmering/). LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen här: [https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/](https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/)
 
 
 ## Hårdvara
