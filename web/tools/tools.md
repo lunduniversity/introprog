@@ -166,6 +166,7 @@ sdk install sbt
     scala-cli setup-ide .
     code .
     ```
+    Första gången ett projekt öppnas i VS Code så tar det ett atg innan Metals har byggt allt från grunden. Du kan följa vad som händer i meddelandefältet längst ned; allt är klart när det står "Index complete" efter en raket-ikon.
 5. Om VS Code inte fungerar bra med Scala kan det vara bra att stänga ner VS Code och ta bort dessa underkataloger (om de existerar): `.bsp .bloop .vscode .metal .scala-build target` och därefter köra `scala-cli setup-ide .`  innan du startar VS Code igen i aktuell katalog med `code .`
 
 Läs mer om vad du kan göra med en VS Code och andra verktyg i appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) 
