@@ -18,7 +18,7 @@ Mer info [om skolans datorer här](https://www.lth.se/lthin/datorsalar/vaara-dat
 
 ## Programmera på din egen dator 
 
-Du behöver installera detta på din egen dator: OpenJDK, Scala och VS Code med tillägget Scala (Metals). Följ instruktionerna noga nedan under rubriken för ditt operativsystem om hur du installerar verktygen på din egen dator. Du kan läsa mer om hur du använder dessa verktyg i Appendix i [kompendiet]acOS eller Linux/Ubuntu/WSL".
+Du behöver installera detta på din egen dator: OpenJDK, Scala och VS Code med tillägget Scala (Metals). Följ instruktionerna noga nedan **under rubriken för ditt operativsystem** om hur du installerar verktygen på din egen dator. Du kan läsa mer om hur du använder dessa verktyg i Appendix i [kompendiet]acOS eller Linux/Ubuntu/WSL".
 (https://cs.lth.se/pgk/compendium/). 
 
 Många av de programmeringsverktyg vi använder körs via ett terminalfönster. Hur du får igång terminalen beskrivs nedan.
