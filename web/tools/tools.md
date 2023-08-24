@@ -5,13 +5,13 @@ I denna kurs använder vi programmeringsspråket **Scala** och olika programmeri
 På LTH:s [Linuxdatorer i E-huset](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/) finns alla de verktyg vi använder i kursen förinstallerade:
 
 * Rekommenderad kodeditor: VS Code startas med kommandot `code .` (Tillägget `Scala Metals` är förinstallerat.)  
-* Scala REPL; kommando: `scala` eller `scala-cli repl .`
-* Utvecklingsmiljön Kojo; kommando: `kojo`
-* Scala-kompilatorn; kommando: `scalac` eller `scala-cli compile .`
-* Byggverktyget sbt; kommando: `sbt`
-* Java-kompilatorn; kommando: `javac`
-* Exekveringsmijlön JVM med tillhörande utvecklingsbibliotek (OpenJDK); kommando: `java`
-* Utvecklingsmiljön IntelliJ IDEA med Scala-plugin; kommando: `idea`
+* Scala REPL: `scala` eller `scala-cli repl .`
+* Utvecklingsmiljön Kojo: `kojo`
+* Scala-kompilatorn: `scalac` eller `scala-cli compile .`
+* Byggverktyget Scala BUild Tool: `sbt`
+* Java-kompilatorn: `javac`
+* Exekveringsmijlön JVM med tillhörande utvecklingsbibliotek (OpenJDK): `java`
+* Utvecklingsmiljön IntelliJ IDEA med Scala-plugin: `idea`
 
 
 ## Programmera på din egen dator 
