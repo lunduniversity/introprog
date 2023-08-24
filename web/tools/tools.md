@@ -91,9 +91,15 @@ Om du kör MacOS eller Linux/Ubuntu/WSL så kan du gärna i stället använda de
 
 * Installera först OpenJDK enligt instruktioner ovan om du inte redan gjort det. 
 * Installera Scala-verktygen med detta långa terminalkommando på en och samma rad som slutar med `./cs setup`:
-```
-curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-apple-darwin.gz | gzip -d > cs && chmod +x cs && (xattr -d com.apple.quarantine cs || true) && ./cs setup
-```
+    * För nya Apple-datorer med arkitekturen "Apple Silicon" (M1, M2, ...):
+    ```
+    curl -fL https://github.com/VirtusLab/coursier-m1/releases/latest/download/cs-aarch64-apple-darwin.gz | gzip -d > cs && chmod +x cs && (xattr -d com.apple.quarantine cs || true) && ./cs setup
+    ```
+    * För gamla Apple-datorer med arkitekturen "x86-64":
+    ```
+    curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-apple-darwin.gz | gzip -d > cs && chmod +x cs && (xattr -d com.apple.quarantine cs || true) && ./cs setup
+    ```
+
 * Starta om din dator.
 * Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
 * Installera VS Code med tillägget "Scala (Metals)" och Kojo enligt instruktioner nedan.
