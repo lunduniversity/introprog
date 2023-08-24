@@ -159,10 +159,10 @@ sdk install sbt
     - Inifrån VS Code: Tryck Ctrl+Shift+X och skriv i sök-rutan: `Scala Metals`, markera tillägget *Scala (Metals)* och klicka *Install*. 
     - I terminalen skriv: `code --install-extension scalameta.metals --force`
 3. Om du kör WSL har du nytta av tillägget "Remote - WSL", sök bland tillägg (Ctrl+Shift+X) och klicka "Install", eller skriv i terminalen  `code --install-extension ms-vscode-remote.remote-wsl  --force`
-4. När du ska börja på ett nytt projekt så stäng ned VS Code och förbered VS Code för Scala med följande kommando:
+4. När du ska börja på ett nytt projekt så stäng ned VS Code och förbered VS Code för Scala med följande kommando (välj bättre namn på mittprojekt):
     ```
-    mkdir test
-    cd test
+    mkdir mittprojekt
+    cd mittprojekt
     scala-cli setup-ide .
     code .
     ```
