@@ -57,8 +57,8 @@ Om du kör MacOS eller Linux/Ubuntu/WSL så kan du gärna i stället använda de
 * Ladda ned filen [`cs-x86_64-pc-win32.zip`](https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-win32.zip) och spara den på valfritt ställe och dubbel-klicka på den när nedladdningen är klar. Följ instruktionerna och svara jakande. Om du får varningar så kör ändå genom att klicka "Mer information" eller liknande.
 * Starta om din dator.
 * Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
-* Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner under rubriken "Editor"
-* Installera Kojo enligt instruktioner nedan under rubriken "Kojo"
+* Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "Editor"
+* Installera Kojo enligt instruktioner längre ner under rubriken "Kojo"
 
 
 ### MacOS
@@ -101,8 +101,8 @@ Om du kör MacOS eller Linux/Ubuntu/WSL så kan du gärna i stället använda de
 
 * Starta om din dator.
 * Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
-* Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner under rubriken "Editor"
-* Installera Kojo enligt instruktioner nedan under rubriken "Kojo"
+* Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "Editor"
+* Installera Kojo enligt instruktioner längre ner under rubriken "Kojo"
 
 
 ### Linux
@@ -135,8 +135,8 @@ curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz 
 * Svara ja med stort Y på eventuell fråga om att addera coursier till din path. 
 * Starta om din dator.
 * Testa att skriva `scala --version` och `scala-cli --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
-* Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner under rubriken "Editor"
-* Installera Kojo enligt instruktioner nedan under rubriken "Kojo"
+* Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "Editor"
+* Installera Kojo enligt instruktioner längre ner under rubriken "Kojo"
 
 ### SDKMAN
 #### SDKMAN för dig med MacOS eller Linux/Ubuntu/WSL
