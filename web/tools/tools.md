@@ -25,14 +25,7 @@ Många av de programmeringsverktyg vi använder körs via ett terminalfönster. 
 
 Scala med tillhörande verktyg installeras med hjälp av det officiella installationsverktyget Coursier enligt nedan. Du får då bl.a. följande terminalverktyg som du kan läsa om i kompendiet: `scala`, `scalac`, `scala-cli`, `scaladoc`, `sbt`. 
 
-Om du kör MacOS eller Linux/Ubuntu/WSL så kan du gärna i stället använda den smidiga pakethanteraren SDKMAN, läs mer nedan under rubriken ["SDKMAN för dig med MacOS eller Linux/Ubuntu/WSL"](https://cs.lth.se/pgk/verktyg/#sdkman).
-
-* Hoppa till [Windows](https://cs.lth.se/pgk/verktyg/#windows)
-* Hoppa till [MacOS](https://cs.lth.se/pgk/verktyg/#macos)
-* Hoppa till [Linux/Ubuntu/WSL](https://cs.lth.se/pgk/verktyg/#linux)
-* Hoppa till [VS Code](https://cs.lth.se/pgk/verktyg/#editor)
-* Hoppa till [Kojo](https://cs.lth.se/pgk/verktyg/#kojo)
-
+Om du kör MacOS eller Linux/Ubuntu/WSL så kan du gärna i stället använda den smidiga pakethanteraren SDKMAN, läs mer nedan under rubriken "SDKMAN för dig med MacOS eller Linux/Ubuntu/WSL"
 
 ### Windows
 
