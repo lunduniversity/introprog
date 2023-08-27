@@ -37,9 +37,9 @@ Om du kör en gammal version av SDKMAN rekommenderas att köra `sdk selfupdate f
 
 #### Terminalfönster i Windows
 
-För terminal i Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started). Det räcker fint med Windows Terminal för att köra alla kursens verktyg i cmd och powershell, men det finns också andra sätt att köra terminal i Windows som beskrivs i punktlistan nedan. 
+För terminal i Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started). Det räcker fint med Windows Terminal för att köra alla kursens verktyg i cmd eller powershell, men det finns också andra sätt att köra terminal i Windows som beskrivs i punktlistan nedan. 
 
-Här finns långa listor med olika kommando som finns i gamla cmd här [https://ss64.com/nt/](https://ss64.com/nt/) och i nyare Powershell här [https://ss64.com/ps/](https://ss64.com/ps/).
+Här finns långa listor med olika kommando som finns i gamla cmd här [https://ss64.com/nt/](https://ss64.com/nt/) och i nyare powershell här [https://ss64.com/ps/](https://ss64.com/ps/).
 
 * Du kan också köra den befintliga men antika terminalen direkt i Windows som inte kräver någon installation, följ instruktioner här [https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/](https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/) 
  
