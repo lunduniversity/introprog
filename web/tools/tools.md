@@ -25,9 +25,15 @@ Många av de programmeringsverktyg vi använder körs via ett terminalfönster. 
 
 Scala med tillhörande verktyg installeras med hjälp av det officiella installationsverktyget Coursier enligt nedan. Du får då bl.a. följande terminalverktyg som du kan läsa om i kompendiet: `scala`, `scalac`, `scala-cli`, `scaladoc`, `sbt`. 
 
-Om du kör MacOS eller Linux/Ubuntu/WSL så kan du gärna i stället använda den smidiga pakethanteraren SDKMAN, läs mer nedan under rubriken "SDKMAN för dig med MacOS eller Linux/Ubuntu/WSL"
+Om du kör MacOS eller Linux/Ubuntu/WSL så kan du gärna i stället använda den smidiga pakethanteraren SDKMAN, läs mer nedan under rubriken "SDKMAN" längre ned.
 
-### Windows
+Om redan har en **gammal installation** av Scala-verktyg så **avinstallera först** med nedan kommando och **starta om** din dator efter det, innan du sedan följer efterföljande instruktioner för ditt operativsystem:
+```
+cs uninstall --all
+``` 
+Om du kör en gammal version av SDKMAN rekommenderas att köra `sdk selfupdate force` och sedan starta om innan du installerar nya versioner enligt instruktioner under rubriken "SDKMAN" längre ned.
+
+### WINDOWS
 
 #### Terminalfönster i Windows
 
@@ -61,7 +67,7 @@ Om du kör MacOS eller Linux/Ubuntu/WSL så kan du gärna i stället använda de
 * Installera Kojo enligt instruktioner längre ner under rubriken "Kojo"
 
 
-### MacOS
+### MACOS
 
 #### Terminalfönster i MacOS
 
@@ -105,7 +111,7 @@ Om du kör MacOS eller Linux/Ubuntu/WSL så kan du gärna i stället använda de
 * Installera Kojo enligt instruktioner längre ner under rubriken "Kojo"
 
 
-### Linux
+### LINUX
 
 #### Starta terminalfönster i Linux/Ubuntu/WSL
 
@@ -139,7 +145,7 @@ curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz 
 * Installera Kojo enligt instruktioner längre ner under rubriken "Kojo"
 
 ### SDKMAN
-#### SDKMAN för dig med MacOS eller Linux/Ubuntu/WSL
+#### MacOS/Linux/Ubuntu/WSL: Installera SDKMAN
 
 [https://sdkman.io/](https://sdkman.io/) är ett populärt installationsverktyg för att enkelt installera och hantera olika versioner av allehanda programmeringsverktyg för Ubuntu/Linux/WSL/MacOS. För dig som hellre vill använda SDKMAN i stället så går det utmärkt att installera Scala-verktugen ovan med hjälp av nedan kommando ett i taget i tur och ornding (om du har [installerat SDKMAN](https://sdkman.io/install)) och svara med stort Y på eventuella frågor om att göra nya versionen default:
 ```
@@ -152,7 +158,7 @@ sdk install sbt
 *Tips:* Det är viktigt att du noterar HUR du har installerat olika grejer på din dator, speciellt om du blandar olika metoder. Om du behöver uppdatera eller avinstallera så blir det lätt förvirring om du glömt hur du installerat och försöker uppdatera/avinstallera med annan metod än du installerat etc.
 
 ### Editor
-#### Installera kod-editorn VS Code och tillägget Scala Metals i Windows/MacOS/Linux/Ubuntu/WSL
+#### Windows/MacOS/Linux/Ubuntu/WSL: Installera VS Code och tillägget "Scala (Metals)"
 
 1. Installera **VS Code** för ditt system här: [https://code.visualstudio.com/Download](https://code.visualstudio.com/Download) 
 2. Installera tillägget **Scala Metals**. Du kan antingen göra detta via tilläggshanterare (Extensions) inne i VS Code eller via terminalen. 
@@ -172,7 +178,7 @@ sdk install sbt
 Läs mer om vad du kan göra med en VS Code och andra verktyg i appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) 
 
 ### Kojo
-#### Installera Kojo i Windows/MacOS/Linux/Ubuntu/WSL
+#### Windows/MacOS/Linux/Ubuntu/WSL: Installera Kojo 
 
 Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera. 
 
