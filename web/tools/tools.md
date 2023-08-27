@@ -39,7 +39,7 @@ Om du kör en gammal version av SDKMAN rekommenderas att köra `sdk selfupdate f
 
 * För terminal i Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started) 
 * Du kan också köra den befintliga men antika cmd-terminalen direkt i Windows som inte kräver någon installation, följ instruktioner här [https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/](https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/) och läs mer om vilka kommando som finns i cmd här: [https://ss64.com/nt/](https://ss64.com/nt/)
-* Om du har en uppdaterad version av Windows 10 eller 11 och är en van Windows användare så kan du köra **WSL**, helst version 2, som ger dig tillgång till Linux/Ubuntu direkt under Windows i ett separat filsystem. För att installera WSL behöver du starta  **PowerShell** med admin-rättigheter så här: tryck på windows-knappen, skriv `powershell` och högerklicka och välj run as administrator. Följ vidare instruktioner här och välj att installera Ubuntu 22.04 (fråga ngn om hjälp om du kör fast):  [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10) När du installerat WSL följ instruktionerna under **Linux-rubrikerna** nedan för att installera kursens programmeringsverktyg under WSL/Ubuntu. 
+* Om du har en uppdaterad version av Windows 10 eller 11 så kan du (efter lite meckande, ev. med lite hjälp av en van windowsanvändare) köra **WSL**, helst version 2, som ger dig tillgång till Linux/Ubuntu direkt under Windows i ett separat filsystem. För att installera WSL behöver du starta  **PowerShell** med admin-rättigheter så här: tryck på windows-knappen, skriv `powershell` och högerklicka och välj run as administrator. Följ vidare instruktioner här och välj att installera Ubuntu 22.04 (fråga ngn om hjälp om du kör fast):  [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10) När du installerat WSL följ instruktionerna under **Linux-rubrikerna** nedan för att installera kursens programmeringsverktyg under WSL/Ubuntu. 
 * Det finns även andra sätt att installera Linux/Ubuntu, t.ex. med [VirtualBox](https://ubuntu.com/tutorials/how-to-run-ubuntu-desktop-on-a-virtual-machine-using-virtualbox#1-overview) (kräver snabb dator och rejät med RAM) eller [Dual Boot](https://medium.com/linuxforeveryone/how-to-install-ubuntu-20-04-and-dual-boot-alongside-windows-10-323a85271a73) (kräver att du har minst 25GB extra utrymme på disken, gärna mer, och att du krymper din Windows-partition och slår på legacy boot i BIOS), eller att du helt [ersätter Windows med Ubuntu](https://ubuntu.com/tutorials/install-ubuntu-desktop) (enklaste sättet och funkar fint även på äldre och klenare datorer). Fråga någon medstudent som vet hur det går till om råd och hjälp om du vill installera Ubuntu "på riktigt". 
 
 #### Installera OpenJDK i Windows
@@ -63,8 +63,8 @@ Om du kör en gammal version av SDKMAN rekommenderas att köra `sdk selfupdate f
 * Ladda ned filen [`cs-x86_64-pc-win32.zip`](https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-win32.zip) och spara den på valfritt ställe och dubbel-klicka på den när nedladdningen är klar. Följ instruktionerna och svara jakande. Om du får varningar så kör ändå genom att klicka "Mer information" eller liknande.
 * Starta om din dator.
 * Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
-* Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "Editor"
-* Installera Kojo enligt instruktioner längre ner under rubriken "Kojo"
+* Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "EDITOR"
+* Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
 
 
 ### MACOS
@@ -107,8 +107,8 @@ Om du kör en gammal version av SDKMAN rekommenderas att köra `sdk selfupdate f
 
 * Starta om din dator.
 * Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
-* Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "Editor"
-* Installera Kojo enligt instruktioner längre ner under rubriken "Kojo"
+* Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "EDITOR"
+* Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
 
 
 ### LINUX
@@ -141,8 +141,8 @@ curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz 
 * Svara ja med stort Y på eventuell fråga om att addera coursier till din path. 
 * Starta om din dator.
 * Testa att skriva `scala --version` och `scala-cli --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
-* Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "Editor"
-* Installera Kojo enligt instruktioner längre ner under rubriken "Kojo"
+* Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "EDITOR"
+* Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
 
 ### SDKMAN
 #### MacOS/Linux/Ubuntu/WSL: Installera SDKMAN
@@ -157,8 +157,8 @@ sdk install sbt
 ```
 *Tips:* Det är viktigt att du noterar HUR du har installerat olika grejer på din dator, speciellt om du blandar olika metoder. Om du behöver uppdatera eller avinstallera så blir det lätt förvirring om du glömt hur du installerat och försöker uppdatera/avinstallera med annan metod än du installerat etc.
 
-### Editor
-#### Windows/MacOS/Linux/Ubuntu/WSL: Installera VS Code och tillägget "Scala (Metals)"
+### EDITOR
+#### Windows/MacOS/Linux/Ubuntu/WSL: Installera VS Code + Metals
 
 1. Installera **VS Code** för ditt system här: [https://code.visualstudio.com/Download](https://code.visualstudio.com/Download) 
 2. Installera tillägget **Scala Metals**. Du kan antingen göra detta via tilläggshanterare (Extensions) inne i VS Code eller via terminalen. 
@@ -177,7 +177,7 @@ sdk install sbt
 
 Läs mer om vad du kan göra med en VS Code och andra verktyg i appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) 
 
-### Kojo
+### KOJO
 #### Windows/MacOS/Linux/Ubuntu/WSL: Installera Kojo 
 
 Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera. 
