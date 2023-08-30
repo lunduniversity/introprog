@@ -131,6 +131,7 @@ Här finns långa listor med olika kommando som finns i gamla cmd här [https://
 
 * Öppna terminalfönster och installera med:
 ```
+sudo apt update
 sudo apt install openjdk-17-jdk openjdk-17-doc openjdk-17-source
 ```
 
