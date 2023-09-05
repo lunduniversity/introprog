@@ -124,7 +124,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "\\code|ys.mkString              |" -> "ny sträng med alla element intill varandra",
       "\\code|ys.mkString(\",\")       |" -> "ny sträng med komma mellan elementen",
       "\\code|xs.map(_.toString)       |" -> "ny samling, elementen omgjorda till strängar",
-      "\\code|xs map (_.toInt)         |" -> "ny samling, elementen omgjorda till heltal",
+      "\\code|xs.map (_.toInt)         |" -> "ny samling, elementen omgjorda till heltal",
       "" -> ""
     ).filter(_._1.trim.nonEmpty),
 
