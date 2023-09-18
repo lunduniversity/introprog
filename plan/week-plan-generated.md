@@ -14,5 +14,5 @@
 | W11 | 20/11-24/11 | Lp2V4 | Kontextuella abstraktioner och varians | F21 F22 | context     | snake1       |
 | W12 | 27/11-1/12  | Lp2V5 | Valfri fördjupning, Projekt            | F23 F24 | extra       | Projekt0     |
 | W13 | 4/12-8/12   | Lp2V6 | Repetition                             | F25 F26 | examprep    | Projekt1     |
-| W14 | 11/12-15/12 | Lp2V7 | MUNTLIGT PROV                          | F27 F28 | Munta       | Munta        |
+| W14 | 11/12-15/12 | Lp2V7 | MUNTLIGT PROV                          | --      | Munta       | Munta        |
 | T   | 4/1         | TP2   | VALFRI TENTAMEN                        | --      | --          | --           |
