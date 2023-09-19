@@ -420,7 +420,7 @@ scala> // fortsätt så att en hel kvadrat ritas
 package hello
 
 object Main:
-  val w = new introprog.PixelWindow(400, 300, "HEJ")
+  val w = introprog.PixelWindow(400, 300, "HEJ")
 
   var color = java.awt.Color.red
 
@@ -491,8 +491,8 @@ Det finns, förutom  ditt eget huvudprogram vid namn \code{hello.Main}, flera ex
 \end{itemize}
 Man kan skapa nya fönsterinstanser till exempel så här:
 \begin{Code}
-val w1 = new introprog.PixelWindow()
-val w2 = new introprog.PixelWindow(100, 200, "Mitt fina nya fönster")
+val w1 = introprog.PixelWindow()
+val w2 = introprog.PixelWindow(100, 200, "Mitt fina nya fönster")
 \end{Code}
 
 \SubtaskSolved 
@@ -505,7 +505,7 @@ curl -o introprog_3-1.3.1.jar -sLO https://fileadmin.cs.lth.se/introprog.jar
 \SubtaskSolved
 \begin{REPL}
 > scala repl --jar introprog_3-1.3.1.jar
-scala> val w = new introprog.PixelWindow(400,300,"HEJ")
+scala> val w = introprog.PixelWindow(400,300,"HEJ")
 scala> w.line(100, 100, 200, 100)
 scala> w.line(200, 100, 200, 200)
 scala> w.line(200, 200, 100, 200)
@@ -517,7 +517,7 @@ scala> w.line(100, 200, 100, 100)
 package hello
 
 object Main:
-  val w = new introprog.PixelWindow(400, 300, "HEJ")
+  val w = introprog.PixelWindow(400, 300, "HEJ")
 
   var color = java.awt.Color.red
 
@@ -568,7 +568,7 @@ I bildminnen i datorer är det vanligt att beskriva färger som en blandning av 
 På veckans labb ska vi använda \code{PixelWindow}, som beskriver RGB-färger med klassen \code{java.awt.Color}.
 Det finns några fördefinierade färger i \code{java.awt.Color}, till exempel \code{java.awt.Color.black} för svart och \code{java.awt.Color.green} för grönt, se vidare dokumentationen för \code{java.awt.Color} i JDK\footnote{\JDKApiUrl}.
 Andra färger kan skapas genom att du själv anger den specifika mängden rött, grönt och blått som behövs för att blanda en viss färg.
-Den tre parametrarna till \code{new java.awt.Color(r, g, b)} anger hur mycket \emph{rött}, \emph{grönt} respektive \emph{blått} som färgen ska innehålla, och mängderna ska vara i intervallet 0--255.
+Den tre parametrarna till \code{ java.awt.Color(r, g, b)} anger hur mycket \emph{rött}, \emph{grönt} respektive \emph{blått} som färgen ska innehålla, och mängderna ska vara i intervallet 0--255.
 Färgen $(153, 102, 51)$ innebär ganska mycket rött, lite mindre grönt och ännu mindre blått och det upplevs som brunt.
 
 
@@ -576,11 +576,11 @@ Färgen $(153, 102, 51)$ innebär ganska mycket rött, lite mindre grönt och ä
 På laborationen behöver du dessa tre brunaktiga färger och det är smidigt att samla dem i en egen namnrymd via ett singelobjekt som heter \code{Color} enligt nedan.
 \begin{Code}
 object Color:
-  val mole   = new java.awt.Color( 51,  51,   0)
-  val soil   = new java.awt.Color(153, 102,  51)
-  val tunnel = new java.awt.Color(204, 153, 102)
+  val mole   = java.awt.Color( 51,  51,   0)
+  val soil   = java.awt.Color(153, 102,  51)
+  val tunnel = java.awt.Color(204, 153, 102)
 \end{Code}
-\noindent Men vi vill helst göra import på \code{java.awt.Color} för att kunna använda klassens namn utan att upprepa hela sökvägen, trots att namnet krockar med namnet på vårt singelobjekt. Skriv om koden ovan med hjälp av namnbyte vid import så att färgerna kan skapas med \code{new JColor(...)}. Gör importen lokalt i singelobjektet \code{Color}.
+\noindent Men vi vill helst göra import på \code{java.awt.Color} för att kunna använda klassens namn utan att upprepa hela sökvägen, trots att namnet krockar med namnet på vårt singelobjekt. Skriv om koden ovan med hjälp av namnbyte vid import så att färgerna kan skapas med \code{JColor(...)}. Gör importen lokalt i singelobjektet \code{Color}.
 
 
 
@@ -596,7 +596,7 @@ object Color:
 
 \begin{REPL}
 > scala-cli repl --dep se.lth.cs::introprog:1.3.1
-scala> val w = new introprog.PixelWindow(400,300,"Tre nyanser av brunt")
+scala> val w = introprog.PixelWindow(400,300,"Tre nyanser av brunt")
 scala> type Pt = (Int, Int)
 scala> var color = java.awt.Color.red
 scala> def rak(p: Pt)(d: Int) = w.line(p._1, p._2, ???, ???, color)
@@ -614,6 +614,8 @@ scala> fyll(100,100)(50)
 scala> color = Color.mole
 scala> fyll(150,150)(25)
 \end{REPL}
+Från Scala 3.1.0 så behövs inte optionen \texttt{-repl}.
+
 
 
 \Subtask Vid vilka anrop ovan utnyttjas att tupelparenteserna kan skippas?
@@ -627,9 +629,9 @@ scala> fyll(150,150)(25)
 object Color:
   import java.awt.{Color as JColor}
 
-  val mole   = new JColor( 51,  51,   0)
-  val soil   = new JColor(153, 102,  51)
-  val tunnel = new JColor(204, 153, 102)
+  val mole   = JColor( 51,  51,   0)
+  val soil   = JColor(153, 102,  51)
+  val tunnel = JColor(204, 153, 102)
 \end{Code}
 
 \SubtaskSolved
@@ -640,13 +642,13 @@ package hello
 object Color:
   import java.awt.{Color as JColor}
 
-  val mole   = new JColor( 51, 51,    0)
-  val soil   = new JColor(153, 102, 51)
-  val tunnel = new JColor(204, 153, 102)
+  val mole   = JColor( 51, 51,    0)
+  val soil   = JColor(153, 102, 51)
+  val tunnel = JColor(204, 153, 102)
 
 
 object Main:
-  val w = new introprog.PixelWindow(width = 400, height = 300, title = "HEJ")
+  val w = introprog.PixelWindow(width = 400, height = 300, title = "HEJ")
 
   type Pt = (Int, Int)
 
