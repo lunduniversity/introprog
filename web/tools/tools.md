@@ -189,13 +189,14 @@ Läs mer om vad du kan göra med en VS Code och andra verktyg i appendix i [komp
 
 Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera. 
 
-Det finns 3 olika sätt att köra Kojo:
+Det finns 2 olika sätt att köra Kojo:
 
 1. Använd kodbiblioteket **kojolib** (rekommenderas), som fungerar fint med nya Scala 3. Ladda ner filen [https://fileadmin.cs.lth.se/kojolib.scala](https://fileadmin.cs.lth.se/kojolib.scala) och kör enl. instruktioner i kompendiet, t.ex. med `scala-cli repl .` 
 
 2. Kojo Desktop: en nybörjarvänlig utvecklingsmiljö med lättanvänd editor. Använder gamla Scala 2. Följ installationsinstruktioner för ditt system här: [http://www.kogics.net/kojo-download](http://www.kogics.net/kojo-download)
 
-3. Kör Kojo i din webbläsare. Använder gamla Scala 2 och en begränsad uppsättning av de kommandon som finns i Kojo Desktop. Skriv och kör din kod direkt här: [http://kojo.lu.se/](http://kojo.lu.se/)
+[//]: # (såhär gör man tydligen kommentarer i markdown?)
+[//]: # (3. Kör Kojo i din webbläsare. Använder gamla Scala 2 och en begränsad uppsättning av de kommandon som finns i Kojo Desktop. Skriv och kör din kod direkt här: [http://kojo.lu.se/](http://kojo.lu.se/))
 
 Kojo används på [Vattenhallen Science Center](https://www.vattenhallen.lu.se/upplevelser/programmering/). LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen här: [https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/](https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/)
 
