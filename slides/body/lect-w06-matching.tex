@@ -143,13 +143,13 @@ Vanligaste användningen av mönster är i \code{match}-uttryck.
 \begin{Slide}{Kolla om det passar med nästlade if-uttryck}
 Ett vanligt problem: \\ att kolla vilket bland många värden som passar \\~\\
 
-Kan göras med nästlade if-then-else-uttryck:
+Kan göras med nästlade \code{if-then-else}-uttryck:
 
 \begin{Code}
 val g = scala.io.StdIn.readLine("Ange en grönsak:")
 val smak =
-  if g == "gurka" then "gott!"
-  else if g == "tomat" then "jättegott!"
+  if      g == "gurka"    then "gott!"
+  else if g == "tomat"    then "jättegott!"
   else if g == "broccoli" then "ganska gott..."
   else "inte gott :("
 
@@ -171,19 +171,20 @@ I stället för nästlade \code{if} kan du använda Scalas kraftfulla \code{matc
 
 \begin{Code}
 val g = scala.io.StdIn.readLine("Ange en grönsak: ")
-val smak = g match 
-  case "gurka"    => "gott!"
-  case "tomat"    => "jättegott!"
-  case "broccoli" => "ganska gott..."
-  case _ => "mindre gott..."
+val smak = 
+  g match 
+    case "gurka"    => "gott!"
+    case "tomat"    => "jättegott!"
+    case "broccoli" => "ganska gott..."
+    case _ => "mindre gott..."
 \end{Code}
 \begin{itemize}
 \pause\item Varje \code{case}-gren testas var för sig i tur och ordning \Emph{uppifrån och ned}.
 \item Det som står mellan \code{case} och \code{=>} kallas ett \Emph{mönster} \Eng{pattern}
-\item Om ett mönster kan matchas så görs det som står efter \code{=>} 
-\item \Alert{Inga grenar testas efter lyckad match}.  
-\item Sista default-grenen ovan kallas \Emph{wildcard-mönster}: \code{case _ => }
+\item Om ett mönster matchar så görs det som står efter \code{=>} 
+\item \Alert{Inga efterföljande \code{case}-grenar testas efter lyckad match}.  
 \item Ovan är exempel på matchning mot \Emph{konstant-mönster}, \\ i detta fallet tre stycken strängkonstantmönster.
+\item Sista default-grenen ovan kallas \Emph{wildcard-mönster}: \code{case _ => }
 \item Det finns många andra sätt att skriva mönster.
 \end{itemize}
 % \pause Scalas \code{match} ''faller inte igenom'' som \code{switch}-satser som finns i många språk, t.ex. Java...
@@ -193,15 +194,17 @@ val smak = g match
 \begin{Slide}{Syntax för match-uttryck}
 Ett \code{match}-uttryck består av godtyckligt många \code{case ... => ...}
 \begin{Code}
-  värdeAttUndersöka match 
+  värdeAttUndersöka match {
     case mönster1 => resultat1
     case mönster2 => resultat2
     case mönster3 => resultat3
     case mönsterN => resultatN
+  }
 \end{Code}
 \begin{itemize}
+  \item Klammerparenteser efter \code{match} valfria om \code{case} på ny rad.
   \item Varje resultat-uttryck kan bestå av många rader. 
-  \item  Inga klammerparenteser behövs efter \code{=>} 
+  \item  Klammerparenteser behövs ej efter \code{=>} vid många rader. 
 \end{itemize}
 \vspace{1em}
 Om många rader efter \code{case} så blir sista uttrycket resultatet. \\
@@ -292,18 +295,26 @@ val i2: Int =
 }
 \end{Slide}
 
-\begin{Slide}{Typen \text{Matchable}}
+\begin{Slide}{Fördjupning: Unionstyper och typen \text{Matchable}}
 \begin{itemize}\SlideFontSmall
-\item
-När ett uttryck inte kan ges en mer specifik typ så härleds \code{Matchable}, vilket visar att värdet kan undersökas med \code{match}.
-\item Exempel: För de orelaterade typerna \code{String} och \code{Double} är den mest specifika typen som kan härledas \code{Matchable}.
+\item Exempel: För de orelaterade typerna \code{String} och \code{Double} är den mest specifika typen som kan härledas \code{Int | String}, läses ''Int eller String'' och kallas en \Emph{unionstyp} \Eng{union type}.
 
 \begin{REPLsmall}
-scala> def f = if math.random() > 0.5 then 42 else "hej"
-def f: Matchable
+scala> def f = math.random() match
+          case a if a > 0.5 => 42
+          case a if a < 0.2 => "hej"
+        
+def f: Int | String
 \end{REPLsmall}
 
+\item Alla värden som kan undersökas med \code{match} har typen \code{Matchable} .
 \item Typen \code{Matchable} är nästan lika generell som topptypen \code{Any}. 
+\begin{REPLsmall}
+scala> (f.isInstanceOf[Matchable], f.isInstanceOf[Any])
+val res0:  (Boolean, Boolean) = (true,true)
+\end{REPLsmall}
+
+
 \item \code{Matchable} infördes i Scala 3 med \Emph{opaka typalias} som garanterat aldrig boxas men inte kan mönstermatchas. (Ingår ej i denna kurs.)
 \item Fördjupning om \code{Matchable} och \code{opaque type} i Scala 3 finns här:
 \\\url{https://dotty.epfl.ch/docs/reference/other-new-features}
