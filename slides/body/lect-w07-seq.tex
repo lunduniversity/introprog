@@ -141,7 +141,7 @@ val res1: Vector[Int] = Vector(0, 1, 2)
   \item Snabb om du bygger upp sekvens genom många tillägg i början.
   \end{itemize}
 
-\item \code{Array} (använd fr.o.m. Scala 2.13 hellre \code{ArraySeq})
+\item \code{Array} eller \code{scala.collection.mutable.ArraySeq}
   \begin{itemize}\SlideFontSmall
   \item \Alert{Föränderlig}: \Emph{snabb indexering \& uppdatering}.
   \item Kan \Alert{ej ändra storlek}; storlek ges vid allokering.
@@ -151,17 +151,17 @@ val res1: Vector[Int] = Vector(0, 1, 2)
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{I stället för Array: \texttt{ArraySeq} (Scala >2.13)}
-Nytt i Scala 2.13:
-\begin{itemize}
-  \item \code{collection.mutable.ArraySeq} fungerar lika bra som, eller bättre än \code{Array}
-  \item \url{https://stackoverflow.com/questions/5028551/array-vs-arrayseq-comparison}
-  \item \code{collection.immutable.ArraySeq} fungerar som en Array som inte kan ändras
-  \item \code{WrappedArray} är från 2.13 \textit{deprecated} (på väg bort)
-\end{itemize}
-{\SlideFontTiny Fördjupning: Sammanfattning av prestanda för olika samlingar: \href{https://docs.scala-lang.org/overviews/collections-2.13/performance-characteristics.html}{docs.scala-lang.org/overviews/collections-2.13/performance-characteristics.html}
-}
-\end{Slide}
+% \begin{Slide}{I stället för Array: \texttt{ArraySeq} (Scala >2.13)}
+% Nytt i Scala 2.13:
+% \begin{itemize}
+%   \item \code{collection.mutable.ArraySeq} fungerar lika bra som, eller bättre än \code{Array}
+%   \item \url{https://stackoverflow.com/questions/5028551/array-vs-arrayseq-comparison}
+%   \item \code{collection.immutable.ArraySeq} fungerar som en Array som inte kan ändras
+%   \item \code{WrappedArray} är från 2.13 \textit{deprecated} (på väg bort)
+% \end{itemize}
+% {\SlideFontTiny Fördjupning: Sammanfattning av prestanda för olika samlingar: \href{https://docs.scala-lang.org/overviews/collections-2.13/performance-characteristics.html}{docs.scala-lang.org/overviews/collections-2.13/performance-characteristics.html}
+% }
+% \end{Slide}
 
 \begin{Slide}{Vilken sekvenssamling ska jag välja?}\SlideFontSmall
 \vspace{-0.5em}
@@ -199,8 +199,8 @@ Nytt i Scala 2.13:
 \end{Slide}
 
 \begin{Slide}{Några konstigheter med Array}
-\begin{itemize}
-\item Referenslikhet istf innehållslikhet: 
+\begin{itemize}\SlideFontSmall
+\item \Alert{Referenslikhet} (och inte innehållslikhet): 
 \begin{REPLnonum}
 scala> Vector(1,2,3) == Vector(1,2,3)
 val res0: Boolean = true
@@ -208,7 +208,8 @@ val res0: Boolean = true
 scala> Array(1,2,3) == Array(1,2,3)
 val res1: Boolean = false  // aaargh!!
 \end{REPLnonum}
-\item Special-syntax för att skapa utan explicit initialisering: \\
+Notera: Metoden \code{==} mellan två \code{ArraySeq} ger \Emph{innehållslikhet}.
+\item Special-syntax för allokering \Alert{utan} explicit initialisering: \\
 {\SlideFontSmall\code{val xs = new Array[String](1000)  // 1000 null-referenser}}
 \item Fungerar inte lika bra med generiska typer:
 \begin{REPLnonum}
@@ -217,6 +218,8 @@ scala> def box[T](x: T) = Vector[T](x)  //funkar fint
 scala> def abox[T](x: T) = Array[T](x)
   error: No ClassTag available for T
 \end{REPLnonum}
+%\item I stället för \code{Array} använd \code{scala.collection.mutable.ArraySeq} som beter sig som en ''normal'' samling.
+% Men ClassTag behövs ändå för arrayseq :(
 \end{itemize}
 \end{Slide}
 
@@ -255,7 +258,7 @@ scala> def abox[T](x: T) = Array[T](x)
 \item \Emph{Filtrering}: urval av vissa element som uppfyller ett \Alert{villkor}
 \item \Emph{Sökning} efter ett element som uppfyller ett \Alert{sökkriterium}
 \item \Emph{Sortering} enligt någon \Alert{ordning}
-\item \Emph{Registrering} av \Alert{frekvens} av element med vissa \Alert{egenskaper}
+\item \Emph{Registrering} kategorisera eller \Alert{räkna element} med vissa egenskaper
 \end{itemize}
 \end{itemize}
 \href{https://youtu.be/0ArlUSVDQIw?t=27s}{\textbf{KUT FSSR}} 
@@ -275,14 +278,12 @@ scala> def abox[T](x: T) = Array[T](x)
 
 \begin{Slide}{Använda färdiga sekvenssamlingsmetoder}
 \begin{itemize}\SlideFontSmall
-\item Standardbiblioteket i Scala innehåller flera olika samlingar som har sekvensegenskaper, t.ex. \code{Vector} och \code{ArrayBuffer}, som erbjuder olika möjligheter och har olika prestanda beroende på vad man vill göra.
-\item Scala 3 använder samma samlingsbibliotek som i Scala 2.13, se intro:  \url{https://docs.scala-lang.org/overviews/collections-2.13/introduction.html} 
-
 \item Ofta kan man implementera sekvensalgoritmer genom anrop av en eller flera \Alert{färdiga} metoder.
 
 \item Dessa färdiga metoder är \Emph{optimerade och vältestade} och är att föredra om möjligt.
 
-\item Studera Scalas api-dokumentation och kursens quickref för att se vad man kan göra med färdiga metoder.
+\item Studera Scalas api-dokumentation och kursens quickref för att se vad man kan göra med färdiga metoder.\\
+\url{https://docs.scala-lang.org/overviews/collections-2.13/introduction.html} 
 
 \item Det är \Emph{lärorikt} att ''\Alert{uppfinna hjulet}'' och implementera några sekvensalgoritmer \Emph{själv} för bättre förståelse, även om de redan finns färdiga i Scalas samlingsbibliotek.
 
