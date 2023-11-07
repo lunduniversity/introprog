@@ -136,7 +136,7 @@ Det finns \Alert{mer specifika} \Emph{subtyper} av \code{Seq}, \code{Set} och \c
 \Emph{\texttt{Vector}} är en \Alert{\texttt{IndexedSeq}} medan
 \Emph{\texttt{List}} är en \Alert{\texttt{LinearSeq}}.
 
-\pause\vspace{1em}{\SlideFontSmall
+\vspace{1em}{\SlideFontSmall
 \href
 {https://docs.scala-lang.org/overviews/collections-2.13/overview.html}
 {docs.scala-lang.org/overviews/collections-2.13/overview.html}
@@ -435,7 +435,7 @@ nycklarna är \Alert{unika}.
 
 \item Kallas även \href{https://sv.wikipedia.org/wiki/Hashtabell}{\Emph{hashtabell}} \Eng{hash table}, \Emph{lexikon} \Eng{Dictionary} eller \Emph{mapp} \Eng{Map} (det blir lätt sammanblandning med metoden \code{map}).
 
-\item Om man vet nyckeln kan man slå upp värdet \Alert{snabbt}, på liknande sätt som indexering sker i en vektor givet heltalsindex.
+\item Om man vet nyckeln kan man slå upp värdet \Alert{snabbt}, på liknande sätt som indexering sker snabbt i en vektor givet heltalsindex.
 
 \item Denna datastruktur är \Alert{mycket användbar} och fungerar som en slags databas i kombination med filtrering, registrering, etc.
 \end{itemize}
@@ -478,8 +478,8 @@ Javascript -> 1995, C -> 1972, C++ -> 1983, Kotlin -> 2011, Java -> 1995)
 Några ofta förekommande metoder på tabeller:
 \begin{itemize}
 \item \code{xs.keySet} ger en mängd av alla nycklar
-\item \code{xs.map(f)} mappar funktionen f på alla par av (key, value)
-\item \code{xs.map((k, v) => k -> f(v))} mappar funktionen f på alla värden
+\item \code{xs.map(f)} kör funktionen f på alla par (key, value) i \Alert{någon} ordning
+\item \code{xs.map((k, v) => k -> f(v))} kör funktionen f på alla \Emph{värden}
 \end{itemize}
 \begin{REPLsmall}
 scala> val färg = Map("gurka" -> "grön", "tomat"->"röd", "aubergine"->"lila")
@@ -528,17 +528,19 @@ grupperaEfterÅlder: Map[Int,Vector[(String, Int)]] =
   
 \begin{Slide}{Övning: Implementera en \texttt{Multimap}}
 \begin{itemize}
+\item Om du lägger till ett värde i en \emph{vanlig} \code{Map} så ersätts  värdet:
+\begin{REPLsmall}
+scala> val m = Map(1 -> 2, 1 -> 3, 2 -> 1, 2 -> 2) 
+val m: Map[Int, Int] = Map(1 -> 3, 2 -> 2)   //senaste värdet gäller
+\end{REPLsmall}
+...men ibland vill vi i stället lagra alla tillagda värden.
 \item En \Emph{multimap} är en speciell nyckel-värde-tabell där värdena utgör en samling (ofta en mängd).
 \item En multimap samlar alla värden som har samma nyckel.
-\item Om du lägger till ett värde så ersätts inte värdet; i stället utökas samlingen av värden.
-\end{itemize}
 \begin{REPL}
-scala> val m = Map(1 -> 2, 1 -> 3, 2 -> 1, 2 -> 2)  // senaste värdet gäller
-val m: Map[Int, Int] = Map(1 -> 3, 2 -> 2)
-
-scala> val mm = Multimap(1 -> 2, 1 -> 3, 2 -> 1, 2 -> 2)  // värdena samlas
-val mm: Multimap[Int, Int] = Multimap(1 -> Set(2, 3), 2 -> Set(1, 2))
+  scala> val mm = Multimap(1 -> 2, 1 -> 3, 2 -> 1, 2 -> 2) 
+  val mm: Multimap[Int, Int] = Multimap(1 -> Set(2, 3), 2 -> Set(1, 2))
 \end{REPL}
+\end{itemize}
 Övning: Implementera en multimap som fungerar som ovan, med hjälp av en case-klass med attributet \code{toMap} som är en oföränderlig nyckel-värde-tabell där värdena är en mängd. \\Tips: Använd~\code{groupBy}
 \end{Slide}
 
