@@ -271,8 +271,8 @@ Typen \textit{\textbf{\texttt{Grönsak}}} är en \Emph{bastyp} i nedan arvshiera
 
 \pause
 {\vspace{1em}\SlideFontSmall 
-Typerna \code{Tomat} och \code{Gurka} är \Emph{subtyper} till den \Emph{abstrakta} typen \code{Grönsak}.\\
-En typ kallas abstrakt om den inte kan instansieras.
+Typerna \code{Tomat} och \code{Gurka} är \Emph{subtyper} typen \code{Grönsak}.\\
+Bastyp som ej ska instansieras direkt är \Alert{abstrakt} (visas med \emph{kursiv} stil).
 }
 \end{center}
 \end{Slide}
@@ -284,7 +284,7 @@ En typ kallas abstrakt om den inte kan instansieras.
 
 
 \begin{Slide}{Skapa en gemensam bastyp med \texttt{trait} och \texttt{extends}}\SlideFontSmall
-Med \code{trait Grönsak} kan klasserna \code{Gurka} och \code{Tomat} få en gemensam \Emph{bastyp} genom att båda \Emph{subtyperna} gör \code{extends Grönsak}:
+Med en \code{trait Grönsak} kan klasserna \code{Gurka} och \code{Tomat} få en gemensam abstrakt \Emph{bastyp} genom att båda \Emph{subtyperna} gör \code{extends Grönsak}:
 \begin{REPL}
 scala> trait Grönsak
 
@@ -336,11 +336,11 @@ Placera gemensamma medlemmar i bastypen:
 \draw[umlarrow] (SubType2.north) -- ++(0,0.5) -| (BaseType.south);
 \end{tikzpicture}
 \end{center}
-\vspace{2em}
+\vspace{1em}
 \begin{itemize}
-\item Alla grönsaker har attributet \code{val vikt}.
+\item Alla grönsaker har nu attributet \code{val vikt}.
 \item Det specifika värdet på vikten definieras \Alert{inte} i bastypen.
-\item Medlemen \code{vikt} kallas  \Emph{abstrakt} eftersom den \Alert{saknar implementation}.
+\item Medlemen \code{vikt} kallas  \Emph{abstrakt} eftersom den \Alert{saknar implementation} och kan därför inte instansieras direkt.
 \end{itemize}
 \end{Slide}
 
@@ -404,7 +404,7 @@ En förenklad bild av den översta delen av typhierarkin i Scala:
 \item De numeriska typerna \code{Int}, \code{Double}, etc är subtyper till \Emph{\code{AnyVal}} och kallas \Emph{värdetyper} och lagras på ett speciellt, effektivt sätt i minnet.
 \item Alla dina egna klasser är subtyper till \Emph{\texttt{AnyRef}} och kallas \Emph{referenstyper} och kan (direkt eller indirekt) konstrueras med \code{new}.
 \item \texttt{AnyRef} motsvaras av \Alert{\code{java.lang.Object}} i JVM.
-\item (För att skilja ut s.k. opaka typer (ingår ej i denna kurs), som inte kan undersökas med mönstermatchning, så är finns även typen \code{Matchable} som är subtyp till \code{Any} och supertyp till \code{AnyRef} och \code{AnyVal}.)
+\pause\item (För att skilja ut s.k. \Emph{opaka typer} (ingår ej i denna kurs), som \Alert{inte} kan undersökas med mönstermatchning, så är finns även typen \code{Matchable} som är subtyp till \code{Any} och supertyp till \code{AnyRef} och \code{AnyVal}.)
 \end{itemize}
 \end{Slide}
 
@@ -485,7 +485,7 @@ Alla dina egna typer ingår underförstått i Scalas typhierarki:
 \end{Slide}
 
 \begin{Slide}{Vad används en trait till?}
-En \code{trait} används för att skapa en bastyp som kan vara hemvist för gemensamma delar hos subtyper:
+En \code{trait} kan användas för att skapa en bastyp som kan vara hemvist för gemensamma delar hos subtyper:
 \begin{Code}
 trait Bastyp { val x = 42 }                 // Bastyp har medlemmen x
 class Subtyp1 extends Bastyp { val y = 43 } // Subtyp1 ärver x, har även y
@@ -547,7 +547,7 @@ class A extends X(42)
 class B(y: Int) extends X(y) // värdet av y blir argument till x i X  
 \end{Code}
 \pause\vspace{-0.5em}
-\begin{REPL}
+\begin{REPLsmall}
 scala> val a = A()
 val a: A = A@5faeada1
 
@@ -563,9 +563,9 @@ val res0: Vector[Int] = Vector(42, 43)
 scala> b.y 
 --  Error: 
   value y cannot be accessed as a member of (b : B)
-\end{REPL}
+\end{REPLsmall}
 \SlideFontTiny
-Hur kan vi göra medlemmen \code{y} synlig? \pause Gör det till en \code{val}-parameter.
+Hur kan vi göra medlemmen \code{y} synlig? \pause \\Lägg till \code{val} framför parameternamnet, eller använd en \code{case}-klass.
 \end{Slide}
   
 
@@ -611,8 +611,8 @@ Hur kan vi göra medlemmen \code{y} synlig? \pause Gör det till en \code{val}-p
 
 \pause
 
-\item {Men det finns tillfällen när \Alert{kodduplicering} \Emph{faktiskt är att föredra}: \pause t.ex. om man vill att olika delar av koden ska vara \Alert{helt oberoende} av varandra.}
 \end{itemize}
+Det \emph{finns} tillfällen när \Alert{kodduplicering} \Emph{faktiskt är att föredra}: \pause t.ex. om man vill att olika delar av koden ska vara \Alert{helt oberoende} av varandra.}
 \end{Slide}
 
 
@@ -673,7 +673,7 @@ scala> s.vårHemlis
 \item Det går bara ha \Alert{en enda publik klass per kodfil}.
 \item Kodfilen måste ha \Alert{samma namn} som den publika klassen, t.ex. \code{KlassensNamn.java}
 \end{itemize}
-\item Scala är friare:
+\item Scala är \Emph{friare}:
 \begin{itemize}\SlideFontTiny
 \item I Scala får man ha \Emph{så många} icke-privata klasser/traits/singelobjekt i samma kodfil \Emph{som man vill}.
 \item I Scala får man döpa kodfilerna \Emph{oberoende} av deras innehåll. \pause 
@@ -703,27 +703,27 @@ Klasser kan ärva andra typer (klasser och traits). Om supertypen har parametrar
 \begin{Code}
     var p: Person = Forskare("Robin Smith", "Lund", "Professor Dr")
 \end{Code}
-\begin{itemize}
-\item Den \Emph{statiska typen} för \code{p} är \code{Person} vilket gör att vi sedan kan låta \code{p} referera till andra instanser som är av typen Person.
+\begin{itemize}\SlideFontTiny
+\item Den \Emph{statiska typen} för \code{p} är \code{Person} vilket gör att vi sedan kan låta \code{p} referera till \emph{andra} instanser som är av typen Person.
 \begin{Code}
 p = Student("Kim Robinson", "Lund", "Data")
 \end{Code}
 
 \pause
 
-\item Med ''statisk typ'' menas den typinformation som kompilatorn känner till vid kompileringstid.
+\item Med ''statisk typ'' menas den typinformation som finns vid \Alert{kompileringstid}.
 
 \pause
-\item Den \Emph{dynamiska typen}, även kallad \Emph{körtidstypen}, som gäller under körning är här mer specifik och mångfaceterad: \code{p} är efter tilldelning nu Student, Person och Akademiker.
-
-\pause
-
-\item Man kan undersöka om den dynamiska typen för \code{p} är \code{EnVissTyp} med \\ \code{p.isInstanceOf[EnVissTyp]}
+\item Den \Emph{dynamiska typen}, även kallad \Emph{körtidstypen} som gäller vid exekvering kan vara mer specifik: den dynamiska typen för \code{p} är nu efter ovan tilldelning Student, men också Akademiker och Person.
 
 \pause
 
-\item Man kan säga åt kompilatorn: \Alert{''jag garanterar att p är av typen \code{EnVissTyp} så du kan omforma den statiska typen till \code{EnVissTyp} och så får jag stå ut med körtidsfel om jag ljuger''} genom att göra typomvandling \Eng{type casting} med    
-\code{p.asInstanceOf[EnVissTyp]}   (detta är mycket ovanligt i normal Scala-kod)
+\item  Man kan undersöka om den dynamiska typen för \code{p} är \code{EnVissTyp} med \\ \code{p.isInstanceOf[EnVissTyp]} (men använd hellre \code{match})
+
+\pause
+
+\item  Man kan säga åt kompilatorn: \Alert{''jag garanterar att p är av typen \code{EnVissTyp} så du kan omforma den statiska typen till \code{EnVissTyp} och så får jag stå ut med körtidsfel om jag ljuger''} genom att göra \Emph{typomvandling} \Eng{type casting} med    
+\code{p.asInstanceOf[EnVissTyp]}   (detta är mycket ovanligt i normal Scala-kod, eftersom typtest + typomvandling görs säkrare med \code{match})
 \end{itemize}
 \end{Slide}
 
@@ -766,12 +766,12 @@ case class TalkingBot(name: String) extends Robot:
 \begin{REPL}[numbers=left, basicstyle=\color{white}\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
 scala> def robotDoWork(bot: Robot) = { print(bot); bot.work() }
 
-scala> var r: Robot = new CleaningBot("Wall-E")
+scala> var r: Robot = CleaningBot("Wall-E")
 
 scala> robotDoWork(r)
 CleaningBot(Wall-E) Städa Städa
 
-scala> r = new TalkingBot("C3PO")
+scala> r = TalkingBot("C3PO")
 
 scala> robotDoWork(r)
 TalkingBot(C3PO) Prata Prata
@@ -785,7 +785,7 @@ Om man har en abstrakt typ med saknade implementationer kan man fylla i det som 
 scala> trait Grönsak { val vikt: Int }
 // defined trait Grönsak
 
-scala> new Grönsak
+scala> new Grönsak    // eller Grönsak()
 -- Error:
 1 |new Grönsak
   |    ^^^^^^^
@@ -885,7 +885,7 @@ scala> object StorGurkan extends Gurka(1000, 1_000_000): // ärv på bäst du vi
 \item Du kan även komma undan varningen med \code{import scala.language.adhocExtensions} 
 \end{itemize}  
 
-\url{https://youtu.be/aFmIS5qeetA?t=221}
+\url{https://youtu.be/aFmIS5qeetA?t=206}
 \end{Slide}
 
 
