@@ -189,32 +189,58 @@ class Player(val snake: Snake)
 \end{Slide}
 
 \begin{Slide}{Behovet av gemensam bastyp}\SlideFontSmall
-\begin{REPL}
+\begin{REPLsmall}
 scala> class Gurka(val vikt: Int)
 
 scala> class Tomat(val vikt: Int)
 
 scala> val gurkor = Vector(new Gurka(200), new Gurka(300))
-gurkor: scala.collection.immutable.Vector[Gurka] =
-  Vector(Gurka@60856961, Gurka@2fd953a6)
+gurkor: Vector[Gurka] = Vector(Gurka@60856961, Gurka@2fd953a6)
 
 scala> gurkor.map(_.vikt)
-res0: scala.collection.immutable.Vector[Int] = Vector(200, 300)
+res0: Vector[Int] = Vector(200, 300)
 
 scala> val grönsaker = Vector(new Gurka(200), new Tomat(42))
 val grönsaker: Vector[Gurka | Tomat] = Vector(Gurka@15f11bfb,Tomat@16a499d1)
 
 scala> grönsaker.map(_.vikt)
-<console>:15: error: value vikt is not a member of Object
-       grönsaker.map(_.vikt)
-\end{REPL}
-Hur ordna en mer specifik typ än \code{Vector[Object]}? \pause$\rightarrow$ Skapa en \Emph{bastyp}!
+-- [E008] Not Found Error: --------------------------
+1 |grönsaker.map(_.vikt)
+  |              ^^^^^^
+  |              value vikt is not a member of Gurka | Tomat
+\end{REPLsmall}
+Hur får vi detta att fungera som vi vill? \pause\\$\rightarrow$ Skapa en bastyp \Emph{bastyp} med gemensamt attribut \code{vikt}!
+\end{Slide}
+
+\begin{Slide}{Varför syns inte gemensam medlem i en typunion?}
+\begin{REPLsmall}
+scala> val grönsaker = Vector(new Gurka(200), new Tomat(42))
+val grönsaker: Vector[Gurka | Tomat] = Vector(Gurka@15f11bfb,Tomat@16a499d1)
+
+scala> grönsaker.map(_.vikt)
+-- [E008] Not Found Error: --------------------------
+1 |grönsaker.map(_.vikt)
+  |              ^^^^^^
+  |              value vikt is not a member of Gurka | Tomat
+\end{REPLsmall}
+\begin{itemize}\SlideFontSmall
+  \item Typerna \code{Grönsak} och \code{Tomat} är \Alert{orelaterade}. (\code{AnyRef} saknar \code{vikt})
+  \item En medlem som råkar ha samma namn har inte alltid samma innebörd.
+  \item I Scala måste du explicit relatera medlemmarna genom \Emph{arv} av bastyp med gemensam medlem, eller så får du \Alert{matcha} på unionens delar. 
+  \pause\item Du kan erbjuda en sådan matchning som en \Emph{extensionsmetod}:
+\end{itemize}
+\begin{REPLsmall}
+scala> extension (gEllerT: Gurka | Tomat) def vikt = gEllerT match
+         case g: Gurka => g.vikt
+         case t: Tomat => t.vikt
+
+scala> val vikter = grönsaker.map(_.vikt)
+val vikter: Vector[Int] = Vector(200, 42)
+\end{REPLsmall}
 \end{Slide}
 
 
-
-
-\begin{Slide}{Skapa en gemensam bastyp}
+\begin{Slide}{Skapa en gemensam bastyp med arv}
 Typen \textit{\textbf{\texttt{Grönsak}}} är en \Emph{bastyp} i nedan arvshierarki:
 
 \vspace{1em}
@@ -267,17 +293,18 @@ scala> class Gurka(val vikt: Int) extends Grönsak
 scala> class Tomat(val vikt: Int) extends Grönsak
 
 scala> val grönsaker = Vector(new Gurka(200), new Tomat(42))
-grönsaker: scala.collection.immutable.Vector[Grönsak] =
-  Vector(Gurka@3dc4ed6f, Tomat@2823b7c5)
+grönsaker: Vector[Grönsak] = Vector(Gurka@3dc4ed6f, Tomat@2823b7c5)
 
 
 \end{REPL}
 \pause
-Men det är fortfarande inte som vi vill ha det:
+Men det är ännu \Alert{inte} som vi vill ha det:
 \begin{REPLnonum}
-scala> grönsaker.map(_.vikt)
-<console>:15: error: value vikt is not a member of Grönsak
-       grönsaker.map(_.vikt)
+  scala> grönsaker.map(_.vikt)
+  -- [E008] Not Found Error: --------------------------
+  1 |grönsaker.map(_.vikt)
+    |              ^^^^^^
+    |              value vikt is not a member of Grönsak
 \end{REPLnonum}
 \end{Slide}
 
@@ -333,17 +360,15 @@ class Gurka(val vikt: Int) extends Grönsak
 
 class Tomat(val vikt: Int) extends Grönsak
 \end{Code}
-Nu vet kompilatorn att alla grönsaker har en vikt:
+Nu har du explicit sagt till kompilatorn att du vill att alla grönsaker har en vikt:
 \begin{REPLsmall}
 scala> val grönsaker = Vector(new Gurka(200), new Tomat(42))   //funkar även utan new
-val grönsaker: Vector[Grönsak] =
-  Vector(Gurka@3dc4ed6f, Tomat@2823b7c5)
+val grönsaker: Vector[Grönsak] = Vector(Gurka@3dc4ed6f, Tomat@2823b7c5)
 
 scala> grönsaker.map(_.vikt)
 val res0: Vector[Int] = Vector(200, 42)
 \end{REPLsmall}
 Den abstrakta medlemmen \code{vikt} i den abstrakta typen \code{Grönsak} \Emph{implementeras} i en konkret subklass, här som en klassparameter.
-
 \end{Slide}
 
 
