@@ -181,7 +181,7 @@ scala> val b: X & Y = new X with Y  // Funkar! En anonym klass av typen X & Y
 
 
 \begin{Slide}{Fördjupning: Typunioner med eller-operator}\SlideFontSmall
-En mycket enkel summa-typ kan skapas med typ-operatorn \code{|} 
+Typunioner skapas typ-operatorn \code{|} mellan typer: 
 \begin{REPLsmall}
 scala> var x: Int | String = 42
 var x: Int | String = 42
@@ -195,7 +195,7 @@ scala> type IntOrErr = Int | String
 scala> def div(nom: Int, denom: Int): IntOrErr = 
          if denom != 0 then nom / denom else "div. by zero"
 \end{REPLsmall}
-Fördel jämfört med klass: rudimentärt enkelt.\\ Nackdelar: kan inte deklarera parametrar, medelemmar och allt annat som en klass kan; i viss mån kan detta kompensera med \code{extension} och \code{match}.\\ 
+Fördel jämfört med klass: rudimentärt enkelt.\\ Nackdelar: kan inte deklarera parametrar, medlemmar och allt annat som en klass kan; i viss mån kan detta kompensera med \code{extension} och \code{match}.\\ 
 {\SlideFontTiny Läs mer här:
 \url{https://dotty.epfl.ch/docs/reference/new-types/union-types.html}
 }
@@ -240,7 +240,7 @@ Vilken typ hade visats utan \code{transparent}? \pause \\ \code{Vector[Grönsak 
 \code|final class|      & gör klassen final: förhindrar vidare subtypning\\
 \code|sealed|           & förseglad trait/klass: enbart subtyper i denna kodfil, koll av match\\
 \code|open class|       & berätta att den är tänkt att ärvas, \code|open| krävs för arv i annan kodfil\\   
-\code|transparent trait|& gör typen osynlig vid typhärledning\\
+\code|transparent trait|& gör typen ''genomskinlig'' (alltså osynlig) vid typhärledning\\
 \code|super.gurka|      & refererar till supertypens medlem \code|gurka| (jmf \code|this|)\\
 
 \end{tabular}
@@ -342,23 +342,23 @@ enum PersonId:
 
 \begin{Slide}{Algebraisk datatyp med typparameter}\SlideFontSmall
 Denna ADT har ett fall som är en \Emph{generisk} case-klass:     
-\begin{Code}
-sealed trait Kanske[+A]   // +A ger s.k. covarians, mer om det senare
+\begin{CodeSmall}
+sealed trait Kanske[+A]   // +A gör typen flexibel, ä.k. "kovariant" mer om det senare
 object Kanske:
   case class Någon[A](a: A) extends Kanske[A]
   case object Ingen extends Kanske[Nothing]   
-\end{Code}
-Motsvarande med \code{enum}: (kompilatorn fyller i \code{extends ...} automatiskt)
-\begin{Code}
+\end{CodeSmall}
+\pause Motsvarande med \code{enum}: (kompilatorn fyller i \code{extends ...} automatiskt)
+\begin{CodeSmall}
 enum Kanske[+A]:
   case Någon(a: A)
   case Ingen     
-\end{Code}
+\end{CodeSmall}
 Känner du igen denna? \pause Jämför inbyggda typen \code{Option}\\~\\Implementation av \code{getOrElse} med extensionsmetod, tips: använd \code{match} \pause
-\begin{Code}
+\begin{CodeSmall}
 extension [A](k: Kanske[A]) def getOrElse(default: A):A = k match 
   case Kanske.Någon(a) => a
   case Kanske.Ingen => default
-\end{Code}     
+\end{CodeSmall}     
 \end{Slide}
 
