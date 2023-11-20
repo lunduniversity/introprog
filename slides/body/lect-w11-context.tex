@@ -6,51 +6,67 @@
 
 \Subsection{Fördjupning: mer om generiska strukturer}
 
-\begin{Slide}{Repetition: Typparametrar och generiska strukturer}
-\begin{itemize}\SlideFontSmall
+\begin{Slide}{Typparametrar och generiska strukturer}
+\begin{itemize}\SlideFontTiny
 \item Med hjälp av \Emph{typparametrar} \Eng{type parameters} kan du skapa \Emph{generiska strukturer} \Eng{generic structures}.
 \item Typparametrar skrivs inom hakparenteser, exempelvis: \code{ [T, U] }
-\item Generiska strukturer fungerar för \emph{olika} typer, \Alert{okända} vid \Emph{deklaration}. 
+\item En generisk struktur fungerar för \emph{godtycklig} typ, \Alert{okänd} vid \Emph{deklaration}. 
+\item Kompilatorn säkerställer \Alert{korrekt} \Emph{användning} redan vid \emph{kompilering}.
+\item På användningsplatsen i koden (vid anrop eller instansiering) \Emph{binds} typparametrar till ''verkliga'' typer enligt typsystemets regler. 
 \begin{Code}
 case class Pair[A, B](a: A, b: B):  // A och B är obundna (fria) inom []
   def swap: Pair[B, A] = Pair(b, a) // A och B bundna då swap saknar []
 \end{Code}
-\pause
-\item Kompilatorn säkerställer \Alert{korrekt} \Emph{användning} redan vid \emph{kompilering}.
-\item På användningsplatsen i koden (vid anrop eller instansiering) \Emph{binds} typparametrar till ''verkliga'' typer enligt typsystemets regler. 
-\begin{REPL}
+\item Skriver du inte ut typerna försöker kompilatorn \Emph{härleda} \Eng{infer} dem:
+\begin{REPLsmall}
 scala> val p = Pair("hej", 42)
 val p: Pair[String, Int] = Pair(hej,42)
 
 scala> p.swap
 val res0: Pair[Int, String] = Pair(42,hej)
-\end{REPL}
-\pause
-\item Skriver du inte ut typerna försöker kompilatorn \Emph{härleda} \Eng{infer} dem.
-\item Klassen \code{Pair} kallas även \Emph{typkonstruktor} \Eng{type constructor} då den ''verkliga'' typen skapas först vid användning \code{Pair[String, Int]}.
+\end{REPLsmall}
+\item Klassen \code{Pair} kallas \Emph{typkonstruktor} \Eng{type constructor} då den ''färdiga'' typen \code{Pair[String, Int]} ''konstrueras'' vid användning.
 \end{itemize}
+\pause\SlideFontTiny
+\ifkompendium\else
+\vspace{-0.5em}
+\fi
+Övning: Ändra klassen \code{Pair} ovan så att båda elementen i paret har samma typ.
 \end{Slide}
 
 
-\begin{Slide}{Olika sätt att begränsa typer}
-Det finns i Scala flera olika sätt att att begränsa vilka typer du vill tillåta. En översikt av några möjligheter:
-\begin{itemize}
-  \item Ge \Emph{övre} gräns för typparametrar \Eng{upper bound}
-  \item Ge \Emph{undre} gräns för typparametrar \Eng{lower bound}
-  \item Ge en \Emph{kontextgräns} för typparametrar i relation till implicit givna typer \Eng{context bound}
-  \item Begränsa möjlig inmixning vid deklaration av en trait med en explicit \Emph{egentyp} \Eng{self type} 
+\begin{Slide}{Olika sätt att begränsa typer}\SlideFontSmall
+Det finns i Scala flera olika sätt att att begränsa vilka typer du vill tillåta -- kompilatorn att hjälper dig att kontrollera detta. 
+
+\vspace{1em} En översikt av några möjligheter:
+\begin{itemize}\SlideFontSmall
+  \item \Emph{Övre gräns} \Eng{upper bound} med \code{A <: B}
+  \item \Emph{Undre gräns} \Eng{lower bound} med \code{A >: B}
+  \item \Emph{Kontextgräns} \Eng{context bound} via given typkonstruktor \code{A: B}. 
+  
+  \item \Emph{Egentyp} \Eng{self type} begränsar hur du kan mixa in en trait. \\
+  \pause Ge ett godtyckligt namn följt av en typanotering och en raket i klasskroppen:
+  \begin{Code}
+  trait MinTrait:
+    self: ÄrDennaTyp =>
+
+    // Kod här kan utgå från att denna instans är av typen ÄrDennaTyp 
+    // namnet, här self, är valfritt, men self är vanligaste valet  
+  \end{Code}
+  Kompilatorn kontrollerar att inmixing sker med \code{ÄrDennaTyp}.
 \end{itemize}
 \end{Slide}
 
 \begin{Slide}{Övre och undre typgräns}\SlideFontSmall
-Med typoperatorerna \code{<:} och \code{>:} går det att begränsa vilka typer som kan bindas till en typparameter i en generiska struktur. 
-
-\vspace{0.5em}Antag att \code{T} är en obunden typparameter medan \code{U} och \code{L} är bundna. 
+Med typoperatorerna \code{<:} och \code{>:} går det att begränsa vilka typer som kan bindas till en typparameter i en generiska struktur.
 \begin{itemize}
-  \item med \code{T <: U} blir \code{U} en övre gräns \Eng{upper bound} för \code{T}\\(en ''högsta'' möjliga typ i  typhierarkin) 
-  \item med \code{T >: L} blir \code{L} en undre gräns \Eng{lower bound} för \code{T}\\(en ''lägsta'' möjliga i  typhierarkin) 
-  \item Minnesregel för typgränser: kolon på slutet.
-  \item Alla typer \code{T} är implicit \code{T >: Nothing <: Any}
+  \item Minnesregel för typgränser: \Emph{kolon på slutet}. 
+\end{itemize}
+\vspace{0.5em}Antag att \code{T} är en \Emph{obunden} typparameter, medan \code{U} och \code{L} är \Alert{bundna}. 
+\begin{itemize}
+  \item med \code{T <: U} blir \code{U} en övre gräns \Eng{upper bound} för \code{T}\\\code{U} är ''högsta'' möjliga typ som \code{T} får vara (jämför ''mindre eller lika med'')
+  \item med \code{T >: L} blir \code{L} en undre gräns \Eng{lower bound} för \code{T}\\\code{U} är ''lägsta'' möjliga typ som \code{T} får vara  (jämför ''större eller lika med'')
+  \item För alla typer \code{A} gäller att \code{A >: Nothing} och \code{A <: Any}
 \end{itemize} 
 \pause
 
@@ -160,8 +176,9 @@ val djurbur: Bur[Djur] = Bur(Katt())
 \end{REPL}
 \item \code{Bur[Katt]} är nu en \Alert{subtyp} till \code{Bur[Djur]}.
 \pause
-\item \Emph{Oföränderliga} samlingar görs ofta kovarianta, t.ex Vector, Option.
-\item Generiska enumerationer blir mer flexibla om du gör dem kovarianta:
+\item \Emph{Oföränderliga} samlingar är ofta kovarianta, t.ex Vector, Option, List.
+\pause
+\item Generiska enumerationer \Alert{behöver} vara kovarianta för att de olika fallen ska få en flexibel typparameter. \code{Ledig} är en \code{Toalett[Nothing]} här:
 \ifkompendium
 \begin{Code}
 enum Toalett[+T]:
@@ -255,10 +272,12 @@ val res1: Bur[Djur] = Bur(Hund())
 \begin{itemize}\SlideFontTiny
 \item Oföränderliga generiska klasser som har metoder som är \Emph{producenter} av nya oföränderliga generiska typer passar ofta bäst som \Emph{kovarianta}, t.ex. \code{Vector[+T]}, \code{Option[+T]} . 
 \item En typkonstruktor av \code{T}, som har metoder som är \Alert{konsumenter} av \code{T}, kan vara \Emph{kontravariant}, t.ex. \code{Veterinär[-T]}. \\Den kan också vara \Emph{kovariant} om konsumerande metoder \Alert{vidgar} inparametertypen till \code{B} där \code{B >: T}
-\item En typkonstruktor med flera parametrar kan vara \Emph{både} kontravariant \Emph{och} kovariant, t.ex. \code{Function1[-A, +B]} \\-- detta är den egentliga typen av det ''syntaktiska sockret'' \code{A => B}\\
-(ett parametervärde\code{:A} \emph{konsumeras} och ett returtvärde\code{:B} \emph{produceras})
+\item En typkonstruktor med flera parametrar kan vara \Emph{både} kontravariant \Alert{och} kovariant, t.ex. \code{Function1[-A, +B]} 
+\\ett parametervärde\code{:A} \emph{konsumeras} och ett returtvärde\code{:B} \emph{produceras}
+\\(\code{Function1[-A, +B]} är egentliga typen av ''syntaktiska sockret'' \code{A => B}
+\pause 
 \item \Alert{Förändringsbara} strukturer måste vara \Emph{invarianta}, annars väntar \Alert{kaos}!\\
-\pause Antag att det finns en \code{Bur} som kan ändras på plats via metoden \code{bytTill} \emph{och samtidigt} vore kovariant (varning för känsliga kodare): 
+Antag att det finns en \code{Bur} som kan ändras på plats via metoden \code{bytTill} \emph{och samtidigt} vore kovariant (varning för känsliga kodare): 
 \begin{REPLsmall}
 ejscala> val kattBur: Bur[Katt] = Bur(Katt())
 
@@ -307,17 +326,21 @@ Använd bara typpjoker om det \emph{verkligen} behövs.
 
 
 
-\begin{Slide}{Typbegränsning med egentyp \Eng{self type}}\SlideFontSmall
+\begin{Slide}{Egentyp + anonym klass för att ''injektera'' beroenden}\SlideFontSmall
 \begin{itemize}\SlideFontTiny
-  \item Det går att gå ett explicit, valfritt namn, t.ex. \code{self},  på ''mig själv'', alltså denna instans, genom att skriva~\code{ self => }~i kroppen på en trait eller klass. 
+  \item Det går att få ett explicit, valfritt namn, t.ex. \code{self},  på ''mig själv'', alltså denna instans, genom att skriva~\code{ self => }~i kroppen på en trait eller klass. 
   \item En typbegränsning på den egna instansen kallas \Emph{egentyp} \Eng{self type}. 
   \item Användbart vid inmixning: du kan begränsa med vad denna trait får mixas in.
-\begin{Code}
+\begin{CodeSmall}
 trait Grönsak { def vikt: Int }
+
 trait KanSkalas:
   self: Grönsak =>
   def viktEfterSkalning = 0.99 * vikt 
-\end{Code}
+\end{CodeSmall}
+\item Notera att \emph{även} om \code{KanSkalas} \emph{inte} gör \code{extends} så är \emph{ändå} \code{vikt} tillgänglig i dess kropp, eftersom vi med egentypen kräver att \code{KanSkalas} är en \code{Grönsak}.
+\pause
+\item Du kan du kombinera anonym klass och dynamisk inmixning med \code{with}:
 \begin{REPLsmall}
 scala> val g = new Grönsak with KanSkalas { val vikt = 100 }
 val g: Grönsak & KanSkalas = anon1@70a91d72
@@ -325,12 +348,39 @@ val g: Grönsak & KanSkalas = anon1@70a91d72
 scala> g.viktEfterSkalning
 val res0: Double = 99.0
 \end{REPLsmall}
-\item Även om \code{KanSkalas} \Alert{inte} gör \code{extends} så är \Emph{ändå} \code{vikt} tillgänglig i dess kropp, eftersom vi kräver att den egna typen är en \code{Grönsak}.
-\item Kan användas för att göra s.k. \Emph{beroendeinjektion} \Eng{dependency injection}.\\\url{https://en.wikipedia.org/wiki/Dependency_injection}
+\item Detta är ett elegant sätt att \Emph{injektera beroenden} \Eng{dependency injection}.\\\url{https://en.wikipedia.org/wiki/Dependency_injection}
 \end{itemize}
-
 \end{Slide}
 
+\begin{Slide}{Vad är fördelen med egentyper i stället för arv?}
+\SlideFontSmall
+Arv tillåter \Alert{inte} ömsesidiga (cykliska) beroenden...
+
+\begin{REPLsmall}
+scala> trait Tulpan extends Ros; trait Ros extends Tulpan
+-- [E110] Syntax Error: -------------------------------------------------------------------------------------------------------
+1 |trait Tulpan extends Ros; trait Ros extends Tulpan
+  |                     ^^^
+  |                     Cyclic inheritance: trait Tulpan extends itself
+  |
+\end{REPLsmall}
+
+\vspace{0.5em}
+...medan egentyper \emph{kan} vara \Emph{ömsesidigt beroende}:
+\begin{Code}
+trait Tulpan: 
+  self: Ros => 
+
+trait Ros:
+  self: Tulpan => 
+\end{Code}
+
+\begin{REPLnonum}
+scala> val tulipanaros = new Tulpan with Ros
+val tulipanaros: Tulpan & Ros = anon1@1c63b39a
+\end{REPLnonum}
+\url{https://sv.wikipedia.org/wiki/Tulipanaros}
+\end{Slide}
 
 
 \Subsection{Kontextuella abstraktioner}
