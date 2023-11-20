@@ -137,10 +137,10 @@ trait Plan {
       | trait, abstrakt klass, 
       """.stripTrim),
 
-    Module("Kontextuella abstraktioner och varians",
+    Module("Varians och kontextparametrar",
       id = "context", exercise = "context", lab = "snake1", contents = """
-      | övre- och undre typgräns, varians, kontravarians, kovarians, typjoker, egentyp,
-      | givet värde (given), kontextparameter (using), generiska extensionsmetoder, ad hoc polymorfism, kontextgräns, typklass,
+      | övre- och undre typgräns, varians, kontravarians, kovarians, typjoker, kontextgräns, typkonstruktor, egentyp, typjoker,
+      | givet värde (given), kontextparameter (using), ad hoc polymorfism,  typklass,
       | api, kodläsbarhet, granskningar
       """.stripTrim),
 

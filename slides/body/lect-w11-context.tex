@@ -4,9 +4,9 @@
 %%%
 
 
-\Subsection{Fördjupning: mer om generiska strukturer}
+\Subsection{Mer om generiska strukturer}
 
-\begin{Slide}{Typparametrar och generiska strukturer}
+\begin{Slide}{Typparameter, generisk struktur, typkonstruktor}
 \begin{itemize}\SlideFontTiny
 \item Med hjälp av \Emph{typparametrar} \Eng{type parameters} kan du skapa \Emph{generiska strukturer} \Eng{generic structures}.
 \item Typparametrar skrivs inom hakparenteser, exempelvis: \code{ [T, U] }
@@ -35,7 +35,7 @@ val res0: Pair[Int, String] = Pair(42,hej)
 \end{Slide}
 
 
-\begin{Slide}{Olika sätt att begränsa typer}\SlideFontSmall
+\begin{Slide}{Olika sätt att begränsa generiska typer}\SlideFontSmall
 Det finns i Scala flera olika sätt att att begränsa vilka typer du vill tillåta -- kompilatorn att hjälper dig att kontrollera detta. 
 
 \vspace{1em} En översikt av några möjligheter:
@@ -325,7 +325,6 @@ Använd bara typpjoker om det \emph{verkligen} behövs.
 \end{Slide}
 
 
-
 \begin{Slide}{Egentyp + anonym klass för att ''injektera'' beroenden}\SlideFontSmall
 \begin{itemize}\SlideFontTiny
   \item Det går att få ett explicit, valfritt namn, t.ex. \code{self},  på ''mig själv'', alltså denna instans, genom att skriva~\code{ self => }~i kroppen på en trait eller klass. 
@@ -412,10 +411,10 @@ val tulipanaros: Tulpan & Ros = anon1@1c63b39a
     \item FP: kan bli många parametrar som måste upprepas vid nästlade anrop
   \end{itemize} 
   \pause
-  \item Till vår räddning, fler coola FP-grejer: 
+  \item Till vår räddning: fler \Alert{coola grejer} i Scala: 
   \begin{itemize}\SlideFontTiny
-    \item \Emph{Kontextuella abstraktioner}: möjliggör (på annat ställe) \Emph{givna} värden som finns \emph{implicit} (alltså underförstått, utan att vi behöver explicit skriva ut dem).
-    \item \Emph{Ad hoc polymorfism}: möjliggör olika implementationer beroende på typ, \emph{statiskt} härledda och utan att det behöver finnas en arvsrelation.
+    \item \Emph{Kontextparametrar}: möjliggör att \Emph{givna} (implicita) värden kan framkallas automatiskt av kompilatorn.
+    \item \Emph{Ad hoc polymorfism}: möjliggör olika implementationer beroende på \Emph{statisk} typ utan att det krävs en arvsrelation eller dynamisk bindning.
   \end{itemize} 
 \end{itemize}
 \end{Slide}
@@ -453,100 +452,100 @@ val res4: Int = 43
 \pause
 \item  Kan vi ta detta ett steg till och \Alert{frikoppla} deklarationen av funktionen \Emph{från} det givna värdet, och ge detta på annan plats baserat på typen?
 \pause 
-\item I Scala 3 görs detta med nyckelorden \code{given} resp. \code{using}\\(i Scala 2 användes gamla nyckelordet \code{implicit})
+\item JA! I Scala 3 görs detta med \Emph{givna} värden och \Emph{kontextparametrar}, som skapas med nyckelorden \code{given} respektive \code{using}\\(i Scala 2 användes gamla nyckelordet \code{implicit})
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{Givna värden som alternativ till default-argument}\SlideFontSmall
-Exmpel på användning av \code{using} och \code{given}:
-\begin{REPL}
-scala> def f(x: Int)(using y: Int) = x + y
-def f(x: Int)(using y: Int): Int
+\begin{Slide}{Givna värden + kontextparameter}\SlideFontSmall
+Exmpel på användning av \code{given} och \code{using}:
+\begin{CodeSmall}
+case class Default(value: Int)
 
-scala> f(1)(using 2)    //explicit värde används
+object Default:
+  given d: Default = Default(0)  // Använd detta om inget annat givet värde finns lokalt
+\end{CodeSmall}
+\begin{REPLsmall}
+scala> def f(x: Int)(using d: Default) = x + d.value
+
+scala> f(1)(using Default(2))    //explicit värde används alltid först om sådant finns
 val res0: Int = 3
 
-scala> f(1)        // kompilatorn hittar inget givet Int-värde
--- Error:
-1 |f(1)
-  |    ^
-  |  no implicit argument of type Int was found for parameter y of method f
+scala> f(1)  // kompilatorn framkallar ett givet värde för Default ur kompanjonsobjektet
+val res1: Int = 1
 
-scala> given Int = 42    // låt 42 vara givet 
-lazy val given_Int: Int
+scala> given d: Default = Default(42)  // låt d vara givna värdet i denna kontext
+lazy val given_Default: Default
 
-scala> f(1)       // kompilatorn kan nu framkalla givet värde av typen Int
-val res0: Int = 43
-\end{REPL}
-Det går också att ge det givna värdet ett namn vid behov, men ofta onödigt:\\
-\code{given blabla: Int = 42}
+scala> f(1)       // kompilatorn framkallar nu det givna värdet i denna lokala kontext
+val res2: Int = 43
+\end{REPLsmall}
+Man kan utelämna namnet på värdet, eftersom det oftast inte behövs:\\
+\code{given Default = Default(42)}
 \end{Slide}
 
-\begin{Slide}{Går det lika bra att ha en variabel som default-värde?}
+\begin{Slide}{Går det inte lika bra att ha en global variabel?}
+  \SlideFontSmall Varning för känsliga kodare!
 \begin{itemize}\SlideFontSmall
-\item Ett försök att skapa ett kontextberoende default-värde med en variabel:
+\item Ett försök att skapa ett default-värde med en global \code{var}-variabel:
 \begin{REPLsmall}
-scala> var ctx = 42
+scala> var globalVar = Default(42)
 var ctx: Int = 42
 
-scala> def f(x: Int = ctx) = x + 1
-def f(x: Int): Int
+scala> def f(x: Int, d: Default = globalVar) = x + d.value
 
-scala> f()
-val res0: Int = 43
+scala> f(1)
+val res3: Int = 43
 
-scala> ctx = 0
+scala> globalVar = Default(0) // FÖRÄNDRINGEN SLÅR GLOBALT I HELA DITT PROGRAM!!
 
-scala> f()                                                                      
-val res1: Int = 1
+scala> f(1)                                                                      
+val res4: Int = 1
 \end{REPLsmall} 
-\item Här utgörs ''kontexten'' av referensen till ett föränderligt värde vid \Alert{körtid} som måste synas i \Emph{aktuell} namnrymd. Funktionen är ej heller äkta \code{:(} 
-\item Denna lösning kan inte erbjuda flera kontextberoende default-värden, så att funktionen fungerar i många \Emph{olika} sammanhang.
-\item För givna värden med \code{given} så finns i stället en \Emph{implicit namnrymd} \Eng{implicit scope} med speciella synlighetsregler vid \code{using}.
+\item Här utgörs ''kontexten'' av referensen till ett föränderligt värde som bestäms vid \Alert{körtid} i den globala namnrymden. Funktionen \code{f} är ej äkta! 
+\item Denna lösning kan \Alert{inte} erbjuda \Alert{olika} kontextberoende default-värden; alla funktionsanrop använder \Alert{ett} globalt föränderliga värde. Buggrisk!
 \end{itemize}
+Givna värden med \code{given} härleds istället vid \Emph{kompileringstid} ur en speciell \Emph{implicit namnrymd} \Eng{implicit scope} enligt speciella regler.
 \end{Slide}
 
 
-\begin{Slide}{Kontextuella abstraktioner med \texttt{given}, \texttt{using}}\SlideFontSmall
-\Emph{Kontextuell abstraktion} \Eng{contextual abstraction} i Scala:
-\begin{itemize}\SlideFontSmall
-\item Nyckelordet \code{given} anger ett \Emph{givet värde} av en viss typ.
-\item Värdet \Alert{framkallas} vid anrop med \Emph{kontextparameter} av given typ.
-\end{itemize}
+\begin{Slide}{Import av kontextparameter}\SlideFontTiny
 \begin{Code}
-object MinKontext:
-  given String = "tagen för givet"
-  def framkalla(using s: String) = s  //kontextparametrar märks med using
+object EnNamnrymd:
+  given enGivenSträng: String = "ett givet värde i EnNamnrymd"
+  def framkalla(using s: String) = s     //kontextparametrar märks med using
 \end{Code}
-\pause\vspace{-0.9em}
+Det är den \Emph{lokala} kontexten vid \Alert{användning} som styr vad som kan framkallas (och inte den namnrymd där kontextparametern deklarerades):
 \begin{REPLsmall}
-scala> MinKontext.framkalla(using "explicit")
-val res0: String = explicit
+scala> EnNamnrymd.framkalla
+-- [E172] Type Error: -------------------------------------------------------------
+1 |EnNamnrymd.framkalla
+  |                    ^
+  | No given instance of type String was found for parameter s of method framkalla 
+  | in object EnNamnrymd. The following import might fix the problem:
+  | import EnNamnrymd.enGivenSträng
+\end{REPLsmall}
+Du kan importera givna värden med speciell syntax där typen anges istället för namnet:
+\begin{REPLsmall}
+scala> import EnNamnrymd.given String    // speciell import-syntax baserat på typ
 
-scala> given String = "ta denna"
-lazy val given_String: String
-
-scala> MinKontext.framkalla
-val res1: String = ta denna
-
-scala> import MinKontext.given String    // speciell import-syntax för givna värden
-
-scala> MinKontext.framkalla
-val res2: String = tagen för givet
+scala> EnNamnrymd.framkalla
+val res0: String = ett givet värde i EnNamnrymd
 \end{REPLsmall}
 \end{Slide}
 
 \begin{Slide}{Framkalla värde med \texttt{summon}}\SlideFontSmall
-I standardbiblioteket för Scala 3 finns en generisk variant av metoden \code{framkalla} i föregående exempel, som är definierad så här:
+I standardbiblioteket för Scala 3 finns en \Emph{generisk} variant av metoden \code{framkalla} i föregående exempel, som är definierad så här:
 \begin{Code}
 def summon[T](using x: T) = x 
 \end{Code}
 Funktionen \code{summon} kan användas för att testa vilket värde kompilatorn framkallar i en viss kontext:
 \begin{Code}
-object MinKontext:
-  given String = "tagen för givet"
+object EnAnnanNamnrymd:
+  given String = "tagen för givet"    // namn behövs ej, det räcker med typ
 \end{Code}
-\vspace{-0.9em}
+\ifkompendium\else
+\vspace{-0.8em}
+\fi
 \begin{REPLsmall}
 scala> summon[String]
 -- Error:
@@ -554,9 +553,9 @@ scala> summon[String]
   |              ^
   | no implicit argument of type String was found for parameter x of 
   | method summon in object Predef. The following import might fix the problem:
-  | import MinKontext.given_String
+  | import EnAnnanNamnrymd.given_String
 
-scala> import MinKontext.given    // importerar alla givna värden i MinKontext
+scala> import EnAnnanNamnrymd.given    // importerar alla givna värden i MinKontext
 
 scala> summon[String]
 val res0: String = tagen för givet
@@ -565,56 +564,56 @@ val res0: String = tagen för givet
 
 \begin{Slide}{Prioritetsordning vid framkallning av givna värden}\SlideFontSmall
 \begin{itemize}\SlideFontSmall
-\item Det kan finnas flera \Alert{olika} givna värden av \Emph{samma} typ.
-\item Men då får det ju inte vara tvetydigt vilket implicit värde som ska väljas.
-\item Därför väljer kompilatorn ett givet värde enligt denna prioritering:
+\item Det kan finnas flera \Alert{olika} givna värden av \Emph{samma} typ om de finns i olika namnrymder.
+\item Det får \Alert{inte} vara \Alert{tvetydigt} vilket värde som ska framkallas.
+\item Därför finns det speciella prioriteringsregler:
 \begin{enumerate}\SlideFontTiny
 \item \Emph{Explicita} argument till kontextparametrar märkta med \code{using}
 \item \code{given} och \code{import given ...} i aktuell namnrymd \Eng{current scope} 
 \item \code{given}-värden i \Emph{kompanjonsobjekt} för den använda typen.
-\item ... (fler knepiga regler som vi inte går in på här)
+\item ... (fler regler i speciella fall som vi inte går in på här)
 \end{enumerate}
-\item Om flera givna värden kan framkallas för typer som ingår i en gemensam arvshierarki så väljer kompilatorn det givna värdet som är av den \emph{mest specifika} typen.
+\item \emph{Specialregel:} Om flera givna värden kan framkallas för typer som ingår i en gemensam \Alert{arvshierarki} så väljer kompilatorn det givna värdet som är av den \Emph{mest specifika} typen.
 \end{itemize}
-Framkallning av givna värden vid anrop med kontextparametrar har flera namn på engelska: \emph{to summon}, eller \emph{term inference}, eller \emph{implicit resolution}. 
+Framkallning av givna värden har flera namn på engelska:\\ \emph{to summon}, eller \emph{term inference}, eller \emph{implicit resolution}. 
 \end{Slide}
 
-\begin{Slide}{Ad hoc polymorfism med typklasser}\SlideFontTiny
+\begin{Slide}{Ad hoc polymorfism}\SlideFontTiny
 \begin{itemize}\SlideFontTiny
-\item Med Ad hoc polymorfism kan det finnas \emph{olika} implementationer för \emph{olika} typer \emph{utan} användning av arv (\code{extends}). 
-\item Uppfanns i språket ML och vidareutvecklades i språket Haskell.
-\item I Haskell kallas mekanismen för Ad hoc polymorfism för \Emph{typklass}. %\\(En förvirrande term; Haskell är inte objekt-orienterat...)
-\item Typklasser skapas i Scala genom att \Emph{kombinera} parametrisk polymorfism (typparametrar) med kontextuella abstraktioner (given-using).
-\item En \Emph{typklass i Scala} är en tillståndslös \code{trait} med minst en typparameter och minst en abstrakt metod.
+\item Med så kallad \Emph{Ad hoc polymorfism} kan du ha \emph{olika} implementationer av en funktion för \emph{olika} typer \emph{utan} att du behöver använda arv och dynamisk bindning. 
+\item Detta uppfanns i språket ML och vidareutvecklades i språket Haskell.
+\item I Haskell skapas Ad hoc polymorfism med en s.k. ''\Emph{typklass}'' \Eng{type class}. %\\(En förvirrande term; Haskell är inte objekt-orienterat...)
+\item Detta görs i Scala genom att kombinera typparametrar och kontextparametrar.
+\item En ''typklass'' i Scala är en tillståndslös \code{trait} med minst en typparameter och minst en abstrakt metod.
 \end{itemize}
 \begin{CodeSmall}
-trait Parser[T]:   // en typklass för att tolka och omvandla strängar till godtycklig typ 
+trait Parser[T]: //en typklass för tolkning och omvandling av strängar till godtycklig typ 
   def fromString(value: String): Option[T]
 
-object Parser:             // olika implementationer erbjuds som givna värden
-  given Parser[Int] with   // nyckelordet with behövs då given implementerar abstrakt metod
+object Parser:            //implementationer för en viss typ kan erbjudas som givna värden
+  given Parser[Int] with        //nyckelordet with behövs då abstrakt medlem implementeras
     def fromString(value: String): Option[Int] = value.toIntOption   
 \end{CodeSmall}
 \begin{itemize}\SlideFontTiny
-\item Den specifika implementationen framkallas via en kontextuell parameter:
+\item Den specifika implementationen framkallas vid anrop med kontextparameter:
 \end{itemize}
 \begin{REPLsmall}
-scala> def minAnvändningAvParser[T](s: String)(using p: Parser[T]) = p.fromString(s)
+scala> def användParser[T](s: String)(using p: Parser[T]) = p.fromString(s)
 
-scala> minAnvändningAvParser[Int]("12")
+scala> användParser[Int]("12")        // hittar givet värde i kompanjonsobjektet
 val res0: Option[Int] = Some(12)
 \end{REPLsmall}
 \end{Slide}
 
 \begin{Slide}{Hur få typklassen \texttt{Parser} att funka för fler typer?}
-\begin{REPL}
-scala> minAnvändningAvParser[java.awt.Color]("Color(120,10,0)")
+\begin{REPLsmall}
+scala> användParser[java.awt.Color]("Color(120,10,0)")
 -- Error:
-1 |minAnvändningAvParser[java.awt.Color]("Color(120,10,0)")
+1 |användParser[java.awt.Color]("Color(120,10,0)")
   |                                        ^
   | no implicit argument of type Parser[java.awt.Color] was found 
-  | for parameter p of method minAnvändningAvParser
-\end{REPL}
+  | for parameter p of method användParser
+\end{REPLsmall}
 \begin{Code}
 given Parser[java.awt.Color] with
   def fromString(value: String): Option[java.awt.Color] =
@@ -625,7 +624,7 @@ given Parser[java.awt.Color] with
         case _ => None
 \end{Code}
 \begin{REPLsmall}
-scala> minAnvändningAvParser[java.awt.Color]("Color(120,10,0)")
+scala> användParser[java.awt.Color]("Color(120,10,0)")
 val res1: Option[java.awt.Color] = Some(java.awt.Color[r=120,g=10,b=0])
 \end{REPLsmall}
 \pause {\SlideFontSmall Detta ger \Emph{flexibilitet}: Jag kan ge givna värden för mina \Alert{egna} typer!}
@@ -638,13 +637,13 @@ val res1: Option[java.awt.Color] = Some(java.awt.Color[r=120,g=10,b=0])
 \item Därför är det tillåtet att utelämna parameternamnet vid \code{using}. 
 \item Det givna värdet kan istället framkallas med \code{summon} vid behov:%
 \begin{Code}
-def minAnvändningAvParser[T](s: String)(using Parser[T]) = 
+def användParser[T](s: String)(using Parser[T]) = 
   summon[Parser[T]].fromString(s)
 \end{Code}
 % \pause
 % \item Om du placerar en \code{apply} i typklassens kompanjonsobjekt som gör samma jobb som \code{summon} så kan du skriva detta ännu kortare:
 % \begin{CodeSmall}
-% def minAnvändningAvParser[T](s: String)(using Parser[T]) = Parser[T].fromString(s)
+% def användParser[T](s: String)(using Parser[T]) = Parser[T].fromString(s)
 % \end{CodeSmall}
 % \item En sådan ''framkallnings-apply'' kan se ut så här:
 % \begin{CodeSmall}
@@ -657,13 +656,13 @@ def minAnvändningAvParser[T](s: String)(using Parser[T]) =
 
 
 \begin{Slide}{Kontextgräns}\SlideFontSmall
-Denna form av \code{using}-parametrar...
+Denna form av \code{using}-parameter med en typkonstruktor...
 \begin{Code}
-def minAnvändningAvParser[T](s: String)(using Parser[T]) = ???
+def användParser[T](s: String)(using Parser[T])
 \end{Code}
-...är så vanliga att Scala har ett kortare skrivsätt som kallas \Emph{kontextgräns}:
+...är så vanlig i Scala att det finns kortare skrivsätt som kallas \Emph{kontextgräns}:
 \begin{Code}
-def minAnvändningAvParser[T: Parser](s: String) = ???
+def användParser[T: Parser](s: String)
 \end{Code}
 Om \code{F[A]} är en typkonstruktor och du skriver \code{[T: F]} så blir \code{F} en så kallad \Emph{kontextgräns} \Eng{context boundary}. 
 Kompilatorn expandera detta automatiskt till kontextparametern \code{(using F[T])}
@@ -672,41 +671,39 @@ Kompilatorn expandera detta automatiskt till kontextparametern \code{(using F[T]
 
 
 \begin{Slide}{Ännu smidigare typklass med extensionsmetod}\SlideFontSmall
-Kombinera kontextgräns med extensionsmetod och få smidig punktnotation.
+Det får att kombinera kontextgräns med extensionsmetoder:
 \begin{Code}
 extension [T: Parser](s: String) 
-  def minAnvändningAvParser(default: T): T = 
+  def parseOrElse(default: T): T = 
     summon[Parser[T]].fromString(s).getOrElse(default)
- 
 \end{Code}
-\pause
-\begin{REPL}
-scala> "12".minAnvändningAvParser(default = 42)
+Nu har vi smidig punktnotation:
+\begin{REPLsmall}
+scala> "12".parseOrElse(default = 42)
 val res2: Int = 12
 
-scala> "gurka".minAnvändningAvParser(default = 42)
+scala> "gurka".parseOrElse(default = 42)
 val res3: Int = 42
 
-scala> "Color(100,100,0)".minAnvändningAvParser(java.awt.Color.black)
+scala> "Color(100,100,0)".parseOrElse(default = java.awt.Color.black)
 val res4: java.awt.Color = java.awt.Color[r=100,g=100,b=0]
-\end{REPL}
-\begin{itemize}
-  \item Här behöver typparametern \code{T} ej anges explicit eftersom kompilatorn kan använda default-värdet för att härleda typen.
-  \item Extensionsmetoder kan skrivas i efterhand på valfri plats och även göras tillgängliga med import.
 
-\end{itemize}
+scala> "fel färg".parseOrElse(default = java.awt.Color.black)
+val res5: java.awt.Color = java.awt.Color[r=0,g=0,b=0]
+
+\end{REPLsmall}
+% \begin{itemize}\SlideFontTiny
+  % \item Här behöver typparametern inte anges eftersom kompilatorn kan använda default-värdet för att härleda typen.
+  % \item Extensionsmetoder kan skrivas i efterhand på valfri plats och även göras tillgängliga med import.
+% \end{itemize}
 \end{Slide}
 
 
-% \begin{Slide}{Typklass med samlade smidigheter}\SlideFontSmall
-% Om vi samlar ihop alla smidighetstrick får vi ett typiskt typklassexempel: 
+% \begin{Slide}{Typklass}\SlideFontSmall
 % \begin{CodeSmall}
 % trait Parser[T]: 
 %   def fromString(value: String): Option[T]
-
-%   extension (s: String) 
-%     def minAnvändningAvParser(default: T): T = fromString(s).getOrElse(default)
-
+%   //TODO: ta reda på hur detta görs med extensionsmetod i kroppen på typklassen
 % object Parser:
 %   given intParser: Parser[Int] with 
 %     def fromString(value: String): Option[Int] = value.toIntOption   
@@ -719,7 +716,7 @@ val res4: java.awt.Color = java.awt.Color[r=100,g=100,b=0]
 %         case _ => None
 % \end{CodeSmall}
 % \begin{REPLsmall}
-% scala> import Parser.intParser
+% scala> import Parser.given
 % scala> "12".parse
 % val res0: Option[Int] = Some(12)
 % \end{REPLsmall}
