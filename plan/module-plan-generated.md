@@ -12,7 +12,7 @@
 | W09 | Mängder och tabeller              | innehållstest, mängd, Set, mutable.Set, nyckel-värde-tabell, Map, mutable.Map, hash code, java.util.HashMap, java.util.HashSet, persistens, serialisering, textfiler, Source.fromFile, java.nio.file |
 | W10 | Arv och komposition               | arv, komposition, polymorfism, trait, extends, asInstanceOf, with, inmixning supertyp, subtyp, bastyp, override, Scalas typhierarki, Any, AnyRef, Object, AnyVal, Null, Nothing, topptyp, bottentyp, referenstyper, värdetyper, accessregler vid arv, protected, final, trait, abstrakt klass |
 | W11 | Varians och kontextparametrar     | övre- och undre typgräns, varians, kontravarians, kovarians, typjoker, kontextgräns, typkonstruktor, egentyp, typjoker, givet värde (given), kontextparameter (using), ad hoc polymorfism, typklass, api, kodläsbarhet, granskningar |
-| W12 | Valfri fördjupning, Projekt       | välj valfritt fördjupningsområde, påbörja projekt |
+| W12 | Fördjupning, Projekt              | välj valfritt fördjupningsområde, påbörja projekt |
 | W13 | Repetition                        | träna på extentor, redovisa projekt, träna inför muntligt prov |
 | W14 | MUNTLIGT PROV                     |  |
 | T   | VALFRI TENTAMEN                   |  |
