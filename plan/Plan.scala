@@ -144,7 +144,7 @@ trait Plan {
       | api, kodläsbarhet, granskningar
       """.stripTrim),
 
-    Module("Valfri fördjupning, Projekt",
+    Module("Fördjupning, Projekt",
         id = "extra", exercise = "extra", lab = "project0", contents = """
         | välj valfritt fördjupningsområde, påbörja projekt,
         """.stripTrim),
