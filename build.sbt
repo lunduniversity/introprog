@@ -3,6 +3,8 @@ import Process._
 import Keys._
 import complete.DefaultParsers._
 
+Global / onChangedBuildSource := ReloadOnSourceChanges
+
 lazy val hello = taskKey[Unit]("Prints welcome message")
 hello := println("""
   ======= WELCOME to the sbt build of lunduniversity/introprog =========
@@ -38,8 +40,8 @@ lazy val myStartupTransition: State => State = { s: State =>
 
 lazy val commonSettings = Seq(
   organization := "se.lth.cs",
-  version := "2021.0.1",
-  scalaVersion := "3.2.2",
+  version := "2024.0.1",
+  scalaVersion := "3.3.3",
   scalacOptions ++= Seq("-deprecation", "-feature")
 )
 
