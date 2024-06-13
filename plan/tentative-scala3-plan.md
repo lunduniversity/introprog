@@ -1,4 +1,6 @@
-tentative-scala3-progression.md
+# tentative-scala3-progression.md
+
+This is deprecated. Kept for archeological reasons :)
 
 ## Plan A (small changes)
 

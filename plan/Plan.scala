@@ -1,4 +1,4 @@
-trait Plan {
+trait Plan:
   import StringExtras._
 
   case class Module(
@@ -70,8 +70,6 @@ trait Plan {
       | initialisering, lazy val,
       | typalias,
       """.stripTrim),
-//      | enkelt bash-skript för kompilering ???här eller i vecka 2???,
-//      | sbt tilde run ???här eller i vecka2???,
 
     Module("Klasser och datamodellering",
       id = "classes", exercise = "classes", lab = "blockbattle0", contents = """
@@ -91,7 +89,7 @@ trait Plan {
       | flatten, flatMap, partiella funktioner, collect,
       | wildcard-mönster, variabelbindning i mönster, sekvens-wildcard, bokstavliga mönster,
       | implementera equals, hashcode 
-      """.stripTrim), // equals -> sortering???
+      """.stripTrim), 
 
 
     Module("Sekvenser och enumerationer",
@@ -197,13 +195,13 @@ trait Plan {
     else labNumOfWeek(w)
   }
 
-  lazy val startLp1 = Date(2022, 8, 28)
+  lazy val startLp1 = Date(2024, 9, 2)
 
-  lazy val startLp2 = Date(2022, 10, 30)
+  lazy val startLp2 = Date(2024, 11, 4)
 
-  lazy val ksdatum = Date(2022, 10, 25)
+  lazy val ksdatum = Date(2024, 10, 29)
 
-  lazy val tentadatum = Date(2023, 1, 4)
+  lazy val tentadatum = Date(2025, 1, 8)
 
   def weeksOf(date: Date, n: Int): Seq[String] =
     for (week <- 0 until n) yield date.addDays(week*7).workWeek
@@ -225,4 +223,3 @@ trait Plan {
   )
 
   lazy val body = (0 until 16).map(bodyItem)
-}

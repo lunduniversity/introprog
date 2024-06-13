@@ -1,6 +1,6 @@
 # TODO
 
-**This old TODO is abandoned. Now github issues to the rescue....** 
+**This old TODO is abandoned. Use github issues instead.** 
 Kept for archeological interest :)
 
 ## Started
