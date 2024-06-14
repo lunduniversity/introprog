@@ -322,7 +322,7 @@ val res0: Set[Int] = HashSet(5, 1, 2, 3, 4)
 \end{Slide}
 
 
-\begin{Slide}{Exempel: Oföränderlig mängd}
+\begin{Slide}{Oföränderlig mängd}
 \setlength{\leftmargini}{1em}
 \begin{itemize}
 \item \Emph{Skapa}:
@@ -338,12 +338,12 @@ val res1: Boolean = true
 
 \item \Emph{Uppdatera}: lägg till element (händer inget om redan finns)
 \begin{REPLnonum}
-scala> xs = xs + "jordekorre"
+scala> xs = xs + "jordekorre" // en ny, delvis förändrad
 \end{REPLnonum}
 
 \item \Emph{Ta bort}: (om finns, annars händer inget)
 \begin{REPLnonum}
-scala> xs = xs - "gurka"
+scala> xs = xs - "gurka" // en ny, delvis förändrad
 \end{REPLnonum}
 \end{itemize}
 {\SlideFontTiny\code{SLUT} = Skapa, Läsa, Uppdatera, Ta bort \hfill\code{CRUD} = Create, Read, Update, Delete}
@@ -377,12 +377,12 @@ val res1: Int = 3         // med toSeq blir det som vi ville
 
 
 
-\begin{Slide}{Exempel: Förändringsbar mängd}\SlideFontSmall
+\begin{Slide}{Förändringsbar mängd}\SlideFontSmall
 Med en \Alert{förändringsbar} mängd kan man stegvis utöka på plats.
 \begin{REPL}
 scala> val mängd = scala.collection.mutable.Set.empty[Int]
 
-scala> for i <- 1 to 1_000_000 do mängd += i
+scala> for i <- 1 to 1_000_000 do mängd.addOne(i)
 
 scala> mängd.contains(-1)   // samma som mängd(-1) eller mängd.apply(-1)
 \end{REPL}
@@ -402,6 +402,34 @@ def nanos(b: => Unit) = { val t0 = System.nanoTime; b; System.nanoTime - t0 }
 \end{Slide}
 
 
+\begin{Slide}{Speciella metoder på förändringsbar mängd}\SlideFontSmall
+Förändringsbara mängder har metoder som ändrar på plats:
+\begin{REPLsmall}
+scala> val s = scala.collection.mutable.Set.empty[Int]
+
+scala> s.addOne(1)     // finns även under namnet += om du gillar operator-notion
+val res0: scala.collection.mutable.Set[Int] = HashSet(1)
+
+scala> s.addOne(2).addOne(3).addOne(3).addOne(42) // addOne returnerar this
+val res1: scala.collection.mutable.Set[Int] = HashSet(1, 2, 3, 42)
+
+scala> res0.eq(res1)  // samma instans av mutable.Set (ingen ny har skapats)
+val res2: Boolean = true
+
+scala> s.addAll(Vector(3, 4, 5))  // finns även ++= om du gillar operator-notion
+val res3: scala.collection.mutable.Set[Int] = HashSet(1, 2, 3, 4, 5, 42)
+
+scala> s.subtractOne(1).subtractAll(List(1,2,3))  // finns även -= och --=
+val res4: scala.collection.mutable.Set[Int] = HashSet(4, 5, 42)
+
+scala> s.filterInPlace(_ > 4)
+val res5: scala.collection.mutable.Set[Int] = HashSet(5, 42)
+
+\end{REPLsmall}
+\code{addOne}, \code{addAll}, \code{subtractOne}, \code{subtractAll}, \code{filterInPlace} returnerar \code{this} så du kan ändra på plats med kedjade anrop med punktnotation.
+\end{Slide}
+
+  
 
 
 
@@ -442,7 +470,7 @@ nycklarna är \Alert{unika}.
 \end{Slide}
 
 
-\begin{Slide}{Exempel: Oföränderlig nyckel-värde-tabell}
+\begin{Slide}{Oföränderlig nyckel-värde-tabell}
 \setlength{\leftmargini}{1em}
 \begin{itemize}
 \item \Emph{Skapa}: ge par till metoden \code{apply} 
@@ -503,8 +531,6 @@ val baklängesFärg: Map[String,String] =
 
 \end{Slide}
 
-
-
 \begin{Slide}{Från sekvens av par till tabell}
 \begin{REPL}
 scala> val xs = Vector(("Kim",42), ("Pam", 42), ("Kim", 50), ("Pam", 50))
@@ -562,34 +588,35 @@ object Multimap:
 \end{Slide}
 
 
-\Subsection{Tips inför veckans uppgifter}
-
-\begin{Slide}{Speciella metoder på förändringsbara samlingar}\SlideFontSmall
+\begin{Slide}{Speciella metoder på förändringsbar tabell}\SlideFontSmall
 Både \code{Set} och \code{Map} finns i \Alert{förändringsbara} varianter med extra metoder för uppdatering av innehållet ''på plats'' utan att nya samlingar skapas.
 \begin{REPLsmall}
 scala> import scala.collection.mutable
-
 scala> val ms = mutable.Set.empty[Int]
 val ms: scala.collection.mutable.Set[Int] = HashSet()
 
-scala> ms += 42
+scala> ms += 42  // metoden += gör samma som addOne
 val res0: scala.collection.mutable.Set[Int] = HashSet(42)
 
 scala> ms ++= Seq(1, 2, 3, 1, 2, 3)  // metoden ++= gör samma som addAll 
 val res1: scala.collection.mutable.Set[Int] = HashSet(1, 2, 3, 42)
 
-scala> val ms2 = ms diff Set(1, 2)
+scala> val mm = mutable.Map.empty[String, String]
 
-scala> ms2.mkString("Mängd: ", ", ", " Antal: " + ms2.size)
-val res2: String =Mängd: 3, 42 Antal: 2
+scala> mm.addOne("hej" -> "svejs").addAll(Seq("abra" -> "kadabra", "ada" -> "lovelace"))
+val res2: scala.collection.mutable.Map[String, String] = 
+  HashMap(hej -> svejs, abra -> kadabra, ada -> lovelace
 
-scala> val ordpar = mutable.Map.empty[String, String]
-
-scala> ordpar ++= Seq("hej" -> "svejs", "abra" -> "kadabra", "ada" -> "lovelace")
-
-scala> ordpar("abra")
-val res3: String = kadabra\end{REPLsmall}
+scala> mm("abra")
+val res3: String = kadabra
+\end{REPLsmall}
+Metoden \code{++=} gör samma som addAll, används gärna med operator-notation:\\
+\code{mm ++= Seq("hej" -> "san", "abra" -> "kada", "bra" -> "scala")}
 \end{Slide}
+  
+
+\Subsection{Tips inför veckans uppgifter}
+
 
 
 \begin{Slide}{Övning: Förändringsbar lokalt, returnera oföränderlig}
