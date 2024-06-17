@@ -54,21 +54,40 @@ Efter kritik om att \sbt~är komplicerat så har flera alternativa byggverktyg f
 
 \section{Scala Command Line Interface \texttt{scala-cli}}\label{appendix:build:scala-cli}
 
-Utvecklingen av \href{https://scala-cli.virtuslab.org/}{Scala CLI} påbörjades 2022 av \href{https://virtuslab.com/}{Virtuslab}. Scala CLI blir under 2023 det officiella byggverktyget för enkla Scala-projekt och kommer medfölja \href{https://www.scala-lang.org/download/}{installationen av Scala}. Scala CLI kan även installeras separat och köras med kommandot \code{scala-cli}, men blir någon gång under 2023 liktydigt med kommandot \code{scala} i terminalen.\footnote{I skrivande stund har gamla \code{scala}-kommandot ännu inte uppgraderats, men det förväntas ske i början av hösten. När så väl sker kan alla förekomster av \code{scala-cli} i detta stycke ersättas med det kortare kommandot \code{scala}, efter uppdatering.}
+Utvecklingen av Scala CLI\footnote{CLI är en förkortning för \textit{command line interface}. Läs mer om Scala CLI här: \url{https://scala-cli.virtuslab.org/docs/overview}} påbörjades 2022 och planeras under 2024 bli det officiella bygg- och körverktyget. Det kommer då medfölja den officiella installationen av Scala via \url{https://www.scala-lang.org}. Scala CLI kan även installeras separat från \url{https://scala-cli.virtuslab.org} och köras med kommandot \code{scala-cli}, men någon gång under 2024 när Scala 3.5 släpps så blir kommandot \code{scala} liktydigt med \code{scala-cli}.\footnote{I skrivande stund har gamla \code{scala}-kommandot ännu inte uppgraderats, men det förväntas ske i början av hösten. När så väl sker kan \code{scala-cli} ersättas med \code{scala} om du uppdaterar till Scala 3.5.0 eller senare.}
 
 Efter nyinstallation av Scala CLI kan du ange följande kommando för att, en gång för alla, få tillgång till kompletteringar av optioner med Tab-tangenten i terminalen:
 \begin{REPLsmall}
 scala-cli install-completions 
 \end{REPLsmall}
 
-Innan du börjar skriva källkod i en ny katalog i VS Code kan du konfigurera VS Code att vara redo för att använda Scala CLI som byggverktyg i aktuell katalog med följande kommando (vänta med att öppna VS Code till efter att du kört kommandot): 
+Innan du börjar skriva källkod i en ny katalog i VS Code kan du göra VS Code redo för att använda Scala CLI som byggverktyg i aktuell katalog med följande kommando (vänta med att öppna VS Code till efter att du kört kommandot): 
 \begin{REPLsmall}
 mkdir minNyaKatalog
 cd minNyaKatalog
 scala-cli setup-ide . 
 code .
 \end{REPLsmall}
-	
+I senare versionerna av VS Code med Metals och Scala 3.4 behövs ej \code{setup-ide} då Metals kör scala-cli som default.
+
+\subsection{Exempel på användning av Scala CLI}\label{appendix:build-scala-cli-watch-mode}
+
+Nedan beskrivs de viktigaste Scala-CLI-kommandona för att stegvis bygga upp din kod med många små steg och experimenterande med dellösningar. 
+
+\begin{itemize}
+  \item Med kommandot \code{scala-cli compile . -w} i ett eget terminalfönster bredvid din editor startar du Scala CLI i så kallad \textit{watch mode}. Då bevakas alla filändringar och omkompilering sker direkt när någon ny ändring sparats och du kan se eventuella kompileringsfel direkt. Åtgärda helst ett kompileringsfel innan du bygger vidare på din kod, då följdfel kan vara svåra att lösa speciellt om de är många. Dela upp stora kodändringar i små steg och försök att så fort som möjligt få den senaste ändringen att kompilera felfritt. 
+  \item
+    Med kommandot \code{scala-cli repl .}~ i ett annat terminalfönster startar du REPL med dina klasser i aktuella katalogen  automatiskt tillgängliga på classpath (därav punkten efter blanksteg efter \code{scala repl}) och du kan anropa dina metoder, efter ev. \code{import} när du gör experiment inför nästa steg. 
+    
+    På så sätt kan du skapa och testa små funktioner och få dem att att fungera innan inför dem i ditt program och sätter samman dessa med redan skapade funktioner. Det är ofta lättare att felsöka och bygga upp ett större program om du har många små funktioner som samverkar, snarare än få väldigt stora funktioner. Och det är oftast lättare att testköra nya lösningsidéer i REPL innan du skapar ''färdig'' kod i ditt program.
+  \item
+    Med \texttt{scala-cli run .} sker kompilering och körning av \code{main}-metoden i aktuella katalogen. Du kan ange en annan katalog genom att skicka med sökvägen som argument till kommandot.  Du kan också ange optionen \code{-w} för \textit{watch mode} vid körning. Då kommer ditt program att köras om vid varje ändring. Watch mode vid körning är användbart om programmet ger resultat utan att vänta på input, men inte så smidigt om varje körning kräver att användaren skriver indata eller om fönster måste stängas.
+  \item
+    Om det finns flera \texttt{main}-metoder i aktuella katalogen, går det att specificera vilken av dessa som ska exekveras med optionen \verb|--main-class|, exempelvis\\ \verb|scala-cli run .  --main-class hello| 
+  \item Argument till ditt huvudprogam anges efter dubbla minustecken \verb|--| så här: \\\verb|scala-cli run . -- arg1 arg2 arg3|
+\end{itemize}
+
+
 
 \subsection{Grundläggande byggfunktioner i Scala CLI}
 
