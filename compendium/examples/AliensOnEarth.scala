@@ -12,14 +12,14 @@ object AliensOnEarth:
     options(selected)
 
   def playGame(alien: String, maxPoints: Int = 1000): Int =
-    val os = Vector("penguin", "window", "apple")
-    val correct = if math.random() < 0.5 then os(0) else randomChoice(os)
-    val cheatCode = (os.indexOf(correct) + 1) * math.Pi
+    val xs = Vector("penguin", "window", "apple")
+    val correct = if math.random() < 0.5 then xs(0) else randomChoice(xs)
+    val cheatCode = (xs.indexOf(correct) + 1) * math.Pi
     println(s"""|Hello $alien!
                 |You are an alien on Earth.
                 |Your encrypted password is $cheatCode.
                 |You see three strange Earth objects.""".stripMargin)
-    val choice = readChoice(s"$alien wants? ", os)
+    val choice = readChoice(s"$alien wants? ", xs)
     if choice == correct then maxPoints else 0
 
   def main(args: Array[String]): Unit =
