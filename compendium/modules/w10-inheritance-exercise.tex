@@ -292,12 +292,14 @@ I fig. \ref{snake:fig:pairs-uml} visas en bild av klasshierarkin som du steg-fö
 
 \Subtask Öppna en editor och koda \code{trait Pair[T]} i en fil \code{pairs.scala}. Lägg dessutom till en konkret metod \code{tuple} i \code{Pair[T]} som returnerar en 2-tupel med de båda elementen i paret, så att det vid behov går att omvandla \code{Pair}-instanser till 2-tupler. Använd REPL för att testa att detta fungerar:
 \begin{REPLnonum}
-scala> val p = new Pair[Int] { val x = 10; val y = 20 }
+scala> val p = new Pair[Int] { override val x = 10; override val y = 20 }
 p: Pair[Int]{val x: Int; val y: Int} = $anon$1@784223e9
 
 scala> p.tuple
 val res0: (Int, Int) = (10,20)
 \end{REPLnonum}
+
+\Subtask Fungerar koden ovan även utan nyckelordet \code{override} (testa i REPL)? Varför? När \emph{måste} \code{override} användas? Vad är fördelen resp. nackdelen med att använda \code{override} även när det inte är nödvändigt? 
 
 \Subtask Skapa en case-klass \code{Dim} som ärver \code{Pair[Int]}. Instanser av denna klass kommer du att använda under veckans laboration för att representera en spelplans storlek genom att låta \code{x} ange antalet horisontella positioner och \code{y} antalet vertikala positioner.
 
@@ -366,6 +368,17 @@ trait Pair[T]:
   def tuple: (T, T) = (x, y)
 
 \end{CodeSmall}
+
+\SubtaskSolved 
+\begin{itemize}
+  \item Fungerar koden ovan även utan nyckelordet \code{override}? Varför? 
+  \item[] Ja den fungerar eftersom \code{override} ej måste anges när ärvda \emph{abstrakta} medlemmar implementeras i en subtyp. Abstrakta medlemmar saknar implementation och det finns inget som behöver överskuggas. 
+  \item När \emph{måste} \code{override} användas? 
+  \item[] Det krävs \code{override} om du vill ge en ärvd medlem en \emph{annan} implementation i subtypen, om denna medlemmen redan \emph{har} en implementation i supertypen. Din nya implementation överskuggar (ersätter) den ärvda medlemmens implementation. 
+  \item Vad är fördelen resp. nackdelen med att använda \code{override} även när det inte är nödvändigt?
+  \item[] \emph{Fördel:} du får hjälp av kompilatorn att kontrollera att du verkligen implementerar en ärvd medlem och inte t.ex. råkat stava medlemmens namn fel.
+  \item[] \emph{Nackdel:} mer att skriva och därmed även längre att läsa.
+\end{itemize}
 
 \SubtaskSolved
 \begin{CodeSmall}
