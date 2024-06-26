@@ -208,35 +208,57 @@
 \par}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\vspace{1em}
-\head{Top-level definitions} \vspace{0.75em}
-\hspace{0.32em}\begin{minipage}{0.52\linewidth}%
-\begin{Code}[frame=single] %[frame=single]  [frame=none]
+\vspace{0.7em}
+\head{Compile and run @main program} \vspace{0.8em}
+\hspace{0.32em}\begin{minipage}{0.56\linewidth}%
+%Example source file \code{hi.scala} with top-level definitions: 
+\vspace{-0.5em}
+\begin{Code}
 //> using scala 3.4.2
+//> using toolkit default
+//> using dep se.lth.cs::introprog:1.4.0
+
 package x.y.z
+import introprog.Dialog.{file as selectFile}
 
-val msg = "Hello"
+val greeting = "Hej "
 
-@main def greet(args: String*): Unit =
-  println(s"$msg ${args.mkString(" ")}")
+def greet(nbr: Int, names: Seq[String]) =
+  names.mkString(greeting * nbr, ", ", "\n")
+
+@main def prog(n: Int, xs: String*): Unit =
+  val dir = os.pwd.toString
+  val f = selectFile(startDir = dir)
+  if f.nonEmpty && !os.exists(os.Path(f)) then 
+    os.write(os.Path(f), greet(n, xs))
 \end{Code}%
 \end{minipage}%
-\hfill\begin{minipage}{0.45\linewidth}
-\raggedright{\small
-A compilation unit (here hello.scala) consists of top-level definitions such as val, var, def, import, class and object, which may be preceded by a package clause, e.g.: \code|package x.y.z |that places the compiled files in directory x/y/z/ in .scala-build
+\hfill\begin{minipage}{0.38\linewidth}
+\raggedright{\small\vspace{0.2em}
+A compilation unit, e.g. \code{hi.scala}, can have top-level definitions such as val, var, def, import, class and object, which may be preceded by a package clause, e.g.: \code|package x.y.z |that creates a name space and places the compiled bytecode in dir \code{.scala-build} under  \code{x/y/z/}\\[0.5em]
 
-\begin{tabular}{@{}r @{\hspace{0.5em}}l} \\[-0.5em]
-\textbf{Compile}:  & \verb|scala-cli compile .| \\
-\textbf{Run}:  &  \verb|scala-cli run . -- Earth Moon| \\[0.1em]
+\textbf{Compile and run single file:}
+\verb|scala-cli run hi.scala|\\[0.3em]
+\textbf{Compile all scala \& java files in current dir:}\\
+\verb|scala-cli compile . -w|\\
+where \code{-w} or \code{--watch} recompile on change\\[0.3em]
+\textbf{Run all scala \& java files in current dir:}\\
+\verb|scala-cli run . -- 42 Sara Jim|\\program arguments after \code{--}\\[0.3em]
+\textbf{Start REPL:} ~\verb|scala-cli repl .|\\The dot gives access to code in current dir\\[0.3em]
+\hfill
+
+%\begin{tabular}{@{}r @{\hspace{0.5em}}l} \\[-0.5em]
+%\textbf{Compile}:  & \verb|scala-cli compile hi.scala| \\
+%\textbf{Run}:  &  \verb|scala-cli run . -- Ada Joe| \\[0.1em]
 %&Execution starts in method marked \verb|@main|.
-\end{tabular}%
+%&\end{tabular}%
 }%
 \end{minipage}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\vspace*{-0.25em}
+\vspace*{-1em}
 \head{Definitions and declarations}\Newline
 {\small\renewcommand{\arraystretch}{0.95}
 A \textbf{definition} binds a name to a value/implementation, while a \textbf{declaration} just introduces a name (and type) of an abstract member. Below \code|defsAndDecl| denotes a list of definitions and/or declarations. Template bodies \code|{ ... }| are optional, can be replaced by \code{:} that opens an indentation region.~~~ \code{=}~~also opens an indentation region
