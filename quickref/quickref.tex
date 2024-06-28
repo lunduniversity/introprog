@@ -199,25 +199,25 @@
 \newcommand{\Comment}[1]{{\color{commentgreen}{#1}}}
 
 \begin{document}
-
 \LangMarker{Scala}{1.5cm}{10}
-\LangTitle{Scala 3.4 Quick Ref @ Lund University}
+\LangTitle{ \vspace*{-1.0em} Scala 3.4 Quick Ref @ Lund University}
 {\centering https://github.com/lunduniversity/introprog/tree/master/quickref \\
 {\small \Version. License: CC-BY-SA. Pull requests welcome! Contact: bjorn.regnell@cs.lth.se}\\
 %{\small Pull requests welcome! Contact: bjorn.regnell at cs.lth.se}
 \par}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\vspace{0.7em}
+\vspace{0.6em}
 \head{Compile and run @main program} \vspace{0.8em}
 \hspace{0.32em}\begin{minipage}{0.56\linewidth}%
 %Example source file \code{hi.scala} with top-level definitions: 
-\vspace{-0.5em}
+\vspace{-0.75em}
 \begin{Code}
 //> using scala 3.4.2
 //> using toolkit default
 //> using dep se.lth.cs::introprog:1.4.0
-
+\end{Code}%
+\vspace*{-0.9em}
+\begin{Code}
 package x.y.z
 import introprog.Dialog.{file as selectFile}
 
@@ -226,25 +226,29 @@ val greeting = "Hej "
 def greet(nbr: Int, names: Seq[String]) =
   names.mkString(greeting * nbr, ", ", "\n")
 
-@main def prog(n: Int, xs: String*): Unit =
+@main def RunGreet(n: Int, xs: String*) =
   val dir = os.pwd.toString
   val f = selectFile(startDir = dir)
-  if f.nonEmpty && !os.exists(os.Path(f)) then 
-    os.write(os.Path(f), greet(n, xs))
+  if f.nonEmpty && !os.exists(os.Path(f)) 
+  then os.write(os.Path(f), greet(n, xs))
+  else println("ERROR: greeting aborted")
 \end{Code}%
 \end{minipage}%
-\hfill\begin{minipage}{0.38\linewidth}
+\hfill\begin{minipage}{0.40\linewidth}
 \raggedright{\small\vspace{0.2em}
-A compilation unit, e.g. \code{hi.scala}, can have top-level definitions such as val, var, def, import, class and object, which may be preceded by a package clause, e.g.: \code|package x.y.z |that creates a name space and places the compiled bytecode in dir \code{.scala-build} under  \code{x/y/z/}\\[0.5em]
+A compilation unit, e.g. \code{hi.scala}, can have top-level definitions such as val, var, def, import, class and object, which may be preceded by a package clause, e.g.: \code|package x.y.z | creates a name space and places the compiled bytecode in dir \code{.scala-build} under  \code{x/y/z/}\\[0.5em]
 
 \textbf{Compile and run single file:}
-\verb|scala-cli run hi.scala|\\[0.3em]
+\verb|scala-cli run hi.scala|\\[0.2em]
 \textbf{Compile all scala \& java files in current dir:}\\
 \verb|scala-cli compile . -w|\\
-where \code{-w} or \code{--watch} recompile on change\\[0.3em]
+where \code{-w} or \code{--watch} recompile on change\\
+the dot \code{.} gives access to code in current dir.
+\\[0.2em]
 \textbf{Run all scala \& java files in current dir:}\\
-\verb|scala-cli run . -- 42 Sara Jim|\\program arguments after \code{--}\\[0.3em]
-\textbf{Start REPL:} ~\verb|scala-cli repl .|\\The dot gives access to code in current dir\\[0.3em]
+\verb|scala-cli run . -- 42 Sara Jim|\\Main program arguments after \code{--} 
+\\[0.2em]
+\textbf{Start REPL:} ~\verb|scala-cli repl .|\\[0.2em]
 \hfill
 
 %\begin{tabular}{@{}r @{\hspace{0.5em}}l} \\[-0.5em]
@@ -258,7 +262,7 @@ where \code{-w} or \code{--watch} recompile on change\\[0.3em]
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\vspace*{-1em}
+\vspace*{-0.5em}
 \head{Definitions and declarations}\Newline
 {\small\renewcommand{\arraystretch}{0.95}
 A \textbf{definition} binds a name to a value/implementation, while a \textbf{declaration} just introduces a name (and type) of an abstract member. Below \code|defsAndDecl| denotes a list of definitions and/or declarations. Template bodies \code|{ ... }| are optional, can be replaced by \code{:} that opens an indentation region.~~~ \code{=}~~also opens an indentation region
@@ -388,8 +392,8 @@ class IntVec(private val xs: Array[Int]):
 \hfill\begin{minipage}{0.32\linewidth}
 \vspace{0.5em}\raggedright{\small
 \Comment{Special syntax for \textbf{update} and \textbf{apply}:} \\
-v(0) = 0~\Comment{expanded to} v.update(0,0)\\
-v(0)\hspace{1.5em}\Comment{expanded to} v.apply(0)\\
+v(0) = 0~\Comment{expands to} v.update(0,0)\\
+v(0)\hspace{1.5em}\Comment{expands to} v.apply(0)\\
 \Comment{where} val v = IntVec(Array(1,2,3)) \\
 
 }%
@@ -400,9 +404,39 @@ v(0)\hspace{1.5em}\Comment{expanded to} v.apply(0)\\
 
 
 
+\vspace{0.0em}\head{Type parameters, type bounds, variance, ClassTag}\vspace{0.75em}
+\renewcommand{\arraystretch}{1.0}
+{\small%
+\begin{tabular}{@{}l @{\hspace{-10.7em}}r}
+\code|class Box[T](val x: T): |
+& \Comment{a \textbf{generic class} Box with a \textbf{type parameter} T, allowing x to be of any type}\\
+
+\code|  def pair[U](y: U): (T, U) = (x, y) |
+& \Comment{a \textbf{generic method} with \textbf{type parameter} U} \\
+
+\code| |
+& \Comment{T is bound to the type of x, U is free in pairedWith, so y can be of any type}\\
+
+\code|val b = Box(0) |
+& \Comment{same as (with explicit type parameters):~~~val b: Box\textbf{[Int]} = new Box\textbf{[Int]}(0)}\\
+
+\code|val p: (Box[Int], Box[Char]) = b.pair(Box('!'))  |
+& \Comment{\textbf{type bounds} \code|>:| supertype~~\code|<:| subtype}\\
+
+\end{tabular}
+}% small
+
+\vspace{0.0em}{\small
+\Comment{\code|+| \textbf{covariance}~~\code|-| \textbf{contravariance}}~~~~\code|class Box[+T](x: T){ def pair[U >: T](y: U) = (x, y) }| \\
+ClassTag needed for generic array constr.: \code|def mkArr[A:reflect.ClassTag](a: A) = Array[A](a)|
+}%end small
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\head{Expressions}\Newline
+\vspace{0.5em}\head{Expressions}\Newline
 {\small\renewcommand{\arraystretch}{1.06}
 \begin{tabular}{@{}l @{\hspace{0.9em}}l @{\hspace{0.2em}}l}
 literals  &  \code|0 0L 0.0 "0" '0' true false|   & \Comment{Basic types e.g. Int, Long, Double, String, Char, Boolean} \\
@@ -421,19 +455,23 @@ try       &  \code|val resultOfUnsafeExpr =  |  & \Comment{Evaluate function f: 
           & \code|  finally doStuff| & \Comment{finally is optional, doStuff always done even if expr throws} \\
 \end{tabular}
 
-\vspace{-0.7em}
+\clearpage
+
+\vspace{0.0em}\head{Expressions (continued)}\Newline
+
 \begin{tabular}{@{}l @{\hspace{-1.6em}}r @{\hspace{0.6em}}l | r l}
-\vspace{-0.4em}\\
-Empty tuple, unit value& \code|()|  &  \Comment{the only value of type Unit}  & \multicolumn{2}{l}{\textbf{Integer division and remainder:}} \\
-2-tuple value   & \code|(1, "hello")| &  \Comment{same as Tuple2(1, "hello")} & \multicolumn{2}{l}{\code|a / b|  \Comment{~no decimals if  Int, Short, Byte }}   \\ \vspace{0.5em}
-2-tuple type    & \code|(Int, String)| & \Comment{same as Tuple2[Int, String]} & \multicolumn{2}{l}{\code|a \% b|  \Comment{~fulfills: (a / b) * b + (a \% b) == a}} \\
+  \textbf{Tuples:} & & & \multicolumn{2}{l}{\textbf{Integer division and remainder:}}\\
+Empty tuple, unit value& \code|()|  &  \Comment{the only value of type Unit}  & \multicolumn{2}{l}{\code|a / b|  \Comment{~no decimals if  Int, Short, Byte }}  \\
+2-tuple value   & \code|(1, "hello")| &  \Comment{same as Tuple2(1, "hello")} & \multicolumn{2}{l}{\code|a \% b|  \Comment{~fulfills: (a / b) * b + (a \% b) == a}}   \\ 
+2-tuple type    & \code|(Int, String)| & \Comment{same as Tuple2[Int, String]} & \Comment{Check if x is even:} \code|x % 2 == 0|  \\[0.25em]
+
 \multicolumn{5}{l}{\hspace{-0.7em}Tuple prepend~~~\code|3 *: (1.0, '!')| ~\Comment{of type \texttt{Int\,*:\,Double\,*:\,Char\,*:\,EmptyTuple}~~same as (Int, Double, Char)}}\\
-\multicolumn{5}{l}{\hspace{-0.7em}Methods on tuples:~~\code|apply drop take head tail zip toArray toIArray toList| }\\
+\multicolumn{5}{l}{\hspace{-0.7em}Methods on tuples:~~\code|apply drop take head tail zip toArray toIArray toList| }\\[0.25em]
 Non-referable reference & \code|null|  &  \multicolumn{3}{l}{\hspace{-0.7em}\Comment{refers to null object of type Null} }\\
 \multicolumn{5}{l}{\hspace{-0.7em}Uninitialized ~~\Comment{mutable AnyRef field set to null}~~~\code|var x: String = scala.compiletime.uninitialized|} \\
-Assignment operator & \code|x += 1|  &  \multicolumn{3}{l}{\hspace{-0.7em}\Comment{expands to~~\code|x = x + 1|~~if no method += is available, works for all operators}} \\
+Assignment operator & \code|x += 1|  &  \multicolumn{3}{l}{\hspace{-0.7em}\Comment{expands to~~\code|x = x + 1|~~if no method += is available, works for all operators}} \\[0.25em]
 
-\end{tabular}
+\end{tabular} 
 
 
 \renewcommand{\arraystretch}{1.05}
@@ -503,20 +541,34 @@ Supertype reference & \code|super.m|  &  \Comment{refers to member m of supertyp
 
 \vspace{0.1em}{\small \Comment{Matching with type pattern} \code| x match { case a: Int => a; case _ => 0 }| \Comment{is preferred over} \\ \Comment{explicit instance test and casting:} \code{ if x.isInstanceOf[Int] then x.asInstanceOf[Int] else 0}}
 
+
+
+
+
 \vspace{0.5em}\head{Enumerations}
 
 \vspace{0.9em}\renewcommand{\arraystretch}{1.0}
 {\small%
 \begin{tabular}{@{}l @{\hspace{0.3em}}l}
 \code|enum Col:| & \Comment{Col is a sealed class, values in companion of type Col:}~~\code|Col.Red| ~ \Comment{etc.}   \\
-\code|  case Red, Green, Blue| & \Comment{Array of values:} \texttt{Col.values(Col.Red.ordinal) == Col.Red} \\
+\code|  case Red, Green, Blue| & \texttt{Col.values == Array(Col.Red, Col.Green, Col.Blue)} \\[0.25em]
 %\vspace*{-0.5em}
-& \Comment{value from String:} \code|Col.valueOf("Red") == Col.Red| \\ 
-\code|enum Bin(val toInt: Int):| &  \Comment{\textbf{parameterized enum} val is needed for class param to be externally visible.}\\
+\code|Col.Blue.ordinal| & \Comment{zero-based ordinal number, here} \texttt{2}. \Comment{The} \texttt{toString} \Comment{of} \texttt{Col.Blue} \Comment{is} \texttt{"Blue"} \\ 
+
+\code|Col.valueOf("Red")|  & \Comment{value from String, here} \texttt{Red}, \Comment{can throw IllegalArgumentException}\\ 
+\code|Col.fromOrdinal(0)|  & \Comment{value from Int, here} \texttt{Red}, \Comment{can throw NoSuchElementException}\\[0.3em] 
+
+\code|enum Bin(val toInt: Int):| &  \Comment{\textbf{Parameterized enum}. \code|val| is needed for class param to be externally visible.}\\
 \code|  case F extends Bin(-1)| & \Comment{get parameter from case value:} \code|Bin.F.toInt == -1|\\
 \code|  case T extends Bin(1)| & \Comment{you can also define case members (def, val, etc) inside enums}\\
 
-\end{tabular}
+\end{tabular}\\[0.3em]
+
+\code|enum Color(val rgb: Int):|  \hfill\Comment{\textbf{Algebraic Data Type} (ADT). Parameterized \code|case| expands to case class.}  \\
+\code|  case Red   extends Color(0xFF0000)|  \hfill\Comment{The exends clause is only needed if parameters are passed.}  \\
+\code|  case Green extends Color(0x00FF00)|  \hfill\Comment{0x00FF00 is a hexadecimal Int litteral, decimal value 65280}   \\
+\code|  case Blue  extends Color(0x0000FF)|  \hfill\Comment{Parameter access:} \code|Color.Blue.rgb == 255| \\
+\code|  case Mix(mix: Int) extends Color(mix)| \hfill\Comment{expanded to:}\\ \hfill\Comment{case class Mix(mix: Int) extends Color(mix) in companion object of trait Color(val rgb: Int)}  \\
 }% small
 
 %\vspace{0.25em}{\small The \textbf{unapply} method can be used in \textbf{extractor} pattern matching (to avoid extra class \& instance), e.g.:}
@@ -545,9 +597,11 @@ Supertype reference & \code|super.m|  &  \Comment{refers to member m of supertyp
 % \vspace{-0.5em}{\small\code|str match { case Host(name) => ... }|  {\hfill\Comment{\textbf{Extractor pattern} leads to a call to Host.unapply(str)}}}
 
 
+\vspace{0.0em}\head{Extension methods}\Newline
 
+TODO 
 
-\vspace{0.5em}\head{scala.\{Option, Some, None\}}\Newline
+\vspace{0.5em}\head{scala.\{Option, Some, None\} to handle missing values }\Newline
 
 {\small \textbf{Option[T]} is like a collection with zero or one element. \textbf{Some[T]} and \textbf{None} are subtypes of Option. }
 
@@ -557,28 +611,55 @@ Supertype reference & \code|super.m|  &  \Comment{refers to member m of supertyp
 
 \begin{tabular}{@{}l @{\hspace{1.0em}}l}
 
-\multicolumn{2}{l}{\hspace{-0.62em}\code|val opt: Option[String] = if math.random() > 0.9 then Some("bingo") else None|} \\
+\multicolumn{2}{l}{\hspace{-0.62em}\code|def rnd(): Option[String] = if math.random() > 0.9 then Some("bingo") else None|} \\
 
-\code|opt.getOrElse(expr)|
-& \Comment{if opt == Some[T] then x else expr}\\
+\code|rnd().getOrElse(expr)|
+& \Comment{if rnd() == Some[T] then x else expr}\\
 
-\code|opt.map(f}|
-& \Comment{if opt == Some(x) then f(x) else None}\\
+\code|rnd().map(f)|
+& \Comment{if rnd() == Some(x) then Some(f(x)) else None}\\
 
-\code|opt.get|
-& \Comment{if opt == Some[T] then x else throws NoSuchElementException}\\
+\code|rnd().get|
+& \Comment{if rnd() == Some[T] then x else throws NoSuchElementException}\\
 \end{tabular}
 
-\begin{tabular}{@{}l @{\hspace{1.0em}}r}
-\code|opt match { case Some(x) => expr1;  case None => expr2 } |
-& \Comment{expr1 if Some(x) else expr2}\\
+\begin{tabular}{@{}l @{\hspace{1.0em}}l}
+\code|rnd() match | & \Comment{a match on Option where expr1 if Some(x) or expr2 if None}\\
+\code|  case Some(x) => expr1 | & \Comment{or use} \code|if rnd().isDefined then expr1 else expr2|\\
+\code|  case None => expr2 | & \Comment{or use} \code|if rnd().isEmpty then expr2 else expr1|\\ 
+\code|                     | & \Comment{or use} \code|if rnd().nonEmpty then expr1 else expr2|\\ 
 \end{tabular}
 }% small
 
-{\small Other collection-like methods on \textbf{Option}: foreach, isEmpty, filter, toVector, ..., on \textbf{Try}: map, foreach, toOption, ... }
+{\small Some collection methods also work on \textbf{Option}: map, foreach, filter, toVector, flatten, flatMap, ... with None discarded.}
 
 
-\vspace{0.5em}\head{scala.util.\{Try, Success, Failure\}
+
+\vspace{0.5em}\head{scala.util.\{Either, Left, Right\} to handle errors as values
+%, scala.concurrent.Future
+}\Newline
+\vspace*{-0.5em}\begin{Code}
+def rnd(): Either[String, Int] = // normally returns Int but can report error
+  if math.random() > 0.9 then Right(42) else Left("Bad") // Left wraps message
+\end{Code}
+\vspace{-0.25em}
+{\small\renewcommand{\arraystretch}{1.0}
+
+{\textbf{Either[E, V]} wraps a normal value or error. \textbf{Left[E]} error of type E. \textbf{Right[V]} normal value of type V.}
+
+\begin{tabular}{@{}l @{\hspace{1.0em}}l}
+  \code|rnd().isRight rnd().isLeft| & \Comment{Predicates to test if normal och error.} \\
+  \code|rnd().merge| & \Comment{Unraps any value, type is common supertype, here \code+String | Int+} \\
+  \code|rnd().swap| & \Comment{Turns a Right to Left and vice versa, with swapped type parameters} \\
+  \end{tabular}
+  
+}
+
+{\small Some collection methods also work on \textbf{Either}: map, foreach, flatMap, ... with Left discarded. }
+
+
+
+\vspace{0.5em}\head{scala.util.\{Try, Success, Failure\} to handle exceptions
 %, scala.concurrent.Future
 }\Newline
 
@@ -591,13 +672,16 @@ Supertype reference & \code|super.m|  &  \Comment{refers to member m of supertyp
 
 \code|Try(expr1).recover{ case e: Exception => expr2 }| & \hspace{5em}\Comment{Success(expr2) if exception else Success(expr1)} \\
 \end{tabular}
-\code|Try(1/0) match { case Success(x) => x; case Failure(e) => 0 }| %\Comment{~~e is ArithmeticException}
+\code|Try(1/0) match |\\
+\code|  case Success(x) => println("happy path") | \hfill\Comment{or use predicate:} \code|isSuccess|\\
+\code|  case Failure(e) => println("exception") | \hfill\Comment{or use predicate:} \code|isFailure|\\
 }
 
+{\small Some collection methods also work on \textbf{Try}: map, foreach, flatMap, ... with Failure discarded. }
 
-\clearpage
 
-\vspace{0.5em}\head{Reading/writing from file, and standard in/out:}\Newline
+
+\vspace{0.5em}\head{scala.io.\{Source, StdIn\} to read/write from file, and standard in/out }\Newline
 {\small
 \Comment{\textbf{Read} string of lines from \textbf{file}, \code|fromFile| gives BufferedSource, \code|getLines| gives Iterator[String]}
 \code|val source = scala.io.Source.fromFile("f.txt", "UTF-8")|  ~~~~\Comment{or \code|fromURL(adr, enc)|}
@@ -610,43 +694,31 @@ Supertype reference & \code|super.m|  &  \Comment{refers to member m of supertyp
 \code|val input = scala.io.StdIn.readLine("> ") | \Comment{} \\ 
 \code|println(s"you wrote $input after > using ${input.length} chars")| 
 
-\vspace{0.25em}\Comment{\textbf{Write} string to \textbf{file} after} import java.nio.file.\{Path, Paths, Files\}; import java.nio.charset.StandardCharsets.UTF\_8\vspace{-0.4em}
+\vspace{0.25em}\Comment{\textbf{Write} string to \textbf{file} after} import java.nio.file.\{Path, Paths, Files\}; import java.nio.charset.StandardCharsets.UTF\_8 \\[0.2em]
+
+\Comment{Other common character encoding:} java.nio.charset.StandardCharsets.ISO\_8859\_1 \\\vspace{-0.5em}
 \begin{Code}
 def save(fileName: String, data: String): Path =
-    Files.write(Paths.get(fileName), data.getBytes(UTF_8))
+  Files.write(Paths.get(fileName), data.getBytes(UTF_8))
 \end{Code}
 }
 
 
+\vspace{-0.1em}\head{Using the Scala toolkit: os, munit, JSON}\Newline
+{\small
+
+TODO: \texttt{https://docs.scala-lang.org/toolkit/os-intro.html}
 
 
+TODO: \texttt{https://docs.scala-lang.org/toolkit/testing-suite.html}
 
-\vspace{0.5em}\head{Type parameters, type bounds, variance, ClassTag}\vspace{0.75em}
-\renewcommand{\arraystretch}{1.0}
-{\small%
-\begin{tabular}{@{}l @{\hspace{-10.7em}}r}
-\code|class Box[T](val x: T): |
-& \Comment{a \textbf{generic class} Box with a \textbf{type parameter} T, allowing x to be of any type}\\
+}
 
-\code|  def pair[U](y: U): (T, U) = (x, y) |
-& \Comment{a \textbf{generic method} with \textbf{type parameter} U} \\
+\vspace{0.5em}\head{Contextual abstractions}\Newline
 
-\code| |
-& \Comment{T is bound to the type of x, U is free in pairedWith, so y can be of any type}\\
+TODO 
 
-\code|val b = Box(0) |
-& \Comment{same as (with explicit type parameters):~~~val b: Box\textbf{[Int]} = new Box\textbf{[Int]}(0)}\\
 
-\code|val p: (Box[Int], Box[Char]) = b.pair(Box('!'))  |
-& \Comment{\textbf{type bounds} \code|>:| supertype~~\code|<:| subtype}\\
-
-\end{tabular}
-}% small
-
-\vspace{0.0em}{\small
-\Comment{\code|+| \textbf{covariance}~~\code|-| \textbf{contravariance}}~~~~\code|class Box[+T](x: T){ def pair[U >: T](y: U) = (x, y) }| \\
-ClassTag needed for generic array constr.: \code|def mkArr[A:reflect.ClassTag](a: A) = Array[A](a)|
-}%end small
 
 
 
