@@ -333,7 +333,7 @@ Import
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
-%\vspace*{-2.0em}
+\vspace*{-2.5em}
 \head{Modifyers on definitions and declarations}\Newline
 
 \vspace{0.25em}
@@ -341,15 +341,17 @@ Import
 \begin{tabular}{@{}l @{}l l}
 \textbf{Modifier} & \textbf{applies to} & \textbf{semantics}\\ \hline \\[-0.7em]
 %\code|private[this] | & definitions, declarations & \Comment{Restricts access to this instance only; also private[p] for package p.} \\
-\code|private| & definitions, declarations & \Comment{Restricts access to directly enclosing class and its companion.}\\
-\code|override| & definitions, declarations & \Comment{Mandatory if overriding  a concrete definition in a parent class.}\\
+\code|private| & definitions, declarations& \Comment{Restricts access to directly enclosing class and its companion.}\\
+\code|override| & definitions, declarations& \Comment{Mandatory if overriding  a concrete definition in a parent class.}\\
 \code|final| &  definitions & \Comment{Final members cannot be overridden, final classes cannot be extended.}\\
 \code|protected|~~ & definitions& \Comment{Restricts access to subtypes and companion.}\\
-\code|lazy| & val definitions & \Comment{Delays initialization of val, initialized when first referenced.}\\
-\code|infix| & def definitions & \Comment{Allow alpha-numeric function names in operator notation without warning.}\\
-\code|abstract| & class definitions & \Comment{Abstract classes cannot be instantiated (redundant for traits).}\\
-\code|sealed| & class definitions & \Comment{Restricts direct inheritance to classes in the same compilation unit.}\\
-\code|open| & class definitions & \Comment{Signal intent to be used in inheritance hierarchy. Silences warning.} \\
+\code|lazy| & val & \Comment{Delays initialization of val, initialized when first referenced.}\\
+\code|infix| & def & \Comment{Allow alpha-numeric names in operator notation without warning.}\\
+\code|inline| & def, val & \Comment{Replaced at compile time by its implementation. Also if, match, params.} \\
+\code|abstract| & class & \Comment{Abstract classes cannot be instantiated (redundant for traits).}\\
+\code|sealed| & class, trait & \Comment{Restricts direct inheritance to classes in the same compilation unit.}\\
+\code|open| & class & \Comment{Signal intent to be used in inheritance hierarchy. Silences warning.} \\
+\code|transparent | & class, trait, def & \Comment{TInference of class/trait is suppressed. Inference of def type is precise.} \\
 \end{tabular}
 }
 
@@ -596,10 +598,41 @@ Supertype reference & \code|super.m|  &  \Comment{refers to member m of supertyp
 
 % \vspace{-0.5em}{\small\code|str match { case Host(name) => ... }|  {\hfill\Comment{\textbf{Extractor pattern} leads to a call to Host.unapply(str)}}}
 
+\clearpage 
 
-\vspace{0.0em}\head{Extension methods}\Newline
+\vspace*{-2.5em}\head{Extension methods}\Newline
+{\small
+\textbf{Extension methods} allow adding methods to a type after the type is defined, e.g. add a method to type String:
+\vspace*{-0.5em}\begin{Code}
+extension (s: String) def shoutBackwards = s.reverse.toUpperCase 
+\end{Code} 
+\vspace*{-0.45em} Can be called using dot notation and normal call: \code|"hej".shoutBackwards; shoutBackwards("hej")|
+
+\vspace*{0.25em}\textbf{Collective extension methods} provide multiple extensions to the same type:
+\vspace*{-0.5em}\begin{Code}
+extension (xs: Seq[Double])                        // note: no trailing colon
+  def mean: Double = xs.sum / xs.length            // significant indentation
+  def range: (Double, Double) = (xs.min, xs.max)
+  def midrange: Double = Seq(xs.max, xs.min).mean
+\end{Code} 
+\vspace*{-0.95em}\begin{Code}
+extension [T](xs: List[T])      // generic extension, type param before paren
+  def second = xs.tail.head
+\end{Code} 
+\vspace*{-0.96em}\begin{Code}
+extension [T: Ordering](xs: List[T])  // generic extension with context bound
+  def sortedDescending = xs.reverse.sorted        // sorted requires Ordering 
+\end{Code} 
+
+
+
+\vspace{-0.0em}\head{Contextual abstractions}\Newline
 
 TODO 
+
+
+
+
 
 \vspace{0.5em}\head{scala.\{Option, Some, None\} to handle missing values }\Newline
 
@@ -659,7 +692,7 @@ def rnd(): Either[String, Int] = // normally returns Int but can report error
 
 
 
-\vspace{0.5em}\head{scala.util.\{Try, Success, Failure\} to handle exceptions
+\vspace{0.5em}\head{scala.util.\{Try, Success, Failure\} to handle exceptions as values
 %, scala.concurrent.Future
 }\Newline
 
@@ -680,6 +713,7 @@ def rnd(): Either[String, Int] = // normally returns Int but can report error
 {\small Some collection methods also work on \textbf{Try}: map, foreach, flatMap, ... with Failure discarded. }
 
 
+\clearpage
 
 \vspace{0.5em}\head{scala.io.\{Source, StdIn\} to read/write from file, and standard in/out }\Newline
 {\small
@@ -714,9 +748,6 @@ TODO: \texttt{https://docs.scala-lang.org/toolkit/testing-suite.html}
 
 }
 
-\vspace{0.5em}\head{Contextual abstractions}\Newline
-
-TODO 
 
 
 
@@ -901,12 +932,12 @@ Traverse: & \texttt{xs.foreach(f)} & Executes f for every element of xs. Return 
 
   Iterators: & \texttt{val it = xs.iterator} & An iterator \texttt{it} of type \texttt{Iterator} that yields each element one by one: \texttt{ while (it.hasNext) f(it.next)}\\   \cline{2-3}
 
-   & \texttt{xs.grouped(size)} & An iterator yielding fixed-sized chunks of this collection.\\\cline{2-3}
-   & \texttt{xs.sliding(size)} & An iterator yielding a sliding fixed-sized window of elements.\\\cline{1-3}
+  & \texttt{xs.grouped(size)} & An iterator yielding fixed-sized chunks of this collection.\\\cline{2-3}
+  & \texttt{xs.sliding(size)} & An iterator yielding a sliding fixed-sized window of elements.\\\cline{1-3}
 
   Zippers: & \texttt{xs.zip(ys)} &  	An iterable of pairs of corresponding elements from xs and ys.\\   \cline{2-3}
-   & \texttt{xs.zipAll(ys, x, y)} & Similar to \texttt{zip}, but the shorter sequence is extended to match the longer one by appending elements x or y.\\\cline{2-3}
-   & \texttt{xs.zipWithIndex} & An iterable of pairs of elements from xs with their indices.\\\cline{1-3}
+  & \texttt{xs.zipAll(ys, x, y)} & Similar to \texttt{zip}, but the shorter sequence is extended to match the longer one by appending elements x or y.\\\cline{2-3}
+  & \texttt{xs.zipWithIndex} & An iterable of pairs of elements from xs with their indices.\\\cline{1-3}
 
   Compare: & \texttt{xs.sameElements(ys)} & True if xs and ys contain the same elements in the same order.\\   \cline{1-3}
 
@@ -927,10 +958,10 @@ Traverse: & \texttt{xs.foreach(f)} & Executes f for every element of xs. Return 
 
   Indexing & \texttt{xs(i)  ~ xs.apply(i)} & The element of xs at index i.\\   \cline{2-3}
 
-   and size: & \texttt{xs.length} & Length of sequence. Same as \texttt{size} in \texttt{Iterable}.\\\cline{2-3}
-   & \texttt{xs.indices} & Returns a \texttt{Range} extending from 0 until xs.length.\\\cline{2-3}
-   & \texttt{xs.isDefinedAt(i)} & True if i is contained in xs.indices.\\\cline{2-3}
-   & \texttt{xs.lengthCompare(n)} & Returns -1 if xs is shorter than n, +1 if it is longer, else 0. \\\cline{1-3}
+  and size: & \texttt{xs.length} & Length of sequence. Same as \texttt{size} in \texttt{Iterable}.\\\cline{2-3}
+  & \texttt{xs.indices} & Returns a \texttt{Range} extending from 0 until xs.length.\\\cline{2-3}
+  & \texttt{xs.isDefinedAt(i)} & True if i is contained in xs.indices.\\\cline{2-3}
+  & \texttt{xs.lengthCompare(n)} & Returns -1 if xs is shorter than n, +1 if it is longer, else 0. \\\cline{1-3}
 
 
   Index & \texttt{xs.indexOf(x)} & The index of the first element in xs equal to x.\\   \cline{2-3}
@@ -976,6 +1007,7 @@ Reverse: & \texttt{xs.reverse} & A new sequence with the elements of xs in rever
 \end{tabular}
 }
 
+\clearpage
 %\Newline
 \vspace*{-0.8em}\head{Mutation methods in trait \texttt{mutable.Buffer[A]}, \texttt{ArrayBuffer[A]}, \texttt{ListBuffer[A]}    }\Newline%
 \vspace*{-0.5em}%
