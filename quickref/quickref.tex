@@ -199,7 +199,7 @@
 \newcommand{\Comment}[1]{{\color{commentgreen}{#1}}}
 
 \begin{document}
-\LangMarker{Scala}{1.5cm}{10}
+\LangMarker{Scala}{1.5cm}{12}
 \LangTitle{ \vspace*{-1.0em} Scala 3.4 Quick Ref @ Lund University}
 {\centering https://github.com/lunduniversity/introprog/tree/master/quickref \\
 {\small \Version. License: CC-BY-SA. Pull requests welcome! Contact: bjorn.regnell@cs.lth.se}\\
@@ -333,7 +333,7 @@ Import
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
-\vspace*{-2.5em}
+\vspace*{-2.6em}
 \head{Modifyers on definitions and declarations}\Newline
 
 \vspace{0.25em}
@@ -357,18 +357,19 @@ Import
 
 \vspace{0.25em}
 
-\head{Constructors and special methods (getters, setters, apply, update), Companion object}\Newline
+\head{Constructors and special methods (getters, setters, apply, update, right-assoc. op.), Companion object}\Newline
 
 {\small
 \begin{tabular}{@{}l @{}l}
 \code|class A(initX: Int = 0):| & \Comment{\textbf{primary constructor}, object creation (new is optional): new A(1), A(1), A()} \\
-\code|  private var _x = initX| & \Comment{private member only visible in A and its companion object} \\
-\code|  def x: Int = _x| & \Comment{getter for private field \_x (name with \_ chosen to avoid clash with x)} \\
-\code|  def x_=(i: Int): Unit = | & \Comment{special setter syntax to update attribute using assignment:} \\
-\code|    _x = i  | & \Comment{val a = A(1); a.x = 2} \\ \vspace{0.4em}
+\code|  private var _x = initX| & \Comment{\textbf{private member} only visible in A and its companion object} \\
+\code|  def x: Int = _x| & \Comment{\textbf{getter} for private field \_x (name with \_ chosen to avoid clash with x)} \\
+\code|  def x_=(i: Int): Unit =   | & \Comment{special setter syntax of \textbf{setter} method enabling assignment syntax:} \\
+\code|    _x = i  | & \code|  val a = A(1);  a.x = 2| \Comment{~~~means} \code|a.x_=(42)|\\ 
+\code|  def +: (i: Int) = _x += i | & \Comment{\textbf{Right associative operator} if ends with colon:} \code|42 +: a| \Comment{~means} \code|a.+:(42)| \\ 
 \code|end A| & \Comment{optional end marker checked by compiler} \\
 \code|object A: | & \Comment{becomes a \textbf{companion object} if same name and in same code file} \\
-\code|  def apply(i: Int = 0) = |  & \Comment{apply is optional: A.apply(1), A(1), A()} \\
+\code|  def apply(i: Int) = |  & \Comment{apply is optional: A(1) is expanded to A.apply(1)} \\
 \code|    new A(i) |  & \Comment{\code|new| is needed here to avoid recursive calls} \\
 \code|  val y = A(1)._x | & \Comment{private members can be accessed in companion} \\
 \end{tabular}
@@ -459,19 +460,19 @@ try       &  \code|val resultOfUnsafeExpr =  |  & \Comment{Evaluate function f: 
 
 \clearpage
 
-\vspace{0.0em}\head{Expressions (continued)}\Newline
-
+\vspace*{-2.0em}\head{Expressions (continued)}\Newline
 \begin{tabular}{@{}l @{\hspace{-1.6em}}r @{\hspace{0.6em}}l | r l}
   \textbf{Tuples:} & & & \multicolumn{2}{l}{\textbf{Integer division and remainder:}}\\
 Empty tuple, unit value& \code|()|  &  \Comment{the only value of type Unit}  & \multicolumn{2}{l}{\code|a / b|  \Comment{~no decimals if  Int, Short, Byte }}  \\
-2-tuple value   & \code|(1, "hello")| &  \Comment{same as Tuple2(1, "hello")} & \multicolumn{2}{l}{\code|a \% b|  \Comment{~fulfills: (a / b) * b + (a \% b) == a}}   \\ 
+2-tuple value   & \code|(1, "hi")| &  \Comment{also: 1->"hi" and Tuple2(1, "hi")} & \multicolumn{2}{l}{\code|a \% b|  \Comment{~fulfills: (a / b) * b + (a \% b) == a}}   \\ 
 2-tuple type    & \code|(Int, String)| & \Comment{same as Tuple2[Int, String]} & \Comment{Check if x is even:} \code|x % 2 == 0|  \\[0.25em]
-
+\end{tabular} 
+\begin{tabular}{@{}l @{\hspace{-1.6em}}r @{\hspace{0.6em}}l | r l}
 \multicolumn{5}{l}{\hspace{-0.7em}Tuple prepend~~~\code|3 *: (1.0, '!')| ~\Comment{of type \texttt{Int\,*:\,Double\,*:\,Char\,*:\,EmptyTuple}~~same as (Int, Double, Char)}}\\
-\multicolumn{5}{l}{\hspace{-0.7em}Methods on tuples:~~\code|apply drop take head tail zip toArray toIArray toList| }\\[0.25em]
-Non-referable reference & \code|null|  &  \multicolumn{3}{l}{\hspace{-0.7em}\Comment{refers to null object of type Null} }\\
-\multicolumn{5}{l}{\hspace{-0.7em}Uninitialized ~~\Comment{mutable AnyRef field set to null}~~~\code|var x: String = scala.compiletime.uninitialized|} \\
-Assignment operator & \code|x += 1|  &  \multicolumn{3}{l}{\hspace{-0.7em}\Comment{expands to~~\code|x = x + 1|~~if no method += is available, works for all operators}} \\[0.25em]
+\multicolumn{5}{l}{\hspace{-0.7em}Methods on tuples:~~\code|apply _1 _2| \Comment{...} ~ \code|drop take head init tail zip toArray toIArray toList| }\\[0.25em]
+\textbf{Non-referable reference} \code|  null|  &  \multicolumn{3}{l}{\hspace{-0.7em}\Comment{refers to null object of type Null. Instead prefer Option or unitialized:} }\\
+\multicolumn{5}{l}{\hspace{-0.7em}\textbf{Uninitialized} ~~~\code|var x: String = scala.compiletime.uninitialized| ~~\Comment{mutable AnyRef field set to null} } \\
+\textbf{Shorthand assignment operator} \code| x += 1|  &  \multicolumn{3}{l}{\hspace{1.25em}\Comment{expands to~~\code|x = x + 1|~~if no method += is available, works for all operators}} \\[0.25em]
 
 \end{tabular} 
 
@@ -600,7 +601,7 @@ Supertype reference & \code|super.m|  &  \Comment{refers to member m of supertyp
 
 \clearpage 
 
-\vspace*{-2.5em}\head{Extension methods}\Newline
+\vspace*{-2.75em}\head{Extension methods}\Newline
 {\small
 \textbf{Extension methods} allow adding methods to a type after the type is defined, e.g. add a method to type String:
 \vspace*{-0.5em}\begin{Code}
@@ -610,27 +611,34 @@ extension (s: String) def shoutBackwards = s.reverse.toUpperCase
 
 \vspace*{0.25em}\textbf{Collective extension methods} provide multiple extensions to the same type:
 \vspace*{-0.5em}\begin{Code}
-extension (xs: Seq[Double])                        // note: no trailing colon
-  def mean: Double = xs.sum / xs.length            // significant indentation
-  def range: (Double, Double) = (xs.min, xs.max)
+extension (xs: Seq[Double])                       // note: no trailing colon
+  def mean: Double = xs.sum / xs.length           // significant indentation
   def midrange: Double = Seq(xs.max, xs.min).mean
+  def +:(d: Double) = xs.appended(d)          // right-associative extension
 \end{Code} 
-\vspace*{-0.95em}\begin{Code}
-extension [T](xs: List[T])      // generic extension, type param before paren
+\vspace*{-0.25em}Right associate extensions are swapped if called as non-extension: 
+\vspace*{-0.5em}\begin{Code}
+extension [T](xs: List[T])     // generic extension, type param before paren
   def second = xs.tail.head
 \end{Code} 
 \vspace*{-0.96em}\begin{Code}
-extension [T: Ordering](xs: List[T])  // generic extension with context bound
-  def sortedDescending = xs.reverse.sorted        // sorted requires Ordering 
+extension [T: Ordering](xs: List[T]) // generic extension with context bound
+  def sortedDescending = xs.reverse.sorted       // sorted requires Ordering 
 \end{Code} 
+}
 
 
-
-\vspace{-0.0em}\head{Contextual abstractions}\Newline
-
-TODO 
-
-
+\vspace{-0.2em}\head{Contextual abstractions, \texttt{given using summon}}\Newline 
+{\small
+\code|case class Config(lang: Lang); enum Lang { case En, Sv }| \hfill\Comment{assumed in examples below:} \\
+\code|object Config:|  \hfill\Comment{Given values in companion have lowest priority.}  \\
+\code|  given default: Config = Config(Lang.En)|  \hfill\Comment{A given instance. Name \code|default:| is optional.} \\[0.3em]
+\code|def greet(name: String)(using cfg: Config) = | \hfill\Comment{Can also be \textbf{unnamed given}, \code|cfg:| is optional.}\\ 
+\code|  if cfg.lang == Lang.Sv then s"hej $name"| \hfill\Comment{If unnamed then use:~} \code|  summon[Config]|\\
+\code|  else "hello $name"| \hfill\Comment{where summon returns given of specified type}\\[0.3em]
+The given arg can be ommited:  \code| greet("Anna")| \hfill\Comment{Compiler searches for implicit value of given type, here Config.}  \\
+Explicit given: \code| greet("Anna")(using Config(Lang.sv))| \hfill\Comment{Keword} \code|using| \Comment{is needed for explicit givens.} \\
+}
 
 
 
@@ -681,18 +689,19 @@ def rnd(): Either[String, Int] = // normally returns Int but can report error
 {\textbf{Either[E, V]} wraps a normal value or error. \textbf{Left[E]} error of type E. \textbf{Right[V]} normal value of type V.}
 
 \begin{tabular}{@{}l @{\hspace{1.0em}}l}
-  \code|rnd().isRight rnd().isLeft| & \Comment{Predicates to test if normal och error.} \\
-  \code|rnd().merge| & \Comment{Unraps any value, type is common supertype, here \code+String | Int+} \\
-  \code|rnd().swap| & \Comment{Turns a Right to Left and vice versa, with swapped type parameters} \\
+  \code|rnd().isRight| & \Comment{Predicate that tests if normal value. To test if error:} \code|rnd().isLeft|\\
+  \code|rnd().merge| & \Comment{Unraps any value, will get precice common supertype, here union type:} \code+ String | Int+ \\
+  \code|rnd().swap| & \Comment{Turns a Right to Left and vice versa, with swapped type parameters.} \\
   \end{tabular}
   
 }
 
 {\small Some collection methods also work on \textbf{Either}: map, foreach, flatMap, ... with Left discarded. }
 
+\clearpage
 
 
-\vspace{0.5em}\head{scala.util.\{Try, Success, Failure\} to handle exceptions as values
+\vspace*{0.0em}\head{scala.util.\{Try, Success, Failure\} to handle exceptions as values
 %, scala.concurrent.Future
 }\Newline
 
@@ -712,8 +721,6 @@ def rnd(): Either[String, Int] = // normally returns Int but can report error
 
 {\small Some collection methods also work on \textbf{Try}: map, foreach, flatMap, ... with Failure discarded. }
 
-
-\clearpage
 
 \vspace{0.5em}\head{scala.io.\{Source, StdIn\} to read/write from file, and standard in/out }\Newline
 {\small
@@ -760,7 +767,7 @@ TODO: \texttt{https://docs.scala-lang.org/toolkit/testing-suite.html}
 \vspace*{-2.5em}\head{The Scala Type System}%\Newline
 \vspace{-0.5em}\includegraphics[width=1.05\textwidth,trim=12mm 0 0 0cm]{../img/hierarchy.pdf}
 
-{\small \renewcommand{\arraystretch}{1.01}
+{\small \renewcommand{\arraystretch}{1.0}
 \textbf{Number types}\\
 \begin{tabular}{@{}l l @{\hspace{0.7em}}l @{\hspace{0.7em}}l @{}p{0.1em} | l l}
 \textbf{name} & \textbf{\# bits} & \textbf{range} & \textbf{literal} &   & \multicolumn{2}{l}{\textbf{Methods on numbers}}\\ \cline{1-4}%\hline
@@ -771,39 +778,46 @@ TODO: \texttt{https://docs.scala-lang.org/toolkit/testing-suite.html}
 \texttt{Short}  &  16 & $-2^{15}$ ... $2^{15}-1$ & \texttt{0.toShort}  &
 & \code|x.round| & \Comment{math.round(x), to nearest Long}\\
 
-\texttt{Char}   &  16 & $0$ ... $2^{16}-1$ & \code|'0' '\u0030'| &
+\texttt{Char}   &  16 & $0$ ... $2^{16}-1$ & \code|'0'|~\code|'\u0030'| &
 & \code|x.floor| & \Comment{math.floor(x), cut decimals}\\
 
 \texttt{Int}    &  32 & $-2^{31}$ ... $2^{31}-1$ & \texttt{0  0xF} &
-& \code|x.ceil| & \Comment{math.ceil(x), round up cut decimals}\\
+& \code|x.ceil| & \Comment{math.ceil(x), round up}\\
 
 \texttt{Long}   &  64 & $-2^{63}$ ... $2^{63}-1$ & \texttt{0L} &
-& \code|x max y| & \Comment{math.max(x, y), gives largest, also min}\\
+& \code|x max y| & \Comment{math.max(x, y), maximum}\\
 
 \texttt{Float}  &  32 & ± $3.4 \cdot 10^{38}$  & \texttt{0F} &
 & \code|x.toInt| & \Comment{also toByte, toChar, toDouble etc.}\\
 
 \texttt{Double} &  64 & ± $1.8 \cdot 10^{308}$ & \texttt{0.0} &
-& \code|1 to 4| & \Comment{Range.inclusive(1, 4), contains 1,2,3,4}\\ \cline{1-4}
- & & & &
- & \code|0 until 4| & \Comment{Range(0, 4), contains 0,1,2,3}\\
+& \code|1 to 4| & \Comment{Range.inclusive(1, 3), incl. 1,2,3}\\ 
+
+\cline{1-4}
+
+& & & &
+ & \code|0 until 4| & \Comment{Range(0, 4), incl. 0,1,2,3}\\
 
  & & & & &  \code|Int.MinValue| & \Comment{least possible value of type Int}\\
  & & & & &  \code|Int.MaxValue| & \Comment{largest possible value of the Int}\\
-  & & & & &   & \Comment{similar for all number types.}  \\
+  & & & & & \code|math.Pi|~~\code|math.E|  & \Comment{$\pi$  ~~ $e$}  \\
+  & & & & &  \code|4.0.toRadians| & \Comment{also \texttt{toDegrees}}  \\
+
 \end{tabular}
 }
 
-\Newline\vspace{-5.0em}{\small
+\Newline\vspace{-6.0em}{\small
 Some methods in \code{math} same as in \code{java.lang.Math}:\\
-\code{hypot(x, y) sin(x) cos(x) tan(x)}\\
-\code{pow(x, y) sqrt(x) log(x) toRadians(x)}\\
+\code|pow(x, y)| \Comment{~~$x^y$} \code|  sqrt(x)| \Comment{ $\sqrt{x}$ } \code|  exp(x)| \Comment{$e^x$} \\
+\code|hypot(x, y)| \Comment{ $\sqrt{x^2 + y^2}$ } \code|log(x)| \Comment{2-based logaritm} \\
+\code|sin(x) asin(x) cos(x) tan(x) atan2(x,y)|\\
 \code|floorMod(x, y)| \Comment{similar to x \% y but always positive}
 
 }\Newline\vspace{1em}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Newline\vspace{-2em}\head{The Scala Standard Collection Library}
+\Newline\vspace{-2.5em}\head{The Scala Standard Collection Library}
 {
 \small\renewcommand{\arraystretch}{1.1}
 \begin{multicols}{2}
@@ -821,8 +835,6 @@ Some methods in \code{math} same as in \code{java.lang.Math}:\\
 \vspace{0.2em}
 
 \texttt{String} and \texttt{Array} has implicit conversions that\\ make sequence methods work as for other sequences. \\
-
-\columnbreak
 
 \newcommand{\NodeSkip}{0.5cm}
 \begin{center}
@@ -857,7 +869,9 @@ Some methods in \code{math} same as in \code{java.lang.Math}:\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \clearpage
+
 \vspace*{-2.0em}\head{Methods in trait \texttt{Iterable[A]}}\Newline
 {\small\renewcommand{\arraystretch}{1.14}
 \begin{tabular}{@{}l p{3.6cm} p{6.8cm}}
@@ -881,8 +895,6 @@ Traverse: & \texttt{xs.foreach(f)} & Executes f for every element of xs. Return 
   Size info: & \texttt{xs.isEmpty} & Returns true if the collection xs is empty.\\ \cline{2-3}
    & \texttt{xs.nonEmpty} & Returns true if the collection xs has at least one element.\\ \cline{2-3}
    & \texttt{xs.size} & Returns an \texttt{Int} with the number of elements in xs.\\ \cline{1-3}
-
-
   Retrieval: & \texttt{xs.head xs.last} &  	The first/last element of xs (or some elem, if order undefined).\\ \cline{2-3}
       & \texttt{xs.headOption \newline xs.lastOption} & The first/last element of xs (or some element, if no order is defined) in an option value, or \texttt{None} if xs is empty.\\ \cline{2-3}
       & \texttt{xs.find(p)} & An option with the first element satisfying p, or None.\\ \cline{1-3}
@@ -1160,17 +1172,24 @@ Strings are implictly treated as Seq[Char], so all Seq methods also work.
 \code|s.stripMargin| & \Comment{Strips leading white space followed by | from each line in string.}\\
 \code|s.substring(i)| & \Comment{Returns a substring of s with all charcters from index i.}\\
 \code|s.substring(i, j)| & \Comment{Returns a substring of s from index i to index j-1.}\\
-\code|s.toIntOption  s.toDoubleOption  | & \Comment{Parses s as an Option[Int] or Option[Double] etc. None if invalid.}\\
+\code|s.toIntOption  s.toDoubleOption| & \Comment{Parses s as an Option[Int] or Option[Double] etc. None if invalid.}\\
 \code|42.toString   42.0.toString| & \Comment{Converts a number to a String.}\\
 \code|s.toLowerCase| & \Comment{Converts all characters to lower case.}\\
 \code|s.toUpperCase| & \Comment{Converts all characters to upper case.} \\
-\code|s.trim| & \Comment{Removes leading and trailing white space.}\\
+\code|s.trim| & \Comment{Removes leading and trailing white space.}\\[0.5em]
+\code|val sb = StringBuilder("")| & \Comment{En empty mutable string. (If multi-thread access use StringBuffer.)}\\
+\code|sb.append("hello")| & \Comment{Append string in-place. Also for Int, Char, Boolean, etc}\\
+\code|sb.insert(i, s)| & \Comment{Insert s at index i.}\\
+\code|sb.delete(i)| & \Comment{Remove char at index i.}\\
+\code|sb.setCharAt(i, ch)| & \Comment{Update char at index i to ch.}\\
+\code|sb.toString| & \Comment{Make an immutable String copy of sb.}\\
+
 \end{tabular}
 }
 
 
 
-\Newline\vspace*{-1.0em}
+\Newline\vspace*{-0.5em}
 
 {\small\renewcommand{\arraystretch}{1.05}
 \begin{tabular}{@{}p{0.7cm} l | r l}
@@ -1189,26 +1208,13 @@ Strings are implictly treated as Seq[Char], so all Seq methods also work.
 \code{Random.nextInt(n)} \hfill \Comment{A random \code{Int} from \code{0} until \code{n}, not including \code{n}.} \\
 \code{Random.nextInt()} \hfill \Comment{A random \code{Int} from \code{-Int.MaxValue} to \code{Int.MaxValue}.} \\
 \code{Random.nextDouble()} \hfill \Comment{A random \code{Double} from \code{0.0} to \code{0.9999999999999999}.}\\
+\code{Random.nextPrintableChar()} \hfill \Comment{A random \code{Char} including \code{A} to \code{Z} or any other printable char.}\\
+\code{Random.nextGussian()} \hfill \Comment{A random \code{Double} that is normally distributed with mean 0 and std dev 1.}\\
+\code{Random.between(a, b)} \hfill \Comment{A random number (a, b is Int, Float or Double) uniformly distributed in \texttt{a.until(b)}}\\
 \code{Random.shuffle(xs)} \hfill \Comment{Returns a new sequence with the elements in xs in random order.}\\
 \code{Random.setSeed(s)} \hfill \Comment{Set Random's integer seed \code{s}; sequence of next ''random'' values will be same on each run.}\\
 }
 
-\Newline\vspace*{-0.5em}\head{scala.jdk.CollectionConverters}\Newline\vspace*{-0.2em}
-
-{\small
-Enable \code{.asJava} and \code{.asScala} conversions: \code{ import scala.jdk.CollectionConverters.* }
-\vspace*{0.2em}
-
-\begin{tabular}{@{}r c l}
-\texttt{xs.asJava} on a \textbf{Scala} collection of type: & & \texttt{xs.asScala} on a \textbf{Java} collection of type: \\
-\texttt{Iterator} &               $\longleftrightarrow$ & \texttt{java.util.Iterator} \\
-\texttt{Iterable} &               $\longleftrightarrow$ & \texttt{java.lang.Iterable} \\
-\texttt{Iterable} &               $\leftarrow$ & \texttt{java.util.Collection} \\
-\texttt{mutable.Buffer} &         $\longleftrightarrow$  & \texttt{java.util.List} \\
-\texttt{mutable.Set} &            $\longleftrightarrow$  & \texttt{java.util.Set} \\
-\texttt{mutable.Map} &            $\longleftrightarrow$  & \texttt{java.util.Map} \\
-\texttt{mutable.ConcurrentMap} &  $\longleftrightarrow$  & \texttt{java.util.concurrent.ConcurrentMap} \\\end{tabular}
-}
 
 \Newline\vspace*{-0.5em}\head{Reserved words}\Newline%% TODO: differentiate by color or something hard and soft keywords
 
@@ -1231,106 +1237,67 @@ trait transparent true try type using val var while with yield
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\clearpage\renewcommand{\arraystretch}{0.91}
-\setcounter{page}{1}
+\clearpage
+\renewcommand{\arraystretch}{1.0}
+%\setcounter{page}{1}
 \renewcommand{\LangColor}{blue}
-\LangMarker{JDK}{3.5cm}{2}
+\LangMarker{JVM}{3.5cm}{12}
 
-\LangTitle{Java Developmeny Kit (JDK) Version 21}
+\small
+
+\LangTitle{Platform: Java Virtual Machine (JVM)}
 \vspace{1em}
 
+\code|scala-cli run hi.scala --jvm 21| \hfill\Comment{Specify explicit JVM version, here Java JDK 21 LTS} \\[0.5em]
 
-\head{java.lang}
-\Newline
+\Newline\vspace*{-0.5em}\head{scala.jdk.CollectionConverters}\Newline\vspace*{-0.2em}
 
-TODO: Translate to English.
+Enable \code{.asJava} and \code{.asScala} with \code{ import scala.jdk.CollectionConverters.* }
+\vspace*{0.5em}
 
-TODO: Transalte to Scala syntax.
+\begin{tabular}{@{}r c l}
+\texttt{xs.asJava} on a \textbf{Scala} collection of type: & & \texttt{xs.asScala} on a \textbf{Java} collection of type: \\
+\texttt{Iterator} &               $\longleftrightarrow$ & \texttt{java.util.Iterator} \\
+\texttt{Iterable} &               $\longleftrightarrow$ & \texttt{java.lang.Iterable} \\
+\texttt{Iterable} &               $\leftarrow$ & \texttt{java.util.Collection} \\
+\texttt{mutable.Buffer} &         $\longleftrightarrow$  & \texttt{java.util.List} \\
+\texttt{mutable.Set} &            $\longleftrightarrow$  & \texttt{java.util.Set} \\
+\texttt{mutable.Map} &            $\longleftrightarrow$  & \texttt{java.util.Map} \\
+\texttt{mutable.ConcurrentMap} &  $\longleftrightarrow$  & \texttt{java.util.concurrent.ConcurrentMap} \\\end{tabular}
 
-\Newline
-Klasser i \jcode{java.lang} är automatiskt importerade så du behöver inte skriva \code{import}.
+
+\Newline\vspace*{-0.5em}\head{java.lang.Object, java.lang.\{Boolean, Byte, Character, Double, Float, Integer, Long, Short\}}\Newline\vspace*{-0.2em}
+
+The class \texttt{java.lang.Object} corresponds to the Scala class \texttt{scala.AnyRef} with the following methods:\\[0.5em]
+\code|def equals(other: Object): Boolean| \hfill\Comment{Type-unsafe equality test. Can be overridden.}\\
+\code|def hashCode: Int| \hfill\Comment{An integer that is equal every other instance's hashCode if \code{equals(other)} is true.}\\
+\code|def toString: String| \hfill\Comment{A readable String representation.}\\[0.5em]
+The JVM makes a difference between primitive types and reference types. Primitive types in Java are auto-boxed by implicit conversion using e.g. \jcode{Integer.valueOf(42)} but that is transparent in Scala.
+
+\vspace{2em}TODO 
+\vspace{2em}TODO 
+
+
+
+\head{java.lang.\{System, Thread\}}
+
+
 \begin{etab}
-Object            & \mc{Superklass till alla klasser.} \subsecend
-                  & boolean equals(Object other);   &  ger true om objektet är lika med other \\
-                  & int hashCode();                 &  ger objektets hashkod \\
-                  & String toString();              &  ger en läsbar representation av objektet \secend
-
-Math              & \mc{Statiska konstanter Math.PI och Math.E. Metoderna är statiska (anropas med t~ex Math.round(x)):} \subsecend
-                  & long round(double x);           &  avrundning, även float $\rightarrow$ int \\
-                  & int abs(int x);                 &  $|x|$, även double, \ldots \\
-                  & double hypot(double x, double y); &  $\sqrt{x^2+y^2}$ \\
-                  & double sin(double x);           &  $\sin x$, liknande: cos, tan, asin, acos, atan \\
-                  & double exp(double x);           &  $e^x$ \\
-                  & double pow(double x, double y); &  $x^y$ \\
-                  & double log(double x);           &  $\ln x$ \\
-                  & double sqrt(double x);          &  $\sqrt{x}$ \\
-                  & double toRadians(double deg);   &  $\mathit{deg} \cdot \pi / 180$ \secend
-
-System            & void System.out.print(String s); &  skriv ut strängen s \\
-                  & void System.out.println(String s); &  som print men avsluta med ny rad \\
-                  & void System.exit(int status);   &  avsluta exekveringen, status != 0 om fel \\
-                  & \mc{Parametern till print och println kan vara av godtycklig typ: int, double, \ldots} \secend
-
-Wrapperklasser     & \mc{För varje datatyp finns en wrapperklass: char $\rightarrow$ Character, int $\rightarrow$ Integer, double $\rightarrow$ Double, \ldots\
-Statiska konstanter MIN\_VALUE och MAX\_VALUE i klassen Integer ger minsta respektive största heltalsvärde. För klassen Double ger MIN\_VALUE minsta flyttalet som är större än noll.\\
-Exempel med klassen Integer:} \subsecend
-                  & Integer(int value);             &  skapar ett objekt som innehåller value \\
-                  & int intValue();                 &  tar reda på värdet \secend
-
-String            & \mc{Teckensträngar där tecknen inte kan ändras. ''asdf'' är ett String-objekt. s1 + s2 för att konkatenera två strängar. StringIndexOutOfBoundsException om någon position är fel.} \subsecend
-                  & int length();                   &  antalet tecken \\
-                  & char charAt(int i);             &  tecknet på plats i, 0..length()$-1$ \\
-                  & boolean equals(String s);       &  jämför innehållet (s1 == s2 fungerar inte) \\
-                  & int compareTo(String s);        &  < 0 om mindre, = 0 om lika, > 0 om större \\
-                  & int indexOf(char ch);           &  index för ch, $-1$ om inte finns \\
-                  & int indexOf(char ch, int from); &  som indexOf men börjar leta på plats from \\
-                  & String substring(int first, int last); &  kopia av tecknen first..last$-1$ \\
-                  & String[\hspace{0.5mm}] split(String delim); &  ger array med ''ord'' (ord är följder av \\
-                  &                                 &  tecken åtskilda med tecknen i delim) \secend
-
-                  & \mc{Konvertering mellan standardtyp och String (exempel med int, liknande för andra typer):} \\%\subsecend
-                  & String.valueOf(int x);          &  x = 1234 $\rightarrow$ ''1234'' \\
-                  & Integer.parseInt(String s);     &  s = ''1234'' $\rightarrow$ 1234, NumberFormat- \\
-                  &                                 &  Exception om s innehåller felaktiga tecken \secend
-
-StringBuilder     & \mc{Modifierbara teckensträngar. length och charAt som String, plus:} \subsecend
-                  & StringBuilder(String s);        &  StringBuilder med samma innehåll som s \\
-                  & void setCharAt(int i, char ch); &  ändrar tecknet på plats i till ch \\
-                  & StringBuilder append(String s); &  lägger till s, även andra typer: int, char, \ldots \\
-                  & StringBuilder insert(int i, String s); &  lägger in s med början på plats i \\
-                  & StringBuilder deleteCharAt(int i); &  tar bort tecknet på plats i \\
-                  & String toString();              &  skapar kopia som String-objekt
+System            & void System.exit(int status);   &  avsluta exekveringen, status != 0 om fel \\
+                  & void System.currentTimeMillis   &   \\
 \end{etab}
 
-\head{java.util}
+TODO Primitive main
+
+
+\head{java.nio.file.\{Path, Paths, Files\}}
+
+\vspace{2em}TODO 
+\vspace{2em}TODO 
+
+\head{java.util.Scanner}
+
 \begin{etab}
-List              & \mc{List<E> är ett gränssnitt som beskriver listor med objekt av parameterklassen E. Man kan lägga in värden av standardtyperna genom att kapsla in dem, till exempel int i Integer-objekt. Gränssnittet implementeras av klasserna ArrayList<E> och LinkedList<E>, som har samma operationer. Man ska inte använda operationerna som har en position som parameter på en LinkedList (i stället en iterator). IndexOutOfBoundsException om någon position är fel.} \subsecend
-                  & \mc{För att operationerna contains, indexOf och remove(Object) ska fungera måste klassen E överskugga funktionen equals(Object). Integer och de andra wrapperklasserna gör det.} \subsecend
-ArrayList         & ArrayList<E>();                 &  skapar tom lista \\
-LinkedList        & LinkedList<E>();                &  skapar tom lista \\
-                  & int size();                     &  antalet element \\
-                  & boolean isEmpty();              &  ger true om listan är tom \\
-                  & E get(int i);                   &  tar reda på elementet på plats i \\
-                  & int indexOf(Object obj);        &  index för obj, $-1$ om inte finns \\
-                  & boolean contains(Object obj);   &  ger true om obj finns i listan \\
-
-                  & void add(E obj);                &  lägger in obj sist, efter existerande element \\
-                  & void add(int i, E obj);         &  lägger in obj på plats i (efterföljande \\
-                  &                                 &  element flyttas) \\
-                  & E set(int i, E obj);            &  ersätter elementet på plats i med obj \\
-                  & E remove(int i);                &  tar bort elementet på plats i (efter- \\
-                  &                                 &  följande element flyttas) \\
-                  & boolean remove(Object obj);     &  tar bort objektet obj, om det finns \\
-                  & void clear();                   &  tar bort alla element i listan \secend
-
-\end{etab}
-\secend
-\begin{etab}
-
-Random            & Random();                       &  skapar ''slumpmässig'' slumptalsgenerator \\
-                  & Random(long seed);              &  -- med bestämt slumptalsfrö \\
-                  & int nextInt(int n);             &  heltal i intervallet [0, n) \\
-                  & double nextDouble();            &  double-tal i intervallet [0.0, 1.0) \secend
 
 Scanner           & Scanner(File f);                &  läser från filen f, ofta System.in \\
                   & Scanner(String s);              &  läser från strängen s \\
@@ -1340,6 +1307,12 @@ Scanner           & Scanner(File f);                &  läser från filen f, oft
                   & boolean hasNextInt();           &  också hasNextDouble(), \ldots \\
                   & String nextLine();              &  läser resten av raden
 \end{etab}
+
+\vspace{1em}TODO 
+\vspace{1em}TODO 
+
+
+
 
 % \head{java.io.File, FileNotFoundException, PrintWriter}
 % \begin{etab}
@@ -1356,5 +1329,28 @@ Scanner           & Scanner(File f);                &  läser från filen f, oft
 % \ind $\}$}
 % \end{etab}
 
+\clearpage
+
+\renewcommand{\LangColor}{cyan}
+\LangMarker{\color{black}{Scala Native} ~~~~ \color{white}{ScalaJS} ~~~}{6.5cm}{12}
+
+\LangTitle{Platform: ScalaJS (Javascript, DOM, npm)}
+\vspace{1em}
+
+\code|scala-cli compile hello-js.scala --js| \hfill\Comment{Compile to javascript} \\[0.5em]
+
+
+
+\vspace{4em}TODO 
+\vspace{4em}TODO 
+
+
+\LangTitle{\color{gray}{Scala Native (LLVM, gcc)}}
+\vspace{1em}
+
+\code|scala-cli compile hello-native.scala --native| \hfill\Comment{Compile to a binary using LLVM and gcc} \\[0.5em]
+
+\vspace{4em}TODO 
+\vspace{4em}TODO 
 
 \end{document}
