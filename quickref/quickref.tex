@@ -472,11 +472,12 @@ Empty tuple, unit value& \code|()|  &  \Comment{the only value of type Unit}  & 
 \begin{tabular}{@{}l @{\hspace{-1.6em}}r @{\hspace{0.6em}}l | r l}
 \multicolumn{5}{l}{\hspace{-0.7em}Tuple prepend~~~\code|3 *: (1.0, '!')| ~\Comment{of type \texttt{Int\,*:\,Double\,*:\,Char\,*:\,EmptyTuple}~~same as (Int, Double, Char)}}\\
 \multicolumn{5}{l}{\hspace{-0.7em}Methods on tuples:~~\code|apply _1 _2| \Comment{...} ~ \code|drop take head init tail zip toArray toIArray toList| }\\[0.25em]
-\textbf{Non-referable reference} \code|  null|  &  \multicolumn{3}{l}{\hspace{-0.7em}\Comment{refers to null object of type Null. Instead prefer Option or unitialized:} }\\
-\multicolumn{5}{l}{\hspace{-0.7em}\textbf{Uninitialized} ~~~\code|var x: String = scala.compiletime.uninitialized| ~~\Comment{mutable AnyRef field set to null} } \\
-\textbf{Shorthand assignment operator} \code| x += 1|  &  \multicolumn{3}{l}{\hspace{1.25em}\Comment{expands to~~\code|x = x + 1|~~if no method += is available, works for all operators}} \\[0.25em]
-
+\textbf{Non-referable reference:} \code|  null|  &  \multicolumn{3}{l}{\hspace{-0.7em}\Comment{refers to null object of type Null. Instead prefer Option or unitialized:} }\\
+\multicolumn{5}{l}{\hspace{-0.7em}\textbf{Uninitialized:} ~~~\code|var x: String = scala.compiletime.uninitialized| ~~\Comment{mutable AnyRef field set to null} } \\
+\textbf{Shorthand assignment:} \code| x += 1|  &  \multicolumn{3}{l}{\hspace{1.25em}\Comment{expands to~~\code|x = x + 1|~~if no method += is available, works for all operators}} \\
 \end{tabular} 
+\textbf{Check arguments:} \code|require(x >= 0)|  ~~\Comment{If condition is false throws IllegalArgumentException. Optional param msg.} \\
+\textbf{Check assertion:} ~~~~~\code|assert(x >= 0)| ~ \Comment{If condition is false throws AssertionError. Optional param msg.} \\[0.25em]
 
 
 \renewcommand{\arraystretch}{1.05}
@@ -702,8 +703,7 @@ def rnd(): Either[String, Int] = // normally returns Int but can report error
 
 \clearpage
 
-
-\vspace*{0.0em}\head{scala.util.\{Try, Success, Failure\} to handle exceptions as values
+\vspace*{-2.1em}\head{scala.util.\{Try, Success, Failure\} to handle exceptions as values
 %, scala.concurrent.Future
 }\Newline
 
@@ -714,7 +714,7 @@ def rnd(): Either[String, Int] = // normally returns Int but can report error
 \begin{tabular}{@{}l @{\hspace{-4.8em}}r}
 \code|Try{ ...; ...; expr1 }.getOrElse(expr2)| & \Comment{evaluates to expr1 if successful or expr2 if exception} \\
 
-\code|Try(expr1).recover{ case e: Exception => expr2 }| & \hspace{5em}\Comment{Success(expr2) if exception else Success(expr1)} \\
+\code|Try(expr1).recover{case e: Exception => expr2}| & \hspace{5.0em}\Comment{Success(expr2) if exception else Success(expr1)} \\
 \end{tabular}
 \code|Try(1/0) match |\\
 \code|  case Success(x) => println("happy path") | \hfill\Comment{or use predicate:} \code|isSuccess|\\
@@ -734,8 +734,7 @@ def rnd(): Either[String, Int] = // normally returns Int but can report error
 
 {\small
 \vspace{0.25em}\Comment{\textbf{Read} string from \textbf{standard in} (prompt string is optional) using readLine; \textbf{write} to \textbf{standard out} using println:}
-\code|val input = scala.io.StdIn.readLine("> ") | \Comment{} \\ 
-\code|println(s"you wrote $input after > using ${input.length} chars")| 
+\code|val input = scala.io.StdIn.readLine("> ") | \Comment{Reads keystrokes in terminal after printing prompt >} \\ 
 
 \vspace{0.25em}\Comment{\textbf{Write} string to \textbf{file} after} import java.nio.file.\{Path, Paths, Files\}; import java.nio.charset.StandardCharsets.UTF\_8 \\[0.2em]
 
@@ -747,13 +746,48 @@ def save(fileName: String, data: String): Path =
 }
 
 
-\vspace{-0.1em}\head{Using the Scala toolkit: os, munit, JSON}\Newline
+\vspace{-0.1em}\head{Using the Scala toolkit: os, munit, ujson, upickle}\Newline
 {\small
 
-TODO: \texttt{https://docs.scala-lang.org/toolkit/os-intro.html}
+\code{scala-cli run hi.scala --toolkit default} \hfill\Comment{Use stable vers. of Scala toolkit, an extended std libary. }
+\code{//> using toolkit default }  Directive in source. \hfill\code{//> using toolkit latest } for unstable vers. \\[0.5em]
 
+\code|os.pwd   os.root   os.home| \hfill\Comment{Absolute path of type \texttt{os.Path} to working directory, root, and home dir.}\\
+\code|os.root/"tmp"      os.pwd/"src"| \hfill\Comment{Absolute paths to /tmp dir and src in working dir.}\\
+\code|val wd = os.pwd/"myDir";  val p = wd/"myFile.txt" | \hfill\Comment{Absolute paths to dir and file.}\\
+\code|p.ext  p.segments  p.last| \hfill\Comment{Methods on os.Path, returns \code{"txt"}, iterator, last segment.}\\
+\code|os.remove.all(wd)  os.makeDir(wd)| \hfill\Comment{Remove all files in wd if exists. Create wd if not exists.}\\
+\code|os.write(wd/"f.txt", "hi")   os.read(wd/"f.txt")| \hfill\Comment{Write text to f.txt. Read f.txt as String.}\\
+\code|os.copy(wd/"f.txt", wd/"cpy.txt")    os.list(wd)| \hfill\Comment{Copy f.txt to cpy.txt. List files in wd as Seq.}\\[0.5em]
+Call OS process in host shell in wd and get output as String. Result is \code|"hihi"| after above examples are evaluated:
+\code|os.proc("cat", wd/"f.txt", wd/"cpy.txt").call(cwd = wd).out.text()| \\[0.5em]
 
-TODO: \texttt{https://docs.scala-lang.org/toolkit/testing-suite.html}
+\textbf{Write tests} in file \texttt{MyTests.test.scala} in a class extending \texttt{munit.FunSuite} as follows:\\
+Run with: \code{scala-cli test MyTests.test.scala --toolikt deafult}\\[-0.25em]
+
+\begin{Code}
+class MyTests extends munit.FunSuite:
+  test("sum of two integers"):
+    val sum = 2 + 2
+    assert(sum == 4)
+\end{Code}
+
+\vspace*{-0.1em}\textbf{Parse and serialize JSON} and access named values:\\
+\vspace*{-0.5em}\begin{Code}
+val jsonString = """{"name": "Anna", "age": 13, "pets": ["Cat", "Dog"]}"""
+val json: ujson.Value  = ujson.read(jsonString)
+val s = json("name").str                  // "Anna"
+val so = json("name").strOpt              // Some("Anna")
+val pets = json("pets").arr               // ArrayBuffer("Cat", "Dog")
+val petsOpt = json("pets").arrOpt         // Some(ArrayBuffer("Cat", "Dog"))
+val m: Map[String, Int] =  Map("Dog" -> 3, "Cat" -> 5)
+val js: String = upickle.default.write(m) // """{"Dog":3,"Cat":5}"""
+import upickle.default.*
+case class PetOwner(name: String, pets: List[String]) derives ReadWriter
+val po = PetOwner("Joe", List("Cat", "Dog"))
+val jsPo: String = write(po) // """{"name":"Joe","pets":["Cat","Dog"]}""""
+val po2: PetOwner = read[PetOwner](jsPo)
+\end{Code}
 
 }
 
@@ -933,7 +967,7 @@ Traverse: & \texttt{xs.foreach(f)} & Executes f for every element of xs. Return 
 
 \end{tabular}
 
-\hfill \Comment{Contiued on next page...}
+\hfill \Comment{Iterable[A] contiues on next page...}
 
 }
 
