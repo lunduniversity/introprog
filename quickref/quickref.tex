@@ -41,6 +41,8 @@
 \usepackage{xcolor}
 \usepackage{array}
 
+\definecolor{scalared}{RGB}{222, 52, 35}
+
 \definecolor{commentgreen}{rgb}{0,0.4,0}
 \definecolor{grammarcolor}{rgb}{0.3,0.6,0.1}
 \definecolor{mylinkcolor}{rgb}{0,0.1,0.5}
@@ -60,7 +62,8 @@
 
 %---------------------------------------------------------------
 
-\newcommand{\LangColor}{red}
+\newcommand{\LangColor}{scalared}
+\newcommand{\PageNumColor}{black}
 
 \setlength{\parindent}{0pt}
 \raggedright
@@ -169,7 +172,11 @@
 
 %*****************************************************************
 
+\newcommand{\Newline}{\vspace{\baselineskip}}
 
+\newcommand{\LangTitle}[1]{{\centering \Huge{\bfseries\sffamily \color{\LangColor}{#1}}\par}}
+
+\newcommand{\Comment}[1]{{\color{commentgreen}{#1}}}
 
 \newcommand{\LangRect}[5]{\tikz[overlay, remember picture,inner sep=7pt,minimum height=0.65cm] \node[fill=#2,text=white,rotate=90] at #4 (name) {\large\normalfont\textbf{#1} ~~{\small \thepage(#5)}}; }
 
@@ -192,15 +199,40 @@
 \pagestyle{fancy}
 }
 
-\newcommand{\Newline}{\vspace{\baselineskip}}
 
-\newcommand{\LangTitle}[1]{{\centering \Huge{\bfseries\sffamily \color{\LangColor}{#1}}\par}}
 
-\newcommand{\Comment}[1]{{\color{commentgreen}{#1}}}
+\newcommand{\PageNumRect}[5]{
+  \tikz[overlay, remember picture, circle, inner sep=2pt,minimum height=0.70cm] 
+    \node[fill=#2,text=white,rotate=0] at #4 (name) {\centering\large\textbf{#1~\thepage}};% ~~{\thepage(#5)}}; 
+}
+
+\newcommand{\PageNumRectOdd}[4]{\PageNumRect{#1}{#2}{#3}{($(current page.north east)-(0.55,#3)$)}{#4}}
+\newcommand{\PageNumRectEven}[4]{\PageNumRect{#1}{#2}{#3}{($(current page.north west)-(-0.55,#3)$)}{#4}}
+
+\newcommand{\PageNumMarker}[3]{%param 1 = text, param 2 = offset from top
+%\fancyhead{} % clear all header fields
+\fancyfoot{} % clear all footer fields
+%\fancyfoot[RO]{\thepage}
+%\fancyfoot[LE]{\thepage}
+\fancyhead{
+\ifodd\thepage\PageNumRectOdd{#1}{\PageNumColor}{#2}{#3}
+\else\PageNumRectEven{#1}{\PageNumColor}{#2}{#3}
+\fi
+}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\pagestyle{fancy}
+}
+
+
+
+%***********************************************************************************
+
 
 \begin{document}
-\LangMarker{Scala}{1.5cm}{12}
-\LangTitle{ \vspace*{-1.0em} Scala 3.4 Quick Ref @ Lund University}
+\PageNumMarker{}{0.75}{12}
+%\LangMarker{Scala}{1.5cm}{12}
+\LangTitle{ \vspace*{-1.0em} Scala 3.4 QuickRef @ Lund University}
 {\centering https://github.com/lunduniversity/introprog/tree/master/quickref \\
 {\small \Version. License: CC-BY-SA. Pull requests welcome! Contact: bjorn.regnell@cs.lth.se}\\
 %{\small Pull requests welcome! Contact: bjorn.regnell at cs.lth.se}
@@ -336,7 +368,7 @@ Import
 \vspace*{-2.6em}
 \head{Modifyers on definitions and declarations}\Newline
 
-\vspace{0.25em}
+\vspace{0.0em}
 {\small
 \begin{tabular}{@{}l @{}l l}
 \textbf{Modifier} & \textbf{applies to} & \textbf{semantics}\\ \hline \\[-0.7em]
@@ -351,7 +383,7 @@ Import
 \code|abstract| & class & \Comment{Abstract classes cannot be instantiated (redundant for traits).}\\
 \code|sealed| & class, trait & \Comment{Restricts direct inheritance to classes in the same compilation unit.}\\
 \code|open| & class & \Comment{Signal intent to be used in inheritance hierarchy. Silences warning.} \\
-\code|transparent | & class, trait, def & \Comment{TInference of class/trait is suppressed. Inference of def type is precise.} \\
+\code|transparent | & class, trait, def & \Comment{Inference of class/trait is suppressed. Inference of def type is precise.} \\
 \end{tabular}
 }
 
@@ -384,7 +416,7 @@ Import
 {\hfill\code|class A private (var x: Int = 0)|} \\
 \Comment{Instead of default arguments, an \textbf{auxiliary constructor} can be defined (less common):} {\hfill\code|def this() = this(0)|}
 
-\vspace{-0.2em}\hspace{0.32em}\begin{minipage}{0.65\linewidth}%
+\vspace{-0.4em}\hspace{0.32em}\begin{minipage}{0.65\linewidth}%
 {\small\begin{Code}[frame=none]
 class IntVec(private val xs: Array[Int]):
   def update(i: Int, x: Int): Unit = { xs(i) = x }
@@ -431,6 +463,7 @@ v(0)\hspace{1.5em}\Comment{expands to} v.apply(0)\\
 
 \vspace{0.0em}{\small
 \Comment{\code|+| \textbf{covariance}~~\code|-| \textbf{contravariance}}~~~~\code|class Box[+T](x: T){ def pair[U >: T](y: U) = (x, y) }| \\
+\code|val f: [A] => Seq[A] => A = [A] => xs => xs.head| \hfill\Comment{polymorfic function type and lambda}\\
 ClassTag needed for generic array constr.: \code|def mkArr[A:reflect.ClassTag](a: A) = Array[A](a)|
 }%end small
 
@@ -439,8 +472,8 @@ ClassTag needed for generic array constr.: \code|def mkArr[A:reflect.ClassTag](a
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\vspace{0.5em}\head{Expressions}\Newline
-{\small\renewcommand{\arraystretch}{1.06}
+\vspace{0.25em}\head{Expressions}\Newline
+{\small\renewcommand{\arraystretch}{1.0}
 \begin{tabular}{@{}l @{\hspace{0.9em}}l @{\hspace{0.2em}}l}
 literals  &  \code|0 0L 0.0 "0" '0' true false|   & \Comment{Basic types e.g. Int, Long, Double, String, Char, Boolean} \\
 
@@ -631,168 +664,47 @@ extension [T: Ordering](xs: List[T]) // generic extension with context bound
 }
 
 
-\vspace{-0.2em}\head{Contextual abstractions, \texttt{given using summon}}\Newline 
+\vspace{-0.2em}\head{Contextual abstractions: \texttt{given}, \texttt{using}, \texttt{summon[T]}}\Newline 
 {\small
-\code|case class Config(lang: Lang); enum Lang { case En, Sv }| \hfill\Comment{assumed in examples below:} \\
+\code|enum Lang { case En, Sv }| \hfill\Comment{enum assumed in examples below} \\
+\code|case class Config(lang: Lang) | \hfill\Comment{case class assumed in examples below} \\[0.25em]
+
+\textbf{Contextual abstraction} allows values to be inferred, and arguments to be filled in, based on expected type.
 \code|object Config:|  \hfill\Comment{Given values in companion have lowest priority.}  \\
-\code|  given default: Config = Config(Lang.En)|  \hfill\Comment{A given instance. Name \code|default:| is optional.} \\[0.3em]
-\code|def greet(name: String)(using cfg: Config) = | \hfill\Comment{Can also be \textbf{unnamed given}, \code|cfg:| is optional.}\\ 
-\code|  if cfg.lang == Lang.Sv then s"hej $name"| \hfill\Comment{If unnamed then use:~} \code|  summon[Config]|\\
+\code|  given default: Config = Config(Lang.En)|  \hfill\Comment{A given instance, the name \code|default:| is optional.} \\[0.3em]
+\code|def greet(name: String)(using cfg: Config) = | \hfill\Comment{A using parameter, the name \code|cfg:| is optional.}\\ 
+\code|  if cfg.lang == Lang.Sv then s"hej $name"| \hfill\Comment{If unnamed use:} \code|summon[Config].lang|\\
 \code|  else "hello $name"| \hfill\Comment{where summon returns given of specified type}\\[0.3em]
-The given arg can be ommited:  \code| greet("Anna")| \hfill\Comment{Compiler searches for implicit value of given type, here Config.}  \\
+A \code|using| argument can be omited: \code| greet("Anna")| \hfill\Comment{A value of given type is inferred, here Config.default}  \\
 Explicit given: \code| greet("Anna")(using Config(Lang.sv))| \hfill\Comment{Keword} \code|using| \Comment{is needed for explicit givens.} \\
+
+\vspace{0.5em}
+
+A \textbf{type class} in Scala is a \code{trait} with one type parameter and at least one abstract method. Example:\\[0.25em]
+\code|trait CanShow[T]:|\\
+\code|  extension (x: T) def show: String|  \\[0.5em]
+
+Separately define given instances of type class CanShow for any type in any local scope:\\[0.25em]
+\code|given CanShow[Config] with| \hfill\Comment{keyword \code{with} needed when implementing given members}
+\code|  extension (x: Config) def show: String = s"Language is " + x.lang|\\[0.25em]
+Extension method show in type class CanShow is now available on Config implicitly:\hfill \code|Config(Lang.En).show|
+
+\vspace{0.5em}
+
+\textbf{Context bound}: Use colon after type parameter as a shorthand when using parameter is a type class:\\
+\code|def rev[T: CanShow](x: T) = x.show.reverse  | \\\Comment{The colon syntax above reads ''A is CanShow'' and expands to a using parameter:} \\  
+\code|def rev[T](x: T)(using CanShow[T]) = x.show.reverse|   
+\\[0.5em]
+
+\textbf{Context functions}: the type of a function with a context parameter of type U to result type R is denoted \code| U ?=> R|\\
+\code|val f: Config ?=> Int = c ?=> c.lang.ordinal|\hfill\Comment{a context function lambda, c is a using-param.} \\
+When \code{f} is referred to without argument it is automatically expanded to: \code{ f(using summon[Config])}\\
+If type \code|U ?=> E| is expected, an \code{expr} of type \code{E} is expanded to a context function lambda: \code{(u: U) ?=> expr} 
 }
 
+\vspace{0.5em}\head{Opaque types}\Newline 
 
-
-\vspace{0.5em}\head{scala.\{Option, Some, None\} to handle missing values }\Newline
-
-{\small \textbf{Option[T]} is like a collection with zero or one element. \textbf{Some[T]} and \textbf{None} are subtypes of Option. }
-
-\renewcommand{\arraystretch}{1.0}\vspace{0.25em}
-{\small%
-
-
-\begin{tabular}{@{}l @{\hspace{1.0em}}l}
-
-\multicolumn{2}{l}{\hspace{-0.62em}\code|def rnd(): Option[String] = if math.random() > 0.9 then Some("bingo") else None|} \\
-
-\code|rnd().getOrElse(expr)|
-& \Comment{if rnd() == Some[T] then x else expr}\\
-
-\code|rnd().map(f)|
-& \Comment{if rnd() == Some(x) then Some(f(x)) else None}\\
-
-\code|rnd().get|
-& \Comment{if rnd() == Some[T] then x else throws NoSuchElementException}\\
-\end{tabular}
-
-\begin{tabular}{@{}l @{\hspace{1.0em}}l}
-\code|rnd() match | & \Comment{a match on Option where expr1 if Some(x) or expr2 if None}\\
-\code|  case Some(x) => expr1 | & \Comment{or use} \code|if rnd().isDefined then expr1 else expr2|\\
-\code|  case None => expr2 | & \Comment{or use} \code|if rnd().isEmpty then expr2 else expr1|\\ 
-\code|                     | & \Comment{or use} \code|if rnd().nonEmpty then expr1 else expr2|\\ 
-\end{tabular}
-}% small
-
-{\small Some collection methods also work on \textbf{Option}: map, foreach, filter, toVector, flatten, flatMap, ... with None discarded.}
-
-
-
-\vspace{0.5em}\head{scala.util.\{Either, Left, Right\} to handle errors as values
-%, scala.concurrent.Future
-}\Newline
-\vspace*{-0.5em}\begin{Code}
-def rnd(): Either[String, Int] = // normally returns Int but can report error
-  if math.random() > 0.9 then Right(42) else Left("Bad") // Left wraps message
-\end{Code}
-\vspace{-0.25em}
-{\small\renewcommand{\arraystretch}{1.0}
-
-{\textbf{Either[E, V]} wraps a normal value or error. \textbf{Left[E]} error of type E. \textbf{Right[V]} normal value of type V.}
-
-\begin{tabular}{@{}l @{\hspace{1.0em}}l}
-  \code|rnd().isRight| & \Comment{Predicate that tests if normal value. To test if error:} \code|rnd().isLeft|\\
-  \code|rnd().merge| & \Comment{Unraps any value, will get precice common supertype, here union type:} \code+ String | Int+ \\
-  \code|rnd().swap| & \Comment{Turns a Right to Left and vice versa, with swapped type parameters.} \\
-  \end{tabular}
-  
-}
-
-{\small Some collection methods also work on \textbf{Either}: map, foreach, flatMap, ... with Left discarded. }
-
-\clearpage
-
-\vspace*{-2.1em}\head{scala.util.\{Try, Success, Failure\} to handle exceptions as values
-%, scala.concurrent.Future
-}\Newline
-
-\vspace{0.25em}
-{\small\renewcommand{\arraystretch}{1.0}
-{\textbf{Try[T]} is like a collection with \textbf{Success[T]} or \textbf{Failure[E]}.\hfill\code|import scala.util.{Try, Success, Failure}|}
-
-\begin{tabular}{@{}l @{\hspace{-4.8em}}r}
-\code|Try{ ...; ...; expr1 }.getOrElse(expr2)| & \Comment{evaluates to expr1 if successful or expr2 if exception} \\
-
-\code|Try(expr1).recover{case e: Exception => expr2}| & \hspace{5.0em}\Comment{Success(expr2) if exception else Success(expr1)} \\
-\end{tabular}
-\code|Try(1/0) match |\\
-\code|  case Success(x) => println("happy path") | \hfill\Comment{or use predicate:} \code|isSuccess|\\
-\code|  case Failure(e) => println("exception") | \hfill\Comment{or use predicate:} \code|isFailure|\\
-}
-
-{\small Some collection methods also work on \textbf{Try}: map, foreach, flatMap, ... with Failure discarded. }
-
-
-\vspace{0.5em}\head{scala.io.\{Source, StdIn\} to read/write from file, and standard in/out }\Newline
-{\small
-\Comment{\textbf{Read} string of lines from \textbf{file}, \code|fromFile| gives BufferedSource, \code|getLines| gives Iterator[String]}
-\code|val source = scala.io.Source.fromFile("f.txt", "UTF-8")|  ~~~~\Comment{or \code|fromURL(adr, enc)|}
-\code|val lines = try source.getLines.mkString("\n") finally source.close|
-}
-
-
-{\small
-\vspace{0.25em}\Comment{\textbf{Read} string from \textbf{standard in} (prompt string is optional) using readLine; \textbf{write} to \textbf{standard out} using println:}
-\code|val input = scala.io.StdIn.readLine("> ") | \Comment{Reads keystrokes in terminal after printing prompt >} \\ 
-
-\vspace{0.25em}\Comment{\textbf{Write} string to \textbf{file} after} import java.nio.file.\{Path, Paths, Files\}; import java.nio.charset.StandardCharsets.UTF\_8 \\[0.2em]
-
-\Comment{Other common character encoding:} java.nio.charset.StandardCharsets.ISO\_8859\_1 \\\vspace{-0.5em}
-\begin{Code}
-def save(fileName: String, data: String): Path =
-  Files.write(Paths.get(fileName), data.getBytes(UTF_8))
-\end{Code}
-}
-
-
-\vspace{-0.1em}\head{Using the Scala toolkit: os, munit, ujson, upickle}\Newline
-{\small
-
-\code{scala-cli run hi.scala --toolkit default} \hfill\Comment{Use stable vers. of Scala toolkit, an extended std libary. }
-\code{//> using toolkit default }  Directive in source. \hfill\code{//> using toolkit latest } for unstable vers. \\[0.5em]
-
-\code|os.pwd   os.root   os.home| \hfill\Comment{Absolute path of type \texttt{os.Path} to working directory, root, and home dir.}\\
-\code|os.root/"tmp"      os.pwd/"src"| \hfill\Comment{Absolute paths to /tmp dir and src in working dir.}\\
-\code|val wd = os.pwd/"myDir";  val p = wd/"myFile.txt" | \hfill\Comment{Absolute paths to dir and file.}\\
-\code|p.ext  p.segments  p.last| \hfill\Comment{Methods on os.Path, returns \code{"txt"}, iterator, last segment.}\\
-\code|os.remove.all(wd)  os.makeDir(wd)| \hfill\Comment{Remove all files in wd if exists. Create wd if not exists.}\\
-\code|os.write(wd/"f.txt", "hi")   os.read(wd/"f.txt")| \hfill\Comment{Write text to f.txt. Read f.txt as String.}\\
-\code|os.copy(wd/"f.txt", wd/"cpy.txt")    os.list(wd)| \hfill\Comment{Copy f.txt to cpy.txt. List files in wd as Seq.}\\[0.5em]
-Call OS process in host shell in wd and get output as String. Result is \code|"hihi"| after above examples are evaluated:
-\code|os.proc("cat", wd/"f.txt", wd/"cpy.txt").call(cwd = wd).out.text()| \\[0.5em]
-
-\textbf{Write tests} in file \texttt{MyTests.test.scala} in a class extending \texttt{munit.FunSuite} as follows:\\
-Run with: \code{scala-cli test MyTests.test.scala --toolikt deafult}\\[-0.25em]
-
-\begin{Code}
-class MyTests extends munit.FunSuite:
-  test("sum of two integers"):
-    val sum = 2 + 2
-    assert(sum == 4)
-\end{Code}
-
-\vspace*{-0.1em}\textbf{Parse and serialize JSON} and access named values:\\
-\vspace*{-0.5em}\begin{Code}
-val jsonString = """{"name": "Anna", "age": 42, "pets": ["Cat", "Dog"]}"""
-val json: ujson.Value  = ujson.read(jsonString)
-val s = json("name").str                  // "Anna"
-val so = json("name").strOpt              // Some("Anna")
-val pets = json("pets").arr               // ArrayBuffer("Cat", "Dog")
-val petsOpt = json("pets").arrOpt         // Some(ArrayBuffer("Cat", "Dog"))
-val m: Map[String, Int] =  Map("Dog" -> 3, "Cat" -> 5)
-val js: String = upickle.default.write(m) // """{"Dog":3,"Cat":5}"""
-import upickle.default.*
-case class PetOwner(name: String, pets: List[String]) derives ReadWriter
-val po = PetOwner("Kim", List("Cat", "Dog"))
-val jsPo: String = write(po) // """{"name":"Kim","pets":["Cat","Dog"]}""""
-val po2: PetOwner = read[PetOwner](jsPo)
-\end{Code}
-
-}
-
-
-
+TODO?
 
 
 
@@ -801,10 +713,13 @@ val po2: PetOwner = read[PetOwner](jsPo)
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \vspace*{-2.5em}\head{The Scala Type System}%\Newline
-\vspace{-0.5em}\includegraphics[width=1.05\textwidth,trim=12mm 0 0 0cm]{../img/hierarchy.pdf}
+\vspace{-0.0em}\includegraphics[width=1.05\textwidth,trim=12mm 0 0 0cm]{../img/hierarchy.pdf}
+
+
+\vspace*{0.5em}\head{Numbers}%\Newline
 
 {\small \renewcommand{\arraystretch}{1.0}
-\textbf{Number types}\\
+\vspace{1.5em}\textbf{Number types}\\
 \begin{tabular}{@{}l l @{\hspace{0.7em}}l @{\hspace{0.7em}}l @{}p{0.1em} | l l}
 \textbf{name} & \textbf{\# bits} & \textbf{range} & \textbf{literal} &   & \multicolumn{2}{l}{\textbf{Methods on numbers}}\\ \cline{1-4}%\hline
 & & & &\\[-0.8em]
@@ -842,18 +757,34 @@ val po2: PetOwner = read[PetOwner](jsPo)
 \end{tabular}
 }
 
-\Newline\vspace{-6.0em}{\small
+\Newline\vspace{-5.5em}{\small
 Some methods in \code{math} same as in \code{java.lang.Math}:\\
 \code|pow(x, y)| \Comment{~~$x^y$} \code|  sqrt(x)| \Comment{ $\sqrt{x}$ } \code|  exp(x)| \Comment{$e^x$} \\
 \code|hypot(x, y)| \Comment{ $\sqrt{x^2 + y^2}$ } \code|log(x)| \Comment{2-based logaritm} \\
 \code|sin(x) asin(x) cos(x) tan(x) atan2(x,y)|\\
 \code|floorMod(x, y)| \Comment{similar to x \% y but always positive}
 
-}\Newline\vspace{1em}
+}
+%\Newline\vspace{1em}
 
+\Newline\vspace*{-0.25em}\head{\code{scala.util.Random}}\Newline
+{\small
+\code{Random.nextInt(n)} \hfill \Comment{A random \code{Int} uniformly distributed from \code{0} until \code{n}, not including \code{n}.} \\
+\code{Random.nextInt()} \hfill \Comment{A random \code{Int} uniformly distributed from \code{-Int.MaxValue} to \code{Int.MaxValue}.} \\
+\code{Random.nextDouble()} \hfill \Comment{A random \code{Double}  uniformly distributed from \code{0.0} to \code{0.9999999999999999}.}\\
+\code{Random.between(a, b)} \hfill \Comment{A random number (a, b is Int, Float or Double) uniformly distributed from a until b.}\\
+\code{Random.nextPrintableChar()} \hfill \Comment{A random \code{Char} including \code{A} to \code{Z} or any other printable char (uniform dist.).}\\
+\code{Random.nextGussian()} \hfill \Comment{A random \code{Double} that is \textbf{normally} distributed with mean 0 and std dev 1.}\\
+\code{Random.shuffle(xs)} \hfill \Comment{Returns a new sequence with the elements in xs in any, equally likely, random order.}\\
+\code{Random.setSeed(s)} \hfill \Comment{Set Random's integer seed \code{s}; sequence of next ''random'' values will be same on each run.}\\
+}
+
+
+
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Newline\vspace{-2.5em}\head{The Scala Standard Collection Library}
+\vspace*{-2.0em}\head{The Scala Standard Collection Library}
 {
 \small\renewcommand{\arraystretch}{1.1}
 \begin{multicols}{2}
@@ -868,9 +799,7 @@ Some methods in \code{math} same as in \code{java.lang.Math}:\\
 \texttt{Map} & \texttt{Map} & \texttt{apply~~+~~-} \\
 \end{tabular}
 
-\vspace{0.2em}
-
-\texttt{String} and \texttt{Array} has implicit conversions that\\ make sequence methods work as for other sequences. \\
+%\vspace{0.2em}\texttt{String} and \texttt{Array} has implicit conversions that\\ make sequence methods work as for other sequences. \\
 
 \newcommand{\NodeSkip}{0.5cm}
 \begin{center}
@@ -896,13 +825,78 @@ Some methods in \code{math} same as in \code{java.lang.Math}:\\
 \end{multicols}
 }
 
-\vspace{-0.75em} 
-{\small \texttt{Array} has efficient \code{update}, but strange with generics. Special \code{Array} allocation syntax: \code{new Array[Int](n)}  ~~~Prefer \code{ArraySeq} (a "normal" collection, better with generics) or \code{IArray} (an Array that cannot be updated)}
-
 % \vspace{-0.5em}{\small Concrete implementations of \textbf{Set} include HashSet, ListSet and BitSet; collection.\textbf{SortedSet} is implemented by TreeSet.\\
 % Concrete implementations of \textbf{Map} include HashMap and ListMap; collection.\textbf{SortedMap} is implemented by TreeMap.
 % }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\vspace{-0.75em}\head{Factory examples:}\Newline
+
+{\small%
+\code{Vector(0,0,0)} \Comment{ same as } \code{Vector.fill(3)(0)} \hfill\Comment{On mutable Set, Map:} \code{toSet}, \code{toMap} \Comment{etc. returns immutable}\\
+\code{collection.mutable.Set.empty[Int]} \hfill\Comment{ same as } \code{collection.mutable.Set[Int]()}\\
+\mbox{\code{Map("se" -> "Sweden","nk" -> "Norway")} \hfill\Comment{same as }
+\code{Map(("se","Sweden"),("nk","Norway"))}}\\
+\texttt{Vector.tabulate(3)(i => "s" + i.toString) } \hfill\Comment{gives} \code{ Vector("s0", "s1", "s2")}
+\texttt{ Vector.iterate(1.2, 3)(\_ + 0.5)} \hfill\Comment{gives} \texttt{Vector(1.2, 1.7, 2.2)}\\
+%\code{Array.ofDim[Int](3,2)} \Comment{gives} \texttt{Array(Array(0, 0), Array(0, 0), Array(0, 0))} \Comment{same as} \texttt{Array.fill(3,2)(0)};
+}
+
+
+
+\vspace{0.5em}\head{String \hfill implicitly \texttt{Seq[Char]} via \texttt{immutable.StringOps} }\Newline
+{\small\renewcommand{\arraystretch}{1.05}
+Some methods below are from java.lang.String and some methods are implicitly added from StringOps, etc.\\ 
+Strings are implictly treated as \textbf{\code|Seq[Char]|}, so all \code|Iterable| and \code|Seq| methods also work.
+
+\vspace{0.25em}
+\begin{tabular}{@{}l l}
+\code|s(i)  s.apply(i)  s.charAt(i)| & \Comment{Returns the character at index i.} \\
+\code|s.capitalize| & \Comment{Returns this string with first character converted to upper case.} \\
+\code|s.compareTo(t)| & \Comment{Returns x where x < 0 if s < t, x > 0 if s > t, x is 0 if s == t}\\
+\code|s.compareToIgnoreCase(t)| & \Comment{Similar to compareTo but not sensitive to case.}\\
+\code|s.endsWith(t)| & \Comment{True if string s ends with string t.} \\
+\code|s.replace(s1, s2)| & \Comment{Replace all occurances of s1 with s2 in s.} \\
+\code|s.split(c)| & \Comment{Returns an array of strings split at every occurance of character c.} \\
+\code|s.startsWith(t)| & \Comment{True if string s begins with string t.} \\
+\code|s.stripMargin| & \Comment{Strips leading white space followed by | from each line in string.}\\
+\code|s.substring(i)| & \Comment{Returns a substring of s with all charcters from index i.}\\
+\code|s.substring(i, j)| & \Comment{Returns a substring of s from index i to index j-1.}\\
+\code|s.toIntOption  s.toDoubleOption| & \Comment{Parses s as an Option[Int] or Option[Double] etc. None if invalid.}\\
+\code|42.toString   42.0.toString| & \Comment{Converts a number to a String.}\\
+\code|s.toLowerCase| & \Comment{Converts all characters to lower case.}\\
+\code|s.toUpperCase| & \Comment{Converts all characters to upper case.} \\
+\code|s.trim| & \Comment{Removes leading and trailing white space.}\\[0.5em]
+\code|val sb = StringBuilder("")| & \Comment{En empty mutable string. (If multi-thread access use StringBuffer.)}\\
+\code|sb.append("hello")| & \Comment{Append string in-place. Also for Int, Char, Boolean, etc}\\
+\code|sb.insert(i, s)| & \Comment{Insert s at index i.}\\
+\code|sb.delete(i)| & \Comment{Remove char at index i.}\\
+\code|sb.setCharAt(i, ch)| & \Comment{Update char at index i to ch.}\\
+\code|sb.toString| & \Comment{Make an immutable String copy of sb.}\\
+
+\end{tabular}
+}
+
+
+
+\Newline\vspace*{-0.5em}
+
+{\small\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}p{0.7cm} l | r l}
+\textbf{Escape} & \textbf{char} & \textbf{Special strings} & \\
+\code|\n| & line break & \code|"hello\nworld\t!"| & \Comment{string including escape char for line break and tab}\\
+\code|\t| & horisontal tab & \code|"""a "raw" string"""| & \Comment{can include quotes and span multiple lines}\\
+\code|\"| & double quote '' & \code|s"x is $x"| & \Comment{\textbf{s interpolator} inserts values of existing names after} \code|$|\\
+\code|\'| & single quote ' &  \code|s"x+1 is ${x+1}"|& \Comment{s interpolator evaluates expressions within}  \code|${}|\\
+\code|\\| & backslash \textbackslash & \code|f"$x%5.2f"| & \Comment{format Double x to 2 decimals at least 5 chars wide}\\
+\code|\u0041| &  unicode for A & \code|f"$y%5d"| & \Comment{format Int y right justified at least five chars wide}\\
+\end{tabular}
+}
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1060,7 +1054,7 @@ Reverse: & \texttt{xs.reverse} & A new sequence with the elements of xs in rever
 
 \clearpage
 %\Newline
-\vspace*{-2.1em}\head{Mutation methods in \texttt{mutable.\{ArraySeq[A], ArrayBuffer[A], ListBuffer[A]\}}}\Newline%
+\vspace*{-2.5em}\head{Mutation methods in \texttt{mutable.\{ArraySeq[A], ArrayBuffer[A], ListBuffer[A]\}}}\Newline%
 \vspace*{-0.5em}%
 {\small\renewcommand{\arraystretch}{1.125}
 \begin{tabular}{@{}p{5.3cm}  p{6.6cm}}
@@ -1106,7 +1100,7 @@ Reverse: & \texttt{xs.reverse} & A new sequence with the elements of xs in rever
 }
 
 \Newline
-\vspace*{-0.5em}\head{Mutation methods in \texttt{mutable.Set[A]}}%
+\vspace*{-0.75em}\head{Mutation methods in \texttt{mutable.Set[A]}}%
 \Newline\vspace*{-0.5em}%
 {\small\renewcommand{\arraystretch}{1.125}
 \begin{tabular}{@{}p{5.1cm}  p{6.8cm}}
@@ -1125,8 +1119,7 @@ Reverse: & \texttt{xs.reverse} & A new sequence with the elements of xs in rever
 \end{tabular}
 }
 
-\Newline
-\vspace*{-0.5em}\head{\texttt{Map[K, V]}}%
+\vspace*{0.7em}\head{\texttt{Map[K, V]}}%
 \Newline\vspace*{-0.5em}%
 
 {\small\renewcommand{\arraystretch}{1.125}
@@ -1155,8 +1148,7 @@ Reverse: & \texttt{xs.reverse} & A new sequence with the elements of xs in rever
 }
 
 
-\Newline
-\vspace*{-0.5em}\head{Mutation methods in \texttt{mutable.Map[K, V]}}%
+\vspace*{0.25em}\head{Mutation methods in \texttt{mutable.Map[K, V]}}%
 \Newline\vspace*{-0.5em}%
 
 {\small\renewcommand{\arraystretch}{1.125}
@@ -1177,120 +1169,151 @@ Reverse: & \texttt{xs.reverse} & A new sequence with the elements of xs in rever
 \end{tabular}
 }
 
-\vspace{0.5em}\head{Factory examples:}\Newline
 
-{\small%
-\Comment{On mutable Set, Map:} \code{toSet}, \code{toMap} \Comment{returns immutable};
-\hfill\code{Vector(0,0,0)} \Comment{ same as } \code{Vector.fill(3)(0)};
-\\
-\code{collection.mutable.Set.empty[Int]} \Comment{ same as } \code{collection.mutable.Set[Int]()}\\
-\mbox{\code{Map("se" -> "Sweden","nk" -> "Norway")} \Comment{same as }
-\code{Map(("se","Sweden"),("nk","Norway"))}}\\
-\code{Array.ofDim[Int](3,2)} \Comment{gives} \texttt{Array(Array(0, 0), Array(0, 0), Array(0, 0))} \Comment{same as} \texttt{Array.fill(3,2)(0)};
-\texttt{ Vector.iterate(1.2, 3)(\_ + 0.5)} \Comment{gives} \texttt{Vector(1.2, 1.7, 2.2)}\\
-\texttt{Vector.tabulate(3)("s" + \_) } \Comment{gives} \code{ Vector("s0", "s1", "s2")}
+
+\vspace{0.5em} \head{\texttt{java.lang.Array[A]} \hfill implicitly \texttt{mutable.Seq[A]} via \texttt{ArrayOps}}\Newline
+
+{\small \texttt{Array} has efficient \code{update}, but is strange with generics, and gives reference equality on \code{xs == ys}. \Comment{Shallow content test:} \code{xs.sameElements(ys)} \hfill \Comment{Deep content test:} \code{java.util.Arrays.deepEquals(xs, ys)}\\
+ \code|val xs = new Array[Int](n)| \hfill\Comment{Allocate n Int values initialized to default value for number types: 0}\\
+ \code|val ys = new Array[String](n)| \hfill\Comment{n String references initialized to default value of reference types: \code|null| }\\
+\Comment{Copy from start:} \code|Array.copyOf(xs, newLen)| \Comment{From pos:} \code|Array.copy(xs, pos, xs2, toPos, n)| \\
+\code{Array.ofDim[Int](3,2)} \Comment{gives} \texttt{Array(Array(0, 0), Array(0, 0), Array(0, 0))}\\
+\textbf{Prefer:} \Comment{''normal'' collection:} \code{immutable.ArraySeq},~ \code{mutable.ArraySeq}, ~or immutable \code{IArray}\\
 }
-
 
 
 
 \clearpage
 
-\Newline\head{String}\Newline
-{\small\renewcommand{\arraystretch}{1.05}
-Some methods below are from java.lang.String and some methods are implicitly added from StringOps, etc.\\ 
-Strings are implictly treated as Seq[Char], so all Seq methods also work.
 
-\vspace{0.0em}
-\begin{tabular}{@{}l l}
-\code|s(i)  s.apply(i)  s.charAt(i)| & \Comment{Returns the character at index i.} \\
-\code|s.capitalize| & \Comment{Returns this string with first character converted to upper case.} \\
-\code|s.compareTo(t)| & \Comment{Returns x where x < 0 if s < t, x > 0 if s > t, x is 0 if s == t}\\
-\code|s.compareToIgnoreCase(t)| & \Comment{Similar to compareTo but not sensitive to case.}\\
-\code|s.endsWith(t)| & \Comment{True if string s ends with string t.} \\
-\code|s.replace(s1, s2)| & \Comment{Replace all occurances of s1 with s2 in s.} \\
-\code|s.split(c)| & \Comment{Returns an array of strings split at every occurance of character c.} \\
-\code|s.startsWith(t)| & \Comment{True if string s begins with string t.} \\
-\code|s.stripMargin| & \Comment{Strips leading white space followed by | from each line in string.}\\
-\code|s.substring(i)| & \Comment{Returns a substring of s with all charcters from index i.}\\
-\code|s.substring(i, j)| & \Comment{Returns a substring of s from index i to index j-1.}\\
-\code|s.toIntOption  s.toDoubleOption| & \Comment{Parses s as an Option[Int] or Option[Double] etc. None if invalid.}\\
-\code|42.toString   42.0.toString| & \Comment{Converts a number to a String.}\\
-\code|s.toLowerCase| & \Comment{Converts all characters to lower case.}\\
-\code|s.toUpperCase| & \Comment{Converts all characters to upper case.} \\
-\code|s.trim| & \Comment{Removes leading and trailing white space.}\\[0.5em]
-\code|val sb = StringBuilder("")| & \Comment{En empty mutable string. (If multi-thread access use StringBuffer.)}\\
-\code|sb.append("hello")| & \Comment{Append string in-place. Also for Int, Char, Boolean, etc}\\
-\code|sb.insert(i, s)| & \Comment{Insert s at index i.}\\
-\code|sb.delete(i)| & \Comment{Remove char at index i.}\\
-\code|sb.setCharAt(i, ch)| & \Comment{Update char at index i to ch.}\\
-\code|sb.toString| & \Comment{Make an immutable String copy of sb.}\\
 
+\vspace{0.5em}\head{scala.\{Option, Some, None\} to handle missing values }\Newline
+
+{\small \textbf{Option[T]} is like a collection with zero or one element. \textbf{Some[T]} and \textbf{None} are subtypes of Option. }
+
+\renewcommand{\arraystretch}{1.0}\vspace{0.25em}
+{\small%
+
+
+\begin{tabular}{@{}l @{\hspace{1.0em}}l}
+
+\multicolumn{2}{l}{\hspace{-0.62em}\code|def rnd(): Option[String] = if math.random() > 0.9 then Some("bingo") else None|} \\
+
+\code|rnd().getOrElse(expr)|
+& \Comment{if rnd() == Some[T] then x else expr}\\
+
+\code|rnd().map(f)|
+& \Comment{if rnd() == Some(x) then Some(f(x)) else None}\\
+
+\code|rnd().get|
+& \Comment{if rnd() == Some[T] then x else throws NoSuchElementException}\\
 \end{tabular}
-}
 
-
-
-\Newline\vspace*{-0.5em}
-
-{\small\renewcommand{\arraystretch}{1.05}
-\begin{tabular}{@{}p{0.7cm} l | r l}
-\textbf{Escape} & \textbf{char} & \textbf{Special strings} & \\
-\code|\n| & line break & \code|"hello\nworld\t!"| & \Comment{string including escape char for line break and tab}\\
-\code|\t| & horisontal tab & \code|"""a "raw" string"""| & \Comment{can include quotes and span multiple lines}\\
-\code|\"| & double quote '' & \code|s"x is $x"| & \Comment{\textbf{s interpolator} inserts values of existing names after} \code|$|\\
-\code|\'| & single quote ' &  \code|s"x+1 is ${x+1}"|& \Comment{s interpolator evaluates expressions within}  \code|${}|\\
-\code|\\| & backslash \textbackslash & \code|f"$x%5.2f"| & \Comment{format Double x to 2 decimals at least 5 chars wide}\\
-\code|\u0041| &  unicode for A & \code|f"$y%5d"| & \Comment{format Int y right justified at least five chars wide}\\
+\begin{tabular}{@{}l @{\hspace{1.0em}}l}
+\code|rnd() match | & \Comment{a match on Option where expr1 if Some(x) or expr2 if None}\\
+\code|  case Some(x) => expr1 | & \Comment{or use} \code|if rnd().isDefined then expr1 else expr2|\\
+\code|  case None => expr2 | & \Comment{or use} \code|if rnd().isEmpty then expr2 else expr1|\\ 
+\code|                     | & \Comment{or use} \code|if rnd().nonEmpty then expr1 else expr2|\\ 
 \end{tabular}
-}
+}% small
 
-\Newline\vspace*{-0.75em}\head{\code{scala.util.Random}}\Newline
-{\small
-\code{Random.nextInt(n)} \hfill \Comment{A random \code{Int} uniformly distributed from \code{0} until \code{n}, not including \code{n}.} \\
-\code{Random.nextInt()} \hfill \Comment{A random \code{Int} uniformly distributed from \code{-Int.MaxValue} to \code{Int.MaxValue}.} \\
-\code{Random.nextDouble()} \hfill \Comment{A random \code{Double}  uniformly distributed from \code{0.0} to \code{0.9999999999999999}.}\\
-\code{Random.between(a, b)} \hfill \Comment{A random number (a, b is Int, Float or Double) uniformly distributed from a until b.}\\
-\code{Random.nextPrintableChar()} \hfill \Comment{A random \code{Char} including \code{A} to \code{Z} or any other printable char (uniform dist.).}\\
-\code{Random.nextGussian()} \hfill \Comment{A random \code{Double} that is \textbf{normally} distributed with mean 0 and std dev 1.}\\
-\code{Random.shuffle(xs)} \hfill \Comment{Returns a new sequence with the elements in xs in any, equally likely, random order.}\\
-\code{Random.setSeed(s)} \hfill \Comment{Set Random's integer seed \code{s}; sequence of next ''random'' values will be same on each run.}\\
-}
+{\small Some collection methods also work on \textbf{Option}: map, foreach, filter, toVector, flatten, flatMap, ... with None discarded.}
 
 
-\Newline\vspace*{-0.5em}\head{Reserved words}\Newline%% TODO: differentiate by color or something hard and soft keywords
 
-{\small These words and symbols have special meaning. Can be used as identifiers if put within \verb|`|backticks\verb|`|.}
-\vspace*{-0.5em}
-\begin{Code}[morekeywords={macro,\_},otherkeywords={>,<-,\%,<,>:,@,:,=,\#},basicstyle=\ttfamily\fontsize{8}{9}\selectfont]
-abstract as case catch class def derives do else end enum export extends extension false 
-final finally for forSome given if implicit import infix inline lazy macro match new null 
-object opaque open override package private protected return sealed super then this throw 
-trait transparent true try type using val var while with yield
- _   :   =   =>   <-   <:   <%   >:   #   @
+\vspace{0.5em}\head{scala.util.\{Either, Left, Right\} to handle errors as values
+%, scala.concurrent.Future
+}\Newline
+\vspace*{-0.5em}\begin{Code}
+def rnd(): Either[String, Int] = // normally returns Int but can report error
+  if math.random() > 0.9 then Right(42) else Left("Bad") // Left wraps message
 \end{Code}
-% abstract case catch class def do else extends false final finally for
-% forSome if  implicit import lazy macro match new null object override
-% package private protected return sealed super this throw trait try true
-% type val var while with yield  
+\vspace{-0.25em}
+{\small\renewcommand{\arraystretch}{1.0}
+
+{\textbf{Either[E, V]} wraps a normal value or error. \textbf{Left[E]} error of type E. \textbf{Right[V]} normal value of type V.}
+
+\begin{tabular}{@{}l @{\hspace{1.0em}}l}
+  \code|rnd().isRight| & \Comment{Predicate that tests if normal value. To test if error:} \code|rnd().isLeft|\\
+  \code|rnd().merge| & \Comment{Unraps any value, will get precice common supertype, here union type:} \code+ String | Int+ \\
+  \code|rnd().swap| & \Comment{Turns a Right to Left and vice versa, with swapped type parameters.} \\
+  \end{tabular}
+  
+}
+
+{\small Some collection methods also work on \textbf{Either}: map, foreach, flatMap, ... with Left discarded. }
 
 
-%\input{java/java-quickref.tex}  %% REPLACED BY shorter ref on Java STD-lib below 
+
+
+
+
+
+\vspace*{0.5em}\head{scala.util.\{Try, Success, Failure\} to handle exceptions as values
+%, scala.concurrent.Future
+}\Newline
+
+\vspace{0.25em}
+{\small\renewcommand{\arraystretch}{1.0}
+{\textbf{Try[T]} is like a collection with \textbf{Success[T]} or \textbf{Failure[E]}.\hfill\code|import scala.util.{Try, Success, Failure}|}
+
+\begin{tabular}{@{}l @{\hspace{-4.8em}}r}
+\code|Try{ ...; ...; expr1 }.getOrElse(expr2)| & \Comment{evaluates to expr1 if successful or expr2 if exception} \\
+
+\code|Try(expr1).recover{case e: Exception => expr2}| & \hspace{5.0em}\Comment{Success(expr2) if exception else Success(expr1)} \\
+\end{tabular}
+\code|Try(1/0) match |\\
+\code|  case Success(x) => println("happy path") | \hfill\Comment{or use predicate:} \code|isSuccess|\\
+\code|  case Failure(e) => println("exception") | \hfill\Comment{or use predicate:} \code|isFailure|\\
+}
+
+{\small Some collection methods also work on \textbf{Try}: map, foreach, flatMap, ... with Failure discarded. }
+
+
+\vspace{0.5em}\head{scala.io.\{Source, StdIn\} to read/write from file, and standard in/out }\Newline
+{\small
+\Comment{\textbf{Read} string of lines from \textbf{file}, \code|fromFile| gives BufferedSource, \code|getLines| gives Iterator[String]}
+\code|val source = scala.io.Source.fromFile("f.txt", "UTF-8")|  ~~~~\Comment{or \code|fromURL(adr, enc)|}
+\code|val lines = try source.getLines.mkString("\n") finally source.close|
+}
+
+
+{\small
+\vspace{0.25em}\Comment{\textbf{Read} string from \textbf{standard in} (prompt string is optional) using readLine; \textbf{write} to \textbf{standard out} using println:}
+\code|val input = scala.io.StdIn.readLine("> ") | \Comment{Reads keystrokes in terminal after printing prompt >} \\ 
+
+\vspace{0.25em}\Comment{\textbf{Write} string to \textbf{file} after} import java.nio.file.\{Path, Paths, Files\}; import java.nio.charset.StandardCharsets.UTF\_8 \\[0.2em]
+
+\Comment{Other common character encoding:} java.nio.charset.StandardCharsets.ISO\_8859\_1 \\\vspace{-0.5em}
+\begin{Code}
+def save(fileName: String, data: String): Path =
+  Files.write(Paths.get(fileName), data.getBytes(UTF_8))
+\end{Code}
+}
+
+
+\clearpage
+
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\clearpage
 \renewcommand{\arraystretch}{1.0}
 %\setcounter{page}{1}
-\renewcommand{\LangColor}{blue}
-\LangMarker{JVM}{3.5cm}{12}
+%\renewcommand{\LangColor}{blue}
+%\LangMarker{JVM}{3.5cm}{12}
 
 \small
 
-\LangTitle{Platform: Java Virtual Machine (JVM)}
+\head{Specific platforms: JVM, ScalaJS, Scala Native}
 \vspace{1em}
 
-\code|scala-cli run hi.scala --jvm 21| \hfill\Comment{Specify explicit JVM version, here Java JDK 21 LTS} \\[0.5em]
+\code|scala-cli compile hello.scala --jvm 21| \hfill\Comment{Compile to specific JVM version, here Java JDK 21 LTS} \\[0.5em]
+\code|scala-cli compile hello-js.scala --js| \hfill\Comment{Compile to javascript, include in HTML or run via nodejs} \\[0.5em]
+\code|scala-cli compile hello-native.scala --native| \hfill\Comment{Compile to a binary using LLVM and gcc} \\[0.5em]
 
 \Newline\vspace*{-0.5em}\head{scala.jdk.CollectionConverters}\Newline\vspace*{-0.2em}
 
@@ -1308,20 +1331,21 @@ Enable \code{.asJava} and \code{.asScala} with \code{ import scala.jdk.Collectio
 \texttt{mutable.ConcurrentMap} &  $\longleftrightarrow$  & \texttt{java.util.concurrent.ConcurrentMap} \\\end{tabular}
 
 
-\Newline\vspace*{-0.5em}\head{java.lang.Object, java.lang.\{Boolean, Byte, Character, Double, Float, Integer, Long, Short\}}\Newline\vspace*{-0.2em}
+\Newline\vspace*{-0.5em}\head{java.lang.Object, scala.AnyRef}\Newline%\vspace*{-0.2em}
+%java.lang.\{Boolean, Byte, Character, Double, Float, Integer, Long, Short\
 
-The class \texttt{java.lang.Object} corresponds to the Scala class \texttt{scala.AnyRef} with the following methods:\\[0.5em]
+The class \texttt{java.lang.Object} corresponds to the Scala class \texttt{scala.AnyRef} including the following methods:\\[0.5em]
 \code|def equals(other: Object): Boolean| \hfill\Comment{Type-unsafe equality test. Can be overridden.}\\
 \code|def hashCode: Int| \hfill\Comment{An integer that is equal to every other instance's hashCode if \code{equals(other)} is true.}\\
 \code|def toString: String| \hfill\Comment{A readable String representation.}\\[0.5em]
 The JVM makes a difference between primitive types and reference types. Primitive types in Java are auto-boxed by implicit conversion using e.g. \jcode{Integer.valueOf(42)} but that is transparent in Scala.
 
-\vspace{2em}TODO 
-\vspace{2em}TODO 
+\vspace{1em}TODO Recepie for equals and hashcode\\
+TODO Recepie for equals and hashcode 
 
 
 
-\head{java.lang.\{System, Thread\}}
+\vspace{1em}\head{java.lang.\{System, Thread\}}
 
 
 \begin{etab}
@@ -1334,7 +1358,6 @@ TODO Primitive main
 
 \head{java.nio.file.\{Path, Paths, Files\}}
 
-\vspace{2em}TODO 
 \vspace{2em}TODO 
 
 \head{java.util.Scanner}
@@ -1371,28 +1394,78 @@ Scanner           & Scanner(File f);                &  läser från filen f, oft
 % \ind $\}$}
 % \end{etab}
 
+
+%\renewcommand{\LangColor}{cyan}
+%\LangMarker{\color{black}{Scala Native} ~~~~ \color{white}{ScalaJS} ~~~}{6.5cm}{12}
+
+%\LangTitle{Platform: ScalaJS (Javascript, DOM, npm)}
+
 \clearpage
 
-\renewcommand{\LangColor}{cyan}
-\LangMarker{\color{black}{Scala Native} ~~~~ \color{white}{ScalaJS} ~~~}{6.5cm}{12}
+\vspace{-0.1em}\head{Using the Scala toolkit: os, munit, ujson, upickle}\Newline
+{\small
 
-\LangTitle{Platform: ScalaJS (Javascript, DOM, npm)}
+\code{scala-cli run hi.scala --toolkit default} \hfill\Comment{Use stable vers. of Scala toolkit, an extended std libary. }
+\code{//> using toolkit default }  Directive in source. \hfill\code{//> using toolkit latest } for unstable vers. \\[0.5em]
+
+\code|os.pwd   os.root   os.home| \hfill\Comment{Absolute path of type \texttt{os.Path} to working directory, root, and home dir.}\\
+\code|os.root/"tmp"      os.pwd/"src"| \hfill\Comment{Absolute paths to /tmp dir and src in working dir.}\\
+\code|val wd = os.pwd/"myDir";  val p = wd/"myFile.txt" | \hfill\Comment{Absolute paths to dir and file.}\\
+\code|p.ext  p.segments  p.last| \hfill\Comment{Methods on os.Path, returns \code{"txt"}, iterator, last segment.}\\
+\code|os.remove.all(wd)  os.makeDir(wd)| \hfill\Comment{Remove all files in wd if exists. Create wd if not exists.}\\
+\code|os.write(wd/"f.txt", "hi")   os.read(wd/"f.txt")| \hfill\Comment{Write text to f.txt. Read f.txt as String.}\\
+\code|os.copy(wd/"f.txt", wd/"cpy.txt")    os.list(wd)| \hfill\Comment{Copy f.txt to cpy.txt. List files in wd as Seq.}\\[0.5em]
+Call OS process in host shell in wd and get output as String. Result is \code|"hihi"| after above examples are evaluated:
+\code|os.proc("cat", wd/"f.txt", wd/"cpy.txt").call(cwd = wd).out.text()| \\[0.5em]
+
+\textbf{Write tests} in file \texttt{MyTests.test.scala} in a class extending \texttt{munit.FunSuite} as follows:\\
+Run with: \code{scala-cli test MyTests.test.scala --toolikt deafult}\\[-0.25em]
+
+\begin{Code}
+class MyTests extends munit.FunSuite:
+  test("sum of two integers"):
+    val sum = 2 + 2
+    assert(sum == 4)
+\end{Code}
+
+\vspace*{-0.1em}\textbf{Parse and serialize JSON} and access named values:\\
+\vspace*{-0.5em}\begin{Code}
+val jsonString = """{"name": "Anna", "age": 42, "pets": ["Cat", "Dog"]}"""
+val json: ujson.Value  = ujson.read(jsonString)
+val s = json("name").str                  // "Anna"
+val so = json("name").strOpt              // Some("Anna")
+val pets = json("pets").arr               // ArrayBuffer("Cat", "Dog")
+val petsOpt = json("pets").arrOpt         // Some(ArrayBuffer("Cat", "Dog"))
+val m: Map[String, Int] =  Map("Dog" -> 3, "Cat" -> 5)
+val js: String = upickle.default.write(m) // """{"Dog":3,"Cat":5}"""
+import upickle.default.*
+case class PetOwner(name: String, pets: List[String]) derives ReadWriter
+val po = PetOwner("Kim", List("Cat", "Dog"))
+val jsPo: String = write(po) // """{"name":"Kim","pets":["Cat","Dog"]}""""
+val po2: PetOwner = read[PetOwner](jsPo)
+\end{Code}
+
+}
+
+
+
+
+
+%\LangTitle{\color{gray}{Platform: Scala Native (LLVM, gcc)}}
 \vspace{1em}
 
-\code|scala-cli compile hello-js.scala --js| \hfill\Comment{Compile to javascript} \\[0.5em]
 
+\Newline\vspace*{-0.5em}\head{Reserved words in Scala}\Newline
+%% TODO: differentiate by color or something to show hard and soft keywords
+{\small These words and symbols have special meaning. Can be used as identifiers if put within \verb|`|backticks\verb|`|.}
+\vspace*{-0.5em}
+\begin{Code}[morekeywords={macro,\_},otherkeywords={>,<-,\%,<,>:,@,:,=,\#},basicstyle=\ttfamily\fontsize{8}{9}\selectfont]
+abstract as case catch class def derives do else end enum export extends extension false 
+final finally for forSome given if implicit import infix inline lazy macro match new null 
+object opaque open override package private protected return sealed super then this throw 
+trait transparent true try type using val var while with yield
+ _   :   =   =>   <-   <:   <%   >:   #   @
+\end{Code}
 
-
-\vspace{4em}TODO 
-\vspace{4em}TODO 
-
-
-\LangTitle{\color{gray}{Platform: Scala Native (LLVM, gcc)}}
-\vspace{1em}
-
-\code|scala-cli compile hello-native.scala --native| \hfill\Comment{Compile to a binary using LLVM and gcc} \\[0.5em]
-
-\vspace{4em}TODO 
-\vspace{4em}TODO 
 
 \end{document}
