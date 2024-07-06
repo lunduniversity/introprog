@@ -494,8 +494,8 @@ try       &  \code|val resultOfUnsafeExpr =  |  & \Comment{Evaluate function f: 
 
 \clearpage
 
-\vspace*{-2.2em}\head{Expressions (continued)}\Newline
-{\small
+\vspace*{-2.7em}\head{Expressions (continued)}\Newline
+{\small\vspace*{-0.2em}
 \begin{tabular}{@{}l @{\hspace{-1.6em}}r @{\hspace{0.6em}}l | r l}
   \textbf{Tuples:} & & & \multicolumn{2}{l}{\textbf{Integer division and remainder:}}\\
 Empty tuple, unit value& \code|()|  &  \Comment{the only value of type Unit}  & \multicolumn{2}{l}{\code|a / b|  \Comment{~no decimals if  Int, Short, Byte }}  \\
@@ -505,7 +505,7 @@ Empty tuple, unit value& \code|()|  &  \Comment{the only value of type Unit}  & 
 \begin{tabular}{@{}l @{\hspace{-1.6em}}r @{\hspace{0.6em}}l | r l}
 \multicolumn{5}{l}{\hspace{-0.7em}Tuple prepend~~~\code|3 *: (1.0, '!')| ~\Comment{of type \texttt{Int\,*:\,Double\,*:\,Char\,*:\,EmptyTuple}~~same as (Int, Double, Char)}}\\
 \multicolumn{5}{l}{\hspace{-0.7em}Methods on tuples:~~\code|apply _1 _2| \Comment{...} ~ \code|drop take head init tail zip toArray toIArray toList| }\\[0.25em]
-\textbf{Non-referable reference:} \code|  null|  &  \multicolumn{3}{l}{\hspace{-0.7em}\Comment{refers to null object of type Null. Instead prefer Option or unitialized:} }\\
+\textbf{Non-referable reference:} \code|  null|  &  \multicolumn{3}{l}{\hspace{1.5em}\Comment{refers to null object of type Null. Instead prefer Option or unitialized:} }\\
 \multicolumn{5}{l}{\hspace{-0.7em}\textbf{Uninitialized:} ~~~\code|var x: String = scala.compiletime.uninitialized| ~~\Comment{mutable AnyRef field set to null} } \\
 \textbf{Shorthand assignment:} \code| x += 1|  &  \multicolumn{3}{l}{\hspace{1.25em}\Comment{expands to~~\code|x = x + 1|~~if no method += is available, works for all operators}} \\
 \end{tabular} 
@@ -514,7 +514,7 @@ Empty tuple, unit value& \code|()|  &  \Comment{the only value of type Unit}  & 
 
 
 \renewcommand{\arraystretch}{1.05}
-\begin{tabular}{@{}l @{\hspace{-1.5em}}r @{\hspace{0.6em}}l | r l}
+\begin{tabular}{@{}l @{\hspace{-0.5em}}r @{\hspace{0.6em}}l | r l}
 
 Evaluation order& \code| (1 + 2) * 3| & \Comment{parenthesis control order} & \multicolumn{2}{l}{\hspace{-0.2em}\textbf{Precedence} of operators starting with:}\\
 
@@ -529,13 +529,14 @@ Negation  & \code|!c|          &  \Comment{logical \textbf{not}, false if c is t
 Function application  & \code|f(1, 2, 3)|  &   \Comment{same as f.apply(1,2,3)} & \code|<  >|\\
 
 Function literal  & \code|x => x + 1|  &   \Comment{anonymous function, ''lambda''} & \code|:|\\
+Placeholder syntax  & \code|_ + 1|  &   \Comment{same as x => x+1, if arg used once} & \code|+ -|\\
 
-Object creation  & \code|new C(1,2)|  &   \Comment{class args (1,2) new is optional} & \code|+ -|\\
+Object creation  & \code|new C(1,2)|  &   \Comment{class args (1,2) new is optional} & \code|* / %|\\
 
-Self reference  & \code|this|  &  \Comment{refers to the object being defined} & \code|* / %| \\
+Self reference  & \code|this|  &  \Comment{refers to the object being defined} &  other special chars & \textbf{highest}  \\
 \vspace{0.4em}
 
-Supertype reference & \code|super.m|  &  \Comment{refers to member m of supertype} & other special chars & \textbf{highest} \\ %\cline{4-5}
+Supertype reference & \code|super.m|  &  \Comment{refers to member m of supertype} &\\ %\cline{4-5}
 \end{tabular}
 }%end small
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -584,7 +585,7 @@ Supertype reference & \code|super.m|  &  \Comment{refers to member m of supertyp
 
 
 
-\vspace{0.5em}\head{Enumerations}
+\vspace{0.25em}\head{Enumerations}
 
 \vspace{0.9em}\renewcommand{\arraystretch}{1.0}
 {\small%
@@ -680,20 +681,20 @@ Explicit given: \code| greet("Anna")(using Config(Lang.sv))| \hfill\Comment{Kewo
 
 \vspace{0.5em}
 
-A \textbf{type class} in Scala is a \code{trait} with one type parameter and at least one abstract method. Example:\\[0.25em]
-\code|trait CanShow[T]:|\\
-\code|  extension (x: T) def show: String|  \\[0.5em]
+A ''\textbf{type class}'' in Scala is a \code{trait} with one type parameter and at least one abstract method. Example:\\[0.25em]
+\code|trait CanShow[T]:| \hfill\Comment{A trait with one type parameter T}\\
+\code|  extension (x: T) def show: String| \hfill\Comment{An abstract member with a parameter of type T} \\[0.5em]
 
 Separately define given instances of type class CanShow for any type in any local scope:\\[0.25em]
-\code|given CanShow[Config] with| \hfill\Comment{keyword \code{with} needed when implementing given members}
+\code|given CanShow[Config] with| \hfill\Comment{keyword \code{with} needed when implementing members of given types}
 \code|  extension (x: Config) def show: String = s"Language is " + x.lang|\\[0.25em]
-Extension method show in type class CanShow is now available on Config implicitly:\hfill \code|Config(Lang.En).show|
+\Comment{Extension method show in type class CanShow is now available on Config implicitly:}\hfill \code|Config(Lang.En).show|
 
 \vspace{0.5em}
 
 \textbf{Context bound}: Use colon after type parameter as a shorthand when using parameter is a type class:\\
-\code|def rev[T: CanShow](x: T) = x.show.reverse  | \\\Comment{The colon syntax above reads ''A is CanShow'' and expands to a using parameter:} \\  
-\code|def rev[T](x: T)(using CanShow[T]) = x.show.reverse|   
+\code|def rev[T: CanShow](x: T) = x.show.reverse| \hfill\Comment{CanShow[T] is required; automatically expands to:}\\  
+\hfill\code|def rev[T](x: T)(using CanShow[T]) = x.show.reverse|   
 \\[0.5em]
 
 \textbf{Context functions}: the type of a function with a context parameter of type U to result type R is denoted \code| U ?=> R|\\
@@ -702,9 +703,18 @@ When \code{f} is referred to without argument it is automatically expanded to: \
 If type \code|U ?=> E| is expected, an \code{expr} of type \code{E} is expanded to a context function lambda: \code{(u: U) ?=> expr} 
 }
 
-\vspace{0.5em}\head{Opaque types}\Newline 
+\vspace{0.5em}\head{Opaque types: zero-cost abstractions}\Newline 
 
-TODO?
+{\small
+
+  \code|object Physical:| \hfill\Comment{Create a local scope for our opaque type alias}\\
+  \code|  opaque type Distance = Double |  \hfill\Comment{alias of Distance is Double, but that is invisible outside Physical} \\
+  \code|  object Distance:| \hfill\Comment{In the local scope it is known that Distance is actually Double} \\
+  \code|    extension (value: Double) def meter: Distance = value|\\
+  \Comment{Make the opaque type alias member available:} \hfill\code|import Physical.Distance.meter| \\
+  \Comment{ Type of dist is Distance and members of type Double not available on dist:} \hfill\code|val dist = 42.0.meter| \\
+  \textbf{Prefer} more versatile: \code{case class Distance(value: Double)}\hfill\Comment{if zero allocation not performance-critical.}
+}%end small
 
 
 
@@ -784,7 +794,7 @@ Some methods in \code{math} same as in \code{java.lang.Math}:\\
 \clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\vspace*{-2.0em}\head{The Scala Standard Collection Library}
+\vspace*{-2.5em}\head{The Scala Standard Collection Library}
 {
 \small\renewcommand{\arraystretch}{1.1}
 \begin{multicols}{2}
@@ -834,13 +844,14 @@ Some methods in \code{math} same as in \code{java.lang.Math}:\\
 \vspace{-0.75em}\head{Factory examples:}\Newline
 
 {\small%
-\code{Vector(0,0,0)} \Comment{ same as } \code{Vector.fill(3)(0)} \hfill\Comment{On mutable Set, Map:} \code{toSet}, \code{toMap} \Comment{etc. returns immutable}\\
-\code{collection.mutable.Set.empty[Int]} \hfill\Comment{ same as } \code{collection.mutable.Set[Int]()}\\
-\mbox{\code{Map("se" -> "Sweden","nk" -> "Norway")} \hfill\Comment{same as }
-\code{Map(("se","Sweden"),("nk","Norway"))}}\\
-\texttt{Vector.tabulate(3)(i => "s" + i.toString) } \hfill\Comment{gives} \code{ Vector("s0", "s1", "s2")}
-\texttt{ Vector.iterate(1.2, 3)(\_ + 0.5)} \hfill\Comment{gives} \texttt{Vector(1.2, 1.7, 2.2)}\\
-%\code{Array.ofDim[Int](3,2)} \Comment{gives} \texttt{Array(Array(0, 0), Array(0, 0), Array(0, 0))} \Comment{same as} \texttt{Array.fill(3,2)(0)};
+\code{List(0, 0, 0); List(List(0), List(0))}  \hfill \Comment{ same as } \code{List.fill(3)(0); List.fill(2,1)(0)}\\
+\code{Map(1 -> "Sweden", 2 -> "Norway")} \hfill\Comment{same as }
+\code{Map((1, "Sweden"), (2, "Norway"))}\\
+\texttt{Vector.tabulate(3)(i => i + 10) } \hfill\Comment{gives } \code{Vector(10, 11, 12)}\\
+\texttt{Vector.iterate(1.2, 3)(\_ + 0.5)} \hfill\Comment{gives } \texttt{Vector(1.2, 1.7, 2.2)}\\
+\code{collection.mutable.Set.empty[Int]} \hfill\Comment{same as } \code{collection.mutable.Set[Int]()} \Comment{ etc.}\\
+\Comment{On \textbf{mutable} and immutable Set, Map, ArraySeq, etc.:} \hfill \code{toSet}, \code{toMap}, \code{toSeq} \Comment{ etc. returns \textbf{immutable} collection}\\
+%\code{Array.ofDim[Int](3,2)} \Comment{gives} \texttt{Array(Array(0, 0), Array(0, 0), Array(0, 0))} \Comment{same as} \texttt{Array.fill(3,2)(0)} 
 }
 
 
@@ -1173,7 +1184,7 @@ Reverse: & \texttt{xs.reverse} & A new sequence with the elements of xs in rever
 
 \vspace{0.5em} \head{\texttt{java.lang.Array[A]} \hfill implicitly \texttt{mutable.Seq[A]} via \texttt{ArrayOps}}\Newline
 
-{\small \texttt{Array} has efficient \code{update}, but is strange with generics, and gives reference equality on \code{xs == ys}. \Comment{Shallow content test:} \code{xs.sameElements(ys)} \hfill \Comment{Deep content test:} \code{java.util.Arrays.deepEquals(xs, ys)}\\
+{\small \texttt{Array} has efficient \code{update}, but is strange with generics, and gives reference equality on \code{xs == ys}. \Comment{Shallow equality test:} \code{xs.sameElements(ys)} \hfill \Comment{Deep equality test:} \code{java.util.Arrays.deepEquals(xs, ys)}\\
  \code|val xs = new Array[Int](n)| \hfill\Comment{Allocate n Int values initialized to default value for number types: 0}\\
  \code|val ys = new Array[String](n)| \hfill\Comment{n String references initialized to default value of reference types: \code|null| }\\
 \Comment{Copy from start:} \code|Array.copyOf(xs, newLen)| \Comment{From pos:} \code|Array.copy(xs, pos, xs2, toPos, n)| \\
@@ -1270,7 +1281,7 @@ def rnd(): Either[String, Int] = // normally returns Int but can report error
 {\small Some collection methods also work on \textbf{Try}: map, foreach, flatMap, ... with Failure discarded. }
 
 
-\vspace{0.5em}\head{scala.io.\{Source, StdIn\} to read/write from file, and standard in/out }\Newline
+\vspace{0.5em}\head{scala.io.\{Source, StdIn\} \hfill java.nio.file.\{Path, Paths, Files\} }\Newline
 {\small
 \Comment{\textbf{Read} string of lines from \textbf{file}, \code|fromFile| gives BufferedSource, \code|getLines| gives Iterator[String]}
 \code|val source = scala.io.Source.fromFile("f.txt", "UTF-8")|  ~~~~\Comment{or \code|fromURL(adr, enc)|}
@@ -1280,17 +1291,20 @@ def rnd(): Either[String, Int] = // normally returns Int but can report error
 
 {\small
 \vspace{0.25em}\Comment{\textbf{Read} string from \textbf{standard in} (prompt string is optional) using readLine; \textbf{write} to \textbf{standard out} using println:}
-\code|val input = scala.io.StdIn.readLine("> ") | \Comment{Reads keystrokes in terminal after printing prompt >} \\ 
+\code|val input = scala.io.StdIn.readLine("> ") | \Comment{Reads keystrokes in terminal after printing prompt >} \\[0.5em]
 
-\vspace{0.25em}\Comment{\textbf{Write} string to \textbf{file} after} import java.nio.file.\{Path, Paths, Files\}; import java.nio.charset.StandardCharsets.UTF\_8 \\[0.2em]
+\vspace{0.25em}\Comment{\textbf{Write} string to \textbf{file} using java.nio:}\\[0.5em]
+\code|import java.nio.file.{Path, Paths, Files}|
+\code|import java.nio.charset.StandardCharsets.UTF_8| \\[0.2em]
 
-\Comment{Other common character encoding:} java.nio.charset.StandardCharsets.ISO\_8859\_1 \\\vspace{-0.5em}
 \begin{Code}
 def save(fileName: String, data: String): Path =
   Files.write(Paths.get(fileName), data.getBytes(UTF_8))
 \end{Code}
-}
+\Comment{Other common character encoding:} \code|java.nio.charset.StandardCharsets.ISO_8859_1| \\[0.5em]
 
+Alternative to scala.io, java.nio: use \textbf{Scala toolkit} os.write os.read etc, see page 12.
+}
 
 \clearpage
 
@@ -1302,21 +1316,10 @@ def save(fileName: String, data: String): Path =
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \renewcommand{\arraystretch}{1.0}
-%\setcounter{page}{1}
-%\renewcommand{\LangColor}{blue}
-%\LangMarker{JVM}{3.5cm}{12}
 
-\small
-
-\head{Specific platforms: JVM, ScalaJS, Scala Native}
-\vspace{1em}
-
-\code|scala-cli compile hello.scala --jvm 21| \hfill\Comment{Compile to specific JVM version, here Java JDK 21 LTS} \\[0.5em]
-\code|scala-cli compile hello-js.scala --js| \hfill\Comment{Compile to javascript, include in HTML or run via nodejs} \\[0.5em]
-\code|scala-cli compile hello-native.scala --native| \hfill\Comment{Compile to a binary using LLVM and gcc} \\[0.5em]
 
 \Newline\vspace*{-0.5em}\head{scala.jdk.CollectionConverters}\Newline\vspace*{-0.2em}
-
+{\small
 Enable \code{.asJava} and \code{.asScala} with \code{ import scala.jdk.CollectionConverters.* }
 \vspace*{0.5em}
 
@@ -1329,38 +1332,9 @@ Enable \code{.asJava} and \code{.asScala} with \code{ import scala.jdk.Collectio
 \texttt{mutable.Set} &            $\longleftrightarrow$  & \texttt{java.util.Set} \\
 \texttt{mutable.Map} &            $\longleftrightarrow$  & \texttt{java.util.Map} \\
 \texttt{mutable.ConcurrentMap} &  $\longleftrightarrow$  & \texttt{java.util.concurrent.ConcurrentMap} \\\end{tabular}
+}
 
-
-\Newline\vspace*{-0.5em}\head{java.lang.Object, scala.AnyRef}\Newline%\vspace*{-0.2em}
-%java.lang.\{Boolean, Byte, Character, Double, Float, Integer, Long, Short\
-
-The class \texttt{java.lang.Object} corresponds to the Scala class \texttt{scala.AnyRef} including the following methods:\\[0.5em]
-\code|def equals(other: Object): Boolean| \hfill\Comment{Type-unsafe equality test. Can be overridden.}\\
-\code|def hashCode: Int| \hfill\Comment{An integer that is equal to every other instance's hashCode if \code{equals(other)} is true.}\\
-\code|def toString: String| \hfill\Comment{A readable String representation.}\\[0.5em]
-The JVM makes a difference between primitive types and reference types. Primitive types in Java are auto-boxed by implicit conversion using e.g. \jcode{Integer.valueOf(42)} but that is transparent in Scala.
-
-\vspace{1em}TODO Recepie for equals and hashcode\\
-TODO Recepie for equals and hashcode 
-
-
-
-\vspace{1em}\head{java.lang.\{System, Thread\}}
-
-
-\begin{etab}
-System            & void System.exit(int status);   &  avsluta exekveringen, status != 0 om fel \\
-                  & void System.currentTimeMillis   &   \\
-\end{etab}
-
-TODO Primitive main
-
-
-\head{java.nio.file.\{Path, Paths, Files\}}
-
-\vspace{2em}TODO 
-
-\head{java.util.Scanner}
+\Newline\head{java.util.Scanner}
 
 \begin{etab}
 
@@ -1373,8 +1347,7 @@ Scanner           & Scanner(File f);                &  läser från filen f, oft
                   & String nextLine();              &  läser resten av raden
 \end{etab}
 
-\vspace{1em}TODO 
-\vspace{1em}TODO 
+\vspace{1em}TODO \\~\\
 
 
 
@@ -1400,25 +1373,56 @@ Scanner           & Scanner(File f);                &  läser från filen f, oft
 
 %\LangTitle{Platform: ScalaJS (Javascript, DOM, npm)}
 
+
+\vfill 
+
+\Newline\vspace*{-0.5em}\head{Reserved words in Scala}\Newline
+%% TODO: differentiate by color or something to show hard and soft keywords
+{\small These words and symbols have special meaning. Can be used as identifiers if put within \verb|`|backticks\verb|`|.}
+\vspace*{-0.5em}
+\begin{Code}[morekeywords={macro,\_},otherkeywords={>,<-,\%,<,>:,@,:,=,\#},basicstyle=\ttfamily\fontsize{8}{9}\selectfont]
+abstract as case catch class def derives do else end enum export extends extension false 
+final finally for forSome given if implicit import infix inline lazy macro match new null 
+object opaque open override package private protected return sealed super then this throw 
+trait transparent true try type using val var while with yield
+ _   :   =   =>   <-   <:   <%   >:   #   @
+\end{Code}
+
+
+
 \clearpage
 
-\vspace{-0.1em}\head{Using the Scala toolkit: os, munit, ujson, upickle}\Newline
+
+\Newline\vspace*{-2.5em}\head{Using dependencies \hfill from Maven central, github}\Newline\vspace*{-0.2em}
+{\small
+TODO\\~\\~
+}
+
+
+
+
+\vspace{-0.0em}\head{Using the Scala toolkit \hfill os, munit, ujson, upickle}\Newline
 {\small
 
 \code{scala-cli run hi.scala --toolkit default} \hfill\Comment{Use stable vers. of Scala toolkit, an extended std libary. }
 \code{//> using toolkit default }  Directive in source. \hfill\code{//> using toolkit latest } for unstable vers. \\[0.5em]
 
+\textbf{Manage files and os processes with \texttt{os-lib}}\\
 \code|os.pwd   os.root   os.home| \hfill\Comment{Absolute path of type \texttt{os.Path} to working directory, root, and home dir.}\\
 \code|os.root/"tmp"      os.pwd/"src"| \hfill\Comment{Absolute paths to /tmp dir and src in working dir.}\\
 \code|val wd = os.pwd/"myDir";  val p = wd/"myFile.txt" | \hfill\Comment{Absolute paths to dir and file.}\\
 \code|p.ext  p.segments  p.last| \hfill\Comment{Methods on os.Path, returns \code{"txt"}, iterator, last segment.}\\
 \code|os.remove.all(wd)  os.makeDir(wd)| \hfill\Comment{Remove all files in wd if exists. Create wd if not exists.}\\
-\code|os.write(wd/"f.txt", "hi")   os.read(wd/"f.txt")| \hfill\Comment{Write text to f.txt. Read f.txt as String.}\\
-\code|os.copy(wd/"f.txt", wd/"cpy.txt")    os.list(wd)| \hfill\Comment{Copy f.txt to cpy.txt. List files in wd as Seq.}\\[0.5em]
+\code|os.write(os.pwd/"f.txt", "hi")   os.read(os.pwd/"f.txt")| \hfill\Comment{Write text to f.txt. Read as String.}\\
+\code|os.exists(os.pwd/"f.txt")    os.list(os.pwd)| \hfill\Comment{true if exists. List files as Seq.}
+\code|os.copy(os.pwd/"f.txt", os.pwd/"cpy.txt", replaceExisting = false)| \hfill\Comment{conditional copy}\\
+\code|os.move(os.pwd/"f.txt", os.pwd/"f2.txt", replaceExisting = false)| \hfill\Comment{conditional move}\\[0.5em]
+
 Call OS process in host shell in wd and get output as String. Result is \code|"hihi"| after above examples are evaluated:
 \code|os.proc("cat", wd/"f.txt", wd/"cpy.txt").call(cwd = wd).out.text()| \\[0.5em]
 
-\textbf{Write tests} in file \texttt{MyTests.test.scala} in a class extending \texttt{munit.FunSuite} as follows:\\
+\textbf{Write and run tests with \texttt{munit}}\hfill \Comment{compatible with junit, scala-cli, sbt, metals, vscode etc}\\
+In file \texttt{MyTests.test.scala} in a class extending \texttt{munit.FunSuite} as follows:\\
 Run with: \code{scala-cli test MyTests.test.scala --toolikt deafult}\\[-0.25em]
 
 \begin{Code}
@@ -1428,7 +1432,7 @@ class MyTests extends munit.FunSuite:
     assert(sum == 4)
 \end{Code}
 
-\vspace*{-0.1em}\textbf{Parse and serialize JSON} and access named values:\\
+\vspace*{-0.1em}\textbf{Parse and serialize JSON with ujson and upickle}\\
 \vspace*{-0.5em}\begin{Code}
 val jsonString = """{"name": "Anna", "age": 42, "pets": ["Cat", "Dog"]}"""
 val json: ujson.Value  = ujson.read(jsonString)
@@ -1448,24 +1452,20 @@ val po2: PetOwner = read[PetOwner](jsPo)
 }
 
 
-
-
-
-%\LangTitle{\color{gray}{Platform: Scala Native (LLVM, gcc)}}
+\head{Compiling for specific platforms: JVM, ScalaJS, Scala Native}
+{\small
 \vspace{1em}
 
+\code|scala-cli compile hello.scala --jvm 21| \hfill\Comment{Compile to specific JVM version, here Java JDK 21 LTS} \\[0.5em]
+\code|scala-cli compile hello-js.scala --js| \hfill\Comment{Compile to javascript, include in HTML or run via nodejs} \\[0.5em]
+\code|scala-cli compile hello-native.scala --native| \hfill\Comment{Compile to a binary using LLVM and gcc} \\[0.5em]
 
-\Newline\vspace*{-0.5em}\head{Reserved words in Scala}\Newline
-%% TODO: differentiate by color or something to show hard and soft keywords
-{\small These words and symbols have special meaning. Can be used as identifiers if put within \verb|`|backticks\verb|`|.}
-\vspace*{-0.5em}
-\begin{Code}[morekeywords={macro,\_},otherkeywords={>,<-,\%,<,>:,@,:,=,\#},basicstyle=\ttfamily\fontsize{8}{9}\selectfont]
-abstract as case catch class def derives do else end enum export extends extension false 
-final finally for forSome given if implicit import infix inline lazy macro match new null 
-object opaque open override package private protected return sealed super then this throw 
-trait transparent true try type using val var while with yield
- _   :   =   =>   <-   <:   <%   >:   #   @
-\end{Code}
+}
+
+
+
+
+
 
 
 \end{document}
