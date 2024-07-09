@@ -238,45 +238,32 @@
 %{\small Pull requests welcome! Contact: bjorn.regnell at cs.lth.se}
 \par}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\vspace{0.6em}
+\vspace{1.6em}
 \head{Compile and run @main program} \vspace{0.8em}
 \hspace{0.32em}\begin{minipage}{0.56\linewidth}%
 %Example source file \code{hi.scala} with top-level definitions: 
-\vspace{-0.75em}
+\small
+In file \texttt{hi.scala}
 \begin{Code}
 //> using scala 3.4.2
-//> using toolkit default
-//> using dep se.lth.cs::introprog:1.4.0
+@main def hi(n: Int) = println("hi " * n)
 \end{Code}%
-\vspace*{-0.9em}
-\begin{Code}
-package x.y.z
-import introprog.Dialog.{file as selectFile}
-
-def greet(nbr: Int, names: Seq[String]) =
-  names.mkString(greeting * nbr, ", ", "\n")
-
-@main def RunGreet(n: Int, xs: String*) =
-  val dir = os.pwd.toString
-  val f = selectFile(startDir = dir)
-  if f.nonEmpty && !os.exists(os.Path(f)) 
-  then os.write(os.Path(f), greet(n, xs))
-  else println("ERROR: greeting aborted")
-\end{Code}%
-\end{minipage}%
-\hfill\begin{minipage}{0.40\linewidth}
-\raggedright{\small\vspace{0.2em}
-A compilation unit, e.g. \code{hi.scala}, can have top-level definitions such as val, var, def, import, class and object, which may be preceded by a package clause, e.g.: \code|package x.y.z | creates a name space and places the compiled bytecode in dir \code{.scala-build} under  \code{x/y/z/}\\[0.5em]
-
-\textbf{Compile and run single file:}
-\verb|scala-cli run hi.scala|\\[0.2em]
+\textbf{Compile and run single file:}\\
+\verb|scala-cli run hi.scala -- 42|\\
+Main program arguments after \code{--}\\[0.2em]
 \textbf{Compile all scala \& java files in current dir:}\\
 \verb|scala-cli compile . -w|\\
 where \code{-w} or \code{--watch} recompile on change\\
 the dot \code{.} gives access to code in current dir.
 \\[0.2em]
+
+\end{minipage}%
+\hfill\begin{minipage}{0.40\linewidth}
+\raggedright{\small\vspace{0.2em}
+A compilation unit, e.g. \code{hi.scala}, can have top-level definitions such as \code{val}, \code{var}, \code{def}, \code{import}, \code{class} \code{object}, \code{trait}, which may be preceded by a package clause, e.g.: \code|package x.y.z | creates a name space and places the compiled bytecode in dir \code{.scala-build} under  \code{x/y/z/}\\[0.5em]
+
 \textbf{Run all scala \& java files in current dir:}\\
-\verb|scala-cli run . -- 42 Sara Jim|\\Main program arguments after \code{--} 
+\verb|scala-cli run . -- 42|\\Main program arguments after \code{--} 
 \\[0.2em]
 \textbf{Start REPL:} ~\verb|scala-cli repl .|\\[0.2em]
 \hfill
@@ -332,7 +319,8 @@ Function
 
 \begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
 Object
-& \code|object Name { defsAndDecl } | \Comment{Singleton object auto-allocated when referenced the first time.}
+& \code|object Name:  | \Comment{\hspace{3.0em}A singleton object is automatically allocated when referenced the first time.}\\
+& \code|  def member = "hi" | \Comment{Object basicstyleody can contain definitions of members such as \code|def|, \code|val|, etc.}
 \end{tabular}
 
 \begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
@@ -1316,7 +1304,7 @@ Alternative to scala.io, java.nio: use \textbf{Scala toolkit} os.write os.read e
 \renewcommand{\arraystretch}{1.0}
 
 
-\Newline\vspace*{-0.5em}\head{scala.jdk.CollectionConverters}\Newline\vspace*{-0.2em}
+\Newline\vspace*{-1.5em}\head{scala.jdk.CollectionConverters}\Newline\vspace*{-0.2em}
 {\small
 Enable \code{.asJava} and \code{.asScala} with \code{ import scala.jdk.CollectionConverters.* }
 \vspace*{0.5em}
@@ -1359,7 +1347,31 @@ A \textbf{Scanner} reads tokens separated by whitespace from a String or File. \
 
 
 
+\Newline\vspace*{0.0em}\head{Create a single page web app using ScalaJS}\Newline
+{\small
+In file \texttt{hello-js.scala} 
+\begin{Code}
+//> using scala 3.4.2
+//> using platform scala-js
+//> using dep org.scala-js::scalajs-dom::2.8.0
 
+import org.scalajs.dom
+
+@main def hello: Unit = 
+  val p = dom.document.createElement("p")  // create a paragraph node
+  p.textContent = "Hello ScalaJS!"
+  dom.document.addEventListener("DOMContentLoaded", 
+    (e: dom.Event) => dom.document.body.appendChild(p))
+\end{Code}
+Compile and package javascript to hello.js:\\ \texttt{scala-cli package hello-js.scala}\\[0.5em]
+In file \texttt{page.html}
+\begin{Code}
+<!DOCTYPE html>
+<head><script src="hello.js"></script></head>
+</html>
+\end{Code}
+Open file \code{page.html} in browser e.g. Firefox.
+}
 
 % \head{java.io.File, FileNotFoundException, PrintWriter}
 % \begin{etab}
@@ -1385,7 +1397,7 @@ A \textbf{Scanner} reads tokens separated by whitespace from a String or File. \
 
 %\vfill 
 
-\Newline\vspace*{1.5em}\head{Reserved words in Scala}\Newline
+\Newline\vspace*{1.0em}\head{Reserved words in Scala}\Newline
 %% TODO: differentiate by color or something to show hard and soft keywords
 {\small These words and symbols have special meaning. Can be used as identifiers if put within \verb|`|backticks\verb|`|.}
 \vspace*{-0.5em}
