@@ -253,8 +253,6 @@
 package x.y.z
 import introprog.Dialog.{file as selectFile}
 
-val greeting = "Hej "
-
 def greet(nbr: Int, names: Seq[String]) =
   names.mkString(greeting * nbr, ", ", "\n")
 
@@ -566,7 +564,7 @@ Supertype reference & \code|super.m|  &  \Comment{refers to member m of supertyp
 & \Comment{\textbf{sequence extractor patterns} matches head and tail, also x +: y +: z +: xs etc.} \\
 
 \code+  case p1 | ... | pN => expr +
-& \Comment{matches if at least one \textbf{pattern alternative} p1, p2 ... or pN  matches} \\
+& \Comment{\textbf{alternative pattern}, match if at least one pattern p1, ..., pN  match} \\
 
 \code|  case x@pattern => expr |
 & \Comment{a \textbf{pattern binder} with the @ sign binds a variable to (part of) a pattern} \\
@@ -1347,7 +1345,18 @@ Scanner           & Scanner(File f);                &  läser från filen f, oft
                   & String nextLine();              &  läser resten av raden
 \end{etab}
 
-\vspace{1em}TODO \\~\\
+
+
+\Newline \head{Compiling for specific platforms: JVM, ScalaJS, Scala Native}
+{\small
+\vspace{1em}
+
+\code|scala-cli compile hello.scala --jvm 21| \hfill\Comment{Compile to specific JVM version, here Java JDK 21 LTS} \\[0.5em]
+\code|scala-cli compile hello-js.scala --js| \hfill\Comment{Compile to javascript, include in HTML or run via nodejs} \\[0.5em]
+\code|scala-cli compile hello-native.scala --native| \hfill\Comment{Compile to a binary using LLVM and gcc} \\[0.5em]
+
+}
+
 
 
 
@@ -1393,15 +1402,8 @@ trait transparent true try type using val var while with yield
 \clearpage
 
 
-\Newline\vspace*{-2.5em}\head{Using dependencies \hfill from Maven central, github}\Newline\vspace*{-0.2em}
-{\small
-TODO\\~\\~
-}
 
-
-
-
-\vspace{-0.0em}\head{Using the Scala toolkit \hfill os, munit, ujson, upickle}\Newline
+\vspace{1.0em}\head{Using the Scala toolkit \hfill os, munit, ujson, upickle}\Newline
 {\small
 
 \code{scala-cli run hi.scala --toolkit default} \hfill\Comment{Use stable vers. of Scala toolkit, an extended std libary. }
@@ -1411,15 +1413,17 @@ TODO\\~\\~
 \code|os.pwd   os.root   os.home| \hfill\Comment{Absolute path of type \texttt{os.Path} to working directory, root, and home dir.}\\
 \code|os.root/"tmp"      os.pwd/"src"| \hfill\Comment{Absolute paths to /tmp dir and src in working dir.}\\
 \code|val wd = os.pwd/"myDir";  val p = wd/"myFile.txt" | \hfill\Comment{Absolute paths to dir and file.}\\
-\code|p.ext  p.segments  p.last| \hfill\Comment{Methods on os.Path, returns \code{"txt"}, iterator, last segment.}\\
-\code|os.remove.all(wd)  os.makeDir(wd)| \hfill\Comment{Remove all files in wd if exists. Create wd if not exists.}\\
+\code|p.ext  p.segments     p.last| \hfill\Comment{Methods on os.Path, returns \code{"txt"}, iterator, last segment.}\\
+\code|os.remove.all(wd)     os.makeDir(wd)| \hfill\Comment{Remove all files in wd if exists. Create wd if not exists.}\\
 \code|os.write(os.pwd/"f.txt", "hi")   os.read(os.pwd/"f.txt")| \hfill\Comment{Write text to f.txt. Read as String.}\\
-\code|os.exists(os.pwd/"f.txt")    os.list(os.pwd)| \hfill\Comment{true if exists. List files as Seq.}
+\code|os.exists(os.pwd/"f.txt")        os.list(os.pwd)| \hfill\Comment{true if exists. List files as Seq.}
+\code|os.write.append(os.pwd / "f.txt", "text to append")| \hfill\Comment{Append text at end of existing file.}\\
+\code|os.write.over(os.pwd / "f.txt", "replace contents")| \hfill\Comment{Overwrite text to existing file.}\\
 \code|os.copy(os.pwd/"f.txt", os.pwd/"cpy.txt", replaceExisting = false)| \hfill\Comment{conditional copy}\\
 \code|os.move(os.pwd/"f.txt", os.pwd/"f2.txt", replaceExisting = false)| \hfill\Comment{conditional move}\\[0.5em]
 
-Call OS process in host shell in wd and get output as String. Result is \code|"hihi"| after above examples are evaluated:
-\code|os.proc("cat", wd/"f.txt", wd/"cpy.txt").call(cwd = wd).out.text()| \\[0.5em]
+Call OS process in host shell in wd and get output as String: 
+\code|val output = os.proc("cat", wd/"f.txt", wd/"cpy.txt").call(cwd = wd).out.text()| \\[0.5em]
 
 \textbf{Write and run tests with \texttt{munit}}\hfill \Comment{compatible with junit, scala-cli, sbt, metals, vscode etc}\\
 In file \texttt{MyTests.test.scala} in a class extending \texttt{munit.FunSuite} as follows:\\
@@ -1432,12 +1436,12 @@ class MyTests extends munit.FunSuite:
     assert(sum == 4)
 \end{Code}
 
-\vspace*{-0.1em}\textbf{Parse and serialize JSON with ujson and upickle}\\
+\vspace*{-0.1em}\textbf{Read and write JSON with \texttt{ujson} and \texttt{upickle}}\\
 \vspace*{-0.5em}\begin{Code}
 val jsonString = """{"name": "Anna", "age": 42, "pets": ["Cat", "Dog"]}"""
 val json: ujson.Value  = ujson.read(jsonString)
-val s = json("name").str                  // "Anna"
-val so = json("name").strOpt              // Some("Anna")
+val name = json("name").str               // "Anna"
+val nameOpt = json("name").strOpt         // Some("Anna")
 val pets = json("pets").arr               // ArrayBuffer("Cat", "Dog")
 val petsOpt = json("pets").arrOpt         // Some(ArrayBuffer("Cat", "Dog"))
 val m: Map[String, Int] =  Map("Dog" -> 3, "Cat" -> 5)
@@ -1452,19 +1456,16 @@ val po2: PetOwner = read[PetOwner](jsPo)
 }
 
 
-\head{Compiling for specific platforms: JVM, ScalaJS, Scala Native}
+\Newline\head{Using dependencies \hfill from Maven central, github}\Newline\vspace*{-0.2em}
 {\small
-\vspace{1em}
-
-\code|scala-cli compile hello.scala --jvm 21| \hfill\Comment{Compile to specific JVM version, here Java JDK 21 LTS} \\[0.5em]
-\code|scala-cli compile hello-js.scala --js| \hfill\Comment{Compile to javascript, include in HTML or run via nodejs} \\[0.5em]
-\code|scala-cli compile hello-native.scala --native| \hfill\Comment{Compile to a binary using LLVM and gcc} \\[0.5em]
+Using library dependency from Maven central, here \code{introprog} for simple graphics, as using-directive in source:\\
+\code|//> using dep "se.lth.cs::introprog:1.4.0"| \hfill\Comment{Note: double colon adds Scala version to jar. }\\
+Or as argument in terminal:
+\code|scala-cli repl --dep "se.lth.cs::introprog:1.4.0"|\\[0.5em]
+Using library dependency from Github, one line per dependency, note single colon:\\
+\Comment{\texttt{//> using dep "termut:termut:0.1.0,url=https://github.com/bjornregnell/termut/}\\\code{releases/download/v0.1.0/termut_3-assembly-0.1.0.jar"}}
 
 }
-
-
-
-
 
 
 
