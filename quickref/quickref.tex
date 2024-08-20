@@ -266,7 +266,8 @@ A compilation unit, e.g. \code{hi.scala}, can have top-level definitions such as
 \textbf{Run all scala \& java files in current dir:}\\
 \verb|scala run . -- 42|\\Main program arguments after \code{--} 
 \\[0.2em]
-\textbf{Start REPL:} ~\verb|scala repl .|\\[0.2em]
+\textbf{Start REPL:} ~\verb|scala repl .|\\[0.25em]
+Before Scala 3.5 use: ~\verb|scala-cli repl .|\\[0.2em]
 \hfill
 
 %\begin{tabular}{@{}r @{\hspace{0.5em}}l} \\[-0.5em]
@@ -326,20 +327,22 @@ Object
 
 \begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
 Class
-& \code|class C(parameters) { defsAndDecl }| & \hspace{-3.2em}\Comment{A template for objects to be allocated with \textbf{new} or apply.} \\
-& \code|case class C(parameters) { defsAndDecl }| & \Comment{Case class parameters become val members,} \\
+& \code|class C(val x: Int): | & \hspace{-0.7em}\Comment{A template for objects to be allocated with \textbf{new} or apply.} \\
+& \code|  def myMethod = ??? | & \hspace{-0.7em}\Comment{Members indented after colon, or use curly braces instead of colon.} \\[0.25em]
+& \code|case class C(x: Int)| & \hspace{-0.7em}\Comment{Case class parameters become val members,} \\
 & \multicolumn{2}{l}{\Comment{other case class goodies: equals, copy, hashcode, unapply, nice toString, companion object with apply factory.}}\\
 \end{tabular}
 
 \begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
 Trait
-& \code|trait T(parameters) { defsAndDecl }| & \hspace{-0.5em}\Comment{A trait is like an abstract class, but can be mixed in.}\\
-& \code|class C extends D, T| & \hspace{-6.5em}\Comment{A class can only \textbf{extend} one class but \textbf{mix in} many traits separated with \code{,}}\\
+& \code|trait T(val x: Int):| & \hspace{-0.0em}\Comment{A trait is like an abstract class, but can be mixed in.}\\
+& \code|  def myAbstractMethod: Int| & \hspace{-0.0em}\Comment{An abstract member declaration with no implementation.}\\[0.25em]
+Mixin & \code|class C extends D, T| & \hspace{-4.2em}\Comment{A class can only \textbf{extend} one class, but \textbf{mix in} many traits separated with comma}\\
 \end{tabular}
 
-\begin{tabular}{@{}p{\FirstColWidth} l l}\MoveUp
-Type
-& \code|type A = typeDef | & \Comment{Defines an alias A for the type in typeDef. Abstract if no typeDef.}
+\begin{tabular}{@{}l l l}\MoveUp
+Type Alias
+& \hspace{-0.8em}\code|type A = AnotherType | & \Comment{Defines an alias A for the type AnotherType. Abstract if no \code|= ...|}
 \end{tabular}
 
 \begin{tabular}{@{}p{\FirstColWidth} l @{}l}\MoveUp
@@ -1270,17 +1273,20 @@ def rnd(): Either[String, Int] = // normally returns Int but can report error
 
 \vspace{0.5em}\head{scala.io.\{Source, StdIn\} \hfill java.nio.file.\{Path, Paths, Files\} }\Newline
 {\small
-\Comment{\textbf{Read} string of lines from \textbf{file}, \code|fromFile| gives BufferedSource, \code|getLines| gives Iterator[String]}
+Alternative to scala.io, java.nio: use \textbf{Scala toolkit} os.write os.read etc, see page 12, which normally is preferred.
+
+
+\vspace{1em} \Comment{\textbf{Read} string of lines from \textbf{file}, \code|fromFile| gives BufferedSource, \code|getLines| gives Iterator[String]}
 \code|val source = scala.io.Source.fromFile("f.txt", "UTF-8")|  ~~~~\Comment{or \code|fromURL(adr, enc)|}
 \code|val lines = try source.getLines.mkString("\n") finally source.close|
 }
 
 
 {\small
-\vspace{0.25em}\Comment{\textbf{Read} string from \textbf{standard in} (prompt string is optional) using readLine; \textbf{write} to \textbf{standard out} using println:}
-\code|val input = scala.io.StdIn.readLine("> ") | \Comment{Reads keystrokes in terminal after printing prompt >} \\[0.5em]
+\vspace{1em}\Comment{\textbf{Read} string from \textbf{standard in} (prompt string is optional) using readLine; \textbf{write} to \textbf{standard out} using println:}
+\code|val input = scala.io.StdIn.readLine("> ") | \Comment{Reads keystrokes in terminal after printing prompt >} \\
 
-\vspace{0.25em}\Comment{\textbf{Write} string to \textbf{file} using java.nio:}\\[0.5em]
+\vspace{1em}\Comment{\textbf{Write} string to \textbf{file} using java.nio:}\\[0.5em]
 \code|import java.nio.file.{Path, Paths, Files}|
 \code|import java.nio.charset.StandardCharsets.UTF_8| \\[0.2em]
 
@@ -1290,7 +1296,7 @@ def save(fileName: String, data: String): Path =
 \end{Code}
 \Comment{Other common character encoding:} \code|java.nio.charset.StandardCharsets.ISO_8859_1| \\[0.5em]
 
-Alternative to scala.io, java.nio: use \textbf{Scala toolkit} os.write os.read etc, see page 12.
+
 }
 
 \clearpage
@@ -1350,7 +1356,7 @@ A \textbf{Scanner} reads tokens separated by whitespace from a String or File. \
 
 \Newline\vspace*{0.0em}\head{Create a single page web app using ScalaJS}\Newline
 {\small
-In file \texttt{hello-js.scala} 
+In file \texttt{hello-js.scala} \hfill\Comment{~ Note double colon before version when using dependencies for ScalaJS. }
 \begin{Code}
 //> using scala 3.4.2
 //> using platform scala-js
@@ -1398,7 +1404,7 @@ Open file \code{page.html} in browser e.g. Firefox.
 
 %\vfill 
 
-\Newline\vspace*{1.0em}\head{Reserved words in Scala}\Newline
+\vspace*{1.25em}\head{Reserved words in Scala}\Newline
 %% TODO: differentiate by color or something to show hard and soft keywords
 {\small These words and symbols have special meaning. Can be used as identifiers if put within \verb|`|backticks\verb|`|.}
 \vspace*{-0.5em}
@@ -1469,10 +1475,10 @@ val po2: PetOwner = read[PetOwner](jsPo)
 }
 
 
-\Newline\head{Using dependencies \hfill from Maven central, Github}\Newline\vspace*{-0.2em}
+\vspace*{0.5em}\head{Using dependencies \hfill from Maven central, Github}\Newline\vspace*{-0.2em}
 {\small
 Using library dependency from Maven central, here \code{introprog} for simple graphics, as using-directive in source:\\
-\code|//> using dep "se.lth.cs::introprog:1.4.0"| \hfill\Comment{Note: double colon adds Scala version to jar. }\\
+\code|//> using dep "se.lth.cs::introprog:1.4.0"| \hfill\Comment{Note: double colon adds Scala version to jar. }\\[0.5em]
 Or as argument in terminal:
 \code|scala repl --dep "se.lth.cs::introprog:1.4.0"|\\[0.5em]
 Using library dependency from Github, one line per dependency, note single colon:\\
