@@ -1,6 +1,6 @@
 I denna kurs använder vi programmeringsspråket **Scala** och olika programmeringsverktyg. Läs om hur du använder dessa programmeringsverktyg i **Appendix** i [kompendiet](https://cs.lth.se/pgk/compendium/). Verktygen finns förinstallerade på LTH:s [Linuxdatorer i E-huset](https://fileadmin.cs.lth.se/cs/Bilder/Salar/Datorsalar_E-huset.pdf). Instruktioner om hur du installerar dessa verktyg på din egen dator finns nedan.
 
-Tips om att köpa egen dator finns längre ned under rubriken "Hårdvara".
+Tips om du ska köpa egen dator finns längre ned under rubriken "Hårdvara".
 
 ## Programmera på LTH:s datorer
 
