@@ -52,11 +52,11 @@ Här finns listor med olika kommando som finns i gamla cmd: [https://ss64.com/nt
   ```
   javac --version
   ```
-  Om utskriften säger att `javac` saknas eller anger en annan version än version 17 eller 11, installera då OpenJDK enl. nedan. 
+  Om utskriften säger att `javac` saknas eller anger en annan version än version 21, installera då OpenJDK enl. nedan. 
 
 * Installera OpenJDK för ditt system härifrån: [https://adoptium.net/](https://adoptium.net/)
  
-    1. Välj att ladda ner OpenJDK **version 17**  (LTS) HotSpot **för ditt operativsystem**. 
+    1. Välj att ladda ner OpenJDK **version 21**  (LTS) HotSpot **för ditt operativsystem**. 
     2. Dubbelklicka på filen som laddas ned för att starta installationen. Om du får en varning ska du köra ändå genom att klicka på "Mer information" eller liknande. Under installationen välj alla dessa åtgärder: Update PATH, Associate .jar, Set JAVA_HOME, JavaSoft registry key. 
     3. Starta om din dator.
     4. Starta terminalfönster och kontrollera att `javac --version` ger rätt version. Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
@@ -87,11 +87,11 @@ Här finns listor med olika kommando som finns i gamla cmd: [https://ss64.com/nt
   ```
   javac --version
   ```
-  Om utskriften säger att `javac` saknas eller anger en annan version än version 17 eller 11, installera då OpenJDK enl. nedan. 
+  Om utskriften säger att `javac` saknas eller anger en annan version än version 21, installera då OpenJDK enl. nedan. 
 
 * Installera OpenJDK för ditt system härifrån: [https://adoptium.net/](https://adoptium.net/)
  
-    1. Välj att ladda ner OpenJDK **version 17**  (LTS) HotSpot **för ditt operativsystem**. 
+    1. Välj att ladda ner OpenJDK **version 21**  (LTS) HotSpot **för ditt operativsystem**. 
     2. Dubbelklicka på filen som laddas ned för att starta installationen. Om du får en varning ska du köra ändå genom att klicka på "Mer information" eller liknande. Under installationen välj alla dessa åtgärder: Update PATH, Associate .jar, Set JAVA_HOME, JavaSoft registry key. 
     3. Starta om din dator.
     4. Starta terminalfönster och kontrollera att `javac --version` ger rätt version. Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
@@ -127,12 +127,12 @@ Här finns listor med olika kommando som finns i gamla cmd: [https://ss64.com/nt
   ```
   javac --version
   ```
-  Om utskriften säger att `javac` saknas eller anger en annan version än version 17 eller 11, installera då OpenJDK enl. nedan. 
+  Om utskriften säger att `javac` saknas eller anger en annan version än version 21, installera då OpenJDK enl. nedan. 
 
-* Öppna terminalfönster och installera med:
+* Om du inte redan har OpenJDK version 21 och du inte hellre använder SDKMAN (se nedan), så öppna terminalfönster och installera med:
 ```
 sudo apt update && sudo apt full-upgrade -y
-sudo apt install openjdk-17-jdk openjdk-17-doc openjdk-17-source
+sudo apt install openjdk-21-jdk openjdk-21-doc openjdk-21-source
 ```
 
 #### Installera Scala med tillhörande verktyg i Linux/Ubuntu/WSL
@@ -141,9 +141,9 @@ sudo apt install openjdk-17-jdk openjdk-17-doc openjdk-17-source
 * Testa om nedladdningsprogrammet `curl` finns på ditt system genom att skriva `curl --version` i terminalen. Om `curl` saknas så installera detta i terminalen genom att skriva: `sudo apt install curl`
 * Installera Scala-verktygen med detta långa terminalkommando på en och samma rad som slutar med `./cs setup`:
 ```
-curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
+curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
 ```
-* Svara ja med stort Y på eventuell fråga om att addera coursier till din path. 
+* Svara med stort Y för ja på eventuell fråga om att addera coursier till din path. 
 * Starta om din dator.
 * Testa att skriva `scala --version` och `scala-cli --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
 * Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "EDITOR"
@@ -155,7 +155,7 @@ curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz 
 [https://sdkman.io/](https://sdkman.io/) är ett populärt installationsverktyg för att enkelt installera och hantera olika versioner av allehanda programmeringsverktyg för Ubuntu/Linux/WSL/MacOS. För dig som hellre vill använda SDKMAN i stället så går det utmärkt att installera Scala-verktugen ovan med hjälp av nedan kommando ett i taget i tur och ornding (om du har [installerat SDKMAN](https://sdkman.io/install)) och svara med stort Y på eventuella frågor om att göra nya versionen default:
 ```
 sdk update
-sdk install java 17.0.8-tem
+sdk install java 21.0.4-tem
 sdk install scala
 sdk install scalacli
 sdk install sbt
@@ -187,7 +187,7 @@ Läs mer om vad du kan göra med en VS Code och andra verktyg i appendix i [komp
 
 Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera. 
 
-Det finns 2 olika sätt att köra Kojo:
+Det finns olika sätt att köra Kojo:
 
 1. Använd kodbiblioteket **kojolib** (rekommenderas), som fungerar fint med nya Scala 3. Ladda ner filen [https://fileadmin.cs.lth.se/kojolib.scala](https://fileadmin.cs.lth.se/kojolib.scala) och kör enl. instruktioner i kompendiet, t.ex. med `scala-cli repl .` 
 
@@ -206,11 +206,13 @@ När du studerar hemma behöver du en bra arbetsplats och en dator med Linux (t.
 
 ### Köpa egen dator
 
-När du ska programmera är det bra med en dator med minst 8GB RAM och 2.5GHz CPU. Du kan t.ex. köpa dator här: [Compliq i Lund](https://www.compliq.se/bygga-dator/), [Webbhallen i Malmö](https://www.webhallen.com/se/store/30-Malmo-City), [Inet i Malmö](https://www.inet.se/info/243/inet-malmo)
+När du ska programmera är det bra med en dator med minst 8GB RAM och minst 1.5GHz CPU.  
 
-Både [Lenovo](https://www.lenovo.com/se/sv/studentrabatt/) och [Dell](https://www.dell.com/sv-se/shop/dell-advantage/cp/students) har studentrabatt och säljer både stationära och bärbara datorer.
+Begagnade Lenovo är prisvärda och de brukar vara kontrollerade innan försäljning med garanti från sajter som specialiserar sig på begagnat, tex https://shop.inrego.se/ Ett prisvärt val är en Thinkpad T480 16GB RAM och 480GB SSD som kostar ca 5000.
 
-Om du letar efter en bra stationär dator rekommenderas senaste modellen av [Siago](https://www.atlastsolutions.com/sigao/) som är fläktlös och därmed helt tyst. Sigao kan fås med Ubuntu eller Windows förinstallerat.
+Både [Lenovo](https://www.lenovo.com/se/sv/studentrabatt/) och [Dell](https://www.dell.com/sv-se/shop/dell-advantage/cp/students) har studentrabatt och säljer både stationära och bärbara datorer. Lokala datorbutiker finns här: [Inet i Malmö](https://www.inet.se/), [Webhallen i Malmö](https://www.webhallen.com/), [Compliq i Lund](https://www.compliq.se/bygga-dator)
+
+Om du letar efter en bra stationär dator som är fläktlös och särför helt tyst rekommenderas [AtLast Solutions](https://www.atlastsolutions.com/) som även erbjuder Ubuntu förinstallerat utan kostnad.
 
 ### Headset-adapter
 
