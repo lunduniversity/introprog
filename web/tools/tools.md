@@ -8,9 +8,9 @@ På LTH:s [Linuxdatorer i E-huset](https://fileadmin.cs.lth.se/cs/Bilder/Salar/D
 
 * Rekommenderad kodeditor: VS Code startas med kommandot `code .` (Tillägget `Scala Metals` är förinstallerat.)  
 * Scala REPL: `scala` eller `scala-cli repl .`
-* Utvecklingsmiljön Kojo: `kojo`
-* Scala-kompilatorn: `scalac` eller `scala-cli compile .`
-* Byggverktyget Scala BUild Tool: `sbt`
+* Scala-kompilatorn: `scalac`, `scala compile` eller `scala-cli compile .`
+* Nybörjarvänliga utvecklingsmiljön Kojo: `kojo`
+* Byggverktyget Scala Build Tool: `sbt`
 * Java-kompilatorn: `javac`
 * Exekveringsmijlön JVM med tillhörande utvecklingsbibliotek (OpenJDK): `java`
 * Utvecklingsmiljön IntelliJ IDEA med Scala-plugin: `idea`
