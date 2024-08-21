@@ -1,5 +1,7 @@
 I denna kurs använder vi programmeringsspråket **Scala** och olika programmeringsverktyg. Läs om hur du använder dessa programmeringsverktyg i **Appendix** i [kompendiet](https://cs.lth.se/pgk/compendium/). Verktygen finns förinstallerade på LTH:s [Linuxdatorer i E-huset](https://fileadmin.cs.lth.se/cs/Bilder/Salar/Datorsalar_E-huset.pdf). Instruktioner om hur du installerar dessa verktyg på din egen dator finns nedan.
 
+Tips om att köpa egen dator finns längre ned under rubriken "Hårdvara".
+
 ## Programmera på LTH:s datorer
 
 På LTH:s [Linuxdatorer i E-huset](https://fileadmin.cs.lth.se/cs/Bilder/Salar/Datorsalar_E-huset.pdf) finns alla dessa verktyg förinstallerade:
@@ -208,11 +210,11 @@ När du studerar hemma behöver du en bra arbetsplats och en dator med Linux (t.
 
 När du ska programmera är det bra med en dator med minst 8GB RAM och minst 1.5GHz CPU.  
 
-Begagnade Lenovo är prisvärda och de brukar vara kontrollerade innan försäljning med garanti från sajter som specialiserar sig på begagnat, tex https://shop.inrego.se/ Ett prisvärt val är en Thinkpad T480 16GB RAM och 480GB SSD som kostar ca 5000.
+Begagnade Lenovo är prisvärda och de brukar vara kontrollerade innan försäljning med garanti från sajter som specialiserar sig på begagnat, tex [Inrego](https://shop.inrego.se/) Ett prisvärt val är en [Thinkpad T480](https://shop.inrego.se/Shop/Product/List?q=t480) som kostar ca 3500kr - vill du lägga lite mer så uppgradera till 16GB RAM (+750kr) och SSD 480GB (+1000 kr).
 
 Både [Lenovo](https://www.lenovo.com/se/sv/studentrabatt/) och [Dell](https://www.dell.com/sv-se/shop/dell-advantage/cp/students) har studentrabatt och säljer både stationära och bärbara datorer. Lokala datorbutiker finns här: [Inet i Malmö](https://www.inet.se/), [Webhallen i Malmö](https://www.webhallen.com/), [Compliq i Lund](https://www.compliq.se/bygga-dator)
 
-Om du letar efter en bra stationär dator som är fläktlös och särför helt tyst rekommenderas [AtLast Solutions](https://www.atlastsolutions.com/) som även erbjuder Ubuntu förinstallerat utan kostnad.
+Om du letar efter en bra stationär dator som är fläktlös och därför *helt tyst* rekommenderas [AtLast Solutions](https://www.atlastsolutions.com/) som även erbjuder Ubuntu förinstallerat utan extra kostnad.
 
 ### Headset-adapter
 
