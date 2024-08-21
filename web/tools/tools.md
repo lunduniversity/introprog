@@ -18,8 +18,7 @@ Mer info [om skolans datorer här](https://www.lth.se/lthin/datorsalar/vaara-dat
 
 ## Programmera på din egen dator 
 
-Du behöver installera detta på din egen dator: OpenJDK, Scala och VS Code med tillägget Scala (Metals). Följ instruktionerna noga nedan **under rubriken för ditt operativsystem** om hur du installerar verktygen på din egen dator. Du kan läsa mer om hur du använder dessa verktyg i Appendix i [kompendiet]acOS eller Linux/Ubuntu/WSL".
-(https://cs.lth.se/pgk/compendium/). 
+Du behöver installera detta på din egen dator: **OpenJDK**, **Scala** och **VS Code** med tillägget Scala (Metals). Följ instruktionerna noga nedan **under rubriken för ditt operativsystem** om hur du installerar verktygen på din egen dator. Du kan läsa mer om hur du använder dessa verktyg i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/). 
 
 Många av de programmeringsverktyg vi använder körs via ett terminalfönster. Hur du får igång terminalen beskrivs nedan.
 
@@ -27,10 +26,8 @@ Scala med tillhörande verktyg installeras med hjälp av det officiella installa
 
 Om du kör MacOS eller Linux/Ubuntu/WSL så kan du gärna i stället använda den smidiga pakethanteraren SDKMAN, läs mer nedan under rubriken "SDKMAN" längre ned.
 
-Om redan har en **gammal installation** av Scala-verktyg så **avinstallera först** med nedan kommando och **starta om** din dator efter det, innan du sedan följer efterföljande instruktioner för ditt operativsystem:
-```
-cs uninstall --all
-``` 
+Om redan har en **gammal installation** av Scala-verktyg så **avinstallera först** med detta kommando: `cs uninstall --all` och **starta om** din dator efter det, innan du sedan följer efterföljande instruktioner för ditt operativsystem. 
+
 Om du kör en gammal version av SDKMAN rekommenderas att köra `sdk selfupdate force` och sedan starta om innan du installerar nya versioner enligt instruktioner under rubriken "SDKMAN" längre ned.
 
 ### WINDOWS
@@ -39,14 +36,15 @@ Om du kör en gammal version av SDKMAN rekommenderas att köra `sdk selfupdate f
 
 För terminal i Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started). Det räcker fint med Windows Terminal för att köra alla kursens verktyg i cmd eller powershell, men det finns också andra sätt att köra terminal i Windows som beskrivs i punktlistan nedan. 
 
-Här finns långa listor med olika kommando som finns i gamla cmd här [https://ss64.com/nt/](https://ss64.com/nt/) och i nyare powershell här [https://ss64.com/ps/](https://ss64.com/ps/).
-
 * Du kan också köra den befintliga men antika terminalen som inte kräver någon installation, följ instruktioner här [https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/](https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/) 
  
 * Om du har en uppdaterad version av Windows 10 eller 11 så kan du (efter lite meckande, ev. med lite hjälp av en van windowsanvändare) köra **WSL**, helst version 2, som ger dig tillgång till Linux/Ubuntu direkt under Windows i ett separat filsystem. För att installera WSL behöver du starta  **PowerShell** med admin-rättigheter så här: tryck på windows-knappen, skriv `powershell` och högerklicka och välj run as administrator. Följ vidare instruktioner här och välj att installera Ubuntu 22.04 (fråga ngn om hjälp om du kör fast):  [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10) När du installerat WSL följ instruktionerna under **Linux-rubrikerna** nedan för att installera kursens programmeringsverktyg under WSL/Ubuntu. Om du kör WSL2 kan då även få fönster att fungera om du följer dessa instruktioner: [https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps)  
 WSL kan krångla så om du inte får det att funka så installera alla kursens verkyg direkt under Windows så du kommer igång och be någon om hjälp vid senare tillfälle.
 
 * Det finns även andra sätt att installera Linux/Ubuntu, t.ex. med [VirtualBox](https://ubuntu.com/tutorials/how-to-run-ubuntu-desktop-on-a-virtual-machine-using-virtualbox#1-overview) (kräver snabb dator och rejät med RAM) eller [Dual Boot](https://medium.com/linuxforeveryone/how-to-install-ubuntu-20-04-and-dual-boot-alongside-windows-10-323a85271a73) (kräver att du har minst 25GB extra utrymme på disken, gärna mer, och att du krymper din Windows-partition och slår på legacy boot i BIOS), eller att du helt [ersätter Windows med Ubuntu](https://ubuntu.com/tutorials/install-ubuntu-desktop) (enklaste sättet och funkar fint även på äldre och klenare datorer). Fråga någon medstudent som vet hur det går till om råd och hjälp om du vill installera Ubuntu "på riktigt". 
+
+Här finns listor med olika kommando som finns i gamla cmd: [https://ss64.com/nt/](https://ss64.com/nt/) och motsvarande i nyare powershell finns här: [https://ss64.com/ps/](https://ss64.com/ps/).
+
 
 #### Installera OpenJDK i Windows
 
@@ -195,8 +193,7 @@ Det finns 2 olika sätt att köra Kojo:
 
 2. Kojo Desktop: en nybörjarvänlig utvecklingsmiljö med lättanvänd editor. Använder gamla Scala 2. Följ installationsinstruktioner för ditt system här: [http://www.kogics.net/kojo-download](http://www.kogics.net/kojo-download)
 
-[//]: # (såhär gör man tydligen kommentarer i markdown?)
-[//]: # (3. Kör Kojo i din webbläsare. Använder gamla Scala 2 och en begränsad uppsättning av de kommandon som finns i Kojo Desktop. Skriv och kör din kod direkt här: [http://kojo.lu.se/](http://kojo.lu.se/))
+3. Kör Kojo i din webbläsare. Använder gamla Scala 2 och en begränsad uppsättning av de kommandon som finns i Kojo Desktop. Skriv och kör din kod direkt här: [http://kojo.lu.se/](http://kojo.lu.se/)
 
 Kojo används på [Vattenhallen Science Center](https://www.vattenhallen.lu.se/upplevelser/programmering/). LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen här: [https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/](https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/)
 
