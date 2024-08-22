@@ -68,7 +68,7 @@ Här finns listor med olika kommando som finns i gamla cmd: [https://ss64.com/nt
 * Installera först OpenJDK enligt instruktioner ovan om du inte redan gjort det. 
 * Ladda ned filen [`cs-x86_64-pc-win32.zip`](https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-win32.zip) och spara den på valfritt ställe och dubbel-klicka på den när nedladdningen är klar. Följ instruktionerna och svara jakande. Om du får varningar så kör ändå genom att klicka "Mer information" eller liknande.
 * Starta om din dator.
-* Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
+* Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3". Om du får `[warning] MainGenericRunner` skriv `cs install scala:3.5.0` och sedan ska `scala --version` fungera utan varning.
 * Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "EDITOR"
 * Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
 
@@ -112,7 +112,7 @@ Här finns listor med olika kommando som finns i gamla cmd: [https://ss64.com/nt
     ```
 
 * Starta om din dator.
-* Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
+* Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3". Om du får `[warning] MainGenericRunner` skriv `cs install scala:3.5.0` och sedan ska `scala --version` fungera utan varning.
 * Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "EDITOR"
 * Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
 
@@ -147,7 +147,7 @@ curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64
 ```
 * Svara med stort Y för ja på eventuell fråga om att addera coursier till din path. 
 * Starta om din dator.
-* Testa att skriva `scala --version` och `scala-cli --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3".
+* Testa att skriva `scala --version` och `scala-cli --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3". Om du får `[warning] MainGenericRunner` skriv `cs install scala:3.5.0` och sedan ska `scala --version` fungera utan varning.
 * Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "EDITOR"
 * Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
 
