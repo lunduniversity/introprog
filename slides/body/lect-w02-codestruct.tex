@@ -440,25 +440,25 @@ Några viktiga skillnader:
   \begin{itemize}
     \item En editor: \Emph{VS Code} med tillägget \Alert{Scala (Metals)}
     \item Körmiljön \Emph{OpenJDK} 
-    \item Kommandoverktyg för terminalen: \Alert{\texttt{scala-cli}}
-    \item Se instruktioner här: \url{http://cs.lth.se/pgk/verktyg}
+    \item Kommandoverktyg i terminalen: \Alert{\texttt{scala}} eller \texttt{scala-cli}
+    \item Installera så här: \url{http://cs.lth.se/pgk/verktyg}
     \item Läs mer i Appendix C.
     \item Tips om du kör Windows: installera %\href{https://docs.microsoft.com/en-us/windows/terminal/get-started}
     {nya Windows Terminal}
 
   \end{itemize}
-    Be om hjälp i \texttt{\#frågor-och-svar}-textkanalen på vår Discord-server eller fråga handledare på resurstid.
+    Få hjälp i kanalerna \texttt{\#installationskrångel} och \texttt{\#frågor-och-svar} på vår Discord-server eller fråga handledare på resurstid.
   
 \end{Slide}
 
 \begin{Slide}{Scala Command Line Interface (CLI)}
 \begin{itemize}
 \item Utvecklingen av ett nytt kommandogränssnitt \Eng{Command Line Interface (CLI)} för Scala startades 2022 i ett öppenkällkodsprojekt som leds av Virtuslab. 
-\item Under 2023 ersätter \Alert{\texttt{scala-cli}} det gamla \Emph{\texttt{scala}}-kommandot.\footnote{I skrivande stund så har skiftet ännu inte skett. När det sker kan du ersätta alla förekomster av \code{scala-cli} med det kortare \code{scala}.}
+\item Under 2023 ersätter \Alert{\texttt{scala-cli}} det gamla \Emph{\texttt{scala}}-kommandot.%\footnote{I skrivande stund så har skiftet ännu inte skett. När det sker kan du ersätta alla förekomster av \code{scala-cli} med det kortare \code{scala}.}
 \item Läs mer i Appendix C och F, samt här: \url{https://scala-cli.virtuslab.org/}
-\item Du kan se vad Scala CLI kan göra via hjälp-optionen:
+\item Se vad Scala CLI kan göra med underkommandot \texttt{help}
 \begin{REPLnonum}
-> scala-cli help
+scala help
 \end{REPLnonum}
 \end{itemize}
 \end{Slide}
@@ -469,16 +469,13 @@ Spara nedan Scala-kod i filen \code{hej.scala}:
 @main def run = println("Hej Scala!")
 \end{Code}
 
-Spara i filen \code{hej.scala}, kompilera och kör i terminalen:
+Kompilera och kör i terminalen:
 \begin{REPL}
-> cat hej.scala
-@main def run = println("Hej Scala!")
-
-> scala-cli run hej.scala 
+> scala run hej.scala 
 Hej Scala! 
 \end{REPL}
 
-Innan körning kompileras dina kodfiler. Du kan se maskinkoden här: 
+Innan körning kompileras dina kodfiler automatiskt vid behov. Du kan se maskinkoden i en underkatalog i till katalogen \texttt{.scala-build}: 
 \begin{REPL}
 > ls .scala-build/*/classes/main
 'hej$package.class'  'hej$package$.class'  'hej$package.tasty'   run.class   run.tasty
@@ -523,7 +520,7 @@ object HelloScalaArgs:
 En primitiv \code{main}-metod har ej \code{@main} och måste vara i ett objekt. \\
 Kompilera och kör med programargument efter \code{--}
 \begin{REPL}
-> scala-cli run helloargs1.scala -- morot gurka tomat
+> scala run helloargs1.scala -- morot gurka tomat
 morot
 gurka
 tomat
@@ -543,10 +540,10 @@ Skriv och spara nedan kod i filen \texttt{helloargs2.scala}
 Med \code{@main} behövs inget objekt.\\
 Kompilera och kör med programargument efter \code{--}
 \begin{REPL}
-> scala-cli run helloargs2.scala -- 2 morot gurka tomat
+> scala run helloargs2.scala -- 2 morot gurka tomat
 morot
 gurka
-> scala-cli run helloargs2.scala -- aj morot gurka tomat
+> scala run helloargs2.scala -- aj morot gurka tomat
 Illegal command line: java.lang.NumberFormatException: For input string: "aj"
 \end{REPL}
 Med \code{@main} genereras automatiskt en primitiv main som kollar att argumenten har rätt typ.
@@ -569,7 +566,7 @@ println("Hej alla mina argument:")
 for a <- args do println(s"Hej: $a") 
 \end{Code}
 \begin{REPLnonum}
-> scala-cli run myscript.sc -- ett två tre
+> scala run myscript.sc -- ett två tre
 Hej alla mina argument:
 Hej: ett
 Hej: två
@@ -1035,13 +1032,13 @@ Man säger att det importerade namnet hamnar \Emph{\textit{in scope}}.
 \texttt{jar}-filer liknar \texttt{zip}-filer och används för att sammanföra många kompilerade kodfiler i \Emph{en komprimerad fil} för enkel distribution och körning.
 \item Du använder jar-filer med optionen \code{--jar}
 \begin{REPLsmall}
-scala-cli run . --jar introprog.jar
+scala run . --jar introprog.jar
 \end{REPLsmall}
-\item Du kan skapa egna jar-filer med \texttt{scala-cli package} där optionen \code{--library} gör så att endast den komilerade koden inkluderas. Utan optionen \code{--library} så görs jar-filen exekverbar. Med optionen \code{--assembly} tas allt med i jar-filen som behövs för att köra jar-filen helt fristående med ett dubbelklick eller \code{java -jar myapp.jar}
+\item Du kan skapa egna jar-filer med \texttt{scala package} där optionen \code{--library} gör så att endast den komilerade koden inkluderas. Utan optionen \code{--library} så görs jar-filen exekverbar. Med optionen \code{--assembly} tas allt med i jar-filen som behövs för att köra jar-filen helt fristående med ett dubbelklick eller \code{java -jar myapp.jar}
 \begin{REPLsmall}
-scala-cli package . --library --output myapp.jar
-scala-cli run --jar myapp.jar
-scala-cli package . --assembly --output my-fat-jar-app.jar
+scala package . --library --output myapp.jar
+scala run --jar myapp.jar
+scala package . --assembly --output my-fat-jar-app.jar
 java -jar my-fat-jar-app.jar
 \end{REPLsmall}
 Läs mer om jar-filer i Appendix F.
