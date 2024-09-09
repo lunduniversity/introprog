@@ -1,4 +1,4 @@
-//> using scala 3.3
+//> using scala 3.5
 
 import scala.io.StdIn.readLine
 

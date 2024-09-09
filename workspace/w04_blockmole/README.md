@@ -5,7 +5,7 @@ http://cs.lth.se/pgk/kompendium
 
 Om du försöker köra filen `hello-window.scala` med `scala-cli run .` så får du följande felmeddelande:
 ```
-Compiling project (Scala 3.3.0, JVM)
+Compiling project (Scala 3.5.0, JVM)
 [error] ./hello-window.scala:4:8
 [error] Not found: introprog
 [error] import introprog.PixelWindow
@@ -14,7 +14,7 @@ Compiling project (Scala 3.3.0, JVM)
 [error] Not found: introprog
 [error]   introprog.examples.TestPixelWindow.main(Array())
 [error]   ^^^^^^^^^
-Error compiling project (Scala 3.3.0, JVM)
+Error compiling project (Scala 3.5.0, JVM)
 Compilation failed
 ```
 
@@ -43,7 +43,7 @@ Se dokumentationen för `introprog` här: http://fileadmin.cs.lth.se/pgk/api/
 I stället för att själv ladda ner en jar-fil kan du, om den finns publicerad som öppen källkod på Maven Central, använda `//> using dep` för att lägga till jar-filen som ett externt beroende (eng. dependency, förkortat "dep") enligt nedan - notera dubbla kolon på två ställen. 
 
 ``` 
-//> using dep se.lth.cs::introprog::1.3.1
+//> using dep se.lth.cs::introprog::1.4.0
 ```
 
 Då kommer scala-cli att automatiskt att (om det inte redan är gjort) ladda ned och sparar undan jar-filen på ett speciellt ställe i din hemkatalog. När du kompilerar och kör så lägger scala-cli automatiskt till jar-filen på classpath.
@@ -53,7 +53,7 @@ Då kommer scala-cli att automatiskt att (om det inte redan är gjort) ladda ned
 
 Du kan också, i stället för en magisk kommentar inne i din kodfil, ange beroendet som en option direkt i terminalen: 
 
-    scala-cli run . --dep se.lth.cs::introprog::1.3.1
+    scala-cli run . --dep se.lth.cs::introprog::1.4.0
 
 ## Ange optioner till Scala-compilatorn
 

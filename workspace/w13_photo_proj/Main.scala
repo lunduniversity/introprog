@@ -1,6 +1,3 @@
-//> using scala 3.3
-//> using dep se.lth.cs::introprog::1.3.1
-
 package photo
 
 import introprog.{PixelWindow, Image, IO}
