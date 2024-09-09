@@ -96,7 +96,7 @@ object PixelWindow:
       case _             =>
         throw new IllegalArgumentException(s"Unknown event number: $event")
 
-/** A window with a canvas for pixel-based drawing.
+/** A window with a canvas for pixel-based drawing. Y-coordinates are increasing downwards.
   *
   * @constructor Create a new window for pixel-based drawing.
   * @param width the number of horizontal pixels

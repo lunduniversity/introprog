@@ -1,18 +1,16 @@
 package introprog
 
-
+/** Companion object to create Image instances. */ 
 object Image:
   import java.awt.image.BufferedImage
   /** Create new empty Image with specified dimensions `(width, height)`*/
   def ofDim(width: Int, height: Int) =
     Image(BufferedImage(width, height, BufferedImage.TYPE_INT_RGB))
 
-
-
+/** Image represents pixel arrays backed by underlying java.awtimage.BufferedImage */
 class Image (val underlying: java.awt.image.BufferedImage):
   import java.awt.Color
   import java.awt.image.BufferedImage
-
   
   /** Get color of pixel at `(x, y)`.*/
   def apply(x: Int, y: Int): Color = Color(underlying.getRGB(x, y))
@@ -25,14 +23,13 @@ class Image (val underlying: java.awt.image.BufferedImage):
     for x <- 0 until width; y <- 0 until height do
         update(x, y, f(x, y))
 
-  /** Set color of pixels by passing `f(x, y)` and return self*/
+  /** Set color of pixels by passing `f(x, y)` and return self. */
   def updated(f: (Int, Int) => Color): Image =
     for x <- 0 until width; y <- 0 until height do
         update(x, y, f(x, y))
     this
     
-
-  /** Extract and return image pixels.*/
+  /** Extract and return image pixels. */
   def toMatrix: Array[Array[Color]] = 
     val xs: Array[Array[Color]] = Array.ofDim(width, height)
     for x <- 0 until width; y <- 0 until height do
@@ -62,9 +59,13 @@ class Image (val underlying: java.awt.image.BufferedImage):
     val bi = BufferedImage(width, height, imageType)
     bi.createGraphics().drawImage(underlying, 0, 0, width, height, null)
     Image(bi)
-    
-
+  
+  /** Test if alpha channel is supperted. */
   val hasAlpha = underlying.getColorModel.hasAlpha
+  
+  /** The height of this image. */ 
   val height = underlying.getHeight
+  
+  /** The width of this image. */ 
   val width = underlying.getWidth
   

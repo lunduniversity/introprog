@@ -2,7 +2,9 @@ package introprog
 
 import java.awt.Color
 
-/** A class for creating games with block-based graphics.
+/** A class for creating games with block-based graphics. 
+ * See example usage in [introprog.examples.TestBlockGame](https://github.com/lunduniversity/introprog-scalalib/blob/master/src/main/scala/introprog/examples/TestBlockGame.scala#L7)
+ * 
  * @constructor Create a new game.
  * @param title the title of the window
  * @param dim the (width, height) of the window in number of blocks
@@ -84,6 +86,8 @@ abstract class BlockGame(
   /** The game loop that continues while not `stopWhen` is true.
     * It draws only updated blocks aiming at the desired frame rate.
     * It calls each `onXXX` method if a corresponding event is detected.
+    * Use the call-by-name `stopWhen` to pass a condition that ends the loop if false.
+    * See example usage in `introprog.examples.TestBlockGame`.
     */
   protected def gameLoop(stopWhen: => Boolean): Unit = while !stopWhen do
     import PixelWindow.Event
