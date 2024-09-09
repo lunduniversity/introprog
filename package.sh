@@ -1,7 +1,7 @@
 #workspace is published in repo (should be in release...)
 # sbt eclipse  # deprecated, no support for scala-ide, use metals-eclipse plugin 
 rm -i lib/workspace.zip
-zip -9 -r lib/workspace.zip -x=*target* -x=*.class -x="workspace/project/*" workspace
+zip -9 -r lib/workspace.zip -x="*target*" -x=*.class -x="workspace/project/*" -x="**/.*" -x="**/.scala-build" workspace
 
 # deprecated cslib will not change:
 # sbt cslib/package
