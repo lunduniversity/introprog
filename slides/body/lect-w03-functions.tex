@@ -998,9 +998,11 @@ Läs labbinstruktioner:\url{http://cs.lth.se/pgk/compendium/}
 \begin{CodeSmall}
 "Yes".toLowerCase.startsWith("y")    // true
 "hejsan".contains("ejsa")            // true
-"42".toInt                           // 42
-"?".toIntOption.getOrElse(42)        // 42
-Thread.sleep(1000)                   // ger lagom irriterande fördröjning (1 sekund)
+"42".toInt                           // 42 
+"?".toInt                            // ger krasch (undantaget NumberFormatException)
+"?".toIntOption.getOrElse(42)        // 42 (toIntOption kan inte krascha)
+// ett annat sätt att förhindra krasch med try ... catch:
+val x = try { "?".toInt } catch { case e: Exception => 42 }
 
 val i = 42
 s"Livets mening är $i!" // dollar $ före namn vid stränginterpolering med s""
@@ -1015,8 +1017,7 @@ math.random() < 0.8                  // true i 80% av fallen
 scala.util.Random.nextInt(42)      // ger slumptal mellan 0 och 41
 scala.io.StdIn.readLine("prompt>") // ger sträng som användaren skriver
 
-val x = try { "?".toInt } catch { case e: Exception => 42 }  // förhindrar krasch
-Thread.sleep(1000)    // sova i 1000 milliskeunder
+Thread.sleep(1000)    // sova i 1 sekunder, en lagom irriterande fördröjning
 \end{CodeSmall}
 Kolla \Emph{snabbreferensen} vad mer du kan göra med strängar!
 \end{SlideExtra}
@@ -1032,18 +1033,19 @@ Kolla \Emph{snabbreferensen} vad mer du kan göra med strängar!
 \end{SlideExtra}
 
 \begin{SlideExtra}{Jobba så här}
-\begin{itemize}\SlideFontSmall
+\begin{itemize}\SlideFontTiny
   \item Skriv koden i editorn vs code som du startar med \code{code .}
   \item Dra igång 3 olika terminalfönster:
   \begin{enumerate}\SlideFontTiny
-  \item \code{scala-cli compile . --watch}~\\så att din kod kompileras om automatiskt vid varje sparning med Ctrl+S.
-  \item \code{scala-cli repl .}~\\så att du kan göra mindre undersökningar rad för rad, medan du tänker. Ctrl+D avslutar REPL, så du kan börja om efter kodändring.
-  \item \code{scala-cli run .}~\\för att se om programmet funkar som det ska. Om programmet väntar på input kan du behöva avbryta för att köra om efter ändring. 
+  \item \code{scala compile . --watch}~\\så att din kod kompileras om automatiskt vid varje sparning med Ctrl+S.
+  \item \code{scala repl .}~\\så att du kan göra mindre undersökningar rad för rad, medan du tänker. Ctrl+D avslutar REPL, så du kan börja om efter kodändring.
+  \item \code{scala run .}~\\för att se om programmet funkar som det ska. Om programmet väntar på input kan du behöva avbryta för att köra om efter ändring. 
   \end{enumerate}
   \item Börja enkelt och bygg vidare steg för steg.
   \item Bygg om koden allteftersom den växer genom att införa nya abstraktioner med väl valda namn (s.k. ''refaktorisering'') .
-  \item Fixa \Alert{alla} kompileringsfel \code{||} körtidsfel \Emph{innan} du går vidare.
-  \item Fokusera på kodens \Alert{läsbarhet}.
+  \item Fixa \Alert{alla} kompileringsfel och \Alert{alla} körtidsfel \Emph{innan} du går vidare.
+  \item Fokusera på kodens \Alert{läsbarhet}: Om en funktion blir stor så försök dela upp den i flera funktioner med bra namn. 
+  \item En åtgärd som förbättrar läsbarheten utan att ändra hur koden fungerar ur användarens synvinkel kallas \Emph{refaktorisering} \Eng{refactoring}. \\\url{https://sv.wikipedia.org/wiki/Omstrukturering_av_kod}\\\url{https://en.wikipedia.org/wiki/Code_refactoring} 
 \end{itemize}
 
 \end{SlideExtra}
