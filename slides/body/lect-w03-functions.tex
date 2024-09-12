@@ -93,7 +93,7 @@ Dessa abstraktionsmekanismer blir \Emph{extra kraftfulla} om de \Alert{kombinera
   \item \Alert{Kroppen} ska vara ett \Emph{uttryck} (ev. ett block med flera uttryck).
   \item \Emph{Parametrar} binds till \Emph{argument} vid \Alert{anrop}.
   \item Uttrycket i funktionens kropp \Emph{evalueras} vid \Alert{varje anrop}. 
-  \item Värdet av uttrycket blir funktionen \Emph{returvärde}. 
+  \item Värdet av uttrycket blir funktionens \Emph{returvärde}. 
 \end{itemize}
 
 \pause
@@ -151,21 +151,24 @@ scala> inc(42)
 val res2: Int = 43
 
 \end{REPLnonum}
-\item Om ett argument utelämnas och parametern deklarerats med defaultargument så appliceras detta. Kompilatorn fyller alltså i argumentet åt oss, om det är entydigt vilken parameter som avses.
+\item Om ett argument utelämnas och parametern deklarerats med defaultargument så appliceras detta. Kompilatorn fyller alltså i argumentet åt oss, om det är \Alert{entydigt} vilken parameter som avses.
 \end{itemize}
 \end{Slide}
 
 
 \begin{Slide}{Funktioner med namngivna argument}
-\begin{itemize}
+\begin{itemize}\SlideFontTiny
 \item Genom att använda \Emph{namngivna argument} behöver man inte hålla reda på ordningen på parametrarna, bara man känner till parameternamnen.
 \item Namngivna argument går fint att \Alert{kombinera} med defaultargument.
 \begin{REPLnonum}[basicstyle=\SlideFontSize{7}{9}\ttfamily\color{white}]
-scala> def namn(förnamn: String,
-                efternamn: String,
-                förnamnFörst: Boolean = true,
-                ledtext: String = "Namn:"): String =
-         if förnamnFörst then s"$ledtext $förnamn $efternamn"
+scala> def namn(
+         förnamn: String,
+         efternamn: String,
+         förnamnFörst: Boolean = true,
+         ledtext: String = "Namn:"
+       ): String = 
+         if förnamnFörst 
+         then s"$ledtext $förnamn $efternamn"
          else s"$ledtext $efternamn, $förnamn"
 
 scala> namn(ledtext = "Name:", efternamn = "Coder", förnamn = "Kim")
@@ -177,7 +180,7 @@ val res0: String = Name: Kim Coder
 
 \begin{Slide}{Enhetlig access}\SlideFontSmall
 \begin{itemize}
-\item Om en funktion \Emph{deklareras} \Alert{med} tom parameterlista \code{()} så ska den \Emph{anropas} \Alert{med} tom parameterlista.
+\item Om en funktion \Emph{deklareras} \Alert{med} tom parameterlista \code{()} så \emph{ska} den \Emph{anropas} \Alert{med} tom parameterlista. \hfill (Undantag: Java-metoder)
 \begin{REPLsmall}
 scala> def tomParameterlista() = 42
 
@@ -198,7 +201,6 @@ scala> ingenParameterlista()
   |^^^^^^^^^^^^^^^^^^^
   |method ingenParameterlista does not take parameters
 \end{REPLsmall}
-
 \pause
 \item Deklaration utan \code{()} möjliggör \Emph{enhetlig access}: implementationen kan ändras från \code{val} till \code{def} eller tvärtom, \Emph{utan} att \Alert{användandet} påverkas.
 %\item Om parameterlista saknas får man alltså \Alert{inte} använda \code{()} vid anrop:
@@ -346,7 +348,7 @@ Exception in thread "main" java.lang.ArithmeticException: / by zero
 \begin{itemize}\SlideFontSmall
   \item En \Emph{stack trace} skrivs ut efter en krasch p.g.a. körtidsfel.
   \item Körtidsfel känns igen med ordet \Alert{Exception}.
-  \item Först kommer en beskrivning av felet som orsakat kraschen, här: \\\code{java.lang.ArithmeticException: \ by zero} 
+  \item Först kommer en beskrivning av felet som orsakat kraschen, här: \\\code{java.lang.ArithmeticException: / by zero} 
   \item Därefter visas anropsstacken.
   \item För varje funktionsanrop anges: \Emph{\texttt{klass.metod(kodfil:radnummer)}}
   \item Main-funktioner läggs i ett singelobjekt i ett speciellt paket
@@ -390,7 +392,7 @@ Lokala, nästlade funktionsdeklarationer är tyvärr inte tillåtna i många and
 \item En funktion är ett \Alert{äkta värde}.
 \item Vi kan till exempel tilldela en variabel ett \Emph{funktionsvärde}.
 \pause
-\item Med hjälp enbart funktionsnamnet får vi funktionen som ett \Alert{värde} (inga argument appliceras än):
+\item Med hjälp \Alert{enbart} \Emph{funktionsnamnet} får vi funktionen som har ett \Alert{värde} (inga argument har applicerats än):
 \begin{REPLnonum}
 scala> def add(a: Int, b: Int) = a + b
 
@@ -403,12 +405,12 @@ val res0: Int = 42
 \item Ett funktionsvärde har en \Alert{typ} precis som alla värden: \\
 \code{f: (Int, Int) => Int}
 \pause
-\item Ett funktionsvärde har till skillnad från en funktionsdeklaration inget namn (variabeln \code{f} har ett namn men inte själva funktionen). Den kallas därför en \Emph{anonym} funktion eller \Alert{lambda} (mer om detta snart).
+\item Ett funktionsvärde har till skillnad från en funktionsdeklaration inget namn (variabeln \code{f} har ett namn, men inte själva funktionen). Den kallas därför en \Emph{anonym} funktion eller \Alert{lambda} (mer om detta snart).
 \end{itemize}
 \end{Slide}
 
-\begin{Slide}{Funktionsvärden kan vara argument}
-En funktion kan ha en annan funktion som parameter:
+\begin{Slide}{Funktionsvärden kan vara argument}\SlideFontSmall
+Funktioner kan ha funktioner som parametrar:
 \begin{REPL}
 scala> def tvåGånger(x: Int, f: Int => Int) = f(f(x))
 
@@ -422,6 +424,8 @@ val res1: Int = 44
 scala> tvåGånger(42, minska)
 val res1: Int = 40
 \end{REPL}
+En funktion som har funktionsvärden som indata (eller utdata) kallas en\\ \Emph{högre ordningens funktion}  \Eng{higher-order function}.
+
 \end{Slide}
 
 
@@ -443,7 +447,6 @@ val res0: ???   // vad blir resultatet?
 scala> xs.map(minska)
 val res1: ???   // vad blir resultatet?
 \end{REPL}
-En funktion som har funktionsvärden som indata (eller utdata) kallas en\\ \Emph{högre ordningens funktion}  \Eng{higher-order function}.
 \end{Slide}
 
 
@@ -463,7 +466,7 @@ val res0: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
 scala> xs.map(minska)
 val res1: scala.collection.immutable.Vector[Int] = Vector(0, 1, 2)
 \end{REPL}
-En funktion som har funktionsvärden som indata kallas en\\ \Emph{högre ordningens funktion}  \Eng{higher-order function}.
+Metoden \Emph{\texttt{map}} är en smidig och ofta använd \Alert{högre ordningens funktion}.
 \end{Slide}
 
 \Subsection{Äkta funktioner}
@@ -471,7 +474,7 @@ En funktion som har funktionsvärden som indata kallas en\\ \Emph{högre ordning
 \begin{Slide}{Äkta funktioner}
 \begin{itemize}\SlideFontSmall
 \item En \Emph{äkta} \Eng{pure} funktion är en funktion som ger ett resultat som \Alert{enbart} beror av dess argument. Alltså som funktioner i matematiken.
-\item En äkta (matematisk) funktion är \Emph{referentiellt transparent} \Eng{referentially transparent}, vilket innebär att varje anrop kan bytas ut mot funktionskroppen där parametrarna ersatts med motsvarande argument.
+\item En äkta (matematisk) funktion är \Emph{referentiellt transparent} \Eng{referentially transparent}. Det innebär att \Alert{varje anrop} \Emph{kan bytas ut} mot funktionskroppen där parametrarna ersatts med motsvarande argument.
 \item En äkta funktion har \Alert{inga sidoeffekter}, t.ex. utskrift, skriva/läsa filer,  eller uppdateringar av variabler \Alert{synliga utanför} funktionen.
 \item Exempel:
 \begin{Code}
@@ -508,13 +511,13 @@ def rnd(n: Int): Int = (math.random() * n).toInt  // oäkta funktion
 \begin{Code}
   val seed = 42
   val rnd = util.Random(seed) // skapa ny slumpgenerator med frö 42
-  val r = rnd.nextInt(6) // ger slumptal mellan 0 till och med 5
+  val r = rnd.nextInt(6)      // något av heltalen 0, 1, 2, 3, 4, 5
 \end{Code}
 \pause
 \item Om man \Alert{inte} ger ett \Emph{frö} så sätts fröet till ''\emph{a value very likely to be distinct from any other invocation of this constructor}''. Då vet vi inte vilket fröet blir och det blir olika varje gång man kör programmet.
 \begin{Code}
-  val rnd = util.Random() // OLIKA frö varje körning
-  val r = rnd.nextInt(6) // ger slumptal mellan 0 till och med 5
+  val rnd = util.Random() // OLIKA frö vid varje programkörning
+  val r = rnd.nextInt(6) 
 \end{Code}
 \end{itemize}
 \end{Slide}
@@ -536,7 +539,7 @@ def rnd(n: Int): Int = (math.random() * n).toInt  // oäkta funktion
 
 
 \begin{Slide}{Anonyma funktioner}
-\begin{itemize}
+\begin{itemize}\SlideFontSmall
 \item  Man behöver inte ge funktioner namn. De kan i stället skapas med hjälp av \Emph{funktionslitteraler}.\footnote{Även kallat ''lambda-värde'' eller bara ''lambda'' efter den s.k. lambdakalkylen. \href{https://en.wikipedia.org/wiki/Anonymous_function}{en.wikipedia.org/wiki/Anonymous\_function}}
 
 \item En funktionslitteral har ...
@@ -548,8 +551,9 @@ def rnd(n: Int): Int = (math.random() * n).toInt  // oäkta funktion
 \pause
 \item Exempel:
 \begin{Code}[basicstyle=\ttfamily\SlideFontSize{9}{11}]
-(x: Int, y: Int) => x + y             // vilken typ?
+(x: Int, y: Int) => x + y
 \end{Code}
+Vilken typ har denna funktionslitteral? \pause \hfill\code{(Int, Int) => Int}
 \pause
 \item Om kompilatorn kan gissa typerna från sammanhanget så behöver typerna inte anges i själva  funktionslitteralen:
 \begin{Code}[basicstyle=\ttfamily\SlideFontSize{9}{11}]
@@ -568,7 +572,7 @@ scala> xs.map((x: Int) => x + 1)
 res0: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
 \end{REPL}
 \pause
-Eftersom kompilatorn här kan härleda typerna så behövs de inte:
+Eftersom kompilatorn här kan härleda typen \code{Int} så behövs den inte:
 \begin{REPL}
 scala> xs.map(x => x + 1)
 res1: scala.collection.immutable.Vector[Int] = Vector(2, 3, 4)
@@ -755,7 +759,7 @@ hejsan hejsan
 Det ser rätt klyddigt ut med \code+{(+  och \code+)}+ eller vad tycker du? \pause Men...
 För alla funktioner \code{f} gäller att: \\ det är helt ok att byta ut vanliga parenteser: \hfill\code{f(uttryck)} \\ mot krullparenteser: \hfill\code|f{uttryck}| \\ \Alert{om} parameterlistan har \Alert{exakt en} parameter.
 
-\vspace{0.5em}Man kan alltså skippa det yttre parentesparet för bättre läsbarhet:
+\vspace{0.5em}Man kan alltså skippa yttre parentesparet för \Alert{bättre läsbarhet}:
 \begin{REPLnonum}
 scala> twice { print("hej"); print("san ") }
 \end{REPLnonum}
@@ -923,7 +927,7 @@ def gissaTalet(max: Int, min: Int = 1): Unit =
 \end{itemize}
 \end{Slide}
 
-\Subsection{Automatisera kompilering}
+\Subsection{Automatisk omkompilering}
 
 \begin{Slide}{Kompilera om det som ändrats vid varje sparning}
 \begin{itemize}
