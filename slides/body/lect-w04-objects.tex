@@ -701,29 +701,30 @@ Initialisering i fel ordning kan ge oväntade överraskningar:
 scala> { val b = a; val a = 42 }
 val b: Int = 0   // default-värdet för Int är noll och a har ännu inte fått värdet 42
 val a: Int = 42
-
-scala> :settings -Wsafe-init
-
-scala> { val b = a; val a = 42 }
-1 warning found
--- Warning: ------------------------------------------
-1 |{ val b = a; val a = 42 }
-  |                 ^
-  |                 Access non-initialized value a.
-val b: Int = 0
-val a: Int = 42
 \end{REPLsmall}
 Med kompilator-optionen \code{-Wsafe-init} får du en välbehövlig varning. \\
-Skriv såhär, t.ex. i \code{project.scala}, om du vill ha denna option påslagen:
+Skriv såhär i din kod om du vill ha denna option påslagen:
 \begin{CodeSmall}
-//> using option -Wsafe-init
+//> using options -Wsafe-init
+
+@main def run =
+  val b = a
+  val a = 42
+  println(b)
+
 \end{CodeSmall}
+\begin{REPLsmall}
+>  scala run .
+[error] a is a forward reference extending over the definition of b
+[error]   val b = a
+[error]           ^
+\end{REPLsmall}
 \end{Slide}
 
 \begin{Slide}{Be kompilatorn ge fler bra varningar}\SlideFontSmall
 Slå på mer utförliga meddelanden och varningar:
 \begin{CodeSmall}
-//> using option -unchecked -deprecation -Wunused:all -Wvalue-discard -Wsafe-init
+//> using options -unchecked -deprecation -Wunused:all -Wvalue-discard -Wsafe-init
 \end{CodeSmall}
 \begin{tabular}{l p{8.5cm}}
 \texttt{-unchecked} & Extra varningar vid flera fall av osäker kod. \\
@@ -734,9 +735,10 @@ Slå på mer utförliga meddelanden och varningar:
 \end{tabular}
 
 \pause\vspace*{1em}
-Om du tycker vissa varningar är irriterande kan du slå av dem med \code{@annotation.nowarn} 
+Om du tycker vissa specifika varningar är irriterande kan du slå av dem med \code{@annotation.nowarn} 
 \begin{CodeSmall}
-scala> { val b = a; @annotation.nowarn val a = 42 }
+  val b = a
+  @annotation.nowarn val a = 42 
 \end{CodeSmall}
   
 \end{Slide}
@@ -1111,7 +1113,7 @@ scala> val w = introprog.PixelWindow(300, 200, "hejsan")
 \item Du kan istället låta \code{scala-cli} \Emph{automatiskt} ladda ner ett färdigt kodbibliotek som är publicerat på Maven Central och lägga det på classpath med optionen \code{--dep} som är en förkortning av \emph{dependency}. 
 \item Notera antalet kolon i adressen till kodbiblioteket:
 \begin{REPLsmall}
-> scala-cli repl . --dep se.lth.cs::introprog:1.3.1
+> scala-cli repl . --dep se.lth.cs::introprog:1.4.0
 Welcome to Scala 3.1.3 (17.0.3, Java OpenJDK 64-Bit Server VM).
 Type in expressions for evaluation. Or try :help.
 
@@ -1125,8 +1127,8 @@ scala> introprog.Dialog.show("hello introprog")
 \begin{itemize}
 \item \code{scala-cli} kan inkludera kodbibliotek från Maven Central om du skriver en ''magisk'' kommentar i början av din \code{.scala-}filen:
 \begin{Code}
-//> using scala 3.3
-//> using dep se.lth.cs::introprog:1.3.1
+//> using scala 3.5.0
+//> using dep se.lth.cs::introprog:1.4.0
 
 @main def run = introprog.Dialog.show("hello introprog")
 \end{Code}
