@@ -57,7 +57,7 @@ trait Plan:
     Module("Objekt och inkapsling",
       id = "objects", exercise = "objects", lab = "blockmole", contents = """
       | modul, singelobjekt, punktnotation, tillstånd, medlem, attribut, metod,
-      | paket, filstruktur, jar, dokumentation, JDK,
+      | paket, filstruktur, jar, classpath, dokumentation, JDK,
       | import, selektiv import, namnbyte vid import, export,
       | tupel, multipla returvärden,
       | block, lokal variabel, skuggning,
