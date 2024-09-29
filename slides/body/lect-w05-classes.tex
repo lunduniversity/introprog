@@ -65,7 +65,7 @@ Varför behövs klasser?
 \item Med klasser kan du skapa \Alert{nya} typer (utöver \code{Int}, \code{String} ...) som bättre representerar domänens data.
 \item Med klasser implementerar du modeller som representerar väsentliga \Emph{attribut} ur applikationsdomänen. 
 \item Med \Emph{metoder} (funktioner i klasser) kan du skapa och behandla domänens data.
-\item Datamodellering i Scala görs ofta med \code{case}-klasser och \Emph{oföränderliga} instanser.
+\item Datamodellering i Scala görs ofta med s.k. \code{case}-klasser och \Emph{oföränderliga} instanser.
 \end{itemize}
 % \TODO förklara nyttan med att göra otillåtna tillstånd omöjliga att representera, begrepp skapar ett nytt domänspecifikt språk
 \end{Slide}
@@ -271,7 +271,7 @@ sandra: Person = Person@7878bbdb
 \end{Slide}
 
 
-\begin{Slide}{Klassdeklarationer och instansiering}\SlideFontSmall
+\begin{Slide}{Klassdeklarationer och instansiering}\SlideFontTiny
 \setlength{\leftmargini}{0pt}
 \begin{itemize}
 \item Syntax för deklaration av klass: \\ \vspace{0.5em}{\SlideFontSize{13}{16}\code|class Klassnamn(parametrar){ medlemmar }|}\vspace{0.5em}
@@ -284,14 +284,15 @@ class Klassnamn(val attribut1: Int, attribut2: String):  //klassparametrar
   lazy val attr5 = Vector.fill(100000)(42.0)     //fördröjd initialisering
 \end{Code}
 
-\item Parametrar initialiseras med de argument som ges vid \code{new}.
+\item \Emph{Klass-parametrar} blir \Alert{attribut} som initialiseras med de argument som ges vid \code{new}. 
+\\(Kompilatorn skapar \Emph{primärkonstruktor}: kod som allokerar \& initialiserar alla attribut.)
 \item Exempel: \Emph{instansiering} med argument för initialisering av klassparametrar
 \begin{Code}
 val instansReferens = new Klassnamn(42, "hej")  // new är valfritt i Scala 3 
 \end{Code}
 
-\item Parametrar som inte föregås av modifierare (t.ex. \code{private val}, \code{val}, \code{var}) blir \Emph{attribut} som bara är synliga i \Alert{denna} instans.
-\item Attribut i klasskroppen är \Emph{publika} (alltså synliga utåt) om de inte är \code{private} (eller \code{protected} som begränsar synlighet till subtyper som vi ska se senare).
+\item Parametrar som inte föregås av modifierare (t.ex. \code{private val}, \code{val}, \code{var}) blir \Emph{attribut} som bara är synliga i \Alert{denna} instans,  de kallas då \Emph{instansprivata}.
+\item Attribut i klasskroppen är \Emph{publika} (alltså synliga utåt) om de inte deklareras \code{private}\\(eller \code{protected} som begränsar synlighet till subtyper som vi ska se senare).
 \end{itemize}
 \end{Slide}
 
@@ -404,7 +405,7 @@ val res0: String = Person(Björn,55)
 scala> p.age
 val res1: Int = 55
 \end{REPLsmall}
-\item En \code{copy}-metod med alla attribut som parametrar och instansens attributvärden som default-argument. Den gör det smidigt att skapa förändrade kopior där några attribut ändrats och andra förblir som innan.  
+\item En \code{copy}-metod med alla attribut som parametrar och instansens attributvärden som default-argument: det blir då \Emph{smidigt att skapa} \Alert{delvis förändrade kopior} där några attribut ändrats med namngivna argument och andra förblir som innan.  
 \begin{REPLsmall}
 scala> p.copy(age = p.age + 1)
 val res2: Person = Person(Björn,56)
@@ -441,22 +442,23 @@ Någon gång i \Alert{framtiden} kommer följande gälla:
 \end{itemize}
 \pause
 \begin{Code}
-case class Box(x: Int): // kompilera med optionen "-source:future"
+case class Box(x: Int):
   def +(other: Box): Box = Box(x + other.x)    // utan varning
-  def plus(other: Box) = Box(x + other.x)      // ger varning (i framtiden)
+  def plus(other: Box) = Box(x + other.x)      // ger varning
   infix def add(other: Box) = Box(x + other.x) // utan varning
 \end{Code}
-\code{-source:future} aktiverar regler för framtida Scala-versioner\\ \code{-deprecation} varnar för sådant som kommer att så småningom tas bort.
 \begin{REPLsmall}
-> scala-cli repl --scala-opt -source:future -deprecation 
 scala> Box(41) plus Box(1)
--- Warning:
+1 warning found
+-- Warning: ------------------------------------------------------------------------
 1 |Box(41) plus Box(1)
   |        ^^^^
-  |Alphanumeric method plus is not declared `infix`; it should not be used as infix operator.
-  |The operation can be rewritten automatically to `plus` under -deprecation -rewrite.
-  |Or rewrite to method syntax .plus(...) manually.
+  |Alphanumeric method plus is not declared infix; it should not be used as infix operator.
+  |Instead, use method syntax .plus(...) or backticked identifier `plus`.
 val res0: Box = Box(42)
+
+scala> Box(41) add Box(1)
+val res1: Box = Box(41)
 \end{REPLsmall}
 \end{Slide}
 
@@ -873,12 +875,12 @@ Vi kan utan risk dela med oss av en referens till en oföränderlig klass -- ing
 
 %\item I Java och många andra språk får man \Alert{explicit} skriva kod för konstruktorer med speciell syntax och göra alla initialiseringar av attribut själv, och det behövs många olika konstruktorer för att motsvara defaultargument.
 
-\item I Scala \Emph{kan} man också skriva egna alternativa s.k. \Emph{hjälpkonstruktorer}, men det är \Alert{ovanligt}, eftersom man har möjligheten med fabriksmetoder i kompanjonsobjekt och default-argument.
+\item I Scala \Emph{kan} man också skriva egna alternativa s.k. \Emph{hjälpkonstruktorer} \Eng{auxilliary constructor}, men det är \Alert{ovanligt}, eftersom man har möjligheten med fabriksmetoder i kompanjonsobjekt och default-argument.
 \end{itemize}
 \end{Slide}
 
 
-\begin{Slide}{Hjälpkonstruktorer i Scala (ovanliga)}%\SlideFontSmall
+\begin{Slide}{Fördjupning: Hjälpkonstruktorer i Scala (ovanliga)}\SlideFontTiny
 Fördjupning för kännedom:
 \begin{itemize}
 \item I Scala kan man skapa ett alternativ till primärkonstruktorn, en så kallad \Emph{hjälpkonstruktor} \Eng{auxilliary constructor} genom att deklarera en metod med det speciella namnet \code{this}.
@@ -891,14 +893,14 @@ class Point(val x: Int, val y: Int, val z: Int): // primärkonstruktor
   def this(x: Int, y: Int) = this(x, y, 0) // anropa primärkonstruktorn
   def this(x: Int) = this(x, 0) // anropa hjälpkonstruktor
 \end{Code}
-\item Varför? Enklare att använda från \Alert{Java}-kod jämfört med apply i kompanjonsobjekt. (Men om din Scala-kod inte ska användas från Java så är detta onödigt.)
+\item Varför? Enklare att använda från \Alert{Java}-kod jämfört med apply i kompanjonsobjekt. (Men om din Scala-kod inte ska användas från Java så är detta onödigt: använd då hellre kompanjonsobjekt med fabriksmetod.)
 
 \end{itemize}
 %{\SlideFontSmall Överlagrade hjälpkonstruktorer i Scala liknar användning av konstruktorer i Java, där man inte har default-argument och apply i kompanjonsobj. etc.}
 
 \end{Slide}
 
-\begin{Slide}{Användning av hjälpkonstruktor}
+\begin{Slide}{Fördjupning: Användning av hjälpkonstruktor}
 \begin{REPL}
 scala> val p1 = Point(1)
 p1: Point = Point@21312342
