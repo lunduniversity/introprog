@@ -16,16 +16,16 @@ Scalas typsystem är \Alert{fullständigt}:
 \begin{Code}
 trait Any:         // en förenklad beskrivning av Any
   def toString
-  def ==
-  def !=
-  def equals
-  def isInstanceOf
-  def asInstanceOf
-  def ##
-  def hashCode
-  def getClass
-
-trait Matchable extends Any
+  def equals(other: Any): Boolean
+  def hashCode: Int
+  // finala metoder får ej överskuggas
+  final def ==(other: Any): Boolean = equals(other)
+  final def !=(other: Any): Boolean = !equals(other)
+  final def ##(): Int = hashCode
+  // nedan metoder hanteras speciellt av kompilatorn
+  final def isInstanceOf[T]: Boolean = ???  
+  final def asInstanceOf[T]: T = ???
+  final def getClass = ???
 \end{Code}
 \end{itemize}
 
@@ -33,7 +33,8 @@ Det kommer mer om abstrakta klasser och traits i veckan om arv.
 \end{Slide}
 
 \begin{Slide}{Alla typer är subtyper till \texttt{Any}}\SlideFontSmall\ifkompendium\footnotesize\fi
-\vspace{-0.0em}\begin{center}
+
+  \vspace{-0.0em}\begin{center}
 \newcommand{\TextBox}[1]{\raisebox{0pt}[1em][0.5em]{#1}}
 \tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=2cm, rectangle split, rectangle split parts = 3]
 \begin{tikzpicture}[inner sep=0.5em]
@@ -61,11 +62,12 @@ Det kommer mer om abstrakta klasser och traits i veckan om arv.
 \draw[umlarrow] (SubType2.north) -- ++(0,0.5) -| (Matchable.south);
 \end{tikzpicture}
 \end{center}
+
 \begin{itemize}
   \item Alla \Emph{värdetyper}, t.ex. \code{Int}, \code{Double}, \code{Boolean}, är subtyper till \code{AnyVal}
   \item Alla \Emph{referenstyper} t.ex. \code{String} är subtyper till \code{AnyRef}
   \item Värden av typen \code{Matchable} kan användas vid s.k mönstermatchning. 
-  \item (Det finns även s.k. opaka typer som inte kan mönstermatchas.)
+  \item (Det går att skapa s.k. opaka typer som inte kan mönstermatchas.)
 \end{itemize}
 \end{Slide}
 
