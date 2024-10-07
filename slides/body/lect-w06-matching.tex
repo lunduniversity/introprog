@@ -13,23 +13,25 @@ Scalas typsystem är \Alert{fullständigt}:
   \item Alla typer är subtyper till bastypen \code{Any}.
   \item Typen \code{Any} kallas därför \Emph{topptyp}.
   \item Alla objekt har vissa grundläggande metoder, så som \code{toString} och \code{==}
+  \pause
 \begin{Code}
-trait Any:         // en förenklad beskrivning av Any
-  def toString
-  def equals(other: Any): Boolean
-  def hashCode: Int
-  // finala metoder får ej överskuggas
-  final def ==(other: Any): Boolean = equals(other)
-  final def !=(other: Any): Boolean = !equals(other)
-  final def ##(): Int = hashCode
-  // nedan metoder hanteras speciellt av kompilatorn
-  final def isInstanceOf[T]: Boolean = ???  
-  final def asInstanceOf[T]: T = ???
-  final def getClass = ???
+trait Any:              // en förenklad beskrivning av Any
+  def toString: String  // en strängrepresentation
+  def equals(other: Any): Boolean = eq(other)
+  def hashCode: Int     // ska vara samma som andras om equals true
+
+  // finala metoder får ej överskuggas:
+  final def eq(other: Any): Boolean  // ger alltid referenslikhet
+  final def ne(other: Any): Boolean = !eq(other)
+  final def ==(other: Any) = equals(other)
+  final def !=(other: Any) = !equals(other)
+  final def isInstanceOf[T]: Boolean  // typtest vid körtid
+  final def asInstanceOf[T]: T  // osäker typkonvertering vid körtid
+  final def ## = hashCode  // specialbehandlas för värdetyper i JVM
 \end{Code}
 \end{itemize}
 
-Det kommer mer om abstrakta klasser och traits i veckan om arv.
+(Mer om bastyper, traits, equals, hashCode, ... senare.)
 \end{Slide}
 
 \begin{Slide}{Alla typer är subtyper till \texttt{Any}}\SlideFontSmall\ifkompendium\footnotesize\fi
