@@ -94,8 +94,8 @@ val res1: Vector[Int] = Vector(0, 1, 2)
   \item Minnesregel: ''\Alert{Colon on the collection side}''
   \begin{REPLnonum}
   scala> val xs = Vector(1,2,3)
-  scala> 42 +: xs         // ger ny Vector(42, 1, 2, 3)
   scala> xs :+ 42         // ger ny Vector(1, 2, 3, 42)
+  scala> 42 +: xs         // ger ny Vector(42, 1, 2, 3)
   \end{REPLnonum}
   \pause
   \item Semantik: operatornotation med operatorer som \Emph{slutar med kolon} är \Alert{högerassociativa}
@@ -123,8 +123,8 @@ val res1: Vector[Int] = Vector(0, 1, 2)
 
 \item \code{List}
   \begin{itemize}\SlideFontSmall
-  \item \Emph{Oföränderlig}. Snabb på att skapa kopior med små förändringar.
-  \item Snabb indexering \& uppdatering \Emph{i början}.
+  \item \Emph{Oföränderlig}. Snabbt att skapa kopior med uppdatering \Emph{i början}.
+  \item Snabbt jobba \Emph{i början}, men \Alert{långsamt} jobba i \Alert{slutet} av listan.
   \item Smidig \& snabb vid \Emph{rekursiva} algoritmer.
   \item Långsam vid upprepad \Alert{indexering} på godtyckliga ställen.
   \end{itemize}
@@ -175,7 +175,7 @@ val res1: Vector[Int] = Vector(0, 1, 2)
 
 \item Välj \code{List} om ...
   \begin{itemize}\SlideFontTiny
-  \item[] du har en \Alert{rekursiv} sekvensalgoritm och/eller \Alert{mestadels jobbar i början}.
+  \item[] du har en \Alert{rekursiv} sekvensalgoritm eller \Alert{mestadels jobbar i början}.
   \end{itemize}
 
 \item Välj \code{ArrayBuffer} om ...
@@ -247,7 +247,7 @@ scala> def abox[T](x: T) = Array[T](x)
 \begin{Slide}{Vad är en sekvensalgoritm?}\SlideFontTiny
 \begin{itemize}
 \item En algoritm är en stegvis beskrivning av lösningen på ett problem.
-\item En \textbf{sekvensalgoritm} är en algoritm där \Emph{element i sekvens} utgör en viktig del av \Alert{problembeskrivningen} och/eller \Alert{lösningen}.
+\item En \textbf{sekvensalgoritm} är en algoritm där \Emph{element i sekvens} utgör en viktig del av \Alert{problembeskrivningen} eller \Alert{lösningen}.
 \item Exempelproblem: sortera en sekvens av personer efter deras ålder.
 \pause
 \item \Alert{Sju} ofta återkommande programmeringsproblem som löses med en sekvensalgoritm:
@@ -282,10 +282,15 @@ scala> def abox[T](x: T) = Array[T](x)
 
 \item Dessa färdiga metoder är \Emph{optimerade och vältestade} och är att föredra om möjligt.
 
-\item Studera Scalas api-dokumentation och kursens quickref för att se vad man kan göra med färdiga metoder.\\
+\item Studera \Alert{quickref} för att se vad man kan göra med färdiga samlingar.
+
+\item Det är \Emph{lärorikt} att ''\Alert{uppfinna hjulet}'' och implementera några grundläggande sekvensalgoritmer \Emph{själv} för bättre förståelse, även om de redan finns färdiga i Scalas samlingsbibliotek.
+
+\item Fördjupning: En översikt av samlingarna i Scalas standardbibliotek:
 \url{https://docs.scala-lang.org/overviews/collections-2.13/introduction.html} 
 
-\item Det är \Emph{lärorikt} att ''\Alert{uppfinna hjulet}'' och implementera några sekvensalgoritmer \Emph{själv} för bättre förståelse, även om de redan finns färdiga i Scalas samlingsbibliotek.
+\item (Det kommer mer om implementation av samlingar och algoritmer i fördjupningskursen pfk.)
+
 
 \end{itemize}
 \end{Slide}
@@ -393,12 +398,12 @@ def sort(xs: Vector[Int]): Vector[Int] = ???
 
 def freq(xs: Vector[Int]): Vector[(Int, Int)] = ???  // (heltal, frekvens)
 \end{Code}
-Övning: Hur implementera dessa med \code{for}-uttryck och/eller färdiga samlingsmetoder?\\
+Övning: Hur implementera dessa med \code{for}-uttryck eller färdiga samlingsmetoder?\\
 \Emph{Tips:} För \code{sort}\&\code{freq} se \code{sorted}, \code{distinct}, \code{count} i \href{http://cs.lth.se/pgk/quickref/}{quickref}
 \end{Slide}
 
 
-\begin{Slide}{Implementation av sekvensproblem med \texttt{for}-uttryck och/eller färdiga samlingsmetoder}
+\begin{Slide}{Implementation av sekvensproblem med \texttt{for}-uttryck eller färdiga samlingsmetoder}
 \begin{Code}
 def copy(xs: Vector[Int]): Vector[Int] = for x <- xs yield x
 
@@ -413,7 +418,7 @@ def sort(xs: Vector[Int]): Vector[Int] = xs.sorted // mer om sortering sen
 def freq(xs: Vector[Int]): Vector[(Int, Int)] = // mer om registrering snart
   for x <- xs.distinct yield x -> xs.count(_ == x)
 \end{Code}
-Övning: Hur implementera dessa med \code{map} och \code{filter} och/eller andra färdiga samlingsmetoder?
+Övning: Hur implementera dessa med \code{map} och \code{filter} eller andra färdiga samlingsmetoder?
 \end{Slide}
 
 \begin{Slide}{Implementation av sekvensproblem med \texttt{map}, \texttt{filter}}
@@ -541,7 +546,7 @@ def freq[T](xs: Seq[T]): Seq[(T, Int)] =
 Standardbibliotekets metoder försöker ordna så att det blir samma konkreta typ in som ut, men ibland väljs annan lämplig konkret samling, t.ex. kan en \code{Array} bli en \code{ArrayBuffer}. 
 \end{Slide}
 
-\begin{Slide}{Använda Java-samlingar i Scala med \texttt{CollectionConverters}}\SlideFontSmall
+\begin{Slide}{Fördjupning: Använda Java-samlingar i Scala med \texttt{CollectionConverters}}\SlideFontSmall
 Med hjälp av \code{import scala.jdk.CollectionConverters.*} \\
 får man smidig \Emph{interoperabilitet} med Java och dess standardbibliotek, \\
 speciellt metoderna \Alert{\code{asJava}} och \Alert{\code{asScala}}:
