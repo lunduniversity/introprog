@@ -1,4 +1,4 @@
-# Character Encoding in Scala on Windows 10/11
+# Character encoding problems in Windows
 
 ## Problem
 
