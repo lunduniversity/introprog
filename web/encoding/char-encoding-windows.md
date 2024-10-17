@@ -30,7 +30,7 @@ If you are on **Windows 10, version 1809** or later.
 4. Enable the `Beta: Use Unicode UTF-8 for worldwide language support`
 5. Restart the computer
 
-![Region Settings](/intl.cpl.png "Region Settings")
+![Region Settings](intl.cpl.png "Region Settings")
 
 *It dosen't hurt to change the **Current system locale** to your actual language. It doesn't change the Windows display language but it can help set the other encoding defaults to UTF-8.*
 
