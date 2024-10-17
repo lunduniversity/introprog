@@ -27,12 +27,13 @@ If you are on **Windows 11** or **Windows 10, version 1809** or later.
 1. Press `Win + R` and type `intl.cpl`, press enters
 2. Switch to **Administrative** tab
 3. Click the `Change system locale`
+4. Set "Current system locale:" to "Swedish (Sweden)"
 4. Enable the `Beta: Use Unicode UTF-8 for worldwide language support`
 5. Restart the computer
 
 ![Region Settings](intl.cpl.png "Region Settings")
 
-*It dosen't hurt to change the **Current system locale** to your actual language. It doesn't change the Windows display language but it can help set the other encoding defaults to UTF-8.*
+NOte: Setting **Current system locale** to "Swedish (Sweden)" doesn't change the Windows display language but it sets other encoding defaults to UTF-8 so that you don't need `//> using java-opt -Dfile.encoding=UTF-8` in the test script below.
 
 ### Solution 2
 
@@ -53,7 +54,7 @@ Scripts used to test printing and inputing UTF-8 characters
 ```scala
 //> using scala 3.5.1
 //> using java-opt -Dfile.encoding=UTF-8
-// The UTF-8 java option is needed when the "Current system locale" is set to "English"
+// The UTF-8 java option is only needed when the "Current system locale" is set to "English"
 
 import java.nio.charset.{StandardCharsets as C}
 
