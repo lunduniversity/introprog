@@ -22,7 +22,7 @@ val res0: String = ??????
 
 ### Solution 1
 
-If you are on **Windows 10, version 1809** or later.
+If you are on **Windows 11** or **Windows 10, version 1809** or later.
 
 1. Press `Win + R` and type `intl.cpl`, press enters
 2. Switch to **Administrative** tab
