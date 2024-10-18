@@ -25,7 +25,7 @@ val res0: String = ??????
 First it is good to install the new Windows Terminal, which is better att handling Utf-8 encoding:
 * https://learn.microsoft.com/en-us/windows/terminal/install
   
-If you still have problems then you need to fiddle with some windows setting as describet below.
+If you still have problems then you need to fiddle with some windows setting as described below.
 
 ### Solution 1
 
