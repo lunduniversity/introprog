@@ -1,5 +1,7 @@
 # Character encoding problems in Windows
 
+If you are using a terminal under Windows, sometimes native characters such as åäöÅÄÖ are strange. If you print them and it just works then you are good to go, but if you read åääÅÄÖ using `scala.io.StdIn.readLine` and you get strange charachters back, then you may want to try the solutions below. 
+
 ## Problem
 
 It is difficult to print strings with **UTF-8** encoding by default to any terminal on Windows because of Windows default encoding *ANSI* on Windows installations made with **English** as the system locale.
@@ -19,6 +21,11 @@ val res0: String = ??????
 ```
 
 ## Solutions
+
+First it is good to install the new Windows Terminal, which is better att handling Utf-8 encoding:
+* https://learn.microsoft.com/en-us/windows/terminal/install
+  
+If you still have problems then you need to fiddle with some windows setting as describet below.
 
 ### Solution 1
 
