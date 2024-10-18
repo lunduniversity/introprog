@@ -40,7 +40,7 @@ If you are on **Windows 11** or **Windows 10, version 1809** or later.
 
 ![Region Settings](intl.cpl.png "Region Settings")
 
-NOte: Setting **Current system locale** to "Swedish (Sweden)" doesn't change the Windows display language but it sets other encoding defaults to UTF-8 so that you don't need `//> using java-opt -Dfile.encoding=UTF-8` in the test script below.
+**Note:** Setting **Current system locale** to "Swedish (Sweden)" doesn't change the Windows display language but it sets other encoding defaults to UTF-8 so that you don't need `//> using java-opt -Dfile.encoding=UTF-8` in the test script below.
 
 ### Solution 2
 
