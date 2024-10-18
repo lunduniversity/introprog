@@ -53,9 +53,9 @@ Change the codepage **[ terminal/console only ]**
 If `Autorun` is not present, you need to create a `New String` in the directory.
 
 
-## Scala test script
+## Test program
 
-Scripts used to test printing and inputing UTF-8 characters
+Use the Scala program below to test printing and inputing UTF-8 characters
 
 
 ```scala
