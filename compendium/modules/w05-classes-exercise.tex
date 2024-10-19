@@ -510,12 +510,11 @@ Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en k
 \item \code{y: Double} för y-koordinaten.
 \end{itemize}
 
-\item \code{Point} ska ha följande publika medlemmar (två oföränderliga attribut och två metoder):
+\item \code{Point} ska ha följande publika medlemmar (två oföränderliga attribut och en metod):
 \begin{itemize}[nolistsep, noitemsep]
-\item \code{val r: Double} ska ge motsvarande polära koordinatens
+\item \code{lazy val r: Double} ska ge motsvarande polära koordinatens
  avstånd till origo.
-\item \code{val theta: Double} ska ge polära koordinatens vinkel i radianer.
-\item \code{def negY: Point} ska ge en ny punkt med y-koordinaten negerad.
+\item \code{lazy val theta: Double} ska ge polära koordinatens vinkel i radianer.
 \item \code{def +(p: Point): Point} ska ge en ny punkt vars koordinat är summan av x- respektive y-koordinaterna för denna instans och punkten \code{p}.
 \end{itemize}
 
@@ -559,16 +558,32 @@ Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en k
 
 \item Du har nytta av metoderna \code{math.cos(theta)} och \code{math.sin(theta)} vid omvandling från polära koordinater.
 
-\item Attributet \code{negY} är användbar vid omvandling till fönsterkoordinater där y-axeln är omvänd jämfört med kartesiska koordinater.
-
 \item Notera att klassens attribut är av typen \code{Double} och inte \code{Int}, trots att vi senare ska använda punkten för att beskriva en diskret pixelposition i ett \code{PixelWindow}. Anledningen till detta är att det kan uppstå avrundningsfel vid numeriska beräkningar. Detta blir särskilt märkbart vid upprepad räkning med små värden, t.ex. när man ritar en approximerad cirkel med många linjesegment.
 \end{itemize}
 
-\Subtask Använd din punktklass då du deklarerar en funktion \code{cyclic(n, r, p)} som ger en sekvens av punkter som beskriver en liksidig månghörning med \code{n} hörn där hörnen är placerade på en cirkel med radien \code{r} och mittpunkten \code{p}.
+\Subtask Studera nu följande singelobjekt \code{PolygonWindow} som med hjälp av ett \code{PixelWindow} ger möjlighet att rita ut polygoner:
+\begin{Code}
+object PolygonWindow:
+  import introprog.PixelWindow
+  import java.awt.Color
 
-\Subtask Skapa en funktion \code{drawPolygon(pts)} som ritar månghörningar enligt en punktsekvens \code{pts} i ett \code{PixelWindow}.
+  val black = Color(0,0,0)
+  val coolGreen = Color(0,255,100)
+  val width = 500
+  val height = 500
+  val window = PixelWindow(width, height, title = "Polygons", background = black, foreground = coolGreen)
 
-\Subtask Hur många hörn behövs det för att en liksidig månghörning ska se ut som en cirkel?
+  private def convertPoint(point: Point): Vector[Int] = 
+    Vector(point.x.toInt, point.y.toInt)
+
+  def draw(polygon: Polygon): Unit =
+    for i <- 0 until polygon.nbrOfCorners do
+      val from = convertPoint(polygon.pointsForDrawing(i)).map(_ + width/2)
+      val to = convertPoint(polygon.pointsForDrawing((i+1) % polygon.nbrOfCorners)).map(_ + width/2)
+      window.line(from(0), from(1), to(0), to(1), lineWidth = 2)
+\end{Code}
+Skapa case-klassen \code{Polygon(points: Vector[Point], midPoint: Point)} med attributen \code{lazy val nbrOfCorners: Int} och \code{lazy val pointsForDrawing: Vector[Point]} så att ovanstående kod går att köra.
+\code{Polygon} ska ha ett kompanjonsobjekt med en metod \code{makePolygon(nbrOfCorners: Int, radius: Double, midPoint: Point): Polygon} för att skapa polygoner.
 
 \SOLUTION
 
@@ -578,9 +593,8 @@ Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en k
 package graphics
 
 case class Point(x: Double, y: Double):
-  val r: Double          = math.hypot(x, y)
-  val theta: Double      = math.atan2(y, x)
-  def negY: Point        = Point(x, -y)
+  lazy val r: Double          = math.hypot(x, y)
+  lazy val theta: Double      = math.atan2(y, x)
   def +(p: Point): Point = Point(x + p.x, y + p.y)
 
 object Point:
@@ -588,11 +602,20 @@ object Point:
     Point(r * math.cos(theta), r * math.sin(theta))
 \end{Code}
 
-\Subtask \TODO
-
-\Subtask \TODO
-
-\Subtask \TODO
+\Subtask \begin{Code}
+case class Polygon(points: Vector[Point], midPoint: Point):
+  lazy val nbrOfCorners: Int = points.length
+  lazy val pointsForDrawing: Vector[Point] = points.map(_ + midPoint)
+  
+object Polygon:
+  def makePolygon(nbrOfCorners: Int, radius: Double, midPoint: Point): Polygon =
+    val points = new Array[Point](nbrOfCorners)
+    for i <- 0 until nbrOfCorners do
+      val theta = i * (2 * math.Pi) / nbrOfCorners
+      points(i) = Point.polar(radius, theta)
+    end for
+    Polygon(points.toVector, midPoint)
+\end{Code}
 
 
 \QUESTEND
