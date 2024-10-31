@@ -565,36 +565,40 @@ Kopiera koden för \code{PolygonWindow} till en ny kodfil \code{PolygonWindow.sc
 
 \begin{Code}
 //> using dep "se.lth.cs::introprog:1.4.0"
-
 package graphics
 
-class PolygonWindow:
-  import introprog.PixelWindow
-  import java.awt.Color
+import introprog.PixelWindow
+import java.awt.Color
 
+extension def toPixels(p: Point): Seq[Int] = 
+  Seq(point.x.round.toInt, point.y.round.toInt)
+
+class PolygonWindow:
   val black     = Color(0,0,0)
   val coolGreen = Color(0,255,111)
   val width     = 500
   val height    = 500
 
-  val window = PixelWindow(width, height, title = "Polygons", background = black, foreground = coolGreen)
-
-  private def convertToVector(point: Point): Vector[Int] = 
-    Vector(point.x.toInt, point.y.toInt)
+  val window = 
+    PixelWindow(width, height,  title = "Polygons", 
+                background = black, foreground = coolGreen)
 
   def draw(polygon: Polygon): Unit =
     for i <- 0 until polygon.nbrOfCorners do
-      val from = convertToVector(polygon.points(i)).map(_ + width/2)
-      val to = convertToVector(polygon.points((i+1) % polygon.nbrOfCorners)).map(_ + width/2)
+      val from = polygon.points(i).toPixels.map(_ + width/2)
+      val mod = polygon.points((i+1) % polygon.nbrOfCorners)
+      val to = mod.toPixels.map(_ + width/2)
       window.line(from(0), from(1), to(0), to(1), lineWidth = 2)
 \end{Code}
 
-Skapa nu en ny kodfil innehållandes en case-klass \code{Polygon(points: Vector[Point])} med attributet \code{val nbrOfCorners: Int}. \code{Polygon} ska också ligga i paketet \code{graphics}. 
-Likt klassen \code{Point} ovan ska också \code{Polygon} ha ett kompanjonsobjekt. Kompanjonsobjektet ska ha en metod \code{regularPolygon(nbrOfCorners: Int, radius: Double, midPoint: Point): Polygon} för att skapa regelbundna polygoner.
-Fundera över hur case-klassen \code{Polygon} och dess kompanjonsobjekt ska se ut för att koden ovan i \code{PolygonWindow} ska fungera som tänkt. Testa i Scala REPL!
+Skapa en case-klass vid namn \code{Polygon} men en parameter \code{points: Vector[Point]} och ett attribut \code{val nbrOfCorners: Int}. Case-klassen \code{Polygon} ska också ligga i paketet \code{graphics}. 
+
+Likt klassen \code{Point} ovan ska också \code{Polygon} ha ett kompanjonsobjekt. 
+Kompanjonsobjektet ska ha en metod som skapar en regelbunden polygon vid namn \code{regular} med följande parametrar: \code{nbrOfCorners: Int, radius: Double, midPoint: Point}\\
+Fundera över hur case-klassen \code{Polygon} och dess kompanjonsobjekt ska se ut för att koden ovan i \code{PolygonWindow} ska fungera som tänkt. Testa att allt fungerar i REPL.
 
 \Subtask Kan man använda metoden \code{regularPolygon} för att rita cirklar? Kan man använda \code{Polygon} för att representera oregelbundna polygoner?
-Testa i Scala REPL!
+Testa i REPL.
 
 \SOLUTION
 
@@ -620,7 +624,7 @@ case class Polygon(points: Vector[Point]):
   val nbrOfCorners: Int = points.length
   
 object Polygon:
-  def regularPolygon(nbrOfCorners: Int, radius: Double, midPoint: Point): Polygon =
+  def regular(nbrOfCorners: Int, radius: Double, midPoint: Point): Polygon =
     val points = new Array[Point](nbrOfCorners)
     for i <- 0 until nbrOfCorners do
       val theta = i * (2 * math.Pi) / nbrOfCorners
@@ -634,14 +638,15 @@ En perfekt cirkel går inte att skapa, men det går att komma tillräckligt när
 Testa till exempel med 50 hörn likt nedan.
 \begin{REPL}
 scala> import graphics.*
-scala> val circle = Polygon.regularPolygon(50,70,Point(-25,-25))
+scala> val circle = Polygon.regular(50,70,Point(-25,-25))
 scala> val window = PolygonWindow()
 scala> window.draw(circle)
 \end{REPL}
 
 Även en oregelbunden polygon går att skapa. Använd då konstruktorn till \code{Polygon} direkt. Till exempel likt nedan.
 \begin{REPL}
-scala> val irregular = Polygon(Vector(Point(34,83), Point(16,42), Point(77,77), Point(100,138)))
+scala> val irregular = 
+         Polygon(Vector(Point(34,83), Point(16,42), Point(77,77), Point(100,138)))
 scala> window.draw(irregular)
 \end{REPL}
 
