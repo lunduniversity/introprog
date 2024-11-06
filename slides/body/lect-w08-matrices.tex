@@ -576,7 +576,7 @@ Primitiva arrayer har en equals-metod som ger referenslikhet, \Alert{inte} inneh
 \end{Slide}
 
 \ifkompendium\else
-\begin{Slide}{Övning: Kolla likhet av array (uppfinner hjulet)}
+\begin{Slide}{Kolla likhet mellan två heltalsmatriser (uppfinner hjulet)}
 \begin{CodeSmall}
 def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = 
   if xss.length != yss.length then false else
@@ -602,7 +602,7 @@ end isEqual
 \fi
 
 
-\begin{Slide}{Övning: Kolla likhet av array (uppfinner hjulet)}
+\begin{Slide}{Kolla likhet mellan två heltalsmatriser (uppfinner hjulet)}
 \begin{CodeSmall}
 def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = 
   if xss.length != yss.length then false else
@@ -626,9 +626,9 @@ end isEqual
 \end{CodeSmall}
 \end{Slide}
 
-\begin{Slide}{Använd \texttt{sameElements} för test av innehållslikhet men bara på icke-nästlade arrayer}
-
-  I Scala kan du använda metoden \code{sameElements} på arrayer för innehållslikhet, men det funkar \Alert{INTE} på nästlade strukturer.
+\begin{Slide}{Använd INTE \texttt{sameElements} på nästlade arrayer}
+\SlideFontSmall
+I Scala kan du använda metoden \code{sameElements} för att kolla innehållslikhet mellan två arrayer, men det funkar \Alert{INTE} på djupet i nästlade strukturer.
 
 \begin{REPL}
 scala> val xs = Array(1,2,3)
@@ -637,15 +637,38 @@ xs: Array[Int] = Array(1, 2, 3)
 scala> val ys = Array(1,2,3)
 ys: Array[Int] = Array(1, 2, 3)
 
-scala> xs.sameElements(ys)
-res0: Boolean = true
+scala> xs.sameElements(ys)                            // xs, ys ej nästlade
+res0: Boolean = true                                  // innehåll lika!
 
 scala> Array(Array(1)) sameElements Array(Array(1))  
-res1: Boolean = false
+res1: Boolean = false                                 //AAAARGH!
 
 \end{REPL}
-\pause Använd i stället: \code{java.util.Arrays.deepEquals(xs, ys)}\\
-men det kan då behövas \code{.asInstanceOf[Array[Object]]} på argumenten om kompilatorn inte klarar typkonverteringen.
+Använd i stället: \\\code{java.util.Objects.deepEquals} eller \code{java.util.Arrays.deepEquals} \\Den senare kräver typkonvertering av argumenten med: \code{asInstanceOf[Array[Object]]}
+\end{Slide}
+
+\begin{Slide}{Kontroll av innehållslikhet mellan nästlade arrayer}\SlideFontTiny
+\code{java.util.Objects.deepEquals} fungerar \Emph{på djupet} för godtyckliga referenstyper:
+\begin{REPLsmall}
+scala> java.util.Objects.deepEquals(
+          Array(Array("a", Array("b"), 42)),
+          Array(Array("a", Array("b"), 42)))
+val res0: Boolean = true
+
+scala> java.util.Objects.deepEquals(
+          Array(Array("a", Array("b"), 42)),
+          Array(Array("a", Array("b"), 43)))
+val res1: Boolean = false
+\end{REPLsmall}
+\code{java.util.Objects.deepEquals} kontrollerar om argumenten är arrayer och anropar då i sin tur \code{java.util.Arrays.deepEquals} efter typkonvertering:
+\begin{REPLsmall}
+scala> java.util.Arrays.deepEquals(
+          Array(Array("a", Array("b"), 42)).asInstanceOf[Array[Object]],
+          Array(Array("a", Array("b"), 42)).asInstanceOf[Array[Object]])
+val res3: Boolean = true
+
+\end{REPLsmall}
+\url{https://stackoverflow.com/questions/63686721/best-replacement-of-deep-method-in-scala-2-13}
 \end{Slide}
 
 % \begin{Slide}{Matris som Array med Array med heltal i Java}\SlideFontTiny
