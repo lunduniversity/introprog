@@ -279,7 +279,7 @@ Bastyp som ej ska instansieras direkt är \Alert{abstrakt} (visas med \emph{kurs
 
 
 
-
+\Subsection{Bastyp, \texttt{trait}, \texttt{extends}}
 
 
 
@@ -616,13 +616,43 @@ Det \emph{finns} tillfällen när \Alert{kodduplicering} \Emph{faktiskt är att 
 \end{Slide}
 
 
+\Subsection{Subtypspolymorfism och dynamisk bindning}
+
+
+\begin{Slide}{Subtypspolymorfism och dynamisk bindning}\SlideFontTiny
+\begin{Code}[basicstyle=\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
+trait Robot { def work(): Unit }
+
+case class CleaningBot(name: String) extends Robot:
+  def work(): Unit = println(" Städa Städa")
+
+case class TalkingBot(name: String) extends Robot:
+  def work(): Unit = println(" Prata Prata")
+\end{Code}
+\Emph{Polymorfism} betyder ''många former''. Referenserna r och bot nedan kan ha olika ''former'', d.v.s de kan referera till olika sorters robotar. \\ \Emph{Dynamisk bindning} innebär att körtidstypen avgör vilken metod som körs.
+\begin{REPL}[numbers=left, basicstyle=\color{white}\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
+scala> def robotDoWork(bot: Robot) = { print(bot); bot.work() }
+
+scala> var r: Robot = CleaningBot("Wall-E")
+
+scala> robotDoWork(r)
+CleaningBot(Wall-E) Städa Städa
+
+scala> r = TalkingBot("C3PO")
+
+scala> robotDoWork(r)
+TalkingBot(C3PO) Prata Prata
+\end{REPL}
+\end{Slide}
+  
+  
 
 \ifkompendium
-\begin{Slide}{Överskuggning}
+\begin{Slide}{Exempel: Överskuggning och \texttt{override}}
   \vspace{-0.5em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{11}{13}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/vego3.scala}
 \end{Slide}
 \else
-\begin{Slide}{Överskuggning}
+\begin{Slide}{Exempel: Överskuggning och \texttt{override}} \SlideFontSmall
   \vspace{-0.5em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6}{7.3}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/vego3.scala}
 \end{Slide}
 \fi
@@ -752,32 +782,6 @@ Testa körtidstyp med \code{isInstanceOf[Typ]}. Lova kompilatorn (och ta själv 
 
   
 
-\begin{Slide}{Terminologi: Polymorfism och dynamisk bindning}\SlideFontTiny
-\begin{Code}[basicstyle=\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
-trait Robot { def work(): Unit }
-
-case class CleaningBot(name: String) extends Robot:
-  override def work(): Unit = println(" Städa Städa")
-
-case class TalkingBot(name: String) extends Robot:
-  override def work(): Unit = println(" Prata Prata")
-\end{Code}
-\Emph{Polymorfism} betyder ''många former''. Referenserna r och bot nedan kan ha olika ''former'', d.v.s de kan referera till olika sorters robotar. \\ \Emph{Dynamisk bindning} innebär att körtidstypen avgör vilken metod som körs.
-\begin{REPL}[numbers=left, basicstyle=\color{white}\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
-scala> def robotDoWork(bot: Robot) = { print(bot); bot.work() }
-
-scala> var r: Robot = CleaningBot("Wall-E")
-
-scala> robotDoWork(r)
-CleaningBot(Wall-E) Städa Städa
-
-scala> r = TalkingBot("C3PO")
-
-scala> robotDoWork(r)
-TalkingBot(C3PO) Prata Prata
-\end{REPL}
-\end{Slide}
-
 
 \begin{Slide}{Anonym klass}\SlideFontSmall
 Om man har en abstrakt typ med saknade implementationer kan man fylla i det som fattas i dessa i ett extra block som ''hängs på'' vid instansiering:
@@ -881,15 +885,13 @@ open class Gurka(val vikt: Int, val pris: Double):
 scala> object StorGurkan extends Gurka(1000, 1_000_000): // ärv på bäst du vill!
          override def alternativ = "kan kanske också funka med en betongpelare"
 \end{REPLsmall}
-\item \code{open} krävs om du vill tysta varning vid arv från en annan kodfil.
+\item \code{open} krävs om du vill tysta varning vid \Alert{arv från en annan kodfil}.
 \item Du kan även komma undan varningen med \code{import scala.language.adhocExtensions} 
 \end{itemize}  
 
 \url{https://youtu.be/aFmIS5qeetA?t=206}
 \end{Slide}
 
-
-\Subsection{Trait eller abstrakt klass?}
 
 \begin{Slide}{Trait eller abstrakt klass?}\SlideFontSmall
 Nyckelordet \code{abstract} behövs framför \code{class} om abstrakta medlemmar:
