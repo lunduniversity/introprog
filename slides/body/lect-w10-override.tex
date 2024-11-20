@@ -95,19 +95,19 @@ Undvik abstrakta \code{var}-medlemmar -- oftast bättre med abstrakt \code{def}.
 \begin{itemize}
 \item En abstrakt \code{def}-medlem får bytas ut mot en \code{var} om du \Alert{inte} skriver \code{override}:
 \begin{REPLsmall}
-scala> trait AbstractDef { def x: Int }
-scala> trait Sub extends AbstractDef { override var x = 43 }
+scala> trait Super { def x: Int }
+scala> trait Sub extends Super { override var x = 43 }
 -- Error:
-1 |trait Sub extends AbstractDef { override var x = 43 }
+1 |trait Sub extends Super { override var x = 43 }
   |                                             ^
   |                                             setter x_= overrides nothing
 
-scala> trait Sub extends AbstractVar { var x = 43 }   // funkar om ej override
+scala> trait Sub extends Super { var x = 43 }   // funkar om ej override
 \end{REPLsmall}
 Den abstrakta \code{def}-medlemmen blir då implementerad av en konkret getter. 
 \item Egentligen är en publik \code{var}-medlem en kombination av en getter och en setter. Du kan skapa konkret getter+setter och överskugga gettern explicit med \code{override} (notera att settern inte kan göra \code{override}, eftersom superklassen inte har någon motsvarande metod att byta ut -- jämför felmeddelande ovan):
 \begin{REPLsmall}
-scala> trait Sub2 extends AbstractDef:
+scala> trait Sub2 extends Super:
          private var myPrivateValue = 42
          override def x: Int = myPrivateValue
          def x_(newValue: Int): Unit = myPrivateValue = newValue
