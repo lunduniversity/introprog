@@ -526,13 +526,27 @@ scala> sort(42.0, 41.0)
 
 \TaskSolved \what
 
-\SubtaskSolved \TODO
+\SubtaskSolved 
 
+\begin{itemize}
+  \item Först deklarerar vi en \code{trait}, \code{CanCompare}, med en generisk typparameter \code{T}. Den innehåller en abstrakt metod \code{compare} som tar två parametrar av typen \code{T} och returnerar en \code{Int}.
+  \item Sedan definieras en metod \code{sort} som också tar en generisk typparameter \code{T}. Metoden tar två parametrar, a och b av typen T, samt en \code{using} parameter cc som måste vara en instans av \code{CanCompare[T]}. Inuti metoden används compare-metoden från CanCompare för att bestämma om a och b ska byta plats eller inte. 
+  \item När vi försöker köra \code{sort(42, 41)} så får vi felmeddelande av kompilatorn. Anledning till detta är att det inte finns en given instans av CanCompare[Int].
+  \item Vi löser detta på nästa rad med \code{given intComparator} som är av typen \linebreak CanCompare[Int]. Vi definierar även vår abstrakta metod \code{compare} från CanCompare med \code{override def compare}... När vi kör \code{sort(42,41)} på nästa rad fungerar det nu som det ska och vi får tillbaka \code{(Int, Int) = (41, 42)}
+  \item När vi försöker köra sort med argument av typen \code{Double} får vi ett liknande felmeddelande som vi fick tidigare, och av samma anledning att det inte finns en CanCompare för typen Double.
+\end{itemize}
 
-\SubtaskSolved \TODO
+\SubtaskSolved 
+\begin{REPL}
+scala> given doubleComparator: CanCompare[Double] with
+         override def compare(a: Double, b: Double): Int = (a - b).toInt
+\end{REPL}
 
-
-\SubtaskSolved \TODO
+\SubtaskSolved 
+\begin{REPL}
+scala> given stringComparator: CanCompare[String] with
+         override def compare(a: String, b: String): Int = (a.compareTo(b))
+\end{REPL}
 
 \QUESTEND
 
