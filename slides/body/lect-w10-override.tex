@@ -4,7 +4,7 @@
 %%%
 
 
-\Subsection{Överskuggingsregler, \texttt{override}}
+\Subsection{Överskuggningsregler}
 
 \begin{Slide}{Medlemmar, arv och överskuggning}\SlideFontTiny
 \begin{multicols}{2}
@@ -95,19 +95,19 @@ Undvik abstrakta \code{var}-medlemmar -- oftast bättre med abstrakt \code{def}.
 \begin{itemize}
 \item En abstrakt \code{def}-medlem får bytas ut mot en \code{var} om du \Alert{inte} skriver \code{override}:
 \begin{REPLsmall}
-scala> trait AbstractDef { def x: Int }
-scala> trait Sub extends AbstractDef { override var x = 43 }
+scala> trait Super { def x: Int }
+scala> trait Sub extends Super { override var x = 43 }
 -- Error:
-1 |trait Sub extends AbstractDef { override var x = 43 }
+1 |trait Sub extends Super { override var x = 43 }
   |                                             ^
   |                                             setter x_= overrides nothing
 
-scala> trait Sub extends AbstractVar { var x = 43 }   // funkar om ej override
+scala> trait Sub extends Super { var x = 43 }   // funkar om ej override
 \end{REPLsmall}
 Den abstrakta \code{def}-medlemmen blir då implementerad av en konkret getter. 
 \item Egentligen är en publik \code{var}-medlem en kombination av en getter och en setter. Du kan skapa konkret getter+setter och överskugga gettern explicit med \code{override} (notera att settern inte kan göra \code{override}, eftersom superklassen inte har någon motsvarande metod att byta ut -- jämför felmeddelande ovan):
 \begin{REPLsmall}
-scala> trait Sub2 extends AbstractDef:
+scala> trait Sub2 extends Super:
          private var myPrivateValue = 42
          override def x: Int = myPrivateValue
          def x_(newValue: Int): Unit = myPrivateValue = newValue
@@ -117,16 +117,13 @@ Ovan fungerar fint eftersom vi nu har en giltig kombination av getter+setter.
 \end{Slide}
 
 
-\Subsection{\texttt{super}}
-
 \begin{Slide}{Att skilja på mitt och ditt med \texttt{super}}
 \begin{REPL}
 scala> class X { def gurka = "super pepino" }
 
-scala> class Y extends X {
+scala> class Y extends X:
          override val gurka = ":("
          val sg = super.gurka
-       }
 
 scala> val y = new Y
 y: Y = Y@26ba2a48
@@ -180,27 +177,6 @@ scala> val b: X & Y = new X with Y  // Funkar! En anonym klass av typen X & Y
 \end{Slide}
 
 
-\begin{Slide}{Fördjupning: Typunioner med eller-operator}\SlideFontSmall
-Typunioner skapas typ-operatorn \code{|} mellan typer: 
-\begin{REPLsmall}
-scala> var x: Int | String = 42
-var x: Int | String = 42
-
-scala> x = "hej" 
-x: Int | String = hej
-
-scala> type IntOrErr = Int | String
-// defined alias type IntOrErr = Int | String
-
-scala> def div(nom: Int, denom: Int): IntOrErr = 
-         if denom != 0 then nom / denom else "div. by zero"
-\end{REPLsmall}
-Fördel jämfört med klass: rudimentärt enkelt.\\ Nackdelar: kan inte deklarera parametrar, medlemmar och allt annat som en klass kan; i viss mån kan detta kompensera med \code{extension} och \code{match}.\\ 
-{\SlideFontTiny Läs mer här:
-\url{https://dotty.epfl.ch/docs/reference/new-types/union-types.html}
-}
-\end{Slide}
-
 \begin{Slide}{Fördjupning: Transparent trait}\SlideFontSmall
 Du kan göra din trait \Emph{genomskinlig} vid typhärledning av supertypen för inmixningen med nyckelordet \code{transparent}:
 \begin{Code}
@@ -219,6 +195,29 @@ Vilken typ hade visats utan \code{transparent}? \pause \\ \code{Vector[Grönsak 
 \end{Slide}
 
 
+
+\begin{Slide}{Fördjupning: Typunioner med eller-operator}\SlideFontSmall
+Typunioner skapas typ-operatorn \code{|} mellan typer: 
+\begin{REPLsmall}
+scala> var x: Int | String = 42
+var x: Int | String = 42
+
+scala> x = "hej" 
+x: Int | String = hej
+
+scala> type IntOrErr = Int | String
+// defined alias type IntOrErr = Int | String
+
+scala> def div(nom: Int, denom: Int): IntOrErr = 
+          if denom != 0 then nom / denom else "div. by zero"
+\end{REPLsmall}
+Fördel jämfört med klass: rudimentärt enkelt.\\ Nackdelar: kan inte deklarera parametrar, medlemmar och allt annat som en klass kan; i viss mån kan detta kompensera med \code{extension} och \code{match}.\\ 
+{\SlideFontTiny Läs mer här:
+\url{https://dotty.epfl.ch/docs/reference/new-types/union-types.html}
+}
+\end{Slide}
+
+
 \begin{Slide}{Terminologi och nyckelord vid arv}
 
 \SlideFontSize{7.5}{10}
@@ -230,13 +229,14 @@ Vilken typ hade visats utan \code{transparent}? \pause \\ \code{Vector[Grönsak 
 \Emph{konkret medlem}   & en medlem som ej saknar implementation\\
 \Emph{abstrakt typ}     & en typ som kan ha abstrakta medlemmar; kan ej instansieras\\
 \Emph{konkret typ}      & en typ som ej har abstrakta medlemmar; kan instansieras\\
+\Emph{anonym klass}     & en namnlös klass som skapas direkt vid instansiering \\
 \code|class|            & en konkret typ som \Alert{kan ej ha abstrakta medlemmar}\\
 \code|abstract class|   & en abstrakt typ som \Emph{kan ha abstrakta medlemmar}\\
 \code|trait|            & är en abstrakt typ som \Emph{kan mixas in} \\
 \code|extends|          & står före en supertyp, medför arv av supertypens medlemmar\\
 \code|override|         & en medlem överskuggar (byter ut) en medlem i en superttyp\\
 \code|protected|        & gör en medlem synlig i subtyper till denna typ (jmf \code|private|)\\
-\code|final gurka|      & gör medlemen gurka final: förhindrar överskuggning\\
+\code|final def gurka|  & gör medlemen gurka final: förhindrar överskuggning\\
 \code|final class|      & gör klassen final: förhindrar vidare subtypning\\
 \code|sealed|           & förseglad trait/klass: enbart subtyper i denna kodfil, koll av match\\
 \code|open class|       & berätta att den är tänkt att ärvas, \code|open| krävs för arv i annan kodfil\\   

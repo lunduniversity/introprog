@@ -40,9 +40,10 @@ $X$ \Emph{är en} $Y$
 \item Klientkod kan \Emph{utvidga} \Eng{extend} ett givet API med egna specifika tillägg.
 \end{itemize}
 
-\item Man kan använda arv för att deklarera en gemensam \Emph{bastyp} så att generiska samlingar kan ges en mer specifik elementtyp.
+\item Man kan använda arv för att deklarera en gemensam \Emph{bastyp} så att variabler och generiska samlingar kan ges en lagom specifik elementtyp.
 \begin{itemize}
-\item Det räcker att man vet bastypen för att kunna anropa gemensamma metoder på alla element i samlingen.
+\item Det räcker att man vet bastypen för att kunna nå gemensamma medlemmar för alla element i samlingen.
+\item Exempel: Alla grönsaker har en vikt.
 \end{itemize}
 \end{itemize}
 \end{Slide}
@@ -74,7 +75,7 @@ $X$ \Emph{är en} $Y$
 
 \end{tikzpicture}
 \end{center}
-Mer om UML-diagram i senare kurser: pfk, omd.\\
+Mer om UML-diagram i senare kurser.\\
 \href{https://en.wikipedia.org/wiki/Class_diagram}{\SlideFontTiny en.wikipedia.org/wiki/Class\_diagram}
 
 \end{Slide}
@@ -190,18 +191,18 @@ class Player(val snake: Snake)
 
 \begin{Slide}{Behovet av gemensam bastyp}\SlideFontSmall
 \begin{REPLsmall}
-scala> class Gurka(val vikt: Int)
+scala> case class Gurka(vikt: Int)
 
-scala> class Tomat(val vikt: Int)
+scala> case class Tomat(vikt: Int)
 
-scala> val gurkor = Vector(new Gurka(200), new Gurka(300))
-gurkor: Vector[Gurka] = Vector(Gurka@60856961, Gurka@2fd953a6)
+scala> val gurkor = Vector(Gurka(200), Gurka(300))
+val gurkor: Vector[Gurka] = Vector(Gurka(200), Gurka(300))
 
 scala> gurkor.map(_.vikt)
 res0: Vector[Int] = Vector(200, 300)
 
-scala> val grönsaker = Vector(new Gurka(200), new Tomat(42))
-val grönsaker: Vector[Gurka | Tomat] = Vector(Gurka@15f11bfb,Tomat@16a499d1)
+scala> val grönsaker = Vector(Gurka(200), Tomat(42))
+val grönsaker: Vector[Gurka | Tomat] = Vector(Gurka(200), Tomat(42))
 
 scala> grönsaker.map(_.vikt)
 -- [E008] Not Found Error: --------------------------
@@ -214,7 +215,7 @@ Hur får vi detta att fungera som vi vill? \pause\\$\rightarrow$ Skapa en bastyp
 
 \begin{Slide}{Varför syns inte gemensam medlem i en typunion?}
 \begin{REPLsmall}
-scala> val grönsaker = Vector(new Gurka(200), new Tomat(42))
+scala> val grönsaker = Vector(Gurka(200), Tomat(42))
 val grönsaker: Vector[Gurka | Tomat] = Vector(Gurka@15f11bfb,Tomat@16a499d1)
 
 scala> grönsaker.map(_.vikt)
@@ -279,7 +280,7 @@ Bastyp som ej ska instansieras direkt är \Alert{abstrakt} (visas med \emph{kurs
 
 
 
-
+\Subsection{Bastyp, \texttt{trait}, \texttt{extends}}
 
 
 
@@ -288,23 +289,23 @@ Med en \code{trait Grönsak} kan klasserna \code{Gurka} och \code{Tomat} få en 
 \begin{REPL}
 scala> trait Grönsak
 
-scala> class Gurka(val vikt: Int) extends Grönsak
+scala> case class Gurka(vikt: Int) extends Grönsak
 
-scala> class Tomat(val vikt: Int) extends Grönsak
+scala> case class Tomat(vikt: Int) extends Grönsak
 
-scala> val grönsaker = Vector(new Gurka(200), new Tomat(42))
-grönsaker: Vector[Grönsak] = Vector(Gurka@3dc4ed6f, Tomat@2823b7c5)
+scala> val grönsaker = Vector(Gurka(200), Tomat(42))
+val grönsaker: Vector[Grönsak] = Vector(Gurka(200), Tomat(42))
 
 
 \end{REPL}
 \pause
 Men det är ännu \Alert{inte} som vi vill ha det:
 \begin{REPLnonum}
-  scala> grönsaker.map(_.vikt)
-  -- [E008] Not Found Error: --------------------------
-  1 |grönsaker.map(_.vikt)
-    |              ^^^^^^
-    |              value vikt is not a member of Grönsak
+scala> grönsaker.map(_.vikt)
+-- [E008] Not Found Error: --------------------------
+1 |grönsaker.map(_.vikt)
+  |              ^^^^^^
+  |              value vikt is not a member of Grönsak
 \end{REPLnonum}
 \end{Slide}
 
@@ -356,14 +357,14 @@ Vi inkluderar det gemensamma attributet \code{val vikt} som en \Emph{abstrakt me
 trait Grönsak:
   val vikt: Int    // implementation saknas, inget =
 
-class Gurka(val vikt: Int) extends Grönsak
+case class Gurka(vikt: Int) extends Grönsak
 
-class Tomat(val vikt: Int) extends Grönsak
+case class Tomat(vikt: Int) extends Grönsak
 \end{Code}
 Nu har du explicit sagt till kompilatorn att du vill att alla grönsaker har en vikt:
 \begin{REPLsmall}
-scala> val grönsaker = Vector(new Gurka(200), new Tomat(42))   //funkar även utan new
-val grönsaker: Vector[Grönsak] = Vector(Gurka@3dc4ed6f, Tomat@2823b7c5)
+scala> val grönsaker = Vector(Gurka(200), Tomat(42))
+val grönsaker: Vector[Grönsak] = Vector(Gurka(200), Tomat(42))
 
 scala> grönsaker.map(_.vikt)
 val res0: Vector[Int] = Vector(200, 42)
@@ -404,7 +405,7 @@ En förenklad bild av den översta delen av typhierarkin i Scala:
 \item De numeriska typerna \code{Int}, \code{Double}, etc är subtyper till \Emph{\code{AnyVal}} och kallas \Emph{värdetyper} och lagras på ett speciellt, effektivt sätt i minnet.
 \item Alla dina egna klasser är subtyper till \Emph{\texttt{AnyRef}} och kallas \Emph{referenstyper} och kan (direkt eller indirekt) konstrueras med \code{new}.
 \item \texttt{AnyRef} motsvaras av \Alert{\code{java.lang.Object}} i JVM.
-\pause\item (För att skilja ut s.k. \Emph{opaka typer} (ingår ej i denna kurs), som \Alert{inte} kan undersökas med mönstermatchning, så är finns även typen \code{Matchable} som är subtyp till \code{Any} och supertyp till \code{AnyRef} och \code{AnyVal}.)
+\pause\item {\SlideFontTiny (Det finns även \code{Matchable} som är subtyp till \code{Any} och supertyp till \code{AnyRef} och \code{AnyVal}. Typen \code{Matchable} behövs för att skilja mellan typer som kan undersökas med mönstermatchning och andra s.k. \Emph{opaka typer} (överkurs).) }
 \end{itemize}
 \end{Slide}
 
@@ -474,11 +475,11 @@ Alla dina egna typer ingår underförstått i Scalas typhierarki:
 
 \item den \Emph{kan} innehålla delar som \Emph{saknar implementation}
 
-\item den \Emph{kan mixas} med flera andra traits så att olika koddelar kan återanvändas på flexibla sätt.
+\item den \Emph{kan mixas} med flera andra traits så att olika koddelar kan kombineras på flexibla sätt.
 
-\item den \Alert{kan inte} instansieras direkt eftersom den är abstrakt.
+\item den \Alert{kan inte} instansieras direkt.
 
-\item Från Scala 3 \Emph{kan} den ha \Emph{parametrar} (precis som klasser).
+\item den \Emph{kan} ha \Emph{parametrar}\footnote{I gamla Scala 2 kan traits ej ha parametrar} på samma sätt som klasser.
 \end{itemize}
 \end{itemize}
 
@@ -592,6 +593,7 @@ Hur kan vi göra medlemmen \code{y} synlig? \pause \\Lägg till \code{val} framf
 
 
 \begin{Slide}{Varför kan kodduplicering orsaka problem?}
+\pause
 \begin{itemize}
 \item Mer att skriva (inte jättestort problem)
 \pause
@@ -616,13 +618,43 @@ Det \emph{finns} tillfällen när \Alert{kodduplicering} \Emph{faktiskt är att 
 \end{Slide}
 
 
+\Subsection{Subtypspolymorfism och dynamisk bindning}
+
+
+\begin{Slide}{Subtypspolymorfism och dynamisk bindning}\SlideFontTiny
+\begin{Code}[basicstyle=\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
+trait Robot { def work(): Unit }
+
+case class CleaningBot(name: String) extends Robot:
+  def work(): Unit = println(" Städa Städa")
+
+case class TalkingBot(name: String) extends Robot:
+  def work(): Unit = println(" Prata Prata")
+\end{Code}
+\Emph{Polymorfism} betyder ''många former''. Referenserna r och bot nedan kan ha olika ''former'', d.v.s de kan referera till olika sorters robotar. \\ \Emph{Dynamisk bindning} innebär att körtidstypen avgör vilken metod som körs.
+\begin{REPL}[numbers=left, basicstyle=\color{white}\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
+scala> def robotDoWork(bot: Robot) = { print(bot); bot.work() }
+
+scala> var r: Robot = CleaningBot("Wall-E")
+
+scala> robotDoWork(r)
+CleaningBot(Wall-E) Städa Städa
+
+scala> r = TalkingBot("C3PO")
+
+scala> robotDoWork(r)
+TalkingBot(C3PO) Prata Prata
+\end{REPL}
+\end{Slide}
+  
+  
 
 \ifkompendium
-\begin{Slide}{Överskuggning}
+\begin{Slide}{Exempel: Överskuggning och \texttt{override}}
   \vspace{-0.5em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{11}{13}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/vego3.scala}
 \end{Slide}
 \else
-\begin{Slide}{Överskuggning}
+\begin{Slide}{Exempel: Överskuggning och \texttt{override}} \SlideFontSmall
   \vspace{-0.5em}\scalainputlisting[numbers=left,numberstyle=,basicstyle=\fontsize{6}{7.3}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/vego3.scala}
 \end{Slide}
 \fi
@@ -684,6 +716,7 @@ scala> s.vårHemlis
 \item Om en kodfil bara innehåller \Emph{en enda} klass/trait/singelobjekt ge filen samma namn som innehållet, t.ex. \code{KlassensNamn.scala}
 \item Om en kodfil innehåller \Emph{flera} saker, döp filen till något som återspeglar hela innehållet och använd \Emph{liten begynnelsebokstav}, t.ex. \code{drawing-utils.scala} eller \code{bastypensNamn.scala}
 \end{itemize}
+\item Scala 3 varnar vid arv utanför samma kodfil (se öppna klasser senare).
 \end{itemize}
 \end{Slide}
 
@@ -752,32 +785,6 @@ Testa körtidstyp med \code{isInstanceOf[Typ]}. Lova kompilatorn (och ta själv 
 
   
 
-\begin{Slide}{Terminologi: Polymorfism och dynamisk bindning}\SlideFontTiny
-\begin{Code}[basicstyle=\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
-trait Robot { def work(): Unit }
-
-case class CleaningBot(name: String) extends Robot:
-  override def work(): Unit = println(" Städa Städa")
-
-case class TalkingBot(name: String) extends Robot:
-  override def work(): Unit = println(" Prata Prata")
-\end{Code}
-\Emph{Polymorfism} betyder ''många former''. Referenserna r och bot nedan kan ha olika ''former'', d.v.s de kan referera till olika sorters robotar. \\ \Emph{Dynamisk bindning} innebär att körtidstypen avgör vilken metod som körs.
-\begin{REPL}[numbers=left, basicstyle=\color{white}\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
-scala> def robotDoWork(bot: Robot) = { print(bot); bot.work() }
-
-scala> var r: Robot = CleaningBot("Wall-E")
-
-scala> robotDoWork(r)
-CleaningBot(Wall-E) Städa Städa
-
-scala> r = TalkingBot("C3PO")
-
-scala> robotDoWork(r)
-TalkingBot(C3PO) Prata Prata
-\end{REPL}
-\end{Slide}
-
 
 \begin{Slide}{Anonym klass}\SlideFontSmall
 Om man har en abstrakt typ med saknade implementationer kan man fylla i det som fattas i dessa i ett extra block som ''hängs på'' vid instansiering:
@@ -838,13 +845,12 @@ Med en förseglad typhierarki kan du bara ärva bastypen inom samma kodfil.
 \end{Slide}
 
 
-\begin{Slide}{Förseglade typer med \texttt{sealed}}\SlideFontSmall
+\begin{Slide}{Förseglade typer med \texttt{sealed}}\SlideFontTiny
 Med en \code{sealed} kan du skapa en \Emph{förseglad} uppräkning:
 \begin{Code}
 sealed trait Färg(val toInt: Int)
 object Färg:
   val values = Vector(Spader, Hjärter, Ruter, Klöver)
-  
   case object Spader  extends Färg(0)
   case object Hjärter extends Färg(1)
   case object Ruter   extends Färg(2)
@@ -862,6 +868,7 @@ scala> Färg.values(0) match { case Färg.Spader => "hej" }
   |It would fail on pattern case: Hjärter, Ruter, Klöver
 val res0: String = hej
 \end{REPLsmall}
+Använd hellre \code{enum} så får du både \code{sealed} och mer godis på köpet!
 \end{Slide}
   
         
@@ -881,15 +888,13 @@ open class Gurka(val vikt: Int, val pris: Double):
 scala> object StorGurkan extends Gurka(1000, 1_000_000): // ärv på bäst du vill!
          override def alternativ = "kan kanske också funka med en betongpelare"
 \end{REPLsmall}
-\item \code{open} krävs om du vill tysta varning vid arv från en annan kodfil.
+\item \code{open} krävs om du vill tysta varning vid \Alert{arv från en annan kodfil}.
 \item Du kan även komma undan varningen med \code{import scala.language.adhocExtensions} 
 \end{itemize}  
 
 \url{https://youtu.be/aFmIS5qeetA?t=206}
 \end{Slide}
 
-
-\Subsection{Trait eller abstrakt klass?}
 
 \begin{Slide}{Trait eller abstrakt klass?}\SlideFontSmall
 Nyckelordet \code{abstract} behövs framför \code{class} om abstrakta medlemmar:

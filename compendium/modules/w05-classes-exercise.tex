@@ -492,15 +492,15 @@ scala> g.vikt
 
 
 
-\WHAT{Skapa en punktklass som kan hantera polära koordinater.}
+\WHAT{Skapa en punktklass som kan hantera polära koordinater och en klass som representerar en polygon m.h.a. dessa punkter.}
 
 \QUESTBEGIN
 
 \Task \what~
-Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en koordinat både med ''vanliga'' kartesiska koordinater\footnote{\url{https://sv.wikipedia.org/wiki/Kartesiskt_koordinatsystem}} och med polära koordinater%
-\footnote{\url{https://sv.wikipedia.org/wiki/Pol\%C3\%A4ra\_koordinater}}.
+Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en koordinat både med ''vanliga'' kartesiska koordinater\footnote{\url{https://sv.wikipedia.org/wiki/Kartesiskt_koordinatsystem}} och med polära koordinater
+\footnote{\url{https://sv.wikipedia.org/wiki/Pol\%C3\%A4ra\_koordinater}}. Sedan ska du använda denna klass för att skapa regelbundna polygoner med en oföränderlig case-klass \code{Polygon}.
 
-\Subtask Skapa kod med hjälp av en editor, t.ex. VS \code{code}, i filen  \code{Point.scala} enligt följande riktlinjer:
+\Subtask Skapa kod med hjälp av en editor, t.ex. VS \code{code}, i filen \code{Point.scala} enligt följande riktlinjer:
 \begin{enumerate}[noitemsep]
 \item \code{Point} ska ligga i paketet \code{graphics}.
 
@@ -510,12 +510,10 @@ Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en k
 \item \code{y: Double} för y-koordinaten.
 \end{itemize}
 
-\item \code{Point} ska ha följande publika medlemmar (två oföränderliga attribut och två metoder):
+\item \code{Point} ska ha följande publika medlemmar (två oföränderliga attribut och en metod):
 \begin{itemize}[nolistsep, noitemsep]
-\item \code{val r: Double} ska ge motsvarande polära koordinatens
- avstånd till origo.
+\item \code{val r: Double} ska ge motsvarande polära koordinatens avstånd till origo.
 \item \code{val theta: Double} ska ge polära koordinatens vinkel i radianer.
-\item \code{def negY: Point} ska ge en ny punkt med y-koordinaten negerad.
 \item \code{def +(p: Point): Point} ska ge en ny punkt vars koordinat är summan av x- respektive y-koordinaterna för denna instans och punkten \code{p}.
 \end{itemize}
 
@@ -559,16 +557,48 @@ Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en k
 
 \item Du har nytta av metoderna \code{math.cos(theta)} och \code{math.sin(theta)} vid omvandling från polära koordinater.
 
-\item Attributet \code{negY} är användbar vid omvandling till fönsterkoordinater där y-axeln är omvänd jämfört med kartesiska koordinater.
-
 \item Notera att klassens attribut är av typen \code{Double} och inte \code{Int}, trots att vi senare ska använda punkten för att beskriva en diskret pixelposition i ett \code{PixelWindow}. Anledningen till detta är att det kan uppstå avrundningsfel vid numeriska beräkningar. Detta blir särskilt märkbart vid upprepad räkning med små värden, t.ex. när man ritar en approximerad cirkel med många linjesegment.
 \end{itemize}
 
-\Subtask Använd din punktklass då du deklarerar en funktion \code{cyclic(n, r, p)} som ger en sekvens av punkter som beskriver en liksidig månghörning med \code{n} hörn där hörnen är placerade på en cirkel med radien \code{r} och mittpunkten \code{p}.
+\Subtask Klassen \code{PolygonWindow} nedan innehåller ett \code{PixelWindow} och ger möjlighet att rita ut polygoner. 
+Kopiera koden för \code{PolygonWindow} till en ny kodfil \code{PolygonWindow.scala} i samma katalog som du placerade \code{Point} ovan i.
 
-\Subtask Skapa en funktion \code{drawPolygon(pts)} som ritar månghörningar enligt en punktsekvens \code{pts} i ett \code{PixelWindow}.
+\begin{Code}
+//> using dep "se.lth.cs::introprog:1.4.0"
+package graphics
 
-\Subtask Hur många hörn behövs det för att en liksidig månghörning ska se ut som en cirkel?
+import introprog.PixelWindow
+import java.awt.Color
+
+extension (p: Point) def toPixels: Seq[Int] = 
+  Seq(p.x.round.toInt, p.y.round.toInt)
+
+class PolygonWindow:
+  val black     = Color(0, 0, 0)
+  val coolGreen = Color(0, 255, 111)
+  val width     = 500
+  val height    = 500
+
+  val window = 
+    PixelWindow(width, height, title = "Polygons", 
+                background = black, foreground = coolGreen)
+
+  def draw(polygon: Polygon): Unit =
+    for i <- 0 until polygon.nbrOfCorners do
+      val from = polygon.points(i).toPixels.map(_ + width / 2)
+      val next = polygon.points((i+1) % polygon.nbrOfCorners)
+      val to = next.toPixels.map(_ + width / 2)
+      window.line(from(0), from(1), to(0), to(1), lineWidth = 2)
+\end{Code}
+
+Skapa en case-klass vid namn \code{Polygon} med en parameter \code{points: Vector[Point]} och ett attribut \code{val nbrOfCorners: Int}. Case-klassen \code{Polygon} ska också ligga i paketet \code{graphics}. 
+
+Likt klassen \code{Point} ovan ska också \code{Polygon} ha ett kompanjonsobjekt. 
+Kompanjonsobjektet ska ha en metod \code{regular} som skapar en regelbunden polygon. Metoden ska ha följande parametrar: \code{nbrOfCorners: Int, radius: Double, midPoint: Point}\\
+Fundera över hur case-klassen \code{Polygon} och dess kompanjonsobjekt ska se ut för att koden ovan i \code{PolygonWindow} ska fungera som tänkt. Testa att allt fungerar i REPL.
+
+\Subtask Kan man använda metoden \code{regular} för att rita cirklar? Kan man använda \code{Polygon} för att representera oregelbundna polygoner?
+Testa i REPL.
 
 \SOLUTION
 
@@ -578,9 +608,8 @@ Du ska skapa en oföränderlig case-klass \code{Point} som kan representera en k
 package graphics
 
 case class Point(x: Double, y: Double):
-  val r: Double          = math.hypot(x, y)
-  val theta: Double      = math.atan2(y, x)
-  def negY: Point        = Point(x, -y)
+  val r: Double = math.hypot(x, y)
+  val theta: Double = math.atan2(y, x)
   def +(p: Point): Point = Point(x + p.x, y + p.y)
 
 object Point:
@@ -588,12 +617,38 @@ object Point:
     Point(r * math.cos(theta), r * math.sin(theta))
 \end{Code}
 
-\Subtask \TODO
+\Subtask \begin{Code}
+package graphics
 
-\Subtask \TODO
+case class Polygon(points: Vector[Point]):
+  val nbrOfCorners: Int = points.length
+  
+object Polygon:
+  def regular(nbrOfCorners: Int, radius: Double, midPoint: Point): Polygon =
+    val points = new Array[Point](nbrOfCorners)
+    for i <- 0 until nbrOfCorners do
+      val theta = i * (2 * math.Pi) / nbrOfCorners
+      points(i) = Point.polar(radius, theta) + midPoint
+    end for
+    Polygon(points.toVector)
+\end{Code}
 
-\Subtask \TODO
+\Subtask 
+En perfekt cirkel går inte att skapa, men det går att komma tillräckligt nära för att göra det omöjligt att se hörnen.
+Testa till exempel med 50 hörn likt nedan.
+\begin{REPL}
+scala> import graphics.*
+scala> val circle = Polygon.regular(50,70,Point(-25,-25))
+scala> val window = PolygonWindow()
+scala> window.draw(circle)
+\end{REPL}
 
+Även en oregelbunden polygon går att skapa. Använd då konstruktorn till \code{Polygon} direkt. Till exempel likt nedan.
+\begin{REPL}
+scala> val irregular = 
+         Polygon(Vector(Point(1,8), Point(33,14), Point(99,87), Point(42,56)))
+scala> window.draw(irregular)
+\end{REPL}
 
 \QUESTEND
 

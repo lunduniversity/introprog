@@ -276,19 +276,24 @@ val smak = g match
 
 
 
-\begin{Slide}{Matchning med typade mönster}\SlideFontSmall
-Med en typannotering efter en variabel får man ett \Emph{typat mönster} \Eng{typed pattern}. Om matchningen lyckas blir värdet \Alert{omvandlat} till den specifika typen och binds till variabeln.
+\begin{Slide}{Matchning med typade mönster}\SlideFontTiny
+Antag att vi har nedan oäkta funktion \code{f} som vi vill matcha på:
 \begin{Code}
-def f() = 
+def f() =   // Vilken returtyp härleds av kompilatorn? 
   if math.random() < 0.5 then 42 + math.random() 
   else s"gurka ${math.random()}"
-
-val i = f() match 
-  case x: Double => x.round.toInt
-  case s: String => s.length
 \end{Code}
-\code{f()} får typen \code{Matchable} som är subtyp till \code{Any}. Vilken typ får \code{i}? \pause ~~\code{Int}
-{\SlideFontTiny \\\vspace{0.5em} Matchning mot specifika typer enl. ovan används i idiomatisk Scala hellre än \code{isInstanceOf} och \code{asInstanceOf} men man kan göra motsvarande ovan så här:
+\pause 
+Med en typannotering efter en variabel får man ett \Emph{typat mönster} \Eng{typed pattern}. Vid lyckad matchning \Alert{omvandlas} värdet till den specifika typen och binds till variabeln.
+
+
+\begin{Code}
+val i: Int = f() match         
+  case x: Double => x.round.toInt     // typat mönster som kollar om Double
+  case s: String => s.length          // typat mönster som kollar om String
+\end{Code}
+\pause
+\vspace{0.5em} Matchning mot specifika typer enl. ovan används i idiomatisk Scala hellre än \code{isInstanceOf} och \code{asInstanceOf} men man kan göra motsvarande ovan så här:
 \begin{Code}
 val i2: Int =  
   val x = f()
@@ -296,7 +301,6 @@ val i2: Int =
   else if x.isInstanceOf[String] then x.asInstanceOf[String].length
   else throw scala.MatchError(x)
 \end{Code}
-}
 \end{Slide}
 
 \begin{Slide}{Fördjupning: Unionstyper och typen \text{Matchable}}
@@ -361,7 +365,9 @@ def visa(xs: Vector[Grönsak]): String = xs match
   case Vector(g1, g2)         => s"exakt två grönsaker: $g1, $g2"
   case Vector(g, gs*)         => s"först en $g och sedan svansen: $gs"
 \end{Code}
+\pause
 \item Vad händer om du byter ordning på 2:a och 3:e mönstret?
+\pause
 \item \code{Vector(g, gs*)} kan också skrivas som \code{g +: gs}
 \end{itemize}
 \end{Slide}
@@ -376,6 +382,7 @@ pair match
   case (_, b)            => s"fattas mening: $b"
 
 \end{Code}
+Understreck betyder att vi inte är intresserade av att binda ett variabelnamn till värdet.
 
 \end{Slide}
 
@@ -383,7 +390,7 @@ pair match
 En bastyp och specifika singelobjekt av gemensam typ:
 \begin{Code}
 trait Färg
-case object Spader  extends Färg // funkar utan case men vi vill ha najs toString
+case object Spader  extends Färg // funkar utan case men vill ha najs toString
 case object Hjärter extends Färg
 case object Ruter   extends Färg
 case object Klöver  extends Färg
@@ -417,14 +424,14 @@ def parallellFärg(f: Färg): Färg = f match
   case Hjärter => Ruter
 \end{Code}
 \begin{REPL}
-1 |def parallellFärg(f: Färg): Färg = f match 
+1 warning found
+  |def parallellFärg(f: Färg): Färg = f match 
   |                                   ^
   |                           match may not be exhaustive.
   |
   |                           It would fail on pattern case: Ruter
-def parallellFärg(f: Färg): Färg
 \end{REPL}
-\Emph{Varning vid kompilering} \code{:)} ~~~Sista raden visar att det bara är en varning!
+\Emph{Varning vid kompilering} \code{:)} ~~~Tack kompilatorn!
 \end{Slide}
 
 \begin{Slide}{Mönstermatcha enumeration}\SlideFontSmall
@@ -442,8 +449,8 @@ def parallellFärg(f: Färg): Färg =
 \end{Code}
 \pause
 \begin{REPL}
-def parallellFärg(f: Färg): Färg
-3 |  f match 
+1 warning found
+  |  f match 
   |  ^
   |  match may not be exhaustive.
   |
@@ -580,7 +587,7 @@ scala> Vector(1 -> 2, 0 -> 3, 42 -> 0).collect{ case (a,b) if a > 0 => a }
 val res1: Vector[Int] = Vector(1, 42)
 
 \end{REPLsmall}
-\item Notera att \Alert{krullparentes behövs} vid ensamt \code{case}.
+\item Notera att \Alert{krullparentes behövs} vid \code{case} utan \code{match}.
 % \item Läs mer om mönster här:  \href{http://www.artima.com/pins1ed/case-classes-and-pattern-matching.html}{\SlideFontTiny www.artima.com/pins1ed/case-classes-and-pattern-matching.html}
 
 % \item För djupare förståelse av hur \code{case} fungerar, läs speciellt om \Emph{partiella funktioner} här: \href{http://www.artima.com/pins1ed/case-classes-and-pattern-matching.html\#15.7}{\SlideFontTiny www.artima.com/pins1ed/case-classes-and-pattern-matching.html\#15.7}
