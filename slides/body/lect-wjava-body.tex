@@ -8,7 +8,7 @@
 \Subsection{Jämförelse Scala och Java}
 \begin{Slide}{Övning \texttt{scalajava} och labb \texttt{javatext}}\SlideFontSmall
 %\Emph{Labbförberedelse:}
-Valfria uppgifter som ger dig en flygande start i efterföljande kurs:
+Valfria uppgifter som ger dig en \Emph{flygande start} i efterföljande kurs:
 \begin{itemize}
 \item Övning \texttt{scalajava}:
 \begin{itemize}\SlideFontTiny
@@ -22,7 +22,14 @@ Valfria uppgifter som ger dig en flygande start i efterföljande kurs:
   \item Gör ett textspel för terminalen huvudsakligen i Java men vissa delar i Scala, enligt krav, tips och inspiration i labb-instruktionerna.
 
 \end{itemize}
-\item Tips: Scala CLI och sbt kan blanda \code{.scala} och \code{.java} i samma projekt.
+\item OBS! Scala CLI och sbt kan blanda \code{.scala} och \code{.java} i samma projekt.
+\begin{REPLnonum}
+> scala run .
+\end{REPLnonum}
+Ovan kommando kommer också kompilera \code{.java}-filer.
+\\Observera Javas filnamnsregler: klass == filnamn, paket == katalog
+\\ Bra plats att lägga \code{.java}-filer: \hfill\code{src/main/java/} 
+\\ Bra plats att lägga \code{.scala}-filer: \hfill\code{src/main/scala/} 
 \end{itemize}
 \end{Slide}
 
@@ -332,14 +339,14 @@ public class HighScore {
 \begin{itemize}\SlideFontSize{6}{8}
 \item \Emph{överlagring}
 \item \Emph{anonyma funktioner}
-\item mönstermatchning
+\item \Emph{mönstermatchning}
 \item funktioner etc. på toppnivå
 \item utelämna tom parameterlista (enhetlig access)
 \item defaultargument
 \item namngivna argument
 \item lokala funktioner
 \item funktioner som äkta värden
-\item klammerparentes vid ensam paramenter
+\item klammerparentes vid ensam parameter
 \item multipla parameterlistor
 \item egendefinierade kontrollstrukturer
 \item namnanrop (fördröjd evaluering)
@@ -349,7 +356,7 @@ public class HighScore {
 \item kontextuella abstraktioner
 \end{itemize}
 \item[] ...kan man i Java %\footnote{\SlideFontTiny\href{https://en.wikipedia.org/wiki/Java_version_history}{en.wikipedia.org/wiki/Java\_version\_history}}  
-endast göra: \Emph{överlagring} (''overloading'') och \Emph{anonyma funktioner} (''lambda'') där det senare har starka begränsningar. %\footnote{\SlideFontTiny\href{https://en.wikipedia.org/wiki/Anonymous_function\#Java_Limitations}{en.wikipedia.org/wiki/Anonymous\_function\#Java\_Limitations}}
+endast göra: \Emph{överlagring} (''overloading''), \Emph{anonyma funktioner} (''lambda''), \Emph{mönstermatchning} (de senare två har starka begränsningar) 
 
 %\item \vspace{0.5em} En av de saker jag saknar mest i Java: \Alert{lokala funktioner}!
 %\item[] Det är \Alert{kombinationen} av alla koncept som \Alert{skapar uttryckskraften} i Scala.
@@ -385,7 +392,7 @@ endast göra: \Emph{överlagring} (''overloading'') och \Emph{anonyma funktioner
 De flesta C-liknande språk (men inte Scala) har en \jcode{switch}-sats som man kan använda istället för (vissa) nästlade if-else-satser:
 \javainputlisting[basicstyle=\ttfamily\SlideFontSize{5}{6}\selectfont]{../compendium/examples/match/Switch.java}
 {\SlideFontTiny
-\code{switch} i Java har stora begränsningar (fungerar t.ex. bara på primitiva typer och några till, tex String); i framtiden planerar man att anamma en del av det \code{match} i Scala kan.
+\code{switch} från Java 21 har begränsad mönstermatchning \url{https://docs.oracle.com/en/java/javase/21/language/pattern-matching.html}
 }
 \end{Slide}
 
@@ -436,7 +443,7 @@ Exempel på variabeldeklarationer i
   frame=none]
   var i1: Int = 0
   var i2 = 0
-  var i3 = 0: Int
+  var i3 = (i2: Int) + 0
   var p1: Point = new Point(0, 0)
   var p2 = new Point(0, 0)
   var (x, y) = (0, 0)
@@ -607,7 +614,7 @@ for (int i = 0; i < xs.length; i++){
 
 \item En array i Java är inget vanligt objekt, men har ett ''attribut'' \code{length} som ger antal element.
 
-\item \Emph{Övning}: skriv om med \code{while}-sats i stället; har samma syntax i Scala \& Java.
+\item \Emph{Övning}: skriv om med Javas \code{while}-sats i stället.
 
 \end{itemize}
 \end{minipage}
@@ -670,7 +677,7 @@ public class Klassnamn {
     metoder: publika abstraktioner tänkta att användas av klientkoden
 }
 \end{Code}
-\href{http://www.oracle.com/technetwork/java/codeconventions-141855.html#1852}{\SlideFontSize{9}{8}www.oracle.com/technetwork/java/codeconventions-141855.html\#1852}
+%\href{http://www.oracle.com/technetwork/java/codeconventions-141855.html#1852}{\SlideFontSize{9}{8}www.oracle.com/technetwork/java/codeconventions-141855.html\#1852}
 \end{Slide}
 
 
@@ -769,7 +776,17 @@ Gör \code{Person} + \code{JPerson} \Alert{förändringsbara}\\så att namnet oc
 
 
 \begin{Slide}{Exempel: Scala-klassen Complex}
-\scalainputlisting[basicstyle=\ttfamily\SlideFontSize{7}{9},numbers=left,numberstyle=\SlideFontSize{7}{7}\ttfamily\selectfont]{../compendium/examples/complex7.scala}
+\begin{Code}
+class Complex(val re: Double, val im: Double):
+  def r  = math.hypot(re, im)
+  def fi = math.atan2(im, re)
+  def +(other: Complex) = new Complex(re + other.re, im + other.im)
+  override def toString = s"$re + $im${Complex.imSymbol}"
+
+object Complex:
+  var imSymbol = 'i'
+\end{Code}
+
 {\SlideFontTiny Scala:~~\url{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/complex7.scala}}
 
 {\SlideFontTiny Java:~~~\url{https://github.com/lunduniversity/introprog/blob/master/compendium/examples/JComplex.scala}}
