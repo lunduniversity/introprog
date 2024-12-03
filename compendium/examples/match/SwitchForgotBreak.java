@@ -9,7 +9,7 @@ public class SwitchForgotBreak {
         case "gurka": 
             System.out.println("gott!");
         case "tomat": 
-            System.out.println("gott!");
+            System.out.println("mycket gott!");
             break;
         case "broccoli": 
             System.out.println("ganska gott...");
