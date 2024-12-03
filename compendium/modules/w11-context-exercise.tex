@@ -823,7 +823,7 @@ En trait som används på detta sätt kallas \textbf{gränssnitt} \Eng{interface
 case class Team(name: String, rank: Int) extends Ordered[Team]:
   override def compare(that: Team): Int = ???
 \end{Code}
-\emph{Tips:} Du kan anropa metoden \code{compare} på alla grundtyper, t.ex. \code{Int}, eftersom de implementerar gränssnittet \code{Oredered}. Genom att negera uttrycket blir ordningen den omvända. 
+\emph{Tips:} Du kan anropa metoden \code{compare} på alla grundtyper, t.ex. \code{Int}, eftersom de implementerar gränssnittet \code{Ordered}. Genom att negera uttrycket blir ordningen den omvända. 
 
 \begin{REPLnonum}
 scala> -(2.compare(1))
@@ -844,7 +844,7 @@ scala> Team("fnatic",1499) < Team("gurka", 2)
 \SubtaskSolved
 
 \begin{Code}
-case class  Team(name: String, rank: Int) extends Ordered[Team]:
+case class Team(name: String, rank: Int) extends Ordered[Team]:
   override def compare(that: Team): Int = -rank.compare(that.rank)
 \end{Code}
 
@@ -855,7 +855,32 @@ scala> Team("fnatic",1499) < Team("gurka", 2)
 val res1: Boolean = true
 \end{REPLnonum}
 
-\SubtaskSolved Ad hoc polymorfism är mer flexibel. \TODO{mer diskussion om likheter och skillnader här...}
+\SubtaskSolved
+Subtypspolymorfism, alltså användande av arv och gränssnitt \Eng{interface} bygger på att varje subtyp måste implementera vissa medlemmar. 
+Kompilatorn kan därmed garantera att \emph{något} kommer att ske vid anrop med en subtyp.
+Den kan däremot inte garantera \emph{vad} som kommer att ske. Detta avgörs på plats under körtid,
+så kallad dynamisk bindning.
+
+Ad hoc polymorfism å andra sidan bygger på att den anropade funktionen är definierad 
+så att den beter sig olika för olika typer. Till detta används någon form av typklasser.
+Det är alltså typen som ges vid anrop som avgör vad som sker, 
+inte vilket beteende som är definierat i den subtyp som typen "råkar" ha.
+Redan då koden kompileras kan alltså kompilatorn avgöra vad som kommer att ske baserat på
+typen, alltså statisk bindning. Detta innebär att det blir lättare att resonera om
+hur programmet beter sig.
+
+Ad hoc polymorfism ger också större flexibilitet eftersom nya typer som ska fungera tillsammans 
+med befintlig kod inte behöver uppfylla en specifikation i en supertyp eller implementera flera olika befintliga, 
+eller för ändamålet nyskapade, gränssnitt \Eng{interface}. 
+Det räcker att lägga till beteendet för denna givna typ på platsen där det spelar roll.
+På så vis behöver man inte skapa en komplicerad hierarki av specifikationer som ska implementeras.
+
+Subtypspolymorfism har dock fördelen att det finns tydliga inbördes förhållanden mellan typerna. Detta kan
+underlätta modellering.
+
+Det är svårt att förklara nyttan och begränsningarna med olika typer av polymorfism utan att förutsätta
+att läsaren har sett så pass mycket kod att det går att förvänta sig en bakgrundsförståelse för vilka problem som
+kan uppstå. Mer om sådana här spännande grejer i senare kurser alltså, eller genom andra programmeringserfarenheter.
 
 \QUESTEND
 
