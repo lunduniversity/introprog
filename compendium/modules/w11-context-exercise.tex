@@ -613,10 +613,9 @@ scala> isSorted(persons)
 
 \Subtask \emph{Importera implicita ordningsoperatorer från en \code{Ordering}.} Om man gör import på ett \code{Ordering}-objekt får man tillgång till implicita konverteringar som gör att jämförelseoperatorerna fungerar. Testa nedan variant av \code{isSorted} på olika sekvenstyper och verifiera att \code{<=}, \code{>}, etc., nu fungerar enligt nedan.
 \begin{CodeSmall}
-def isSorted[T](xs: Seq[T])(given ord: Ordering[T]): Boolean = {
-  import ord._
+def isSorted[T](xs: Seq[T])(using ord: Ordering[T]): Boolean =
+  import ord.*
   xs.zip(xs.tail).forall(x => x._1 <= x._2)
-}
 \end{CodeSmall}
 
 
@@ -682,6 +681,12 @@ scala> isSorted(persons)
 \end{REPLnonum}
 Felmeddelandet ges därför att kompilatorn inte känner till någon ordning för klassen \code{Person}. 
 
+\SubtaskSolved
+-
+
+\SubtaskSolved
+-
+
 \QUESTEND
 
 
@@ -742,16 +747,57 @@ scala> Team("fnatic",1499) < Team("gurka", 2)  // Inget fel? Varför?
 
 \SOLUTION
 
-
 \TaskSolved \what 
 
-\SubtaskSolved \TODO
+\SubtaskSolved
+\begin{REPLnonum}
+scala> xs.sorted
+-- [E172] Type Error: ---------------------------------------------------------------------------------------------------------------
+1 |xs.sorted
+  |         ^
+  | No implicit Ordering defined for Team..
+  | I found:
+  |
+  |     scala.math.Ordering.comparatorToOrdering[Team](/* missing */summon[java.util.Comparator[Team]])
+  |
+  | But no implicit values were found that match type java.util.Comparator[Team].
+  |
+  | One of the following imports might make progress towards fixing the problem:
+  |
+  |     import scala.math.Ordering.comparatorToOrdering
+  |     import scala.math.Ordering.ordered
+  |
+1 error found
+\end{REPLnonum}
+Felmeddelandet ges därför att kompilatorn inte känner till någon ordning för klassen \code{Team}. 
 
-\SubtaskSolved \TODO
+Efter tilldelningen \code{given Ordering[Team] = Ordering.by(t => t.rank)} existerar en given ordning för \code{Team} i den nuvarande kontexten. 
+Därför fungerar nu det efterföljande anropet \code{xs.sorted} som tänkt.
 
-\SubtaskSolved \TODO
+\SubtaskSolved 
+-
 
-\SubtaskSolved \TODO
+\SubtaskSolved
+-
+
+\SubtaskSolved
+\begin{REPLnonum}
+scala> Team("fnatic",1499) < Team("gurka", 2)
+-- [E008] Not Found Error: ------------------------------------------------------------
+1 |Team("fnatic",1499) < Team("gurka", 2)
+  |^^^^^^^^^^^^^^^^^^^^^
+  |value < is not a member of Team, but could be made available as an extension method.
+  |
+  |One of the following imports might fix the problem:
+  |
+  |  import scala.math.Ordered.orderingToOrdered
+  |  import scala.math.Ordering.Implicits.infixOrderingOps
+  |
+1 error found
+\end{REPLnonum}
+Precis som kompilatorn säger är \code{<} inte en metod definierad för \code{Team}.
+Däremot, efter \code{import Team.highestRankFirst.given} importeras även de implicita konverteringar som finns definierade för \code{highestRankFirst: Ordering[Team]} (eftersom det är ett objekt av typen \code{Ordering}).
+Därmed fungerar \code{<}. Se uppgift 7e för mer bakgrund.
 
 
 \QUESTEND
