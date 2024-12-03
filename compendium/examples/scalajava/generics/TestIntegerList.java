@@ -8,7 +8,7 @@ public class TestIntegerList {
         System.out.println("Skriv heltal med blank emellan. Avsluta med <CTRL+D>");
         while (scan.hasNextInt()) {
             int nbr = scan.nextInt();
-            Integer obj = new Integer(nbr);
+            Integer obj = Integer.valueOf(nbr);
             list.add(obj);
         }
         System.out.println("Dina heltal i omvänd ordning:");
