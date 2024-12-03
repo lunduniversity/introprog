@@ -8,7 +8,7 @@ public class TestIntegerListAutoboxing {
         System.out.println("Skriv heltal med blank emellan. Avsluta med <CTRL+D>");
         while (scan.hasNextInt()) {
             int nbr = scan.nextInt();
-            list.add(nbr);   // motsvarar: list.add(new Integer(nbr));
+            list.add(nbr);   // motsvarar: list.add(Integer.valueOf(nbr));
         }
         System.out.println("Dina heltal i omvänd ordning:");
         for (int i = list.size() - 1; i >= 0; i--) {
