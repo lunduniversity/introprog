@@ -13,7 +13,7 @@ object Command:
   def apply(cmd: String, args: Seq[String]): String =
     all.find(_.str == cmd) match
       case Some(c) => c(args)
-      case None => s"Unkown command: $cmd\nType ? for help."
+      case None => s"Unknown command: $cmd\nType ? for help."
 
   def loopUntilExit(nextLine: () => String): Unit =
     val line = nextLine()
@@ -29,7 +29,7 @@ object Command:
 object Help extends Command("?", "print help"):
   def apply(args: Seq[String]): String = args match
     case Seq() => Command.allHelpTexts
-    case Seq(cmd) => Command.find(cmd).map(_.help).getOrElse(s"Unkown: $cmd")
+    case Seq(cmd) => Command.find(cmd).map(_.help).getOrElse(s"Unknown: $cmd")
     case _ => s"Usage: $str [cmd]"
 
 object Quit extends Command(":q", "quit this app"):
