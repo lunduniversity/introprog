@@ -30,7 +30,7 @@ object Main {
     if (partOfQuizName.nonEmpty) println(s"    for quiz names containing args(0)=$partOfQuizName")
     else println("    as no args(0) is given: (re-)generating all existing quiz files")
 
-    val ns = for (q <- QuizData.quizIDs if q.name contains partOfQuizName) yield {
+    val ns = for q <- QuizData.quizIDs if q.name.contains(partOfQuizName) yield {
       val (t, s) = QuizUtils.toLatexTaskSolution(q)
 
       //println(s"\nGenerating: ${q.name}-taskrows" )
