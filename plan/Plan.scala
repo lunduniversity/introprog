@@ -6,7 +6,8 @@ trait Plan:
     id:       String,
     exercise: String,
     lab:      String,
-    contents: String
+    contents: String,
+    dodLabOpt: Option[String] = None,
   )
 
   lazy val modules: Seq[Module] = Vector(
@@ -24,8 +25,9 @@ trait Plan:
       | definiera och anropa funktion, funktionshuvud, funktionskropp, procedur,
       | inbyggda grundtyper, 
       | println, typen Unit, enhetsvärdet (), stränginterpolatorn s,
-      | aritmetik, slumptal, logiska uttryck, de Morgans lagar, if, true, false, while, for,
-      """.stripTrim),
+      | aritmetik, slumptal, logiska uttryck, de Morgans lagar, if, true, false, while, for, DoD: Operativsystem
+      """.stripTrim,
+      dodLabOpt = Some("linux")),
 
     Module("Program och kontrollstrukturer",
       id = "programs", exercise = "programs", lab = "", contents = """
@@ -35,8 +37,9 @@ trait Plan:
       | samling, sekvens, indexering, Array, Vector,
       | intervall, Range,
       | algoritm, implementation, pseudokod,
-      | algoritmexempel: SWAP, SUM, MIN-MAX, MIN-INDEX,
-      """.stripTrim),
+      | algoritmexempel: SWAP, SUM, MIN-MAX, MIN-INDEX, DoD: Versionshantering
+      """.stripTrim,
+      dodLabOpt = Some("git")),
 
     Module("Funktioner och abstraktion",
       id = "functions", exercise = "functions", lab = "irritext", contents = """
@@ -51,8 +54,9 @@ trait Plan:
       | värdeandrop, namnanrop, 
       | klammerparentes och kolon vid ensam parameter, 
       | rekursion,
-      | scala.util.Random, slumptalsfrö,
-      """.stripTrim),
+      | scala.util.Random, slumptalsfrö, DoD: Typsättning
+      """.stripTrim,
+      dodLabOpt = Some("latex")),
 
     Module("Objekt och inkapsling",
       id = "objects", exercise = "objects", lab = "blockmole", contents = """
@@ -68,8 +72,9 @@ trait Plan:
       | överlagring av metoder,
       | introprog.PixelWindow,
       | initialisering, lazy val,
-      | typalias,
-      """.stripTrim),
+      | typalias, DoD: Maskinkod
+      """.stripTrim,
+      dodLabOpt = Some("c3pu")),
 
     Module("Klasser och datamodellering",
       id = "classes", exercise = "classes", lab = "blockbattle0", contents = """
@@ -172,7 +177,7 @@ trait Plan:
   }
 
   lazy val lecturesOfWeek =
-    Vector("F01 F02","F03 F04","F05 F06","F07 F08","F09 F10", "F11 F12", "F13 F14", "--") ++
+    Vector("F01 F02 DoD:f1","F03 F04 DoD:f2","F05 F06 DoD:f3","F07 F08 DoD:f4","F09 F10", "F11 F12", "F13 F14", "--") ++
     Vector("F15 F16","F17 F18","F19 F20","F21 F22","F23 F24", "F25 F26", "--", "--")
 
   lazy val exerciseNumOfWeek =
@@ -186,12 +191,14 @@ trait Plan:
   }
 
   lazy val labNumOfWeek =
-    "Lab01,--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab7,Lab08,Lab09,Lab10,Projekt0,Projekt1,Munta,--,--"
+    "Lab01,L--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab7,Lab08,Lab09,Lab10,Projekt0,Projekt1,Munta,--,--"
       .split(',').toVector
 
   lazy val labOfWeek = for (w <- 0 until labNumOfWeek.size) yield {
-    if (labNumOfWeek(w).startsWith("L") && modules(w).lab != "")
-      modules(w).lab
+    if labNumOfWeek(w).startsWith("L") && modules(w).lab != "" then
+      modules(w).lab + modules(w).dodLabOpt.map(dodLab => s", $dodLab").getOrElse("")
+    else if labNumOfWeek(w).startsWith("L") && modules(w).lab == "" then
+      modules(w).dodLabOpt.getOrElse("")
     else labNumOfWeek(w)
   }
 
@@ -222,4 +229,4 @@ trait Plan:
     "Innehåll" -> contentsOfModule(moduleOfWeek(w))
   )
 
-  lazy val body = (0 until 16).map(bodyItem)
+  lazy val tableBody = (0 until 16).map(bodyItem)

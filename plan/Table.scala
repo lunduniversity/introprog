@@ -4,9 +4,9 @@
     type Grid   = Seq[RowMap]
     
     def heading: Row 
-    def body   : Grid 
+    def tableBody   : Grid 
     
-    lazy val grid: Grid = body.map(_.withDefaultValue(" "))
+    lazy val grid: Grid = tableBody.map(_.withDefaultValue(" "))
     
     def column(head: String): Seq[String] = grid.map(_.apply(head))
     
