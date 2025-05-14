@@ -12,7 +12,7 @@ HERE=$(pwd)
 echo "*** scp pdfs to $WEB_REMOTE_LU"
 scp compendium/*.pdf slides/*.pdf quickref/quickref*.pdf plan/courseplan/courseplan.pdf $LUCATID@$WEB_REMOTE_LU:/Websites/Fileadmin/pgk/.
 
-for f in plan/*-generated.html
+for f in plan/*-generated.html glossary/*-generated.html 
 do
   b=$(basename $f)
   dest=$WEB_LOCAL_GITHUB_DEST/$b
