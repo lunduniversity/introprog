@@ -210,7 +210,7 @@ När du studerar hemma behöver du en bra arbetsplats och en dator med Linux (t.
 
 När du ska programmera är det bra med en dator med minst 8GB RAM och minst 1.5GHz CPU.  
 
-Begagnade Lenovo är prisvärda och de brukar vara kontrollerade innan försäljning med garanti från sajter som specialiserar sig på begagnat, tex [Inrego](https://shop.inrego.se/) Ett prisvärt val är en [Thinkpad T480](https://shop.inrego.se/Shop/Product/List?q=t480) som har matt skärm utan reflexer och bra tangentbord och kostar från ca 3500kr - vill du lägga lite mer så uppgradera till 16GB RAM (+750kr) och SSD 480GB (+1000 kr).
+Begagnade Lenovo är prisvärda och de brukar vara kontrollerade innan försäljning med garanti från sajter som specialiserar sig på begagnat, tex [Inrego](https://shop.inrego.se/) Prisvärda val är [Thinkpad T490](https://shop.inrego.se/Shop/Product/List?q=T490) eller [Thinkpad T490](https://shop.inrego.se/Shop/Product/List?q=T14 G1) som har matt skärm utan reflexer och bra tangentbord och kostar från ca 3500kr - vill du lägga lite mer så uppgradera till 16GB RAM (+750kr) och SSD 480GB (+1000 kr).
 
 Både [Lenovo](https://www.lenovo.com/se/sv/studentrabatt/) och [Dell](https://www.dell.com/sv-se/shop/dell-advantage/cp/students) har studentrabatt och säljer både stationära och bärbara datorer. Lokala datorbutiker finns här: [Inet i Malmö](https://www.inet.se/), [Webhallen i Malmö](https://www.webhallen.com/), [Compliq i Lund](https://www.compliq.se/bygga-dator)
 
