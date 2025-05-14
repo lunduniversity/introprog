@@ -7,7 +7,6 @@ trait Plan:
     exercise: String,
     lab:      String,
     contents: String,
-    dodLabOpt: Option[String] = None,
   )
 
   lazy val modules: Seq[Module] = Vector(
@@ -16,6 +15,10 @@ trait Plan:
     * tidigarelägg modul Mönster, Undantag till efter modul Klasser, för att hålla tempot i teorin
     * gör om labb tabular till ett projekt - totalt en labb mindre i kursen
     * senarelägg modul Mängder, tabeller till efter modul Matriser, typparametrar eftersom det är svårt med nästlade strukturer och det är bra med en lätt labb (life är lättare än words?) efter kontrollskrivningen
+  * Ändring 2024 -> 2025; merga pgk med dod, ta bort kontrollskrivning
+  * Kanske ändra till 2026: 
+    * gör tajtare integration med dod i kompendiet, vissa veckor två labbkapitel, ev. förel.bilder etc 
+    * flytta dod:latex till projektet och kräv en enkel rapport om iterativa arbetet och lärdomar med debugging etc
   */
     Module("Introduktion",
       id = "intro", exercise = "expressions", lab = "kojo", contents = """
@@ -25,9 +28,8 @@ trait Plan:
       | definiera och anropa funktion, funktionshuvud, funktionskropp, procedur,
       | inbyggda grundtyper, 
       | println, typen Unit, enhetsvärdet (), stränginterpolatorn s,
-      | aritmetik, slumptal, logiska uttryck, de Morgans lagar, if, true, false, while, for, DoD: Operativsystem
-      """.stripTrim,
-      dodLabOpt = Some("linux")),
+      | aritmetik, slumptal, logiska uttryck, de Morgans lagar, if, true, false, while, for, dod: operativsystem
+      """.stripTrim),
 
     Module("Program och kontrollstrukturer",
       id = "programs", exercise = "programs", lab = "", contents = """
@@ -37,9 +39,8 @@ trait Plan:
       | samling, sekvens, indexering, Array, Vector,
       | intervall, Range,
       | algoritm, implementation, pseudokod,
-      | algoritmexempel: SWAP, SUM, MIN-MAX, MIN-INDEX, DoD: Versionshantering
-      """.stripTrim,
-      dodLabOpt = Some("git")),
+      | algoritmexempel: SWAP, SUM, MIN-MAX, MIN-INDEX, dod: versionshantering
+      """.stripTrim),
 
     Module("Funktioner och abstraktion",
       id = "functions", exercise = "functions", lab = "irritext", contents = """
@@ -54,9 +55,8 @@ trait Plan:
       | värdeandrop, namnanrop, 
       | klammerparentes och kolon vid ensam parameter, 
       | rekursion,
-      | scala.util.Random, slumptalsfrö, DoD: Typsättning
-      """.stripTrim,
-      dodLabOpt = Some("latex")),
+      | scala.util.Random, slumptalsfrö, dod: typsättning
+      """.stripTrim),
 
     Module("Objekt och inkapsling",
       id = "objects", exercise = "objects", lab = "blockmole", contents = """
@@ -72,9 +72,8 @@ trait Plan:
       | överlagring av metoder,
       | introprog.PixelWindow,
       | initialisering, lazy val,
-      | typalias, DoD: Maskinkod
-      """.stripTrim,
-      dodLabOpt = Some("c3pu")),
+      | typalias, dod: maskinkod
+      """.stripTrim),
 
     Module("Klasser och datamodellering",
       id = "classes", exercise = "classes", lab = "blockbattle0", contents = """
@@ -113,7 +112,7 @@ trait Plan:
       | repeterade parametrar,
       """.stripTrim),
 
-    Module("KONTROLLSKRIVN.", id = "", exercise = "", lab = "", contents = "".stripTrim),
+    Module("--", id = "", exercise = "", lab = "", contents = "".stripTrim),
 
     Module("Nästlade och generiska strukturer",
       id = "matrices", exercise = "matrices", lab = "life", contents = """
@@ -169,7 +168,7 @@ trait Plan:
   lazy val moduleOfWeek: Vector[String] = modules.map(_.name).toVector
 
   lazy val nameOfWeek: Vector[String] =
-    "W01 W02 W03 W04 W05 W06 W07 KS W08 W09 W10 W11 W12 W13 W14 T".split(' ').toVector
+    "W01 W02 W03 W04 W05 W06 W07 TP W08 W09 W10 W11 W12 W13 W14 TP".split(' ').toVector
 
   def studyPeriodOfWeek(week: Int) = {
     val (lp, v) = (1 + week / 8, 1 + week % 8)
@@ -177,7 +176,7 @@ trait Plan:
   }
 
   lazy val lecturesOfWeek =
-    Vector("F01 F02 DoD:f1","F03 F04 DoD:f2","F05 F06 DoD:f3","F07 F08 DoD:f4","F09 F10", "F11 F12", "F13 F14", "--") ++
+    Vector("F01 F02","F03 F04","F05 F06","F07 F08","F09 F10", "F11 F12", "F13 F14", "--") ++
     Vector("F15 F16","F17 F18","F19 F20","F21 F22","F23 F24", "F25 F26", "--", "--")
 
   lazy val exerciseNumOfWeek =
@@ -191,30 +190,26 @@ trait Plan:
   }
 
   lazy val labNumOfWeek =
-    "Lab01,L--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab7,Lab08,Lab09,Lab10,Projekt0,Projekt1,Munta,--,--"
+    "Lab01,--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab7,Lab08,Lab09,Lab10,Projekt0,Projekt1,Munta,--,--"
       .split(',').toVector
 
   lazy val labOfWeek = for (w <- 0 until labNumOfWeek.size) yield {
     if labNumOfWeek(w).startsWith("L") && modules(w).lab != "" then
-      modules(w).lab + modules(w).dodLabOpt.map(dodLab => s", $dodLab").getOrElse("")
-    else if labNumOfWeek(w).startsWith("L") && modules(w).lab == "" then
-      modules(w).dodLabOpt.getOrElse("")
+      modules(w).lab
     else labNumOfWeek(w)
   }
 
-  lazy val startLp1 = Date(2024, 9, 2)
+  lazy val startLp1 = Date(2025, 9, 1)
 
-  lazy val startLp2 = Date(2024, 11, 4)
+  lazy val startLp2 = Date(2025, 11, 3)
 
-  lazy val ksdatum = Date(2024, 10, 29)
-
-  lazy val tentadatum = Date(2025, 1, 8)
+  lazy val tentadatum = Date(2025, 1, 7)
 
   def weeksOf(date: Date, n: Int): Seq[String] =
     for (week <- 0 until n) yield date.addDays(week*7).workWeek
 
   lazy val weekDates: Vector[String] = (
-    weeksOf(startLp1, 7) ++ Seq(ksdatum.shortDate) ++
+    weeksOf(startLp1, 7) ++ Seq("--") ++
     weeksOf(startLp2, 7) ++ Seq(tentadatum.shortDate)
   ).toVector
 
