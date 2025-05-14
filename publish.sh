@@ -26,8 +26,8 @@ do
     cp -i $f $dest && \
       cd $WEB_LOCAL_GITHUB && \
         source build.sh && \
-          git status && \
-            git add $WEB_LOCAL_GITHUB_PATH/$b && \
+          git add $WEB_LOCAL_GITHUB_PATH/$b && \
+            git status && \
               git commit -m "update $WEB_LOCAL_GITHUB_PATH/$b" && \
                 git push
     cd $HERE
