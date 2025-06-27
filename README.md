@@ -13,7 +13,7 @@ This is on-going work, and the first instance of the course was given in 2016 at
 
 * Download latest stable version of the on-line course material from the [course homepage at Lund University](https://cs.lth.se/pgk/download/)
 
-* Use a cached version or re-compile the latest snapshot version, possibly in an inconsistent state under update, of the most recent version of the course material via LaTeX.Online (if your click triggers a re-compile it may take a while before the pdf is ready; if the server is not responding then try again later):
+* Use a cached version or re-compile the latest snapshot version, possibly in an inconsistent state under update, of the most recent version of the course material via LaTeX.Online (if your click triggers a re-compile it may take very long before the pdf is ready; if the server gives timeout then try again later):
 
   - [compendium1.pdf](https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&target=compendium/compendium1.tex&command=pdflatex)  with lectures and assignments for the first half of the course, formatted for print.
 
