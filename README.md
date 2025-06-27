@@ -5,7 +5,7 @@
 
 This is the repo of a course given by Lund University called "Introduction to Programming" using Scala. The repo contains course material in Swedish and some English along with code examples and libraries used in exercises and labs.
 
-Course homepage (in Swedish): http://cs.lth.se/pgk/
+Course homepage (in Swedish): https://lunduniversity.github.io/pgk
 
 This is on-going work, and the first instance of the course was given in 2016 at Lund University. A new instance of the course is given each fall semester. In 2021 the course migrated to Scala 3.
 
