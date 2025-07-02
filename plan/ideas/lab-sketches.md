@@ -163,10 +163,6 @@ Byta namn till turtlegraphics?
   1. Try ???
   1. unapply ??? Nej, antagligen ev. bara på fördjupningsuppgift på övningar
 
-* Utgå från kontrollskrivningen om ackord och gör ngt kul, tex. rita ackordbilder i simple window: 
-  * http://fileadmin.cs.lth.se/cs/Education/eda016/2015/kontroll/kontroll-2015okt27.pdf
-  * http://fileadmin.cs.lth.se/cs/Education/eda016/2015/kontroll/kontroll-2015okt27-losning.pdf
-
 * Ide till extrauppgift om det inte är för svårt: spela toner med java midi, kanske man kan göra en SimpleMidi-klass som spelar en ton i taget och wrappa detta:
   * http://stackoverflow.com/questions/16462854/midi-beginner-need-to-play-one-note 
   * https://docs.oracle.com/javase/8/docs/api/javax/sound/midi/MidiSystem.html
