@@ -41,7 +41,7 @@ https://docs.scala-lang.org/scala3/guides/migration/incompat-syntactic.html   an
 
 3. Make sure you can `sbt build` with a working local Latex installation (e.g. TexLive, on linux/WSL `sudo apt install texlive-full`) so that you get `pdflatex` on your path
 
-4. Study how to make a contribution to this repo in Chapter 0 here on page 16 [http://cs.lth.se/pgk/compendium] 
+4. Study how to make a contribution to this repo in Chapter 0 here on page 16 [http://fileadmin.cs.lth.se/pgk/compendium.pdf] 
 
 5. Locate the issue corresponding to the exercise you are migrating [here](https://github.com/lunduniversity/introprog/issues) called something like `Migrate exercise w01 expressions`
 

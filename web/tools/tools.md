@@ -1,4 +1,4 @@
-I denna kurs använder vi programmeringsspråket **Scala** och olika programmeringsverktyg. Läs om hur du använder dessa programmeringsverktyg i **Appendix** i [kompendiet](https://cs.lth.se/pgk/compendium/). Verktygen finns förinstallerade på LTH:s [Linuxdatorer i E-huset](https://fileadmin.cs.lth.se/cs/Bilder/Salar/Datorsalar_E-huset.pdf). Instruktioner om hur du installerar dessa verktyg på din egen dator finns nedan.
+I denna kurs använder vi programmeringsspråket **Scala** och olika programmeringsverktyg. Läs om hur du använder dessa programmeringsverktyg i **Appendix** i [kompendiet](https://fileadmin.cs.lth.se/pgk/compendium.pdf/). Verktygen finns förinstallerade på LTH:s [Linuxdatorer i E-huset](https://fileadmin.cs.lth.se/cs/Bilder/Salar/Datorsalar_E-huset.pdf). Instruktioner om hur du installerar dessa verktyg på din egen dator finns nedan.
 
 Tips om du ska köpa egen dator finns längre ned under rubriken "Hårdvara".
 
@@ -20,7 +20,7 @@ Mer info [om skolans datorer här](https://www.lth.se/lthin/datorsalar/vaara-dat
 
 ## Programmera på din egen dator 
 
-Du behöver installera detta på din egen dator: **OpenJDK**, **Scala** och **VS Code** med tillägget Scala (Metals). Följ instruktionerna noga nedan **under rubriken för ditt operativsystem** om hur du installerar verktygen på din egen dator. Du kan läsa mer om hur du använder dessa verktyg i Appendix i [kompendiet](https://cs.lth.se/pgk/compendium/). 
+Du behöver installera detta på din egen dator: **OpenJDK**, **Scala** och **VS Code** med tillägget Scala (Metals). Följ instruktionerna noga nedan **under rubriken för ditt operativsystem** om hur du installerar verktygen på din egen dator. Du kan läsa mer om hur du använder dessa verktyg i Appendix i [kompendiet](https://fileadmin.cs.lth.se/pgk/compendium.pdf/). 
 
 Många av de programmeringsverktyg vi använder körs via ett terminalfönster. Hur du får igång terminalen beskrivs nedan.
 
@@ -182,7 +182,7 @@ sdk install sbt
     Första gången ett projekt öppnas i VS Code så tar det ett tag innan Metals har byggt allt från grunden. Du kan följa vad som händer i meddelandefältet längst ned; allt är klart när det står "Index complete" efter en raket-ikon.
 5. Om VS Code inte fungerar bra med Scala kan det vara bra att stänga ner VS Code och ta bort dessa underkataloger (om de existerar): `.bsp .bloop .vscode .metals .scala-build target` och därefter köra `scala-cli setup-ide .`  innan du startar VS Code igen i aktuell katalog med `code .`
 
-Läs mer om vad du kan göra med en VS Code och andra verktyg i appendix i [kompendiet](https://cs.lth.se/pgk/compendium/) 
+Läs mer om vad du kan göra med en VS Code och andra verktyg i appendix i [kompendiet](https://fileadmin.cs.lth.se/pgk/compendium.pdf/) 
 
 ### KOJO
 #### Windows/MacOS/Linux/Ubuntu/WSL: Installera Kojo 
