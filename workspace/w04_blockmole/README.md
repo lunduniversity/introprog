@@ -1,7 +1,7 @@
 # Laboration blockmole
 
 Laboration `blockmole` utvecklar du helt från början med en kodeditor och kompilering i terminalen. Du hittar laborationsuppgifterna i kompendiet:
-https://cs.lth.se/pgk/kompendium
+https://fileadmin.cs.lth.se/pgk/compendium.pdf
 
 Om du försöker köra filen `hello-window.scala` med `scala-cli run .` så får du följande felmeddelande:
 ```
@@ -24,9 +24,9 @@ Det beror på att paketet `introprog` saknas på classpath. Följ instruktionern
 
 Använd `hello-window.scala` och prova kompilering tillsammans med en egen-händigt nedladdad jar-fil på classpath med optionen `--jar` enligt nedan:
 
-* Ladda ner introprog-biblioteket härifrån: https://cs.lth.se/pgk/lib och kalla filen för `introprog.jar` du kan klicka på länken ovan, eller om du kör Linux skriva följande i terminalen:
+* Ladda ner introprog-biblioteket härifrån: https://fileadmin.cs.lth.se/pgk/introprog_3-1.4.0.jar och kalla filen för `introprog.jar` du kan klicka på länken ovan, eller om du kör Linux skriva följande i terminalen:
 
-  wget -O introprog.jar https://cs.lth.se/pgk/lib
+  wget -O introprog.jar https://fileadmin.cs.lth.se/pgk/introprog_3-1.4.0.jar
 
 * Kompilera filen `hello-window.scala` med detta kommando:
 
