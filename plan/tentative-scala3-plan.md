@@ -15,7 +15,7 @@ alt 1 labb v8
 | W05 | 28/9-2/10   | Lp1V5 | Klasser, datamodeller                 | F09 F10 | classes     | --          |
 | W06 | 5/10-9/10   | Lp1V6 | Mönster, felhantering, *avlusning*    | F11 F12 | patterns    | blockbattle |
 | W07 | 12/10-16/10 | Lp1V7 | Sekvenser, enumerationer              | F13 F14 | sequences   | shuffle     |
-| KS  | 28/10       | TP1   | KONTROLLSKRIVN.                       | --      | --          | --          |
+| KS  | 28/10       | TP1   | KS                       | --      | --          | --          |
 | W08 | 2/11-6/11   | Lp2V1 | Matriser, typparametrar,              | F15 F16 | matrices    | life        |
 | W09 | 9/11-13/11  | Lp2V2 | Mängder, tabeller, *testning*         | F17 F18 | lookup      | words       |
 | W10 | 16/11-20/11 | Lp2V3 | Arv, *granskningar*                   | F19 F20 | inheritance | snake0      |
@@ -36,7 +36,7 @@ alt 2 ingen lab v8
 | W05 | 28/9-2/10   | Lp1V5 | Klasser                               | F09 F10 | classes     | --          |
 | W06 | 5/10-9/10   | Lp1V6 | Mönster, undantag                     | F11 F12 | patterns    | blockbattle |
 | W07 | 12/10-16/10 | Lp1V7 | Sekvenser, enumerationer              | F13 F14 | sequences   | shuffle     |
-| KS  | 28/10       | TP1   | KONTROLLSKRIVN.                       | --      | --          | --          |
+| KS  | 28/10       | TP1   | KS.                       | --      | --          | --          |
 | W08 | 2/11-6/11   | Lp2V1 | *Avlusning, granskningar, test, api*  | F15 F16 | debug       | studyplan   |
 | W09 | 9/11-13/11  | Lp2V2 | Matriser, typparametrar               | F17 F18 | matrices    | life        |
 | W10 | 16/11-20/11 | Lp2V3 | Mängder, tabeller                     | F19 F20 | lookup      | words       |
@@ -61,7 +61,7 @@ alt 2 ingen lab v8
 | W05 | Lp1V5 | Klasser, enumerering              | F09 F10 | `classes`      | --            |
 | W06 | Lp1V6 | Mönster, undantag                 | F11 F12 | `patterns`     | `blockbattle` |
 | W07 | Lp1V7 | Sekvenser                         | F13 F14 | `sequences`    | `shuffle`     |
-| KS  | TP1   | KONTROLLSKRIVN.                   | --      | --             | --            |
+| KS  | TP1   | KS.                   | --      | --             | --            |
 | W08 | Lp2V1 | Nästlade strukturer, debugging    | F15 F16 | `nested`       | `find_bug`    |
 | W09 | Lp2V2 | Generiska strukturer              | F17 F18 | `generic`      | `life`        |
 | W10 | Lp2V3 | Mängder, tabeller                 | F19 F20 | `lookup`       | `words`       |

@@ -32,8 +32,6 @@ Kept for archeological interest :)
   * http://wiki.eclipse.org/FAQ_How_do_I_increase_the_heap_size_available_to_Eclipse%3F 
   * ammonite?
 * Follow up schedule requests implementation by schema@lth
-* Create fictitious checkpoint exam (kontrollskrivning)
-* Create fictitious 
 * Find guest lecturers for the first weeks to stimulate student identification as becoming professional software engineers
 
 ## Done

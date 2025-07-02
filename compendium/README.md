@@ -17,7 +17,7 @@ https://latexonline.cc/compile?git=https://github.com/lunduniversity/introprog&t
 | W05 | Sekvensalgoritmer                | sequences   | shuffle         | W05 | Klasser                      | classes     | turtle          |
 | W06 | Klasser                          | classes     | turtlegraphics  | W06 | Sekvenser                    | sequences   | shuffle         |
 | W07 | Arv                              | traits      | turtlerace-team | W07 | Mängder, tabeller            | lookup      | words           |
-| KS  | KONTROLLSKRIVN.                  | --          | --              | KS  | KONTROLLSKRIVN.              | --          | --              |
+| KS  |                   | --          | --              | KS  |               | --          | --              |
 | W08 | Repetition, trösklar, luckor     | reboot-plan | reboot-check    | W08 | Matriser, typparametrar      | matrices    | maze            |
 | W09 | Mönster, undantag                | matching    | chords-team     | W09 | Arv                          | inheritance | turtlerace-team |
 | W10 | Matriser, typparametrar          | matrices    | maze            | W10 | Mönstermatchning, undantag   | patterns    | chords-team     |
