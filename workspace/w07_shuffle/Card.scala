@@ -1,19 +1,14 @@
-package cards
+package poker
 
-case class Card(rank: Int, suit: Int):
-  import Card._
+case class Card(rank: Card.Rank, suit: Card.Suit):
+  lazy val show = s"${rank.toString.head}${Card.suitChars(suit.ordinal)}"
 
-  require(rankRange.contains(rank), s"rank=$rank, must be in $rankRange")
-  require(suitRange.contains(suit), s"suit=$suit, must be in $suitRange")
-
-  val rankString: String = ranks(rank - 1)
-  val suitChar:   Char   = suits(suit - 1)
-
-  override def toString() = s"$rankString$suitChar "
-  
 object Card:
-  val suitRange: Range = 1 to 4
-  val rankRange: Range = 1 to 13
-  val suits: Vector[Char] = "♠♥♣♦".toVector
-  val ranks: Vector[String] =
-    "A" +: ((2 to 10).map(_.toString).toVector ++ Vector("J", "Q", "K"))
+  enum Rank:
+    case Ace, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, Ten, Jack, Queen, King
+
+  enum Suit:
+    case Spades, Hearts, Clubs, Diamonds
+  
+  val suitChars = "♠♥♣♦"
+end Card

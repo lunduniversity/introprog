@@ -1,21 +1,29 @@
-package cards
+package poker
 
-class Deck private (val initCards: Vector[Card]):
+import scala.collection.immutable.ArraySeq
+
+class Deck private (val initCards: ArraySeq[Card]):
   private var cards: Array[Card] = initCards.toArray
 
   def reset(): Unit = cards = initCards.toArray
+
   def apply(i: Int): Card = cards(i)
-  def toVector: Vector[Card] = cards.toVector
-  override def toString: String = cards.mkString(" ")
 
-  def peek(n: Int): Vector[Card] = cards.take(n).toVector
+  def toSeq: ArraySeq[Card] = cards.to(ArraySeq)
 
-  def remove(n: Int): Vector[Card] =
+  def show: String = cards.map(_.show).mkString(" ")
+
+  def peek(n: Int): ArraySeq[Card] = 
+    cards.take(n).to(ArraySeq)
+
+  def remove(n: Int): ArraySeq[Card] =
     val init = peek(n)
     cards = cards.drop(n)
     init
+  end remove
 
-  def prepend(moreCards: Card*): Unit = cards = moreCards.toArray ++ cards
+  def prepend(moreCards: Card*): Unit = 
+    cards = (moreCards ++ cards).toArray
 
   /** Swaps cards at position a and b. */
   def swap(a: Int, b: Int): Unit = ???
@@ -24,8 +32,8 @@ class Deck private (val initCards: Vector[Card]):
   def shuffle(): Unit = ???
 
 object Deck:
-  def empty: Deck = new Deck(Vector())
-  def apply(cards: Seq[Card]): Deck = new Deck(cards.toVector)
+  def apply(cards: Seq[Card]): Deck = new Deck(cards.to(ArraySeq))
 
   /** Creates a new full Deck with 52 cards in rank and suit order. */
   def full(): Deck = ???
+
