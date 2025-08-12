@@ -1,4 +1,4 @@
-//> using scala 3.5.1
+//> using scala 3.7.2
 //> using java-opt -Dfile.encoding=UTF-8
 // The UTF-8 java option is needed when the "Current system locale" is set to "English"
 
