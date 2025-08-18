@@ -257,25 +257,23 @@ Minnet som innehåller ett programs data är uppdelat i två delar:
 % \end{tabular}
 % \end{Slide}
 
-\begin{Slide}{Aktiveringspost}\SlideFontSmall
-Nästlade anrop ger växande anropsstack.
+\begin{Slide}{Anropsstacken och aktiveringsposter}\SlideFontSmall
+Nästlade anrop ger växande anropsstack. Vid varje anrop allokeras en s.k. \Emph{aktiveringspost} \Eng{activation record} med plats i minnet för parametrar, lokala variabler och ev. returvärde. När funktionen är klar så raderas aktiveringsposten och stacken krymper.
 \begin{REPLsmall}
-scala> def h(x: Int, y: Int) = { val z = x + y; println(z) }
-
-scala> def g(a: Int, b: Int) = { val x = 1; h(x + 1, a + b) }
-
-scala> def f() = { val n = 5; g(n, 2 * n) }
+scala> def h(x: Int, y: Int): Unit = { val z = x + y; println(z) }
+       def g(a: Int, b: Int): Unit = { val x = 1; h(x + 1, a + b) }
+       def f(): Unit = { val n = 5; g(n, 2 * n) }
 
 scala> f()
 
 \end{REPLsmall}
 
 \pause
-\Alert{Stacken}
+\Alert{Stacken} med 3 aktiveringsposter då f anropar g som anropar h:
 
 \begin{tabular}{|r | l | l |} \hline
 
-variabel & värde & Aktiveringspost för anrop av... \\ \hline \hline
+variabel & värde & Anrop av... \\ \hline \hline
 \pause
  n & 5 & f \\ \hline
  \pause
