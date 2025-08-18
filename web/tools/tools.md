@@ -147,7 +147,7 @@ curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64
 ```
 * Svara med stort Y för ja på eventuell fråga om att addera coursier till din path. 
 * Starta om din dator.
-* Testa att skriva `scala --version` och `scala-cli --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3". Om du får `[warning] MainGenericRunner` skriv `cs install scala:3.7.2` och sedan ska `scala --version` fungera utan varning.
+* Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3". Om du får `[warning] MainGenericRunner` skriv `cs install scala:3.7.2` och sedan ska `scala --version` fungera utan varning.
 * Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "EDITOR"
 * Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
 
@@ -176,11 +176,11 @@ sdk install sbt
     ```
     mkdir mittprojekt
     cd mittprojekt
-    scala-cli setup-ide .
+    scala setup-ide .
     code .
     ```
     Första gången ett projekt öppnas i VS Code så tar det ett tag innan Metals har byggt allt från grunden. Du kan följa vad som händer i meddelandefältet längst ned; allt är klart när det står "Index complete" efter en raket-ikon.
-5. Om VS Code inte fungerar bra med Scala kan det vara bra att stänga ner VS Code och ta bort dessa underkataloger (om de existerar): `.bsp .bloop .vscode .metals .scala-build target` och därefter köra `scala-cli setup-ide .`  innan du startar VS Code igen i aktuell katalog med `code .`
+5. Om VS Code inte fungerar bra med Scala kan det vara bra att stänga ner VS Code och ta bort dessa underkataloger (om de existerar): `.bsp .bloop .vscode .metals .scala-build target` och därefter köra `scala setup-ide .`  innan du startar VS Code igen i aktuell katalog med `code .`
 
 Läs mer om vad du kan göra med en VS Code och andra verktyg i appendix i [kompendiet](https://fileadmin.cs.lth.se/pgk/compendium.pdf/) 
 
@@ -191,7 +191,7 @@ Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjä
 
 Det finns olika sätt att köra Kojo:
 
-1. Använd **grafikbiblioteket i kojo** (rekommenderas för vuxna kodare) som fungerar med Scala 3. Ladda ner filen [https://fileadmin.cs.lth.se/kojo.scala](https://fileadmin.cs.lth.se/kojo.scala) och kör enl. instruktioner i kompendiet, t.ex. med `scala-cli repl .` 
+1. Använd **grafikbiblioteket i kojo** (rekommenderas för vuxna kodare) som fungerar med Scala 3. Ladda ner filen [https://fileadmin.cs.lth.se/kojo.scala](https://fileadmin.cs.lth.se/kojo.scala) och kör enl. instruktioner i kompendiet, t.ex. med `scala repl .` 
 
 2. Kör **Kojo som Desktopapp** (rekommenderas om du har barn i närheten): en nybörjarvänlig utvecklingsmiljö med lättanvänd editor med unga kodare som målgrupp. Använder gamla Scala 2 som kräver klammerparenteser (valfria i Scala 3). Följ installationsinstruktioner för ditt system här: [http://www.kogics.net/kojo-download](http://www.kogics.net/kojo-download)
 

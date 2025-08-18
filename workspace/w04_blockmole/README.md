@@ -3,7 +3,7 @@
 Laboration `blockmole` utvecklar du helt från början med en kodeditor och kompilering i terminalen. Du hittar laborationsuppgifterna i kompendiet:
 https://fileadmin.cs.lth.se/pgk/compendium.pdf
 
-Om du försöker köra filen `hello-window.scala` med `scala-cli run .` så får du följande felmeddelande:
+Om du försöker köra filen `hello-window.scala` med `scala run .` så får du följande felmeddelande:
 ```
 Compiling project (Scala 3.7.2, JVM)
 [error] ./hello-window.scala:4:8
@@ -30,11 +30,11 @@ Använd `hello-window.scala` och prova kompilering tillsammans med en egen-händ
 
 * Kompilera filen `hello-window.scala` med detta kommando:
 
-    scala-cli compile . --jar introprog.jar 
+    scala compile . --jar introprog.jar 
 
 Kör med detta kommando:
 
-    scala-cli run . --jar introprog.jar
+    scala run . --jar introprog.jar
 
 Se dokumentationen för `introprog` här: http://fileadmin.cs.lth.se/pgk/api/
 
@@ -48,12 +48,12 @@ I stället för att själv ladda ner en jar-fil kan du, om den finns publicerad 
 
 Då kommer scala-cli att automatiskt att (om det inte redan är gjort) ladda ned och sparar undan jar-filen på ett speciellt ställe i din hemkatalog. När du kompilerar och kör så lägger scala-cli automatiskt till jar-filen på classpath.
 
-    scala-cli run . 
+    scala run . 
 
 
 Du kan också, i stället för en magisk kommentar inne i din kodfil, ange beroendet som en option direkt i terminalen: 
 
-    scala-cli run . --dep se.lth.cs::introprog::1.4.0
+    scala run . --dep se.lth.cs::introprog::1.4.0
 
 ## Ange optioner till Scala-compilatorn
 
