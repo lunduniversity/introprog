@@ -142,9 +142,19 @@ sudo apt install openjdk-21-jdk openjdk-21-doc openjdk-21-source
 * Installera först OpenJDK enligt instruktioner ovan om du inte redan gjort det. 
 * Testa om nedladdningsprogrammet `curl` finns på ditt system genom att skriva `curl --version` i terminalen. Om `curl` saknas så installera detta i terminalen genom att skriva: `sudo apt install curl`
 * Installera Scala-verktygen med detta långa terminalkommando på en och samma rad som slutar med `./cs setup`:
-```
-curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
-```
+  ```
+  curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
+  ```
+  
+  > **Observera:** Om din dator har en processor med ARM64-arkitektur  
+  > (om du inte känner till det är det förmodligen inte ARM64),  
+  > använd i stället följande kommando:
+  > ```
+  > curl -fL https://github.com/VirtusLab/coursier-m1/releases/latest/download/cs-aarch64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
+  > ```
+  >
+  > Båda kommandon återfinns under *"Linux"* på [https://www.scala-lang.org/download/](https://www.scala-lang.org/download/).
+
 * Svara med stort Y för ja på eventuell fråga om att addera coursier till din path. 
 * Starta om din dator.
 * Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3". Om du får `[warning] MainGenericRunner` skriv `cs install scala:3.7.2` och sedan ska `scala --version` fungera utan varning.
