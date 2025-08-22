@@ -79,10 +79,8 @@ Här finns listor med olika kommando som finns i gamla cmd: [https://ss64.com/nt
 
 * Följ instruktioner här: [https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/](https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/)
 
-* Apple har på grund av licensregler bestämt att inte längre inkludera senaste versionen terminalskalet bash i MacOS och har i stället gått över till zsh. Alla instruktioner i pgk och dod förutsätter bash. Följ instruktionerna om hur du får igång bash på MacOS här : [https://www.howtogeek.com/444596/how-to-change-the-default-shell-to-bash-in-macos-catalina/](https://www.howtogeek.com/444596/how-to-change-the-default-shell-to-bash-in-macos-catalina/)
+* I senare versioner av macOS är *zsh* standardkommandotolk istället för *bash*, men det mesta fungerar lika.. Följ instruktionerna om hur du får igång bash på MacOS här : [https://www.howtogeek.com/444596/how-to-change-the-default-shell-to-bash-in-macos-catalina/](https://www.howtogeek.com/444596/how-to-change-the-default-shell-to-bash-in-macos-catalina/)
 (eller under rubriken *Alternativ terminal på MacOS (Valfri)* senare)
-
-* Det är bra om du installerar en nya version enligt instruktioner här, men det är inte strikt nödvändigt: [https://www.shell-tips.com/mac/upgrade-bash/](https://www.shell-tips.com/mac/upgrade-bash/) 
 
 #### Installera Homebrew (pakethanterare)
 Homebrew är det enklaste sättet att installera program och verktyg på macOS. Öppna ett terminalfönster och kör kommando:
