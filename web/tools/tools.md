@@ -128,7 +128,7 @@ MacOS kommer med en inbyggd terminal, men många föredrar att använda iTerm2 s
 
 * Installera OpenJDK med hjälp av Homebrew genom kommando:
     ```bash
-    brew install openjdk
+    brew install openjdk@21
     ```
 * Lägg till JDK i din miljö (så att javac hittas i PATH och JAVA_HOME sätts):
     ```bash
