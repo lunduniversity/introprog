@@ -88,11 +88,7 @@ Homebrew är det enklaste sättet att installera program och verktyg på macOS. 
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-När installationen är klar, följ de instruktioner som skrivs ut för att lägga till Homebrew i din PATH. Ofta innebär det att köra något i stil med:
-```bash
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.bash_profile
-eval "$(/opt/homebrew/bin/brew shellenv)"
-```
+När installationen är klar, följ de instruktioner som skrivs ut för att lägga till Homebrew i din PATH. 
 
 Kontrollera att Homebrew fungerar genom att köra kommando:
 ```bash
