@@ -36,16 +36,20 @@ Om du kör en gammal version av SDKMAN rekommenderas att köra `sdk selfupdate f
 
 #### Terminalfönster i Windows
 
-För terminal i Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started). Det räcker fint med Windows Terminal för att köra alla kursens verktyg i cmd eller powershell, men det finns också andra sätt att köra terminal i Windows som beskrivs i punktlistan nedan. 
+För terminal i Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started). Det räcker fint med Windows Terminal för att köra alla kursens verktyg i cmd eller powershell, men det finns också andra sätt att köra terminal i Windows som beskrivs i punktlistan nedan.
 
-* Du kan också köra den befintliga men antika terminalen som inte kräver någon installation, följ instruktioner här [https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/](https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/) 
- 
-* Om du har en uppdaterad version av Windows 10 eller 11 så kan du (efter lite meckande, ev. med lite hjälp av en van windowsanvändare) köra **WSL**, helst version 2, som ger dig tillgång till Linux/Ubuntu direkt under Windows i ett separat filsystem. För att installera WSL behöver du starta  **PowerShell** med admin-rättigheter så här: tryck på windows-knappen, skriv `powershell` och högerklicka och välj run as administrator. Följ vidare instruktioner här och välj att installera Ubuntu 22.04 (fråga ngn om hjälp om du kör fast):  [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10) När du installerat WSL följ instruktionerna under **Linux-rubrikerna** nedan för att installera kursens programmeringsverktyg under WSL/Ubuntu. Om du kör WSL2 kan då även få fönster att fungera om du följer dessa instruktioner: [https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps)  
-WSL kan krångla så om du inte får det att funka så installera alla kursens verkyg direkt under Windows så du kommer igång och be någon om hjälp vid senare tillfälle.
+* **_(Rekommenderas ej)_** Du kan också köra den befintliga men antika terminalen som inte kräver någon installation, följ instruktioner här [https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/](https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/)
 
-* Det finns även andra sätt att installera Linux/Ubuntu, t.ex. med [VirtualBox](https://ubuntu.com/tutorials/how-to-run-ubuntu-desktop-on-a-virtual-machine-using-virtualbox#1-overview) (kräver snabb dator och rejät med RAM) eller [Dual Boot](https://medium.com/linuxforeveryone/how-to-install-ubuntu-20-04-and-dual-boot-alongside-windows-10-323a85271a73) (kräver att du har minst 25GB extra utrymme på disken, gärna mer, och att du krymper din Windows-partition.), eller att du helt [ersätter Windows med Ubuntu](https://ubuntu.com/tutorials/install-ubuntu-desktop) (enklaste sättet och funkar fint även på äldre och klenare datorer). Fråga någon medstudent som vet hur det går till om råd och hjälp om du vill installera Ubuntu "på riktigt". 
+* **_(Rekommenderas om du föredrar Windows men vill ha en Unix-terminal)_** Git Bash är ett terminalprogram som följer med när du installerar Git (se nedan). Den kör inte riktig Unix så som WSL gör, utan fortfarande Windows fullt ut, men erbjuder alla grundläggande Unix-kommandon och passar bra för kursens innehåll och krav.
 
-Här finns listor med olika kommando som finns i gamla cmd: [https://ss64.com/nt/](https://ss64.com/nt/) och motsvarande i nyare powershell finns här: [https://ss64.com/ps/](https://ss64.com/ps/).
+* **_(Rekommenderas om du vill ha riktigt Linux men fortfarande Windows)_** Om du har en uppdaterad version av Windows 10 eller 11 så kan du (efter lite meckande, ev. med lite hjälp av en van Windowsanvändare) köra **WSL**, helst version 2, som ger dig tillgång till Linux/Ubuntu direkt under Windows i ett separat filsystem. För att installera WSL behöver du starta **PowerShell** med admin-rättigheter så här: tryck på windows-knappen, skriv `powershell` och högerklicka och välj run as administrator. Följ vidare instruktioner här och välj att installera Ubuntu 22.04 (fråga ngn om hjälp om du kör fast): [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+
+  * **Notera**: När du installerat WSL så har du en ett riktigt Lunix operativsystem på datorn. Följ nu instruktionerna under **Linux-rubrikerna** nedan istället för Windows, för att installera kursens programmeringsverktyg under WSL/Ubuntu. Om du kör WSL2 kan du även få fönster att fungera om du följer dessa instruktioner: [https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps)
+  - WSL kan krångla så om du inte får det att funka så installera alla kursens verkyg direkt under Windows så du kommer igång och be någon om hjälp vid senare tillfälle.
+
+* **_(Rekommenderas kanske, om du vill kompromissa)_** Det finns även andra sätt att installera Linux/Ubuntu, t.ex. med [VirtualBox](https://ubuntu.com/tutorials/how-to-run-ubuntu-desktop-on-a-virtual-machine-using-virtualbox#1-overview) (kräver snabb dator och rejät med RAM) eller [Dual Boot](https://medium.com/linuxforeveryone/how-to-install-ubuntu-20-04-and-dual-boot-alongside-windows-10-323a85271a73) (kräver att du har minst 25GB extra utrymme på disken, gärna mer, och att du krymper din Windows-partition.). **Observera:** Att installera Linux via Dual Boot kan ev. vara en permanent ändring på datorn, och kan inte backas så du återigen bara har Windows utan att formattera om datorn och installera Windows på nytt.
+
+* **_(Rekommenderas endast om du är okej med att helt slopa Windows)_** Du kan helt [ersätta Windows med Ubuntu](https://ubuntu.com/tutorials/install-ubuntu-desktop). Funkar fint även på äldre och klenare datorer som t.ex. inte klarar av VirtualBox eller Dual Boot. Fråga någon medstudent som vet hur det går till om råd och hjälp om du vill installera Ubuntu "på riktigt". Här finns listor med olika kommando som finns i gamla cmd: [https://ss64.com/nt/](https://ss64.com/nt/) och motsvarande i nyare powershell finns här: [https://ss64.com/ps/](https://ss64.com/ps/).
 
 
 #### Installera OpenJDK i Windows
@@ -72,6 +76,14 @@ Här finns listor med olika kommando som finns i gamla cmd: [https://ss64.com/nt
 * Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "EDITOR"
 * Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
 
+
+#### Installera Git på Windows
+
+* Ladda ner Git för Windows härifrån: [https://git-scm.com/download/win](https://git-scm.com/download/win)
+* Dubbelklicka på den nedladdade filen för att starta installationen. Följ instruktionerna och välj de förvalda alternativen om du är osäker.
+* Vid val av editor, välj gärna *nano* (enkel texteditor direkt i terminalen, smidigt för Git).
+* När installationen är klar, öppna Git Bash (detta är en terminal som följer med Git-installationen).
+* Skriv `git --version` för att kontrollera att Git är korrekt installerat.
 
 ### MACOS
 
@@ -117,6 +129,14 @@ Här finns listor med olika kommando som finns i gamla cmd: [https://ss64.com/nt
 * Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
 
 
+#### Installera Git på MacOS
+
+* Du kan installera Git på MacOS genom att använda Homebrew. Om du inte har Homebrew installerat, följ instruktionerna här: [https://brew.sh/](https://brew.sh/)
+* När du har Homebrew installerat, öppna ett terminalfönster och skriv följande kommando för att installera Git:
+```
+brew install git
+```
+
 ### LINUX
 
 #### Starta terminalfönster i Linux/Ubuntu/WSL
@@ -150,6 +170,13 @@ curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64
 * Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3". Om du får `[warning] MainGenericRunner` skriv `cs install scala:3.7.2` och sedan ska `scala --version` fungera utan varning.
 * Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "EDITOR"
 * Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
+
+#### Installera Git på Linux/Ubuntu/WSL
+
+* Du kan installera Git på Linux/Ubuntu/WSL genom att öppna ett terminalfönster och skriva följande kommando:
+```
+sudo apt install git
+```
 
 ### SDKMAN
 #### MacOS/Linux/Ubuntu/WSL: Installera SDKMAN
