@@ -73,15 +73,50 @@ Här finns listor med olika kommando som finns i gamla cmd: [https://ss64.com/nt
 * Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
 
 
-### MACOS
+### MacOS
 
 #### Terminalfönster i MacOS
 
 * Följ instruktioner här: [https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/](https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/)
 
-* Apple har på grund av licensregler bestämt att inte längre inkludera senaste versionen terminalskalet bash i MacOS och har i stället gått över till zsh. Alla instruktioner i pgk och dod förutsätter bash. Följ instruktionerna om hur du får igång bash på MacOS här: [https://www.howtogeek.com/444596/how-to-change-the-default-shell-to-bash-in-macos-catalina/](https://www.howtogeek.com/444596/how-to-change-the-default-shell-to-bash-in-macos-catalina/)
+* Apple har på grund av licensregler bestämt att inte längre inkludera senaste versionen terminalskalet bash i MacOS och har i stället gått över till zsh. Alla instruktioner i pgk och dod förutsätter bash. Följ instruktionerna om hur du får igång bash på MacOS här : [https://www.howtogeek.com/444596/how-to-change-the-default-shell-to-bash-in-macos-catalina/](https://www.howtogeek.com/444596/how-to-change-the-default-shell-to-bash-in-macos-catalina/)
+(eller under rubriken *Alternativ terminal på MacOS (Valfri)* senare)
 
 * Det är bra om du installerar en nya version enligt instruktioner här, men det är inte strikt nödvändigt: [https://www.shell-tips.com/mac/upgrade-bash/](https://www.shell-tips.com/mac/upgrade-bash/) 
+
+#### Installera Homebrew (pakethanterare)
+Homebrew är det enklaste sättet att installera program och verktyg på macOS. Öppna ett terminalfönster och kör kommando:
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+När installationen är klar, följ de instruktioner som skrivs ut för att lägga till Homebrew i din PATH. Ofta innebär det att köra något i stil med:
+```bash
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.bash_profile
+eval "$(/opt/homebrew/bin/brew shellenv)"
+```
+
+Kontrollera att Homebrew fungerar genom att köra kommando:
+```bash
+brew --version
+```
+
+#### Alternativ terminal på MacOS (Valfri)
+MacOS kommer med en inbyggd terminal, men många föredrar att använda iTerm2 som är mer flexibel.
+* Installera iTerm2 (valfritt) med:
+    ```bash
+    brew install --cask iterm2
+    ```
+* Installera Bash
+    Apple använder zsh som standard, men våra instruktioner förutsätter bash. Installera en ny version av bash via Homebrew:
+    ```bash
+    brew install bash
+    ```
+* Byt sedan standardskal till bash:
+    ```bash
+    chsh -s /opt/homebrew/bin/bash
+    ```
+* Stäng terminalen och öppna en ny för att ändringarna ska träda i kraft. Förslagsvis kan du använda iTerm2 istället för vanliga terminalen.
 
 #### Installera OpenJDK i MacOS
 
@@ -91,28 +126,33 @@ Här finns listor med olika kommando som finns i gamla cmd: [https://ss64.com/nt
   ```
   Om utskriften säger att `javac` saknas eller anger en annan version än version 21, installera då OpenJDK enl. nedan. 
 
-* Installera OpenJDK för ditt system härifrån: [https://adoptium.net/](https://adoptium.net/)
- 
-    1. Välj att ladda ner OpenJDK **version 21**  (LTS) HotSpot **för ditt operativsystem**. 
-    2. Dubbelklicka på filen som laddas ned för att starta installationen. Om du får en varning ska du köra ändå genom att klicka på "Mer information" eller liknande. Under installationen välj alla dessa åtgärder: Update PATH, Associate .jar, Set JAVA_HOME, JavaSoft registry key. 
-    3. Starta om din dator.
-    4. Starta terminalfönster och kontrollera att `javac --version` ger rätt version. Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
-
+* Installera OpenJDK med hjälp av Homebrew genom kommando:
+    ```bash
+    brew install openjdk
+    ```
+* Lägg till JDK i din miljö (så att javac hittas i PATH och JAVA_HOME sätts):
+    ```bash
+    echo 'export PATH="/opt/homebrew/opt/openjdk@21/bin:$PATH"' >> ~/.bash_profile
+    echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 21)' >> ~/.bash_profile
+    source ~/.bash_profile
+    ```
+* Kontrollera att installationen fungerat:
+    ```bash
+    javac --version
+    ```
 #### Installera Scala med tillhörande verktyg i MacOS
 
 * Installera först OpenJDK enligt instruktioner ovan om du inte redan gjort det. 
 * Installera Scala-verktygen med detta långa terminalkommando på en och samma rad som slutar med `./cs setup`:
-    * För nya Apple-datorer med arkitekturen "Apple Silicon" (M1, M2, ...):
-    ```
-    curl -fL https://github.com/VirtusLab/coursier-m1/releases/latest/download/cs-aarch64-apple-darwin.gz | gzip -d > cs && chmod +x cs && (xattr -d com.apple.quarantine cs || true) && ./cs setup
-    ```
-    * För gamla Apple-datorer med arkitekturen "x86-64":
-    ```
-    curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-apple-darwin.gz | gzip -d > cs && chmod +x cs && (xattr -d com.apple.quarantine cs || true) && ./cs setup
-    ```
+    * Installera Scala direkt via Homebrew:
+        ```
+        brew install scala
+        ```
+    * Kontrollera att installationen fungerar:
+        ```bash
+        scala --version
+        ```
 
-* Starta om din dator.
-* Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3". Om du får `[warning] MainGenericRunner` skriv `cs install scala:3.7.2` och sedan ska `scala --version` fungera utan varning.
 * Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "EDITOR"
 * Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
 
@@ -152,9 +192,9 @@ curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64
 * Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
 
 ### SDKMAN
-#### MacOS/Linux/Ubuntu/WSL: Installera SDKMAN
+#### Linux/Ubuntu/WSL: Installera SDKMAN
 
-[https://sdkman.io/](https://sdkman.io/) är ett populärt installationsverktyg för att enkelt installera och hantera olika versioner av allehanda programmeringsverktyg för Ubuntu/Linux/WSL/MacOS. För dig som hellre vill använda SDKMAN i stället så går det utmärkt att installera Scala-verktugen ovan med hjälp av nedan kommando ett i taget i tur och ornding (om du har [installerat SDKMAN](https://sdkman.io/install)) och svara med stort Y på eventuella frågor om att göra nya versionen default:
+[https://sdkman.io/](https://sdkman.io/) är ett populärt installationsverktyg för att enkelt installera och hantera olika versioner av allehanda programmeringsverktyg för Ubuntu/Linux/WSL. För dig som hellre vill använda SDKMAN i stället så går det utmärkt att installera Scala-verktugen ovan med hjälp av nedan kommando ett i taget i tur och ornding (om du har [installerat SDKMAN](https://sdkman.io/install)) och svara med stort Y på eventuella frågor om att göra nya versionen default:
 ```
 sdk update
 sdk install java 21.0.4-tem
@@ -167,7 +207,7 @@ sdk install sbt
 ### EDITOR
 #### Windows/MacOS/Linux/Ubuntu/WSL: Installera VS Code + Metals
 
-1. Installera **VS Code** för ditt system här: [https://code.visualstudio.com/Download](https://code.visualstudio.com/Download) 
+1. Installera **VS Code** för ditt system här: [https://code.visualstudio.com/Download](https://code.visualstudio.com/Download) eller genom kommando ```brew install --cask visual-studio-code``` om du installerat Homebrew.
 2. Installera tillägget **Scala Metals**. Du kan antingen göra detta via tilläggshanterare (Extensions) inne i VS Code eller via terminalen. 
     - Inifrån VS Code: Tryck Ctrl+Shift+X och skriv i sök-rutan: `Scala Metals`, markera tillägget *Scala (Metals)* och klicka *Install*. 
     - I terminalen skriv: `code --install-extension scalameta.metals --force`
