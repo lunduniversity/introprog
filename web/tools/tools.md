@@ -146,14 +146,13 @@ sudo apt install openjdk-21-jdk openjdk-21-doc openjdk-21-source
   curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
   ```
   
-  > **Observera:** Om din dator har en processor med ARM64-arkitektur  
-  > (om du inte känner till det är det förmodligen inte ARM64),  
-  > använd i stället följande kommando:
-  > ```
-  > curl -fL https://github.com/VirtusLab/coursier-m1/releases/latest/download/cs-aarch64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
-  > ```
-  >
-  > Båda kommandon återfinns under *"Linux"* på [https://www.scala-lang.org/download/](https://www.scala-lang.org/download/).
+  Om din dator har en processor med ARM64-arkitektur (inte så vanligt) använd
+  i stället följande kommando:
+  ```
+  curl -fL https://github.com/VirtusLab/coursier-m1/releases/latest/download/cs-aarch64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
+  ```
+  
+  Båda kommandon återfinns under *"Linux"* på [https://www.scala-lang.org/download/](https://www.scala-lang.org/download/).
 
 * Svara med stort Y för ja på eventuell fråga om att addera coursier till din path. 
 * Starta om din dator.
