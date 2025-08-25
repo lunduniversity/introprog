@@ -1,6 +1,6 @@
 # Ljud i WSL2
 
-Detta är en guide för att fixa problem med att ljud inte spelas upp från applikationer som körs under WSL2. Notera att det kan vara så att ljud redan fungerar för dig i WSL2. Detta beror på vilken version av WSL2 du kör (huruvida utvecklarna av WSL2 numera har fixat detta problem). Testa därför alltid först ifall du verkligen har problem med ljudet, innan du ger dig på stegen i denna guide. Ett alternativ är också att istället köra vad det nu är för någonting du håller på med direkt under Windows istället för i WSL2, men om du föredrar att göra vad som krävs för att få ljud att fungera i WSL2, är denna guide förmodligen hjälpsam. Notera dock att du använder den på egen risk.
+Detta är en guide för att fixa problem med att ljud inte spelas upp från applikationer som körs under WSL2. Notera att det kan vara så att ljud redan fungerar för dig i WSL2. Detta beror på vilken version av WSL2 du kör och huruvida utvecklarna av WSL2 numera har fixat detta problem. Testa därför alltid först ifall du verkligen har problem med ljudet, innan du ger dig på stegen i denna guide. Ett alternativ är också att istället köra vad det nu är för någonting du håller på med direkt under Windows istället för i WSL2, men om du föredrar att göra vad som krävs för att få ljud att fungera i WSL2, kan denna guide hjälpa dig.
 
 Den här guiden är baserad på en guide skriven av Pedro Augusto Fabri, vilken kan återfinnas här: <https://www.linkedin.com/pulse/sound-wsl2-windows-11-pulseaudio-configuration-made-easy-pedro-fabri-fu9mf/>
 
