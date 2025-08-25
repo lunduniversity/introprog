@@ -17,18 +17,17 @@ På LTH:s [Linuxdatorer i E-huset](https://fileadmin.cs.lth.se/cs/Bilder/Salar/D
 
 Mer info [om skolans datorer här](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/) och [hur du använder Linux](http://fileadmin.cs.lth.se/cs/Education/EDAA60/general/unix-x.pdf) och [hur du använder bash](https://github.com/RehanSaeed/Bash-Cheat-Sheet).
 
+## Programmera på din egen dator
 
-## Programmera på din egen dator 
-
-Du behöver installera detta på din egen dator: **OpenJDK**, **Scala** och **VS Code** med tillägget Scala (Metals). Följ instruktionerna noga nedan **under rubriken för ditt operativsystem** om hur du installerar verktygen på din egen dator. Du kan läsa mer om hur du använder dessa verktyg i Appendix i [kompendiet](https://fileadmin.cs.lth.se/pgk/compendium.pdf/). 
+Du behöver installera detta på din egen dator: **OpenJDK**, **Scala** och **VS Code** med tillägget Scala (Metals). Följ instruktionerna noga nedan **under rubriken för ditt operativsystem** om hur du installerar verktygen på din egen dator. Du kan läsa mer om hur du använder dessa verktyg i Appendix i [kompendiet](https://fileadmin.cs.lth.se/pgk/compendium.pdf/).
 
 Många av de programmeringsverktyg vi använder körs via ett terminalfönster. Hur du får igång terminalen beskrivs nedan.
 
-Scala med tillhörande verktyg installeras med hjälp av det officiella installationsverktyget Coursier enligt nedan. Du får då bl.a. följande terminalverktyg som du kan läsa om i kompendiet: `scala`, `scalac`, `scala-cli`, `scaladoc`, `sbt`. 
+Scala med tillhörande verktyg installeras med hjälp av det officiella installationsverktyget Coursier enligt nedan. Du får då bl.a. följande terminalverktyg som du kan läsa om i kompendiet: `scala`, `scalac`, `scala-cli`, `scaladoc`, `sbt`.
 
 Om du kör MacOS eller Linux/Ubuntu/WSL så kan du gärna i stället använda den smidiga pakethanteraren SDKMAN, läs mer nedan under rubriken "SDKMAN" längre ned.
 
-Om redan har en **gammal installation** av Scala-verktyg så **avinstallera först** med detta kommando: `cs uninstall --all` och **starta om** din dator efter det, innan du sedan följer efterföljande instruktioner för ditt operativsystem. 
+Om redan har en **gammal installation** av Scala-verktyg så **avinstallera först** med detta kommando: `cs uninstall --all` och **starta om** din dator efter det, innan du sedan följer efterföljande instruktioner för ditt operativsystem.
 
 Om du kör en gammal version av SDKMAN rekommenderas att köra `sdk selfupdate force` och sedan starta om innan du installerar nya versioner enligt instruktioner under rubriken "SDKMAN" längre ned.
 
@@ -36,15 +35,13 @@ Om du kör en gammal version av SDKMAN rekommenderas att köra `sdk selfupdate f
 
 #### Terminalfönster i Windows
 
-För terminal i Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started). Det räcker fint med Windows Terminal för att köra alla kursens verktyg i cmd eller powershell, men det finns också andra sätt att köra terminal i Windows som beskrivs i punktlistan nedan.
-
-* **_(Rekommenderas ej)_** Du kan också köra den befintliga men antika terminalen som inte kräver någon installation, följ instruktioner här [https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/](https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/)
+För terminal i Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started). I en modern installation av Windows är Windows Terminal redan standard. Det räcker fint med Windows Terminal för att köra alla kursens verktyg i cmd eller powershell, men det finns också andra sätt att köra terminal i Windows som beskrivs i punktlistan nedan.
 
 * **_(Rekommenderas om du föredrar Windows men vill ha en Unix-terminal)_** Git Bash är ett terminalprogram som följer med när du installerar Git (se nedan). Den kör inte riktig Unix så som WSL gör, utan fortfarande Windows fullt ut, men erbjuder alla grundläggande Unix-kommandon och passar bra för kursens innehåll och krav.
 
-* **_(Rekommenderas om du vill ha riktigt Linux men fortfarande Windows)_** Om du har en uppdaterad version av Windows 10 eller 11 så kan du (efter lite meckande, ev. med lite hjälp av en van Windowsanvändare) köra **WSL**, helst version 2, som ger dig tillgång till Linux/Ubuntu direkt under Windows i ett separat filsystem. För att installera WSL behöver du starta **PowerShell** med admin-rättigheter så här: tryck på windows-knappen, skriv `powershell` och högerklicka och välj run as administrator. Följ vidare instruktioner här och välj att installera Ubuntu 22.04 (fråga ngn om hjälp om du kör fast): [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+* **_(Rekommenderas om du vill ha riktigt Linux men fortfarande Windows)_** Om du har en uppdaterad version av Windows 10 eller 11 så kan du (efter lite meckande, ev. med lite hjälp av en van Windowsanvändare) köra **WSL2**, som ger dig tillgång till Linux/Ubuntu direkt under Windows i ett separat filsystem. För att installera WSL behöver du starta **PowerShell** med admin-rättigheter så här: tryck på windows-knappen, skriv `powershell` och högerklicka och välj run as administrator. Följ vidare instruktioner här och använd standardinstallationen som ger dig senaste LTS-versionen (Long Term Support) av Ubuntu: [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 
-  * **Notera**: När du installerat WSL så har du en ett riktigt Lunix operativsystem på datorn. Följ nu instruktionerna under **Linux-rubrikerna** nedan istället för Windows, för att installera kursens programmeringsverktyg under WSL/Ubuntu. Om du kör WSL2 kan du även få fönster att fungera om du följer dessa instruktioner: [https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps)
+  * **Notera**: När du installerat WSL2 så har du ett riktigt Linux-operativsystem på datorn. Följ nu instruktionerna under **Linux-rubrikerna** nedan istället för Windows, för att installera kursens programmeringsverktyg under WSL/Ubuntu. I nuvarande versionen av WSL2 ska grafiska applikationer fungera utan vidare åtgärder. Om du mot förmodan skulle ha problem med grafiska applikationer (visar sig senare i kursen, men du kan testa redan nu om du känner dig hugad), så se dessa instruktioner: [https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps)
   - WSL kan krångla så om du inte får det att funka så installera alla kursens verkyg direkt under Windows så du kommer igång och be någon om hjälp vid senare tillfälle.
 
 * **_(Rekommenderas kanske, om du vill kompromissa)_** Det finns även andra sätt att installera Linux/Ubuntu, t.ex. med [VirtualBox](https://ubuntu.com/tutorials/how-to-run-ubuntu-desktop-on-a-virtual-machine-using-virtualbox#1-overview) (kräver snabb dator och rejät med RAM) eller [Dual Boot](https://medium.com/linuxforeveryone/how-to-install-ubuntu-20-04-and-dual-boot-alongside-windows-10-323a85271a73) (kräver att du har minst 25GB extra utrymme på disken, gärna mer, och att du krymper din Windows-partition.). **Observera:** Att installera Linux via Dual Boot kan ev. vara en permanent ändring på datorn, och kan inte backas så du återigen bara har Windows utan att formattera om datorn och installera Windows på nytt.
@@ -213,13 +210,6 @@ sudo apt install openjdk-21-jdk openjdk-21-doc openjdk-21-source
 * Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "EDITOR"
 * Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
 
-#### Installera Git på Linux/Ubuntu/WSL
-
-* Du kan installera Git på Linux/Ubuntu/WSL genom att öppna ett terminalfönster och skriva följande kommando:
-```
-sudo apt install git
-```
-
 ### SDKMAN
 #### Linux/Ubuntu/WSL: Installera SDKMAN
 
@@ -236,11 +226,11 @@ sdk install sbt
 ### EDITOR
 #### Windows/MacOS/Linux/Ubuntu/WSL: Installera VS Code + Metals
 
-1. Installera **VS Code** för ditt system här: [https://code.visualstudio.com/Download](https://code.visualstudio.com/Download) eller genom kommando ```brew install --cask visual-studio-code``` om du installerat Homebrew.
+1. Installera **VS Code** för ditt system här: [https://code.visualstudio.com/Download](https://code.visualstudio.com/Download) eller genom kommando ```brew install --cask visual-studio-code``` om du installerat Homebrew. OBS: Ifall du kör WSL, så ska du alltså fortfarande installera **VS Code** direkt under Windows, inte inuti WSL.
 2. Installera tillägget **Scala Metals**. Du kan antingen göra detta via tilläggshanterare (Extensions) inne i VS Code eller via terminalen. 
     - Inifrån VS Code: Tryck Ctrl+Shift+X och skriv i sök-rutan: `Scala Metals`, markera tillägget *Scala (Metals)* och klicka *Install*. 
     - I terminalen skriv: `code --install-extension scalameta.metals --force`
-3. Om du kör WSL har du nytta av tillägget "Remote - WSL", sök bland tillägg (Ctrl+Shift+X) och klicka "Install", eller skriv i terminalen  `code --install-extension ms-vscode-remote.remote-wsl  --force`
+3. Om du kör WSL har du nytta av tillägget "WSL", sök bland tillägg (Ctrl+Shift+X) och klicka "Install", eller skriv i terminalen  `code --install-extension ms-vscode-remote.remote-wsl  --force`
 4. När du ska börja på ett nytt projekt så stäng ned VS Code och förbered VS Code för Scala med följande kommando (välj bättre namn på mittprojekt):
     ```
     mkdir mittprojekt
@@ -256,7 +246,7 @@ Läs mer om vad du kan göra med en VS Code och andra verktyg i appendix i [komp
 ### KOJO
 #### Windows/MacOS/Linux/Ubuntu/WSL: Installera Kojo 
 
-Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera. 
+Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera.
 
 Det finns olika sätt att köra Kojo:
 
