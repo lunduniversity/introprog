@@ -53,7 +53,7 @@ sudo apt install pulseaudio pulseaudio-utils
 
 ``ipconfig``
 
-Leta upp din IP4-adress och kopiera den. Adressen bör återfinnas på detta vis:
+Leta upp din IPv4-adress och kopiera den. Adressen bör återfinnas på detta vis:
 
 ```
 Link-local IPv6 Address . . . . . . :
