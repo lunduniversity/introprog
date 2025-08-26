@@ -47,23 +47,9 @@ sudo apt update
 sudo apt install pulseaudio pulseaudio-utils
 ```
 
-### 3.2 Ta fram IP-addressen i Windows
+### 3.2 Konfigurera PULSE_SERVER miljövariabeln
 
-Öppna en Windows-terminal (PowerShell/CMD) och skriv detta kommando:
-
-``ipconfig``
-
-Leta upp din IP4-adress och kopiera den. Adressen bör återfinnas på detta vis:
-
-```
-Link-local IPv6 Address . . . . . . :
-IPv4 Address. . . . . . . . . . . . : <adressen du ska kopiera>
-Subnet Mask . . . . . . . . . . . . : 
-```
-
-### 3.3 Konfigurera PULSE_SERVER miljövariabeln
-
-PulseAudio använder miljövariabeln PULSE_SERVER. Denna måste därför alltid peka på servern du vill koppla till, alltså behöver du här IP-adressen du kopierade i föregående steg.
+PulseAudio använder miljövariabeln PULSE_SERVER. Denna måste därför alltid peka på servern du vill koppla till.
 
 För att du ska slippa sätta denna variabel varje gång du öppnar en ny Ubuntu-terminal, så vill du lägga till följande rader i din `.bashrc` (en konfigurationsfil som körs varje gång du öppnar en ny Ubuntu-terminal).
 
