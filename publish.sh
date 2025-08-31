@@ -11,6 +11,7 @@ HERE=$(pwd)
 
 echo "*** scp pdfs to $WEB_REMOTE_LU"
 scp compendium/*.pdf slides/*.pdf quickref/quickref*.pdf plan/courseplan/courseplan.pdf $LUCATID@$WEB_REMOTE_LU:/Websites/Fileadmin/pgk/.
+scp workspace/w01_kojo/kojo.scala $LUCATID@$WEB_REMOTE_LU:/Websites/Fileadmin/.
 
 for f in plan/*-generated.html glossary/*-generated.html 
 do
