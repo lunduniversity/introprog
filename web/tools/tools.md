@@ -90,8 +90,7 @@ För terminal i Windows rekommenderas Microsoft-appen "Windows Terminal", se vid
 
 * Följ instruktioner här: [https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/](https://www.howtogeek.com/682770/how-to-open-the-terminal-on-a-mac/)
 
-* I senare versioner av macOS är *zsh* standardkommandotolk istället för *bash*, men det mesta fungerar lika.. Följ instruktionerna om hur du får igång bash på MacOS här : [https://www.howtogeek.com/444596/how-to-change-the-default-shell-to-bash-in-macos-catalina/](https://www.howtogeek.com/444596/how-to-change-the-default-shell-to-bash-in-macos-catalina/)
-(eller under rubriken *Alternativ terminal på MacOS (Valfri)* senare)
+* I senare versioner av macOS är *zsh* standardkommandotolk istället för *bash*, men det mesta fungerar lika. Det går alltså bra att ha det som det är men vill du byta till bash så följ instruktionerna nedan under rubriken *Alternativ terminal på MacOS (Valfri)* nedan. 
 
 #### Installera Homebrew (pakethanterare)
 Homebrew är det enklaste sättet att installera program och verktyg på macOS. Öppna ett terminalfönster och kör kommando:
