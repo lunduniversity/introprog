@@ -152,6 +152,10 @@ MacOS kommer med en inbyggd terminal, men många föredrar att använda iTerm2 s
         ```
         brew install scala
         ```
+    * Installera Scala-cli direkt via Homebrew
+	```
+	brew install Virtuslab/scala-cli/scala-cli
+	```
     * Kontrollera att installationen fungerar:
         ```bash
         scala --version
