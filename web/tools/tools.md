@@ -79,7 +79,7 @@ Det räcker fint med Windows Terminal för att köra alla kursens verktyg i cmd 
 
 * Installera först OpenJDK enligt instruktioner ovan om du inte redan gjort det. Följ ett av stegen nedan beroende på vilken dator du har:
   * **x86**: Om du har en x86-dator (vanligast): Ladda ned filen [`cs-x86_64-pc-win32.zip`](https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-win32.zip) och spara den på valfritt ställe och dubbel-klicka på den när nedladdningen är klar så den packas upp och dubbel-klicka för att köra installationsprogrammet. Följ instruktionerna och svara jakande. Om du får varningar så kör ändå genom att klicka "Mer information" eller liknande.
-  * **ARM**: Om du har en ARM-dator (t.ex. Snapdragon eller liknande, inte så vanligt) kör istället dessa kommandon i terminalen:
+  * **ARM**: Om du har en ARM-dator (t.ex. Snapdragon eller liknande, inte så vanligt) kör istället dessa kommandon i terminalen (be om hjälp om du inte får igång terminalen eller om du får felmeddelande etc.):
     * Om du kör Powershell klistra in dessa kommandon ett i taget:
       ```
       Start-BitsTransfer -Source https://github.com/coursier/launchers/raw/master/coursier -Destination coursier
