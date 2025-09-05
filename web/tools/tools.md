@@ -33,11 +33,20 @@ Om du kör en gammal version av SDKMAN rekommenderas att köra `sdk selfupdate f
 
 ### WINDOWS
 
+1. Innan du installerar är det bra om du först tar reda på vilken typ av dator du har, x86 eller ARM. Du hittar information i [Settings -> System -> About](ms-settings:about). Fråga någon om hjälp om du inte hittar eller läs [här](https://support.microsoft.com/en-us/windows/find-information-about-your-windows-device-a66d52c8-3323-44fd-8f34-a9497bb935e1).
+
+2. Därefter är det bra om du i Windows-inställningarna slår på att visa filtyp och dolda filer och sökväg (tryck på Windows-knappen och leta efter "Visa filtyp" eller "Show file extension"). Fråga någon om hjälp om du inte hittar.
+
+
 #### Terminalfönster i Windows
 
-För terminal i Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started). I en modern installation av Windows är Windows Terminal redan standard. Det räcker fint med Windows Terminal för att köra alla kursens verktyg i cmd eller powershell, men det finns också andra sätt att köra terminal i Windows som beskrivs i punktlistan nedan.
+För terminal i Windows rekommenderas Microsoft-appen "Windows Terminal", se vidare här: [https://docs.microsoft.com/en-us/windows/terminal/get-started](https://docs.microsoft.com/en-us/windows/terminal/get-started). I en modern installation av Windows är Windows Terminal redan standard. 
 
-* **_(Rekommenderas om du föredrar Windows men vill ha en Unix-terminal)_** Git Bash är ett terminalprogram som följer med när du installerar Git (se nedan). Den kör inte riktig Unix så som WSL gör, utan fortfarande Windows fullt ut, men erbjuder alla grundläggande Unix-kommandon och passar bra för kursens innehåll och krav.
+* Här finns listor med olika kommando som finns i gamla cmd: [https://ss64.com/nt/](https://ss64.com/nt/) och motsvarande i nyare powershell (PS) finns här: [https://ss64.com/ps/](https://ss64.com/ps/). 
+
+Det räcker fint med Windows Terminal för att köra alla kursens verktyg i cmd eller powershell, men det finns också *andra sätt* att köra en terminal i Windows som beskrivs i punktlistan nedan.
+
+* **_Rekommenderas om du föredrar Windows och även vill ha en Unix-terminal_**: Använd *Git Bash* som är ett terminalprogram som följer med när du installerar Git (se nedan). Den kör inte ett fullständigt Linux-system (så som WSL gör se nedan), men erbjuder grundläggande Linux-kommandon och fungerar bra för denna kurs.
 
 * **_(Rekommenderas om du vill ha riktigt Linux men fortfarande Windows)_** Om du har en uppdaterad version av Windows 10 eller 11 så kan du (efter lite meckande, ev. med lite hjälp av en van Windowsanvändare) köra **WSL2**, som ger dig tillgång till Linux/Ubuntu direkt under Windows i ett separat filsystem. För att installera WSL behöver du starta **PowerShell** med admin-rättigheter så här: tryck på windows-knappen, skriv `powershell` och högerklicka och välj run as administrator. Följ vidare instruktioner här och använd standardinstallationen som ger dig senaste LTS-versionen (Long Term Support) av Ubuntu: [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 
@@ -47,10 +56,9 @@ För terminal i Windows rekommenderas Microsoft-appen "Windows Terminal", se vid
   
   * Om du vill få ljud att fungera då du kör program inifrån WSL, så kan du ta hjälp av guiden ``sound_in_wsl2.md`` [https://github.com/lunduniversity/introprog/blob/master/web/tools/sound_in_wsl2.md](https://github.com/lunduniversity/introprog/blob/master/web/tools/sound_in_wsl2.md)
 
-* **_(Rekommenderas kanske, om du vill kompromissa)_** Det finns även andra sätt att installera Linux/Ubuntu, t.ex. med [VirtualBox](https://ubuntu.com/tutorials/how-to-run-ubuntu-desktop-on-a-virtual-machine-using-virtualbox#1-overview) (kräver snabb dator och rejät med RAM) eller [Dual Boot](https://medium.com/linuxforeveryone/how-to-install-ubuntu-20-04-and-dual-boot-alongside-windows-10-323a85271a73) (kräver att du har minst 25GB extra utrymme på disken, gärna mer, och att du krymper din Windows-partition.). **Observera:** Att installera Linux via Dual Boot kan ev. vara en permanent ändring på datorn, och kan inte backas så du återigen bara har Windows utan att formattera om datorn och installera Windows på nytt.
+* **_(Rekommenderas om du är okej med att helt radera Windows)_** Du kan helt [ersätta Windows med Ubuntu](https://ubuntu.com/tutorials/install-ubuntu-desktop). Funkar fint även på äldre och klenare datorer som t.ex. inte klarar av VirtualBox eller Dual Boot. Fråga någon medstudent som vet hur det går till om råd och hjälp om du vill installera Ubuntu "på riktigt". 
 
-* **_(Rekommenderas endast om du är okej med att helt slopa Windows)_** Du kan helt [ersätta Windows med Ubuntu](https://ubuntu.com/tutorials/install-ubuntu-desktop). Funkar fint även på äldre och klenare datorer som t.ex. inte klarar av VirtualBox eller Dual Boot. Fråga någon medstudent som vet hur det går till om råd och hjälp om du vill installera Ubuntu "på riktigt". Här finns listor med olika kommando som finns i gamla cmd: [https://ss64.com/nt/](https://ss64.com/nt/) och motsvarande i nyare powershell finns här: [https://ss64.com/ps/](https://ss64.com/ps/).
-
+* **_(Rekommenderas kanske, om du vill ha dubbla system)_** Det finns även andra sätt att installera Linux/Ubuntu, t.ex. med [VirtualBox](https://ubuntu.com/tutorials/how-to-run-ubuntu-desktop-on-a-virtual-machine-using-virtualbox#1-overview) (kräver snabb dator och rejät med RAM) eller [Dual Boot](https://medium.com/linuxforeveryone/how-to-install-ubuntu-20-04-and-dual-boot-alongside-windows-10-323a85271a73) (kräver att du har minst 25GB extra utrymme på disken, gärna mer, och att du krymper din Windows-partition.). **Observera:** Att installera Linux via Dual Boot är en permanent ändring på datorn, och kan inte alltid återställas. Be om hjälp av någon med erfarenhet av Dual Boot om du är osäker.
 
 #### Installera OpenJDK i Windows
 
@@ -62,20 +70,20 @@ För terminal i Windows rekommenderas Microsoft-appen "Windows Terminal", se vid
 
 * Installera OpenJDK för ditt system härifrån: [https://adoptium.net/](https://adoptium.net/)
  
-    1. Välj att ladda ner OpenJDK **version 21**  (LTS) HotSpot **för ditt operativsystem**. 
+    1. Välj att ladda ner OpenJDK **version 21**  (LTS) HotSpot **för ditt operativsystem** (Windows) och **din typ av dator** (oftast x86 men kan vara aarch64 om du har en arm). 
     2. Dubbelklicka på filen som laddas ned för att starta installationen. Om du får en varning ska du köra ändå genom att klicka på "Mer information" eller liknande. Under installationen välj alla dessa åtgärder: Update PATH, Associate .jar, Set JAVA_HOME, JavaSoft registry key. 
     3. Starta om din dator.
     4. Starta terminalfönster och kontrollera att `javac --version` ger rätt version. Om något krånglar: fråga någon som installerat JDK förr om hjälp. 
 
 #### Installera Scala med tillhörande verktyg i Windows
 
-* Installera först OpenJDK enligt instruktioner ovan om du inte redan gjort det. 
-* Ladda ned filen [`cs-x86_64-pc-win32.zip`](https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-win32.zip) och spara den på valfritt ställe och dubbel-klicka på den när nedladdningen är klar. Följ instruktionerna och svara jakande. Om du får varningar så kör ändå genom att klicka "Mer information" eller liknande.
-* OBS! Om du har en ARM-dator (Snapdragon X eller liknande) kör istället:
-```
-Start-BitsTransfer -Source https://github.com/coursier/launchers/raw/master/coursier -Destination coursier
-Start-BitsTransfer -Source https://github.com/coursier/launchers/raw/master/coursier.bat -Destination coursier.bat
-coursier setup
+* Installera först OpenJDK enligt instruktioner ovan om du inte redan gjort det. Följ ett av stegen nedan beroende på vilken dator du har:
+  * **x86**: Om du har en x86-dator (vanligast): Ladda ned filen [`cs-x86_64-pc-win32.zip`](https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-win32.zip) och spara den på valfritt ställe och dubbel-klicka på den när nedladdningen är klar så den packas upp och dubbel-klicka för att köra installationsprogrammet. Följ instruktionerna och svara jakande. Om du får varningar så kör ändå genom att klicka "Mer information" eller liknande.
+  * **ARM**: Om du har en ARM-dator (t.ex. Snapdragon eller liknande, inte så vanligt) kör istället dessa kommandon i terminalen:
+    ```
+    Start-BitsTransfer -Source https://github.com/coursier/launchers/raw/master/coursier -Destination coursier
+    Start-BitsTransfer -Source https://github.com/coursier/launchers/raw/master/coursier.bat -Destination coursier.bat
+    coursier setup
 ```
 * Starta om din dator.
 * Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3". Om du får `[warning] MainGenericRunner` skriv `cs install scala:3.7.2` och sedan ska `scala --version` fungera utan varning.
