@@ -109,7 +109,7 @@ Det räcker fint med Windows Terminal för att köra alla kursens verktyg i cmd 
 
 1. Innan du installerar är det bra om du först tar reda på vilken typ av dator du har. Öppna ett terminalfönster (se nedan) och skriv `uname -m -p` och se om du har `x86` eller `ARM` och notera detta (det påverkar hur du ska installera grejer i efterföljande steg).
 
-2. Därefter är det bra om du slår på att visa filtyp och dolda filer. Öppna ett terminalfönster (se nedan) och klistra in dessa kommandon i tur och ordning:
+2. Därefter är det bra om du slår på att visa filtyp och dolda filer. Öppna ett terminalfönster (se nedan) och klistra in dessa kommandon:
 ```
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true && killall Finder
 defaults write com.apple.finder AppleShowAllFiles YES && killall Finder
