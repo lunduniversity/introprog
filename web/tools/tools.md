@@ -177,15 +177,14 @@ MacOS kommer med en inbyggd terminal, men många föredrar att använda iTerm2 s
 #### Installera Scala med tillhörande verktyg i MacOS
 
 * Installera först OpenJDK enligt instruktioner ovan om du inte redan gjort det. 
-* Installera Scala-verktygen med detta långa terminalkommando på en och samma rad som slutar med `./cs setup`:
-    * Installera Scala direkt via Homebrew:
+    * Installera Scala via Homebrew:
         ```
         brew install scala
         ```
-    * Installera Scala-cli direkt via Homebrew
-	```
-	brew install Virtuslab/scala-cli/scala-cli
-	```
+    * Installera Scala CLI  via Homebrew
+      ```
+      brew install Virtuslab/scala-cli/scala-cli
+    	```
     * Kontrollera att installationen fungerar:
         ```bash
         scala --version
