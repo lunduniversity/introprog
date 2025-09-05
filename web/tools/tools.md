@@ -71,6 +71,12 @@ För terminal i Windows rekommenderas Microsoft-appen "Windows Terminal", se vid
 
 * Installera först OpenJDK enligt instruktioner ovan om du inte redan gjort det. 
 * Ladda ned filen [`cs-x86_64-pc-win32.zip`](https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-win32.zip) och spara den på valfritt ställe och dubbel-klicka på den när nedladdningen är klar. Följ instruktionerna och svara jakande. Om du får varningar så kör ändå genom att klicka "Mer information" eller liknande.
+* OBS! Om du har en ARM-dator (Snapdragon X eller liknande) kör istället:
+```
+Start-BitsTransfer -Source https://github.com/coursier/launchers/raw/master/coursier -Destination coursier
+Start-BitsTransfer -Source https://github.com/coursier/launchers/raw/master/coursier.bat -Destination coursier.bat
+coursier setup
+```
 * Starta om din dator.
 * Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3". Om du får `[warning] MainGenericRunner` skriv `cs install scala:3.7.2` och sedan ska `scala --version` fungera utan varning.
 * Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "EDITOR"
