@@ -204,6 +204,14 @@ brew install git
 
 ### LINUX
 
+1. Innan du installerar är det bra om du först tar reda på vilken typ av dator du har. Öppna ett terminalfönster (se nedan) och skriv `uname -m -p` och se om du har `x86` eller `ARM` och notera detta (det påverkar hur du ska installera grejer i efterföljande steg).
+
+2. Därefter är det bra om du slår på att visa dolda filer och filtyp. Öppna ett terminalfönster (se nedan) och klistra in detta kommando och tryck enter:
+```
+gsettings set org.gtk.gtk4.Settings.FileChooser show-hidden true
+gsettings set org.gtk.gtk4.Settings.FileChooser show-type-column true
+```
+
 #### Starta terminalfönster i Linux/Ubuntu/WSL
 
 * Tryck Ctrl+Alt+T eller tryck på Windows-tangenten och sök efter "Terminal". 
@@ -227,17 +235,17 @@ sudo apt install openjdk-21-jdk openjdk-21-doc openjdk-21-source
 * Installera först OpenJDK enligt instruktioner ovan om du inte redan gjort det. 
 * Testa om nedladdningsprogrammet `curl` finns på ditt system genom att skriva `curl --version` i terminalen. Om `curl` saknas så installera detta i terminalen genom att skriva: `sudo apt install curl`
 * Installera Scala-verktygen med detta långa terminalkommando på en och samma rad som slutar med `./cs setup`:
-  ```
-  curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
-  ```
+  * Om du har en x86-dator (vanligast):
+    ```
+    curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
+    ```
   
-  Om din dator har en processor med ARM64-arkitektur (inte så vanligt) använd
-  i stället följande kommando:
-  ```
-  curl -fL https://github.com/VirtusLab/coursier-m1/releases/latest/download/cs-aarch64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
-  ```
+  * Om din dator har en processor med ARM64-arkitektur (inte så vanligt) använd i stället följande kommando:
+    ```
+    curl -fL https://github.com/VirtusLab/coursier-m1/releases/latest/download/cs-aarch64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
+    ```
   
-  Båda kommandon återfinns under *"Linux"* på [https://www.scala-lang.org/download/](https://www.scala-lang.org/download/).
+  Båda kommandon återfinns även under *"Linux"* på [https://www.scala-lang.org/download/](https://www.scala-lang.org/download/).
 
 * Svara med stort Y för ja på eventuell fråga om att addera coursier till din path. 
 * Starta om din dator.
