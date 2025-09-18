@@ -79,7 +79,6 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "Vector         " -> "en oföränderlig, indexerbar sekvenssamling",
       "Range          " -> "en samling som representerar ett intervall av heltal",
       "yield          " -> "används i for-uttryck för att skapa ny samling",
-      "map            " -> "applicerar en funktion på varje element i en samling",
       "algoritm       " -> "stegvis beskrivning av en lösning på ett problem",
       "implementation " -> "en specifik realisering av en algoritm",
       "" -> ""
@@ -151,6 +150,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "namnanrop         " -> "fördröjd evaluering av argument",
   //    "tupel             " -> "lista med bestämt antal (heterogena) värden",
   //    "tupelreturtyp     " -> "gör att en funktion kan flera resultatvärden",
+      "map            " -> "applicerar en funktion på varje element i en samling",
       "äkta funktion     " -> "ger alltid samma resultat om samma argument",
       "predikat          " -> "en funktion som ger ett booleskt värde",
       "slumptalsfrö      " -> "ger återupprepningsbar sekvens av pseudoslumptal",

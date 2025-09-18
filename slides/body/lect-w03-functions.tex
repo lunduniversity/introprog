@@ -553,7 +553,7 @@ def rnd(n: Int): Int = (math.random() * n).toInt  // oäkta funktion
 \end{Code}
 Vilken typ har denna funktionslitteral? \pause \hfill\code{(Int, Int) => Int}
 \pause
-\item Om kompilatorn kan gissa typerna från sammanhanget så behöver typerna inte anges i själva  funktionslitteralen:
+\item Om kompilatorn kan gissa typerna från sammanhanget så behöver parametertyperna inte anges i själva  funktionslitteralen:
 \begin{Code}[basicstyle=\ttfamily\SlideFontSize{9}{11}]
 val f: (Int, Int) => Int = (x, y) => x + y
 \end{Code}
@@ -630,7 +630,7 @@ res23: Int = 120
 
 
 \begin{Slide}{Predikat, med och utan namn}
-\begin{itemize}\SlideFontSmall
+\begin{itemize}\SlideFontTiny
 \item En funktion som har \code{Boolean} som returtyp kallas för ett \Emph{predikat}. 
 \item Exempel:
 \begin{Code}
@@ -650,21 +650,18 @@ val parts: (Vector[Int], Vector[Int]) =
 \end{itemize}  
 \end{Slide}
 
-\begin{Slide}{Funktionsvärde vid tom parameterlista: använd ''thunk''}\SlideFontSmall
-\begin{itemize}\SlideFontSmall
+\begin{Slide}{Funktionsvärde vid tom parameterlista: använd ''thunk''}\SlideFontTiny
+\begin{itemize}\SlideFontTiny
 
-\item Om du vill ha funktionen som ett värde så skriv bara namnet och inte parameterlistan (samma exempel som tidigare):
+\item Vi har tidigare sett: \\Vill du ha funktionen som värde -- \Emph{skriv bara namnet} och inte parameterlistan:
 \begin{REPLsmall}
-scala> def add(a: Int, b: Int) = a + b
-
-scala> val f = add     // inget anrop sker 
+scala> val f = add     // inget anrop av add sker 
 val f: (Int, Int) => Int = Lambda7210/0x0000000841e4e040@1ce2db23
 \end{REPLsmall}
-
-\item Vid \Alert{tom parameterlista} behövs anonym funktion som \Emph{fördröjer anrop}: 
+\pause
+\item MEN: Vid \Alert{tom parameterlista} behövs anonym funktion som \Emph{fördröjer anrop} för att få motsvarande funktionsvärde: 
 \begin{REPLsmall}
 scala> def a() = 42
-def a(): Int
 
 scala> val b = a
 1 |val b = a
@@ -673,8 +670,9 @@ scala> val b = a
 
 scala> val b = () => a()   // anonym funktion, fördröjd evaluering
 val b: () => Int = Lambda7214/0x0000000841e50440@565d794
-\end{REPLsmall}
+\end{REPLsmall} \pause
 \item Notera typen: \code{() => Int} ~~Ett sådant funktionsvärde kallas \Alert{thunk}\\ \url{https://en.wikipedia.org/wiki/Thunk} 
+\item Förslag på svenskt namn: \Emph{tånk}   (eftersom thunk är en ordvits på \emph{think} = tänk)
 \end{itemize}
 \end{Slide}
 
@@ -707,7 +705,7 @@ scala> def add(a: Int, b: Int) = a + b
 
 scala> add(21, 21)
 res0: Int = 42
-\end{REPLnonum}
+\end{REPLnonum}\pause
 Man kan även ha \Alert{mer än en} \Emph{parameterlista}:
 \begin{REPLnonum}
 scala> def add(a: Int)(b: Int) = a + b
@@ -791,7 +789,7 @@ gurka gurka gurka tomat tomat gurka gurka gurka gurka tomat tomat tomat tomat to
 
 
 \begin{Slide}{Kolon vid ensam parameter}\SlideFontSmall
-Du kan från Scala 3.3 i stället för klammerparentes vid ensam parameter använda kolon för att få färre ''krullisar'' \Eng{fewer braces}.
+Du kan i Scala 3 i stället för klammerparentes vid ensam parameter använda kolon för att få färre ''krullisar'' \Eng{fewer braces}.
 \begin{Code}
   upprepa(42):
     if math.random() < 0.5 
@@ -826,7 +824,7 @@ def f(x: Int): Int => Int =
   def g(y: Int): Int = y + a
   g
 \end{Code}
-Funktionen \code{g} \Alert{fångar} den lokala variabeln \code{a} i ett \Emph{funktionsobjekt}.
+Funktionen \code{g} \Alert{fångar} den lokala variabeln \code{a} i ett funktionsobjekt.
 \pause
 \begin{REPLnonum}
 scala> val funkis = f(1)
@@ -881,7 +879,7 @@ val res0: Int = 120
 
 \item I aktiveringsposten sparas varje returvärde som gör att \code{5 * (4 * (3 * (2 * 1)))} kan beräknas.
 
-\item Rekrusionen avbryts när man når \Emph{basfallet}, här \code{n < 2}
+\item Rekursionen avbryts när man når \Emph{basfallet}, här \code{n < 2}
 
 \item En rekursiv funktion \Alert{måste} ha en returtyp.
 
@@ -912,27 +910,32 @@ def gissaTalet(max: Int, min: Int = 1): Unit =
 \end{Slide}
 
 
-\begin{Slide}{Rekursiva datastrukturer}
-\begin{itemize}
+\begin{Slide}{Rekursiva datastrukturer}\SlideFontSmall
+\begin{itemize}\SlideFontSmall
 \item Datastrukturena Lista och Träd är exempel på datastrukturer som passar bra ihop med rekursion.
 \item Båda dessa datastrukturer kan beskrivas rekursivt:
-\begin{itemize}
+\begin{itemize}\SlideFontSmall
 \item En lista består av ett huvud och en lista, som i sin tur består av ett huvud och en lista, som i sin tur...
 \item Ett träd består av grenar till träd som i sin tur består av grenar till träd som i sin tur, ...
-\end{itemize}
+\end{itemize}\SlideFontSmall
 \item Dessa datastrukturer bearbetas med fördel med rekursiva algoritmer.
 \item I denna kursen ingår rekursion endast ''för kännedom'': \\ du ska veta vad det är och kunna skapa en enkel rekursiv funktion, t.ex. fakultets-beräkning. Du kommer jobba mer med rekursion och rekursiva datastrukturer i fortsättningskursen.
 \end{itemize}
+\ifkompendium\else
+\pause {\hfill\SlideFontTiny För den nyfikne: se filmen \href{https://youtu.be/IDatlPjZ58A?si=nD2KZx6o8ujPqT0L}{''Fatta Rekursion''} (eller vänta till pfk).}
+\fi
 \end{Slide}
 
 \Subsection{Automatisk omkompilering}
 
 \begin{Slide}{Kompilera om det som ändrats vid varje sparning}
-\begin{itemize}
+\begin{itemize}\SlideFontSmall
   \item Den kreativa programmeringsprocessen innehåller många korta cykler av koda, ändra, testa.
-  \item Det blir \Alert{många omkompileringar} och då vill man gärna slippa skriva samma kommando om och om igen. %En lösning är att skapa ett skript, t.ex. i språket \Emph{bash}, som kör kompileringen.
-  \item Vid \Emph{varje liten ändring} vill man \Alert{kompilera om} det som ändrats och se om det fortfarande kompilerar utan fel. 
-  \item Då kan du använda:\\\code{scala compile . --watch}\\Ändringar bevakas och kompileras om direkt.
+  %\item Det blir \Alert{många omkompileringar} och då vill man gärna slippa skriva samma kommando om och om igen. %En lösning är att skapa ett skript, t.ex. i språket \Emph{bash}, som kör kompileringen.
+  \item Vid \Emph{varje liten ändring} vill man \Alert{kompilera om} det som ändrats och se om det fortfarande kompilerar utan fel.
+  \item Detta görs automatiskt i vscode och du får röda understrykningar vid fel.
+  \item Men du kan också använda terminalen:\\\code{scala compile . --watch}\\Ändringar bevakas och du kan tydligt se ev. felmeddelande i en kompilator-utskrift som sker först när du sparar din ändring med Ctrl+S.
+  \item Du \Alert{slipper} felmeddelande som beror på att du ännu inte skrivit klart...
   %\item  Du kan också använda ett s.k. \Emph{byggverktyg},\\t.ex. Scala Build Tool (\code{sbt}), se Appendix F.
 
 \end{itemize}
@@ -1039,10 +1042,9 @@ Kolla \Emph{snabbreferensen} vad mer du kan göra med strängar!
   \item \code{scala repl .}~\\så att du kan göra mindre undersökningar rad för rad, medan du tänker. Ctrl+D avslutar REPL, så du kan börja om efter kodändring.
   \item \code{scala run .}~\\för att se om programmet funkar som det ska. Om programmet väntar på input kan du behöva avbryta för att köra om efter ändring. 
   \end{enumerate}
-  \item Börja enkelt och bygg vidare steg för steg.
-  \item Bygg om koden allteftersom den växer genom att införa nya abstraktioner med väl valda namn (s.k. ''refaktorisering'') .
+  \item Börja enkelt och bygg vidare steg för steg i \Alert{små} steg.
   \item Fixa \Alert{alla} kompileringsfel och \Alert{alla} körtidsfel \Emph{innan} du går vidare.
-  \item Fokusera på kodens \Alert{läsbarhet}: Om en funktion blir stor så försök dela upp den i flera funktioner med bra namn. 
+  \item Fokusera på kodens \Emph{läsbarhet}: Om en funktion blir stor så försök dela upp den i flera mindre funktioner med bra namn. 
   \item En åtgärd som förbättrar läsbarheten utan att ändra hur koden fungerar ur användarens synvinkel kallas \Emph{refaktorisering} \Eng{refactoring}. \\\url{https://sv.wikipedia.org/wiki/Omstrukturering_av_kod}\\\url{https://en.wikipedia.org/wiki/Code_refactoring} 
 \end{itemize}
 
