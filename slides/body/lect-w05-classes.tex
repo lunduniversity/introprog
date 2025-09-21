@@ -1075,6 +1075,58 @@ Försök att \Alert{undvika} \code{null} om det går eftersom det ger stor risk 
 
 \end{Slide}
 
+\begin{Slide}{Be kompilatorn att varna vid initialiseringsproblem}
+\SlideFontSmall
+Initialisering i fel ordning kan ge oväntade överraskningar:
+\begin{REPLsmall}
+scala> class C { val b = a; val a = 42 }
+
+scala> C().b
+val res0: Int = 0  // default-värdet för Int är noll och a har ännu inte fått värdet 42
+\end{REPLsmall}
+Med kompilator-optionen \code{-Wsafe-init} får du en välbehövlig varning.
+\begin{REPLsmall}
+scala> :settings -Wsafe-init
+
+scala> class C { val b = a; val a = 42 }
+1 warning found
+-- Warning: ----------------------------
+1 |class C { val b = a; val a = 42 }
+  |                         ^
+  |                         Access non-initialized value a.
+\end{REPLsmall}
+\end{Slide}
+
+\begin{Slide}{Be kompilatorn ge fler bra varningar}\SlideFontSmall
+Slå på mer utförliga meddelanden och varningar:
+\begin{CodeSmall}
+//> using options -unchecked -deprecation -Wunused:all -Wvalue-discard -Wsafe-init
+\end{CodeSmall}
+\begin{tabular}{l p{8.5cm}}\SlideFontSmall
+\texttt{-unchecked} & Extra varningar vid flera fall av osäker kod. \\
+\texttt{-deprecation} & Förklaring vid användning av utgående funktioner. \\
+\texttt{-Wunused:all} & Varning om deklarationer ej används. \\
+\texttt{-Wvalue-discard} & Varning vid förlorat värde. \\
+\texttt{-Wsafe-init} & Varna vid användning av ännu ej initialiserade attribut. \\
+\end{tabular}
+
+\vspace*{1em}
+Slå på alla varningar och ge kompileringsfel vid varning:
+\begin{CodeSmall}
+//> using options -Wall -Werror
+\end{CodeSmall}
+Se alla tillgängliga varningar med: \texttt{scala compile -W}
+
+\pause\vspace*{1em}
+Om du tycker en specifik varning är irriterande kan du slå av den så här: 
+\begin{CodeSmall}
+  @annotation.nowarn 
+  val b = a
+  val a = 42 
+\end{CodeSmall}
+  
+\end{Slide}
+
 \Subsection{Referensen \texttt{this}}
 \begin{Slide}{Referensen \texttt{this}}\SlideFontSmall
 \begin{itemize}

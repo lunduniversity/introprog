@@ -1,43 +1,6 @@
 %!TEX encoding = UTF-8 Unicode
 %!TEX root = ../lect-w04.tex
 
-\ifkompendium\else
-\begin{SlideExtra}{Denna vecka: Objekt}
-\begin{itemize}\SlideFontSmall
-\item Övning \texttt{objects} innehåller bland annat:
-\begin{itemize}\SlideFontTiny
-\item hur man kan kapsla in funktioner och variabler i singelobjekt
-\item hur man kan skapa namnrymder, hantera namnöverskuggning, och använda punktnotation
-%\item skapa objekt med hjälp av tupler
-%\item lat initialisering
-%\item jar-fil, paket, namnbyte vid import
-\item använda färdiga klasser, t.ex. \code{java.awt.Color}
-\item händelsehantering i ett grafiskt fönster
-\end{itemize}
-
-\item På laboration \texttt{blockmole} lär du dig bland annat:
-\begin{itemize}\SlideFontTiny
-  \item att dela upp din kod i flera singelobjekt
-  \item att använda färdig klass: \code{introprog.PixelWindow}
-  \item att skapa ett större program i form av ett grafiskt spel
-  \item använda tidigare begrepp: uttryck, program och funktioner
-\end{itemize}
-
-\item Senaste versionen av kursbiblioteket \code{introprog} är \Emph{\LibVersion} 
-\begin{itemize}\SlideFontTiny
-\item Jar-fil kan laddas ned här: \url{https://fileadmin.cs.lth.se/introprog.jar}
-\item Eller låt \texttt{scala-cli} ladda ner den med
-\begin{Code}
-//> using scala 3.7.2
-//> using dep se.lth.cs::introprog:1.4.0  
-\end{Code} 
-\item \url{https://github.com/lunduniversity/introprog-scalalib}
-\end{itemize}
-\end{itemize}
-\end{SlideExtra}
-\fi
-
-
 \Subsection{Vad är ett objekt?}
 
 \ifkompendium\else
@@ -123,7 +86,7 @@ Vector(1,2,3)  // skapa Vector-objekt med apply-metod
 Vector.apply(1,2,3)  // explicit apply
 \end{Code}
 {\SlideFontTiny En funktion som skapar objekt kallas \Alert{fabriksmetod} \Eng{factory method}.\vspace{0.5em}}
-
+\pause
 \item Göra \code{new} på en klass (mer om klasser senare):
 \begin{Code}
 new introprog.PixelWindow() // skapa ett fönsterobjekt
@@ -132,15 +95,16 @@ new introprog.PixelWindow() // skapa ett fönsterobjekt
 \SlideFontSmall Med \code{new} kan man skapa \Alert{många upplagor} av samma typ av objekt.\\
 I Scala 3 kan \code{new} ofta utelämnas: \code{introprog.PixelWindow()}
 }
-
+\pause
 \item Deklarera ett \Emph{singelobjekt} med nyckelordet \code{object}
 \begin{itemize}\SlideFontSmall
   \item Ett singelobjekt finns i exakt \Alert{en} upplaga.
   \item Allokeras \Alert{automatiskt} första gången man refererar objektet; \\
   man behöver inte, och kan inte, skriva \code{new}.
-  \pause
-  \item Medlemmar i ett Scala-singelobjekt liknar \jcode{static}-medlemmar i en Java/C++/C\#-klass.
+  %\pause
+  %\item Medlemmar i ett Scala-singelobjekt liknar \jcode{static}-medlemmar i en Java/C++/C\#-klass.
 \end{itemize}
+\pause
 \item Använda en \Emph{tupel}, exempel: \code{val p = (200, 300)}
 \end{enumerate}
 \end{Slide}
@@ -229,18 +193,19 @@ scala> Highscore.highscore = 42
 \end{Slide}
 
 
-\begin{Slide}{Punktnotation och operatornotation}
+\begin{Slide}{Punktnotation och operatornotation}\SlideFontSmall
 Punktnotation där metodanropet har \Alert{ett} enda argument:\\~\\
 \code{objekt.metod(argument)}
 \\~\\kan även skrivas med infix \Emph{operatornotation}:\\~\\
 \code{objekt metod argument}
 \\~\\Exempel:\\
-\code{1 + 2}\\\pause\vspace{0.5em}
+\code{1 + 2}\pause\hfill\code{1.+(2)}\pause\\\code{1 to 42}\hfill\code{1.to(42)}
+\\\pause\vspace{0.5em}
 \code{Highscore isHighscore 1000}
 \pause 
 {
 \SlideFontSmall
-\\\vspace{0.5em}Operatornotation med metoder vars namn börjar med bokstäver kommer i framtiden kräva deklaration med \code{infix} före \code{def}, detta för att uppmuntra konsekvent användning.
+\\\vspace{0.5em}Metoder vars namn \Emph{börjar med bokstäver} \Alert{ger varning} vid anrop med operatornotation om ej deklarerad med \code{infix} före \code{def}, detta för att uppmuntra konsekvent användning av punktnotation.
 }
 \end{Slide}
 
@@ -250,18 +215,18 @@ Punktnotation där metodanropet har \Alert{ett} enda argument:\\~\\
   \item En \Emph{namnrymd}\footnote{\url{https://sv.wikipedia.org/wiki/Namnrymd}}  \Eng{namespace} är en omgivning (kontext) i vilken alla namn är unika. Genom att skapa flera olika namnrymder
   kan man undvika ''\Alert{krockar}'' mellan lika namn med olika betydelser (homonymer). \\
   Exempel: mejladresser \code{kim@företag1.se}  ~$\neq$~  \code{kim@företag2.se}
+\pause
   \item Medlemmarna i ett singelobjekt finns i en egen namnrymd,
   där alla namn måste vara unika på samma nivå. De ''krockar'' inte med namn ''utanför'' objektet. Dock kan det förekomma \Alert{skuggning} \Eng{shadowing}:
 \end{itemize}
 \begin{Code}
-object Game {
+object Game:
 
   val highscore = 42   // ett annat värde än Game.Highscore.highscore
 
   object Highscore:
     var highscore = 0  // ett annat värde än Game.highscore
     def isHighscore(points: Int): Boolean = points > highscore
-}
 \end{Code}
 
 \end{Slide}
@@ -429,19 +394,19 @@ align=center, draw] (x) at (5.6cm, -1.4cm) {
   \begin{itemize}
     \item En modul samlar kod som utgör en sammanhållen, avgränsad \Emph{uppsättning abstraktioner} som kan användas av annan kod  för att lösa ett specifikt (del)problem.
     \item I Scala finns två sätt att skapa moduler:\footnote{\href{https://en.wikipedia.org/wiki/Modular_programming}{en.wikipedia.org/wiki/Modular\_programming}}
-    \begin{itemize}
+    \begin{itemize}\SlideFontTiny
       \item \Emph{singelobjekt} med nyckelordet \code{object} och
       \item \Emph{paket} med nyckelordet \code{package}
       \pause
       \item Liknar varandra; t.ex. kan man använda punktnotation och göra \code{import} på medlemmar i både singelobjekt och paket.
       \pause
       \item Skillnader:
-      \begin{itemize} 
-        \item paket medför att \Alert{underkataloger} för maskinkoden skapas vid kompilering
-        \item objekt kan ärva medlemmar från klasser och traits (mer om det senare)
-        %\item paket får inte i Scala 2 innehålla variabel- och funktions- deklarationer på topp-nivå; dessa  måste i Scala 2 ligga inuti singelobjekt eller klasser
+      \begin{itemize} \SlideFontTiny
+        \item för varje paket skapar kompilatorn \Alert{underkataloger} för maskinkoden 
+        \item paket kan delas upp i \Emph{flera} kodfiler -- ett objekt måste vara i \Alert{en} kodfil
+        \item objekt kan \Emph{ärva medlemmar} från klasser \& traits (mer sen om detta)
       \end{itemize}
-      %\item I Scala 2 kan toppnivådekl. placeras i ett \code{package object}
+      %\item Om du vill att ditt paket ska ärva medlemmar kan du använda ett \code{package object}
     \end{itemize}
   
   \end{itemize}
@@ -523,10 +488,10 @@ du behöver bara parenteser och kommatecken för att skapa tupel-objekt: ~~\code
 scala> val t = ("hej", 42, math.Pi)
 t: (String, Int, Double) = (hej,42,3.141592653589793)
 
-scala> t._1    // direkt access
+scala> t._1        // 1-baserad access
 res0: String = hej
 
-scala> t(1)    // notera användningen av apply
+scala> t(1)        // 0-baserad indexering, implicit apply
 res1: Int = 42
 \end{REPL}
 
@@ -563,6 +528,7 @@ scala> polär((3,4))
 res2: (Double, Double) = (5.0,0.6435011087932844)
 
 \end{REPLsmall}
+\pause
 \vspace{0.5em}
 \item Om typerna passar kan man skippa dubbla parenteser vid \Emph{ensamt tupel-argument}:
 \begin{REPL}
@@ -629,8 +595,8 @@ Typalias kan vara bra när:
 
 \Subsection{Fördröjd initialisering}
 
-\begin{Slide}{Lata variabler och fördröjd initialisering}
-Med nyckelordet \code{lazy} före \code{val} sker ''\Emph{lat}'' evaluering av initialiseringsuttrycket. Motsatsen (det normala i Scala) kallas \Alert{strikt} evaluering.
+\begin{Slide}{Lata variabler med fördröjd initialisering}
+Med nyckelordet \code{lazy} före \code{val} sker \Alert{fördröjd} (ä.k. ''\Emph{lat}'') evaluering av initialiseringsuttrycket. \\Motsatsen (det normala i Scala) kallas \Alert{strikt} evaluering.
 \begin{REPL}
 scala> val strikt = Vector.fill(1000000)(math.random())
 strikt: scala.collection.immutable.Vector[Double] =
@@ -644,7 +610,7 @@ res0: scala.collection.immutable.Vector[Double] =
   Vector(0.5391685014341797, 0.14759775960530275, 0.722606095900537, 0.9025572787055386, ...
 \end{REPL}
 
-En \code {lazy val} initialiseras \Alert{inte} vid deklarationen utan när den \Alert{refereras första gången}. Uttrycket som anges i deklarationen evalueras med s.k. \Emph{fördröjd evaluering} (även ''lat'' evaluering).
+En \code {lazy val} initialiseras \Alert{inte} vid deklarationen utan \Emph{senare} när den \Alert{refereras första gången}. 
 \end{Slide}
 
 
@@ -696,55 +662,7 @@ I vilken ordning sker utskrifterna?
 \end{Slide}
 
 
-\begin{Slide}{Be kompilatorn att varna vid initialiseringsproblem}
-\SlideFontSmall
-Initialisering i fel ordning kan ge oväntade överraskningar:
-\begin{REPLsmall}
-scala> { val b = a; val a = 42 }
-val b: Int = 0   // default-värdet för Int är noll och a har ännu inte fått värdet 42
-val a: Int = 42
-\end{REPLsmall}
-Med kompilator-optionen \code{-Wsafe-init} får du en välbehövlig varning. \\
-Skriv såhär i din kod om du vill ha denna option påslagen:
-\begin{CodeSmall}
-//> using options -Wsafe-init
 
-@main def run =
-  val b = a
-  val a = 42
-  println(b)
-
-\end{CodeSmall}
-\begin{REPLsmall}
->  scala run .
-[error] a is a forward reference extending over the definition of b
-[error]   val b = a
-[error]           ^
-\end{REPLsmall}
-\end{Slide}
-
-\begin{Slide}{Be kompilatorn ge fler bra varningar}\SlideFontSmall
-Slå på mer utförliga meddelanden och varningar:
-\begin{CodeSmall}
-//> using options -unchecked -deprecation -Wunused:all -Wvalue-discard -Wsafe-init
-\end{CodeSmall}
-\begin{tabular}{l p{8.5cm}}
-\texttt{-unchecked} & Extra varningar vid flera fall av osäker kod. \\
-\texttt{-deprecation} & Förklaring vid användning av utgående funktioner. \\
-\texttt{-Wunused:all} & Varning om deklarationer ej används. \\
-\texttt{-Wvalue-discard} & Varning vid förlorat värde. \\
-\texttt{-Wsafe-init} & Varna vid användning av ännu ej initialiserade variabler. \\
-\end{tabular}
-
-\pause\vspace*{1em}
-Om du tycker vissa specifika varningar är irriterande kan du slå av dem med \code{@annotation.nowarn} 
-\begin{CodeSmall}
-  @annotation.nowarn 
-  val b = a
-  val a = 42 
-\end{CodeSmall}
-  
-\end{Slide}
 
 \Subsection{Funktioner är objekt}
 
@@ -1206,6 +1124,41 @@ Fungerar också för run-kommandot, men det är inte lika användbart om appen �
 
 
 \Subsection{Veckans övning och laboration}
+
+\begin{SlideExtra}{Denna vecka: Objekt}
+\begin{itemize}\SlideFontSmall
+\item Övning \texttt{objects} innehåller bland annat:
+\begin{itemize}\SlideFontTiny
+\item hur man kan kapsla in funktioner och variabler i singelobjekt
+\item hur man kan skapa namnrymder, hantera namnöverskuggning, och använda punktnotation
+%\item skapa objekt med hjälp av tupler
+%\item lat initialisering
+%\item jar-fil, paket, namnbyte vid import
+\item använda färdiga klasser, t.ex. \code{java.awt.Color}
+\item händelsehantering i ett grafiskt fönster
+\end{itemize}
+
+\item På laboration \texttt{blockmole} lär du dig bland annat:
+\begin{itemize}\SlideFontTiny
+  \item att dela upp din kod i flera singelobjekt
+  \item att använda färdig klass: \code{introprog.PixelWindow}
+  \item att skapa ett större program i form av ett grafiskt spel
+  \item använda tidigare begrepp: uttryck, program och funktioner
+\end{itemize}
+
+\item Senaste versionen av kursbiblioteket \code{introprog} är \Emph{\LibVersion} 
+\begin{itemize}\SlideFontTiny
+\item Jar-fil kan laddas ned här: \url{https://fileadmin.cs.lth.se/introprog.jar}
+\item Eller låt \texttt{scala-cli} ladda ner den med
+\begin{Code}
+//> using scala 3.7.3
+//> using dep se.lth.cs::introprog:1.4.0  
+\end{Code} 
+\item \url{https://github.com/lunduniversity/introprog-scalalib}
+\end{itemize}
+\end{itemize}
+\end{SlideExtra}
+
 
 \begin{SlideExtra}{Övning \texttt{objects}}\SlideFontTiny
 \setlength{\leftmargini}{0pt}
