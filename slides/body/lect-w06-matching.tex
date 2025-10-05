@@ -6,31 +6,32 @@
 \Subsection{Typhierarkier i Scala}
 
 \begin{Slide}{Bastypen för alla typer: \texttt{Any}}
-\SlideFontSmall
+\SlideFontTiny
 Scalas typsystem är \Alert{fullständigt}:
-\begin{itemize}\SlideFontSmall
-  \item Alla värden är objekt som har en typ.
-  \item Alla typer är subtyper till bastypen \code{Any}.
-  \item Typen \code{Any} kallas därför \Emph{topptyp}.
-  \item Alla objekt har vissa grundläggande metoder, så som \code{toString} och \code{==}
+\begin{itemize}\SlideFontTiny
+  \item Exakt alla existerande värden i Scala är \Emph{objekt} som har en \Alert{typ}.
+  \item Alla typer är subtyper till bastypen \code{Any}, och därför kallas \Emph{topptyp}.
+  \item Typen \code{Nothing} är subtyp till alla typer, och kallas därför \Emph{bottentyp}. \\ Inget värde har enbart typen \code{Nothing}; alla objekttyper är mindre specifika än så.
   \pause
-\begin{Code}
-trait Any:              // en förenklad beskrivning av Any
-  def toString: String  // en strängrepresentation
-  def equals(other: Any): Boolean = eq(other)
-  def hashCode: Int     // ska vara samma som andras om equals true
+  \item En förenklad beskrivning av topptypen \code{Any} som ger alla objekt \code{toString} etc:
+\begin{CodeSmall}
+trait Any:
+  // metoder som får överskuggas
+  def toString: String                        // en strängrepresentation
+  def equals(other: Any): Boolean = eq(other) // definierar likhet
+  def hashCode: Int                           // ska ge samma heltal om equals true
 
   // finala metoder får ej överskuggas:
-  final def eq(other: Any): Boolean  // ger alltid referenslikhet
+  final def eq(other: Any): Boolean       // ger alltid referenslikhet
   final def ne(other: Any): Boolean = !eq(other)
   final def ==(other: Any) = equals(other)
   final def !=(other: Any) = !equals(other)
-  final def isInstanceOf[T]: Boolean  // typtest vid körtid
-  final def asInstanceOf[T]: T  // osäker typkonvertering vid körtid
-  final def ## = hashCode  // specialbehandlas för värdetyper i JVM
-\end{Code}
+  final def isInstanceOf[T]: Boolean      // typtest vid körtid
+  final def asInstanceOf[T]: T            // osäker typkonvertering vid körtid
+  final def ## = hashCode                 // annorlunda för värdetyper och null
+\end{CodeSmall}
 \end{itemize}
-
+\url{https://www.scala-lang.org/api/current/scala/Any.html}\\
 (Mer om bastyper, traits, equals, hashCode, ... senare.)
 \end{Slide}
 
@@ -69,7 +70,7 @@ trait Any:              // en förenklad beskrivning av Any
   \item Alla \Emph{värdetyper}, t.ex. \code{Int}, \code{Double}, \code{Boolean}, är subtyper till \code{AnyVal}
   \item Alla \Emph{referenstyper} t.ex. \code{String} är subtyper till \code{AnyRef}
   \item Värden av typen \code{Matchable} kan användas vid s.k mönstermatchning. 
-  \item (Det går att skapa s.k. opaka typer som inte kan mönstermatchas.)
+  \item (Det finns även s.k. opaka typer som inte kan mönstermatchas.)
 \end{itemize}
 \end{Slide}
 
@@ -135,11 +136,11 @@ val p: Point = Point(1,2)
 \pause 
 
 \begin{REPLnonum}
-scala> val Point(x, y) = p      // plocka isär en punkt
-val x: Int = 1
-val y: Int = 2
+scala> val Point(a, b) = p      // plocka isär en punkt
+val a: Int = 1
+val b: Int = 2
 \end{REPLnonum}
-\pause \code{Point(x, y)} kallas ett \Emph{konstruktormönster}.\\ Namnen \code{x} och \code{y} blir nya variabler.\\ Det finns många olika sorters mönster. \\
+\pause \code{Point(a, b)} kallas ett \Emph{konstruktormönster}.\\ De godtyckliga namnen \code{a} och \code{b} blir nya variabler.\\ Det finns \emph{många} olika sorters mönster. \\
 Vanligaste användningen av mönster är i \code{match}-uttryck.
 \end{Slide}
 
@@ -409,10 +410,11 @@ scala.MatchError: Ruter
 \Alert{Undantag vid körtid} \code{:(}
 \end{Slide}
 
-\begin{Slide}{Mönstermatchning och förseglade typer}\SlideFontSmall
-Med nyckelordet \code{sealed} får vi en kompileringsvarning.
-\begin{Code}
-sealed trait Färg //tryck Alt+Enter i REPL för tolkning av flera rader ett svep
+\begin{Slide}{Mönstermatchning och förseglade typer}\SlideFontTiny
+Med nyckelordet \code{sealed} får du en \Emph{förseglad} typ: inga fler subtyper får finnas än de som står i \Alert{samma kodfil}.
+Du får \Emph{varning} om \Alert{glömt fall} i mönstermatchning.
+\begin{CodeSmall}
+sealed trait Färg                   // ESC+Enter i REPL kompilerar fler rader i ett svep
 case object Spader  extends Färg
 case object Hjärter extends Färg
 case object Ruter   extends Färg
@@ -422,15 +424,15 @@ def parallellFärg(f: Färg): Färg = f match
   case Spader  => Klöver
   case Klöver  => Spader
   case Hjärter => Ruter
-\end{Code}
-\begin{REPL}
+\end{CodeSmall}
+\begin{REPLsmall}
 1 warning found
   |def parallellFärg(f: Färg): Färg = f match 
   |                                   ^
   |                           match may not be exhaustive.
   |
   |                           It would fail on pattern case: Ruter
-\end{REPL}
+\end{REPLsmall}
 \Emph{Varning vid kompilering} \code{:)} ~~~Tack kompilatorn!
 \end{Slide}
 
@@ -456,7 +458,7 @@ def parallellFärg(f: Färg): Färg =
   |
   |  It would fail on pattern case: Ruter
 \end{REPL}
-\Emph{Även här får vi hjälpsam varning vid kompilering} \code{:)} 
+\Emph{Även här får vi hjälpsam varning vid kompilering} \code{:)} Tack kompilatorn!
 \end{Slide}
 
 \begin{Slide}{Stora/små begynnelsebokstäver vid matchning}
