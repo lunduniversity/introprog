@@ -75,29 +75,33 @@ val res1: Boolean = true
 \end{Slide}
 
 
-\begin{Slide}{Option för hantering av ev. saknade värden}\SlideFontSmall
+\begin{Slide}{Option för hantering av ev. saknade värden}\SlideFontTiny
 Alla vill inte berätta för Facebook vad de har för kön. \\ Förbättra Facebooks kod med ett litet Scala-program:
-\begin{Code}
+\begin{CodeSmall}
 enum Gender:
   case Male, Female
 
 case class Person(name: String, gender: Option[Gender])
-\end{Code}
+\end{CodeSmall}
 \pause
-\begin{REPL}
+\begin{REPLsmall}
 scala> val p1 = Person("Björn",  Some(Gender.Male))
 scala> val p2 = Person("Sandra", Some(Gender.Female))
 scala> val p3 = Person("Kim",  None)
+
 scala> val g2 = p2.gender
-scala> def show(g: Option[Gender]): String = g match {
+val g2: Option[Gender] = Some(Female)
+
+scala> def show(g: Option[Gender]): String = g match 
          case Some(x) => x.toString
-         case None    => "unknown"
-       }
-scala> show(g2)
-scala> show(p3.gender)
+         case None    => "undefined"
+
+scala> show(g2)                              // ger "Female"
+scala> show(p3.gender)                       // ger "undefined"
 scala> val ps = Vector(p1,p2,p3)
-scala> ps.map(_.gender).map(show)   // None ignoreras av map
-\end{REPL}
+scala> val binary = ps.flatMap(_.gender)     // flatMap ignorerar None
+val binary: Vector[Gender] = Vector(Male, Female)
+\end{REPLsmall}
 \end{Slide}
 
 \begin{Slide}{Några smidiga metoder på \code{Option}}\SlideFontSmall
