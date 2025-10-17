@@ -28,7 +28,7 @@ object Test:
       freq(permIndex) += 1L
     end for
     val listingOfPercentages = perms.indices
-      .map(i => s"${perms(i).map(_.show).mkString}: ${freq(i).toDouble/n}%")
+      .map(i => s"${perms(i).map(_.show).mkString}: ${100 * freq(i).toDouble/n}%")
       .mkString("\n")
     println(s"\n$listingOfPercentages")
   end testShuffle
