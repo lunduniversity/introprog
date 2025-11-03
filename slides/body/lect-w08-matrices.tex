@@ -336,14 +336,15 @@ Exempel: iterera med nästlad \code{for}-sats för utskrift av denna matris\\
 \begin{REPL}
 scala> for ??? do
          for ??? do 
-           print(xss(i)(j))
-           print(" ")
-         println
+           print(s"x ")
+         end for
+         println()
+       end for
 
 1 2 3 4 5
 2 3 4 5 6
 \end{REPL}
-Övning: \\Vad ska det stå vid \code{???} för att alla element ska skrivas ut?
+Övning: \\Vad ska det stå vid \code{???} för att alla element ska skrivas ut som ovan?
 \end{Slide}
 
 \begin{Slide}{Iterera över nästlad struktur}\SlideFontSmall
@@ -355,8 +356,7 @@ scala> for ??? do
   \begin{REPL}
 scala> for xs <- xss do
          for x <- xs do 
-           print(x)
-           print(" ")
+           print(s"$x ")
          end for
          println()
        end for
@@ -367,10 +367,9 @@ scala> for xs <- xss do
 Övning: skriv ut matrisen med nästlad \code{foreach}\\
 \pause
 \begin{Code}
-xss.foreach { xs => 
-  xs.foreach { x => print(x); print(" ") }
+xss.foreach: xs => 
+  xs.foreach(x => print(s"$x "))
   println()
-}
 \end{Code}
 \end{Slide}
 
@@ -416,9 +415,11 @@ Iterera med nästlad for-sats: (vad har xss för typ?)
 scala> val xss = Vector.fill(100)(roll(5))
 
 scala> for i <- ??? do 
-         for j <- ??? do
+         for j <- ??? do 
            print(s"($i)($j): ${xss(i)(j)} ")
+         end for
          println(s" YATZY: ${isYatzy(xss(i))}")
+       end for
 
 (0)(0): 3 (0)(1): 6 (0)(2): 4 (0)(3): 4 (0)(4): 6  YATZY: false
 (1)(0): 4 (1)(1): 1 (1)(2): 5 (1)(3): 2 (1)(4): 6  YATZY: false
@@ -430,8 +431,6 @@ scala> for i <- ??? do
 (7)(0): 6 (7)(1): 2 (7)(2): 4 (7)(3): 4 (7)(4): 3  YATZY: false
 (8)(0): 1 (8)(1): 5 (8)(2): 4 (8)(3): 2 (8)(4): 4  YATZY: false
 (9)(0): 1 (9)(1): 1 (9)(2): 3 (9)(3): 6 (9)(4): 6  YATZY: false
-(10)(0): 2 (10)(1): 5 (10)(2): 2 (10)(3): 4 (10)(4): 5  YATZY: false
-(11)(0): 3 (11)(1): 4 (11)(2): 2 (11)(3): 5 (11)(4): 6  YATZY: false
 ...
 \end{REPL}
 \end{Slide}
@@ -444,7 +443,9 @@ scala> val xss = Vector.fill(100)(roll(5))
 scala> for i <- xss.indices do 
          for j <- xss(i).indices do
            print(s"($i)($j): ${xss(i)(j)} ")
+         end for
          println(s" YATZY: ${isYatzy(xss(i))}")
+       end for
 
 (0)(0): 3 (0)(1): 6 (0)(2): 4 (0)(3): 4 (0)(4): 6  YATZY: false
 (1)(0): 4 (1)(1): 1 (1)(2): 5 (1)(3): 2 (1)(4): 6  YATZY: false
@@ -456,8 +457,6 @@ scala> for i <- xss.indices do
 (7)(0): 6 (7)(1): 2 (7)(2): 4 (7)(3): 4 (7)(4): 3  YATZY: false
 (8)(0): 1 (8)(1): 5 (8)(2): 4 (8)(3): 2 (8)(4): 4  YATZY: false
 (9)(0): 1 (9)(1): 1 (9)(2): 3 (9)(3): 6 (9)(4): 6  YATZY: false
-(10)(0): 2 (10)(1): 5 (10)(2): 2 (10)(3): 4 (10)(4): 5  YATZY: false
-(11)(0): 3 (11)(1): 4 (11)(2): 2 (11)(3): 5 (11)(4): 6  YATZY: false
 ...
 \end{REPL}
 \end{Slide}
@@ -573,12 +572,18 @@ scala> Array.fill(5, 2)(42) == Array.fill(5, 2)(42)
 val res1: Boolean = false  // AAAARRGH!!! :(
 \end{REPL}
 Primitiva arrayer har en equals-metod som ger referenslikhet, \Alert{inte} innehållslikhet. Och det fungerar följaktligen ej heller på nästlade strukturer. 
+
+\vspace{1em} Övning: implementera 
+\begin{Code}
+def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]): Boolean = ???
+\end{Code}
+
 \end{Slide}
 
 \ifkompendium\else
 \begin{Slide}{Kolla likhet mellan två heltalsmatriser (uppfinner hjulet)}
 \begin{CodeSmall}
-def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = 
+def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]): Boolean = 
   if xss.length != yss.length then false else
     var i = 0
     var foundUnequal = false
@@ -604,7 +609,7 @@ end isEqual
 
 \begin{Slide}{Kolla likhet mellan två heltalsmatriser (uppfinner hjulet)}
 \begin{CodeSmall}
-def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]) = 
+def isEqual(xss: Array[Array[Int]], yss: Array[Array[Int]]): Boolean = 
   if xss.length != yss.length then false else
     var i = 0
     var foundUnequal = false
