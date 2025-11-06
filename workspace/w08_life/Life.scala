@@ -33,7 +33,7 @@ object Life:
   /** Skapar ett universum med döda celler. */
   def empty(dim: (Int, Int)): Life = ???
 
-  /** Skapar ett unviversum med slumpmässigt liv. */
+  /** Skapar ett universum med slumpmässigt liv. */
   def random(dim: (Int, Int)): Life = ???
 
   /** Implementerar reglerna enligt Conways Game of Life. */
