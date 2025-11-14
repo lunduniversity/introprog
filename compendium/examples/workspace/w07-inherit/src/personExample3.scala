@@ -13,7 +13,7 @@ object personExample3:
                  val titel: String) extends Person, Akademiker, Examinerad
 
   def main(args: Array[String]): Unit =
-    var p: Person = new Forskare("B. Regnell", "Lunds universitet", "Professor Dr")
+    var p: Person = new Forskare("B. Regnell", "Lunds universitet", "Professor")
     if p.isInstanceOf[Akademiker] then println(p.namn + " är akademiker")
     p = new Student("Kim Robinson", "Lund", "Data")  // går det att göra p.program?
     if p.isInstanceOf[Student] then println(p.asInstanceOf[Student].program)
