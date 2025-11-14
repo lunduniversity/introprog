@@ -381,6 +381,76 @@ val tulipanaros: Tulpan & Ros = anon1@1c63b39a
 \end{Slide}
 
 
+\Subsection{Speciella typer: union, intersektion, transparens}
+
+\begin{Slide}{Fördjupning: Typunioner med eller-operator}\SlideFontSmall
+Typunioner skapas typ-operatorn \code{|} mellan typer: 
+\begin{REPLsmall}
+scala> var x: Int | String = 42
+var x: Int | String = 42
+
+scala> x = "hej" 
+x: Int | String = hej
+
+scala> type IntOrErr = Int | String
+// defined alias type IntOrErr = Int | String
+
+scala> def div(nom: Int, denom: Int): IntOrErr = 
+          if denom != 0 then nom / denom else "div. by zero"
+\end{REPLsmall}
+Fördel jämfört med klass: rudimentärt enkelt.\\ Nackdelar: kan inte deklarera parametrar, medlemmar och allt annat som en klass kan; i viss mån kan detta kompensera med \code{extension} och \code{match}.\\ 
+{\SlideFontTiny Läs mer här:
+\url{https://dotty.epfl.ch/docs/reference/new-types/union-types.html}
+}
+\end{Slide}
+
+
+\begin{Slide}{Fördjupning: Intersektionstyp}\SlideFontSmall
+Vid inmixning blir supertypen en intersektionstyp \Eng{intersection type}, vilket indikeras med typoperatorn \code{&} i exempel nedan:
+\begin{Code}
+trait Grönsak(val vikt: Int)
+trait HarSmak(val smak: String)
+
+object Gurka extends Grönsak(42), HarSmak("vattning")
+object Tomat extends Grönsak(43), HarSmak("syrlig")
+\end{Code} 
+\begin{REPLnonum}
+scala> Vector(Gurka, Tomat)
+val res0: Vector[Grönsak & HarSmak] = 
+  Vector(Gurka@560742f7, Tomat@3cc82e23)
+\end{REPLnonum}
+Det går att skapa egna intersektionstyper med \code{with}:
+\begin{REPLsmall}
+scala> class X { val x = 42 }
+scala> trait Y { val y = "hej" }
+scala> val a: X & Y = new X         // -- Error: Found: X Required: X & Y
+scala> val b: X & Y = new X with Y  // Funkar! En anonym klass av typen X & Y
+\end{REPLsmall}
+\end{Slide}
+
+
+\begin{Slide}{Fördjupning: Transparent trait}\SlideFontSmall
+Du kan göra din trait \Emph{genomskinlig} vid typhärledning av supertypen för inmixningen med nyckelordet \code{transparent}:
+\begin{Code}
+trait Grönsak(val vikt: Int)
+transparent trait HarSmak(val smak: String)
+
+object Gurka extends Grönsak(42), HarSmak("vattning")
+object Tomat extends Grönsak(43), HarSmak("syrlig")
+\end{Code} 
+\begin{REPLnonum}
+scala> Vector(Gurka, Tomat)
+val res0: Vector[Grönsak] = 
+  Vector(Gurka@560742f7, Tomat@3cc82e23)
+\end{REPLnonum}
+Vilken typ hade visats utan \code{transparent}? \pause \\ \code{Vector[Grönsak & HarSmak]}
+\end{Slide}
+
+
+
+
+
+
 \Subsection{Vad är ett bra api?} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
