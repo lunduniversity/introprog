@@ -16,7 +16,7 @@ object personExample1:
     override val universitet: String,
     val titel: String) extends Akademiker(namn, universitet)
 
-  def main(args: Array[String]): Unit =
+  @main def Test: Unit =
     val kim = new Student("Kim Robinsson", "Lund", "Data")
     println(s"${kim.namn} ${kim.universitet} ${kim.program}")
 
