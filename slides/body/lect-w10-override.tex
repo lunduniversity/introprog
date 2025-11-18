@@ -7,8 +7,7 @@
 \Subsection{Överskuggningsregler}
 
 \begin{Slide}{Medlemmar, arv och överskuggning}\SlideFontTiny
-\begin{multicols}{2}
-\noindent Olika sorters medlemmar i \Emph{Scala} som kan överkuggas med \code{override}:
+\noindent Olika sorters medlemmar i \Emph{Scala} som vid arv kan övertas (ersättas) med \code{override}:
 \begin{itemize}
 \item \code{def}
 \item \code{val}
@@ -16,22 +15,20 @@
 \item \code{var}
 \end{itemize}
 
-\columnbreak
+% \noindent Olika sorters medlemmar i \Emph{Java} som kan överkuggas med \code{override}:
+% \begin{itemize}
+% \item variabel
+% \item metod
+% \end{itemize}
+
+% {\SlideFontTiny\noindent Medlemmar som är \jcode{static} kan ej överskuggas med \code{override} vid arv. (men deras namn kan döljas) }
+
+%\vspace{0.5em}
 
 \pause
 
-\noindent Olika sorters medlemmar i \Emph{Java} som kan överkuggas med \code{override}:
-\begin{itemize}
-\item variabel
-\item metod
-\end{itemize}
+Övergripande (förenklade) regler:
 
-{\SlideFontTiny\noindent Medlemmar som är \jcode{static} kan ej överskuggas med \code{override} vid arv. (men deras namn kan döljas) }
-
-\vspace{0.5em}
-\end{multicols}
-
-\pause
 \begin{itemize}\SlideFontTiny
 \item När man överskuggar \Eng{override} en medlemmen med en annan medlem med samma namn i en subtyp, får denna medlem en (ny) implementation.
 
@@ -44,7 +41,7 @@
 \end{Slide}
 
 
-\begin{Slide}{Fördjupning: Regler för överskuggning i Scala} \SlideFontTiny
+\begin{Slide}{Fördjupning: Detaljerade regler för override} \SlideFontTiny
 \label{slideW07:overriderules}
 En medlem M1 i en supertyp får överskuggas av en medlem M2 i en subtyp, enligt dessa regler: (se även \url{https://stackoverflow.com/questions/40057337})
 \begin{enumerate}
@@ -62,8 +59,8 @@ En medlem M1 i en supertyp får överskuggas av en medlem M2 i en subtyp, enligt
 \end{enumerate}
 \end{Slide}
 
-\begin{Slide}{Fördjupning: Överskugga \texttt{var} med \texttt{var}}\SlideFontTiny
-Det krävs speciella förutsättningar för att överskugga en \code{var} med en \code{var}.
+\begin{Slide}{Fördjupning: override av \texttt{var} med \texttt{var}}\SlideFontTiny
+Det krävs speciella förutsättningar för att ersätta en \code{var} med en \code{var} vid arv.
 \begin{itemize}
 \item En konkret medlem får \Alert{inte} bytas ut mot en \code{var} -- inte ens en konkret \code{var}:
 \begin{REPLsmall}
@@ -91,7 +88,7 @@ scala> trait Sub extends AbstractVar { var x = 43 }   // funkar utan override
 Undvik abstrakta \code{var}-medlemmar -- oftast bättre med abstrakt \code{def}.
 \end{Slide}
 
-\begin{Slide}{Fördjupning: Överskugga \texttt{def} med \texttt{var}}\SlideFontTiny
+\begin{Slide}{Fördjupning: override av \texttt{def} med \texttt{var}}\SlideFontTiny
 \begin{itemize}
 \item En abstrakt \code{def}-medlem får bytas ut mot en \code{var} om du \Alert{inte} skriver \code{override}:
 \begin{REPLsmall}
@@ -230,24 +227,24 @@ Klassen \code{Person} nedan har ett namn \Alert{och} en ålder.
 \begin{REPL}
 scala> case class Person(namn: String, ålder: Int)
 
-scala> Person("Kim",42)
-val res0: Person = Person(Kim,42)
+scala> val p = Person("Kim",42)
+val p: Person = Person(Kim,42)
 
-scala> res0.isInstanceOf[Product]
+scala> p.isInstanceOf[Product]
 val res1: Boolean = true
 
-scala> res0.product   // Tryck TAB
+scala> p.product   // Tryck TAB
 productArity          productElement    productElementName
 productElementNames   productIterator   productPrefix
           
-scala> res0.productElementNames.toVector
+scala> p.productElementNames.toVector
 val res2: Vector[String] = Vector(namn, ålder)
 
-scala> res0.productElement
+scala> p.productElement
 val res3: Int => Any = Lambda1981/0x00000008408f2840@44498af0
 
-scala> res0.productElement(0)
-val res4: Any = björn
+scala> p.productElement(0)
+val res4: Any = Kim
 
 \end{REPL} 
 \end{Slide}
