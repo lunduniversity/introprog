@@ -4,3 +4,10 @@
 export net.kogics.kojo.Swedish.*, padda.*, CanvasAPI.*, TurtleAPI.*
 export builtins.activateCanvas
 export java.awt.Color
+
+def selectColor(
+  message: String = "Select a color",
+  default: java.awt.Color = java.awt.Color.red
+): java.awt.Color =
+  import javax.swing.JColorChooser
+  Option(JColorChooser.showDialog(null, message, default)).getOrElse(default)
