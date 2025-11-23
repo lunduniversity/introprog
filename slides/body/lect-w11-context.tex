@@ -34,7 +34,7 @@ val res0: Pair[Int, String] = Pair(42,hej)
 Övning: Ändra klassen \code{Pair} ovan så att båda elementen i paret har samma typ.
 \end{Slide}
 
-\Subsection{Generiska typgränser}
+\Subsection{Typgränser}
 
 \begin{Slide}{Olika sätt att begränsa generiska typer}\SlideFontSmall
 Det finns i Scala flera olika sätt att att begränsa vilka typer du vill tillåta -- kompilatorn att hjälper dig att kontrollera detta. 
@@ -128,32 +128,35 @@ Om vi tillåter \Emph{varians} så blir generiska strukturer mer \Alert{flexibla
 \end{Slide}
 
 \begin{Slide}{Varför behövs varians?}\SlideFontSmall
-\begin{Code}
+\begin{CodeSmall}
 trait Djur
 case class Katt() extends Djur
 case class Hund() extends Djur
 
 case class Bur[A](a: A)
-\end{Code}
-\pause
-Nedan fungerar inte! Buren ovan är \Emph{invariant} (oflexibel i sin typparameter).
-\begin{REPL}
+\end{CodeSmall}
+\begin{REPLsmall}[numbers=none]
 scala> val djurbur: Bur[Djur] = Bur[Katt](Katt())
+\end{REPLsmall}
+\pause
+Fungerar inte! Buren ovan är \Emph{invariant} (oflexibel i sin typparameter).
+\begin{REPLsmall}[numbers=none]
 -- Error:
 1 |val djurbur: Bur[Djur] = Bur[Katt](Katt())
   |                   ^^^^^^^^^^^^^^^^^
   |                   Found:    Bur[Katt]
   |                   Required: Bur[Djur]
-\end{REPL}
+\end{REPLsmall}
 \pause
 Varför fungerar detta??
-\begin{REPL}
+\begin{REPLsmall}[numbers=none]
 scala> val djur: Vector[Djur] = Vector[Katt](Katt())
 val djur: Vector[Djur] = Vector(Katt())
-\end{REPL}
+\end{REPLsmall}
 \pause \code{Vector} är deklarerad som \Emph{kovariant} och därmed mer flexibel!
 \end{Slide}
 
+\Subsection{Kovarians}
 
 \begin{Slide}{Kovarians \Eng{covariance}}
 \begin{itemize}\SlideFontSmall
@@ -191,6 +194,7 @@ enum Toalett[+T]:
 
 \end{Slide}
 
+\Subsection{Kontravarians}
 
 \ifkompendium\else
 \begin{SlideSimple}{Kontravarians}
@@ -238,6 +242,8 @@ scala> val kattveterinär: Veterinär[Djur] = Veterinär[Katt]()
 
 \end{Slide}
 
+\Subsection{Varians: fallgropar och specialfall}
+
 \begin{Slide}{Variansproblem -- tack kompilatorn!}
 \begin{itemize}\SlideFontSmall
 \item En typkonstruktor kan \Alert{inte} vara kovariant om typparametern används som parametertyp för metoder (så kallad \emph{kontravariant position}):
@@ -269,14 +275,25 @@ val res1: Bur[Djur] = Bur(Hund())
 
 \begin{Slide}{När använda vilken slags varians?}
 \begin{itemize}\SlideFontTiny
-\item Oföränderliga generiska klasser som har metoder som är \Emph{producenter} av nya oföränderliga generiska typer passar ofta bäst som \Emph{kovarianta}, t.ex. \code{Vector[+T]}, \code{Option[+T]} . 
-\item En typkonstruktor av \code{T}, som har metoder som är \Alert{konsumenter} av \code{T}, kan vara \Emph{kontravariant}, t.ex. \code{Veterinär[-T]}. \\Den kan också vara \Emph{kovariant} om konsumerande metoder \Alert{vidgar} inparametertypen till \code{B} där \code{B >: T}
-\item En typkonstruktor med flera parametrar kan vara \Emph{både} kontravariant \Alert{och} kovariant, t.ex. \code{Function1[-A, +B]} 
-\\ett parametervärde\code{:A} \emph{konsumeras} och ett returtvärde\code{:B} \emph{produceras}
-\\(\code{Function1[-A, +B]} är egentliga typen av ''syntaktiska sockret'' \code{A => B}
-\pause 
-\item \Alert{Förändringsbara} strukturer måste vara \Emph{invarianta}, annars väntar \Alert{kaos}!\\
-Antag att det finns en \code{Bur} som kan ändras på plats via metoden \code{bytTill} \emph{och samtidigt} vore kovariant (varning för känsliga kodare): 
+\item Oföränderliga generiska klasser som har metoder som är \Emph{producenter} av nya oföränderliga generiska typer passar ofta bäst som \Emph{kovarianta}, t.ex. \code{class Vector[+T]}, \code{trait Option[+T]} . 
+\item En typkonstruktor av \code{T}, som har metoder som är \Alert{konsumenter} av \code{T}, kan vara \Emph{kontravariant}, t.ex. \code{case class Veterinär[-T]}
+\\Den kan också vara \Emph{kovariant} om konsumerande metoder \Alert{vidgar} inparametertypen till \code{B} där \code{B >: T}
+
+\item En typkonstruktor med flera parametrar kan vara \Emph{både} kontravariant \Alert{och} kovariant, t.ex. \code{trait Function1[-A, +B]} 
+\\Argument av typen \code{A} \emph{konsumeras} och returvärde av typen \code{:B} \emph{produceras}.
+
+\footnote{\SlideFontTiny Funktionstypen \code{A => B} är ''syntaktiskt socker'' -- kompilatorn expanderar detta till \code{Function1[A, B]} }
+\end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Invarians vid förändringsbarhet}
+\begin{itemize}\SlideFontSmall
+
+\item \Alert{Förändringsbara} kan bara vara \Emph{invarianta}, annars vore det \Alert{kaos}!
+\item Antag att det finns en \code{Bur} som kan ändras på plats via metoden \code{bytTill} \emph{och samtidigt} vore kovariant (varning för känsliga kodare): 
+\end{itemize}
+
 \begin{REPLsmall}
 ejscala> val kattBur: Bur[Katt] = Bur(Katt())
 
@@ -286,7 +303,7 @@ ejscala> djurBur.bytTill(Hund())           // ändra på plats
 
 ejscala> val katt: Katt = kattBur.släppUt  // KAOS! typosäkert hundkatt-monster :(
 \end{REPLsmall}
-\end{itemize}
+
 \end{Slide}
 
 
@@ -323,6 +340,7 @@ Använd bara typpjoker om det \emph{verkligen} behövs.
 \end{itemize}
 \end{Slide}
 
+\Subsection{Egentyper} 
 
 \begin{Slide}{Egentyp + anonym klass för att ''injektera'' beroenden}\SlideFontSmall
 \begin{itemize}\SlideFontTiny
@@ -338,7 +356,7 @@ trait KanSkalas:
 \end{CodeSmall}
 \item Notera att \emph{även} om \code{KanSkalas} \emph{inte} gör \code{extends} så är \emph{ändå} \code{vikt} tillgänglig i dess kropp, eftersom vi med egentypen kräver att \code{KanSkalas} är en \code{Grönsak}.
 \pause
-\item Du kan du kombinera anonym klass och dynamisk inmixning med \code{with}:
+\item Nu kan du kombinera \Emph{anonym klass} och \Emph{inmixning} vid \Alert{körtid} med \code{with}:
 \begin{REPLsmall}
 scala> val g = new Grönsak with KanSkalas { val vikt = 100 }
 val g: Grönsak & KanSkalas = anon1@70a91d72
