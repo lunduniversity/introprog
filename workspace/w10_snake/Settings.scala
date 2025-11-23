@@ -5,7 +5,7 @@ class Settings(configs: Map[String, String]):
   def getOrElse[T](key: String, default: T)(using p: Settings.Parser[T]): T = 
     configs.get(key).flatMap(p.fromString).getOrElse(default)
 
-  var windowTitle: String          = getOrElse("windowTitel", "Snake")
+  var windowTitle: String          = getOrElse("windowTitle", "Snake")
   var windowSize: (Int, Int)       = getOrElse("windowSize", (50,30))
   var blockSize: Int               = getOrElse("blockSize", 15)
   var background: Color            = getOrElse("background", Colors.Black) 
