@@ -247,14 +247,16 @@ scala> val kattveterinär: Veterinär[Djur] = Veterinär[Katt]()
 \begin{Slide}{Variansproblem -- tack kompilatorn!}
 \begin{itemize}\SlideFontSmall
 \item En typkonstruktor kan \Alert{inte} vara kovariant om typparametern används som parametertyp för metoder (så kallad \emph{kontravariant position}):
-\begin{Code}
+\begin{CodeSmall}
 trait Djur
 case class Katt() extends Djur
 case class Hund() extends Djur
-\end{Code}
+
+case class Bur[+A](a: A): 
+  def bytTill(x: A): Bur[A] = Bur(x)     // problem!
+\end{CodeSmall}
+\pause
 \begin{REPLsmall}
-scala> case class Bur[+A](a: A): 
-         def bytTill(x: A): Bur[A] = Bur(x)
 -- Error:
 2 |  def bytTill(x: A): Bur[A] = Bur(x)
   |          ^^^^
@@ -262,10 +264,10 @@ scala> case class Bur[+A](a: A):
 \end{REPLsmall}
 \pause
 \item Här måste typen tillåtas variera ''uppåt'' med hjälp av en \Emph{undre gräns}:
-\begin{Code}
+\begin{CodeSmall}
 case class Bur[+A](a: A): 
   def bytTill[B >: A](x: B): Bur[B] = Bur(x)
-\end{Code}
+\end{CodeSmall}
 \begin{REPLsmall}
 scala> Bur[Katt](Katt()).bytTill(Hund())
 val res1: Bur[Djur] = Bur(Hund())
@@ -276,13 +278,12 @@ val res1: Bur[Djur] = Bur(Hund())
 \begin{Slide}{När använda vilken slags varians?}
 \begin{itemize}\SlideFontTiny
 \item Oföränderliga generiska klasser som har metoder som är \Emph{producenter} av nya oföränderliga generiska typer passar ofta bäst som \Emph{kovarianta}, t.ex. \code{class Vector[+T]}, \code{trait Option[+T]} . 
-\item En typkonstruktor av \code{T}, som har metoder som är \Alert{konsumenter} av \code{T}, kan vara \Emph{kontravariant}, t.ex. \code{case class Veterinär[-T]}
+\item En typkonstruktor av \code{T}, som har metoder som är \Alert{konsumenter} av \code{T}, kan vara \Emph{kontravariant}, t.ex. \code{class Veterinär[-T]}
 \\Den kan också vara \Emph{kovariant} om konsumerande metoder \Alert{vidgar} inparametertypen till \code{B} där \code{B >: T}
 
 \item En typkonstruktor med flera parametrar kan vara \Emph{både} kontravariant \Alert{och} kovariant, t.ex. \code{trait Function1[-A, +B]} 
-\\Argument av typen \code{A} \emph{konsumeras} och returvärde av typen \code{:B} \emph{produceras}.
-
-\footnote{\SlideFontTiny Funktionstypen \code{A => B} är ''syntaktiskt socker'' -- kompilatorn expanderar detta till \code{Function1[A, B]} }
+\\Argument av typen \code{A} \emph{konsumeras} och returvärde av typen \code{B} \emph{produceras}
+\footnote{\SlideFontTiny Funktionstypen \code{A => B} expanderas av kompilatorn till \code{Function1[A, B]} }.
 \end{itemize}
 \end{Slide}
 
