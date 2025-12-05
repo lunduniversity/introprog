@@ -1,8 +1,8 @@
 package music
 
 object Synth:
-  import javax.sound.midi._
-  import GMInstruments._
+  import javax.sound.midi.*
+  import GMInstruments.*
 
   val underlying: Synthesizer =
     println("Initializing javax.sound.MidiSystem ...")
@@ -81,9 +81,8 @@ object Synth:
   ): Unit =
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    val _ = scala.concurrent.Future {
+    val _ = scala.concurrent.Future:
       playBlocking(noteNumbers, velocity, duration, spread, after, channel)
-    }
 
   object GMInstruments:
     // These program numbers are defined as particular instruments by General MIDI.

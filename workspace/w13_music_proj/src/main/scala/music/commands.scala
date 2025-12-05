@@ -38,4 +38,6 @@ object Quit extends Command(":q", "quit this app"):
 
 object Play extends Command("!", "play chord TODO"):
   def apply(args: Seq[String]): String = args match
-    case _ => Synth.playBlocking(); s"play chord TODO"
+    case _ =>
+      Synth.playBlocking()
+      s"play chord TODO"

@@ -1,6 +1,7 @@
 package music
 
-trait StringInstrument { def toChordOpt: Option[Chord] }
+trait StringInstrument:
+  def toChordOpt: Option[Chord]
 
 case class Piano(isKeyDown: Set[Int]) extends StringInstrument:
   def toChordOpt: Option[Chord] =
