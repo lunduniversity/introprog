@@ -24,10 +24,10 @@ case class Guitar(pos: (Int, Int, Int, Int, Int, Int))
   val grip = Vector(pos._1, pos._2, pos._3, pos._4, pos._5, pos._6)
   val nbrOfStrings = 6
   val tuning =
-    "E3 A3 D4 G4 B4 E5".split(' ').map(Pitch.apply).toVector
+    "E2 A2 D3 G3 B3 E4".split(' ').map(Pitch.apply).toVector
 
 case class Ukulele(pos: (Int, Int, Int, Int)) extends FrettedInstrument:
   val grip = Vector(pos._1, pos._2, pos._3, pos._4)
   val nbrOfStrings = 4
   val tuning =
-    "A5 D5 F#5 B5".split(' ').map(Pitch.apply).toVector
+    "A4 D4 F#4 B4".split(' ').map(Pitch.apply).toVector
