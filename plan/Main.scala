@@ -140,3 +140,5 @@ object overview extends Plan with Table:
       currentDir + s"../slides/generated/$weekName-overview-generated.tex")
   end for
 
+  FindHeadings()
+

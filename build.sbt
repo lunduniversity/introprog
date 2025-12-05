@@ -48,6 +48,7 @@ lazy val commonSettings = Seq(
 lazy val plan = (project in file("plan")).settings(commonSettings: _*).
   settings(
     name := "plan",
+    libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.10.2",
   )
 
 lazy val quiz = (project in file("quiz")).settings(commonSettings: _*).
