@@ -1,5 +1,7 @@
 package music
 
+import scala.util.Try
+
 case class Pitch(nbr: Int): // Tonhöjd
   assert((0 to 127) contains nbr, s"Error: nbr $nbr outside (0 to 127)")
   def pitchClass: Int = nbr % 12
@@ -17,7 +19,7 @@ object Pitch:
 
   val pitchClassIndex: Map[String, Int] = pitchClassNames.zipWithIndex.toMap
 
-  def fromString(s: String): Option[Pitch] = scala.util.Try {
+  def fromString(s: String): Option[Pitch] = Try {
     val (pitchClassName, octaveName) = s.partition(c => c.isLetter)
     val octave = if octaveName.nonEmpty then octaveName.toInt else defaultOctave
     Pitch(pitchClassIndex(pitchClassName) + (octave + 1) * 12)

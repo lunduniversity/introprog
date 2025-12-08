@@ -1,5 +1,7 @@
 package music
 
+import scala.util.Random
+
 case class Chord(ps: Vector[Pitch]):
   assert(ps.nonEmpty, "Chord pitch sequence is empty")
 
@@ -24,5 +26,5 @@ object Chord:
   def apply(xs: String*): Chord = Chord(xs.map(Pitch.apply).toVector)
 
   def random(pitchNumbers: Seq[Int] = 60 to 72, n: Int = 3): Chord =
-    val shuffled = scala.util.Random.shuffle(pitchNumbers).toVector
+    val shuffled = Random.shuffle(pitchNumbers).toVector
     Chord(shuffled.take(n).map(Pitch.apply))

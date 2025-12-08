@@ -80,8 +80,9 @@ object Synth:
       channel: Int = 0
   ): Unit =
     import scala.concurrent.ExecutionContext.Implicits.global
+    import scala.concurrent.Future
 
-    val _ = scala.concurrent.Future:
+    val _ = Future:
       playBlocking(noteNumbers, velocity, duration, spread, after, channel)
 
   object GMInstruments:
