@@ -1,5 +1,6 @@
 package music
 
+import scala.math.floorMod
 import scala.util.Random
 
 case class Chord(ps: Vector[Pitch]):
@@ -12,7 +13,7 @@ case class Chord(ps: Vector[Pitch]):
   def intervals(root: Pitch = ps(0)): Vector[Int] = ps.map(_.nbr - root.nbr)
 
   def relativePitchClasses(root: Pitch = ps(0)): Vector[Int] =
-    intervals(root).map(i => (i % 12 + 12) % 12).distinct.sorted
+    intervals(root).map(i => floorMod(i, 12)).distinct.sorted
 
   def name(root: Pitch = ps(0)): String = relativePitchClasses(root) match
     case Vector(0, 4, 7)     => root.pitchClassName
