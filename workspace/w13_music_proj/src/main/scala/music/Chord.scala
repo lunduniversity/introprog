@@ -6,7 +6,7 @@ import scala.util.Random
 case class Chord(ps: Vector[Pitch]):
   assert(ps.nonEmpty, "Chord pitch sequence is empty")
 
-  val pitchClasses: Vector[Int] = ps.map(_.pitchClass).toVector
+  val pitchClasses: Vector[Pitch.Class] = ps.map(_.pitchClass).toVector
 
   def apply(i: Int): Pitch = ps(i)
 
