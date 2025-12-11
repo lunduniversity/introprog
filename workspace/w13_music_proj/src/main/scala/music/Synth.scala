@@ -1,31 +1,43 @@
 package music
 
 object Synth:
-  import javax.sound.midi._
-  import GMInstruments._
+  import javax.sound.midi.*
+  import GMInstruments.*
 
   val underlying: Synthesizer =
     println("Initializing javax.sound.MidiSystem ...")
     println(MidiSystem.getMidiDeviceInfo().mkString(" "))
     val synth = MidiSystem.getSynthesizer
     synth.open
-    assert(synth.loadAllInstruments(synth.getDefaultSoundbank), "Loading MIDI instruments failed")
+    assert(
+      synth.loadAllInstruments(synth.getDefaultSoundbank),
+      "Loading MIDI instruments failed"
+    )
     synth
   resetInstruments() // assign some different instruments to channels
 
-  def midiChannel(channel: Int): MidiChannel = underlying.getChannels.apply(channel)
+  def midiChannel(channel: Int): MidiChannel =
+    underlying.getChannels.apply(channel)
   def channels: Range = underlying.getChannels.indices
 
   def instruments: Seq[Instrument] = underlying.getLoadedInstruments.toSeq
 
   def changeInstrument(program: Int, channel: Int = 0): Unit =
-    val patch = instruments.find(_.getPatch.getProgram == program).map(_.getPatch)
+    val patch =
+      instruments.find(_.getPatch.getProgram == program).map(_.getPatch)
     patch match
-      case Some(p) => midiChannel(channel).programChange(p.getBank, p.getProgram)
+      case Some(p) =>
+        midiChannel(channel).programChange(p.getBank, p.getProgram)
       case None => println(s"Instrument with program number $program not found")
 
-  lazy val defaultInstruments = 
-    Vector(AcousticGrandPiano, AcousticGuitarNylon, AcousticBass, Trumpet, Flute)
+  lazy val defaultInstruments =
+    Vector(
+      AcousticGrandPiano,
+      AcousticGuitarNylon,
+      AcousticBass,
+      Trumpet,
+      Flute
+    )
 
   def resetInstruments(): Unit = defaultInstruments.zipWithIndex.foreach {
     case (program, channel) => changeInstrument(program, channel)
@@ -44,15 +56,15 @@ object Synth:
   def delay(millis: Long): Unit = Thread.sleep(millis)
 
   def playBlocking(
-    noteNumbers: Seq[Int] = Vector(60),
-    velocity: Int         = 60,
-    duration: Long        = 300,
-    spread:   Long        = 50,
-    after:    Long        = 0,
-    channel:  Int         = 0
+      noteNumbers: Seq[Int] = Vector(60),
+      velocity: Int = 60,
+      duration: Long = 300,
+      spread: Long = 50,
+      after: Long = 0,
+      channel: Int = 0
   ): Unit =
     delay(after)
-    noteNumbers.foreach{ nbr =>
+    noteNumbers.foreach { nbr =>
       noteOn(nbr, velocity, channel)
       delay(spread)
     }
@@ -60,18 +72,18 @@ object Synth:
     noteNumbers.foreach(noteOff(_, channel))
 
   def playConcurrently(
-    noteNumbers: Seq[Int] = Vector(60),
-    velocity: Int         = 60,
-    duration: Long        = 300,
-    spread:   Long        = 50,
-    after:    Long        = 0,
-    channel:  Int         = 0
+      noteNumbers: Seq[Int] = Vector(60),
+      velocity: Int = 60,
+      duration: Long = 300,
+      spread: Long = 50,
+      after: Long = 0,
+      channel: Int = 0
   ): Unit =
     import scala.concurrent.ExecutionContext.Implicits.global
+    import scala.concurrent.Future
 
-    val _ = scala.concurrent.Future{
+    val _ = Future:
       playBlocking(noteNumbers, velocity, duration, spread, after, channel)
-    }
 
   object GMInstruments:
     // These program numbers are defined as particular instruments by General MIDI.
