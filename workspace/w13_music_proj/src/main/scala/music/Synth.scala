@@ -65,8 +65,8 @@ object Synth:
       channel: Int = 0
   ): Unit =
     delay(after)
-    noteNumbers.foreach { nbr =>
-      noteOn(nbr, velocity, channel)
+    noteNumbers.foreach { number =>
+      noteOn(number, velocity, channel)
       delay(spread)
     }
     delay(duration)

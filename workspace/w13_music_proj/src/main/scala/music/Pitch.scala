@@ -2,13 +2,13 @@ package music
 
 import scala.util.Try
 
-case class Pitch(nbr: Int): // Tonhöjd
-  assert((0 to 127) contains nbr, s"Error: nbr $nbr outside (0 to 127)")
-  def pitchClass: Pitch.Class = Pitch.Class.fromOrdinal(nbr % 12)
+case class Pitch(number: Int): // Tonhöjd
+  assert((0 to 127) contains number, s"Error: number $number outside (0 to 127)")
+  def pitchClass: Pitch.Class = Pitch.Class.fromOrdinal(number % 12)
   def pitchClassName: String = pitchClass.toString
   def name: String = s"$pitchClassName$octave"
-  def octave: Int = nbr / 12 - 1
-  def +(offset: Int): Pitch = Pitch(nbr + offset)
+  def octave: Int = number / 12 - 1
+  def +(offset: Int): Pitch = Pitch(number + offset)
   override def toString = s"Pitch($name)"
 
 object Pitch:

@@ -10,7 +10,7 @@ case class Chord(ps: Vector[Pitch]):
 
   def apply(i: Int): Pitch = ps(i)
 
-  def intervals(root: Pitch = ps(0)): Vector[Int] = ps.map(_.nbr - root.nbr)
+  def intervals(root: Pitch = ps(0)): Vector[Int] = ps.map(_.number - root.number)
 
   def simpleIntervals(root: Pitch = ps(0)): Vector[Int] =
     intervals(root).map(i => floorMod(i, 12)).distinct.sorted
