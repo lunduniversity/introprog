@@ -15,7 +15,7 @@ object Pitch:
   val defaultOctave = 4 // mittenoktaven på ett pianos tangentbord
 
   enum Class:
-    case C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb
+    case C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B
 
   def fromString(s: String): Option[Pitch] = Try {
     val (pitchClassName, octaveName) = s.partition(c => c.isLetter)
