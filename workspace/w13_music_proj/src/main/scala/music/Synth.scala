@@ -58,11 +58,11 @@ object Synth:
 
   def playBlocking(
       noteNumbers: Seq[Int] = Vector(60),
-      velocity: Int = 60,
+      velocity: Int  = 60,
       duration: Long = 300,
-      spread: Long = 50,
-      after: Long = 0,
-      channel: Int = 0
+      spread: Long   = 50,
+      after: Long    = 0,
+      channel: Int   = 0
   ): Unit =
     delay(after)
     noteNumbers.foreach { number =>
@@ -74,11 +74,11 @@ object Synth:
 
   def playConcurrently(
       noteNumbers: Seq[Int] = Vector(60),
-      velocity: Int = 60,
+      velocity: Int  = 60,
       duration: Long = 300,
-      spread: Long = 50,
-      after: Long = 0,
-      channel: Int = 0
+      spread: Long   = 50,
+      after: Long    = 0,
+      channel: Int   = 0
   ): Unit =
     import scala.concurrent.ExecutionContext.Implicits.global
     import scala.concurrent.Future

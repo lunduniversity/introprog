@@ -4,12 +4,13 @@ import scala.util.Try
 
 case class Pitch(number: Int): // Tonhöjd
   assert((0 to 127) contains number, s"Error: number $number outside (0 to 127)")
+
   def pitchClass: Pitch.Class = Pitch.Class.fromOrdinal(number % 12)
-  def pitchClassName: String = pitchClass.toString
-  def name: String = s"$pitchClassName$octave"
-  def octave: Int = number / 12 - 1
-  def +(offset: Int): Pitch = Pitch(number + offset)
-  override def toString = s"Pitch($name)"
+  def pitchClassName: String  = pitchClass.toString
+  def name: String            = s"$pitchClassName$octave"
+  def octave: Int             = number / 12 - 1
+  def +(offset: Int): Pitch   = Pitch(number + offset)
+  override def toString       = s"Pitch($name)"
 
 object Pitch:
   val defaultOctave = 4 // mittenoktaven på ett pianos tangentbord
