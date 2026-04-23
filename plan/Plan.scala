@@ -176,8 +176,8 @@ trait Plan:
   }
 
   lazy val lecturesOfWeek =
-    Vector("F01 F02","F03 F04","F05 F06","F07 F08","F09 F10", "F11 F12", "F13 F14", "--") ++
-    Vector("F15 F16","F17 F18","F19 F20","F21 F22","F23 F24", "F25 F26", "--", "--")
+    Vector("P01 P02 D1","P03 P04 D2","P05 P06","P07 P08","P09 P10", "P11 P12", "P13 P14", "--") ++
+    Vector("P15 P16 D3","P17 P18 D4","P19 P20","P21 P22","P23 P24", "P25 P26", "--", "--")
 
   lazy val exerciseNumOfWeek =
     ( "Övn01,Övn02,Övn03,Övn04,Övn05,Övn06,Övn07,--," +
