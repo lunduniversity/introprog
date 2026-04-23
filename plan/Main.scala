@@ -33,7 +33,7 @@ def exerciseRow(s: String) = s"""\\ExeRow{$s}"""
 
 def labRow(s: String) = s"""\\LabRow{$s}"""
 
-val labs = row("Lab").map(labRow).mkString("\n")
+val labs = row("Lab").mkString(", ").split(", ").map(labRow).mkString("\n")
 
 def row(col: String) = 
   weeks.map(weekPlan.column(col)(_)).filterNot(_ == "--").filterNot(isFirstUpper)
@@ -73,6 +73,31 @@ end modulePlan
 object overview extends Plan with Table:
   override val heading = Seq("W", "Modul", "Övn", "Lab")
 
+def nameDefRow(week: Int, modName: String, labName: String, exeName: String) =
+    val moduleExercise = s"""
+    |\\newcommand{\\ModWeek${weekNumAlpha(week)}}{$modName}
+    |\\newcommand{\\ExeWeek${weekNumAlpha(week)}}{$exeName}
+    |""".stripMargin
+
+    val dodLabs = Set("linux", "cpu", "latex", "git")
+
+    val labRows = 
+      val labNames = labName.split(",").toSeq.map(_.trim)
+      def labType(n: String) = if dodLabs.contains(n) then "dod" else "" 
+      labNames.zipWithIndex.map((n, i) => s"""\\newcommand{\\LabWeek${weekNumAlpha(week)}${labType(n)}}{$n}""")
+
+    moduleExercise + labRows.mkString("\n")
+
+def namesOfWeek(w: Int) =
+  nameDefRow(w, weekPlan.column("Modul")(w), weekPlan.column("Lab")(w), weekPlan.column("Övn")(w))
+
+val nameDefs = {
+  val ws = for (w <- weeks) yield namesOfWeek(w)
+  ws.mkString("\n")
+}
+
+
+
 @main def Main =
   println("*** plan generation started in: " + here)
 
@@ -105,16 +130,6 @@ object overview extends Plan with Table:
 
   exercises.prepend(texUtf).save(currentDir + "../compendium/generated/exercises-generated.tex")
 
-  def nameDefRow(week: Int, modName: String, labName: String, exeName: String) =
-    s"""
-    |\\newcommand{\\ModWeek${weekNumAlpha(week)}}{$modName}
-    |\\newcommand{\\ExeWeek${weekNumAlpha(week)}}{$exeName}
-    |\\newcommand{\\LabWeek${weekNumAlpha(week)}}{$labName}
-    |""".stripMargin
-
-  def namesOfWeek(w: Int) =
-    nameDefRow(w, weekPlan.column("Modul")(w), weekPlan.column("Lab")(w), weekPlan.column("Övn")(w))
-  val nameDefs = (for (w <- weeks) yield namesOfWeek(w)).mkString("\n")
   nameDefs.prepend(texUtf).save(currentDir + "../compendium/generated/names-generated.tex")
 
   def overviewTemplate(module: String, exe: String, lab: String, body: String, cols: Int = 3): String = 

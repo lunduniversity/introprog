@@ -1,18 +1,18 @@
 | W   | Datum       | Lp V  | Modul                             | Förel   | Övn         | Lab          |
 |:----|:------------|:------|:----------------------------------|:--------|:------------|:-------------|
-| W01 | 1/9-5/9     | Lp1V1 | Introduktion                      | F01 F02 | expressions | kojo         |
-| W02 | 8/9-12/9    | Lp1V2 | Program och kontrollstrukturer    | F03 F04 | programs    | --           |
+| W01 | 1/9-5/9     | Lp1V1 | Introduktion                      | F01 F02 | expressions | kojo, linux  |
+| W02 | 8/9-12/9    | Lp1V2 | Program och kontrollstrukturer    | F03 F04 | programs    | cpu          |
 | W03 | 15/9-19/9   | Lp1V3 | Funktioner och abstraktion        | F05 F06 | functions   | irritext     |
 | W04 | 22/9-26/9   | Lp1V4 | Objekt och inkapsling             | F07 F08 | objects     | blockmole    |
 | W05 | 29/9-3/10   | Lp1V5 | Klasser och datamodellering       | F09 F10 | classes     | blockbattle0 |
 | W06 | 6/10-10/10  | Lp1V6 | Mönster och felhantering          | F11 F12 | patterns    | blockbattle1 |
 | W07 | 13/10-17/10 | Lp1V7 | Sekvenser och enumerationer       | F13 F14 | sequences   | shuffle      |
 | TP  | --          | TP1   | --                                | --      | --          | --           |
-| W08 | 3/11-7/11   | Lp2V1 | Nästlade och generiska strukturer | F15 F16 | matrices    | life         |
-| W09 | 10/11-14/11 | Lp2V2 | Mängder och tabeller              | F17 F18 | lookup      | words        |
+| W08 | 3/11-7/11   | Lp2V1 | Nästlade och generiska strukturer | F15 F16 | matrices    | life, latex  |
+| W09 | 10/11-14/11 | Lp2V2 | Mängder och tabeller              | F17 F18 | lookup      | words, git   |
 | W10 | 17/11-21/11 | Lp2V3 | Arv och komposition               | F19 F20 | inheritance | snake0       |
 | W11 | 24/11-28/11 | Lp2V4 | Varians och kontextparametrar     | F21 F22 | context     | snake1       |
 | W12 | 1/12-5/12   | Lp2V5 | Fördjupning, Projekt              | F23 F24 | extra       | Projekt0     |
 | W13 | 8/12-12/12  | Lp2V6 | Repetition                        | F25 F26 | examprep    | Projekt1     |
-| W14 | 15/12-19/12 | Lp2V7 | MUNTLIGT PROV                     | --      | Munta       | Munta        |
+| W14 | 15/12-19/12 | Lp2V7 | MUNTLIGT PROV                     | --      | Munta       | --           |
 | TP  | 7/1         | TP2   | VALFRI TENTAMEN                   | --      | --          | --           |
