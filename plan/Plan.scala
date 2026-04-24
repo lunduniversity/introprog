@@ -31,7 +31,7 @@ trait Plan:
       | aritmetik, slumptal, logiska uttryck, de Morgans lagar, if, true, false, while, for, dod: operativsystem
       """.stripTrim),
 
-    Module("Program och kontrollstrukturer",
+    Module("Program, kontrollstrukturer, maskinkod",
       id = "programs", exercise = "programs", labs = Seq("cpu"), contents = """
       | huvudprogram, program-argument, indata, scala.io.StdIn.readLine,
       | kontrollstruktur,
@@ -39,7 +39,7 @@ trait Plan:
       | samling, sekvens, indexering, Array, Vector,
       | intervall, Range,
       | algoritm, implementation, pseudokod,
-      | algoritmexempel: SWAP, SUM, MIN-MAX, MIN-INDEX, dod: versionshantering
+      | algoritmexempel: SWAP, SUM, MIN-MAX, MIN-INDEX, dod: maskinkod
       """.stripTrim),
 
     Module("Funktioner och abstraktion",
@@ -55,7 +55,7 @@ trait Plan:
       | värdeandrop, namnanrop, 
       | klammerparentes och kolon vid ensam parameter, 
       | rekursion,
-      | scala.util.Random, slumptalsfrö, dod: typsättning
+      | scala.util.Random, slumptalsfrö
       """.stripTrim),
 
     Module("Objekt och inkapsling",
@@ -72,7 +72,7 @@ trait Plan:
       | överlagring av metoder,
       | introprog.PixelWindow,
       | initialisering, lazy val,
-      | typalias, dod: maskinkod
+      | typalias
       """.stripTrim),
 
     Module("Klasser och datamodellering",
@@ -114,19 +114,19 @@ trait Plan:
 
     Module("--", id = "", exercise = "", labs = Seq(), contents = "".stripTrim),
 
-    Module("Nästlade och generiska strukturer",
+    Module("Nästlade och generiska strukturer, typsättning",
       id = "matrices", exercise = "matrices", labs = Seq("life", "latex"), contents = """
       | matris, nästlad samling, nästlad for-sats,
       | typparameter, generisk funktion, generisk klass, fri och bunden typparameter,
-      | generiska datastrukturer, generiska samlingar i Scala,
+      | generiska datastrukturer, generiska samlingar i Scala, dod: typsättning
       """.stripTrim),
 
-    Module("Mängder och tabeller",
+    Module("Mängder och tabeller, versionshantering",
     id = "setmap", exercise = "lookup", labs = Seq("words", "git"), contents = """
     | innehållstest, mängd, Set, mutable.Set,
     | nyckel-värde-tabell, Map, mutable.Map,
     | hash code, java.util.HashMap, java.util.HashSet,
-    | persistens, serialisering, textfiler, Source.fromFile, java.nio.file,
+    | persistens, serialisering, textfiler, Source.fromFile, java.nio.file, dod: versionshantering
     """.stripTrim),
 
     Module("Arv och komposition", 
