@@ -220,6 +220,10 @@
 %https://tex.stackexchange.com/questions/1111/problem-with-defining-shortcuts-for-tikz-matrices
 }
 
+\newcommand{\enquote}[1]{''#1''}
+\newcommand{\commandchar}[1]{\textsc{#1}}
+\newcommand{\file}[1]{\texttt{#1}}
+
 
 \newenvironment{Goals}%
 {\subsubsection{Mål}\begin{itemize}[nosep, label={$\square$},]}%
@@ -229,9 +233,22 @@
 {\subsubsection{Förberedelser}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
+\newenvironment{Kontrollfragor}%
+{\subsubsection{Kontrollfragor}\begin{itemize}[nosep, label={$\square$},]}%
+{\end{itemize}}
+
+\newenvironment{Datorarbete}%
+{\begin{enumerate}}{\end{enumerate}}
+
+\newenvironment{Deluppgifter}%
+{\begin{enumerate}[nosep]}{\end{enumerate}}
+
+
 \newenvironment{Background}%
 {\begin{adjustwidth}{\parindent}{}\small \emph{Bakgrund:}}%
 {\end{adjustwidth}}
+
+
 
 \newcommand{\vecka}{1}%renew this command in chapter.tex files
 
