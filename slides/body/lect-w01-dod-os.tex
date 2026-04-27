@@ -1,0 +1,739 @@
+%!TEX encoding = UTF-8 Unicode
+%!TEX root = ../lect-w01-dod.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\Subsection{Om Datorer och datoranvändning}
+
+\begin{Slide}{Välkommen till Datorer och datoranvändning (dod)}
+	\begin{itemize}
+		\item Syftet med \emph{dod}-delen?
+		      \begin{itemize}
+			      \item Lär dig grundläggande verktyg.
+			      \item Introduktion inför kommande kurser.
+		      \end{itemize}
+		\item Vem läser kursen?
+		      \begin{itemize}
+			      \item C-programmet.
+			      \item D-programmet.
+		      \end{itemize}
+		\item Vad innehåller kursen?
+		      \begin{itemize}
+			      \item Fyra ämnen, med vardera en föreläsning och en laboration
+			            \begin{enumerate}
+				            \item Unix och Linux
+				            \item \LaTeX
+				            \item Git och Github
+				            \item Maskinkod
+			            \end{enumerate}
+		      \end{itemize}
+	\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Schema och gruppindelning}
+
+	\begin{itemize}
+		\item Gruppindelning
+		      \begin{itemize}
+			      \item Gruppindelning, se Canvas.
+			      \item Kapten Alloc \url{https://fileadmin.cs.lth.se/pgk/kaptenalloc/}
+		      \end{itemize}
+		\item Schema
+		\item Föreläsning alltid samma tid (tisdag 15:15), E:A
+		\item Laborationer
+		      \begin{itemize}
+			      \item En labb per vecka, start på torsdag!
+			      \item Föreberedelseuppgifter, kontrollfrågor.
+			      \item Laboration 1, Linux (Första laborationen på torsdag!)
+			      \item Laboration 2. \LaTeX
+			      \item Laboration 3, Git
+			      \item Laboration 4, Maskinkod
+		      \end{itemize}
+	\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Kurshemsidan och Github}
+
+	{\bf Den öppna kurshemsidan:}
+
+	\smallskip
+	\small\url{https://lunduniversity.github.io/pgk/}
+
+
+	\bigskip
+
+
+	{\bf Allt kursmaterial finns tillgängligt på GitHub:}
+
+	\smallskip
+	\small\url{https://github.com/lunduniversity/introprog-computer-intro}
+
+	\smallskip
+	\begin{itemize}
+		\item Källkod och material för kursen.
+		\item Lämna issues om ni upptäcker problem eller vill föreslå förbättringar.
+		\item Pull requests är alltid välkomna!
+	\end{itemize}
+\end{Slide}
+
+\begin{Slide}{Vid sjukdom / förhinder}
+
+	Om du blir sjuka eller får annat förhinder:
+	\begin{itemize}
+		\item Meddela mig (dod) \url{mattias.nordahl@cs.lth.se}
+		\item Meddela Björn (prog) \url{bjorn.regnell@cs.lth.se}
+		\item Få hjälp och redovisa på resurstid
+	\end{itemize}
+\end{Slide}
+\begin{Slide}{Vid frågor}
+
+	\begin{itemize}
+		\item Ni kan alltid maila mig: \url{mattias.nordahl@cs.lth.se}
+		\item Discord. Hitta invite-länk på Canvas-sidan.
+	\end{itemize}
+\end{Slide}
+\Subsection{Operativsystem}
+
+\begin{Slide}{Förberedelse inför laboration 1.}
+    \label{unix}
+        
+
+        \begin{itemize}
+            \ii{Operativsystem, Unix historik}
+            \is{Filer och kataloger}
+            \is{Kommandon}
+            \is{Filskydd}
+            \is{Kommandotolk}
+            \is{Processer}
+        \end{itemize}
+\end{Slide}
+
+\begin{Slide}{Operativsystem}
+    \begin{itemize}
+        \ii{Dator --- kör program}
+        \ii{Program --- instruktioner för datorn}
+        \ii{Operativsystem --- en samling program som gör det möjligt att köra \enquote{vanliga} program}
+        \ii{Operativsystemet hanterar:}
+        \begin{itemize}
+            \is{de program som körs (program körs ofta parallellt, operativsystemet ser till att programmen får minne och tid att exekvera)}
+            \ii{yttre enheter (tangentbord, mus, skärm, nätverk, \ldots)}
+            \ii{lagring av data (filer, \ldots)}
+            \ii{skydd, felhantering, kommunikation med användaren}
+        \end{itemize}
+
+        \ii{Exempel:}
+        \begin{itemize}
+            \is{Linux, Windows, Mac OS X, Unix, \ldots}
+        \end{itemize}
+    \end{itemize}
+\end{Slide}
+\begin{Slide}{Unix historia}
+    \begin{itemize}
+        \ii{1960-talet: Multics, ett stort projekt avsedd för stora datorer.}
+        \ii{1969: Ken Thompson på AT\&T Bell Labs utvecklar Unix, ett enklare system för mindre datorer med inspiration från Multics.}
+        \ii{1973: Unix omskrivs i C av Dennis Ritchie, vilket underlättar distribution och anpassning.}
+        \ii{Utvecklingen fortsätter med många varianter: Linux, BSD, Mac OS X, och Android bland andra.}
+        \ii{Unix varumärket ägs av The Open Group som certifierar Unix-kompatibla system (Linux är ej certifierat).}
+    \end{itemize}
+\end{Slide}
+\begin{Slide}{Linux och GNU}
+    \begin{itemize}
+        \ii{1983: GNU-verktygen -- fritt Unix-liknande operativsystem.}
+        \ii{1991: Linus Torvalds skapar Linuxkärnan -- hanterar hårdvaruinteraktioner.}
+        \ii{Linuxkärnan + GNU-verktyg = GNU/Linux -- skapar en fullständig användarmiljö.}
+        \ii{\enquote{Linux} används ofta som kortform för hela systemet.}
+    \end{itemize}
+\end{Slide}
+
+\begin{Slide}{Kännetecken för Unix}
+    \ti{Grundläggande:}
+    \begin{itemize}
+        \is{Kärna --- liten, grundläggande funktioner}
+        \ii{Processer, tidsdelning}
+        \ii{Filskydd}
+        \ii{Fleranvändarsystem}
+        \ii{Kommandotolk (terminalfönster)}
+    \end{itemize}
+    \ti{Unix är:}
+    \begin{itemize}
+        \is{Litet, standardiserat, flyttbart}
+        \ii{(Ursprungligen) Inte för nybörjare. Enklare nu med grafiska skrivbordsmiljöer.}
+    \end{itemize}
+\end{Slide}
+% \begin{frame}[fragile]
+%     \frametitle{Vilket operativsystem använder du?}
+
+%     ... opinionsundersökning i mentimeter...
+
+%   \end{Slide}
+\begin{Slide}{Filer i Unix/Linux}
+    I en dator måste man kunna lagra
+    \begin{itemize}
+        \ii{program (Word, Excel, Java-/Scalakompilator, spelprogram, \ldots)}
+        \ii{data (foton, document, programmeringsuppgifter, \ldots)}
+    \end{itemize}
+
+    \halfblankline
+
+    \ti{Man lagrar program och data i \emph{filer}, som har ett namn.}
+
+    \halfblankline
+    \ti{Filer ligger alltid i en katalog (mapp).}
+
+    \halfblankline
+    \ti{Filer och kataloger lagras på \enquote{permanent} minne (hårddisk, SSD, \ldots).}
+
+    \halfblankline
+    \ti{Filnamn i Unix/Linux:}
+
+    \begin{itemize}
+        \is{\texttt{namn.tillägg} (\texttt{Calc.scala}, \texttt{Calc.class}, \texttt{brev.txt}, \texttt{test1}, \ldots)}
+        \ii{Tillägget är bara en extra upplysning, bestämmer inte filtypen!}
+    \end{itemize}
+\end{Slide}
+% \begin{frame}[fragile]
+%     \frametitle{Kataloger}
+%     Varje fil finns i en katalog. Kataloger kan innehålla underkataloger, så man får en hierarkisk struktur, ett \emph{filträd}:
+
+%     \begin{center}
+%         % \includegraphics[width=\textwidth,height=0.7\textheight,keepaspectratio]{images/file-tree.pdf}
+%         \resizebox{!}{0.7\textheight}{\input{lect-w01-dod-file-tree.tex}}
+%     \end{center}
+
+% \end{Slide}
+% \begin{frame}[fragile]
+%     \frametitle{Filnamn}
+%     I praktiken är det inte så rörigt som det ser ut på den förra bilden!
+%     Ett fullständigt (absolut) filnamn börjar från rotkatalogen och man räknar upp alla katalogerna med \texttt{/} emellan:
+
+%     \begin{Code}[language=]
+%         /h/d24/b/uw3307bq-s/dod/lab1/example.txt
+%     \end{Code}
+
+%     Men operativsystemet håller reda på en \emph{aktuell katalog}, som ungefär betyder \emph{\enquote{var i filträdet befinner jag mig just nu?}}. Istället för att ange det absoluta filnamnet, räcker det att ange vägen med start från den aktuella katalogen -- ett s.k. \emph{relativt} filnamn.
+
+%     \halfblankline
+
+%     Om \texttt{uw3307bq-s} (användarens \emph{hemkatalog}) är aktuell katalog så kommer man åt filen ovan med namnet:
+
+%     \begin{Code}[language=]
+%         dod/lab1/example.txt
+%     \end{Code}
+
+% \end{Slide}
+\begin{Slide}{Filnamn och sökvägar}
+
+    \ti{\textbf{Termer:}}
+    \begin{itemize}
+        \is{Sökväg (eng. path) -- vägen till en fil}
+        \ii{Absolut sökväg -- från rotkatalogen}
+        \ii{Relativ sökväg -- från aktuell katalog}
+        \ii{Aktuell katalog -- \emph{där du är i filträdet}}
+    \end{itemize}
+
+    \blankline
+    \ti{\textbf{Absolut filnamn:}}
+        \begin{Code}[language=]
+            /h/d24/b/uw3307bq-s/dod/lab1/example.txt
+        \end{Code}
+
+    \ti{\textbf{Relativt filnamn:}}
+\begin{Code}[language=]
+dod/lab1/example.txt
+\end{Code}
+
+\end{Slide}
+
+% \begin{frame}[fragile]
+%     \frametitle{Förkortade filnamn}
+%     En del filer har förkortade namn:
+
+%     \blankline
+%     \begin{tabular}{cl}
+%         \url{~}     & (tilde) hemkatalogen för aktuell användare (Alt Gr + $\sim$ ) \\
+%         \url{~user} & hemkatalogen för användaren med användarnamnet user           \\
+%         \texttt{.}    & (punkt) aktuell katalog                                       \\
+%         \texttt{..}   & (punktpunkt) katalogen ovanför aktuell katalog i filträdet    \\
+%     \end{tabular}
+
+%     \blankline
+%     Antag att \texttt{\url{~}/dod/lab1} är aktuell katalog. Man kan navigera upp och ned i filträdet enligt följande exempel:
+
+%     \begin{Code}[language=]{6}
+%         ~/pgk/lab1/kojo.scala
+%         (till hemkatalogen, ner i pfk, ner i lab1)
+
+%         ../../pgk/lab1/kojo.scala
+%         (upp ett steg, upp ett steg, ner i pgk, ner i lab1)
+%     \end{Code}
+
+% \end{Slide}
+\begin{Slide}{Förkortade filnamn}
+
+    \ti{\textbf{Förkortningar:}}
+
+    \ts{Vissa filnamn har speciella betydelser:}
+
+    \blankline
+        \begin{tabular}{cl}
+            \url{~}     & Hemkatalog (tilde)              \\
+            \url{~user} & Användarens hemkatalog          \\
+            \texttt{.}    & Aktuell katalog (punkt)         \\
+            \texttt{..}   & Överordnad katalog (punktpunkt) \\
+        \end{tabular}
+    \blankline
+
+    \ti{\textbf{Exempel:}}
+
+    \ts{Om \texttt{\url{~}/dod/lab1} är aktuell katalog:}
+
+\begin{Code}[language=]
+~/pgk/lab1/kojo.scala
+(till hemkatalogen, ner i pfk, ner i lab1)
+\end{Code}
+    \vspace{-1em}
+\begin{Code}[language=]
+../../pgk/lab1/kojo.scala
+\end{Code}
+(upp ett steg, upp ett steg, ner i pgk, ner i lab1)
+
+\end{Slide}
+
+% \begin{frame}[fragile]
+%     \frametitle{Kommandotolk}
+%     Man kommunicerar med Unix eller Linux genom att ge kommandon. Ett särskilt program i operativsystemet, kommandotolken, ''shell'', läser in kommandona och utför det som ska göras.
+
+%     \pindent Det finns flera olika kommandotolkar. På Linuxdatorerna i E-huset används kommandotolken \texttt{bash} (''Bourne-Again SHell''). Andra vanliga kommandotolkar är \texttt{sh}, \texttt{zsh} och \texttt{csh}.
+
+%     \pindent Kommandotolken läser kommandon som ges i ett terminalfönster på skärmen. Så här arbetar tolken:
+
+%     \begin{Code}[language=]{4}
+%         Upprepa i all oändlighet:
+%             Läs ett kommando
+%             Om kommandot är ett riktigt kommando:
+%                 utför det som ska göras
+%             annars:
+%                 skriv ut felmeddelande
+%     \end{Code}
+
+% \end{Slide}
+\begin{Slide}{Kommandotolk (shell) och terminal}
+
+    \ti{Termerna \emph{kommandotolk} och \emph{terminal} används ofta synonymt, men har olika betydelser:}
+
+    \halfblankline
+    \begin{description}
+        \di{Kommandotolk}{För kommunikation med operativsystemet, via kommandon}
+        \di{Terminal}{Program som låter användaren skriva kommandon till kommandotolken}
+        \di{Shell}{Engelska för kommandotolk}
+    \end{description}
+
+    \blankline
+
+    \ti{Exempel på shells:}
+    \begin{itemize}
+        \is{\texttt{bash} (Bourne-Again SHell)}
+        \is{\texttt{sh}, \texttt{zsh}, \texttt{csh}}
+    \end{itemize}
+
+\end{Slide}
+\begin{Slide}{Kommandotolk (shell) och terminal}
+
+    Så här fungerar en kommandotolk:
+    \begin{Code}[language=]
+        Upprepa i all oändlighet:
+        Läs ett kommando
+        Om kommandot är ett riktigt kommando:
+        utför det som ska göras
+        annars:
+        skriv ut felmeddelande
+    \end{Code}
+
+\end{Slide}
+\begin{Slide}{Bash vs. Zsh för Mac-användare}
+
+    \ti{\textbf{Bash och Zsh:}}
+    \begin{itemize}
+        \is{Bash är standard i de flesta Linux-system.}
+        \is{Zsh är standard i macOS från Catalina.}
+        \is{Båda är kraftfulla skal i Unix-system.}
+        \is{För grundläggande användning, t.ex. denna kurs, fungerar båda bra.}
+    \end{itemize}
+
+    \ti{\textbf{Att byta till Bash (valfritt):}}
+    \begin{itemize}
+        \is{Öppna Terminal och skriv \texttt{bash} för att temporärt byta till Bash.}
+        \is{Installera senaste Bash via Homebrew: \texttt{brew install bash}}
+    \end{itemize}
+
+    \ti{\textbf{Skillnader:}}
+    \begin{itemize}
+        \is{Zsh upplevs av många som mer användarvänligt. Erbjuder fler funktioner och anpassningsmöjligheter, men kan vara överväldigande för nybörjare.}
+        \is{Bash är mer konservativt och har bättre kompatibilitet.}
+    \end{itemize}
+
+\end{Slide}
+\begin{Slide}{Unix-shellalternativ för Windows-användare}
+
+    \ti{\textbf{Git Bash:}}
+    \begin{itemize}
+        \is{Enkel Bash-tillgång, minimal konfiguration.}
+        \is{Installeras med Git för Windows.}
+    \end{itemize}
+
+    \ti{\textbf{WSL (Windows Subsystem for Linux):}}
+    \begin{itemize}
+        \is{Kör fullständig Linux i Windows.}
+    \end{itemize}
+
+    \ti{\textbf{Cygwin:}}
+    \begin{itemize}
+        \is{Ger bred Unix-vertygsuppsättning.}
+        \is{Mer konfiguration.}
+    \end{itemize}
+
+    \blankline
+    \ti{\textbf{Vilket ska jag välja?}}
+    \begin{itemize}
+        \is{\textbf{Git Bash}: Grundläggande Bash och Git. (Rekommenderas)}
+        \is{\textbf{WSL}: Fullständig Linux-utveckling. (Rekommenderas)}
+        \is{\textbf{Cygwin}: Omfattande Unix-funktionalitet. (Avråds)}
+    \end{itemize}
+
+\end{Slide}
+
+\begin{Slide}{Kommandoformat}
+    \ti{Varje kommando skrivs på en rad:}
+
+\begin{Code}[language=]
+kommandonamn -option1 -option2 ... argument1 ...
+\end{Code}
+
+    \begin{itemize}
+        \ii{Kommandot talar om vad som ska göras.}
+        \ii{Optionerna modifierar kommandot på något sätt.}
+        \ii{Argumenten är (oftast) filer eller kataloger som påverkas av kommandot.}
+    \end{itemize}
+
+    \halfblankline
+    \ti{Exempel:}
+
+    \halfblankline
+        \begin{tabular}{lp{60mm}}
+            \texttt{scalac Calc.scala}        & Kompilerar \texttt{Calc.scala} med Scalakompilatorn                                                                                             \\
+            \texttt{cp -i report.tex old.tex} & Kopierar \texttt{report.tex} till \texttt{old.tex}. \texttt{-i} betyder att systemet frågar om \texttt{old.tex} ska skrivas över, om den redan finns. \\
+        \end{tabular}
+\end{Slide}
+
+
+
+\begin{Slide}{Kommandon för filhantering}\SlideFontSmall
+    Exempel på kommandon för att hantera filer:
+
+    \blankline
+    \begin{tabular}{lp{7.0cm}}
+        \texttt{cp orig kopia} & Kopiera filen \texttt{orig} till \texttt{kopia}.                                                                                                                                 \\
+        \texttt{less fil}      & Skriv ut \texttt{fil} på skärmen, en sida i taget.                                                                                                                             \\
+        \texttt{ls [-la] kat}  & Skriv ut en innehållsförteckning över katalogen \texttt{kat} (aktuell katalog om ingen katalog ges). \texttt{-l} skriv i ett längre format, \texttt{-a} skriv också ut punktfiler. \\
+        \texttt{mv fil1 fil2}  & Döp om \texttt{fil1} till \texttt{fil2}. Om \texttt{fil2} är en katalog så flyttas filen till den katalogen.                                                                       \\
+        \texttt{rm fil1 ...}   & Tag bort de angivna filerna.                                                                                                                                                 \\
+    \end{tabular}
+\end{Slide}
+\begin{Slide}{Kataloghantering}
+    Exempel på kommandon för att hantera kataloger:
+
+    \blankline
+    \begin{tabular}{lp{8.3cm}}
+        \texttt{cd kat}    & Ändra aktuell katalog till \texttt{kat}. Utan argument blir det hemkatalogen (samma som \texttt{cd} \url{~}). \\
+        \texttt{mkdir kat} & Skapa underkatalogen \texttt{kat} i den aktuella katalogen.                                                 \\
+        \texttt{pwd}       & Skriv ut namnet på aktuell katalog.                                                                       \\
+        \texttt{rmdir kat} & Tag bort \texttt{kat}. Man måste först ta bort alla filerna i katalogen.                                    \\
+    \end{tabular}
+\end{Slide}
+% \begin{frame}[fragile]
+%     \frametitle{Filskydd 1}
+%     Varje fil har en ägare. Ägaren identifieras med användarnamn och grupp, till exempel \texttt{ma1337no-s} i gruppen \texttt{students}.
+
+%     \pindent Ägaren kan skydda filer så att andra inte kan komma åt dem, eller göra dem publika så att andra kan komma åt dem.
+
+%     \pindent För att ta reda på filskydd och ägare (och storlek och datum) för filer kan man använda kommandot \texttt{ls} med optionen \texttt{l}, alltså \texttt{ls -l}:
+%     \begin{Code}[language=]{6}
+%         hacke-3{ma1337no-s}: ls -l
+%         -rw-r-----  1 ma1337no-s  students  4940 aug 21 11:14 example.txt
+%          (skydd)      (ägare)   (grupp)
+%     \end{Code}
+
+% \end{Slide}
+
+\begin{Slide}{Filskydd 1/3}
+
+    \ti{\textbf{Filägande:}}
+    \begin{itemize}
+        \is{Ägare identifieras via användarnamn och grupp\\
+            \hspace{1em}(t.ex., \texttt{ma1337no-s} i \texttt{students})}
+    \end{itemize}
+
+    \ti{\textbf{Filsäkerhet:}}
+    \begin{itemize}
+        \is{Ändra åtkomsträttigheter för att skydda eller dela filer}
+    \end{itemize}
+
+    \ti{\textbf{Visa detaljer:}}
+\begin{Code}[language=]
+hacke-3{ma1337no-s}: ls -l
+-rw-r-----  1 ma1337no-s  students  4940 aug 21 11:14 example.txt
+(skydd)       (ägare)     (grupp)
+\end{Code}
+
+\end{Slide}
+
+\begin{Slide}{Filskydd 2/3}
+\begin{Code}[language=]
+-rw-r-----  1 ma1337no-s  students  4940 aug 21 11:14 example.txt
+u  g  o
+\end{Code}
+
+    Tre kategorier av användare:
+
+    \begin{description}
+        \item[\texttt{u}] (user) filens ägare
+        \item[\texttt{g}] (group) medlemmar i samma grupp som ägaren
+        \item[\texttt{o}] (others) alla andra
+    \end{description}
+
+    Tre olika rättigheter:
+
+    \begin{description}
+        \item[\texttt{r}] (read) tillstånd att läsa
+        \item[\texttt{w}] (write) tillstånd att skriva
+        \item[\texttt{x}] (execute) tillstånd att exekvera program (för kataloger betyder \texttt{x} tillstånd att titta på innehållet i katalogen)
+    \end{description}
+
+\end{Slide}
+\begin{Slide}{Filskydd 3/3}
+\ti{Kommando för att ändra filskydd:}
+
+\begin{Code}[language=]
+    chmod skydd fil1 fil2 ...
+\end{Code}
+
+\ti{Filskydd kan anges symboliskt, till exempel \texttt{u=rw,o=r}}
+
+\halfblankline
+\ti{Eller numeriskt, enligt:}
+
+\begin{Code}[language=]
+    x = 001, w = 010, r = 100, rx = 101, rw = 110, rwx = 111
+\end{Code}
+
+
+\ti{Siffrorna tolkar man sedan som binära tal, vilket ger:}
+
+\begin{Code}[language=]
+    x = 1, w = 2, r = 4, rx = 5, rw = 6, rwx = 7
+\end{Code}
+
+
+\ti{Fullständiga numeriska filskydd blir till exempel:}
+
+\begin{Code}[language=]
+    604 <=> u=rw,o=r    755 <=> u=rwx,g=rx,o=rx
+\end{Code}
+\end{Slide}
+\begin{Slide}{bash-finesser 1} \SlideFontSmall
+    Man kan editera den aktuella kommandoraden:
+
+    \blankline
+    \begin{tabular}{p{2.2cm}p{8cm}}
+        \commandchar{$\leftarrow$\ $\rightarrow$} & Flytta markören på raden.                                                 \\
+        \commandchar{Control-K}                   & Radera hela raden.                                                        \\
+        \commandchar{Control-U}                   & Radera allt till vänster.                                                 \\
+        \commandchar{Control-L}                   & Töm terminalfönstret.                                                     \\
+        \commandchar{Tab}                         & Filnamnskomplettering (man behöver bara skriva början av ett långt namn). \\
+    \end{tabular}
+
+    \blankline
+    \texttt{bash} håller reda på de senaste kommandona som utförts, och man kan få tillbaka gamla kommandon:
+
+    \blankline
+    \begin{tabular}{p{2.2cm}p{8cm}}
+        \texttt{$\uparrow$} \texttt{$\downarrow$} & Bläddra bland tidigare kommandon.                  \\
+        \texttt{!abc}                           & Gör om senaste kommando som inleds med \texttt{abc}. \\
+        \texttt{!!}                             & Gör om senaste kommando.                           \\
+    \end{tabular}
+\end{Slide}
+\begin{Slide}{bash-finesser 2}
+    \ti{När man refererar till filer kan man utnyttja jokertecken (wildcards):}
+
+    \blankline
+        \begin{tabular}{ll}
+            \texttt{?} & motsvarar \emph{ett} godtyckligt tecken \\
+            \texttt{*} & motsvarar 0--flera godtyckliga tecken   \\
+        \end{tabular}
+
+    \blankline
+    \ti{Antag att vi har följande filer i vår katalog:}
+\begin{Code}[language=]
+Test1.java  Test2.java  Test23.java  Final.java
+Test1.class Test2.class Final.class  FinalReport.tex
+Outline.tex
+\end{Code}
+
+    \ti{Då kan vi till exempel skriva:}
+\begin{Code}[language=]
+javac Test?.java (javac Test1.java Test2.java)
+rm *.class       (rm Test1.class Test2.class Final.class)
+gedit F*.tex     (gedit FinalReport.tex)
+\end{Code}
+
+\end{Slide}
+% \begin{frame}[fragile]
+%     \frametitle{Initieringsfiler}
+%     Många program läser en initieringsfil när de startas. Initieringsfilen innehåller inställningar för programmet. Namnen på initieringsfilerna inleds med punkt, så man ser normalt inte dessa filer när man gör \texttt{ls}.
+
+%     \pindent \texttt{bash} läser initieringsfilen \texttt{.bash\_profile} när ett nytt terminalfönster skapas. Bra rader att ha i denna fil (gör att man alltid får frågor om man verkligen vill ta bort/skriva över filer):
+
+%     \begin{Code}[language=]
+%         alias rm='rm -i'
+%         alias cp='cp -i'
+%         alias mv='mv -i'
+%     \end{Code}
+
+%     Varning: kopiera inte andras initieringsfiler om du inte begriper vad som står i dem!
+% \end{Slide}
+\begin{Slide}{Initieringsfiler}
+
+    \ti{\textbf{Om initieringsfiler:}}
+    \begin{itemize}
+        \is{Används ofta för att konfigurera program.}
+        \ii{Filnamn börjar med punkt och är dolda, s.k. \emph{punktfiler}.}
+    \end{itemize}
+
+    \ti{\textbf{\texttt{bash} initieringsfil:}}
+    \begin{itemize}
+        \is{bash läser \texttt{.bash\_profile} (från hemkatalogen) när ett nytt terminalfönster öppnas.}
+        \ii{Nyttiga alias för att förhindra oavsiktliga filoperationer:}
+    \end{itemize}
+
+\begin{Code}[language=]
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+\end{Code}
+
+    \ti{\textbf{Varning:}}
+    \begin{itemize}
+        \is{Kopiera inte initieringsfiler utan att förstå innehållet!}
+    \end{itemize}
+
+\end{Slide}
+
+% \begin{frame}[fragile]
+%     \frametitle{Vad är egentligen ett kommando?}
+%     Kommandon är av två slag:
+
+%     \begin{description}
+%         \item[''inbyggda''] små kommandon som exekveras direkt i kommandotolken, till exempel \texttt{cd}, \texttt{pwd}, \texttt{exit}
+%         \item[''vanliga program''] kommandotolken letar efter ett program med samma namn som kommandot
+%     \end{description}
+
+%     Kommandotolken letar efter program i de kataloger som anges i sökvägen (operativsystemvariabeln \texttt{PATH}, som man själv kan sätta med kommandot \texttt{export}). När man till exempel skriver \texttt{javac X.java} exekveras programmet \texttt{/usr/bin/javac}, eftersom katalogen \texttt{/usr/bin} finns i sökvägen.
+
+%     \pindent När man ska exekvera ett eget program som finns i den aktuella katalogen skriver man:
+%     \begin{Code}[language=]
+%         ./programnamn
+%     \end{Code}
+
+%     \texttt{./} är nödvändigt eftersom \texttt{.} (den aktuella katalogen) inte finns i sökvägen.
+% \end{Slide}
+\begin{Slide}{Vad är egentligen ett kommando?}
+
+    \ti{\textbf{Typer av kommandon:}}
+    \begin{description}
+        \di{Inbyggda}{Kör direkt i kommandotolken (t.ex. \texttt{cd}, \texttt{pwd}, \texttt{ls}).}
+        \di{Vanliga program}{Kommandotolken söker efter programfiler i \texttt{PATH}.}
+    \end{description}
+
+    \ti{\textbf{Programexekvering:}}
+    \begin{itemize}
+        \is{\texttt{PATH} definierar var program letas upp (\texttt{export PATH=...} för anpassning).}
+        \ii{Ex: \texttt{/usr/bin/javac} finns i \texttt{PATH}, så \texttt{javac X.java} går att köra.}
+    \end{itemize}
+
+    \ti{\textbf{Köra egna program:}}
+\begin{Code}[language=]
+./programnamn
+\end{Code}
+{\SlideFontSmall Använd \texttt{./} för program i den aktuella katalogen, eftersom \texttt{.} inte ingår i \texttt{PATH}.}
+
+\end{Slide}
+
+% \begin{frame}[fragile]
+%     \frametitle{Processer}
+%     Varje program som körs i Unix körs som en egen process som exekverar självständigt, ''parallellt'' med andra processer. Varje process körs några millisekunder, sedan får nästa process exekvera, osv. Detta hanteras av operativsystemet.
+
+%     \pindent När man exekverar ett program från ett terminalfönster ''låser'' programmet fönstret tills det avslutas --- så vill man ofta att det ska fungera.
+
+%     \pindent Men man kan också köra program ''i bakgrunden'' dvs frikopplade från terminalfönstret. Det gör man genom att skriva \texttt{\&} sist på kommandoraden, till exempel:
+
+%     \begin{Code}[language=]
+%         gedit example.txt &
+%     \end{Code}
+
+% \end{Slide}
+
+\begin{Slide}{Processer}\SlideFontSmall
+
+    \ti{\textbf{Grundläggande om Processer:}}
+    \begin{itemize}
+        \ii{Varje program körs som en egen process, oberoende och ''parallellt'' med andra.}
+        \ii{Processväxling sker kontinuerligt, hanteras automatiskt av operativsystemet.}
+    \end{itemize}
+
+    \ti{\textbf{Exekvering i Terminal:}}
+    \begin{itemize}
+        \ii{Standard: Kommandotolken väntar på programmet. Terminalen framstår som upptagen tills programmet avslutas.}
+        \ii{Bakgrundskörning: Använd \texttt{\&} för att köra programmet frikopplat från terminalen.}
+    \end{itemize}
+
+    \ti{\textbf{Exempel:}}
+\begin{Code}[language=]
+gedit example.txt &
+\end{Code}
+    \ti{\textit{Öppnar \texttt{gedit} i bakgrunden, terminalen blir omedelbart tillgänglig för nya kommandon.}}
+
+\end{Slide}
+
+% \begin{frame}[fragile]
+%     \frametitle{Fönstersystem, skrivbordsmiljö}
+%     I Unix och Linux är fönstersystemet inte inbyggt (Unix utvecklades långt innan det fanns grafiska skärmar).
+
+%     \pindent De flesta Unix- och Linuxsystem som kör på persondatorer använder fönstersystemet X Window System, som oftast kallas bara X. X gör det möjligt att ha fönster på skärmen, att flytta dem, ikonifiera dem, osv.
+
+%     \pindent Exakt hur fönstren ska se ut och hur man arbetar med dem bestäms av \emph{fönsterhanteraren}, som också är ett separat program. Ovanpå fönsterhanteraren finns skrivbordsmiljön.
+
+%     \pindent Det bästa (enda) sättet att lära sig att använda en skrivbordsmiljö är att träna!
+% \end{Slide}
+
+
+\begin{Slide}{Fönstersystem, skrivbordsmiljö}
+
+    \ti{\textbf{Fönstersystem:}}
+    \begin{itemize}
+        \ii{I Unix och Linux är fönstersystemet inte inbyggt (Unix utvecklades långt innan det fanns grafiska skärmar).}
+        \ii{Fönstersystemet X Window System (ofta kallat \emph{X}).}
+    \end{itemize}
+
+    \ti{\textbf{Fönsterhanterare och skrivbordsmiljö:}}
+    \begin{itemize}
+        \ii{Fönsterhanteraren bestämmer utseende och funktion hos fönstren.}
+        \ii{Skrivbordsmiljön bygger vidare på fönsterhanteraren för en fullständig användarupplevelse.}
+    \end{itemize}
+
+    \ti{\textbf{Lära sig skrivbordsmiljön:}}
+    \begin{itemize}
+        \ii{För många av er är Linux nytt. Bästa sättet att bli bekant med en skrivbordsmiljö är att träna!}
+    \end{itemize}
+
+\end{Slide}

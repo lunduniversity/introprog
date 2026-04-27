@@ -276,8 +276,12 @@
   \ifx\relax#1\relax \else \,(\textit{#1})\fi
 }
 
-% Define the hint command
 \newcommand{\halfblankline}{\vspace{0.5em}}
+\newcommand{\blankline}{\vspace{1.0em}}
+
+
+
+% Define the hint command
 \newcommand{\hint}[2][]{\par\halfblankline\noindent\textbf{Ledtråd\ifx#1\empty\else\space#1\fi}: #2\par}
 
 %% END stuff from introprog-computer-intro/dodlabs.txt
