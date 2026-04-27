@@ -3,30 +3,263 @@
 
 \Lab{\LabWeekTWOdod}
 \begin{Goals}
-\item TODO
+\item Att förstå hur en dator fungerar på en grundläggande nivå. Man hör ibland att datorer endast förstår och arbetar med \enquote{ettor och nollor}, men vad betyder det egentligen? I denna laboration kommer vi arbeta med en förenklad datormodell där vi kan inspektera och manipulera minnet och processorn på en låg nivå och se just hur ettor och nollor används för att utföra beräkningar.
 \end{Goals}
 
 \begin{Preparations}
-\item TODO
+\item Läs igenom ''Kort teori om maskinkod'' på sidan \pageref{subsec:machinecodetheory} nedan och se till att du förstår begreppen.
+    \item Titta igenom föreläsningsbilderna från dod-föreläsning 4.
+    \item Läs igenom uppgifterna under rubriken Datorarbete.
+    \item Förbered din dator för laborationen genom att installera Java om du inte redan gjort det. Instruktioner finns på kurshemsidan.
+    \item Ladda ned programmet \textbf{\CPUprogname} (länk nedan) och packa upp det i en lämplig katalog. Programmet består av en \texttt{.jar}-fil som innehåller allt som behövs för att köra programmet.\\
+    $\rightarrow$ \url{https://github.com/lunduniversity/introprog-cpu-emulator/releases/latest}
+    \item Kontrollera att du kan köra programmet genom att dubbelklicka på \texttt{.jar}-filen. Om det inte fungerar kan du istället starta programmet från terminalen med kommandot:
+    \begin{center}
+        {\texttt{java -jar \CPUprogfilename}}
+    \end{center}
+    Där \texttt{\CPUprogversion} är versionsnummret, vilket eventuellt kan vara annorlunda.
+    \item Läs igenom användarmanualen för programmet som beskriver hur det fungerar. Manualen öppnas automatiskt när programmet startas, eller via menyn \texttt{Help}~$\rightarrow$~\texttt{Show Help}.
+
 \end{Preparations}
 
 \subsubsection{Tips och vanliga frågor}
 \begin{itemize}[nosep]
-    \item TODO
+    \item Vad betyder svårighetsgraden för uppgifterna?\\
+          Svårighetsgraden är en uppskattning av hur svår varje uppgift är, på en skala från \diffinline{1} (enkel) till \diffinline{5} (mer komplicerad). Den påverkar inte om en uppgift är obligatorisk eller inte -- det framgår alltid av uppgiftsindelningen. \\
+          Uppgifter under \emph{Datorarbete} är obligatoriska, medan uppgifter under \emph{Extrauppgifter} är frivilliga. Där kan svårighetsgraden vara ett stöd för dig när du väljer vilka uppgifter du vill försöka med.
+
 \end{itemize}
 
-
 \begin{Kontrollfragor}
-  \item TODO
+    \item Vad står förkortningen CPU för?
+    \item Vad är huvudfunktionen hos en CPU?
+    \item Nämn två typer av minne som finns i en dator.
+    \item Vad används registren i en CPU till?
+    \item Vad är en programräknare och vad gör den?
+    \item Vad menas med termen ''cache'' i kontexten av CPU?
+    \item Hur representeras informationen i datorns minne?
+    \item Vad innebär binärt tal?
+    \item Hur konverterar man ett decimaltal till ett binärt tal?
+    \item Vad är en maskininstruktion?
+    \item Vad är en assembler?
+    \item Hur skiljer sig maskinkod från högnivå programmeringsspråk?
+    \item Vad är ett operativsystem och vilken roll spelar det i en dator?
+    \item Vad är en bit och vad är en byte?
+    \item Vad är ett hexadecimalt tal och varför används det ofta i datavetenskap?
+    \item Ge ett exempel på en enkel operation som en ALU (Arithmetic Logic Unit) kan utföra.
+
 \end{Kontrollfragor} 
 
+\label{subsec:machinecodetheory}
+\subsection{Kort teori om maskinkod}
+Här går vi kortfattat igenom några centrala begrepp som du behöver inför laborationen. Gör också uppgifterna i avsnittet \enquote{Obligatoriska förberedelser (hemarbete)} \emph{innan} laborationen.
+
+\subsubsection{Processor (CPU, Central Processing Unit) och Register}
+CPU:n, eller \emph{processorn}, är hjärnan i en dator och utför alla dess beräkningar. Den läser och exekverar instruktioner från arbetsminnet, hanterar data via sina inbyggda register, och koordinerar övriga komponenter i systemet. \emph{Register} är små, snabba lagringsenheter inuti CPU:n som temporärt lagrar data för snabb tillgång under beräkningarna. De är begränsade i antal men erbjuder extremt snabb dataåtkomst -- upp till 100 gånger snabbare än arbetsminnet. Därför vill man vanligtvis använda registerna så mycket som möjligt, genom att ladda in data från arbetsminnet till registren en gång, använda dem genomgående i beräkningar, och först när beräkningarna är klara skriva tillbaka resultatet till arbetsminnet.
+
+\subsubsection{Arbetsminne (RAM, Random Access Memory)}
+Arbetsminnet i en dator fungerar som lagringsplatser som kan innehålla en viss mängd data. Man kan tänka på dem som \enquote{lådor} som kan fyllas med värden som CPU:n sedan kan läsa eller ändra. Varje låda har en unik adress så att CPU:n direkt kan hämta eller skriva data.
+Arbetsminnet används för att temporärt lagra både programkod och de data som programmen arbetar med.
+Det är långsammare än processorns register, men kan vara betydligt större. En modern dator har typiskt flera miljarder minnesplatser (mäts i GB, Giga Byte). 
+Till skillnad från permanenta lagringsenheter som hårddiskar och SSD-enheter, är arbetsminnet \emph{flyktigt}, vilket betyder att dess innehåll försvinner när datorn stängs av. Det är dock många storleksordningar snabbare än både hårddiskar och SSD-enheter\footnote{Läsning från RAM tar typiskt 10--100ns, från SSD 10--100$\mu$s och från hårddisk flera millisekunder.}.
+
+
+\subsubsection{Instruktioner och Maskinkod}
+Varje CPU har en specifik uppsättning instruktioner, känd som dess instruktionsuppsättning. Dessa instruktioner styr CPU:n till att utföra operationer, så som addition och subtraktion eller dataöverföring mellan minnesplatser och register. Vanligt förekommande instruktioner är \texttt{ADD} (addition), \texttt{MOV} (flytta data), och \texttt{JMP} (hoppa till en annan instruktion). Varje instruktion har en binär representation, alltså en sekvens av ettor och nollor. Detta är datorns grundläggande språk, kallat maskinkod.
+
+\subsubsection{Programräknare}
+Programräknaren är ett speciellt register i CPU:n som håller reda på adressen till nästa instruktion som ska hämtas och utföras. Detta gör det möjligt för datorn att veta vilken del av programmet som ska köras härnäst.
+
+\subsubsection{Teckenkodning}
+För att representera text och tecken använder datorer kodningsscheman. ASCII (uttalas ''aski'') är ett sådant schema där varje bokstav eller symbol representeras av ett unikt binärt värde. ASCII-schemat innehåller bara 128 olika tecken och inkluderar det engelska alfabetet, siffror och några specialtecken. UTF-8 är ett modernare schema som kan representera de flesta av världens alla språk och alfabet, men är också mer komplicerat, så i denna laboration kommer vi nöja oss med ASCII.
+
+\subsubsection{\CPUprogname}
+I labben ska du arbeta med en fiktiv dator, kallad \CPUprogname, som emulerar (härmar) hur en riktig dator fungerar i princip, men förenklat.
+Den har en 8-bitars processor, med åtta register, samt ett arbetsminne med 256 platser. Varje minnesplats är åtta bitar, vilket betyder att varje plats kan lagra ett heltal mellan 0 och 255.
+Du kan direkt editera individuella bitar i minnet och i processorns register, och köra dem som instruktioner. Du kommer alltså skriva och köra program i maskinkod.
+
+\subsubsection{Notation i handledningen}
+I handledningen behöver vi ibland kunna referera till register och minnesplatser. Registerna i \CPUprogname{} har index 0--7, men refereras typiskt till med sina namn:
+
+\begin{description}[leftmargin=20mm]
+    \item[\texttt{R0}--\texttt{R2}] Register 0, 1 och 2 är allmänna register och kan användas fritt.
+    \item[\texttt{OP1}, \texttt{OP2}] Register som typiskt används som operanderna i beräkningar.
+    \item[\texttt{RES}] Ett register som ofta används för att spara resultatet av en beräkning.
+    \item[\texttt{OUT}] Ett register som används för att skriva ut data till konsolen.
+    \item[\texttt{PC}] Programräknaren, som håller reda på vilken instruktion som ska köras härnäst.
+\end{description}
+
+Platserna i arbetsminnet har index 0--255 och benämns som \texttt{M0}, \texttt{M1}, \texttt{M2}, och så vidare. För att skilja mellan när ett värde används direkt eller som en adress för att referera till ett annat värde, använder vi en asterisk (eller \enquote{stjärna}, \texttt{*}). Denna notation är inspirerad av programspråket C, där asterisk används för att hantera pekare. Som exempel: Om värdet 38 är lagrat i registret \texttt{R0}, så refererar \texttt{R0} till värdet 38. Å andra sidan, betyder \texttt{*R0} att värdet 38 används som en adress, och refererar till \texttt{M38}, alltså värdet som finns i arbetsminnet på plats 38. För mer komplexa adresseringar kan vi även använda parenteser, såsom i \texttt{*(R0+1)}, vilket då refererar till minnesplatsen \texttt{M39}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsection{Datorarbete}
+Under laborationen kommer vi att arbeta med programmet \CPUprogname{} som simulerar en förenklad dator. Programmet är skrivet i Java och kan köras på de flesta datorer. Datorn har ett minne och en processor med register som kan utföra enkla operationer. Programmet låter oss inspektera och manipulera minnet och processorn på en låg nivå och se hur datorn tolkar och utför instruktioner.
+
 \begin{Datorarbete}
-\item TODO
+    \item \difficulty{1} Börja med att starta \CPUprogname. Om du inte gjort det redan så läs igenom användarmanualen som beskriver hur programmet fungerar. Den öppnas automatiskt när programmet startas, eller via menyn \texttt{Help}~$\rightarrow$~\texttt{Show Help}.
 
-\begin{Deluppgifter}
-\item TODO
+    \item \difficulty{1} I programmet finns ett antal exempelprogram som kan laddas in, under menyn \texttt{Examples}. Öppna det exempel som heter \texttt{Tiny program}. Detta är ett mycket enkelt program som bara använder fyra minnesceller, varav tre innehåller instruktioner och en innehåller data. Prova att stega igenom programmet och se vad som händer vid varje steg. Nedan är en beskrivning av vad programmet gör:
+    \begin{enumerate}
+        \item Eftersom programräknaren startar på värdet 0 kommer processorn att läsa värdet på den minnesplatsen först och tolka det som en instruktion.
+        \item Instruktionen är \texttt{LD (72 $\rightarrow$ OUT)}, eller ''Load 72 into OUT''. \texttt{LD}-instruktionen läser värdet på nästa minnesplats, i detta fall det decimala värdet 72, och laddar in det till ett register. Registret bestäms av intruktionens \emph{operand}, alltså instruktionens fyra sista bitar. Här anges registret med index 6, som är \texttt{OUT}.
+        \item När instruktionen körs så läses alltså värdet på minnesplats 1, och kopieras till registret \texttt{OUT}. Därefter ökar programräknaren med 2, eftersom instruktionen är två byte lång.
+        \item Nu pekar programräknaren på minnesplats 2, som innehåller instruktionen \texttt{PRT}, eller ''Print text''. Denna instruktion skriver ut värdet som finns i registret \texttt{OUT} till konsolen, som ett ASCII-tecken. Därefter ökar programräknaren med 1.
+        \item Till sist så körs instruktionen på minnesplats 3, som är \texttt{HLT}, eller ''Halt'', som avslutar programmet.
+    \end{enumerate}
 
-\end{Deluppgifter}
+    \item \difficulty{2} Bygg vidare på det tidigare exemplet och skriv ut flera tecken i rad, t.ex. \texttt{Hello,~World!}. Kom ihåg att varje tecken måste representeras som ett ASCII-värde. Ta hjälp av ASCII-tabellen för att hitta tecken och deras motsvarande decimal- eller binärvärden.
 
+    När du är klar så spara ditt program genom att klicka på \texttt{File}~$\rightarrow$~\texttt{Save} och ge filen ett namn. Du kan sedan ladda in programmet igen genom att klicka på \texttt{File}~$\rightarrow$~\texttt{Open} och välja filen.
+    \hint[1]{Tecknet \texttt{'' ''} (mellanslag) har ASCII-värdet 32.}
+    \vspace{-2mm}
+    \hint[2]{Du kan använda upprepade \texttt{LD}- och \texttt{PRT}-instruktioner, eller \texttt{PRL} (Print Loop).}
+
+    \item \difficulty{2} Från \texttt{Examples}-menyn, öppna nu det exempel som heter \texttt{Simple~add}, och försök förstå vad det gör och hur det fungerar. Kom ihåg och ta hjälp av att varje minnescell visas med olika tolkningar, däribland decimalt och som instruktioner. Vilka värden kommer att tolkas som instruktioner och vilka som data? Vad kommer resultatet att bli när programmet körs? Till sists, kör programmet och se om du hade rätt.
+
+    \item \difficulty{4} Nu ska du modifiera ditt program lite grand, och utöka din förståelse för CPU:n genom att hantera data dynamiskt. Föreställ dig att ett tidigare program har kört och sparat ett resultat i minnet på en okänd plats; alltså du känner inte till minnesplatsen när du skriver programmet, men programmet får reda på adressen under körning.
+
+    \begin{Deluppgifter}
+        \item \textbf{Förbered Minnet:} För att simulera den tidigare beräkningen, skriv manuellt in talen 127 och 43 på minnesplatserna 18 respektive 19. Detta är alltså de ''okända'' värdena som programmet kommer att läsa.
+        \item \textbf{Ladda Adresser:} Använd instruktionen \texttt{LD} för att ladda in värdet 18 till ett register, t.ex. \texttt{R0}. Notera att detta värdet alltså ska tolkas som en minnesaddress, och i sin tur användas för att ladda de faktiska värdena. Register \texttt{R0} kommer alltså att innehålla adressen som värdet finns på.
+        \item \textbf{Ladda Värden:} Använd instruktionen \texttt{LDA} (Load Address) för att ladda värden från en given address till ett register. Alltså, ladda in operanderna som ska adderas från \texttt{*R0} och \texttt{*(R0+1)} till operandregistren, \texttt{OP1} och \texttt{OP2}.
+        \item \textbf{Ändra till Subtraktion:} Modifiera programmet för att utföra en subtraktion istället för addition, alltså beräkna \(127-43\), och skriva ut resultatet liksom tidigare. Kontrollera att programmet ger det korrekta resultatet.
+        \item \textbf{Experiment med Operandordning:} Vad tror du händer om du byter plats på värdena i minnesplatserna och beräknar \(43-127\)? Prova och se vad resultatet blir.
+    \end{Deluppgifter}
+
+    \noindent När du är klar så spara ditt program i en fil \texttt{subtraction.txt}.
+
+    \hint{För deluppgift c): \texttt{LDA} instruktionen laddar in värdet från en minnesplats, vars address ges av ett register. \texttt{*RO} betyder att värdet i \texttt{R0} används som en adress, och värdet på den adressen laddas in till ett register, t.ex. \texttt{OP1}. \texttt{*(R0+1)} betyder att värdet i \texttt{R0} först ökas med 1, och det nya värdet används som adress för att ladda in ett värde. Du behöver alltså öka värdet i \texttt{R0} manuellt innan du använder det för att ladda in nästa värde.}
+
+    \item \difficulty{3} Skriv ett eget program som innehåller en \texttt{if}-sats. Programmet ska jämföra två tal och skriva ut Y (för ''yes'') om de är lika, annars N (för ''no''). Använd hoppinstruktioner för att implementera villkorlig exekvering. Kör programmet och se att det fungerar som förväntat.
+    \hint{Liksom alltid inom programmering så kan målet uppnås på flera olika sätt. Nedan är två exempel i pseudokod:}
+
+\begin{minipage}[t]{0.42\textwidth}
+\begin{lstlisting}[xleftmargin=5mm,language=]
+1. a = 5
+2. b = 5
+3. if a == b, jump to 5
+4. jump to 7
+5. load and print 'Y'
+6. halt
+7. load and print 'N'
+8. halt
+\end{lstlisting}
+\end{minipage}%
+\begin{minipage}[t]{0.42\textwidth}
+\begin{lstlisting}[xleftmargin=5mm,language=]
+1. a = 5
+2. b = 5
+3. load 'Y'
+4. if a == b, jump to 6
+5. load 'N'
+6. print
+7. halt
+\end{lstlisting}
+\end{minipage}
+
+  \item \difficulty{2} Nästa exempel är mycket roligt! \texttt{:)} Öppna exempelprogrammet \texttt{Simple loop} och försök förstå vad det gör och hur det fungerar. Vad kommer resultatet att bli när programmet körs? Kör det och se om du hade rätt.
+
+  \item \difficulty{3} Vi kan alltså skapa loopar genom att använda hoppinstruktioner. Skapa ett eget program som räknar från 0 till 10 och skriver ut varje tal. Använd en loop för att uppnå detta. Kör programmet och se att det fungerar som förväntat. Spara programmet i en ny fil \texttt{count.txt}.
+  
+  \item \difficulty{2} Baserat på ditt \texttt{count}-program, skriv ett nytt loop-program som summerar alla tal från 0 till \(N\), där \(N\) är ett tal som du själv väljer. Eftersom \CPUprogname{} endast har en 8-bitars processor så är vi väldigt begränsade i hur stora tal vi kan hantera. Vilken är den största summan du kan beräkna? Vad händer om du beräknar en större summa? Spara ditt program i en ny fil \texttt{sum.txt} när du är klar.
 \end{Datorarbete}
+
+
+\subsection{Extrauppgifter (frivilliga)}
+
+Nedanstående uppgifter krävs inte för att bli godkänd på laborationen, utan finns för dig som vill ha en extra utmaning. Kika gärna på dem och se om någon verkar intressant! I annat fall är du klar med laborationen och kan redovisa den för handledaren.
+
+\begin{Extrauppgifter}
+\item \difficulty{2}Skriv ett program som kontrollerar ifall två tal båda är större än 50, och i så fall skriver ut ''True'', annars ''False''. Programmet ska alltså göra \emph{två} jämförelser i ett ''och''-uttryck, motsvarande ungefär:
+
+\begin{Code}[language=]
+if a > 50 && b > 50:
+...
+else:
+...
+\end{Code}
+
+\vspace{-3mm}
+\hint{En villkorlig hoppinstruktion som inte uppfyller villkoret kommer fortsätta att exekvera nästa instruktion som vanligt.}
+
+
+\item \difficulty{4} Skriv ett program som konverterar en följd av siffror till en sträng av motsvarande tecken. Programmet ska läsa in en följd av värden (som måste vara 0--9) från minnet och konvertera dem till motsvarande ASCII tecken. Alltså, den första följden av siffror ska kunna skrivas till terminalen med \texttt{PRD} instruktionen (print decimal), medan de konverterade värdena ska kunna skrivas ut med \texttt{PRT} instruktionen (print text).
+
+
+\item \difficulty{4} Implementera ett funktionsanrop i ditt program. Skapa en funktion som adderar två tal och returnerar summan. Använd hoppinstruktioner för att anropa funktionen och hantera returvärdet. Ditt program ska motsvara följande pseudokod:
+
+\begin{Code}[language=]
+a = 3
+b = 4
+sum = call add(a, b)
+print sum
+halt
+add(a, b):
+return a + b
+\end{Code}
+
+\vspace{-3mm}
+\hint{Se nedan för förslag på hur en funktion kan implementeras. Notera att termen ''funktion'' används ganska löst här, eftersom det inte finns något koncept av funktioner i maskinkod.}
+\begin{enumerate}
+    \item Välj för din funktion fyra register som ska ha särskild betydelse:
+          \begin{itemize}
+              \item Ett register för att spara det första talet (första funktionsparametern).
+              \item Ett register för att spara det andra talet (andra funktionsparametern).
+              \item Ett register för att spara programräknarens nuvarande värde, så att funktionen vet vart den ska hoppa tillbaka.
+              \item Ett register för att spara returvärdet, så att koden som anropade funktionen kan använda det.
+          \end{itemize}
+
+          Använd förslagsvis registerna \texttt{R1}--\texttt{R3} för att spara de två talen och programräknarens värde. Returvärdet behövs inte förrän efter beräkningen är klar, så du kan återanvända ett av de två talregistren för att spara det, eller använda \texttt{RES}.
+    \item För koden som ska anropa funktionen:
+          \begin{enumerate}
+              \item Spara de två talen och programräknarens nuvarande värde i dina valda register.
+              \item Hoppa till funktionens startadress.
+          \end{enumerate}
+    \item För funktionen:
+          \begin{enumerate}
+              \item Hämta de två talen från dina valda register och utför beräkningen.
+              \item Spara resultatet i returregistret.
+              \item Använd det sparade programräknarvärdet för att hoppa tillbaka till den instruktion som anropade funktionen.
+          \end{enumerate}
+    \item Tänk på att funktionen ska retunera och fortsätta med instruktionen \emph{efter} anropet, så att programmet inte hamnar i en oändlig loop.
+
+\end{enumerate}
+
+\item \difficulty{4} Skriv ett program som multiplicerar två tal genom upprepade additioner. Använd en loop för att utföra multiplikationen och spara resultatet i en minnescell.
+
+\item \difficulty{4} När en funktion anropas är det viktigt att inte överskriva nuvarande värden i vissa register som används av programmet. I verkliga processorer finns det därför speciella register kända som \emph{mottagarbevarade} (eng. \emph{callee-saved}), vilka ska sparas och återställas av den anropade funktionen. Implementera en funktion som använder och tillfälligt sparar registren \texttt{R1} till \texttt{R3} och återställer dem innan funktionen avslutas.
+
+\hint{Använd ett ledigt område i minnet (i verkliga system skulle detta hanteras av operativsystemet) för att temporärt spara de register som ska bevaras. Nu kan funktionen fritt använda registerna till sina beräkningar. Innan funktionen avslutas och returnerar, återställ dessa register till deras ursprungliga värden.}
+
+\item \difficulty[Väldigt svår. Lösningsförslag i Examples-menyn, \texttt{Segfault}.]{5}
+I programspråket C är \emph{segmentation fault} ett ökänt och vanligt förekommande fel. Det betyder att programmet försöker skriva till eller läsa från en minnesadress som inte är tillåten (t.ex. en adress utanför programmet eller en del av minnet som inte är allokerat).    
+Implementera ett program som medvetet leder till segmentation fault, t.ex. som demonstrerat av nedanstående pseudokod. Reflektera sedan över vad som händer och varför det kan så vara svårt att felsöka denna typ av fel.
+
+\halfblankline
+\textbf{OBS!} Tänk på att spara ditt program \emph{innan} du kör det, gärna en kopia också, eftersom när du får det att \enquote{fungera} så kommer det att skriva över sig själv och till slut krascha. Spara alltså \emph{inte} programmet efter att det skrivit över sig själv!
+
+\hint[1]{Pseudokoden nedan använder en mix av hög- och lågnivåinstruktioner, för att både visa det logiska programflödet men samtidigt ge ledtrådar till kluriga lågnivådetaljer. Din kod kommer behöva använda fler rader och instruktioner, och du behöver tänka på hur minnesadresser och register används, så radnummer kommer inte stämmer.}
+
+\hint[2]{Förklaring: Tanken med programmet är att det får ett startvärde (\(val = 10\)) och ett maxvärde (\(max = 200\)). Startvärdet dubbleras så länge det är mindre än maxvärdet, och varje beräknat värde sparas också i en vektor (array). Vi vill alltså beräkna vektorn \(nums = [20, 40, 80, 160, 320]\). Med andra startvärden blir vektorn annorlunda. Om startvärdet är $1$ så blir vektorn $nums = [2, 4, 8, 16, 32, 64, 128, 256]$, där antalet element är $|nums| = 8$. I värstafallet behöver vektorn alltså ha plats för åtta värden.}
+
+
+\begin{Code}[language=]
+0. jump to 12  // allocate memory for variables
+1. 10          // val = 10
+2. 200         // max = 200
+3. 0           // idx = 0
+4. 0           // nums = int[8], i.e. 8 empty memory cells
+(*@\dots@*)
+11. 0
+12. if val > max, jump to 17:   // loop until val >= max
+13.     val = val + val
+14.     store val in nums[idx]  // i.e. in m[4 + idx]
+15.     idx = idx + 1
+16.     jump to 12
+17. halt       // do something with nums...
+               // for this example,
+               // just stop the program
+\end{Code}
+
+\end{Extrauppgifter}
