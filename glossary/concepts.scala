@@ -34,8 +34,8 @@ object explain:
       en = "abstract class",
       svShortExplanation = "kan ha parametrar, kan ej instansieras, kan ej mixas in",
       enShortExplanation = "can have parameters, cannot be instantiated, cannot be mixed in",
-      svLongExplanation = "En abstrakt klass kan ha konstruktorparametrar och konkreta medlemmar, men kan inte instansieras direkt och kan inte mixas in med 'with'; den används som basklass i en arvshierarki där subklasser implementerar de abstrakta medlemmarna.",
-      enLongExplanation = "An abstract class can have constructor parameters and concrete members, but cannot be instantiated directly and cannot be mixed in with 'with'; it is used as a base class in an inheritance hierarchy where subclasses implement the abstract members.",
+      svLongExplanation = "En abstrakt klass kan ha konstruktorparametrar och konkreta medlemmar, men kan inte instansieras direkt och kan inte mixas in; den används som basklass i en arvshierarki där subklasser implementerar de abstrakta medlemmarna.",
+      enLongExplanation = "An abstract class can have constructor parameters and concrete members, but cannot be instantiated directly and cannot be mixed in; it is used as a base class in an inheritance hierarchy where subclasses implement the abstract members.",
     )
     val AbstractMember = Concept(
       sv = "abstrakt medlem",
@@ -482,8 +482,8 @@ object explain:
       en = "mixin",
       svShortExplanation = "tillföra egenskaper med with och en trait",
       enShortExplanation = "adding features using with and a trait",
-      svLongExplanation = "Inmixning innebär att man utökar en klass eller ett objekt med egenskaperna hos en eller flera traits med nyckelordet 'with'; detta möjliggör återanvändning av kodegenskaper utan klassarv och stöder ett slags multipelt arv av beteenden.",
-      enLongExplanation = "Mixin means extending a class or object with the properties of one or more traits using the 'with' keyword; this enables reuse of code properties without class inheritance and supports a form of multiple inheritance of behaviors.",
+      svLongExplanation = "Inmixning innebär att man utökar en klass eller ett objekt med egenskaperna hos en eller flera traits; detta möjliggör återanvändning av kodegenskaper utan klassarv och stöder ett slags multipelt arv av beteenden.",
+      enLongExplanation = "Mixin means extending a class or object with the properties of one or more traits; this enables reuse of code properties without class inheritance and supports a form of multiple inheritance of behaviors.",
     )
     val Module = Concept(
       sv = "modul",
@@ -530,7 +530,7 @@ object explain:
       en = "null",
       svShortExplanation = "ett värde som ej refererar till någon instans",
       enShortExplanation = "a value that does not refer to any instance",
-      svLongExplanation = "Null är ett specialvärde av referenstyp som indikerar att en referens inte pekar på någon instans; att avreferera null ger NullPointerException och null rekommenderas inte i Scala — använd istället Option[T] för att representera ett möjligen saknat värde.",
+      svLongExplanation = "Null är ett specialvärde av referenstyp som indikerar att en referens inte pekar på någon instans; att referera null ger NullPointerException och null rekommenderas inte i Scala — använd istället Option[T] för att representera ett möjligen saknat värde.",
       enLongExplanation = "Null is a special reference-type value indicating that a reference does not point to any instance; dereferencing null gives a NullPointerException and null is not recommended in Scala — use Option[T] instead to represent a possibly absent value.",
     )
     val Object = Concept(
