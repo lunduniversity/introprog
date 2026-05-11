@@ -48,3 +48,6 @@ object StringExtras:
       result
     }
 
+    def toCamelCase = s.split(" ").map(_.toLowerCase.capitalize).map(_.filter(_.isLetter)).mkString
+
+

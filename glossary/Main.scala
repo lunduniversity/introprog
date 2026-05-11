@@ -29,9 +29,11 @@ object Main {
     table.toLatex.save(s"$conceptsFile.tex")
 
     println(s"""Generating explanations""")
-    extension (s: String) def toWord = s.filter(_.isLetter).toLowerCase.capitalize
+
     val rows = explain.allConcepts.map: c =>
-      s"""\\newcommand{\\Explain${c.en.toWord}}{${c.svLongExplanation.wrapConcept(c.sv)}}"""
+      s"""\\newcommand{\\Explain${c.en.toCamelCase}}{${c.svLongExplanation.wrapConcept(c.sv)}}"""
+
     rows.mkString("\n").save(explanationsFile)
   }
+
 }

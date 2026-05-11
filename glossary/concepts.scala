@@ -5,23 +5,33 @@ object explain:
     import Concept.*
     scala.collection.immutable.ArraySeq(
       Abstract, AbstractClass, AbstractMember, Algorithm, AnonymousClass, AnonymousFunction,
-      Array, Assignment, Attribute, BaseType, Block, Boolean, CallByName, CallByValue,
+      Array, Assignment, Attribute, 
+      BaseType, Block, Boolean, 
+      CallByName, CallByValue,
       CaseClass, Class, ClassParameter, Collection, CollectionLibrary, Column, ColumnVector,
-      CompanionObject, Compile, CompileError, CompileFromFiles, Constructor, DataStructure,
-      DefaultArgument, Deserialize, DotNotation, DynamicBinding, Element, Export, Expression,
+      CompanionObject, Compile, Compiler, CompileError, Computer, Constructor, 
+      DataStructure,
+      DefaultArgument, Deserialize, DotNotation, DynamicBinding, 
+      Element, Export, Expression,
       FactoryMethod, FloatingPoint, ForStatement, Function, FunctionBody, FunctionHeader,
-      Generic, Getter, Implementation, Import, Instance, Key, KeyValueTable, LazyInitialization,
-      LinearSearch, LinearSearchAlgorithm, Literal, MapOperation, Mapping, Matrix, Member,
-      MemoryComplexity, Method, Mixin, Module, NamedArguments, NameShadowing, Namespace,
-      New, Null, Object, Ordering, Overloading, OverriddenMember, Package, ParameterList,
-      Persistence, Polymorphism, Predicate, Private, Procedure, ProgramArgument, ProtectedMember,
-      PureFunction, RandomSeed, Range, RecursiveFunction, ReferenceEquality, ReferenceType,
+      Generic, Getter, 
+      Implementation, Import, Instance, 
+      Key, KeyValueTable, 
+      LazyInitialization, LinearSearch, LinearSearchAlgorithm, Literal, 
+      MapOperation, Mapping, Matrix, Member, MemoryComplexity, Method, Mixin, Module, 
+      NamedArguments, NameShadowing, Namespace, New, Null, 
+      Object, Ordering, Overloading, OverriddenMember, 
+      Package, ParameterList, Persistence, Polymorphism, Predicate, Private, Procedure, ProgramArgument, ProtectedMember,
+      PureFunction, 
+      RandomSeed, Range, RecursiveFunction, ReferenceEquality, ReferenceType,
       Registration, RowVector, RuntimeError, RuntimeType, Script, SealedType, Search, Sequence,
       SequenceAlgorithm, SequenceCollection, Serialize, Set, Setter, SingletonObject, Sorting,
-      StackTrace, Statement, StringType, StructuralEquality, Subtype, Supertype, TimeComplexity,
-      Trait, Type, TypeAlias, TypeArgument, TypeInference, UniformAccess, ValueType, Vector,
+      StackTrace, Statement, StringType, StringInterpolator, StructuralEquality, Subtype, Supertype, 
+      TimeComplexity, Trait, Type, TypeAlias, TypeArgument, TypeInference, 
+      UniformAccess, 
+      ValueType, Variable, Vector,
       WhileStatement, Yield,
-    )
+    ).sortBy(_.en)
 
   case class Concept(sv: String, en: String, svShortExplanation: String, enShortExplanation: String, svLongExplanation: String, enLongExplanation: String)
 
@@ -147,14 +157,6 @@ object explain:
       svLongExplanation = "En case-klass genererar automatiskt ett kompanjonsobjekt med apply-metod (slipper 'new'), equals och hashCode baserade på fältinnehåll, en läsbar toString, en copy-metod för att skapa modifierade kopior, samt stöd för mönstermatchning med unapply.",
       enLongExplanation = "A case class automatically generates a companion object with an apply method (no need for 'new'), equals and hashCode based on field contents, a readable toString, a copy method for creating modified copies, and support for pattern matching with unapply.",
     )
-    val Computer = Concept(
-      sv = "dator",
-      en = "computer",
-      svShortExplanation = "en elektronisk enhet som behandlar data enligt instruktioner",
-      enShortExplanation = "an electronic device that processes data using instructions",
-      svLongExplanation = "En dator är en elektronisk enhet som behandlar data enligt lagrade instruktioner, och utför beräkningar, minnesmanipulationer och logiska operationer för att lösa problem eller utföra uppgifter. En dator består av ev en centralprocessorenhet (CPU), in- och utdataenheter, samt ett minne som lagrar instruktioner och data representerade som heltal",
-      enLongExplanation = "A computer is an electronic device that processes data following stored instructions, performing calculations, memory manipulations, and logical operations to solve problems or execute tasks. A computer consists of a central processing unit (CPU), input and output devices, and a memory that stores instructions and data represented as integers.",
-    )
     val Class = Concept(
       sv = "klass",
       en = "class",
@@ -211,6 +213,22 @@ object explain:
       svLongExplanation = "Ett kompanjonsobjekt har samma namn som en klass, definieras i samma fil, och har ömsesidig tillgång till klassens privata medlemmar; det används ofta för fabriksmetoder, konstanter och hjälpfunktioner kopplade till klassen.",
       enLongExplanation = "A companion object has the same name as a class, is defined in the same file, and has mutual access to the class's private members; it is often used for factory methods, constants, and helper functions associated with the class.",
     )
+    val Computer = Concept(
+      sv = "dator",
+      en = "computer",
+      svShortExplanation = "en elektronisk enhet som behandlar data enligt instruktioner",
+      enShortExplanation = "an electronic device that processes data using instructions",
+      svLongExplanation = "En dator är en elektronisk enhet som behandlar data enligt lagrade instruktioner, och utför beräkningar, minnesmanipulationer och logiska operationer för att lösa problem eller utföra uppgifter. En dator består av ev en centralprocessorenhet (CPU), in- och utdataenheter, samt ett minne som lagrar instruktioner och data representerade som heltal.",
+      enLongExplanation = "A computer is an electronic device that processes data following stored instructions, performing calculations, memory manipulations, and logical operations to solve problems or execute tasks. A computer consists of a central processing unit (CPU), input and output devices, and a memory that stores instructions and data represented as integers.",
+    )
+    val Compiler = Concept(
+      sv = "kompilator",
+      en = "compiler",
+      svShortExplanation = "ett program som tar källkod som indata och ger maskinkod som utdata",
+      enShortExplanation = "a program that takes source code as input and produces machine code as output",
+      svLongExplanation = "En kompilator är ett program som läser källkod, analyserar den för fel och översätter den till maskinkod som datorn kan köra; kompilatorn rapporterar kompileringsfel om koden inte är korrekt.",
+      enLongExplanation = "A compiler is a program that reads source code, analyzes it for errors, and translates it into machine code that the computer can execute; the compiler reports compile errors if the code is not correct.",
+    )
     val Compile = Concept(
       sv = "kompilera",
       en = "compile",
@@ -226,14 +244,6 @@ object explain:
       enShortExplanation = "can occur before execution has started",
       svLongExplanation = "Ett kompileringsfel uppstår när kompilatorn inte kan tolka eller typkontrollera koden och avbryter kompileringen med ett felmeddelande som anger plats och orsak; kompileringsfel måste åtgärdas innan programmet kan köras.",
       enLongExplanation = "A compile error occurs when the compiler cannot parse or type-check the code and aborts compilation with an error message indicating the location and cause; compile errors must be fixed before the program can be run.",
-    )
-    val CompileFromFiles = Concept(
-      sv = "kompilera",
-      en = "compile",
-      svShortExplanation = "maskinkod skapas ur en eller flera källkodsfiler",
-      enShortExplanation = "machine code is created from one or more source code files",
-      svLongExplanation = "Vid kompilering läser kompilatorn en eller flera källkodsfiler, löser beroenden mellan dem, och producerar bytekod eller maskinkod lagrad i separata filer som kan köras direkt utan tillgång till källkoden.",
-      enLongExplanation = "During compilation the compiler reads one or more source code files, resolves dependencies between them, and produces bytecode or machine code stored in separate files that can be run directly without access to the source code.",
     )
     val Constructor = Concept(
       sv = "konstruktor",
@@ -835,13 +845,21 @@ object explain:
       svLongExplanation = "En sats är en kodkonstruktion som utför en åtgärd, t.ex. en tilldelning, ett metodanrop eller en kontrollstruktur; i Scala är satser även uttryck och har ett värde (ofta Unit), och flera satser på samma rad separeras med semikolon.",
       enLongExplanation = "A statement is a code construct that performs an action, e.g. an assignment, a method call, or a control structure; in Scala statements are also expressions and have a value (often Unit), and multiple statements on the same line are separated by semicolons.",
     )
+    val StringInterpolator = Concept(
+      sv = "stränginterpolator",
+      en = "string interpolator",
+      svShortExplanation = "en funktion för att bädda in uttryck i strängar",
+      enShortExplanation = "a feature to embed expressions in strings",
+      svLongExplanation = "Stränginterpolation är en Scala-funktion som tillåter inbäddning av variabelreferenser och uttryck direkt i strängliteraler med hjälp av s-interpolatorn, som skrives med ett inledande s-tecken.",
+      enLongExplanation = "String interpolation is a Scala feature that allows embedding variable references and expressions directly in string literals using the s interpolator, written with a leading s character.",
+    )
     val StringType = Concept(
       sv = "sträng",
       en = "string",
       svShortExplanation = "en sekvens av tecken",
       enShortExplanation = "a sequence of characters",
-      svLongExplanation = "En sträng (String) är en oföränderlig sekvens av Unicode-tecken; i Scala är String ett alias för java.lang.String och erbjuder ett rikt urval av metoder för sökning, ersättning, delsträngar och transformation, samt stöd för stränginterpolation med 's\"...\"'.",
-      enLongExplanation = "A string (String) is an immutable sequence of Unicode characters; in Scala String is an alias for java.lang.String and offers a rich set of methods for searching, replacing, substrings, and transformation, as well as support for string interpolation with 's\"...\"'.",
+      svLongExplanation = "En sträng  är en oföränderlig sekvens av Unicode-tecken; i Scala är String ett alias för java.lang.String och erbjuder ett rikt urval av metoder för sökning, ersättning, delsträngar och transformation.",
+      enLongExplanation = "A string is an immutable sequence of Unicode characters; in Scala String is an alias for java.lang.String and offers a rich set of methods for searching, replacing, substrings, and transformation.",
     )
     val StructuralEquality = Concept(
       sv = "innehållslikhet",
@@ -930,6 +948,14 @@ object explain:
       enShortExplanation = "has supertype AnyVal, stored directly on the stack",
       svLongExplanation = "En värdetyp är en typ vars instanser lagras direkt på stacken eller inline i ett objekt och kopieras vid tilldelning; i Scala är Int, Double, Boolean, Char m.fl. värdetyper med supertypen AnyVal och boxas automatiskt till objekt vid behov.",
       enLongExplanation = "A value type is a type whose instances are stored directly on the stack or inline in an object and copied on assignment; in Scala Int, Double, Boolean, Char, etc. are value types with supertype AnyVal and are automatically boxed to objects when needed.",
+    )
+    val Variable = Concept(
+      sv = "variabel",
+      en = "variable",
+      svShortExplanation = "kan initialiseras, refereras och eventuellt ändras med tilldelning",
+      enShortExplanation = "can be initialized, referenced, and optionally changed by assignment",
+      svLongExplanation = "En variabel används för att ge datavärden ett namn. I de delar av koden där variabeln är synlig kan värdet refereras via variabelns namn. En variable deklareras med val eller var och ges då ett initialvärde. En val-variabel är oföränderlig och kan ej ändras efter initialisering medan en var-variabel kan tilldelas nya värden efter initialisering genom tilldelning.",
+      enLongExplanation = "A variable is used to give data values a name. In the parts of the code where the variable is visible, the value can be referred to by the variable name. A variable is declared with val or var and given an initial value. A val variable is immutable and cannot be changed after initialization, while a var variable can be assigned new values after initialization.",
     )
     val Vector = Concept(
       sv = "Vector",
