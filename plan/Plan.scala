@@ -5,7 +5,7 @@ trait Plan:
     name:     String,
     id:       String,
     exercise: String,
-    lab:      String,
+    labs:     Seq[String],
     contents: String,
   )
 
@@ -21,7 +21,7 @@ trait Plan:
     * flytta dod:latex till projektet och kräv en enkel rapport om iterativa arbetet och lärdomar med debugging etc
   */
     Module("Introduktion",
-      id = "intro", exercise = "expressions", lab = "kojo", contents = """
+      id = "intro", exercise = "expressions", labs = Seq("kojo", "linux"), contents = """
       | sekvens, alternativ, repetition, abstraktion, editera, kompilera, exekvera, datorns delar,
       | virtuell maskin,
       | litteral, värde, uttryck, identifierare, variabel, typ, tilldelning, namn, val, var, def,
@@ -31,19 +31,19 @@ trait Plan:
       | aritmetik, slumptal, logiska uttryck, de Morgans lagar, if, true, false, while, for, dod: operativsystem
       """.stripTrim),
 
-    Module("Program och kontrollstrukturer",
-      id = "programs", exercise = "programs", lab = "", contents = """
+    Module("Program, kontrollstrukturer, maskinkod",
+      id = "programs", exercise = "programs", labs = Seq("cpu"), contents = """
       | huvudprogram, program-argument, indata, scala.io.StdIn.readLine,
       | kontrollstruktur,
       | iterera över element i samling, for-uttryck, yield, map, foreach,
       | samling, sekvens, indexering, Array, Vector,
       | intervall, Range,
       | algoritm, implementation, pseudokod,
-      | algoritmexempel: SWAP, SUM, MIN-MAX, MIN-INDEX, dod: versionshantering
+      | algoritmexempel: SWAP, SUM, MIN-MAX, MIN-INDEX, dod: maskinkod
       """.stripTrim),
 
     Module("Funktioner och abstraktion",
-      id = "functions", exercise = "functions", lab = "irritext", contents = """
+      id = "functions", exercise = "functions", labs = Seq("irritext"), contents = """
       | abstraktion, funktion,
       | parameter, argument, returtyp, default-argument,
       | namngivna argument, parameterlista, funktionshuvud, funktionskropp,
@@ -55,11 +55,11 @@ trait Plan:
       | värdeandrop, namnanrop, 
       | klammerparentes och kolon vid ensam parameter, 
       | rekursion,
-      | scala.util.Random, slumptalsfrö, dod: typsättning
+      | scala.util.Random, slumptalsfrö
       """.stripTrim),
 
     Module("Objekt och inkapsling",
-      id = "objects", exercise = "objects", lab = "blockmole", contents = """
+      id = "objects", exercise = "objects", labs = Seq("blockmole"), contents = """
       | modul, singelobjekt, punktnotation, tillstånd, medlem, attribut, metod,
       | paket, filstruktur, jar, classpath, dokumentation, JDK,
       | import, selektiv import, namnbyte vid import, export,
@@ -72,11 +72,11 @@ trait Plan:
       | överlagring av metoder,
       | introprog.PixelWindow,
       | initialisering, lazy val,
-      | typalias, dod: maskinkod
+      | typalias
       """.stripTrim),
 
     Module("Klasser och datamodellering",
-      id = "classes", exercise = "classes", lab = "blockbattle0", contents = """
+      id = "classes", exercise = "classes", labs = Seq("blockbattle0"), contents = """
       | applikationsdomän, datamodell, objektorientering, klass, instans, 
       | Any, isInstanceOf, toString,
       | new, null, this,
@@ -88,7 +88,7 @@ trait Plan:
       """.stripTrim),
 
     Module("Mönster och felhantering",
-      id = "patterns", exercise = "patterns", lab = "blockbattle1", contents = """
+      id = "patterns", exercise = "patterns", labs = Seq("blockbattle1"), contents = """
       | mönstermatchning, match, Option, throw, try, catch, Try, unapply, sealed,
       | flatten, flatMap, partiella funktioner, collect,
       | wildcard-mönster, variabelbindning i mönster, sekvens-wildcard, bokstavliga mönster,
@@ -97,7 +97,7 @@ trait Plan:
 
 
     Module("Sekvenser och enumerationer",
-      id = "sequences", exercise = "sequences", lab = "shuffle", contents = """
+      id = "sequences", exercise = "sequences", labs = Seq("shuffle"), contents = """
       | översikt av Scalas samlingsbibliotek och samlingsmetoder,
       | klasshierarkin i scala.collection, Iterable,
       | Seq, List, ListBuffer, ArrayBuffer, WrappedArray,
@@ -112,25 +112,25 @@ trait Plan:
       | repeterade parametrar,
       """.stripTrim),
 
-    Module("--", id = "", exercise = "", lab = "", contents = "".stripTrim),
+    Module("--", id = "", exercise = "", labs = Seq(), contents = "".stripTrim),
 
-    Module("Nästlade och generiska strukturer",
-      id = "matrices", exercise = "matrices", lab = "life", contents = """
+    Module("Nästlade och generiska strukturer, typsättning",
+      id = "matrices", exercise = "matrices", labs = Seq("life", "latex"), contents = """
       | matris, nästlad samling, nästlad for-sats,
       | typparameter, generisk funktion, generisk klass, fri och bunden typparameter,
-      | generiska datastrukturer, generiska samlingar i Scala,
+      | generiska datastrukturer, generiska samlingar i Scala, dod: typsättning
       """.stripTrim),
 
-    Module("Mängder och tabeller",
-    id = "setmap", exercise = "lookup", lab = "words", contents = """
+    Module("Mängder och tabeller, versionshantering",
+    id = "setmap", exercise = "lookup", labs = Seq("words", "git"), contents = """
     | innehållstest, mängd, Set, mutable.Set,
     | nyckel-värde-tabell, Map, mutable.Map,
     | hash code, java.util.HashMap, java.util.HashSet,
-    | persistens, serialisering, textfiler, Source.fromFile, java.nio.file,
+    | persistens, serialisering, textfiler, Source.fromFile, java.nio.file, dod: versionshantering
     """.stripTrim),
 
     Module("Arv och komposition", 
-      id = "inheritance", exercise = "inheritance", lab = "snake0", contents = """
+      id = "inheritance", exercise = "inheritance", labs = Seq("snake0"), contents = """
       | arv, komposition, polymorfism, trait, extends, asInstanceOf, with, inmixning
       | supertyp, subtyp, bastyp, override,
       | Scalas typhierarki, Any, AnyRef, Object, AnyVal, Null, Nothing,
@@ -140,26 +140,26 @@ trait Plan:
       """.stripTrim),
 
     Module("Varians och kontextparametrar",
-      id = "context", exercise = "context", lab = "snake1", contents = """
+      id = "context", exercise = "context", labs = Seq("snake1"), contents = """
       | övre- och undre typgräns, varians, kontravarians, kovarians, typjoker, kontextgräns, typkonstruktor, egentyp, typjoker,
       | givet värde (given), kontextparameter (using), ad hoc polymorfism,  typklass,
       | api, kodläsbarhet, granskningar
       """.stripTrim),
 
     Module("Fördjupning, Projekt",
-        id = "extra", exercise = "extra", lab = "project0", contents = """
+        id = "extra", exercise = "extra", labs = Seq("project0"), contents = """
         | välj valfritt fördjupningsområde, påbörja projekt,
         """.stripTrim),
         //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
-    Module("Repetition", id = "examprep", exercise = "examprep", lab = "project1", 
+    Module("Repetition", id = "examprep", exercise = "examprep", labs = Seq("project1"), 
       contents = "träna på extentor, redovisa projekt, träna inför muntligt prov"),
 
     Module("MUNTLIGT PROV",
-      id = "munta", exercise = "Munta", lab = "Munta", contents = """
+      id = "munta", exercise = "Munta", labs = Seq("Munta"), contents = """
       """.stripTrim),
 
-    Module(name = "VALFRI TENTAMEN", id = "", exercise = "", lab = "", contents = "")
+    Module(name = "VALFRI TENTAMEN", id = "", exercise = "", labs = Seq(), contents = "")
   )
 
   lazy val contentsOfModule: Map[String, String] =
@@ -176,8 +176,8 @@ trait Plan:
   }
 
   lazy val lecturesOfWeek =
-    Vector("F01 F02","F03 F04","F05 F06","F07 F08","F09 F10", "F11 F12", "F13 F14", "--") ++
-    Vector("F15 F16","F17 F18","F19 F20","F21 F22","F23 F24", "F25 F26", "--", "--")
+    Vector("P01 P02 D1","P03 P04 D2","P05 P06","P07 P08","P09 P10", "P11 P12", "P13 P14", "--") ++
+    Vector("P15 P16 D3","P17 P18 D4","P19 P20","P21 P22","P23 P24", "P25 P26", "--", "--")
 
   lazy val exerciseNumOfWeek =
     ( "Övn01,Övn02,Övn03,Övn04,Övn05,Övn06,Övn07,--," +
@@ -190,20 +190,20 @@ trait Plan:
   }
 
   lazy val labNumOfWeek =
-    "Lab01,--,Lab02,Lab03,Lab04,Lab05,Lab06,--,Lab7,Lab08,Lab09,Lab10,Projekt0,Projekt1,Munta,--,--"
+    "LabProg01+LabDod01,LabDod01,LabProg02,LabProg03,LabProg04,LabProg05,LabProg06,--,LabProg7+LabDod03,LabProg08+LabDod04,LabProg09,LabProg10,Projekt0,Projekt1,--,--,--"
       .split(',').toVector
 
   lazy val labOfWeek = for (w <- 0 until labNumOfWeek.size) yield {
-    if labNumOfWeek(w).startsWith("L") && modules(w).lab != "" then
-      modules(w).lab
+    if labNumOfWeek(w).startsWith("L") && modules(w).labs.nonEmpty then
+      modules(w).labs.mkString(", ")
     else labNumOfWeek(w)
   }
 
-  lazy val startLp1 = Date(2025, 9, 1)
+  lazy val startLp1 = Date(2026, 8, 31)
 
-  lazy val startLp2 = Date(2025, 11, 3)
+  lazy val startLp2 = Date(2026, 11, 2)
 
-  lazy val tentadatum = Date(2025, 1, 7)
+  lazy val tentadatum = Date(2027, 1, 7)
 
   def weeksOf(date: Date, n: Int): Seq[String] =
     for (week <- 0 until n) yield date.addDays(week*7).workWeek

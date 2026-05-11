@@ -220,7 +220,11 @@
 %https://tex.stackexchange.com/questions/1111/problem-with-defining-shortcuts-for-tikz-matrices
 }
 
+\newcommand{\enquote}[1]{''#1''}
+\newcommand{\commandchar}[1]{\textsc{#1}}
+\newcommand{\file}[1]{\texttt{#1}}
 
+%% BEGIN stuff from introprog-computer-intro/dodlabs.txt
 \newenvironment{Goals}%
 {\subsubsection{Mål}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
@@ -229,9 +233,59 @@
 {\subsubsection{Förberedelser}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
+\newenvironment{Kontrollfragor}%
+{\subsubsection{Kontrollfragor}\begin{itemize}[nosep, label={$\square$},]}%
+{\end{itemize}}
+
+\newenvironment{Extrauppgifter}%
+{\begin{enumerate}}{\end{enumerate}}
+
+\newenvironment{Datorarbete}%
+{\begin{enumerate}}{\end{enumerate}}
+
+
+\newenvironment{Deluppgifter}%
+{\begin{enumerate}[nosep]}{\end{enumerate}}
+
+
 \newenvironment{Background}%
 {\begin{adjustwidth}{\parindent}{}\small \emph{Bakgrund:}}%
 {\end{adjustwidth}}
+
+\usepackage{pifont}   % Provides the star symbols
+
+\newcommand{\stars}[1]{%
+  \ifnum#1>0 \ding{72}\else \ding{73}\fi
+  \ifnum#1>1 \ding{72}\else \ding{73}\fi
+  \ifnum#1>2 \ding{72}\else \ding{73}\fi
+  \ifnum#1>3 \ding{72}\else \ding{73}\fi
+  \ifnum#1>4 \ding{72}\else \ding{73}\fi
+}
+
+% Blockvariant (som tidigare)
+\newcommand{\difficulty}[2][]{%
+  \emph{Svårighet:} \stars{#2}%
+  \ifx\relax#1\relax \else \hspace{3mm}(\textit{#1})\fi
+  %\par%
+  \noindent
+}
+
+% Inline-variant för löpande text
+\newcommand{\diffinline}[2][]{%
+  \stars{#2}%
+  \ifx\relax#1\relax \else \,(\textit{#1})\fi
+}
+
+\newcommand{\halfblankline}{\vspace{0.5em}}
+\newcommand{\blankline}{\vspace{1.0em}}
+
+
+
+% Define the hint command
+\newcommand{\hint}[2][]{\par\halfblankline\noindent\textbf{Ledtråd\ifx#1\empty\else\space#1\fi}: #2\par}
+
+%% END stuff from introprog-computer-intro/dodlabs.txt
+
 
 \newcommand{\vecka}{1}%renew this command in chapter.tex files
 

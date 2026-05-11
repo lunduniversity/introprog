@@ -1,18 +1,18 @@
-| W   | Datum       | Lp V  | Modul                             | Förel   | Övn         | Lab          |
-|:----|:------------|:------|:----------------------------------|:--------|:------------|:-------------|
-| W01 | 1/9-5/9     | Lp1V1 | Introduktion                      | F01 F02 | expressions | kojo         |
-| W02 | 8/9-12/9    | Lp1V2 | Program och kontrollstrukturer    | F03 F04 | programs    | --           |
-| W03 | 15/9-19/9   | Lp1V3 | Funktioner och abstraktion        | F05 F06 | functions   | irritext     |
-| W04 | 22/9-26/9   | Lp1V4 | Objekt och inkapsling             | F07 F08 | objects     | blockmole    |
-| W05 | 29/9-3/10   | Lp1V5 | Klasser och datamodellering       | F09 F10 | classes     | blockbattle0 |
-| W06 | 6/10-10/10  | Lp1V6 | Mönster och felhantering          | F11 F12 | patterns    | blockbattle1 |
-| W07 | 13/10-17/10 | Lp1V7 | Sekvenser och enumerationer       | F13 F14 | sequences   | shuffle      |
-| TP  | --          | TP1   | --                                | --      | --          | --           |
-| W08 | 3/11-7/11   | Lp2V1 | Nästlade och generiska strukturer | F15 F16 | matrices    | life         |
-| W09 | 10/11-14/11 | Lp2V2 | Mängder och tabeller              | F17 F18 | lookup      | words        |
-| W10 | 17/11-21/11 | Lp2V3 | Arv och komposition               | F19 F20 | inheritance | snake0       |
-| W11 | 24/11-28/11 | Lp2V4 | Varians och kontextparametrar     | F21 F22 | context     | snake1       |
-| W12 | 1/12-5/12   | Lp2V5 | Fördjupning, Projekt              | F23 F24 | extra       | Projekt0     |
-| W13 | 8/12-12/12  | Lp2V6 | Repetition                        | F25 F26 | examprep    | Projekt1     |
-| W14 | 15/12-19/12 | Lp2V7 | MUNTLIGT PROV                     | --      | Munta       | Munta        |
-| TP  | 7/1         | TP2   | VALFRI TENTAMEN                   | --      | --          | --           |
+| W   | Datum       | Lp V  | Modul | Förel      | Övn         | Lab          |
+|:----|:------------|:------|:--|:-----------|:------------|:-------------|
+| W01 | 31/8-4/9    | Lp1V1 | Introduktion | P01 P02 D1 | expressions | kojo, linux  |
+| W02 | 7/9-11/9    | Lp1V2 | Program, kontrollstrukturer, maskinkod | P03 P04 D2 | programs    | cpu          |
+| W03 | 14/9-18/9   | Lp1V3 | Funktioner och abstraktion | P05 P06    | functions   | irritext     |
+| W04 | 21/9-25/9   | Lp1V4 | Objekt och inkapsling | P07 P08    | objects     | blockmole    |
+| W05 | 28/9-2/10   | Lp1V5 | Klasser och datamodellering | P09 P10    | classes     | blockbattle0 |
+| W06 | 5/10-9/10   | Lp1V6 | Mönster och felhantering | P11 P12    | patterns    | blockbattle1 |
+| W07 | 12/10-16/10 | Lp1V7 | Sekvenser och enumerationer | P13 P14    | sequences   | shuffle      |
+| TP  | --          | TP1   | -- | --         | --          | --           |
+| W08 | 2/11-6/11   | Lp2V1 | Nästlade och generiska strukturer, typsättning | P15 P16 D3 | matrices    | life, latex  |
+| W09 | 9/11-13/11  | Lp2V2 | Mängder och tabeller, versionshantering | P17 P18 D4 | lookup      | words, git   |
+| W10 | 16/11-20/11 | Lp2V3 | Arv och komposition | P19 P20    | inheritance | snake0       |
+| W11 | 23/11-27/11 | Lp2V4 | Varians och kontextparametrar | P21 P22    | context     | snake1       |
+| W12 | 30/11-4/12  | Lp2V5 | Fördjupning, Projekt | P23 P24    | extra       | Projekt0     |
+| W13 | 7/12-11/12  | Lp2V6 | Repetition | P25 P26    | examprep    | Projekt1     |
+| W14 | 14/12-18/12 | Lp2V7 | MUNTLIGT PROV | --         | Munta       | --           |
+| TP  | 7/1         | TP2   | VALFRI TENTAMEN | --         | --          | --           |

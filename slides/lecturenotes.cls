@@ -13,6 +13,7 @@
 \usepackage{xcolor}
 
 \definecolor{mygreen}{rgb}{0,0.5,0}
+\definecolor{dodblue}{rgb}{0.15,0.35,0.9}
 \definecolor{mylinkcolor}{rgb}{0,0,0.6}
 \definecolor{myemphcolor}{rgb}{0,0.5,0.1}
 \definecolor{myalertcolor}{rgb}{0.7,0,0.1}
@@ -90,6 +91,9 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 %UML definitions
 \tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3cm, rectangle split, rectangle split parts = 3]
 \tikzstyle{umlarrow}=[->, >=open triangle 90, thick]
+
+\usepackage{forest}  % used by w01-lecture-dod-os.tex
+
 
 \newenvironment{Slide}[2][]
   {\begin{frame}[fragile,environment=Slide,#1]{#2}}
