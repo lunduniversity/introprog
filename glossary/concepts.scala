@@ -9,7 +9,7 @@ object explain:
       BaseType, Block, Boolean, 
       CallByName, CallByValue,
       CaseClass, Class, ClassParameter, Collection, CollectionLibrary, Column, ColumnVector,
-      CompanionObject, Compile, Compiler, CompileError, Computer, Constructor, 
+      CompanionObject, Compile, Compiler, CompileError, Computer, ControlStructure, Constructor, 
       DataStructure,
       DefaultArgument, Deserialize, DotNotation, DynamicBinding, 
       Element, Export, Expression,
@@ -244,6 +244,14 @@ object explain:
       enShortExplanation = "can occur before execution has started",
       svLongExplanation = "Ett kompileringsfel uppstår när kompilatorn inte kan tolka eller typkontrollera koden och avbryter kompileringen med ett felmeddelande som anger plats och orsak; kompileringsfel måste åtgärdas innan programmet kan köras.",
       enLongExplanation = "A compile error occurs when the compiler cannot parse or type-check the code and aborts compilation with an error message indicating the location and cause; compile errors must be fixed before the program can be run.",
+    )
+    val ControlStructure = Concept(
+      sv = "kontrollstruktur",
+      en = "control structure",
+      svShortExplanation = "kan ge alternativa vägar genom koden",
+      enShortExplanation = "can give alternative paths through the code",
+      svLongExplanation = "En kontrollstruktur kan ge alternativa vägar genom koden. Exempel på kontrollstrukturer är if-uttryck för logiska val, for-uttryck för att gå igenom sekvenser, och while-satser för att repetera kod så länge ett villkor är uppfyllt.",
+      enLongExplanation = "A control structure can provide alternative paths through the code. Examples include if-expressions for logical decisions, for-expressions for iterating sequences, and while-loops for repeating code as long as a condition holds.",
     )
     val Constructor = Concept(
       sv = "konstruktor",
