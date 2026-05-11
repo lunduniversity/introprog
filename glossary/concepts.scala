@@ -480,10 +480,10 @@ object explain:
     val Mixin = Concept(
       sv = "inmixning",
       en = "mixin",
-      svShortExplanation = "tillföra egenskaper med with och en trait",
+      svShortExplanation = "tillföra flera egenskaper genom arv av trait",
       enShortExplanation = "adding features using with and a trait",
-      svLongExplanation = "Inmixning innebär att man utökar en klass eller ett objekt med egenskaperna hos en eller flera traits; detta möjliggör återanvändning av kodegenskaper utan klassarv och stöder ett slags multipelt arv av beteenden.",
-      enLongExplanation = "Mixin means extending a class or object with the properties of one or more traits; this enables reuse of code properties without class inheritance and supports a form of multiple inheritance of behaviors.",
+      svLongExplanation = "Inmixning innebär att man utökar en klass eller ett objekt med egenskaperna hos en eller flera traits; detta möjliggör återanvändning av kodegenskaper och stöder ett slags multipelt arv av beteenden.",
+      enLongExplanation = "Mixin means extending a class or object with the properties of one or more traits; this enables reuse of code properties and supports a form of multiple inheritance of behaviors.",
     )
     val Module = Concept(
       sv = "modul",
