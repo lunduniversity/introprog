@@ -1,3 +1,4 @@
+package glossary
 import StringExtras._
 object Main {
   val currentDir = java.nio.file.Paths.get("").toAbsolutePath.toString
@@ -7,13 +8,14 @@ object Main {
 
   val quizConceptsFile = s"${inputPrefix}quiz/quiz-concepts.tsv"
   val conceptsFile = s"${outputPrefix}concepts-generated"
+  val explanationsFile = s"${outputPrefix}explanations-generated.tex"
 
   val Begr  = "Begrepp"
   val Beskr = "Beskrivning"
 
   def main(args: Array[String]): Unit = {
     println(s"""
-      |*** GENERATING GLOSSARY
+      |*** GENERATING GLOSSARY based on quiz data
       |  current directory: $currentDir
       |  input file:        $quizConceptsFile
       |""".stripMargin
@@ -25,5 +27,11 @@ object Main {
     table.toMarkdown.save(s"$conceptsFile.md")
     table.toHtml.save(s"$conceptsFile.html")
     table.toLatex.save(s"$conceptsFile.tex")
+
+    println(s"""Generating explanations""")
+    extension (s: String) def toWord = s.filter(_.isLetter).toLowerCase.capitalize
+    val rows = explain.allConcepts.map: c =>
+      s"""\\newcommand{\\Explain${c.en.toWord}}{${c.svLongExplanation.wrapConcept(c.sv)}}"""
+    rows.mkString("\n").save(explanationsFile)
   }
 }

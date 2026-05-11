@@ -1,8 +1,24 @@
-object StringExtras {
+package glossary 
+
+object StringExtras:
   import java.nio.file.{Paths, Files}
   import java.nio.charset.StandardCharsets.UTF_8
 
-  implicit class StringDecorator(s: String) {
+  extension (s: String) 
+    def wrapConcept(
+      concept: String, 
+      pre: String = "\\textbf{", 
+      post: String = "}", 
+      capitalStart: Boolean = true
+    ) =
+      val i = s.toLowerCase.indexOf(concept.toLowerCase())
+      if i < 0 then s else 
+        val (start, end) = (s.substring(0, i), s.substring(i + concept.length))
+        val wrapped = if start.length == 0 && capitalStart then concept.capitalize else concept
+        s"$start$pre$wrapped$post$end"
+
+
+
     def stripTrim: String =
       s.stripMargin.trim.filter(_ != '\n').split(',').map(_.trim).mkString(", ")
 
@@ -31,5 +47,4 @@ object StringExtras {
       }
       result
     }
-  }
-}
+

@@ -1,7 +1,9 @@
+package glossary
+
 object explain:
-  case class Concept(sv: String, en: String, svShortExplanation: String, enShortExplanation: String, svLongExplanation: String, enLongExplanation: String)
-  object Concept:
-    lazy val allConcepts: Seq[Concept] = scala.collection.immutable.ArraySeq(
+  lazy val allConcepts: Seq[Concept] = 
+    import Concept.*
+    scala.collection.immutable.ArraySeq(
       Abstract, AbstractClass, AbstractMember, Algorithm, AnonymousClass, AnonymousFunction,
       Array, Assignment, Attribute, BaseType, Block, Boolean, CallByName, CallByValue,
       CaseClass, Class, ClassParameter, Collection, CollectionLibrary, Column, ColumnVector,
@@ -20,6 +22,10 @@ object explain:
       Trait, Type, TypeAlias, TypeArgument, TypeInference, UniformAccess, ValueType, Vector,
       WhileStatement, Yield,
     )
+
+  case class Concept(sv: String, en: String, svShortExplanation: String, enShortExplanation: String, svLongExplanation: String, enLongExplanation: String)
+
+  object Concept:
 
     val Abstract = Concept(
       sv = "abstrahera",
@@ -140,6 +146,14 @@ object explain:
       enShortExplanation = "no need to write new; automatic structural equality",
       svLongExplanation = "En case-klass genererar automatiskt ett kompanjonsobjekt med apply-metod (slipper 'new'), equals och hashCode baserade på fältinnehåll, en läsbar toString, en copy-metod för att skapa modifierade kopior, samt stöd för mönstermatchning med unapply.",
       enLongExplanation = "A case class automatically generates a companion object with an apply method (no need for 'new'), equals and hashCode based on field contents, a readable toString, a copy method for creating modified copies, and support for pattern matching with unapply.",
+    )
+    val Computer = Concept(
+      sv = "dator",
+      en = "computer",
+      svShortExplanation = "en elektronisk enhet som behandlar data enligt instruktioner",
+      enShortExplanation = "an electronic device that processes data using instructions",
+      svLongExplanation = "En dator är en elektronisk enhet som behandlar data enligt lagrade instruktioner, och utför beräkningar, minnesmanipulationer och logiska operationer för att lösa problem eller utföra uppgifter. En dator består av ev en centralprocessorenhet (CPU), in- och utdataenheter, samt ett minne som lagrar instruktioner och data representerade som heltal",
+      enLongExplanation = "A computer is an electronic device that processes data following stored instructions, performing calculations, memory manipulations, and logical operations to solve problems or execute tasks. A computer consists of a central processing unit (CPU), input and output devices, and a memory that stores instructions and data represented as integers.",
     )
     val Class = Concept(
       sv = "klass",

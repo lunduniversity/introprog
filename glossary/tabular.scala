@@ -1,3 +1,5 @@
+package glossary
+
 object Table {
   type Row    = Seq[String]
   type RowMap = Map[String, String]
