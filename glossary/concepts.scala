@@ -738,8 +738,8 @@ object explain:
       en = "runtime error",
       svShortExplanation = "kan inträffa medan programmet kör",
       enShortExplanation = "can occur while the program is running",
-      svLongExplanation = "Ett exekveringsfel, även kallat körtidsfel, inträffar medan programmet körs, t.ex. ArrayIndexOutOfBoundsException vid felaktigt index eller division med noll; det leder vanligtvis till att programmet avslutas med ett felmeddelande och en stack trace.",
-      enLongExplanation = "A runtime error occurs while the program is running, e.g. ArrayIndexOutOfBoundsException from an invalid index or NullPointerException from dereferencing null; it typically causes the program to terminate with an error message and a stack trace.",
+      svLongExplanation = "Ett exekveringsfel, även kallat körtidsfel, inträffar medan programmet körs, t.ex. ArithmeticException vid division med noll eller IndexOutOfBoundsException vid felaktigt index; det leder vanligtvis till att programmet avslutas med ett felmeddelande och en stack trace.",
+      enLongExplanation = "A runtime error occurs while the program is running, e.g. ArithmeticException when dividing by zero IndexOutOfBoundsException from an invalid index; it typically causes the program to terminate with an error message and a stack trace.",
     )
     val RuntimeType = Concept(
       sv = "körtidstyp",
