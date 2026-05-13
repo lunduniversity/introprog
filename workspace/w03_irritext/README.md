@@ -14,9 +14,9 @@ Notera punkt efter blanktecken. Punkten representerar aktuell katalog.
 
 Det finns en "magisk kommentar" i `irritext.scala` som börjar med `//>` och ser ut så här:
 
-    //> using scala 3.7.2
+    //> using scala 3.8.3
 
 Den anger vilken version av Scala-kompilatorn som ska användas. 
 Du kan också ange Scala-version direkt i terminalen så här:
 
-    scala run . --scala 3.7.2
+    scala run . --scala 3.8.3

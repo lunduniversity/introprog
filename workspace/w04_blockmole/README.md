@@ -5,7 +5,7 @@ https://fileadmin.cs.lth.se/pgk/compendium.pdf
 
 Om du försöker köra filen `hello-window.scala` med `scala run .` så får du följande felmeddelande:
 ```
-Compiling project (Scala 3.7.2, JVM)
+Compiling project (Scala 3.8.3, JVM)
 [error] ./hello-window.scala:4:8
 [error] Not found: introprog
 [error] import introprog.PixelWindow
@@ -14,7 +14,7 @@ Compiling project (Scala 3.7.2, JVM)
 [error] Not found: introprog
 [error]   introprog.examples.TestPixelWindow.main(Array())
 [error]   ^^^^^^^^^
-Error compiling project (Scala 3.7.2, JVM)
+Error compiling project (Scala 3.8.3, JVM)
 Compilation failed
 ```
 

@@ -110,7 +110,7 @@ Det räcker fint med Windows Terminal för att köra alla kursens verktyg i cmd 
       ```
 
 * Starta om din dator.
-* Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3". Om du får `[warning] MainGenericRunner` skriv `cs install scala:3.7.2` och sedan ska `scala --version` fungera utan varning.
+* Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3". Om du får `[warning] MainGenericRunner` skriv `cs install scala:3.8.3` och sedan ska `scala --version` fungera utan varning.
 * Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "EDITOR"
 * Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
 
@@ -297,7 +297,7 @@ sudo apt install openjdk-21-jdk openjdk-21-doc openjdk-21-source
 
 * Svara med stort Y för ja på eventuell fråga om att addera coursier till din path.
 * Starta om din dator.
-* Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3". Om du får `[warning] MainGenericRunner` skriv `cs install scala:3.7.2` och sedan ska `scala --version` fungera utan varning.
+* Testa att skriva `scala --version` i ett nytt terminalfönster och om allt gått bra så ska du få en utskrift som börjar med "Scala code runner version 3". Om du får `[warning] MainGenericRunner` skriv `cs install scala:3.8.3` och sedan ska `scala --version` fungera utan varning.
 * Installera VS Code med tillägget "Scala (Metals)" enligt instruktioner längre ner under rubriken "EDITOR"
 * Installera Kojo enligt instruktioner längre ner under rubriken "KOJO"
 
