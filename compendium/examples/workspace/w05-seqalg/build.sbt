@@ -1,3 +1,3 @@
-scalaVersion := "3.7.2"
+scalaVersion := "3.8.3"
 Compile/scalaSource := baseDirectory.value / "src"
 unmanagedBase := baseDirectory.value / "../../../../lib/"
