@@ -116,6 +116,9 @@
 \tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3cm, rectangle split, rectangle split parts = 3]
 \tikzstyle{umlarrow}=[->, >=open triangle 90, thick]
 
+\usepackage{forest}  % used by w01-lecture-dod-os.tex
+
+
 \newcommand{\TODO}{\colorbox{red!70}{TODO!!!}~}
 \newcommand{\StudyTheory}[1]{Studera begreppen i kapitel \ref{chapter:W#1}}
 \newcommand{\DoExercise}[2]{Gör övning {\tt #1} i avsnitt \ref{exe:W#2}}
