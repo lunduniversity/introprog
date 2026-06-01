@@ -55,5 +55,7 @@ object FindHeadings:
       println(Console.YELLOW + s"Cannot copy file to missing dir $dest \n  clone bjornregnell/muntabot" + Console.RESET)
   } match
     case util.Failure(exception) => println(Console.RED + s"Failed to generate headings: $exception" + Console.RESET)
-    case util.Success(_) => println(Console.GREEN + "OK! Successful Headings generation done!" + Console.RESET)
+    case util.Success(_) => 
+      println(Console.GREEN + "OK! Successful Headings generation done!" + Console.RESET)
+      println(Console.YELLOW + "TODO: Rebuild with muntabot/publish.sh" + Console.RESET)
   

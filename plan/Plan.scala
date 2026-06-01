@@ -32,7 +32,7 @@ trait Plan:
       """.stripTrim),
 
     Module("Program, kontrollstrukturer, maskinkod",
-      id = "programs", exercise = "programs", labs = Seq("cpu"), contents = """
+      id = "programs", exercise = "programs", labs = Seq("", "c3pu"), contents = """
       | huvudprogram, program-argument, indata, scala.io.StdIn.readLine,
       | kontrollstruktur,
       | iterera över element i samling, for-uttryck, yield, map, foreach,
@@ -190,7 +190,7 @@ trait Plan:
   }
 
   lazy val labNumOfWeek =
-    "LabProg01+LabDod01,LabDod01,LabProg02,LabProg03,LabProg04,LabProg05,LabProg06,--,LabProg7+LabDod03,LabProg08+LabDod04,LabProg09,LabProg10,Projekt0,Projekt1,--,--,--"
+    "LabProg01+LabDod01,LabDod02,LabProg02,LabProg03,LabProg04,LabProg05,LabProg06,--,LabProg7+LabDod03,LabProg08+LabDod04,LabProg09,LabProg10,Projekt0,Projekt1,--,--,--"
       .split(',').toVector
 
   lazy val labOfWeek = for (w <- 0 until labNumOfWeek.size) yield {

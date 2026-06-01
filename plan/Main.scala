@@ -79,7 +79,7 @@ def nameDefRow(week: Int, modName: String, labName: String, exeName: String) =
     |\\newcommand{\\ExeWeek${weekNumAlpha(week)}}{$exeName}
     |""".stripMargin
 
-    val dodLabs = Set("linux", "cpu", "latex", "git")
+    val dodLabs = Set("linux", "c3pu", "latex", "git")
 
     val labRows = 
       val labNames = labName.split(",").toSeq.map(_.trim)
