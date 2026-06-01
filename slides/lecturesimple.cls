@@ -284,6 +284,7 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 }{}
 
 
+
 \lstnewenvironment{Code}[1][]{%
     \lstset{basicstyle=\ttfamily\fontsize{7}{9}\selectfont\color{black},#1}%
 }{}
@@ -333,6 +334,40 @@ tabsize=2,#1]{#2}}
 \newcommand{\javainputlisting}[2][]{\lstinputlisting[%
 language=Java,%
 tabsize=4,#1]{#2}}
+
+% Definiera färger för syntaxfärgläggning i latex-kod
+\definecolor{latexkeywordcolor}{rgb}{0.3, 0.3, 0.9}
+\definecolor{latexcommentcolor}{rgb}{0.9, 0.7, 0.1}
+
+
+% Definierar en specifik stil för LaTeX-kodexempel
+\lstdefinestyle{latexex}{
+    language=[LaTeX]TeX,
+    morekeywords={begin,end,documentclass,usepackage,author,title,date,maketitle,frame,includegraphics,centering,tableofcontents,section,subsection,subsubsection,paragraph,subparagraph,itemize,enumerate,description,figure,table,tabular,centering,includegraphics,resizebox,rotatebox,subfigure,subtable,subfloat,subcaption,subref,ref,eqref,label,footnote,cite,printbibliography,printindex,printglossary,printglossaries},
+    breaklines=true,                   % Aktiverar automatisk radbrytning
+    breakatwhitespace=true,            % Radbrytning vid mellanslag
+    basicstyle=\ttfamily\scriptsize,   % Grundstil för koden
+    keywordstyle=\color{latexkeywordcolor}, % Färg för nyckelord
+    commentstyle=\color{latexcommentcolor}, % Färg för kommentarer
+    showstringspaces=false             % Visar inte mellanslag inom strängar
+    xleftmargin=0pt,                   % Ingen marginal till vänster
+    xrightmargin=0pt,                  % Ingen marginal till höger
+    breakautoindent=true,             % Ingen indragning vid radbrytning
+    breakindent=0pt,                   % Ingen indragning vid radbrytning
+    frame=none,                        % Ram runt koden
+    columns=fullflexible,              % Flexibel kolumnbredd
+    resetmargins=true,                 % Återställ marginaler
+    aboveskip=0pt,                     % Avstånd ovanför kod
+    belowskip=0pt,                     % Avstånd under kod
+    framexleftmargin=0pt,              % Ingen marginal till vänster om ramen
+    framesep=0pt,                      % Ingen marginal runt ramen
+    rulesep=0pt,                       % Ingen marginal runt regeln
+    keepspaces=true,                   % Behåll mellanslag
+}
+
+\lstnewenvironment{exlatex}[1][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{7}{9}\selectfont,style=latexex,#1}%
+}{}
 
 \newif\ifkompendium
 \kompendiumfalse
