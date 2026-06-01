@@ -32,7 +32,7 @@ trait Plan:
       """.stripTrim),
 
     Module("Program, kontrollstrukturer, maskinkod",
-      id = "programs", exercise = "programs", labs = Seq("", "c3pu"), contents = """
+      id = "programs", exercise = "programs", labs = Seq("c3pu"), contents = """
       | huvudprogram, program-argument, indata, scala.io.StdIn.readLine,
       | kontrollstruktur,
       | iterera över element i samling, for-uttryck, yield, map, foreach,
