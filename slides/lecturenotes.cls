@@ -92,6 +92,55 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
 \tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3cm, rectangle split, rectangle split parts = 3]
 \tikzstyle{umlarrow}=[->, >=open triangle 90, thick]
 
+
+%% BEGIN stuff from introprog-computer-intro to make it compile
+%% TODO: Mattias: could we just use item? 
+
+\newcommand{\ti}{\textit}
+\newcommand{\ii}{\item}
+\newcommand{\is}{\item}
+\newcommand{\di}{\item}
+\newcommand{\ts}{\textit}
+\newcommand{\enquote}[1]{''#1''}
+\newcommand{\commandchar}{\texttt}
+
+%\newcommand{\commandchar}[1]{\textsc{#1}}
+\newcommand{\file}[1]{\texttt{#1}}
+
+\usepackage{pifont}   % Provides the star symbols
+
+\newcommand{\stars}[1]{%
+  \ifnum#1>0 \ding{72}\else \ding{73}\fi
+  \ifnum#1>1 \ding{72}\else \ding{73}\fi
+  \ifnum#1>2 \ding{72}\else \ding{73}\fi
+  \ifnum#1>3 \ding{72}\else \ding{73}\fi
+  \ifnum#1>4 \ding{72}\else \ding{73}\fi
+}
+
+% Blockvariant (som tidigare)
+\newcommand{\difficulty}[2][]{%
+  \emph{Svårighet:} \stars{#2}%
+  \ifx\relax#1\relax \else \hspace{3mm}(\textit{#1})\fi
+  %\par%
+  \noindent
+}
+
+% Inline-variant för löpande text
+\newcommand{\diffinline}[2][]{%
+  \stars{#2}%
+  \ifx\relax#1\relax \else \,(\textit{#1})\fi
+}
+
+\newcommand{\halfblankline}{\vspace{0.5em}}
+\newcommand{\blankline}{\vspace{1.0em}}
+
+
+
+% Define the hint command
+\newcommand{\hint}[2][]{\par\halfblankline\noindent\textbf{Ledtråd\ifx#1\empty\else\space#1\fi}: #2\par}
+
+%%% END stuff introprog-computer-intro
+
 \usepackage{forest}  % used by w01-lecture-dod-os.tex
 
 
