@@ -39,6 +39,7 @@
 \usepackage{marvosym,dingbat,amssymb}
 
 \usepackage{xcolor}
+\usepackage{framed}
 
 \definecolor{mygreen}{rgb}{0,0.4,0}
 \definecolor{mylinkcolor}{rgb}{0,0.1,0.5}
@@ -307,6 +308,31 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% changes to make slide stuff look good in compendium
+
+\newenvironment{block}[1]{%
+  \par\addvspace{0.8em}%
+  \noindent\begingroup
+  \setlength{\fboxsep}{0.45em}%
+  \colorbox{mygreen!75!black}{%
+    \parbox{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \strut\sffamily\bfseries\color{white}#1\strut
+    }%
+  }%
+  \par\nobreak
+  \setlength{\FrameSep}{0.75em}%
+  \setlength{\OuterFrameSep}{0pt}%
+  \def\FrameCommand{%
+    \setlength{\fboxsep}{\FrameSep}%
+    \setlength{\fboxrule}{0.4pt}%
+    \fcolorbox{mygreen!35!black}{mygreen!5}%
+  }%
+  \MakeFramed{\advance\hsize-\width\FrameRestore}%
+  \noindent\ignorespaces
+}{%
+  \endMakeFramed
+  \par\addvspace{0.8em}%
+  \endgroup
+}
 
 \newcommand{\pause}{}% do nothing
 %%% SLIDE SIZES with no affect in compedium
