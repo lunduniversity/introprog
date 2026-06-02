@@ -313,7 +313,7 @@
   \par\addvspace{0.8em}%
   \noindent\begingroup
   \setlength{\fboxsep}{0.45em}%
-  \colorbox{black!55}{%
+  \colorbox{black!80}{%
     \parbox{\dimexpr\linewidth-2\fboxsep\relax}{%
       \strut\sffamily\bfseries\color{white}#1\strut
     }%
@@ -324,7 +324,7 @@
   \def\FrameCommand{%
     \setlength{\fboxsep}{\FrameSep}%
     \setlength{\fboxrule}{0.4pt}%
-    \fcolorbox{black!55}{black!5}%
+    \fcolorbox{black!35}{black!5}%
   }%
   \MakeFramed{\advance\hsize-\width\FrameRestore}%
   \noindent\ignorespaces
