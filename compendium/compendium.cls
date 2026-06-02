@@ -459,8 +459,8 @@ language=Java,%
 tabsize=4,#1]{#2}}
 
 % Definiera färger för syntaxfärgläggning i latex-kod
-\definecolor{latexkeywordcolor}{rgb}{0.3, 0.3, 0.9}
-\definecolor{latexcommentcolor}{rgb}{0.9, 0.7, 0.1}
+\definecolor{latexkeywordcolor}{rgb}{0.2, 0.2, 0.7}
+\definecolor{latexcommentcolor}{rgb}{0.1, 0.4, 0.1}
 
 
 % Definierar en specifik stil för LaTeX-kodexempel
