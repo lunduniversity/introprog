@@ -1,3 +1,4 @@
-//> using scala 3.5
+//> using scala 3.8.3
 
-@main def run = println("Hej Scala-app!") // en @main-funktion
+@main def run = // en @main-funktion
+  println("Hej Scala-app!") 
