@@ -18,10 +18,51 @@
 \item Läs igenom uppgifterna under rubriken Datorarbete.
 \end{Preparations}
 
-% \subsubsection{Tips och vanliga frågor}
-% \begin{itemize}[nosep]
-%     \item TODO
-% \end{itemize}
+\subsubsection{Tips och vanliga frågor}
+\begin{itemize}[nosep]
+
+    \item \texttt{Hur stänger jag vim!?}\\
+          Om du råkat öppna texteditorn \code{vim} (t.ex. genom att göra en git commit utan att ha ställt in en annan editor) kan du stänga den genom att skriva \code{:q} (kolon följt av \code{q}) och sedan trycka \code{Retur}. Om du redan provat annat kan du ha kommit in i något av Vims olika lägen. Tryck då först \code{Esc} för att återgå till det \enquote*{normala läget}.
+
+    \item \texttt{Hur arbetar jag med texteditorn nano?} \\
+          \code{nano} är en terminalbaserad texteditor. Den körs alltså direkt i terminalen utan att öppna nya fönster, vilket kan vara fördelaktigt ibland. I editorn kan du flytta markören med piltangenterna och skriva text som förväntat. Längst ned i terminalen visas också vanliga operationer och motsvarande knappkombinationer. Där används tecknet \texttt{\^{}} (den lilla \enquote*{hatten} vid sidan om \commandchar{return}) för att betyda Ctrl-knappen. Använd t.ex. \commandchar{control-o} för att spara (Write Out), \commandchar{control-x} för att avsluta eller \commandchar{control-g} för mer hjälp.
+
+    \item \texttt{Hur ändrar jag min standardeditor för git?}\\
+          Du kan ändra din standardeditor för git med kommandot:
+\begin{Code}
+git config --global core.editor nano
+\end{Code}
+          Byt gärna ut \code{nano} mot en editor du föredrar och som är installerad på systemet, t.ex. \code{"code~--wait"} (för Visual Studio Code). Notera att vissa editors, t.ex. \code{code}, kräver extra flaggor för att fungera korrekt tillsammans med git.
+
+    \item \texttt{Hur konfigurerar jag separata SSH-nycklar för olika tjänster?}\\
+          Ur säkerhetssynpunkt är det bra att använda olika SSH-nycklar för olika tjänster, t.ex. en nyckel för GitHub och en annan för GitLab. Du kan skapa flera nyckelpar med \code{ssh-keygen} (acceptera standardnamn och döp sedan om filerna) och sedan konfigurera SSH-klienten att använda rätt nyckel för varje tjänst genom att redigera filen \file{\textasciitilde/.ssh/config}. Om \file{config}-filen inte finns kan du själv skapa den.
+
+          Exempel på konfiguration med olika nycklar för GitHub, GitLab och LTHs studentdatorer:
+\begin{lstlisting}{}
+Host github.com
+    User git
+    HostName github.com
+    IdentityFile ~/.ssh/id_ed25519_github
+
+Host gitlab.com
+    User git
+    HostName gitlab.com
+    IdentityFile ~/.ssh/id_ed25519_gitlab
+
+Host student.login.lth.se
+    User xy1234zz-s
+    HostName student.login.lth.se
+    IdentityFile ~/.ssh/id_ed25519_student
+\end{lstlisting}
+
+          Här anger \code{IdentityFile} sökvägen till den privata nyckeln som ska användas för respektive tjänst. Notera att filen \file{config} inte har någon filändelse och att den måste ha rätt behörigheter --- läs- och skrivbehörighet endast för användaren. Ändra t.ex. med:
+\begin{lstlisting}{language=bash}
+chmod 600 ~/.ssh/config
+\end{lstlisting}
+
+          \textbf{Notera} också att du behöver logga in på respektive tjänst och lägga till den publika nyckeln i deras system.
+
+\end{itemize}
 
 
 \begin{Kontrollfragor}
@@ -36,11 +77,12 @@
 \item Ge exempel på en situation då en sammanfogningskonflikt kan uppstå.
 \end{Kontrollfragor} 
 
-Under laborationen kommer vi att gå igenom ett scenario steg för steg där vi: 1) Skapar ett projekt, även kallat repositorium (\emph{repository} på engelska) eller i dagligt tal förkortat till  \emph{repo}, på GitHub; 2) Skapar en lokal klon av repositoriet på vår lokala dator och arbetar med det; 3) Kopierar upp resultatet av vårt arbete till det centrala repositoriet på GitHub. Vi kommer därefter simulera fallet att två utvecklare arbetar tillsammans med samma projekt och har vars sin lokala kopia av repositoriet på sin egen dator.
+\subsection{Datorarbete}
+
+\noindent Under laborationen kommer vi att gå igenom ett scenario steg för steg där vi: 1) Skapar ett projekt, även kallat repositorium (\emph{repository} på engelska) eller i dagligt tal förkortat till  \emph{repo}, på GitHub; 2) Skapar en lokal klon av repositoriet på vår lokala dator och arbetar med det; 3) Kopierar upp resultatet av vårt arbete till det centrala repositoriet på GitHub. Vi kommer därefter simulera fallet att två utvecklare arbetar tillsammans med samma projekt och har vars sin lokala kopia av repositoriet på sin egen dator.
 
 \emph{Observera} att några uppgifter beskriver vad du ska göra men inte exakt hur. I slutet av handledningen finns lösningsförslag men försök att själv leta reda på en lösning med hjälp av t.ex. kursmaterialet, ett ''cheat sheet'' eller genom att söka på Internet.
 
-\subsection{Datorarbete}
 \begin{Datorarbete}
 
 \item Logga in på ditt konto på GitHub och skapa ett nytt repositorium för laborationen. Klicka på den gröna knappen med texten ''New'' uppe till vänster på sidan du kommer till när du loggat in.
