@@ -1,32 +1,367 @@
 %!TEX encoding = UTF-8 Unicode
-%!TEX root = ../labs.tex
+%!TEX root = ../compendium2.tex
+
+\def\reponame{dod-lab-git}   % TODO: check that this works (it was dod-lab2 before the move to lp2)
+
 
 \Lab{\LabWeekNINEdod}
 \begin{Goals}
-\item TODO
+\item \emph{Mål:} Du ska bekanta dig med grundläggande tekniker för versionshantering och att arbeta flera personer i samma utvecklingsprojekt med hjälp av Git och GitHub. Laborationen kommer att utgöra en guidad tur genom ett enkelt användningsfall. Syftet är alltså inte att bli experter, utan att få se och senare kunna känna igen kommandon och få en känsla för arbetssättet.
 \end{Goals}
 
 \begin{Preparations}
-\item TODO
+\item Titta igenom föreläsningsbilderna från föreläsning 2 (versionshantering med Git och GitHub).
+\item Läs igenom \emph{Appendix G Versionshantering och kodlagring} i \emph{Introduktion till programmering med Scala} av Björn Regnell.
+\item Se avsnitt 1.1, 1.2, 1.3, 1.6 och 1.7 (''fäll ner'' flikarna uppe till höger för att komma åt de individuella avsnitten) i youtube-serien \emph{Git and GitHub for Poets}.
+\item Läs igenom kapitel 1, 2 och 3.1-3.2 i \emph{Pro Git} av Scott Chacon och Ben Straub. Vi kommer inte att använda oss av s.k. \emph{branches} (grenar) direkt i laborationen, men det kommer att bli ett viktigt begrepp i era senare kurser och introducerar begreppet \emph{merge} (sammanfogning) som ni stöter på i laborationen.
+\item Gå till GitHub (\code{https://github.com}) och skapa dig ett eget gratiskonto. Försök välja ett kontonamn du känner att du kommer att vara bekväm med för en lång tid framöver. Det är mycket möjligt du kommer att ha kvar det under hela din yrkesverksamma tid. Prova till exempel \code{fornamnefternamn} utan svenska tecken och se om det är ledigt.
+\item Läs igenom uppgifterna under rubriken Datorarbete.
 \end{Preparations}
 
-\subsubsection{Tips och vanliga frågor}
-\begin{itemize}[nosep]
-    \item TODO
-\end{itemize}
+% \subsubsection{Tips och vanliga frågor}
+% \begin{itemize}[nosep]
+%     \item TODO
+% \end{itemize}
 
 
 \begin{Kontrollfragor}
-  \item TODO
+\item Vad är ett versionshanteringssystem?
+\item Vad är skillnaden mellan Git och GitHub?
+\item Vad är ett repositorium (eng. \emph{repository})?
+\item Vad innebär det att göra en klon av ett repositorium?
+\item Vad innebär begreppet \emph{commit}?
+\item Vad är skillnaden mellan commit och push i Git?
+\item Vad är skillnaden mellan push och pull i Git?
+\item Vad är en sammanfogningskonflikt (eng. \emph{merge conflict})?
+\item Ge exempel på en situation då en sammanfogningskonflikt kan uppstå.
 \end{Kontrollfragor} 
+
+Under laborationen kommer vi att gå igenom ett scenario steg för steg där vi: 1) Skapar ett projekt, även kallat repositorium (\emph{repository} på engelska) eller i dagligt tal förkortat till  \emph{repo}, på GitHub; 2) Skapar en lokal klon av repositoriet på vår lokala dator och arbetar med det; 3) Kopierar upp resultatet av vårt arbete till det centrala repositoriet på GitHub. Vi kommer därefter simulera fallet att två utvecklare arbetar tillsammans med samma projekt och har vars sin lokala kopia av repositoriet på sin egen dator.
+
+\emph{Observera} att några uppgifter beskriver vad du ska göra men inte exakt hur. I slutet av handledningen finns lösningsförslag men försök att själv leta reda på en lösning med hjälp av t.ex. kursmaterialet, ett ''cheat sheet'' eller genom att söka på Internet.
 
 \subsection{Datorarbete}
 \begin{Datorarbete}
-\item TODO
 
+\item Logga in på ditt konto på GitHub och skapa ett nytt repositorium för laborationen. Klicka på den gröna knappen med texten ''New'' uppe till vänster på sidan du kommer till när du loggat in.
+
+Ge repositoriet namnet t.ex. \code{\reponame} och ange att det ska vara privat (\emph{private}). Klicka även i rutan framför ''Initialize this repository with a README''. Det senare innebär att det redan från början finns ett innehåll i repositoriet vilket underlättar när vi sedan ska skapa vår lokala klon på vår egen dator. I drop-down-menyn ''Add .gitignore:'' väljer du ''Scala''. Vi ska nämligen utveckla ett enkelt program i Scala och filen \code{.gitignore} talar bland annat om för Git att inte bry sig om de filer som scalakompilatorn genererar. Genererade filer vill man normalt inte ha med i sitt repository, för då tycker git att repot har ändrats varje gång man t.ex. provkör sitt program. Klicka till slut på ''Create repository'' för att skapa repositoriet.
+
+Du kan nu redigera filen \code{README.md} genom att klicka på pennsymbolen efter filnamnet (eller klicka på filnamnet för att öppna filen och därefter klicka på pennsymbolen till höger i fönstret). I README-filen brukar man skriva en beskrivning av vad repositoriet innehåller för något och saker man behöver veta för att komma igång med innehållet. Skriv något kort relaterat till laborationen.
+
+När du är färdig sparar du filen genom att göra en så kallad \emph{commit}. Varje commit bör medföljas ev en beskrivning av varför filen ändrades. Ofta räcker det med en kort kommentar. Skriv en sådan kort kommentar i rutan under rubriken ''Commit changes''. Du kan t.ex. skriva ''Provided initial description of the project". Om en längre beskrivning är motiverad kan denna lämnas i rutan undertill. Klicka sedan på ''Commit changes''. Gå tillbaka till repositoriets huvudsida (klicka på den blå länken ''\reponame'') och betrakta resultatet.
+
+Nu ska vi se hur vi kan arbeta med git på vår lokala dator!
+
+\item Innan vi börjar använda Git för första gången bör vi göra några mindre inställningar. Dessa behöver vi bara göra en gång. Det handlar om att tala om för Git vem vi är och vilken texteditor vi föredrar. Som standard använder git editorn \code{vim}, vilket de flesta nog inte vill, då den är känd för att vara väldigt kraftful men svåranvänd och ha en hög inlärningskurva.
+\\
+
+\texttt{\ref{git-config}} Använd kommandot \code{git config} med flaggan \code{global} för att sätta ditt användarnamn, e-postadress och din föredragna editor. Du kan t.ex. använda editorn \code{nano} (kör direkt i terminalen) eller \code{gedit} (öppnas i eget fönster).
+\\
+
+Editorn du anger kommer användas när du gör \code{git commit} i terminalen, där git ber dig att skriva en commit-kommentar. Att välja en editor som fungerar direkt i terminalen, så som \code{nano}, snarare än att behöva öppna ett nytt fönster, kan då vara smidigt.
+
+\item Utöver att konfigurera git att använda en viss editor och ditt korrekta namn och e-postadress, kan det vara bra att konfigurera en ytterligare grej:
+\begin{Code}
+git config --global pull.rebase false
+\end{Code}
+När man använder \code{git pull} (som du kommer få göra senare) så finns det två sätt att göra det på: \emph{merge} och \emph{rebase}. Det är två olika sätt att försöka sammanfoga ändringar från det centrala repositoriet med dina lokala ändringar. Det är en smaksak vilket man föredrar, båda har för- och nackdelar, men för nya git-användare är det rekommenderat att inte använda \code{rebase}. Därför sätter vi \code{pull.rebase} till \code{false}. Detta är faktiskt standardinställningen, men i nyare versioner av git måste man ändå uttryckligen göra denna inställning.
+
+% Tack Alexander Sandström som skriv ihop detta steg!
+\item Nu börjar vi närma oss att kunna göra en lokal klon av vårt repo och börja arbeta med git, men vi behöver sätta upp en sak till: en SSH-nyckel.
+
+\halfblankline
+Om du redan har satt upp en SSH-nyckel kan du hoppa över denna del.
+\halfblankline
+
+\noindent I en alltmer osäker cyberrymd krävs det numera att man kopplar upp sig till GitHub via protokollet SSH (som vi använde för att koppla upp oss mot annan skoldator i slutet av labb~1). Med en SSH-nyckel så slipper man ange inloggningsuppgifter vid varje git-kommando. Det är också mycket säkrare eftersom du inte skickar dina inloggningsuppgifter via internet.
+
+Du ska generera ett så kallat nyckelpar (en privat och en publik nyckel) på din dator, och berätta för GitHub vilken din \emph{publika} nyckel är (\emph{ge \textbf{aldrig} ut din privata nyckel till \textbf{någon}}). Därefter sköts all kryptering och annan säkerhet automatiskt varje gång du snackar med GitHub via terminalen.
+
+
+\vspace*{3mm}
+
+\noindent De följande stegen är baserade på GitHubs egen guide \enquote{Generating a new SSH key}%\footnote{\url{https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#generating-a-new-ssh-key}}:
+
+\begin{enumerate}
+\item Öppna terminalen
+\item Skriv följande i terminalen:\\
+\code{ssh-keygen -t ed25519 -C "valfri kommentar"}
+
+\item SSH ber dig att döpa filen, default-namnet går bra att använda, tryck Enter.\\
+\textbf{Varning}: Om du väljer att döpa filen till något annat än default-namnet, så måste du inkludera sökvägen i namnet, för att den ska hamna på rätt plats, t.ex. 
+\code{~/.ssh/min-nyckel}. 
+Om du inte använder default-namnet måste du också konfigurera git att använda rätt nyckel. Se sidan med \emph{Tips} i början av dokumentet.
+
+\item Ingen passphrase behövs i detta läge, tryck Enter två gånger
+\end{enumerate}
+
+
+\noindent Nu har du genererat ett så kallat nyckelpar med en privat och en publik nyckel (mer om detta i senare kurser, men för intresserade, se fotnot\footnote{\url{https://en.wikipedia.org/wiki/Public-key_cryptography}}). Gör \code{ls} på din dolda ssh-katalog för att se filerna:
+\begin{Code}
+> ls ~/.ssh
+id_ed25519         # din privata nyckel
+id_ed25519.pub     # din publika nyckel
+\end{Code}
+
+Nu saknas endast att lägga till din publika nyckel i ditt GitHub-konto så att hemsidan kan autentisera dig. Följande guide beskriver de sista stegen under rubriken \enquote{Adding a new SSH key to your account}:\\\href{https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account#adding-a-new-ssh-key-to-your-account}{https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account}.
+
+När alla stegen är gjorda på hemsidan ska det vara fritt fram att börja använda git och arbeta mot GitHub utan att behöva uppge användarnamn och lösenord. Var inte rädd att fråga din handledare om du fastnar vid något av stegen.
+
+\item Det är nu dags att skapa en lokal kopia, eller \emph{klon}, av vårt repositorium på vår lokala dator. Skapa en katalog på lämpligt ställe med hjälp av kommandon i terminalfönstret, t.ex. \file{$\sim$/dod/lab2}. Gå sedan till katalogen du nyss skapade med hjälp av kommandot \code{cd}.
+
+För att kunna klona vårt repositorium behöver vi en referens till det. Gå därför till webbsidan för ditt repositorium. Där hittar du en grön knapp med texten ''Code''. Om du klickar på denna får du upp en drop-downmeny som bland annat innehåller en URL, som du ska kopiera.
+\\
+
+
+\textbf{OBS!} Kontrollera att du tittar på SSH-varianten snarare än HTTS, URL:en ska vara på formatet:
+\vspace{-.5em}
+\begin{Code}
+git@github.com:<username>/dod-lab2.git
+\end{Code}
+\vspace{.5em}
+
+\texttt{\ref{git-clone}} Använd nu kommandot \code{git clone} för att klona repositoriet.
+\\
+
+Du ska nu ha fått en katalog med samma namn som ditt repositorium. Gå ner i denna katalog och undersök innehållet med \code{ls -la}. Ser du README-filen och \code{.gitignore}? Dessutom borde du ha en katalog kallad \code{.git}. Det är här Git sparar allt den behöver veta för att hålla reda på våra filer.
+Du kan alltid kontrollera det aktuella tillståndet för dina projektfiler genom att skriva:
+
+\begin{Code}
+git status
+\end{Code}
+
+Kommandot borde bekräfta att alla dina filer stämmer överens med originalet på GitHub.
+
+\item Vi ska nu börja utvecklingen av vårt scalaprogram. Skapa en fil i katalogen, kalla den t.ex. \code{HelloWorld.scala}, med följande innehåll:
+
+\begin{lstlisting}[language=scala]
+@main def main=
+  println("Hello world!")
+\end{lstlisting}
+
+Prova att kompilera och testköra programmet för att verifiera att det fungerar (\emph{OBS! Nedan instruktioner kan vara fel, gör så som du lärt dig i prog-delen av kursen!}):
+
+\begin{Code}
+scala run HelloWorld.scala
+\end{Code}
+
+Kontrollera innehållet i katalogen och statusen för projektet:
+
+\begin{Code}
+ls
+git status
+\end{Code}
+
+Git har upptäckt att det finns en fil (\code{HelloWorld.scala}) som Git tror du kanske vill ha med i ditt projekt och föreslår att du ska lägga till den.
+
+Observera att det antagligen också finns flera andra filer i katalogen som git har upptäckt. När du körde ditt scalaprogram så genererades t.ex. en fil som slutar på \code{.class} och några dolda kataloger vars namn börjar med en punkt, t.ex. \code{.metals}, \code{.scala-build} och \code{.vscode}. Genererade filer så som dessa vill man normalt inte ha med i sitt repository. Genom att skriva dessa filnamn i filen \code{.gitignore} så kommer Git att ignorera dem. Öppna filen \code{.gitignore} i valfri texteditor och lägg till namnen på de filer du vill ignorera, t.ex.:
+
+\begin{Code}
+*.class         # alla filer som slutar på .class
+.metals/        # katalogen .metals/
+.scala-build/   # katalogen .scala-build/
+.vscode/        # katalogen .vscode/
+*.tasty         # alla filer som slutar på .tasty
+\end{Code}
+
+
+Spara filen när du är klar, och kolla statusen för projektet igen med \code{git status}. Nu borde de genererade filerna inte längre visas, och bara filen \code{HelloWorld.scala} ska visas som ''untracked''.
+
+För att lagra vår Scala-fil i repositoriet så att git kan hålla reda på den måste vi utföra två steg: Först berättar vi vilka filer vi vill lagra genom att lägga till dem i s.k. \emph{staging area} (\code{git~add}); Därefter ger vi kommandot \code{git~commit} för att faktiskt lägga till de utvalda filerna. Ofta vill man spara alla filändringar man gjort, så det första steget kan verka onödigt, men ibland vill man ha mer kontroll över vilka filer som ska eller inte ska läggas till, innan man gör en commit.
+\\
+
+\texttt{\ref{git-add}} Lägg till din fil i staging area med kommandot \code{git add}, och kolla status igen efteråt.
+\\
+
+En extra detalj man kan notera är att \code{git add} inte egentligen lägger till \emph{filer} i staging area, utan snarare \emph{förändringar}. Efter status-kommandot ser vi att Git har förberett för att spara filen i repositoriet, men ännu inte gjort det. Om du nu ändrar något mer i filen och kör \code{git status} igen kommer så rapporterar Git att förändringar har lagts till i staging area samt att andra förändringar har gjorts i filen som ännu inte lagts till. Det finns alltså just nu olika innehåll i ditt workspace och i staging area.
+
+Gör \code{git add} igen för att också lägga till de nya ändringarna i staging area. Nu kan vi göra en commit!
+\\
+
+\texttt{\ref{git-commit}} Spara den nuvarande versionen av din fil i databasen med kommandot \code{git~commit}.
+\\
+
+När du gör en commit måste du samtidigt förse git med ett commit-meddelade som beskriver syftet med ändringen. Git kommer då att öppna en editor (den du konfigurerade tidigare) där du kan skriva ditt meddelande. När du är klar så spara och stäng filen. Då slutförs committen och det lagras en ny permanent version av de filer och förändringar som du lagt i staging area.
+
+Ofta räcker det med en kort commit-kommentar, som berättar \emph{syftet} med committen, snarare än exakt vad som ändrats, och då kan man skriva den direkt på kommandoraden med optionen \code{-m}.
+
+\begin{Code}
+git commit -m "Förtydligade utskriften i programmet"
+\end{Code}
+
+Vid utskrift av projektets status bör det nu framgå att alla filer i katalogen är \enquote{up-to-date} med (det lokala) repositoriet.
+
+Du kan nu fortsätta att arbeta med Scala-programmet i \code{HelloWorld.scala}. Ändra programmet med din favoriteditor så att något annat än ''Hello, world!'' skrivs ut, spara, kompilera och testkör.
+
+När du är nöjd med din ändring undersöker vi projektets status igen:
+
+\begin{Code}
+git status
+\end{Code}
+
+Vi ser att Git har upptäckt att \code{HelloWorld.scala} har modifierats. För att lagra den nya versionen i Git-databasen gör vi likadant som när vi adderade filen, d.v.s. först \code{git~add} och sedan \code{git~commit}. Man kan också skriva \code{git~add~.}  (notera punkten) för att addera alla ändrade filer.	Många gånger vill man addera och committa alla modifierade filer. Därför finns det en genväg för att slippa göra både \emph{add} och \emph{commit}. Man kan använda optionen \code{-a} på commit-kommandot (\code{git commit -a}) för att automatiskt göra \emph{add} på alla modifierade filer. Notera att detta bara är sant för filer som redan har blivit tillagda i Git. För nyskapta filer behöver man således manuellt köra \emph{add} första gången.
+\\
+
+\texttt{\ref{git-commit-a}}  Välj en av metoderna och gör commit på dina ändringar! Kontrollera med \code{git~status} att ditt lokala repositorium är uppdaterat.
+\\
+
+\item Alla ändringar vi gjort hittils finns bara lagrade i vårt lokala repositorium på vår egen dator. För att kunna dela med oss av vårt uppdaterade projekt till andra, eller för att vi själva ska kunna komma åt projektet från andra platser, vill vi ladda upp våra ändringar till den centrala lagringsplatsen på GitHub.
+
+% Börja med att gå till webbsidan för ditt projekt på GitHub. Inget har förändrats här sedan sist, eller hur?
+% För att kopiera våra ändringar till GitHub används gitkommandot \code{push}. Gå tillbaka till terminalen och
+Prova det nu:
+
+\begin{Code}
+git push
+\end{Code}
+
+Efter att du kört kommandot så gå tillbaka till ditt projekt på GitHub och ladda om sidan. Undersök vilka förändringar som skett i projektet. Klicka på \code{HelloWorld.scala} och kontrollera innehållet. Klicka på ''History'' och undersök vilka versioner av filen som finns sparade samt vad de innehåller.
+
+\item En av de stora vinsterna med att använda Git är att det underlättar mycket när flera personer arbetar tillsammans på samma projekt, eller om en och samma person vill arbeta med olika saker på projektet parallellt -- på en och samma eller flera datorer. Om man samarbetar med en annan person behöver man ge den personen rättighet att arbeta med projektet på GitHub. För att bjuda in en annan person till projektet så klicka på ''Settings'' på projektets webbsida och välj därefter ''Manage access'' i menyn till vänster. Här har du möjlighet att bjuda in en annan GitHub-användare till projektet. Klicka dig dit för att se hur sidan ser ut.
+
+I fortsättningen av laborationen kommer vi att simulera en sådan parallell utveckling genom att du själv skapar en andra klon av repositoriet och arbetar med de två klonerna parallellt. (Eller, om ni är två personer som samarbetar, kan ni ha vars en klon.) Vi kommer också att se exempel på hur man kan arbeta med Git inifrån ett utvecklingsverktyg utan att använda sig av terminalen.
+
+%För att skapa en ny klon av repositoriet på GitHub behöver vi en ny tom katalog att arbeta i. Låt oss kalla den \file{lab2b}. Starta ett nytt terminalfönster, gå till en lämplig plats med \code{cd} skapa den nya katalogen med hjälp av följande kommandon:
+%
+%\begin{Code}
+%	mkdir lab2b
+%	cd lab2b
+%\end{Code}
+
+Som utvecklingsverktyg kommer vi använder oss av editorn Visual Studio Code (i fortsättningen förkortat \emph{VS Code}). VS Code är en generell texteditor med stöd för många olika programmeringsspråk och som även har inbyggt stöd för Git. I VS Code ska vi klona ditt repositorium igen, och alltså ha två kloner på olika ställen på din dator; en som vi arbetar med i terminalen och en som vi arbetar med i VS Code.
+
+Starta editorn i terminalen genom att skriva:
+\begin{Code}
+code
+\end{Code}
+
+
+Efter en kort stund ska ett nytt fönster öppnas. För att skapa en ny klon av ditt repositorium på GitHub kan du trycka CTRL+SHIFT+P. Då får du upp något som kallas för ''kommandopaletten''. Sök eller scrolla ner i listan tills du hittar kommandot ''Git: Clone'' och välj detta. Skriv sedan in URL:en till ditt repositorium på GitHub (samma som när du gjorde \code{git clone} i terminalen tidigare) och tryck ENTER. Du får nu upp en fildialog för att välja var du vill placera det nya klonade repositoriet. Skapa en ny katalog bredvid katalogen du skapade tidigare (\file{lab2}) kallad t.ex. \file{lab2b} och välj denna som målkatalog. Om allt gått väl kommer VS Code att skapa en ny klon och du får en dialogruta som frågar om du vill öppna det nya repositoriet. Välj ''Open''!
+
+\item Längst ut åt vänster finns en rad symboler som representerar olika verktyg. Den översta kallas för ''Explorer'' och används för att se vilka filer som finns i katalogen och för att editera dessa. Gå in i filen \file{HelloWorld.scala} och ändra återigen utskriften så att något nytt skrivs ut samt spara filen.
+
+Den tredje symbolen representerar verktyget \code{Source Control}. Det är ''Git-fliken'', klicka på denna! Du ser då att filen \file{HelloWorld.scala}  är markerad som modifierad (''changed'') och till höger om denna finns en rad små ikoner. Med hjälp av dessa kan du i tur och ordning öppna filen, ångra ändringarna och göra något som kallas för att ''stage:a'' filen, alltså lägga till den i staging area, precis som vi gjorde tidigre genom att köra \code{git add}. Klicka på ikonen i form av ett litet plustecken för att göra ''add'' på filen. Dess tillstånd ändras nu till ''staged''.
+
+Vi är nu  nöjda med våra ändringar och det är dags att göra commit på dem. En bit upp i fönstret, strax till höger om rubriken ''SOURCE CONTROL'' hittar du ytterligare tre ikoner. Tryck på den första (en bock) för att göra commit. Fyll i en commit-komentar i dialogrutan som dyker upp.
+
+\item Till vänster om commit-ikonen hittar du en ikon som består av tre punkter. Klickar du på den dyker en pull-down-meny upp med ytterligare Git-kommandon. Välj nu ''Push" i menyn för att ladda upp din ändring till GitHub. Kontrollera på projektets webbsida att ändringen är synlig.
+
+\item Nu är dina ändringar överförda till det centrala repositoriet på GitHub, men har ännu inte överförts till din första klon av repositoriet -- det som du tidigare har jobbat mot via terminalfönstret. För att göra detta används kommandot \code{git pull}.
+\\
+
+
+\texttt{\ref{git-pull-term}}  Gå till terminalfönstret och hämta ner de senaste ändringarna från det centrala repositoriet med git pull.
+\\
+
+
+Kontrollera att ändringarna du gjorde har laddats ner genom att inspektera innehållet i filen \code{HelloWorld.scala}.
+
+\item Så här långt har vi, trots att vi har separata kloner av vårt repositorium, hela tiden arbetat \emph{sekvensiellt} och vid varje förändring sparat undan våra ändringar till det centrala repositoriet innan vi har gjort någon förändring i den andra klonen. Men den stora poängen med Git och versionshantering är att det stöder \emph{parallellt} arbete i de olika klonerna. Vilka problem stöter vi på då? Låt oss prova och se vad som händer.
+
+% \clearpage
+
+\texttt{\ref{git-conflict-1}} I ditt först klonade repositorium (det som du arbetar mot via terminalen):
 \begin{Deluppgifter}
-\item TODO
-
+\item Ändra återigen \file{HelloWorld.scala} så att en ny text skrivs ut (ändra på raden med \code{println}-kommandot).
+\item Gör ''stage'' (\code{git add}) samt commit (\code{git commit}), eller använd flaggan \code{-a} till commit-kommandot för att göra båda stegen samtidigt.
+\item Ladda upp din ändring till GitHub (\code{git push})
 \end{Deluppgifter}
 
+Nu ska vi prova att göra en motsvarande ändring i det andra repositoriet:
+\begin{Deluppgifter}
+\item Gå till ditt VS Code-fönster.
+\item Gör en ändring på samma rad i \file{HelloWorld.scala} som du ändrade nyss så att en ny text skrivs ut.
+\item Spara filen.
+\item Gör ''stage'' på filen (den lilla plusikonen efter filnamnet i ''changed''-listan).
+\item Gör commit på dina ändringar (den lilla checkikonen längst upp).
+\item Prova att ladda upp dina ändringar till GitHub (''Push'' i pull-down-menyn du får när du klickar på de tre prickarna till höger om ''commit''-ikonen). Vad händer?
+\end{Deluppgifter}
+
+Uppenbarligen har någon (faktiskt vi själva i detta fallet) gjort ändringar parallellt med våra, och push:at dem till GitHub före oss. Git tillåter oss då inte att göra push, för då hade våra ändringar skrivit över de ändringarna som andra personer har gjort.	Istället måste vi först ladda ner och foga samman de ändringar som andra gjort med våra egna (och kontrollera att de fungerar ihop) innan vi kan ladda upp dem till GitHub:
+
+\begin{Deluppgifter}
+\item Klicka bort dialogrutan med felmeddelandet.
+\item Välj ''Pull'' i pull-down-menyn (de tre prickarna...).
+\end{Deluppgifter}
+
+De senaste ändringarna från GitHub-repositoriet laddas nu ner och sammanfogas (eng. \emph{merge}) med de vi gjort lokalt. I många fall klarar Git av att göra detta helt på egen hand och det enda vi behöver göra är att kontrollera att vårt program fortfarande går att kompilera och beter sig som vi förväntar oss. Sedan kan vi på nytt ladda upp ändringarna till GitHub. Ibland  klarar dock inte Git av att göra sammanfogningen på ett entydigt sätt utan vi måste ingripa och göra sammanfogningen manuellt. Det har uppstått en så kallad \emph{sammanfogningskonflikt} (eng. \emph{merge conflict}). En sådan situation uppstår när ändringar gjorts på samma rader i respektive version av filerna. När en sådan här konflikt uppstår markerar Git konflikten genom att skjuta in extra rader i filen som beskriver konflikten och visar hur de olika versionerna av filen skiljer sig åt. Det kan t.ex. se ut så här:
+
+\begin{Code}
+<<<<<<< HEAD (Current Change)
+println("Hello from version one!")
+=======
+println("Hello from the second version!")
+>>>>>>> 7e01181febacf80fdd666e36d4d492aea0b0f620 (Incoming Change)
+\end{Code}
+
+Det är nu vår uppgift att editera filen så att den blir så som vi vill ha den och ta bort de extra raderna som Git har skjutit in för att markera konflikten. Det kan vi göra genom att välja att behålla endera av versionerna, behålla båda, eller skriva om programmet på önskat vis. Om du gör detta i VS Code underlättar editorn arbetet genom att visa en rad med alternativ omedelbart ovanför konflikten med klickbara alternativ för de vanligaste valen, t.ex. för att behålla endera av versionerna. Lös konflikten på lämpligt sätt och ladda upp ändringarna till GitHub:
+
+\begin{Deluppgifter}
+\item Välj en av versionerna genom att klicka på snabblänkarna eller editera filen manuellt.
+\item Spara filen!
+\item Gör ''stage'' (add) på filen.
+\item Gör commit.
+\item Ladda upp ändringarna till GitHub genom att göra push\footnote{Om man inte har gjort exakt enligt instruktionen, tex glömt att spara filen innan man gör den staged, kan man råka ut för något som verkar vara en bugg i VS Code när man gör push som gör att push misslyckas därför att VS Code påstår att det finns konflikter kvar att lösa trots att dessa redan är lösta. Om detta händer så gör en valfri ändring i filen, t.ex. lägg till en kommentar, spara filen, gör filen staged (ej genom att göra commit på allt eller att göra alla filer staged i en klump), gör commit och prova att göra push igen. Du kan alltid ta bort den extra ändringen senare.}
+\item Kontrollera förändringen i ditt projekts webbsida på GitHub.
+\end{Deluppgifter}
+
+\item Om du har tid: Gå till terminalfönstret och upprepa föregående deluppgift och prova på att på nytt lösa en sammanfogningskonflikt, fast denna gång genom att använda terminalkommandon. Dvs, ändra utskriften genom att ändra  i \file{HelloWorld.scala}, gör add/commit/push, studera felmeddelandet, ladda ner ändringar med pull, lös konflikten och gör add/commit/push på nytt.
+
+
 \end{Datorarbete}
+
+
+Du har nu lärt dig tillräckligt mycket om Git för att kunna använda det för dina egna mjukvaruprojekt eller projekt du gör tillsammans med en eller några få kamrater. Under utbildningens gång kommer du att stöta på mer avancerade sätt att använda Git och hur det används för att hantera större mjukvaruprojekt.
+
+
+
+
+\newpage
+
+\subsection{Git-kommandon}\label{git:losningar}
+Här ges lösningar till de uppgifter som är markerade. Försök gärna lösa uppgifterna utan denna hjälp först. Ta gärna hjälp av en \enquote{cheat sheet}.
+
+\begin{enumerate}[label=C\arabic*]
+\item\label{git-config} Byt ut \code{fornamnefternamn} och \code{mejladr@plats.se} nedan mot ditt GitHub användarnamn eller ditt namn (''Förnamn Efternamn''). Om du föredrar att använda en annan texteditor än \code{nano} byter du även ut \code{nano} mot namnet på den editor du vill använda, t.ex. \code{gedit}
+\begin{Code}
+git config --global user.name fornamnefternamn
+git config --global user.email mejladr@plats.se
+git config --global user.editor nano
+\end{Code}
+
+\item\label{git-clone} Byt ut URL:en mot din egen:
+\begin{Code}
+git clone https://github.com/fornamnefternamn/edab05-dod-lab2.git
+\end{Code}
+
+\item\label{git-add} Lägg till fil till \emph{staging area}:
+\begin{Code}
+git add HelloWorld.scala
+git status
+\end{Code}
+
+\item\label{git-commit} Spara permanent det som ligger i staging area:
+\begin{Code}
+git commit -m "Created initial version of the program"
+\end{Code}
+
+\item\label{git-commit-a} Gör t.ex.:
+\begin{Code}
+git commit -a -m "Changed program to make it more awesome"
+\end{Code}
+
+\item\label{git-pull-term} Man kan ge argument för att bestämma var ifrån man vill hämta ändringar, men i de flesta fall, liksom nu, räcker det att du kör:
+\begin{Code}
+git pull
+\end{Code}
+
+\item\label{git-conflict-1} Gör t.ex.:
+\begin{Deluppgifter}
+\item \code{nano HelloWorld.scala}
+\item \code{git commit -a -m "Improved the print!"}
+\item \code{git push}
+\end{Deluppgifter}
+
+
+\end{enumerate}
