@@ -1,5 +1,5 @@
 //> using scala 3.8.3
-//> using dep org.knowm.xchart:xchart:3.8.8
+//> using dep org.knowm.xchart:xchart:4.0.0
 
 import org.knowm.xchart.{XYChart, XYChartBuilder, BitmapEncoder}
 import org.knowm.xchart.BitmapEncoder.BitmapFormat
