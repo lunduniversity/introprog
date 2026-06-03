@@ -105,6 +105,6 @@ val outLin = "plot_sort_linear"
 val outLog = "plot_sort_log"
 
 @main def run(): Unit =
-  BitmapEncoder.saveBitmap(buildChart(false), outLin, BitmapFormat.PNG)
-  BitmapEncoder.saveBitmap(buildChart(true), outLog, BitmapFormat.PNG)
+  BitmapEncoder.saveBitmap(buildChart(logScale = false), outLin, BitmapFormat.PNG)
+  BitmapEncoder.saveBitmap(buildChart(logScale = true), outLog, BitmapFormat.PNG)
   println(s"Wrote $outLin.png and $outLog.png")
