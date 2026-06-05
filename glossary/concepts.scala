@@ -106,8 +106,8 @@ object explain:
       en = "attribute",
       svShortExplanation = "variabel som utgör (del av) ett objekts tillstånd",
       enShortExplanation = "variable that constitutes (part of) an object's state",
-      svLongExplanation = "Ett attribut är en variabel definierad som del av en klass eller ett objekt och representerar en del av dess tillstånd; attribut kan vara oföränderliga (val) eller föränderliga (var), och görs ofta privata för att skydda objektets invarianter.",
-      enLongExplanation = "An attribute is a variable defined as part of a class or object and represents a part of its state; attributes can be immutable (val) or mutable (var), and are often made private to protect the object's invariants.",
+      svLongExplanation = "Ett attribut är en variabel definierad som del av en klass eller ett objekt och representerar en del av dess tillstånd; attribut kan vara oföränderliga (val) eller föränderliga (var), och görs ofta privata för att skydda mot godtyckliga förändringar",
+      enLongExplanation = "An attribute is a variable defined as part of a class or object and represents a part of its state; attributes can be immutable (val) or mutable (var), and are often made private to protect the object from arbitrary modifications.",
     )
     val BaseType = Concept(
       sv = "bastyp",
@@ -138,8 +138,8 @@ object explain:
       en = "call by name",
       svShortExplanation = "fördröjd evaluering av argument",
       enShortExplanation = "delayed evaluation of the argument",
-      svLongExplanation = "Vid namnanrop skickas ett argument som ett fördröjt uttryck som evalueras varje gång det används inuti funktionen; detta möjliggör kortslutningsevaluering och skapande av egna kontrollstrukturer, och deklareras med '=>' före parametertypen.",
-      enLongExplanation = "With call by name, an argument is passed as a delayed expression that is evaluated each time it is used inside the function; this enables short-circuit evaluation and the creation of custom control structures, and is declared with '=>' before the parameter type.",
+      svLongExplanation = "Vid namnanrop skickas ett argument som ett fördröjt uttryck som evalueras varje gång det används inuti funktionen; detta möjliggör skapande av egna kontrollstrukturer, och deklareras med '=>' före parametertypen.",
+      enLongExplanation = "With call by name, an argument is passed as a delayed expression that is evaluated each time it is used inside the function; this enables the creation of custom control structures, and is declared with '=>' before the parameter type.",
     )
     val CallByValue = Concept(
       sv = "värdeanrop",
@@ -634,16 +634,16 @@ object explain:
       en = "predicate",
       svShortExplanation = "en funktion som ger ett booleskt värde",
       enShortExplanation = "a function that returns a boolean value",
-      svLongExplanation = "Ett predikat är en funktion som tar ett eller flera argument och returnerar ett booleskt värde (true eller false); predikat används som filterfunktioner i samlingsoperationer som 'filter', 'exists', 'forall' och 'takeWhile'.",
-      enLongExplanation = "A predicate is a function that takes one or more arguments and returns a boolean value (true or false); predicates are used as filter functions in collection operations such as 'filter', 'exists', 'forall', and 'takeWhile'.",
+      svLongExplanation = "Ett predikat är en funktion returnerar ett booleskt värde (true eller false); predikat används som filterfunktioner i samlingsoperationer som 'filter', 'exists', 'forall' och 'takeWhile'.",
+      enLongExplanation = "A predicate is a function that returns a boolean value (true or false); predicates are used as filter functions in collection operations such as 'filter', 'exists', 'forall', and 'takeWhile'.",
     )
     val Private = Concept(
       sv = "privat",
       en = "private",
       svShortExplanation = "modifierar synligheten av en objektmedlem",
       enShortExplanation = "modifies the visibility of an object member",
-      svLongExplanation = "En privat medlem, deklarerad med 'private', är synlig endast inuti den klass eller det objekt den tillhör; detta döljer implementationsdetaljer från användare av klassen, skyddar invarianter och minskar kopplingen mellan klasser.",
-      enLongExplanation = "A private member, declared with 'private', is visible only inside the class or object it belongs to; this hides implementation details from users of the class, protects invariants, and reduces coupling between classes.",
+      svLongExplanation = "En privat medlem, deklarerad med 'private', är synlig endast inuti den klass eller det objekt den tillhör; detta döljer implementationsdetaljer från användare av klassen, skyddar mot godtycklig förändring och minskar kopplingen mellan klasser.",
+      enLongExplanation = "A private member, declared with 'private', is visible only inside the class or object it belongs to; this hides implementation details from users of the class, protects against arbitrary modifications, and reduces coupling between classes.",
     )
     val Procedure = Concept(
       sv = "procedur",
