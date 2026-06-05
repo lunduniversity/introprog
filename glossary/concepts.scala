@@ -15,7 +15,7 @@ object explain:
       Enumeration, Element, Export, Expression,
       FactoryMethod, FloatingPoint, ForStatement, Function, FunctionBody, FunctionHeader,
       Generic, Getter, 
-      Implementation, Import, Instance, 
+      Implementation, Import, Inheritance, Instance, 
       Key, KeyValueTable, 
       LazyInitialization, LinearSearch, LinearSearchAlgorithm, Literal, 
       MapOperation, Mapping, Matrix, Member, MemoryComplexity, Method, Mixin, Module, 
@@ -412,6 +412,14 @@ object explain:
       enShortExplanation = "makes a name locally available without needing the full path",
       svLongExplanation = "En import-sats gör ett namn tillgängligt i det lokala omfånget utan att hela den kvalificerade sökvägen behöver skrivas varje gång; i Scala 3 kan import placeras var som helst i koden och man kan importera flera namn eller använda wildcard med '_'.",
       enLongExplanation = "An import statement makes a name available in the local scope without needing to write the full qualified path every time; in Scala 3, imports can be placed anywhere in the code and multiple names can be imported or a wildcard can be used with '_'.",
+    )
+    val Inheritance = Concept(
+      sv = "arv",
+      en = "inheritance",
+      svShortExplanation = "arv beskriver relationen 'är en'",
+      enShortExplanation = "inheritance describes the 'is a' relationship",
+      svLongExplanation = "Med arv kan en typ (subtyp) ärvas från en annan typ (supertyp), vilket innebär att subtypen får tillgång till supertypens medlemmar och kan användas där supertypen förväntas; det uttrycker relationen 'är en' och stödjer polymorfism och specialisering.",
+      enLongExplanation = "With inheritance, one type (subtype) derives from another type (supertype), which means the subtype gains access to the supertype's members and can be used wherever the supertype is expected; it expresses the 'is a' relationship and supports polymorphism and specialization.",
     )
     val Instance = Concept(
       sv = "instans",
