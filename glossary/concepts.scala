@@ -74,8 +74,8 @@ object explain:
       en = "anonymous class",
       svShortExplanation = "klass utan namn, utvidgad med extra implementation",
       enShortExplanation = "class without a name, extended with extra implementation",
-      svLongExplanation = "En anonym klass skapas direkt vid instansiering med 'new' följt av ett trait- eller klassnamn och ett block med extra implementation; klassen ges inget eget namn och används när en engångsimplementering av ett gränssnitt behövs.",
-      enLongExplanation = "An anonymous class is created directly at instantiation with 'new' followed by a trait or class name and a block with extra implementation; the class is given no name of its own and is used when a one-off implementation of an interface is needed.",
+      svLongExplanation = "En anonym klass saknar namn och skapas direkt vid instansiering med 'new' följt av ett trait- eller klassnamn och ett block med extra implementation.",
+      enLongExplanation = "An anonymous class has no name and is created directly at instantiation with 'new' followed by a trait or class name and a block with extra implementation.",
     )
     val AnonymousFunction = Concept(
       sv = "anonym funktion",
