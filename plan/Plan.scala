@@ -78,7 +78,7 @@ trait Plan:
     Module("Klasser och datamodellering",
       id = "classes", exercise = "classes", labs = Seq("blockbattle0"), contents = """
       | applikationsdomän, datamodell, objektorientering, klass, instans, 
-      | Any, isInstanceOf, toString,
+      | isInstanceOf, toString,
       | new, null, this,
       | accessregler, private, private[this],
       | klassparameter, primär konstruktor, fabriksmetod, alternativ konstruktor,
@@ -89,7 +89,7 @@ trait Plan:
 
     Module("Mönster och felhantering",
       id = "patterns", exercise = "patterns", labs = Seq("blockbattle1"), contents = """
-      | mönstermatchning, match, Option, throw, try, catch, Try, unapply, sealed,
+      | mönstermatchning, Any, match, isInstanceOf, Option, throw, try, catch, Try, unapply, sealed, 
       | flatten, flatMap, partiella funktioner, collect,
       | wildcard-mönster, variabelbindning i mönster, sekvens-wildcard, bokstavliga mönster,
       | implementera equals, hashcode 
