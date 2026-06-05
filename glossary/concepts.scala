@@ -858,8 +858,8 @@ object explain:
       en = "string interpolator",
       svShortExplanation = "en funktion för att bädda in uttryck i strängar",
       enShortExplanation = "a feature to embed expressions in strings",
-      svLongExplanation = "Stränginterpolation är en Scala-funktion som tillåter inbäddning av variabelreferenser och uttryck direkt i strängliteraler med hjälp av s-interpolatorn, som skrives med ett inledande s-tecken.",
-      enLongExplanation = "String interpolation is a Scala feature that allows embedding variable references and expressions directly in string literals using the s interpolator, written with a leading s character.",
+      svLongExplanation = "Att 'interpolera' innebär att skjuta in mellanliggande ord i en text. Stränginterpolation är en Scala-funktion som tillåter inbäddning av variabelreferenser och uttryck direkt i strängliteraler med hjälp av s-interpolatorn, som skrives med ett inledande s-tecken.",
+      enLongExplanation = "To 'interpolate' means to insert intermediate words in a text. String interpolation is a Scala feature that allows embedding variable references and expressions directly in string literals using the s interpolator, written with a leading s character.",
     )
     val StringType = Concept(
       sv = "sträng",
