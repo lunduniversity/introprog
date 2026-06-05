@@ -12,7 +12,7 @@ object explain:
       CompanionObject, Compile, Compiler, CompileError, Computer, ControlStructure, Constructor, 
       DataStructure,
       DefaultArgument, Deserialize, DotNotation, DynamicBinding, 
-      Element, Export, Expression,
+      Enumeration, Element, Export, Expression,
       FactoryMethod, FloatingPoint, ForStatement, Function, FunctionBody, FunctionHeader,
       Generic, Getter, 
       Implementation, Import, Instance, 
@@ -300,6 +300,14 @@ object explain:
       enShortExplanation = "the runtime type determines which method is called",
       svLongExplanation = "Dynamisk bindning innebär att det vid ett metodanrop är objektets körtidstyp, inte den statiska deklarerade typen, som avgör vilken implementering av metoden som faktiskt exekveras; detta är grunden för polymorfism och möjliggörs av överskuggning.",
       enLongExplanation = "Dynamic binding means that at a method call it is the object's runtime type, not the statically declared type, that determines which implementation of the method is actually executed; this is the foundation of polymorphism and is enabled by overriding.",
+    )
+    val Enumeration = Concept(
+      sv = "enumeration",
+      en = "enumeration",
+      svShortExplanation = "en uppräkning av värden i en viss ordning",
+      enShortExplanation = "a listing of values in a particular order",
+      svLongExplanation = "En enumeration är en datastruktur som består av ett begränsat antal namngivna värden i bestämd ordning; den används för att representera en uppräknelig mängd alternativ med tydliga namn och kan förbättra typkontroll och läsbarhet.",
+      enLongExplanation = "An enumeration is a data structure consisting of a finite set of named values in a specific order; it is used to represent an enumerable set of alternatives with clear names and can improve type safety and readability.",
     )
     val Element = Concept(
       sv = "element",
