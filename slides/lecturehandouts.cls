@@ -156,7 +156,7 @@ linkcolor=, linkbordercolor=mylinkcolor, urlbordercolor=mylinkcolor, urlcolor=my
     private,protected,return,sealed,%
     super,then,throw,trait,true,try,%
     type,val,var,while,with,yield,%
-    as, derives, end, extension, infix, inline, opaque, open, transparent, using}, % soft keywords
+    derives, end, extension, infix, inline, opaque, open, transparent, using}, % soft keywords excluding as
   otherkeywords={=>,<-,<:,>:,@,=>>,?=>},
   sensitive=true,
   morecomment=[l]{//},
