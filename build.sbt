@@ -1,3 +1,4 @@
+import org.bouncycastle.pqc.jcajce.provider.lms.LMSSignatureSpi.generic
 import sbt._
 import Process._
 import Keys._
@@ -72,7 +73,8 @@ build := Def.sequential(
   gen,
   genquiz,
   gengloss,
-  pdf
+  pdf,
+  gen
 ).value
 
 lazy val gen = taskKey[Unit]("alias for plan/run")
