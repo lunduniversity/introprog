@@ -45,7 +45,7 @@ trait Plan:
     Module("Funktioner och abstraktion",
       id = "functions", exercise = "functions", labs = Seq("irritext"), contents = """
       | abstraktion, funktion,
-      | parameter, argument, returtyp, default-argument,
+      | parameter, argument, returtyp, defaultargument,
       | namngivna argument, parameterlista, funktionshuvud, funktionskropp,
       | applicera funktion på alla element i en samling,
       | uppdelad parameterlista, skapa egen kontrollstruktur,
