@@ -68,14 +68,11 @@ lazy val glossary = (project in file("glossary")).settings(commonSettings: _*).
   )
 
 
-lazy val build = taskKey[Unit]("complete build including plan/run before pdf")
-build := Def.sequential(
-  gen,
-  genquiz,
-  gengloss,
-  pdf,
-  gen
-).value
+// `build` is a COMMAND alias (not a task): each step runs as its own command,
+// so the final `gen` re-runs AFTER `pdf`. (As a task, `gen` is one node in the
+// graph and sbt evaluates it once — the second `gen` would be skipped.) This
+// makes headings-GENERATED.scala reflect the freshly built compendium pages.
+addCommandAlias("build", "gen; genquiz; gengloss; pdf; gen")
 
 lazy val gen = taskKey[Unit]("alias for plan/run")
 gen := (plan/Compile/run).toTask("").value
