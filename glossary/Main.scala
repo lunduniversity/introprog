@@ -67,12 +67,41 @@ object Main {
       |  English terms from: ${engSourceDirs.mkString(", ")} (${engCorpus.size} .tex files)
       |""".stripMargin
     )
-    val concepts =  quizConceptsFile.loadLines
-      .map(_.split("\t"))
-      .map( xs => Map(Begr -> xs(0), Eng -> findEnglish(xs(0)), Beskr -> xs(1)))
+    // Quiz concepts (mined from the exercises into the tsv): (Begrepp, Beskrivning).
+    // The mining can emit the same concept more than once with different one-liners.
+    val quizRows: Seq[(String, String)] =
+      quizConceptsFile.loadLines.map(_.split("\t")).filter(_.length >= 2).map(xs => (xs(0), xs(1)))
+
+    // Warn (in yellow) about duplicate concepts coming out of the quiz mining.
+    val dups = quizRows.groupBy(_._1.toLowerCase).filter(_._2.size > 1)
+    if (dups.nonEmpty) {
+      val (yellow, reset) = (Console.YELLOW, Console.RESET)
+      println(s"${yellow}  WARNING: ${dups.size} duplicate concept(s) in $quizConceptsFile " +
+        s"(resolved by preferring concepts.scala):$reset")
+      dups.toSeq.sortBy(_._1).foreach { case (_, rows) =>
+        println(s"$yellow    ${rows.head._1}:$reset")
+        rows.foreach { case (_, d) => println(s"$yellow      - $d$reset") }
+      }
+    }
+
+    // The glossary is the UNION of the official explanations and the quiz concepts,
+    // PREFERRING concepts.scala: every official concept (with its own en + description),
+    // plus any quiz-only concept the catalogue lacks (English mined from \Eng{...}).
+    val explainKeys = explain.allConcepts.map(_.sv.toLowerCase).toSet
+    val officialConcepts = explain.allConcepts.map(c =>
+      Map(Begr -> c.sv, Eng -> c.en, Beskr -> c.svShortExplanation))
+    val quizOnly = quizRows
+      .filterNot(r => explainKeys.contains(r._1.toLowerCase))
+      .map { case (b, d) => Map(Begr -> b, Eng -> findEnglish(b), Beskr -> d) }
+
+    val concepts = (officialConcepts ++ quizOnly)
+      .groupBy(_(Begr).toLowerCase).map(_._2.head).toSeq // dedupe by Begrepp
+      .sortBy(_(Begr).toLowerCase)
 
     val foundEng = concepts.count(_(Eng).nonEmpty)
-    println(s"  found official English term for $foundEng of ${concepts.size} concepts via \\Eng{...}")
+    println(s"  glossary concepts: ${concepts.size} " +
+      s"(official ${officialConcepts.size} + quiz-only ${quizOnly.map(_(Begr).toLowerCase).distinct.size}); " +
+      s"English filled for $foundEng")
 
     val table = Table(Seq(Begr, Eng, Beskr), concepts)
     table.toMarkdown.save(s"$conceptsFile.md")

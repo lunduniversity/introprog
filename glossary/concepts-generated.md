@@ -1,118 +1,124 @@
-| Begrepp             | Engelska                 | Beskrivning |
-|:--------------------|:-------------------------|:--|
-| @main               |                          | där exekveringen av kompilerat program startar |
-| abstrahera          |                          | att införa nya begrepp som förenklar kodningen |
-| abstrakt klass      |                          | kan ha parametrar, kan ej instansieras, kan ej mixas in |
-| abstrakt medlem     |                          | saknar implementation |
-| algoritm            |                          | stegvis beskrivning av en lösning på ett problem |
-| anonym funktion     |                          | funktion utan namn; kallas även lambda |
-| anonym klass        |                          | klass utan namn, utvidgad med extra implementation |
-| Array               |                          | en förändringsbar, indexerbar sekvenssamling |
-| attribut            | attribute                | variabel som utgör (del av) ett objekts tillstånd |
-| bastyp              |                          | den mest generella typen i en arvshierarki |
-| block               |                          | kan ha lokala namn; sista raden ger värdet |
-| boolesk             |                          | antingen sann eller falsk |
-| case-klass          |                          | slipper skriva new; automatisk innehållslikhet |
-| datastruktur        |                          | många olika element i en helhet; elementvis åtkomst |
-| de-serialisera      |                          | avkoda symbolsekvens och återskapa objekt i minnet |
-| defaultargument     |                          | gör att argument kan utelämnas |
-| dynamisk bindning   |                          | körtidstypen avgör vilken metod som körs |
-| element             |                          | objekt i en datastruktur |
-| enhetlig access     | uniform access principle | ändring mellan def och val påverkar ej användning |
-| exekveringsfel      |                          | kan inträffa medan programmet kör |
-| export              |                          | gör namn synligt utåt som medlem i detta objekt |
-| fabriksmetod        | factory method           | hjälpfunktion för indirekt konstruktion |
-| flyttal             |                          | decimaltal med begränsad noggrannhet |
-| for-sats            |                          | bra då antalet repetitioner är bestämt i förväg |
-| funktion            | higher-order function    | vid anrop beräknas ett returvärde |
-| funktionshuvud      |                          | har parameterlista och eventuellt en returtyp |
-| funktionskropp      |                          | koden som exekveras vid funktionsanrop |
-| förseglad typ       |                          | subtypning utanför denna kodfil är förhindrad |
-| generisk            | generic                  | har abstrakt typparameter, typen är generell |
-| getter              |                          | indirekt åtkomst av attributvärde |
-| implementation      |                          | en specifik realisering av en algoritm |
-| import              |                          | gör namn tillgängligt lokalt utan att hela sökvägen behövs |
-| inmixning           | mix-in                   | tillföra flera egenskaper genom arv av trait |
-| innehållslikhet     | structural equality      | instanser anses lika om de har samma tillstånd |
-| instans             |                          | upplaga av ett objekt med eget tillståndsminne |
-| klass               | class                    | en mall för att skapa flera instanser av samma typ |
-| klassparameter      |                          | binds till argument som ges vid konstruktion |
-| kolonn              |                          | annat ord för kolumn |
-| kolumnvektor        |                          | matris av dimension $m\times{}1$ med $m$ vertikala värden |
-| kompanjonsobjekt    | companion object         | ser privata medlemmar i klass med samma namn |
-| kompilera           |                          | att översätta kod till exekverbar form |
-| kompilera           |                          | maskinkod skapas ur en eller flera källkodsfiler |
-| kompileringsfel     |                          | kan inträffa innan exekveringen startat |
-| konstruktor         | constructor              | skapar instans, allokerar plats för tillståndsminne |
-| körtidstyp          |                          | kan vara mer specifik än den statiska typen |
-| lat initialisering  |                          | allokering sker först när namnet refereras |
-| linjärsöka          |                          | leta i sekvens tills sökkriteriet är uppfyllt |
-| linjärsökning       |                          | sökalgoritm som letar i sekvens tills element hittas |
-| litteral            |                          | anger ett specifikt datavärde |
-| map                 |                          | applicerar en funktion på varje element i en samling |
-| mappning            |                          | nyckel -> värde |
-| matris              | matrix                   | indexerbar datastruktur i två dimensioner |
-| medlem              |                          | tillhör ett objekt; nås med punktnotation om synlig |
-| metod               |                          | funktion som är medlem av ett objekt |
-| minneskomplexitet   |                          | hur minnesåtgången växer med problemstorleken |
-| modul               | module                   | kodenhet med abstraktioner som kan återanvändas |
-| mängd               |                          | oordnad samling med unika element |
-| namnanrop           |                          | fördröjd evaluering av argument |
-| namngivna argument  |                          | gör att argument kan ges i valfri ordning |
-| namnrymd            | current scope            | omgivning där är alla namn är unika |
-| namnskuggning       |                          | lokalt namn döljer samma namn i omgivande block |
-| new                 |                          | nyckelord vid direkt instansiering av klass |
-| null                |                          | ett värde som ej refererar till någon instans |
-| nyckel              |                          | en unik identifierare |
-| nyckel-värde-tabell | key-value table          | oordnad samling av mappningar med unika nycklar |
-| objekt              | mutable object           | samlar variabler och funktioner |
-| ordning             |                          | definierar hur element av en viss typ ska ordnas |
-| paket               | package                  | modul som skapar namnrymd; maskinkod får egen katalog |
-| parameterlista      |                          | beskriver namn och typ på parametrar |
-| persistens          |                          | egenskapen att finnas kvar efter programmets avslut |
-| polymorfism         | paramteric polymorphism  | kan ha många former, t.ex. en av flera subtyper |
-| predikat            |                          | en funktion som ger ett booleskt värde |
-| privat              |                          | modifierar synligheten av en objektmedlem |
-| procedur            |                          | vid anrop sker (sido)effekt; returvärdet är tomt |
-| programargument     |                          | kan överföras via parametern args till main |
-| punktnotation       |                          | används för att komma åt icke-privata delar |
-| radvektor           |                          | matris av dimension $1\times{}m$ med $m$ horisontella värden |
-| Range               |                          | en samling som representerar ett intervall av heltal |
-| referenslikhet      | reference equality       | instanser anses olika även om tillstånden är lika |
-| referenstyp         |                          | har supertypen AnyRef, allokeras i heapen via referens |
-| registrering        |                          | algoritm som räknar element med vissa egenskaper |
-| rekursiv funktion   |                          | en funktion som anropar sig själv |
-| samling             | collection               | datastruktur med element av samma typ |
-| samlingsbibliotek   |                          | många färdiga samlingar med olika egenskaper |
-| sats                |                          | en kodrad som gör något; kan särskiljas med semikolon |
-| sekvens(samling)    |                          | noll el. flera element av samma typ i viss ordning |
-| sekvensalgoritm     |                          | lösning på problem som drar nytta av sekvenssamling |
-| sekvenssamling      |                          | datastruktur med element i en viss ordning |
-| serialisera         |                          | koda objekt till avkodningsbar sekvens av symboler |
-| setter              |                          | indirekt tilldelning av attributvärde |
-| singelobjekt        | singleton object         | modul som kan ha tillstånd; finns i en enda upplaga |
-| skript              |                          | ensam kodfil, huvudprogram behövs ej |
-| skyddad medlem      |                          | är endast synlig i subtyper |
-| slumptalsfrö        | random seed              | ger återupprepningsbar sekvens av pseudoslumptal |
-| sortering           |                          | algoritm som ordnar element i en viss ordning |
-| stack trace         |                          | lista anropskedja vid körtidsfel |
-| sträng              |                          | en sekvens av tecken |
-| subtyp              |                          | en typ som är mer specifik |
-| supertyp            |                          | en typ som är mer generell |
-| sökning             |                          | algoritm som letar upp element enligt sökkriterium |
-| tidskomplexitet     |                          | hur exekveringstiden växer med problemstorleken |
-| tilldelning         |                          | för att ändra en variabels värde |
-| trait               |                          | är abstrakt, kan mixas in, kan ha parametrar |
-| typ                 |                          | beskriver vad data kan användas till |
-| typalias            |                          | alternativt namn på typ som ofta ökar läsbarheten |
-| typargument         |                          | konkret typ, binds till typparameter vid kompilering |
-| typhärledning       |                          | kompilatorn beräknar typ ur sammanhanget |
-| uttryck             |                          | kombinerar värden och funktioner till ett nytt värde |
-| Vector              |                          | en oföränderlig, indexerbar sekvenssamling |
-| värdeanrop          |                          | argumentet evalueras innan anrop |
-| värdetyp            |                          | har supertypen AnyVal, lagras direkt på stacken |
-| while-sats          |                          | bra då antalet repetitioner ej är bestämt i förväg |
-| yield               |                          | används i for-uttryck för att skapa ny samling |
-| äkta funktion       |                          | ger alltid samma resultat om samma argument |
-| överlagring         | overloading              | metoder med samma namn men olika parametertyper |
-| överskuggad medlem  |                          | medlem i subtyp ersätter medlem i supertyp |
+| Begrepp             | Engelska                | Beskrivning |
+|:--------------------|:------------------------|:--|
+| @main               | @main                   | där exekveringen av kompilerat program startar |
+| abstrahera          | abstract                | att införa nya begrepp som förenklar kodningen |
+| abstrakt klass      | abstract class          | kan ha parametrar, kan ej instansieras, kan ej mixas in |
+| abstrakt medlem     | abstract member         | saknar implementation |
+| algoritm            | algorithm               | stegvis beskrivning av en lösning på ett problem |
+| anonym funktion     | anonymous function      | funktion utan namn; kallas även lambda |
+| anonym klass        | anonymous class         | klass utan namn, utvidgad med extra implementation |
+| Array               | Array                   | en förändringsbar, indexerbar sekvenssamling |
+| arv                 | inheritance             | arv beskriver relationen 'är en' |
+| attribut            | attribute               | variabel som utgör (del av) ett objekts tillstånd |
+| bastyp              | base type               | den mest generella typen i en arvshierarki |
+| block               | block                   | kan ha lokala namn; sista raden ger värdet |
+| boolesk             | boolean                 | antingen sann eller falsk |
+| case-klass          | case class              | slipper skriva new; automatisk innehållslikhet |
+| datastruktur        | data structure          | många olika element i en helhet; elementvis åtkomst |
+| dator               | computer                | en elektronisk enhet som behandlar data enligt instruktioner |
+| de-serialisera      | deserialize             | avkoda symbolsekvens och återskapa objekt i minnet |
+| defaultargument     | default argument        | gör att argument kan utelämnas |
+| dynamisk bindning   | dynamic binding         | körtidstypen avgör vilken metod som körs |
+| element             | element                 | objekt i en datastruktur |
+| enhetlig access     | uniform access          | ändring mellan def och val påverkar ej användning |
+| enumeration         | enumeration             | en uppräkning av värden i en viss ordning |
+| exekveringsfel      | runtime error           | kan inträffa medan programmet kör |
+| export              | export                  | gör namn synligt utåt som medlem i detta objekt |
+| fabriksmetod        | factory method          | hjälpfunktion för indirekt konstruktion |
+| flyttal             | floating-point number   | decimaltal med begränsad noggrannhet |
+| for-sats            | for statement           | bra då antalet repetitioner är bestämt i förväg |
+| funktion            | function                | vid anrop beräknas ett returvärde |
+| funktionshuvud      | function header         | har parameterlista och eventuellt en returtyp |
+| funktionskropp      | function body           | koden som exekveras vid funktionsanrop |
+| förseglad typ       | sealed type             | subtypning utanför denna kodfil är förhindrad |
+| generisk            | generic                 | har abstrakt typparameter, typen är generell |
+| getter              | getter                  | indirekt åtkomst av attributvärde |
+| implementation      | implementation          | en specifik realisering av en algoritm |
+| import              | import                  | gör namn tillgängligt lokalt utan att hela sökvägen behövs |
+| inmixning           | mixin                   | tillföra flera egenskaper genom arv av trait |
+| innehållslikhet     | structural equality     | instanser anses lika om de har samma tillstånd |
+| instans             | instance                | upplaga av ett objekt med eget tillståndsminne |
+| klass               | class                   | en mall för att skapa flera instanser av samma typ |
+| klassparameter      | class parameter         | binds till argument som ges vid konstruktion |
+| kolonn              | column                  | annat ord för kolumn |
+| kolumnvektor        | column vector           | matris av dimension $m\times{}1$ med $m$ vertikala värden |
+| kompanjonsobjekt    | companion object        | ser privata medlemmar i klass med samma namn |
+| kompilator          | compiler                | ett program som tar källkod som indata och ger maskinkod som utdata |
+| kompilera           | compile                 | att översätta kod till exekverbar form |
+| kompileringsfel     | compile error           | kan inträffa innan exekveringen startat |
+| konstruktor         | constructor             | skapar instans, allokerar plats för tillståndsminne |
+| kontrollstruktur    | control structure       | kan ge alternativa vägar genom koden |
+| körtidstyp          | runtime type            | kan vara mer specifik än den statiska typen |
+| lat initialisering  | lazy initialization     | allokering sker först när namnet refereras |
+| linjärsöka          | linear search           | leta i sekvens tills sökkriteriet är uppfyllt |
+| linjärsökning       | linear search algorithm | sökalgoritm som letar i sekvens tills element hittas |
+| litteral            | literal                 | anger ett specifikt datavärde |
+| map                 | map                     | applicerar en funktion på varje element i en samling |
+| mappning            | mapping                 | nyckel -> värde |
+| matris              | matrix                  | indexerbar datastruktur i två dimensioner |
+| medlem              | member                  | tillhör ett objekt; nås med punktnotation om synlig |
+| metod               | method                  | funktion som är medlem av ett objekt |
+| minneskomplexitet   | memory complexity       | hur minnesåtgången växer med problemstorleken |
+| modul               | module                  | kodenhet med abstraktioner som kan återanvändas |
+| mängd               | set                     | oordnad samling med unika element |
+| namnanrop           | call by name            | fördröjd evaluering av argument |
+| namngivna argument  | named arguments         | gör att argument kan ges i valfri ordning |
+| namnrymd            | namespace               | omgivning där är alla namn är unika |
+| namnskuggning       | name shadowing          | lokalt namn döljer samma namn i omgivande block |
+| new                 | new                     | nyckelord vid direkt instansiering av klass |
+| null                | null                    | ett värde som ej refererar till någon instans |
+| nyckel              | key                     | en unik identifierare |
+| nyckel-värde-tabell | key-value table         | oordnad samling av mappningar med unika nycklar |
+| objekt              | object                  | samlar variabler och funktioner |
+| ordning             | ordering                | definierar hur element av en viss typ ska ordnas |
+| paket               | package                 | modul som skapar namnrymd; maskinkod får egen katalog |
+| parameterlista      | parameter list          | beskriver namn och typ på parametrar |
+| persistens          | persistence             | egenskapen att finnas kvar efter programmets avslut |
+| polymorfism         | polymorphism            | kan ha många former, t.ex. en av flera subtyper |
+| predikat            | predicate               | en funktion som ger ett booleskt värde |
+| privat              | private                 | modifierar synligheten av en objektmedlem |
+| procedur            | procedure               | vid anrop sker (sido)effekt; returvärdet är tomt |
+| programargument     | program argument        | kan överföras via parametern args till main |
+| punktnotation       | dot notation            | används för att komma åt icke-privata delar |
+| radvektor           | row vector              | matris av dimension $1\times{}m$ med $m$ horisontella värden |
+| Range               | Range                   | en samling som representerar ett intervall av heltal |
+| referenslikhet      | reference equality      | instanser anses olika även om tillstånden är lika |
+| referenstyp         | reference type          | har supertypen AnyRef, allokeras i heapen via referens |
+| registrering        | counting                | algoritm som räknar element med vissa egenskaper |
+| rekursiv funktion   | recursive function      | en funktion som anropar sig själv |
+| samling             | collection              | datastruktur med element av samma typ |
+| samlingsbibliotek   | collection library      | många färdiga samlingar med olika egenskaper |
+| sats                | statement               | en kodrad som gör något; kan särskiljas med semikolon |
+| sekvens(samling)    | sequence (collection)   | noll el. flera element av samma typ i viss ordning |
+| sekvensalgoritm     | sequence algorithm      | lösning på problem som drar nytta av sekvenssamling |
+| sekvenssamling      | sequence collection     | datastruktur med element i en viss ordning |
+| serialisera         | serialize               | koda objekt till avkodningsbar sekvens av symboler |
+| setter              | setter                  | indirekt tilldelning av attributvärde |
+| singelobjekt        | singleton object        | modul som kan ha tillstånd; finns i en enda upplaga |
+| skript              | script                  | ensam kodfil, huvudprogram behövs ej |
+| skyddad medlem      | protected member        | är endast synlig i subtyper |
+| slumptalsfrö        | random seed             | ger återupprepningsbar sekvens av pseudoslumptal |
+| sortering           | sorting                 | algoritm som ordnar element i en viss ordning |
+| stack trace         | stack trace             | lista anropskedja vid körtidsfel |
+| sträng              | string                  | en sekvens av tecken |
+| stränginterpolator  | string interpolator     | en funktion för att bädda in uttryck i strängar |
+| subtyp              | subtype                 | en typ som är mer specifik |
+| supertyp            | supertype               | en typ som är mer generell |
+| sökning             | search                  | algoritm som letar upp element enligt sökkriterium |
+| tidskomplexitet     | time complexity         | hur exekveringstiden växer med problemstorleken |
+| tilldelning         | assignment              | för att ändra en variabels värde |
+| trait               | trait                   | är abstrakt, kan mixas in, kan ha parametrar |
+| typ                 | type                    | beskriver vad data kan användas till |
+| typalias            | type alias              | alternativt namn på typ som ofta ökar läsbarheten |
+| typargument         | type argument           | konkret typ, binds till typparameter vid kompilering |
+| typhärledning       | type inference          | kompilatorn beräknar typ ur sammanhanget |
+| uttryck             | expression              | kombinerar värden och funktioner till ett nytt värde |
+| variabel            | variable                | kan initialiseras, refereras och eventuellt ändras med tilldelning |
+| Vector              | Vector                  | en oföränderlig, indexerbar sekvenssamling |
+| värdeanrop          | call by value           | argumentet evalueras innan anrop |
+| värdetyp            | value type              | har supertypen AnyVal, lagras direkt på stacken |
+| while-sats          | while statement         | bra då antalet repetitioner ej är bestämt i förväg |
+| yield               | yield                   | används i for-uttryck för att skapa ny samling |
+| äkta funktion       | pure function           | ger alltid samma resultat om samma argument |
+| överlagring         | overloading             | metoder med samma namn men olika parametertyper |
+| överskuggad medlem  | overridden member       | medlem i subtyp ersätter medlem i supertyp |

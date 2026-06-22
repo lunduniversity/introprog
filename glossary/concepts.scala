@@ -18,7 +18,7 @@ object explain:
       Implementation, Import, Inheritance, Instance, 
       Key, KeyValueTable, 
       LazyInitialization, LinearSearch, LinearSearchAlgorithm, Literal, 
-      MapOperation, Mapping, Matrix, Member, MemoryComplexity, Method, Mixin, Module, 
+      Main, MapOperation, Mapping, Matrix, Member, MemoryComplexity, Method, Mixin, Module,
       NamedArguments, NameShadowing, Namespace, New, Null, 
       Object, Ordering, Overloading, OverriddenMember, 
       Package, ParameterList, Persistence, Polymorphism, Predicate, Private, Procedure, ProgramArgument, ProtectedMember,
@@ -476,6 +476,14 @@ object explain:
       enShortExplanation = "specifies a specific data value",
       svLongExplanation = "En litteral är en direkt notation för ett specifikt värde i källkoden, t.ex. '42' för ett heltal, '3.14' för ett Double, '\"hej\"' för en sträng, 'true' för ett booleskt värde, eller ''a'' för ett tecken.",
       enLongExplanation = "A literal is a direct notation for a specific value in source code, e.g. '42' for an integer, '3.14' for a Double, '\"hello\"' for a string, 'true' for a boolean, or ''a'' for a character.",
+    )
+    val Main = Concept(
+      sv = "@main",
+      en = "@main",
+      svShortExplanation = "där exekveringen av kompilerat program startar",
+      enShortExplanation = "where execution of a compiled program starts",
+      svLongExplanation = "En metod som annoteras med @main blir programmets startpunkt: när det kompilerade programmet körs anropas @main-metoden automatiskt, och eventuella kommandoradsargument görs tillgängliga som typade parametrar.",
+      enLongExplanation = "A method annotated with @main becomes the program's entry point: when the compiled program is run, the @main method is called automatically, and any command-line arguments are made available as typed parameters.",
     )
     val MapOperation = Concept(
       sv = "map",
