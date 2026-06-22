@@ -47,6 +47,7 @@ lazy val commonSettings = Seq(
 )
 
 lazy val plan = (project in file("plan")).settings(commonSettings: _*).
+  dependsOn(glossary). // plan reads glossary.explain to generate translations for muntabot
   settings(
     name := "plan",
     libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.10.2",

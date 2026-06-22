@@ -157,3 +157,5 @@ val nameDefs = {
 
   FindHeadings()
 
+  FindTranslations()
+
