@@ -1003,7 +1003,8 @@ Som kan ses ovan är elementet som jämförs i \code{equals} av typen \code{Any}
 
 \end{tikzpicture}
 
-\SubtaskSolved  -
+\SubtaskSolved
+Se objektdiagrammet ovan: \code{g1} och \code{g2} refererar till samma \code{Gurka}-objekt medan \code{g3} refererar till ett eget objekt med samma innehåll --- därför ger \code{==} (som utan egen \code{equals} jämför referenslikhet) \code{true} för \code{g1 == g2} men \code{false} för \code{g1 == g3}.
 
 \SubtaskSolved  I de första 3 raderna sker samma som i deluppgift \textit{a}. När nu dessa jämförelser görs mellan \code{Gurka}-objekten så överskuggas \code{Any.equals} av den \code{equals} som är specificerad för just \code{Gurka}. Eftersom båda objekten \code{g1} jämförs med också är av typen \code{Gurka} så matchar den med \code{case that: Gurka}. Denna i sin tur jämför vikterna hos de båda gurkorna och returnerar en \code{Boolean} huruvida de är lika eller inte, vilket de i båda fallen är.
 
@@ -1053,7 +1054,8 @@ res2: polynomial.Poly = -5x + y^4 + 3z^2
 \SubtaskSolved
 Koden bygger upp en liten DSL för polynom. Den förseglade typen \code{Term} har subtyperna \code{Const} (en konstant), \code{Var} (en variabel med en exponent, t.ex. \code{x}) och \code{Prod} (en produkt av en konstant och en mängd \code{Var}), medan \code{Poly} representerar en summa av termer. Metoden \code{*} multiplicerar termer (t.ex. ger \code{Const(1) * x} termen \code{x}) och upphöjningsmetoden ger en ny term med uppdaterad exponent. De fördefinierade variablerna \code{x}, \code{y}, \code{z}, \code{s} och \code{t} är \code{Var}-objekt och \code{Poly(...)} skriver ut sina termer som en summa --- vilket förklarar resultaten i REPL-exemplet ovan.
 
-\SubtaskSolved \TODO
+\SubtaskSolved
+\emph{Ledtråd.} Inför addition (\code{+}) analogt med \code{*} genom att matcha på subtyperna: två \code{Prod} med samma variabeldel kan slås ihop genom att addera konstanterna, annars blir resultatet en \code{Poly} som innehåller båda termerna i sin mängd.
 
 
 
@@ -1139,6 +1141,7 @@ Programmet beter sig precis som Java-versionen. De viktigaste skillnaderna: Scal
 
 
 \TaskSolved \what
+\emph{Ledtråd.} \code{reduce} ska förenkla ett \code{Poly} genom att slå ihop \code{Prod}-termer med samma variabeldel: gruppera termerna på deras \code{vars}, summera konstanterna inom varje grupp och bygg ett nytt \code{Poly} av de hopslagna termerna (uteslut termer vars konstant blev 0).
 
 
 
@@ -1179,6 +1182,7 @@ Programmet beter sig precis som Java-versionen. De viktigaste skillnaderna: Scal
 
 
 \TaskSolved \what
+\emph{Ledtråd.} Inför \code{def ===(that: Term): Boolean} som abstrakt metod i \code{Term} och överskugga den i varje subtyp med en innehållsjämförelse. Eftersom parametern har den specifika typen \code{Term} (inte \code{Any}) ger kompilatorn ett typfel om man försöker jämföra en \code{Term} med t.ex. en \code{String} eller \code{Vector}.
 
 
 
@@ -1239,6 +1243,7 @@ Om du överskuggar en \textit{annan} equals än den standard-equals som finns i 
 
 
 \TaskSolved \what
+\emph{Ledtråd.} Följ receptets åtta steg: \code{def canEqual(other: Any) = other.isInstanceOf[Complex]}, en \code{override def equals(other: Any)} som ett match-uttryck med \code{case that: Complex => (that canEqual this) && re == that.re && im == that.im} och \code{case _ => false}, samt \code{override def hashCode = (re, im).##}.
 
 
 
@@ -1270,6 +1275,7 @@ class Rational(numerator: Int, denominator: Int) extends Number:
 
 
 \TaskSolved \what
+\emph{Ledtråd.} Tillämpa samma recept i arvshierarkin: ge \code{Number} en \code{equals} och låt varje subklass (\code{Complex}, \code{Rational}) överskugga \code{canEqual} med sin egen typ samt \code{equals} med \code{super.equals(that) && that.canEqual(this)} följt av jämförelse av de egna fälten. Objekt av olika subklasser blir då aldrig lika.
 
 
 
@@ -1377,6 +1383,7 @@ val res0: String = host=my.host.domain, path=path/to/this
 \SOLUTION
 
 
-\TaskSolved \what \TODO
+\TaskSolved \what
+\emph{Ledtråd.} Polynomdivision är en öppen och klurig uppgift: gör som vid liggande stol --- dividera upprepat den ledande termen i resten med den ledande termen i nämnaren, multiplicera och subtrahera tills restens grad är mindre än nämnarens. Bygg vidare på \code{*}, \code{+} och \code{reduce}.
 
 \QUESTEND
