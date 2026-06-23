@@ -68,6 +68,11 @@ lazy val glossary = (project in file("glossary")).settings(commonSettings: _*).
     name := "glossary",
   )
 
+lazy val autotranslateProject = (project in file("autotranslate")).settings(commonSettings: _*).
+  settings(
+    name := "autotranslate",
+  )
+
 
 // `build` is a COMMAND alias (not a task): each step runs as its own command,
 // so the final `gen` re-runs AFTER `pdf`. (As a task, `gen` is one node in the
@@ -84,6 +89,9 @@ genquiz := (quiz/Compile/run).toTask("").value
 
 lazy val gengloss = taskKey[Unit]("alias for glossary/run")
 gengloss := (glossary/Compile/run).toTask("").value
+
+lazy val autotranslate = taskKey[Unit]("alias for autotranslate/run")
+autotranslate := (autotranslateProject/Compile/run).toTask("").value
 
 // ************** cmd util functions
 
@@ -218,7 +226,7 @@ pdfSlides := {
 }
 
 lazy val root = (project in file(".")).
-  aggregate(workspace, plan, quiz, glossary).
+  aggregate(workspace, plan, quiz, glossary, autotranslateProject).
   settings(commonSettings: _*).
   settings(
     name := "introprog root",
