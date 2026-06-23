@@ -51,6 +51,12 @@ object Main:
       os.exists(root / "compendium"),
       s"cannot find 'compendium' dir from $root (run in introprog root or autotranslate/)"
     )
+    if args.contains("--selftest") then Translate.selftest(root)
+    else if args.contains("--clean") then Translate.clean(root)
+    else mirror(root)
+
+  /** (Re-)create compendium-en/ and slides-en/ (copy + -en rename + \input rewrite + assets). */
+  def mirror(root: os.Path): Unit =
     for (src, dst) <- mirrors do
       val srcDir = root / src
       val dstDir = root / dst

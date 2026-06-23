@@ -69,9 +69,14 @@ lazy val glossary = (project in file("glossary")).settings(commonSettings: _*).
   )
 
 lazy val autotranslateProject = (project in file("autotranslate")).settings(commonSettings: _*).
+  dependsOn(glossary). // typed access to glossary.explain.allConcepts (authoritative sv<->en)
   settings(
     name := "autotranslate",
-    libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.10.2",
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %% "os-lib"   % "0.11.8",
+      "com.lihaoyi" %% "requests" % "0.9.3",
+      "com.lihaoyi" %% "ujson"    % "4.4.3",
+    ),
   )
 
 
