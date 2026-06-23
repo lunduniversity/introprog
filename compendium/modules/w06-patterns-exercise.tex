@@ -1050,7 +1050,8 @@ res2: polynomial.Poly = -5x + y^4 + 3z^2
 \TaskSolved \what
 
 
-\SubtaskSolved \TODO
+\SubtaskSolved
+Koden bygger upp en liten DSL för polynom. Den förseglade typen \code{Term} har subtyperna \code{Const} (en konstant), \code{Var} (en variabel med en exponent, t.ex. \code{x}) och \code{Prod} (en produkt av en konstant och en mängd \code{Var}), medan \code{Poly} representerar en summa av termer. Metoden \code{*} multiplicerar termer (t.ex. ger \code{Const(1) * x} termen \code{x}) och upphöjningsmetoden ger en ny term med uppdaterad exponent. De fördefinierade variablerna \code{x}, \code{y}, \code{z}, \code{s} och \code{t} är \code{Var}-objekt och \code{Poly(...)} skriver ut sina termer som en summa --- vilket förklarar resultaten i REPL-exemplet ovan.
 
 \SubtaskSolved \TODO
 
@@ -1100,7 +1101,28 @@ Metoden \code{contains} returnerar en \code{Boolean} som visar om den har ett v�
 \SOLUTION
 
 
-\TaskSolved \what \TODO
+\TaskSolved \what
+I Scala är \code{try}-\code{catch} ett \textbf{uttryck} som ger ett värde, så \code{input} och \code{output} kan bindas med \code{val} direkt från resultatet i stället för att (som i Java) först deklarera oinitialiserade variabler:
+\begin{Code}
+@main def TryCatch(args: String*): Unit =
+  val (input, output) =
+    if args(0) == "safe" then
+      try
+        val in = args(1).toInt
+        println("Skyddad division!")
+        (in, 42 / in)
+      catch
+        case e: Exception =>
+          println("Undantag fångat: " + e)
+          println("Dividerar ändå med säker default!")
+          (1, 42 / 1)
+    else
+      val in = args(0).toInt
+      println("Oskyddad division!")
+      (in, 42 / in)
+  println(s"42 / $input == $output")
+\end{Code}
+Programmet beter sig precis som Java-versionen. De viktigaste skillnaderna: Scalas \code{try}-\code{catch} returnerar ett värde (här en tupel), \code{catch} använder mönstermatchning (\code{case e: Exception =>}), och Scala kräver varken att undantag fångas eller deklareras.
 
 
 \QUESTEND
@@ -1272,7 +1294,26 @@ class Rational(numerator: Int, denominator: Int) extends Number:
 \SOLUTION
 
 
-\TaskSolved \what \TODO
+\TaskSolved \what
+
+\SubtaskSolved
+Mönstret \code{namn @ delmönster} binder ett namn till hela det matchade värdet samtidigt som delmönstret plockar isär det:
+\begin{REPL}
+scala> Vector(1, 2, 3) match
+     |   case hela @ Vector(första, _*) => (första, hela)
+val res0: (Int, Vector[Int]) = (1,Vector(1, 2, 3))
+\end{REPL}
+
+\SubtaskSolved
+I sekvensmönster matchar \texttt{\_} exakt ett element medan \texttt{\_*} matchar noll eller flera kvarvarande element:
+\begin{REPL}
+scala> def beskriv(xs: Vector[Int]) = xs match
+     |   case Vector()           => "tom"
+     |   case Vector(x)          => s"ett element: $x"
+     |   case Vector(första, _*) => s"börjar med $första"
+scala> Vector(beskriv(Vector()), beskriv(Vector(9)), beskriv(Vector(1, 2, 3)))
+val res0: Vector[String] = Vector(tom, ett element: 9, börjar med 1)
+\end{REPL}
 
 
 
@@ -1301,7 +1342,24 @@ Skapa ditt eget extraktor-objekt för http-addresser som i t.ex.: \\
 \SOLUTION
 
 
-\TaskSolved \what \TODO
+\TaskSolved \what
+Ett extraktor-objekt definierar metoden \code{unapply} som kan användas i mönstermatchning. Här plockas värd och sökväg ut ur en http-adress:
+\begin{Code}
+object Http:
+  def unapply(s: String): Option[(String, String)] =
+    if s.startsWith("http://") then
+      val rest = s.drop("http://".length)
+      val i = rest.indexOf('/')
+      if i >= 0 then Some((rest.take(i), rest.drop(i + 1)))
+      else Some((rest, ""))
+    else None
+\end{Code}
+\begin{REPL}
+scala> "http://my.host.domain/path/to/this" match
+     |   case Http(host, path) => s"host=$host, path=$path"
+     |   case _                => "ingen träff"
+val res0: String = host=my.host.domain, path=path/to/this
+\end{REPL}
 
 
 

@@ -1157,7 +1157,30 @@ scala> val rätt = Vector("ö","å","ä","z").sorted(svOrd)
 \SOLUTION
 
 
-\TaskSolved \what \TODO
+\TaskSolved \what
+
+\SubtaskSolved
+\begin{REPL}
+val fel: Vector[String] = Vector(z, ä, å, ö)
+val rätt: Vector[String] = Vector(z, å, ä, ö)
+\end{REPL}
+Den vanliga \code{.sorted} jämför på teckenkod och ger fel svensk ordning, medan en \code{Collator} för \code{Locale} \code{"sv"} ger rätt ordning där \code{å}, \code{ä}, \code{ö} kommer sist (efter \code{z}).
+
+\SubtaskSolved
+\begin{Code}
+@main def sorted(flagga: String, fil: String): Unit =
+  val locale =
+    if flagga == "-sv" then java.util.Locale.of("sv")
+    else java.util.Locale.getDefault
+  val coll = java.text.Collator.getInstance(locale)
+  val ordning = Ordering.fromLessThan[String]((a, b) => coll.compare(a, b) < 0)
+  val rader = scala.io.Source.fromFile(fil).getLines().toVector
+  rader.sorted(ordning).foreach(println)
+\end{Code}
+Programmet körs med \code{scala sorted -sv textfil.txt} och skriver ut filens rader i korrekt svensk sorteringsordning.
+
+\SubtaskSolved
+Se länken ovan för fler detaljer och alternativ för lokalanpassad sortering.
 
 
 
