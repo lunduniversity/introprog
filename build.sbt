@@ -71,6 +71,7 @@ lazy val glossary = (project in file("glossary")).settings(commonSettings: _*).
 lazy val autotranslateProject = (project in file("autotranslate")).settings(commonSettings: _*).
   settings(
     name := "autotranslate",
+    libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.10.2",
   )
 
 
