@@ -35,6 +35,7 @@ The main directories are:
   * `modules` with lectures exercises and labs for each week
   * `generated` with output from execution of `plan/Main.scala` included in the compendium
 * `slides` with lecture notes in projector-friendly format
+* `compendium-en` and `slides-en` are **generated** English-side mirrors of `compendium` and `slides` (see "English translation" below) — **do not edit them by hand** and do not commit them; they are git-ignored and re-created on each run of `sbt autotranslate`
 * `workspace` with student workspace including lab code skeletons, examples, code libs etc.
 * `plan` with module contents and concepts per week
 * `img` images used in compendium and slides
@@ -52,6 +53,15 @@ The main directories are:
   * `sbt gen` to generate the planning files, alias for `sbt plan/run`
   * `sbt pdf` to make slides and compendium using pdflatex
   * `sbt build` run both the commands `gen` and `pdf` in sequence
+
+### English translation (work in progress)
+
+An English edition is being built up incrementally and is **not finished yet**. It lives in the generated mirror directories `compendium-en` and `slides-en`, produced by the `autotranslate` sub-project:
+
+* `sbt autotranslate` (re-)creates `compendium-en` and `slides-en`, mirroring the directory structure of `compendium`/`slides` and copying each `X.tex` to `X-en.tex`. The text is **not translated yet** — for now the content is still Swedish; only the file names get an `-en` suffix and the local `\input`/`\include` references are rewritten so the mirror is self-consistent and buildable. Translation will be wired into this step over time.
+* `sbt pdfCompendiumEn` builds `compendium-en/compendium-en.pdf` and `sbt "pdfSlidesEn w01"` builds `slides-en/lect-w01-en.pdf`, so the English side can be verified to compile even before the text is translated.
+
+Because these directories are regenerated from the Swedish source, **never edit `compendium-en` or `slides-en` by hand** — any manual change is overwritten the next time `autotranslate` runs. They are git-ignored.
 
 
 ## How to contribute
