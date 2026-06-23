@@ -192,6 +192,11 @@ pdfCompendium := {
   runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))
 }
 
+lazy val pdfCompendiumEn = taskKey[Unit]("Compile the generated English mirror compendium-en/compendium-en.tex")
+pdfCompendiumEn := {
+  runPdfLatexCmd(texFile = file("compendium-en.tex"), workDir = file("compendium-en"))
+}
+
 lazy val pdfCompendiumPrint = taskKey[Unit]("Compile compendium-print.tex")
 pdfCompendiumPrint := {
   runPdfLatexCmd(texFile = file("compendium-print.tex"), workDir = file("compendium"))
@@ -224,6 +229,23 @@ pdfSlides := {
     runPdfLatexCmd(texFile, workDir)
   }
   if (args.isEmpty) runPdfLatexCmd(file("all-lectures.tex"), workDir)
+}
+
+lazy val pdfSlidesEn = inputKey[Unit]("run pdflatex on the English mirror slides-en/lect-w<weeknumber>-en.tex")
+pdfSlidesEn := {
+  val args: Seq[String] = spaceDelimited("<arg>").parsed
+  val workDir = file("slides-en")
+  val weeks = if (args.isEmpty) {
+    println("""<args> is empty, using w01""")
+    Seq("w01")
+  } else args
+  for (w <- weeks) {
+    val f: String = if (w startsWith "w") "lect-" + w else w // allow both w01 and lect-w01 / file names
+    val name = if (f.takeRight(4) == ".tex") f.dropRight(4) + "-en.tex" else f + "-en.tex"
+    val texFile = file(name)
+    println(s"runPdfLatexCmd($texFile, $workDir)")
+    runPdfLatexCmd(texFile, workDir)
+  }
 }
 
 lazy val root = (project in file(".")).
