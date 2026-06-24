@@ -28,7 +28,7 @@ object Translate:
 
   /** The model to use — a catalogue key. Whether it is served by the modly model server (GPU) or the
     * local CPU Ollama is resolved at runtime: modly is preferred if reachable AND has this model. */
-  val SelectedModel: Name = "qwen2.5:3b" // <-- change this to switch model
+  val SelectedModel: Name = "qwen2.5:7b" // <-- change this to switch model
 
   val Seed = 42
   val ModlyUrl = "http://bjornyx.local:8080" // GPU model server (modly) on the LAN
