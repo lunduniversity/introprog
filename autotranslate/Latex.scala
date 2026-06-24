@@ -22,6 +22,14 @@ object Latex:
   val verbatimInline = Set("code", "jcode", "lstinline", "lstinline*", "verb", "verb*")
   // environments whose whole body is verbatim/non-prose → masked as one block.
   val verbatimEnvs = Set("Code", "REPL", "verbatim", "Verbatim", "lstlisting", "comment")
+  // environments whose mandatory {title} arg is a PROSE heading to translate (the slide title shows
+  // as a level-3 heading in the compendium). \begin{env} + optional [..] is masked; {title} is not.
+  val titleEnvs = Set("Slide", "SlideExtra", "SlideSimple")
+  // \item and its introprog aliases (\ii \is \di = \item in the .cls) — treated as list-item
+  // boundaries so \ii{...} bullet lists split into SMALL per-item units (reliably translatable)
+  // instead of one giant placeholder-dense block that falls back to Swedish.
+  // (\ti \ts = \textit are handled by the default scan = translate-arg, no special case needed.)
+  val itemCmds = Set("item", "ii", "is", "di")
   // \Eng{...} renders "(eng. term)" — redundant in English → removed on the en side.
   // Commands masked WHOLE (command + args) — args are NON-prose and must NOT be translated.
   val maskWhole = Set(
@@ -123,6 +131,10 @@ object Latex:
                 val endTok = s"\\end{$env}"
                 val cl = text.indexOf(endTok, j2); val e = if cl < 0 then n else cl + endTok.length
                 protect(text.substring(i, e)); i = e
+              else if titleEnvs.contains(env) then
+                // mask \begin{env} + optional [..]; leave the mandatory {title} for translate-arg
+                val k = skipOptional(text, j2)
+                protect(text.substring(i, k)); i = k
               else
                 var k = j2 // mask \begin{env} + any immediate env args [..]/{..}
                 var moved = true
@@ -150,7 +162,7 @@ object Latex:
               var k = j
               for _ <- 1 to argc do k = skipGroup(text, skipOptional(text, k))
               protect(text.substring(i, k)); i = k
-            case "item" =>
+            case nm if itemCmds.contains(nm) => // \item / \ii / \is / \di — list-item boundary
               val k = skipOptional(text, j); itemIdx += spans.size; protect(text.substring(i, k)); i = k
             case _ =>
               protect(text.substring(i, j)); i = j // zero-arg / font / unknown control word
