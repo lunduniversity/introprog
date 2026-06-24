@@ -30,14 +30,21 @@ object Main:
 
   private val inputRef = raw"\\(input|include)\{([^}]*)\}".r
 
-  /** Append -en to LOCAL \input/\include .tex targets; leave ../ and / refs alone. */
+  /** Rewrite \input/\include targets to point at the English mirror:
+    *  - LOCAL X.tex -> X-en.tex
+    *  - ../slides/<p>.tex -> ../slides-en/<p>-en.tex  (compendium chapters pull translated slide
+    *    bodies via the Slide environment; without this the chapters stay Swedish)
+    *  - other ../ and / refs (../glossary, ../plan, ../img, ../contributors) left ALONE — their
+    *    English mirrors don't exist yet (e.g. explanations-generated-en.tex is a later phase). */
   def rewriteInputs(tex: String): String =
     inputRef.replaceAllIn(
       tex,
       m =>
         val t = m.group(2)
         val nt =
-          if t.startsWith("..") || t.startsWith("/") then t
+          if t.startsWith("../slides/") && t.endsWith(".tex") then
+            "../slides-en/" + t.stripPrefix("../slides/").dropRight(4) + "-en.tex"
+          else if t.startsWith("..") || t.startsWith("/") then t
           else if t.endsWith(".tex") then t.dropRight(4) + "-en.tex"
           else t + "-en"
         Matcher.quoteReplacement(s"\\${m.group(1)}{$nt}")
