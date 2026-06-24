@@ -13,21 +13,33 @@ import scala.collection.mutable
   */
 object Translate:
 
-  // ---------- model config (swap by editing SelectedModel) ----------
-  val ModelFastCPU: String   = "qwen2.5:3b"  // small, fast, ~2GB; baseline quality
-  val ModelBetterCPU: String = "qwen2.5:7b"  // better quality; ~4.7GB
-  val ModelBestCPU: String   = "qwen2.5:14b" // higher quality, Swedish-capable; ~9GB; ~2x slower than 7b on CPU
-  val ModelBestGPU: String   = "aya23:35b"   // top translation quality (~GPT-4-level) but ~20GB and
-                                             // REQUIRES a GPU — impractically slow on a CPU-only box.
-  // alt CPU option: "gemma2:9b" (Google, strong European/Nordic, ~7b speed). NOT aya-expanse — it has
-  // NO Swedish (its 23 languages exclude sv). qwen2.5:32b fits 31GB RAM but is too slow on this CPU.
-  val SelectedModel: String = ModelFastCPU // <-- change this line to switch model
+  // ---------- model catalogue ----------
+  type Name = String
+  case class Model(name: Name, description: String)
 
-  /** Models that realistically need a GPU (too slow to be usable on CPU). */
-  val gpuModels: Set[String] = Set(ModelBestGPU)
+  val catalogue: Map[Name, Model] = Seq(
+    Model("qwen2.5:3b",   "Qwen2.5 3B — small & fast; baseline sv→en quality (runs on CPU)"),
+    Model("qwen2.5:7b",   "Qwen2.5 7B — general multilingual, good sv→en; fits a 6GB GPU"),
+    Model("qwen2.5:14b",  "Qwen2.5 14B — higher quality; needs >6GB VRAM or a strong CPU"),
+    Model("gemma2:9b",    "Gemma2 9B — strong European/Nordic prose"),
+    Model("gemma3:latest","Gemma3 4B — multilingual, small & fast"),
+    Model("aya23:35b",    "Aya23 35B — top translation quality; GPU-class (~20GB), won't fit a 6GB card")
+  ).map(m => m.name -> m).toMap
+
+  /** The model to use — a catalogue key. Whether it is served by the modly model server (GPU) or the
+    * local CPU Ollama is resolved at runtime: modly is preferred if reachable AND has this model. */
+  val SelectedModel: Name = "qwen2.5:3b" // <-- change this to switch model
 
   val Seed = 42
-  val OllamaChat = "http://localhost:11434/api/chat"
+  val ModlyUrl = "http://bjornyx.local:8080" // GPU model server (modly) on the LAN
+  val OllamaChat = "http://localhost:11434/api/chat" // local CPU Ollama (this box)
+  val OllamaTags = "http://localhost:11434/api/tags"
+
+  /** Where model calls go. Resolved at init; printed so it's always clear which is in use. */
+  enum Backend(val label: String):
+    case Modly extends Backend(s"modly model server ($ModlyUrl)")
+    case Local   extends Backend(s"local CPU via Ollama (this box, $OllamaChat)")
+    case Offline extends Backend("NO backend reachable — translations fall back to Swedish")
 
   // Inference threads: llama.cpp wants PHYSICAL cores (hyperthreads hurt — benchmarked: 4 beats 8
   // on an i7-4790K). Detect physical cores from /proc/cpuinfo; fall back to logical/2; override below.
@@ -96,56 +108,48 @@ object Translate:
   def saveCache(root: os.Path): Unit = writeTsv(cacheFile(root), cache)
   def loadOverrides(root: os.Path): Unit = readTsv(overridesFile(root), overrides)
 
-  // ---------- Ollama process management ----------
-  var ollamaOk = false
+  // ---------- backend: modly model server (GPU) preferred, else local CPU Ollama ----------
+  var backend: Backend = Backend.Offline
 
-  private def proc(args: String*): (Int, String) =
-    try
-      val r = os.proc(args).call(check = false, stderr = os.Pipe)
-      (r.exitCode, r.out.text())
-    catch case _: Throwable => (-1, "")
+  private def httpGet(url: String, timeoutMs: Int): Option[String] =
+    try Some(requests.get(url, readTimeout = timeoutMs, connectTimeout = timeoutMs).text())
+    catch case _: Throwable => None
 
-  /** Best-effort cross-platform GPU detection (Nvidia/AMD/Apple) for the GPU-model warning.
-    * Advisory only — false if no usable LLM GPU is found / the probe commands are missing. */
-  def hasGpu: Boolean =
-    def listed(cmd: String, args: String*): Boolean =
-      val (code, out) = proc((cmd +: args)*)
-      code == 0 && out.trim.nonEmpty
-    listed("nvidia-smi", "-L")                       // Nvidia (CUDA)
-      || listed("rocm-smi", "--showid")              // AMD (ROCm)
-      || os.exists(os.Path("/sys/class/kfd"))        // AMD ROCm kernel driver present
-      || proc("uname", "-s")._2.trim == "Darwin"     // macOS ⇒ Apple Metal (Ollama uses it)
-      || {                                           // Linux fallback: discrete AMD/Nvidia via lspci
-        val (c, o) = proc("lspci")
-        c == 0 && o.linesIterator.map(_.toLowerCase).exists { l =>
-          (l.contains("vga") || l.contains(" 3d ") || l.contains("display")) &&
-          (l.contains("nvidia") || l.contains("amd") || l.contains("radeon") || l.contains("advanced micro"))
-        }
-      }
+  private def httpPost(url: String, body: String, timeoutMs: Int): Option[String] =
+    try Some(requests.post(url, data = body, headers = Map("Content-Type" -> "application/json"),
+      readTimeout = timeoutMs, connectTimeout = timeoutMs).text())
+    catch case _: Throwable => None
 
-  /** Check ollama is installed and SelectedModel is pulled; pull it if missing. Warn, never crash. */
-  def ensureModel(): Unit =
-    if gpuModels.contains(SelectedModel) && !hasGpu then
-      println(s"  [WARN] SelectedModel=$SelectedModel is a GPU-class model but NO usable GPU was " +
-        "detected (Nvidia/AMD/Apple). It will be impractically slow on CPU — switch to " +
-        "ModelBestCPU/ModelBetterCPU/ModelFastCPU for a CPU-only box.")
-    val (vc, vout) = proc("ollama", "--version")
-    if vc != 0 then
-      println("  [warn] ollama not found on PATH — translations will fall back to Swedish.")
-      ollamaOk = false
-    else
-      println(s"  ollama: ${vout.trim}")
-      val (_, listed) = proc("ollama", "list")
-      val present = listed.linesIterator.drop(1).map(_.takeWhile(!_.isWhitespace).trim).contains(SelectedModel)
-      if present then
-        println(s"  model $SelectedModel is available.")
-        ollamaOk = true
-      else
-        println(s"  [warn] model $SelectedModel not pulled — running `ollama pull $SelectedModel` (may take a while)...")
-        val pull = try os.proc("ollama", "pull", SelectedModel).call(check = false, stdout = os.Inherit, stderr = os.Inherit).exitCode
-        catch case _: Throwable => -1
-        ollamaOk = pull == 0
-        if !ollamaOk then println("  [warn] pull failed — translations will fall back to Swedish.")
+  /** Models reported by the modly server; None if modly is unreachable. */
+  def modlyModels(): Option[List[String]] =
+    httpGet(s"$ModlyUrl/models", 3000).flatMap { s =>
+      try Some(ujson.read(s)("models").arr.map(_.str).toList) catch case _: Throwable => None
+    }
+
+  /** Models in the local Ollama (via /api/tags); Nil if unreachable. */
+  def localModels(): List[String] =
+    httpGet(OllamaTags, 3000).flatMap { s =>
+      try Some(ujson.read(s)("models").arr.map(_("name").str).toList) catch case _: Throwable => None
+    }.getOrElse(Nil)
+
+  /** Resolve which backend serves SelectedModel and PRINT model + description + backend.
+    * Prefers modly (GPU) if reachable AND it has the model; else local Ollama; else offline. */
+  def resolveBackend(): Unit =
+    val m = catalogue.getOrElse(SelectedModel, Model(SelectedModel, "(uncatalogued model)"))
+    val mm = modlyModels()
+    backend =
+      if mm.exists(_.contains(SelectedModel)) then Backend.Modly
+      else if localModels().contains(SelectedModel) then Backend.Local
+      else Backend.Offline
+    if backend == Backend.Modly then
+      // tell modly the active model + deterministic defaults once (used by /generate)
+      httpPost(s"$ModlyUrl/set-model",
+        ujson.write(ujson.Obj("model" -> SelectedModel, "temperature" -> 0, "seed" -> Seed)), 120000)
+    println(s"  model:   ${m.name} — ${m.description}")
+    println(s"  backend: ${backend.label}")
+    println(s"  modly: ${mm.map(ms => s"UP (${ms.size} models)").getOrElse("down/unreachable")} ($ModlyUrl)")
+    if backend == Backend.Offline then
+      println(s"  [warn] '$SelectedModel' is on neither modly nor local Ollama — keeping Swedish.")
 
   // ---------- model call ----------
   var modelCalls = 0
@@ -180,34 +184,42 @@ object Translate:
   private def isForeignLetter(c: Char): Boolean =
     c.isLetter && Character.UnicodeScript.of(c.toInt) != Character.UnicodeScript.LATIN
 
-  /** Translate one Swedish unit (plain sentence OR masked LaTeX segment) via Ollama.
-    * Returns None on any failure or if a `__CN__` placeholder was dropped (caller falls back). */
-  def ollamaTranslate(sv: String): Option[String] =
-    if !ollamaOk then return None
+  /** System instructions (+ glossary) shared by both backends. */
+  private def buildSystem(sv: String): String =
     val gloss = glossaryFor(sv)
-    val system =
-      "You are a precise Swedish-to-English translator for an introductory Scala programming course. " +
-        "Translate the Swedish to natural English. Keep numbers, symbols and code unchanged. " +
-        "Keep every placeholder token of the form __C0__, __C1__, ... EXACTLY as-is and in place. " +
-        "Output ONLY the translation: no quotes, no notes, no extra text." +
-        (if gloss.nonEmpty then s" Use these official term translations where they occur: $gloss." else "")
-    val payload = ujson.Obj(
-      "model" -> SelectedModel,
-      "messages" -> ujson.Arr(
-        ujson.Obj("role" -> "system", "content" -> system),
-        ujson.Obj("role" -> "user", "content" -> sv)
-      ),
-      "stream" -> false,
-      "options" -> ujson.Obj("seed" -> Seed, "temperature" -> 0, "num_thread" -> numThreads, "num_ctx" -> 2048)
-    )
-    try
-      val resp = requests.post(OllamaChat, data = ujson.write(payload),
-        headers = Map("Content-Type" -> "application/json"), readTimeout = 600000, connectTimeout = 10000)
-      val out = ujson.read(resp.text())("message")("content").str.trim
-      invalidReason(sv, out) match
-        case None         => Some(out)
-        case Some(reason) => println(s"  [fallback] $reason, kept Swedish for: ${sv.take(60)}"); None
-    catch case e: Throwable => { println(s"  [fallback] ollama error (${e.getClass.getSimpleName}) for: ${sv.take(50)}"); None }
+    "You are a precise Swedish-to-English translator for an introductory Scala programming course. " +
+      "Translate the Swedish to natural English. Keep numbers, symbols and code unchanged. " +
+      "Keep every placeholder token of the form __C0__, __C1__, ... EXACTLY as-is and in place. " +
+      "Output ONLY the translation: no quotes, no notes, no extra text." +
+      (if gloss.nonEmpty then s" Use these official term translations where they occur: $gloss." else "")
+
+  private def checkOut(sv: String, out: String): Option[String] =
+    invalidReason(sv, out) match
+      case None         => Some(out)
+      case Some(reason) => println(s"  [fallback] $reason, kept Swedish for: ${sv.take(60)}"); None
+
+  /** Translate one unit via the resolved backend; None on failure/offline (caller keeps Swedish).
+    * temperature 0 + fixed seed on both backends ⇒ reproducible. */
+  def modelTranslate(sv: String): Option[String] = backend match
+    case Backend.Offline => None
+    case Backend.Local =>
+      val payload = ujson.Obj(
+        "model" -> SelectedModel,
+        "messages" -> ujson.Arr(
+          ujson.Obj("role" -> "system", "content" -> buildSystem(sv)),
+          ujson.Obj("role" -> "user", "content" -> sv)),
+        "stream" -> false,
+        "options" -> ujson.Obj("seed" -> Seed, "temperature" -> 0, "num_thread" -> numThreads, "num_ctx" -> 2048))
+      httpPost(OllamaChat, ujson.write(payload), 600000) match
+        case Some(r) => checkOut(sv, try ujson.read(r)("message")("content").str.trim catch case _: Throwable => "")
+        case None    => println(s"  [fallback] local Ollama error for: ${sv.take(50)}"); None
+    case Backend.Modly =>
+      // modly /generate is single-prompt (Ollama /api/generate); combine instructions + masked text
+      val prompt = buildSystem(sv) + "\n\nSwedish:\n" + sv + "\n\nEnglish:"
+      val payload = ujson.Obj("prompt" -> prompt, "temperature" -> 0, "seed" -> Seed)
+      httpPost(s"$ModlyUrl/generate", ujson.write(payload), 600000) match
+        case Some(r) => checkOut(sv, try ujson.read(r)("response").str.trim catch case _: Throwable => "")
+        case None    => println(s"  [fallback] modly error for: ${sv.take(50)}"); None
 
   // incremental cache persistence (set in init): flush every SaveEvery model translations.
   private var saveRoot: Option[os.Path] = None
@@ -221,7 +233,7 @@ object Translate:
   def translate(sv: String): String =
     if sv.isEmpty then ""
     else overrides.get(sv).orElse(authoritative.get(sv)).orElse(cache.get(sv)).getOrElse {
-      ollamaTranslate(sv) match
+      modelTranslate(sv) match
         case Some(en) => modelCalls += 1; cache(sv) = en; noteCacheAdd(); en
         // cache the Swedish fallback too, so hopeless 3B units aren't re-tried every run (a masking
         // change gives a NEW key so it still retries; `--clean` retries all for a quality pass).
@@ -320,10 +332,10 @@ object Translate:
     saveRoot = Some(root) // enable incremental cache flushing
     loadOverrides(root)
     loadCache(root)
-    if withModel then ensureModel()
-    else { ollamaOk = false; println("  [dryrun] model disabled — all units kept Swedish (pipeline structural test)") }
+    if withModel then resolveBackend()
+    else { backend = Backend.Offline; println("  [dryrun] backend disabled — all units kept Swedish (pipeline structural test)") }
     println(s"  translate init: concepts=${concepts.size} authoritative=${authoritative.size} " +
-      s"overrides=${overrides.size} cache=${cache.size} model=$SelectedModel threads=$numThreads ollamaOk=$ollamaOk")
+      s"overrides=${overrides.size} cache=${cache.size} threads=$numThreads")
 
   // ---------- commands ----------
   def clean(root: os.Path): Unit =
@@ -333,10 +345,10 @@ object Translate:
 
   /** P0 self-test: exercise the precedence + fallback on a few plain sentences. */
   def selftest(root: os.Path): Unit =
-    println(s"autotranslate --selftest: model=$SelectedModel seed=$Seed")
+    println(s"autotranslate --selftest: seed=$Seed")
     loadOverrides(root)
     loadCache(root)
-    ensureModel()
+    resolveBackend()
     println(s"  concepts: ${concepts.size}, term pairs: ${termPairs.size}, authoritative sentences: ${authoritative.size}, " +
       s"overrides: ${overrides.size}, cache: ${cache.size}")
 
