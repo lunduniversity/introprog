@@ -371,3 +371,5 @@ tabsize=4,#1]{#2}}
 
 \newif\ifkompendium
 \kompendiumfalse
+\newif\ifswedish     % autotranslate: marks Swedish-only content (excluded from the English mirror)
+\swedishtrue         % English build (compendium-en/slides-en): autotranslate injects \swedishfalse

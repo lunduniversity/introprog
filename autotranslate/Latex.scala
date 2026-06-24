@@ -88,6 +88,23 @@ object Latex:
     if k >= s.length || s(k) != '{' then ("", k)
     else { val end = skipGroup(s, k); (s.substring(k + 1, end - 1), end) }
 
+  /** From index `from` (just after a `\ifX`), return the index just after its matching `\fi`,
+    * nesting-aware: a nested `\if...` opens a level, `\fi` closes one, `\else` is irrelevant.
+    * `\iff` (the amsmath relation `\Longleftrightarrow`, not a TeX conditional) is NOT counted.
+    * Used to mask a whole `\ifswedish...\fi` block verbatim. */
+  private def matchFi(s: String, from: Int): Int =
+    var i = from; var depth = 1; val n = s.length
+    while i < n && depth > 0 do
+      if s(i) == '\\' && i + 1 < n && isCmdLetter(s(i + 1)) then
+        var j = i + 1
+        while j < n && isCmdLetter(s(j)) do j += 1
+        val nm = s.substring(i + 1, j)
+        if nm == "fi" then depth -= 1
+        else if nm.startsWith("if") && nm != "iff" then depth += 1
+        i = j
+      else i += 1
+    i
+
   /** Mask the source. Returns (maskedText, spans, itemIdx) where itemIdx is the set of placeholder
     * indices that are `\item` markers (used to split bullet lists into per-item translation units).
     * With stripEng=true, `\Eng{...}` is removed. */
@@ -151,6 +168,14 @@ object Latex:
               val k = skipGroup(text, skipOptional(text, j))
               if stripEng then i = k // remove entirely
               else { protect(text.substring(i, k)); i = k }
+            case "ifswedish" =>
+              // Swedish-only block: mask the whole \ifswedish...\fi VERBATIM so its content is never
+              // translated. The English build sets \swedishfalse (injected by Main.setEnglishFlags),
+              // so pdflatex skips it — and conditional skip-scanning never expands the content, making
+              // this a robust escape hatch for build-breaking constructs. An optional \else branch
+              // (English replacement) rides along verbatim and shows on the English side.
+              val e = matchFi(text, j)
+              protect(text.substring(i, e)); i = e
             case nm if verbatimInline.contains(nm) =>
               var k = j
               if nm == "lstinline" then k = skipOptional(text, k)

@@ -50,6 +50,28 @@ object Main:
         Matcher.quoteReplacement(s"\\${m.group(1)}{$nt}")
     )
 
+  /** The English mirror must flip Swedish-source conditionals to their English-build value.
+    * Currently: inject \swedishfalse right after \begin{document}, so \ifswedish...\fi blocks
+    * (Swedish-only content, masked verbatim by the tokenizer) are skipped by pdflatex on the
+    * English side. No-op for \input fragments (no \begin{document}) — they inherit the main
+    * document's setting. \swedishtrue is the default (set next to \ifkompendium in the sources). */
+  def setEnglishFlags(tex: String): String =
+    // Only real MAIN documents get the flag: those whose first non-comment line is \documentclass.
+    // \input fragments inherit the main document's setting — and a slide body may legitimately
+    // contain \begin{document} (and \documentclass) as VERBATIM example text (a LaTeX lecture),
+    // so a naive indexOf would inject \swedishfalse INTO a \verb/...\begin{document}.../ and break it.
+    val firstReal = tex.linesIterator.map(_.trim).find(l => l.nonEmpty && !l.startsWith("%"))
+    if !firstReal.exists(_.startsWith("\\documentclass")) then tex
+    else
+      val marker = "\\begin{document}"
+      val idx = tex.indexOf(marker)
+      if idx < 0 then tex
+      else
+        val cut = idx + marker.length
+        tex.substring(0, cut) +
+          "\n\\swedishfalse % autotranslate: English build excludes \\ifswedish (Swedish-only) blocks" +
+          tex.substring(cut)
+
   def main(args: Array[String]): Unit =
     // Same idea as glossary/Main.scala's inputPrefix hack (here with os-lib):
     // works whether run from the introprog root or from the autotranslate sub-dir.
@@ -100,7 +122,7 @@ object Main:
           val translate = doTranslate && selected(f)
           val body = os.read(f)
           val outBody = if translate then { nTrans += 1; Translate.translateTex(body, rel.toString) } else body
-          os.write.over(target, rewriteInputs(outBody))
+          os.write.over(target, setEnglishFlags(rewriteInputs(outBody)))
           nTex += 1
         else
           val target = dstDir / rel

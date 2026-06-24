@@ -102,8 +102,14 @@ object Translate:
     * stricter) — dropped keys get re-translated under the new guards on the next run. */
   def loadCache(root: os.Path): Unit =
     readTsv(cacheFile(root), cache)
+    // self-heal step 1: re-apply deterministic normalization (e.g. " -> ``'') to stored values
+    var fixed = 0
+    for (sv, en) <- cache.toList do
+      val n = normalize(en); if n != en then { cache(sv) = n; fixed += 1 }
+    // self-heal step 2: drop entries still failing validation (re-translated under current guards)
     val bad = cache.iterator.filterNot((sv, en) => validate(sv, en)).map(_._1).toList
     bad.foreach(cache.remove)
+    if fixed > 0 then println(s"  [cache] normalized $fixed entries")
     if bad.nonEmpty then println(s"  [cache] dropped ${bad.size} invalid entries (re-translate under current guards)")
   def saveCache(root: os.Path): Unit = writeTsv(cacheFile(root), cache)
   def loadOverrides(root: os.Path): Unit = readTsv(overridesFile(root), overrides)
@@ -164,6 +170,30 @@ object Translate:
   // LaTeX special chars that were all masked away — the model must not invent them in prose.
   val Specials: String = "{}\\$%&#^_~"
 
+  /** Post-process raw model output into build-safe, house-style LaTeX prose. Deterministic (no model
+    * call), so it is safe to also re-apply to cached entries on load (self-healing).
+    *
+    * Converts straight ASCII double-quotes "x" to directional ``x'': the compendium loads
+    * babel[swedish], where " is an ACTIVE shorthand character. A stray " (e.g. the model's "scal")
+    * makes pdflatex die with "! Incomplete \iffalse" deep inside babel's shorthand expansion. The
+    * Swedish source never uses " (house style is ``...''), so qwen's " is the sole source. */
+  def normalize(en: String): String =
+    if !en.contains('"') then en
+    else
+      val sb = StringBuilder(); var open = true
+      en.foreach: c =>
+        if c == '"' then { sb ++= (if open then "``" else "''"); open = !open }
+        else sb += c
+      sb.toString
+
+  /** qwen sometimes ignores "output ONLY the translation" and emits meta-commentary such as
+    * `Note: The term "dator" was translated to "computer" as per the official translation provided.`
+    * These phrases never occur in real course prose, so treat them as a failed unit (keep Swedish). */
+  private val leakMarkers = List("was translated", "official translation", "translation provided")
+  private def looksLikeLeak(en: String): Boolean =
+    val low = en.toLowerCase
+    leakMarkers.exists(low.contains)
+
   /** All structural guards a translated unit must satisfy. Applied to BOTH fresh model output and
     * cached entries on load, so the cache self-heals when the guards get stricter. */
   def validate(sv: String, en: String): Boolean = invalidReason(sv, en).isEmpty
@@ -172,6 +202,7 @@ object Translate:
   def invalidReason(sv: String, en: String): Option[String] =
     if en.isEmpty then Some("empty")
     else if en.length > sv.length * 4 + 80 then Some("too long")
+    else if looksLikeLeak(en) then Some("model meta-comment leak")
     else if Latex.placeholderSeq(en) != Latex.placeholderSeq(sv) then Some("placeholder reorder/drop")
     else if Latex.placeholderAdjacency(en) != Latex.placeholderAdjacency(sv) then Some("collapsed newline around placeholder")
     else if Latex.placeholderGapText(en) != Latex.placeholderGapText(sv) then Some("merged content between placeholders")
@@ -194,8 +225,9 @@ object Translate:
       (if gloss.nonEmpty then s" Use these official term translations where they occur: $gloss." else "")
 
   private def checkOut(sv: String, out: String): Option[String] =
-    invalidReason(sv, out) match
-      case None         => Some(out)
+    val cleaned = normalize(out) // build-safe post-processing (e.g. " -> ``''), then validate
+    invalidReason(sv, cleaned) match
+      case None         => Some(cleaned)
       case Some(reason) => println(s"  [fallback] $reason, kept Swedish for: ${sv.take(60)}"); None
 
   /** Translate one unit via the resolved backend; None on failure/offline (caller keeps Swedish).
