@@ -23,18 +23,16 @@ object Latex:
   // environments whose whole body is verbatim/non-prose → masked as one block.
   val verbatimEnvs = Set("Code", "REPL", "verbatim", "Verbatim", "lstlisting", "comment")
   // \Eng{...} renders "(eng. term)" — redundant in English → removed on the en side.
-  // commands masked WHOLE (command + args); args that are NOT prose, or (P1) prose we defer.
+  // Commands masked WHOLE (command + args) — args are NON-prose and must NOT be translated.
   val maskWhole = Set(
-    // non-prose args:
+    // non-prose args (refs / labels / urls / dimensions / colours):
     "ref", "pageref", "eqref", "autoref", "nameref", "label", "cite", "input", "include",
     "includegraphics", "scalainputlisting", "javainputlisting", "inputgraphics", "hypertarget",
     "hyperlink", "url", "href", "index", "vspace", "hspace", "vskip", "hskip", "fontsize",
     "setlength", "selectfont", "color", "textcolor", "colorbox", "raisebox", "includepdf",
     "SlideFontSize", "marginnote", "reversemarginpar",
-    // prose args, masked OPAQUE in P1 (TRANSLATE-ARG recursion comes in P2):
-    "Emph", "Alert", "emph", "textbf", "textit", "texttt", "textsf", "underline", "sout",
-    "section", "subsection", "subsubsection", "Subsection", "Section", "chapter", "paragraph",
-    "caption", "footnote", "title", "author", "date", "textsuperscript",
+    "texttt", "title", "author", "date", "textsuperscript", // code / proper-noun / symbol — keep verbatim
+    "renewcommand", "newcommand", "providecommand", // macro (re)definitions — never translate the body
     // custom introprog macros whose args delegate to NON-prose targets (paths/refs/labels/code/
     // numbers/\def) — audited from compendium.cls + slides/*.cls. Masked WHOLE so the model can't
     // translate/mangle the path/label/id (\SlideImg{title}{PATH} was the empty-filename build break).
@@ -42,10 +40,17 @@ object Latex:
     "Lab", "Teamlab", "Assignment", "WHAT", "Size", "stars", "setnextsection", "difficulty",
     "ExeRow", "LabRow", "Vecka" // defined in .tex files (plan tables / week links) — non-prose args
   )
+
+  // TRANSLATE-ARG: these prose-wrapping commands are deliberately NOT in maskWhole. The default scan
+  // masks the command + its braces as placeholders and leaves the ARGUMENT TEXT translatable, so
+  // emphasized words AND headings become English (e.g. \Subsection{Om programmering} -> \Subsection{About programming}):
+  //   \Emph \Alert \emph \textbf \textit \textsf \underline \sout
+  //   \section \subsection \subsubsection \Subsection \Section \chapter \paragraph \caption \footnote
   // commands taking 2 mandatory args.
   val argCount = Map(
     "href" -> 2, "textcolor" -> 2, "hyperlink" -> 2, "fontsize" -> 2, "setlength" -> 2,
-    "SlideImg" -> 2, "SlideFontSize" -> 2, "DoExercise" -> 2, "difficulty" -> 2
+    "SlideImg" -> 2, "SlideFontSize" -> 2, "DoExercise" -> 2, "difficulty" -> 2,
+    "renewcommand" -> 2, "newcommand" -> 2, "providecommand" -> 2
   )
 
   private def isCmdLetter(c: Char): Boolean = c.isLetter
@@ -203,11 +208,12 @@ object Latex:
   /** Remove all `__Cn__` placeholders, leaving only the surrounding prose. */
   def stripPlaceholders(s: String): String = Place.replaceAllIn(s, " ")
 
-  /** For each gap around/between placeholders, whether it contains translatable text (a letter).
-    * The model must preserve this pattern — collapsing a text gap between two placeholders means it
-    * MERGED content (e.g. two address lines → one), clustering structural tokens like `\\` into `\\\\`. */
+  /** For each gap around/between placeholders, whether it has any NON-WHITESPACE content.
+    * The model must preserve this pattern: it must not MERGE a text gap to empty (e.g. two address
+    * lines → one, clustering `\\` into `\\\\`) NOR inject junk into an empty gap (e.g. commas between
+    * the placeholders of `\renewcommand{\arraystretch}{1.75}` → `\renewcommand,{,...`). */
   def placeholderGapText(s: String): Seq[Boolean] =
-    Place.pattern.split(s, -1).toVector.map(_.exists(_.isLetter))
+    Place.pattern.split(s, -1).toVector.map(_.exists(!_.isWhitespace))
 
   /** Does the segment contain translatable prose (a letter outside any placeholder)? */
   def hasText(s: String): Boolean = Place.replaceAllIn(s, "").exists(_.isLetter)

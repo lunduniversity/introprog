@@ -31,6 +31,25 @@ hello := println("""
 
     type 'hello' to see this message
 
+    --- English mirror (autotranslate sub-project) ---
+
+      NOTE: depends on ollama to be run locally or
+            using codeberg.org/bjornregnell/modly on LAN 
+            if cache is dropped with --clean
+
+    type 'autotranslate' to (re)build the English mirror compendium-en/ and slides-en/
+      (copies .tex as X-en.tex, rewrites \input + assets; content NOT translated by this task)
+
+    for translation run e.g. 'autotranslateProject/run --only w01' (also --all),
+      '... --clean' (drop cache), '--selftest', '--dryrun', '--latextest'
+
+    translation backend + model is set in autotranslate/Translate.scala (SelectedModel);
+      uses the modly GPU server if reachable, else local Ollama, else keeps Swedish
+
+    type 'pdfCompendiumEn' to build the English compendium-en/compendium-en.pdf
+
+    type 'pdfSlidesEn w01' to build an English lecture, e.g. slides-en/lect-w01-en.pdf
+
   =====================================================================
 
 """)
