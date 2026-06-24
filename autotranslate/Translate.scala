@@ -14,10 +14,17 @@ import scala.collection.mutable
 object Translate:
 
   // ---------- model config (swap by editing SelectedModel) ----------
-  val Model1: String = "qwen2.5:3b" // small, fast, ~2GB; low RAM; baseline quality
-  val Model2: String = "qwen2.5:7b" // better quality; needs more RAM/CPU
-  // add translation-tuned candidates here as Model3, ...
-  val SelectedModel: String = Model1 // <-- change this line to switch model
+  val ModelFastCPU: String   = "qwen2.5:3b"  // small, fast, ~2GB; baseline quality
+  val ModelBetterCPU: String = "qwen2.5:7b"  // better quality; ~4.7GB
+  val ModelBestCPU: String   = "qwen2.5:14b" // higher quality, Swedish-capable; ~9GB; ~2x slower than 7b on CPU
+  val ModelBestGPU: String   = "aya23:35b"   // top translation quality (~GPT-4-level) but ~20GB and
+                                             // REQUIRES a GPU — impractically slow on a CPU-only box.
+  // alt CPU option: "gemma2:9b" (Google, strong European/Nordic, ~7b speed). NOT aya-expanse — it has
+  // NO Swedish (its 23 languages exclude sv). qwen2.5:32b fits 31GB RAM but is too slow on this CPU.
+  val SelectedModel: String = ModelFastCPU // <-- change this line to switch model
+
+  /** Models that realistically need a GPU (too slow to be usable on CPU). */
+  val gpuModels: Set[String] = Set(ModelBestGPU)
 
   val Seed = 42
   val OllamaChat = "http://localhost:11434/api/chat"
@@ -91,8 +98,30 @@ object Translate:
       (r.exitCode, r.out.text())
     catch case _: Throwable => (-1, "")
 
+  /** Best-effort cross-platform GPU detection (Nvidia/AMD/Apple) for the GPU-model warning.
+    * Advisory only — false if no usable LLM GPU is found / the probe commands are missing. */
+  def hasGpu: Boolean =
+    def listed(cmd: String, args: String*): Boolean =
+      val (code, out) = proc((cmd +: args)*)
+      code == 0 && out.trim.nonEmpty
+    listed("nvidia-smi", "-L")                       // Nvidia (CUDA)
+      || listed("rocm-smi", "--showid")              // AMD (ROCm)
+      || os.exists(os.Path("/sys/class/kfd"))        // AMD ROCm kernel driver present
+      || proc("uname", "-s")._2.trim == "Darwin"     // macOS ⇒ Apple Metal (Ollama uses it)
+      || {                                           // Linux fallback: discrete AMD/Nvidia via lspci
+        val (c, o) = proc("lspci")
+        c == 0 && o.linesIterator.map(_.toLowerCase).exists { l =>
+          (l.contains("vga") || l.contains(" 3d ") || l.contains("display")) &&
+          (l.contains("nvidia") || l.contains("amd") || l.contains("radeon") || l.contains("advanced micro"))
+        }
+      }
+
   /** Check ollama is installed and SelectedModel is pulled; pull it if missing. Warn, never crash. */
   def ensureModel(): Unit =
+    if gpuModels.contains(SelectedModel) && !hasGpu then
+      println(s"  [WARN] SelectedModel=$SelectedModel is a GPU-class model but NO usable GPU was " +
+        "detected (Nvidia/AMD/Apple). It will be impractically slow on CPU — switch to " +
+        "ModelBestCPU/ModelBetterCPU/ModelFastCPU for a CPU-only box.")
     val (vc, vout) = proc("ollama", "--version")
     if vc != 0 then
       println("  [warn] ollama not found on PATH — translations will fall back to Swedish.")
