@@ -17,8 +17,9 @@ object Latex:
 
   private val Place: Regex = raw"__C(\d+)__".r
 
-  // \code/\jcode/\lstinline: lstinline is DELIMITER-based verbatim (see memory note).
-  val verbatimInline = Set("code", "jcode", "lstinline")
+  // \code/\jcode/\lstinline/\verb: all DELIMITER-based verbatim (see memory note). \verb is a LaTeX
+  // builtin (not \newcommand) used with /, |, + delimiters here — content must be masked verbatim.
+  val verbatimInline = Set("code", "jcode", "lstinline", "lstinline*", "verb", "verb*")
   // environments whose whole body is verbatim/non-prose → masked as one block.
   val verbatimEnvs = Set("Code", "REPL", "verbatim", "Verbatim", "lstlisting", "comment")
   // \Eng{...} renders "(eng. term)" — redundant in English → removed on the en side.
@@ -194,6 +195,12 @@ object Latex:
 
   /** Remove all `__Cn__` placeholders, leaving only the surrounding prose. */
   def stripPlaceholders(s: String): String = Place.replaceAllIn(s, " ")
+
+  /** For each gap around/between placeholders, whether it contains translatable text (a letter).
+    * The model must preserve this pattern — collapsing a text gap between two placeholders means it
+    * MERGED content (e.g. two address lines → one), clustering structural tokens like `\\` into `\\\\`. */
+  def placeholderGapText(s: String): Seq[Boolean] =
+    Place.pattern.split(s, -1).toVector.map(_.exists(_.isLetter))
 
   /** Does the segment contain translatable prose (a letter outside any placeholder)? */
   def hasText(s: String): Boolean = Place.replaceAllIn(s, "").exists(_.isLetter)

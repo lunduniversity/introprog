@@ -31,7 +31,7 @@ object Translate:
 
   // Inference threads: llama.cpp wants PHYSICAL cores (hyperthreads hurt — benchmarked: 4 beats 8
   // on an i7-4790K). Detect physical cores from /proc/cpuinfo; fall back to logical/2; override below.
-  val ThreadsOverride: Option[Int] = None
+  val ThreadsOverride: Option[Int] = Some(3) // leave a core for the OS — gentler heat after the crash
 
   private def physicalCores: Int =
     val logical = Runtime.getRuntime.availableProcessors
@@ -85,7 +85,14 @@ object Translate:
     os.write.over(f, if body.isEmpty then "" else body + "\n")
 
   def cacheSize: Int = cache.size
-  def loadCache(root: os.Path): Unit = readTsv(cacheFile(root), cache)
+
+  /** Load the cache, dropping any entry that fails current validation (self-heals after guards get
+    * stricter) — dropped keys get re-translated under the new guards on the next run. */
+  def loadCache(root: os.Path): Unit =
+    readTsv(cacheFile(root), cache)
+    val bad = cache.iterator.filterNot((sv, en) => validate(sv, en)).map(_._1).toList
+    bad.foreach(cache.remove)
+    if bad.nonEmpty then println(s"  [cache] dropped ${bad.size} invalid entries (re-translate under current guards)")
   def saveCache(root: os.Path): Unit = writeTsv(cacheFile(root), cache)
   def loadOverrides(root: os.Path): Unit = readTsv(overridesFile(root), overrides)
 
@@ -150,12 +157,33 @@ object Translate:
     termPairs.collect { case (sv, en) if sv.length >= 4 && low.contains(sv.toLowerCase) => s"$sv = $en" }
       .toSeq.sorted.take(40).mkString("; ")
 
+  // LaTeX special chars that were all masked away — the model must not invent them in prose.
+  val Specials: String = "{}\\$%&#^_~"
+
+  /** All structural guards a translated unit must satisfy. Applied to BOTH fresh model output and
+    * cached entries on load, so the cache self-heals when the guards get stricter. */
+  def validate(sv: String, en: String): Boolean = invalidReason(sv, en).isEmpty
+
+  /** None if `en` is a structurally-safe translation of masked `sv`; else the first failing reason. */
+  def invalidReason(sv: String, en: String): Option[String] =
+    if en.isEmpty then Some("empty")
+    else if en.length > sv.length * 4 + 80 then Some("too long")
+    else if Latex.placeholderSeq(en) != Latex.placeholderSeq(sv) then Some("placeholder reorder/drop")
+    else if Latex.placeholderAdjacency(en) != Latex.placeholderAdjacency(sv) then Some("collapsed newline around placeholder")
+    else if Latex.placeholderGapText(en) != Latex.placeholderGapText(sv) then Some("merged content between placeholders")
+    else if Latex.stripPlaceholders(en).exists(c => Specials.contains(c)) then Some("introduced LaTeX special")
+    else if Latex.stripPlaceholders(en).exists(c => isForeignLetter(c) && !sv.contains(c)) then Some("foreign-script char (e.g. CJK)")
+    else None
+
+  /** A letter from a non-Latin script (e.g. CJK, Cyrillic) — qwen sometimes leaks these; pdflatex
+    * can't typeset undefined Unicode. Swedish åäö are Latin script, so they're allowed. */
+  private def isForeignLetter(c: Char): Boolean =
+    c.isLetter && Character.UnicodeScript.of(c.toInt) != Character.UnicodeScript.LATIN
+
   /** Translate one Swedish unit (plain sentence OR masked LaTeX segment) via Ollama.
     * Returns None on any failure or if a `__CN__` placeholder was dropped (caller falls back). */
   def ollamaTranslate(sv: String): Option[String] =
     if !ollamaOk then return None
-    val needSeq = Latex.placeholderSeq(sv) // ORDERED — output must keep the same placeholder sequence
-    val needAdj = Latex.placeholderAdjacency(sv) // newline-before/after each placeholder must be preserved
     val gloss = glossaryFor(sv)
     val system =
       "You are a precise Swedish-to-English translator for an introductory Scala programming course. " +
@@ -176,20 +204,9 @@ object Translate:
       val resp = requests.post(OllamaChat, data = ujson.write(payload),
         headers = Map("Content-Type" -> "application/json"), readTimeout = 600000, connectTimeout = 10000)
       val out = ujson.read(resp.text())("message")("content").str.trim
-      val orderOk = Latex.placeholderSeq(out) == needSeq // same placeholders, same ORDER (no reorder/drop/dup)
-      // model must NOT invent LaTeX specials in prose (all were masked) — catches stray braces etc.
-      val prose = Latex.stripPlaceholders(out)
-      val cleanProse = !prose.exists(c => "{}\\$%&#^_~".contains(c))
-      // model must NOT change newline-adjacency of any placeholder (collapsing a newline around a
-      // %comment / \end{} / \includegraphics breaks LaTeX) — catches the newline-collapse class.
-      val adjOk = Latex.placeholderAdjacency(out) == needAdj
-      val reason =
-        if !orderOk then "placeholder reorder/drop"
-        else if !cleanProse then "introduced LaTeX special"
-        else if !adjOk then "collapsed newline around placeholder"
-        else "suspicious output"
-      if out.nonEmpty && orderOk && cleanProse && adjOk && out.length <= sv.length * 4 + 80 then Some(out)
-      else { println(s"  [fallback] $reason, kept Swedish for: ${sv.take(60)}"); None }
+      invalidReason(sv, out) match
+        case None         => Some(out)
+        case Some(reason) => println(s"  [fallback] $reason, kept Swedish for: ${sv.take(60)}"); None
     catch case e: Throwable => { println(s"  [fallback] ollama error (${e.getClass.getSimpleName}) for: ${sv.take(50)}"); None }
 
   // incremental cache persistence (set in init): flush every SaveEvery model translations.
@@ -205,8 +222,10 @@ object Translate:
     if sv.isEmpty then ""
     else overrides.get(sv).orElse(authoritative.get(sv)).orElse(cache.get(sv)).getOrElse {
       ollamaTranslate(sv) match
-        case Some(en) => modelCalls += 1; cache(sv) = en; noteCacheAdd(); en // cache only real model results
-        case None     => fallbacks += 1; sv                                   // do NOT cache fallbacks
+        case Some(en) => modelCalls += 1; cache(sv) = en; noteCacheAdd(); en
+        // cache the Swedish fallback too, so hopeless 3B units aren't re-tried every run (a masking
+        // change gives a NEW key so it still retries; `--clean` retries all for a quality pass).
+        case None => fallbacks += 1; cache(sv) = sv; noteCacheAdd(); sv
     }
 
   /** Report which tier a string resolves from (for diagnostics). */
