@@ -110,8 +110,11 @@ object Latex:
         else
           val cl = text.indexOf('$', i + 1); val e = if cl < 0 then n else cl + 1
           protect(text.substring(i, e)); i = e
-      else if c == '{' || c == '}' then
-        protect(c.toString); i += 1 // bare grouping brace
+      else if "{}&~#^_".contains(c) then
+        // grouping brace, tabular column separator (&), non-breaking space (~), and other bare LaTeX
+        // specials → mask as a placeholder so they're preserved verbatim, order-validated, and kept
+        // OUT of the prose (otherwise a tabular row's '&' trips the no-specials guard → Swedish).
+        protect(c.toString); i += 1
       else if c == '\\' then
         if i + 1 >= n then { out += c; i += 1 }
         else if !isCmdLetter(text(i + 1)) then
