@@ -152,11 +152,18 @@ object Latex:
       else { out += c; i += 1 }
     (out.toString, spans.toVector, itemIdx.toSet)
 
-  /** Restore placeholders (single pass; unknown indices left as-is). */
+  /** Restore placeholders (single pass; unknown indices left as-is).
+    * Self-corrects the "control word glued to a following letter" case (model dropped the space, e.g.
+    * `\what`+`What` → `\whatWhat` → undefined control sequence): if the span is a command ending in a
+    * letter and the next char is a letter, insert a space. No-op on valid input (a control word is
+    * never followed by a letter in real LaTeX), so the round-trip invariant holds. */
   def restore(masked: String, spans: IndexedSeq[String]): String =
     Place.replaceAllIn(masked, m =>
       val idx = m.group(1).toInt
-      Matcher.quoteReplacement(if idx < spans.size then spans(idx) else m.matched)
+      val span = if idx < spans.size then spans(idx) else m.matched
+      val nextIsLetter = m.end < masked.length && masked.charAt(m.end).isLetter
+      val fixed = if nextIsLetter && span.length >= 2 && span(0) == '\\' && span.last.isLetter then span + " " else span
+      Matcher.quoteReplacement(fixed)
     )
 
   /** Split masked text into segments on blank lines AND before each `\item` marker, keeping the
