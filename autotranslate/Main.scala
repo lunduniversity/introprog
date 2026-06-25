@@ -64,9 +64,24 @@ object Main:
     val firstReal = tex.linesIterator.map(_.trim).find(l => l.nonEmpty && !l.startsWith("%"))
     if !firstReal.exists(_.startsWith("\\documentclass")) then tex
     else
-      val t1 = tex
-        .replace("\\usepackage[swedish]{babel}", "\\usepackage[english]{babel}")
-        .replace("\\addto\\captionsswedish", "\\addto\\captionsenglish")
+      // TITLE PAGE: the cover text lives in \title/\author/\date in the (translation-protected)
+      // preamble, so translate the known cover phrases here. Distinctive strings that only occur on
+      // the cover of a main doc — safe to replace document-wide.
+      val coverPhrases = Seq(
+        "Introduktion till programmering med Scala" -> "Introduction to Programming with Scala",
+        "Föreläsningar \\& uppgifter"               -> "Lectures \\& exercises",
+        "för läsning på skärm"                      -> "for reading on screen",
+        "Laborationer och projekt"                  -> "Labs and projects",
+        "Kompileringsdatum"                         -> "Compilation date",
+        "Datavetenskap, LTH"                        -> "Computer Science, LTH",
+        "Lunds universitet"                         -> "Lund University",
+        "Övningar"                                  -> "Exercises", // exercises-doc cover subtitle
+      )
+      val t1 = coverPhrases.foldLeft(
+        tex
+          .replace("\\usepackage[swedish]{babel}", "\\usepackage[english]{babel}")
+          .replace("\\addto\\captionsswedish", "\\addto\\captionsenglish")
+      ) { case (s, (sv, en)) => s.replace(sv, en) }
       val marker = "\\begin{document}"
       val idx = t1.indexOf(marker)
       if idx < 0 then t1
