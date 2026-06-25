@@ -38,7 +38,8 @@ object Latex:
   // unit (so it translates in isolation AND plain-heading override keys match even when body follows
   // with no blank line). Command + optional [short title] masked; {heading} left for translate-arg.
   val headingCmds = Set("part", "chapter", "section", "subsection", "subsubsection",
-    "Section", "Subsection", "paragraph", "ChapterUnnum")
+    "Section", "Subsection", "paragraph", "ChapterUnnum",
+    "WHAT") // \WHAT{desc} = a task title (\def\what{\emph{#1}}); its arg is PROSE -> translate as own unit
   // \Eng{...} renders "(eng. term)" — redundant in English → removed on the en side.
   // Commands masked WHOLE (command + args) — args are NON-prose and must NOT be translated.
   val maskWhole = Set(
@@ -54,7 +55,7 @@ object Latex:
     // numbers/\def) — audited from compendium.cls + slides/*.cls. Masked WHOLE so the model can't
     // translate/mangle the path/label/id (\SlideImg{title}{PATH} was the empty-filename build break).
     "SlideImg", "file", "Key", "StudyTheory", "DoExercise", "Exercise", "ExerciseSolution",
-    "Lab", "Teamlab", "Assignment", "WHAT", "Size", "stars", "setnextsection", "difficulty",
+    "Lab", "Teamlab", "Assignment", "Size", "stars", "setnextsection", "difficulty",
     "ExeRow", "LabRow", "Vecka" // defined in .tex files (plan tables / week links) — non-prose args
   )
 
