@@ -103,10 +103,11 @@ object Translate:
     * stricter) — dropped keys get re-translated under the new guards on the next run. */
   def loadCache(root: os.Path): Unit =
     readTsv(cacheFile(root), cache)
-    // self-heal step 1: re-apply deterministic normalization (e.g. " -> ``'') to stored values
+    // self-heal step 1: re-apply deterministic post-processing (quote-normalize + term enforcement,
+    // e.g. grundtyp's "primitive"->"basic") to stored values — fixes cached entries without --clean.
     var fixed = 0
     for (sv, en) <- cache.toList do
-      val n = normalize(en); if n != en then { cache(sv) = n; fixed += 1 }
+      val n = enforceTerms(sv, normalize(en)); if n != en then { cache(sv) = n; fixed += 1 }
     // self-heal step 2: drop entries still failing validation (re-translated under current guards)
     val bad = cache.iterator.filterNot((sv, en) => validate(sv, en)).map(_._1).toList
     bad.foreach(cache.remove)
@@ -187,6 +188,17 @@ object Translate:
         else sb += c
       sb.toString
 
+  /** Source-aware TERM enforcement (deterministic; safe to re-apply to cached entries on load).
+    * "grundtyp" (basic type) is a beginner-friendly term and must NOT become "primitive type" — that
+    * is a JVM term of art (e.g. String is NOT a JVM primitive). The source uses "primitiv" separately
+    * (~50×) for genuine primitives, so we only rewrite units whose Swedish has grundtyp and NOT
+    * primitiv. Extend this map as more such pairs are found. */
+  def enforceTerms(sv: String, en: String): String =
+    val low = sv.toLowerCase
+    if low.contains("grundtyp") && !low.contains("primitiv")
+    then en.replace("primitive", "basic").replace("Primitive", "Basic")
+    else en
+
   /** qwen sometimes ignores "output ONLY the translation" and emits meta-commentary such as
     * `Note: The term "dator" was translated to "computer" as per the official translation provided.`
     * These phrases never occur in real course prose, so treat them as a failed unit (keep Swedish). */
@@ -204,6 +216,10 @@ object Translate:
     if en.isEmpty then Some("empty")
     else if en.length > sv.length * 4 + 80 then Some("too long")
     else if looksLikeLeak(en) then Some("model meta-comment leak")
+    // STRICT placeholder structure (order-sensitive). A relaxation that allowed reordering was tried
+    // and reverted: it recovered only ~292 units (most complex-unit fallbacks are genuine placeholder
+    // DROPs, not reorders) and let a mangled unit through into a build break — a bad trade vs the
+    // build-safety priority. Keep strict.
     else if Latex.placeholderSeq(en) != Latex.placeholderSeq(sv) then Some("placeholder reorder/drop")
     else if Latex.placeholderAdjacency(en) != Latex.placeholderAdjacency(sv) then Some("collapsed newline around placeholder")
     else if Latex.placeholderGapText(en) != Latex.placeholderGapText(sv) then Some("merged content between placeholders")
@@ -226,7 +242,7 @@ object Translate:
       (if gloss.nonEmpty then s" Use these official term translations where they occur: $gloss." else "")
 
   private def checkOut(sv: String, out: String): Option[String] =
-    val cleaned = normalize(out) // build-safe post-processing (e.g. " -> ``''), then validate
+    val cleaned = enforceTerms(sv, normalize(out)) // build-safe + term post-processing, then validate
     invalidReason(sv, cleaned) match
       case None         => Some(cleaned)
       case Some(reason) => println(s"  [fallback] $reason, kept Swedish for: ${sv.take(60)}"); None

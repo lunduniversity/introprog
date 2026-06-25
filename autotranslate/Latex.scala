@@ -38,7 +38,7 @@ object Latex:
   // Commands masked WHOLE (command + args) — args are NON-prose and must NOT be translated.
   val maskWhole = Set(
     // non-prose args (refs / labels / urls / dimensions / colours):
-    "ref", "pageref", "eqref", "autoref", "nameref", "label", "cite", "input", "include",
+    "ref", "pageref", "eqref", "autoref", "nameref", "label", "cite", "input", "include", "hyphenation",
     "includegraphics", "scalainputlisting", "javainputlisting", "lstinputlisting", "inputgraphics", "hypertarget",
     "hyperlink", "url", "href", "index", "vspace", "hspace", "vskip", "hskip", "fontsize",
     "setlength", "selectfont", "color", "textcolor", "colorbox", "raisebox", "includepdf",

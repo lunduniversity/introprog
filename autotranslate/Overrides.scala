@@ -44,7 +44,9 @@ object Overrides:
     "Vem går pgk?"                  -> "Who takes pgk?",             // "gå en kurs" = take a course
     "Kursmoment --- varför?"        -> "Course components --- why?", // "moment" = component, not "moment"
     "Laborationer"                  -> "Labs",                       // qwen: "Exercises" (clashes w/ Övningar)
-    "Grundtypernas omfång"          -> "Range of the primitive types", // "omfång" = range, NOT "scope"
+    "Grundtypernas omfång"          -> "Range of the basic types", // "omfång"=range (NOT scope); grundtyp=basic (NOT JVM "primitive")
+    "Grundtyper i Scala och primitiva typer Java" -> "Basic types in Scala and primitive types in Java", // mixed unit: model swapped the two terms
+    "Grundtyper i Scala"            -> "Basic types in Scala", // grundtyp = basic
     "Funktion, argument, parameter" -> "Function, argument, parameter", // qwen lower-cased "function"
     "Kommandotolk (shell, ''skal'') och terminal" -> "Command interpreter (shell) and terminal", // "skal"->"scal"
     """Historik förstaspråk på D \& C vid LTH""" -> """History of the first programming language at D \& C at LTH""",
