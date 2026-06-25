@@ -133,7 +133,7 @@ object Main:
     if doTranslate then
       Translate.printBar("done", force = true); println()
       Translate.saveCache(root)
-      println(s"  done. model calls: ${Translate.modelCalls}, fallbacks: ${Translate.fallbacks}, cache: ${Translate.cacheSize}")
+      println(s"  done. model calls: ${Translate.modelCalls}, fallbacks: ${Translate.fallbacks}, overrides: ${Translate.overrideHits}, cache: ${Translate.cacheSize}")
 
   /** Tokenizer safety net: verify restore(mask(x)) == x exactly (with \Eng kept) on selected files. */
   def latextest(root: os.Path, only: Option[String]): Unit =

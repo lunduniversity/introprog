@@ -64,7 +64,6 @@ object Translate:
 
   def autotranslateDir(root: os.Path): os.Path = root / "autotranslate"
   def cacheFile(root: os.Path): os.Path = autotranslateDir(root) / "translate-cache.tsv"
-  def overridesFile(root: os.Path): os.Path = autotranslateDir(root) / "overrides.tsv"
 
   // ---------- authoritative data from glossary (typed, no parsing) ----------
   lazy val concepts: Seq[glossary.explain.Concept] = glossary.explain.allConcepts
@@ -82,7 +81,9 @@ object Translate:
     m.toMap
 
   // ---------- reviewed overrides (always win) + cache (idempotency) ----------
-  private val overrides = mutable.LinkedHashMap[String, String]()
+  // Overrides live in Overrides.scala — typed, compile-checked, keyed by CLEAN Swedish (see
+  // translateBlock). The cache is a generated TSV (idempotency store), self-healing on load.
+  val overrides: Map[String, String] = Overrides.overridingTranslations
   private val cache = mutable.LinkedHashMap[String, String]()
 
   private def readTsv(f: os.Path, into: mutable.LinkedHashMap[String, String]): Unit =
@@ -112,7 +113,6 @@ object Translate:
     if fixed > 0 then println(s"  [cache] normalized $fixed entries")
     if bad.nonEmpty then println(s"  [cache] dropped ${bad.size} invalid entries (re-translate under current guards)")
   def saveCache(root: os.Path): Unit = writeTsv(cacheFile(root), cache)
-  def loadOverrides(root: os.Path): Unit = readTsv(overridesFile(root), overrides)
 
   // ---------- backend: modly model server (GPU) preferred, else local CPU Ollama ----------
   var backend: Backend = Backend.Offline
@@ -160,6 +160,7 @@ object Translate:
   // ---------- model call ----------
   var modelCalls = 0
   var fallbacks = 0
+  var overrideHits = 0
 
   /** Authoritative term pairs whose Swedish term occurs in `t`, formatted for the prompt. */
   def glossaryFor(t: String): String =
@@ -335,13 +336,22 @@ object Translate:
     * trailing runs of whitespace+placeholders (e.g. `\item`, `\end{itemize}`, and the NEWLINES
     * between them — beamer fragile frames need `\end{...}` at line start) and translate only the
     * prose core. The model thus cannot move structural tokens or alter the whitespace around them. */
-  private def translateBlock(b: String): String =
+  private def translateBlock(b: String, spans: IndexedSeq[String]): String =
     val lead = leadLen(b)
     val trail = trailStart(b)
     if trail <= lead then b // all whitespace/placeholders, no prose
     else
       val core = b.substring(lead, trail)
-      if Latex.hasText(core) then b.substring(0, lead) + translate(core) + b.substring(trail) else b
+      if !Latex.hasText(core) then b
+      else
+        // CONTRIBUTOR OVERRIDE (highest precedence): match the unit's CLEAN (unmasked) Swedish, so
+        // overrides.tsv keys are plain Swedish exactly as in the source — no internal __C0__ forms.
+        // The override value is used verbatim (the contributor writes natural English incl. any LaTeX),
+        // so it also works for units that contain inline commands.
+        val clean = Latex.restore(core, spans).trim
+        overrides.get(clean) match
+          case Some(en) => overrideHits += 1; b.substring(0, lead) + en + b.substring(trail)
+          case None     => b.substring(0, lead) + translate(core) + b.substring(trail)
 
   /** Translate one region (mask -> segment -> translate prose blocks -> restore). */
   private def translateRegion(region: String, label: String): String =
@@ -350,7 +360,7 @@ object Translate:
     val translated = Array.from[String](blocks)
     for k <- blocks.indices do
       if Latex.hasText(blocks(k)) then
-        translated(k) = translateBlock(blocks(k))
+        translated(k) = translateBlock(blocks(k), spans)
         doneUnits += 1
         printBar(label, force = false)
     val sb = StringBuilder()
@@ -377,11 +387,11 @@ object Translate:
         body.substring(0, bodyStart) + translateRegion(body.substring(bodyStart, ei), label) + body.substring(ei)
 
   // ---------- lifecycle ----------
-  /** Load cache + overrides and make sure the model is ready (called before mirror translation). */
+  /** Load cache and make sure the model is ready (called before mirror translation).
+    * Overrides need no loading — they are compiled in (Overrides.overridingTranslations). */
   def init(root: os.Path, withModel: Boolean = true): Unit =
-    modelCalls = 0; fallbacks = 0; sinceSave = 0
+    modelCalls = 0; fallbacks = 0; overrideHits = 0; sinceSave = 0
     saveRoot = Some(root) // enable incremental cache flushing
-    loadOverrides(root)
     loadCache(root)
     if withModel then resolveBackend()
     else { backend = Backend.Offline; println("  [dryrun] backend disabled — all units kept Swedish (pipeline structural test)") }
@@ -397,7 +407,6 @@ object Translate:
   /** P0 self-test: exercise the precedence + fallback on a few plain sentences. */
   def selftest(root: os.Path): Unit =
     println(s"autotranslate --selftest: seed=$Seed")
-    loadOverrides(root)
     loadCache(root)
     resolveBackend()
     println(s"  concepts: ${concepts.size}, term pairs: ${termPairs.size}, authoritative sentences: ${authoritative.size}, " +
