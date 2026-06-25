@@ -21,7 +21,11 @@ object Latex:
   // builtin (not \newcommand) used with /, |, + delimiters here — content must be masked verbatim.
   val verbatimInline = Set("code", "jcode", "lstinline", "lstinline*", "verb", "verb*")
   // environments whose whole body is verbatim/non-prose → masked as one block.
-  val verbatimEnvs = Set("Code", "REPL", "verbatim", "Verbatim", "lstlisting", "comment")
+  val verbatimEnvs = Set("Code", "REPL", "verbatim", "Verbatim", "lstlisting", "comment",
+    // diagram environments: coordinates / node NAMES / options / \foreach vars are NOT prose and
+    // translating them breaks the build (a node ref (Subtyp) -> (Subtype) => "No shape named ...").
+    // Node TEXT labels stay Swedish — an accepted trade-off for build safety.
+    "tikzpicture", "pgfpicture", "tikzcd", "forest")
   // environments whose mandatory {title} arg is a PROSE heading to translate (the slide title shows
   // as a level-3 heading in the compendium). \begin{env} + optional [..] is masked; {title} is not.
   val titleEnvs = Set("Slide", "SlideExtra", "SlideSimple")
@@ -35,7 +39,7 @@ object Latex:
   val maskWhole = Set(
     // non-prose args (refs / labels / urls / dimensions / colours):
     "ref", "pageref", "eqref", "autoref", "nameref", "label", "cite", "input", "include",
-    "includegraphics", "scalainputlisting", "javainputlisting", "inputgraphics", "hypertarget",
+    "includegraphics", "scalainputlisting", "javainputlisting", "lstinputlisting", "inputgraphics", "hypertarget",
     "hyperlink", "url", "href", "index", "vspace", "hspace", "vskip", "hskip", "fontsize",
     "setlength", "selectfont", "color", "textcolor", "colorbox", "raisebox", "includepdf",
     "SlideFontSize", "marginnote", "reversemarginpar",
@@ -63,11 +67,16 @@ object Latex:
 
   private def isCmdLetter(c: Char): Boolean = c.isLetter
 
-  /** if s(k)=='{' return index after the matching '}' (brace-balanced); else k. */
+  /** if s(k)=='{' (optionally after whitespace) return index after the matching '}'; else k.
+    * Tolerating whitespace lets a command pick up an argument on the NEXT line, e.g.
+    * `\scalainputlisting\n{path}` — otherwise the path leaks out as translatable prose and the
+    * model mangles it (Snake.scala -> "Snake(.scala)" => Listings "File not found"). */
   private def skipGroup(s: String, k: Int): Int =
-    if k >= s.length || s(k) != '{' then k
+    var p = k
+    while p < s.length && s(p).isWhitespace do p += 1
+    if p >= s.length || s(p) != '{' then k
     else
-      var depth = 0; var j = k
+      var depth = 0; var j = p
       var done = false
       while j < s.length && !done do
         s(j) match
@@ -78,10 +87,12 @@ object Latex:
         j += 1
       j
 
-  /** if s(k)=='[' return index after the matching ']'; else k. */
+  /** if s(k)=='[' (optionally after whitespace) return index after the matching ']'; else k. */
   private def skipOptional(s: String, k: Int): Int =
-    if k >= s.length || s(k) != '[' then k
-    else { val c = s.indexOf(']', k + 1); if c < 0 then s.length else c + 1 }
+    var p = k
+    while p < s.length && s(p).isWhitespace do p += 1
+    if p >= s.length || s(p) != '[' then k
+    else { val c = s.indexOf(']', p + 1); if c < 0 then s.length else c + 1 }
 
   /** read a {name} group's content starting at k (k at '{'); return (content, idxAfter). */
   private def groupContent(s: String, k: Int): (String, Int) =

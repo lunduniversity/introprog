@@ -343,8 +343,9 @@ object Translate:
       val core = b.substring(lead, trail)
       if Latex.hasText(core) then b.substring(0, lead) + translate(core) + b.substring(trail) else b
 
-  def translateTex(body: String, label: String = ""): String =
-    val (masked, spans, itemIdx) = Latex.mask(body, stripEng = true)
+  /** Translate one region (mask -> segment -> translate prose blocks -> restore). */
+  private def translateRegion(region: String, label: String): String =
+    val (masked, spans, itemIdx) = Latex.mask(region, stripEng = true)
     val (blocks, seps) = Latex.segmentMasked(masked, itemIdx)
     val translated = Array.from[String](blocks)
     for k <- blocks.indices do
@@ -356,6 +357,24 @@ object Translate:
     for k <- blocks.indices do
       sb ++= translated(k); if k < seps.size then sb ++= seps(k)
     Latex.restore(sb.toString, spans)
+
+  /** Translate a .tex body. For a MAIN document, ONLY the matter between \begin{document} and
+    * \end{document} is translated: the preamble (\documentclass, \usepackage[..]{..}, \geometry,
+    * lengths, macro setup, ...) is pure LaTeX, not prose, and translating it mangles the build
+    * (\usepackage[swedish]{babel} -> "\usepackage Scala{babel}" -> File `S.sty' not found). Any
+    * post-\end{document} matter is preserved too. \input fragments (no \begin{document}) translate
+    * whole — that is where the real content lives. */
+  def translateTex(body: String, label: String = ""): String =
+    val bTok = "\\begin{document}"
+    val bi = body.indexOf(bTok)
+    if bi < 0 then translateRegion(body, label) // \input fragment
+    else
+      val bodyStart = bi + bTok.length
+      val ei = body.lastIndexOf("\\end{document}")
+      if ei < bodyStart then
+        body.substring(0, bodyStart) + translateRegion(body.substring(bodyStart), label)
+      else
+        body.substring(0, bodyStart) + translateRegion(body.substring(bodyStart, ei), label) + body.substring(ei)
 
   // ---------- lifecycle ----------
   /** Load cache + overrides and make sure the model is ready (called before mirror translation). */
