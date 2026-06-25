@@ -37,7 +37,7 @@ object Latex:
   // sectioning commands: like titleEnvs, the {arg} is a prose heading that becomes its OWN translation
   // unit (so it translates in isolation AND plain-heading override keys match even when body follows
   // with no blank line). Command + optional [short title] masked; {heading} left for translate-arg.
-  val headingCmds = Set("chapter", "section", "subsection", "subsubsection",
+  val headingCmds = Set("part", "chapter", "section", "subsection", "subsubsection",
     "Section", "Subsection", "paragraph", "ChapterUnnum")
   // \Eng{...} renders "(eng. term)" — redundant in English → removed on the en side.
   // Commands masked WHOLE (command + args) — args are NON-prose and must NOT be translated.
