@@ -253,12 +253,53 @@ object Latex:
     for m <- blankSep.findAllMatchIn(s) do events += ((m.start, m.end))
     for m <- Place.findAllMatchIn(s) if itemIdx.contains(m.group(1).toInt) && m.start > 0 do
       events += ((m.start, m.start)) // cut just before the \item placeholder
+    // Sentence-split PLACEHOLDER-DENSE blocks: a unit with many inline commands (\code/\Emph/...) is
+    // where the model DROPs a placeholder (the dominant fallback). Splitting such a block at sentence
+    // boundaries gives each sentence fewer placeholders ⇒ far fewer drops. Only dense base blocks are
+    // split (light ones keep full context). All cuts preserve the blocks++seps==s invariant.
+    val baseSorted = events.distinct.sortBy(_._1)
+    var p = 0
+    for (a, b) <- baseSorted if a >= p do { sentenceCuts(s, p, a).foreach(events += _); p = b }
+    sentenceCuts(s, p, s.length).foreach(events += _)
     val sorted = events.distinct.sortBy(_._1)
     val blocks = mutable.ArrayBuffer[String](); val seps = mutable.ArrayBuffer[String]()
     var last = 0
     for (a, b) <- sorted if a >= last do { blocks += s.substring(last, a); seps += s.substring(a, b); last = b }
     blocks += s.substring(last)
     (blocks.toVector, seps.toVector)
+
+  private val DenseThreshold = 3 // placeholders in a base block above which we sentence-split it
+  private val sentenceAbbrev = // lowercased word before a '.' that is NOT a sentence end (Swedish)
+    Set("etc", "dvs", "osv", "jfr", "kap", "fig", "resp", "obs", "ung", "ev", "bl", "ex", "ca", "ssk")
+
+  /** Sentence-boundary cut events within s[a,b), but ONLY if that block is placeholder-dense. A cut is
+    * (afterPunct, afterWhitespace): the `.`/`!`/`?` stays with its sentence, the whitespace is the sep.
+    * Conservative: the word before the dot must be >=3 letters and not a known abbreviation, and the
+    * next sentence must start with an uppercase letter or a placeholder — so decimals (3.14), ellipses,
+    * and abbreviations (t.ex.) are not split. */
+  private def sentenceCuts(s: String, a: Int, b: Int): Seq[(Int, Int)] =
+    if Place.findAllMatchIn(s.substring(a, b)).size < DenseThreshold then Nil
+    else
+      val cuts = mutable.ArrayBuffer[(Int, Int)]()
+      var i = a
+      while i < b - 1 do
+        val c = s(i)
+        if (c == '.' || c == '!' || c == '?') && s(i + 1).isWhitespace && sentenceEndsAt(s, i, a) then
+          var j = i + 1
+          while j < b && s(j).isWhitespace do j += 1
+          val nextOk = j < b && (s(j).isUpper || s(j) == '_')
+          if nextOk && i + 1 > a then { cuts += ((i + 1, j)); i = j } else i += 1
+        else i += 1
+      cuts.toVector
+
+  /** Is the punctuation at index `i` a real sentence end (not an abbreviation/decimal)? */
+  private def sentenceEndsAt(s: String, i: Int, lo: Int): Boolean =
+    if s(i) != '.' then true // '!' and '?' are unambiguous ends
+    else
+      var k = i // back-scan the letter run before the dot
+      while k > lo && s(k - 1).isLetter do k -= 1
+      val word = s.substring(k, i)
+      word.length >= 3 && !sentenceAbbrev.contains(word.toLowerCase)
 
   /** Split on blank lines only (no item splitting). */
   def splitParas(s: String): (IndexedSeq[String], IndexedSeq[String]) = segmentMasked(s, Set.empty)

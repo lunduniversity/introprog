@@ -146,7 +146,12 @@ object Main:
         else
           val target = dstDir / rel
           os.makeDir.all(target / os.up)
-          os.copy.over(f, target)
+          // A .cls (e.g. the slides' lecturenotes.cls) loads babel — switch the EN copy to english so
+          // the slide chrome (figure/table captions, dates) is English. The Swedish source .cls is
+          // untouched, so the Swedish slides build unchanged.
+          if f.ext == "cls" then
+            os.write.over(target, os.read(f).replace("\\usepackage[swedish]{babel}", "\\usepackage[english]{babel}"))
+          else os.copy.over(f, target)
           nAsset += 1
       println(s"autotranslate: $src -> $dst  ($nTex .tex [$nTrans translated], $nAsset assets copied)")
     if doTranslate then
@@ -154,10 +159,11 @@ object Main:
       Translate.saveCache(root)
       println(s"  done. model calls: ${Translate.modelCalls}, fallbacks: ${Translate.fallbacks}, overrides: ${Translate.overrideHits}, cache: ${Translate.cacheSize}")
 
-  /** Tokenizer safety net: verify restore(mask(x)) == x exactly (with \Eng kept) on selected files. */
+  /** Tokenizer safety net: verify restore(mask(x)) == x exactly (with \Eng kept) AND that segmentation
+    * is lossless (blocks ++ seps interleaved == masked) on selected files. */
   def latextest(root: os.Path, only: Option[String]): Unit =
     val pat = only.getOrElse("lect-w01")
-    var pass = 0; var fail = 0
+    var pass = 0; var fail = 0; var segFail = 0
     for (src, _) <- mirrors do
       for f <- os.walk(root / src) if os.isFile(f) && f.ext == "tex" && f.last.contains(pat) do
         val orig = os.read(f)
@@ -171,4 +177,9 @@ object Main:
           println(s"  [FAIL] ${f.relativeTo(root)} differs at offset $at")
           println(s"    orig : ...${orig.slice(at - 20, at + 40).replace("\n", "\\n")}...")
           println(s"    round: ...${round.slice(at - 20, at + 40).replace("\n", "\\n")}...")
-    println(s"latextest (pattern '$pat'): round-trip PASS=$pass FAIL=$fail")
+        // segmentation must be lossless: interleaving blocks and seps reproduces the masked text
+        val (mk2, _, itemIdx) = Latex.mask(orig, stripEng = true)
+        val (blocks, seps) = Latex.segmentMasked(mk2, itemIdx)
+        val rejoined = blocks.zipAll(seps, "", "").map((b, s) => b + s).mkString
+        if rejoined != mk2 then { segFail += 1; println(s"  [SEG-FAIL] ${f.relativeTo(root)} (blocks++seps != masked)") }
+    println(s"latextest (pattern '$pat'): round-trip PASS=$pass FAIL=$fail, segmentation FAIL=$segFail")
