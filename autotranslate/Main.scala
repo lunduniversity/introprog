@@ -50,27 +50,31 @@ object Main:
         Matcher.quoteReplacement(s"\\${m.group(1)}{$nt}")
     )
 
-  /** The English mirror must flip Swedish-source conditionals to their English-build value.
-    * Currently: inject \swedishfalse right after \begin{document}, so \ifswedish...\fi blocks
-    * (Swedish-only content, masked verbatim by the tokenizer) are skipped by pdflatex on the
-    * English side. No-op for \input fragments (no \begin{document}) — they inherit the main
-    * document's setting. \swedishtrue is the default (set next to \ifkompendium in the sources). */
+  /** Rewrite a MAIN document's preamble for the English build (the preamble is otherwise translation-
+    * protected). Two things:
+    *   1. CHROME: switch babel to english, so LaTeX-generated labels are English (Contents / Chapter /
+    *      Figure / Table / Appendix) and `\today` is an English date. babel is loaded in the main .tex
+    *      preamble (not the .cls). The `\addto\captionsswedish` patch is retargeted to `captionsenglish`
+    *      so it doesn't reference an undefined caption list under english babel.
+    *   2. inject `\swedishfalse` right after `\begin{document}`, so `\ifswedish...\fi` Swedish-only
+    *      blocks are skipped on the English side.
+    * Gated on a first-line `\documentclass`: only real main docs, never an \input fragment (a slide
+    * body may contain `\begin{document}`/`\documentclass` as VERBATIM example text in a LaTeX lecture). */
   def setEnglishFlags(tex: String): String =
-    // Only real MAIN documents get the flag: those whose first non-comment line is \documentclass.
-    // \input fragments inherit the main document's setting — and a slide body may legitimately
-    // contain \begin{document} (and \documentclass) as VERBATIM example text (a LaTeX lecture),
-    // so a naive indexOf would inject \swedishfalse INTO a \verb/...\begin{document}.../ and break it.
     val firstReal = tex.linesIterator.map(_.trim).find(l => l.nonEmpty && !l.startsWith("%"))
     if !firstReal.exists(_.startsWith("\\documentclass")) then tex
     else
+      val t1 = tex
+        .replace("\\usepackage[swedish]{babel}", "\\usepackage[english]{babel}")
+        .replace("\\addto\\captionsswedish", "\\addto\\captionsenglish")
       val marker = "\\begin{document}"
-      val idx = tex.indexOf(marker)
-      if idx < 0 then tex
+      val idx = t1.indexOf(marker)
+      if idx < 0 then t1
       else
         val cut = idx + marker.length
-        tex.substring(0, cut) +
+        t1.substring(0, cut) +
           "\n\\swedishfalse % autotranslate: English build excludes \\ifswedish (Swedish-only) blocks" +
-          tex.substring(cut)
+          t1.substring(cut)
 
   def main(args: Array[String]): Unit =
     // Same idea as glossary/Main.scala's inputPrefix hack (here with os-lib):
