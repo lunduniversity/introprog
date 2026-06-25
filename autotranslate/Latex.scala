@@ -34,6 +34,11 @@ object Latex:
   // instead of one giant placeholder-dense block that falls back to Swedish.
   // (\ti \ts = \textit are handled by the default scan = translate-arg, no special case needed.)
   val itemCmds = Set("item", "ii", "is", "di")
+  // sectioning commands: like titleEnvs, the {arg} is a prose heading that becomes its OWN translation
+  // unit (so it translates in isolation AND plain-heading override keys match even when body follows
+  // with no blank line). Command + optional [short title] masked; {heading} left for translate-arg.
+  val headingCmds = Set("chapter", "section", "subsection", "subsubsection",
+    "Section", "Subsection", "paragraph", "ChapterUnnum")
   // \Eng{...} renders "(eng. term)" — redundant in English → removed on the en side.
   // Commands masked WHOLE (command + args) — args are NON-prose and must NOT be translated.
   val maskWhole = Set(
@@ -211,6 +216,12 @@ object Latex:
               protect(text.substring(i, k)); i = k
             case nm if itemCmds.contains(nm) => // \item / \ii / \is / \di — list-item boundary
               val k = skipOptional(text, j); itemIdx += spans.size; protect(text.substring(i, k)); i = k
+            case nm if headingCmds.contains(nm) => // \section/\subsection/... — heading is its OWN unit
+              // mask the command + optional [short title]; leave {heading} for translate-arg, and mark
+              // its closing `}` as a segment boundary (same mechanism as Slide titles, titleCloseAt).
+              val k = skipOptional(text, j)
+              if k < n && text(k) == '{' then titleCloseAt = skipGroup(text, k) - 1
+              protect(text.substring(i, k)); i = k
             case _ =>
               protect(text.substring(i, j)); i = j // zero-arg / font / unknown control word
       else { out += c; i += 1 }
