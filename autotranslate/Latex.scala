@@ -126,6 +126,8 @@ object Latex:
     def protect(span: String): Unit = { out ++= s"__C${spans.size}__"; spans += span }
     val n = text.length
     var i = 0
+    var titleCloseAt = -1 // position of the `}` closing a Slide title (titleEnvs) — made a segment
+                          // boundary so the title becomes its OWN translation unit (clean override keys)
     while i < n do
       val c = text(i)
       if c == '%' then
@@ -142,6 +144,8 @@ object Latex:
         // grouping brace, tabular column separator (&), non-breaking space (~), and other bare LaTeX
         // specials → mask as a placeholder so they're preserved verbatim, order-validated, and kept
         // OUT of the prose (otherwise a tabular row's '&' trips the no-specials guard → Swedish).
+        // A Slide title's closing `}` is marked as a segment boundary so the title is its own unit.
+        if c == '}' && i == titleCloseAt then { itemIdx += spans.size; titleCloseAt = -1 }
         protect(c.toString); i += 1
       else if c == '\\' then
         if i + 1 >= n then { out += c; i += 1 }
@@ -163,8 +167,12 @@ object Latex:
                 val cl = text.indexOf(endTok, j2); val e = if cl < 0 then n else cl + endTok.length
                 protect(text.substring(i, e)); i = e
               else if titleEnvs.contains(env) then
-                // mask \begin{env} + optional [..]; leave the mandatory {title} for translate-arg
+                // mask \begin{env} + optional [..]; leave the mandatory {title} for translate-arg.
+                // Mark the title's closing `}` as a segment boundary (titleCloseAt) so the title is
+                // translated as its OWN unit — better quality AND lets overrides.tsv-style keys be the
+                // plain title text even when slide body content follows with no blank line.
                 val k = skipOptional(text, j2)
+                if k < n && text(k) == '{' then titleCloseAt = skipGroup(text, k) - 1
                 protect(text.substring(i, k)); i = k
               else
                 var k = j2 // mask \begin{env} + any immediate env args [..]/{..}

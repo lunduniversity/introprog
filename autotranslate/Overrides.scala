@@ -48,4 +48,25 @@ object Overrides:
     "Funktion, argument, parameter" -> "Function, argument, parameter", // qwen lower-cased "function"
     "Kommandotolk (shell, ''skal'') och terminal" -> "Command interpreter (shell) and terminal", // "skal"->"scal"
     """Historik förstaspråk på D \& C vid LTH""" -> """History of the first programming language at D \& C at LTH""",
+
+    // ── slide titles w04–w13: false friends, a factual howler, bad compounds ────────────────
+    "Bogo sort"                               -> "Bogo sort",                 // a REAL algorithm — qwen "fixed" it to "Bubble sort"!
+    "Paket i REPL"                            -> "Packages in REPL",          // qwen typo "Pacakets"
+    "Övning: en läskig mutant"                -> "Exercise: a scary mutant",  // läskig = scary, NOT "fizzy" (läsk=soda)
+    "Exempel: ofärdig kod"                    -> "Example: unfinished code",  // ofärdig = unfinished, not "unreliable"
+    "Matchning med eller-mönster"             -> "Matching with or-patterns", // qwen "the-or-pattern"
+    "Hitta felorsaken: debugging (avlusning)" -> "Find the cause of the error: debugging", // felorsak = cause
+    "Mergekonflikt"                           -> "Merge conflict",            // qwen "MergeConflict"
+    "Binärsökning"                            -> "Binary search",             // qwen "BinarySearch"
+    "Variansproblem -- tack kompilatorn!"     -> "Variance problem -- thanks to the compiler!", // varians = variance, not "variation"
+    "Exempel: PolygonArray, ändring på plats" -> "Example: PolygonArray, in-place modification", // på plats = in place
+    "Redovisning på obligatorisk schemalagd labbtid"   -> "Presentation at mandatory scheduled lab time", // redovisning = presentation, not "redemption"
+    "Vad är fördelen med egentyper i stället för arv?" -> "What is the advantage of self-types instead of inheritance?", // egentyp = self-type, not "case class"
+    // NB: a title's TRAILING inline \code{}/\texttt{} is peeled as structure, so the key is the PROSE
+    // ONLY (the trailing command is restored automatically — and one key covers all \code{X} variants).
+    "Exempel: Överskuggning och" -> "Example: Overriding and",      // överskuggning = overriding, not "overlapping"
+    "Om veckans övning:"         -> "About this week's exercise:",  // Om = About here, not "If" (matrices/expressions/...)
+    "Om veckans labb:"           -> "About this week's lab:",       // (kojo/life/...)
+    "Om veckans övning"          -> "About this week's exercise",   // \Subsection form (no colon/\code)
+    "Om veckans labb"            -> "About this week's lab",
   )
