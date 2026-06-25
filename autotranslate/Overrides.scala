@@ -38,4 +38,14 @@ object Overrides:
     "identifierare"       -> "identifier",
     "slumptal"            -> "random number",
     "dod: operativsystem" -> "dod: operating system",
+
+    // ── slide titles: clear qwen errors (false friends, conflations, bad compounds) ──────────
+    "Veckoöversikt"                 -> "Weekly overview",            // qwen: "WeekOverview"
+    "Vem går pgk?"                  -> "Who takes pgk?",             // "gå en kurs" = take a course
+    "Kursmoment --- varför?"        -> "Course components --- why?", // "moment" = component, not "moment"
+    "Laborationer"                  -> "Labs",                       // qwen: "Exercises" (clashes w/ Övningar)
+    "Grundtypernas omfång"          -> "Range of the primitive types", // "omfång" = range, NOT "scope"
+    "Funktion, argument, parameter" -> "Function, argument, parameter", // qwen lower-cased "function"
+    "Kommandotolk (shell, ''skal'') och terminal" -> "Command interpreter (shell) and terminal", // "skal"->"scal"
+    """Historik förstaspråk på D \& C vid LTH""" -> """History of the first programming language at D \& C at LTH""",
   )
