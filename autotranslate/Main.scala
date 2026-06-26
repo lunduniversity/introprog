@@ -119,6 +119,8 @@ object Main:
     if args.contains("--selftest") then Translate.selftest(root)
     else if args.contains("--clean") then Translate.clean(root)
     else if args.contains("--latextest") then latextest(root, only)
+    else if args.contains("--codetest") then // translate ONE .scala/.java file's comments+strings, print it
+      Translate.init(root); println(Code.translate(os.read(os.Path(argVal("--codetest").get, root)), Translate.translatePlain))
     else mirror(root, doTranslate, only, dryrun)
 
   /** (Re-)create compendium-en/ and slides-en/ (copy + -en rename + \input rewrite + assets).
