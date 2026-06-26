@@ -9,7 +9,9 @@ object Code:
   // Detect Swedish prose in a STRING literal. åäö is a sure sign, but many Swedish strings have none
   // ("Du klarade det!"), so also look for unambiguous Swedish function words (chosen to avoid English
   // collisions — e.g. NOT "men"/"in"/"om"/"man"). Comments are always translated, so this is strings-only.
-  private val swedishWords = Set(
+  // public (pure, immutable) so tooling — e.g. scratch/pdf-swedish.scala — can reuse the SAME notion of
+  // "looks Swedish" the translator uses, instead of a divergent ad-hoc copy.
+  val swedishWords = Set(
     // function words / pronouns / connectors (unambiguous — avoid English collisions like men/in/om/man)
     "och", "att", "inte", "jag", "han", "hon", "det", "den", "som", "eller", "hej", "tack", "nej",
     "vad", "vem", "vilken", "vilket", "vilka", "hur", "varför", "ingen", "inget", "inga", "alla", "allt",
@@ -29,7 +31,7 @@ object Code:
     "linje", "punkt", "bredd", "ruta", "rutor", "plats", "byter", "flytta", "flyttar", "kontrollera",
     "kontrollerar", "funktion", "funktionen", "metoden", "klassen", "variabeln", "listan", "slingan",
     "villkor", "annars", "medan", "sedan", "skapar", "loopen", "anropas", "objektet", "metod")
-  private def swedishish(s: String): Boolean =
+  def swedishish(s: String): Boolean =
     s.exists("åäöÅÄÖ".contains) ||
       s.toLowerCase.split("[^a-zåäö]+").exists(swedishWords.contains)
 
