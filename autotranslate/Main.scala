@@ -17,7 +17,8 @@ import java.util.regex.Matcher
   * Run from the introprog root with:  sbt --client autotranslate
   */
 object Main:
-  val mirrors = Seq("compendium" -> "compendium-en", "slides" -> "slides-en")
+  val mirrors = Seq("compendium" -> "compendium-en", "slides" -> "slides-en",
+    "workspace" -> "workspace-en") // top-level example code referenced by compendium listings (../workspace/)
 
   /** File extensions that are build artifacts and are never mirrored. */
   val skipExt = Set(
@@ -49,6 +50,14 @@ object Main:
           else t + "-en"
         Matcher.quoteReplacement(s"\\${m.group(1)}{$nt}")
     )
+
+  /** Redirect `\...inputlisting{...}` example-code paths to the translated mirrors (Option B), so the
+    * English docs include English-comment/-string code: `../workspace/`→`../workspace-en/` and
+    * `../compendium/examples/`→`../compendium-en/examples/`. These path strings only occur in code
+    * listing args, so a plain replace is safe. */
+  def redirectListings(tex: String): String =
+    tex.replace("../workspace/", "../workspace-en/")
+      .replace("../compendium/examples/", "../compendium-en/examples/")
 
   /** Rewrite a MAIN document's preamble for the English build (the preamble is otherwise translation-
     * protected). Two things:
@@ -141,7 +150,7 @@ object Main:
           val translate = doTranslate && selected(f)
           val body = os.read(f)
           val outBody = if translate then { nTrans += 1; Translate.translateTex(body, rel.toString) } else body
-          os.write.over(target, setEnglishFlags(rewriteInputs(outBody)))
+          os.write.over(target, setEnglishFlags(redirectListings(rewriteInputs(outBody))))
           nTex += 1
         else
           val target = dstDir / rel
@@ -151,6 +160,9 @@ object Main:
           // untouched, so the Swedish slides build unchanged.
           if f.ext == "cls" then
             os.write.over(target, os.read(f).replace("\\usepackage[swedish]{babel}", "\\usepackage[english]{babel}"))
+          else if doTranslate && (f.ext == "scala" || f.ext == "java") then
+            // Option B: translate comments + Swedish string literals; keep all code (identifiers) verbatim.
+            os.write.over(target, Code.translate(os.read(f), Translate.translatePlain))
           else os.copy.over(f, target)
           nAsset += 1
       println(s"autotranslate: $src -> $dst  ($nTex .tex [$nTrans translated], $nAsset assets copied)")

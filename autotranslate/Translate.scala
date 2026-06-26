@@ -64,6 +64,7 @@ object Translate:
 
   def autotranslateDir(root: os.Path): os.Path = root / "autotranslate"
   def cacheFile(root: os.Path): os.Path = autotranslateDir(root) / "translate-cache.tsv"
+  def codeCacheFile(root: os.Path): os.Path = autotranslateDir(root) / "translate-code-cache.tsv"
 
   // ---------- authoritative data from glossary (typed, no parsing) ----------
   lazy val concepts: Seq[glossary.explain.Concept] = glossary.explain.allConcepts
@@ -85,6 +86,9 @@ object Translate:
   // translateBlock). The cache is a generated TSV (idempotency store), self-healing on load.
   val overrides: Map[String, String] = Overrides.overridingTranslations
   private val cache = mutable.LinkedHashMap[String, String]()
+  // separate idempotency store for CODE prose (comments / string literals), kept apart from the LaTeX
+  // cache so the LaTeX self-heal/validate (which rejects {}, $, …) doesn't churn legitimate code text.
+  private val codeCache = mutable.LinkedHashMap[String, String]()
 
   private def readTsv(f: os.Path, into: mutable.LinkedHashMap[String, String]): Unit =
     if os.exists(f) then
@@ -113,7 +117,9 @@ object Translate:
     bad.foreach(cache.remove)
     if fixed > 0 then println(s"  [cache] normalized $fixed entries")
     if bad.nonEmpty then println(s"  [cache] dropped ${bad.size} invalid entries (re-translate under current guards)")
-  def saveCache(root: os.Path): Unit = writeTsv(cacheFile(root), cache)
+    readTsv(codeCacheFile(root), codeCache) // code prose store (no LaTeX self-heal/validate)
+  def saveCache(root: os.Path): Unit =
+    writeTsv(cacheFile(root), cache); writeTsv(codeCacheFile(root), codeCache)
 
   // ---------- backend: modly model server (GPU) preferred, else local CPU Ollama ----------
   var backend: Backend = Backend.Offline
@@ -247,9 +253,24 @@ object Translate:
       case None         => Some(cleaned)
       case Some(reason) => println(s"  [fallback] $reason, kept Swedish for: ${sv.take(60)}"); None
 
+  /** Validator for CODE prose (comments / string literals): NO LaTeX placeholder/specials guards
+    * (code legitimately has {}, $, …), and NO quote-normalization (a `"` must stay literal). Instead
+    * reject anything that would break the code: an introduced `"` or newline. */
+  private def checkOutCode(sv: String, out: String): Option[String] =
+    val cleaned = enforceTerms(sv, out)
+    val reason =
+      if cleaned.isEmpty then Some("empty")
+      else if cleaned.length > sv.length * 4 + 80 then Some("too long")
+      else if looksLikeLeak(cleaned) then Some("leak")
+      else if cleaned.contains('"') then Some("introduced quote")
+      else if cleaned.contains('\n') then Some("introduced newline")
+      else if cleaned.exists(c => isForeignLetter(c) && !sv.contains(c)) then Some("foreign-script")
+      else None
+    reason match { case None => Some(cleaned); case Some(r) => println(s"  [code-fallback] $r: ${sv.take(50)}"); None }
+
   /** Translate one unit via the resolved backend; None on failure/offline (caller keeps Swedish).
-    * temperature 0 + fixed seed on both backends ⇒ reproducible. */
-  def modelTranslate(sv: String): Option[String] = backend match
+    * temperature 0 + fixed seed on both backends ⇒ reproducible. `check` validates the raw output. */
+  def modelTranslate(sv: String, check: (String, String) => Option[String] = checkOut): Option[String] = backend match
     case Backend.Offline => None
     case Backend.Local =>
       val payload = ujson.Obj(
@@ -260,14 +281,14 @@ object Translate:
         "stream" -> false,
         "options" -> ujson.Obj("seed" -> Seed, "temperature" -> 0, "num_thread" -> numThreads, "num_ctx" -> 2048))
       httpPost(OllamaChat, ujson.write(payload), 600000) match
-        case Some(r) => checkOut(sv, try ujson.read(r)("message")("content").str.trim catch case _: Throwable => "")
+        case Some(r) => check(sv, try ujson.read(r)("message")("content").str.trim catch case _: Throwable => "")
         case None    => println(s"  [fallback] local Ollama error for: ${sv.take(50)}"); None
     case Backend.Modly =>
       // modly /generate is single-prompt (Ollama /api/generate); combine instructions + masked text
       val prompt = buildSystem(sv) + "\n\nSwedish:\n" + sv + "\n\nEnglish:"
       val payload = ujson.Obj("prompt" -> prompt, "temperature" -> 0, "seed" -> Seed)
       httpPost(s"$ModlyUrl/generate", ujson.write(payload), 600000) match
-        case Some(r) => checkOut(sv, try ujson.read(r)("response").str.trim catch case _: Throwable => "")
+        case Some(r) => check(sv, try ujson.read(r)("response").str.trim catch case _: Throwable => "")
         case None    => println(s"  [fallback] modly error for: ${sv.take(50)}"); None
 
   // incremental cache persistence (set in init): flush every SaveEvery model translations.
@@ -288,6 +309,21 @@ object Translate:
         // change gives a NEW key so it still retries; `--clean` retries all for a quality pass).
         case None => fallbacks += 1; cache(sv) = sv; noteCacheAdd(); sv
     }
+
+  /** Translate CODE prose (a comment / string-literal body) — preserves leading/trailing whitespace,
+    * uses the code-safe validator + a separate code cache. Passed to Code.translate as `tr`. */
+  def translatePlain(sv: String): String =
+    val lead = sv.length - sv.dropWhile(_.isWhitespace).length
+    val trail = sv.length - sv.reverse.dropWhile(_.isWhitespace).length
+    if lead + trail >= sv.length then sv
+    else
+      val core = sv.substring(lead, sv.length - trail)
+      val en = overrides.get(core).orElse(authoritative.get(core)).orElse(codeCache.get(core)).getOrElse {
+        modelTranslate(core, checkOutCode) match
+          case Some(t) => modelCalls += 1; codeCache(core) = t; noteCacheAdd(); t
+          case None    => fallbacks += 1; codeCache(core) = core; noteCacheAdd(); core
+      }
+      sv.substring(0, lead) + en + sv.substring(sv.length - trail)
 
   /** Report which tier a string resolves from (for diagnostics). */
   def sourceOf(sv: String): String =
