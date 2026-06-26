@@ -72,4 +72,19 @@ object Overrides:
     "Om veckans labb:"           -> "About this week's lab:",       // (kojo/life/...)
     "Om veckans övning"          -> "About this week's exercise",   // \Subsection form (no colon/\code)
     "Om veckans labb"            -> "About this week's lab",
+
+    // ── code-example prose the strict CODE guards can't keep build-safe ──────────────────────────
+    // Swedish comments / string literals in compendium/examples/*.{scala,java}. The model's output
+    // trips the code guards ($var / \n-escape / placeholder), so these become sv==sv code-cache
+    // fallbacks that the code self-heal DROPS on every load (sv==sv with åäö) → a model call every
+    // `--all` run. A verbatim override is the deterministic fix (and gives real English). KEY = the
+    // exact comment/string body Code.translate hands to the translator (trimmed of outer whitespace).
+    // NB: string-literal keys keep the source's LITERAL `\n` (use """…""" — no escape processing);
+    // the block-comment key has a REAL newline+tab (use "…" so \n\t are interpreted).
+    """Vilken dörr väljer du? V=vänster H=Höger\n""" -> """Which door do you choose? V=left H=Right\n""", // irritext.scala
+    """\nUtökad for-sats fungerar även med primitiva vektorer:""" -> """\nEnhanced for-statement also works with primitive arrays:""", // TestGenerics.java
+    """$msg\nRätt svar: $secret""" -> """$msg\nCorrect answer: $secret""", // hangman2.scala (keep $msg/$secret/\n)
+    "*\n\t * Tar bort punkten på plats pos. Efterföljande element flyttas" ->
+      "*\n\t * Removes the point at position pos. Subsequent elements are shifted", // vector/Polygon.java block comment
+    """\n\n*** ALLA SITT UTOM VINNARE:""" -> """\n\n*** EVERYONE SIT EXCEPT THE WINNER:""", // RegisterToggleWinner.scala
   )

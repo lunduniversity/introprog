@@ -180,8 +180,10 @@ object Main:
     val all = args.contains("--all")          // translate all files
     val dryrun = args.contains("--dryrun")    // run the full pipeline with the MODEL DISABLED (all Swedish)
     val retryFallbacks = args.contains("--retry-fallbacks") // drop Swedish fallbacks from cache + re-translate
+    val dumpOverrides = args.contains("--dump-overrides") // record every MODEL-tier unit (clean sv + en) for curating Overrides.scala
+    if dumpOverrides then Translate.captureSuggestions = true
     argVal("--model").foreach(m => Translate.SelectedModel = m) // override the model for this run
-    val doTranslate = all || only.isDefined || dryrun || retryFallbacks // default (none): copy as-is, no Ollama
+    val doTranslate = all || only.isDefined || dryrun || retryFallbacks || dumpOverrides // default (none): copy as-is, no Ollama
 
     if args.contains("--selftest") then Translate.selftest(root)
     else if args.contains("--clean") then Translate.clean(root)
@@ -192,7 +194,22 @@ object Main:
     else if args.contains("--modeltest") then // A/B a model on a sample of fallbacks (non-destructive)
       Translate.modeltest(root, argVal("--modeltest").getOrElse(Translate.SelectedModel),
         argVal("--n").flatMap(_.toIntOption).getOrElse(30))
-    else mirror(root, doTranslate, only, dryrun, retryFallbacks)
+    else
+      mirror(root, doTranslate, only, dryrun, retryFallbacks)
+      if dumpOverrides then writeOverrideSuggestions(root)
+
+  /** Write the captured MODEL-tier units (clean Swedish + the model's English) to a review file, so the
+    * misses that keep `--all` from being 0-model-calls can be curated into Overrides.scala. TSV-ish:
+    * one unit per block — kind, label, then sv/en with newlines shown as ⏎ for readability. */
+  def writeOverrideSuggestions(root: os.Path): Unit =
+    val s = Translate.suggestions.toSeq
+    val out = root / "autotranslate" / "scratch" / "override-suggestions.txt"
+    def vis(x: String): String = x.replace("\n", "⏎")
+    val body = s.zipWithIndex.map { case ((kind, label, sv, en), i) =>
+      s"[${i + 1}] $kind | $label\n  SV |${vis(sv)}\n  EN |${vis(en)}"
+    }.mkString("\n\n")
+    os.write.over(out, s"=== ${s.size} model-tier units (curate into Overrides.scala) ===\n\n$body\n")
+    println(s"  --dump-overrides: ${s.size} model-tier units -> $out")
 
   /** ONE-TIME (re-)translate the COMMITTED workspace-en mirror IN PLACE: comments + Swedish string
     * literals in every .scala/.java, keeping ALL code (identifiers, operators, and `//> using`

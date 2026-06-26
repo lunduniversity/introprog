@@ -90,15 +90,35 @@ object Translate:
   // cache so the LaTeX self-heal/validate (which rejects {}, $, …) doesn't churn legitimate code text.
   private val codeCache = mutable.LinkedHashMap[String, String]()
 
+  // Reversible TSV escaping: backslash, newline AND tab must round-trip. The old scheme mapped only
+  // newline↔`\n`, so a key/value containing a LITERAL `\n` or a TAB (dense code units: REPL blocks,
+  // serverLoop, Sobel matrix, the lab table) was mangled or split on reload → the unit's recomputed key
+  // never matched the stored one → a model call EVERY `--all` run. Escape `\` FIRST on write; decode in a
+  // single scan so `\\n` stays backslash+n (not a newline). Self-migrating: legacy single-`\` LaTeX
+  // (`\Emph`) survives via the unknown-escape pass-through; the few legacy literal-`\n`/tab entries
+  // re-translate once and re-save under the new scheme.
+  private def enc(s: String): String =
+    s.replace("\\", "\\\\").replace("\n", "\\n").replace("\t", "\\t")
+  private def dec(s: String): String =
+    val sb = StringBuilder(); var i = 0
+    while i < s.length do
+      if s(i) == '\\' && i + 1 < s.length then
+        s(i + 1) match
+          case 'n'  => sb += '\n'; i += 2
+          case 't'  => sb += '\t'; i += 2
+          case '\\' => sb += '\\'; i += 2
+          case c    => sb += '\\'; sb += c; i += 2 // unknown escape (e.g. legacy single-`\` LaTeX) — keep both
+      else { sb += s(i); i += 1 }
+    sb.toString
+
   private def readTsv(f: os.Path, into: mutable.LinkedHashMap[String, String]): Unit =
     if os.exists(f) then
       for line <- os.read.lines(f) if line.contains("\t") do
         val Array(sv, en) = line.split("\t", 2)
-        into(sv.replace("\\n", "\n")) = en.replace("\\n", "\n")
+        into(dec(sv)) = dec(en)
 
   private def writeTsv(f: os.Path, m: mutable.LinkedHashMap[String, String]): Unit =
-    val body = m.toSeq.sortBy(_._1)
-      .map((sv, en) => s"${sv.replace("\n", "\\n")}\t${en.replace("\n", "\\n")}").mkString("\n")
+    val body = m.toSeq.sortBy(_._1).map((sv, en) => s"${enc(sv)}\t${enc(en)}").mkString("\n")
     os.write.over(f, if body.isEmpty then "" else body + "\n")
 
   def cacheSize: Int = cache.size
@@ -113,10 +133,13 @@ object Translate:
     for (sv, en) <- cache.toList do
       val n = enforceTerms(sv, normalize(en)); if n != en then { cache(sv) = n; fixed += 1 }
     // self-heal step 2: drop entries still failing validation (re-translated under current guards)
-    val bad = cache.iterator.filterNot((sv, en) => validate(sv, en)).map(_._1).toList
-    bad.foreach(cache.remove)
+    // Do NOT drop guard-flagged entries: the committed cache built clean (820pp compendium-en), so they
+    // are build-safe — the guards false-positive on dense units (too-long heuristic, placeholder reorder/
+    // merged-content). Dropping forced a model call EVERY `--all` run with no quality gain (re-translation
+    // fails identically). Keep them; fresh model output is still validated via checkOut at translate time.
+    val bad = cache.iterator.filterNot((sv, en) => validate(sv, en)).size
     if fixed > 0 then println(s"  [cache] normalized $fixed entries")
-    if bad.nonEmpty then println(s"  [cache] dropped ${bad.size} invalid entries (re-translate under current guards)")
+    if bad > 0 then println(s"  [cache] kept $bad guard-flagged entries (trusting committed cache; not re-translating)")
     // code prose store: self-heal with the code validator (drops poisoned entries, e.g. masked $vars
     // or dropped interpolations cached before the guards existed → re-translated next run).
     readTsv(codeCacheFile(root), codeCache)
@@ -208,6 +231,14 @@ object Translate:
   var modelCalls = 0
   var fallbacks = 0
   var overrideHits = 0
+
+  // ---------- override-suggestion capture (--dump-overrides) ----------
+  // When on, every unit that resolves to the MODEL tier (not override/authoritative/cache) is recorded
+  // with its CLEAN Swedish key (the form Overrides.scala uses) + the model's English, so the misses that
+  // keep a `--all` run from being 0-model-calls can be curated into Overrides.scala. Pure diagnostics.
+  var captureSuggestions = false
+  var currentLabel = ""
+  val suggestions = mutable.ArrayBuffer[(String, String, String, String)]() // (kind, label, cleanSv, en)
 
   /** Authoritative term pairs whose Swedish term occurs in `t`, formatted for the prompt. */
   def glossaryFor(t: String): String =
@@ -375,11 +406,14 @@ object Translate:
     if lead + trail >= sv.length then sv
     else
       val core = sv.substring(lead, sv.length - trail)
+      val willModel = captureSuggestions &&
+        !overrides.contains(core) && !authoritative.contains(core) && !codeCache.contains(core)
       val en = overrides.get(core).orElse(authoritative.get(core)).orElse(codeCache.get(core)).getOrElse {
         modelTranslate(core, checkOutCode) match
           case Some(t) => modelCalls += 1; codeCache(core) = t; noteCacheAdd(); t
           case None    => fallbacks += 1; codeCache(core) = core; noteCacheAdd(); core
       }
+      if willModel then suggestions += (("code", currentLabel, core, en))
       sv.substring(0, lead) + en + sv.substring(sv.length - trail)
 
   /** Report which tier a string resolves from (for diagnostics). */
@@ -460,10 +494,15 @@ object Translate:
         val clean = Latex.restore(core, spans).trim
         overrides.get(clean) match
           case Some(en) => overrideHits += 1; b.substring(0, lead) + en + b.substring(trail)
-          case None     => b.substring(0, lead) + translate(core) + b.substring(trail)
+          case None     =>
+            val willModel = captureSuggestions && sourceOf(core) == "model"
+            val en = translate(core)
+            if willModel then suggestions += (("tex", currentLabel, clean, Latex.restore(en, spans).trim))
+            b.substring(0, lead) + en + b.substring(trail)
 
   /** Translate one region (mask -> segment -> translate prose blocks -> restore). */
   private def translateRegion(region: String, label: String): String =
+    currentLabel = label
     val (masked, spans, itemIdx) = Latex.mask(region, stripEng = true)
     val (blocks, seps) = Latex.segmentMasked(masked, itemIdx)
     val translated = Array.from[String](blocks)
