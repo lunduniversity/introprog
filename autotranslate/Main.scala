@@ -130,7 +130,9 @@ object Main:
     val only = argVal("--only")              // translate only files whose name contains this substring
     val all = args.contains("--all")          // translate all files
     val dryrun = args.contains("--dryrun")    // run the full pipeline with the MODEL DISABLED (all Swedish)
-    val doTranslate = all || only.isDefined || dryrun // default (none): copy as-is, no Ollama
+    val retryFallbacks = args.contains("--retry-fallbacks") // drop Swedish fallbacks from cache + re-translate
+    argVal("--model").foreach(m => Translate.SelectedModel = m) // override the model for this run
+    val doTranslate = all || only.isDefined || dryrun || retryFallbacks // default (none): copy as-is, no Ollama
 
     if args.contains("--selftest") then Translate.selftest(root)
     else if args.contains("--clean") then Translate.clean(root)
@@ -138,7 +140,10 @@ object Main:
     else if args.contains("--codetest") then // translate ONE .scala/.java file's comments+strings, print it
       Translate.init(root); println(Code.translate(os.read(os.Path(argVal("--codetest").get, root)), Translate.translatePlain))
     else if args.contains("--workspace-en") then translateWorkspaceEn(root, only)
-    else mirror(root, doTranslate, only, dryrun)
+    else if args.contains("--modeltest") then // A/B a model on a sample of fallbacks (non-destructive)
+      Translate.modeltest(root, argVal("--modeltest").getOrElse(Translate.SelectedModel),
+        argVal("--n").flatMap(_.toIntOption).getOrElse(30))
+    else mirror(root, doTranslate, only, dryrun, retryFallbacks)
 
   /** ONE-TIME (re-)translate the COMMITTED workspace-en mirror IN PLACE: comments + Swedish string
     * literals in every .scala/.java, keeping ALL code (identifiers, operators, and `//> using`
@@ -168,10 +173,14 @@ object Main:
 
   /** (Re-)create compendium-en/ and slides-en/ (copy + -en rename + \input rewrite + assets).
     * If doTranslate, .tex bodies matching `only` (or all) are run through Translate.translateTex. */
-  def mirror(root: os.Path, doTranslate: Boolean, only: Option[String], dryrun: Boolean = false): Unit =
+  def mirror(root: os.Path, doTranslate: Boolean, only: Option[String], dryrun: Boolean = false,
+      retryFallbacks: Boolean = false): Unit =
     def selected(f: os.Path): Boolean = only.forall(s => f.last.contains(s))
     if doTranslate then
       Translate.init(root, withModel = !dryrun)
+      if retryFallbacks then
+        val n = Translate.dropSwedishFallbacks()
+        println(s"  --retry-fallbacks: dropped $n Swedish fallback cache entries → re-translating them")
       // pre-pass (model-free): count translatable blocks across selected files to size the bar
       var total = 0
       for (src, _) <- mirrors; f <- os.walk(root / src)

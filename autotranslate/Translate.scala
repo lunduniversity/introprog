@@ -28,7 +28,7 @@ object Translate:
 
   /** The model to use — a catalogue key. Whether it is served by the modly model server (GPU) or the
     * local CPU Ollama is resolved at runtime: modly is preferred if reachable AND has this model. */
-  val SelectedModel: Name = "qwen2.5:7b" // <-- change this to switch model
+  var SelectedModel: Name = "qwen2.5:7b" // <-- change this to switch model (var: --modeltest overrides it)
 
   val Seed = 42
   val ModlyUrl = "http://bjornyx.local:8080" // GPU model server (modly) on the LAN
@@ -130,6 +130,36 @@ object Translate:
     if badCode.nonEmpty then println(s"  [code-cache] dropped ${badCode.size} invalid/stale entries (re-translate under current guards)")
   def saveCache(root: os.Path): Unit =
     writeTsv(cacheFile(root), cache); writeTsv(codeCacheFile(root), codeCache)
+
+  /** `--retry-fallbacks`: drop LaTeX-cache entries that are Swedish fallbacks — en == sv AND the text
+    * still contains åäö (the model gave up, usually a placeholder drop on a dense slide unit). They get
+    * re-translated on this run (ideally on a stronger backend / after segmentation improvements). The
+    * good translations stay cached (no re-translation). Returns how many were dropped. */
+  def dropSwedishFallbacks(): Int =
+    val drop = cache.iterator.filter((sv, en) => sv == en && sv.exists("åäöÅÄÖ".contains)).map(_._1).toList
+    drop.foreach(cache.remove)
+    drop.size
+
+  /** Non-destructive A/B: set `model`, sample the first `n` current Swedish fallbacks (en==sv with åäö)
+    * from the cache, re-translate each, and count how many now PASS validation (recover to English).
+    * Does NOT save the cache — use to compare backends before committing to a full --retry-fallbacks run.
+    * The sample is deterministic (cache insertion order), so the same units are tried across models. */
+  def modeltest(root: os.Path, model: String, n: Int): Unit =
+    SelectedModel = model
+    init(root) // loads cache + resolves backend with the chosen model (no disk write)
+    val fb = cache.iterator.filter((sv, en) => sv == en && sv.exists("åäöÅÄÖ".contains)).map(_._1).toVector
+    val sample = fb.take(n)
+    val log = collection.mutable.ArrayBuffer[String](s"modeltest: model=$model, backend=${backend.label} — sampling ${sample.size} of ${fb.size} Swedish fallbacks")
+    var recovered = 0
+    for (sv, i) <- sample.zipWithIndex do
+      modelTranslate(sv) match
+        case Some(en) if en != sv => recovered += 1; log += f"  [OK ${i + 1}%2d] ${sv.take(55)}  ->  ${en.take(55)}"
+        case _                    => log += f"  [-- ${i + 1}%2d] ${sv.take(80)}"
+    log += s"=== $model recovered $recovered / ${sample.size} sampled fallbacks ==="
+    val out = root / "autotranslate" / "scratch" / s"modeltest-${model.replace(":", "-").replace("/", "-")}.txt"
+    os.write.over(out, log.mkString("\n") + "\n")
+    log.foreach(println)
+    println(s"(report written to $out)")
 
   // ---------- backend: modly model server (GPU) preferred, else local CPU Ollama ----------
   var backend: Backend = Backend.Offline
