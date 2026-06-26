@@ -117,7 +117,17 @@ object Translate:
     bad.foreach(cache.remove)
     if fixed > 0 then println(s"  [cache] normalized $fixed entries")
     if bad.nonEmpty then println(s"  [cache] dropped ${bad.size} invalid entries (re-translate under current guards)")
-    readTsv(codeCacheFile(root), codeCache) // code prose store (no LaTeX self-heal/validate)
+    // code prose store: self-heal with the code validator (drops poisoned entries, e.g. masked $vars
+    // or dropped interpolations cached before the guards existed → re-translated next run).
+    readTsv(codeCacheFile(root), codeCache)
+    // drop invalid entries (poisoned masking etc.) AND stale Swedish fallbacks (cached sv->sv that still
+    // has åäö = the model gave up earlier). Unlike the big LaTeX cache, the code corpus is small and the
+    // mirror is committed once, so retrying give-ups each run is worth the quality.
+    val badCode = codeCache.iterator.filter((sv, en) =>
+      codeReason(sv, enforceTerms(sv, en)).isDefined || (sv == en && sv.exists("åäöÅÄÖ".contains))
+    ).map(_._1).toList
+    badCode.foreach(codeCache.remove)
+    if badCode.nonEmpty then println(s"  [code-cache] dropped ${badCode.size} invalid/stale entries (re-translate under current guards)")
   def saveCache(root: os.Path): Unit =
     writeTsv(cacheFile(root), cache); writeTsv(codeCacheFile(root), codeCache)
 
@@ -256,17 +266,34 @@ object Translate:
   /** Validator for CODE prose (comments / string literals): NO LaTeX placeholder/specials guards
     * (code legitimately has {}, $, …), and NO quote-normalization (a `"` must stay literal). Instead
     * reject anything that would break the code: an introduced `"` or newline. */
+  private val interpRe = raw"\$$\{[^}]*\}|\$$[A-Za-z_][A-Za-z0-9_]*".r
+  private val escapeRe = raw"\\.".r
+  private val placeholderLeakRe = raw"__C\d".r // masking-placeholder leak (e.g. __C0__) from an old code path
+  /** Pure validity check for translated CODE prose (no printing) — used by both the validator and the
+    * code-cache self-heal. `cleaned` is the post-enforceTerms candidate. */
+  private def codeReason(sv: String, cleaned: String): Option[String] =
+    // string-interpolation tokens ($x, ${...}) must survive verbatim, else the value is silently lost
+    val svInterps = interpRe.findAllIn(sv).toSet
+    // escape sequences (\n, \t, \", \\, …) must survive too — dropping a \n silently changes I/O
+    val svEscapes = escapeRe.findAllIn(sv).toList
+    if cleaned.isEmpty then Some("empty")
+    else if cleaned.length > sv.length * 4 + 80 then Some("too long")
+    else if looksLikeLeak(cleaned) then Some("leak")
+    else if placeholderLeakRe.findFirstIn(cleaned).isDefined && placeholderLeakRe.findFirstIn(sv).isEmpty then Some("placeholder leak")
+    // reject only delimiters the source didn't have (a single-line "..." or // breaks; a multi-line
+    // """...""" legitimately keeps its newlines and inner quotes, so those are fine if sv had them).
+    else if cleaned.contains('"') && !sv.contains('"') then Some("introduced quote")
+    else if cleaned.contains('\n') && !sv.contains('\n') then Some("introduced newline")
+    else if svInterps.exists(t => !cleaned.contains(t)) then Some("dropped interpolation")
+    else if svEscapes.distinct.exists(e => escapeRe.findAllIn(cleaned).count(_ == e) < svEscapes.count(_ == e)) then Some("dropped escape")
+    else if cleaned.exists(c => isForeignLetter(c) && !sv.contains(c)) then Some("foreign-script")
+    else None
+
   private def checkOutCode(sv: String, out: String): Option[String] =
     val cleaned = enforceTerms(sv, out)
-    val reason =
-      if cleaned.isEmpty then Some("empty")
-      else if cleaned.length > sv.length * 4 + 80 then Some("too long")
-      else if looksLikeLeak(cleaned) then Some("leak")
-      else if cleaned.contains('"') then Some("introduced quote")
-      else if cleaned.contains('\n') then Some("introduced newline")
-      else if cleaned.exists(c => isForeignLetter(c) && !sv.contains(c)) then Some("foreign-script")
-      else None
-    reason match { case None => Some(cleaned); case Some(r) => println(s"  [code-fallback] $r: ${sv.take(50)}"); None }
+    codeReason(sv, cleaned) match
+      case None => Some(cleaned)
+      case Some(r) => println(s"  [code-fallback] $r: ${sv.take(50)}"); None
 
   /** Translate one unit via the resolved backend; None on failure/offline (caller keeps Swedish).
     * temperature 0 + fixed seed on both backends ⇒ reproducible. `check` validates the raw output. */

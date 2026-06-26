@@ -17,8 +17,10 @@ import java.util.regex.Matcher
   * Run from the introprog root with:  sbt --client autotranslate
   */
 object Main:
-  val mirrors = Seq("compendium" -> "compendium-en", "slides" -> "slides-en",
-    "workspace" -> "workspace-en") // top-level example code referenced by compendium listings (../workspace/)
+  val mirrors = Seq("compendium" -> "compendium-en", "slides" -> "slides-en")
+  // NOTE: workspace-en is NOT an auto-regenerated mirror — it is a COMMITTED, compile-verified, hand/
+  // once-translated English copy of workspace/ (runnable lab code, rarely changes). The autotranslator
+  // only (a) redirects listing paths to it (redirectListings) and (b) warns on drift (checkWorkspaceDrift).
 
   /** File extensions that are build artifacts and are never mirrored. */
   val skipExt = Set(
@@ -58,6 +60,20 @@ object Main:
   def redirectListings(tex: String): String =
     tex.replace("../workspace/", "../workspace-en/")
       .replace("../compendium/examples/", "../compendium-en/examples/")
+
+  /** workspace-en is a COMMITTED, hand-maintained English copy of workspace/. Surface DRIFT: warn if
+    * workspace/ has files (lab code etc.) that workspace-en/ is missing, so the English listings don't
+    * silently fall back to / break on a missing input when new lab code is added. */
+  def checkWorkspaceDrift(root: os.Path): Unit =
+    val ws = root / "workspace"; val wsen = root / "workspace-en"
+    if os.exists(ws) && os.exists(wsen) then
+      val missing = os.walk(ws).filter(f => os.isFile(f)
+        && !f.relativeTo(ws).segments.exists(skipSeg) && !skipExt(f.ext)
+        && !os.exists(wsen / f.relativeTo(ws)))
+      if missing.nonEmpty then
+        println(s"  [DRIFT] workspace-en is missing ${missing.size} file(s) present in workspace/ — translate + commit:")
+        missing.take(20).foreach(f => println(s"    ${f.relativeTo(ws)}"))
+    else if os.exists(ws) then println("  [DRIFT] workspace-en/ does not exist yet — create the committed English mirror.")
 
   /** Rewrite a MAIN document's preamble for the English build (the preamble is otherwise translation-
     * protected). Two things:
@@ -121,7 +137,34 @@ object Main:
     else if args.contains("--latextest") then latextest(root, only)
     else if args.contains("--codetest") then // translate ONE .scala/.java file's comments+strings, print it
       Translate.init(root); println(Code.translate(os.read(os.Path(argVal("--codetest").get, root)), Translate.translatePlain))
+    else if args.contains("--workspace-en") then translateWorkspaceEn(root, only)
     else mirror(root, doTranslate, only, dryrun)
+
+  /** ONE-TIME (re-)translate the COMMITTED workspace-en mirror IN PLACE: comments + Swedish string
+    * literals in every .scala/.java, keeping ALL code (identifiers, operators, and `//> using`
+    * directives) verbatim. workspace code is English-identifier already, so this is the whole of the
+    * "full" translation. Review the diff + commit the result; afterwards workspace-en is hand-maintained. */
+  def translateWorkspaceEn(root: os.Path, only: Option[String]): Unit =
+    val wsen = root / "workspace-en"
+    require(os.exists(wsen), s"no workspace-en at $wsen — run mk-workspace-en first")
+    Translate.init(root)
+    // w01_kojo is a DEFERRED special case: Kojo is a kids' lib/app and English users use the English
+    // Kojo (different dep + different exports), so its Swedish Kojo identifiers need hand-mapping via
+    // Appendix A table A.1 ("More about Kojo"). Skip the generic pass; handle it once examples are done.
+    val deferredDirs = Set("w01_kojo")
+    var n = 0; var changed = 0
+    for f <- os.walk(wsen)
+      if os.isFile(f) && (f.ext == "scala" || f.ext == "java")
+        && !f.relativeTo(wsen).segments.exists(skipSeg)
+        && !f.relativeTo(wsen).segments.exists(deferredDirs)
+        && only.forall(s => f.last.contains(s))
+    do
+      val src = os.read(f); val out = Code.translate(src, Translate.translatePlain)
+      if out != src then { os.write.over(f, out); changed += 1 }
+      n += 1
+    Translate.saveCache(root)
+    println(s"workspace-en: $n code files processed, $changed changed")
+    checkWorkspaceDrift(root)
 
   /** (Re-)create compendium-en/ and slides-en/ (copy + -en rename + \input rewrite + assets).
     * If doTranslate, .tex bodies matching `only` (or all) are run through Translate.translateTex. */
@@ -172,6 +215,7 @@ object Main:
       Translate.printBar("done", force = true); println()
       Translate.saveCache(root)
       println(s"  done. model calls: ${Translate.modelCalls}, fallbacks: ${Translate.fallbacks}, overrides: ${Translate.overrideHits}, cache: ${Translate.cacheSize}")
+      checkWorkspaceDrift(root) // committed workspace-en must keep up with workspace/
 
   /** Tokenizer safety net: verify restore(mask(x)) == x exactly (with \Eng kept) AND that segmentation
     * is lossless (blocks ++ seps interleaved == masked) on selected files. */
