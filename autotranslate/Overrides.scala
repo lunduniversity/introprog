@@ -38,6 +38,7 @@ object Overrides:
     "identifierare"       -> "identifier",
     "slumptal"            -> "random number",
     "dod: operativsystem" -> "dod: operating system",
+    "Denna kurs behandlar de tre första." -> "This course covers the first three.", // paradigms slide; model fallback kept Swedish
 
     // ── slide titles: clear qwen errors (false friends, conflations, bad compounds) ──────────
     "Veckoöversikt"                 -> "Weekly overview",            // qwen: "WeekOverview"
