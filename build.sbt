@@ -260,8 +260,13 @@ pdfSlidesEn := {
   val args: Seq[String] = spaceDelimited("<arg>").parsed
   val workDir = file("slides-en")
   val weeks = if (args.isEmpty) {
-    println("""<args> is empty, using w01""")
-    Seq("w01")
+    // empty args = build ALL decks (like pdfSlides), derived from the Swedish source set slides/lect-*.tex
+    val decks = Option(file("slides").listFiles).getOrElse(Array.empty)
+      .filter(f => f.getName.startsWith("lect-") && f.getName.endsWith(".tex"))
+      .map(_.getName.stripPrefix("lect-").stripSuffix(".tex"))
+      .sorted.toSeq
+    println(s"""<args> is empty, building all ${decks.size} decks: ${decks.mkString(" ")}""")
+    decks
   } else args
   for (w <- weeks) {
     val f: String = if (w startsWith "w") "lect-" + w else w // allow both w01 and lect-w01 / file names
