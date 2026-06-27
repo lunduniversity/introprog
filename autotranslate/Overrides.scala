@@ -39,6 +39,12 @@ object Overrides:
     "slumptal"            -> "random number",
     "dod: operativsystem" -> "dod: operating system",
     "Denna kurs behandlar de tre första." -> "This course covers the first three.", // paradigms slide; model fallback kept Swedish
+    // "How do you learn" slide (lect-w01-about): inline \Alert/\Emph split the text into a placeholder-
+    // dense unit the model mangles (placeholder reorder/drop → Swedish fallback); override the clean unit.
+    // NB: the trailing `}` (closing \Emph) is peeled as structure, so the matched unit ends at "göra!"
+    // with an UNBALANCED \Emph{ — key + value omit the closing brace (auto-restored as trailing structure).
+    """Genom praktiskt \Alert{eget arbete}: \Emph{Lära genom att göra!""" ->
+      """Through practical \Alert{own work}: \Emph{Learning by doing!""",
 
     // ── slide titles: clear qwen errors (false friends, conflations, bad compounds) ──────────
     "Veckoöversikt"                 -> "Weekly overview",            // qwen: "WeekOverview"
