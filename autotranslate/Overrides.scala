@@ -78,6 +78,8 @@ object Overrides:
     "Om veckans labb:"           -> "About this week's lab:",       // (kojo/life/...)
     "Om veckans övning"          -> "About this week's exercise",   // \Subsection form (no colon/\code)
     "Om veckans labb"            -> "About this week's lab",
+    "Om kursen"                  -> "About the course",             // \part heading — model: "If the Course"
+    "Om ditt lärande"            -> "About your learning",           // \section heading — model: "If your learning"
 
     // ── code-example prose the strict CODE guards can't keep build-safe ──────────────────────────
     // Swedish comments / string literals in compendium/examples/*.{scala,java}. The model's output
