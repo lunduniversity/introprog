@@ -161,7 +161,7 @@
 \refstepcounter{TaskCounter}%
 \ifnum\value{TaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
 \pagebreak[2]
-\noindent{\Emph{Uppgift~\arabic{TaskCounter}.}~}%
+\noindent{\Emph{\ifswedish Uppgift \else Task \fi~\arabic{TaskCounter}.}~}%
 }
 
 \newcounter{SolutionTaskCounter}[section]
