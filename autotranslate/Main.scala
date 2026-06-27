@@ -187,7 +187,8 @@ object Main:
     argVal("--model").foreach(m => Translate.SelectedModel = m) // override the model for this run
     val doTranslate = all || only.isDefined || dryrun || retryFallbacks || dumpOverrides || sweepFallbacks // default (none): copy as-is, no Ollama
 
-    if args.contains("--selftest") then Translate.selftest(root)
+    if args.contains("--swedish-left") then Translate.checkHowMuchSwedishLeft(root) // progress metric for the Overrides loop
+    else if args.contains("--selftest") then Translate.selftest(root)
     else if args.contains("--clean") then Translate.clean(root)
     else if args.contains("--latextest") then latextest(root, only)
     else if args.contains("--codetest") then // translate ONE .scala/.java file's comments+strings, print it

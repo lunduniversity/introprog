@@ -566,6 +566,23 @@ object Translate:
     if os.exists(f) then { os.remove(f); println(s"autotranslate --clean: removed $f (next run re-translates from scratch)") }
     else println(s"autotranslate --clean: no cache to remove at $f")
 
+  /** Quick, MODEL-FREE progress metric for the Overrides ralph-loop (see handover-to-codex.md): count the
+    * DISTINCT Swedish-looking lines remaining in the generated `-en` mirrors, reusing `Code.swedishish`
+    * (the same åäö + Swedish-stop-word notion the translator uses to decide what to translate). Scans the
+    * already-generated `-en` .tex (run after a `--all` pass); prints the corpus total + the worst files so
+    * the loop can target them and watch the number fall. */
+  def checkHowMuchSwedishLeft(root: os.Path): Unit =
+    val all = mutable.LinkedHashSet[String]()
+    val perFile = mutable.ArrayBuffer[(String, Int)]()
+    for dir <- Seq("slides-en", "compendium-en"); d = root / dir if os.exists(d)
+        f <- os.walk(d) if os.isFile(f) && f.ext == "tex"
+    do
+      val sw = os.read.lines(f).iterator.map(_.trim).filter(_.nonEmpty).filter(Code.swedishish).toVector.distinct
+      if sw.nonEmpty then perFile += ((f.relativeTo(root).toString, sw.size))
+      all ++= sw
+    println(s"  swedish-left: ${all.size} distinct Swedish-looking lines across ${perFile.size} -en files")
+    perFile.sortBy(-_._2).take(25).foreach((p, c) => println(f"    $c%4d  $p"))
+
   /** P0 self-test: exercise the precedence + fallback on a few plain sentences. */
   def selftest(root: os.Path): Unit =
     println(s"autotranslate --selftest: seed=$Seed")
