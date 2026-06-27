@@ -111,7 +111,7 @@ object Main {
     println(s"""Generating explanations""")
 
     val rows = explain.allConcepts.map: c =>
-      s"""\\newcommand{\\Explain${c.en.toCamelCase}}{${c.svLongExplanation.wrapConcept(c.sv)}}"""
+      s"""\\newcommand{\\Explain${c.en.toCamelCase}}{\\ifswedish ${c.svLongExplanation.wrapConcept(c.sv)} \\else ${c.enLongExplanation.wrapConcept(c.en)} \\fi}"""
 
     rows.mkString("\n").save(explanationsFile)
   }
