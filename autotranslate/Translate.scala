@@ -572,16 +572,47 @@ object Translate:
     * already-generated `-en` .tex (run after a `--all` pass); prints the corpus total + the worst files so
     * the loop can target them and watch the number fall. */
   def checkHowMuchSwedishLeft(root: os.Path): Unit =
-    val all = mutable.LinkedHashSet[String]()
+    val all = mutable.LinkedHashSet[String]()      // distinct Swedish-looking lines
+    val allLines = mutable.LinkedHashSet[String]() // distinct non-empty lines (the % denominator)
     val perFile = mutable.ArrayBuffer[(String, Int)]()
     for dir <- Seq("slides-en", "compendium-en"); d = root / dir if os.exists(d)
         f <- os.walk(d) if os.isFile(f) && f.ext == "tex"
     do
-      val sw = os.read.lines(f).iterator.map(_.trim).filter(_.nonEmpty).filter(Code.swedishish).toVector.distinct
+      val lines = os.read.lines(f).iterator.map(_.trim).filter(_.nonEmpty).toVector
+      val sw = lines.filter(Code.swedishish).distinct
       if sw.nonEmpty then perFile += ((f.relativeTo(root).toString, sw.size))
-      all ++= sw
-    println(s"  swedish-left: ${all.size} distinct Swedish-looking lines across ${perFile.size} -en files")
-    perFile.sortBy(-_._2).take(25).foreach((p, c) => println(f"    $c%4d  $p"))
+      all ++= sw; allLines ++= lines
+    val total = allLines.size
+    val pct = if total == 0 then 0.0 else all.size * 100.0 / total
+    if all.isEmpty then println(s"  swedish-left: 0% — fully English ✅ ($total distinct lines, ${perFile.size} files)")
+    else println(f"  swedish-left: $pct%.1f%% Swedish — ${all.size}/$total distinct lines across ${perFile.size} -en files")
+    perFile.sortBy(-_._2).take(20).foreach((p, c) => println(f"    $c%4d  $p"))
+
+  /** Insourced PDF Swedish scan (was scratch/pdf-swedish.scala): pdftotext → the fraction of DISTINCT
+    * non-empty lines that `Code.swedishish` flags. The *En build tasks call this so they ALWAYS report
+    * how close to 0% we are. Prints a clear `0% — fully English ✅` or `X.X% Swedish ⚠`; writes the full
+    * Swedish-line list next to the PDF (swedish-<name>.txt) for inspection. Fail-safe (no pdftotext → skip). */
+  def pdfSwedish(root: os.Path, pdfStr: String): Unit =
+    val pdf = os.Path(pdfStr, root)
+    if !os.exists(pdf) then { println(s"  [swedish] no PDF at $pdf"); return }
+    // pdftotext is OPTIONAL: if the binary is missing OR exits non-zero, just WARN (with install hint) and
+    // skip the report — never throw, so a `--pdf-swedish` / *En build is NEVER killed by a missing tool.
+    val res =
+      try os.proc("pdftotext", "-layout", pdf.toString, "-").call(check = false)
+      catch case _: Throwable =>
+        println("  [swedish] WARNING: 'pdftotext' not found — install it for the Swedish-% report " +
+          "(e.g. `sudo apt install poppler-utils`); skipping (build NOT affected).")
+        return
+    if res.exitCode != 0 then
+      println(s"  [swedish] WARNING: pdftotext failed (exit ${res.exitCode}) on ${pdf.last} — " +
+        "install/repair poppler-utils; skipping the Swedish-% report (build NOT affected).")
+      return
+    val lines = res.out.text().linesIterator.map(_.trim).filter(_.nonEmpty).toVector.distinct
+    val sw = lines.filter(Code.swedishish)
+    val pct = if lines.isEmpty then 0.0 else sw.size * 100.0 / lines.size
+    os.write.over(pdf / os.up / s"swedish-${pdf.baseName}.txt", if sw.isEmpty then "" else sw.mkString("\n") + "\n")
+    if sw.isEmpty then println(s"  [swedish] ${pdf.last}: 0% — fully English ✅ (${lines.size} lines)")
+    else println(f"  [swedish] ${pdf.last}: $pct%.1f%% Swedish — ${sw.size}/${lines.size} distinct lines ⚠")
 
   /** P0 self-test: exercise the precedence + fallback on a few plain sentences. */
   def selftest(root: os.Path): Unit =

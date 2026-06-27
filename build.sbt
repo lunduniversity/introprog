@@ -216,9 +216,18 @@ pdfCompendium := {
   runPdfLatexCmd(texFile = file("compendium.tex"), workDir = file("compendium"))
 }
 
+// Best-effort Swedish-% report via the autotranslate scanner (single source of truth: Code.swedishish),
+// run AFTER an English PDF is built so the *En tasks ALWAYS show how close to 0% Swedish we are. Wrapped
+// so a missing pdftotext / scanner error never fails the build.
+def reportSwedishPct(autotranslateCp: String, pdf: File): Unit =
+  try { import scala.sys.process._; Seq("java", "-cp", autotranslateCp, "Main", "--pdf-swedish", pdf.getPath).!; () }
+  catch { case _: Throwable => println(s"  (swedish-% report skipped: ${pdf.getName})") }
+
 lazy val pdfCompendiumEn = taskKey[Unit]("Compile the generated English mirror compendium-en/compendium-en.tex")
 pdfCompendiumEn := {
+  val cp = (autotranslateProject / Compile / fullClasspath).value.files.map(_.getPath).mkString(java.io.File.pathSeparator)
   runPdfLatexCmd(texFile = file("compendium-en.tex"), workDir = file("compendium-en"))
+  reportSwedishPct(cp, file("compendium-en/compendium-en.pdf"))
 }
 
 lazy val pdfCompendiumPrint = taskKey[Unit]("Compile compendium-print.tex")
@@ -258,6 +267,7 @@ pdfSlides := {
 lazy val pdfSlidesEn = inputKey[Unit]("run pdflatex on the English mirror slides-en/lect-w<weeknumber>-en.tex")
 pdfSlidesEn := {
   val args: Seq[String] = spaceDelimited("<arg>").parsed
+  val cp = (autotranslateProject / Compile / fullClasspath).value.files.map(_.getPath).mkString(java.io.File.pathSeparator)
   val workDir = file("slides-en")
   val weeks = if (args.isEmpty) {
     // empty args = build ALL decks (like pdfSlides), derived from the Swedish source set slides/lect-*.tex
@@ -274,6 +284,7 @@ pdfSlidesEn := {
     val texFile = file(name)
     println(s"runPdfLatexCmd($texFile, $workDir)")
     runPdfLatexCmd(texFile, workDir)
+    reportSwedishPct(cp, new File(workDir, name.dropRight(4) + ".pdf"))
   }
 }
 
