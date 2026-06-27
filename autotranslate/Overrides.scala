@@ -119,4 +119,29 @@ object Overrides:
       """First, \Emph{the expression to the right} of the assignment sign is computed.""",
     """Sedan \Emph{ersätts värdet} som variabelnamnet refererar till av det beräknade uttrycket.""" ->
       """Then \Emph{the value is replaced} that the variable name refers to, by the computed expression.""",
+
+    // ── w01 learning goals (modules/w01-intro-exercise-goals.tex) — render in the slide overview AND
+    //    compendium-en; clean prose bullets the model kept Swedish. Keys = the \item prose, verbatim. ──
+    """Förstå vad som händer när satser exekveras och uttryck evalueras.""" ->
+      """Understand what happens when statements are executed and expressions are evaluated.""",
+    """Känna till betydelsen av begreppen sekvens, alternativ, repetition och abstraktion.""" ->
+      """Know the meaning of the concepts sequence, selection, repetition and abstraction.""",
+    """Känna till litteralerna för enkla värden, deras typer och omfång.""" ->
+      """Know the literals for simple values, their types and range.""",
+    """Kunna deklarera och använda variabler och tilldelning, samt kunna rita bilder av minnessituationen då variablers värden förändras.""" ->
+      """Be able to declare and use variables and assignment, and to draw pictures of the memory situation as variables' values change.""",
+    """Förstå skillnaden mellan olika numeriska typer, kunna omvandla mellan dessa och vara medveten om noggrannhetsproblem som kan uppstå.""" ->
+      """Understand the difference between different numeric types, be able to convert between them, and be aware of precision problems that can arise.""",
+    """Förstå booleska uttryck och värdena \code{true} och \code{false}, samt kunna förenkla booleska uttryck.""" ->
+      """Understand boolean expressions and the values \code{true} and \code{false}, and be able to simplify boolean expressions.""",
+    """Förstå skillnaden mellan heltalsdivision och flyttalsdivision, samt användning av rest vid heltalsdivision.""" ->
+      """Understand the difference between integer division and floating-point division, and the use of the remainder in integer division.""",
+    """Förstå precedensregler och användning av parenteser i uttryck.""" ->
+      """Understand precedence rules and the use of parentheses in expressions.""",
+    """Kunna använda \code{if}-satser och \code{if}-uttryck.""" -> """Be able to use \code{if} statements and \code{if} expressions.""",
+    """Kunna använda \code{for}-satser och \code{while}-satser.""" -> """Be able to use \code{for} statements and \code{while} statements.""",
+    """Kunna använda \code{math.random()} för att generera slumptal i olika intervaller.""" ->
+      """Be able to use \code{math.random()} to generate random numbers in various intervals.""",
+    """Kunna beskriva skillnader och likheter mellan en procedur och en funktion.""" ->
+      """Be able to describe differences and similarities between a procedure and a function.""",
   )
