@@ -125,6 +125,7 @@ object Main:
 
   /** Fixed slide boilerplate chrome (title-page / running header-footer / overview-table headers). */
   val chromePhrases: Seq[(String, String)] = Seq(
+    "Introduktion till programmering med Scala" -> "Introduction to Programming with Scala",
     "Föreläsning i ''Programmering, grundkurs''" -> "Lecture in ''Programming, introductory course''",
     "Programmering, grundkurs"                   -> "Programming, introductory course", // \subtitle (after footer phrase)
     "senast uppdaterad:"                         -> "last updated:",
@@ -148,7 +149,8 @@ object Main:
       // preamble, so translate the known cover phrases here. Distinctive strings that only occur on
       // the cover of a main doc — safe to replace document-wide.
       val coverPhrases = Seq(
-        "Introduktion till programmering med Scala" -> "Introduction to Programming with Scala",
+        "Introduktion till programmering"           -> "Introduction to Programming",
+        "Detta kompendium"                          -> "This compendium",
         "Föreläsningar \\& uppgifter"               -> "Lectures \\& exercises",
         "för läsning på skärm"                      -> "for reading on screen",
         "Laborationer och projekt"                  -> "Labs and projects",
