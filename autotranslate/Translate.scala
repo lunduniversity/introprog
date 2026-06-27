@@ -237,6 +237,7 @@ object Translate:
   // with its CLEAN Swedish key (the form Overrides.scala uses) + the model's English, so the misses that
   // keep a `--all` run from being 0-model-calls can be curated into Overrides.scala. Pure diagnostics.
   var captureSuggestions = false
+  var dumpFallbacks = false // --sweep-fallbacks: record SLIDE units whose result is still Swedish
   var currentLabel = ""
   val suggestions = mutable.ArrayBuffer[(String, String, String, String)]() // (kind, label, cleanSv, en)
 
@@ -479,7 +480,7 @@ object Translate:
     * trailing runs of whitespace+placeholders (e.g. `\item`, `\end{itemize}`, and the NEWLINES
     * between them — beamer fragile frames need `\end{...}` at line start) and translate only the
     * prose core. The model thus cannot move structural tokens or alter the whitespace around them. */
-  private def translateBlock(b: String, spans: IndexedSeq[String]): String =
+  private def translateBlock(b: String, spans: IndexedSeq[String], collapseEmph: Boolean = false): String =
     val lead = leadLen(b)
     val trail = trailStart(b)
     if trail <= lead then b // all whitespace/placeholders, no prose
@@ -498,23 +499,36 @@ object Translate:
             val willModel = captureSuggestions && sourceOf(core) == "model"
             val en = translate(core)
             if willModel then suggestions += (("tex", currentLabel, clean, Latex.restore(en, spans).trim))
-            b.substring(0, lead) + en + b.substring(trail)
+            // TIER-2 RETRY: the exposed-emphasis translation fell back (still Swedish) on a unit WITH
+            // inline emphasis → re-translate with emphasis collapsed to single placeholders (child-
+            // translated). Tier-1 (exposed) keeps in-context grammar for the units that succeed; only
+            // the placeholder-dense fallbacks pay the isolated-emphasis cost.
+            if !collapseEmph && Code.swedishish(Latex.restore(en, spans)) && Latex.hasEmphArg(clean) then
+              b.substring(0, lead) + translateRegion(Latex.restore(core, spans), currentLabel, collapseEmph = true) + b.substring(trail)
+            else
+              if dumpFallbacks && currentLabel.startsWith("slides/") && Code.swedishish(Latex.restore(en, spans)) then
+                suggestions += (("sv-fallback", currentLabel, clean, "")) // slide unit still Swedish after retry
+              b.substring(0, lead) + en + b.substring(trail)
 
   /** Translate one region (mask -> segment -> translate prose blocks -> restore). */
-  private def translateRegion(region: String, label: String): String =
+  private def translateRegion(region: String, label: String, collapseEmph: Boolean = false): String =
     currentLabel = label
-    val (masked, spans, itemIdx) = Latex.mask(region, stripEng = true)
+    val (masked, spans, itemIdx) = Latex.mask(region, stripEng = true, collapseEmph = collapseEmph)
     val (blocks, seps) = Latex.segmentMasked(masked, itemIdx)
     val translated = Array.from[String](blocks)
     for k <- blocks.indices do
       if Latex.hasText(blocks(k)) then
-        translated(k) = translateBlock(blocks(k), spans)
+        translated(k) = translateBlock(blocks(k), spans, collapseEmph)
         doneUnits += 1
         printBar(label, force = false)
     val sb = StringBuilder()
     for k <- blocks.indices do
       sb ++= translated(k); if k < seps.size then sb ++= seps(k)
-    Latex.restore(sb.toString, spans)
+    // When emphasis was collapsed (tier-2), translate each \Emph/\Alert/... span's inner text as a child
+    // unit. No-op under tier-1 (exposed) masking, where emphasis isn't a whole-command span.
+    val finalSpans = if !collapseEmph then spans
+      else spans.map(sp => Latex.reEmphArg(sp, child => translateRegion(child, label, collapseEmph = true)))
+    Latex.restore(sb.toString, finalSpans)
 
   /** Translate a .tex body. For a MAIN document, ONLY the matter between \begin{document} and
     * \end{document} is translated: the preamble (\documentclass, \usepackage[..]{..}, \geometry,

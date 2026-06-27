@@ -181,9 +181,11 @@ object Main:
     val dryrun = args.contains("--dryrun")    // run the full pipeline with the MODEL DISABLED (all Swedish)
     val retryFallbacks = args.contains("--retry-fallbacks") // drop Swedish fallbacks from cache + re-translate
     val dumpOverrides = args.contains("--dump-overrides") // record every MODEL-tier unit (clean sv + en) for curating Overrides.scala
+    val sweepFallbacks = args.contains("--sweep-fallbacks") // record every SLIDE unit whose result is still Swedish
     if dumpOverrides then Translate.captureSuggestions = true
+    if sweepFallbacks then Translate.dumpFallbacks = true
     argVal("--model").foreach(m => Translate.SelectedModel = m) // override the model for this run
-    val doTranslate = all || only.isDefined || dryrun || retryFallbacks || dumpOverrides // default (none): copy as-is, no Ollama
+    val doTranslate = all || only.isDefined || dryrun || retryFallbacks || dumpOverrides || sweepFallbacks // default (none): copy as-is, no Ollama
 
     if args.contains("--selftest") then Translate.selftest(root)
     else if args.contains("--clean") then Translate.clean(root)
@@ -196,7 +198,7 @@ object Main:
         argVal("--n").flatMap(_.toIntOption).getOrElse(30))
     else
       mirror(root, doTranslate, only, dryrun, retryFallbacks)
-      if dumpOverrides then writeOverrideSuggestions(root)
+      if dumpOverrides || sweepFallbacks then writeOverrideSuggestions(root)
 
   /** Write the captured MODEL-tier units (clean Swedish + the model's English) to a review file, so the
     * misses that keep `--all` from being 0-model-calls can be curated into Overrides.scala. TSV-ish:
@@ -269,7 +271,7 @@ object Main:
           os.makeDir.all(target / os.up)
           val translate = doTranslate && selected(f)
           val body = os.read(f)
-          val outBody = if translate then { nTrans += 1; Translate.translateTex(body, rel.toString) } else body
+          val outBody = if translate then { nTrans += 1; Translate.translateTex(body, s"$src/$rel") } else body
           os.write.over(target, setEnglishFlags(enChrome(redirectListings(rewriteInputs(outBody)))))
           nTex += 1
         else

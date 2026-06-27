@@ -59,6 +59,13 @@ object Latex:
     "ExeRow", "LabRow", "Vecka" // defined in .tex files (plan tables / week links) — non-prose args
   )
 
+  // Inline emphasis wrappers: prose args we DO translate, but mask the WHOLE `\cmd{arg}` as ONE
+  // placeholder (not command + `{` + exposed-text + `}` = 3) so a multi-emphasis bullet is not
+  // placeholder-dense — the dominant cause of model placeholder drop/reorder → Swedish fallback. The
+  // arg is translated as a CHILD unit (see reEmphArg + Translate.translateRegion), so emphasized words
+  // still become English (often a glossary hit), in isolation rather than mid-sentence.
+  val emphArg = Set("Emph", "Alert", "emph", "textbf", "textit", "textsf", "underline", "sout")
+
   // TRANSLATE-ARG: these prose-wrapping commands are deliberately NOT in maskWhole. The default scan
   // masks the command + its braces as placeholders and leaves the ARGUMENT TEXT translatable, so
   // emphasized words AND headings become English (e.g. \Subsection{Om programmering} -> \Subsection{About programming}):
@@ -125,7 +132,7 @@ object Latex:
   /** Mask the source. Returns (maskedText, spans, itemIdx) where itemIdx is the set of placeholder
     * indices that are `\item` markers (used to split bullet lists into per-item translation units).
     * With stripEng=true, `\Eng{...}` is removed. */
-  def mask(text: String, stripEng: Boolean): (String, IndexedSeq[String], Set[Int]) =
+  def mask(text: String, stripEng: Boolean, collapseEmph: Boolean = false): (String, IndexedSeq[String], Set[Int]) =
     val out = StringBuilder()
     val spans = mutable.ArrayBuffer[String]()
     val itemIdx = mutable.Set[Int]()
@@ -223,6 +230,10 @@ object Latex:
               val k = skipOptional(text, j)
               if k < n && text(k) == '{' then titleCloseAt = skipGroup(text, k) - 1
               protect(text.substring(i, k)); i = k
+            case nm if collapseEmph && emphArg.contains(nm) => // FALLBACK masking: collapse \cmd{arg} to
+              val k = skipGroup(text, j)         // ONE placeholder (arg child-translated via reEmphArg).
+              protect(text.substring(i, k)); i = k // Only when collapseEmph — default exposes the arg
+              // (translated in-context for better grammar); see Translate.translateBlock's tier-2 retry.
             case _ =>
               protect(text.substring(i, j)); i = j // zero-arg / font / unknown control word
       else { out += c; i += 1 }
@@ -241,6 +252,27 @@ object Latex:
       val fixed = if nextIsLetter && span.length >= 2 && span(0) == '\\' && span.last.isLetter then span + " " else span
       Matcher.quoteReplacement(fixed)
     )
+
+  /** If `span` is a whole inline-emphasis command `\cmd{arg}` (cmd in emphArg), return it with `arg`
+    * replaced by `tr(arg)` — the child-translated English; else return `span` unchanged. Lets
+    * Translate.translateRegion translate emphasized text AFTER the surrounding prose, so a dense bullet
+    * sees one placeholder per emphasis instead of three. */
+  /** True if `s` contains an inline-emphasis command (\Emph{…}/\Alert{…}/…) — gates the tier-2 retry. */
+  def hasEmphArg(s: String): Boolean = emphArg.exists(c => s.contains(s"\\$c{"))
+
+  def reEmphArg(span: String, tr: String => String): String =
+    if span.length < 2 || span(0) != '\\' then span
+    else
+      var j = 1
+      while j < span.length && span(j).isLetter do j += 1
+      if !emphArg.contains(span.substring(1, j)) then span
+      else
+        var open = j
+        while open < span.length && span(open).isWhitespace do open += 1
+        if open >= span.length || span(open) != '{' then span
+        else
+          val end = skipGroup(span, open) // index after the matching '}'
+          span.substring(0, open + 1) + tr(span.substring(open + 1, end - 1)) + span.substring(end - 1)
 
   /** Split masked text into segments on blank lines AND before each `\item` marker, keeping the
     * separators for EXACT rejoin (blocks ++ seps interleaved == s). Splitting per-item keeps
