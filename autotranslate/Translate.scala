@@ -576,7 +576,7 @@ object Translate:
     val allLines = mutable.LinkedHashSet[String]() // distinct non-empty lines (the % denominator)
     val perFile = mutable.ArrayBuffer[(String, Int)]()
     for dir <- Seq("slides-en", "compendium-en"); d = root / dir if os.exists(d)
-        f <- os.walk(d) if os.isFile(f) && f.ext == "tex"
+        f <- os.walk(d) if os.isFile(f) && Set("tex", "scala", "java")(f.ext) // incl. CODE files (human-fix at source)
     do
       val lines = os.read.lines(f).iterator.map(_.trim).filter(_.nonEmpty).toVector
       val sw = lines.filter(Code.swedishish).distinct
@@ -610,9 +610,14 @@ object Translate:
     val lines = res.out.text().linesIterator.map(_.trim).filter(_.nonEmpty).toVector.distinct
     val sw = lines.filter(Code.swedishish)
     val pct = if lines.isEmpty then 0.0 else sw.size * 100.0 / lines.size
-    os.write.over(pdf / os.up / s"swedish-${pdf.baseName}.txt", if sw.isEmpty then "" else sw.mkString("\n") + "\n")
-    if sw.isEmpty then println(s"  [swedish] ${pdf.last}: 0% — fully English ✅ (${lines.size} lines)")
-    else println(f"  [swedish] ${pdf.last}: $pct%.1f%% Swedish — ${sw.size}/${lines.size} distinct lines ⚠")
+    val outFile = pdf / os.up / s"swedish-${pdf.baseName}.txt"
+    os.write.over(outFile, if sw.isEmpty then "" else sw.mkString("\n") + "\n")
+    if sw.isEmpty then { println(s"  [swedish] ${pdf.last}: 0% — fully English ✅ (${lines.size} lines)"); os.remove(outFile) }
+    else
+      println(f"  [swedish] ${pdf.last}: $pct%.1f%% Swedish — ${sw.size}/${lines.size} distinct lines ⚠")
+      // Accepted residual is mostly Swedish in CODE examples (identifiers/strings). List the lines a human
+      // can fix at the source (grep the source tree for them): full list written next to the PDF.
+      println(s"            lines to fix (incl. code) -> ${outFile}")
 
   /** P0 self-test: exercise the precedence + fallback on a few plain sentences. */
   def selftest(root: os.Path): Unit =
