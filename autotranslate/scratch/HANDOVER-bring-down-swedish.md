@@ -1,4 +1,4 @@
-# Handover: bring down Swedish in the English mirror (Overrides ralph-loop)
+# Handover: bring down Swedish in the English mirror (by adding to Overrides.scala)
 
 Run your agent **from this introprog repo root** (so plain `git`/`sbt`/`scala-cli` work, no `cd`). Read this
 whole file, then `autotranslate/{Main,Translate,Overrides,Latex,Code}.scala` to orient, then start the loop.
