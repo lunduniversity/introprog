@@ -91,6 +91,12 @@ Adopt the method at **https://codeberg.org/bjornregnell/genscalator**:
 - **One bare command per shell call** — no `cd`, no `&&`/`;` chains, no `> log; echo` scaffolding.
 - Log any confirmation-friction event to genscalator's `research/wr-data/` (gated — write only, BR reviews).
 
+## sbt gotcha
+`sbt --client` does NOT auto-reload `build.sbt` (it reuses a long-running server). After editing
+`build.sbt`, run `sbt --client reload` (or `sbt --client shutdown`) before your next task, or you'll run a
+stale task. The `*En` Swedish-% report prints ONE `[swedish] …` line at the very END of the build output
+(after all the pdflatex spam) — grep for `[swedish]` if you miss it.
+
 ## Commit rules
 - Plain `git` (cwd is introprog). **NO agent/Claude/Codex credit** in commit messages. **Push every commit.**
 - Generated `compendium-en/`, `slides-en/`, `plan/*-en` are **gitignored** — never commit them. Commit
