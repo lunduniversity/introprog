@@ -131,8 +131,8 @@ object Main:
   /** Fixed slide boilerplate chrome (title-page / running header-footer / overview-table headers). */
   val chromePhrases: Seq[(String, String)] = Seq(
     "Introduktion till programmering med Scala" -> "Introduction to Programming with Scala",
-    "Föreläsning i ''Programmering, grundkurs''" -> "Lecture in ''Programming, introductory course''",
-    "Programmering, grundkurs"                   -> "Programming, introductory course", // \subtitle (after footer phrase)
+    "Föreläsning i ''Programmering, grundkurs''" -> "Lecture in ''Introduction to programming''",
+    "Programmering, grundkurs"                   -> "Introduction to programming", // official course name (\subtitle, after footer phrase)
     "senast uppdaterad:"                         -> "last updated:",
     "Vecka \\vecka"                              -> "Week \\vecka",   // frame title: "Vecka N." -> "Week N."
     "Kompilerad den"                             -> "Compiled on",
