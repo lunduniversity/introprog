@@ -571,21 +571,42 @@ object Translate:
     * (the same åäö + Swedish-stop-word notion the translator uses to decide what to translate). Scans the
     * already-generated `-en` .tex (run after a `--all` pass); prints the corpus total + the worst files so
     * the loop can target them and watch the number fall. */
+  // Verbatim/code environments whose body is NOT reader-facing PROSE — Swedish inside is accepted code
+  // residual, so the prose gauge skips them (de-noised metric, 2026-06-29).
+  private val codeEnvs = Set("Code", "CodeSmall", "CodeTiny", "REPL", "REPLnonum", "REPLnonumber",
+    "lstlisting", "verbatim", "Verbatim", "Trace", "Output")
+  private val beginEnvRe = raw"\\begin\{([A-Za-z*]+)\}".r
+  private val endEnvRe = raw"\\end\{([A-Za-z*]+)\}".r
+
+  /** Reader-facing PROSE lines of a .tex: drop `%`-comment lines (never rendered) and the bodies of
+    * code/verbatim environments (accepted code residual), so the Swedish gauge counts only fixable prose. */
+  private def proseLines(raw: Iterable[String]): Vector[String] =
+    val out = mutable.ArrayBuffer[String]()
+    var depth = 0
+    for line <- raw do
+      val t = line.trim
+      val begins = beginEnvRe.findAllMatchIn(t).map(_.group(1)).count(codeEnvs.contains)
+      val ends = endEnvRe.findAllMatchIn(t).map(_.group(1)).count(codeEnvs.contains)
+      val insideBefore = depth > 0
+      depth = math.max(0, depth + begins - ends)
+      if t.nonEmpty && !t.startsWith("%") && !insideBefore && begins == 0 then out += t
+    out.toVector
+
   def checkHowMuchSwedishLeft(root: os.Path): Unit =
-    val all = mutable.LinkedHashSet[String]()      // distinct Swedish-looking lines
-    val allLines = mutable.LinkedHashSet[String]() // distinct non-empty lines (the % denominator)
+    val all = mutable.LinkedHashSet[String]()      // distinct Swedish PROSE lines
+    val allLines = mutable.LinkedHashSet[String]() // distinct PROSE lines (the % denominator)
     val perFile = mutable.ArrayBuffer[(String, Int)]()
     for dir <- Seq("slides-en", "compendium-en"); d = root / dir if os.exists(d)
-        f <- os.walk(d) if os.isFile(f) && Set("tex", "scala", "java")(f.ext) // incl. CODE files (human-fix at source)
+        f <- os.walk(d) if os.isFile(f) && f.ext == "tex" // PROSE gauge: .tex only (code Swedish is accepted residual)
     do
-      val lines = os.read.lines(f).iterator.map(_.trim).filter(_.nonEmpty).toVector
+      val lines = proseLines(os.read.lines(f)) // skips comments + code/verbatim blocks
       val sw = lines.filter(Code.swedishish).distinct
       if sw.nonEmpty then perFile += ((f.relativeTo(root).toString, sw.size))
       all ++= sw; allLines ++= lines
     val total = allLines.size
     val pct = if total == 0 then 0.0 else all.size * 100.0 / total
-    if all.isEmpty then println(s"  swedish-left: 0% — fully English ✅ ($total distinct lines, ${perFile.size} files)")
-    else println(f"  swedish-left: $pct%.1f%% Swedish — ${all.size}/$total distinct lines across ${perFile.size} -en files")
+    if all.isEmpty then println(s"  swedish-left: 0% prose — fully English ✅ ($total distinct prose lines, ${perFile.size} files)")
+    else println(f"  swedish-left: $pct%.1f%% Swedish PROSE — ${all.size}/$total distinct lines (comments + code blocks excluded), ${perFile.size} files")
     perFile.sortBy(-_._2).take(20).foreach((p, c) => println(f"    $c%4d  $p"))
 
   /** Insourced PDF Swedish scan (was scratch/pdf-swedish.scala): pdftotext → the fraction of DISTINCT
