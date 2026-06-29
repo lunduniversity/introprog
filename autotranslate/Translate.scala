@@ -592,6 +592,15 @@ object Translate:
       if t.nonEmpty && !t.startsWith("%") && !insideBefore && begins == 0 then out += t
     out.toVector
 
+  /** Dump the actual Swedish PROSE lines of ONE generated -en file (comments + code blocks excluded) —
+    * the spotting tool for the Overrides loop: shows exactly which prose to fix in a target file. */
+  def dumpSwedishProse(root: os.Path, relpath: String): Unit =
+    val f = os.Path(relpath, root)
+    if !os.exists(f) then { println(s"  [swedish-lines] no file at $f"); return }
+    val sw = proseLines(os.read.lines(f)).filter(Code.swedishish).distinct
+    println(s"  ${sw.size} Swedish prose lines in $relpath:")
+    sw.foreach(l => println(s"    $l"))
+
   def checkHowMuchSwedishLeft(root: os.Path): Unit =
     val all = mutable.LinkedHashSet[String]()      // distinct Swedish PROSE lines
     val allLines = mutable.LinkedHashSet[String]() // distinct PROSE lines (the % denominator)
