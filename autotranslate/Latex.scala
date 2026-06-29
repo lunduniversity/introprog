@@ -21,7 +21,11 @@ object Latex:
   // builtin (not \newcommand) used with /, |, + delimiters here — content must be masked verbatim.
   val verbatimInline = Set("code", "jcode", "lstinline", "lstinline*", "verb", "verb*")
   // environments whose whole body is verbatim/non-prose → masked as one block.
-  val verbatimEnvs = Set("Code", "REPL", "verbatim", "Verbatim", "lstlisting", "comment",
+  // NB: ALL code/REPL variants must be here. A missing one (e.g. CodeSmall) is NOT masked verbatim, so its
+  // Scala `$`-interpolation (`$x`, `${...}`) leaks into the `$…$` math handler → mis-paired `$` swallow a
+  // huge prose region as one span (an 11k-char span hid whole \Subtask sentences from translation).
+  val verbatimEnvs = Set("Code", "CodeSmall", "REPL", "REPLnonum", "REPLsmall",
+    "verbatim", "Verbatim", "lstlisting", "comment",
     // diagram environments: coordinates / node NAMES / options / \foreach vars are NOT prose and
     // translating them breaks the build (a node ref (Subtyp) -> (Subtype) => "No shape named ...").
     // Node TEXT labels stay Swedish — an accepted trade-off for build safety.

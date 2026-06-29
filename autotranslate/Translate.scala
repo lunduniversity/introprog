@@ -441,13 +441,22 @@ object Translate:
     val now = System.currentTimeMillis
     if force || now - lastPrintMs >= 800 then
       lastPrintMs = now
-      val frac = if totalUnits > 0 then doneUnits.toDouble / totalUnits else 0.0
+      // clamp to [0,1] / [0,∞) as an honesty safety net: the block-count estimate can be slightly off
+      // (e.g. main-doc preamble vs body), so never show >100% or a negative ETA.
+      val frac = if totalUnits > 0 then math.min(1.0, doneUnits.toDouble / totalUnits) else 0.0
       val w = 24; val n = (frac * w).toInt
       val bar = "#" * n + "-" * (w - n)
       val elapsed = now - startMs
-      val eta = if doneUnits > 0 then ((elapsed.toDouble / doneUnits) * (totalUnits - doneUnits)).toLong else 0L
+      val eta = if doneUnits > 0 then math.max(0L, ((elapsed.toDouble / doneUnits) * (totalUnits - doneUnits)).toLong) else 0L
       print(f"\r  [$bar] ${(frac * 100).toInt}%3d%%  $doneUnits/$totalUnits  model=$modelCalls cache=${cache.size} fb=$fallbacks  ${fmt(elapsed)} ETA ${fmt(eta)}  $label        ")
       System.out.flush()
+      // ALSO write the same status to a file, so a long run can be monitored live even when stdout is
+      // buffered (e.g. `sbt --client` only flushes at completion). Throttled with the bar (≤ every 800ms),
+      // a tiny overwrite — no throughput impact. Best-effort: never let a write error abort the run.
+      saveRoot.foreach: r =>
+        try os.write.over(r / "autotranslate" / "scratch" / "progress.txt",
+          f"${(frac * 100).toInt}%3d%%  $doneUnits/$totalUnits blocks  model=$modelCalls cache=${cache.size} fb=$fallbacks  elapsed ${fmt(elapsed)} ETA ${fmt(eta)}  at: $label\n")
+        catch case _: Throwable => ()
 
   /** Translate a whole .tex body: mask → segment (paragraphs) → translate each masked segment
     * (skip pure-markup segments) → rejoin → restore. \Eng{...} is stripped on the en side.
@@ -519,8 +528,11 @@ object Translate:
     for k <- blocks.indices do
       if Latex.hasText(blocks(k)) then
         translated(k) = translateBlock(blocks(k), spans, collapseEmph)
-        doneUnits += 1
-        printBar(label, force = false)
+        // Count ONLY top-level blocks toward progress: countTextBlocks (the denominator) counts top-level
+        // blocks, so the tier-2 emphArg children (recursive translateRegion with collapseEmph=true) must
+        // NOT increment doneUnits — else doneUnits exceeds the total and the bar reads >100%.
+        if !collapseEmph then doneUnits += 1
+        printBar(label, force = false) // still refresh display often (model/cache/fb update during children)
     val sb = StringBuilder()
     for k <- blocks.indices do
       sb ++= translated(k); if k < seps.size then sb ++= seps(k)
@@ -573,7 +585,7 @@ object Translate:
     * the loop can target them and watch the number fall. */
   // Verbatim/code environments whose body is NOT reader-facing PROSE — Swedish inside is accepted code
   // residual, so the prose gauge skips them (de-noised metric, 2026-06-29).
-  private val codeEnvs = Set("Code", "CodeSmall", "CodeTiny", "REPL", "REPLnonum", "REPLnonumber",
+  private val codeEnvs = Set("Code", "CodeSmall", "REPL", "REPLnonum", "REPLsmall",
     "lstlisting", "verbatim", "Verbatim", "Trace", "Output")
   private val beginEnvRe = raw"\\begin\{([A-Za-z*]+)\}".r
   private val endEnvRe = raw"\\end\{([A-Za-z*]+)\}".r

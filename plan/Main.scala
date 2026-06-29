@@ -107,6 +107,27 @@ val nameDefs = {
   modulePlan.toMarkdown.    save(currentDir + "module-plan-generated.md")
   modulePlan.toHtmlPatched. save(currentDir + "module-plan-generated.html")
   modulePlan.latexTableBody.save(currentDir + "module-plan-generated.tex")
+
+  // English module-plan: translate ONLY the concept column ("Innehåll") via the authoritative glossary
+  // sv->en concepts (same source as FindTranslations). Module names (col "Modul") are LEFT IN SWEDISH on
+  // purpose — autotranslate's enChrome translates them with the SAME `moduleNames` map it uses for the
+  // overview-en, so module titles can never diverge between the two tables. A concept with no English in
+  // the glossary stays Swedish (surfacing a glossary gap to fix at the source).
+  val conceptEn: Map[String, String] = glossary.explain.allConcepts
+    .filter(_.en.nonEmpty).map(c => c.sv.trim -> c.en.trim).toMap
+  var missing = 0
+  def translateConcepts(innehall: String): String =
+    innehall.split(',').toVector.map { raw =>
+      val term = raw.trim
+      conceptEn.get(term) match
+        case Some(en)                 => raw.replace(term, en) // keep original surrounding spaces
+        case None if term.isEmpty     => raw
+        case None                     => missing += 1; raw     // no glossary English -> keep Swedish
+    }.mkString(",")
+  val enGrid = modulePlan.grid.map(row => row.updated("Innehåll", translateConcepts(row("Innehåll"))))
+  modulePlan.latexTableBodyOf(enGrid).save(currentDir + "module-plan-generated-en.tex")
+  println(s"Generated module-plan-generated-en.tex (${conceptEn.size} glossary terms; $missing concept terms had no English -> kept Swedish)")
+
   overview  .toLatex   .prepend(texUtf).save(currentDir + "overview-generated.tex")
 
   for w <- weeks do
