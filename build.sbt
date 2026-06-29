@@ -245,6 +245,20 @@ pdfCompendium2 := {
   runPdfLatexCmd(texFile = file("compendium2.tex"), workDir = file("compendium"))
 }
 
+lazy val pdfCompendium1En = taskKey[Unit]("Compile the generated English mirror compendium-en/compendium1-en.tex")
+pdfCompendium1En := {
+  val cp = (autotranslateProject / Compile / fullClasspath).value.files.map(_.getPath).mkString(java.io.File.pathSeparator)
+  runPdfLatexCmd(texFile = file("compendium1-en.tex"), workDir = file("compendium-en"))
+  reportSwedishPct(cp, file("compendium-en/compendium1-en.pdf"))
+}
+
+lazy val pdfCompendium2En = taskKey[Unit]("Compile the generated English mirror compendium-en/compendium2-en.tex")
+pdfCompendium2En := {
+  val cp = (autotranslateProject / Compile / fullClasspath).value.files.map(_.getPath).mkString(java.io.File.pathSeparator)
+  runPdfLatexCmd(texFile = file("compendium2-en.tex"), workDir = file("compendium-en"))
+  reportSwedishPct(cp, file("compendium-en/compendium2-en.pdf"))
+}
+
 lazy val pdfSlides = inputKey[Unit]("run pdflatex slides/lect-w<weeknumber>.tex")
 pdfSlides := {
   // http://www.scala-sbt.org/1.0/docs/Input-Tasks.html#Basic+Input+Task+Definition

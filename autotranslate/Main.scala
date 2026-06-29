@@ -57,6 +57,11 @@ object Main:
             // too (compendium-en mirrors every module + builds clean). With/without a .tex suffix.
             val b = t.stripPrefix("../compendium/")
             "../compendium-en/" + (if b.endsWith(".tex") then b.dropRight(4) else b) + "-en.tex"
+          else if t.endsWith("global-constants.tex") then
+            // global-constants.tex lives at compendium/ root and IS mirrored (global-constants-en.tex),
+            // but is \input via `../` from a subdir (cover/), so the `..` catch-all below would leave it
+            // pointing at a non-existent compendium-en/global-constants.tex. Redirect to the -en mirror.
+            t.dropRight(4) + "-en.tex"
           else if t.startsWith("..") || t.startsWith("/") then t
           else if t.endsWith(".tex") then t.dropRight(4) + "-en.tex"
           else t + "-en"
