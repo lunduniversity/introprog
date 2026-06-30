@@ -332,4 +332,16 @@ object Overrides:
       """Goal: create your \Emph{own} program with \Emph{many small functions} and practise the \Emph{concepts} we have used so far.""",
     """Om ni inte redan gjort det: \\Visa \href{https://github.com/bjornregnell/lth-eda016-2015/tree/master/assignments}{samarbetskontrakt} för handledare på resurstid.""" ->
       """If you haven't already done so: \\Show the \href{https://github.com/bjornregnell/lth-eda016-2015/tree/master/assignments}{collaboration contract} to an assistant during a tutorial.""",
+
+    // ── lect-w10-override: clean slide prose (Färg/Röd/Svart/namn/ålder are example identifiers) ──
+    """Om en medlem i en supertyp är abstrakt \emph{behöver} man inte använda nyckelordet \code{override} i subtypen. (Men det är bra att göra det ändå så att kompilatorn hjälper dig att kolla att du verkligen överskuggar något.)""" ->
+      """If a member of a supertype is abstract you \emph{do not need} to use the keyword \code{override} in the subtype. (But it is good to do so anyway, so the compiler helps you check that you really are overriding something.)""",
+    """Om en medlem i en supertyp är konkret \emph{måste} man använda nyckelordet \code{override} i subtypen, annars ges kompileringsfel.""" ->
+      """If a member of a supertype is concrete you \emph{must} use the keyword \code{override} in the subtype, otherwise you get a compile error.""",
+    """En konkret medlem får \Alert{inte} bytas ut mot en \code{var} -- inte ens en konkret \code{var}:""" ->
+      """A concrete member may \Alert{not} be replaced by a \code{var} -- not even a concrete \code{var}:""",
+    """En produkt-typ är en ''och''-typ (ä.k. record, struct), exempel: \\ \code|case class Person(namn: String, ålder: Int)| \\består av attributen namn \Alert{OCH} ålder.""" ->
+      """A product type is an ''and''-type (a.k.a. record, struct), example: \\ \code|case class Person(namn: String, ålder: Int)| \\consists of the attributes namn \Alert{AND} ålder.""",
+    """Exempel: \code|enum Färg { case Röd, Svart}| \\Färg kan vara antingen Röd \Emph{ELLER} Svart.""" ->
+      """Example: \code|enum Färg { case Röd, Svart}| \\Färg can be either Röd \Emph{OR} Svart.""",
   )
