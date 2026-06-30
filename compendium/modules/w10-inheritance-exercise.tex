@@ -57,14 +57,23 @@
 \QUESTBEGIN
 
 \Task  \what~  Man vill ofta lägga in objekt av olika typ i samma samling.
+\ifswedish
 \begin{REPL}
 scala> class Gurka(val vikt: Int)
 scala> class Tomat(val vikt: Int)
 scala> val gurkor = Vector(Gurka(100), Gurka(200))
 scala> val grönsaker = Vector(Gurka(300), Tomat(42))
 \end{REPL}
+\else
+\begin{REPL}
+scala> class Cucumber(val weight: Int)
+scala> class Tomato(val weight: Int)
+scala> val gurkor = Vector(Cucumber(100), Cucumber(200))
+scala> val vegetables = Vector(Cucumber(300), Tomato(42))
+\end{REPL}
+\fi
 
-\Subtask Om en samling innehåller objekt av flera olika typer försöker kompilatorn härleda den mest specifika typen som objekten har gemensamt. Vad blir det för typ på värdet \code{grönsaker} ovan?
+\Subtask Om en samling innehåller objekt av flera olika typer försöker kompilatorn härleda den mest specifika typen som objekten har gemensamt. Vad blir det för typ på värdet \ifswedish\code{grönsaker}\else\code{vegetables}\fi ovan?
 
 \Subtask Försök ta reda på summan av vikterna enligt nedan. Vad ger andra raden för felmeddelande? Varför?
 
@@ -73,10 +82,11 @@ scala> gurkor.map(_.vikt).sum     // fungerar
 scala> grönsaker.map(_.vikt).sum  // fungerar inte
 \end{REPL}
 
-\Subtask Du ska nu göra så att du kan komma åt vikten på alla grönsaker genom att ge gurkor och tomater en gemensam bastyp som de olika konkreta grönsakstyperna utvidgar med nyckelordet \code{extends}. Det heter att subtyperna \code{Gurka} och \code{Tomat} \textbf{ärver} egenskaperna hos supertypen \code{Grönsak}.
+\Subtask Du ska nu göra så att du kan komma åt vikten på alla grönsaker genom att ge gurkor och tomater en gemensam bastyp som de olika konkreta grönsakstyperna utvidgar med nyckelordet \code{extends}. Det heter att subtyperna \ifswedish\code{Gurka}\else\code{Cucumber}\fi och \ifswedish\code{Tomat}\else\code{Tomato}\fi \textbf{ärver} egenskaperna hos supertypen \ifswedish\code{Grönsak}\else\code{Vegetable}\fi.
 
-Skapa en bastyp \code{Grönsak} med ett abstrakt attribut \code{vikt}. Låt sedan de konkreta grönsakerna ärva bastypen:
+Skapa en bastyp \ifswedish\code{Grönsak}\else\code{Vegetable}\fi med ett abstrakt attribut \ifswedish\code{vikt}\else\code{weight}\fi. Låt sedan de konkreta grönsakerna ärva bastypen:
 
+\ifswedish
 \begin{REPL}
 scala> trait Grönsak { val vikt: Int }
 scala> class Gurka(val vikt: Int) extends Grönsak
@@ -84,28 +94,50 @@ scala> class Tomat(val vikt: Int) extends Grönsak
 scala> val gurkor = Vector(Gurka(100), Gurka(200))
 scala> val grönsaker = Vector(Gurka(300), Tomat(42))
 \end{REPL}
-När sker initialisering av attributet \code{vikt}?
+\else
+\begin{REPL}
+scala> trait Vegetable { val weight: Int }
+scala> class Cucumber(val weight: Int) extends Vegetable
+scala> class Tomato(val weight: Int) extends Vegetable
+scala> val gurkor = Vector(Cucumber(100), Cucumber(200))
+scala> val vegetables = Vector(Cucumber(300), Tomato(42))
+\end{REPL}
+\fi
+När sker initialisering av attributet \ifswedish\code{vikt}\else\code{weight}\fi?
 
-\Subtask Vad blir det nu för typ på variabeln \code{grönsaker} ovan?
+\Subtask Vad blir det nu för typ på variabeln \ifswedish\code{grönsaker}\else\code{vegetables}\fi ovan?
 
-\Subtask Går det nu att summera vikterna i \code{grönsaker} med uttrycket nedan? Varför?\\ \code{grönsaker.map(_.vikt).sum}
+\Subtask Går det nu att summera vikterna i \ifswedish\code{grönsaker}\else\code{vegetables}\fi med uttrycket nedan? Varför?\\ \ifswedish\code{grönsaker.map(_.vikt).sum}\else\code{vegetables.map(_.weight).sum}\fi
 
 
 \Subtask En trait liknar en klass, men man kan inte instansiera den direkt. Vad blir det för felmeddelande om du försöker skapa en instans av en trait enligt nedan?
+\ifswedish
 \begin{REPL}
 scala> trait Grönsak { val vikt: Int }
 scala> new Grönsak
 \end{REPL}
+\else
+\begin{REPL}
+scala> trait Vegetable { val weight: Int }
+scala> new Vegetable
+\end{REPL}
+\fi
 
 
-\Subtask Traiten \code{Grönsak} har en abstrakt medlem \code{vikt}. Den sägs vara abstrakt eftersom den saknar implementation -- medlemmen har bara ett namn och en typ men inget värde. Du kan instansiera den abstrakta traiten \code{Grönsak} om du fyller i det som ''fattas'', nämligen ett värde på \code{vikt}. Man kan fylla på det som fattas i genom att ''hänga på'' ett block efter typens namn vid instansiering. Man får då vad som kallas en \textbf{anonym klass}, i detta fall en ganska konstig grönsak som inte är någon speciell sorts grönsak med som ändå har en vikt.
+\Subtask Traiten \ifswedish\code{Grönsak}\else\code{Vegetable}\fi har en abstrakt medlem \ifswedish\code{vikt}\else\code{weight}\fi. Den sägs vara abstrakt eftersom den saknar implementation -- medlemmen har bara ett namn och en typ men inget värde. Du kan instansiera den abstrakta traiten \ifswedish\code{Grönsak}\else\code{Vegetable}\fi om du fyller i det som ''fattas'', nämligen ett värde på \ifswedish\code{vikt}\else\code{weight}\fi. Man kan fylla på det som fattas i genom att ''hänga på'' ett block efter typens namn vid instansiering. Man får då vad som kallas en \textbf{anonym klass}, i detta fall en ganska konstig grönsak som inte är någon speciell sorts grönsak med som ändå har en vikt.
 
-Vad får \code{anonymGrönsak} nedan för typ och strängrepresenation?
+Vad får \ifswedish\code{anonymGrönsak}\else\code{anonymousVegetable}\fi nedan för typ och strängrepresenation?
+\ifswedish
 \begin{REPL}
 scala> val anonymGrönsak = new Grönsak { val vikt = 42 }
 \end{REPL}
+\else
+\begin{REPL}
+scala> val anonymousVegetable = new Vegetable { val weight = 42 }
+\end{REPL}
+\fi
 
-\Subtask Vad blir felmeddelandet om du skapar en anonym klass \code{Grönsak} med en kropp som saknar definition av vikt?
+\Subtask Vad blir felmeddelandet om du skapar en anonym klass \ifswedish\code{Grönsak}\else\code{Vegetable}\fi med en kropp som saknar definition av vikt?
 
 \SOLUTION
 
@@ -116,6 +148,7 @@ scala> val anonymGrönsak = new Grönsak { val vikt = 42 }
 \SubtaskSolved  \code{Vector[Object]}. Typen \code{Object} i JVM är motsvarar typen \code{AnyRef} som är bastyp för alla referenstyper.
 
 \SubtaskSolved  Felmeddelande:
+\ifswedish
 \begin{REPLnonum}
 scala> grönsaker.map(_.vikt).sum  
 -- Error:                                                                                 
@@ -127,15 +160,29 @@ scala> grönsaker.map(_.vikt).sum
   |                         ^
   |ambiguous implicit arguments: both object DoubleIsFractional in object Numeric and object ShortIsIntegral in object Numeric match type Numeric[B] of parameter num of method sum in trait IterableOnceOps
 \end{REPLnonum}
-Det första felmeddelandet beror på att vektorns element är av typen \code{Object} och medlemmen \code{vikt} är inte definierat för denna typ. Det andra felmeddelandet är ett följdfel som beror på att en sekvens med element av typen \code{Object} inte kan summeras eftersom kompilatorn inte kan härleda att elementtypen är numerisk.
+\else
+\begin{REPLnonum}
+scala> vegetables.map(_.weight).sum  
+-- Error:                                                                                 
+1 |vegetables.map(_.weight).sum
+  |              ^^^^^^
+  |             value weight is not a member of Object - did you mean wait?
+-- Error:
+1 |vegetables.map(_.weight).sum
+  |                         ^
+  |ambiguous implicit arguments: both object DoubleIsFractional in object Numeric and object ShortIsIntegral in object Numeric match type Numeric[B] of parameter num of method sum in trait IterableOnceOps
+\end{REPLnonum}
+\fi
+Det första felmeddelandet beror på att vektorns element är av typen \code{Object} och medlemmen \ifswedish\code{vikt}\else\code{weight}\fi är inte definierat för denna typ. Det andra felmeddelandet är ett följdfel som beror på att en sekvens med element av typen \code{Object} inte kan summeras eftersom kompilatorn inte kan härleda att elementtypen är numerisk.
 
-\SubtaskSolved  Attributet \code{vikt} initialiseras vid konstruktion av \code{Gurka} resp. \code{Tomat}. Värdet ges av resp. klassparameter.
+\SubtaskSolved  Attributet \ifswedish\code{vikt}\else\code{weight}\fi initialiseras vid konstruktion av \ifswedish\code{Gurka}\else\code{Cucumber}\fi resp. \ifswedish\code{Tomat}\else\code{Tomato}\fi. Värdet ges av resp. klassparameter.
 
-\SubtaskSolved  \code{Vector[Grönsak]}.
+\SubtaskSolved  \ifswedish\code{Vector[Grönsak]}\else\code{Vector[Vegetable]}\fi.
 
-\SubtaskSolved  Ja. Eftersom den statiska typen för elementen i sekvensen är \code{Grönsak} (den dynamiska typen kan vara godtycklig subtyp av \code{Grönsak}) och alla instanser av denna typ garanterat har attributet \code{vikt} som är av typen \code{Int} så kan kompilatorn vid \emph{kompileringstid} dra slutsatsen att summeringen är giltig och därmed kan kompilatorn kompilera koden till körbar maskinkod.
+\SubtaskSolved  Ja. Eftersom den statiska typen för elementen i sekvensen är \ifswedish\code{Grönsak}\else\code{Vegetable}\fi (den dynamiska typen kan vara godtycklig subtyp av \ifswedish\code{Grönsak}\else\code{Vegetable}\fi) och alla instanser av denna typ garanterat har attributet \ifswedish\code{vikt}\else\code{weight}\fi som är av typen \code{Int} så kan kompilatorn vid \emph{kompileringstid} dra slutsatsen att summeringen är giltig och därmed kan kompilatorn kompilera koden till körbar maskinkod.
 
 \SubtaskSolved  
+\ifswedish
 \begin{REPLnonum}
 scala> new Grönsak
 -- Error:
@@ -143,20 +190,39 @@ scala> new Grönsak
   |    ^^^^^^^
   |    Grönsak is a trait; it cannot be instantiated
 \end{REPLnonum}
+\else
+\begin{REPLnonum}
+scala> new Vegetable
+-- Error:
+1 |new Vegetable
+  |    ^^^^^^^
+  |    Vegetable is a trait; it cannot be instantiated
+\end{REPLnonum}
+\fi
 
 \SubtaskSolved  
+\ifswedish
 \begin{REPLnonum}
 scala> val anonymGrönsak = new Grönsak { val vikt = 42 }
 val anonymGrönsak: Grönsak = anon$1@1edde8b6
 scala> anonymGrönsak.toString                                                                                      
 val res0: String = anon$1@1edde8b6
 \end{REPLnonum}
-Typen är \code{Grönsak} och blir här en s.k. \emph{anonym klass}, eftersom vi inte har använt en namngiven klass med \code{extends}, utan bara ''hängt på'' en klasskropp inom klammerparenteser direkt vid konstruktion. När du skapar anonyma klasser måste du använda nyckelordet \code{new}.
+\else
+\begin{REPLnonum}
+scala> val anonymousVegetable = new Vegetable { val weight = 42 }
+val anonymousVegetable: Vegetable = anon$1@1edde8b6
+scala> anonymousVegetable.toString                                                                                      
+val res0: String = anon$1@1edde8b6
+\end{REPLnonum}
+\fi
+Typen är \ifswedish\code{Grönsak}\else\code{Vegetable}\fi och blir här en s.k. \emph{anonym klass}, eftersom vi inte har använt en namngiven klass med \code{extends}, utan bara ''hängt på'' en klasskropp inom klammerparenteser direkt vid konstruktion. När du skapar anonyma klasser måste du använda nyckelordet \code{new}.
 
 Kompilatorn hittar på ett unikt klassnamn, här anon\$1, för att hålla reda på den anonyma klassen under kompilering till maskinkod. Strängrepresentationen innehåller ett hexadecimalt heltal som är unikt för instansen, här \code{1edde8b6}.
 
 \SubtaskSolved  
 
+\ifswedish
 \begin{REPLsmall}
 scala> new Grönsak { }
 -- Error:
@@ -165,6 +231,16 @@ scala> new Grönsak { }
   |object creation impossible, since val vikt: Int in trait Grönsak is not defined 
 
 \end{REPLsmall}
+\else
+\begin{REPLsmall}
+scala> new Vegetable { }
+-- Error:
+1 |new Vegetable { }
+  |^
+  |object creation impossible, since val weight: Int in trait Vegetable is not defined 
+
+\end{REPLsmall}
+\fi
 
 
 \QUESTEND
