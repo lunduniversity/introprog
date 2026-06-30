@@ -316,4 +316,20 @@ object Overrides:
       """You can instantiate the abstract trait \code{Grönsak} if you fill in what is ''missing'', namely a value for \code{vikt}. You can fill in what is missing by ''attaching'' a block after the type's name at instantiation.""",
     """Vad får \code{anonymGrönsak} nedan för typ och strängrepresenation?""" ->
       """What type and string representation does \code{anonymGrönsak} below get?""",
+
+    // ── lect-w02-codestruct: clean slide prose ──
+    """Exempel på \Emph{färdiga samlingar} i Scalas standardbibliotek där elementen är organiserade  internt på \Alert{olika} vis så att samlingen får olika egenskaper som passar \Alert{olika användningsområden}:""" ->
+      """Examples of \Emph{ready-made collections} in Scala's standard library where the elements are organised internally in \Alert{different} ways so that the collection gets different properties suited to \Alert{different use cases}:""",
+    """speciella klasser som samlar data i element av \Alert{samma} typ""" ->
+      """special classes that collect data in elements of the \Alert{same} type""",
+    """har ofta \emph{många} färdiga \Emph{bra-att-ha-metoder}, \\ se snabbreferensen""" ->
+      """often have \emph{many} ready-made \Emph{handy methods}, \\ see the quick reference""",
+    """Med en \code{Range(start, slut)} kan du skapa ett \Emph{intervall}: \\ från och med \code{start} till (men inte med)""" ->
+      """With a \code{Range(start, slut)} you can create an \Emph{interval}: \\ from \code{start} up to (but not including)""",
+    """Paket kan vara \Emph{nästlade}: ofta finns paket i paket i paket.""" ->
+      """Packages can be \Emph{nested}: there are often packages within packages within packages.""",
+    """Mål: skapa \Emph{eget} program med \Emph{många små funktioner} och träna på de \Emph{begrepp} vi använt hittills.""" ->
+      """Goal: create your \Emph{own} program with \Emph{many small functions} and practise the \Emph{concepts} we have used so far.""",
+    """Om ni inte redan gjort det: \\Visa \href{https://github.com/bjornregnell/lth-eda016-2015/tree/master/assignments}{samarbetskontrakt} för handledare på resurstid.""" ->
+      """If you haven't already done so: \\Show the \href{https://github.com/bjornregnell/lth-eda016-2015/tree/master/assignments}{collaboration contract} to an assistant during a tutorial.""",
   )
