@@ -122,8 +122,8 @@
 
 \newcommand{\TODO}{\colorbox{red!70}{TODO!!!}~}
 \newcommand{\StudyTheory}[1]{Studera begreppen i kapitel \ref{chapter:W#1}}
-\newcommand{\DoExercise}[2]{Gör övning {\tt #1} i avsnitt \ref{exe:W#2}}
-\newcommand{\ReadTheLab}{Läs igenom och begrunda hela laborationsinstruktionen.}
+\newcommand{\DoExercise}[2]{\ifswedish Gör övning\else Do exercise\fi{} {\tt #1} \ifswedish i avsnitt\else in section\fi{} \ref{exe:W#2}}
+\newcommand{\ReadTheLab}{\ifswedish Läs igenom och begrunda hela laborationsinstruktionen.\else Read through and consider the whole lab instruction.\fi}
 
 \newcommand{\Emph}[1]{\textcolor{myemphcolor}{\textbf{#1}}}
 \newcommand{\Alert}[1]{\textcolor{myalertcolor}{\textbf{#1}}}
@@ -171,7 +171,7 @@
 \newcommand{\TaskSolved}{%
 \refstepcounter{SolutionTaskCounter}%
 \ifnum\value{SolutionTaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
-\pagebreak[2]\noindent{\Emph{Lösn. uppg.~\arabic{SolutionTaskCounter}.}~}%
+\pagebreak[2]\noindent{\Emph{\ifswedish Lösn. uppg.\else Sol. task\fi~\arabic{SolutionTaskCounter}.}~}%
 }
 
 
