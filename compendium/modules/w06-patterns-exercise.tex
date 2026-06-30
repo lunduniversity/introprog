@@ -96,9 +96,15 @@ Exekveringsfel, uppstår av en viss input under körningen.
 \Task  \what~  Med hjälp en gard \Eng{guard} i en case-gren kan man begränsa med ett villkor om grenen ska väljas.
 
 Utgå från koden i uppgift \ref{task:vegomatch}\ref{subtask:vegomatch} och byt ut case-grenen för \code{'g'}-matchning till nedan variant med en gard med nyckelordet \code{if} (notera att det inte behövs parenteser runt villkoret):
+\ifswedish
 \begin{Code}
     case 'g' if math.random() > 0.5 => "gurka är gott ibland..."
 \end{Code}
+\else
+\begin{Code}
+    case 'g' if math.random() > 0.5 => "cucumber is tasty sometimes..."
+\end{Code}
+\fi
 Kompilera om och kör programmet upprepade gånger med olika indata tills alla grenar i \code{match}-uttrycket har exekverats. Förklara vad som händer.
 
 \SOLUTION
@@ -124,14 +130,22 @@ Gardens krav måste uppfyllas för att det ska matcha som vanligt.
 
 %\Task \label{task:match-caseclass} \what~   Scalas \code{match}-uttryck är extra kraftfulla om de används tillsammans med \code{case}-klasser: då kan attribut extraheras automatiskt och bindas till lokala variabler direkt i case-grenen som nedan exempel visar (notera att \code{v} och \code{rutten} inte behöver deklareras explicit). Detta kallas för \textbf{mönstermatchning}.
 
-\Task \label{task:match-caseclass} \what~   Scalas \code{match}-uttryck är extra kraftfulla om de används tillsammans med \code{case}-klasser: då kan attribut extraheras automatiskt och bindas till lokala variabler direkt i case-grenen som nedan exempel visar (notera att \code{v} och \code{rutten} inte behöver deklareras explicit). Detta kallas för \textbf{mönstermatchning}. 
-Vad skrivs ut nedan? Varför? Prova att byta namn på \code{v} och \code{rutten}.
+\Task \label{task:match-caseclass} \what~   Scalas \code{match}-uttryck är extra kraftfulla om de används tillsammans med \code{case}-klasser: då kan attribut extraheras automatiskt och bindas till lokala variabler direkt i case-grenen som nedan exempel visar (notera att \code{v} och \ifswedish\code{rutten}\else\code{rotten}\fi inte behöver deklareras explicit). Detta kallas för \textbf{mönstermatchning}. 
+Vad skrivs ut nedan? Varför? Prova att byta namn på \code{v} och \ifswedish\code{rutten}\else\code{rotten}\fi.
 %\Subtask \label{subtask:autobinding-match} Vad skrivs ut nedan? Varför? Prova att byta namn på \code{v} och \code{rutten}.
+\ifswedish
 \begin{REPL}
 scala> case class Gurka(vikt: Int, ärRutten: Boolean)
 scala> val g = Gurka(100, true)
 scala> g match { case Gurka(v,rutten) => println("G" + v + rutten) }
 \end{REPL}
+\else
+\begin{REPL}
+scala> case class Cucumber(weight: Int, isRotten: Boolean)
+scala> val g = Cucumber(100, true)
+scala> g match { case Cucumber(v,rotten) => println("G" + v + rotten) }
+\end{REPL}
+\fi
 
 %\TODO %Tab två gånger fungerar inte i scala3-repl, issue #536
 %\Subtask Skriv sedan nedan i REPL och tryck TAB två gånger efter punkten. Vad har \code{unapply}-metoden för resultattyp?
@@ -157,7 +171,7 @@ scala> g match { case Gurka(v,rutten) => println("G" + v + rutten) }
 
 \TaskSolved \what \\
 G100true. Vid byte av plats: Gtrue100.\\
-\code{match} testar om kompanjonsobjektet \code{Gurka} är av typen \code{Gurka} med två parametervärden. De angivna parametrarna tilldelas namn, \code{vikt} får namnet \code{v} och \code{ärRutten} namnet \code{rutten} och skrivs sedan ut. Byts namnen dessa ges skrivs de ut i den omvända ordningen.
+\code{match} testar om kompanjonsobjektet \ifswedish\code{Gurka}\else\code{Cucumber}\fi är av typen \ifswedish\code{Gurka}\else\code{Cucumber}\fi med två parametervärden. De angivna parametrarna tilldelas namn, \ifswedish\code{vikt}\else\code{weight}\fi får namnet \code{v} och \ifswedish\code{ärRutten}\else\code{isRotten}\fi namnet \ifswedish\code{rutten}\else\code{rotten}\fi och skrivs sedan ut. Byts namnen dessa ges skrivs de ut i den omvända ordningen.
 
 %\TODO % TAB+TAB fungerar inte i scala3-repl så svaret till uppgiften är felaktig
 %\SubtaskSolved  \code{Option[(Int, Boolean)]}
@@ -317,6 +331,7 @@ Vi såg att i deluppgift \ref{task:match-sealedtrait}\ref{subtask:match-forgetca
 \Task  \what~  För att åstadkomma att namn kan bindas till variabler vid matchning utan att de behöver deklareras i förväg (som vi såg i uppgift \ref{task:match-caseclass}) så har identifierare med liten begynnelsebokstav fått speciell betydelse: den tolkas av kompilatorn som att du vill att en variabel  binds till ett värde vid matchningen. En identifierare med stor begynnelsebokstav tolkas däremot som ett konstant värde (t.ex. ett case-objekt eller ett case-klass-mönster).
 
 \Subtask \emph{En case-gren som fångar allt}. En case-gren med en identifierare med liten begynnelsebokstav som saknar gard kommer att matcha allt. Prova nedan i REPL, men försök lista ut i förväg vad som kommer att hända. Vad händer?
+\ifswedish
 \begin{REPL}
 scala> val x = "urka"
 scala> x match
@@ -327,6 +342,18 @@ scala> g match
          case str if str.startsWith("g") => println("kanske gurka")
          case vadsomhelst => println("ej gurka: " + vadsomhelst)
 \end{REPL}
+\else
+\begin{REPL}
+scala> val x = "urka"
+scala> x match
+         case str if str.startsWith("g") => println("kanske cucumber")
+         case vadsomhelst => println("ej cucumber: " + vadsomhelst)
+scala> val g = "cucumber"
+scala> g match
+         case str if str.startsWith("g") => println("kanske cucumber")
+         case vadsomhelst => println("ej cucumber: " + vadsomhelst)
+\end{REPL}
+\fi
 
 \Subtask \emph{Fallgrop med små begynnelsebokstäver.} Innan du provar nedan i REPL, försök gissa vad som kommer att hända. Vad händer? Hur lyder varningarna och vad innebär de?
 \begin{REPL}
@@ -339,7 +366,7 @@ scala> any match
          case _ => println("allt annat")
 \end{REPL}
 
-\Subtask \emph{Använd backticks för att tvinga fram match på konstant värde.} Det finns en utväg om man inte vill att kompilatorn ska skapa en ny lokal variabel: använd specialtecknet \emph{backtick}, som skrivs \`{} och kräver speciella tangentbordstryck.\footnote{Fråga någon om du inte hittar hur man gör backtick \`{} på ditt tangentbord.}  Gör om föregående uppgift men omgärda nu identifieraren \code{tomat} i tomat-case-grenen med backticks, så här: \code{  case `tomat` => ...}
+\Subtask \emph{Använd backticks för att tvinga fram match på konstant värde.} Det finns en utväg om man inte vill att kompilatorn ska skapa en ny lokal variabel: använd specialtecknet \emph{backtick}, som skrivs \`{} och kräver speciella tangentbordstryck.\footnote{Fråga någon om du inte hittar hur man gör backtick \`{} på ditt tangentbord.}  Gör om föregående uppgift men omgärda nu identifieraren \ifswedish\code{tomat}\else\code{tomato}\fi i tomat-case-grenen med backticks, så här: \ifswedish\code{  case `tomat` => ...}\else\code{  case `tomato` => ...}\fi
 
 
 
@@ -350,7 +377,7 @@ scala> any match
 
 
 \SubtaskSolved  Både \code{str} och \code{vadsomhelst} matchar med inputen, oavsett vad denna är på grund av att de har en liten begynnelsebokstav.\\
- \code{str} har dock en gard att strängen måste börja med $g$ vilket gör så endast \code{val g = "gurka"} matchar med denna. \code{val x = "urka"} plockas dock upp av \code{vadsomhelst} som är utan gard.
+ \code{str} har dock en gard att strängen måste börja med $g$ vilket gör så endast \ifswedish\code{val g = "gurka"}\else\code{val g = "cucumber"}\fi matchar med denna. \code{val x = "urka"} plockas dock upp av \code{vadsomhelst} som är utan gard.
 
 \SubtaskSolved
 \begin{REPL}
@@ -358,16 +385,29 @@ scala> any match
 .1)
 \end{REPL}
 och
+\ifswedish
 \begin{REPL}
 <console>:17: warning: unreachable code due to variable patter 'tomat' on line
 16
 \end{REPL}
-Trots att en klass \code{tomat} existerar så tolkar Scalas \code{match} den som en \code{case}-gren som fångar allt på grund av en liten begynnelsebokstav. Detta gör så alla objekt som inte är av typen \code{Gurka} kommer ge utskriften \textit{tomat} och att sista caset inte kan nås.
+\else
+\begin{REPL}
+<console>:17: warning: unreachable code due to variable patter 'tomato' on line
+16
+\end{REPL}
+\fi
+Trots att en klass \ifswedish\code{tomat}\else\code{tomato}\fi existerar så tolkar Scalas \code{match} den som en \code{case}-gren som fångar allt på grund av en liten begynnelsebokstav. Detta gör så alla objekt som inte är av typen \ifswedish\code{Gurka}\else\code{Cucumber}\fi kommer ge utskriften \textit{tomat} och att sista caset inte kan nås.
 
 \SubtaskSolved
+\ifswedish
 \begin{Code}
 case `tomat` => println("tomat")
 \end{Code}
+\else
+\begin{Code}
+case `tomato` => println("tomato")
+\end{Code}
+\fi
 
 
 
@@ -816,9 +856,9 @@ scala> xs.map(_.toOption).flatten.size
 
 \Subtask Gör en ny variant av ditt program enligt nedan riktlinjer och spara den modifierade koden i filen \texttt{vegopoly.scala} och kompilera och kör.
 \begin{itemize}[noitemsep]
-\item Ta bort predikatet \code{ärÄtvärd} i objektet \code{Main} och inför i stället en abstrakt metod \code{def ärÄtbar: Boolean} i traiten \code{Grönsak}.
+\item Ta bort predikatet \ifswedish\code{ärÄtvärd}\else\code{isWorthEating}\fi i objektet \code{Main} och inför i stället en abstrakt metod \ifswedish\code{def ärÄtbar: Boolean}\else\code{def isEdible: Boolean}\fi i traiten \ifswedish\code{Grönsak}\else\code{Vegetable}\fi.
 \item Inför konkreta \code{val}-medlemmar i respektive grönsak som definierar ätbarheten.
-\item Ändra i huvudprogrammet i enlighet med ovan ändringar så att \code{ärÄtvärd} anropas som en metod på de skördade grönsaksobjekten när de ätvärda ska filtreras ut.
+\item Ändra i huvudprogrammet i enlighet med ovan ändringar så att \ifswedish\code{ärÄtvärd}\else\code{isWorthEating}\fi anropas som en metod på de skördade grönsaksobjekten när de ätvärda ska filtreras ut.
 \end{itemize}
 
 \Subtask Lägg till en ny grönsak \code{case class Broccoli} och definiera dess ätbarhet. Ändra i slump-funktionerna så att broccoli blir ovanligare än gurka.
@@ -869,18 +909,31 @@ object Main:
 
 \SubtaskSolved
 Följande \code{case class} läggs till:
+\ifswedish
 \begin{Code}
 case class Broccoli(vikt: Int, ärRutten: Boolean) extends Grönsak:
   val ärÄtbar: Boolean = (!ärRutten && vikt > 80)
 \end{Code}
+\else
+\begin{Code}
+case class Broccoli(weight: Int, isRotten: Boolean) extends Vegetable:
+  val isEdible: Boolean = (!isRotten && weight > 80)
+\end{Code}
+\fi
 ~\\
-Därefter läggs följande till i \code{object Main} innan \code{def slumpgrönsak}:
+Därefter läggs följande till i \code{object Main} innan \ifswedish\code{def slumpgrönsak}\else\code{def randomVegetable}\fi:
 
+\ifswedish
 \begin{Code}
 def slumpbroccoli: Broccoli = Broccoli(slumpvikt, slumprutten)
 \end{Code}
+\else
+\begin{Code}
+def randomBroccoli: Broccoli = Broccoli(randomWeight, randomRotten)
+\end{Code}
+\fi
 ~\\
-Slutligen ändras \code{def slumpgrönsak} till följande:
+Slutligen ändras \ifswedish\code{def slumpgrönsak}\else\code{def randomVegetable}\fi till följande:
 
 \begin{Code}
 def slumpgrönsak: Grönsak =     // välj t.ex. denna fördelning:
@@ -936,7 +989,8 @@ final class Gurka(val vikt: Int, val ärÄtbar: Boolean):
     case _ => false
   override def hashCode: Int = (vikt, ärÄtbar).## //förklaras sen
 \end{Code}
-\Subtask Vad händer nu nedan, där \code{Gurka} nu har en överskuggad \code{equals} med innehållslikhet?
+\Subtask Vad händer nu nedan, där \ifswedish\code{Gurka}\else\code{Cucumber}\fi nu har en överskuggad \code{equals} med innehållslikhet?
+\ifswedish
 \begin{REPL}
 scala> val g1 = new Gurka(42, true)
 scala> val g2 = g1
@@ -944,6 +998,15 @@ scala> val g3 = new Gurka(42, true)
 scala> g1 == g2
 scala> g1 == g3
 \end{REPL}
+\else
+\begin{REPL}
+scala> val g1 = new Cucumber(42, true)
+scala> val g2 = g1
+scala> val g3 = new Cucumber(42, true)
+scala> g1 == g2
+scala> g1 == g3
+\end{REPL}
+\fi
 \Subtask Hur märker man ovan att den överskuggade \code{equals} medför att \code{==} nu ger innehållslikhet? Jämför med deluppgift \ref{subtask:refequals}.
 
 I uppgift \ref{task:equals:Complex} får du prova på att följa det fullständiga receptet i 8 steg för att överskugga en \code{equals} enligt konstens alla regler. I efterföljande kurs kommer mer träning i att hantera innehållslikhet och hash-koder. I Scala får man ett objekts hash-kod med metoden \code{##}.%
@@ -960,10 +1023,10 @@ I uppgift \ref{task:equals:Complex} får du prova på att följa det fullständi
 
 
 \SubtaskSolved  \begin{enumerate}
-\item En klass \code{Gurka} skapas med parametrarna \code{vikt} av typen \code{Int} och ärÄtbar av typen \code{Boolean}.
-\item \code{g1} tilldelas en instans av \code{Gurka}-klassen med \code{vikt = 42} och \code{ärÄtbar = true}.
-\item \code{g2} tilldelas samma \code{Gurka}-objekt som g1.
-\item \code{g3} tilldelas en ny instans av \code{Gurka}-klassen med motsvarande parametrar som g1.
+\item En klass \ifswedish\code{Gurka}\else\code{Cucumber}\fi skapas med parametrarna \ifswedish\code{vikt}\else\code{weight}\fi av typen \code{Int} och ärÄtbar av typen \code{Boolean}.
+\item \code{g1} tilldelas en instans av \ifswedish\code{Gurka}\else\code{Cucumber}\fi-klassen med \ifswedish\code{vikt = 42}\else\code{weight = 42}\fi och \ifswedish\code{ärÄtbar = true}\else\code{isEdible = true}\fi.
+\item \code{g2} tilldelas samma \ifswedish\code{Gurka}\else\code{Cucumber}\fi-objekt som g1.
+\item \code{g3} tilldelas en ny instans av \ifswedish\code{Gurka}\else\code{Cucumber}\fi-klassen med motsvarande parametrar som g1.
 \item \code{==}(\code{equals})-metoden jämför g1 med g2 och returnerar \code{true}.
 \item \code{==}(\code{equals})-metoden jämför g1 med g3 och returnerar \code{false}.
 \item \code{def equals(x\$1: Any): Boolean}
@@ -1004,9 +1067,9 @@ Som kan ses ovan är elementet som jämförs i \code{equals} av typen \code{Any}
 \end{tikzpicture}
 
 \SubtaskSolved
-Se objektdiagrammet ovan: \code{g1} och \code{g2} refererar till samma \code{Gurka}-objekt medan \code{g3} refererar till ett eget objekt med samma innehåll --- därför ger \code{==} (som utan egen \code{equals} jämför referenslikhet) \code{true} för \code{g1 == g2} men \code{false} för \code{g1 == g3}.
+Se objektdiagrammet ovan: \code{g1} och \code{g2} refererar till samma \ifswedish\code{Gurka}\else\code{Cucumber}\fi-objekt medan \code{g3} refererar till ett eget objekt med samma innehåll --- därför ger \code{==} (som utan egen \code{equals} jämför referenslikhet) \code{true} för \code{g1 == g2} men \code{false} för \code{g1 == g3}.
 
-\SubtaskSolved  I de första 3 raderna sker samma som i deluppgift \textit{a}. När nu dessa jämförelser görs mellan \code{Gurka}-objekten så överskuggas \code{Any.equals} av den \code{equals} som är specificerad för just \code{Gurka}. Eftersom båda objekten \code{g1} jämförs med också är av typen \code{Gurka} så matchar den med \code{case that: Gurka}. Denna i sin tur jämför vikterna hos de båda gurkorna och returnerar en \code{Boolean} huruvida de är lika eller inte, vilket de i båda fallen är.
+\SubtaskSolved  I de första 3 raderna sker samma som i deluppgift \textit{a}. När nu dessa jämförelser görs mellan \ifswedish\code{Gurka}\else\code{Cucumber}\fi-objekten så överskuggas \code{Any.equals} av den \code{equals} som är specificerad för just \ifswedish\code{Gurka}\else\code{Cucumber}\fi. Eftersom båda objekten \code{g1} jämförs med också är av typen \ifswedish\code{Gurka}\else\code{Cucumber}\fi så matchar den med \ifswedish\code{case that: Gurka}\else\code{case that: Cucumber}\fi. Denna i sin tur jämför vikterna hos de båda gurkorna och returnerar en \code{Boolean} huruvida de är lika eller inte, vilket de i båda fallen är.
 
 \SubtaskSolved  I deluppgift a gav \code{g1 == g3 false} trots innehållslikhet. Efter skuggningen ger dock detta uttryck \code{true} vilket påvisar jämförelse av innehållslikhet.
 
