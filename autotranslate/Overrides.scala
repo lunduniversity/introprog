@@ -546,4 +546,28 @@ object Overrides:
       """If you remove the indentation on the last line with the print statement, the compiler interprets this as it being \emph{outside} the main function, and you get an error message because lone statements at the top level are not allowed. (It is, however, fine to have lone statements in a script with \code{.sc} at the end of the source file's name. )""",
     """Bygg vidare på koden nedan och gör ett Sten-Sax-Påse-spel\footnote{\url{https://sv.wikipedia.org/wiki/Sten,_sax,_påse}}. Koden fungerar som den ska, förutom funktionen \code{winner} som fuskar till datorns fördel.""" ->
       """Build on the code below and make a Rock-Paper-Scissors game\footnote{\url{https://sv.wikipedia.org/wiki/Sten,_sax,_påse}}. The code works as it should, except the function \code{winner} which cheats in the computer's favour.""",
+
+    // ── w01-intro-lab: clean prose (Kojo lab abstractions kvadrat/stapel/rutnät kept as code) ──
+    """Skriv \code{\_f} och tryck på \commandchar{tab} igen; datorn fyller i till det unika filnamnet \file{report\_final.txt}. Tryck på \commandchar{retur} för att titta på filen.""" ->
+      """Type \code{\_f} and press \commandchar{tab} again; the computer fills in the unique file name \file{report\_final.txt}. Press \commandchar{retur} to look at the file.""",
+    """Man kan tillfälligt avbryta exekveringen av ett program med \commandchar{control-z}. Skriv \code{xeyes} och sedan \commandchar{control-z}. Notera att programmet nu inte är aktivt (ögonen följer inte musmarkören). Med kommandot \code{fg} (foreground) återupptar man exekveringen igen.""" ->
+      """You can temporarily pause the execution of a program with \commandchar{control-z}. Type \code{xeyes} and then \commandchar{control-z}. Note that the program is now not active (the eyes don't follow the mouse cursor). With the command \code{fg} (foreground) you resume execution again.""",
+    """Definiera en egen procedur som heter \code{kvadrat} med hjälp av nyckelordet \code{def} som vid anrop ritar en kvadrat med hjälp av en \code{for}-loop.""" ->
+      """Define your own procedure named \code{kvadrat} using the keyword \code{def} which, when called, draws a square using a \code{for} loop.""",
+    """Studera hur anrop av proceduren \code{kvadrat} påverkar exekveringssekvensen av dina satser genom att göra lämpliga utskrifter så att du kan se när olika delar av koden exekveras.""" ->
+      """Study how calling the procedure \code{kvadrat} affects the execution sequence of your statements by making suitable printouts so that you can see when different parts of the code are executed.""",
+    """Rita samma bild med 10 staplade kvadrater (se bild \ref{fig:kojo-lab:column} på sidan \pageref{fig:kojo-lab:column}), men nu \emph{utan} att använda abstraktionen \code{kvadrat} -- använd i stället en nästlad repetition (alltså en upprepning inuti en upprepning). Vilket av de två sätten (med och utan abstraktionen \code{kvadrat}) är lättast att läsa?""" ->
+      """Draw the same picture with 10 stacked squares (see figure \ref{fig:kojo-lab:column} on page \pageref{fig:kojo-lab:column}), but now \emph{without} using the abstraction \code{kvadrat} -- use instead a nested repetition (i.e. a repetition inside a repetition). Which of the two ways (with and without the abstraction \code{kvadrat}) is easiest to read?""",
+    """Generalisera din abstraktion \code{kvadrat} genom att ge den en parameter \code{sida: Double} som anger kvadratens storlek.""" ->
+      """Generalise your abstraction \code{kvadrat} by giving it a parameter \code{sida: Double} that specifies the square's size.""",
+    """Skapa en abstraktion \code{def stapel = ???} som använder din abstraktion \code{kvadrat}.""" ->
+      """Create an abstraction \code{def stapel = ???} that uses your abstraction \code{kvadrat}.""",
+    """Generalisera dina abstraktioner \code{kvadrat} och \code{stapel} så att man kan påverka storleken på kvadraterna som ritas ut.""" ->
+      """Generalise your abstractions \code{kvadrat} and \code{stapel} so that you can affect the size of the squares that are drawn.""",
+    """Skapa en abstraktion \code{rutnät} med lämpliga parametrar som gör att man kan rita rutnät med olika stora kvadrater och olika många kvadrater i både x- och y-led.""" ->
+      """Create an abstraction \code{rutnät} with suitable parameters that lets you draw grids with squares of different sizes and different numbers of squares in both the x and y directions.""",
+    """Generalisera dina abstraktioner \code{kvadrat} och \code{stapel} så att man kan påverka fyllfärgen och pennfärgen för kvadraterna som ritas ut.""" ->
+      """Generalise your abstractions \code{kvadrat} and \code{stapel} so that you can affect the fill colour and pen colour of the squares that are drawn.""",
+    """Skriv \code{räknaSnabbt} terminalen för att köra huvudprogrammet.""" ->
+      """Type \code{räknaSnabbt} in the terminal to run the main program.""",
   )
