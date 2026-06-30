@@ -172,4 +172,26 @@ object Overrides:
       """Look up the documentation for \code{java.lang.Integer}.\\Use the methods \code{toBinaryString} and \code{toHexString} to fill in the table below.""",
     """Sök upp dokumentationtionen för\\\code{java.lang.Math.multiplyExact} och läs om vad den metoden gör.""" ->
       """Look up the documentation for\\\code{java.lang.Math.multiplyExact} and read about what that method does.""",
+
+    // ── w06-patterns-exercise: prose around Swedish domain-term \code{} identifiers (kept code) ──
+    """En \textbf{förseglad typ} måste ha alla sina subtyper i en och samma kodfil.""" ->
+      """A \textbf{sealed type} must have all its subtypes in one and the same source file.""",
+    """Skapa en funktion \code{def parafärg(f: Färg): Färg} i en editor, som med hjälp av ett match-uttryck returnerar parallellfärgen till en färg.""" ->
+      """Create a function \code{def parafärg(f: Färg): Färg} in an editor that, using a match expression, returns the parallel suit of a suit.""",
+    """Parallellfärgen till \code{Hjärter} är \code{Ruter} och vice versa, medan parallellfärgen till \code{Klöver} är \code{Spader} och vice versa.""" ->
+      """The parallel suit of \code{Hjärter} is \code{Ruter} and vice versa, while the parallel suit of \code{Klöver} is \code{Spader} and vice versa.""",
+    """Anropa \code{parafärg} med den ''glömda'' färgen. Hur lyder felmeddelandet? Är det ett kompileringsfel eller ett körtidsfel?""" ->
+      """Call \code{parafärg} with the ''forgotten'' suit. What does the error message say? Is it a compile-time error or a run-time error?""",
+    """Tänk på att denna gången är \code{Färg} inget \code{sealed trait}, utan istället en enumeration (\code{enum}). Klistra in funktionen i REPL.""" ->
+      """Note that this time \code{Färg} is not a \code{sealed trait}, but instead an enumeration (\code{enum}). Paste the function into the REPL.""",
+    """Andra grenen passar med \code{Vector("hej")} och variablen \code{a} binds till \code{"hej"}.""" ->
+      """The second branch matches \code{Vector("hej")} and the variable \code{a} is bound to \code{"hej"}.""",
+    """Ett \code{Exception} kastas med felmeddelandet \textit{PANG!}.""" ->
+      """An \code{Exception} is thrown with the error message \textit{PANG!}.""",
+    """skapas som kastar ett \code{Exception} med felmeddelandet \textit{PANG!}.""" ->
+      """is created that throws an \code{Exception} with the error message \textit{PANG!}.""",
+    """Slutligen ändras \code{def slumpgrönsak} till följande:""" ->
+      """Finally, \code{def slumpgrönsak} is changed to the following:""",
+    """tilldelas en instans av \code{Gurka}-klassen med \code{vikt = 42} och \code{ärÄtbar = true}.""" ->
+      """is assigned an instance of the \code{Gurka} class with \code{vikt = 42} and \code{ärÄtbar = true}.""",
   )
