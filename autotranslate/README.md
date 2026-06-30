@@ -44,6 +44,37 @@ destroy**:
 > Design rule: any regex must be tested — BR can't review regex by eye. Prefer the masking tokenizer
 > and explicit env lists over clever patterns.
 
+### 1a. Authoritative bilingual glossary (ground truth) + markup conventions
+
+The `glossary` project (`glossary/concepts.scala`) is the **authoritative, hand-curated source of truth**
+for terminology. `case class Concept` carries **both** `sv` and `en` fields, so concept terms already have
+a high-quality *human* English — the autotranslator must **not** re-translate them (they come via the
+*authoritative* tier). Terminology tables generated from the glossary are **deliberately bilingual** (some
+entries may not have an English side yet, but that is the intent), so Swedish inside a glossary table is
+*expected*, not a leak.
+
+Markup that matters for translation:
+- **`\Eng{term}`** — *authoritative English* for a term. It is **stripped on the English side** (redundant
+  there); on the Swedish side it renders "(eng. *term*)". Never translate it.
+- **`\Emph{…}` / `\Alert{…}`** — emphasis (emphasised / alert-red). They sometimes wrap a glossary term or
+  something important; their argument is normally **translatable prose**, so the two-tier emphasis masking
+  (§7.3) exposes it for translation. When such a unit *leaks* or trips the scanner/masker/cache in a way
+  that's hard to fix, clamp it with `\ifswedish` in the source (§3b).
+- A **"leak"** = Swedish that reaches the *English* PDF where it shouldn't (BR's review term). Usual
+  sources: hardcoded text in `compendium.cls` macros/headings (fix in the `.cls` with `\ifswedish`),
+  masked-`\href`/figure/table interiors (clamp), or tiny units the model echoes (override).
+
+### 1b. Dependencies / model backends
+
+Needed **only to (re)translate at the model tier** — a clone regenerates the English side **model-free**
+from the committed `translate-cache.tsv`, so most contributors never install these:
+- **Ollama** — local LLM runner. Install from <https://ollama.com>; then e.g. `ollama pull gemma2:9b`.
+- **modly** — BR's small GPU model server (the project's NVIDIA box, default `http://bjornyx.local:8080`)
+  that fronts Ollama. The translator prefers modly, then falls back to a local Ollama, then **offline**
+  (all-Swedish dry run). Repo/setup: BR's `modly` project (Codeberg/GitHub — ask BR for the current link).
+- **pdftotext** (poppler-utils) — optional, only for the rendered-PDF Swedish-% report (`--pdf-swedish` /
+  the `*En` build tasks). Missing → the report is skipped, the build is unaffected.
+
 ---
 
 ## 2. How to run it

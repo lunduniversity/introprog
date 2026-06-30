@@ -275,15 +275,15 @@
 %%% END stuff introprog-computer-intro
 
 \newenvironment{Goals}%
-{\subsubsection{Mål}\begin{itemize}[nosep, label={$\square$},]}%
+{\subsubsection{\ifswedish Mål\else Goals\fi}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
 \newenvironment{Preparations}%
-{\subsubsection{Förberedelser}\begin{itemize}[nosep, label={$\square$},]}%
+{\subsubsection{\ifswedish Förberedelser\else Preparations\fi}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
 \newenvironment{Kontrollfragor}%
-{\subsubsection{Kontrollfragor}\begin{itemize}[nosep, label={$\square$},]}%
+{\subsubsection{\ifswedish Kontrollfragor\else Review questions\fi}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
 \newenvironment{Extrauppgifter}%
