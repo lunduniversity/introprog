@@ -538,4 +538,12 @@ object Overrides:
       """With a \Alert{mutable} set you can extend incrementally in place.""",
     """En \Emph{nyckel-värde-tabell}  är en slags generaliserad vektor där man kan ''indexera'' med godtycklig typ.""" ->
       """A \Emph{key-value table} is a kind of generalised vector where you can ''index'' with an arbitrary type.""",
+
+    // ── w02-programs-exercise: clean prose ──
+    """Hämta given kod via \href{https://github.com/lunduniversity/introprog/tree/master/workspace/}{kursen github-plats}.""" ->
+      """Get the given code from \href{https://github.com/lunduniversity/introprog/tree/master/workspace/}{the course's GitHub site}.""",
+    """Om du tar bort indenteringen på den sista raden med utskrift-satsen så tolkar kompilatorn detta som att denna ligger \emph{utanför} main-funktionen och du får ett felmeddelande eftersom det inte är tillåtet att ha ensamma satser på toppnivå. (Det går dock bra att ha ensamma satser i ett skript med \code{.sc} i slutet av namnet på kodfilen. )""" ->
+      """If you remove the indentation on the last line with the print statement, the compiler interprets this as it being \emph{outside} the main function, and you get an error message because lone statements at the top level are not allowed. (It is, however, fine to have lone statements in a script with \code{.sc} at the end of the source file's name. )""",
+    """Bygg vidare på koden nedan och gör ett Sten-Sax-Påse-spel\footnote{\url{https://sv.wikipedia.org/wiki/Sten,_sax,_påse}}. Koden fungerar som den ska, förutom funktionen \code{winner} som fuskar till datorns fördel.""" ->
+      """Build on the code below and make a Rock-Paper-Scissors game\footnote{\url{https://sv.wikipedia.org/wiki/Sten,_sax,_påse}}. The code works as it should, except the function \code{winner} which cheats in the computer's favour.""",
   )
