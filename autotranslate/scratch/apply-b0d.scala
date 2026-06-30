@@ -54,6 +54,21 @@ object Glossary:
   def touches(span: String): Boolean =
     tok.findAllIn(span).exists(id.contains) || str.exists((sv, _) => span.contains(sv))
 
+// Stricter leak gate than Code.swedishish: ALSO splits identifiers on camelCase boundaries and flags common
+// diacritic-free Swedish STEMS. Catches leaks the åäö-detector misses where a clamped unit's English still
+// carries an uncovered Swedish identifier (KanSkalas, HarSmak, gEllerT, smak) -- the funkar/slumpbroccoli leak
+// class extended from comments to IDENTIFIERS, found while dry-running the w11/w10 slides. No English
+// collisions: kan/har/eller/skalas/skala/smak are not English words, and 'skala' != 'scala' (k vs c), so the
+// ratified vego/cards English (Cucumber/harvest/isPeeled/sameColourSuit/...) is never falsely skipped.
+val swedishStems: Set[String] = Set("kan", "har", "eller", "skalas", "skala", "smak")
+def looksSwedishStrict(s: String): Boolean =
+  Code.swedishish(s) || {
+    s.split("[^A-Za-zÅÄÖåäö]+").iterator
+      .flatMap(_.split("(?<=[a-zåäö])(?=[A-ZÅÄÖ])"))
+      .map(_.toLowerCase).filter(_.nonEmpty)
+      .exists(swedishStems.contains)
+  }
+
 object Apply:
   val inlineRe: Regex = raw"(?s)^\\(code|jcode|lstinline|verb)\*?(.)".r
   val envRe: Regex = raw"(?s)^\\begin\{(Code|CodeSmall|REPL|REPLnonum|REPLsmall|lstlisting|verbatim|Verbatim)\}(.*)\\end\{".r
@@ -86,7 +101,7 @@ object Apply:
         if !candidate then s
         else
           val en = Glossary.render(s)
-          if en != s && !Code.swedishish(Glossary.render(c)) then
+          if en != s && !looksSwedishStrict(Glossary.render(c)) then
             clamped += ((c.replace("\n", "⏎").take(70), content(en, k).replace("\n", "⏎").take(70)))
             clamp(s, en, k)
           else
