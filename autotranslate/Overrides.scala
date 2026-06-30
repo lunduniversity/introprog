@@ -290,4 +290,30 @@ object Overrides:
       """Modify the main program in accordance with the changes above so that \code{ärÄtvärd} is called as a method on the harvested vegetable objects when the edible ones are to be filtered out.""",
     """Mönstret \code{namn @ delmönster} binder ett namn till hela det matchade värdet samtidigt som delmönstret plockar isär det:""" ->
       """The pattern \code{namn @ delmönster} binds a name to the whole matched value while the subpattern takes it apart:""",
+
+    // ── w07-sequences-exercise: clean prose ──
+    """Tyvärr så följer ordningen av ÄÅÖ inte svenska regler, men det ignorerar vi i fortsättningen för enkelhets skull; om du är intresserad av hur man kan fixa  detta, gör uppgift \ref{task:swedish-letter-ordering}.""" ->
+      """Unfortunately the ordering of ÄÅÖ does not follow Swedish rules, but we ignore that in the following for simplicity; if you are interested in how to fix this, do task \ref{task:swedish-letter-ordering}.""",
+    """Indata är en sekvens av booleska värden där krona kodas som \code{true} och klave kodas som \code{false}. För registreringen ska du använda en lokal \code{Array[Int]}. I resultatet ska antalet utfall av \code{krona} ligga på första platsen i 2-tupeln och på andra platsen ska antalet utfall av \code{klave} ligga.""" ->
+      """The input is a sequence of boolean values where heads is coded as \code{true} and tails as \code{false}. For the registration, use a local \code{Array[Int]}. In the result, the count of \code{krona} outcomes should be in the first position of the 2-tuple and the count of \code{klave} outcomes in the second.""",
+    """Antalet krona och klave blir ungefär lika (cirka 500 vardera); det exakta utfallet varierar mellan körningar eftersom \code{flips} singlar slumpmässigt.""" ->
+      """The number of heads and tails becomes roughly equal (about 500 each); the exact outcome varies between runs because \code{flips} flips randomly.""",
+
+    // ── w10-inheritance-exercise: clean prose around Swedish domain-term \code{} (Grönsak/Gurka kept) ──
+    """Om en samling innehåller objekt av flera olika typer försöker kompilatorn härleda den mest specifika typen som objekten har gemensamt. Vad blir det för typ på värdet \code{grönsaker} ovan?""" ->
+      """If a collection contains objects of several different types, the compiler tries to infer the most specific type the objects have in common. What type does the value \code{grönsaker} above get?""",
+    """Du ska nu göra så att du kan komma åt vikten på alla grönsaker genom att ge gurkor och tomater en gemensam bastyp som de olika konkreta grönsakstyperna utvidgar med nyckelordet \code{extends}. Det heter att subtyperna \code{Gurka} och \code{Tomat} \textbf{ärver} egenskaperna hos supertypen \code{Grönsak}.""" ->
+      """You will now make it possible to access the weight of all vegetables by giving cucumbers and tomatoes a common base type that the different concrete vegetable types extend with the keyword \code{extends}. We say that the subtypes \code{Gurka} and \code{Tomat} \textbf{inherit} the properties of the supertype \code{Grönsak}.""",
+    """Skapa en bastyp \code{Grönsak} med ett abstrakt attribut \code{vikt}. Låt sedan de konkreta grönsakerna ärva bastypen:""" ->
+      """Create a base type \code{Grönsak} with an abstract attribute \code{vikt}. Then let the concrete vegetables inherit the base type:""",
+    """Vad blir det nu för typ på variabeln \code{grönsaker} ovan?""" ->
+      """What type does the variable \code{grönsaker} above now get?""",
+    """Går det nu att summera vikterna i \code{grönsaker} med uttrycket nedan?""" ->
+      """Is it now possible to sum the weights in \code{grönsaker} with the expression below?""",
+    """Traiten \code{Grönsak} har en abstrakt medlem \code{vikt}. Den sägs vara abstrakt eftersom den saknar implementation -- medlemmen har bara ett namn och en typ men inget värde.""" ->
+      """The trait \code{Grönsak} has an abstract member \code{vikt}. It is said to be abstract because it lacks an implementation -- the member has only a name and a type but no value.""",
+    """Du kan instansiera den abstrakta traiten \code{Grönsak} om du fyller i det som ''fattas'', nämligen ett värde på \code{vikt}. Man kan fylla på det som fattas i genom att ''hänga på'' ett block efter typens namn vid instansiering.""" ->
+      """You can instantiate the abstract trait \code{Grönsak} if you fill in what is ''missing'', namely a value for \code{vikt}. You can fill in what is missing by ''attaching'' a block after the type's name at instantiation.""",
+    """Vad får \code{anonymGrönsak} nedan för typ och strängrepresenation?""" ->
+      """What type and string representation does \code{anonymGrönsak} below get?""",
   )
