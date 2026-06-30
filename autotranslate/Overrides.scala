@@ -344,4 +344,90 @@ object Overrides:
       """A product type is an ''and''-type (a.k.a. record, struct), example: \\ \code|case class Person(namn: String, ålder: Int)| \\consists of the attributes namn \Alert{AND} ålder.""",
     """Exempel: \code|enum Färg { case Röd, Svart}| \\Färg kan vara antingen Röd \Emph{ELLER} Svart.""" ->
       """Example: \code|enum Färg { case Röd, Svart}| \\Färg can be either Röd \Emph{OR} Svart.""",
+
+    // ── lect-wjava-body: clean Scala-vs-Java slide prose ──
+    """Samlingarna i Scalas standardbibliotek, speciellt de \Emph{oföränderliga} samlingarna \code{Vector}, \code{Map}, \code{Set}, \code{List}, etc.""" ->
+      """The collections in Scala's standard library, especially the \Emph{immutable} collections \code{Vector}, \code{Map}, \code{Set}, \code{List}, etc.""",
+    """Man \Alert{måste} skriva \code{return}.""" -> """You \Alert{must} write \code{return}.""",
+    """Man \Alert{måste} ha semikolon efter varje sats.""" -> """You \Alert{must} have a semicolon after every statement.""",
+    """Man kan \Alert{inte} deklarera explicita singelobjekt i Java och det finns inget nyckelord \code{object}.""" ->
+      """You \Alert{cannot} declare explicit singleton objects in Java, and there is no keyword \code{object}.""",
+    """I Java måste man skriva \Alert{tomma parentes-par} efter metodnamnet vid \Alert{anrop av parameterlösa metoder}.""" ->
+      """In Java you must write \Alert{empty parenthesis pairs} after the method name when \Alert{calling parameterless methods}.""",
+    """Med \code{new java.util.Scanner("hej 42")} kan man även scanna en sträng.""" ->
+      """With \code{new java.util.Scanner("hej 42")} you can also scan a string.""",
+    """Scanna \code{Int} och \code{Double} med metoderna \code{nextInt} och \code{nextDouble}.\\Se doc:""" ->
+      """Scan \code{Int} and \code{Double} with the methods \code{nextInt} and \code{nextDouble}.\\See the doc:""",
+    """Fungerar \Alert{inte} rakt av med primitiva typer \code{int}, \code{double}, \code{char}, ... \\ (men det finns sätt komma runt detta, tack vare s.k. wrapper-klasser och autoboxning; mer om detta snart)""" ->
+      """Does \Alert{not} work directly with the primitive types \code{int}, \code{double}, \code{char}, ... \\ (but there are ways around this, thanks to so-called wrapper classes and autoboxing; more on this soon)""",
+    """Detta går tyvärr \Alert{INTE} i Java:""" -> """Unfortunately this does \Alert{NOT} work in Java:""",
+    """Om ett \code{int}-värde förekommer där det behövs ett \code{Integer}-objekt, så lägger kompilatorn \Alert{automatiskt} ut kod som skapar ett \code{Integer}-objekt som packar in värdet.""" ->
+      """If an \code{int} value appears where an \code{Integer} object is needed, the compiler \Alert{automatically} emits code that creates an \code{Integer} object wrapping the value.""",
+    """metoden \code{ne} testar referens\textbf{o}likhet och \code{r1.ne(r2)} ger \code{true} om \code{r1} och \code{r2} refererar till \Alert{olika} instanser.""" ->
+      """the method \code{ne} tests reference \textbf{in}equality and \code{r1.ne(r2)} gives \code{true} if \code{r1} and \code{r2} refer to \Alert{different} instances.""",
+    """I Java kan man \Alert{inte} skapa en primitiv array av godtycklig typ enligt generisk typparameter:""" ->
+      """In Java you \Alert{cannot} create a primitive array of arbitrary type according to a generic type parameter:""",
+    """Ibland ger \code{"hej" == "hej"} förvånande nog värdet \code{true} i Java.""" ->
+      """Sometimes \code{"hej" == "hej"} surprisingly gives the value \code{true} in Java.""",
+
+    // ── lect-w01-about: course intro / academic integrity ──
+    """Den \Alert{största förnyelsen} av den inledande programmeringskursen sedan vi införde \Emph{Java 1997}.""" ->
+      """The \Alert{biggest renewal} of the introductory programming course since we introduced \Emph{Java in 1997}.""",
+    """Kursmaterialet är \Emph{öppen källkod} och \Alert{fritt} tillgängligt.""" ->
+      """The course material is \Emph{open source} and \Alert{freely} available.""",
+    """Scala är \Emph{öppen källkod} + massor av fria kodbibliotek""" ->
+      """Scala is \Emph{open source} + lots of free code libraries""",
+    """Kompendiet och snabbreferens trycks här i E-huset och säljs av institutionen till \Emph{självkostnadspris}. För efterbeställning se Cavnvas.""" ->
+      """The compendium and quick reference are printed here in the E-building and sold by the department at \Emph{cost price}. For back-orders see Canvas.""",
+    """Säljs separat, se info i Canvas ''Efterbeställning snabbreferens''.""" ->
+      """Sold separately, see info in Canvas ''Back-order quick reference''.""",
+    """Ett studiesammanhang med \Alert{höga ambitioner} och \Alert{respektfull gemenskap} gör att \Emph{alla lär sig mer}.""" ->
+      """A study environment with \Alert{high ambitions} and a \Alert{respectful community} means that \Emph{everyone learns more}.""",
+    """Samarbete gör att man lär sig bättre, men man lär sig \Alert{inte} av att kopiera andras lösningar.""" ->
+      """Collaboration helps you learn better, but you do \Alert{not} learn from copying others' solutions.""",
+    """Du får \Alert{INTE} lägga ut laborationslösningar öppet på \Emph{\code{github}} eller på annan plats där någon annan kan komma åt dem!""" ->
+      """You may \Alert{NOT} post lab solutions openly on \Emph{\code{github}} or anywhere else where someone else can access them!""",
+    """Det är \Alert{inte} tillåtet att använda AI för att generera lösningar.""" ->
+      """It is \Alert{not} allowed to use AI to generate solutions.""",
+    """Det är \Alert{mycket viktigt} att du lär dig \Emph{koda självständigt}.""" ->
+      """It is \Alert{very important} that you learn to \Emph{code independently}.""",
+    """Fokusera på att \Emph{förstå} vad som händer när du kör din kod.""" ->
+      """Focus on \Emph{understanding} what happens when you run your code.""",
+    """Skapa en miljö för \Emph{koncentration} och lärande \Emph{på djupet}. Stäng telefon, be kompisar i datorsalen att inte prata för högt, etc.""" ->
+      """Create an environment for \Emph{concentration} and \Emph{deep} learning. Turn off your phone, ask friends in the computer lab not to talk too loudly, etc.""",
+    """På laborationerna \Emph{sammanför} du veckans koncept till en \Emph{helhet} i ett större program och kollar att du \Alert{kan grunderna} inför kommande veckor.""" ->
+      """In the labs you \Emph{bring together} the week's concepts into a \Emph{whole} in a larger program and check that you \Alert{know the basics} for the coming weeks.""",
+    """Gör \Emph{övningarna} och \Emph{labbförberedelserna} noga \Alert{innan} själva labben -- detta är ofta helt nödvändigt för att du ska hinna klart.""" ->
+      """Do the \Emph{exercises} and \Emph{lab preparations} carefully \Alert{before} the lab itself -- this is often absolutely necessary for you to finish in time.""",
+
+    // ── lect-w05-classes: OOP / classes / constructors ──
+    """Begreppet \Emph{klass} är en viktig abstraktionsmekanism inom \Emph{objekt-orienterad programmering} (OOP) för att modellera data i en applikationsdomän, t.ex. data om \emph{användare} och deras \emph{favoritmusik} i applikationsdomänen \emph{musikspelare}. Klasser används för att samla funktioner och data.""" ->
+      """The concept of a \Emph{class} is an important abstraction mechanism in \Emph{object-oriented programming} (OOP) for modelling data in an application domain, e.g. data about \emph{users} and their \emph{favourite music} in the application domain \emph{music player}. Classes are used to gather functions and data.""",
+    """Det går att skapa \Alert{många} objekt ur en och samma klass.""" ->
+      """You can create \Alert{many} objects from one and the same class.""",
+    """Ett objekt som skapats med klassen \code{Klassnamn} som mall kallas för en \Emph{instans} av klassen \code{Klassnamn}.""" ->
+      """An object created with the class \code{Klassnamn} as a template is called an \Emph{instance} of the class \code{Klassnamn}.""",
+    """Varje instans har sin \Alert{egen} uppsättning värden på attributen, som tillsammans utgör instansens \Emph{tillstånd}.""" ->
+      """Each instance has its \Alert{own} set of values for the attributes, which together make up the instance's \Emph{state}.""",
+    """Med en \Emph{klass} kan man skapa \Alert{godtyckligt många} \Emph{instanser av klassen} med hjälp av nyckelordet \code{new} följt av klassens namn:""" ->
+      """With a \Emph{class} you can create \Alert{arbitrarily many} \Emph{instances of the class} using the keyword \code{new} followed by the class's name:""",
+    """Parametrar som \Emph{inte} föregås av någon modifierare alls (t.ex. \code{val}, \code{var} etc.) blir medlemmar som är bara är synliga i \Alert{denna} instans.""" ->
+      """Parameters that are \Emph{not} preceded by any modifier at all (e.g. \code{val}, \code{var} etc.) become members that are visible only in \Alert{this} instance.""",
+    """Metoder som har \Emph{alfanumeriska namn}, alltså namn med bokstäver och ev. siffror ger en \Alert{varning} vid operatornotation om de \Alert{inte} är deklarerade med nyckelordet \code{infix}.""" ->
+      """Methods that have \Emph{alphanumeric names}, i.e. names with letters and possibly digits, give a \Alert{warning} with operator notation if they are \Alert{not} declared with the keyword \code{infix}.""",
+    """Eftersom klientkoden inte ser skillnad på metoder och variabler, kallas detta \Emph{principen om enhetlig access}. (Många andra språk har \Alert{inte} denna möjlighet, tex Java där metoder \emph{måste} ha parenteser.)""" ->
+      """Since the client code sees no difference between methods and variables, this is called the \Emph{uniform access principle}. (Many other languages do \Alert{not} have this possibility, e.g. Java where methods \emph{must} have parentheses.)""",
+    """Case-klasser är ett smidigt sätt att skapa \Emph{oföränderliga} datastrukturer.""" ->
+      """Case classes are a convenient way to create \Emph{immutable} data structures.""",
+    """... och \Alert{mer därtill} men mer om det senare...""" -> """... and \Alert{more besides}, but more on that later...""",
+    """I Scala \Alert{genererar kompilatorn} en \Emph{primärkonstruktor} åt dig med maskinkod som initialiserar alla attribut baserat på klassparametrarna som du deklarerat.""" ->
+      """In Scala the \Alert{compiler generates} a \Emph{primary constructor} for you with machine code that initialises all attributes based on the class parameters you declared.""",
+    """I Scala \emph{kan} man också skriva egna s.k. \Emph{hjälpkonstruktorer} , men det är \Alert{ovanligt}, eftersom man har möjligheten med fabriksmetoder i kompanjonsobjekt och default-argument.""" ->
+      """In Scala you \emph{can} also write your own so-called \Emph{auxiliary constructors}, but it is \Alert{uncommon}, since you have the option of factory methods in companion objects and default arguments.""",
+    """I Scala kan man skapa ett alternativ till primärkonstruktorn, en så kallad \Emph{hjälpkonstruktor}  genom att deklarera en metod med det speciella namnet \code{this}.""" ->
+      """In Scala you can create an alternative to the primary constructor, a so-called \Emph{auxiliary constructor}, by declaring a method with the special name \code{this}.""",
+    """Hjälpkonstruktorer \Alert{måste} börja med att anropa en \Alert{annan} konstruktor som står \Alert{före} i koden, till exempel primärkonstruktorn.""" ->
+      """Auxiliary constructors \Alert{must} begin by calling \Alert{another} constructor that appears \Alert{before} it in the code, for example the primary constructor.""",
+    """Man kan åstadkomma \Emph{oföränderliga} datastrukturer där attributreferenserna inte förändras efter allokering om klassen \Alert{inte} erbjuder en \Alert{setter} för privata attribut.""" ->
+      """You can achieve \Emph{immutable} data structures where the attribute references don't change after allocation if the class does \Alert{not} offer a \Alert{setter} for private attributes.""",
   )
