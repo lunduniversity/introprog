@@ -468,4 +468,24 @@ object Overrides:
       """is required if you want to silence the warning when \Alert{inheriting from another source file}.""",
     """...du vill korta ned tiden för omkompilering vid ändringar om \emph{mycket stor} kodbas.""" ->
       """...you want to shorten the recompilation time on changes for a \emph{very large} code base.""",
+
+    // ── lect-w04-objects: objects / state / packages / lazy / jar ──
+    """En \Alert{metod} är en \Emph{funktion} som finns i ett objekt.""" ->
+      """A \Alert{method} is a \Emph{function} that lives in an object.""",
+    """Privata medlemmar kan bara refereras \emph{inifrån} objektet.""" ->
+      """Private members can only be referenced \emph{from inside} the object.""",
+    """Ett objekts \Emph{tillstånd} är den samlade uppsättningen av värden av alla de attribut som finns i objektet.""" ->
+      """An object's \Emph{state} is the combined set of values of all the attributes in the object.""",
+    """När en variabel tilldelas ett nytt värde sker en \Emph{tillståndsändring}. Ett \Emph{förändringsbart objekt}  har ett \Emph{förändringsbart tillstånd} .""" ->
+      """When a variable is assigned a new value, a \Emph{state change} occurs. A \Emph{mutable object} has a \Emph{mutable state}.""",
+    """paket kan delas upp i \Emph{flera} kodfiler -- ett objekt måste vara i \Alert{en} kodfil""" ->
+      """a package can be split into \Emph{several} source files -- an object must be in \Alert{one} source file""",
+    """Med nyckelordet \code{lazy} före \code{val} sker \Alert{fördröjd} (ä.k. ''\Emph{lat}'') evaluering av initialiseringsuttrycket.""" ->
+      """With the keyword \code{lazy} before \code{val}, \Alert{delayed} (a.k.a. ''\Emph{lazy}'') evaluation of the initialisation expression occurs.""",
+    """Singelobjekt allokeras \Alert{inte} direkt vid deklaration; allokeringen sker först då objektet refereras första gången.""" ->
+      """Singleton objects are \Alert{not} allocated immediately at declaration; the allocation happens only when the object is first referenced.""",
+    """Notera att det \emph{inte} ska vara något kolon efter \code{extension}-deklarationens första rad.""" ->
+      """Note that there should be \emph{no} colon after the first line of the \code{extension} declaration.""",
+    """En \Emph{jar}-fil följer ett standardiserat filformat och används för att \Alert{paketera flera filer} i en och samma fil, exempelvis:""" ->
+      """A \Emph{jar} file follows a standardised file format and is used to \Alert{package several files} into one and the same file, for example:""",
   )
