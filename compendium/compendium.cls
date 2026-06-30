@@ -136,11 +136,11 @@
 \newcommand{\SectionUnnum}[1]{\section*{#1}\addcontentsline{toc}{section}{#1}}
 % Exercise/lab/task section headings — hardcoded text clamped with \ifswedish so the English build
 % (\swedishfalse) renders English. The {\tt #1} exercise names are language-neutral and stay as-is.
-\newcommand{\Exercise}[1]{\newpage\section{\ifswedish Övning\else Exercise\fi {\tt #1}}\label{section:exe:#1}}
-\newcommand{\ExerciseSolution}[1]{\newpage\section{\ifswedish Lösning\else Solution\fi {\tt #1}}}
-\newcommand{\Lab}[1]{\newpage\section{\ifswedish Laboration:\else Lab:\fi {\tt #1}}\label{section:lab:#1}}
-\newcommand{\Teamlab}[1]{\newpage\section{\ifswedish Grupplaboration:\else Group lab:\fi {\tt #1}}\label{section:lab:#1}}
-\newcommand{\Assignment}[1]{\newpage\section{\ifswedish Projektuppgift:\else Project assignment:\fi {\tt #1}}\label{section:proj:#1}}
+\newcommand{\Exercise}[1]{\newpage\section{\ifswedish Övning\else Exercise\fi~{\tt #1}}\label{section:exe:#1}}
+\newcommand{\ExerciseSolution}[1]{\newpage\section{\ifswedish Lösning\else Solution\fi~{\tt #1}}}
+\newcommand{\Lab}[1]{\newpage\section{\ifswedish Laboration:\else Lab:\fi~{\tt #1}}\label{section:lab:#1}}
+\newcommand{\Teamlab}[1]{\newpage\section{\ifswedish Grupplaboration:\else Group lab:\fi~{\tt #1}}\label{section:lab:#1}}
+\newcommand{\Assignment}[1]{\newpage\section{\ifswedish Projektuppgift:\else Project assignment:\fi~{\tt #1}}\label{section:proj:#1}}
 \newcommand{\BasicTasks}{\subsection{\ifswedish Grunduppgifter; förberedelse inför laboration\else Basic tasks; preparation for the lab\fi}}
 \newcommand{\BasicTasksNoLab}{\subsection{\ifswedish Grunduppgifter\else Basic tasks\fi}}
 \newcommand{\ExtraTasks}{\subsection{\ifswedish Extrauppgifter; träna mer\else Extra tasks; practice more\fi}}
