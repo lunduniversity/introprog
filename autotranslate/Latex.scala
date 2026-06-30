@@ -26,6 +26,14 @@ object Latex:
   // huge prose region as one span (an 11k-char span hid whole \Subtask sentences from translation).
   val verbatimEnvs = Set("Code", "CodeSmall", "REPL", "REPLnonum", "REPLsmall",
     "verbatim", "Verbatim", "lstlisting", "comment",
+    // exlatex/envi: custom LaTeX-EXAMPLE environments (the dod:latex lecture shows raw LaTeX source). Not
+    // masking them leaks $/\ and the model mangles the example macros. Example source stays verbatim.
+    "exlatex", "envi",
+    // algorithm (algorithm2e): pseudocode with keyword macros (\SetKwInOut{Input}{Indata}, \Input, \While)
+    // — NOT prose. Translating it mangles the macros (\SetKwInOut{Input}{Indata} -> {Input }{ In data } so
+    // \Input is never defined -> build break). It was ACCIDENTALLY masked before by a $-runaway from the
+    // (then-unmasked) CodeSmall leak; masking CodeSmall exposed it. Mask whole; pseudocode stays Swedish.
+    "algorithm",
     // diagram environments: coordinates / node NAMES / options / \foreach vars are NOT prose and
     // translating them breaks the build (a node ref (Subtyp) -> (Subtype) => "No shape named ...").
     // Node TEXT labels stay Swedish — an accepted trade-off for build safety.

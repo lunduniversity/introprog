@@ -132,14 +132,18 @@ object Translate:
     var fixed = 0
     for (sv, en) <- cache.toList do
       val n = enforceTerms(sv, normalize(en)); if n != en then { cache(sv) = n; fixed += 1 }
-    // self-heal step 2: drop entries still failing validation (re-translated under current guards)
-    // Do NOT drop guard-flagged entries: the committed cache built clean (820pp compendium-en), so they
-    // are build-safe — the guards false-positive on dense units (too-long heuristic, placeholder reorder/
-    // merged-content). Dropping forced a model call EVERY `--all` run with no quality gain (re-translation
-    // fails identically). Keep them; fresh model output is still validated via checkOut at translate time.
-    val bad = cache.iterator.filterNot((sv, en) => validate(sv, en)).size
+    // self-heal step 2: DROP entries whose guard failure would BREAK the build (a hallucinated paragraph
+    // break / introduced LaTeX special / foreign script) — they must be re-translated; the fresh output is
+    // re-validated, so a repeat hallucination just falls back to the safe source. KEEP build-SAFE flags
+    // (too-long heuristic, placeholder reorder/merged-content): the committed cache builds clean with them,
+    // and dropping them forced a useless model call EVERY run (re-translation fails identically).
+    val buildBreaking = Set("introduced paragraph break", "introduced LaTeX special", "foreign-script char (e.g. CJK)")
+    val drop = cache.iterator.collect { case (sv, en) if invalidReason(sv, en).exists(buildBreaking.contains) => sv }.toList
+    drop.foreach(cache.remove)
+    val kept = cache.iterator.filterNot((sv, en) => validate(sv, en)).size
     if fixed > 0 then println(s"  [cache] normalized $fixed entries")
-    if bad > 0 then println(s"  [cache] kept $bad guard-flagged entries (trusting committed cache; not re-translating)")
+    if drop.nonEmpty then println(s"  [cache] dropped ${drop.size} BUILD-BREAKING entries (re-translate; hallucinations re-fall-back)")
+    if kept > 0 then println(s"  [cache] kept $kept build-safe guard-flagged entries (trusting committed cache)")
     // code prose store: self-heal with the code validator (drops poisoned entries, e.g. masked $vars
     // or dropped interpolations cached before the guards existed → re-translated next run).
     readTsv(codeCacheFile(root), codeCache)
@@ -294,6 +298,11 @@ object Translate:
     if en.isEmpty then Some("empty")
     else if en.length > sv.length * 4 + 80 then Some("too long")
     else if looksLikeLeak(en) then Some("model meta-comment leak")
+    // INTRODUCED PARAGRAPH BREAK: the model sometimes hallucinates a blank line + extra text on short
+    // units (e.g. "Latex:" -> "Latex:\n\nEnglish:"), which splits an \item / breaks list & \textcolor
+    // structure -> build break. A single translation unit is one paragraph, so a NEW blank line it didn't
+    // have is always a mangle -> reject (falls back to the safe source, e.g. the proper noun unchanged).
+    else if en.contains("\n\n") && !sv.contains("\n\n") then Some("introduced paragraph break")
     // STRICT placeholder structure (order-sensitive). A relaxation that allowed reordering was tried
     // and reverted: it recovered only ~292 units (most complex-unit fallbacks are genuine placeholder
     // DROPs, not reorders) and let a mangled unit through into a build break — a bad trade vs the
@@ -551,7 +560,13 @@ object Translate:
   def translateTex(body: String, label: String = ""): String =
     val bTok = "\\begin{document}"
     val bi = body.indexOf(bTok)
-    if bi < 0 then translateRegion(body, label) // \input fragment
+    // Only a REAL main doc (first non-comment line is \documentclass) uses the preamble/body split. A
+    // slide-body \input FRAGMENT may contain \begin{document} as VERBATIM EXAMPLE text (the dod:latex
+    // lecture shows document structure) — the naive split then treats the whole real slide body BEFORE
+    // that example as "preamble" and skips translating it. Gate on \documentclass to avoid that.
+    val isMainDoc = body.linesIterator.map(_.trim).find(l => l.nonEmpty && !l.startsWith("%"))
+      .exists(_.startsWith("\\documentclass"))
+    if bi < 0 || !isMainDoc then translateRegion(body, label) // fragment: translate the whole body
     else
       val bodyStart = bi + bTok.length
       val ei = body.lastIndexOf("\\end{document}")
