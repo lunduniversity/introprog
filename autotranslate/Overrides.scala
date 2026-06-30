@@ -570,4 +570,18 @@ object Overrides:
       """Generalise your abstractions \code{kvadrat} and \code{stapel} so that you can affect the fill colour and pen colour of the squares that are drawn.""",
     """Skriv \code{räknaSnabbt} terminalen för att köra huvudprogrammet.""" ->
       """Type \code{räknaSnabbt} in the terminal to run the main program.""",
+
+    // ── w10-inheritance-lab: snake-game group lab ──
+    """Gör övning {\tt \ExeWeekNINE} i kapitel \ref{exe:W10}, speciellt uppgift \ref{exe:inheritance:labprep-pair}.""" ->
+      """Do exercise {\tt \ExeWeekNINE} in chapter \ref{exe:W10}, especially task \ref{exe:inheritance:labprep-pair}.""",
+    """Ett monster består av fem rosa block i kryssform.""" ->
+      """A monster consists of five pink blocks in a cross shape.""",
+    """Ett monster föds på en slumpvis position och rör sig i en riktning som bestäms vid monstrets födelse.""" ->
+      """A monster is born at a random position and moves in a direction determined at the monster's birth.""",
+    """Ett monster blir uppätet och dör om ormens huvud nuddar ett monsterblock.""" ->
+      """A monster gets eaten and dies if the snake's head touches a monster block.""",
+    """När ormen ätit ett visst antal äpplen, eller om ormen blivit uppäten av ett monster, är spelet slut och poängen visas.""" ->
+      """When the snake has eaten a certain number of apples, or if the snake has been eaten by a monster, the game is over and the score is shown.""",
+    """Varje person i gruppen ska implementera \emph{minst ett} (gärna flera) av kraven nedan.""" ->
+      """Each person in the group should implement \emph{at least one} (preferably several) of the requirements below.""",
   )
