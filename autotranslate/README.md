@@ -48,11 +48,15 @@ destroy**:
 
 ## 2. How to run it
 
-All commands run from the introprog repo root. The `scratch/` programs are launched with `scala-cli`.
+All commands run from the introprog repo root. The autotranslator itself is the `autotranslate` sbt
+sub-project (`autotranslateProject`); the `scratch/` programs are thin `scala-cli` launchers around the
+same `Main` for ad-hoc runs without the sbt server.
 
 | Goal | Command |
 |------|---------|
-| Translate everything (both mirrors) | `scala-cli run autotranslate/scratch/at.scala -- . --all --model gemma2:9b` |
+| Translate everything (both mirrors), via sbt | `sbt "autotranslateProject/run --all"` (or the alias `sbt autotranslate` = no args) |
+| …only one week | `sbt "autotranslateProject/run --only w01"` |
+| Translate everything, via scratch (no sbt server) | `scala-cli run autotranslate/scratch/at.scala -- . --all --model gemma2:9b` |
 | Build one English deck | `scala-cli run autotranslate/scratch/build-deck.scala -- . w05` |
 | Build all 19 English decks | `scala-cli run autotranslate/scratch/slides-en.scala -- .` |
 | English compendium halves (fast checks) | `sbt --client pdfCompendium1En` / `pdfCompendium2En` |
@@ -65,6 +69,29 @@ All commands run from the introprog repo root. The `scratch/` programs are launc
 A clean run reports `done. model calls: 0` — the committed cache + overrides cover the whole corpus, so
 no network/GPU is needed to regenerate. A non-zero count means a unit changed keys (e.g. you edited
 masking) and is being re-translated.
+
+`autotranslateProject/run` flags (same `Main`, whether via sbt or `scratch/at.scala`): `--all`,
+`--only <wNN>`, `--model <name>`, `--swedish-left`, `--swedish-lines <file>`, `--pdf-swedish <pdf>`,
+`--sweep-fallbacks`, `--dump-overrides`, `--clean`. The sbt form defaults the repo root; the scratch
+form takes it as the first arg (`.`).
+
+### 2a. The sbt `build` task builds the **Swedish** side only (this is what CI runs)
+
+The PDF build tasks come in two families:
+
+- **Swedish** (the source language): `pdf`, `pdfCompendium`, `pdfCompendium1`/`2`, `pdfSlides`,
+  `pdfExercises`, … and the umbrella command alias **`build`** =
+  `addCommandAlias("build", "gen; genquiz; gengloss; pdf; gen")`. **`sbt build` does NOT touch the
+  English mirror** — it runs the generator projects (plan/quiz/glossary) then `pdf` (the Swedish PDFs).
+- **English** (the generated mirror): `pdfCompendiumEn`, `pdfCompendium1En`/`2En`, `pdfSlidesEn`. These
+  read `compendium-en/`, `slides-en/`, so you must run the translator (`autotranslateProject/run --all`)
+  first to (re)generate the mirror.
+
+**CI** (`.github/workflows/main.yml`) runs `sbt build` only → it compiles and builds the **Swedish**
+material and never runs autotranslate or the `*En` tasks. So the English side is **not** gated by CI; it
+is regenerated model-free from the committed `translate-cache.tsv` on demand (and published separately).
+Practical consequence: a translation/clamp change cannot break the CI build, but you must verify the
+English build yourself (see §4) — CI won't catch an English-only breakage.
 
 ---
 
@@ -198,3 +225,98 @@ A clean English build prints `[swedish] <file>.pdf: N% Swedish` and produces the
 
 See also: `notes/at-recovery-state-*.md` (recovery/resume notes) and the `introprog-autotranslator`
 project memory for the decision history.
+
+---
+
+## 7. Internals: the masking tokenizer (for reviewers)
+
+This section is for an experienced programmer reviewing `Latex.scala` / `Translate.scala`. The hard
+problem is: *send the model only translatable prose, then put it back exactly, on live LaTeX, without a
+parser*. The whole design follows from "never trust the model with markup, and never risk the round-trip".
+
+### 7.1 Representation: placeholders + a spans vector
+
+`Latex.mask(text, stripEng, collapseEmph=false): (String, IndexedSeq[String], Set[Int])` returns:
+
+- a **masked string** in which every fragile fragment has been replaced by a token `__C<n>__` (regex
+  `Place = __C(\d+)__`), leaving only translatable prose between tokens;
+- **`spans`** — an `IndexedSeq[String]` where `spans(n)` is the verbatim original of token `__C<n>__`;
+- **`itemIdx`** — the set of span indices that are `\item`-like (list-segmentation boundaries, §7.4).
+
+`protect(span)` is the one primitive: it appends `__C${spans.size}__` to the output and pushes `span`.
+Because tokens are numbered by emission order, `restore(masked, spans)` is a single linear pass that
+swaps each `__C<n>__` back for `spans(n)` (unknown indices are left as-is — defensive). Round-trip is
+therefore exact *by construction*: the model only ever rewrites the prose between opaque tokens.
+
+### 7.2 The scan: one linear, brace-balanced pass — not regex, not a parser
+
+`mask` walks the string with a single index `i` and a hand-rolled, brace-balanced scanner. Deliberate
+choice: a recursive-descent parser risks losing bytes on the round-trip; broad regex is unreviewable
+(BR's rule: regex must be tested, not eyeballed). The scan dispatches on what is at `i`:
+
+- **newline** → emitted as text (paragraph structure must survive; a model that introduces a `\n\n` the
+  source lacked is rejected downstream — see 7.5).
+- **inline/display math** `$…$`, `\[…\]`, `\(…\)` → the whole span is `protect`ed.
+- **LaTeX specials** `\\`, `\{`, `\%`, `\$`, `\,`, … → `protect`ed as a token, so they are preserved
+  verbatim *and* participate in order-validation.
+- **`\begin{env}`** → if `env ∈ verbatimEnvs` (Code/REPL/tikzpicture/algorithm/…) the **whole
+  environment** (to its matching `\end{env}`) is one span; otherwise the `\begin`/`\end` markers are
+  masked and the body between them stays translatable.
+- **`\ifswedish`** → `matchFi` scans to the matching `\fi` (nesting-aware: it counts inner `\if…`/`\fi`),
+  and the whole `\ifswedish … [\else …] \fi` block is one verbatim span. This is exactly why the author
+  escape hatch (§3b) is untouchable by the model.
+- **control words** (`\cmd`) dispatch by name via the category sets:
+  - `maskWhole` → command **and its argument(s)** masked as one span (e.g. refs, includes, listings);
+  - `itemCmds` (`item`/`ii`/`is`/`di`) → mask the marker (+ optional `[..]`), and record the span index
+    in `itemIdx`;
+  - `headingCmds` / other **TRANSLATE-ARG** commands → mask the `\cmd{` and the closing `}` as separate
+    tokens but **leave the argument text exposed** for translation;
+  - `emphArg` (`Emph`/`Alert`/`emph`/`textbf`/…) → see 7.3;
+  - zero-arg / font-switch / unknown control word → mask just the control word, prose continues.
+
+Helpers: `skipGroup` (balanced `{…}`), `skipOptional` (`[…]`), `groupContent` (returns arg + end index),
+`matchFi`, `isCmdLetter`. All are index-returning and total (they clamp at end-of-string), so the scan
+cannot run off the end or desynchronize.
+
+### 7.3 Two-tier inline-emphasis masking (the dominant fallback fix)
+
+Inline emphasis is the hard case: `… \Emph{x} … \Alert{y} …`. If each `\cmd{arg}` is masked as
+command+`{`+text+`}`, a single bullet becomes *placeholder-dense* (3 tokens per emphasis), and small
+models drop or reorder placeholders → the unit fails validation → Swedish fallback.
+
+- **Tier 1 (default, `collapseEmph=false`):** the emphasis **argument text stays exposed** (only the
+  `\cmd{`/`}` wrappers are tokens). The model sees natural prose with the emphasized words in context —
+  best grammar, reuses the existing cache.
+- **Tier 2 (`collapseEmph=true`):** triggered by `Translate` *only* when a tier-1 result still looks
+  Swedish **and** `hasEmphArg(clean)` is true. Now each `\cmd{arg}` collapses to **one** token, and the
+  inner `arg` is translated as a child unit via `reEmphArg(span, translate)`. One placeholder per
+  emphasis instead of three → far fewer drops on the placeholder-dense bullets that tier 1 missed.
+
+### 7.4 Segmentation: `segmentMasked`
+
+`segmentMasked(masked, itemIdx)` splits the masked text into translation **units** so each model call is
+small: it cuts just before every `\item` token (using `itemIdx`), and then **sentence-splits any "dense"
+base block** (more than `DenseThreshold = 3` placeholders) on sentence boundaries. Fewer placeholders per
+unit ⇒ dramatically fewer model placeholder-drops. It returns the units plus the separators needed to
+reassemble them losslessly.
+
+### 7.5 Validation & fallback (`Translate.invalidReason`)
+
+After restore, a candidate translation is rejected (→ keep Swedish) if it: drops/reorders the masked
+tokens or LaTeX specials; introduces a LaTeX special the source lacked; introduces a paragraph break
+(`\n\n`) absent from the source (the gemma2 `Latex:`→`Latex:\n\nEnglish:` hallucination that broke
+lists); or contains foreign-script characters. The committed cache is trusted for build-*safe*
+guard-flags (too-long / placeholder-reorder) but build-*breaking* flags are dropped on load so they
+re-translate. Net rule restated: **a build that renders some Swedish always beats one that doesn't
+compile.**
+
+### 7.6 What a reviewer should poke at
+
+- `mask`'s control-word dispatch (the big `match`) — does every branch advance `i` past the construct?
+- `matchFi` nesting and `skipGroup`/`skipOptional` boundary clamping (off-by-one / EOF).
+- `reEmphArg` — does it reconstruct `\cmd{translated}` for exactly the `emphArg` commands and pass other
+  spans through untouched?
+- `invalidReason` — is the placeholder/specials order-check symmetric (no false accept that would let a
+  reordered span through)?
+- `enChrome` (`Main.scala`) — literal `.replace` over each mirror; order-sensitive for overlapping keys
+  (e.g. the `Resource Time`→`Tutorial` + trailing-`s` plural trick in §3/strand-2).
