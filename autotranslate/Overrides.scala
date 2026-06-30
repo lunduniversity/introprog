@@ -268,4 +268,26 @@ object Overrides:
       """Through the names that are defined, \Emph{reusable abstractions} are created that encapsulate what the function does into a ''building block''.""",
     """Abstraktioner med \Emph{välgenomtänkta namn} är enklare att använda, jämfört med kryptiska eller missvisande namn.""" ->
       """Abstractions with \Emph{well-thought-out names} are easier to use than cryptic or misleading ones.""",
+
+    // ── w06-patterns-exercise: prose around Swedish domain-term \code{} identifiers (kept as code) ──
+    """De angivna parametrarna tilldelas namn, \code{vikt} får namnet \code{v} och \code{ärRutten} namnet \code{rutten} och skrivs sedan ut. Byts namnen dessa ges skrivs de ut i den omvända ordningen.""" ->
+      """The given parameters are assigned names: \code{vikt} gets the name \code{v} and \code{ärRutten} the name \code{rutten}, and are then printed. If the given names are swapped, they are printed in the reverse order.""",
+    """Vi ska nu undersöka vad som händer om man glömmer en av case-grenarna i matchningen i \code{parafärg}. ''Glöm'' alltså avsiktligt en av case-grenarna och klistra in den nya \code{parafärg} med den ofullständiga matchningen.""" ->
+      """We will now investigate what happens if you forget one of the case branches in the match in \code{parafärg}. So deliberately ''forget'' one of the case branches and paste in the new \code{parafärg} with the incomplete match.""",
+    """Felmeddelandet fås av att REPL:en behandlar varje inmatning individuellt och tillåter därför inte att subtypen \code{Spader} ärver från  supertypen \code{Färg} eftersom denna var förseglad . Mer om detta senare i kursen...""" ->
+      """The error message arises because the REPL treats each input individually and therefore does not allow the subtype \code{Spader} to inherit from the supertype \code{Färg}, since the latter was sealed. More on this later in the course...""",
+    """Nu accepteras koden utan fel eftersom den förseglade typen \code{Färg} och alla dess subtyper (\code{Spader}, \code{Hjärter}, \code{Ruter}, \code{Klöver}) ligger i samma kodfil, inuti det yttre objektet \code{Kortlek}.""" ->
+      """Now the code is accepted without error because the sealed type \code{Färg} and all its subtypes (\code{Spader}, \code{Hjärter}, \code{Ruter}, \code{Klöver}) are in the same source file, inside the outer object \code{Kortlek}.""",
+    """Likt uppgift \ref{task:match-sealedtrait}\ref{subtask:match-sealedtrait-function} så kan även här en \code{import}-sats skrivas för att nå medlemmarna i \code{Färg} utan punktnotation.""" ->
+      """Like in task \ref{task:match-sealedtrait}\ref{subtask:match-sealedtrait-function}, here too an \code{import} statement can be written to reach the members of \code{Färg} without dot notation.""",
+    """Om ett kanske saknat värde packas in i en \code{Option} , finns det i en speciell slags samling som bara kan innehålla \emph{inget} eller \emph{något} värde, och alltså har antingen storleken \code{0} eller \code{1}.""" ->
+      """If a possibly-missing value is wrapped in an \code{Option}, it lives in a special kind of collection that can contain only \emph{no} or \emph{some} value, and thus has either size \code{0} or \code{1}.""",
+    """applicerar \code{def öka} till det enda elementen i \code{kanske}, 42. Denna funktion returnerar en \code{Some} med värdet 43 som tilldelas \code{merKanske}.""" ->
+      """applies \code{def öka} to the single element in \code{kanske}, 42. This function returns a \code{Some} with the value 43, which is assigned to \code{merKanske}.""",
+    """Ta bort predikatet \code{ärÄtvärd} i objektet \code{Main} och inför i stället en abstrakt metod \code{def ärÄtbar: Boolean} i traiten \code{Grönsak}.""" ->
+      """Remove the predicate \code{ärÄtvärd} in the object \code{Main} and instead introduce an abstract method \code{def ärÄtbar: Boolean} in the trait \code{Grönsak}.""",
+    """Ändra i huvudprogrammet i enlighet med ovan ändringar så att \code{ärÄtvärd} anropas som en metod på de skördade grönsaksobjekten när de ätvärda ska filtreras ut.""" ->
+      """Modify the main program in accordance with the changes above so that \code{ärÄtvärd} is called as a method on the harvested vegetable objects when the edible ones are to be filtered out.""",
+    """Mönstret \code{namn @ delmönster} binder ett namn till hela det matchade värdet samtidigt som delmönstret plockar isär det:""" ->
+      """The pattern \code{namn @ delmönster} binds a name to the whole matched value while the subpattern takes it apart:""",
   )

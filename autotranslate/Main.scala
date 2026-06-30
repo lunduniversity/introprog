@@ -149,6 +149,11 @@ object Main:
     "Resource Time"                              -> "Tutorial",
     "Resource time"                              -> "Tutorial",
     "resource time"                              -> "tutorial",
+    // inline hint labels `\emph{Ledtråd.}` / `\emph{Ledtråd:}` in exercise modules — the model leaves the
+    // short label Swedish. Brace-delimited so we don't touch lowercase prose "ledtråd" (= a clue). (The
+    // bold `\hint` macro label is clamped in compendium.cls instead.)
+    "{Ledtråd.}"                                 -> "{Hint.}",
+    "{Ledtråd:}"                                 -> "{Hint:}",
   )
 
   def enChrome(tex: String): String =

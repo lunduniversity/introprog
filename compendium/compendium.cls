@@ -270,7 +270,7 @@
 
 
 % Define the hint command
-\newcommand{\hint}[2][]{\par\halfblankline\noindent\textbf{Ledtråd\ifx#1\empty\else\space#1\fi}: #2\par}
+\newcommand{\hint}[2][]{\par\halfblankline\noindent\textbf{\ifswedish Ledtråd\else Hint\fi\ifx#1\empty\else\space#1\fi}: #2\par}
 
 %%% END stuff introprog-computer-intro
 
