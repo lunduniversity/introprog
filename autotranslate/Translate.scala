@@ -524,8 +524,10 @@ object Translate:
             if !collapseEmph && Code.swedishish(Latex.restore(en, spans)) && Latex.hasEmphArg(clean) then
               b.substring(0, lead) + translateRegion(Latex.restore(core, spans), currentLabel, collapseEmph = true) + b.substring(trail)
             else
-              if dumpFallbacks && currentLabel.startsWith("slides/") && Code.swedishish(Latex.restore(en, spans)) then
-                suggestions += (("sv-fallback", currentLabel, clean, "")) // slide unit still Swedish after retry
+              if dumpFallbacks && Code.swedishish(Latex.restore(en, spans)) then
+                // ALL files (slides + compendium): record the unit's EXACT clean Swedish key (the override
+                // key) + its still-Swedish output, so --sweep-fallbacks is a reliable Overrides-key source.
+                suggestions += (("sv-fallback", currentLabel, clean, Latex.restore(en, spans).trim))
               b.substring(0, lead) + en + b.substring(trail)
 
   /** Translate one region (mask -> segment -> translate prose blocks -> restore). */

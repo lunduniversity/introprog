@@ -146,4 +146,30 @@ object Overrides:
       """Be able to use \code{math.random()} to generate random numbers in various intervals.""",
     """Kunna beskriva skillnader och likheter mellan en procedur och en funktion.""" ->
       """Be able to describe differences and similarities between a procedure and a function.""",
+
+    // ── w01-intro-exercise: genuine prose the model kept Swedish (exact keys from --sweep-fallbacks) ──
+    """Du behöver en dator med Scala och Kojo, se appendix~\ref{appendix:compile} och  \ref{appendix:kojo}.""" ->
+      """You need a computer with Scala and Kojo, see appendix~\ref{appendix:compile} and  \ref{appendix:kojo}.""",
+    """Vad har uttrycket \code{ "hej" * 3 } för typ och värde? Testa i REPL.""" ->
+      """What type and value does the expression \code{ "hej" * 3 } have? Test it in REPL.""",
+    """Gör så att paddan \emph{inte} fyller i något när den ritar.""" ->
+      """Make the turtle \emph{not} fill in anything when it draws.""",
+    """Sänker paddans penna så att den \emph{inte} ritar när den går.""" ->
+      """Lowers the turtle's pen so that it does \emph{not} draw when it moves.""",
+    """En sats \emph{gör} något (t.ex. skriver ut något), men resulterat inte i något användbart värde.""" ->
+      """A statement \emph{does} something (e.g. prints something), but does not result in any useful value.""",
+    """Deklarera en procedur \code{updateHighscore} som tar en parameter \code{points} och tilldelar \code{highscore} ett nytt värde om \code{points} är större än \code{highscore} och skriver ut strängen \code{"REKORD!"}. Om inte \code{points} är större än \code{highscore} ska strängen \code{"GE INTE UPP!"} skrivas ut. Testa proceduren i REPL.""" ->
+      """Declare a procedure \code{updateHighscore} that takes a parameter \code{points} and assigns \code{highscore} a new value if \code{points} is greater than \code{highscore}, and prints the string \code{"REKORD!"}. If \code{points} is not greater than \code{highscore}, the string \code{"GE INTE UPP!"} should be printed. Test the procedure in REPL.""",
+    """Gör en ny variant av \code{updateHighscore}, som \emph{inte} är en procedur utan i stället är en funktion som ger en sträng för senare utskrift.""" ->
+      """Make a new variant of \code{updateHighscore} that is \emph{not} a procedure but instead a function that returns a string for later printing.""",
+    """Utskrift: \code{1:krona 2:klave 3:krona 4:krona 5:klave } eller liknande beroende på vilka slumptal \code{math.random()} ger.""" ->
+      """Output: \code{1:krona 2:klave 3:krona 4:krona 5:klave } or similar, depending on which random numbers \code{math.random()} produces.""",
+    """Antag att \code{poäng} och \code{highscore} är heltalsvariabler medan \code{klar} är av typen \code{Boolean}.""" ->
+      """Assume that \code{poäng} and \code{highscore} are integer variables while \code{klar} is of type \code{Boolean}.""",
+    """Du skapar ett \code{BigInt}-heltal med \code{BigInt(2)} och kan anropa funktionen \code{pow} på en \code{BigInt} med punktnotation.""" ->
+      """You create a \code{BigInt} integer with \code{BigInt(2)} and can call the function \code{pow} on a \code{BigInt} using dot notation.""",
+    """Sök upp dokumentationen för \code{java.lang.Integer}.\\Använd metoderna \code{toBinaryString} och \code{toHexString} för att fylla i tabellen nedan.""" ->
+      """Look up the documentation for \code{java.lang.Integer}.\\Use the methods \code{toBinaryString} and \code{toHexString} to fill in the table below.""",
+    """Sök upp dokumentationtionen för\\\code{java.lang.Math.multiplyExact} och läs om vad den metoden gör.""" ->
+      """Look up the documentation for\\\code{java.lang.Math.multiplyExact} and read about what that method does.""",
   )
