@@ -488,4 +488,24 @@ object Overrides:
       """Note that there should be \emph{no} colon after the first line of the \code{extension} declaration.""",
     """En \Emph{jar}-fil följer ett standardiserat filformat och används för att \Alert{paketera flera filer} i en och samma fil, exempelvis:""" ->
       """A \Emph{jar} file follows a standardised file format and is used to \Alert{package several files} into one and the same file, for example:""",
+
+    // ── w04-objects-exercise: Underjorden/Mullvaden/Masken etc. are example identifiers (kept as code) ──
+    """Skapa ovan kod i filen \code{Underjorden.scala} med en editor och implementera predikatet  \code{ärMullvadsmat} så att det blir sant om mullvadens koordinater är samma som maskens.""" ->
+      """Create the code above in the file \code{Underjorden.scala} with an editor and implement the predicate \code{ärMullvadsmat} so that it becomes true if the mole's coordinates are the same as the worm's.""",
+    """Testa livet i Underjorden genom att klistra in din modul i REPL. Importera Underjordens medlemmar med asterisk så att du ser Mullvaden och Masken. Flytta med hjälp av tilldelning Maskens y-koordinat så att Masken hamnar på samma plats som Mullvaden. Kontrollera att predikatet \code{ärMullvadsmat} fungerar som tänkt.""" ->
+      """Test life in Underjorden by pasting your module into the REPL. Import Underjorden's members with an asterisk so that you see Mullvaden and Masken. Using assignment, move Masken's y-coordinate so that Masken ends up in the same place as Mullvaden. Check that the predicate \code{ärMullvadsmat} works as intended.""",
+    """Predikatet \code{ärMullvadsmat} ska vara sant om Masken finns på samma plats som Mullvaden.""" ->
+      """The predicate \code{ärMullvadsmat} should be true if Masken is in the same place as Mullvaden.""",
+    """Predikatet  \code{ärRaktUnderUppgången} ska vara sant om $x$- och $y$-koordinaterna sammanfaller med den hemliga uppgången till överjorden.""" ->
+      """The predicate \code{ärRaktUnderUppgången} should be true if the $x$ and $y$ coordinates coincide with the secret entrance to the overworld.""",
+    """Undersök i REPL vad uttrycket \code{"päronisglass".split('i')} har för värde.""" ->
+      """Investigate in the REPL what value the expression \code{"päronisglass".split('i')} has.""",
+    """I många språk finns en konstruktion med följande syntax: \code{do <satser> while <villkor>} där \code{<satser>} görs minst en gång innan sanningsvärdet för <villkor> testas.""" ->
+      """In many languages there is a construct with the following syntax: \code{do <satser> while <villkor>} where \code{<satser>} are executed at least once before the truth value of <villkor> is tested.""",
+    """Vad händer om du trycker \Button{Ok} efter att du valt en grön färg?""" ->
+      """What happens if you press \Button{Ok} after choosing a green colour?""",
+    """Vad händer om du trycker \Button{Cancel}~?""" -> """What happens if you press \Button{Cancel}~?""",
+    """Använda färdigt paket: användardialoger.""" -> """Using a ready-made package: user dialogs.""",
+    """Använd funktionen \code{introprog.Dialog.input} för att visa frågan \code{"Vad heter du?"} och ta reda på användarens namn.""" ->
+      """Use the function \code{introprog.Dialog.input} to show the question \code{"Vad heter du?"} and find out the user's name.""",
   )
