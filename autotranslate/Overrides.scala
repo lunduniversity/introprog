@@ -232,4 +232,22 @@ object Overrides:
     """Rust""" -> """Rust""",
     """Go""" -> """Go""",
     """Kotlin""" -> """Kotlin""",
+
+    // ── w01 mixed-fallback bullets the model mangled (BR-flagged) ──
+    // gemma2 hallucinated a "J": "Med en VM" -> "With a JVM" (confusing, JVM is the NEXT bullet).
+    """Med en VM blir källkoden \Emph{plattformsoberoende} och fungerar på många olika maskiner.""" ->
+      """With a VM the source code becomes \Emph{platform-independent} and works on many different machines.""",
+    """En \Emph{variabel} kan tilldelas värdet av ett enkelt eller sammansatt uttryck.""" ->
+      """A \Emph{variable} can be assigned the value of a simple or compound expression.""",
+
+    // ── w07-sequences-exercise: clean prose fallbacks ──
+    """Fixa svensk sorteringsordning av ÄÅÖ.""" -> """Fix the Swedish sort order of Ä, Å, Ö.""",
+    """En palindrom\footnote{\url{https://sv.wikipedia.org/wiki/Palindrom}} är ett ord som förblir oförändrat om man läser det baklänges.""" ->
+      """A palindrome\footnote{\url{https://sv.wikipedia.org/wiki/Palindrom}} is a word that stays unchanged when read backwards.""",
+    """Den vanliga \code{.sorted} jämför på teckenkod och ger fel svensk ordning, medan en \code{Collator} för \code{Locale} \code{"sv"} ger rätt ordning där \code{å}, \code{ä}, \code{ö} kommer sist (efter \code{z}).""" ->
+      """The usual \code{.sorted} compares by character code and gives the wrong Swedish order, whereas a \code{Collator} for \code{Locale} \code{"sv"} gives the correct order where \code{å}, \code{ä}, \code{ö} come last (after \code{z}).""",
+    """Observera alltså att kopiering med \code{toArray}, \code{toVector}, \code{toBuffer}, etc. \emph{inte är djup}, d.v.s. det är bara instansreferenserna som kopieras och inte själva instanserna.""" ->
+      """Note then that copying with \code{toArray}, \code{toVector}, \code{toBuffer}, etc. is \emph{not deep}, i.e. only the instance references are copied and not the instances themselves.""",
+    """Implementera med hjälp av en \code{while}-sats funktionen \code{deepCopy} nedan som gör \emph{djup} kopiering, d.v.s skapar en ny array med nya, innehållskopierade mutanter.""" ->
+      """Using a \code{while} statement, implement the function \code{deepCopy} below that does \emph{deep} copying, i.e. creates a new array with new, content-copied mutants.""",
   )

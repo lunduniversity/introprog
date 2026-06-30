@@ -397,15 +397,25 @@ object Translate:
     sinceSave += 1
     if sinceSave >= SaveEvery then { saveRoot.foreach(saveCache); sinceSave = 0 }
 
+  /** Diagnostic: append each MODEL/FB unit's clean key (+ current file) to scratch/model-calls.txt so a
+    * long run is inspectable live and a runaway ("why N calls?") is instantly traceable to its units.
+    * Truncated at the start of each run (see translateAll init). Best-effort; never fails a run. */
+  def diagLog(kind: String, sv: String): Unit =
+    saveRoot.foreach { r =>
+      try os.write.append(r / "autotranslate" / "scratch" / "model-calls.txt",
+        s"$kind\t$currentLabel\t${sv.replace("\n", "⏎").take(180)}\n")
+      catch case _: Throwable => ()
+    }
+
   /** sv -> en with precedence OVERRIDE > AUTHORITATIVE > CACHE > MODEL; Swedish on fallback. */
   def translate(sv: String): String =
     if sv.isEmpty then ""
     else overrides.get(sv).orElse(authoritative.get(sv)).orElse(cache.get(sv)).getOrElse {
       modelTranslate(sv) match
-        case Some(en) => modelCalls += 1; cache(sv) = en; noteCacheAdd(); en
+        case Some(en) => modelCalls += 1; diagLog("MODEL", sv); cache(sv) = en; noteCacheAdd(); en
         // cache the Swedish fallback too, so hopeless 3B units aren't re-tried every run (a masking
         // change gives a NEW key so it still retries; `--clean` retries all for a quality pass).
-        case None => fallbacks += 1; cache(sv) = sv; noteCacheAdd(); sv
+        case None => fallbacks += 1; diagLog("FB", sv); cache(sv) = sv; noteCacheAdd(); sv
     }
 
   /** Translate CODE prose (a comment / string-literal body) — preserves leading/trailing whitespace,
@@ -583,6 +593,7 @@ object Translate:
   def init(root: os.Path, withModel: Boolean = true): Unit =
     modelCalls = 0; fallbacks = 0; overrideHits = 0; sinceSave = 0
     saveRoot = Some(root) // enable incremental cache flushing
+    try os.write.over(root / "autotranslate" / "scratch" / "model-calls.txt", "") catch case _: Throwable => ()
     loadCache(root)
     if withModel then resolveBackend()
     else { backend = Backend.Offline; println("  [dryrun] backend disabled — all units kept Swedish (pipeline structural test)") }
