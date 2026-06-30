@@ -219,4 +219,17 @@ object Overrides:
       """Through the names that are defined, \Emph{reusable abstractions} are created that encapsulate what the function does.""",
     """Abstraktioner som beräknar eller gör \Emph{en enda, väldefinierad sak} är enklare att använda, jämfört med de som gör många, helt olika saker.""" ->
       """Abstractions that compute or do \Emph{a single, well-defined thing} are easier to use than those that do many, completely different things.""",
+
+    // ── lect-w01-intro "Examples of programming languages": language NAMES are proper nouns (identical
+    //    in both languages). gemma2 hallucinated these tiny \item units (Java->Scala, C->Case, Go->Move on,
+    //    C#->Case#). Identity overrides stop the model from touching them. ──
+    """Java""" -> """Java""",
+    """C""" -> """C""",
+    """C++""" -> """C++""",
+    """C\#""" -> """C\#""",
+    """Python""" -> """Python""",
+    """JavaScript""" -> """JavaScript""",
+    """Rust""" -> """Rust""",
+    """Go""" -> """Go""",
+    """Kotlin""" -> """Kotlin""",
   )

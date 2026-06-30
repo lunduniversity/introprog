@@ -142,6 +142,13 @@ object Main:
     "Labb "                                      -> "Lab ",
     "{Modul}"                                    -> "{Module}",       // full-course plan-table header
     "{Övn}"                                      -> "{Exc}",
+    // "resurstid" is the course-admin term for scheduled, TA-staffed sessions in booked computer rooms
+    // (parallel to "Labs"). The model rendered it literally as "Resource Time(s)" — wrong/cryptic in
+    // English. Deterministic term fix to "Tutorial(s)" everywhere (plural handled by the trailing 's';
+    // verified all "resource time" occurrences are this term, none legitimate). See \label{section:tutorials}.
+    "Resource Time"                              -> "Tutorial",
+    "Resource time"                              -> "Tutorial",
+    "resource time"                              -> "tutorial",
   )
 
   def enChrome(tex: String): String =
