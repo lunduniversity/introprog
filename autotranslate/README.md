@@ -71,7 +71,7 @@ from the committed `translate-cache.tsv`, so most contributors never install the
 - **Ollama** — local LLM runner. Install from <https://ollama.com>; then e.g. `ollama pull gemma2:9b`.
 - **modly** — BR's small GPU model server (the project's NVIDIA box, default `http://bjornyx.local:8080`)
   that fronts Ollama. The translator prefers modly, then falls back to a local Ollama, then **offline**
-  (all-Swedish dry run). Repo/setup: BR's `modly` project (Codeberg/GitHub — ask BR for the current link).
+  (all-Swedish dry run). Repo/setup: <https://codeberg.org/bjornregnell/modly>.
 - **pdftotext** (poppler-utils) — optional, only for the rendered-PDF Swedish-% report (`--pdf-swedish` /
   the `*En` build tasks). Missing → the report is skipped, the build is unaffected.
 

@@ -528,4 +528,14 @@ object Overrides:
       """Normally in Scala (and in Java) so-called \emph{call-by-value} occurs when calling functions, which means that the argument expression is evaluated \emph{before} the binding to the parameter name happens.""",
     """Om vi placerar \code{1/x} \emph{före} det rekursiva anropet, så når vi detta uttryck direkt och det kastas ett undantag p.g.a. division med noll.""" ->
       """If we place \code{1/x} \emph{before} the recursive call, we reach this expression immediately and an exception is thrown due to division by zero.""",
+
+    // ── lect-w09-collections: clean slide prose (sets, maps, StringOps) ──
+    """Detta gör att \Alert{alla samlingsmetoder på \texttt{Seq} även funkar på strängar} och även flera andra smidiga strängmetoder erbjuds \Alert{utöver} de som finns i \href{https://www.scala-lang.org/api/current/scala/collection/StringOps.html}{\code{java.lang.String}} genom klassen \href{http://www.scala-lang.org/api/current/scala/collection/immutable/StringOps.html}{\code{StringOps}}.""" ->
+      """This means that \Alert{all collection methods on \texttt{Seq} also work on strings}, and several other convenient string methods are offered \Alert{beyond} those in \href{https://www.scala-lang.org/api/current/scala/collection/StringOps.html}{\code{java.lang.String}}, through the class \href{http://www.scala-lang.org/api/current/scala/collection/immutable/StringOps.html}{\code{StringOps}}.""",
+    """En mängd är \Alert{inte}  en sekvens: du kan \Alert{inte} utgå från att elementen ligger i någon viss ordning, t.ex. den ordning som de ges vid konstruktion; en mängd har ej längd, men en \Emph{storlek}; metoden \code{size} ger antalet element men metoden \code{length} saknas.""" ->
+      """A set is \Alert{not} a sequence: you \Alert{cannot} assume that the elements are in any particular order, e.g. the order they were given at construction; a set has no length, but a \Emph{size}; the method \code{size} gives the number of elements but the method \code{length} is missing.""",
+    """Med en \Alert{förändringsbar} mängd kan man stegvis utöka på plats.""" ->
+      """With a \Alert{mutable} set you can extend incrementally in place.""",
+    """En \Emph{nyckel-värde-tabell}  är en slags generaliserad vektor där man kan ''indexera'' med godtycklig typ.""" ->
+      """A \Emph{key-value table} is a kind of generalised vector where you can ''index'' with an arbitrary type.""",
   )
