@@ -645,57 +645,82 @@ object Translate:
     "lstlisting", "verbatim", "Verbatim", "Trace", "Output", "exlatex", "envi")
   private val beginEnvRe = raw"\\begin\{([A-Za-z*]+)\}".r
   private val endEnvRe = raw"\\end\{([A-Za-z*]+)\}".r
-  private val ifTokRe = raw"\\(ifswedish|if[a-zA-Z]+|else|fi)".r
+  /** Render the ENGLISH side of `\ifswedish A \else B \fi` (= `B`) and `\ifswedish A \fi` (= dropped) — i.e.
+    * exactly what the en build emits under `\swedishfalse`, so the gauge counts only Swedish that actually
+    * renders in English. Handles INLINE and MULTI-LINE clamps uniformly (scans the whole text), nesting-
+    * aware. Returns (renderedText, number-of-`\ifswedish` clamps). */
+  def renderEnglishSide(text: String): (String, Int) =
+    val sb = new StringBuilder
+    val n = text.length
+    def isLetter(k: Int) = k < n && text(k).isLetter
+    var i = 0
+    var count = 0
+    while i < n do
+      val idx = text.indexOf("\\ifswedish", i)
+      if idx < 0 then { sb.append(text.substring(i)); i = n }
+      else
+        sb.append(text.substring(i, idx)); count += 1
+        var j = idx + 10 // past "\ifswedish"
+        var depth = 0; var elsePos = -1; var fiStart = -1
+        while fiStart < 0 && j < n do
+          if text.startsWith("\\fi", j) && !isLetter(j + 3) then
+            if depth == 0 then fiStart = j else { depth -= 1; j += 3 }
+          else if text.startsWith("\\else", j) && !isLetter(j + 5) then { if depth == 0 then elsePos = j; j += 5 }
+          else if text.startsWith("\\if", j) && isLetter(j + 3) then { depth += 1; j += 3 } // nested \ifX
+          else j += 1
+        if fiStart < 0 then { sb.append(text.substring(idx)); i = n } // unmatched — keep verbatim
+        else
+          if elsePos >= 0 then sb.append(text.substring(elsePos + 5, fiStart)) // the \else (English) branch
+          i = fiStart + 3
+    (sb.toString, count)
 
-  /** Reader-facing PROSE lines of a .tex: drop `%`-comment lines (never rendered), the bodies of
-    * code/verbatim environments (accepted code residual), AND the SV branch of `\ifswedish…[\else…]\fi`
-    * blocks (the English build sets `\swedishfalse`, so that Swedish is NOT in the English PDF — counting
-    * it over-states the remaining work). So the gauge counts only Swedish that actually renders in English. */
+  /** Reader-facing PROSE lines: drop `%`-comment lines (never rendered) and code/verbatim env bodies
+    * (accepted code residual). Run on text already passed through `renderEnglishSide`, so `\ifswedish` SV
+    * branches are already gone (inline + multi-line). */
   private def proseLines(raw: Iterable[String]): Vector[String] =
     val out = mutable.ArrayBuffer[String]()
     var depth = 0
-    val ifStack = mutable.ArrayBuffer[Int]() // 0 = other \ifX, 1 = \ifswedish SV branch (SKIP), 2 = its \else branch
     for line <- raw do
       val t = line.trim
       val begins = beginEnvRe.findAllMatchIn(t).map(_.group(1)).count(codeEnvs.contains)
       val ends = endEnvRe.findAllMatchIn(t).map(_.group(1)).count(codeEnvs.contains)
       val insideBefore = depth > 0
       depth = math.max(0, depth + begins - ends)
-      val swedishSkipBefore = ifStack.contains(1) // was inside an \ifswedish SV branch entering this line
-      for m <- ifTokRe.findAllMatchIn(t) do m.group(1) match
-        case "ifswedish" => ifStack += 1
-        case "else"      => if ifStack.nonEmpty then ifStack(ifStack.size - 1) = ifStack.last match
-                              case 1 => 2; case 2 => 1; case x => x // only an \ifswedish flips SV<->else
-        case "fi"        => if ifStack.nonEmpty then ifStack.remove(ifStack.size - 1)
-        case _           => ifStack += 0 // \ifkompendium etc. — not language-gated
-      val swedishSkip = swedishSkipBefore || ifStack.contains(1)
-      if t.nonEmpty && !t.startsWith("%") && !insideBefore && begins == 0 && !swedishSkip then out += t
+      if t.nonEmpty && !t.startsWith("%") && !insideBefore && begins == 0 then out += t
     out.toVector
+
+  /** PROSE lines of one generated file, English-side-rendered. Returns (prose lines, #`\ifswedish` clamps). */
+  private def proseFromFile(f: os.Path): (Vector[String], Int) =
+    val (eng, ifCount) = renderEnglishSide(os.read(f))
+    (proseLines(eng.linesIterator.toSeq), ifCount)
 
   /** Dump the actual Swedish PROSE lines of ONE generated -en file (comments + code blocks excluded) —
     * the spotting tool for the Overrides loop: shows exactly which prose to fix in a target file. */
   def dumpSwedishProse(root: os.Path, relpath: String): Unit =
     val f = os.Path(relpath, root)
     if !os.exists(f) then { println(s"  [swedish-lines] no file at $f"); return }
-    val sw = proseLines(os.read.lines(f)).filter(Code.swedishish).distinct
-    println(s"  ${sw.size} Swedish prose lines in $relpath:")
+    val (lines, clamps) = proseFromFile(f)
+    val sw = lines.filter(Code.swedishish).distinct
+    println(s"  ${sw.size} Swedish prose lines in $relpath ($clamps \\ifswedish clamps, interiors excluded):")
     sw.foreach(l => println(s"    $l"))
 
   def checkHowMuchSwedishLeft(root: os.Path): Unit =
-    val all = mutable.LinkedHashSet[String]()      // distinct Swedish PROSE lines
+    val all = mutable.LinkedHashSet[String]()      // distinct Swedish PROSE lines (rendered English side)
     val allLines = mutable.LinkedHashSet[String]() // distinct PROSE lines (the % denominator)
     val perFile = mutable.ArrayBuffer[(String, Int)]()
+    var clamps = 0                                 // total \ifswedish clamps (reporting feature)
     for dir <- Seq("slides-en", "compendium-en"); d = root / dir if os.exists(d)
         f <- os.walk(d) if os.isFile(f) && f.ext == "tex" // PROSE gauge: .tex only (code Swedish is accepted residual)
     do
-      val lines = proseLines(os.read.lines(f)) // skips comments + code/verbatim blocks
+      val (lines, ifCount) = proseFromFile(f) // English-side rendered: \ifswedish SV interiors excluded
+      clamps += ifCount
       val sw = lines.filter(Code.swedishish).distinct
       if sw.nonEmpty then perFile += ((f.relativeTo(root).toString, sw.size))
       all ++= sw; allLines ++= lines
     val total = allLines.size
     val pct = if total == 0 then 0.0 else all.size * 100.0 / total
-    if all.isEmpty then println(s"  swedish-left: 0% prose — fully English ✅ ($total distinct prose lines, ${perFile.size} files)")
-    else println(f"  swedish-left: $pct%.1f%% Swedish PROSE — ${all.size}/$total distinct lines (comments + code blocks excluded), ${perFile.size} files")
+    if all.isEmpty then println(s"  swedish-left: 0% prose — fully English ✅ ($total distinct prose lines, ${perFile.size} files; $clamps \\ifswedish clamps)")
+    else println(f"  swedish-left: $pct%.1f%% Swedish PROSE — ${all.size}/$total distinct lines (comments + code + $clamps \\ifswedish-clamp interiors excluded), ${perFile.size} files")
     perFile.sortBy(-_._2).take(20).foreach((p, c) => println(f"    $c%4d  $p"))
 
   /** Insourced PDF Swedish scan (was scratch/pdf-swedish.scala): pdftotext → the fraction of DISTINCT
