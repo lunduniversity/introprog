@@ -29,6 +29,11 @@ object Glossary:
     "ärÄtvärd" -> "isWorthEating", "skörd" -> "harvest", "ätvärda" -> "worthEating", "ärÄtbar" -> "isEdible",
     "anonymGrönsak" -> "anonymousVegetable",
     "skalningsmetod" -> "peelingMethod", "skalfaktor" -> "peelFactor", "ärSkalad" -> "isPeeled", "skala" -> "peel",
+    // CARDS cluster (w06-patterns) — PROVISIONAL, needs BR ratification (esp. parafärg).
+    "Färg" -> "Suit", "Kortlek" -> "Deck",
+    "Spader" -> "Spades", "Hjärter" -> "Hearts", "Ruter" -> "Diamonds", "Klöver" -> "Clubs",
+    "parafärg" -> "partnerSuit",   // maps a suit to the same-COLOUR partner (Spades<->Clubs black, Hearts<->Diamonds red)
+    "parallellFärg" -> "parallelSuit",
   )
   // string / comment inner text (longest first so a prefix doesn't pre-empt). exact substring replace.
   val str: Seq[(String, String)] = Seq(

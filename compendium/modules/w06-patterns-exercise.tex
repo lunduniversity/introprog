@@ -197,14 +197,22 @@ G100true. Vid byte av plats: Gtrue100.\\
 \QUESTBEGIN
 
 \Task	\label{task:match-sealedtrait} \what~	Skriv nedan kodrader i en REPL en för en. Notera nyckelordet \code{sealed} som används för att försegla en typ. En \textbf{förseglad typ} måste ha alla sina subtyper i en och samma kodfil.
+\ifswedish
 \begin{REPL}
 scala> sealed trait Färg
 scala> case object Spader extends Färg
 \end{REPL}
+\else
+\begin{REPL}
+scala> sealed trait Suit
+scala> case object Spades extends Suit
+\end{REPL}
+\fi
 \Subtask Hur lyder felmeddelandet och varför sker det? Är det ett kompileringsfel eller ett körtidsfel?
 
 \Subtask  \label{subtask:match-sealedtrait-caseobject}
 Skapa nu nedan kod i en editor och klistra in i REPL.
+\ifswedish
 \begin{Code}
 object Kortlek:
   sealed trait Färg
@@ -215,19 +223,39 @@ object Kortlek:
   case object Ruter extends Färg
   case object Klöver extends Färg
 \end{Code}
+\else
+\begin{Code}
+object Deck:
+  sealed trait Suit
+  object Suit:
+      val values = Vector(Spades, Hearts, Diamonds, Clubs)
+  case object Spades extends Suit
+  case object Hearts extends Suit
+  case object Diamonds extends Suit
+  case object Clubs extends Suit
+\end{Code}
+\fi
 
 \Subtask \label{subtask:match-sealedtrait-function}
-Skapa en funktion \code{def parafärg(f: Färg): Färg} i en editor, som med hjälp av ett match-uttryck returnerar parallellfärgen till en färg. Parallellfärgen till \code{Hjärter} är \code{Ruter} och vice versa, medan parallellfärgen till \code{Klöver} är \code{Spader} och vice versa. Klistra in funktionen i REPL. Passa även på att skriva en \code{import}-sats för det yttre objektet \textbf{Kortlek}, så medlemmarna av objektet kan nås enkelt.
+Skapa en funktion \ifswedish\code{def parafärg(f: Färg): Färg}\else\code{def partnerSuit(f: Suit): Suit}\fi i en editor, som med hjälp av ett match-uttryck returnerar parallellfärgen till en färg. Parallellfärgen till \ifswedish\code{Hjärter}\else\code{Hearts}\fi är \ifswedish\code{Ruter}\else\code{Diamonds}\fi och vice versa, medan parallellfärgen till \ifswedish\code{Klöver}\else\code{Clubs}\fi är \ifswedish\code{Spader}\else\code{Spades}\fi och vice versa. Klistra in funktionen i REPL. Passa även på att skriva en \code{import}-sats för det yttre objektet \textbf{Kortlek}, så medlemmarna av objektet kan nås enkelt.
+\ifswedish
 \begin{REPL}
 scala> parafärg(Spader)
 scala> val xs = Vector.fill(5)(Färg.values((math.random() * 4).toInt))
 scala> xs.map(parafärg)
 \end{REPL}
+\else
+\begin{REPL}
+scala> partnerSuit(Spades)
+scala> val xs = Vector.fill(5)(Suit.values((math.random() * 4).toInt))
+scala> xs.map(partnerSuit)
+\end{REPL}
+\fi
 
 \Subtask \label{subtask:match-forgetcase}
-Vi ska nu undersöka vad som händer om man glömmer en av case-grenarna i matchningen i \code{parafärg}. ''Glöm'' alltså avsiktligt en av case-grenarna och klistra in den nya \code{parafärg} med den ofullständiga matchningen. Hur lyder varningen? Kommer varningen vid körtid eller vid kompilering?
+Vi ska nu undersöka vad som händer om man glömmer en av case-grenarna i matchningen i \ifswedish\code{parafärg}\else\code{partnerSuit}\fi. ''Glöm'' alltså avsiktligt en av case-grenarna och klistra in den nya \ifswedish\code{parafärg}\else\code{partnerSuit}\fi med den ofullständiga matchningen. Hur lyder varningen? Kommer varningen vid körtid eller vid kompilering?
 
-\Subtask Anropa \code{parafärg} med den ''glömda'' färgen. Hur lyder felmeddelandet? Är det ett kompileringsfel eller ett körtidsfel?
+\Subtask Anropa \ifswedish\code{parafärg}\else\code{partnerSuit}\fi med den ''glömda'' färgen. Hur lyder felmeddelandet? Är det ett kompileringsfel eller ett körtidsfel?
 
 \Subtask Förklara vad nyckelordet \code{sealed} innebär och vilken nytta man kan ha av att \textbf{försegla} en supertyp.
 
@@ -238,16 +266,23 @@ Vi ska nu undersöka vad som händer om man glömmer en av case-grenarna i match
 \TaskSolved \what
 
 \SubtaskSolved
+\ifswedish
 \begin{REPL}
 Cannot extend sealed trait Färg in a different source file
 \end{REPL}
-Felmeddelandet fås av att REPL:en behandlar varje inmatning individuellt och tillåter därför inte att subtypen \code{Spader} ärver från \Eng{extends} supertypen \code{Färg} eftersom denna var förseglad \Eng{sealed}. Mer om detta senare i kursen...
+\else
+\begin{REPL}
+Cannot extend sealed trait Suit in a different source file
+\end{REPL}
+\fi
+Felmeddelandet fås av att REPL:en behandlar varje inmatning individuellt och tillåter därför inte att subtypen \ifswedish\code{Spader}\else\code{Spades}\fi ärver från \Eng{extends} supertypen \ifswedish\code{Färg}\else\code{Suit}\fi eftersom denna var förseglad \Eng{sealed}. Mer om detta senare i kursen...
 
 \SubtaskSolved
-Nu accepteras koden utan fel eftersom den förseglade typen \code{Färg} och alla dess subtyper (\code{Spader}, \code{Hjärter}, \code{Ruter}, \code{Klöver}) ligger i samma kodfil, inuti det yttre objektet \code{Kortlek}.
+Nu accepteras koden utan fel eftersom den förseglade typen \ifswedish\code{Färg}\else\code{Suit}\fi och alla dess subtyper (\ifswedish\code{Spader}\else\code{Spades}\fi, \ifswedish\code{Hjärter}\else\code{Hearts}\fi, \ifswedish\code{Ruter}\else\code{Diamonds}\fi, \ifswedish\code{Klöver}\else\code{Clubs}\fi) ligger i samma kodfil, inuti det yttre objektet \ifswedish\code{Kortlek}\else\code{Deck}\fi.
 
 \SubtaskSolved
-Förusatt att \code{import Kortlek._} har skrivits...
+Förusatt att \ifswedish\code{import Kortlek._}\else\code{import Deck._}\fi har skrivits...
+\ifswedish
 \begin{Code}
 def parafärg(f: Färg): Färg = f match
   case Spader  => Klöver
@@ -255,19 +290,42 @@ def parafärg(f: Färg): Färg = f match
   case Ruter   => Hjärter
   case Klöver  => Spader
 \end{Code}
+\else
+\begin{Code}
+def partnerSuit(f: Suit): Suit = f match
+  case Spades  => Clubs
+  case Hearts => Diamonds
+  case Diamonds   => Hearts
+  case Clubs  => Spades
+\end{Code}
+\fi
 
 \SubtaskSolved
+\ifswedish
 \begin{REPL}
 <console>:17: warning: match may not be exhaustive.
 It would fail on the following input: Ruter
 \end{REPL}
+\else
+\begin{REPL}
+<console>:17: warning: match may not be exhaustive.
+It would fail on the following input: Diamonds
+\end{REPL}
+\fi
 Varningen kommer redan vid kompilering.
 
 \SubtaskSolved
+\ifswedish
 \begin{REPL}
 scala.MatchError: Ruter (of class Ruter)
   at .parafärg(<console>:17)
 \end{REPL}
+\else
+\begin{REPL}
+scala.MatchError: Diamonds (of class Diamonds)
+  at .partnerSuit(<console>:17)
+\end{REPL}
+\fi
 Detta är ett körtidsfel.
 
 \SubtaskSolved  Om en klass är \code{sealed} innebär det att om ett element ska matchas och är en subtyp av denna klass så ger Scala varning redan vid kompilering om det finns en risk för ett \code{MatchError}, alltså om \code{match}-uttrycket inte är uttömmande och det finns fall som inte täcks av ett \code{case}.\\
@@ -283,17 +341,32 @@ En förseglad supertyp innebär att programmeraren redan vid kompileringstid få
 \QUESTBEGIN
 %\TODO %Se gärna över denna frågan samt facit.
 \Task	\what~ Vi ska nu undersöka och jämföra skillnad mellan nyckelorden \code{enum} och \code{sealed trait}. Skriv nedan kod i en REPL.
+\ifswedish
 \begin{Code}
 enum Färg:
   case Spader, Hjärter, Ruter, Klöver
 \end{Code}
+\else
+\begin{Code}
+enum Suit:
+  case Spades, Hearts, Diamonds, Clubs
+\end{Code}
+\fi
 
-\Subtask Skapa med hjälp av en editor igen en funktion \code{def parafärg(f: Färg): Färg}, nästintill likadan som den som vi skapade i deluppgift \ref{task:match-sealedtrait}\ref{subtask:match-sealedtrait-function}. Funktionen ska återigen utnyttja match-uttryck för att returnera paralellfärgen till argumentet som ges. Tänk på att denna gången är \code{Färg} inget \code{sealed trait}, utan istället en enumeration (\code{enum}). Klistra in funktionen i REPL.
+\Subtask Skapa med hjälp av en editor igen en funktion \ifswedish\code{def parafärg(f: Färg): Färg}\else\code{def partnerSuit(f: Suit): Suit}\fi, nästintill likadan som den som vi skapade i deluppgift \ref{task:match-sealedtrait}\ref{subtask:match-sealedtrait-function}. Funktionen ska återigen utnyttja match-uttryck för att returnera paralellfärgen till argumentet som ges. Tänk på att denna gången är \ifswedish\code{Färg}\else\code{Suit}\fi inget \code{sealed trait}, utan istället en enumeration (\code{enum}). Klistra in funktionen i REPL.
+\ifswedish
 \begin{REPL}
 scala> parafärg(Färg.Ruter)
 scala> val xs = Vector.fill(5)(Färg.values((math.random() * 4).toInt))
 scala> xs.map(parafärg)
 \end{REPL}
+\else
+\begin{REPL}
+scala> partnerSuit(Suit.Diamonds)
+scala> val xs = Vector.fill(5)(Suit.values((math.random() * 4).toInt))
+scala> xs.map(partnerSuit)
+\end{REPL}
+\fi
 
 
 \Subtask
@@ -305,6 +378,7 @@ Fundera på skillnader och likheter mellan att utnyttja \code{sealed trait} ihop
 
 \TaskSolved \what
 \SubtaskSolved
+\ifswedish
 \begin{Code}
 def parafärg(f: Färg): Färg = f match
   case Färg.Spader  => Färg.Klöver
@@ -312,7 +386,16 @@ def parafärg(f: Färg): Färg = f match
   case Färg.Ruter   => Färg.Hjärter
   case Färg.Klöver  => Färg.Spader
 \end{Code}
-Likt uppgift \ref{task:match-sealedtrait}\ref{subtask:match-sealedtrait-function} så kan även här en \code{import}-sats skrivas för att nå medlemmarna i \code{Färg} utan punktnotation.
+\else
+\begin{Code}
+def partnerSuit(f: Suit): Suit = f match
+  case Suit.Spades  => Suit.Clubs
+  case Suit.Hearts => Suit.Diamonds
+  case Suit.Diamonds   => Suit.Hearts
+  case Suit.Clubs  => Suit.Spades
+\end{Code}
+\fi
+Likt uppgift \ref{task:match-sealedtrait}\ref{subtask:match-sealedtrait-function} så kan även här en \code{import}-sats skrivas för att nå medlemmarna i \ifswedish\code{Färg}\else\code{Suit}\fi utan punktnotation.
 Det är dock inte alltid fördelaktigt att importera medlemmar till den globala namnrymden, då det kan förekomma namnkrockar. Anta ett exempel där vi jobbar på ett program med grafiskt användargränssnitt där vi har en färg \code{Red} definerad.
 Anta också att vi nu till vårt program vill importera ytterligare en röd färg för kulörerna hjärter och ruter, denna också namngiven \code{Red}. I detta scenario hade det uppstått en namnkrock då \code{Red} redan är definerad så importeringen hade ej kunnat ske.
 
