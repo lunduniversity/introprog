@@ -252,7 +252,7 @@
 
 % Blockvariant (som tidigare)
 \newcommand{\difficulty}[2][]{%
-  \emph{Svårighet:} \stars{#2}%
+  \emph{\ifswedish Svårighet:\else Difficulty:\fi} \stars{#2}%
   \ifx\relax#1\relax \else \hspace{3mm}(\textit{#1})\fi
   %\par%
   \noindent

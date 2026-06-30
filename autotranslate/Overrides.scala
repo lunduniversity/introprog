@@ -250,4 +250,22 @@ object Overrides:
       """Note then that copying with \code{toArray}, \code{toVector}, \code{toBuffer}, etc. is \emph{not deep}, i.e. only the instance references are copied and not the instances themselves.""",
     """Implementera med hjälp av en \code{while}-sats funktionen \code{deepCopy} nedan som gör \emph{djup} kopiering, d.v.s skapar en ny array med nya, innehållskopierade mutanter.""" ->
       """Using a \code{while} statement, implement the function \code{deepCopy} below that does \emph{deep} copying, i.e. creates a new array with new, content-copied mutants.""",
+
+    // ── lect-w01-intro: clean single-line prose fallbacks (some with Swedish trapped in masked \href) ──
+    """Ha picknick i \href{http://kartor.lund.se/wiki/lundanamn/index.php/Ada_Lovelace-parken}{Ada Lovelace-parken} på Brunnshög!""" ->
+      """Have a picnic in \href{http://kartor.lund.se/wiki/lundanamn/index.php/Ada_Lovelace-parken}{Ada Lovelace-parken} at Brunnshög!""",
+    """En VM är en ''dator'' implementerad i mjukvara som kan tolka en abstrakt ''maskinkod'' som \Emph{översätts under körning} till den \Alert{verkliga} maskinens konkreta maskinkod.""" ->
+      """A VM is a ''computer'' implemented in software that can interpret an abstract ''machine code'' that is \Emph{translated at run time} into the \Alert{real} machine's concrete machine code.""",
+    """GitHub för kodlagring -- men \Alert{inte} av lösningar till labbar!""" ->
+      """GitHub for code storage -- but \Alert{not} for solutions to labs!""",
+    """Om du vill att REPL ska vänta att tolka raden du skrivit och istället ge dig \Emph{ännu en rad}, så tryck först ner ESC-tangenten och sedan ENTER.""" ->
+      """If you want the REPL to wait before interpreting the line you typed and instead give you \Emph{another line}, first press the ESC key and then ENTER.""",
+    """Scala-kompilatorn gör \href{https://en.wikipedia.org/wiki/Type_inference}{\Emph{typhärledning}}: man \Alert{slipper skriva typerna} om kompilatorn kan lista ut dem med hjälp av typerna hos deluttrycken.""" ->
+      """The Scala compiler does \href{https://en.wikipedia.org/wiki/Type_inference}{\Emph{type inference}}: you \Alert{don't have to write the types} if the compiler can figure them out using the types of the subexpressions.""",
+    """En identifierare får \Alert{inte} vara ett \Emph{reserverat ord}, se \href{https://fileadmin.cs.lth.se/pgk/quickref.pdf}{snabbreferensen} för alla reserverade ord i Scala.""" ->
+      """An identifier may \Alert{not} be a \Emph{reserved word}, see \href{https://fileadmin.cs.lth.se/pgk/quickref.pdf}{the quick reference} for all reserved words in Scala.""",
+    """Genom de namn som definieras skapas \Emph{återanvändbara abstraktioner} som kapslar in det funktionen gör till ett ''byggblock''.""" ->
+      """Through the names that are defined, \Emph{reusable abstractions} are created that encapsulate what the function does into a ''building block''.""",
+    """Abstraktioner med \Emph{välgenomtänkta namn} är enklare att använda, jämfört med kryptiska eller missvisande namn.""" ->
+      """Abstractions with \Emph{well-thought-out names} are easier to use than cryptic or misleading ones.""",
   )
