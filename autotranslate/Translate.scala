@@ -127,6 +127,24 @@ object Translate:
     * stricter) — dropped keys get re-translated under the new guards on the next run. */
   def loadCache(root: os.Path): Unit =
     readTsv(cacheFile(root), cache)
+    // MIGRATE to placeholder-normalized keys (idempotent, no model calls): the cache is keyed on the
+    // masked form with GLOBAL __C<n>__ numbers, so an upstream edit that shifts numbering re-keys (and
+    // re-translates) the whole downstream of a file. Re-key to LOCAL order-of-appearance so keys are
+    // position-independent. Collision (identical prose, different global numbering): prefer a real
+    // translation (value != key) over a Swedish fallback (value == key).
+    locally {
+      val migrated = mutable.LinkedHashMap[String, String]()
+      var renum = 0
+      for (k, v) <- cache do
+        val (nk, l2g) = Latex.normalize(k)
+        val nv = Latex.globalToLocal(v, l2g.iterator.zipWithIndex.map((g, l) => (g, l)).toMap)
+        if nk != k then renum += 1
+        migrated.get(nk) match
+          case Some(existing) if existing != nk && nv == nk => () // keep the translation, drop the fallback
+          case _                                            => migrated(nk) = nv
+      cache.clear(); cache ++= migrated
+      if renum > 0 then println(s"  [cache] migrated $renum entries to placeholder-normalized keys")
+    }
     // self-heal step 1: re-apply deterministic post-processing (quote-normalize + term enforcement,
     // e.g. grundtyp's "primitive"->"basic") to stored values — fixes cached entries without --clean.
     var fixed = 0
@@ -407,15 +425,25 @@ object Translate:
       catch case _: Throwable => ()
     }
 
-  /** sv -> en with precedence OVERRIDE > AUTHORITATIVE > CACHE > MODEL; Swedish on fallback. */
+  /** sv -> en with precedence OVERRIDE > AUTHORITATIVE > CACHE > MODEL; Swedish on fallback.
+    * The CACHE is keyed on the placeholder-NORMALIZED masked form (`Latex.normalize`) so it is independent
+    * of global `__C<n>__` numbering — an upstream edit that shifts placeholder numbers no longer re-keys
+    * (and re-translates) the rest of the file. The cached value is stored normalized too and de-normalized
+    * back to this unit's globals on a hit. */
   def translate(sv: String): String =
     if sv.isEmpty then ""
-    else overrides.get(sv).orElse(authoritative.get(sv)).orElse(cache.get(sv)).getOrElse {
-      modelTranslate(sv) match
-        case Some(en) => modelCalls += 1; diagLog("MODEL", sv); cache(sv) = en; noteCacheAdd(); en
-        // cache the Swedish fallback too, so hopeless 3B units aren't re-tried every run (a masking
-        // change gives a NEW key so it still retries; `--clean` retries all for a quality pass).
-        case None => fallbacks += 1; diagLog("FB", sv); cache(sv) = sv; noteCacheAdd(); sv
+    else overrides.get(sv).orElse(authoritative.get(sv)).getOrElse {
+      val (norm, l2g) = Latex.normalize(sv)
+      cache.get(norm) match
+        case Some(v) => Latex.denormalize(v, l2g)
+        case None =>
+          modelTranslate(sv) match
+            case Some(en) =>
+              modelCalls += 1; diagLog("MODEL", sv)
+              val g2l = l2g.iterator.zipWithIndex.map((g, l) => (g, l)).toMap
+              cache(norm) = Latex.globalToLocal(en, g2l); noteCacheAdd(); en
+            // cache the Swedish fallback too (normalized), so hopeless 3B units aren't re-tried every run.
+            case None => fallbacks += 1; diagLog("FB", sv); cache(norm) = norm; noteCacheAdd(); sv
     }
 
   /** Translate CODE prose (a comment / string-literal body) — preserves leading/trailing whitespace,

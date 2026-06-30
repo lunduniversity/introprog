@@ -265,6 +265,39 @@ object Latex:
       Matcher.quoteReplacement(fixed)
     )
 
+  /** ── Cache-key stability (placeholder normalization) ──────────────────────────────────────────
+    * A unit's masked form embeds GLOBAL placeholder numbers (`__C57__`) assigned sequentially across the
+    * whole file. Any upstream edit that adds/removes a placeholder (e.g. inserting an `\ifswedish` clamp)
+    * shifts every downstream number — so if the translate cache is keyed on the masked form, every
+    * downstream unit in the file gets a new key and re-translates (a costly cascade). These helpers
+    * renumber placeholders to LOCAL order-of-appearance (`__C0__`, `__C1__`, …) so the cache key is
+    * position-independent. `normalize` is idempotent (already-local text is unchanged), so the committed
+    * cache can be migrated in place on load with no model calls. */
+
+  /** Renumber `masked`'s placeholders to local order-of-appearance. Returns the normalized text and
+    * `local2global` (index = local number, value = original global number). */
+  def normalize(masked: String): (String, IndexedSeq[Int]) =
+    val g2l = scala.collection.mutable.LinkedHashMap[Int, Int]()
+    val out = Place.replaceAllIn(masked, m =>
+      val g = m.group(1).toInt
+      val l = g2l.getOrElseUpdate(g, g2l.size)
+      Matcher.quoteReplacement(s"__C${l}__"))
+    (out, g2l.keysIterator.toIndexedSeq)
+
+  /** Map a normalized string's local placeholders back to this unit's global numbers (so `restore` can
+    * then swap in the unit's spans). Unknown locals are left as-is. */
+  def denormalize(norm: String, local2global: IndexedSeq[Int]): String =
+    Place.replaceAllIn(norm, m =>
+      val l = m.group(1).toInt
+      Matcher.quoteReplacement(s"__C${if l >= 0 && l < local2global.size then local2global(l) else l}__"))
+
+  /** Renumber a string's global placeholders to local via `global2local` (for normalizing model OUTPUT or
+    * migrating a cached value). Unmapped globals are left as-is. */
+  def globalToLocal(s: String, global2local: Map[Int, Int]): String =
+    Place.replaceAllIn(s, m =>
+      val g = m.group(1).toInt
+      Matcher.quoteReplacement(s"__C${global2local.getOrElse(g, g)}__"))
+
   /** If `span` is a whole inline-emphasis command `\cmd{arg}` (cmd in emphArg), return it with `arg`
     * replaced by `tr(arg)` — the child-translated English; else return `span` unchanged. Lets
     * Translate.translateRegion translate emphasized text AFTER the surrounding prose, so a dense bullet
