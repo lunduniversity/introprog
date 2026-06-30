@@ -430,4 +430,42 @@ object Overrides:
       """Auxiliary constructors \Alert{must} begin by calling \Alert{another} constructor that appears \Alert{before} it in the code, for example the primary constructor.""",
     """Man kan åstadkomma \Emph{oföränderliga} datastrukturer där attributreferenserna inte förändras efter allokering om klassen \Alert{inte} erbjuder en \Alert{setter} för privata attribut.""" ->
       """You can achieve \Emph{immutable} data structures where the attribute references don't change after allocation if the class does \Alert{not} offer a \Alert{setter} for private attributes.""",
+
+    // ── lect-w10-extends: inheritance / traits / composition ──
+    """Som alternativ till att klassen X ärver klassen Y kan man i stället använda \Emph{komposition} , som innebär att klassen X \Alert{har ett attribut} som \Emph{refererar} till klassen Y.""" ->
+      """As an alternative to class X inheriting class Y, you can instead use \Emph{composition}, which means that class X \Alert{has an attribute} that \Emph{refers} to class Y.""",
+    """det \emph{inte} finns en tydlig \Emph{X-är-en-Y}-relation""" -> """there is \emph{no} clear \Emph{X-is-a-Y} relationship""",
+    """det \emph{inte} är önskvärt ärva och exponera \emph{alla} Y:s medlemmar via X""" ->
+      """it is \emph{not} desirable to inherit and expose \emph{all} of Y's members via X""",
+    """Typerna \code{Grönsak} och \code{Tomat} är \Alert{orelaterade}. (\code{AnyRef} saknar \code{vikt})""" ->
+      """The types \code{Grönsak} and \code{Tomat} are \Alert{unrelated}. (\code{AnyRef} lacks \code{vikt})""",
+    """Typen \textit{\textbf{\texttt{Grönsak}}} är en \Emph{bastyp} i nedan arvshierarki:""" ->
+      """The type \textit{\textbf{\texttt{Grönsak}}} is a \Emph{base type} in the inheritance hierarchy below:""",
+    """Det specifika värdet på vikten definieras \Alert{inte} i bastypen.""" ->
+      """The specific value of the weight is \Alert{not} defined in the base type.""",
+    """den \Emph{kan mixas} med flera andra traits så att olika koddelar kan kombineras på flexibla sätt.""" ->
+      """it \Emph{can be mixed} with several other traits so that different parts of the code can be combined in flexible ways.""",
+    """den \Alert{kan inte} instansieras direkt.""" -> """it \Alert{cannot} be instantiated directly.""",
+    """den \Emph{kan} ha \Emph{parametrar}\footnote{I gamla Scala 2 kan traits ej ha parametrar} på samma sätt som klasser.""" ->
+      """it \Emph{can} have \Emph{parameters}\footnote{In old Scala 2, traits cannot have parameters} in the same way as classes.""",
+    """En \code{trait} kan användas för att skapa en bastyp som kan vara hemvist för gemensamma delar hos subtyper:""" ->
+      """A \code{trait} can be used to create a base type that can be home to common parts of subtypes:""",
+    """Det \emph{finns} tillfällen när \Alert{kodduplicering} \Emph{faktiskt är att föredra}: \pause t.ex. om man vill att olika delar av koden ska vara \Alert{helt oberoende} av varandra.""" ->
+      """There \emph{are} occasions when \Alert{code duplication} \Emph{is actually preferable}: \pause e.g. if you want different parts of the code to be \Alert{completely independent} of each other.""",
+    """I flera språk, t.ex. Java, gäller dessa regler (men \Alert{inte} i Scala):""" ->
+      """In several languages, e.g. Java, these rules apply (but \Alert{not} in Scala):""",
+    """Scala är \Emph{friare}:""" -> """Scala is \Emph{more permissive}:""",
+    """I Scala får man ha \Emph{så många} icke-privata klasser/traits/singelobjekt i samma kodfil \Emph{som man vill}.""" ->
+      """In Scala you may have \Emph{as many} non-private classes/traits/singleton objects in the same source file \Emph{as you want}.""",
+    """Om en kodfil bara innehåller \Emph{en enda} klass/trait/singelobjekt ge filen samma namn som innehållet, t.ex.""" ->
+      """If a source file contains only \Emph{a single} class/trait/singleton object, give the file the same name as the content, e.g.""",
+    """Med ''statisk typ'' menas den typinformation som finns vid \Alert{kompileringstid}.""" ->
+      """By ''static type'' we mean the type information available at \Alert{compile time}.""",
+    """Man kan ärva \Alert{flera} traits.""" -> """You can inherit \Alert{several} traits.""",
+    """Genom att skapa \Emph{öppna klasser} med nyckelordet \code{open} signalerar du att klassen är tänkt att vara en supertyp vid arv.""" ->
+      """By creating \Emph{open classes} with the keyword \code{open}, you signal that the class is intended to be a supertype for inheritance.""",
+    """krävs om du vill tysta varning vid \Alert{arv från en annan kodfil}.""" ->
+      """is required if you want to silence the warning when \Alert{inheriting from another source file}.""",
+    """...du vill korta ned tiden för omkompilering vid ändringar om \emph{mycket stor} kodbas.""" ->
+      """...you want to shorten the recompilation time on changes for a \emph{very large} code base.""",
   )
