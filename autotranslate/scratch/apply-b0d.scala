@@ -32,8 +32,10 @@ object Glossary:
     // CARDS cluster (w06-patterns) — PROVISIONAL, needs BR ratification (esp. parafärg).
     "Färg" -> "Suit", "Kortlek" -> "Deck",
     "Spader" -> "Spades", "Hjärter" -> "Hearts", "Ruter" -> "Diamonds", "Klöver" -> "Clubs",
-    "parafärg" -> "partnerSuit",   // maps a suit to the same-COLOUR partner (Spades<->Clubs black, Hearts<->Diamonds red)
-    "parallellFärg" -> "parallelSuit",
+    // parafärg = short for parallellfärg = the same-COLOUR suit (Spades<->Clubs black, Hearts<->Diamonds red).
+    // No standard English card term exists (verified: bridge pairs suits by colour but has no single word),
+    // so use the clearest self-documenting name. NOT "partnerSuit" (collides with bridge 'partner' = player).
+    "parafärg" -> "sameColourSuit", "parallellFärg" -> "sameColourSuit",
   )
   // string / comment inner text (longest first so a prefix doesn't pre-empt). exact substring replace.
   val str: Seq[(String, String)] = Seq(
