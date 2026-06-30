@@ -584,4 +584,20 @@ object Overrides:
       """When the snake has eaten a certain number of apples, or if the snake has been eaten by a monster, the game is over and the score is shown.""",
     """Varje person i gruppen ska implementera \emph{minst ett} (gärna flera) av kraven nedan.""" ->
       """Each person in the group should implement \emph{at least one} (preferably several) of the requirements below.""",
+
+    // ── w12-extra-exercise: concurrency / threads / atomicity (Swedish \code identifiers kept) ──
+    """Observera att om samlingen inte är sorterad är resultatet ''odefinierat'', d.v.s. något returneras men det är \emph{inte} att lita på; man måste alltså först sortera samlingen eller vara helt säker på att den är sorterad.""" ->
+      """Note that if the collection is not sorted, the result is ''undefined'', i.e. something is returned but it is \emph{not} to be relied on; so you must first sort the collection or be completely sure that it is sorted.""",
+    """Om man anropar \code{run} direkt blir det \emph{inte} jämlöpande exekvering.""" ->
+      """If you call \code{run} directly, you do \emph{not} get concurrent execution.""",
+    """Alltså kommer det skrivas ut \code{zzz snark hej!} i de flesta fall, men det är inte garanterat.""" ->
+      """So \code{zzz snark hej!} will be printed in most cases, but it is not guaranteed.""",
+    """I \code{slösaSpara} hämtas saldot, ändras och placeras tillbaka i minnet -  fördröjs -  upprepas.""" ->
+      """In \code{slösaSpara} the balance is fetched, changed and placed back in memory -  delayed -  repeated.""",
+    """En operation som inte kan avbrytas kallas \textbf{atomär} . Studera dokumentationen för \code{AtomicInteger}\footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html}{docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html}} och prova nedan kod.""" ->
+      """An operation that cannot be interrupted is called \textbf{atomic} . Study the documentation for \code{AtomicInteger}\footnote{\href{https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html}{docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html}} and try the code below.""",
+    """I \code{slösaSpara} pausas tråden i en millisekund så \code{vargen}-tråden kan hinna ta ut pengar innan \code{farmor}-sätter hinner sätta in pengar igen och saldot blir negativt.""" ->
+      """In \code{slösaSpara} the thread is paused for a millisecond so the \code{vargen} thread can withdraw money before the \code{farmor} depositor can deposit money again and the balance becomes negative.""",
+    """Akka erbjuder automatisk  multitrådning med s.k. trådpooler och möjliggör avancerad parallellprogrammering på en hög  abstraktionsnivå, där man själv slipper skapa instanser av klassen \code{Thread}. I stället kan man helt enkelt placera sin kod inramad med \code|Future{ "körs parallellt" }| efter att man importerat det som behövs.""" ->
+      """Akka offers automatic multithreading with so-called thread pools and enables advanced parallel programming at a high abstraction level, where you don't have to create instances of the class \code{Thread} yourself. Instead you can simply place your code wrapped in \code|Future{ "körs parallellt" }| after importing what is needed.""",
   )
