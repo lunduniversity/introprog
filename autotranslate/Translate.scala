@@ -601,22 +601,34 @@ object Translate:
   // Verbatim/code environments whose body is NOT reader-facing PROSE — Swedish inside is accepted code
   // residual, so the prose gauge skips them (de-noised metric, 2026-06-29).
   private val codeEnvs = Set("Code", "CodeSmall", "REPL", "REPLnonum", "REPLsmall",
-    "lstlisting", "verbatim", "Verbatim", "Trace", "Output")
+    "lstlisting", "verbatim", "Verbatim", "Trace", "Output", "exlatex", "envi")
   private val beginEnvRe = raw"\\begin\{([A-Za-z*]+)\}".r
   private val endEnvRe = raw"\\end\{([A-Za-z*]+)\}".r
+  private val ifTokRe = raw"\\(ifswedish|if[a-zA-Z]+|else|fi)".r
 
-  /** Reader-facing PROSE lines of a .tex: drop `%`-comment lines (never rendered) and the bodies of
-    * code/verbatim environments (accepted code residual), so the Swedish gauge counts only fixable prose. */
+  /** Reader-facing PROSE lines of a .tex: drop `%`-comment lines (never rendered), the bodies of
+    * code/verbatim environments (accepted code residual), AND the SV branch of `\ifswedish…[\else…]\fi`
+    * blocks (the English build sets `\swedishfalse`, so that Swedish is NOT in the English PDF — counting
+    * it over-states the remaining work). So the gauge counts only Swedish that actually renders in English. */
   private def proseLines(raw: Iterable[String]): Vector[String] =
     val out = mutable.ArrayBuffer[String]()
     var depth = 0
+    val ifStack = mutable.ArrayBuffer[Int]() // 0 = other \ifX, 1 = \ifswedish SV branch (SKIP), 2 = its \else branch
     for line <- raw do
       val t = line.trim
       val begins = beginEnvRe.findAllMatchIn(t).map(_.group(1)).count(codeEnvs.contains)
       val ends = endEnvRe.findAllMatchIn(t).map(_.group(1)).count(codeEnvs.contains)
       val insideBefore = depth > 0
       depth = math.max(0, depth + begins - ends)
-      if t.nonEmpty && !t.startsWith("%") && !insideBefore && begins == 0 then out += t
+      val swedishSkipBefore = ifStack.contains(1) // was inside an \ifswedish SV branch entering this line
+      for m <- ifTokRe.findAllMatchIn(t) do m.group(1) match
+        case "ifswedish" => ifStack += 1
+        case "else"      => if ifStack.nonEmpty then ifStack(ifStack.size - 1) = ifStack.last match
+                              case 1 => 2; case 2 => 1; case x => x // only an \ifswedish flips SV<->else
+        case "fi"        => if ifStack.nonEmpty then ifStack.remove(ifStack.size - 1)
+        case _           => ifStack += 0 // \ifkompendium etc. — not language-gated
+      val swedishSkip = swedishSkipBefore || ifStack.contains(1)
+      if t.nonEmpty && !t.startsWith("%") && !insideBefore && begins == 0 && !swedishSkip then out += t
     out.toVector
 
   /** Dump the actual Swedish PROSE lines of ONE generated -en file (comments + code blocks excluded) —
