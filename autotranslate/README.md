@@ -199,8 +199,12 @@ A clean English build prints `[swedish] <file>.pdf: N% Swedish` and produces the
 
 - **`sbt --client` uses a persistent server.** To stop a running task, kill the server JVM
   (`--detach-stdio`), not the client. After editing `build.sbt`, run `sbt --client reload`.
-- **Masking changes force a re-translate.** Changing what gets masked re-keys units → a one-time model
-  pass (minutes on the GPU box) before `--all` converges back to 0 calls. Watch `scratch/progress.txt`.
+- **The cache is placeholder-NORMALIZED, so edits no longer cascade.** The cache keys on each unit's
+  masked form with placeholders renumbered to local order-of-appearance (`Latex.normalize`), so inserting
+  an `\ifswedish` clamp (or any placeholder-shifting edit) re-translates only the *changed* unit, not the
+  whole downstream of the file. A masking-rule change (what gets masked) still re-keys the affected units →
+  a one-time model pass; watch `scratch/progress.txt` + `scratch/model-calls.txt`. Normalization also
+  de-dups identical-prose units across positions (cache shrank ~30% on adoption).
 - **Don't git-track the generated `-en` side.** `compendium-en/`, `slides-en/` (`.tex` + PDFs) are
   gitignored; clones regenerate model-free from the committed cache. Readers get PDFs via `publish.sh`
   (fileadmin) and the GitHub release.
@@ -320,3 +324,25 @@ compile.**
   reordered span through)?
 - `enChrome` (`Main.scala`) — literal `.replace` over each mirror; order-sensitive for overlapping keys
   (e.g. the `Resource Time`→`Tutorial` + trailing-`s` plural trick in §3/strand-2).
+
+### 7.7 Cache-key normalization (why edits don't cascade)
+
+The translate cache is keyed on the unit's *masked* form, which contains `__C<n>__` placeholders numbered
+**globally** across a file. A naive cache keyed on that form is fragile: inserting one `\ifswedish` clamp
+shifts every downstream placeholder number, so every downstream unit's key changes and re-translates — an
+expensive whole-file cascade (this actually happened: one clamp → 74 model calls). The fix is
+`Latex.normalize`, which renumbers a masked string's placeholders to **local** order-of-appearance
+(`__C0__`, `__C1__`, …) and returns the `local→global` map:
+
+- `translate()` keys the cache on `normalize(sv)`; on a hit it `denormalize`s the stored value back to this
+  unit's global numbers (then `restore` swaps in the spans); on a miss it stores the model output
+  `globalToLocal`-renumbered. So the key is independent of global numbering — a clamp re-translates only
+  the *changed* unit.
+- `normalize` is **idempotent** (already-local text is unchanged), so `loadCache` migrates the committed
+  cache in place with **zero model calls** — and de-dups identical-prose units that differed only in
+  numbering (the cache shrank ~30% on adoption). Collision rule: prefer a real translation over a Swedish
+  fallback (value == key).
+- Reviewer checks: does `denormalize` leave unknown locals untouched (no crash)? Is the round-trip exact
+  for a unit with reordered placeholders in the value? Does migration ever merge two *different*
+  translations of the same normalized key (only when prose is genuinely identical — then either is correct)?
+- Not yet applied to `codeCache` (code-comment prose) — same fix would port if it ever cascades.
