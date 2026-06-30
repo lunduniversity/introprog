@@ -168,6 +168,10 @@ object Main:
       // the cover of a main doc — safe to replace document-wide.
       val coverPhrases = Seq(
         "Introduktion till programmering"           -> "Introduction to Programming",
+        "Kompendium 1"                              -> "Compendium 1",   // cover: \title volume label
+        "Kompendium 2"                              -> "Compendium 2",
+        "Första läsperioden"                        -> "First reading period",  // cover subtitle (": Module 1 -- 7")
+        "Andra läsperioden"                         -> "Second reading period",
         "Detta kompendium"                          -> "This compendium",
         "Föreläsningar \\& uppgifter"               -> "Lectures \\& exercises",
         "för läsning på skärm"                      -> "for reading on screen",
