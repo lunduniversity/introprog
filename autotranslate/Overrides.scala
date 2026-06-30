@@ -508,4 +508,24 @@ object Overrides:
     """Använda färdigt paket: användardialoger.""" -> """Using a ready-made package: user dialogs.""",
     """Använd funktionen \code{introprog.Dialog.input} för att visa frågan \code{"Vad heter du?"} och ta reda på användarens namn.""" ->
       """Use the function \code{introprog.Dialog.input} to show the question \code{"Vad heter du?"} and find out the user's name.""",
+
+    // ── w03-functions-exercise: clean prose (Swedish \code identifiers öka/görDettaTvåGånger kept) ──
+    """Definiera funktionen \code{öka} som har en heltalsparameter \code{x} och vars returvärde är argumentet plus 1. Defaultargument ska vara 1. Ange returtypen explicit.""" ->
+      """Define the function \code{öka} which has an integer parameter \code{x} and whose return value is the argument plus 1. The default argument should be 1. Specify the return type explicitly.""",
+    """Vad har uttrycket \code{öka(öka(öka(öka())))} för värde?""" ->
+      """What value does the expression \code{öka(öka(öka(öka())))} have?""",
+    """Det finns ett \emph{ännu} kortare sätt att skriva en anonym funktion \emph{om} typen kan härledas \emph{och} den bara använder sin parameter \emph{en enda gång}; då går funktionslitteraler att skriva med s.k. \emph{platshållarsyntax} som använder understreck, till exempel \code{ _ + 1} och som automatiskt expanderas av kompilatorn till \code{ngtnamn => ngtnamn + 1} (namnet på parametern spelar ingen roll; kompilatorn väljer något eget, internt namn).""" ->
+      """There is an \emph{even} shorter way to write an anonymous function \emph{if} the type can be inferred \emph{and} it uses its parameter only \emph{once}; then function literals can be written with so-called \emph{placeholder syntax} that uses an underscore, for example \code{ _ + 1}, which the compiler automatically expands to \code{ngtnamn => ngtnamn + 1} (the parameter's name doesn't matter; the compiler chooses its own internal name).""",
+    """Funktionslitteraler kallas \textit{anonyma funktioner}, eftersom de inte har något namn, till skillnad från t.ex. \code{def öka(i: Int): Int = i + 1}, som ju heter \code{öka}. Ett annat vanligt namn är \textit{lambda-uttryck} efter det datalogiska matematikverktyget \href{https://sv.wikipedia.org/wiki/Lambdakalkyl}{lambdakalkyl}.""" ->
+      """Function literals are called \textit{anonymous functions}, because they have no name, unlike e.g. \code{def öka(i: Int): Int = i + 1}, which is named \code{öka}. Another common name is \textit{lambda expression}, after the computer-science mathematical tool \href{https://sv.wikipedia.org/wiki/Lambdakalkyl}{lambda calculus}.""",
+    """Skriv ett program i filen \texttt{fel.scala} som orsakar ett \emph{körtidsfel} och kör igång det i terminalen med \code{scala run fel.scala}. Studera den stack trace som skrivs ut. Vad innehåller en \code{stack trace}?""" ->
+      """Write a program in the file \texttt{fel.scala} that causes a \emph{runtime error} and run it in the terminal with \code{scala run fel.scala}. Study the stack trace that is printed. What does a \code{stack trace} contain?""",
+    """Funktioner som tar funktioner som argument kallas \emph{högre ordningens funktioner}.""" ->
+      """Functions that take functions as arguments are called \emph{higher-order functions}.""",
+    """Anropa \code{görDettaTvåGånger} med ett block som parameter. Blocket ska innehålla en utskriftssats. Förklara vad som händer.""" ->
+      """Call \code{görDettaTvåGånger} with a block as a parameter. The block should contain a print statement. Explain what happens.""",
+    """Normalt sker i Scala (och i Java) s.k. \emph{värdeanrop} vid anrop av funktioner, vilket innebär att argumentuttrycket evalueras \emph{före} bindningen till parameternamnet sker.""" ->
+      """Normally in Scala (and in Java) so-called \emph{call-by-value} occurs when calling functions, which means that the argument expression is evaluated \emph{before} the binding to the parameter name happens.""",
+    """Om vi placerar \code{1/x} \emph{före} det rekursiva anropet, så når vi detta uttryck direkt och det kastas ett undantag p.g.a. division med noll.""" ->
+      """If we place \code{1/x} \emph{before} the recursive call, we reach this expression immediately and an exception is thrown due to division by zero.""",
   )
