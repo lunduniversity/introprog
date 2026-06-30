@@ -608,4 +608,10 @@ object Overrides:
       """The third branch matches \code{Vector("på", "dej")} where the first value is not bound to any variable because an underscore is in the corresponding place, while the second value is bound to \code{b}.""",
     """I de första 3 raderna sker samma som i deluppgift \textit{a}. När nu dessa jämförelser görs mellan \code{Gurka}-objekten så överskuggas \code{Any.equals} av den \code{equals} som är specificerad för just \code{Gurka}. Eftersom båda objekten \code{g1} jämförs med också är av typen \code{Gurka} så matchar den med \code{case that: Gurka}. Denna i sin tur jämför vikterna hos de båda gurkorna och returnerar en \code{Boolean} huruvida de är lika eller inte, vilket de i båda fallen är.""" ->
       """In the first 3 lines the same happens as in subtask \textit{a}. Now, when these comparisons are made between the \code{Gurka} objects, \code{Any.equals} is overridden by the \code{equals} specified specifically for \code{Gurka}. Since both objects that \code{g1} is compared with are also of type \code{Gurka}, it matches \code{case that: Gurka}. This in turn compares the weights of the two cucumbers and returns a \code{Boolean} of whether they are equal or not, which they are in both cases.""",
+
+    // ── w01-intro-exercise: remaining clean prose ──
+    """Skriver först ut hej med det innersta anropet och sen \code{()} med det yttre anropet""" ->
+      """First prints hej with the innermost call and then \code{()} with the outer call""",
+    """Om du \emph{verkligen} vill ha sådana operatorer är det \emph{mycket} lämpligt att också erbjuda varianter i klartext:""" ->
+      """If you \emph{really} want such operators, it is \emph{very} appropriate to also offer plain-text variants:""",
   )
