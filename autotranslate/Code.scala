@@ -30,7 +30,10 @@ object Code:
     "rita", "ritar", "returnera", "returnerar", "loopa", "loopar", "kvadrat", "rektangel", "cirkel",
     "linje", "punkt", "bredd", "ruta", "rutor", "plats", "byter", "flytta", "flyttar", "kontrollera",
     "kontrollerar", "funktion", "funktionen", "metoden", "klassen", "variabeln", "listan", "slingan",
-    "villkor", "annars", "medan", "sedan", "skapar", "loopen", "anropas", "objektet", "metod")
+    "villkor", "annars", "medan", "sedan", "skapar", "loopen", "anropas", "objektet", "metod",
+    // colloquial/slang in code COMMENTS (no åäö, no English collision) — caught a leak where a B0+D
+    // unit's English branch kept a Swedish comment ("funkar utan case men vill ha najs toString").
+    "funkar", "najs", "vill", "utan")
   def swedishish(s: String): Boolean =
     s.exists("åäöÅÄÖ".contains) ||
       s.toLowerCase.split("[^a-zåäö]+").exists(swedishWords.contains)
