@@ -194,4 +194,29 @@ object Overrides:
       """Finally, \code{def slumpgrönsak} is changed to the following:""",
     """tilldelas en instans av \code{Gurka}-klassen med \code{vikt = 42} och \code{ärÄtbar = true}.""" ->
       """is assigned an instance of the \code{Gurka} class with \code{vikt = 42} and \code{ärÄtbar = true}.""",
+
+    // ── lect-w02-codestruct: clean emphasis-dense slide prose (balanced \Emph/\Alert) ──
+    """Man kan i REPL \Emph{deklarera} variabler och funktioner med \Emph{samma namn} \Alert{flera gånger} på samma nivå.""" ->
+      """In the REPL you can \Emph{declare} variables and functions with the \Emph{same name} \Alert{multiple times} at the same level.""",
+    """Om du får krona har du vunnit.""" -> """If you get heads, you have won.""",
+    """Loopa genom en samling med en \texttt{while}-sats""" -> """Loop through a collection with a \texttt{while} statement""",
+    """Är \Emph{oföränderlig}: du kan lita på att elementreferenserna aldrig någonsin kommer att ändras.""" ->
+      """Is \Emph{immutable}: you can trust that the element references will never ever change.""",
+    """Spara nedan Scala-kod i filen \code{hej.scala}:""" -> """Save the Scala code below in the file \code{hej.scala}:""",
+    """En \href{https://sv.wikipedia.org/wiki/Algoritm}{algoritm} är en sekvens av instruktioner som beskriver hur man löser ett problem.""" ->
+      """An \href{https://sv.wikipedia.org/wiki/Algoritm}{algorithm} is a sequence of instructions that describes how to solve a problem.""",
+    """Denna bättre \code{isHighscore} är nu en \Emph{äkta funktion} som alltid ger samma svar för samma inparametrar och \Alert{saknar sidoeffekter}; dessa funktioner är ofta lättare att förstå.""" ->
+      """This better \code{isHighscore} is now a \Emph{pure function} that always gives the same answer for the same inputs and \Alert{has no side effects}; such functions are often easier to understand.""",
+    """I Scala (till skillnad från många andra språk) har ett block ett \Emph{värde} och är alltså ett \Emph{uttryck}.""" ->
+      """In Scala (unlike many other languages) a block has a \Emph{value} and is therefore an \Emph{expression}.""",
+    """Du \Emph{deklarerar egna procedurer} genom att ange \texttt{\Alert{Unit}} som returvärdestyp.""" ->
+      """You \Emph{declare your own procedures} by specifying \texttt{\Alert{Unit}} as the return type.""",
+    """Det som \Alert{görs} kallas (sido)\Emph{effekt}. Ovan är utskriften själva effekten.""" ->
+      """What is \Alert{done} is called a (side) \Emph{effect}. Above, the printout is the effect itself.""",
+    """Java m.fl. har speciell syntax för procedurer med nyckelordet \jcode{void}, men \Alert{inte} Scala.""" ->
+      """Java and others have special syntax for procedures with the keyword \jcode{void}, but Scala does \Alert{not}.""",
+    """Genom de namn som definieras skapas \Emph{återanvändbara abstraktioner} som kapslar in det funktionen gör.""" ->
+      """Through the names that are defined, \Emph{reusable abstractions} are created that encapsulate what the function does.""",
+    """Abstraktioner som beräknar eller gör \Emph{en enda, väldefinierad sak} är enklare att använda, jämfört med de som gör många, helt olika saker.""" ->
+      """Abstractions that compute or do \Emph{a single, well-defined thing} are easier to use than those that do many, completely different things.""",
   )
