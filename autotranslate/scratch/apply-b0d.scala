@@ -54,20 +54,42 @@ object Glossary:
   def touches(span: String): Boolean =
     tok.findAllIn(span).exists(id.contains) || str.exists((sv, _) => span.contains(sv))
 
-// Stricter leak gate than Code.swedishish: ALSO splits identifiers on camelCase boundaries and flags common
-// diacritic-free Swedish STEMS. Catches leaks the åäö-detector misses where a clamped unit's English still
-// carries an uncovered Swedish identifier (KanSkalas, HarSmak, gEllerT, smak) -- the funkar/slumpbroccoli leak
-// class extended from comments to IDENTIFIERS, found while dry-running the w11/w10 slides. No English
-// collisions: kan/har/eller/skalas/skala/smak are not English words, and 'skala' != 'scala' (k vs c), so the
-// ratified vego/cards English (Cucumber/harvest/isPeeled/sameColourSuit/...) is never falsely skipped.
-val swedishStems: Set[String] = Set("kan", "har", "eller", "skalas", "skala", "smak")
-def looksSwedishStrict(s: String): Boolean =
-  Code.swedishish(s) || {
-    s.split("[^A-Za-zÅÄÖåäö]+").iterator
-      .flatMap(_.split("(?<=[a-zåäö])(?=[A-ZÅÄÖ])"))
-      .map(_.toLowerCase).filter(_.nonEmpty)
-      .exists(swedishStems.contains)
-  }
+// ALLOWLIST leak gate (BR-approved 2026-07-01). SOUND by construction: a clamped unit's English must contain
+// NO token that isn't recognized English / Scala / glossary. Anything unknown is treated as SUSPECT SWEDISH and
+// the unit stays Swedish (logged as a fall-through), so ALL diacritic-free Swedish is caught -- namn, smak, Fyle,
+// KanSkalas -- INCLUDING invented pun-words that a blocklist or even a full Swedish dictionary can't. Cost: it
+// over-skips genuinely-English-but-unlisted tokens (SAFE -- they just stay Swedish and surface in the fall-through
+// report, which drives what to allowlist/glossary next). Contrast a blocklist (`namn` still leaked). English =
+// /usr/share/dict/{american,british}-english; the report's fall-through vocabulary is the key review artefact.
+object Allow:
+  private def loadDict(p: String): Set[String] =
+    val f = os.Path(p)
+    if os.exists(f) then os.read.lines(f).iterator.map(_.trim.toLowerCase).filter(_.nonEmpty).toSet else Set.empty
+  lazy val english: Set[String] =
+    loadDict("/usr/share/dict/american-english") ++ loadDict("/usr/share/dict/british-english")
+  // Scala keywords + common stdlib/abbreviations NOT in an English dictionary (English words are covered above):
+  val scalaProg: Set[String] = Set(
+    "def", "val", "var", "class", "trait", "object", "case", "match", "if", "then", "else", "for", "while", "do",
+    "yield", "extends", "with", "given", "using", "import", "export", "package", "new", "this", "super", "sealed",
+    "enum", "type", "lazy", "implicit", "override", "final", "private", "protected", "abstract", "null", "true",
+    "false", "return", "throw", "try", "catch", "finally", "end", "derives", "opaque", "transparent", "inline",
+    "erased", "infix", "as", "scala", "repl", "int", "str", "seq", "nil", "res", "args", "arg", "obj", "ctx",
+    "idx", "tmp", "impl", "init", "len", "expr", "stmt", "env", "cfg", "config", "param", "params", "ptr", "ref",
+    "num", "io", "os", "jvm", "sbt", "api", "cli", "url", "uri", "http", "https", "json", "html", "css", "xml",
+    "ok", "todo", "fixme", "uuid", "foo", "bar", "baz", "qux", "std", "stdin", "stdout", "stderr", "util", "utils",
+    "lib", "src", "dir", "msg", "err", "fn", "cb", "req", "resp", "elem", "elems", "acc", "iter", "prev", "curr",
+    "vararg", "varargs", "lhs", "rhs", "xs", "ys", "gs", "kv", "toint", "tostring", "hashcode", "eq", "ne",
+  )
+  private def subwords(s: String): Iterator[String] =
+    "[A-Za-zÅÄÖåäö_]+".r.findAllIn(s).iterator
+      .flatMap(_.split("(?<=[a-zåäö])(?=[A-ZÅÄÖ])"))       // split camelCase so KanSkalas -> kan, skalas
+      .map(_.toLowerCase.filter(_.isLetter)).filter(_.nonEmpty)
+  lazy val glossaryEn: Set[String] =
+    (Glossary.id.values.iterator.flatMap(subwords) ++ Glossary.str.iterator.map(_._2).flatMap(subwords)).toSet
+  def allowed(w: String): Boolean = w.length <= 2 || scalaProg(w) || glossaryEn(w) || english(w)
+  /** distinct lowercased subwords in `en` that are NOT recognized = suspect Swedish / fall-through. */
+  def suspects(en: String): Seq[String] = subwords(en).filterNot(allowed).toSeq.distinct
+  def isClean(en: String): Boolean = !subwords(en).exists(w => !allowed(w))
 
 object Apply:
   val inlineRe: Regex = raw"(?s)^\\(code|jcode|lstinline|verb)\*?(.)".r
@@ -87,11 +109,14 @@ object Apply:
     case "env"    => s"\\ifswedish\n$sv\n\\else\n$en\n\\fi"
     case _        => sv
 
-  /** returns (out, clamped, skippedResidualSwedish) */
-  def apply(src: String): (String, Seq[(String, String)], Seq[String]) =
+  /** returns (out, clamped, skipped[preview, suspects], fallthroughVocab[token, count desc]).
+    * A candidate unit is CLAMPED only if its rendered English is allowlist-clean (no suspect Swedish token);
+    * otherwise it stays Swedish and its suspect tokens are logged (the fall-through BR wants tracked). */
+  def apply(src: String): (String, Seq[(String, String)], Seq[(String, Seq[String])], Seq[(String, Int)]) =
     val (masked, spans, _) = Latex.mask(src, stripEng = false)
     val clamped = collection.mutable.ArrayBuffer[(String, String)]()
-    val skipped = collection.mutable.ArrayBuffer[String]()
+    val skipped = collection.mutable.ArrayBuffer[(String, Seq[String])]()
+    val fall = collection.mutable.Map[String, Int]().withDefaultValue(0)
     val spans2 = spans.map { s =>
       val k = kind(s)
       if k.isEmpty then s
@@ -101,20 +126,25 @@ object Apply:
         if !candidate then s
         else
           val en = Glossary.render(s)
-          if en != s && !looksSwedishStrict(Glossary.render(c)) then
+          val enBody = Glossary.render(c)
+          if en != s && Allow.isClean(enBody) then
             clamped += ((c.replace("\n", "⏎").take(70), content(en, k).replace("\n", "⏎").take(70)))
             clamp(s, en, k)
           else
-            if Code.swedishish(c) then skipped += c.replace("\n", "⏎").take(70) // wanted but not fully covered
+            val susp = Allow.suspects(enBody)
+            if susp.nonEmpty || Code.swedishish(c) then
+              skipped += ((c.replace("\n", "⏎").take(70), susp))
+              susp.foreach(w => fall(w) += 1)
             s
     }
-    (Latex.restore(masked, spans2), clamped.toSeq, skipped.toSeq)
+    val fallVocab = fall.toSeq.sortBy { case (w, n) => (-n, w) }
+    (Latex.restore(masked, spans2), clamped.toSeq, skipped.toSeq, fallVocab)
 
 @main def run(args: String*): Unit =
   val file = os.Path(args.head, os.pwd)
   val write = args.contains("--write")
   val src = os.read(file)
-  val (out, clamped, skipped) = Apply(src)
+  val (out, clamped, skipped, fallVocab) = Apply(src)
 
   // structural self-validation (same as b0.scala)
   val (m1, s1, _) = Latex.mask(out, stripEng = false)
@@ -130,12 +160,17 @@ object Apply:
   val report = new StringBuilder
   report ++= s"=== fused B0+D ${if write then "WRITE" else "dry-run"}: $file ===\n"
   report ++= s"clamped (translated) units: ${clamped.size}   |   skipped (not fully covered): ${skipped.size}\n"
-  report ++= s"self-validation: round-trip=$roundTrips brace=$braceOk ifswedishDelta=$ifswDelta (expect=${clamped.size}) -> ${if valOk then "OK" else "CHECK"}\n\n"
-  report ++= "--- clamped units (sv -> en) ---\n"
+  report ++= s"self-validation: round-trip=$roundTrips brace=$braceOk ifswedishDelta=$ifswDelta (expect=${clamped.size}) -> ${if valOk then "OK" else "CHECK"}\n"
+  report ++= s"fall-through vocabulary (distinct suspect Swedish tokens left untranslated): ${fallVocab.size}\n\n"
+  // The KEY review artefact (BR): every suspect token the allowlist gate left Swedish, most-frequent first.
+  // Real Swedish (namn, smak, fyle...) -> add to glossary; missed English/prog token -> add to Allow.scalaProg.
+  report ++= "=== FALL-THROUGH VOCABULARY (token × count — what is still Swedish) ===\n"
+  for (w, n) <- fallVocab do report ++= f"  ${n}%3d  $w\n"
+  report ++= "\n--- clamped units (sv -> en) ---\n"
   for (sv, en) <- clamped do { report ++= s"  SV: $sv\n"; report ++= s"  EN: $en\n" }
-  report ++= "\n--- skipped (Swedish code units NOT in glossary — left as-is) ---\n"
-  for c <- skipped do report ++= s"  $c\n"
+  report ++= "\n--- skipped candidate units (blocking suspect tokens shown) ---\n"
+  for (c, susp) <- skipped do { report ++= s"  UNIT: $c\n"; report ++= s"    suspects: ${susp.mkString(", ")}\n" }
   val reportPath = file / os.up / os.up / os.up / "autotranslate" / "scratch" / "apply-b0d-report.txt"
   os.write.over(reportPath, report.toString)
   if write then { os.write.over(file, out); println(s"[--write] applied ${clamped.size} clamps to $file") }
-  println(s"B0+D ${if write then "WRITE" else "dry-run"}: clamped=${clamped.size} skipped=${skipped.size} validation=${if valOk then "OK" else "CHECK"} -> report: ${reportPath.relativeTo(os.pwd)}")
+  println(s"B0+D ${if write then "WRITE" else "dry-run"}: clamped=${clamped.size} skipped=${skipped.size} fallthrough=${fallVocab.size} validation=${if valOk then "OK" else "CHECK"} -> report: ${reportPath.relativeTo(os.pwd)}")
