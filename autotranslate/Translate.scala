@@ -375,7 +375,12 @@ object Translate:
     else if cleaned.contains('\n') && !sv.contains('\n') then Some("introduced newline")
     else if svInterps.exists(t => !cleaned.contains(t)) then Some("dropped interpolation")
     else if svEscapes.distinct.exists(e => escapeRe.findAllIn(cleaned).count(_ == e) < svEscapes.count(_ == e)) then Some("dropped escape")
-    else if cleaned.exists(c => isForeignLetter(c) && !sv.contains(c)) then Some("foreign-script")
+    // reject ANY non-ASCII char the source didn't have, not just foreign letters: code is rendered by the
+    // `listings` package which only handles the specific extended chars the source uses (åäö), so a model-
+    // introduced ² / ³ / smart-quote / em-dash breaks the build (Invalid UTF-8 in \lst@EC). Source used the
+    // ASCII-safe `km^2`; the model "improved" it to `km²` and broke compendium2-en. Fall back to Swedish
+    // (ASCII-safe) instead. Subsumes the old foreign-letter rule.
+    else if cleaned.exists(c => c.toInt > 127 && !sv.contains(c)) then Some("introduced non-ascii")
     else None
 
   private def checkOutCode(sv: String, out: String): Option[String] =

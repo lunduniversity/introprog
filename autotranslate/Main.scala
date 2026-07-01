@@ -312,7 +312,11 @@ object Main:
           os.makeDir.all(target / os.up)
           val translate = doTranslate && selected(f)
           val body = os.read(f)
-          val outBody = if translate then { nTrans += 1; Translate.translateTex(body, s"$src/$rel") } else body
+          // HD2 hybrid: after prose translation, translate comments/strings inside inline code envs too
+          // (identifiers stay verbatim — the source-side \ifswedish id-glossary clamps handle those).
+          val outBody =
+            if translate then { nTrans += 1; Translate.translateCodeEnvBodies(Translate.translateTex(body, s"$src/$rel")) }
+            else body
           os.write.over(target, setEnglishFlags(enChrome(redirectListings(rewriteInputs(outBody)))))
           nTex += 1
         else
