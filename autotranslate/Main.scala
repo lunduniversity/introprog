@@ -225,6 +225,14 @@ object Main:
     else if args.contains("--latextest") then latextest(root, only)
     else if args.contains("--codetest") then // translate ONE .scala/.java file's comments+strings, print it
       Translate.init(root); println(Code.translate(os.read(os.Path(argVal("--codetest").get, root)), Translate.translatePlain))
+    else if args.contains("--codeenvtest") then // HD2 hybrid: translate code-ENV comments/strings in ONE .tex
+      Translate.init(root)
+      val f = os.Path(argVal("--codeenvtest").get, root)
+      val out = Translate.translateCodeEnvBodies(os.read(f))
+      val outPath = root / "autotranslate" / "scratch" / "codeenvtest-out.tex"
+      os.write.over(outPath, out)
+      Translate.saveCache(root)
+      println(s"--codeenvtest: code-env comments/strings translated -> ${outPath.relativeTo(root)} (diff vs $f to review)")
     else if args.contains("--workspace-en") then translateWorkspaceEn(root, only)
     else if args.contains("--modeltest") then // A/B a model on a sample of fallbacks (non-destructive)
       Translate.modeltest(root, argVal("--modeltest").getOrElse(Translate.SelectedModel),

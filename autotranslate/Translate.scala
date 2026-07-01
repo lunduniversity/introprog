@@ -615,6 +615,20 @@ object Translate:
       else
         body.substring(0, bodyStart) + translateRegion(body.substring(bodyStart, ei), label) + body.substring(ei)
 
+  /** HD2 HYBRID (BR-approved 2026-07-01): translate COMMENTS + Swedish STRING LITERALS inside inline code
+    * environments (Code/CodeSmall/REPL/…) using the SAME `Code.translate` as the .scala assets — identifiers
+    * are kept verbatim (their translation is the job of the source-side `\ifswedish` id-glossary clamps).
+    * Runs on the MIRROR only (wired in Main.mirror), so the Swedish source is untouched and the sv build is
+    * unaffected. Composes with apply-b0d clamps: it also translates the comments inside an `\else`
+    * (English-identifier) branch, completing that branch to fully-English code. This closes the gap where
+    * inline code-env prose was translated by NEITHER the id-glossary NOR Code.translate (see the plan note).
+    * Code envs do not nest, so a non-greedy DOTALL match to the matching `\end{env}` is exact. */
+  def translateCodeEnvBodies(tex: String): String =
+    val envAlt = codeEnvs.toSeq.map(java.util.regex.Pattern.quote).mkString("|")
+    val re = ("(?s)(\\\\begin\\{(" + envAlt + ")\\})(.*?)(\\\\end\\{\\2\\})").r
+    re.replaceAllIn(tex, m =>
+      java.util.regex.Matcher.quoteReplacement(m.group(1) + Code.translate(m.group(3), translatePlain) + m.group(4)))
+
   // ---------- lifecycle ----------
   /** Load cache and make sure the model is ready (called before mirror translation).
     * Overrides need no loading — they are compiled in (Overrides.overridingTranslations). */
