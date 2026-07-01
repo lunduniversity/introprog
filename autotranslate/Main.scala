@@ -219,6 +219,10 @@ object Main:
 
     if args.contains("--swedish-left") then Translate.checkHowMuchSwedishLeft(root) // corpus progress metric (%)
     else if args.contains("--swedish-lines") then Translate.dumpSwedishProse(root, argVal("--swedish-lines").get) // prose lines of ONE file
+    else if args.contains("--prose-leaks") then // TRUE fixable prose leaks (inline code spans masked): one file, or corpus priority list if no file
+      argVal("--prose-leaks") match
+        case Some(rel) => Translate.dumpProseLeaks(root, rel)
+        case None      => Translate.proseLeakCorpus(root)
     else if args.contains("--pdf-swedish") then Translate.pdfSwedish(root, argVal("--pdf-swedish").get) // per-PDF % (insourced)
     else if args.contains("--selftest") then Translate.selftest(root)
     else if args.contains("--clean") then Translate.clean(root)

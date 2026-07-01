@@ -660,8 +660,12 @@ object Translate:
     * the loop can target them and watch the number fall. */
   // Verbatim/code environments whose body is NOT reader-facing PROSE — Swedish inside is accepted code
   // residual, so the prose gauge skips them (de-noised metric, 2026-06-29).
-  private val codeEnvs = Set("Code", "CodeSmall", "REPL", "REPLnonum", "REPLsmall",
-    "lstlisting", "verbatim", "Verbatim", "Trace", "Output", "exlatex", "envi")
+  // Envs whose body is NON-prose and must be excluded from the prose gauge. SINGLE SOURCE OF TRUTH:
+  // the exact set Latex.mask masks WHOLE (so it is never a translation unit) — incl. algorithm (pseudocode
+  // kept Swedish for build safety), tikz/forest diagrams, and all code/REPL variants — plus the REPL
+  // Trace/Output envs. Previously this list omitted algorithm/tikz, so algorithm pseudocode leaked into the
+  // prose gauge and --prose-leaks as false "fixable prose" (it is accepted, deliberately-Swedish residual).
+  private val codeEnvs = Latex.verbatimEnvs ++ Set("Trace", "Output")
   private val beginEnvRe = raw"\\begin\{([A-Za-z*]+)\}".r
   private val endEnvRe = raw"\\end\{([A-Za-z*]+)\}".r
   /** Render the ENGLISH side of `\ifswedish A \else B \fi` (= `B`) and `\ifswedish A \fi` (= dropped) — i.e.
@@ -722,6 +726,60 @@ object Translate:
     val sw = lines.filter(Code.swedishish).distinct
     println(s"  ${sw.size} Swedish prose lines in $relpath ($clamps \\ifswedish clamps, interiors excluded):")
     sw.foreach(l => println(s"    $l"))
+
+  private val placeholderRe = raw"__C\d+__".r
+
+  /** TRUE-prose-leak discriminator. Mask a single prose line via Latex.mask (which replaces inline code
+    * spans `\code`/`\jcode`/`\lstinline`/`\verb`, math, `\Eng`, and braces with `__C<n>__` placeholders),
+    * strip the placeholders, and re-test Code.swedishish on what remains. Some(strippedProse) iff the
+    * line is a REAL fixable prose leak; None iff its Swedish lived ONLY inside masked (deferred) code
+    * identifiers. This removes the code-identifier overcount that --swedish-lines/--swedish-left has:
+    * `öka`/`minska`/Kojo turtle verbs inside `\code{}` no longer count as prose to fix. */
+  private def proseLeak(line: String): Option[String] =
+    val (masked, _, _) = Latex.mask(line, stripEng = true)
+    val stripped = placeholderRe.replaceAllIn(masked, " ").replaceAll("\\s+", " ").trim
+    // False-positive guard: English prose that merely MENTIONS the letters (e.g. "the sort order of Ä, Å, Ö")
+    // is swedishish only via isolated å/ä/ö letters. Remove standalone å/ä/ö (not inside a word) before the
+    // test, so it fires only on real Swedish words (för, många, plats...) where å/ä/ö sit inside a word.
+    val deLettered = stripped.replaceAll("(?i)(?<![a-zåäö])[åäö](?![a-zåäö])", "")
+    if stripped.nonEmpty && Code.swedishish(deLettered) then Some(stripped) else None
+
+  /** --prose-leaks <relpath>: list ONLY the TRUE prose leaks of one -en file, with inline code spans
+    * masked out, so the Overrides loop targets fixable prose and NOT deferred code identifiers. Prints
+    * each leak's original prose line and, indented, the code-stripped form that is still Swedish (the
+    * actual text to translate via an Overrides.scala entry). */
+  def dumpProseLeaks(root: os.Path, relpath: String): Unit =
+    val f = os.Path(relpath, root)
+    if !os.exists(f) then { println(s"  [prose-leaks] no file at $f"); return }
+    val (lines, clamps) = proseFromFile(f)
+    val leaks = lines.distinct.flatMap(l => proseLeak(l).map(s => (l, s)))
+    val head = s"  ${leaks.size} TRUE prose leaks in $relpath ($clamps \\ifswedish clamps, inline code spans masked):"
+    val body = leaks.map { case (orig, stripped) => s"    $orig\n        -> $stripped" }.mkString("\n")
+    val report = s"$head\n$body\n"
+    print(report)
+    val out = root / "autotranslate" / "scratch" / "prose-leaks-report.txt"
+    os.write.over(out, report)
+    println(s"  (report also written to ${out.relativeTo(root)})")
+
+  /** --prose-leaks (no file): corpus priority list — per-file TRUE-prose-leak counts across slides-en +
+    * compendium-en, sorted desc. The REAL grind priority (vs --swedish-left, which overcounts deferred
+    * code identifiers). Counts are distinct-per-file then summed — a priority signal, not a global %. */
+  def proseLeakCorpus(root: os.Path): Unit =
+    val perFile = mutable.ArrayBuffer[(String, Int)]()
+    var total = 0
+    for dir <- Seq("slides-en", "compendium-en"); d = root / dir if os.exists(d)
+        f <- os.walk(d) if os.isFile(f) && f.ext == "tex"
+    do
+      val (lines, _) = proseFromFile(f)
+      val n = lines.distinct.flatMap(proseLeak).size
+      if n > 0 then { perFile += ((f.relativeTo(root).toString, n)); total += n }
+    val head = s"  prose-leaks corpus: $total TRUE prose-leak lines across ${perFile.size} files (inline code spans masked):"
+    val body = perFile.sortBy(-_._2).map((p, c) => f"    $c%4d  $p").mkString("\n")
+    val report = s"$head\n$body\n"
+    print(report)
+    val out = root / "autotranslate" / "scratch" / "prose-leaks-corpus.txt"
+    os.write.over(out, report)
+    println(s"  (report also written to ${out.relativeTo(root)})")
 
   def checkHowMuchSwedishLeft(root: os.Path): Unit =
     val all = mutable.LinkedHashSet[String]()      // distinct Swedish PROSE lines (rendered English side)
