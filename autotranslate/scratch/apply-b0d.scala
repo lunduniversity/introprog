@@ -79,6 +79,9 @@ object Allow:
     "ok", "todo", "fixme", "uuid", "foo", "bar", "baz", "qux", "std", "stdin", "stdout", "stderr", "util", "utils",
     "lib", "src", "dir", "msg", "err", "fn", "cb", "req", "resp", "elem", "elems", "acc", "iter", "prev", "curr",
     "vararg", "varargs", "lhs", "rhs", "xs", "ys", "gs", "kv", "toint", "tostring", "hashcode", "eq", "ne",
+    // java/lib package parts + math abbreviations (false positives seen in the fall-through report):
+    "java", "awt", "swing", "lang", "nio", "sql", "rgb", "nom", "denom", "div", "mul", "rem", "mod", "gcd",
+    "lcm", "abs", "sqrt", "pow", "sin", "cos", "tan", "arr", "vec", "buf", "idx", "pos", "dim", "px",
   )
   private def subwords(s: String): Iterator[String] =
     "[A-Za-zÅÄÖåäö_]+".r.findAllIn(s).iterator
