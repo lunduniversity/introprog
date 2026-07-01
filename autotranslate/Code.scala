@@ -33,7 +33,11 @@ object Code:
     "villkor", "annars", "medan", "sedan", "skapar", "loopen", "anropas", "objektet", "metod",
     // colloquial/slang in code COMMENTS (no åäö, no English collision) — caught a leak where a B0+D
     // unit's English branch kept a Swedish comment ("funkar utan case men vill ha najs toString").
-    "funkar", "najs", "vill", "utan")
+    "funkar", "najs", "vill", "utan",
+    // more diacritic-free comment words missed by the HD2 hybrid on lect-w06-matching ("definierar likhet",
+    // "ger alltid referenslikhet"); all unambiguous Swedish, no English collision:
+    "definierar", "definieras", "likhet", "olikhet", "ger", "alltid", "samma", "referens", "referenslikhet",
+    "referenslikheten", "heltal", "heltalet")
   def swedishish(s: String): Boolean =
     s.exists("åäöÅÄÖ".contains) ||
       s.toLowerCase.split("[^a-zåäö]+").exists(swedishWords.contains)
