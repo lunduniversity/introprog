@@ -155,7 +155,7 @@ object Translate:
     // re-validated, so a repeat hallucination just falls back to the safe source. KEEP build-SAFE flags
     // (too-long heuristic, placeholder reorder/merged-content): the committed cache builds clean with them,
     // and dropping them forced a useless model call EVERY run (re-translation fails identically).
-    val buildBreaking = Set("introduced paragraph break", "introduced LaTeX special", "foreign-script char (e.g. CJK)", "introduced LaTeX environment")
+    val buildBreaking = Set("introduced paragraph break", "introduced LaTeX special", "introduced non-ascii", "introduced LaTeX environment")
     val drop = cache.iterator.collect { case (sv, en) if invalidReason(sv, en).exists(buildBreaking.contains) => sv }.toList
     drop.foreach(cache.remove)
     val kept = cache.iterator.filterNot((sv, en) => validate(sv, en)).size
@@ -330,7 +330,12 @@ object Translate:
     else if Latex.placeholderGapText(en) != Latex.placeholderGapText(sv) then Some("merged content between placeholders")
     else if Latex.stripPlaceholders(en).exists(c => Specials.contains(c)) then Some("introduced LaTeX special")
     else if introducedEnvs(sv, Latex.stripPlaceholders(en)) then Some("introduced LaTeX environment")
-    else if Latex.stripPlaceholders(en).exists(c => isForeignLetter(c) && !sv.contains(c)) then Some("foreign-script char (e.g. CJK)")
+    // INTRODUCED NON-ASCII: reject any char > U+007F the (masked) source didn't have — foreign letters (CJK,
+    // Cyrillic), Latin-but-non-Swedish letters (e.g. Icelandic ð), AND emoji/symbols. pdflatex has no glyph
+    // for these → fatal "Unicode character not set up". Swedish åäö and any accented char carried from the
+    // source survive (they're in `sv`). Subsumes the old foreign-LETTER rule and mirrors codeReason's guard;
+    // it is what a small split unit needs when the model hallucinates gibberish (the w?? `Við`+🏠 break).
+    else if Latex.stripPlaceholders(en).exists(c => c.toInt > 127 && !sv.contains(c)) then Some("introduced non-ascii")
     else None
 
   private val envRe = raw"\\(?:begin|end)\s*\{[^}]*\}".r
@@ -343,11 +348,6 @@ object Translate:
     val svCount = envRe.findAllIn(sv).toList.groupMapReduce(identity)(_ => 1)(_ + _)
     envRe.findAllIn(en).toList.groupMapReduce(identity)(_ => 1)(_ + _)
       .exists((tok, c) => c > svCount.getOrElse(tok, 0))
-
-  /** A letter from a non-Latin script (e.g. CJK, Cyrillic) — qwen sometimes leaks these; pdflatex
-    * can't typeset undefined Unicode. Swedish åäö are Latin script, so they're allowed. */
-  private def isForeignLetter(c: Char): Boolean =
-    c.isLetter && Character.UnicodeScript.of(c.toInt) != Character.UnicodeScript.LATIN
 
   /** System instructions (+ glossary) shared by both backends. */
   private def buildSystem(sv: String): String =
@@ -592,7 +592,7 @@ object Translate:
   private def translateRegion(region: String, label: String, collapseEmph: Boolean = false): String =
     currentLabel = label
     val (masked, spans, itemIdx) = Latex.mask(region, stripEng = true, collapseEmph = collapseEmph)
-    val (blocks, seps) = Latex.segmentMasked(masked, itemIdx)
+    val (blocks, seps) = Latex.segmentMasked(masked, itemIdx, Latex.separatorIdx(spans))
     val translated = Array.from[String](blocks)
     for k <- blocks.indices do
       if Latex.hasText(blocks(k)) then

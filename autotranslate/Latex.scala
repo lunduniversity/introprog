@@ -323,7 +323,7 @@ object Latex:
     * separators for EXACT rejoin (blocks ++ seps interleaved == s). Splitting per-item keeps
     * bullet-list translation units small (few placeholders) — faster and far fewer model failures.
     * Safe because mask() has already absorbed blank lines inside verbatim/Code/comment blocks. */
-  def segmentMasked(s: String, itemIdx: Set[Int]): (IndexedSeq[String], IndexedSeq[String]) =
+  def segmentMasked(s: String, itemIdx: Set[Int], sepIdx: Set[Int] = Set.empty): (IndexedSeq[String], IndexedSeq[String]) =
     val blankSep = raw"\n[ \t]*(?:\n[ \t]*)+".r
     // boundary events as (start, end); blank-line seps have width, item boundaries are zero-width.
     val events = mutable.ArrayBuffer[(Int, Int)]()
@@ -336,8 +336,12 @@ object Latex:
     // split (light ones keep full context). All cuts preserve the blocks++seps==s invariant.
     val baseSorted = events.distinct.sortBy(_._1)
     var p = 0
-    for (a, b) <- baseSorted if a >= p do { sentenceCuts(s, p, a).foreach(events += _); p = b }
+    for (a, b) <- baseSorted if a >= p do
+      sentenceCuts(s, p, a).foreach(events += _)
+      separatorCuts(s, p, a, sepIdx).foreach(events += _)
+      p = b
     sentenceCuts(s, p, s.length).foreach(events += _)
+    separatorCuts(s, p, s.length, sepIdx).foreach(events += _)
     val sorted = events.distinct.sortBy(_._1)
     val blocks = mutable.ArrayBuffer[String](); val seps = mutable.ArrayBuffer[String]()
     var last = 0
@@ -378,6 +382,25 @@ object Latex:
       val word = s.substring(k, i)
       word.length >= 3 && !sentenceAbbrev.contains(word.toLowerCase)
 
+  /** Structural-separator cut events within s[a,b): zero-width cuts just before each `&` / `\\` separator
+    * placeholder, but ONLY if the block is placeholder-dense. Turns a dense one-unit tabular row (e.g. a
+    * generated quiz matching row `term & n & \leadsto & L & def`) into per-cell units so the model no
+    * longer drops/reorders the row's many placeholders. Density-gated so light tables stay whole (their
+    * whole-row translations in the cache are untouched). Cuts preserve the blocks++seps==s invariant. */
+  private def separatorCuts(s: String, a: Int, b: Int, sepIdx: Set[Int]): Seq[(Int, Int)] =
+    if sepIdx.isEmpty || Place.findAllMatchIn(s.substring(a, b)).size < DenseThreshold then Nil
+    else
+      Place.findAllMatchIn(s.substring(a, b))
+        .filter(m => sepIdx.contains(m.group(1).toInt))
+        .map(m => (a + m.start, a + m.start)) // zero-width cut just before the separator placeholder
+        .filter((cut, _) => cut > a)          // never cut at the block start
+        .toVector
+
+  /** Placeholder indices that mask a structural separator — `&` (tabular column) or `\\` (row break).
+    * Pass to segmentMasked so dense tabular rows split into per-cell translation units. */
+  def separatorIdx(spans: IndexedSeq[String]): Set[Int] =
+    spans.iterator.zipWithIndex.collect { case (sp, i) if sp == "&" || sp == "\\\\" => i }.toSet
+
   /** Split on blank lines only (no item splitting). */
   def splitParas(s: String): (IndexedSeq[String], IndexedSeq[String]) = segmentMasked(s, Set.empty)
 
@@ -409,5 +432,5 @@ object Latex:
 
   /** Count translatable blocks in a body (cheap, model-free) — used to size the progress bar. */
   def countTextBlocks(body: String): Int =
-    val (masked, _, itemIdx) = mask(body, stripEng = true)
-    segmentMasked(masked, itemIdx)._1.count(hasText)
+    val (masked, spans, itemIdx) = mask(body, stripEng = true)
+    segmentMasked(masked, itemIdx, separatorIdx(spans))._1.count(hasText)

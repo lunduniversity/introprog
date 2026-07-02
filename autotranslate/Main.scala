@@ -377,8 +377,8 @@ object Main:
           println(s"    orig : ...${orig.slice(at - 20, at + 40).replace("\n", "\\n")}...")
           println(s"    round: ...${round.slice(at - 20, at + 40).replace("\n", "\\n")}...")
         // segmentation must be lossless: interleaving blocks and seps reproduces the masked text
-        val (mk2, _, itemIdx) = Latex.mask(orig, stripEng = true)
-        val (blocks, seps) = Latex.segmentMasked(mk2, itemIdx)
+        val (mk2, spans2, itemIdx) = Latex.mask(orig, stripEng = true)
+        val (blocks, seps) = Latex.segmentMasked(mk2, itemIdx, Latex.separatorIdx(spans2))
         val rejoined = blocks.zipAll(seps, "", "").map((b, s) => b + s).mkString
         if rejoined != mk2 then { segFail += 1; println(s"  [SEG-FAIL] ${f.relativeTo(root)} (blocks++seps != masked)") }
     println(s"latextest (pattern '$pat'): round-trip PASS=$pass FAIL=$fail, segmentation FAIL=$segFail")
