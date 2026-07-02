@@ -25,7 +25,9 @@ object Code:
     "talet", "antal", "antalet", "tal", "heltal", "decimaltal", "siffra", "siffror", "bokstav", "ordet",
     "raden", "kolumn", "namnet", "summan", "medel", "konto", "konton", "kontot", "kontonummer", "saldo",
     "belopp", "summa", "kronor", "krona", "uttag", "pengar", "betala", "medlem", "nummer", "gissning",
-    "spelet", "spelare", "vinst", "vinner", "monster",
+    // NB: "monster" removed — it is an English homograph (violates this list's "avoid English collisions"
+    // principle) and false-flagged pure-English prose (the snake-game lab specs) as Swedish.
+    "spelet", "spelare", "vinst", "vinner",
     // lab-domain verbs/nouns (no åäö) for comments
     "rita", "ritar", "returnera", "returnerar", "loopa", "loopar", "kvadrat", "rektangel", "cirkel",
     "linje", "punkt", "bredd", "ruta", "rutor", "plats", "byter", "flytta", "flyttar", "kontrollera",
