@@ -8,9 +8,14 @@
 // the external xref between compendium1/2 resolves; beamer decks 2x for nav/toc). Reports per-PDF status +
 // pdflatex "! " error counts. Run bare with the introprog root:
 //   scala-cli run autotranslate/scratch/build-release.scala -- /home/bjornr/git/hub/lunduniversity/introprog
-@main def buildReleaseArtifacts(rootStr: String): Unit =
-  val root  = os.Path(rootStr)
-  val decks = "w01 w01-dod w02 w02-dod w03 w04 w05 w06 w07 w08 w08-dod w09 w09-dod w10 w11 w12 w13 w14 wjava"
+// Pass --en-only to SKIP the SV artifacts (SV never reads the translate cache, so it is byte-identical under any
+// AT edit) — regen + EN-only build, ~halves the loop for AT iteration. Run the FULL build before a release.
+//   scala-cli run autotranslate/scratch/build-release.scala -- <introprog-root> --en-only
+@main def buildReleaseArtifacts(rootStr: String, flags: String*): Unit =
+  val root   = os.Path(rootStr)
+  val enOnly = flags.contains("--en-only")
+  val decks  = "w01 w01-dod w02 w02-dod w03 w04 w05 w06 w07 w08 w08-dod w09 w09-dod w10 w11 w12 w13 w14 wjava"
+  if enOnly then println("=== [--en-only] SV artifacts skipped (invariant under AT edits); regen + EN only ===")
 
   def sbtRun(label: String, cmd: String): Unit =
     println(s"\n=== [$label] sbt --client $cmd ===")
@@ -21,18 +26,20 @@
   // 1. regenerate EN mirrors (SV source -> compendium-en/*, slides-en/*); writes ONLY the mirror.
   sbtRun("regen-mirrors", "autotranslateProject/run --all")
 
-  // 2. SV compendium (screen, all-in-one): 2 passes for TOC
-  sbtRun("sv-compendium p1", "pdfCompendium")
-  sbtRun("sv-compendium p2", "pdfCompendium")
+  // 2-4. SV artifacts — SKIPPED with --en-only (SV never reads the cache → invariant under AT edits)
+  if !enOnly then
+    // 2. SV compendium (screen, all-in-one): 2 passes for TOC
+    sbtRun("sv-compendium p1", "pdfCompendium")
+    sbtRun("sv-compendium p2", "pdfCompendium")
 
-  // 3. SV print compendium1/2: interleaved 2 rounds so the cross-doc xref resolves (cf build.sbt `pdf`)
-  for r <- 1 to 2 do
-    sbtRun(s"sv-comp1 r$r", "pdfCompendium1")
-    sbtRun(s"sv-comp2 r$r", "pdfCompendium2")
+    // 3. SV print compendium1/2: interleaved 2 rounds so the cross-doc xref resolves (cf build.sbt `pdf`)
+    for r <- 1 to 2 do
+      sbtRun(s"sv-comp1 r$r", "pdfCompendium1")
+      sbtRun(s"sv-comp2 r$r", "pdfCompendium2")
 
-  // 4. SV slides (all 19 decks): 2 passes each for beamer TOC/nav
-  sbtRun("sv-slides p1", s"pdfSlides $decks")
-  sbtRun("sv-slides p2", s"pdfSlides $decks")
+    // 4. SV slides (all 19 decks): 2 passes each for beamer TOC/nav
+    sbtRun("sv-slides p1", s"pdfSlides $decks")
+    sbtRun("sv-slides p2", s"pdfSlides $decks")
 
   // 5. EN compendium (screen): 2 passes
   sbtRun("en-compendium p1", "pdfCompendiumEn")
@@ -62,14 +69,16 @@
 
   val comp = root / "compendium"; val compEn = root / "compendium-en"
   val sl   = root / "slides";     val slEn   = root / "slides-en"
-  report(comp / "compendium.pdf",      comp / "compendium.log")
-  report(comp / "compendium1.pdf",     comp / "compendium1.log")
-  report(comp / "compendium2.pdf",     comp / "compendium2.log")
+  if !enOnly then
+    report(comp / "compendium.pdf",      comp / "compendium.log")
+    report(comp / "compendium1.pdf",     comp / "compendium1.log")
+    report(comp / "compendium2.pdf",     comp / "compendium2.log")
   report(compEn / "compendium-en.pdf", compEn / "compendium-en.log")
   report(compEn / "compendium1-en.pdf",compEn / "compendium1-en.log")
   report(compEn / "compendium2-en.pdf",compEn / "compendium2-en.log")
-  println("  --- SV slides ---")
-  for d <- decks.split(" ") do report(sl / s"lect-$d.pdf", sl / s"lect-$d.log")
+  if !enOnly then
+    println("  --- SV slides ---")
+    for d <- decks.split(" ") do report(sl / s"lect-$d.pdf", sl / s"lect-$d.log")
   println("  --- EN slides ---")
   for d <- decks.split(" ") do report(slEn / s"lect-$d-en.pdf", slEn / s"lect-$d-en.log")
   println("======================================")
