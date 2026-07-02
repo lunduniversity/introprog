@@ -796,6 +796,32 @@ object Translate:
     os.write.over(out, report)
     println(s"  (report also written to ${out.relativeTo(root)})")
 
+  /** --prose-leaks-dump (no file): corpus-wide dump of EVERY true prose-leak line across slides-en +
+    * compendium-en, grouped by file in priority (count-desc) order, each with its code-stripped Swedish
+    * form. proseLeakCorpus gives per-file COUNTS and dumpProseLeaks gives ONE file's lines; this gives the
+    * whole corpus's lines in one report — the input for categorizing leaks (author-sensitive / mechanical /
+    * structural) without 70 single-file invocations. Analysis-only (emits a report; no translation). */
+  def proseLeakDump(root: os.Path): Unit =
+    val files = mutable.ArrayBuffer[(String, Vector[(String, String)])]()
+    var total = 0
+    for dir <- Seq("slides-en", "compendium-en"); d = root / dir if os.exists(d)
+        f <- os.walk(d) if os.isFile(f) && f.ext == "tex"
+    do
+      val (lines, _) = proseFromFile(f)
+      val leaks = lines.distinct.flatMap(l => proseLeak(l).map(s => (l, s)))
+      if leaks.nonEmpty then { files += ((f.relativeTo(root).toString, leaks)); total += leaks.size }
+    val sorted = files.sortBy(-_._2.size)
+    val sb = new StringBuilder
+    sb.append(s"  prose-leaks dump: $total TRUE prose-leak lines across ${sorted.size} files (inline code spans masked):\n")
+    for (path, leaks) <- sorted do
+      sb.append(s"\n=== ${leaks.size}  $path ===\n")
+      for (orig, stripped) <- leaks do sb.append(s"    $orig\n        -> $stripped\n")
+    val report = sb.toString
+    print(report)
+    val out = root / "autotranslate" / "scratch" / "prose-leaks-dump.txt"
+    os.write.over(out, report)
+    println(s"  (report also written to ${out.relativeTo(root)})")
+
   def checkHowMuchSwedishLeft(root: os.Path): Unit =
     val all = mutable.LinkedHashSet[String]()      // distinct Swedish PROSE lines (rendered English side)
     val allLines = mutable.LinkedHashSet[String]() // distinct PROSE lines (the % denominator)
