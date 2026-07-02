@@ -753,10 +753,12 @@ object Translate:
   private def proseLeak(line: String): Option[String] =
     val (masked, _, _) = Latex.mask(line, stripEng = true)
     val stripped = placeholderRe.replaceAllIn(masked, " ").replaceAll("\\s+", " ").trim
-    // False-positive guard: English prose that merely MENTIONS the letters (e.g. "the sort order of Ä, Å, Ö")
-    // is swedishish only via isolated å/ä/ö letters. Remove standalone å/ä/ö (not inside a word) before the
-    // test, so it fires only on real Swedish words (för, många, plats...) where å/ä/ö sit inside a word.
-    val deLettered = stripped.replaceAll("(?i)(?<![a-zåäö])[åäö](?![a-zåäö])", "")
+    // False-positive guard: English prose that merely MENTIONS the letters (e.g. "the sort order of Ä, Å, Ö"
+    // or a RUN like "ÄÅÖ") is swedishish only via standalone å/ä/ö letters. Remove standalone RUNS of å/ä/ö
+    // (bounded by non-ASCII-letters, so `ÄÅÖ`/`Ä, Å, Ö` both go) before the test, so it fires only on real
+    // Swedish words (för, många, plats...) where å/ä/ö sit inside an ASCII-letter word.
+    // (Java `(?i)` does NOT unicode-case-fold, so `[åäö]` alone misses uppercase ÅÄÖ — list both cases.)
+    val deLettered = stripped.replaceAll("(?<![a-zA-Z])[åäöÅÄÖ]+(?![a-zA-Z])", "")
     if stripped.nonEmpty && Code.swedishish(deLettered) then Some(stripped) else None
 
   /** --prose-leaks <relpath>: list ONLY the TRUE prose leaks of one -en file, with inline code spans
