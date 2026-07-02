@@ -155,7 +155,7 @@ object Translate:
     // re-validated, so a repeat hallucination just falls back to the safe source. KEEP build-SAFE flags
     // (too-long heuristic, placeholder reorder/merged-content): the committed cache builds clean with them,
     // and dropping them forced a useless model call EVERY run (re-translation fails identically).
-    val buildBreaking = Set("introduced paragraph break", "introduced LaTeX special", "foreign-script char (e.g. CJK)")
+    val buildBreaking = Set("introduced paragraph break", "introduced LaTeX special", "foreign-script char (e.g. CJK)", "introduced LaTeX environment")
     val drop = cache.iterator.collect { case (sv, en) if invalidReason(sv, en).exists(buildBreaking.contains) => sv }.toList
     drop.foreach(cache.remove)
     val kept = cache.iterator.filterNot((sv, en) => validate(sv, en)).size
@@ -329,8 +329,20 @@ object Translate:
     else if Latex.placeholderAdjacency(en) != Latex.placeholderAdjacency(sv) then Some("collapsed newline around placeholder")
     else if Latex.placeholderGapText(en) != Latex.placeholderGapText(sv) then Some("merged content between placeholders")
     else if Latex.stripPlaceholders(en).exists(c => Specials.contains(c)) then Some("introduced LaTeX special")
+    else if introducedEnvs(sv, Latex.stripPlaceholders(en)) then Some("introduced LaTeX environment")
     else if Latex.stripPlaceholders(en).exists(c => isForeignLetter(c) && !sv.contains(c)) then Some("foreign-script char (e.g. CJK)")
     else None
+
+  private val envRe = raw"\\(?:begin|end)\s*\{[^}]*\}".r
+  /** True if `en` contains a `\begin{}`/`\end{}` environment token MORE times than `sv` did — i.e. the model
+    * INTRODUCED a LaTeX environment (e.g. hallucinated `\begin{align*}` out of code-like text, as in the w04
+    * disabled-slide bug). An introduced environment turns inert text into live markup (alignment `&`, math)
+    * → fatal build break, so reject (fall back to the safe source). Count-based, so envs the source genuinely
+    * had and the model preserved pass unharmed. */
+  private def introducedEnvs(sv: String, en: String): Boolean =
+    val svCount = envRe.findAllIn(sv).toList.groupMapReduce(identity)(_ => 1)(_ + _)
+    envRe.findAllIn(en).toList.groupMapReduce(identity)(_ => 1)(_ + _)
+      .exists((tok, c) => c > svCount.getOrElse(tok, 0))
 
   /** A letter from a non-Latin script (e.g. CJK, Cyrillic) — qwen sometimes leaks these; pdflatex
     * can't typeset undefined Unicode. Swedish åäö are Latin script, so they're allowed. */
@@ -381,6 +393,9 @@ object Translate:
     // ASCII-safe `km^2`; the model "improved" it to `km²` and broke compendium2-en. Fall back to Swedish
     // (ASCII-safe) instead. Subsumes the old foreign-letter rule.
     else if cleaned.exists(c => c.toInt > 127 && !sv.contains(c)) then Some("introduced non-ascii")
+    // the w04 root cause: a disabled tikz slide routed through the code path let the model hallucinate
+    // `\begin{align*}` from `src/*.scala`, turning a comment into live `&` alignment → fatal build break.
+    else if introducedEnvs(sv, cleaned) then Some("introduced LaTeX environment")
     else None
 
   private def checkOutCode(sv: String, out: String): Option[String] =
