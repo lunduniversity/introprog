@@ -999,11 +999,13 @@ case class Circle(pos: Point, radius: Double) extends Shape:
 
 \QUESTBEGIN
 
-\Task \label{task:fyle} \what~   Man kan utvidga en klass med multipla traits med en kommaseparerad lista. På så sätt kan man fördela medlemmar i olika traits och återanvända gemensamma koddelar genom så kallad \textbf{inmixning}, så som nedan exempel visar.
+\Task \label{task:fyle} \what~   \ifswedish Man kan utvidga en klass med multipla traits med en kommaseparerad lista. På så sätt kan man fördela medlemmar i olika traits och återanvända gemensamma koddelar genom så kallad \textbf{inmixning}, så som nedan exempel visar.\else You can extend a class with multiple traits given as a comma-separated list. This lets you spread members across different traits and reuse shared code through so-called \textbf{mix-in composition}, as the example below shows.\fi
 
-En alternativ fågeltaxonomi, speciellt populär i Skåne, delar in alla fåglar i två specifika kategorier: Kråga respektive Ånka. Krågor kan flyga men inte simma, medan Ånkor kan simma och oftast även flyga. Fågel i generell, kollektiv bemärkelse kallas på gammal skånska för Fyle.%
-\footnote{\href{http://www.klangfix.se/ordlista.htm}{www.klangfix.se/ordlista.htm}}
+\ifswedish En alternativ fågeltaxonomi, speciellt populär i Skåne, delar in alla fåglar i två specifika kategorier: Kråga respektive Ånka. Krågor kan flyga men inte simma, medan Ånkor kan simma och oftast även flyga. Fågel i generell, kollektiv bemärkelse kallas på gammal skånska för Fyle.%
+\footnote{\href{http://www.klangfix.se/ordlista.htm}{www.klangfix.se/ordlista.htm}}\else In the remote Welsh village of Llanffowl-y-Gwyll, whose inhabitants have --- for reasons long since lost to scholarship --- never seen the need to tell apart more than a couple of birds, the local taxonomy sorts all fowl into precisely two kinds: the \emph{Crawke} and the \emph{Quaddle}. A Crawke can fly but cannot swim, whereas a Quaddle can swim and, more often than not, fly as well. A bird in the general, collective sense is known in the old village dialect as a \emph{Fowlk}.%
+\footnote{Affectionately modelled on a genuine alternative bird taxonomy from Scania (Skåne) in southern Sweden, whence the idea came; see \href{http://www.klangfix.se/ordlista.htm}{www.klangfix.se/ordlista.htm}.}\fi
 
+\ifswedish
 \begin{CodeSmall}
 trait Fyle:
   val läte: String
@@ -1019,25 +1021,62 @@ trait KanKanskeFlyga { val ärFlygkunnig = math.random() < 0.8 }
 class Kråga extends Fyle, KanFlyga, KanInteSimma:
   val läte = "krax"
 
-class Ånka extends Fyle, KanSimma, KanKanskeFlyga: 
+class Ånka extends Fyle, KanSimma, KanKanskeFlyga:
   val läte = "kvack"
   override def väsnas = print(läte * 4)
 \end{CodeSmall}
+\else
+\begin{CodeSmall}
+trait Fowlk:
+  val call: String
+  def holler: Unit = print(call * 2)
+  val canActuallySwim: Boolean
+  val canActuallyFly: Boolean
 
-\Subtask En flitig ornitolog hittar 42 fåglar i en perfekt skog där alla fågelsorter är lika sannolika, representerat av vektorn \code{fyle} nedan. Skriv i REPL ett uttryck som undersöker hur många av dessa som är flygkunniga Ånkor, genom att använda metoderna \code{filter}, \code{isInstanceOf}, \code{ärFlygkunnig} och \code{size}.
+trait CanSwim       { val canActuallySwim = true }
+trait CannotSwim    { val canActuallySwim = false }
+trait CanFly        { val canActuallyFly = true }
+trait CanPerhapsFly { val canActuallyFly = math.random() < 0.8 }
 
+class Crawke extends Fowlk, CanFly, CannotSwim:
+  val call = "kraak"
+
+class Quaddle extends Fowlk, CanSwim, CanPerhapsFly:
+  val call = "quawk"
+  override def holler = print(call * 4)
+\end{CodeSmall}
+\fi
+
+\Subtask \ifswedish En flitig ornitolog hittar 42 fåglar i en perfekt skog där alla fågelsorter är lika sannolika, representerat av vektorn \code{fyle} nedan. Skriv i REPL ett uttryck som undersöker hur många av dessa som är flygkunniga Ånkor, genom att använda metoderna \code{filter}, \code{isInstanceOf}, \code{ärFlygkunnig} och \code{size}.\else A diligent ornithologist finds 42 birds in a perfect wood where every kind of bird is equally likely, represented by the vector \code{flock} below. Write, in the REPL, an expression that works out how many of them are flight-capable Quaddles, using the methods \code{filter}, \code{isInstanceOf}, \code{canActuallyFly} and \code{size}.\fi
+
+\ifswedish
 \begin{REPL}
 scala> val fyle =
          Vector.fill(42)(if math.random() > 0.5 then new Kråga else new Ånka)
 scala> fyle.foreach(_.väsnas)
 scala> val antalFlygånkor: Int = ???
 \end{REPL}
+\else
+\begin{REPL}
+scala> val flock =
+         Vector.fill(42)(if math.random() > 0.5 then new Crawke else new Quaddle)
+scala> flock.foreach(_.holler)
+scala> val flyingQuaddles: Int = ???
+\end{REPL}
+\fi
 
-\Subtask \label{subtask:fyle:sound} Om alla de fåglar som ornitologen hittade skulle väsnas exakt en gång var, hur många krax och hur många kvack skulle då höras? Använd metoderna \code{filter} och \code{size}, samt predikatet \code{ärSimkunnig} för att beräkna antalet krax respektive kvack.
+\Subtask \label{subtask:fyle:sound} \ifswedish Om alla de fåglar som ornitologen hittade skulle väsnas exakt en gång var, hur många krax och hur många kvack skulle då höras? Använd metoderna \code{filter} och \code{size}, samt predikatet \code{ärSimkunnig} för att beräkna antalet krax respektive kvack.\else If every bird the ornithologist found were to holler exactly once, how many kraaks and how many quawks would be heard? Use the methods \code{filter} and \code{size}, together with the predicate \code{canActuallySwim}, to compute the number of kraaks and quawks respectively.\fi
+\ifswedish
 \begin{REPL}
 scala> val antalKrax: Int = ???
 scala> val antalKvack: Int = ???
 \end{REPL}
+\else
+\begin{REPL}
+scala> val kraaks: Int = ???
+scala> val quawks: Int = ???
+\end{REPL}
+\fi
 
 \SOLUTION
 
@@ -1046,19 +1085,20 @@ scala> val antalKvack: Int = ???
 
 
 \SubtaskSolved
-Det finns många olika sätt, några exempellösningar:
+\ifswedish Det finns många olika sätt, några exempellösningar:\else There are many ways; here are a few example solutions:\fi
+\ifswedish
 \begin{Code}
-val antalFlygånkor: Int = 
+val antalFlygånkor: Int =
   fyle.count(f => f.isInstanceOf[Ånka] && f.ärFlygkunnig)
 \end{Code}
 
 \begin{Code}
-val antalFlygånkor: Int = 
+val antalFlygånkor: Int =
   fyle.filter(f => f.isInstanceOf[Ånka] && f.ärFlygkunnig).size
 \end{Code}
 
 \begin{Code}
-val antalFlygånkor: Int = 
+val antalFlygånkor: Int =
   fyle.collect{case f: Ånka if f.ärFlygkunnig}.size
 \end{Code}
 
@@ -1068,12 +1108,42 @@ val antalFlygånkor: Int = fyle.map(_ match
   case _ => 0
 ).sum
 \end{Code}
+\else
+\begin{Code}
+val flyingQuaddles: Int =
+  flock.count(f => f.isInstanceOf[Quaddle] && f.canActuallyFly)
+\end{Code}
+
+\begin{Code}
+val flyingQuaddles: Int =
+  flock.filter(f => f.isInstanceOf[Quaddle] && f.canActuallyFly).size
+\end{Code}
+
+\begin{Code}
+val flyingQuaddles: Int =
+  flock.collect{case f: Quaddle if f.canActuallyFly}.size
+\end{Code}
+
+\begin{Code}
+val flyingQuaddles: Int = flock.map(_ match
+  case f: Quaddle if f.canActuallyFly => 1
+  case _ => 0
+).sum
+\end{Code}
+\fi
 
 \SubtaskSolved
+\ifswedish
 \begin{Code}
 val antalKrax: Int = fyle.filter(f => !f.ärSimkunnig).size * 2
 val antalKvack: Int = fyle.filter(f => f.ärSimkunnig).size * 4
 \end{Code}
+\else
+\begin{Code}
+val kraaks: Int = flock.filter(f => !f.canActuallySwim).size * 2
+val quawks: Int = flock.filter(f => f.canActuallySwim).size * 4
+\end{Code}
+\fi
 
 
 \QUESTEND
@@ -1092,11 +1162,11 @@ val antalKvack: Int = fyle.filter(f => f.ärSimkunnig).size * 4
 
 \QUESTBEGIN
 
-\Task  \what~  Om man vill förhindra att man kan göra \code{extends} på en klass kan man göra den final genom att placera nyckelordet \code{final} före nyckelordet \code{class}.
+\Task  \what~  \ifswedish Om man vill förhindra att man kan göra \code{extends} på en klass kan man göra den final genom att placera nyckelordet \code{final} före nyckelordet \code{class}.\else If you want to prevent a class from being extended with \code{extends}, you can make it final by placing the keyword \code{final} before the keyword \code{class}.\fi
 
-\Subtask Eftersom klassificeringen av fåglar i uppgiften ovan i antingen Ånkor eller Krågor är fullständig och det inte finns några subtyper till varken Ånkor eller Krågor är det lämpligt att göra dessa finala. Ändra detta i din kod.
+\Subtask \ifswedish Eftersom klassificeringen av fåglar i uppgiften ovan i antingen Ånkor eller Krågor är fullständig och det inte finns några subtyper till varken Ånkor eller Krågor är det lämpligt att göra dessa finala. Ändra detta i din kod.\else Since the classification of birds in the task above into either Quaddles or Crawkes is complete, and there are no subtypes of either Quaddles or Crawkes, it is appropriate to make these final. Change this in your code.\fi
 
-\Subtask Testa att ändå försöka göra en subklass \code{Simkråga extends Kråga}. Vad ger kompilatorn för felmeddelande om man försöker utvidga en final klass?
+\Subtask \ifswedish Testa att ändå försöka göra en subklass \code{Simkråga extends Kråga}. Vad ger kompilatorn för felmeddelande om man försöker utvidga en final klass?\else Try nonetheless to make a subclass \code{Swimcrawke extends Crawke}. What error message does the compiler give if you try to extend a final class?\fi
 
 
 \SOLUTION
@@ -1105,9 +1175,9 @@ val antalKvack: Int = fyle.filter(f => f.ärSimkunnig).size * 4
 \TaskSolved \what
 
 
-\SubtaskSolved  Sätt \code{final} framför \code{class} i klasserna.
+\SubtaskSolved  \ifswedish Sätt \code{final} framför \code{class} i klasserna.\else Put \code{final} in front of \code{class} in the classes.\fi
 
-\SubtaskSolved  error: illegal inheritance from final class Kråga.
+\SubtaskSolved  \ifswedish error: illegal inheritance from final class Kråga.\else error: illegal inheritance from final class Crawke.\fi
 
 
 \QUESTEND
@@ -1223,7 +1293,7 @@ I Ånka: \code| override def väsnas = { print(läte * 4); räknaLäte += 4 }|
 
 \QUESTBEGIN
 
-\Task  \what~ Det visar sig att vår flitige ornitolog från uppgift \ref{task:fyle} på sidan \pageref{task:fyle} sov på en av föreläsningarna i zoologi när hen var nolla på Natfak, och därför helt missat fylekategorin \code{Pjodd}. Hjälp vår stackars ornitolog så att fylehierarkin nu även omfattar Pjoddar. En Pjodd kan flyga som en Kråga men den \code{ÄrLiten} medan en Kråga \code{ÄrStor}. En Pjodd kvittrar dubbelt så många gånger som en Ånka kvackar. En Pjodd \code{KanKanskeSimma} där simkunnighetssannolikheten är $0.2$. Låt ornitologen ånyo finna 42 slumpmässiga fåglar i skogen och filtrera fram lämpliga arter. Undersök sedan hur dessa väsnas, i likhet med deluppgift \ref{task:fyle}\ref{subtask:fyle:sound}.
+\Task  \what~ \ifswedish Det visar sig att vår flitige ornitolog från uppgift \ref{task:fyle} på sidan \pageref{task:fyle} sov på en av föreläsningarna i zoologi när hen var nolla på Natfak, och därför helt missat fylekategorin \code{Pjodd}. Hjälp vår stackars ornitolog så att fylehierarkin nu även omfattar Pjoddar. En Pjodd kan flyga som en Kråga men den \code{ÄrLiten} medan en Kråga \code{ÄrStor}. En Pjodd kvittrar dubbelt så många gånger som en Ånka kvackar. En Pjodd \code{KanKanskeSimma} där simkunnighetssannolikheten är $0.2$. Låt ornitologen ånyo finna 42 slumpmässiga fåglar i skogen och filtrera fram lämpliga arter. Undersök sedan hur dessa väsnas, i likhet med deluppgift \ref{task:fyle}\ref{subtask:fyle:sound}.\else It turns out that our diligent ornithologist from task \ref{task:fyle} on page \pageref{task:fyle} slept through one of the zoology lectures back when they were a fresher at the science faculty, and so missed the Fowlk category \code{Pibb} entirely. Help our poor ornithologist so that the Fowlk hierarchy now also takes in Pibbs. A Pibb can fly like a Crawke, but it \code{IsSmall} whereas a Crawke \code{IsLarge}. A Pibb chitters twice as many times as a Quaddle quawks. A Pibb \code{CanPerhapsSwim}, with a swim-capability probability of $0.2$. Let the ornithologist once again find 42 random birds in the wood and filter out the appropriate species. Then examine how they holler, as in subtask \ref{task:fyle}\ref{subtask:fyle:sound}.\fi
 
 
 \SOLUTION
@@ -1231,6 +1301,7 @@ I Ånka: \code| override def väsnas = { print(läte * 4); räknaLäte += 4 }|
 \TaskSolved \what
 
 
+\ifswedish
 \begin{Code}
 trait Fyle:
   val läte: String
@@ -1260,8 +1331,40 @@ final class Pjodd extends Fyle, KanFlyga, KanKanskeSimma, ÄrLiten:
   val läte = "kvitter"
   override def väsnas = { print(läte * 8); räknaLäte += 8 }
 \end{Code}
+\else
+\begin{Code}
+trait Fowlk:
+  val call: String
+  def holler: Unit = { print(call * 2); callTally += 2 }
+  protected var callTally: Int = 0
+  val canActuallySwim: Boolean
+  val canActuallyFly: Boolean
+  val isLarge : Boolean
+  def callCount: Int = callTally
 
-I REPL:
+trait CanSwim { val canActuallySwim = true }
+trait CannotSwim { val canActuallySwim = false }
+trait CanFly { val canActuallyFly = true }
+trait CanPerhapsFly { val canActuallyFly = math.random() < 0.8 }
+trait CanPerhapsSwim { val canActuallySwim = math.random() < 0.2 }
+trait IsLarge { val isLarge = true }
+trait IsSmall { val isLarge = false }
+
+final class Crawke extends Fowlk, CanFly, CannotSwim, IsLarge:
+  val call = "kraak"
+
+final class Quaddle extends Fowlk, CanSwim, CanPerhapsFly, IsLarge:
+  val call = "quawk"
+  override def holler = { print(call * 4); callTally += 4 }
+
+final class Pibb extends Fowlk, CanFly, CanPerhapsSwim, IsSmall:
+  val call = "chitter"
+  override def holler = { print(call * 8); callTally += 8 }
+\end{Code}
+\fi
+
+\ifswedish I REPL:\else In the REPL:\fi
+\ifswedish
 \begin{REPL}
 val fyle = Vector.fill(42)(
   if math.random() < 0.33 then Kråga()
@@ -1272,6 +1375,18 @@ fyle.filter(f => f.isInstanceOf[Kråga]).size * 2
 fyle.filter(f => f.isInstanceOf[Ånka]).size * 4
 fyle.filter(f => f.isInstanceOf[Pjodd]).size * 8
 \end{REPL}
+\else
+\begin{REPL}
+val flock = Vector.fill(42)(
+  if math.random() < 0.33 then Crawke()
+  else if math.random() < 0.5 then Quaddle()
+  else Pibb()
+)
+flock.filter(f => f.isInstanceOf[Crawke]).size * 2
+flock.filter(f => f.isInstanceOf[Quaddle]).size * 4
+flock.filter(f => f.isInstanceOf[Pibb]).size * 8
+\end{REPL}
+\fi
 
 \QUESTEND
 
