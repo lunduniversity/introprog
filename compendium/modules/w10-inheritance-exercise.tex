@@ -1173,6 +1173,7 @@ val quawks: Int = flock.filter(f => f.canActuallySwim).size * 4
 
 \QUESTBEGIN
 
+\ifswedish
 \Task  \what~  Om man vill förhindra att man kan göra \code{extends} på en klass kan man göra den final genom att placera nyckelordet \code{final} före nyckelordet \code{class}.
 
 \Subtask Eftersom klassificeringen av fåglar i uppgiften ovan i antingen Ånkor eller Krågor är fullständig och det inte finns några subtyper till varken Ånkor eller Krågor är det lämpligt att göra dessa finala. Ändra detta i din kod.
@@ -1189,6 +1190,27 @@ val quawks: Int = flock.filter(f => f.canActuallySwim).size * 4
 \SubtaskSolved  Sätt \code{final} framför \code{class} i klasserna.
 
 \SubtaskSolved  error: illegal inheritance from final class Kråga.
+
+\else
+
+\Task  \what~  If you want to prevent a class from being extended with \code{extends}, you can make it final by placing the keyword \code{final} before the keyword \code{class}.
+
+\Subtask Since the classification of birds in the task above into either Quaddles or Crawkes is complete, and there are no subtypes of either Quaddles or Crawkes, it is appropriate to make these final. Change this in your code.
+
+\Subtask Try nonetheless to make a subclass \code{Swimcrawke extends Crawke}. What error message does the compiler give if you try to extend a final class?
+
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved  Put \code{final} in front of \code{class} in the classes.
+
+\SubtaskSolved  error: illegal inheritance from final class Crawke.
+
+\fi
 
 
 \QUESTEND
@@ -1304,6 +1326,7 @@ I Ånka: \code| override def väsnas = { print(läte * 4); räknaLäte += 4 }|
 
 \QUESTBEGIN
 
+\ifswedish
 \Task  \what~ Det visar sig att vår flitige ornitolog från uppgift \ref{task:fyle} på sidan \pageref{task:fyle} sov på en av föreläsningarna i zoologi när hen var nolla på Natfak, och därför helt missat fylekategorin \code{Pjodd}. Hjälp vår stackars ornitolog så att fylehierarkin nu även omfattar Pjoddar. En Pjodd kan flyga som en Kråga men den \code{ÄrLiten} medan en Kråga \code{ÄrStor}. En Pjodd kvittrar dubbelt så många gånger som en Ånka kvackar. En Pjodd \code{KanKanskeSimma} där simkunnighetssannolikheten är $0.2$. Låt ornitologen ånyo finna 42 slumpmässiga fåglar i skogen och filtrera fram lämpliga arter. Undersök sedan hur dessa väsnas, i likhet med deluppgift \ref{task:fyle}\ref{subtask:fyle:sound}.
 
 
@@ -1353,6 +1376,60 @@ fyle.filter(f => f.isInstanceOf[Kråga]).size * 2
 fyle.filter(f => f.isInstanceOf[Ånka]).size * 4
 fyle.filter(f => f.isInstanceOf[Pjodd]).size * 8
 \end{REPL}
+
+\else
+
+\Task  \what~ It turns out that our diligent ornithologist from task \ref{task:fyle} on page \pageref{task:fyle} slept through one of the zoology lectures back when they were a fresher at the science faculty, and so missed the Fowlk category \code{Pibb} entirely. Help our poor ornithologist so that the Fowlk hierarchy now also takes in Pibbs. A Pibb can fly like a Crawke, but it \code{IsSmall} whereas a Crawke \code{IsLarge}. A Pibb chitters twice as many times as a Quaddle quawks. A Pibb \code{CanPerhapsSwim}, with a swim-capability probability of $0.2$. Let the ornithologist once again find 42 random birds in the wood and filter out the appropriate species. Then examine how they holler, as in subtask \ref{task:fyle}\ref{subtask:fyle:sound}.
+
+
+\SOLUTION
+
+\TaskSolved \what
+
+
+\begin{Code}
+trait Fowlk:
+  val call: String
+  def holler: Unit = { print(call * 2); callTally += 2 }
+  protected var callTally: Int = 0
+  val canActuallySwim: Boolean
+  val canActuallyFly: Boolean
+  val isLarge : Boolean
+  def callCount: Int = callTally
+
+trait CanSwim { val canActuallySwim = true }
+trait CannotSwim { val canActuallySwim = false }
+trait CanFly { val canActuallyFly = true }
+trait CanPerhapsFly { val canActuallyFly = math.random() < 0.8 }
+trait CanPerhapsSwim { val canActuallySwim = math.random() < 0.2 }
+trait IsLarge { val isLarge = true }
+trait IsSmall { val isLarge = false }
+
+final class Crawke extends Fowlk, CanFly, CannotSwim, IsLarge:
+  val call = "kraak"
+
+final class Quaddle extends Fowlk, CanSwim, CanPerhapsFly, IsLarge:
+  val call = "quawk"
+  override def holler = { print(call * 4); callTally += 4 }
+
+final class Pibb extends Fowlk, CanFly, CanPerhapsSwim, IsSmall:
+  val call = "chitter"
+  override def holler = { print(call * 8); callTally += 8 }
+\end{Code}
+
+In the REPL:
+\begin{REPL}
+val flock = Vector.fill(42)(
+  if math.random() < 0.33 then Crawke()
+  else if math.random() < 0.5 then Quaddle()
+  else Pibb()
+)
+flock.filter(f => f.isInstanceOf[Crawke]).size * 2
+flock.filter(f => f.isInstanceOf[Quaddle]).size * 4
+flock.filter(f => f.isInstanceOf[Pibb]).size * 8
+\end{REPL}
+
+\fi
 
 \QUESTEND
 
