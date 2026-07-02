@@ -647,7 +647,7 @@ object Translate:
     val envAlt = codeEnvs.toSeq.map(java.util.regex.Pattern.quote).mkString("|")
     val re = ("(?s)(\\\\begin\\{(" + envAlt + ")\\})(.*?)(\\\\end\\{\\2\\})").r
     re.replaceAllIn(tex, m =>
-      java.util.regex.Matcher.quoteReplacement(m.group(1) + Code.translate(m.group(3), translatePlain) + m.group(4)))
+      java.util.regex.Matcher.quoteReplacement(m.group(1) + Code.translate(m.group(3), translatePlain, skipTexComments = true) + m.group(4)))
 
   // ---------- lifecycle ----------
   /** Load cache and make sure the model is ready (called before mirror translation).

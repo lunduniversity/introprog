@@ -51,17 +51,35 @@ object Code:
 
   /** Translate comments + Swedish-ish string content in `src` via `tr`; keep all code verbatim.
     * `tr` should be effect-free w.r.t. code safety: it must NOT introduce a `"` or newline (the caller
-    * — Translate.translatePlain — guarantees this), so string/line-comment delimiters stay intact. */
-  def translate(src: String, tr: String => String): String =
+    * — Translate.translatePlain — guarantees this), so string/line-comment delimiters stay intact.
+    *
+    * `skipTexComments` (opt-in, only the code-ENV hybrid `translateCodeEnvBodies` sets it): when a code
+    * environment body comes from a DISABLED / `%`-commented `.tex` block, every line is a LaTeX comment.
+    * Routing those to the model is wasteful and was the w04-objects flaky-bug source — the model hallucinated
+    * a math env from a commented `texttt` path with a `src` glob (whose slash-star sequence even trips this
+    * scanner's own block-comment branch) and dropped a `%`, breaking `compendium-en` non-deterministically
+    * (the AT-B "introduced LaTeX environment"
+    * guard now makes that build-SAFE, so this is the quality/efficiency half: don't send disabled blocks at
+    * all, and stop the per-`--all` cache churn). So skip any line whose first non-space char is `%` — copied
+    * verbatim, never translated. Default false: a real `.scala` line never starts with `%` (it's modulo, an
+    * infix op: `a % b`), so the raw-source path (`--codetest` / workspace) is unaffected. */
+  def translate(src: String, tr: String => String, skipTexComments: Boolean = false): String =
     val sb = StringBuilder(); val n = src.length; var i = 0
     // translate inner text of a comment OR string only if it looks Swedish — this skips already-English
     // library comments AND commented-out code (e.g. `//val w = new LifeWindow(20, 20)`), which must NOT
     // be sent to the model (wasteful + a source of masking-leak corruption).
     def piece(s: String): String =
       if s.exists(_.isLetter) && swedishish(s) then tr(s) else s
+    def texCommentLine(k: Int): Boolean = // first non-space char of the line at k is a LaTeX `%`
+      var w = k
+      while w < n && (src(w) == ' ' || src(w) == '\t') do w += 1
+      w < n && src(w) == '%'
     while i < n do
       val c = src(i)
-      if c == '/' && i + 1 < n && src(i + 1) == '/' then            // line comment
+      if skipTexComments && (i == 0 || src(i - 1) == '\n') && texCommentLine(i) then
+        val e = src.indexOf('\n', i); val end = if e < 0 then n else e  // copy the whole %-line verbatim
+        sb ++= src.substring(i, end); i = end
+      else if c == '/' && i + 1 < n && src(i + 1) == '/' then            // line comment
         val e = src.indexOf('\n', i); val end = if e < 0 then n else e
         val content = src.substring(i + 2, end)
         sb ++= "//"; sb ++= (if isDirective(content) then content else piece(content)); i = end
