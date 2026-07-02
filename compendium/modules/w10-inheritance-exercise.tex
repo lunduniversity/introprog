@@ -999,6 +999,7 @@ case class Circle(pos: Point, radius: Double) extends Shape:
 
 \QUESTBEGIN
 
+\ifswedish
 \Task \label{task:fyle} \what~   Man kan utvidga en klass med multipla traits med en kommaseparerad lista. På så sätt kan man fördela medlemmar i olika traits och återanvända gemensamma koddelar genom så kallad \textbf{inmixning}, så som nedan exempel visar.
 
 En alternativ fågeltaxonomi, speciellt populär i Skåne, delar in alla fåglar i två specifika kategorier: Kråga respektive Ånka. Krågor kan flyga men inte simma, medan Ånkor kan simma och oftast även flyga. Fågel i generell, kollektiv bemärkelse kallas på gammal skånska för Fyle.%
@@ -1074,6 +1075,86 @@ val antalFlygånkor: Int = fyle.map(_ match
 val antalKrax: Int = fyle.filter(f => !f.ärSimkunnig).size * 2
 val antalKvack: Int = fyle.filter(f => f.ärSimkunnig).size * 4
 \end{Code}
+
+\else
+
+\Task \label{task:fyle} \what~   You can extend a class with multiple traits given as a comma-separated list. This lets you spread members across different traits and reuse shared code through so-called \textbf{mix-in composition}, as the example below shows.
+
+In the remote Welsh village of Llanffowl-y-Gwyll, whose inhabitants have --- for reasons long since lost to scholarship --- never seen the need to tell apart more than a couple of birds, the local taxonomy sorts all fowl into precisely two kinds: the \emph{Crawke} and the \emph{Quaddle}. A Crawke can fly but cannot swim, whereas a Quaddle can swim and, more often than not, fly as well. A bird in the general, collective sense is known in the old village dialect as a \emph{Fowlk}.%
+\footnote{Affectionately modelled on a genuine alternative bird taxonomy from Scania (Skåne) in southern Sweden, whence the idea came; see \href{http://www.klangfix.se/ordlista.htm}{www.klangfix.se/ordlista.htm}.}
+
+\begin{CodeSmall}
+trait Fowlk:
+  val call: String
+  def holler: Unit = print(call * 2)
+  val canActuallySwim: Boolean
+  val canActuallyFly: Boolean
+
+trait CanSwim       { val canActuallySwim = true }
+trait CannotSwim    { val canActuallySwim = false }
+trait CanFly        { val canActuallyFly = true }
+trait CanPerhapsFly { val canActuallyFly = math.random() < 0.8 }
+
+class Crawke extends Fowlk, CanFly, CannotSwim:
+  val call = "kraak"
+
+class Quaddle extends Fowlk, CanSwim, CanPerhapsFly:
+  val call = "quawk"
+  override def holler = print(call * 4)
+\end{CodeSmall}
+
+\Subtask A diligent ornithologist finds 42 birds in a perfect wood where every kind of bird is equally likely, represented by the vector \code{flock} below. Write, in the REPL, an expression that works out how many of them are flight-capable Quaddles, using the methods \code{filter}, \code{isInstanceOf}, \code{canActuallyFly} and \code{size}.
+
+\begin{REPL}
+scala> val flock =
+         Vector.fill(42)(if math.random() > 0.5 then new Crawke else new Quaddle)
+scala> flock.foreach(_.holler)
+scala> val flyingQuaddles: Int = ???
+\end{REPL}
+
+\Subtask \label{subtask:fyle:sound} If every bird the ornithologist found were to holler exactly once, how many kraaks and how many quawks would be heard? Use the methods \code{filter} and \code{size}, together with the predicate \code{canActuallySwim}, to compute the number of kraaks and quawks respectively.
+\begin{REPL}
+scala> val kraaks: Int = ???
+scala> val quawks: Int = ???
+\end{REPL}
+
+\SOLUTION
+
+
+\TaskSolved \what
+
+
+\SubtaskSolved
+There are many ways; here are a few example solutions:
+\begin{Code}
+val flyingQuaddles: Int =
+  flock.count(f => f.isInstanceOf[Quaddle] && f.canActuallyFly)
+\end{Code}
+
+\begin{Code}
+val flyingQuaddles: Int =
+  flock.filter(f => f.isInstanceOf[Quaddle] && f.canActuallyFly).size
+\end{Code}
+
+\begin{Code}
+val flyingQuaddles: Int =
+  flock.collect{case f: Quaddle if f.canActuallyFly}.size
+\end{Code}
+
+\begin{Code}
+val flyingQuaddles: Int = flock.map(_ match
+  case f: Quaddle if f.canActuallyFly => 1
+  case _ => 0
+).sum
+\end{Code}
+
+\SubtaskSolved
+\begin{Code}
+val kraaks: Int = flock.filter(f => !f.canActuallySwim).size * 2
+val quawks: Int = flock.filter(f => f.canActuallySwim).size * 4
+\end{Code}
+
+\fi
 
 
 \QUESTEND
