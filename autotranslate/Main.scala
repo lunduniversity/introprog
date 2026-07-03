@@ -32,6 +32,8 @@ object Main:
   val skipSeg = Set("target", ".git", "old", "bin", ".bloop", ".metals", ".scala-build", ".bsp")
 
   private val inputRef = raw"\\(input|include)\{([^}]*)\}".r
+  // \externaldocument (xr/xr-hyper cross-doc refs) carries NO .tex suffix; retarget local basenames to -en.
+  private val externalDocRef = raw"\\externaldocument(\[[^\]]*\])?\{([^}]*)\}".r
 
   /** Rewrite \input/\include targets to point at the English mirror:
     *  - LOCAL X.tex -> X-en.tex
@@ -67,6 +69,20 @@ object Main:
           else if t.endsWith(".tex") then t.dropRight(4) + "-en.tex"
           else t + "-en"
         Matcher.quoteReplacement(s"\\${m.group(1)}{$nt}")
+    )
+
+  /** Retarget \externaldocument{X} (xr/xr-hyper cross-doc refs — e.g. the compendium1<->compendium2 print
+    * pair) to the -en mirror's basename. Without this the EN doc looks for the SV-named .aux inside
+    * compendium-en/ (which isn't there), so every cross-VOLUME \ref resolves to ?? in the printed PDF.
+    * Local basenames only; leaves ../ and / paths (and already-en names) alone. */
+  def rewriteExternalDocs(tex: String): String =
+    externalDocRef.replaceAllIn(
+      tex,
+      m =>
+        val pre = Option(m.group(1)).getOrElse("")
+        val t = m.group(2)
+        val nt = if t.startsWith("..") || t.startsWith("/") || t.endsWith("-en") then t else t + "-en"
+        Matcher.quoteReplacement(s"\\externaldocument$pre{$nt}")
     )
 
   /** Redirect `\...inputlisting{...}` example-code paths to the translated mirrors (Option B), so the
@@ -322,7 +338,7 @@ object Main:
           val outBody =
             if translate then { nTrans += 1; Translate.translateCodeEnvBodies(Translate.translateTex(body, s"$src/$rel")) }
             else body
-          os.write.over(target, setEnglishFlags(enChrome(redirectListings(rewriteInputs(outBody)))))
+          os.write.over(target, setEnglishFlags(enChrome(redirectListings(rewriteExternalDocs(rewriteInputs(outBody))))))
           nTex += 1
         else
           val target = dstDir / rel
