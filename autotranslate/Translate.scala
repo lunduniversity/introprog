@@ -744,6 +744,17 @@ object Translate:
 
   private val placeholderRe = raw"__C\d+__".r
 
+  // Gauge-only proper-noun / place allowlist (V-bucket false-positive cure). These carry å/ä/ö INSIDE an
+  // ASCII-letter word (so the de-lettering run-strip below does not remove them) but are NOT fixable prose —
+  // Swedish/Nordic author+contributor names and town names that are correctly KEPT verbatim in English prose.
+  // Stripped BEFORE the swedishish test in `proseLeak`, so a line whose ONLY "Swedish" is a proper noun stops
+  // being counted as a leak. This affects ONLY the leak gauge; it does NOT touch Code.swedishish as used by the
+  // code-string translator, so no real translation behaviour changes. (Culture-specific place names that should
+  // be RE-THEMED for the EN edition are a separate concern handled by \ifswedish culture clamps, not the gauge.)
+  private val gaugeProperNouns = Seq(
+    "Björn", "Regnell", "Flisbäck", "Åradsson", "Löfgren", // author + contributor names
+    "Luleå", "Brunnshög", "Skåne", "Linköping", "Malmö")   // place names kept verbatim in EN prose
+
   /** TRUE-prose-leak discriminator. Mask a single prose line via Latex.mask (which replaces inline code
     * spans `\code`/`\jcode`/`\lstinline`/`\verb`, math, `\Eng`, and braces with `__C<n>__` placeholders),
     * strip the placeholders, and re-test Code.swedishish on what remains. Some(strippedProse) iff the
@@ -759,7 +770,9 @@ object Translate:
     // Swedish words (för, många, plats...) where å/ä/ö sit inside an ASCII-letter word.
     // (Java `(?i)` does NOT unicode-case-fold, so `[åäö]` alone misses uppercase ÅÄÖ — list both cases.)
     val deLettered = stripped.replaceAll("(?<![a-zA-Z])[åäöÅÄÖ]+(?![a-zA-Z])", "")
-    if stripped.nonEmpty && Code.swedishish(deLettered) then Some(stripped) else None
+    // also drop known proper nouns (people/places) so a line whose only Swedish signal is a name is not a leak
+    val deNamed = gaugeProperNouns.foldLeft(deLettered)((s, nm) => s.replace(nm, " "))
+    if stripped.nonEmpty && Code.swedishish(deNamed) then Some(stripped) else None
 
   /** --prose-leaks <relpath>: list ONLY the TRUE prose leaks of one -en file, with inline code spans
     * masked out, so the Overrides loop targets fixable prose and NOT deferred code identifiers. Prints
