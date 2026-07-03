@@ -401,6 +401,11 @@ object Overrides:
       """Do the \Emph{exercises} and \Emph{lab preparations} carefully \Alert{before} the lab itself -- this is often absolutely necessary for you to finish in time.""",
 
     // ── lect-w05-classes: OOP / classes / constructors ──
+    // AT5 (lect-w05-assignments, blockbattle slide): the model kept this whole \Emph/\Alert-dense bullet as a
+    // Swedish FALLBACK (uncached → it hit the model on every `--all`, and left Swedish in the EN mirror).
+    // Authored EN here so `--all` needs zero model calls and the leak is gone.
+    """Labbtider är \Emph{schemalagda som vanligt} under läsvecka 5. Om du mot förmodan hinner redovisa redan denna vecka så ska du \Alert{ändå närvara} och t.ex. jobba med \Emph{extrauppgifter}.""" ->
+      """Lab sessions are \Emph{scheduled as usual} during study week 5. If against expectation you manage to present already this week, you must \Alert{still attend} and, for example, work on \Emph{extra assignments}.""",
     """Begreppet \Emph{klass} är en viktig abstraktionsmekanism inom \Emph{objekt-orienterad programmering} (OOP) för att modellera data i en applikationsdomän, t.ex. data om \emph{användare} och deras \emph{favoritmusik} i applikationsdomänen \emph{musikspelare}. Klasser används för att samla funktioner och data.""" ->
       """The concept of a \Emph{class} is an important abstraction mechanism in \Emph{object-oriented programming} (OOP) for modelling data in an application domain, e.g. data about \emph{users} and their \emph{favourite music} in the application domain \emph{music player}. Classes are used to gather functions and data.""",
     """Det går att skapa \Alert{många} objekt ur en och samma klass.""" ->
