@@ -4,9 +4,7 @@
 from the Swedish source by translating LaTeX **without breaking the build**. It is real Scala
 (`autotranslate/*.scala`, run via sbt or the `scratch/` programs), not a `.sc` script.
 
-This README is for **both humans and agents**. If you only read one section, read
-[When the English side has Swedish in it](#when-the-english-side-still-has-swedish) — it tells you
-which of the three clamp tools to reach for.
+This README is for **both humans and agents**.
 
 ---
 
