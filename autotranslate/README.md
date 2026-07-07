@@ -130,6 +130,7 @@ Pick the tool by **what kind of thing** is still Swedish:
 
 | The Swedish is… | Use | Why |
 |-----------------|-----|-----|
+| ...tricky or the Latex is tricky so that current autotranslate cannot handle | `\ifswedish ... \else ... \fi` clamps | The autotranslator is not omnipotent and humans often knows best what they want. |
 | **Clean prose / a proper noun** the model echoed or mangled | **`Overrides.scala`** | A human/agent translates better than gemma2; highest precedence; one entry fixes every occurrence. |
 | **Inside a figure** (`tikzpicture`, `pgfpicture`, …) | **`\ifswedish` in the source node** | Figure envs are masked whole → never translated. The only way in is a source clamp. |
 | **A one-off pathological construct** the masker/model keeps breaking | **`\ifswedish` in the source** | Author escape hatch; you hand-write the English once. |
