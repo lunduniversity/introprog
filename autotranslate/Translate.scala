@@ -769,7 +769,12 @@ object Translate:
     // (bounded by non-ASCII-letters, so `ÄÅÖ`/`Ä, Å, Ö` both go) before the test, so it fires only on real
     // Swedish words (för, många, plats...) where å/ä/ö sit inside an ASCII-letter word.
     // (Java `(?i)` does NOT unicode-case-fold, so `[åäö]` alone misses uppercase ÅÄÖ — list both cases.)
-    val deLettered = stripped.replaceAll("(?<![a-zA-Z])[åäöÅÄÖ]+(?![a-zA-Z])", "")
+    // Strip LaTeX metavariable placeholders <word> (e.g. do <satser> while <villkor>) that survive
+    // code-masking when they sit OUTSIDE a \code{} span — pseudocode syntax, not prose. SM018 FP fix:
+    // w04-objects "do <satser> while <villkor> where <satser> are executed…" is English instructional
+    // prose. (`<=`/`<-` have a non-letter after `<`, so this only removes letter-only placeholders.)
+    val deMeta = stripped.replaceAll("<[A-Za-zåäöÅÄÖ]+>", " ")
+    val deLettered = deMeta.replaceAll("(?<![a-zA-Z])[åäöÅÄÖ]+(?![a-zA-Z])", "")
     // also drop known proper nouns (people/places) so a line whose only Swedish signal is a name is not a leak
     val deNamed = gaugeProperNouns.foldLeft(deLettered)((s, nm) => s.replace(nm, " "))
     if stripped.nonEmpty && Code.swedishish(deNamed) then Some(stripped) else None
