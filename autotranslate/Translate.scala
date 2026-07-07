@@ -856,6 +856,68 @@ object Translate:
     else println(f"  swedish-left: $pct%.1f%% Swedish PROSE — ${all.size}/$total distinct lines (comments + code + $clamps \\ifswedish-clamp interiors excluded), ${perFile.size} files")
     perFile.sortBy(-_._2).take(20).foreach((p, c) => println(f"    $c%4d  $p"))
 
+  // ---- --prose-swedish : prose-only Swedish gauge (SM018) ----------------------------------------
+  // Glossary constructs whose Swedish is DELIBERATELY bilingual (pedagogical ground truth) — excluded
+  // from the leak count and tagged [glossary]. DRAFT list, PENDING BR ratification (the SM018 exclusion-
+  // policy gate): prose-leaks-worklist.md triaged \TermItem as fixable (M) while plan §1 calls it accepted
+  // residual, so it is BR's call. Explicit + reviewable (BR's design rule: no regex heuristics).
+  val glossaryCommands = Seq("\\TermItem")
+  private def isGlossaryLine(line: String): Boolean =
+    val t = line.trim; glossaryCommands.exists(t.contains)
+
+  /** --prose-swedish: prose-only Swedish gauge (SM018). Numerator = TRUE prose leaks (proseLeak: inline
+    * code masked, names + åäö-runs allowlisted); denominator = all distinct reader-facing prose lines
+    * (English-side rendered via renderEnglishSide, code/verbatim envs + %-comments excluded, glossary
+    * excluded). Reports leak-lines / prose-lines = X.XX% and writes a deterministic, sorted, tagged dump
+    * (scratch/prose-swedish-dump.txt: [leak]/[allowed]/[glossary]). Model-free, read-only — no cache or
+    * source mutation, same class as --prose-leaks. */
+  def proseSwedish(root: os.Path): Unit =
+    val allProse = mutable.LinkedHashSet[String]()               // distinct non-glossary prose (the denominator)
+    val perFile = mutable.ArrayBuffer[(String, Int)]()           // (path, leakCount) for the stdout table
+    val leakDump = mutable.ArrayBuffer[(String, Vector[(String, String)])]()
+    val allowedLines = mutable.ArrayBuffer[(String, String)]()   // (file, line) accepted-residual, tagged
+    val glossaryLines = mutable.ArrayBuffer[(String, String)]()  // (file, line) glossary, tagged
+    var totalLeaks = 0; var totalAllowed = 0; var totalGlossary = 0; var clamps = 0
+    for dir <- Seq("slides-en", "compendium-en"); d = root / dir if os.exists(d)
+        f <- os.walk(d) if os.isFile(f) && f.ext == "tex"
+    do
+      val rel = f.relativeTo(root).toString
+      val (lines, ifCount) = proseFromFile(f)                    // English-side rendered; code envs + %-comments dropped
+      clamps += ifCount
+      val leaks = mutable.ArrayBuffer[(String, String)]()
+      for line <- lines.distinct do
+        if isGlossaryLine(line) then { totalGlossary += 1; glossaryLines += ((rel, line)) }
+        else
+          allProse += line
+          proseLeak(line) match
+            case Some(stripped) => leaks += ((line, stripped))
+            case None           => if Code.swedishish(line) then { totalAllowed += 1; allowedLines += ((rel, line)) }
+      if leaks.nonEmpty then { leakDump += ((rel, leaks.toVector)); perFile += ((rel, leaks.size)) }
+      totalLeaks += leaks.size
+    val denom = allProse.size
+    val pct = if denom == 0 then 0.0 else totalLeaks * 100.0 / denom
+    // ---- stdout: summary + per-file leak-count table (the loop reads the headline number) ----
+    println(f"  prose-swedish gauge: $totalLeaks [leak] / $denom prose lines = $pct%.2f%% reader-facing prose Swedish")
+    println(f"    + $totalAllowed [allowed] accepted-residual, $totalGlossary [glossary] excluded, $clamps \\ifswedish clamps")
+    println( "    DRAFT gauge — glossary/allowed exclusion PENDING BR ratification (SM018 gate); model-free, read-only.")
+    perFile.sortBy(-_._2).take(25).foreach((p, c) => println(f"    $c%4d  $p"))
+    // ---- file: full deterministic, sorted, tagged dump (the evidence ledger) ----
+    val sb = new StringBuilder
+    sb.append(f"prose-swedish gauge: $totalLeaks [leak] / $denom prose lines = $pct%.2f%% reader-facing prose Swedish\n")
+    sb.append(f"  + $totalAllowed [allowed], $totalGlossary [glossary] excluded, $clamps \\ifswedish clamps\n")
+    sb.append("  glossaryCommands (DRAFT, pending BR ratification): " + glossaryCommands.mkString(", ") + "\n")
+    sb.append("\n=== [leak] lines by file (count desc) — the grind worklist ===\n")
+    for (path, ls) <- leakDump.sortBy(-_._2.size) do
+      sb.append(s"\n--- ${ls.size}  $path ---\n")
+      for (orig, stripped) <- ls do sb.append(s"  [leak] $orig\n         -> $stripped\n")
+    sb.append("\n=== [allowed] accepted-residual (swedishish, but only names / code / example-data) ===\n")
+    for (rel, line) <- allowedLines.sortBy(x => (x._1, x._2)) do sb.append(s"  [allowed] $rel :: $line\n")
+    sb.append("\n=== [glossary] excluded (deliberately bilingual; DRAFT — pending BR ratification) ===\n")
+    for (rel, line) <- glossaryLines.sortBy(x => (x._1, x._2)) do sb.append(s"  [glossary] $rel :: $line\n")
+    val out = root / "autotranslate" / "scratch" / "prose-swedish-dump.txt"
+    os.write.over(out, sb.toString)
+    println(s"  (full tagged dump -> ${out.relativeTo(root)})")
+
   /** Insourced PDF Swedish scan (was scratch/pdf-swedish.scala): pdftotext → the fraction of DISTINCT
     * non-empty lines that `Code.swedishish` flags. The *En build tasks call this so they ALWAYS report
     * how close to 0% we are. Prints a clear `0% — fully English ✅` or `X.X% Swedish ⚠`; writes the full
