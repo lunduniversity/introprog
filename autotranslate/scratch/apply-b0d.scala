@@ -129,9 +129,12 @@ object Apply:
     case "inline" => inlineInner(span)
     case "env"    => envRe.findPrefixMatchOf(span).map(_.group(2)).getOrElse("")
     case _        => ""
+  // NB: `\fi` is a control WORD, so TeX swallows the space that follows it -- `...\fi och` renders "Xoch".
+  // Append `{}` after `\fi` so an existing following space is preserved (and none is added before
+  // punctuation). Verified: `\fi and` -> "Band", `\fi{} and` -> "B and". Applies to BOTH builds.
   def clamp(sv: String, en: String, k: String): String = k match
-    case "inline" => s"\\ifswedish$sv\\else$en\\fi"
-    case "env"    => s"\\ifswedish\n$sv\n\\else\n$en\n\\fi"
+    case "inline" => s"\\ifswedish$sv\\else$en\\fi{}"
+    case "env"    => s"\\ifswedish\n$sv\n\\else\n$en\n\\fi{}"
     case _        => sv
 
   // Strip //-comments and /* */ comments (only) for the leak GATE, but KEEP string/char literals. Comment
