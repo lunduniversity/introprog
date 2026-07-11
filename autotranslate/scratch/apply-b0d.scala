@@ -112,6 +112,26 @@ object Apply:
     case "env"    => s"\\ifswedish\n$sv\n\\else\n$en\n\\fi"
     case _        => sv
 
+  // Strip //-comments, /* */ comments, and string literals so the leak GATE sees CODE IDENTIFIERS ONLY.
+  // Comment/string Swedish is translated DOWNSTREAM by translateCodeEnvBodies inside the \else branch (see
+  // Translate.scala: "composes with apply-b0d clamps: it also translates the comments inside an \else"), so
+  // it must NOT block an identifier clamp. This was the w10-extends false-skip: a Swedish comment
+  // `// implementation saknas, inget =` skipped a fully-glossaried trait/case-class block, leaving that
+  // \begin{Code} Swedish while its adjacent (comment-free) REPL clamped to English — a mixed-language slide.
+  // NOTE: REPL *output* text and prose are NOT string literals, so stripCode keeps them and they still gate
+  // (correct — Code.translate translates comments + string literals, but not bare REPL output).
+  def stripCode(s: String): String =
+    val b = new StringBuilder; var i = 0; val n = s.length
+    while i < n do
+      val c = s(i)
+      if c == '/' && i+1 < n && s(i+1) == '/' then { while i < n && s(i) != '\n' do i += 1 }
+      else if c == '/' && i+1 < n && s(i+1) == '*' then { i += 2; while i+1 < n && !(s(i)=='*'&&s(i+1)=='/') do i += 1; i += 2 }
+      else if c == '"' && i+2 < n && s(i+1)=='"' && s(i+2)=='"' then { i += 3; while i+2 < n && !(s(i)=='"'&&s(i+1)=='"'&&s(i+2)=='"') do i += 1; i += 3 }
+      else if c == '"' then { i += 1; while i < n && s(i) != '"' do { if s(i)=='\\' then i += 1; i += 1 }; i += 1 }
+      else if c == '\'' then { i += 1; while i < n && s(i) != '\'' do { if s(i)=='\\' then i += 1; i += 1 }; i += 1; b.append(' ') }
+      else { b.append(c); i += 1 }
+    b.toString
+
   /** returns (out, clamped, skipped[preview, suspects], fallthroughVocab[token, count desc]).
     * A candidate unit is CLAMPED only if its rendered English is allowlist-clean (no suspect Swedish token);
     * otherwise it stays Swedish and its suspect tokens are logged (the fall-through BR wants tracked). */
@@ -130,11 +150,12 @@ object Apply:
         else
           val en = Glossary.render(s)
           val enBody = Glossary.render(c)
-          if en != s && Allow.isClean(enBody) then
+          val gateBody = stripCode(enBody) // gate on identifiers only; comments/strings handled downstream
+          if en != s && Allow.isClean(gateBody) then
             clamped += ((c.replace("\n", "⏎").take(70), content(en, k).replace("\n", "⏎").take(70)))
             clamp(s, en, k)
           else
-            val susp = Allow.suspects(enBody)
+            val susp = Allow.suspects(gateBody)
             if susp.nonEmpty || Code.swedishish(c) then
               skipped += ((c.replace("\n", "⏎").take(70), susp))
               susp.foreach(w => fall(w) += 1)
