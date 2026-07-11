@@ -153,17 +153,20 @@ object Apply:
 
   private val slideBegin = raw"(?s)^\\begin\{(Slide|SlideExtra|SlideSimple)\}".r
   private val slideEnd   = raw"(?s)^\\end\{(Slide|SlideExtra|SlideSimple)\}".r
-  private case class Info(k: String, sv: String, en: String, clean: Boolean, susp: Seq[String], group: Int)
+  // clampable = has a real rename AND no residual suspect Swedish; susp = un-clampable Swedish identifiers/output
+  private case class Info(k: String, sv: String, en: String, clampable: Boolean, susp: Seq[String], group: Int)
 
   /** returns (out, clamped[sv,en], skipped[preview,suspects], fallthroughVocab[token,count], suppressed[preview]).
-    * SLIDE-LEVEL gating: a candidate unit is clamped only if its rendered English is allowlist-clean AND every
-    * other translatable code unit on the SAME \begin{Slide}...\end{Slide} is also clean. This prevents mixed-
-    * language slides (define-in-English / use-in-Swedish) under partial glossary coverage -- a slide clamps
-    * all-or-nothing. Units OUTSIDE any slide (e.g. compendium continuous text) fall back to per-unit. A clean
-    * unit held back because a slide-mate is dirty is reported as `suppressed` (the coupling cost / worklist). */
+    * SLIDE-LEVEL gating: a candidate unit is clamped only if it is clampable AND no other unit on the SAME
+    * \begin{Slide}...\end{Slide} has residual (un-clampable) Swedish. This prevents mixed-language slides
+    * (define-in-English / use-in-Swedish) under partial glossary coverage -- a slide clamps all-or-nothing.
+    * Units OUTSIDE any slide (e.g. compendium continuous text) fall back to per-unit. A clampable unit held
+    * back because a slide-mate is dirty is reported as `suppressed` (the coupling cost / worklist).
+    * A unit with NOTHING to translate (no glossary id, only a downstream-handled comment) is neither clamped
+    * nor dirtying -- it is benign and left as-is. */
   def apply(src: String): (String, Seq[(String, String)], Seq[(String, Seq[String])], Seq[(String, Int)], Seq[String]) =
     val (masked, spans, _) = Latex.mask(src, stripEng = false)
-    // ---- pass 1: analyse each span (candidate?/clean?/suspects) and assign a slide-group id (-1 = outside) ----
+    // ---- pass 1: analyse each span (candidate?/clampable?/suspects) and assign a slide-group id (-1 = outside) ----
     val infos = new Array[Info](spans.size)
     var gid = -1; var cur = -1
     for idx <- spans.indices do
@@ -177,9 +180,12 @@ object Apply:
           if !(Code.swedishish(c) || Glossary.touches(s)) then Info("", s, s, false, Nil, cur)
           else
             val en = Glossary.render(s)
-            val gateBody = stripComments(Glossary.render(c)) // gate ignores comments (downstream); strings kept
-            val clean = en != s && Allow.isClean(gateBody)
-            Info(k, s, en, clean, if clean then Nil else Allow.suspects(gateBody), cur)
+            // gate ignores comments (downstream) but keeps strings; also drop REPL object-identity hashcodes
+            // (`Gurka@15f11bfb`, `A@5faeada1`) whose hex letter-runs (bfb/faeada/eee) are nondeterministic junk,
+            // not Swedish. `@tailrec`/`@main` survive (a non-hex letter stops the match).
+            val gateBody = stripComments(Glossary.render(c)).replaceAll("@[0-9a-fA-F]+", "")
+            val susp = Allow.suspects(gateBody)
+            Info(k, s, en, en != s && susp.isEmpty, susp, cur)
       if slideEnd.findPrefixMatchOf(s).isDefined then cur = -1
     // Swedish glossary identifier sitting in a code-display context we CANNOT clamp: a \code/\texttt/\lstinline
     // inside a masked-whole span (tikzpicture is a verbatimEnv, \texttt is maskWhole) — the tool never sees it
@@ -189,9 +195,10 @@ object Apply:
     def codeDisplaySwedish(s: String): Boolean =
       Glossary.touches(s) &&
         Seq("\\code", "\\jcode", "\\lstinline", "\\verb", "\\texttt").exists(s.contains)
-    // a slide-group is un-clampable if ANY candidate unit is dirty OR any non-candidate span hides code-Swedish
+    // a slide-group is dirty (un-clampable) if ANY candidate has residual suspects OR any non-candidate span
+    // hides code-Swedish. A benign candidate (nothing to translate, no suspects) does NOT dirty the slide.
     val dirtyGroups = infos.iterator.filter { in =>
-      in.group >= 0 && (if in.k.nonEmpty then !in.clean else codeDisplaySwedish(in.sv))
+      in.group >= 0 && (if in.k.nonEmpty then in.susp.nonEmpty else codeDisplaySwedish(in.sv))
     }.map(_.group).toSet
     // ---- pass 2: build output + logs ----
     val clamped = collection.mutable.ArrayBuffer[(String, String)]()
@@ -201,16 +208,16 @@ object Apply:
     val spans2 = infos.map { in =>
       if in.k.isEmpty then in.sv
       else
-        val doClamp = if in.group >= 0 then in.clean && !dirtyGroups.contains(in.group) else in.clean
+        val doClamp = in.clampable && (in.group < 0 || !dirtyGroups.contains(in.group))
         val c = content(in.sv, in.k)
         if doClamp then
           clamped += ((c.replace("\n", "⏎").take(70), content(in.en, in.k).replace("\n", "⏎").take(70)))
           clamp(in.sv, in.en, in.k)
         else
-          if in.clean then suppressed += c.replace("\n", "⏎").take(70) // clean, but a slide-mate is dirty
-          else if in.susp.nonEmpty || Code.swedishish(c) then
+          if in.clampable then suppressed += c.replace("\n", "⏎").take(70) // clampable, but a slide-mate is dirty
+          else if in.susp.nonEmpty then
             skipped += ((c.replace("\n", "⏎").take(70), in.susp)); in.susp.foreach(w => fall(w) += 1)
-          in.sv
+          in.sv // benign (nothing to translate) or dirty -> keep original
     }
     val fallVocab = fall.toSeq.sortBy { case (w, n) => (-n, w) }
     (Latex.restore(masked, spans2.toVector), clamped.toSeq, skipped.toSeq, fallVocab, suppressed.toSeq)
