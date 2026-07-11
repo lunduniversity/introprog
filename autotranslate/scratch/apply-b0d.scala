@@ -36,6 +36,10 @@ object Glossary:
     // "bastyp"/"subtyp" (concepts, translated as prose). render() only touches code spans, so these
     // rename the CODE identifiers only, never the prose term.
     "Bastyp" -> "BaseType", "Subtyp1" -> "Subtype1", "Subtyp2" -> "Subtype2",
+    // lect-w10-extends demo identifiers (BR-ratified this session): encapsulation + inheritance examples.
+    // gEllerT = "Gurka eller Tomat" -> cOrT (Cucumber or Tomato); minHemlis/avslöjad = secret/reveal demo.
+    "gEllerT" -> "cOrT", "minHemlis" -> "mySecret", "vårHemlis" -> "ourSecret", "avslöjad" -> "revealed",
+    "pris" -> "price", "alternativ" -> "alternative", "StorGurkan" -> "BigCucumber",
     // CARDS cluster (w06-patterns) — BR-RATIFIED 2026-06-30 (sameColourSuit + Färg->Suit confirmed).
     // NOTE: Färg->Suit is CARDS-CONTEXT-ONLY; a kojo/colour file needs Färg->Colour (apply per-context).
     "Färg" -> "Suit", "Kortlek" -> "Deck",
@@ -52,6 +56,12 @@ object Glossary:
     "gurka är gott ibland..." -> "cucumber is tasty sometimes...",
     "Skalas med skalare." -> "Peeled with a peeler.",
     "Skållas." -> "Blanched.",  // BR: culinary term for peeling tomatoes (skålla = blanch), not "scald"
+    // lect-w10-extends output/string data (BR-ratified this session). Applied everywhere in a span, so they
+    // cover both the string literal and the REPL echo (e.g. `println(" Städa Städa")` + `... Städa Städa`).
+    "Det går precis lika bra med selleri!" -> "Celery works just as well!",
+    "kan kanske också funka med en betongpelare" -> "could maybe also work with a concrete pillar",
+    "Error: p är ej student; program saknas" -> "Error: p is not a student; program missing",
+    "Städa" -> "Clean", "Prata" -> "Talk", "hej" -> "hi",
   ).sortBy(-_._1.length)
 
   private val tok: Regex = "[A-Za-zÅÄÖåäö_][A-Za-z0-9ÅÄÖåäö_]*".r
@@ -92,6 +102,8 @@ object Allow:
     // Scala stdlib + English words the dict misses, and all-lowercase LaTeX listing/font option keys
     // captured from code-env optional args (\begin{Code}[basicstyle=...\ttfamily\selectfont]) — never Swedish:
     "println", "instantiated", "basicstyle", "ttfamily", "selectfont", "numberstyle",
+    // proper nouns kept verbatim in examples (BR): a personal-name demo, not a translatable identifier.
+    "björn",
   )
   private def subwords(s: String): Iterator[String] =
     "[A-Za-zÅÄÖåäö_]+".r.findAllIn(s).iterator
@@ -222,7 +234,25 @@ object Apply:
     val fallVocab = fall.toSeq.sortBy { case (w, n) => (-n, w) }
     (Latex.restore(masked, spans2.toVector), clamped.toSeq, skipped.toSeq, fallVocab, suppressed.toSeq)
 
+/** COMPILE GATE (--verify-examples <file.scala>...): render each given .scala through the SAME Glossary and
+  * compile them together (one scala-cli invocation). "Only compilable code should pass": a glossary rename is
+  * accepted only if the English programs still compile. Pass the self-contained, glossary-relevant files that
+  * form one compilation unit (e.g. vego1.scala + vego1Test.scala, which imports exempelVego1.*) so cross-file
+  * renames are verified consistent. Prints the compiler diagnostics and a PASS/FAIL verdict. */
+def verifyExamples(files: Seq[os.Path]): Unit =
+  val tmp = os.temp.dir(prefix = "b0d-verify")
+  for f <- files do os.write.over(tmp / f.last, Glossary.render(os.read(f)))
+  println(s"rendered ${files.size} .scala files -> $tmp; compiling with scala-cli...")
+  val r = os.proc("scala-cli", "compile", "--server=false", tmp.toString)
+    .call(check = false, mergeErrIntoOut = true, stdout = os.Pipe)
+  r.out.text().linesIterator
+    .filterNot(l => Seq("Checking", "Checked", "Downloading", "Downloaded", "Compiling", "project root").exists(l.contains))
+    .filter(_.trim.nonEmpty).take(40).foreach(println)
+  println(if r.exitCode == 0 then s"COMPILE OK — ${files.size} rendered example files compile"
+          else s"COMPILE FAILED (exit ${r.exitCode}) — glossary rename breaks the English project")
+
 @main def run(args: String*): Unit =
+  if args.headOption.contains("--verify-examples") then { verifyExamples(args.tail.map(a => os.Path(a, os.pwd))); return }
   val file = os.Path(args.head, os.pwd)
   val write = args.contains("--write")
   val src = os.read(file)
