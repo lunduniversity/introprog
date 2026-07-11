@@ -29,6 +29,13 @@ object Glossary:
     "ärÄtvärd" -> "isWorthEating", "skörd" -> "harvest", "ätvärda" -> "worthEating", "ärÄtbar" -> "isEdible",
     "anonymGrönsak" -> "anonymousVegetable",
     "skalningsmetod" -> "peelingMethod", "skalfaktor" -> "peelFactor", "ärSkalad" -> "isPeeled", "skala" -> "peel",
+    // VEGO plural inflections used as val-names in REPL examples (lect-w10-extends).
+    "gurkor" -> "cucumbers", "vikter" -> "weights",
+    // GENERIC OO example (lect-w10-extends) — placeholder type names in the arv/subtyp illustration:
+    // `trait Bastyp` with `class Subtyp1/Subtyp2`. NOT a domain cluster; distinct from the prose words
+    // "bastyp"/"subtyp" (concepts, translated as prose). render() only touches code spans, so these
+    // rename the CODE identifiers only, never the prose term.
+    "Bastyp" -> "BaseType", "Subtyp1" -> "Subtype1", "Subtyp2" -> "Subtype2",
     // CARDS cluster (w06-patterns) — BR-RATIFIED 2026-06-30 (sameColourSuit + Färg->Suit confirmed).
     // NOTE: Färg->Suit is CARDS-CONTEXT-ONLY; a kojo/colour file needs Färg->Colour (apply per-context).
     "Färg" -> "Suit", "Kortlek" -> "Deck",
@@ -82,6 +89,9 @@ object Allow:
     // java/lib package parts + math abbreviations (false positives seen in the fall-through report):
     "java", "awt", "swing", "lang", "nio", "sql", "rgb", "nom", "denom", "div", "mul", "rem", "mod", "gcd",
     "lcm", "abs", "sqrt", "pow", "sin", "cos", "tan", "arr", "vec", "buf", "idx", "pos", "dim", "px",
+    // Scala stdlib + English words the dict misses, and all-lowercase LaTeX listing/font option keys
+    // captured from code-env optional args (\begin{Code}[basicstyle=...\ttfamily\selectfont]) — never Swedish:
+    "println", "instantiated", "basicstyle", "ttfamily", "selectfont", "numberstyle",
   )
   private def subwords(s: String): Iterator[String] =
     "[A-Za-zÅÄÖåäö_]+".r.findAllIn(s).iterator
@@ -112,24 +122,33 @@ object Apply:
     case "env"    => s"\\ifswedish\n$sv\n\\else\n$en\n\\fi"
     case _        => sv
 
-  // Strip //-comments, /* */ comments, and string literals so the leak GATE sees CODE IDENTIFIERS ONLY.
-  // Comment/string Swedish is translated DOWNSTREAM by translateCodeEnvBodies inside the \else branch (see
-  // Translate.scala: "composes with apply-b0d clamps: it also translates the comments inside an \else"), so
-  // it must NOT block an identifier clamp. This was the w10-extends false-skip: a Swedish comment
-  // `// implementation saknas, inget =` skipped a fully-glossaried trait/case-class block, leaving that
-  // \begin{Code} Swedish while its adjacent (comment-free) REPL clamped to English — a mixed-language slide.
-  // NOTE: REPL *output* text and prose are NOT string literals, so stripCode keeps them and they still gate
-  // (correct — Code.translate translates comments + string literals, but not bare REPL output).
-  def stripCode(s: String): String =
+  // Strip //-comments and /* */ comments (only) for the leak GATE, but KEEP string/char literals. Comment
+  // Swedish is translated DOWNSTREAM by translateCodeEnvBodies inside the \else branch (see Translate.scala:
+  // "composes with apply-b0d clamps: it also translates the comments inside an \else"), so it must NOT block
+  // an identifier clamp -- this fixes the w10-extends false-skip where a Swedish comment
+  // `// implementation saknas, inget =` skipped a fully-glossaried trait/case-class block.
+  // Strings are KEPT deliberately: render() renames identifier tokens even INSIDE a string literal, so a
+  // Swedish word used as string DATA (e.g. the n-gram demo Vector("fem","gurkor","aer",...)) gets half-
+  // renamed to "cucumbers" while "fem"/"aer" stay Swedish. Keeping strings in the gate lets that residual
+  // Swedish block the clamp (a skipped unit outputs the ORIGINAL, discarding the partial render). String-
+  // aware so a `//` inside a string literal is not mistaken for a comment.
+  def stripComments(s: String): String =
     val b = new StringBuilder; var i = 0; val n = s.length
+    def copyDelimited(q: Char): Unit = // append a "..." or '...' literal verbatim (handles \-escapes)
+      b += s(i); i += 1
+      while i < n && s(i) != q do { if s(i)=='\\' && i+1 < n then { b += s(i); i += 1 }; if i < n then { b += s(i); i += 1 } }
+      if i < n then { b += s(i); i += 1 }
     while i < n do
       val c = s(i)
       if c == '/' && i+1 < n && s(i+1) == '/' then { while i < n && s(i) != '\n' do i += 1 }
       else if c == '/' && i+1 < n && s(i+1) == '*' then { i += 2; while i+1 < n && !(s(i)=='*'&&s(i+1)=='/') do i += 1; i += 2 }
-      else if c == '"' && i+2 < n && s(i+1)=='"' && s(i+2)=='"' then { i += 3; while i+2 < n && !(s(i)=='"'&&s(i+1)=='"'&&s(i+2)=='"') do i += 1; i += 3 }
-      else if c == '"' then { i += 1; while i < n && s(i) != '"' do { if s(i)=='\\' then i += 1; i += 1 }; i += 1 }
-      else if c == '\'' then { i += 1; while i < n && s(i) != '\'' do { if s(i)=='\\' then i += 1; i += 1 }; i += 1; b.append(' ') }
-      else { b.append(c); i += 1 }
+      else if c == '"' && i+2 < n && s(i+1)=='"' && s(i+2)=='"' then
+        b ++= "\"\"\""; i += 3
+        while i+2 < n && !(s(i)=='"'&&s(i+1)=='"'&&s(i+2)=='"') do { b += s(i); i += 1 }
+        if i+2 < n then { b ++= "\"\"\""; i += 3 } else while i < n do { b += s(i); i += 1 }
+      else if c == '"' then copyDelimited('"')
+      else if c == '\'' then copyDelimited('\'')
+      else { b += c; i += 1 }
     b.toString
 
   /** returns (out, clamped, skipped[preview, suspects], fallthroughVocab[token, count desc]).
@@ -150,7 +169,7 @@ object Apply:
         else
           val en = Glossary.render(s)
           val enBody = Glossary.render(c)
-          val gateBody = stripCode(enBody) // gate on identifiers only; comments/strings handled downstream
+          val gateBody = stripComments(enBody) // gate ignores comments (handled downstream); strings kept
           if en != s && Allow.isClean(gateBody) then
             clamped += ((c.replace("\n", "⏎").take(70), content(en, k).replace("\n", "⏎").take(70)))
             clamp(s, en, k)
