@@ -151,43 +151,75 @@ object Apply:
       else { b += c; i += 1 }
     b.toString
 
-  /** returns (out, clamped, skipped[preview, suspects], fallthroughVocab[token, count desc]).
-    * A candidate unit is CLAMPED only if its rendered English is allowlist-clean (no suspect Swedish token);
-    * otherwise it stays Swedish and its suspect tokens are logged (the fall-through BR wants tracked). */
-  def apply(src: String): (String, Seq[(String, String)], Seq[(String, Seq[String])], Seq[(String, Int)]) =
+  private val slideBegin = raw"(?s)^\\begin\{(Slide|SlideExtra|SlideSimple)\}".r
+  private val slideEnd   = raw"(?s)^\\end\{(Slide|SlideExtra|SlideSimple)\}".r
+  private case class Info(k: String, sv: String, en: String, clean: Boolean, susp: Seq[String], group: Int)
+
+  /** returns (out, clamped[sv,en], skipped[preview,suspects], fallthroughVocab[token,count], suppressed[preview]).
+    * SLIDE-LEVEL gating: a candidate unit is clamped only if its rendered English is allowlist-clean AND every
+    * other translatable code unit on the SAME \begin{Slide}...\end{Slide} is also clean. This prevents mixed-
+    * language slides (define-in-English / use-in-Swedish) under partial glossary coverage -- a slide clamps
+    * all-or-nothing. Units OUTSIDE any slide (e.g. compendium continuous text) fall back to per-unit. A clean
+    * unit held back because a slide-mate is dirty is reported as `suppressed` (the coupling cost / worklist). */
+  def apply(src: String): (String, Seq[(String, String)], Seq[(String, Seq[String])], Seq[(String, Int)], Seq[String]) =
     val (masked, spans, _) = Latex.mask(src, stripEng = false)
+    // ---- pass 1: analyse each span (candidate?/clean?/suspects) and assign a slide-group id (-1 = outside) ----
+    val infos = new Array[Info](spans.size)
+    var gid = -1; var cur = -1
+    for idx <- spans.indices do
+      val s = spans(idx)
+      if slideBegin.findPrefixMatchOf(s).isDefined then { gid += 1; cur = gid }
+      val k = kind(s)
+      infos(idx) =
+        if k.isEmpty then Info("", s, s, false, Nil, cur)
+        else
+          val c = content(s, k)
+          if !(Code.swedishish(c) || Glossary.touches(s)) then Info("", s, s, false, Nil, cur)
+          else
+            val en = Glossary.render(s)
+            val gateBody = stripComments(Glossary.render(c)) // gate ignores comments (downstream); strings kept
+            val clean = en != s && Allow.isClean(gateBody)
+            Info(k, s, en, clean, if clean then Nil else Allow.suspects(gateBody), cur)
+      if slideEnd.findPrefixMatchOf(s).isDefined then cur = -1
+    // Swedish glossary identifier sitting in a code-display context we CANNOT clamp: a \code/\texttt/\lstinline
+    // inside a masked-whole span (tikzpicture is a verbatimEnv, \texttt is maskWhole) — the tool never sees it
+    // as a candidate, so it stays Swedish in BOTH builds. If such a span shares a slide with a clamped unit the
+    // slide goes mixed (define-English / diagram-Swedish). Treat it as dirtying the slide. NOT triggered by
+    // bare prose Swedish (no code-display wrapper) -- that is translated downstream by the prose pass.
+    def codeDisplaySwedish(s: String): Boolean =
+      Glossary.touches(s) &&
+        Seq("\\code", "\\jcode", "\\lstinline", "\\verb", "\\texttt").exists(s.contains)
+    // a slide-group is un-clampable if ANY candidate unit is dirty OR any non-candidate span hides code-Swedish
+    val dirtyGroups = infos.iterator.filter { in =>
+      in.group >= 0 && (if in.k.nonEmpty then !in.clean else codeDisplaySwedish(in.sv))
+    }.map(_.group).toSet
+    // ---- pass 2: build output + logs ----
     val clamped = collection.mutable.ArrayBuffer[(String, String)]()
     val skipped = collection.mutable.ArrayBuffer[(String, Seq[String])]()
+    val suppressed = collection.mutable.ArrayBuffer[String]()
     val fall = collection.mutable.Map[String, Int]().withDefaultValue(0)
-    val spans2 = spans.map { s =>
-      val k = kind(s)
-      if k.isEmpty then s
+    val spans2 = infos.map { in =>
+      if in.k.isEmpty then in.sv
       else
-        val c = content(s, k)
-        val candidate = Code.swedishish(c) || Glossary.touches(s)
-        if !candidate then s
+        val doClamp = if in.group >= 0 then in.clean && !dirtyGroups.contains(in.group) else in.clean
+        val c = content(in.sv, in.k)
+        if doClamp then
+          clamped += ((c.replace("\n", "⏎").take(70), content(in.en, in.k).replace("\n", "⏎").take(70)))
+          clamp(in.sv, in.en, in.k)
         else
-          val en = Glossary.render(s)
-          val enBody = Glossary.render(c)
-          val gateBody = stripComments(enBody) // gate ignores comments (handled downstream); strings kept
-          if en != s && Allow.isClean(gateBody) then
-            clamped += ((c.replace("\n", "⏎").take(70), content(en, k).replace("\n", "⏎").take(70)))
-            clamp(s, en, k)
-          else
-            val susp = Allow.suspects(gateBody)
-            if susp.nonEmpty || Code.swedishish(c) then
-              skipped += ((c.replace("\n", "⏎").take(70), susp))
-              susp.foreach(w => fall(w) += 1)
-            s
+          if in.clean then suppressed += c.replace("\n", "⏎").take(70) // clean, but a slide-mate is dirty
+          else if in.susp.nonEmpty || Code.swedishish(c) then
+            skipped += ((c.replace("\n", "⏎").take(70), in.susp)); in.susp.foreach(w => fall(w) += 1)
+          in.sv
     }
     val fallVocab = fall.toSeq.sortBy { case (w, n) => (-n, w) }
-    (Latex.restore(masked, spans2), clamped.toSeq, skipped.toSeq, fallVocab)
+    (Latex.restore(masked, spans2.toVector), clamped.toSeq, skipped.toSeq, fallVocab, suppressed.toSeq)
 
 @main def run(args: String*): Unit =
   val file = os.Path(args.head, os.pwd)
   val write = args.contains("--write")
   val src = os.read(file)
-  val (out, clamped, skipped, fallVocab) = Apply(src)
+  val (out, clamped, skipped, fallVocab, suppressed) = Apply(src)
 
   // structural self-validation (same as b0.scala)
   val (m1, s1, _) = Latex.mask(out, stripEng = false)
@@ -202,7 +234,7 @@ object Apply:
   // wrapped in shell (no `> file`, no `2>/dev/null`, no `echo`). stdout stays a short summary.
   val report = new StringBuilder
   report ++= s"=== fused B0+D ${if write then "WRITE" else "dry-run"}: $file ===\n"
-  report ++= s"clamped (translated) units: ${clamped.size}   |   skipped (not fully covered): ${skipped.size}\n"
+  report ++= s"clamped (translated) units: ${clamped.size}   |   skipped (not fully covered): ${skipped.size}   |   suppressed (clean, but a slide-mate is dirty): ${suppressed.size}\n"
   report ++= s"self-validation: round-trip=$roundTrips brace=$braceOk ifswedishDelta=$ifswDelta (expect=${clamped.size}) -> ${if valOk then "OK" else "CHECK"}\n"
   report ++= s"fall-through vocabulary (distinct suspect Swedish tokens left untranslated): ${fallVocab.size}\n\n"
   // The KEY review artefact (BR): every suspect token the allowlist gate left Swedish, most-frequent first.
@@ -213,7 +245,11 @@ object Apply:
   for (sv, en) <- clamped do { report ++= s"  SV: $sv\n"; report ++= s"  EN: $en\n" }
   report ++= "\n--- skipped candidate units (blocking suspect tokens shown) ---\n"
   for (c, susp) <- skipped do { report ++= s"  UNIT: $c\n"; report ++= s"    suspects: ${susp.mkString(", ")}\n" }
+  // SLIDE-GATING coupling cost: units that ARE clean but were held back because a slide-mate is dirty.
+  // Clamping only these would create a mixed-language slide; fixing their slide's blockers (above) unlocks them.
+  report ++= "\n--- suppressed by slide-gating (clean units on a slide that has a dirty unit) ---\n"
+  for c <- suppressed do report ++= s"  UNIT: $c\n"
   val reportPath = file / os.up / os.up / os.up / "autotranslate" / "scratch" / "apply-b0d-report.txt"
   os.write.over(reportPath, report.toString)
   if write then { os.write.over(file, out); println(s"[--write] applied ${clamped.size} clamps to $file") }
-  println(s"B0+D ${if write then "WRITE" else "dry-run"}: clamped=${clamped.size} skipped=${skipped.size} fallthrough=${fallVocab.size} validation=${if valOk then "OK" else "CHECK"} -> report: ${reportPath.relativeTo(os.pwd)}")
+  println(s"B0+D ${if write then "WRITE" else "dry-run"}: clamped=${clamped.size} skipped=${skipped.size} suppressed=${suppressed.size} fallthrough=${fallVocab.size} validation=${if valOk then "OK" else "CHECK"} -> report: ${reportPath.relativeTo(os.pwd)}")
