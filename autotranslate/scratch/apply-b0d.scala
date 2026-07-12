@@ -153,17 +153,24 @@ object Apply:
       b += s(i); i += 1
       while i < n && s(i) != q do { if s(i)=='\\' && i+1 < n then { b += s(i); i += 1 }; if i < n then { b += s(i); i += 1 } }
       if i < n then { b += s(i); i += 1 }
+    // idiomatic dispatch on a 3-char lookahead (JohanbcEkberg's review suggestion, PR #940): Option via
+    // `lift` removes the manual i+1/i+2 bounds checks. Case order matters: // before /*, """ before ".
     while i < n do
-      val c = s(i)
-      if c == '/' && i+1 < n && s(i+1) == '/' then { while i < n && s(i) != '\n' do i += 1 }
-      else if c == '/' && i+1 < n && s(i+1) == '*' then { i += 2; while i+1 < n && !(s(i)=='*'&&s(i+1)=='/') do i += 1; i += 2 }
-      else if c == '"' && i+2 < n && s(i+1)=='"' && s(i+2)=='"' then
-        b ++= "\"\"\""; i += 3
-        while i+2 < n && !(s(i)=='"'&&s(i+1)=='"'&&s(i+2)=='"') do { b += s(i); i += 1 }
-        if i+2 < n then { b ++= "\"\"\""; i += 3 } else while i < n do { b += s(i); i += 1 }
-      else if c == '"' then copyDelimited('"')
-      else if c == '\'' then copyDelimited('\'')
-      else { b += c; i += 1 }
+      (s.lift(i), s.lift(i + 1), s.lift(i + 2)) match
+        case (Some('/'), Some('/'), _) =>
+          while i < n && s(i) != '\n' do i += 1
+        case (Some('/'), Some('*'), _) =>
+          i += 2
+          while i + 1 < n && !(s(i) == '*' && s(i + 1) == '/') do i += 1
+          i += 2
+        case (Some('"'), Some('"'), Some('"')) =>
+          b ++= "\"\"\""; i += 3
+          while i + 2 < n && !(s(i) == '"' && s(i + 1) == '"' && s(i + 2) == '"') do { b += s(i); i += 1 }
+          if i + 2 < n then { b ++= "\"\"\""; i += 3 } else while i < n do { b += s(i); i += 1 }
+        case (Some('"'), _, _)  => copyDelimited('"')
+        case (Some('\''), _, _) => copyDelimited('\'')
+        case (Some(c), _, _)    => b += c; i += 1
+        case _                  => i += 1 // unreachable (loop guard ensures s.lift(i) is Some)
     b.toString
 
   private val slideBegin = raw"(?s)^\\begin\{(Slide|SlideExtra|SlideSimple)\}".r
