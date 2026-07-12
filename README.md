@@ -120,7 +120,7 @@ Because these directories are regenerated from the Swedish source, **never edit 
 
 ### AI assistants and commit attribution
 
-* AI coding assistants are welcome in this project. We only ask that the git history stays clean and human-attributable.
+* Contributors to this project may use AI agents in their work to improve the introprog course material, if applied responsibly. We only ask that the git history stays clean and human-attributable.
 * **Do not credit an assistant as a commit author or co-author.** Please leave `Co-Authored-By: <assistant>` trailers and "Generated with <tool>" badges out of your commit messages. Each commit is attributed to the human contributor who makes the change and stands behind it.
 * **Instead, tell us how you used an assistant in the pull request.** If an AI assistant helped, a short honest note in the PR description or a comment (what you used it for, and what you checked yourself) is welcome and genuinely useful, and tells a future reader far more than a boilerplate trailer.
 * The point is not to discourage AI help. It is to keep authorship and responsibility clearly human, and to put any AI assistance where it is most informative: in the discussion of the change.
