@@ -1,4 +1,3 @@
-import org.bouncycastle.pqc.jcajce.provider.lms.LMSSignatureSpi.generic
 import sbt._
 import Process._
 import Keys._

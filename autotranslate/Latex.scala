@@ -218,7 +218,12 @@ object Latex:
               // so pdflatex skips it — and conditional skip-scanning never expands the content, making
               // this a robust escape hatch for build-breaking constructs. An optional \else branch
               // (English replacement) rides along verbatim and shows on the English side.
-              val e = matchFi(text, j)
+              // Absorb a trailing `{}` (the space-guard emitted by inline clamps, since `\fi` is a control
+              // word and TeX would swallow a following space -> "Xoch"). Keeping it INSIDE this one span
+              // means an inline clamp masks to a SINGLE placeholder exactly like the bare \code{} it
+              // replaced, so a clamped prose unit keeps the same cache key (stays a model-free cache hit).
+              var e = matchFi(text, j)
+              if e + 1 < n && text(e) == '{' && text(e + 1) == '}' then e += 2
               protect(text.substring(i, e)); i = e
             case nm if verbatimInline.contains(nm) =>
               var k = j

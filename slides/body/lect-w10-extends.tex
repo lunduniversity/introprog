@@ -196,6 +196,7 @@ class Player(val snake: Snake)
 \end{Slide}
 
 \begin{Slide}{Behovet av gemensam bastyp}\SlideFontSmall
+\ifswedish
 \begin{REPLsmall}
 scala> case class Gurka(vikt: Int)
 
@@ -216,10 +217,33 @@ scala> grönsaker.map(_.vikt)
   |              ^^^^^^
   |              value vikt is not a member of Gurka | Tomat
 \end{REPLsmall}
-Hur får vi detta att fungera som vi vill? \pause\\$\rightarrow$ Skapa en bastyp \Emph{bastyp} med gemensamt attribut \code{vikt}!
+\else
+\begin{REPLsmall}
+scala> case class Cucumber(weight: Int)
+
+scala> case class Tomato(weight: Int)
+
+scala> val cucumbers = Vector(Cucumber(200), Cucumber(300))
+val cucumbers: Vector[Cucumber] = Vector(Cucumber(200), Cucumber(300))
+
+scala> cucumbers.map(_.weight)
+res0: Vector[Int] = Vector(200, 300)
+
+scala> val vegetables = Vector(Cucumber(200), Tomato(42))
+val vegetables: Vector[Cucumber | Tomato] = Vector(Cucumber(200), Tomato(42))
+
+scala> vegetables.map(_.weight)
+-- [E008] Not Found Error: --------------------------
+1 |vegetables.map(_.weight)
+  |              ^^^^^^
+  |              value weight is not a member of Cucumber | Tomato
+\end{REPLsmall}
+\fi{}
+Hur får vi detta att fungera som vi vill? \pause\\$\rightarrow$ Skapa en bastyp \Emph{bastyp} med gemensamt attribut \ifswedish\code{vikt}\else\code{weight}\fi{}!
 \end{Slide}
 
 \begin{Slide}{Varför syns inte gemensam medlem i en typunion?}
+\ifswedish
 \begin{REPLsmall}
 scala> val grönsaker = Vector(Gurka(200), Tomat(42))
 val grönsaker: Vector[Gurka | Tomat] = Vector(Gurka@15f11bfb,Tomat@16a499d1)
@@ -230,12 +254,25 @@ scala> grönsaker.map(_.vikt)
   |              ^^^^^^
   |              value vikt is not a member of Gurka | Tomat
 \end{REPLsmall}
+\else
+\begin{REPLsmall}
+scala> val vegetables = Vector(Cucumber(200), Tomato(42))
+val vegetables: Vector[Cucumber | Tomato] = Vector(Cucumber@15f11bfb,Tomato@16a499d1)
+
+scala> vegetables.map(_.weight)
+-- [E008] Not Found Error: --------------------------
+1 |vegetables.map(_.weight)
+  |              ^^^^^^
+  |              value weight is not a member of Cucumber | Tomato
+\end{REPLsmall}
+\fi{}
 \begin{itemize}\SlideFontSmall
-  \item Typerna \code{Grönsak} och \code{Tomat} är \Alert{orelaterade}. (\code{AnyRef} saknar \code{vikt})
+  \item Typerna \ifswedish\code{Grönsak}\else\code{Vegetable}\fi{} och \ifswedish\code{Tomat}\else\code{Tomato}\fi{} är \Alert{orelaterade}. (\code{AnyRef} saknar \ifswedish\code{vikt}\else\code{weight}\fi{})
   \item En medlem som råkar ha samma namn har inte alltid samma innebörd.
   \item I Scala måste du explicit relatera medlemmarna genom \Emph{arv} av bastyp med gemensam medlem, eller så får du \Alert{matcha} på unionens delar. 
   \pause\item Du kan erbjuda en sådan matchning som en \Emph{extensionsmetod}:
 \end{itemize}
+\ifswedish
 \begin{REPLsmall}
 scala> extension (gEllerT: Gurka | Tomat) def vikt = gEllerT match
          case g: Gurka => g.vikt
@@ -244,6 +281,16 @@ scala> extension (gEllerT: Gurka | Tomat) def vikt = gEllerT match
 scala> val vikter = grönsaker.map(_.vikt)
 val vikter: Vector[Int] = Vector(200, 42)
 \end{REPLsmall}
+\else
+\begin{REPLsmall}
+scala> extension (cOrT: Cucumber | Tomato) def weight = cOrT match
+         case g: Cucumber => g.weight
+         case t: Tomato => t.weight
+
+scala> val weights = vegetables.map(_.weight)
+val weights: Vector[Int] = Vector(200, 42)
+\end{REPLsmall}
+\fi{}
 \end{Slide}
 
 
@@ -291,7 +338,8 @@ Bastyp som ej ska instansieras direkt är \Alert{abstrakt} (visas med \emph{kurs
 
 
 \begin{Slide}{Skapa en gemensam bastyp med \texttt{trait} och \texttt{extends}}\SlideFontSmall
-Med en \code{trait Grönsak} kan klasserna \code{Gurka} och \code{Tomat} få en gemensam abstrakt \Emph{bastyp} genom att båda \Emph{subtyperna} gör \code{extends Grönsak}:
+Med en \ifswedish\code{trait Grönsak}\else\code{trait Vegetable}\fi{} kan klasserna \ifswedish\code{Gurka}\else\code{Cucumber}\fi{} och \ifswedish\code{Tomat}\else\code{Tomato}\fi{} få en gemensam abstrakt \Emph{bastyp} genom att båda \Emph{subtyperna} gör \ifswedish\code{extends Grönsak}\else\code{extends Vegetable}\fi{}:
+\ifswedish
 \begin{REPL}
 scala> trait Grönsak
 
@@ -304,8 +352,23 @@ val grönsaker: Vector[Grönsak] = Vector(Gurka(200), Tomat(42))
 
 
 \end{REPL}
+\else
+\begin{REPL}
+scala> trait Vegetable
+
+scala> case class Cucumber(weight: Int) extends Vegetable
+
+scala> case class Tomato(weight: Int) extends Vegetable
+
+scala> val vegetables = Vector(Cucumber(200), Tomato(42))
+val vegetables: Vector[Vegetable] = Vector(Cucumber(200), Tomato(42))
+
+
+\end{REPL}
+\fi{}
 \pause
 Men det är ännu \Alert{inte} som vi vill ha det:
+\ifswedish
 \begin{REPLnonum}
 scala> grönsaker.map(_.vikt)
 -- [E008] Not Found Error: --------------------------
@@ -313,6 +376,15 @@ scala> grönsaker.map(_.vikt)
   |              ^^^^^^
   |              value vikt is not a member of Grönsak
 \end{REPLnonum}
+\else
+\begin{REPLnonum}
+scala> vegetables.map(_.weight)
+-- [E008] Not Found Error: --------------------------
+1 |vegetables.map(_.weight)
+  |              ^^^^^^
+  |              value weight is not a member of Vegetable
+\end{REPLnonum}
+\fi{}
 \end{Slide}
 
 
@@ -357,8 +429,9 @@ Placera gemensamma medlemmar i bastypen:
 
 \begin{Slide}{Placera gemensamma delar i bastypen}
 \SlideFontSmall
-Vi inkluderar det gemensamma attributet \code{val vikt} som en \Emph{abstrakt medlem} i bastypen:
+Vi inkluderar det gemensamma attributet \ifswedish\code{val vikt}\else\code{val weight}\fi{} som en \Emph{abstrakt medlem} i bastypen:
 
+\ifswedish
 \begin{Code}
 trait Grönsak:
   val vikt: Int    // implementation saknas, inget =
@@ -367,7 +440,18 @@ case class Gurka(vikt: Int) extends Grönsak
 
 case class Tomat(vikt: Int) extends Grönsak
 \end{Code}
+\else
+\begin{Code}
+trait Vegetable:
+  val weight: Int    // implementation saknas, inget =
+
+case class Cucumber(weight: Int) extends Vegetable
+
+case class Tomato(weight: Int) extends Vegetable
+\end{Code}
+\fi{}
 Nu har du explicit sagt till kompilatorn att du vill att alla grönsaker har en vikt:
+\ifswedish
 \begin{REPLsmall}
 scala> val grönsaker = Vector(Gurka(200), Tomat(42))
 val grönsaker: Vector[Grönsak] = Vector(Gurka(200), Tomat(42))
@@ -375,7 +459,16 @@ val grönsaker: Vector[Grönsak] = Vector(Gurka(200), Tomat(42))
 scala> grönsaker.map(_.vikt)
 val res0: Vector[Int] = Vector(200, 42)
 \end{REPLsmall}
-Den abstrakta medlemmen \code{vikt} i den abstrakta typen \code{Grönsak} \Emph{implementeras} i en konkret subklass, här som en klassparameter.
+\else
+\begin{REPLsmall}
+scala> val vegetables = Vector(Cucumber(200), Tomato(42))
+val vegetables: Vector[Vegetable] = Vector(Cucumber(200), Tomato(42))
+
+scala> vegetables.map(_.weight)
+val res0: Vector[Int] = Vector(200, 42)
+\end{REPLsmall}
+\fi{}
+Den abstrakta medlemmen \ifswedish\code{vikt}\else\code{weight}\fi{} i den abstrakta typen \ifswedish\code{Grönsak}\else\code{Vegetable}\fi{} \Emph{implementeras} i en konkret subklass, här som en klassparameter.
 \end{Slide}
 
 
@@ -493,12 +586,21 @@ Alla dina egna typer ingår underförstått i Scalas typhierarki:
 
 \begin{Slide}{Vad används en trait till?}
 En \code{trait} kan användas för att skapa en bastyp som kan vara hemvist för gemensamma delar hos subtyper:
+\ifswedish
 \begin{Code}
 trait Bastyp { val x = 42 }                 // Bastyp har medlemmen x
 class Subtyp1 extends Bastyp { val y = 43 } // Subtyp1 ärver x, har även y
 class Subtyp2 extends Bastyp { val z = 44 } // Subtyp2 ärver x, har även z
 \end{Code}
+\else
+\begin{Code}
+trait BaseType { val x = 42 }                 // BaseType har medlemmen x
+class Subtype1 extends BaseType { val y = 43 } // Subtype1 ärver x, har även y
+class Subtype2 extends BaseType { val z = 44 } // Subtype2 ärver x, har även z
+\end{Code}
+\fi{}
 \pause\vspace{-0.5em}
+\ifswedish
 \begin{REPLsmall}
 scala> val a = new Subtyp1
 val a: Subtyp1 = Subtyp1@51016012
@@ -517,6 +619,26 @@ scala> new Bastyp
 --Error:
   Bastyp is a trait; it cannot be instantiated
 \end{REPLsmall}
+\else
+\begin{REPLsmall}
+scala> val a = new Subtype1
+val a: Subtype1 = Subtype1@51016012
+
+scala> a.x
+val res0: Int = 42
+
+scala> a.y
+val res1: Int = 43
+
+scala> a.z
+-- Error:
+  value z is not a member of Subtype1
+
+scala> new BaseType
+--Error:
+  BaseType is a trait; it cannot be instantiated
+\end{REPLsmall}
+\fi{}
 
 \end{Slide}
 
@@ -628,6 +750,7 @@ Det \emph{finns} tillfällen när \Alert{kodduplicering} \Emph{faktiskt är att 
 
 
 \begin{Slide}{Subtypspolymorfism och dynamisk bindning}\SlideFontTiny
+\ifswedish
 \begin{Code}[basicstyle=\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
 trait Robot { def work(): Unit }
 
@@ -637,7 +760,19 @@ case class CleaningBot(name: String) extends Robot:
 case class TalkingBot(name: String) extends Robot:
   def work(): Unit = println(" Prata Prata")
 \end{Code}
+\else
+\begin{Code}[basicstyle=\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
+trait Robot { def work(): Unit }
+
+case class CleaningBot(name: String) extends Robot:
+  def work(): Unit = println(" Clean Clean")
+
+case class TalkingBot(name: String) extends Robot:
+  def work(): Unit = println(" Talk Talk")
+\end{Code}
+\fi{}
 \Emph{Polymorfism} betyder ''många former''. Referenserna r och bot nedan kan ha olika ''former'', d.v.s de kan referera till olika sorters robotar. \\ \Emph{Dynamisk bindning} innebär att körtidstypen avgör vilken metod som körs.
+\ifswedish
 \begin{REPL}[numbers=left, basicstyle=\color{white}\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
 scala> def robotDoWork(bot: Robot) = { print(bot); bot.work() }
 
@@ -651,6 +786,21 @@ scala> r = TalkingBot("C3PO")
 scala> robotDoWork(r)
 TalkingBot(C3PO) Prata Prata
 \end{REPL}
+\else
+\begin{REPL}[numbers=left, basicstyle=\color{white}\SlideFontSize{6.2}{7.5}\ttfamily\selectfont]
+scala> def robotDoWork(bot: Robot) = { print(bot); bot.work() }
+
+scala> var r: Robot = CleaningBot("Wall-E")
+
+scala> robotDoWork(r)
+CleaningBot(Wall-E) Clean Clean
+
+scala> r = TalkingBot("C3PO")
+
+scala> robotDoWork(r)
+TalkingBot(C3PO) Talk Talk
+\end{REPL}
+\fi{}
 \end{Slide}
   
   
@@ -676,6 +826,7 @@ TalkingBot(C3PO) Prata Prata
 
 
 \begin{Slide}{Protected ger synlighet begränsad till subtyper}
+\ifswedish
 \begin{REPLsmall}
 scala> trait Super:
          private val minHemlis = 42
@@ -701,6 +852,33 @@ scala> s.vårHemlis
   Access to protected value vårHemlis not permitted because enclosing object
   is not a subclass of trait Super where target is defined
 \end{REPLsmall}
+\else
+\begin{REPLsmall}
+scala> trait Super:
+         private val mySecret = 42
+         protected val ourSecret = 42
+
+scala> class Sub extends Super { def revealed = mySecret }
+- Error: Not found: mySecret
+
+scala> class Sub extends Super { def revealed = ourSecret }
+
+scala> val s = Sub()
+val s: Sub = Sub@2eee9593
+
+scala> s.revealed
+val res0: Int = 42
+
+scala> s.mySecret
+-- Error: 
+  value mySecret is not a member of Sub - did you mean s.ourSecret?
+
+scala> s.ourSecret
+-- Error: 
+  Access to protected value ourSecret not permitted because enclosing object
+  is not a subclass of trait Super where target is defined
+\end{REPLsmall}
+\fi{}
 \end{Slide}
 
 
@@ -787,11 +965,19 @@ Testa körtidstyp med \code{isInstanceOf[Typ]}. Lova kompilatorn (och ta själv 
 \scalainputlisting[numbers=left,numberstyle=,basicstyle=\small\SlideFontSize{6.2}{7.6}\ttfamily\selectfont]{../compendium/examples/workspace/w07-inherit/src/personExample3.scala}
 \ifkompendium
 \noindent Om du i stället använder \code{match} så får du både typtest och typomvanling på ett smidigt och säkert sätt:
+\ifswedish
 \begin{Code}
   p match 
     case Student(_, _, program) => println(program)
     case _ => println("Error: p är ej student; program saknas")
 \end{Code}
+\else
+\begin{Code}
+  p match 
+    case Student(_, _, program) => println(program)
+    case _ => println("Error: p is not a student; program missing")
+\end{Code}
+\fi{}
 \fi
 \end{Slide}
 
@@ -804,6 +990,7 @@ Testa körtidstyp med \code{isInstanceOf[Typ]}. Lova kompilatorn (och ta själv 
 \ifkompendium \ExplainAnonymousClass \fi
 
 Om man har en abstrakt typ med saknade implementationer kan man fylla i det som fattas i dessa i ett extra block som ''hängs på'' vid instansiering:
+\ifswedish
 \begin{REPL}
 scala> trait Grönsak { val vikt: Int }
 // defined trait Grönsak
@@ -817,6 +1004,21 @@ scala> new Grönsak    // eller Grönsak()
 scala> new Grönsak { val vikt = 42 }
 val res0: Grönsak = anon1@4e3f2908
 \end{REPL}
+\else
+\begin{REPL}
+scala> trait Vegetable { val weight: Int }
+// defined trait Vegetable
+
+scala> new Vegetable    // eller Vegetable()
+-- Error:
+1 |new Vegetable
+  |    ^^^^^^^
+  |    Vegetable is a trait; it cannot be instantiated
+
+scala> new Vegetable { val weight = 42 }
+val res0: Vegetable = anon1@4e3f2908
+\end{REPL}
+\fi{}
 Man får då vad som kallas en \Emph{anonym klass}. (I detta fall en ganska konstig grönsak som inte är någon speciell sorts grönsak, men som ändå har en vikt.)
 
 \vspace{0.5em}
@@ -864,6 +1066,7 @@ Med en förseglad typhierarki kan du bara ärva bastypen inom samma kodfil.
 
 \begin{Slide}{Förseglade typer med \texttt{sealed}}\SlideFontTiny
 Med en \code{sealed} kan du skapa en \Emph{förseglad} uppräkning:
+\ifswedish
 \begin{Code}
 sealed trait Färg(val toInt: Int)
 object Färg:
@@ -873,8 +1076,20 @@ object Färg:
   case object Ruter   extends Färg(2)
   case object Klöver  extends Färg(3)
 \end{Code}
-Nyckelordet \code{sealed} \Alert{förhindrar} vidare subtypning av \code{Färg} i \Emph{annan kodfil} och \Alert{ger varning} om matchning är ofullständig -- tips för att undvika körtidsfel.
+\else
+\begin{Code}
+sealed trait Suit(val toInt: Int)
+object Suit:
+  val values = Vector(Spades, Hearts, Diamonds, Clubs)
+  case object Spades  extends Suit(0)
+  case object Hearts extends Suit(1)
+  case object Diamonds   extends Suit(2)
+  case object Clubs  extends Suit(3)
+\end{Code}
+\fi{}
+Nyckelordet \code{sealed} \Alert{förhindrar} vidare subtypning av \ifswedish\code{Färg}\else\code{Suit}\fi{} i \Emph{annan kodfil} och \Alert{ger varning} om matchning är ofullständig -- tips för att undvika körtidsfel.
 
+\ifswedish
 \begin{REPLsmall}
 scala> Färg.values(0) match { case Färg.Spader => "hej" }
 -- Warning:
@@ -885,6 +1100,18 @@ scala> Färg.values(0) match { case Färg.Spader => "hej" }
   |It would fail on pattern case: Hjärter, Ruter, Klöver
 val res0: String = hej
 \end{REPLsmall}
+\else
+\begin{REPLsmall}
+scala> Suit.values(0) match { case Suit.Spades => "hi" }
+-- Warning:
+1 |Suit.values(0) match { case Suit.Spades => "hi" }
+  |^^^^^^^^^^^^^^
+  |match may not be exhaustive.
+  |
+  |It would fail on pattern case: Hearts, Diamonds, Clubs
+val res0: String = hi
+\end{REPLsmall}
+\fi{}
 Använd hellre \code{enum} så får du både \code{sealed} och mer godis på köpet!
 \end{Slide}
   
@@ -896,15 +1123,30 @@ Använd hellre \code{enum} så får du både \code{sealed} och mer godis på kö
 \item Om man ärver en klass får man tillgång till alla medlemmar som inte är privata och kan byta till godtycklig implementation om typerna stämmer.
 \item Detta kan vara riskabelt om den som skrivit klassen inte planerat för detta och noga dokumenterat hur klassen är tänkt att användas vid arv. 
 \item Genom att skapa \Emph{öppna klasser} med nyckelordet \code{open} signalerar du att klassen är tänkt att vara en supertyp vid arv.
+\ifswedish
 \begin{Code}
 open class Gurka(val vikt: Int, val pris: Double):
   /** Gör override på denna om du vill ha annat alternativ. */
   def alternativ: String = s"Det går precis lika bra med selleri!"  
 \end{Code}
+\else
+\begin{Code}
+open class Cucumber(val weight: Int, val price: Double):
+  /** Gör override på denna om du vill ha annat alternative. */
+  def alternative: String = s"Celery works just as well!"  
+\end{Code}
+\fi{}
+\ifswedish
 \begin{REPLsmall}
 scala> object StorGurkan extends Gurka(1000, 1_000_000): // ärv på bäst du vill!
          override def alternativ = "kan kanske också funka med en betongpelare"
 \end{REPLsmall}
+\else
+\begin{REPLsmall}
+scala> object BigCucumber extends Cucumber(1000, 1_000_000): // ärv på bäst du vill!
+         override def alternative = "could maybe also work with a concrete pillar"
+\end{REPLsmall}
+\fi{}
 \item \code{open} krävs om du vill tysta varning vid \Alert{arv från en annan kodfil}.
 \item Du kan även komma undan varningen med \code{import scala.language.adhocExtensions} 
 \end{itemize}  
