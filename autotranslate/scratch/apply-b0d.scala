@@ -48,6 +48,13 @@ object Glossary:
     // No standard English card term exists (verified: bridge pairs suits by colour but has no single word),
     // so use the clearest self-documenting name. NOT "partnerSuit" (collides with bridge 'partner' = player).
     "parafärg" -> "sameColourSuit", "parallellFärg" -> "sameColourSuit",
+    // lect-w06-matching (pattern-matching lecture) identifiers — BR-ratified this session.
+    "smak" -> "taste", "lök" -> "onion", "testa" -> "test", "visa" -> "show", "svans" -> "tail",
+    "livetsMening" -> "meaningOfLife", "LivetsMening" -> "MeaningOfLife", "ärLivetsMening" -> "isMeaningOfLife",
+    "ärLivetsMeningBuggig" -> "isMeaningOfLifeBuggy", "ärLivetsMeningBackTicks" -> "isMeaningOfLifeBackTicks",
+    "svar" -> "answer", "värdeAttUndersöka" -> "valueToExamine",
+    "mönster1" -> "pattern1", "mönster2" -> "pattern2", "mönster3" -> "pattern3", "mönsterN" -> "patternN",
+    "resultat1" -> "result1", "resultat2" -> "result2", "resultat3" -> "result3", "resultatN" -> "resultN",
   )
   // string / comment inner text (longest first so a prefix doesn't pre-empt). exact substring replace.
   val str: Seq[(String, String)] = Seq(
@@ -62,6 +69,30 @@ object Glossary:
     "kan kanske också funka med en betongpelare" -> "could maybe also work with a concrete pillar",
     "Error: p är ej student; program saknas" -> "Error: p is not a student; program missing",
     "Städa" -> "Clean", "Prata" -> "Talk", "hej" -> "hi",
+    // lect-w06-matching result/prompt strings — BR-ratified this session. `$`-interpolation fragments kept;
+    // sortBy(-length) ensures longer strings (e.g. "inte gott :(") replace before shorter ("gott").
+    "livets mening är funnen: " -> "the meaning of life is found: ",
+    "en rutten gurka som väger " -> "a rotten cucumber weighing ",
+    "exakt två grönsaker: " -> "exactly two vegetables: ",
+    "exakt en grönsak: " -> "exactly one vegetable: ",
+    " och sedan svansen: " -> " and then the tail: ",
+    "smakar bakvänt: " -> "tastes backwards: ",
+    "tom grönsaksvektor" -> "empty vegetable vector",
+    "okänd grönsak: " -> "unknown vegetable: ",
+    "fattas mening: " -> "missing meaning: ",
+    "Ange en grönsak" -> "Enter a vegetable",
+    "ganska gott..." -> "quite tasty...",
+    "mindre gott..." -> "less tasty...",
+    "gott ibland!" -> "tasty sometimes!",
+    "inte gott :(" -> "not tasty :(",
+    "gott, väger " -> "tasty, weighs ",
+    "först en " -> "first one ",
+    "jättegott!" -> "very tasty!",
+    "inte gott" -> "not tasty",
+    "gott!" -> "tasty!",
+    "inte " -> "not ",
+    " är " -> " is ",
+    "gott" -> "tasty",
   ).sortBy(-_._1.length)
 
   private val tok: Regex = "[A-Za-zÅÄÖåäö_][A-Za-z0-9ÅÄÖåäö_]*".r
@@ -101,7 +132,7 @@ object Allow:
     "lcm", "abs", "sqrt", "pow", "sin", "cos", "tan", "arr", "vec", "buf", "idx", "pos", "dim", "px",
     // Scala stdlib + English words the dict misses, and all-lowercase LaTeX listing/font option keys
     // captured from code-env optional args (\begin{Code}[basicstyle=...\ttfamily\selectfont]) — never Swedish:
-    "println", "instantiated", "basicstyle", "ttfamily", "selectfont", "numberstyle",
+    "println", "instantiated", "basicstyle", "ttfamily", "selectfont", "numberstyle", "unapply",
     // proper nouns kept verbatim in examples (BR): a personal-name demo, not a translatable identifier.
     "björn",
   )

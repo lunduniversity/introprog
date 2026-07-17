@@ -150,6 +150,7 @@ Ett vanligt problem: \\ att kolla vilket bland många värden som passar \\~\\
 
 Kan göras med nästlade \code{if-then-else}-uttryck:
 
+\ifswedish
 \begin{Code}
 val g = scala.io.StdIn.readLine("Ange en grönsak:")
 val smak =
@@ -160,6 +161,18 @@ val smak =
 
 println(g + " är " + smak)
 \end{Code}
+\else
+\begin{Code}
+val g = scala.io.StdIn.readLine("Enter a vegetable:")
+val taste =
+  if      g == "cucumber"    then "tasty!"
+  else if g == "tomato"    then "very tasty!"
+  else if g == "broccoli" then "quite tasty..."
+  else "not tasty :("
+
+println(g + " is " + taste)
+\end{Code}
+\fi{}
       
 \end{Slide}
 
@@ -198,6 +211,7 @@ val smak =
 
 \begin{Slide}{Syntax för match-uttryck}
 Ett \code{match}-uttryck består av godtyckligt många \code{case ... => ...}
+\ifswedish
 \begin{Code}
   värdeAttUndersöka match {
     case mönster1 => resultat1
@@ -206,6 +220,16 @@ Ett \code{match}-uttryck består av godtyckligt många \code{case ... => ...}
     case mönsterN => resultatN
   }
 \end{Code}
+\else
+\begin{Code}
+  valueToExamine match {
+    case pattern1 => result1
+    case pattern2 => result2
+    case pattern3 => result3
+    case patternN => resultN
+  }
+\end{Code}
+\fi{}
 \begin{itemize}
   \item Klammerparenteser efter \code{match} valfria om \code{case} på ny rad.
   \item Varje resultat-uttryck kan bestå av många rader. 
@@ -221,6 +245,7 @@ Vi ska nu se exempel på många olika mönster
 
 \begin{Slide}{Matchning med gard}
 Man kan stoppa in en s.k \Emph{gard} \Eng{guard} innan pilen \code{=>} för att villkora matchningen: (notera \code{if} utan \code{then})
+\ifswedish
 \begin{Code}
 val g = scala.io.StdIn.readLine("Ange en grönsak: ")
 val smak = g match 
@@ -229,12 +254,23 @@ val smak = g match
   case "broccoli" => "ganska gott..."
   case _ => "mindre gott..."
 \end{Code}
+\else
+\begin{Code}
+val g = scala.io.StdIn.readLine("Enter a vegetable: ")
+val taste = g match 
+  case "cucumber" if math.random() > 0.5 => "tasty sometimes!"
+  case "tomato" => "very tasty!"
+  case "broccoli" => "quite tasty..."
+  case _ => "less tasty..."
+\end{Code}
+\fi{}
 \code{case}-grenen med gard ger bara en lyckad matchning \\ om uttrycket efter \code{if} är sant; annars provas nästa gren, etc.
 \end{Slide}
 
 \begin{Slide}{Matchning med variabelmönster}\SlideFontSmall
 Om det finns ett namn efter \code{case} som börjar med liten begynnelsebokstav, blir detta namn en variabel som automatiskt binds till uttrycket före \code{match}:
 
+\ifswedish
 \begin{Code}
 val g = scala.io.StdIn.readLine("Ange en grönsak: ")
 val smak = g match 
@@ -243,14 +279,25 @@ val smak = g match
   case "broccoli" => "ganska gott..."
   case other => "smakar bakvänt: " + other.reverse
 \end{Code}
+\else
+\begin{Code}
+val g = scala.io.StdIn.readLine("Enter a vegetable: ")
+val taste = g match 
+  case "cucumber" if math.random() > 0.5 => "tasty sometimes!"
+  case "tomato" => "very tasty!"
+  case "broccoli" => "quite tasty..."
+  case other => "tastes backwards: " + other.reverse
+\end{Code}
+\fi{}
 
-Ett \Alert{enkelt} \Emph{variabelmönster}, så som \\ \code{case other => ...} \\ i exemplet ovan, matchar \Alert{allt}! \\\code{other} får alltså värdet av \code{g} om \code{g} \Alert{inte} är \code{"gurka"}, \code{"tomat"}, \code{"broccoli"}.
+Ett \Alert{enkelt} \Emph{variabelmönster}, så som \\ \code{case other => ...} \\ i exemplet ovan, matchar \Alert{allt}! \\\code{other} får alltså värdet av \code{g} om \code{g} \Alert{inte} är \ifswedish\code{"gurka"}\else\code{"cucumber"}\fi{}, \ifswedish\code{"tomat"}\else\code{"tomato"}\fi{}, \code{"broccoli"}.
 
 \end{Slide}
 
 
 \begin{Slide}{Matchning med eller-mönster}\SlideFontSmall
 Om man har samma utfall för olika grenar kan dessa slås ihop och mönstret separeras med vertikalstreck: \code{|}
+\ifswedish
 \begin{Code}
 val g = scala.io.StdIn.readLine("Ange en grönsak: ")
 val smak = g match 
@@ -259,15 +306,34 @@ val smak = g match
   case "lök"   => "gott"
   case _ => "inte gott"
 \end{Code}
+\else
+\begin{Code}
+val g = scala.io.StdIn.readLine("Enter a vegetable: ")
+val taste = g match 
+  case "cucumber" => "tasty"
+  case "tomato" => "tasty"
+  case "onion"   => "tasty"
+  case _ => "not tasty"
+\end{Code}
+\fi{}
 
 Mer koncist med eller-mönster:
 
+\ifswedish
 \begin{Code}
 val g = scala.io.StdIn.readLine("grönsak:")
 val smak = g match 
   case "gurka" | "tomat" | "lök" => "gott"
   case _ => "inte gott"
 \end{Code}
+\else
+\begin{Code}
+val g = scala.io.StdIn.readLine("vegetable:")
+val taste = g match 
+  case "cucumber" | "tomato" | "onion" => "tasty"
+  case _ => "not tasty"
+\end{Code}
+\fi{}
 
 
 
@@ -279,11 +345,19 @@ val smak = g match
 
 \begin{Slide}{Matchning med typade mönster}\SlideFontTiny
 Antag att vi har nedan oäkta funktion \code{f} som vi vill matcha på:
+\ifswedish
 \begin{Code}
 def f() =   // Vilken returtyp härleds av kompilatorn? 
   if math.random() < 0.5 then 42 + math.random() 
   else s"gurka ${math.random()}"
 \end{Code}
+\else
+\begin{Code}
+def f() =   // Vilken returtyp härleds av kompilatorn? 
+  if math.random() < 0.5 then 42 + math.random() 
+  else s"cucumber ${math.random()}"
+\end{Code}
+\fi{}
 \pause 
 Med en typannotering efter en variabel får man ett \Emph{typat mönster} \Eng{typed pattern}. Vid lyckad matchning \Alert{omvandlas} värdet till den specifika typen och binds till variabeln.
 
@@ -308,6 +382,7 @@ val i2: Int =
 \begin{itemize}\SlideFontSmall
 \item Exempel: För de orelaterade typerna \code{String} och \code{Int} är den mest specifika typen som kan härledas \code{Int | String}, läses ''Int eller String'' och kallas en \Emph{unionstyp} \Eng{union type}.
 
+\ifswedish
 \begin{REPLsmall}
 scala> def f() = math.random() match
           case a if a > 0.5 => 42
@@ -315,6 +390,15 @@ scala> def f() = math.random() match
 
 def f(): Int | String
 \end{REPLsmall}
+\else
+\begin{REPLsmall}
+scala> def f() = math.random() match
+          case a if a > 0.5 => 42
+          case a if a < 0.2 => "hi"
+
+def f(): Int | String
+\end{REPLsmall}
+\fi{}
 
 \item Alla värden som kan undersökas med \code{match} har typen \code{Matchable} .
 \item Typen \code{Matchable} är nästan lika generell som topptypen \code{Any}. 
@@ -332,6 +416,7 @@ val res0:  (Boolean, Boolean) = (true,true)
 
 \begin{Slide}{Konstruktormönster med case-klasser}\SlideFontSmall
 En basklass med gemensamma delar och två subtyper:
+\ifswedish
 \begin{Code}
 trait Grönsak:
   def vikt: Int
@@ -340,8 +425,19 @@ trait Grönsak:
 case class Gurka(vikt: Int, ärRutten: Boolean) extends Grönsak
 case class Tomat(vikt: Int, ärRutten: Boolean) extends Grönsak
 \end{Code}
+\else
+\begin{Code}
+trait Vegetable:
+  def weight: Int
+  def isRotten: Boolean
+
+case class Cucumber(weight: Int, isRotten: Boolean) extends Vegetable
+case class Tomato(weight: Int, isRotten: Boolean) extends Vegetable
+\end{Code}
+\fi{}
 \pause
 Tack vare case-klasserna kan man använda \Emph{konstruktormönster} \Eng{constructor pattern} för att se vad som finns \Alert{inuti} en instans:
+\ifswedish
 \begin{Code}
 def testa(g: Grönsak): String = g match 
   case Gurka(v, false) => "gott, väger " + v
@@ -349,6 +445,15 @@ def testa(g: Grönsak): String = g match
   case Tomat(v, r)     => (if r then "inte " else "") + s"gott, väger $v"
   case _ => s"okänd grönsak: $g"
 \end{Code}
+\else
+\begin{Code}
+def test(g: Vegetable): String = g match 
+  case Cucumber(v, false) => "tasty, weighs " + v
+  case Cucumber(_, true)  => "not tasty"
+  case Tomato(v, r)     => (if r then "not " else "") + s"tasty, weighs $v"
+  case _ => s"unknown vegetable: $g"
+\end{Code}
+\fi{}
 
 Konstruktormönster ''\Emph{plockar isär}'' det som matchas och binder variabler till de attribut som finns i case-klassens konstruktor.
 \end{Slide}
@@ -357,6 +462,7 @@ Konstruktormönster ''\Emph{plockar isär}'' det som matchas och binder variable
 \begin{Slide}{Plocka isär samlingar med djupa mönster}
 \begin{itemize}
   \item Man kan plocka isär innehållet i en samling så här:
+\ifswedish
 \begin{Code}
 def visa(xs: Vector[Grönsak]): String = xs match
   case Vector()               => "tom grönsaksvektor"
@@ -365,6 +471,16 @@ def visa(xs: Vector[Grönsak]): String = xs match
   case Vector(g1, g2)         => s"exakt två grönsaker: $g1, $g2"
   case Vector(g, gs*)         => s"först en $g och sedan svansen: $gs"
 \end{Code}
+\else
+\begin{Code}
+def show(xs: Vector[Vegetable]): String = xs match
+  case Vector()               => "empty vegetable vector"
+  case Vector(Cucumber(v, true)) => s"a rotten cucumber weighing $v"
+  case Vector(g)              => s"exactly one vegetable: $g"
+  case Vector(g1, g2)         => s"exactly two vegetables: $g1, $g2"
+  case Vector(g, gs*)         => s"first one $g and then the tail: $gs"
+\end{Code}
+\fi{}
 \pause
 \item Vad händer om du byter ordning på 2:a och 3:e mönstret?
 \pause
@@ -374,6 +490,7 @@ def visa(xs: Vector[Grönsak]): String = xs match
 
 \begin{Slide}{Matchning på tupler}
 Det går fint att plocka isär tupler med mönstermatchning:\footnote{\url{https://youtu.be/aboZctrHfK8}}
+\ifswedish
 \begin{Code}
 var pair = ("hej", 42)
 
@@ -382,12 +499,23 @@ pair match
   case (_, b)            => s"fattas mening: $b"
 
 \end{Code}
+\else
+\begin{Code}
+var pair = ("hi", 42)
+
+pair match
+  case (a, b) if b == 42 => s"the meaning of life is found: $a"
+  case (_, b)            => s"missing meaning: $b"
+
+\end{Code}
+\fi{}
 Understreck betyder att vi inte är intresserade av att binda ett variabelnamn till värdet.
 
 \end{Slide}
 
 \begin{Slide}{Mönstermatchning och uppräkning med case-objekt}\SlideFontSmall
 En bastyp och specifika singelobjekt av gemensam typ:
+\ifswedish
 \begin{Code}
 trait Färg
 case object Spader  extends Färg // funkar utan case men vill ha najs toString
@@ -400,18 +528,40 @@ def parallellFärg(f: Färg): Färg = f match
   case Klöver  => Spader
   case Hjärter => Ruter
 \end{Code}
+\else
+\begin{Code}
+trait Suit
+case object Spades  extends Suit // funkar utan case men vill ha najs toString
+case object Hearts extends Suit
+case object Diamonds   extends Suit
+case object Clubs  extends Suit
+
+def sameColourSuit(f: Suit): Suit = f match
+  case Spades  => Clubs
+  case Clubs  => Spades
+  case Hearts => Diamonds
+\end{Code}
+\fi{}
 Vilken case-gren har vi glömt? Kan kompilatorn hjälpa oss?
 \pause
+\ifswedish
 \begin{REPL}
 scala> parallellFärg(Ruter)
 scala.MatchError: Ruter 
 \end{REPL}
+\else
+\begin{REPL}
+scala> sameColourSuit(Diamonds)
+scala.MatchError: Diamonds 
+\end{REPL}
+\fi{}
 \Alert{Undantag vid körtid} \code{:(}
 \end{Slide}
 
 \begin{Slide}{Mönstermatchning och förseglade typer}\SlideFontTiny
 Med nyckelordet \code{sealed} får du en \Emph{förseglad} typ: inga fler subtyper får finnas än de som står i \Alert{samma kodfil}.
 Du får \Emph{varning} om \Alert{glömt fall} i mönstermatchning.
+\ifswedish
 \begin{CodeSmall}
 sealed trait Färg                   // ESC+Enter i REPL kompilerar fler rader i ett svep
 case object Spader  extends Färg
@@ -424,6 +574,21 @@ def parallellFärg(f: Färg): Färg = f match
   case Klöver  => Spader
   case Hjärter => Ruter
 \end{CodeSmall}
+\else
+\begin{CodeSmall}
+sealed trait Suit                   // ESC+Enter i REPL kompilerar fler rader i ett svep
+case object Spades  extends Suit
+case object Hearts extends Suit
+case object Diamonds   extends Suit
+case object Clubs  extends Suit
+
+def sameColourSuit(f: Suit): Suit = f match 
+  case Spades  => Clubs
+  case Clubs  => Spades
+  case Hearts => Diamonds
+\end{CodeSmall}
+\fi{}
+\ifswedish
 \begin{REPLsmall}
 1 warning found
   |def parallellFärg(f: Färg): Färg = f match 
@@ -432,11 +597,22 @@ def parallellFärg(f: Färg): Färg = f match
   |
   |                           It would fail on pattern case: Ruter
 \end{REPLsmall}
+\else
+\begin{REPLsmall}
+1 warning found
+  |def sameColourSuit(f: Suit): Suit = f match 
+  |                                   ^
+  |                           match may not be exhaustive.
+  |
+  |                           It would fail on pattern case: Diamonds
+\end{REPLsmall}
+\fi{}
 \Emph{Varning vid kompilering} \code{:)} ~~~Tack kompilatorn!
 \end{Slide}
 
 \begin{Slide}{Mönstermatcha enumeration}\SlideFontSmall
 I stället för \code{sealed trait ... case object ...} kan du använda en \Emph{enumeration} (ä.k. uppräkning, uppräknad datatyp, \Eng{enumeration}).
+\ifswedish
 \begin{Code}
 enum Färg:
   case Spader, Hjärter, Ruter, Klöver
@@ -448,7 +624,21 @@ def parallellFärg(f: Färg): Färg =
     case Klöver  => Spader
     case Hjärter => Ruter
 \end{Code}
+\else
+\begin{Code}
+enum Suit:
+  case Spades, Hearts, Diamonds, Clubs
+  
+def sameColourSuit(f: Suit): Suit = 
+  import Suit.*
+  f match 
+    case Spades  => Clubs
+    case Clubs  => Spades
+    case Hearts => Diamonds
+\end{Code}
+\fi{}
 \pause
+\ifswedish
 \begin{REPL}
 1 warning found
   |  f match 
@@ -457,11 +647,22 @@ def parallellFärg(f: Färg): Färg =
   |
   |  It would fail on pattern case: Ruter
 \end{REPL}
+\else
+\begin{REPL}
+1 warning found
+  |  f match 
+  |  ^
+  |  match may not be exhaustive.
+  |
+  |  It would fail on pattern case: Diamonds
+\end{REPL}
+\fi{}
 \Emph{Även här får vi hjälpsam varning vid kompilering} \code{:)} Tack kompilatorn!
 \end{Slide}
 
 \begin{Slide}{Stora/små begynnelsebokstäver vid matchning}
 \Alert{Fallgrop}: matcha \Alert{värde} som börjar med \Alert{liten} bokstav.
+\ifswedish
 \begin{REPL}
 scala> val livetsMening = 42
 
@@ -481,12 +682,34 @@ scala> def ärLivetsMening(svar: Int) = svar match
 scala> ärLivetsMening(43)
 val res1: Boolean = false
 \end{REPL}
+\else
+\begin{REPL}
+scala> val meaningOfLife = 42
+
+scala> def isMeaningOfLifeBuggy(answer: Int) = answer match 
+         case meaningOfLife => true    // lokalt namn som matchar allt!
+         case _ => false
+
+scala> isMeaningOfLifeBuggy(43)
+val res0: Boolean = true
+
+scala> val MeaningOfLife = 42   // stor begynnelsebokstav
+
+scala> def isMeaningOfLife(answer: Int) = answer match 
+         case MeaningOfLife => true    // funkar fint!
+         case _ => false
+
+scala> isMeaningOfLife(43)
+val res1: Boolean = false
+\end{REPL}
+\fi{}
 \end{Slide}
 
 
 \begin{Slide}{Stora/små begynnelsebokstäver vid matchning}
 Ett sätt att komma runt problemet med liten begynnelsebokstav: \\
 \Emph{backticks} to the rescue!
+\ifswedish
 \begin{REPL}
 scala> val livetsMening = 42
 
@@ -497,6 +720,18 @@ scala> def ärLivetsMeningBackTicks(svar: Int) = svar match
 scala> ärLivetsMeningBackTicks(43)
 val res2: Boolean = false
 \end{REPL}
+\else
+\begin{REPL}
+scala> val meaningOfLife = 42
+
+scala> def isMeaningOfLifeBackTicks(answer: Int) = answer match 
+         case `meaningOfLife` => true    // nu funkar det!
+         case _ => false
+
+scala> isMeaningOfLifeBackTicks(43)
+val res2: Boolean = false
+\end{REPL}
+\fi{}
 \end{Slide}
 
 \ifkompendium\else
@@ -558,7 +793,7 @@ Met två olika specialtecken går det att
 
 \item matcha \Emph{variabelt antal argument}  med \code{*}  
 \\ \code{case Vector(a, _, c) => ... }  matchar om 3 element, \_ kvittar
-\\ \code{case Vector(a, svans*) => ... }  matchar om minst ett element
+\\ \ifswedish\code{case Vector(a, svans*) => ... }\else\code{case Vector(a, tail*) => ... }\fi{}  matchar om minst ett element
 \\ \code{case Vector(a, _*) => ... }  intresserad av första, svans kvittar
 \end{itemize}
 %Läs mer om mönster här: \url{https://docs.scala-lang.org/scala3/book/taste-control-structures.html#match-expressions}
@@ -601,6 +836,7 @@ val res1: Vector[Int] = Vector(1, 42)
 
 \begin{Slide}{Fördjupning: metoden \texttt{unapply}}\SlideFontSmall
 När du deklarerar en case-klass kommer kompilatorn att \Alert{automatiskt generera en metod} med namnet \Emph{\texttt{unapply}}.
+\ifswedish
 \begin{REPL}
 scala> case class Gurka(vikt: Int, ärRutten: Boolean)
 
@@ -612,6 +848,19 @@ scala> val g = Gurka(100, false)
 scala> Gurka.unapply(g)
 val res1: Gurka = Gurka(100,false)
 \end{REPL}
+\else
+\begin{REPL}
+scala> case class Cucumber(weight: Int, isRotten: Boolean)
+
+scala> Cucumber.unapply // tryck ENTER för att se typen
+val res0: Cucumber => Cucumber = Lambda1914/0x00000008408cf840@b0e7bde
+
+scala> val g = Cucumber(100, false)
+
+scala> Cucumber.unapply(g)
+val res1: Cucumber = Cucumber(100,false)
+\end{REPL}
+\fi{}
 \textbf{Vad ska detta vara bra för?} \pause 
 Metoden \code{unapply} genereras av kompilatorn och används internt vid matchning och det är den metoden som gör att case-klasser kan användas i konstruktormönster. Principen är generell: Man kan skapa \Emph{egna} s.k. \Alert{extraktorer} \Eng{extractors} som kan plocka isär ett värde med mönstermatchning, även utan case-klass. \\För den nyfikne: \url{https://docs.scala-lang.org/scala3/reference/changed-features/pattern-matching.html} 
 \end{Slide}
