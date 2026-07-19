@@ -65,13 +65,17 @@ object Code:
     * all, and stop the per-`--all` cache churn). So skip any line whose first non-space char is `%` — copied
     * verbatim, never translated. Default false: a real `.scala` line never starts with `%` (it's modulo, an
     * infix op: `a % b`), so the raw-source path (`--codetest` / workspace) is unaffected. */
-  def translate(src: String, tr: String => String, skipTexComments: Boolean = false): String =
+  def translate(src: String, tr: String => String, skipTexComments: Boolean = false,
+      alsoTranslate: String => Boolean = _ => false): String =
     val sb = StringBuilder(); val n = src.length; var i = 0
     // translate inner text of a comment OR string only if it looks Swedish — this skips already-English
     // library comments AND commented-out code (e.g. `//val w = new LifeWindow(20, 20)`), which must NOT
     // be sent to the model (wasteful + a source of masking-leak corruption).
+    // `alsoTranslate` opens a second gate for exact human knowledge: a no-åäö Swedish string the swedishish
+    // heuristic misses (e.g. "Skalas med skalare.") still routes to `tr` if it's a known Override key, so the
+    // Override resolves it. English strings aren't Override keys, so they still never reach the model.
     def piece(s: String): String =
-      if s.exists(_.isLetter) && swedishish(s) then tr(s) else s
+      if s.exists(_.isLetter) && (swedishish(s) || alsoTranslate(s.trim)) then tr(s) else s
     def texCommentLine(k: Int): Boolean = // first non-space char of the line at k is a LaTeX `%`
       var w = k
       while w < n && (src(w) == ' ' || src(w) == '\t') do w += 1
