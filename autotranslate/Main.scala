@@ -350,8 +350,15 @@ object Main:
           if f.ext == "cls" then
             os.write.over(target, os.read(f).replace("\\usepackage[swedish]{babel}", "\\usepackage[english]{babel}"))
           else if doTranslate && (f.ext == "scala" || f.ext == "java") then
-            // Option B: translate comments + Swedish string literals; keep all code (identifiers) verbatim.
-            os.write.over(target, Code.translate(os.read(f), Translate.translatePlain))
+            // Option B + Option-D: rename Swedish identifiers via the shared CodeGlossary (so
+            // \scalainputlisting'd example programs read English in compendium-en/slides-en — the inline
+            // \ifswedish clamps can't reach external .scala files), then translate comments + Swedish string
+            // literals with Code.translate. Use renderCodeIds (identifiers in CODE regions only): strings +
+            // comments are left verbatim for Code.translate + Overrides, so a corpus-wide `str` replace can't
+            // half-translate them and knowledge strings ("Skållas."->"Blanched.") resolve via Overrides on
+            // their natural Swedish.
+            os.write.over(target, Code.translate(CodeGlossary.renderCodeIds(os.read(f)), Translate.translatePlain,
+              alsoTranslate = Translate.overrides.contains))
           else os.copy.over(f, target)
           nAsset += 1
       println(s"autotranslate: $src -> $dst  ($nTex .tex [$nTrans translated], $nAsset assets copied)")

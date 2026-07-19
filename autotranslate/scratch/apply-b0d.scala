@@ -3,6 +3,7 @@
 //> using dep com.lihaoyi::os-lib:0.11.8
 //> using file ../Latex.scala
 //> using file ../Code.scala
+//> using file ../CodeGlossary.scala
 
 // Fused B0+D applier (case (a): inline \code + verbatim code ENVS in .tex). For each code unit, compute the
 // English via a ratified cluster glossary (identifier rename + string/comment replace), and clamp it as
@@ -14,93 +15,8 @@
 
 import scala.util.matching.Regex
 
-object Glossary:
-  // VEGO cluster — ratified 2026-06-30 (vegomatch.scala + vego1-4 + w06-patterns), compile-verified.
-  // whole-identifier rename (token-exact). longest keys are fine; token replace is exact-match, not substring.
-  val id: Map[String, String] = Map(
-    "Grönsak" -> "Vegetable", "grönsak" -> "vegetable", "Grönsaker" -> "Vegetables", "grönsaker" -> "vegetables",
-    "Gurka" -> "Cucumber", "gurka" -> "cucumber", "ingenGurka" -> "noCucumber",
-    "Tomat" -> "Tomato", "tomat" -> "tomato",
-    "vikt" -> "weight", "ärRutten" -> "isRotten", "rutten" -> "rotten",
-    "slumpvikt" -> "randomWeight", "slumprutten" -> "randomRotten",
-    "slumpgurka" -> "randomCucumber", "slumptomat" -> "randomTomato", "slumpgrönsak" -> "randomVegetable",
-    "slumpbroccoli" -> "randomBroccoli", // exercise variant (w06): Broccoli stays (English), slump-prefix -> random
-    "Broccoli" -> "Broccoli", // identity: keep, but listed so a half-Swedish 'slumpbroccoli' can't slip the gate
-    "ärÄtvärd" -> "isWorthEating", "skörd" -> "harvest", "ätvärda" -> "worthEating", "ärÄtbar" -> "isEdible",
-    "anonymGrönsak" -> "anonymousVegetable",
-    "skalningsmetod" -> "peelingMethod", "skalfaktor" -> "peelFactor", "ärSkalad" -> "isPeeled", "skala" -> "peel",
-    // VEGO plural inflections used as val-names in REPL examples (lect-w10-extends).
-    "gurkor" -> "cucumbers", "vikter" -> "weights",
-    // GENERIC OO example (lect-w10-extends) — placeholder type names in the arv/subtyp illustration:
-    // `trait Bastyp` with `class Subtyp1/Subtyp2`. NOT a domain cluster; distinct from the prose words
-    // "bastyp"/"subtyp" (concepts, translated as prose). render() only touches code spans, so these
-    // rename the CODE identifiers only, never the prose term.
-    "Bastyp" -> "BaseType", "Subtyp1" -> "Subtype1", "Subtyp2" -> "Subtype2",
-    // lect-w10-extends demo identifiers (BR-ratified this session): encapsulation + inheritance examples.
-    // gEllerT = "Gurka eller Tomat" -> cOrT (Cucumber or Tomato); minHemlis/avslöjad = secret/reveal demo.
-    "gEllerT" -> "cOrT", "minHemlis" -> "mySecret", "vårHemlis" -> "ourSecret", "avslöjad" -> "revealed",
-    "pris" -> "price", "alternativ" -> "alternative", "StorGurkan" -> "BigCucumber",
-    // CARDS cluster (w06-patterns) — BR-RATIFIED 2026-06-30 (sameColourSuit + Färg->Suit confirmed).
-    // NOTE: Färg->Suit is CARDS-CONTEXT-ONLY; a kojo/colour file needs Färg->Colour (apply per-context).
-    "Färg" -> "Suit", "Kortlek" -> "Deck",
-    "Spader" -> "Spades", "Hjärter" -> "Hearts", "Ruter" -> "Diamonds", "Klöver" -> "Clubs",
-    // parafärg = short for parallellfärg = the same-COLOUR suit (Spades<->Clubs black, Hearts<->Diamonds red).
-    // No standard English card term exists (verified: bridge pairs suits by colour but has no single word),
-    // so use the clearest self-documenting name. NOT "partnerSuit" (collides with bridge 'partner' = player).
-    "parafärg" -> "sameColourSuit", "parallellFärg" -> "sameColourSuit",
-    // lect-w06-matching (pattern-matching lecture) identifiers — BR-ratified this session.
-    "smak" -> "taste", "lök" -> "onion", "testa" -> "test", "visa" -> "show", "svans" -> "tail",
-    "livetsMening" -> "meaningOfLife", "LivetsMening" -> "MeaningOfLife", "ärLivetsMening" -> "isMeaningOfLife",
-    "ärLivetsMeningBuggig" -> "isMeaningOfLifeBuggy", "ärLivetsMeningBackTicks" -> "isMeaningOfLifeBackTicks",
-    "svar" -> "answer", "värdeAttUndersöka" -> "valueToExamine",
-    "mönster1" -> "pattern1", "mönster2" -> "pattern2", "mönster3" -> "pattern3", "mönsterN" -> "patternN",
-    "resultat1" -> "result1", "resultat2" -> "result2", "resultat3" -> "result3", "resultatN" -> "resultN",
-  )
-  // string / comment inner text (longest first so a prefix doesn't pre-empt). exact substring replace.
-  val str: Seq[(String, String)] = Seq(
-    "Antal skördade grönsaker: " -> "Number of harvested vegetables: ",
-    "Antal ätvärda grönsaker:  " -> "Number of vegetables worth eating:  ",
-    "gurka är gott ibland..." -> "cucumber is tasty sometimes...",
-    "Skalas med skalare." -> "Peeled with a peeler.",
-    "Skållas." -> "Blanched.",  // BR: culinary term for peeling tomatoes (skålla = blanch), not "scald"
-    // lect-w10-extends output/string data (BR-ratified this session). Applied everywhere in a span, so they
-    // cover both the string literal and the REPL echo (e.g. `println(" Städa Städa")` + `... Städa Städa`).
-    "Det går precis lika bra med selleri!" -> "Celery works just as well!",
-    "kan kanske också funka med en betongpelare" -> "could maybe also work with a concrete pillar",
-    "Error: p är ej student; program saknas" -> "Error: p is not a student; program missing",
-    "Städa" -> "Clean", "Prata" -> "Talk", "hej" -> "hi",
-    // lect-w06-matching result/prompt strings — BR-ratified this session. `$`-interpolation fragments kept;
-    // sortBy(-length) ensures longer strings (e.g. "inte gott :(") replace before shorter ("gott").
-    "livets mening är funnen: " -> "the meaning of life is found: ",
-    "en rutten gurka som väger " -> "a rotten cucumber weighing ",
-    "exakt två grönsaker: " -> "exactly two vegetables: ",
-    "exakt en grönsak: " -> "exactly one vegetable: ",
-    " och sedan svansen: " -> " and then the tail: ",
-    "smakar bakvänt: " -> "tastes backwards: ",
-    "tom grönsaksvektor" -> "empty vegetable vector",
-    "okänd grönsak: " -> "unknown vegetable: ",
-    "fattas mening: " -> "missing meaning: ",
-    "Ange en grönsak" -> "Enter a vegetable",
-    "ganska gott..." -> "quite tasty...",
-    "mindre gott..." -> "less tasty...",
-    "gott ibland!" -> "tasty sometimes!",
-    "inte gott :(" -> "not tasty :(",
-    "gott, väger " -> "tasty, weighs ",
-    "först en " -> "first one ",
-    "jättegott!" -> "very tasty!",
-    "inte gott" -> "not tasty",
-    "gott!" -> "tasty!",
-    "inte " -> "not ",
-    " är " -> " is ",
-    "gott" -> "tasty",
-  ).sortBy(-_._1.length)
-
-  private val tok: Regex = "[A-Za-zÅÄÖåäö_][A-Za-z0-9ÅÄÖåäö_]*".r
-  def render(span: String): String =
-    val s1 = str.foldLeft(span) { case (acc, (sv, en)) => acc.replace(sv, en) } // strings first
-    tok.replaceAllIn(s1, m => Regex.quoteReplacement(id.getOrElse(m.matched, m.matched)))
-  def touches(span: String): Boolean =
-    tok.findAllIn(span).exists(id.contains) || str.exists((sv, _) => span.contains(sv))
+// glossary promoted to the production module autotranslate/CodeGlossary.scala (shared with the mirror).
+val Glossary = CodeGlossary
 
 // ALLOWLIST leak gate (BR-approved 2026-07-01). SOUND by construction: a clamped unit's English must contain
 // NO token that isn't recognized English / Scala / glossary. Anything unknown is treated as SUSPECT SWEDISH and

@@ -33,6 +33,12 @@ object Overrides:
 
   val overridingTranslations: Map[Swedish, English] = Map(
     // ── week 1: standalone concept words the model mistranslated ────────────────────────────
+    // vego example-file strings the model gets wrong (moved from CodeGlossary.str per #943 review): whole-unit
+    // match via Code.translate/translatePlain — no substring misfire. Keys are the trimmed string content.
+    "Skållas."                     -> "Blanched.",             // skålla = blanch, NOT scald
+    "Skalas med skalare."          -> "Peeled with a peeler.", // skalare = peeler, NOT scaler
+    "Antal skördade grönsaker:"    -> "Number of harvested vegetables:",
+    "Antal ätvärda grönsaker:"     -> "Number of vegetables worth eating:",
     "alternativ"          -> "selection",
     "repetition"          -> "repetition",
     "identifierare"       -> "identifier",
