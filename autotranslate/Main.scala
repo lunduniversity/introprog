@@ -222,6 +222,20 @@ object Main:
     // arg parsing
     def argVal(flag: String): Option[String] =
       val i = args.indexOf(flag); if i >= 0 && i + 1 < args.length then Some(args(i + 1)) else None
+    // FAIL LOUDLY on unknown flags (PR #943 review follow-up). --verify-examples famously exists only in
+    // scratch/apply-b0d.scala (explicit file paths), so passing it here used to silently run a plain
+    // mirror — the gate everyone cited could be invoked in a way that quietly did nothing.
+    val knownFlags = Set("--only", "--all", "--dryrun", "--retry-fallbacks", "--dump-overrides",
+      "--sweep-fallbacks", "--model", "--swedish-left", "--swedish-lines", "--prose-leaks-dump",
+      "--prose-leaks", "--prose-swedish", "--pdf-swedish", "--selftest", "--clean", "--latextest",
+      "--codetest", "--codeenvtest", "--workspace-en", "--modeltest", "--n")
+    val unknownFlags = args.filter(_.startsWith("--")).filterNot(knownFlags)
+    if unknownFlags.nonEmpty then
+      System.err.println(s"unknown flag(s): ${unknownFlags.mkString(" ")} -- aborting so nothing runs by accident")
+      if unknownFlags.contains("--verify-examples") then
+        System.err.println("--verify-examples is not an sbt-run flag: it lives in autotranslate/scratch/apply-b0d.scala and takes explicit file paths")
+      System.err.println(s"known flags: ${knownFlags.toSeq.sorted.mkString(" ")}")
+      sys.exit(2)
     val only = argVal("--only")              // translate only files whose name contains this substring
     val all = args.contains("--all")          // translate all files
     val dryrun = args.contains("--dryrun")    // run the full pipeline with the MODEL DISABLED (all Swedish)
