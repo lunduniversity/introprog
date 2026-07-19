@@ -49,6 +49,8 @@ object Allow:
     // Scala stdlib + English words the dict misses, and all-lowercase LaTeX listing/font option keys
     // captured from code-env optional args (\begin{Code}[basicstyle=...\ttfamily\selectfont]) — never Swedish:
     "println", "instantiated", "basicstyle", "ttfamily", "selectfont", "numberstyle", "unapply",
+    "arity", // from Product.productArity (REPL tab-completion); "pepino" = a cucumber-variety fruit name
+    "pepino",
     // proper nouns kept verbatim in examples (BR): a personal-name demo, not a translatable identifier.
     "björn",
   )
@@ -162,7 +164,10 @@ object Apply:
     // slide goes mixed (define-English / diagram-Swedish). Treat it as dirtying the slide. NOT triggered by
     // bare prose Swedish (no code-display wrapper) -- that is translated downstream by the prose pass.
     def codeDisplaySwedish(s: String): Boolean =
-      Glossary.touches(s) &&
+      // an already-clamped \ifswedish...\else...\fi span is NOT un-clampable code-Swedish: its Swedish is in
+      // the protected \ifswedish branch and the \else is English (e.g. a hand-clamped colour `enum Färg`).
+      // Without this exclusion the Swedish glossary token in that branch's \code would falsely dirty the slide.
+      !s.trim.startsWith("\\ifswedish") && Glossary.touches(s) &&
         Seq("\\code", "\\jcode", "\\lstinline", "\\verb", "\\texttt").exists(s.contains)
     // a slide-group is dirty (un-clampable) if ANY candidate has residual suspects OR any non-candidate span
     // hides code-Swedish. A benign candidate (nothing to translate, no suspects) does NOT dirty the slide.
