@@ -54,6 +54,12 @@ object CodeGlossary:
     "Examinerad" -> "Graduated",                                       // trait Graduated { val title: String }
     "kastaTärningTillsAllaUtfallUtomEtt" -> "rollDieUntilAllOutcomesExceptOne",
     "BaklängesHandler" -> "BackwardsHandler",
+    // ANIMAL cluster (w10-inheritance-exercise Task 3, `trait Djur`) — BR-agreed 2026-07-20.
+    // Inline .tex code (REPL/Code envs + prose \code{}) → translated by the mirror's inline pass (#948).
+    // The onomatopoeia string literals (Muuuuuuu/Nöffnöff/Gnääääägg) are English sounds too — via `codeStr`
+    // (whole-literal match applied inside string literals by renderCodeIds), NOT this id map.
+    "Djur" -> "Animal", "Ko" -> "Cow", "Gris" -> "Pig", "Häst" -> "Horse",
+    "väsnas" -> "makeNoise", "skapaDjur" -> "createAnimal", "bondgård" -> "farm",
   )
   // string / comment inner text (longest first so a prefix doesn't pre-empt). exact substring replace.
   val str: Seq[(String, String)] = Seq(
@@ -93,6 +99,16 @@ object CodeGlossary:
     "gott" -> "tasty",
   ).sortBy(-_._1.length)
 
+  // WHOLE-literal code-string translations, applied by renderCodeIds INSIDE string literals (both the mirror's
+  // inline-.tex pass and example .scala go through renderCodeIds). EXACT full-content match only — never a
+  // substring — so nothing half-translates (the failure mode that keeps `str` out of renderCodeIds). Use for
+  // ratified string DATA that must be English but isn't reachable via Code.translate/Overrides (inline .tex
+  // code never runs Code.translate). Keyed on the literal's inner text (no quotes).
+  val codeStr: Map[String, String] = Map(
+    // ANIMAL cluster onomatopoeia (w10-inheritance-exercise Task 3) — BR-ratified 2026-07-20: English sounds.
+    "Muuuuuuu" -> "Mooooo", "Nöffnöff" -> "Oink", "Gnääääägg" -> "Neigh",
+  )
+
   private val tok: Regex = "[A-Za-zÅÄÖåäö_][A-Za-z0-9ÅÄÖåäö_]*".r
   // `extra` (a per-file override map) wins over the global id, so a file with a context conflict can deviate.
   private def renameAll(span: String, extra: Map[String, String]): String =
@@ -105,10 +121,11 @@ object CodeGlossary:
   def render(span: String): String =
     renameAll(str.foldLeft(span) { case (acc, (sv, en)) => acc.replace(sv, en) }, Map.empty)
 
-  /** Token-exact IDENTIFIER rename applied ONLY in code regions; string/char literals and //, /* */ comments
-    * are copied VERBATIM. For mirrored example .scala/.java: identifiers get renamed, but strings/comments
-    * are left untouched so Code.translate + Overrides handle them on their natural Swedish (a knowledge
-    * string like "Skållas."->"Blanched." resolves via Overrides; nothing half-translates). No `str` here. */
+  /** Token-exact IDENTIFIER rename applied ONLY in code regions; //, /* */ comments and char literals are copied
+    * VERBATIM. String literals are copied verbatim TOO, except: a WHOLE-literal `codeStr` exact match is
+    * translated, and s/f-interpolation bodies get identifier renames. For mirrored example .scala/.java, other
+    * Swedish strings/comments are left for Code.translate + Overrides (a knowledge string like "Skållas."->
+    * "Blanched." resolves via Overrides; nothing half-translates). No bare-substring `str` replace here. */
   def renderCodeIds(s: String, extraId: Map[String, String] = Map.empty): String =
     val out = new StringBuilder; val code = new StringBuilder; var i = 0; val n = s.length
     def flush(): Unit = if code.nonEmpty then { out ++= renameAll(code.toString, extraId); code.clear() }
@@ -118,26 +135,38 @@ object CodeGlossary:
       if i < n then { out += s(i); i += 1 }
     // an interpolator prefix (s"…"/f"…"/raw"…") is any identifier char immediately before the opening quote.
     def isInterp: Boolean = out.nonEmpty && (out.last.isLetterOrDigit || out.last == '_')
-    // copy a "…" or \"\"\"…\"\"\" literal. Inside an s/f-interpolator, RENAME identifiers in ${…} and $ident
-    // — they are CODE references, and leaving them Swedish breaks compilation (e.g. s"${p.namn}" after
-    // namn->name -> "value namn is not a member"). Plain text stays verbatim; non-interpolated strings
-    // are copied byte-for-byte.
+    // rename identifiers inside an s/f-interpolator body (no quotes): ${…} and $ident are CODE references,
+    // renamed via renameAll; `$$` (escaped literal $) and plain text stay verbatim; `\x` escapes are copied
+    // as-is (so a `\$` never triggers interpolation).
+    def renameInterp(body: String): String =
+      val b = new StringBuilder; var j = 0; val m = body.length
+      while j < m do
+        val c = body(j)
+        if c == '\\' && j+1 < m then { b += c; j += 1; b += body(j); j += 1 }
+        else if c == '$' && j+1 < m && body(j+1) == '$' then { b ++= "$$"; j += 2 }
+        else if c == '$' && j+1 < m && body(j+1) == '{' then
+          b ++= "${"; j += 2; val st = j; var d = 1
+          while j < m && d > 0 do { val ch = body(j); if ch=='{' then d += 1 else if ch=='}' then d -= 1; if d > 0 then j += 1 }
+          b ++= renameAll(body.substring(st, j), extraId); if j < m then { b += '}'; j += 1 }
+        else if c == '$' && j+1 < m && (body(j+1).isLetter || body(j+1) == '_') then
+          b += '$'; j += 1; val st = j
+          while j < m && (body(j).isLetterOrDigit || body(j) == '_') do j += 1
+          b ++= renameAll(body.substring(st, j), extraId)
+        else { b += c; j += 1 }
+      b.toString
+    // copy a "…" or \"\"\"…\"\"\" literal. Precedence: (1) a WHOLE-literal `codeStr` exact match wins (ratified
+    // string DATA, e.g. the animal sounds); (2) inside an s/f-interpolator, RENAME identifiers in ${…}/$ident
+    // (leaving them Swedish breaks compilation, e.g. s"${p.namn}" after namn->name); (3) otherwise verbatim.
     def copyStr(triple: Boolean, interp: Boolean): Unit =
-      if triple then { out ++= "\"\"\""; i += 3 } else { out += '"'; i += 1 }
+      val open = if triple then "\"\"\"" else "\""
+      out ++= open; i += open.length
+      val start = i
       def atClose: Boolean = if triple then i+2 < n && s(i)=='"' && s(i+1)=='"' && s(i+2)=='"' else i < n && s(i)=='"'
-      while i < n && !atClose do
-        val c = s(i)
-        if !triple && c == '\\' && i+1 < n then { out += c; i += 1; if i < n then { out += s(i); i += 1 } }
-        else if interp && c == '$' && i+1 < n && s(i+1) == '$' then { out ++= "$$"; i += 2 } // escaped literal $
-        else if interp && c == '$' && i+1 < n && s(i+1) == '{' then
-          out ++= "${"; i += 2; val st = i; var d = 1
-          while i < n && d > 0 do { val ch = s(i); if ch=='{' then d += 1 else if ch=='}' then d -= 1; if d > 0 then i += 1 }
-          out ++= renameAll(s.substring(st, i), extraId); if i < n then { out += '}'; i += 1 }
-        else if interp && c == '$' && i+1 < n && (s(i+1).isLetter || s(i+1)=='_') then
-          out += '$'; i += 1; val st = i
-          while i < n && (s(i).isLetterOrDigit || s(i)=='_') do i += 1
-          out ++= renameAll(s.substring(st, i), extraId)
-        else { out += c; i += 1 }
+      while i < n && !atClose do { if !triple && s(i)=='\\' && i+1 < n then i += 2 else i += 1 }
+      val rawInner = s.substring(start, i)                 // literal content, verbatim (escapes preserved)
+      codeStr.get(rawInner) match
+        case Some(en) => out ++= en
+        case None     => out ++= (if interp then renameInterp(rawInner) else rawInner)
       if triple then { if i+2 < n then { out ++= "\"\"\""; i += 3 } else while i < n do { out += s(i); i += 1 } }
       else if i < n then { out += '"'; i += 1 }
     while i < n do
