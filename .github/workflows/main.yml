@@ -3,9 +3,24 @@ on:
   push:
     branches:
       - main
+  pull_request:
   workflow_dispatch:
 
 jobs:
+  # "Only compilable code should pass": every example .scala the mirror translates via CodeGlossary must
+  # still compile after the identifier rename (catches e.g. an s-interpolation left pointing at a renamed
+  # field). Runs from source (renders on the fly) — no mirror/texlive needed, so it's a fast, standalone gate.
+  Example-compile-gate:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Setup scala-cli
+        uses: VirtusLab/scala-cli-setup@v1
+      - name: Compile gate for mirror example translation
+        run: scala-cli run autotranslate/scratch/verify-mirror-examples.scala -- .
+        shell: bash
+
   Compile-and-Build:
     strategy:
       matrix:
