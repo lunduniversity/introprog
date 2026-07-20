@@ -42,6 +42,11 @@ object Overrides:
     "alternativ"          -> "selection",
     "repetition"          -> "repetition",
     "identifierare"       -> "identifier",
+    // standalone concept-list items (\item topptyp / \item bottentyp in w10-chaphead): the model mangled these
+    // compound words into camelCase pseudo-identifiers ("topptype"/"bottomType"). The CONTEXTUAL rows already
+    // say "top type"/"bottom type"; override the standalone ones to match. (Cache rows purged.)
+    "topptyp"             -> "top type",
+    "bottentyp"           -> "bottom type",
     "slumptal"            -> "random number",
     "dod: operativsystem" -> "dod: operating system",
     "Denna kurs behandlar de tre första." -> "This course covers the first three.", // paradigms slide; model fallback kept Swedish
