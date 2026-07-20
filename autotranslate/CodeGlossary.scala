@@ -44,6 +44,16 @@ object CodeGlossary:
     "svar" -> "answer", "värdeAttUndersöka" -> "valueToExamine",
     "mönster1" -> "pattern1", "mönster2" -> "pattern2", "mönster3" -> "pattern3", "mönsterN" -> "patternN",
     "resultat1" -> "result1", "resultat2" -> "result2", "resultat3" -> "result3", "resultatN" -> "resultN",
+    // MAYBE cluster (lect-w10-override, an Option-analog demo) — BR-ratified 2026-07-19 (#942).
+    // Just/Empty avoids shadowing scala.Nothing and Option.Some/None; Empty echoes Optional.empty().
+    "Kanske" -> "Maybe", "Någon" -> "Just", "Ingen" -> "Empty",
+    // PERSON cluster (personExample*.scala + lect-w10-override) — BR-ratified 2026-07-19 (#942).
+    "namn" -> "name", "ålder" -> "age", "universitet" -> "university", "titel" -> "title",
+    "Akademiker" -> "Academic", "Forskare" -> "Researcher",
+    // one-off example identifiers surfaced by the #944 coverage sweep — BR-ratified 2026-07-19 (#942).
+    "Examinerad" -> "Graduated",                                       // trait Graduated { val title: String }
+    "kastaTärningTillsAllaUtfallUtomEtt" -> "rollDieUntilAllOutcomesExceptOne",
+    "BaklängesHandler" -> "BackwardsHandler",
   )
   // string / comment inner text (longest first so a prefix doesn't pre-empt). exact substring replace.
   val str: Seq[(String, String)] = Seq(
