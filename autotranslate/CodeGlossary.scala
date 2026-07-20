@@ -94,23 +94,24 @@ object CodeGlossary:
   ).sortBy(-_._1.length)
 
   private val tok: Regex = "[A-Za-zÅÄÖåäö_][A-Za-z0-9ÅÄÖåäö_]*".r
-  private def renameAll(span: String): String =
-    tok.replaceAllIn(span, m => Regex.quoteReplacement(id.getOrElse(m.matched, m.matched)))
+  // `extra` (a per-file override map) wins over the global id, so a file with a context conflict can deviate.
+  private def renameAll(span: String, extra: Map[String, String]): String =
+    tok.replaceAllIn(span, m => Regex.quoteReplacement(extra.getOrElse(m.matched, id.getOrElse(m.matched, m.matched))))
 
   /** id rename + `str` replace over the WHOLE span (incl. inside string literals). CONTEXT-SCOPED: only for
     * the slide clamps (apply-b0d), where the `str` list is ratified per file. NOT for corpus-wide use —
     * `str` is a bare substring replace that half-translates partial-coverage strings and misfires on short
     * keys ("Städa toaletter" -> "Clean toaletter", "hej" in "hejsan"). */
   def render(span: String): String =
-    renameAll(str.foldLeft(span) { case (acc, (sv, en)) => acc.replace(sv, en) })
+    renameAll(str.foldLeft(span) { case (acc, (sv, en)) => acc.replace(sv, en) }, Map.empty)
 
   /** Token-exact IDENTIFIER rename applied ONLY in code regions; string/char literals and //, /* */ comments
     * are copied VERBATIM. For mirrored example .scala/.java: identifiers get renamed, but strings/comments
     * are left untouched so Code.translate + Overrides handle them on their natural Swedish (a knowledge
     * string like "Skållas."->"Blanched." resolves via Overrides; nothing half-translates). No `str` here. */
-  def renderCodeIds(s: String): String =
+  def renderCodeIds(s: String, extraId: Map[String, String] = Map.empty): String =
     val out = new StringBuilder; val code = new StringBuilder; var i = 0; val n = s.length
-    def flush(): Unit = if code.nonEmpty then { out ++= renameAll(code.toString); code.clear() }
+    def flush(): Unit = if code.nonEmpty then { out ++= renameAll(code.toString, extraId); code.clear() }
     def copyChar(): Unit = // copy a '...' char literal verbatim (handles \-escapes); never interpolated
       out += s(i); i += 1
       while i < n && s(i) != '\'' do { if s(i)=='\\' && i+1 < n then { out += s(i); i += 1 }; if i < n then { out += s(i); i += 1 } }
@@ -131,11 +132,11 @@ object CodeGlossary:
         else if interp && c == '$' && i+1 < n && s(i+1) == '{' then
           out ++= "${"; i += 2; val st = i; var d = 1
           while i < n && d > 0 do { val ch = s(i); if ch=='{' then d += 1 else if ch=='}' then d -= 1; if d > 0 then i += 1 }
-          out ++= renameAll(s.substring(st, i)); if i < n then { out += '}'; i += 1 }
+          out ++= renameAll(s.substring(st, i), extraId); if i < n then { out += '}'; i += 1 }
         else if interp && c == '$' && i+1 < n && (s(i+1).isLetter || s(i+1)=='_') then
           out += '$'; i += 1; val st = i
           while i < n && (s(i).isLetterOrDigit || s(i)=='_') do i += 1
-          out ++= renameAll(s.substring(st, i))
+          out ++= renameAll(s.substring(st, i), extraId)
         else { out += c; i += 1 }
       if triple then { if i+2 < n then { out ++= "\"\"\""; i += 3 } else while i < n do { out += s(i); i += 1 } }
       else if i < n then { out += '"'; i += 1 }
@@ -154,3 +155,18 @@ object CodeGlossary:
     out.toString
   def touches(span: String): Boolean =
     tok.findAllIn(span).exists(id.contains) || str.exists((sv, _) => span.contains(sv))
+
+  // ---- per-file deviations for the mirror's inline-.tex Scala-code pass (#944/#947) ----
+  // A mirror-relative path (e.g. "compendium/modules/w10-kojo-lab.tex") containing a key gets that map
+  // MERGED OVER the global id (override wins). Use for a context conflict — e.g. a colour enum where `Färg`
+  // must be `Colour` (not the global `Färg->Suit` for cards). Slide files with hand `\ifswedish` clamps
+  // need nothing here (their clamps are masked verbatim, so the mirror pass leaves them alone).
+  val perFileId: Map[String, Map[String, String]] = Map(
+    // e.g. "w01-kojo" -> Map("Färg" -> "Colour", "Röd" -> "Red", "Svart" -> "Black")
+  )
+  // Mirror-relative path substrings whose inline Scala-code envs SKIP the renderCodeIds pass entirely.
+  val optOut: Set[String] = Set()
+  /** Per-file override map for a mirror-relative path (empty = just the global id applies). */
+  def overridesFor(relPath: String): Map[String, String] =
+    perFileId.iterator.collect { case (k, m) if relPath.contains(k) => m }.flatten.toMap
+  def isOptedOut(relPath: String): Boolean = optOut.exists(relPath.contains)
