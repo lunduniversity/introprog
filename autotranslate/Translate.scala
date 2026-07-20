@@ -643,11 +643,29 @@ object Translate:
     * (English-identifier) branch, completing that branch to fully-English code. This closes the gap where
     * inline code-env prose was translated by NEITHER the id-glossary NOR Code.translate (see the plan note).
     * Code envs do not nest, so a non-greedy DOTALL match to the matching `\end{env}` is exact. */
-  def translateCodeEnvBodies(tex: String): String =
+  // Scala-code envs whose identifiers are safe to rename via CodeGlossary. NOT all codeEnvs: tikz/pgf/forest
+  // (node NAMES / \foreach vars) and algorithm (keyword macros) would break refs/macros if renamed (see the
+  // Latex.verbatimEnvs notes). exlatex/envi (raw LaTeX examples), comment, verbatim/Verbatim also excluded.
+  private val scalaCodeEnvs = Set("Code", "CodeSmall", "REPL", "REPLnonum", "REPLsmall", "lstlisting", "Trace", "Output")
+  private val inlineCodeRe = raw"\\(code|jcode|lstinline)\{([^}]*)\}".r
+
+  /** After prose translation, translate the PROSE inside inline code + code ENVs (comments + Swedish strings,
+    * via Code.translate) AND — Option-D via the mirror — rename Swedish identifiers via CodeGlossary in the
+    * Scala-code envs and inline \code{}/\jcode{}/\lstinline{}. Identifier rename is ENGLISH-ONLY (the Swedish
+    * source is untouched, so no \ifswedish clamp is needed for it); it uses CodeGlossary.renderCodeIds
+    * (code-region-aware, id-only). `relPath` (mirror-relative) selects per-file overrides / opt-out
+    * (CodeGlossary.perFileId / optOut) so a context conflict (e.g. a colour `Färg`) can deviate. */
+  def translateCodeEnvBodies(tex: String, relPath: String = ""): String =
+    val extraId = CodeGlossary.overridesFor(relPath)
+    val doIds = !CodeGlossary.isOptedOut(relPath)
     val envAlt = codeEnvs.toSeq.map(java.util.regex.Pattern.quote).mkString("|")
     val re = ("(?s)(\\\\begin\\{(" + envAlt + ")\\})(.*?)(\\\\end\\{\\2\\})").r
-    re.replaceAllIn(tex, m =>
-      java.util.regex.Matcher.quoteReplacement(m.group(1) + Code.translate(m.group(3), translatePlain, skipTexComments = true) + m.group(4)))
+    val withEnvs = re.replaceAllIn(tex, m =>
+      val body = if doIds && scalaCodeEnvs(m.group(2)) then CodeGlossary.renderCodeIds(m.group(3), extraId) else m.group(3)
+      java.util.regex.Matcher.quoteReplacement(m.group(1) + Code.translate(body, translatePlain, skipTexComments = true) + m.group(4)))
+    if !doIds then withEnvs
+    else inlineCodeRe.replaceAllIn(withEnvs, m =>
+      java.util.regex.Matcher.quoteReplacement(s"\\${m.group(1)}{" + CodeGlossary.renderCodeIds(m.group(2), extraId) + "}"))
 
   // ---------- lifecycle ----------
   /** Load cache and make sure the model is ready (called before mirror translation).

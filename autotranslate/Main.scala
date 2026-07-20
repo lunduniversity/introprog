@@ -348,10 +348,12 @@ object Main:
           os.makeDir.all(target / os.up)
           val translate = doTranslate && selected(f)
           val body = os.read(f)
-          // HD2 hybrid: after prose translation, translate comments/strings inside inline code envs too
-          // (identifiers stay verbatim — the source-side \ifswedish id-glossary clamps handle those).
+          // HD2 hybrid: after prose translation, translate comments/strings inside inline code + code envs,
+          // AND rename Swedish identifiers in Scala-code envs / inline \code via the shared CodeGlossary
+          // (Option-D via the mirror — English-only, so the Swedish source stays byte-identical). `$src/$rel`
+          // is passed so CodeGlossary per-file overrides/opt-out (e.g. a colour Färg) can deviate.
           val outBody =
-            if translate then { nTrans += 1; Translate.translateCodeEnvBodies(Translate.translateTex(body, s"$src/$rel")) }
+            if translate then { nTrans += 1; Translate.translateCodeEnvBodies(Translate.translateTex(body, s"$src/$rel"), s"$src/$rel") }
             else body
           os.write.over(target, setEnglishFlags(enChrome(redirectListings(rewriteExternalDocs(rewriteInputs(outBody))))))
           nTex += 1
