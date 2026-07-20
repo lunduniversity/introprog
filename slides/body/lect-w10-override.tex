@@ -115,6 +115,7 @@ Ovan fungerar fint eftersom vi nu har en giltig kombination av getter+setter.
 
 
 \begin{Slide}{Att skilja på mitt och ditt med \texttt{super}}
+\ifswedish
 \begin{REPL}
 scala> class X { def gurka = "super pepino" }
 
@@ -128,6 +129,21 @@ y: Y = Y@26ba2a48
 scala> y.gurka
 res0: String = :(
 \end{REPL}
+\else
+\begin{REPL}
+scala> class X { def cucumber = "super pepino" }
+
+scala> class Y extends X:
+         override val cucumber = ":("
+         val sg = super.cucumber
+
+scala> val y = new Y
+y: Y = Y@26ba2a48
+
+scala> y.cucumber
+res0: String = :(
+\end{REPL}
+\fi{}
 
 \pause
 Super Pepinos to the rescue:
@@ -233,15 +249,23 @@ Algebraisk datatyp \Eng{algebraic data type}, förk. ADT:
 \item En datatyp som består av (en kombination av): 
 \item \Emph{produkt}-typer och \Alert{summa}-typer:
 \begin{itemize}%\SlideFontTiny
-\item En produkt-typ är en ''och''-typ (ä.k. record, struct), exempel: \\ \code|case class Person(namn: String, ålder: Int)| \\består av attributen namn \Alert{OCH} ålder.
+\item En produkt-typ är en ''och''-typ (ä.k. record, struct), exempel: \\ \ifswedish\code|case class Person(namn: String, ålder: Int)|\else\code|case class Person(name: String, age: Int)|\fi{} \\består av attributen namn \Alert{OCH} ålder.
 \item En summa-typ  är en 'Eller''-typ (ä.k. disjunkt union, co-produkt).
-\item Exempel: \code|enum Färg { case Röd, Svart}| \\Färg kan vara antingen Röd \Emph{ELLER} Svart.
-\item[] En \code{Grönsak} är antingen en \code{Gurka} \Emph{ELLER} en \code{Tomat}
+\item Exempel: \ifswedish\code|enum Färg { case Röd, Svart}|\else\code|enum Colour { case Red, Black }|\fi{} \\Färg kan vara antingen Röd \Emph{ELLER} Svart.
+\item[] En \ifswedish\code{Grönsak}\else\code{Vegetable}\fi{} är antingen en \ifswedish\code{Gurka}\else\code{Cucumber}\fi{} \Emph{ELLER} en \ifswedish\code{Tomat}\else\code{Tomato}\fi{}
+\ifswedish
 \begin{Code}
 sealed trait Grönsak { val vikt: Int }
 case class Gurka(vikt: Int) extends Grönsak
 case class Tomat(vikt: Int) extends Grönsak
 \end{Code}
+\else
+\begin{Code}
+sealed trait Vegetable { val weight: Int }
+case class Cucumber(weight: Int) extends Vegetable
+case class Tomato(weight: Int) extends Vegetable
+\end{Code}
+\fi{}
 \end{itemize}  
 \end{itemize} 
 {\vspace{0.5em}\SlideFontTiny \url{https://en.wikipedia.org/wiki/Algebraic_data_type}}
@@ -249,6 +273,7 @@ case class Tomat(vikt: Int) extends Grönsak
 
 \begin{Slide}{En case-klass är en produkt.}
 Klassen \code{Person} nedan har ett namn \Alert{och} en ålder.
+\ifswedish
 \begin{REPL}
 scala> case class Person(namn: String, ålder: Int)
 
@@ -271,7 +296,32 @@ val res3: Int => Any = Lambda1981/0x00000008408f2840@44498af0
 scala> p.productElement(0)
 val res4: Any = Kim
 
-\end{REPL} 
+\end{REPL}
+\else
+\begin{REPL}
+scala> case class Person(name: String, age: Int)
+
+scala> val p = Person("Kim",42)
+val p: Person = Person(Kim,42)
+
+scala> p.isInstanceOf[Product]
+val res1: Boolean = true
+
+scala> p.product   // Tryck TAB
+productArity          productElement    productElementName
+productElementNames   productIterator   productPrefix
+          
+scala> p.productElementNames.toVector
+val res2: Vector[String] = Vector(name, age)
+
+scala> p.productElement
+val res3: Int => Any = Lambda1981/0x00000008408f2840@44498af0
+
+scala> p.productElement(0)
+val res4: Any = Kim
+
+\end{REPL}
+\fi{} 
 \end{Slide}
 
 
@@ -303,45 +353,96 @@ enum PersonalIdentity:
 
 \begin{Slide}{Algebraisk datatyp med typparameter}\SlideFontSmall
 \ifswedish Denna ADT har ett fall som är en \Emph{generisk} case-klass:\else This ADT has a case that is a \Emph{generic} case class:\fi     
+\ifswedish
 \begin{CodeSmall}
 sealed trait Kanske[+A]   // +A gör typen flexibel, ä.k. "kovariant" mer om det senare
 object Kanske:
   case class Någon[A](a: A) extends Kanske[A]
   case object Ingen extends Kanske[Nothing]   
 \end{CodeSmall}
+\else
+\begin{CodeSmall}
+sealed trait Maybe[+A]   // +A gör typen flexibel, ä.k. "kovariant" mer om det senare
+object Maybe:
+  case class Just[A](a: A) extends Maybe[A]
+  case object Empty extends Maybe[Nothing]   
+\end{CodeSmall}
+\fi{}
 \pause Motsvarande med \code{enum}: (kompilatorn fyller i \code{extends ...} automatiskt)
+\ifswedish
 \begin{CodeSmall}
 enum Kanske[+A]:
   case Någon(a: A)
   case Ingen     
 \end{CodeSmall}
+\else
+\begin{CodeSmall}
+enum Maybe[+A]:
+  case Just(a: A)
+  case Empty     
+\end{CodeSmall}
+\fi{}
 Känner du igen denna? \pause Jämför inbyggda typen \code{Option}\\~\\Övning: implementation av \code{getOrElse} med extensionsmetod
+\ifswedish
 \begin{CodeSmall}
 extension [A](k: Kanske[A]) def getOrElse(default: A):A = ??? 
    /* Tips: 
       använd match */
   
-\end{CodeSmall}     
+\end{CodeSmall}
+\else
+\begin{CodeSmall}
+extension [A](k: Maybe[A]) def getOrElse(default: A):A = ??? 
+   /* Tips: 
+      använd match */
+  
+\end{CodeSmall}
+\fi{}     
 \end{Slide}
 
 \begin{Slide}{Algebraisk datatyp med typparameter}\SlideFontSmall
 \ifswedish Denna ADT har ett fall som är en \Emph{generisk} case-klass:\else This ADT has a case that is a \Emph{generic} case class:\fi     
+\ifswedish
 \begin{CodeSmall}
 sealed trait Kanske[+A]   // +A gör typen flexibel, ä.k. "kovariant" mer om det senare
 object Kanske:
   case class Någon[A](a: A) extends Kanske[A]
   case object Ingen extends Kanske[Nothing]   
 \end{CodeSmall}
+\else
+\begin{CodeSmall}
+sealed trait Maybe[+A]   // +A gör typen flexibel, ä.k. "kovariant" mer om det senare
+object Maybe:
+  case class Just[A](a: A) extends Maybe[A]
+  case object Empty extends Maybe[Nothing]   
+\end{CodeSmall}
+\fi{}
 Motsvarande med \code{enum}: (kompilatorn fyller i \code{extends ...} automatiskt)
+\ifswedish
 \begin{CodeSmall}
 enum Kanske[+A]:
   case Någon(a: A)
   case Ingen     
 \end{CodeSmall}
+\else
+\begin{CodeSmall}
+enum Maybe[+A]:
+  case Just(a: A)
+  case Empty     
+\end{CodeSmall}
+\fi{}
 Känner du igen denna? Jämför inbyggda typen \code{Option}\\~\\Övning: implementation av \code{getOrElse} med extensionsmetod 
+\ifswedish
 \begin{CodeSmall}
 extension [A](k: Kanske[A]) def getOrElse(default: A):A = k match 
   case Kanske.Någon(a) => a
   case Kanske.Ingen => default
-\end{CodeSmall}     
+\end{CodeSmall}
+\else
+\begin{CodeSmall}
+extension [A](k: Maybe[A]) def getOrElse(default: A):A = k match 
+  case Maybe.Just(a) => a
+  case Maybe.Empty => default
+\end{CodeSmall}
+\fi{}     
 \end{Slide}
