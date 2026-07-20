@@ -111,10 +111,34 @@ object CodeGlossary:
   def renderCodeIds(s: String): String =
     val out = new StringBuilder; val code = new StringBuilder; var i = 0; val n = s.length
     def flush(): Unit = if code.nonEmpty then { out ++= renameAll(code.toString); code.clear() }
-    def copyDelim(q: Char): Unit = // copy a "..." or '...' literal verbatim (handles \-escapes)
+    def copyChar(): Unit = // copy a '...' char literal verbatim (handles \-escapes); never interpolated
       out += s(i); i += 1
-      while i < n && s(i) != q do { if s(i)=='\\' && i+1 < n then { out += s(i); i += 1 }; if i < n then { out += s(i); i += 1 } }
+      while i < n && s(i) != '\'' do { if s(i)=='\\' && i+1 < n then { out += s(i); i += 1 }; if i < n then { out += s(i); i += 1 } }
       if i < n then { out += s(i); i += 1 }
+    // an interpolator prefix (s"…"/f"…"/raw"…") is any identifier char immediately before the opening quote.
+    def isInterp: Boolean = out.nonEmpty && (out.last.isLetterOrDigit || out.last == '_')
+    // copy a "…" or \"\"\"…\"\"\" literal. Inside an s/f-interpolator, RENAME identifiers in ${…} and $ident
+    // — they are CODE references, and leaving them Swedish breaks compilation (e.g. s"${p.namn}" after
+    // namn->name -> "value namn is not a member"). Plain text stays verbatim; non-interpolated strings
+    // are copied byte-for-byte.
+    def copyStr(triple: Boolean, interp: Boolean): Unit =
+      if triple then { out ++= "\"\"\""; i += 3 } else { out += '"'; i += 1 }
+      def atClose: Boolean = if triple then i+2 < n && s(i)=='"' && s(i+1)=='"' && s(i+2)=='"' else i < n && s(i)=='"'
+      while i < n && !atClose do
+        val c = s(i)
+        if !triple && c == '\\' && i+1 < n then { out += c; i += 1; if i < n then { out += s(i); i += 1 } }
+        else if interp && c == '$' && i+1 < n && s(i+1) == '$' then { out ++= "$$"; i += 2 } // escaped literal $
+        else if interp && c == '$' && i+1 < n && s(i+1) == '{' then
+          out ++= "${"; i += 2; val st = i; var d = 1
+          while i < n && d > 0 do { val ch = s(i); if ch=='{' then d += 1 else if ch=='}' then d -= 1; if d > 0 then i += 1 }
+          out ++= renameAll(s.substring(st, i)); if i < n then { out += '}'; i += 1 }
+        else if interp && c == '$' && i+1 < n && (s(i+1).isLetter || s(i+1)=='_') then
+          out += '$'; i += 1; val st = i
+          while i < n && (s(i).isLetterOrDigit || s(i)=='_') do i += 1
+          out ++= renameAll(s.substring(st, i))
+        else { out += c; i += 1 }
+      if triple then { if i+2 < n then { out ++= "\"\"\""; i += 3 } else while i < n do { out += s(i); i += 1 } }
+      else if i < n then { out += '"'; i += 1 }
     while i < n do
       val c = s(i)
       if c == '/' && i+1 < n && s(i+1) == '/' then { flush(); while i < n && s(i) != '\n' do { out += s(i); i += 1 } }
@@ -122,12 +146,9 @@ object CodeGlossary:
         flush(); out ++= "/*"; i += 2
         while i+1 < n && !(s(i)=='*'&&s(i+1)=='/') do { out += s(i); i += 1 }
         if i+1 < n then { out ++= "*/"; i += 2 } else while i < n do { out += s(i); i += 1 }
-      else if c == '"' && i+2 < n && s(i+1)=='"' && s(i+2)=='"' then
-        flush(); out ++= "\"\"\""; i += 3
-        while i+2 < n && !(s(i)=='"'&&s(i+1)=='"'&&s(i+2)=='"') do { out += s(i); i += 1 }
-        if i+2 < n then { out ++= "\"\"\""; i += 3 } else while i < n do { out += s(i); i += 1 }
-      else if c == '"' then { flush(); copyDelim('"') }
-      else if c == '\'' then { flush(); copyDelim('\'') }
+      else if c == '"' && i+2 < n && s(i+1)=='"' && s(i+2)=='"' then { flush(); copyStr(true, isInterp) }
+      else if c == '"' then { flush(); copyStr(false, isInterp) }
+      else if c == '\'' then { flush(); copyChar() }
       else { code += c; i += 1 }
     flush()
     out.toString
