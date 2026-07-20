@@ -42,6 +42,13 @@ object Overrides:
     "alternativ"          -> "selection",
     "repetition"          -> "repetition",
     "identifierare"       -> "identifier",
+    // standalone concept-list items (\item topptyp / \item bottentyp / \item inmixning supertyp in w10-chaphead):
+    // the model mangled these compound words — "topptyp"/"bottentyp" into camelCase pseudo-identifiers
+    // ("topptype"/"bottomType"), and "inmixning supertyp" into a half-translated "mixin supertyp" (supertyp left
+    // Swedish, though the standalone "supertyp" row is "supertype"). Override to the correct terms. (Cache rows purged.)
+    "topptyp"             -> "top type",
+    "bottentyp"           -> "bottom type",
+    "inmixning supertyp"  -> "mixin supertype",
     "slumptal"            -> "random number",
     "dod: operativsystem" -> "dod: operating system",
     "Denna kurs behandlar de tre första." -> "This course covers the first three.", // paradigms slide; model fallback kept Swedish
