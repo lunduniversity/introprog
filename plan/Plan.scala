@@ -136,7 +136,7 @@ trait Plan:
       | Scalas typhierarki, Any, AnyRef, Object, AnyVal, Null, Nothing,
       | topptyp, bottentyp, referenstyper, värdetyper,
       | accessregler vid arv, protected, final,
-      | trait, abstrakt klass, 
+      | abstrakt klass, 
       """.stripTrim),
 
     Module("Varians och kontextparametrar",
