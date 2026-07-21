@@ -2,7 +2,7 @@ name: Build
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
   workflow_dispatch:
 
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup scala-cli
         uses: VirtusLab/scala-cli-setup@v1
       - name: Compile gate for mirror example translation
@@ -22,14 +22,17 @@ jobs:
         shell: bash
 
   Compile-and-Build:
-    strategy:
-      matrix:
-        os: [ubuntu-22.04, ubuntu-20.04]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
 
       - name: Setup dependencies
         run: |
