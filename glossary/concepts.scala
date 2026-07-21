@@ -9,7 +9,7 @@ object explain:
       BaseType, Block, Boolean, 
       CallByName, CallByValue,
       CaseClass, Class, ClassParameter, Collection, CollectionLibrary, Column, ColumnVector,
-      CompanionObject, Compile, Compiler, CompileError, Computer, ControlStructure, Constructor, 
+      CompanionObject, Compilation, Compile, Compiler, CompileError, Computer, ControlStructure, Constructor, 
       DataStructure,
       DefaultArgument, Deserialize, DotNotation, DynamicBinding, 
       Enumeration, Element, Export, Expression,
@@ -236,6 +236,14 @@ object explain:
       enShortExplanation = "to translate code into executable form",
       svLongExplanation = "Att kompilera innebär att en kompilator analyserar källkoden, utför typkontroll och andra statiska analyser, och översätter den till en körbar form såsom bytekod för JVM; eventuella fel rapporteras som kompileringsfel.",
       enLongExplanation = "To compile means that a compiler analyzes the source code, performs type checking and other static analyses, and translates it into an executable form such as bytecode for the JVM; any errors are reported as compile errors.",
+    )
+    val Compilation = Concept(
+      sv = "kompilering",
+      en = "compilation",
+      svShortExplanation = "kod på lägre nivå skapas ur källkodsfiler",
+      enShortExplanation = "lower-level code is created from source code files",
+      svLongExplanation = "Kompilering är processen där en kompilator översätter källkod till kod på lägre nivå, i Scalas fall bytekod för JVM; kompileringen sker innan programmet kan köras och eventuella fel rapporteras som kompileringsfel.",
+      enLongExplanation = "Compilation is the process where a compiler translates source code into lower-level code, in the case of Scala bytecode for the JVM; compilation happens before the program can be run and any errors are reported as compile errors.",
     )
     val CompileError = Concept(
       sv = "kompileringsfel",
