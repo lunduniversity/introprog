@@ -175,6 +175,14 @@ object Main:
   def enChrome(tex: String): String =
     (moduleNames ++ chromePhrases).foldLeft(tex) { case (s, (sv, en)) => s.replace(sv, en) }
 
+  /** TeX eats the space after the control word `\fi`, gluing the next word onto the clamp content
+    * ("Suitis", "tomatoin" — the v2026.5 review class). Translation can reorder a word to sit right
+    * after a masked `\ifswedish..\fi` block even when the Swedish source is safe (e.g. `\fi,`), so
+    * the MIRROR writer repairs every bare `\fi ` before a letter deterministically; the Swedish
+    * sources were swept separately (fix-fi-glue.scala) and newly emitted clamps use `\fi{}`. */
+  def deglueFi(tex: String): String =
+    tex.replaceAll("""\\fi (?=[A-Za-zÅÄÖåäö])""", java.util.regex.Matcher.quoteReplacement("\\fi{} "))
+
   def setEnglishFlags(tex: String): String =
     val firstReal = tex.linesIterator.map(_.trim).find(l => l.nonEmpty && !l.startsWith("%"))
     if !firstReal.exists(_.startsWith("\\documentclass")) then tex
@@ -355,7 +363,7 @@ object Main:
           val outBody =
             if translate then { nTrans += 1; Translate.translateCodeEnvBodies(Translate.translateTex(body, s"$src/$rel"), s"$src/$rel") }
             else body
-          os.write.over(target, setEnglishFlags(enChrome(redirectListings(rewriteExternalDocs(rewriteInputs(outBody))))))
+          os.write.over(target, setEnglishFlags(enChrome(redirectListings(rewriteExternalDocs(rewriteInputs(deglueFi(outBody)))))))
           nTex += 1
         else
           val target = dstDir / rel

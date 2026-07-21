@@ -202,7 +202,7 @@
 \newcommand{\DescrCount}{\refstepcounter{DescrCounter}\Alph{DescrCounter}}
 
 \newenvironment{ConceptConnections}[1][0.5cm]%
-{\begingroup\renewcommand{\arraystretch}{1.2}\vspace{1em}\raggedright\begin{tabular}{@{}l |c p{#1} c| p{0.75\textwidth}}}%
+{\begingroup\renewcommand{\arraystretch}{1.2}\vspace{1em}\raggedright\begin{tabular}{@{}l |c p{#1} c| p{0.55\textwidth}}}%
 {\end{tabular}\vspace{1em}\endgroup}
 
 \newcommand{\Connect}[2]      {#1  &  \ConceptCount  &   &   \DescrCount  &  #2 \\}
