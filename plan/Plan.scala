@@ -131,7 +131,7 @@ trait Plan:
 
     Module("Arv och komposition", 
       id = "inheritance", exercise = "inheritance", labs = Seq("snake0"), contents = """
-      | arv, komposition, polymorfism, trait, extends, asInstanceOf, with, inmixning
+      | arv, komposition, polymorfism, trait, extends, asInstanceOf, with, inmixning,
       | supertyp, subtyp, bastyp, override,
       | Scalas typhierarki, Any, AnyRef, Object, AnyVal, Null, Nothing,
       | topptyp, bottentyp, referenstyper, värdetyper,
