@@ -45,7 +45,7 @@
 | kompanjonsobjekt    | companion object        | ser privata medlemmar i klass med samma namn |
 | kompilator          | compiler                | ett program som tar källkod som indata och ger maskinkod som utdata |
 | kompilera           | compile                 | att översätta kod till exekverbar form |
-| kompilering         | compile time            | kod på lägre nivå skapas ur källkodsfiler |
+| kompilering         | compilation             | kod på lägre nivå skapas ur källkodsfiler |
 | kompileringsfel     | compile error           | kan inträffa innan exekveringen startat |
 | konstruktor         | constructor             | skapar instans, allokerar plats för tillståndsminne |
 | kontrollstruktur    | control structure       | kan ge alternativa vägar genom koden |
