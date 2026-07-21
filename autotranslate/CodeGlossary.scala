@@ -50,6 +50,9 @@ object CodeGlossary:
     // PERSON cluster (personExample*.scala + lect-w10-override) — BR-ratified 2026-07-19 (#942).
     "namn" -> "name", "ålder" -> "age", "universitet" -> "university", "titel" -> "title",
     "Akademiker" -> "Academic", "Forskare" -> "Researcher", "IckeAkademiker" -> "NonAcademic",
+    // lowercase val-name forms (Task 5 REPL: `val akademiker = new Academic(...)`) — same words as the classes
+    // above, just lowercased per Scala val-naming convention — BR-ratified 2026-07-21.
+    "akademiker" -> "academic", "forskare" -> "researcher",
     // one-off example identifiers surfaced by the #944 coverage sweep — BR-ratified 2026-07-19 (#942).
     "Examinerad" -> "Graduated",                                       // trait Graduated { val title: String }
     "kastaTärningTillsAllaUtfallUtomEtt" -> "rollDieUntilAllOutcomesExceptOne",
@@ -105,6 +108,8 @@ object CodeGlossary:
   val codeStr: Map[String, String] = Map(
     // ANIMAL cluster onomatopoeia (w10-inheritance-exercise Task 3) — BR-ratified 2026-07-20: English sounds.
     "Muuuuuuu" -> "Mooooo", "Nöffnöff" -> "Oink", "Gnääääägg" -> "Neigh",
+    // PERSON: the researcher's title value (Task 5 REPL: new Researcher(..., "Doktorand")) — BR-ratified 2026-07-21.
+    "Doktorand" -> "PhD student",
   )
 
   private val tok: Regex = "[A-Za-zÅÄÖåäö_][A-Za-z0-9ÅÄÖåäö_]*".r
