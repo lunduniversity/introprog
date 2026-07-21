@@ -67,7 +67,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ),
 
     QuizID("quiz-w02-concepts") -> Vector(  //programs
-      "kompilera      " -> "maskinkod skapas ur en eller flera källkodsfiler",
+      "kompilering    " -> "kod på lägre nivå skapas ur källkodsfiler",
       "skript         " -> "ensam kodfil, huvudprogram behövs ej",
       "objekt         " -> "samlar variabler och funktioner",
       "@main          " -> "där exekveringen av kompilerat program startar",
