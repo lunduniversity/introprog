@@ -1252,9 +1252,9 @@ scala> (new Sub).vårHemlis
 
 \Task  \what~  Den flitige ornitologen från uppgift \ref{task:fyle} ska ringmärka alla 42 fåglar hen hittat i skogen. När hen ändå håller på bestämmer hen att även försöka ta reda på hur mycket oväsen som skapas av respektive fågelsort. För detta ändamål apterar den flitige ornitologen en Linuxdator på allt infångat fyle. Du ska hjälpa ornitologen att skriva programmet.
 
-\Subtask Inför en \code{protected var räknaLäte} i traiten \code{Fyle} och skriv kod på lämpliga ställen för att räkna hur många läten som respektive fågelinstans yttrar.
+\Subtask Inför en \ifswedish\code{protected var räknaLäte}\else\code{protected var callCount}\fi{} i traiten \ifswedish\code{Fyle}\else\code{Fowlk}\fi{} och skriv kod på lämpliga ställen för att räkna hur många läten som respektive fågelinstans yttrar.
 
-\Subtask Inför en metod \code{antalLäten} som returnerar antalet krax respektive kvack som en viss fågel yttrat sedan dess skapelse.
+\Subtask Inför en metod \ifswedish\code{antalLäten}\else\code{numberOfCalls}\fi{} som returnerar antalet krax respektive kvack som en viss fågel yttrat sedan dess skapelse.
 
 \Subtask Varför inte använda \code{private} i stället for \code{protected}?
 
@@ -1268,17 +1268,23 @@ scala> (new Sub).vårHemlis
 \TaskSolved \what
 
 
-\SubtaskSolved  I Fyle:
+\SubtaskSolved  \ifswedish I Fyle:
 \begin{Code}
 protected var räknaLäte: Int = 0
 def väsnas: Unit = { print(läte * 2); räknaLäte += 2 }
 \end{Code}
+\else In Fowlk:
+\begin{Code}
+protected var callCount: Int = 0
+def holler: Unit = { print(call * 2); callCount += 2 }
+\end{Code}
+\fi
 
-I Ånka: \code| override def väsnas = { print(läte * 4); räknaLäte += 4 }|
+\ifswedish I Ånka: \code| override def väsnas = { print(läte * 4); räknaLäte += 4 }|\else In Quaddle: \code| override def holler = { print(call * 4); callCount += 4 }|\fi
 
-\SubtaskSolved  \code{ def antalLäten: Int = räknaLäte }
+\SubtaskSolved  \ifswedish\code{ def antalLäten: Int = räknaLäte }\else\code{ def numberOfCalls: Int = callCount }\fi
 
-\SubtaskSolved  Om en klass som representerar en fågel som skulle ge ifrån sig fler/färre läten än en vanlig \code{Fyle}, behöver \code{väsnas} ändras. Denna metod behöver tillgång till \code{räknaLäte}, vilken inte får vara \code{private}.
+\SubtaskSolved  Om en klass som representerar en fågel som skulle ge ifrån sig fler/färre läten än en vanlig \ifswedish\code{Fyle}\else\code{Fowlk}\fi{}, behöver \ifswedish\code{väsnas}\else\code{holler}\fi{} ändras. Denna metod behöver tillgång till \ifswedish\code{räknaLäte}\else\code{callCount}\fi{}, vilken inte får vara \code{private}.
 
 \SubtaskSolved  Räknar-variabeln ska inte kunna påverkas i någon annan del av programmet.
 
@@ -1335,12 +1341,12 @@ final class Pjodd extends Fyle, KanFlyga, KanKanskeSimma, ÄrLiten:
 \begin{Code}
 trait Fowlk:
   val call: String
-  def holler: Unit = { print(call * 2); callTally += 2 }
-  protected var callTally: Int = 0
+  def holler: Unit = { print(call * 2); callCount += 2 }
+  protected var callCount: Int = 0
   val canActuallySwim: Boolean
   val canActuallyFly: Boolean
   val isLarge : Boolean
-  def callCount: Int = callTally
+  def numberOfCalls: Int = callCount
 
 trait CanSwim { val canActuallySwim = true }
 trait CannotSwim { val canActuallySwim = false }
@@ -1355,11 +1361,11 @@ final class Crawke extends Fowlk, CanFly, CannotSwim, IsLarge:
 
 final class Quaddle extends Fowlk, CanSwim, CanPerhapsFly, IsLarge:
   val call = "quawk"
-  override def holler = { print(call * 4); callTally += 4 }
+  override def holler = { print(call * 4); callCount += 4 }
 
 final class Pibb extends Fowlk, CanFly, CanPerhapsSwim, IsSmall:
   val call = "chitter"
-  override def holler = { print(call * 8); callTally += 8 }
+  override def holler = { print(call * 8); callCount += 8 }
 \end{Code}
 \fi
 
