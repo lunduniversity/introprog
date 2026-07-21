@@ -49,17 +49,15 @@ object CodeGlossary:
     "Kanske" -> "Maybe", "Någon" -> "Just", "Ingen" -> "Empty",
     // PERSON cluster (personExample*.scala + lect-w10-override) — BR-ratified 2026-07-19 (#942).
     "namn" -> "name", "ålder" -> "age", "universitet" -> "university", "titel" -> "title",
-    "Akademiker" -> "Academic", "Forskare" -> "Researcher",
+    "Akademiker" -> "Academic", "Forskare" -> "Researcher", "IckeAkademiker" -> "NonAcademic",
     // one-off example identifiers surfaced by the #944 coverage sweep — BR-ratified 2026-07-19 (#942).
     "Examinerad" -> "Graduated",                                       // trait Graduated { val title: String }
     "kastaTärningTillsAllaUtfallUtomEtt" -> "rollDieUntilAllOutcomesExceptOne",
     "BaklängesHandler" -> "BackwardsHandler",
-    // ANIMAL cluster (w10-inheritance-exercise Task 3, `trait Djur`) — BR-agreed 2026-07-20.
-    // Inline .tex code (REPL/Code envs + prose \code{}) → translated by the mirror's inline pass (#948).
-    // The onomatopoeia string literals (Muuuuuuu/Nöffnöff/Gnääääägg) are English sounds too — via `codeStr`
-    // (whole-literal match applied inside string literals by renderCodeIds), NOT this id map.
-    "Djur" -> "Animal", "Ko" -> "Cow", "Gris" -> "Pig", "Häst" -> "Horse",
-    "väsnas" -> "makeNoise", "skapaDjur" -> "createAnimal", "bondgård" -> "farm",
+    // NB: the ANIMAL cluster (Djur/Ko/Gris/Häst/väsnas/skapaDjur/bondgård) is NOT global — it lives in
+    // `perFileId` scoped to w10-inheritance-exercise. `Djur` also occurs in lect-w11-context's generics demo
+    // (class Katt/Hund extends Djur) where Katt/Hund aren't in the glossary; a global Djur->Animal rendered
+    // `class Katt extends Animal` (mixed). Scoping keeps w11 fully Swedish until that lecture is translated.
   )
   // string / comment inner text (longest first so a prefix doesn't pre-empt). exact substring replace.
   val str: Seq[(String, String)] = Seq(
@@ -192,6 +190,14 @@ object CodeGlossary:
   // need nothing here (their clamps are masked verbatim, so the mirror pass leaves them alone).
   val perFileId: Map[String, Map[String, String]] = Map(
     // e.g. "w01-kojo" -> Map("Färg" -> "Colour", "Röd" -> "Red", "Svart" -> "Black")
+    // ANIMAL cluster — scoped here (NOT global) so `Djur` doesn't bleed into lect-w11-context's generics demo
+    // (class Katt/Hund extends Djur, where Katt/Hund aren't glossary'd -> mixed `class Katt extends Animal`).
+    // Task 3's own Fyle-bird example in this same file is hand-clamped (\ifswedish), so the mirror leaves it
+    // alone (Latex.ifswedishRanges); only Task 3's unclamped REPL/Code envs get these. BR-agreed 2026-07-20.
+    "w10-inheritance-exercise" -> Map(
+      "Djur" -> "Animal", "Ko" -> "Cow", "Gris" -> "Pig", "Häst" -> "Horse",
+      "väsnas" -> "makeNoise", "skapaDjur" -> "createAnimal", "bondgård" -> "farm",
+    ),
   )
   // Mirror-relative path substrings whose inline Scala-code envs SKIP the renderCodeIds pass entirely.
   val optOut: Set[String] = Set()
