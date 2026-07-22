@@ -182,4 +182,20 @@
     println(s"--- phase-2 SKIPPED (${rpSkip.size}) — REPL transcripts that compile in NEITHER language / no input ---")
     rpSkip.foreach(s => println(s"  skip $s"))
 
+  // @later (#951 phase 3) — cross-env context. PARKED 2026-07-22 (deferred; pending BR): the ~81 code-bearing skips above
+  // (30 inline + 51 REPL-with-input) mostly compile in neither language because they reference names DEFINED in a
+  // neighbouring env, not in the body itself. Phase 3 would supply that context: group consecutive scala-code
+  // envs per file into "sessions" (reset at \Task/\Subtask/\SOLUTION/\section/\begin{Slide}/\QUESTBEGIN...),
+  // prepend the preceding same-session envs' code as a preamble — taking the \else branch for \ifswedish context
+  // envs (SV branch for the SV compile, \else for the EN compile, since defs are often hand-clamped while the
+  // referencing REPL is auto-translated) — and compile `object Session: <preamble> <body>` under the same
+  // regression rule. Env selection stays identical for SV and EN, so a mis-grouped boundary can only skip.
+  // Step 0 (static, measured on the RENDERED English side — the source side is optimistic since a ref and its
+  // def share the Swedish identifier by construction): ~20 recoverable, ~24 external (lib/cross-file/absent),
+  // ~37 unclassifiable (lowercase/expression-only). Divergence (recoverable on SV side but NOT on the mirror
+  // side, i.e. caused by INCONSISTENT translation) = 0 — so the current cross-refs that resolve in Swedish also
+  // resolve in English; there is no hidden inconsistency for phase 3 to catch. Given the moderate ~20-body gain
+  // vs the added machinery (session grouping + clamp-branch extraction), parked; phases 1–2 are the coverage
+  // line. Genuinely-external cases stay covered by the opt-out marker (reserved "option 3"). Revisit if the
+  // recoverable set (incl. the Task 3 solution Code envs + several w05/w11 cases) becomes worth gating.
   if regressions.nonEmpty || leaks.nonEmpty || inRegressions.nonEmpty || rpRegressions.nonEmpty then sys.exit(1)
