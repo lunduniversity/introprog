@@ -236,7 +236,8 @@ object Main:
     val knownFlags = Set("--only", "--all", "--dryrun", "--retry-fallbacks", "--dump-overrides",
       "--sweep-fallbacks", "--model", "--swedish-left", "--swedish-lines", "--prose-leaks-dump",
       "--prose-leaks", "--prose-swedish", "--pdf-swedish", "--selftest", "--clean", "--latextest",
-      "--codetest", "--codeenvtest", "--workspace-en", "--modeltest", "--n")
+      "--codetest", "--codeenvtest", "--workspace-en", "--modeltest", "--n",
+      "--cache-only", "--prose-leaks-ratchet")
     val unknownFlags = args.filter(_.startsWith("--")).filterNot(knownFlags)
     if unknownFlags.nonEmpty then
       System.err.println(s"unknown flag(s): ${unknownFlags.mkString(" ")} -- aborting so nothing runs by accident")
@@ -250,10 +251,12 @@ object Main:
     val retryFallbacks = args.contains("--retry-fallbacks") // drop Swedish fallbacks from cache + re-translate
     val dumpOverrides = args.contains("--dump-overrides") // record every MODEL-tier unit (clean sv + en) for curating Overrides.scala
     val sweepFallbacks = args.contains("--sweep-fallbacks") // record every SLIDE unit whose result is still Swedish
+    val cacheOnly = args.contains("--cache-only") // CI mode: full mirror, no backend, FAIL over fallback baseline
+    if cacheOnly then Translate.cacheOnly = true
     if dumpOverrides then Translate.captureSuggestions = true
     if sweepFallbacks then Translate.dumpFallbacks = true
     argVal("--model").foreach(m => Translate.SelectedModel = m) // override the model for this run
-    val doTranslate = all || only.isDefined || dryrun || retryFallbacks || dumpOverrides || sweepFallbacks // default (none): copy as-is, no Ollama
+    val doTranslate = all || only.isDefined || dryrun || retryFallbacks || dumpOverrides || sweepFallbacks || cacheOnly // default (none): copy as-is, no Ollama
 
     if args.contains("--swedish-left") then Translate.checkHowMuchSwedishLeft(root) // corpus progress metric (%)
     else if args.contains("--swedish-lines") then Translate.dumpSwedishProse(root, argVal("--swedish-lines").get) // prose lines of ONE file
@@ -262,6 +265,8 @@ object Main:
       argVal("--prose-leaks") match
         case Some(rel) => Translate.dumpProseLeaks(root, rel)
         case None      => Translate.proseLeakCorpus(root)
+    else if args.contains("--prose-leaks-ratchet") then // CI regression gate: corpus leak count vs committed baseline
+      enforceBaseline("prose-leaks-ratchet", Translate.proseLeakCorpus(root), root / "autotranslate" / "prose-leaks-baseline.txt")
     else if args.contains("--prose-swedish") then Translate.proseSwedish(root) // SM018 prose-only Swedish gauge: leak% + tagged [leak]/[allowed]/[glossary] dump
     else if args.contains("--pdf-swedish") then Translate.pdfSwedish(root, argVal("--pdf-swedish").get) // per-PDF % (insourced)
     else if args.contains("--selftest") then Translate.selftest(root)
@@ -284,6 +289,29 @@ object Main:
     else
       mirror(root, doTranslate, only, dryrun, retryFallbacks)
       if dumpOverrides || sweepFallbacks then writeOverrideSuggestions(root)
+      if cacheOnly then // cache completeness is the CI invariant: every unit must resolve without a model
+        enforceBaseline("cache-only", Translate.fallbacks, root / "autotranslate" / "cache-only-baseline.txt")
+
+  /** CI ratchet gate: fail if `measured` exceeds the integer in the committed baseline file (first
+    * non-empty, non-# line). A missing/unreadable baseline is also a hard failure — the committed file
+    * is part of the contract, so a gate cannot silently pass without one. Failure is sys.error, NOT
+    * sys.exit: run is not forked, so sys.exit kills the whole hot sbt server (measured live — the
+    * shutdown hooks ran); a thrown error fails just the task, sbt --client still exits nonzero for CI,
+    * and a local gate check leaves the build server alive. When the measured value drops BELOW the
+    * baseline the gate passes and prints the tighter value to commit, so the ratchet only moves down. */
+  def enforceBaseline(what: String, measured: Int, baselineFile: os.Path): Unit =
+    val baseline =
+      if !os.exists(baselineFile) then None
+      else os.read.lines(baselineFile).iterator.map(_.trim)
+        .find(l => l.nonEmpty && !l.startsWith("#")).flatMap(_.toIntOption)
+    baseline match
+      case None =>
+        sys.error(s"[$what] FAIL: no committed baseline at $baselineFile — commit one with the current measured value ($measured)")
+      case Some(b) if measured > b =>
+        sys.error(s"[$what] FAIL: measured $measured exceeds committed baseline $b ($baselineFile)")
+      case Some(b) =>
+        println(s"[$what] OK: measured $measured within baseline $b" +
+          (if measured < b then s" — ratchet can tighten: commit $measured to ${baselineFile.last}" else ""))
 
   /** Write the captured MODEL-tier units (clean Swedish + the model's English) to a review file, so the
     * misses that keep `--all` from being 0-model-calls can be curated into Overrides.scala. TSV-ish:
@@ -330,7 +358,7 @@ object Main:
       retryFallbacks: Boolean = false): Unit =
     def selected(f: os.Path): Boolean = only.forall(s => f.last.contains(s))
     if doTranslate then
-      Translate.init(root, withModel = !dryrun)
+      Translate.init(root, withModel = !dryrun && !Translate.cacheOnly)
       if retryFallbacks then
         val n = Translate.dropSwedishFallbacks()
         println(s"  --retry-fallbacks: dropped $n Swedish fallback cache entries → re-translating them")

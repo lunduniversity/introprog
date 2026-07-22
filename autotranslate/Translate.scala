@@ -174,7 +174,7 @@ object Translate:
     badCode.foreach(codeCache.remove)
     if badCode.nonEmpty then println(s"  [code-cache] dropped ${badCode.size} invalid/stale entries (re-translate under current guards)")
   def saveCache(root: os.Path): Unit =
-    writeTsv(cacheFile(root), cache); writeTsv(codeCacheFile(root), codeCache)
+    if !cacheOnly then { writeTsv(cacheFile(root), cache); writeTsv(codeCacheFile(root), codeCache) }
 
   /** `--retry-fallbacks`: drop LaTeX-cache entries that are Swedish fallbacks — en == sv AND the text
     * still contains åäö (the model gave up, usually a placeholder drop on a dense slide unit). They get
@@ -260,6 +260,11 @@ object Translate:
   // keep a `--all` run from being 0-model-calls can be curated into Overrides.scala. Pure diagnostics.
   var captureSuggestions = false
   var dumpFallbacks = false // --sweep-fallbacks: record SLIDE units whose result is still Swedish
+  // --cache-only (CI mode): backend is never resolved (no network attempt at all, so a runner without
+  // LAN/model access cannot stall on connection timeouts), uncached units keep Swedish and count as
+  // fallbacks, and the cache is NOT written back (a CI run must not mint sv->sv entries that would
+  // hide the same units from the next run's fallback count — cache completeness is the invariant).
+  var cacheOnly = false
   var currentLabel = ""
   val suggestions = mutable.ArrayBuffer[(String, String, String, String)]() // (kind, label, cleanSv, en)
 
@@ -676,7 +681,10 @@ object Translate:
     try os.write.over(root / "autotranslate" / "scratch" / "model-calls.txt", "") catch case _: Throwable => ()
     loadCache(root)
     if withModel then resolveBackend()
-    else { backend = Backend.Offline; println("  [dryrun] backend disabled — all units kept Swedish (pipeline structural test)") }
+    else
+      backend = Backend.Offline
+      if cacheOnly then println("  [cache-only] backend disabled — uncached units keep Swedish; cache is NOT written back")
+      else println("  [dryrun] backend disabled — all units kept Swedish (pipeline structural test)")
     println(s"  translate init: concepts=${concepts.size} authoritative=${authoritative.size} " +
       s"overrides=${overrides.size} cache=${cache.size} threads=$numThreads")
 
@@ -817,7 +825,7 @@ object Translate:
   /** --prose-leaks (no file): corpus priority list — per-file TRUE-prose-leak counts across slides-en +
     * compendium-en, sorted desc. The REAL grind priority (vs --swedish-left, which overcounts deferred
     * code identifiers). Counts are distinct-per-file then summed — a priority signal, not a global %. */
-  def proseLeakCorpus(root: os.Path): Unit =
+  def proseLeakCorpus(root: os.Path): Int =
     val perFile = mutable.ArrayBuffer[(String, Int)]()
     var total = 0
     for dir <- Seq("slides-en", "compendium-en"); d = root / dir if os.exists(d)
@@ -833,6 +841,7 @@ object Translate:
     val out = root / "autotranslate" / "scratch" / "prose-leaks-corpus.txt"
     os.write.over(out, report)
     println(s"  (report also written to ${out.relativeTo(root)})")
+    total
 
   /** --prose-leaks-dump (no file): corpus-wide dump of EVERY true prose-leak line across slides-en +
     * compendium-en, grouped by file in priority (count-desc) order, each with its code-stripped Swedish
