@@ -27,7 +27,10 @@
 //   scala-cli run autotranslate/scratch/verify-mirror-examples.scala -- <introprog-root>
 //   (exit 0 = clean, exit 1 = at least one regression or an untranslated ratified code-string)
 
-@main def verifyMirrorExamples(rootStr: String): Unit =
+@main def verifyMirrorExamples(args: String*): Unit =
+  val rootStr = args.find(a => !a.startsWith("--")).getOrElse(".")
+  val listMode = args.contains("--list")   // also print the per-body phase-1 classification (file:line (env))
+  def lineOf(s: String, pos: Int): Int = s.substring(0, pos).count(_ == '\n') + 1
   val root = os.Path(rootStr, os.pwd)
   val dir = root / "compendium" / "examples"   // workspace/ is served by the hand-maintained workspace-en
   val files =
@@ -89,6 +92,8 @@
     body.replaceFirst("(?s)\\A[ \\t]*\\[[^\\]]*\\]", "")
   var inChecked = 0; var inSkipped = 0; var replDeferred = 0; var nonCode = 0
   val inRegressions = collection.mutable.ArrayBuffer[String]()
+  val inOk = collection.mutable.ArrayBuffer[String]()      // file:line (env) of each OK body (for --list)
+  val inSkip = collection.mutable.ArrayBuffer[String]()    // file:line (env) of each skipped body (for --list)
   for f <- texFiles do
     val tex = os.read(f)
     val rel = f.relativeTo(root).toString
@@ -103,14 +108,19 @@
         if en != body then                                   // only REWRITTEN bodies are gate-relevant
           if env.startsWith("REPL") then replDeferred += 1   // rewritten transcripts -> phase 2
           else if !phase1Envs(env) then nonCode += 1         // Trace/Output — not compilable Scala
-          else if compiles(en, "Inline.scala") then inChecked += 1
+          else if compiles(en, "Inline.scala") then { inChecked += 1; inOk += s"$rel:${lineOf(tex, m.start)} ($env)" }
           else if compiles(body, "Inline.scala") then
             inRegressions += s"$rel ($env)"
             println(s"  INLINE REGRESSION: $rel ($env) — compiles in Swedish but NOT after rename")
-          else inSkipped += 1
+          else { inSkipped += 1; inSkip += s"$rel:${lineOf(tex, m.start)} ($env)" }
   println(s"\n=== inline .tex compile gate (phase 1): $inChecked ok, $inSkipped skipped (not standalone), " +
     s"$replDeferred REPL deferred to phase 2, $nonCode Trace/Output not gated, ${inRegressions.size} REGRESSIONS ===")
   if inRegressions.nonEmpty then println("FAIL — inline translation broke compilation in: " + inRegressions.mkString(", "))
   else println("PASS — every rewritten, self-contained inline Scala-code env still compiles.")
+  if listMode then
+    println(s"\n--- phase-1 OK (${inOk.size}) — rewritten inline envs that compile after rename ---")
+    inOk.foreach(s => println(s"  ok   $s"))
+    println(s"--- phase-1 SKIPPED (${inSkip.size}) — rewritten inline envs that compile in NEITHER language (not standalone) ---")
+    inSkip.foreach(s => println(s"  skip $s"))
 
   if regressions.nonEmpty || leaks.nonEmpty || inRegressions.nonEmpty then sys.exit(1)
