@@ -21,8 +21,10 @@
 // to Swedish, and a NEW sound added to a .tex but not to codeStr is caught.
 //
 // Plus a PHASE-1 INLINE .tex COMPILE GATE (#951): the same regression rule applied to the display Scala-code
-// envs (Code/CodeSmall/lstlisting) the mirror rewrites in .tex — skipping \ifswedish-clamped code and deferring
-// REPL transcripts to phase 2. See that section below.
+// envs (Code/CodeSmall/lstlisting) the mirror rewrites in .tex — skipping \ifswedish-clamped code. And a
+// PHASE-2 REPL GATE: REPL* transcripts split on `scala>` prompts, inputs concatenated into an object and
+// compiled under the same regression rule (SV/EN classification is symmetric, so a mis-split only skips).
+// See those sections below.
 //
 //   scala-cli run autotranslate/scratch/verify-mirror-examples.scala -- <introprog-root>
 //   (exit 0 = clean, exit 1 = at least one regression or an untranslated ratified code-string)
@@ -123,4 +125,77 @@
     println(s"--- phase-1 SKIPPED (${inSkip.size}) — rewritten inline envs that compile in NEITHER language (not standalone) ---")
     inSkip.foreach(s => println(s"  skip $s"))
 
-  if regressions.nonEmpty || leaks.nonEmpty || inRegressions.nonEmpty then sys.exit(1)
+  // ---- PHASE-2 INLINE REPL COMPILE GATE (#951) ----
+  // REPL transcripts: split on `scala>` prompts (prompt-stripped input + its indented continuation lines; OUTPUT
+  // lines — result echoes `val x: T = …`, `resN`, error `|`/`-- Error`, blanks — are dropped), concatenate a
+  // transcript's inputs into one `object` body and compile SV vs EN with the phase-1 regression rule. Line
+  // classification is IDENTICAL for the SV and EN transcripts (they have parallel structure), so a mis-split can
+  // only SKIP a transcript — never cause a false regression. Many transcripts reference defs from a neighbouring
+  // Code env and so compile in neither language (self-skip). Clamp-aware + changed-only + per-file overrides.
+  val replEnvs = Set("REPL", "REPLnonum", "REPLsmall")
+  val promptLineRe = raw"^[ \t]*scala>[ ]?(.*)".r
+  val replOutRe = raw"^[ \t]*(val res\d|res\d+:|[|]|\d+ *[|]|-- (Error|Warning)|<console>|\^).*".r
+  def replProgram(bodyStr: String): String =
+    val prog = collection.mutable.ArrayBuffer[String]()
+    var inInput = false
+    for line <- bodyStr.split("\n", -1) do
+      promptLineRe.findFirstMatchIn(line) match
+        case Some(pm) => prog += pm.group(1); inInput = true          // `scala> …` input line (prompt stripped)
+        case None =>
+          val t = line.trim
+          val isOutput = t.isEmpty || replOutRe.findFirstMatchIn(line).isDefined ||
+            t.matches("(val|var)\\s+\\w+:.*=.*")                      // result-echo `val x: T = …`
+          if inInput && !isOutput then prog += line                  // continuation of a multi-line input
+          else inInput = false
+    prog.mkString("\n")
+  def wrapObj(prog: String): String =
+    "object ReplWrap:\n" + prog.split("\n", -1).map("  " + _).mkString("\n")
+  var rpChecked = 0; var rpSkipped = 0
+  val rpRegressions = collection.mutable.ArrayBuffer[String]()
+  val rpOk = collection.mutable.ArrayBuffer[String]()      // file:line of each OK transcript (for --list)
+  val rpSkip = collection.mutable.ArrayBuffer[String]()    // file:line of each skipped transcript (for --list)
+  for f <- texFiles do
+    val tex = os.read(f)
+    val rel = f.relativeTo(root).toString
+    val extraId = CodeGlossary.overridesFor(rel)
+    if !CodeGlossary.isOptedOut(rel) then
+      val clampRanges = Latex.ifswedishRanges(tex)
+      def clamped(pos: Int): Boolean = clampRanges.exists((a, b) => pos >= a && pos < b)
+      for m <- envRe.findAllMatchIn(tex) if replEnvs(m.group(1)) && !clamped(m.start) do
+        val body = stripLstOpt(m.group(2))                           // strip a leading [numbers=none] optional arg
+        val en = CodeGlossary.renderCodeIds(body, extraId)
+        if en != body then
+          val loc = s"$rel:${lineOf(tex, m.start)}"
+          val enProg = replProgram(en)
+          if enProg.trim.isEmpty then { rpSkipped += 1; rpSkip += s"$loc (no scala> input)" }
+          else if compiles(wrapObj(enProg), "ReplWrap.scala") then { rpChecked += 1; rpOk += loc }
+          else if compiles(wrapObj(replProgram(body)), "ReplWrap.scala") then
+            rpRegressions += loc
+            println(s"  REPL REGRESSION: $loc — transcript compiles in Swedish but NOT after rename")
+          else { rpSkipped += 1; rpSkip += loc }
+  println(s"\n=== inline .tex REPL compile gate (phase 2): $rpChecked ok, $rpSkipped skipped (not standalone), ${rpRegressions.size} REGRESSIONS ===")
+  if rpRegressions.nonEmpty then println("FAIL — REPL translation broke compilation in: " + rpRegressions.mkString(", "))
+  else println("PASS — every rewritten, self-contained REPL transcript still compiles.")
+  if listMode then
+    println(s"\n--- phase-2 OK (${rpOk.size}) — rewritten REPL transcripts that compile after rename ---")
+    rpOk.foreach(s => println(s"  ok   $s"))
+    println(s"--- phase-2 SKIPPED (${rpSkip.size}) — REPL transcripts that compile in NEITHER language / no input ---")
+    rpSkip.foreach(s => println(s"  skip $s"))
+
+  // @later (#951 phase 3) — cross-env context. PARKED 2026-07-22 (deferred; pending BR): the ~81 code-bearing skips above
+  // (30 inline + 51 REPL-with-input) mostly compile in neither language because they reference names DEFINED in a
+  // neighbouring env, not in the body itself. Phase 3 would supply that context: group consecutive scala-code
+  // envs per file into "sessions" (reset at \Task/\Subtask/\SOLUTION/\section/\begin{Slide}/\QUESTBEGIN...),
+  // prepend the preceding same-session envs' code as a preamble — taking the \else branch for \ifswedish context
+  // envs (SV branch for the SV compile, \else for the EN compile, since defs are often hand-clamped while the
+  // referencing REPL is auto-translated) — and compile `object Session: <preamble> <body>` under the same
+  // regression rule. Env selection stays identical for SV and EN, so a mis-grouped boundary can only skip.
+  // Step 0 (static, measured on the RENDERED English side — the source side is optimistic since a ref and its
+  // def share the Swedish identifier by construction): ~20 recoverable, ~24 external (lib/cross-file/absent),
+  // ~37 unclassifiable (lowercase/expression-only). Divergence (recoverable on SV side but NOT on the mirror
+  // side, i.e. caused by INCONSISTENT translation) = 0 — so the current cross-refs that resolve in Swedish also
+  // resolve in English; there is no hidden inconsistency for phase 3 to catch. Given the moderate ~20-body gain
+  // vs the added machinery (session grouping + clamp-branch extraction), parked; phases 1–2 are the coverage
+  // line. Genuinely-external cases stay covered by the opt-out marker (reserved "option 3"). Revisit if the
+  // recoverable set (incl. the Task 3 solution Code envs + several w05/w11 cases) becomes worth gating.
+  if regressions.nonEmpty || leaks.nonEmpty || inRegressions.nonEmpty || rpRegressions.nonEmpty then sys.exit(1)
