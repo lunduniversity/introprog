@@ -141,6 +141,19 @@ object Latex:
       else i += 1
     i
 
+  /** Character ranges `[start, end)` of every top-level `\ifswedish...\fi` block (nesting-aware via matchFi).
+    * The mirror's code-env / inline-code translation uses this to LEAVE hand-clamped code alone: both branches
+    * of a `\ifswedish<sv>\else<en>\fi` clamp are already final, so translating inside one would mutate the
+    * Swedish branch (e.g. rename `väsnas`->`makeNoise` while its neighbours stay Swedish -> a mixed listing). */
+  def ifswedishRanges(s: String): Seq[(Int, Int)] =
+    val out = scala.collection.mutable.ArrayBuffer[(Int, Int)]()
+    val tag = "\\ifswedish"; var i = 0
+    while i >= 0 && i < s.length do
+      val k = s.indexOf(tag, i)
+      if k < 0 then i = -1
+      else { val end = matchFi(s, k + tag.length); out += ((k, end)); i = end }
+    out.toSeq
+
   /** Mask the source. Returns (maskedText, spans, itemIdx) where itemIdx is the set of placeholder
     * indices that are `\item` markers (used to split bullet lists into per-item translation units).
     * With stripEng=true, `\Eng{...}` is removed. */

@@ -663,14 +663,27 @@ object Translate:
   def translateCodeEnvBodies(tex: String, relPath: String = ""): String =
     val extraId = CodeGlossary.overridesFor(relPath)
     val doIds = !CodeGlossary.isOptedOut(relPath)
+    // Leave code inside `\ifswedish...\fi` clamps alone: both branches are hand-final, so translating there
+    // would mutate the Swedish branch into a mixed listing (e.g. `def makeNoise` next to `print(läte*2)` in the
+    // hand-clamped Fyle example). Ranges computed on the ORIGINAL text; matches keep their original offsets
+    // because replaceAllIn scans left-to-right and we test m.start against the pre-substitution positions.
+    val protectedRanges = Latex.ifswedishRanges(tex)
+    def clamped(pos: Int): Boolean = protectedRanges.exists((a, b) => pos >= a && pos < b)
     val envAlt = codeEnvs.toSeq.map(java.util.regex.Pattern.quote).mkString("|")
     val re = ("(?s)(\\\\begin\\{(" + envAlt + ")\\})(.*?)(\\\\end\\{\\2\\})").r
     val withEnvs = re.replaceAllIn(tex, m =>
-      val body = if doIds && scalaCodeEnvs(m.group(2)) then CodeGlossary.renderCodeIds(m.group(3), extraId) else m.group(3)
-      java.util.regex.Matcher.quoteReplacement(m.group(1) + Code.translate(body, translatePlain, skipTexComments = true) + m.group(4)))
+      if clamped(m.start) then java.util.regex.Matcher.quoteReplacement(m.matched)
+      else
+        val body = if doIds && scalaCodeEnvs(m.group(2)) then CodeGlossary.renderCodeIds(m.group(3), extraId) else m.group(3)
+        java.util.regex.Matcher.quoteReplacement(m.group(1) + Code.translate(body, translatePlain, skipTexComments = true) + m.group(4)))
     if !doIds then withEnvs
-    else inlineCodeRe.replaceAllIn(withEnvs, m =>
-      java.util.regex.Matcher.quoteReplacement(s"\\${m.group(1)}{" + CodeGlossary.renderCodeIds(m.group(2), extraId) + "}"))
+    else
+      // the env pass changed lengths, so recompute clamp ranges against `withEnvs` for the inline pass.
+      val inlineRanges = Latex.ifswedishRanges(withEnvs)
+      def clampedInline(pos: Int): Boolean = inlineRanges.exists((a, b) => pos >= a && pos < b)
+      inlineCodeRe.replaceAllIn(withEnvs, m =>
+        if clampedInline(m.start) then java.util.regex.Matcher.quoteReplacement(m.matched)
+        else java.util.regex.Matcher.quoteReplacement(s"\\${m.group(1)}{" + CodeGlossary.renderCodeIds(m.group(2), extraId) + "}"))
 
   // ---------- lifecycle ----------
   /** Load cache and make sure the model is ready (called before mirror translation).

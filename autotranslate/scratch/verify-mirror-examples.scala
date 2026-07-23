@@ -2,6 +2,7 @@
 //> using jvm 21
 //> using dep com.lihaoyi::os-lib:0.11.8
 //> using file ../CodeGlossary.scala
+//> using file ../Latex.scala
 
 // COMPILE GATE for the mirror's example-code translation (#947/#948 + the personExample s-interp fix).
 // "Only compilable code should pass": every example .scala/.java that CodeGlossary.renderCodeIds rewrites
@@ -19,14 +20,22 @@
 // key surviving in a rendered Scala-code env / inline \code fails the gate — so a ratified sound can't regress
 // to Swedish, and a NEW sound added to a .tex but not to codeStr is caught.
 //
+// Plus a PHASE-1 INLINE .tex COMPILE GATE (#951): the same regression rule applied to the display Scala-code
+// envs (Code/CodeSmall/lstlisting) the mirror rewrites in .tex — skipping \ifswedish-clamped code and deferring
+// REPL transcripts to phase 2. See that section below.
+//
 //   scala-cli run autotranslate/scratch/verify-mirror-examples.scala -- <introprog-root>
 //   (exit 0 = clean, exit 1 = at least one regression or an untranslated ratified code-string)
 
-@main def verifyMirrorExamples(rootStr: String): Unit =
+@main def verifyMirrorExamples(args: String*): Unit =
+  val rootStr = args.find(a => !a.startsWith("--")).getOrElse(".")
+  val listMode = args.contains("--list")   // also print the per-body phase-1 classification (file:line (env))
+  def lineOf(s: String, pos: Int): Int = s.substring(0, pos).count(_ == '\n') + 1
   val root = os.Path(rootStr, os.pwd)
   val dir = root / "compendium" / "examples"   // workspace/ is served by the hand-maintained workspace-en
-  val files = os.walk(dir).filter(f => os.isFile(f) && (f.ext == "scala" || f.ext == "java"))
-    .sortBy(_.toString)
+  val files =
+    if !os.exists(dir) then Seq.empty[os.Path]
+    else os.walk(dir).filter(f => os.isFile(f) && (f.ext == "scala" || f.ext == "java")).sortBy(_.toString)
   def compiles(code: String, name: String): Boolean =
     val tmp = os.temp.dir(prefix = "mirror-gate")          // keep the original filename (Java needs it)
     os.write.over(tmp / name, code)
@@ -70,4 +79,48 @@
   if leaks.nonEmpty then leaks.foreach(l => println("  LEAK: " + l))
   else println("PASS — every ratified code-string is translated in inline .tex code regions.")
 
-  if regressions.nonEmpty || leaks.nonEmpty then sys.exit(1)
+  // ---- PHASE-1 INLINE .tex COMPILE GATE (#951) ----
+  // Gate the display Scala-code envs the mirror actually rewrites. For each Code/CodeSmall/lstlisting body that
+  // is NOT inside an \ifswedish clamp (the mirror leaves clamped code alone, via Latex.ifswedishRanges) and that
+  // renderCodeIds changes, compile the Swedish body AND the rendered English body. REGRESSION = Swedish compiles
+  // but English does NOT. Skip if BOTH fail — many inline bodies aren't standalone-compilable (neighbour context
+  // / signature-only / script style), and self-skipping those beats false alarms. REPL* transcripts are DEFERRED
+  // to phase 2 (they need splitting on `scala>` prompts); Trace/Output aren't Scala. Uses the SAME per-file
+  // overrides as the mirror (renderCodeIds(body, extraId)) so per-file-scoped clusters (e.g. ANIMAL) are gated.
+  val phase1Envs = Set("Code", "CodeSmall", "lstlisting")
+  def stripLstOpt(body: String): String =                    // \begin{lstlisting}[opts]: the [opts] can trail on line 1
+    body.replaceFirst("(?s)\\A[ \\t]*\\[[^\\]]*\\]", "")
+  var inChecked = 0; var inSkipped = 0; var replDeferred = 0; var nonCode = 0
+  val inRegressions = collection.mutable.ArrayBuffer[String]()
+  val inOk = collection.mutable.ArrayBuffer[String]()      // file:line (env) of each OK body (for --list)
+  val inSkip = collection.mutable.ArrayBuffer[String]()    // file:line (env) of each skipped body (for --list)
+  for f <- texFiles do
+    val tex = os.read(f)
+    val rel = f.relativeTo(root).toString
+    val extraId = CodeGlossary.overridesFor(rel)
+    if !CodeGlossary.isOptedOut(rel) then
+      val clampRanges = Latex.ifswedishRanges(tex)
+      def clamped(pos: Int): Boolean = clampRanges.exists((a, b) => pos >= a && pos < b)
+      for m <- envRe.findAllMatchIn(tex) if !clamped(m.start) do
+        val env = m.group(1)
+        val body = if env == "lstlisting" then stripLstOpt(m.group(2)) else m.group(2)
+        val en = CodeGlossary.renderCodeIds(body, extraId)
+        if en != body then                                   // only REWRITTEN bodies are gate-relevant
+          if env.startsWith("REPL") then replDeferred += 1   // rewritten transcripts -> phase 2
+          else if !phase1Envs(env) then nonCode += 1         // Trace/Output — not compilable Scala
+          else if compiles(en, "Inline.scala") then { inChecked += 1; inOk += s"$rel:${lineOf(tex, m.start)} ($env)" }
+          else if compiles(body, "Inline.scala") then
+            inRegressions += s"$rel ($env)"
+            println(s"  INLINE REGRESSION: $rel ($env) — compiles in Swedish but NOT after rename")
+          else { inSkipped += 1; inSkip += s"$rel:${lineOf(tex, m.start)} ($env)" }
+  println(s"\n=== inline .tex compile gate (phase 1): $inChecked ok, $inSkipped skipped (not standalone), " +
+    s"$replDeferred REPL deferred to phase 2, $nonCode Trace/Output not gated, ${inRegressions.size} REGRESSIONS ===")
+  if inRegressions.nonEmpty then println("FAIL — inline translation broke compilation in: " + inRegressions.mkString(", "))
+  else println("PASS — every rewritten, self-contained inline Scala-code env still compiles.")
+  if listMode then
+    println(s"\n--- phase-1 OK (${inOk.size}) — rewritten inline envs that compile after rename ---")
+    inOk.foreach(s => println(s"  ok   $s"))
+    println(s"--- phase-1 SKIPPED (${inSkip.size}) — rewritten inline envs that compile in NEITHER language (not standalone) ---")
+    inSkip.foreach(s => println(s"  skip $s"))
+
+  if regressions.nonEmpty || leaks.nonEmpty || inRegressions.nonEmpty then sys.exit(1)
