@@ -141,13 +141,14 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
   // 3rd pass may be needed for the ToC/\pageref page numbers to settle. En tasks pass a cap of 4.
   println(s" ******* Compiling $texFile to pdf (up to $maxPasses pass(es)) *******")
   var exitValue = 0; var pass = 0; var rerun = true
-  while pass < math.max(1, maxPasses) && exitValue == 0 && rerun do
+  while (pass < math.max(1, maxPasses) && exitValue == 0 && rerun) {
     exitValue = cmd.#>(cmdOutputFile).run.exitValue
     pass += 1
     rerun = exitValue == 0 && {
       val log = scala.util.Try(IO.read(cmdOutputFile)).getOrElse("")
       log.contains("Rerun to get") || log.contains("Label(s) may have changed")
     }
+  }
   println(s"         ($pass pdflatex pass(es) run)")
   if (exitValue != 0) {
     println("*** ############ ERROR LOG STARTS HERE ############### ***")
