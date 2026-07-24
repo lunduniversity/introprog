@@ -203,6 +203,16 @@ object CodeGlossary:
       "Djur" -> "Animal", "Ko" -> "Cow", "Gris" -> "Pig", "Häst" -> "Horse",
       "väsnas" -> "makeNoise", "skapaDjur" -> "createAnimal", "bondgård" -> "farm",
     ),
+    // lect-w10-extends type-casting section (10.1.28/10.1.30): placeholder type-names in the inline
+    // \code{isInstanceOf[..]} / \code{asInstanceOf[..]} examples. Scoped here (NOT global) because `Typ` is a
+    // common token — a global Typ->Type would bleed into e.g. lect-wjava's \code{Klassnamn<Typ>} (mixed).
+    // BR-ratified 2026-07-24: EnVissTyp ("en viss typ") -> SomeType; Typ -> Type.
+    "lect-w10-extends" -> Map(
+      "EnVissTyp" -> "SomeType", "Typ" -> "Type",
+      // placeholder code-file names (10.1.26): KlassensNamn (capitalised, = the public class's name) ->
+      // ClassName; bastypensNamn (lowercase initial per the "multi-content file -> lowercase" rule) -> baseTypeName.
+      "KlassensNamn" -> "ClassName", "bastypensNamn" -> "baseTypeName",
+    ),
   )
   // Mirror-relative path substrings whose inline Scala-code envs SKIP the renderCodeIds pass entirely.
   val optOut: Set[String] = Set()
