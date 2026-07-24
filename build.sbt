@@ -126,8 +126,7 @@ def showTail(fileName: String, n: Int = 40): Unit = {
   println(lines.takeRight(n).mkString("\n"))
 }
 
-def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-console.log"): Unit = {
-  println(s" ******* Compiling $texFile to pdf *******")
+def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-console.log", maxPasses: Int = 1): Unit = {
   val cmd = scala.sys.process.Process(
     Seq("pdflatex","-halt-on-error", texFile.getName),
     workDir
@@ -135,9 +134,21 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
   val cmdOutputFile =  workDir / texFile.getName.replace(".tex", stdOutSuffix)
   // val bibtexCmd = Process(Seq("bibtex", texFile.getName.replace(".tex", ".aux")), workDir)
 
-  // run pdflatex command TWICE in sequence to generate toc from .aux etc:
-  //val exitValue = cmd.#>(cmdOutputFile).#&&(cmd).#>(cmdOutputFile).run.exitValue
-  val exitValue = cmd.#>(cmdOutputFile).run.exitValue
+  // Run pdflatex until the .toc / cross-refs converge, i.e. until LaTeX stops asking to rerun — capped at
+  // maxPasses (like a tiny latexmk; avoids guessing 2 vs 3). The Swedish tasks default to 1 because their working
+  // dir (compendium/, slides/) keeps .aux/.toc across builds; the English mirror dirs are regenerated fresh every
+  // run, so pass 1 writes the .toc but never reads it (no ToC), pass 2 typesets it (which shifts pages), and a
+  // 3rd pass may be needed for the ToC/\pageref page numbers to settle. En tasks pass a cap of 4.
+  println(s" ******* Compiling $texFile to pdf (up to $maxPasses pass(es)) *******")
+  var exitValue = 0; var pass = 0; var rerun = true
+  while pass < math.max(1, maxPasses) && exitValue == 0 && rerun do
+    exitValue = cmd.#>(cmdOutputFile).run.exitValue
+    pass += 1
+    rerun = exitValue == 0 && {
+      val log = scala.util.Try(IO.read(cmdOutputFile)).getOrElse("")
+      log.contains("Rerun to get") || log.contains("Label(s) may have changed")
+    }
+  println(s"         ($pass pdflatex pass(es) run)")
   if (exitValue != 0) {
     println("*** ############ ERROR LOG STARTS HERE ############### ***")
     //Process(Seq("cat", cmdOutputFile.getName), workDir).run
@@ -225,7 +236,7 @@ def reportSwedishPct(autotranslateCp: String, pdf: File): Unit =
 lazy val pdfCompendiumEn = taskKey[Unit]("Compile the generated English mirror compendium-en/compendium-en.tex")
 pdfCompendiumEn := {
   val cp = (autotranslateProject / Compile / fullClasspath).value.files.map(_.getPath).mkString(java.io.File.pathSeparator)
-  runPdfLatexCmd(texFile = file("compendium-en.tex"), workDir = file("compendium-en"))
+  runPdfLatexCmd(texFile = file("compendium-en.tex"), workDir = file("compendium-en"), maxPasses = 4)
   reportSwedishPct(cp, file("compendium-en/compendium-en.pdf"))
 }
 
@@ -247,14 +258,14 @@ pdfCompendium2 := {
 lazy val pdfCompendium1En = taskKey[Unit]("Compile the generated English mirror compendium-en/compendium1-en.tex")
 pdfCompendium1En := {
   val cp = (autotranslateProject / Compile / fullClasspath).value.files.map(_.getPath).mkString(java.io.File.pathSeparator)
-  runPdfLatexCmd(texFile = file("compendium1-en.tex"), workDir = file("compendium-en"))
+  runPdfLatexCmd(texFile = file("compendium1-en.tex"), workDir = file("compendium-en"), maxPasses = 4)
   reportSwedishPct(cp, file("compendium-en/compendium1-en.pdf"))
 }
 
 lazy val pdfCompendium2En = taskKey[Unit]("Compile the generated English mirror compendium-en/compendium2-en.tex")
 pdfCompendium2En := {
   val cp = (autotranslateProject / Compile / fullClasspath).value.files.map(_.getPath).mkString(java.io.File.pathSeparator)
-  runPdfLatexCmd(texFile = file("compendium2-en.tex"), workDir = file("compendium-en"))
+  runPdfLatexCmd(texFile = file("compendium2-en.tex"), workDir = file("compendium-en"), maxPasses = 4)
   reportSwedishPct(cp, file("compendium-en/compendium2-en.pdf"))
 }
 
@@ -296,7 +307,7 @@ pdfSlidesEn := {
     val name = if (f.takeRight(4) == ".tex") f.dropRight(4) + "-en.tex" else f + "-en.tex"
     val texFile = file(name)
     println(s"runPdfLatexCmd($texFile, $workDir)")
-    runPdfLatexCmd(texFile, workDir)
+    runPdfLatexCmd(texFile, workDir, maxPasses = 4)
     reportSwedishPct(cp, new File(workDir, name.dropRight(4) + ".pdf"))
   }
 }
