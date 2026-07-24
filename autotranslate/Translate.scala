@@ -668,7 +668,7 @@ object Translate:
     // hand-clamped Fyle example). Ranges computed on the ORIGINAL text; matches keep their original offsets
     // because replaceAllIn scans left-to-right and we test m.start against the pre-substitution positions.
     val protectedRanges = Latex.ifswedishRanges(tex)
-    def clamped(pos: Int): Boolean = protectedRanges.exists((a, b) => pos >= a && pos < b)
+    def clamped(pos: Int): Boolean = protectedRanges.exists(r => pos >= r.start && pos < r.end)
     val envAlt = codeEnvs.toSeq.map(java.util.regex.Pattern.quote).mkString("|")
     val re = ("(?s)(\\\\begin\\{(" + envAlt + ")\\})(.*?)(\\\\end\\{\\2\\})").r
     val withEnvs = re.replaceAllIn(tex, m =>
@@ -680,7 +680,7 @@ object Translate:
     else
       // the env pass changed lengths, so recompute clamp ranges against `withEnvs` for the inline pass.
       val inlineRanges = Latex.ifswedishRanges(withEnvs)
-      def clampedInline(pos: Int): Boolean = inlineRanges.exists((a, b) => pos >= a && pos < b)
+      def clampedInline(pos: Int): Boolean = inlineRanges.exists(r => pos >= r.start && pos < r.end)
       inlineCodeRe.replaceAllIn(withEnvs, m =>
         if clampedInline(m.start) then java.util.regex.Matcher.quoteReplacement(m.matched)
         else java.util.regex.Matcher.quoteReplacement(s"\\${m.group(1)}{" + CodeGlossary.renderCodeIds(m.group(2), extraId) + "}"))
