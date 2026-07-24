@@ -26,7 +26,9 @@
 // compiled under the same regression rule (SV/EN classification is symmetric, so a mis-split only skips).
 // See those sections below.
 //
-//   scala-cli run autotranslate/scratch/verify-mirror-examples.scala -- <introprog-root>
+//   scala-cli run autotranslate/scratch/verify-mirror-examples.scala -- [introprog-root] [--list]
+//     introprog-root  repo root to scan (optional; defaults to ".")
+//     --list          also print the per-body/-transcript OK/skip breakdown for phases 1 and 2
 //   (exit 0 = clean, exit 1 = at least one regression or an untranslated ratified code-string)
 
 @main def verifyMirrorExamples(args: String*): Unit =
@@ -69,6 +71,9 @@
   val texFiles = Seq("compendium", "slides").map(root / _).filter(os.exists)
     .flatMap(d => os.walk(d)).filter(f => os.isFile(f) && f.ext == "tex").sortBy(_.toString)
   val leaks = collection.mutable.ArrayBuffer[String]()
+  // NB (#958.6): the per-file setup (read tex, rel, extraId, opt-out, clampRanges) recurs in the two gates below.
+  // Kept as deliberate duplication — this is a scratch tool and the three loops differ enough (leak-check needs
+  // no clamp/extraId) that a shared higher-order helper would add more indirection than it removes.
   for f <- texFiles do
     val tex = os.read(f)
     def scan(body: String): Unit =
@@ -102,7 +107,7 @@
     val extraId = CodeGlossary.overridesFor(rel)
     if !CodeGlossary.isOptedOut(rel) then
       val clampRanges = Latex.ifswedishRanges(tex)
-      def clamped(pos: Int): Boolean = clampRanges.exists((a, b) => pos >= a && pos < b)
+      def clamped(pos: Int): Boolean = clampRanges.exists(r => pos >= r.start && pos < r.end)
       for m <- envRe.findAllMatchIn(tex) if !clamped(m.start) do
         val env = m.group(1)
         val body = if env == "lstlisting" then stripLstOpt(m.group(2)) else m.group(2)
@@ -112,8 +117,8 @@
           else if !phase1Envs(env) then nonCode += 1         // Trace/Output — not compilable Scala
           else if compiles(en, "Inline.scala") then { inChecked += 1; inOk += s"$rel:${lineOf(tex, m.start)} ($env)" }
           else if compiles(body, "Inline.scala") then
-            inRegressions += s"$rel ($env)"
-            println(s"  INLINE REGRESSION: $rel ($env) — compiles in Swedish but NOT after rename")
+            inRegressions += s"$rel:${lineOf(tex, m.start)} ($env)"
+            println(s"  INLINE REGRESSION: $rel:${lineOf(tex, m.start)} ($env) — compiles in Swedish but NOT after rename")
           else { inSkipped += 1; inSkip += s"$rel:${lineOf(tex, m.start)} ($env)" }
   println(s"\n=== inline .tex compile gate (phase 1): $inChecked ok, $inSkipped skipped (not standalone), " +
     s"$replDeferred REPL deferred to phase 2, $nonCode Trace/Output not gated, ${inRegressions.size} REGRESSIONS ===")
@@ -144,7 +149,10 @@
         case None =>
           val t = line.trim
           val isOutput = t.isEmpty || replOutRe.findFirstMatchIn(line).isDefined ||
-            t.matches("(val|var)\\s+\\w+:.*=.*")                      // result-echo `val x: T = …`
+            t.matches("(?U)(val|var)\\s+\\w+:.*=.*")                  // result-echo `val x: T = …`; (?U) so \w
+                                                                      // matches åäö — else `var räknaLäte:` (SV)
+                                                                      // and `var callCount:` (EN) classify
+                                                                      // differently, breaking SV/EN symmetry (#958)
           if inInput && !isOutput then prog += line                  // continuation of a multi-line input
           else inInput = false
     prog.mkString("\n")
@@ -160,7 +168,7 @@
     val extraId = CodeGlossary.overridesFor(rel)
     if !CodeGlossary.isOptedOut(rel) then
       val clampRanges = Latex.ifswedishRanges(tex)
-      def clamped(pos: Int): Boolean = clampRanges.exists((a, b) => pos >= a && pos < b)
+      def clamped(pos: Int): Boolean = clampRanges.exists(r => pos >= r.start && pos < r.end)
       for m <- envRe.findAllMatchIn(tex) if replEnvs(m.group(1)) && !clamped(m.start) do
         val body = stripLstOpt(m.group(2))                           // strip a leading [numbers=none] optional arg
         val en = CodeGlossary.renderCodeIds(body, extraId)

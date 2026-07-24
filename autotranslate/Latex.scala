@@ -145,13 +145,28 @@ object Latex:
     * The mirror's code-env / inline-code translation uses this to LEAVE hand-clamped code alone: both branches
     * of a `\ifswedish<sv>\else<en>\fi` clamp are already final, so translating inside one would mutate the
     * Swedish branch (e.g. rename `väsnas`->`makeNoise` while its neighbours stay Swedish -> a mixed listing). */
-  def ifswedishRanges(s: String): Seq[(Int, Int)] =
-    val out = scala.collection.mutable.ArrayBuffer[(Int, Int)]()
+  def ifswedishRanges(s: String): Seq[(start: Int, end: Int)] =
+    val out = scala.collection.mutable.ArrayBuffer[(start: Int, end: Int)]()
     val tag = "\\ifswedish"; var i = 0
     while i >= 0 && i < s.length do
       val k = s.indexOf(tag, i)
       if k < 0 then i = -1
-      else { val end = matchFi(s, k + tag.length); out += ((k, end)); i = end }
+      else
+        val e = matchFi(s, k + tag.length)
+        // #958.3: reached EOF without a closing \fi -> unbalanced. A stray literal \ifswedish in a comment or
+        // verbatim block opens a bogus range that swallows the rest of the file (envs after it silently go
+        // untranslated & ungated). Conservative (skip, never mistranslate). Only warn when the swallowed region
+        // actually holds a code env / inline code — otherwise it has no consequence (e.g. top-level scaffolding
+        // files with \ifswedish/\ifPreSolution conditionals whose \fi lands across an \input boundary: matchFi
+        // over-counts, but there's nothing to skip, so the warning would be pure noise).
+        if e >= s.length && !(e >= 3 && s.substring(e - 3, e) == "\\fi") then
+          val swallowed = s.substring(k, e)
+          val hasCode = verbatimEnvs.exists(env => swallowed.contains("\\begin{" + env + "}")) ||
+            swallowed.contains("\\code{") || swallowed.contains("\\jcode{") || swallowed.contains("\\lstinline{")
+          if hasCode then
+            System.err.println(s"[Latex.ifswedishRanges] WARNING: \\ifswedish at offset $k has no matching \\fi " +
+              "(range runs to end of file) and swallows code env(s): they go untranslated and ungated.")
+        out += ((start = k, end = e)); i = e
     out.toSeq
 
   /** Mask the source. Returns (maskedText, spans, itemIdx) where itemIdx is the set of placeholder
