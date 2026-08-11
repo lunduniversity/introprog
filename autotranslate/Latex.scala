@@ -169,6 +169,33 @@ object Latex:
         out += ((start = k, end = e)); i = e
     out.toSeq
 
+  /** Every `\ifswedish…\fi` block split into its two BRANCHES: `elseAt` is the offset of the block's
+    * TOP-LEVEL `\else` (nesting-aware — an `\else` belonging to a nested `\if…` does not count), or
+    * `end` when the block has none (a Swedish-ONLY clamp). So `[start, elseAt)` is the Swedish branch
+    * and `[elseAt, end)` the English one.
+    *
+    * Used by the phase-3 cross-env gate to pick the right side of a HAND-CLAMPED context env: a
+    * definition is often clamped (`\ifswedish class Ko … \else class Cow … \fi`) while the REPL that
+    * REFERENCES it is auto-translated, so the Swedish compile needs the `\ifswedish` branch and the
+    * English compile the `\else` branch. Classification is on the raw .tex, so it is identical for
+    * both languages. */
+  def ifswedishBranches(s: String): Seq[(start: Int, elseAt: Int, end: Int)] =
+    ifswedishRanges(s).map: r =>
+      var i = r.start + "\\ifswedish".length
+      var depth = 1
+      var el = -1
+      while i < r.end && el < 0 && depth > 0 do
+        if s(i) == '\\' && i + 1 < r.end && isCmdLetter(s(i + 1)) then
+          var j = i + 1
+          while j < r.end && isCmdLetter(s(j)) do j += 1
+          val nm = s.substring(i + 1, j)
+          if nm == "fi" then depth -= 1
+          else if nm == "else" && depth == 1 then el = i
+          else if nm.startsWith("if") && nm != "iff" then depth += 1
+          i = j
+        else i += 1
+      (start = r.start, elseAt = if el < 0 then r.end else el, end = r.end)
+
   /** Mask the source. Returns (maskedText, spans, itemIdx) where itemIdx is the set of placeholder
     * indices that are `\item` markers (used to split bullet lists into per-item translation units).
     * With stripEng=true, `\Eng{...}` is removed. */
