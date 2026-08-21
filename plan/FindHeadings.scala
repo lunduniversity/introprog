@@ -79,8 +79,25 @@ object FindHeadings:
     * `headingsEn` — with the SAME tuple shape for both editions, so muntabot can
     * join a Swedish heading to its English page via the language-independent
     * section number. Skips cleanly (SV build unaffected) when the PDF is absent,
-    * so the EN pass stays dormant until `sbt pdfCompendiumEn` has built it. */
-  def generate(subdir: String, pdfName: String, valName: String, source: String): Unit =
+    * so the EN pass stays dormant until `sbt pdfCompendiumEn` has built it.
+    *
+    * `copyToMuntabot` is FALSE for the EN edition, and that is a collision fix rather
+    * than a preference (2026-08-21). muntabot's OWN `auto-translate.sc` generates a
+    * DIFFERENT artifact into the very same filename — `headingTranslateSvEn`, a
+    * sv-heading -> en-text display map that `compendium.scala` actually reads — so
+    * copying `headingsEn` there overwrote it and broke muntabot's build every time
+    * `gen` ran. Nothing in muntabot consumes `headingsEn` (the join described above was
+    * designed but never written), so the honest move is to keep it in introprog's
+    * `target/` until a real consumer exists. Do NOT re-enable the copy without first
+    * settling who owns that filename; `publish.sh` regenerates it on every publish, so
+    * two writers race on a schedule, not just in the working tree. */
+  def generate(
+      subdir: String,
+      pdfName: String,
+      valName: String,
+      source: String,
+      copyToMuntabot: Boolean = true
+  ): Unit =
     val wd = os.pwd / subdir
     val in = wd / pdfName
     val tocFile = wd / pdfName.replace(".pdf", ".toc")
@@ -155,7 +172,9 @@ object FindHeadings:
               |""".stripMargin
         println(s"Saving: $out")
         os.write.over(out, generatedCode)
-        if os.exists(dest) then
+        if !copyToMuntabot then
+          println(s"Kept in target/ only: muntabot's auto-translate.sc owns $source")
+        else if os.exists(dest) then
           println(s"Saving: $dest/$source")
           os.write.over(dest / source, generatedCode)
         else
@@ -167,10 +186,17 @@ object FindHeadings:
           println(Console.RED + s"Failed to generate $valName: $exception" + Console.RESET)
         case util.Success(_) =>
           println(Console.GREEN + s"OK! Successful $valName generation done!" + Console.RESET)
-          println(Console.YELLOW + "TODO: Rebuild with muntabot/publish.sh" + Console.RESET)
+          if copyToMuntabot then
+            println(Console.YELLOW + "TODO: Rebuild with muntabot/publish.sh" + Console.RESET)
 
   /** SV compendium (always) + EN mirror (when built). Both editions emit the same
     * tuple shape so muntabot links can join sv-heading -> number -> en-page. */
   def apply(): Unit =
     generate("compendium", "compendium.pdf", "headings", "headings-GENERATED.scala")
-    generate("compendium-en", "compendium-en.pdf", "headingsEn", "headings-En-GENERATED.scala")
+    generate(
+      "compendium-en",
+      "compendium-en.pdf",
+      "headingsEn",
+      "headings-En-GENERATED.scala",
+      copyToMuntabot = false // muntabot's auto-translate.sc owns that filename -- see generate's doc
+    )
