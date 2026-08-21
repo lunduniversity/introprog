@@ -32,20 +32,45 @@ hello := println("""
 
     --- English mirror (autotranslate sub-project) ---
 
-      NOTE: depends on ollama to be run locally or
-            using codeberg.org/bjornregnell/modly on LAN 
-            if cache is dropped with --clean
+      NOTE: a MODEL BACKEND (local ollama, or codeberg.org/bjornregnell/modly on LAN)
+            is needed ONLY for --all with new Swedish prose, and for --clean.
+            The default path below is offline: it reads the committed cache.
+
+    the English side is GENERATED from the Swedish side and is not git-tracked,
+      so it must be regenerated after every change to the Swedish source
 
     type 'autotranslate' to (re)build the English mirror compendium-en/ and slides-en/
-      (copies .tex as X-en.tex, rewrites \input + assets; content NOT translated by this task)
+      DEFAULT = translate from the COMMITTED CACHE with the backend OFF:
+      offline, deterministic, a few seconds, no ollama needed.
+      It FAILS LOUDLY if Swedish prose is not in the cache yet, so it can never
+      emit a silently untranslated (all-Swedish) English side.
 
-    for translation run e.g. 'autotranslateProject/run --only w01' (also --all),
-      '... --clean' (drop cache), '--selftest', '--dryrun', '--latextest'
+    when you have UPDATED SWEDISH PROSE the cache does not know it yet, so:
+      1. 'autotranslateProject/run --all'   translate the new units with the model
+           (needs a backend: modly on LAN, else local ollama; with NO backend the
+            new units just stay Swedish) and write autotranslate/translate-cache.tsv
+      2. commit translate-cache.tsv, so everyone else can rebuild offline
+      3. if the fallback count moved, update autotranslate/cache-only-baseline.txt
+
+    usual order after editing the Swedish side:
+      gen  ->  autotranslate  ->  pdfCompendiumEn
+      ('gen' first only when plan/quiz/glossary changed: the mirror copies what is there)
+
+    other 'autotranslateProject/run' flags:
+      --all          cache + model; the one to use after writing new Swedish prose
+      --only w01     restrict to files matching a substring
+      --cache-only   the default, stated explicitly (what CI should call)
+      --mirror-only  copy WITHOUT translating: the English side stays SWEDISH.
+                       scaffold/plumbing tests only; it warns when it does this
+      --clean        drop the cache (a following --all then needs the model for everything)
+      --swedish-left / --prose-swedish / --pdf-swedish <pdf>   how much Swedish is left
+      --selftest / --latextest / --dryrun / --retry-fallbacks
 
     translation backend + model is set in autotranslate/Translate.scala (SelectedModel);
       uses the modly GPU server if reachable, else local Ollama, else keeps Swedish
 
     type 'pdfCompendiumEn' to build the English compendium-en/compendium-en.pdf
+      (it reports how much Swedish is left in the pdf it just built)
 
     type 'pdfSlidesEn w01' to build an English lecture, e.g. slides-en/lect-w01-en.pdf
 

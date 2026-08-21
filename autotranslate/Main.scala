@@ -237,7 +237,7 @@ object Main:
       "--sweep-fallbacks", "--model", "--swedish-left", "--swedish-lines", "--prose-leaks-dump",
       "--prose-leaks", "--prose-swedish", "--pdf-swedish", "--selftest", "--clean", "--latextest",
       "--codetest", "--codeenvtest", "--workspace-en", "--modeltest", "--n",
-      "--cache-only", "--prose-leaks-ratchet")
+      "--cache-only", "--prose-leaks-ratchet", "--mirror-only")
     val unknownFlags = args.filter(_.startsWith("--")).filterNot(knownFlags)
     if unknownFlags.nonEmpty then
       System.err.println(s"unknown flag(s): ${unknownFlags.mkString(" ")} -- aborting so nothing runs by accident")
@@ -256,7 +256,13 @@ object Main:
     if dumpOverrides then Translate.captureSuggestions = true
     if sweepFallbacks then Translate.dumpFallbacks = true
     argVal("--model").foreach(m => Translate.SelectedModel = m) // override the model for this run
-    val doTranslate = all || only.isDefined || dryrun || retryFallbacks || dumpOverrides || sweepFallbacks || cacheOnly // default (none): copy as-is, no Ollama
+    val mirrorOnly = args.contains("--mirror-only") // copy as-is, NO translation (the old no-flag behaviour)
+    // A flag that explicitly selects HOW to translate. With none of these AND no --mirror-only, the
+    // default is the cache tier (see the mirror branch below) -- NOT a verbatim copy.
+    val explicitTranslate = all || only.isDefined || dryrun || retryFallbacks || dumpOverrides || sweepFallbacks || cacheOnly
+    if mirrorOnly && explicitTranslate then // otherwise we would warn "not translating" and then translate
+      System.err.println("--mirror-only contradicts a translation flag (--all/--only/--cache-only/...) -- pick one")
+      sys.exit(2)
 
     if args.contains("--swedish-left") then Translate.checkHowMuchSwedishLeft(root) // corpus progress metric (%)
     else if args.contains("--swedish-lines") then Translate.dumpSwedishProse(root, argVal("--swedish-lines").get) // prose lines of ONE file
@@ -287,10 +293,25 @@ object Main:
       Translate.modeltest(root, argVal("--modeltest").getOrElse(Translate.SelectedModel),
         argVal("--n").flatMap(_.toIntOption).getOrElse(30))
     else
-      mirror(root, doTranslate, only, dryrun, retryFallbacks)
+      // DEFAULT (no translation-selecting flag and no --mirror-only): translate from the COMMITTED
+      // cache with the backend disabled -- deterministic, no network, seconds not minutes. Until
+      // 2026-08-21 the no-flag default was a verbatim Swedish copy that still reported [success];
+      // it produced a complete, buildable, entirely-Swedish 819-page compendium-en.pdf and leaked
+      // Swedish titles into muntabot's ENGLISH headings table before anyone noticed. A default must
+      // not be able to emit a plausible wrong artifact silently, so the cache tier + the baseline
+      // gate below are now what you get for free; the old behaviour needs --mirror-only and says so.
+      val defaultCache = !mirrorOnly && !explicitTranslate
+      if defaultCache then Translate.cacheOnly = true
+      if mirrorOnly then
+        println("autotranslate: [--mirror-only] copying .tex as X-en.tex WITHOUT translating --")
+        println("  the English side WILL BE SWEDISH. This mode is for plumbing/scaffold tests only.")
+        println("  For a translated mirror: no flag (cache, offline) or --all (cache + model).")
+      mirror(root, explicitTranslate || defaultCache, only, dryrun, retryFallbacks)
       if dumpOverrides || sweepFallbacks then writeOverrideSuggestions(root)
-      if cacheOnly then // cache completeness is the CI invariant: every unit must resolve without a model
-        enforceBaseline("cache-only", Translate.fallbacks, root / "autotranslate" / "cache-only-baseline.txt")
+      if cacheOnly || defaultCache then // cache completeness is the CI invariant: every unit must resolve without a model
+        enforceBaseline("cache-only", Translate.fallbacks, root / "autotranslate" / "cache-only-baseline.txt",
+          hint = "new/changed Swedish prose is not in the cache yet -- run 'autotranslateProject/run --all' " +
+                 "with a backend up (modly on LAN, else local ollama), then commit translate-cache.tsv")
 
   /** CI ratchet gate: fail if `measured` exceeds the integer in the committed baseline file (first
     * non-empty, non-# line). A missing/unreadable baseline is also a hard failure — the committed file
@@ -299,7 +320,7 @@ object Main:
     * shutdown hooks ran); a thrown error fails just the task, sbt --client still exits nonzero for CI,
     * and a local gate check leaves the build server alive. When the measured value drops BELOW the
     * baseline the gate passes and prints the tighter value to commit, so the ratchet only moves down. */
-  def enforceBaseline(what: String, measured: Int, baselineFile: os.Path): Unit =
+  def enforceBaseline(what: String, measured: Int, baselineFile: os.Path, hint: String = ""): Unit =
     val baseline =
       if !os.exists(baselineFile) then None
       else os.read.lines(baselineFile).iterator.map(_.trim)
@@ -308,7 +329,8 @@ object Main:
       case None =>
         sys.error(s"[$what] FAIL: no committed baseline at $baselineFile — commit one with the current measured value ($measured)")
       case Some(b) if measured > b =>
-        sys.error(s"[$what] FAIL: measured $measured exceeds committed baseline $b ($baselineFile)")
+        sys.error(s"[$what] FAIL: measured $measured exceeds committed baseline $b ($baselineFile)" +
+          (if hint.isEmpty then "" else s"\n  -> $hint"))
       case Some(b) =>
         println(s"[$what] OK: measured $measured within baseline $b" +
           (if measured < b then s" — ratchet can tighten: commit $measured to ${baselineFile.last}" else ""))

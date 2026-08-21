@@ -21,6 +21,31 @@ jobs:
         run: scala-cli run autotranslate/scratch/verify-mirror-examples.scala -- .
         shell: bash
 
+  # The English mirror must be fully reconstructible from the COMMITTED translate-cache.tsv with NO
+  # model backend -- that is what lets a cloner (and this runner) regenerate compendium-en/ offline.
+  # Catches CACHE DRIFT: Swedish prose edited without a following `--all`, which otherwise degrades
+  # the English side silently for everyone who regenerates it. Needs no texlive and no ollama, so
+  # it is a fast standalone gate. `--cache-only` is the no-flag default stated explicitly.
+  English-mirror-gate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: sbt
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
+
+      - name: English mirror must resolve from the committed cache
+        run: sbt "autotranslateProject/run --cache-only"
+        shell: bash
+
   Compile-and-Build:
     runs-on: ubuntu-24.04
 
