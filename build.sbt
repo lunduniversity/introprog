@@ -127,7 +127,15 @@ lazy val autotranslateProject = (project in file("autotranslate")).settings(comm
 // so the final `gen` re-runs AFTER `pdf`. (As a task, `gen` is one node in the
 // graph and sbt evaluates it once — the second `gen` would be skipped.) This
 // makes headings-GENERATED.scala reflect the freshly built compendium pages.
-addCommandAlias("build", "gen; genquiz; gengloss; pdf; gen")
+//
+// The English side is built too, from the CACHE ONLY (autotranslate's default: no model
+// backend, about 11s + one pdflatex run). That is not decoration: FindHeadings reads
+// whichever compendium-en.pdf happens to be on disk, so a stale or untranslated one
+// silently becomes muntabot's ENGLISH heading table -- on 2026-08-21 that is exactly how
+// Swedish titles ended up in headings-En-GENERATED.scala. Regenerating it right before the
+// final `gen` makes the English headings as trustworthy as the Swedish ones, and makes a
+// full `build` cover both languages instead of only one.
+addCommandAlias("build", "gen; genquiz; gengloss; pdf; autotranslate; pdfCompendiumEn; gen")
 
 lazy val gen = taskKey[Unit]("alias for plan/run")
 gen := (plan/Compile/run).toTask("").value
