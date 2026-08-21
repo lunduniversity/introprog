@@ -81,23 +81,20 @@ object FindHeadings:
     * section number. Skips cleanly (SV build unaffected) when the PDF is absent,
     * so the EN pass stays dormant until `sbt pdfCompendiumEn` has built it.
     *
-    * `copyToMuntabot` is FALSE for the EN edition, and that is a collision fix rather
-    * than a preference (2026-08-21). muntabot's OWN `auto-translate.sc` generates a
-    * DIFFERENT artifact into the very same filename — `headingTranslateSvEn`, a
-    * sv-heading -> en-text display map that `compendium.scala` actually reads — so
-    * copying `headingsEn` there overwrote it and broke muntabot's build every time
-    * `gen` ran. Nothing in muntabot consumes `headingsEn` (the join described above was
-    * designed but never written), so the honest move is to keep it in introprog's
-    * `target/` until a real consumer exists. Do NOT re-enable the copy without first
-    * settling who owns that filename; `publish.sh` regenerates it on every publish, so
-    * two writers race on a schedule, not just in the working tree. */
-  def generate(
-      subdir: String,
-      pdfName: String,
-      valName: String,
-      source: String,
-      copyToMuntabot: Boolean = true
-  ): Unit =
+    * ⚠ THIS WRITES ONLY INTO `target/` — it does NOT touch muntabot (2026-08-21). Copying
+    * into a sibling clone used to happen here, guarded by nothing but `os.exists(dest)`,
+    * which meant a plain `sbt gen` silently dirtied a repo the user never asked to touch
+    * on ANY box that had muntabot cloned. And the content is only as good as THAT box's
+    * PDFs, since the page numbers come from whatever `compendium.pdf` is on disk, so an
+    * automatic copy could quietly publish numbers from a stale build. The copy is now an
+    * explicit opt-in step: `sbt syncMuntabot`. Keep generation and distribution separate.
+    *
+    * ⚠ The EN file is NOT synced at all, even by that task: muntabot's own
+    * `auto-translate.sc` generates a DIFFERENT artifact into the same filename
+    * (`headingTranslateSvEn`, the sv -> en display map `compendium.scala` reads), and
+    * `publish.sh` regenerates it on every publish, so two writers would race on a
+    * schedule. Nothing in muntabot consumes `headingsEn`. */
+  def generate(subdir: String, pdfName: String, valName: String, source: String): Unit =
     val wd = os.pwd / subdir
     val in = wd / pdfName
     val tocFile = wd / pdfName.replace(".pdf", ".toc")
@@ -108,8 +105,6 @@ object FindHeadings:
     else
       util.Try {
         val out = os.pwd / "target" / source
-        val dest =
-          os.pwd / os.up / os.up / "bjornregnell" / "muntabot" / "src" / "main" / "scala"
         println(s"FindHeadings using pdftk on $pdfName")
         println(s"Reading: $in")
 
@@ -172,31 +167,18 @@ object FindHeadings:
               |""".stripMargin
         println(s"Saving: $out")
         os.write.over(out, generatedCode)
-        if !copyToMuntabot then
-          println(s"Kept in target/ only: muntabot's auto-translate.sc owns $source")
-        else if os.exists(dest) then
-          println(s"Saving: $dest/$source")
-          os.write.over(dest / source, generatedCode)
-        else
-          println(
-            Console.YELLOW + s"Cannot copy file to missing dir $dest \n  clone bjornregnell/muntabot" + Console.RESET
-          )
       } match
         case util.Failure(exception) =>
           println(Console.RED + s"Failed to generate $valName: $exception" + Console.RESET)
         case util.Success(_) =>
           println(Console.GREEN + s"OK! Successful $valName generation done!" + Console.RESET)
-          if copyToMuntabot then
-            println(Console.YELLOW + "TODO: Rebuild with muntabot/publish.sh" + Console.RESET)
 
   /** SV compendium (always) + EN mirror (when built). Both editions emit the same
-    * tuple shape so muntabot links can join sv-heading -> number -> en-page. */
+    * tuple shape so muntabot links can join sv-heading -> number -> en-page.
+    * Both land in `target/` only; distribution to muntabot is `sbt syncMuntabot`. */
   def apply(): Unit =
     generate("compendium", "compendium.pdf", "headings", "headings-GENERATED.scala")
-    generate(
-      "compendium-en",
-      "compendium-en.pdf",
-      "headingsEn",
-      "headings-En-GENERATED.scala",
-      copyToMuntabot = false // muntabot's auto-translate.sc owns that filename -- see generate's doc
-    )
+    generate("compendium-en", "compendium-en.pdf", "headingsEn", "headings-En-GENERATED.scala")
+    println(Console.YELLOW + "Headings generated into target/." + Console.RESET)
+    println("  To update a local muntabot clone:  sbt syncMuntabot")
+    println("  (page numbers come from THIS box's compendium.pdf -- rebuild it first if unsure)")

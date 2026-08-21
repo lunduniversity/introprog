@@ -44,3 +44,20 @@ do
   fi
 done
 
+# ---------------------------------------------------------------------------------
+# STALE-LINK WARNING -- the coupling that has no detector.
+# muntabot deep-links into compendium.pdf by PHYSICAL PAGE NUMBER, so republishing the
+# compendium re-paginates it and every muntabot link silently points into the PREVIOUS
+# pagination until the headings are regenerated and muntabot is redeployed. Nothing
+# catches this: the links still resolve, they just land on the wrong page. Hence a
+# warning here rather than a check somewhere else.
+# ---------------------------------------------------------------------------------
+echo
+echo "*** compendium.pdf was republished -- muntabot heading links are now STALE"
+echo "    Refresh them with:"
+echo "      sbt gen            # re-read page numbers from the pdf just published"
+echo "      sbt syncMuntabot   # copy headings-GENERATED.scala into a local muntabot clone"
+echo "      (cd ../../bjornregnell/muntabot && ./publish.sh)"
+echo "    Skip only if compendium.pdf did not actually change."
+echo
+

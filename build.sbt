@@ -16,7 +16,11 @@ hello := println("""
 
     type 'pdf<TAB>' to see individual pdf build commands
 
-    type 'gen' to generate plan files
+    type 'gen' to generate plan files (headings land in target/, nothing else is touched)
+
+    type 'syncMuntabot' to copy the generated Swedish headings into a local
+      muntabot clone -- deliberately NOT part of 'build', because the page numbers
+      come from THIS box's compendium.pdf; rebuild that first if unsure
 
     type 'genquiz' to generate quiz files
 
@@ -139,6 +143,28 @@ addCommandAlias("build", "gen; genquiz; gengloss; pdf; autotranslate; pdfCompend
 
 lazy val gen = taskKey[Unit]("alias for plan/run")
 gen := (plan/Compile/run).toTask("").value
+
+// Distribution of the generated headings is DELIBERATE, never a build side effect. `gen` writes
+// target/ only; this task is the one act that reaches into another repository. It used to happen
+// automatically inside FindHeadings, guarded by nothing but "does the directory exist", so a plain
+// `sbt gen` silently dirtied muntabot on any box that had it cloned -- and since the page numbers
+// come from THIS box's compendium.pdf, a stale local build could hand muntabot wrong numbers with
+// nobody deciding to. Keep it opt-in, and keep it out of the `build` alias.
+lazy val syncMuntabot = taskKey[Unit]("copy generated headings from target/ into a local muntabot clone")
+syncMuntabot := {
+  val hub = baseDirectory.value.getParentFile.getParentFile
+  val dest = hub / "bjornregnell" / "muntabot" / "src" / "main" / "scala"
+  if (!dest.isDirectory)
+    sys.error(s"no muntabot clone at $dest -- clone bjornregnell/muntabot beside lunduniversity/")
+  // Swedish ONLY. headings-En-GENERATED.scala stays in target/: muntabot's own auto-translate.sc
+  // generates a DIFFERENT artifact under that name and publish.sh rewrites it on every publish,
+  // so copying ours there is a two-writer race. Nothing in muntabot reads our headingsEn.
+  val src = baseDirectory.value / "target" / "headings-GENERATED.scala"
+  if (!src.isFile) sys.error(s"no $src -- run `sbt gen` first")
+  IO.copyFile(src, dest / src.getName)
+  println(s"syncMuntabot: ${src.getName} -> $dest")
+  println("Next: rebuild and deploy with muntabot/publish.sh")
+}
 
 lazy val genquiz = taskKey[Unit]("alias for quiz/run")
 genquiz := (quiz/Compile/run).toTask("").value
