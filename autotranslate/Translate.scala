@@ -28,7 +28,11 @@ object Translate:
 
   /** The model to use — a catalogue key. Whether it is served by the modly model server (GPU) or the
     * local CPU Ollama is resolved at runtime: modly is preferred if reachable AND has this model. */
-  var SelectedModel: Name = "qwen2.5:7b" // <-- change this to switch model (var: --modeltest overrides it)
+  // gemma2:9b, not qwen2.5:7b: qwen drops placeholders on dense units (emphasis-heavy prose, slide
+  // bullets), where gemma2 survives them -- a retry pass with it once recovered 949 of 1614 dropped
+  // fallbacks. It is also the largest model the modly box serves; nothing there exceeds 9b, so this
+  // is the ceiling rather than a step on a ladder. (var: --model and --modeltest override it.)
+  var SelectedModel: Name = "gemma2:9b" // <-- change this to switch model
 
   val Seed = 42
   val ModlyUrl = "http://bjornyx.local:8080" // GPU model server (modly) on the LAN
