@@ -190,6 +190,41 @@ syncMuntabot := {
   println("Next: rebuild and deploy with muntabot/publish.sh")
 }
 
+// The coupling that had NO detector: muntabot deep-links into compendium.pdf by physical page, so
+// republishing the compendium re-paginates it and every muntabot link quietly lands on the wrong
+// page. The links still RESOLVE, so nothing fails and nobody notices. This makes that state
+// observable, as a plain file-vs-file stamp comparison needing no pdf and no pdftk.
+lazy val checkMuntabot = taskKey[Unit]("report whether a local muntabot clone carries stale heading pagination")
+checkMuntabot := {
+  val base = baseDirectory.value
+  val here = base / "target" / "headings-GENERATED.scala"
+  val pdf = base / "compendium" / "compendium.pdf"
+  val dest = base.getParentFile.getParentFile / "bjornregnell" / "muntabot" / "src" / "main" / "scala" / "headings-GENERATED.scala"
+  def stampOf(f: File): Option[String] =
+    if (!f.isFile) None
+    else IO.read(f).linesIterator.find(_.contains("headingsStamp")).map(_.trim)
+  if (!here.isFile)
+    println("checkMuntabot: UNKNOWN -- no target/headings-GENERATED.scala. Run: sbt gen")
+  else if (pdf.isFile && pdf.lastModified > here.lastModified)
+    println("checkMuntabot: STALE at step 1 -- compendium.pdf is NEWER than the generated table.\n" +
+            "  Run: sbt gen  ->  sbt syncMuntabot  ->  muntabot/publish.sh")
+  else if (!dest.isFile)
+    println(s"checkMuntabot: no muntabot clone at $dest (nothing to check)")
+  else (stampOf(here), stampOf(dest)) match {
+    case (Some(a), Some(b)) if a == b =>
+      println("checkMuntabot: FRESH -- the muntabot clone links into THIS pagination")
+    case (Some(_), Some(_)) =>
+      println("checkMuntabot: STALE at step 2 -- the muntabot clone carries a DIFFERENT pagination.\n" +
+              "  Its links still resolve, they just land on the wrong pages.\n" +
+              "  Run: sbt syncMuntabot  ->  muntabot/publish.sh")
+    case (Some(_), None) =>
+      println("checkMuntabot: STALE -- the muntabot clone predates pagination stamping, so what\n" +
+              "  pagination it carries cannot be known. Run: sbt syncMuntabot  ->  muntabot/publish.sh")
+    case _ =>
+      println("checkMuntabot: UNKNOWN -- no headingsStamp in target/. Run: sbt gen")
+  }
+}
+
 lazy val genquiz = taskKey[Unit]("alias for quiz/run")
 genquiz := (quiz/Compile/run).toTask("").value
 

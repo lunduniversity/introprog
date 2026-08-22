@@ -53,8 +53,10 @@ done
 # warning here rather than a check somewhere else.
 # ---------------------------------------------------------------------------------
 echo
-echo "*** compendium.pdf was republished -- muntabot heading links are now STALE"
-echo "    Refresh them with:"
+echo "*** compendium.pdf was republished -- checking whether muntabot's links are now stale"
+sbt --client checkMuntabot || echo "    (checkMuntabot unavailable -- assume STALE and refresh)"
+echo
+echo "    If that says STALE, refresh with:"
 echo "      sbt gen            # re-read page numbers from the pdf just published"
 echo "      sbt syncMuntabot   # copy the headings table AND the sv->en label map to a muntabot clone"
 echo "      (cd ../../bjornregnell/muntabot && ./publish.sh)"

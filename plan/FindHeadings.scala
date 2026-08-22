@@ -161,6 +161,15 @@ object FindHeadings:
                   Info(t.heading, number, if printed >= 0 then printed else physical, physical)
                 case None => Info(t.heading, "", physical, physical)
 
+        // Pagination fingerprint. muntabot deep-links by PHYSICAL PAGE, so republishing the pdf
+        // re-paginates it and every muntabot link silently lands on the wrong page -- the links
+        // still resolve, which is exactly why nothing catches it. Carrying the fingerprint INSIDE
+        // the generated file makes staleness a file-vs-file comparison (`sbt checkMuntabot`), with
+        // no pdf and no pdftk needed at check time.
+        val stamp =
+          val key = infos.map(i => s"${i.number}:${i.physical}").mkString(",")
+          s"rows=${infos.size} maxPage=${infos.map(_.physical).maxOption.getOrElse(0)}" +
+            s" h=${Integer.toHexString(key.hashCode)}"
         val generatedCode =
           s"""|package shared
               |
@@ -170,6 +179,11 @@ object FindHeadings:
               |  lazy val $valName: Seq[(String, String, Int, Int)] = Seq(
               |${infos.map(_.show).mkString("    ", ",\n    ", ",\n    ")}
               |  )
+              |
+              |  /** Fingerprint of the edition this table came from. Compare it against the copy in
+              |    * a muntabot clone to tell whether that clone still links into THIS pagination:
+              |    * `sbt checkMuntabot`. Same numbers, same pages, same stamp. */
+              |  lazy val ${valName}Stamp: String = "$stamp"
               |""".stripMargin
         println(s"Saving: $out")
         os.write.over(out, generatedCode)
