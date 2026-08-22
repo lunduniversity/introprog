@@ -633,4 +633,45 @@ object Overrides:
       """First prints hej with the innermost call and then \code{()} with the outer call""",
     """Om du \emph{verkligen} vill ha sådana operatorer är det \emph{mycket} lämpligt att också erbjuda varianter i klartext:""" ->
       """If you \emph{really} want such operators, it is \emph{very} appropriate to also offer plain-text variants:""",
+
+    // ── HEADINGS: wrong English found by reviewing all 778 sv->en heading pairs (2026-08-22) ──
+    // These became worth fixing when muntabot started DISPLAYING this exact text: introprog is now
+    // the single source of the English heading labels, so a bad heading here is a bad label there.
+    // Every key below was verified to occur verbatim in a Swedish .tex source before being added --
+    // an Overrides entry whose key never matches fails SILENTLY, doing nothing at all.
+    // Straight mistranslations (the English says something the Swedish does not):
+    "Valfria uppgifter"                     -> "Optional tasks",           // valfri = optional, NOT random
+    "Algoritmexempel: N-FAKULTET"           -> "Algorithm example: N-FACTORIAL", // fakultet = factorial
+    "Citationstecken (1/2)"                 -> "Quotation marks (1/2)",    // NOT punctuation
+    "Citationstecken (2/2)"                 -> "Quotation marks (2/2)",
+    "Typjoker: varning för gränslösa typer" -> "Type wildcard: warning for unbounded types", // joker = wildcard
+    "Varians och kontextparametrar"         -> "Variance and context parameters", // varians = variance
+    "Kompilera om det som ändrats vid varje sparning" -> "Recompile what has changed at each save", // sparning = save
+    "Ändra på plats i förändringsbar samling" -> "Modify in place in a mutable collection", // på plats = in place
+    "Java-exempel: Klassen JPerson"         -> "Java example: The class JPerson", // said "Scala example"
+    "Hur hittas felorsaken?"                -> "How is the cause of the error found?",
+    "Om ArrayList i Java"                   -> "About ArrayList in Java",  // Om = about, not if
+    "Om din avslutande projektuppgift"      -> "About your final project assignment",
+    "MUNTLIGT PROV"                         -> "ORAL EXAM",                // said "PRACTICAL TEST"
+    "Kontrollstrukturer: alternativ och repetition" -> "Control structures: alternatives and repetition",
+    "Medlemmar som bara behövs i en enda upplaga" -> "Members that are needed in only a single copy",
+    "Vad rymmer sköldpaddan i Kojo i sitt tillstånd?" -> "What does the turtle in Kojo hold in its state?",
+    "Anpassa Git"                           -> "Configure Git",            // anpassa = configure
+    "Grundläggande byggfunktioner i Scala CLI" -> "Basic build features in Scala CLI",
+    // for-uttryck is an EXPRESSION, and the course deliberately contrasts it with for-sats:
+    "Nästlade for-uttryck"                  -> "Nested for-expressions",
+    "Använda for-uttryck för filtrering med hjälp av gard" -> "Using for-expressions for filtering with a guard",
+    // consistency with the rest of the book:
+    "En final medlem kan ej överskuggas"    -> "A final member cannot be overridden",
+    "Valbara krav -- välj minst ett"        -> "Optional requirements -- choose at least one",
+    "Valbara krav -- varje person ska välja minst ett" -> "Optional requirements -- each person must choose at least one",
+    "Insättningssortering på plats -- implementation" -> "In-place insertion sorting -- implementation",
+    "Båda samtidigt!? -- push"              -> "Both at the same time!? -- push",
+    "Vad är matchning?"                     -> "What is matching?",
+    "Typunioner med eller-operator"         -> "Union types with or-operator",
+    // information the English silently dropped:
+    "Lata variabler med fördröjd initialisering" -> "Lazy variables with delayed initialization",
+    "Ett minimalt fristående program i Scala" -> "A minimal standalone program in Scala",
+    "Klassdiagram med UML (Unified Modeling Language)" -> "Class diagram with UML (Unified Modeling Language)",
+    "Några viktiga operationer på ArrayList<E>" -> "Some important operations on ArrayList<E>", // keep Java syntax
   )

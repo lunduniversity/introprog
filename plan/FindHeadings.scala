@@ -182,6 +182,26 @@ object FindHeadings:
           println(Console.GREEN + s"OK! Successful $valName generation done!" + Console.RESET)
           infos
 
+  /** Is this edition's built `.toc` older than the `.tex` sources it was built from?
+    *
+    * The skew this catches is invisible by construction: `autotranslate` regenerates the English
+    * `.tex` sources AND clears the built pdf/`.toc`, and `pdfCompendiumEn` rebuilds them
+    * afterwards. Run `gen` in between and the heading map is joined against the PREVIOUS English
+    * edition -- a map that is complete, well-formed and plausible, describing a book that is no
+    * longer on disk. Nothing downstream can tell. So compare mtimes and SAY it. */
+  def editionSkew(subdir: String, pdfName: String): Option[String] =
+    val wd = os.pwd / subdir
+    val toc = wd / pdfName.replace(".pdf", ".toc")
+    if !os.exists(wd) || !os.exists(toc) then None
+    else
+      val tocTime = os.mtime(toc)
+      val newer = os.list(wd).filter(p => p.ext == "tex" && os.mtime(p) > tocTime)
+      if newer.isEmpty then None
+      else Some(
+        s"${newer.size} .tex source(s) in $subdir/ are NEWER than ${toc.last}" +
+          s" (e.g. ${newer.take(3).map(_.last).mkString(", ")})"
+      )
+
   /** The sv -> en DISPLAY map muntabot shows in English mode (`headingTranslateSvEn`),
     * joined on section number from the two tables generated above.
     *
@@ -255,6 +275,12 @@ object FindHeadings:
     val sv = generate("compendium", "compendium.pdf", "headings", "headings-GENERATED.scala")
     val en = generate("compendium-en", "compendium-en.pdf", "headingsEn", "headings-En-GENERATED.scala")
     writeTranslateMap(sv, en, "heading-translate-GENERATED.scala")
+    editionSkew("compendium-en", "compendium-en.pdf").foreach: msg =>
+      println(
+        Console.YELLOW + s"WARNING -- English edition skew: $msg." + Console.RESET +
+          "\n  The heading map just written describes the PREVIOUS English edition." +
+          "\n  Fix:  sbt pdfCompendiumEn  ->  sbt gen  ->  sbt syncMuntabot"
+      )
     println(Console.YELLOW + "Headings generated into target/." + Console.RESET)
     println("  To update a local muntabot clone:  sbt syncMuntabot")
     println("  (page numbers come from THIS box's compendium.pdf -- rebuild it first if unsure)")
