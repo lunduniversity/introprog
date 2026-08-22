@@ -13,6 +13,20 @@
   *   4. Rebuild:  sbt "autotranslateProject/run --all" ; sbt pdfCompendiumEn
   *      Your line now wins over the model.
   *
+  * ── ⚠ A KEY THAT NEVER MATCHES FAILS SILENTLY ───────────────────────────────────────────────
+  *   An entry whose key matches no unit does NOTHING: no error, no warning, no change. It looks
+  *   exactly like a fix that works, which is why it is worth a paragraph. Two ways it bites,
+  *   both hit on 2026-08-22 while correcting headings:
+  *     1. Text read off the built PDF or a pdftk bookmark has ALREADY had its LaTeX stripped.
+  *        The unit keeps it:  `Grenar (\emph{Branches})`, not `Grenar (Branches)`.
+  *     2. A unit is SPLIT AT a code span. The unit for `Framkalla värde med \texttt{summon}` is
+  *        just `Framkalla värde med`, and `Exempel på \textbf{funktionell nedbrytning` ends
+  *        WITHOUT its closing brace.
+  *   So confirm the key against the SOURCE .tex, and when a code span is involved look the unit
+  *   up in `translate-cache.tsv` or `scratch/override-suggestions.txt` instead of guessing.
+  *   Then VERIFY: the `overrides: N` figure in the run summary rises by one per APPLIED entry,
+  *   so a count that does not move means your key missed.
+  *
   * ── STRINGS & BACKSLASHES (LaTeX!) ──────────────────────────────────────────────────────────
   *   Prefer PLAIN triple-quoted strings — backslashes are LITERAL, no escaping, and (verified on
   *   Scala 3.8) there is no `\u` gotcha, so even `\underline`/`\usepackage` are safe:
@@ -689,4 +703,18 @@ object Overrides:
     // the Swedish glosses the English term in parentheses; English does not need to gloss itself
     """Grenar (\emph{Branches})"""                    -> """Branches""",
     """Varför grenar (\emph{branches})?"""            -> """Why branches?""",
+
+    // ── Swedish source typos fixed by BR in 6500795a: the KEY changed, so the reviewed English
+    // went with it. Correcting Swedish silently orphans its cache row and the unit falls back to
+    // Swedish -- measured here as fallbacks 9 -> 14, which the cache-only gate caught. English
+    // below is the text that was already reviewed under the OLD key, recovered from the cache,
+    // so this restores the previous output exactly rather than re-translating anything.
+    "Api-design med Scala"                  -> "API Design with Scala",
+    "Distribuerad versionshantering"        -> "Distributed version control",
+    "Köra program + kodbibliotek med Scala CLI" -> "Run programs + libraries with Scala CLI",
+    "Attribut i kompanjonsobjekt används för sådant som är gemensamt för alla instanser"
+      -> "Attributes in the companion object are used for what is shared among all instances",
+    // this one's MEANING changed too (…användningammering -> …användning), so the English must
+    // follow: it is no longer about programming.
+    "Teori: Datorer och datoranvändning: typsättning" -> "Theory: Computers and computer usage: typesetting",
   )
