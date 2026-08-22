@@ -57,8 +57,13 @@ hello := println("""
       3. if the fallback count moved, update autotranslate/cache-only-baseline.txt
 
     usual order after editing the Swedish side:
-      gen  ->  autotranslate  ->  pdfCompendiumEn
+      gen  ->  autotranslate  ->  pdfCompendiumEn  ->  gen  ->  syncMuntabot
       ('gen' first only when plan/quiz/glossary changed: the mirror copies what is there)
+      the SECOND 'gen' is not a typo: the sv->en heading map muntabot displays is read
+      from compendium-en.pdf, which autotranslate clears and pdfCompendiumEn rebuilds,
+      so a map generated before that step describes the PREVIOUS English edition.
+      Without compendium-en.pdf no map is written at all and the old one stands,
+      which is deliberate: an empty map would silently revert every label to Swedish.
 
     other 'autotranslateProject/run' flags:
       --all          cache + model; the one to use after writing new Swedish prose
@@ -163,13 +168,20 @@ syncMuntabot := {
   // is the single writer, and the text is what the English compendium actually prints.
   // headings-En-GENERATED.scala (headingsEn) still stays in target/: nothing in muntabot reads it.
   val targetDir = baseDirectory.value / "target"
-  val srcs = Seq("headings-GENERATED.scala", "heading-translate-GENERATED.scala").map(targetDir / _)
-  val missing = srcs.filterNot(_.isFile)
-  if (missing.nonEmpty) sys.error(s"missing ${missing.mkString(", ")} -- run `sbt gen` first")
+  val required = targetDir / "headings-GENERATED.scala"
+  if (!required.isFile) sys.error(s"no $required -- run `sbt gen` first")
+  // The sv->en label map only exists once compendium-en.pdf has been built, and on a box without
+  // it there is no authoritative English text to ship. Sync the Swedish headings anyway and SAY so,
+  // rather than refusing to sync at all -- muntabot then keeps the map it already has committed.
+  val optional = targetDir / "heading-translate-GENERATED.scala"
+  val srcs = required +: (if (optional.isFile) Seq(optional) else Seq.empty)
   srcs.foreach { src =>
     IO.copyFile(src, dest / src.getName)
     println(s"syncMuntabot: ${src.getName} -> $dest")
   }
+  if (!optional.isFile)
+    println(s"syncMuntabot: NO ${optional.getName} in target/ -- English labels keep muntabot's " +
+      "committed map. Build compendium-en.pdf and re-run `sbt gen` to refresh them.")
   println("Next: rebuild and deploy with muntabot/publish.sh")
 }
 

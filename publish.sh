@@ -56,8 +56,11 @@ echo
 echo "*** compendium.pdf was republished -- muntabot heading links are now STALE"
 echo "    Refresh them with:"
 echo "      sbt gen            # re-read page numbers from the pdf just published"
-echo "      sbt syncMuntabot   # copy headings-GENERATED.scala into a local muntabot clone"
+echo "      sbt syncMuntabot   # copy the headings table AND the sv->en label map to a muntabot clone"
 echo "      (cd ../../bjornregnell/muntabot && ./publish.sh)"
+echo "    The English labels muntabot shows are what compendium-en.pdf prints, so if the"
+echo "    English headings changed, rebuild it first (sbt pdfCompendiumEn) or 'sbt gen' will"
+echo "    regenerate the map from the OLD English edition."
 echo "    Skip only if compendium.pdf did not actually change."
 echo
 
