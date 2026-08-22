@@ -716,5 +716,46 @@ object Overrides:
       -> "Attributes in the companion object are used for what is shared among all instances",
     // this one's MEANING changed too (…användningammering -> …användning), so the English must
     // follow: it is no longer about programming.
-    "Teori: Datorer och datoranvändning: typsättning" -> "Theory: Computers and computer usage: typesetting",
+    "Teori datorer och datoranvändning: typsättning" -> "Theory computers and computer usage: typesetting",
+
+    // ── "Fördjupning" as a heading prefix: ONE spelling, "Deep dive" ────────────────────────────
+    // BR's call 2026-08-22: sentence case, and change ONLY the prefix -- the tails stay as they
+    // are, because book-wide title casing is a separate question (pinned as its own AT task).
+    // The family was inconsistent THREE ways, not one: "Deep Dive", "Deepening", and a single
+    // "Focusing on:" outlier. Keys are the real translation units, read from translate-cache.tsv:
+    // a heading is split AT each code span, which is why several of these end mid-sentence.
+    "Fördjupning"                             -> "Deep dive",
+    "Fördjupning:"                            -> "Deep dive:",
+    "Fördjupning för den intresserade:"       -> "Deep dive for the Interested:",
+    "Fördjupning för kännedom:"               -> "Deep dive for understanding:",
+    "Fördjupning, Projekt"                    -> "Deep dive, Project", // the comma was dropped too
+    "Fördjupning: Använda Java-samlingar i Scala med" -> "Deep dive: Using Java Collections in Scala with",
+    "Fördjupning: Användning av hjälpkonstruktor" -> "Deep dive: Usage of Helper Constructor",
+    "Fördjupning: Detaljerade regler för override" -> "Deep dive: Detailed Rules for Override",
+    "Fördjupning: En översikt av samlingarna i Scalas standardbibliotek:"
+      -> "Deep dive: An Overview of Collections in Scala's Standard Library:",
+    "Fördjupning: Hjälpkonstruktorer i Scala (ovanliga)" -> "Deep dive: Helper Constructors in Scala (unusual)",
+    "Fördjupning: Implementera"               -> "Deep dive: Implement",
+    "Fördjupning: Kontrollerade undantag"     -> "Deep dive: Checked Exceptions",
+    "Fördjupning: Recept i 8 steg för arvssäker" -> "Deep dive: 8-Step Recipe for Inheritance Safety",
+    "Fördjupning: Skapa generisk Array"       -> "Deep dive: Create a Generic Array",
+    "Fördjupning: Sortera samlingar av godtycklig typ" -> "Deep dive: Sorting Collections of Arbitrary Types",
+    "Fördjupning: Studera samlingars prestanda-egenskaper här:"
+      -> "Deep dive: Study the performance characteristics of collections here:",
+    "Fördjupning: Styra synlighet med"        -> "Deep dive: Controlling visibility with", // was "Focusing on:"
+    "Fördjupning: Säkrare likhetstest i Scala 3" -> "Deep dive: Safer Equality Tests in Scala 3",
+    "Fördjupning: metoden"                    -> "Deep dive: the method",
+    "Fördjupning: groupMap, groupMapReduce"   -> "Deep dive: groupMap, groupMapReduce",
+    "Fördjupning: Äkta funktionsobjekt är av funktionstyp" -> "Deep dive: Pure functions are of functional type",
+    // A heading whose code span sits mid-phrase is ONE unit carrying __Cn__ placeholders, which no
+    // plain-Swedish key can address, so the split-unit keys above cannot reach it. This one CAN be
+    // keyed because its span is leading; four siblings cannot and still read "Deep Dive":
+    //   Fördjupning: Implementera \texttt{equals} med \texttt{match}
+    //   Fördjupning: Unionstyper och typen \text{Matchable}
+    //   Fördjupning: override av \texttt{var} med \texttt{var}
+    //   Fördjupning: override av \texttt{def} med \texttt{var}
+    // Their keys were TRIED and measured as no-ops, then removed rather than left in as silent
+    // dead entries. Tracked with the book-wide casing review.
+    """Fördjupning: \texttt{equals} som fungerar för finala klasser"""
+      -> """Deep dive: \texttt{equals} that works for final classes""",
   )
