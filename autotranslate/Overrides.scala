@@ -674,4 +674,19 @@ object Overrides:
     "Ett minimalt fristående program i Scala" -> "A minimal standalone program in Scala",
     "Klassdiagram med UML (Unified Modeling Language)" -> "Class diagram with UML (Unified Modeling Language)",
     "Några viktiga operationer på ArrayList<E>" -> "Some important operations on ArrayList<E>", // keep Java syntax
+    // Same review, but these keys KEEP their LaTeX: the unit is the heading source, and the
+    // bookmark title I first read them from had already stripped the markup, so the plain-text
+    // versions matched nothing and would have failed silently.
+    // ⚠ A heading containing a code span is split into units AT the span: the unit is the text
+    // BEFORE it, with no trailing brace. Confirmed in translate-cache.tsv, not guessed -- the
+    // full-heading forms were tried first and matched nothing, silently.
+    "Förseglade typer med"                            -> "Sealed types with",   // was "Predefined"; förseglad = sealed
+    "Framkalla värde med"                             -> "Summon a value with", // was "Predefine"
+    """Egentyp + anonym klass för att ''injektera'' beroenden"""
+      -> """Self type + anonymous class for ''injecting'' dependencies""", // egentyp = self type
+    """Stegade funktioner, ''Curry-funktioner''"""    -> """Stepped functions, ''curried functions''""",
+    """Exempel på \textbf{funktionell nedbrytning"""  -> """Examples of \textbf{functional decomposition""", // no closing brace: unit ends there
+    // the Swedish glosses the English term in parentheses; English does not need to gloss itself
+    """Grenar (\emph{Branches})"""                    -> """Branches""",
+    """Varför grenar (\emph{branches})?"""            -> """Why branches?""",
   )
