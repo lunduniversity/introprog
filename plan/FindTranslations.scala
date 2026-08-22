@@ -1,13 +1,22 @@
 object FindTranslations:
 
-  /** Generate muntabot's translations-GENERATED.scala from the authoritative
-    * Swedish -> English concept translations in glossary/concepts.scala
-    * (glossary.explain.allConcepts) — the same source the glossary tables use. */
+  /** Generate `translations-GENERATED.scala` from the authoritative Swedish -> English concept
+    * translations in glossary/concepts.scala (glossary.explain.allConcepts) — the same source
+    * the glossary tables use.
+    *
+    * ⚠ THIS WRITES ONLY INTO `target/` (2026-08-22). It used to ALSO write straight into a sibling
+    * muntabot clone, guarded by nothing but `os.exists(dest)`, so a plain `sbt gen` silently
+    * dirtied a repository the user never asked to touch, on any box that had muntabot cloned. That
+    * turns a COMPILE into a cross-repo write, which is the inverse of the rule that reaching another
+    * repo is a deliberate act. `FindHeadings` was fixed this way on 2026-08-21; this was the last
+    * writer still doing it, and it survived only because its content happened to be identical each
+    * time, so nothing ever showed up dirty to give it away.
+    *
+    * Distribution is the explicit opt-in step: `sbt syncMuntabot`. Keep generation and distribution
+    * separate. */
   def apply(): Unit = util.Try {
     val source = "translations-GENERATED.scala"
     val out = os.pwd / "target" / source
-    val dest =
-      os.pwd / os.up / os.up / "bjornregnell" / "muntabot" / "src" / "main" / "scala"
 
     def esc(x: String): String = x.replace("\\", "\\\\").replace("\"", "\\\"")
 
@@ -33,16 +42,8 @@ object FindTranslations:
 
     println(s"Saving: $out")
     os.write.over(out, generatedCode)
-    if os.exists(dest) then
-      println(s"Saving: $dest/$source")
-      os.write.over(dest / source, generatedCode)
-    else
-      println(
-        Console.YELLOW + s"Cannot copy file to missing dir $dest \n  clone bjornregnell/muntabot" + Console.RESET
-      )
   } match
     case util.Failure(exception) =>
       println(Console.RED + s"Failed to generate translations: $exception" + Console.RESET)
     case util.Success(_) =>
       println(Console.GREEN + "OK! Successful translations generation done!" + Console.RESET)
-      println(Console.YELLOW + "TODO: Rebuild with muntabot/publish.sh" + Console.RESET)

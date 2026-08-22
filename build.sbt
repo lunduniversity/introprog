@@ -174,7 +174,12 @@ syncMuntabot := {
   // it there is no authoritative English text to ship. Sync the Swedish headings anyway and SAY so,
   // rather than refusing to sync at all -- muntabot then keeps the map it already has committed.
   val optional = targetDir / "heading-translate-GENERATED.scala"
-  val srcs = required +: (if (optional.isFile) Seq(optional) else Seq.empty)
+  // translations-GENERATED.scala (the glossary concept map) used to be written straight into the
+  // muntabot clone by FindTranslations, as a side effect of `gen`. It ships here instead now, so
+  // that `gen` truly never touches another repository.
+  val concepts = targetDir / "translations-GENERATED.scala"
+  if (!concepts.isFile) sys.error(s"no $concepts -- run `sbt gen` first")
+  val srcs = Seq(required, concepts) ++ (if (optional.isFile) Seq(optional) else Seq.empty)
   srcs.foreach { src =>
     IO.copyFile(src, dest / src.getName)
     println(s"syncMuntabot: ${src.getName} -> $dest")
