@@ -281,6 +281,32 @@ object FindHeadings:
           s"$keptSwedish kept Swedish (no English counterpart), " +
           s"$identical identical to Swedish" + Console.RESET
       )
+      reportResidue(pairs.filter((s, e) => s == e).map(_._1))
+
+  /** Report headings whose English still equals their Swedish and that NOBODY has ruled on.
+    *
+    * A raw count of identical headings is a bad gauge: most matches are correct (Kojo, Rebase,
+    * sbt, Tips), so the number is dominated by non-defects and stops being read. The allowlist
+    * in `autotranslate/heading-residue-keep.txt` records "these two sides SHOULD match" as an
+    * explicit decision, which leaves this report showing only what still needs a human call --
+    * and makes a newly added Swedish heading show up the first time `gen` runs after it lands. */
+  def reportResidue(identical: Seq[String]): Unit =
+    val keepFile = os.pwd / "autotranslate" / "heading-residue-keep.txt"
+    val allowed: Set[String] =
+      if !os.exists(keepFile) then Set.empty
+      else os.read.lines(keepFile).map(_.trim).filter(l => l.nonEmpty && !l.startsWith("#")).toSet
+    val unruled = identical.filterNot(allowed.contains).sorted
+    if unruled.isEmpty then
+      println(s"  heading residue: 0 unruled (${identical.size} identical, all allowlisted)")
+    else
+      println(
+        Console.YELLOW +
+          s"  heading residue: ${unruled.size} UNRULED (of ${identical.size} identical to Swedish)" +
+          Console.RESET
+      )
+      unruled.foreach(h => println(s"    $h"))
+      println("  Each needs a decision: translate it (Overrides.scala), or record that it should")
+      println(s"  stay Swedish by adding it to ${keepFile.last}.")
 
   /** SV compendium (always) + EN mirror (when built). Both editions emit the same
     * tuple shape so muntabot links can join sv-heading -> number -> en-page.

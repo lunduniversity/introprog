@@ -758,4 +758,18 @@ object Overrides:
     // dead entries. Tracked with the book-wide casing review.
     """Fördjupning: \texttt{equals} som fungerar för finala klasser"""
       -> """Deep dive: \texttt{equals} that works for final classes""",
+
+    // ── the genuinely untranslated headings, found by the residue gauge ─────────────────────────
+    // Of the 24 headings whose English equalled their Swedish, 20 are CORRECTLY identical (Kojo,
+    // Rebase, sbt, Tips ...) and are listed in autotranslate/heading-residue-keep.txt. These four
+    // were real Swedish leaking into the English book.
+    // ⚠ "Grupplaboration" is NOT here on purpose. `\subsection{Grupplaboration}` in
+    // prechapters/course-instructions.tex never becomes a translation unit at all -- there is no
+    // such key in translate-cache.tsv -- so no Overrides entry can reach it, and one was tried and
+    // measured as a no-op before being removed. The residue gauge reports it as unruled, which is
+    // the correct outcome: it is a MECHANISM gap, not a missing translation. Same root cause as the
+    // Swedish \chapter title produced by \renewcommand{\Teamlab} in labs.tex.
+    "Repeterade parametrar blir sekvens"    -> "Repeated parameters become a sequence",
+    "bash-finesser 1"                       -> "bash tricks 1",
+    "bash-finesser 2"                       -> "bash tricks 2",
   )
