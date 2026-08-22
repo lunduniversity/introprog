@@ -156,13 +156,20 @@ syncMuntabot := {
   val dest = hub / "bjornregnell" / "muntabot" / "src" / "main" / "scala"
   if (!dest.isDirectory)
     sys.error(s"no muntabot clone at $dest -- clone bjornregnell/muntabot beside lunduniversity/")
-  // Swedish ONLY. headings-En-GENERATED.scala stays in target/: muntabot's own auto-translate.sc
-  // generates a DIFFERENT artifact under that name and publish.sh rewrites it on every publish,
-  // so copying ours there is a two-writer race. Nothing in muntabot reads our headingsEn.
-  val src = baseDirectory.value / "target" / "headings-GENERATED.scala"
-  if (!src.isFile) sys.error(s"no $src -- run `sbt gen` first")
-  IO.copyFile(src, dest / src.getName)
-  println(s"syncMuntabot: ${src.getName} -> $dest")
+  // TWO files: the Swedish headings table (page geometry for the links) and the sv -> en display
+  // map muntabot shows in English mode. The map used to be generated inside muntabot by a local
+  // ollama run, which meant the same heading was translated twice by two systems that could
+  // silently disagree -- at the switchover 85 of 157 shared headings DID disagree. Now introprog
+  // is the single writer, and the text is what the English compendium actually prints.
+  // headings-En-GENERATED.scala (headingsEn) still stays in target/: nothing in muntabot reads it.
+  val targetDir = baseDirectory.value / "target"
+  val srcs = Seq("headings-GENERATED.scala", "heading-translate-GENERATED.scala").map(targetDir / _)
+  val missing = srcs.filterNot(_.isFile)
+  if (missing.nonEmpty) sys.error(s"missing ${missing.mkString(", ")} -- run `sbt gen` first")
+  srcs.foreach { src =>
+    IO.copyFile(src, dest / src.getName)
+    println(s"syncMuntabot: ${src.getName} -> $dest")
+  }
   println("Next: rebuild and deploy with muntabot/publish.sh")
 }
 

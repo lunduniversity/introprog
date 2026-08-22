@@ -73,6 +73,14 @@ object FindHeadings:
               else None
     .toMap
 
+  def esc(x: String): String = x.replace("\\", "\\\\").replace("\"", "\\\"")
+
+  /** One generated row: (heading, sectionNumber, printedPage, physicalPage).
+    * `heading` is the pdftk BOOKMARK title, not the `.toc` title -- see
+    * `writeTranslateMap` for why that distinction decides a whole feature. */
+  case class Info(heading: String, number: String, printed: Int, physical: Int):
+    def show: String = s"""("${esc(heading)}", "${esc(number)}", $printed, $physical)"""
+
   /** Generate one edition's headings file from its PDF + `.toc`: pdftk bookmarks
     * (title -> physical page) joined with the `.toc` (heading -> section number +
     * printed page). `valName` is the emitted `lazy val` — SV: `headings`; EN:
@@ -89,12 +97,12 @@ object FindHeadings:
     * automatic copy could quietly publish numbers from a stale build. The copy is now an
     * explicit opt-in step: `sbt syncMuntabot`. Keep generation and distribution separate.
     *
-    * ⚠ The EN file is NOT synced at all, even by that task: muntabot's own
-    * `auto-translate.sc` generates a DIFFERENT artifact into the same filename
-    * (`headingTranslateSvEn`, the sv -> en display map `compendium.scala` reads), and
-    * `publish.sh` regenerates it on every publish, so two writers would race on a
-    * schedule. Nothing in muntabot consumes `headingsEn`. */
-  def generate(subdir: String, pdfName: String, valName: String, source: String): Unit =
+    * ⚠ The EN file (`headingsEn`) is still NOT synced: nothing in muntabot consumes it.
+    * What muntabot DOES consume is `heading-translate-GENERATED.scala`, built from these
+    * two tables by `writeTranslateMap` below and shipped by `syncMuntabot`. Until
+    * 2026-08-22 muntabot generated that map itself with a local ollama run; it no longer
+    * does, so there is now exactly ONE writer. Keep it that way. */
+  def generate(subdir: String, pdfName: String, valName: String, source: String): Seq[Info] =
     val wd = os.pwd / subdir
     val in = wd / pdfName
     val tocFile = wd / pdfName.replace(".pdf", ".toc")
@@ -102,6 +110,7 @@ object FindHeadings:
       println(
         Console.YELLOW + s"Skipping $valName: no $in (build it first, e.g. sbt pdfCompendiumEn)" + Console.RESET
       )
+      Seq.empty
     else
       util.Try {
         val out = os.pwd / "target" / source
@@ -144,9 +153,6 @@ object FindHeadings:
 
         // 3) join: (heading, number, printedPage, physicalPage)
         //    number = "" and printedPage = physical when no .toc match.
-        case class Info(heading: String, number: String, printed: Int, physical: Int):
-          def esc(x: String): String = x.replace("\\", "\\\\").replace("\"", "\\\"")
-          def show: String = s"""("${esc(heading)}", "${esc(number)}", $printed, $physical)"""
         val infos: Seq[Info] =
           titles.flatMap: t =>
             t.page.toIntOption.map: physical =>
@@ -167,18 +173,88 @@ object FindHeadings:
               |""".stripMargin
         println(s"Saving: $out")
         os.write.over(out, generatedCode)
+        infos
       } match
         case util.Failure(exception) =>
           println(Console.RED + s"Failed to generate $valName: $exception" + Console.RESET)
-        case util.Success(_) =>
+          Seq.empty
+        case util.Success(infos) =>
           println(Console.GREEN + s"OK! Successful $valName generation done!" + Console.RESET)
+          infos
+
+  /** The sv -> en DISPLAY map muntabot shows in English mode (`headingTranslateSvEn`),
+    * joined on section number from the two tables generated above.
+    *
+    * ⚠ WHY THE JOIN IS OVER THE GENERATED TABLES AND NOT OVER THE TWO `.toc` FILES:
+    * the keys must be pdftk BOOKMARK titles, because that is what muntabot looks up
+    * (`Compendium.infoOf` is keyed by this table's first column, and `shownHeading`
+    * is called with the same string). Joining the `.toc` files would key on
+    * `cleanTocTitle` output instead -- a different string domain -- and every lookup
+    * would silently MISS, degrading to Swedish with nothing to notice it. Measured
+    * 2026-08-22: all 160 of muntabot's then-current keys are bookmark titles and
+    * none reached its fallback branch.
+    *
+    * WHY THIS EXISTS AT ALL: the same Swedish heading used to be translated TWICE by
+    * two independent systems that could silently disagree -- here, and by muntabot's
+    * own ollama run in `auto-translate.sc`. At the switchover, of the 157 headings
+    * both systems translated, 85 DISAGREED. This side wins because it is not a
+    * translation at all: it is what the English compendium actually prints, so every
+    * Overrides entry improves muntabot's labels for free.
+    *
+    * Headings with no English counterpart KEEP THEIR SWEDISH (BR's call) and are
+    * COUNTED in the printout, so drift stays visible rather than silent. */
+  def writeTranslateMap(sv: Seq[Info], en: Seq[Info], source: String): Unit =
+    val out = os.pwd / "target" / source
+    if en.isEmpty then
+      println(
+        Console.YELLOW + s"Skipping $source: no English headings (build compendium-en.pdf first)." +
+          "\n  NOT writing an empty map: that would silently revert every English label to Swedish." +
+          Console.RESET
+      )
+    else
+      // Section numbers repeat in these tables (pdftk yields two bookmark hits for some
+      // headings), so do NOT assume uniqueness. Reversing before `toMap` makes the FIRST
+      // (lowest-page) occurrence win, matching muntabot's `Compendium.infoOf`.
+      val enByNumber: Map[String, String] =
+        en.filter(_.number.nonEmpty).reverse.map(i => i.number -> i.heading).toMap
+      val joined: Map[String, String] =
+        sv.filter(_.number.nonEmpty).reverse
+          .flatMap(i => enByNumber.get(i.number).map(e => i.heading -> e))
+          .toMap
+      val pairs = joined.toSeq.sortBy(_._1)
+      val keptSwedish = sv.map(_.heading).distinct.count(!joined.contains(_))
+      val identical = pairs.count((s, e) => s == e)
+      val entries = pairs.map((s, e) => s"""    "${esc(s)}" -> "${esc(e)}"""").mkString(",\n")
+      val generatedCode =
+        s"""|package shared
+            |
+            |  /** English DISPLAY titles for the Swedish compendium headings muntabot links to,
+            |    * keyed by the heading text in `headings`. Links still open the Swedish
+            |    * compendium.pdf; only the shown text is translated.
+            |    *
+            |    * GENERATED by introprog plan/FindHeadings.scala by joining compendium.toc and
+            |    * compendium-en.toc on section number -- NOT translated by a model. A heading
+            |    * with no English counterpart is absent here and stays Swedish at the call site.
+            |    * Do not edit: fix the English compendium instead. */
+            |  lazy val headingTranslateSvEn: Map[String, String] = Map(
+            |$entries
+            |  )
+            |""".stripMargin
+      println(s"Saving: $out")
+      os.write.over(out, generatedCode)
+      println(
+        Console.GREEN + s"OK! headingTranslateSvEn: ${pairs.size} joined, " +
+          s"$keptSwedish kept Swedish (no English counterpart), " +
+          s"$identical identical to Swedish" + Console.RESET
+      )
 
   /** SV compendium (always) + EN mirror (when built). Both editions emit the same
     * tuple shape so muntabot links can join sv-heading -> number -> en-page.
     * Both land in `target/` only; distribution to muntabot is `sbt syncMuntabot`. */
   def apply(): Unit =
-    generate("compendium", "compendium.pdf", "headings", "headings-GENERATED.scala")
-    generate("compendium-en", "compendium-en.pdf", "headingsEn", "headings-En-GENERATED.scala")
+    val sv = generate("compendium", "compendium.pdf", "headings", "headings-GENERATED.scala")
+    val en = generate("compendium-en", "compendium-en.pdf", "headingsEn", "headings-En-GENERATED.scala")
+    writeTranslateMap(sv, en, "heading-translate-GENERATED.scala")
     println(Console.YELLOW + "Headings generated into target/." + Console.RESET)
     println("  To update a local muntabot clone:  sbt syncMuntabot")
     println("  (page numbers come from THIS box's compendium.pdf -- rebuild it first if unsure)")
