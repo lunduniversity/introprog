@@ -161,7 +161,8 @@ syncMuntabot := {
   val dest = hub / "bjornregnell" / "muntabot" / "src" / "main" / "scala"
   if (!dest.isDirectory)
     sys.error(s"no muntabot clone at $dest -- clone bjornregnell/muntabot beside lunduniversity/")
-  // TWO files: the Swedish headings table (page geometry for the links) and the sv -> en display
+  // THREE files: the Swedish headings table (page geometry for the links), the glossary concept map,
+  // and the sv -> en display
   // map muntabot shows in English mode. The map used to be generated inside muntabot by a local
   // ollama run, which meant the same heading was translated twice by two systems that could
   // silently disagree -- at the switchover 85 of 157 shared headings DID disagree. Now introprog
