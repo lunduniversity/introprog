@@ -491,6 +491,9 @@ På LTH:s [Linuxdatorer i E-huset](https://fileadmin.cs.lth.se/cs/Bilder/Salar/D
 - Java-kompilator: `javac`
 - JVM/OpenJDK: `java`
 
+För att kunna programmera på LTHs datorer och komma in i datorsalarna måste du skaffa ett LU-kort. Detta brukar göras i samband med nollningen, men om du saknar en läs mer här: <https://www.lu.se/student/it-tjanster-och-studentsupport/lu-kortet> 
+Om du kan inte logga in på LTHs datorer, du behöver återställa din lösenord, följ: <https://www.student.lth.se/stoed-och-service/it-tjaenster-och-support/faq-fraagor-och-svar/>
+
 Mer info:
 
 - [LTH datorsalar](https://www.lth.se/lthin/datorsalar/vaara-datorsalar/e-huset/)
