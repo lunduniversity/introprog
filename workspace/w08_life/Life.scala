@@ -17,12 +17,12 @@ case class Life(cells: Matrix[Boolean]):
   def nbrOfNeighbours(row: Int, col: Int): Int = ???
 
   /** Skapar en ny Life-instans med nästa generation av universum.
-    * Detta sker genom att applicera funktionen rule på cellerna.
+    * Detta sker genom att applicera funktionen rule på alla celler.
     */
   def evolved(rule: (Int, Int, Life) => Boolean = Life.defaultRule):Life =
     var nextGeneration = Life.empty(cells.dim)
     cells.foreachIndex( (r,c) =>
-      ???
+      ??? // updatera nextGeneration med rule applicerad på denna instans
     )
     nextGeneration
 

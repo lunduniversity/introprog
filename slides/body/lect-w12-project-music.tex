@@ -33,7 +33,7 @@ Förberedelser:
 \begin{itemize}
 \item En ton (tonhöjd) representeras med ett heltal.
 \begin{Code}
-case class Pitch(nbr: Int)
+case class Pitch(number: Int)
 \end{Code}
 
 \item[]
@@ -53,18 +53,14 @@ case class Chord(ps: Vector[Pitch])
 Inom musiken utgår man från 12 olika \Emph{tonklasser} \Eng{pitch classes}.
 
 \item Dessa tonklasser är ordnade i en sekvens av s.k. \Emph{halva tonsteg} och har följande \Alert{tonklassnamn}:
-\begin{Code}
-  val pitchClassNames: Vector[String] =
-    Vector("C","C#","D","D#","E","F","F#","G","G#","A","A#","B")
-\end{Code}
+C, D$\flat$, D, E$\flat$, E, F, G$\flat$, G, A$\flat$, A, B$\flat$ och B.
 \item Efter tonklassen med namnet \code{B} återkommer tonklassen med namnet \code{C}. (Jämför med vita och svarta tangenter på ett piano.)
-\item Symbolen \code{#} uttalas \emph{iss} representerar en höjning ett halvt tonsteg.
+\item Symbolen ''$\flat$'' (skrives \code{b} i ascii) uttalas \emph{ess} representerar en sänkning med ett halvt tonsteg.
 %\item Tonklassen \code{C#} uttalas \emph{siss} på svenska, och \emph{see sharp} på engelska.
 \item Notera att det är ett halvt tonsteg mellan \code{E} och \code{F}, samt mellan \code{B} och \code{C}.
-\item En \Emph{tonklass} \code{(0 until 12)} motsvaras av index i \code{pitchClassNames}.
-\item Case-klassen  \code{Pitch(nbr: Int)} representerar \Emph{tonhöjd} där \code{nbr} är i intervallet \code{(0 until 128)} och tillhör tonklassen \code{nbr % 12}.
-\item Med heltalsdivision \code{nbr / 12} beräknas tonhöjdens s.k. \Alert{oktav}.
-\item En tonhöjd namnges med tonklassnamnet+oktaven, t.ex. \code{"C5"}.
+\item Case-klassen \code{Pitch(number: Int)} representerar en \Emph{tonhöjd} där \code{number} är i intervallet \code{(0 until 128)}.
+\item Metoderna \code{pitchClass} och \code{octave} i \code{Pitch} returnerar tonklassen respektive oktaven av en tonhöjd.
+\item En tonhöjd namnges med tonklassnamnet+oktaven, t.ex. \code{"A4"}.
 
 \item Ett \Emph{ackord} består av flera toner som spelas tillsammans.
 \end{itemize}
@@ -80,7 +76,7 @@ Inom musiken utgår man från 12 olika \Emph{tonklasser} \Eng{pitch classes}.
 
 \item Om man trycker ned ett finger på (egentligen bakom) första bandet höjs tonen ett halvt tonsteg.
 
-\item Exempel: om en sträng är stämd i D3 blir tonen om man trycker ned fingret på fjärde bandet F\#3.
+\item Exempel: om en sträng är stämd i D3 blir tonen om man trycker ned fingret på fjärde bandet G$\flat$3.
 
 \item \href{http://www.gitarr.org}{www.gitarr.org}
 
@@ -94,63 +90,60 @@ Inom musiken utgår man från 12 olika \Emph{tonklasser} \Eng{pitch classes}.
 
 \begin{Slide}{Modell av tonhöjd}
 \begin{CodeSmall}
-case class Pitch(nbr: Int) {
+case class Pitch(number: Int):
 
-  assert((0 to 127) contains nbr, s"Error: nbr $nbr outside (0 to 127)")
+  assert((0 to 127) contains number, s"Error: number $number outside (0 to 127)")
 
-  def pitchClass: Int        = nbr % 12
+  def pitchClass: Pitch.Class = Pitch.Class.fromOrdinal(number % 12)
 
   def pitchClassName: String = ???
 
-  def name: String           = ???
+  def name: String = ???
 
-  def octave: Int            = nbr / 12
+  def octave: Int = number / 12 - 1
 
-  def +(offset: Int): Pitch  = Pitch(nbr + offset)
+  def +(offset: Int): Pitch = Pitch(number + offset)
 
-  override def toString      = s"Pitch($name)"
-}
+  override def toString = s"Pitch($name)"
 
-object Pitch {
+object Pitch:
 
   def fromString(s: String): Option[Pitch] = ???
 
   def apply(s: String): Pitch = ???
-}
 \end{CodeSmall}
 \SlideFontTiny
 Se implementationer här:
-\url{https://github.com/lunduniversity/introprog/blob/master/workspace/w10_music/src/main/scala/music/Pitch.scala}
+\url{https://github.com/lunduniversity/introprog/blob/master/workspace/w13_music_proj/src/main/scala/music/Pitch.scala}
 \end{Slide}
 
 \begin{Slide}{Modell av ackord}
 \begin{CodeSmall}
-case class Chord(ps: Vector[Pitch]) {
+case class Chord(ps: Vector[Pitch]):
 
-  assert(ps.nonEmpty, "Chord pitch sequence is empty")
+assert(ps.nonEmpty, "Chord pitch sequence is empty")
 
-  val pitchClasses: Vector[Int]   = ps.map(_.pitchClass).toVector
+  val pitchClasses: Vector[Pitch.Class] = ps.map(_.pitchClass).toVector
 
   def apply(i: Int): Pitch = ps(i)
 
-  def intervals(root: Pitch = ps(0)): Vector[Int] = ps.map(_.nbr - root.nbr)
+  def intervals(root: Pitch = ps(0)): Vector[Int] = ps.map(_.number - root.number)
 
-  def relativePitchClasses(root: Pitch = ps(0)): Vector[Int] = ???
+  def simpleIntervals(root: Pitch = ps(0)): Vector[Int] =
+    intervals(root).map(i => floorMod(i, 12)).distinct.sorted
 
   def name(root: Pitch = ps(0)): String = ???
 
-  override def toString = ps.map(_.name).mkString("Chord(",",",")")
-}
+  override def toString = ps.map(_.name).mkString("Chord(", ",", ")")
 
-object Chord {
+object Chord:
   def apply(xs: String*): Chord = Chord(xs.map(Pitch.apply).toVector)
 
-  def random(pitchNumbers: Seq[Int] = (60 to 72), n: Int = 3): Chord = ???
-}
+  def random(pitchNumbers: Seq[Int] = 60 to 72, n: Int = 3): Chord = ???
 \end{CodeSmall}
 \SlideFontTiny
 Se implementationer här:
-\url{https://github.com/lunduniversity/introprog/blob/master/workspace/w10_music/src/main/scala/music/Chord.scala}
+\url{https://github.com/lunduniversity/introprog/blob/master/workspace/w13_music_proj/src/main/scala/music/Chord.scala}
 \end{Slide}
 
 \begin{Slide}{Typhierarki: modell av stränginstrument}\SlideFontSmall
@@ -162,7 +155,7 @@ Se implementationer här:
 \node [umlclass, rectangle split parts = 2, xshift=-3cm, text width=5cm] (BaseType)  {
             \textit{\textbf{\centerline{\TextBox{\code{StringInstrument}}}}}
             \nodepart[]{second}
-            \TextBox{\code{def toChordOpt: Option[Chord]}}%\vspace{-0.25em}\newline
+            \TextBox{\code{def toChordOption: Option[Chord]}}%\vspace{-0.25em}\newline
             %\TextBox{\code{def tuning: Vector[String]}}\vspace{-0.25em}\newline
             %\TextBox{\code{def grip: Vector[Int]}}\vspace{-0.25em}\newline
         };
@@ -185,7 +178,7 @@ Se implementationer här:
 \node [umlclass, rectangle split parts = 2, xshift=0cm, text width=4.5cm] at (0cm,-2.2cm)  (Fretted)  {
             \textit{\textbf{\centerline{\TextBox{\code{FrettedInstrument}}}}}
             \nodepart[]{second}
-            \TextBox{\code{def nbrOfStrings: Int}}\vspace{-0.25em}\newline
+            \TextBox{\code{def numberOfStrings: Int}}\vspace{-0.25em}\newline
             \TextBox{\code{def tuning: Vector[Pitch]}}\vspace{-0.25em}\newline
             \TextBox{\code{def grip:   Vector[Int]}}\vspace{-0.25em}\newline
         };

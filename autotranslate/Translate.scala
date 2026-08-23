@@ -1,0 +1,1024 @@
+import scala.collection.mutable
+
+/** Translation engine for the introprog English mirror (P0 scaffolding).
+  *
+  * Determinism & safety (ported from the muntabot pattern):
+  *  - precedence: OVERRIDE > AUTHORITATIVE(glossary) > CACHE > MODEL;
+  *  - a committed cache (autotranslate/translate-cache.tsv) makes runs idempotent — the model runs
+  *    only on cache misses, so a clean re-run needs no Ollama at all;
+  *  - temperature 0 + fixed seed => reproducible first-time translations;
+  *  - any model failure (or no Ollama) falls back to the Swedish source — never a broken build.
+  *
+  * P0 translates PLAIN sentences (no LaTeX masking yet — that arrives in P1 with the tokenizer).
+  */
+object Translate:
+
+  // ---------- model catalogue ----------
+  type Name = String
+  case class Model(name: Name, description: String)
+
+  val catalogue: Map[Name, Model] = Seq(
+    Model("qwen2.5:3b",   "Qwen2.5 3B — small & fast; baseline sv→en quality (runs on CPU)"),
+    Model("qwen2.5:7b",   "Qwen2.5 7B — general multilingual, good sv→en; fits a 6GB GPU"),
+    Model("qwen2.5:14b",  "Qwen2.5 14B — higher quality; needs >6GB VRAM or a strong CPU"),
+    Model("gemma2:9b",    "Gemma2 9B — strong European/Nordic prose"),
+    Model("gemma3:latest","Gemma3 4B — multilingual, small & fast"),
+    Model("aya23:35b",    "Aya23 35B — top translation quality; GPU-class (~20GB), won't fit a 6GB card")
+  ).map(m => m.name -> m).toMap
+
+  /** The model to use — a catalogue key. Whether it is served by the modly model server (GPU) or the
+    * local CPU Ollama is resolved at runtime: modly is preferred if reachable AND has this model. */
+  // gemma2:9b, not qwen2.5:7b: qwen drops placeholders on dense units (emphasis-heavy prose, slide
+  // bullets), where gemma2 survives them -- a retry pass with it once recovered 949 of 1614 dropped
+  // fallbacks. It is also the largest model the modly box serves; nothing there exceeds 9b, so this
+  // is the ceiling rather than a step on a ladder. (var: --model and --modeltest override it.)
+  var SelectedModel: Name = "gemma2:9b" // <-- change this to switch model
+
+  val Seed = 42
+  val ModlyUrl = "http://bjornyx.local:8080" // GPU model server (modly) on the LAN
+  val OllamaChat = "http://localhost:11434/api/chat" // local CPU Ollama (this box)
+  val OllamaTags = "http://localhost:11434/api/tags"
+
+  /** Where model calls go. Resolved at init; printed so it's always clear which is in use. */
+  enum Backend(val label: String):
+    case Modly extends Backend(s"modly model server ($ModlyUrl)")
+    case Local   extends Backend(s"local CPU via Ollama (this box, $OllamaChat)")
+    case Offline extends Backend("NO backend reachable — translations fall back to Swedish")
+
+  // Inference threads: llama.cpp wants PHYSICAL cores (hyperthreads hurt — benchmarked: 4 beats 8
+  // on an i7-4790K). Detect physical cores from /proc/cpuinfo; fall back to logical/2; override below.
+  val ThreadsOverride: Option[Int] = Some(3) // leave a core for the OS — gentler heat after the crash
+
+  private def physicalCores: Int =
+    val logical = Runtime.getRuntime.availableProcessors
+    try
+      val info = os.read(os.Path("/proc/cpuinfo"))
+      val pairs = info.split("\n\n").flatMap { block =>
+        val pid = block.linesIterator.find(_.startsWith("physical id")).map(_.split(":").last.trim)
+        val cid = block.linesIterator.find(_.startsWith("core id")).map(_.split(":").last.trim)
+        for p <- pid; c <- cid yield (p, c)
+      }.toSet
+      if pairs.nonEmpty then pairs.size else math.max(1, logical / 2)
+    catch case _: Throwable => math.max(1, logical / 2)
+
+  lazy val numThreads: Int = ThreadsOverride.getOrElse(physicalCores)
+
+  // Save the cache to disk every this many new model translations (so a kill never loses much).
+  val SaveEvery = 20
+
+  def autotranslateDir(root: os.Path): os.Path = root / "autotranslate"
+  def cacheFile(root: os.Path): os.Path = autotranslateDir(root) / "translate-cache.tsv"
+  def codeCacheFile(root: os.Path): os.Path = autotranslateDir(root) / "translate-code-cache.tsv"
+
+  // ---------- authoritative data from glossary (typed, no parsing) ----------
+  lazy val concepts: Seq[glossary.explain.Concept] = glossary.explain.allConcepts
+
+  /** sv -> en term pairs, injected into the model prompt as a glossary. */
+  lazy val termPairs: Map[String, String] =
+    concepts.iterator.filter(c => c.sv.nonEmpty && c.en.nonEmpty).map(c => c.sv -> c.en).toMap
+
+  /** Full-sentence authoritative translations: the glossary explanations (short + long). */
+  lazy val authoritative: Map[String, String] =
+    val m = mutable.LinkedHashMap[String, String]()
+    for c <- concepts do
+      if c.svShortExplanation.nonEmpty && c.enShortExplanation.nonEmpty then m(c.svShortExplanation) = c.enShortExplanation
+      if c.svLongExplanation.nonEmpty && c.enLongExplanation.nonEmpty then m(c.svLongExplanation) = c.enLongExplanation
+    m.toMap
+
+  // ---------- reviewed overrides (always win) + cache (idempotency) ----------
+  // Overrides live in Overrides.scala — typed, compile-checked, keyed by CLEAN Swedish (see
+  // translateBlock). The cache is a generated TSV (idempotency store), self-healing on load.
+  val overrides: Map[String, String] = Overrides.overridingTranslations
+  private val cache = mutable.LinkedHashMap[String, String]()
+  // separate idempotency store for CODE prose (comments / string literals), kept apart from the LaTeX
+  // cache so the LaTeX self-heal/validate (which rejects {}, $, …) doesn't churn legitimate code text.
+  private val codeCache = mutable.LinkedHashMap[String, String]()
+
+  // Reversible TSV escaping: backslash, newline AND tab must round-trip. The old scheme mapped only
+  // newline↔`\n`, so a key/value containing a LITERAL `\n` or a TAB (dense code units: REPL blocks,
+  // serverLoop, Sobel matrix, the lab table) was mangled or split on reload → the unit's recomputed key
+  // never matched the stored one → a model call EVERY `--all` run. Escape `\` FIRST on write; decode in a
+  // single scan so `\\n` stays backslash+n (not a newline). Self-migrating: legacy single-`\` LaTeX
+  // (`\Emph`) survives via the unknown-escape pass-through; the few legacy literal-`\n`/tab entries
+  // re-translate once and re-save under the new scheme.
+  private def enc(s: String): String =
+    s.replace("\\", "\\\\").replace("\n", "\\n").replace("\t", "\\t")
+  private def dec(s: String): String =
+    val sb = StringBuilder(); var i = 0
+    while i < s.length do
+      if s(i) == '\\' && i + 1 < s.length then
+        s(i + 1) match
+          case 'n'  => sb += '\n'; i += 2
+          case 't'  => sb += '\t'; i += 2
+          case '\\' => sb += '\\'; i += 2
+          case c    => sb += '\\'; sb += c; i += 2 // unknown escape (e.g. legacy single-`\` LaTeX) — keep both
+      else { sb += s(i); i += 1 }
+    sb.toString
+
+  private def readTsv(f: os.Path, into: mutable.LinkedHashMap[String, String]): Unit =
+    if os.exists(f) then
+      for line <- os.read.lines(f) if line.contains("\t") do
+        val Array(sv, en) = line.split("\t", 2)
+        into(dec(sv)) = dec(en)
+
+  private def writeTsv(f: os.Path, m: mutable.LinkedHashMap[String, String]): Unit =
+    val body = m.toSeq.sortBy(_._1).map((sv, en) => s"${enc(sv)}\t${enc(en)}").mkString("\n")
+    os.write.over(f, if body.isEmpty then "" else body + "\n")
+
+  def cacheSize: Int = cache.size
+
+  /** Load the cache, dropping any entry that fails current validation (self-heals after guards get
+    * stricter) — dropped keys get re-translated under the new guards on the next run. */
+  def loadCache(root: os.Path): Unit =
+    readTsv(cacheFile(root), cache)
+    // MIGRATE to placeholder-normalized keys (idempotent, no model calls): the cache is keyed on the
+    // masked form with GLOBAL __C<n>__ numbers, so an upstream edit that shifts numbering re-keys (and
+    // re-translates) the whole downstream of a file. Re-key to LOCAL order-of-appearance so keys are
+    // position-independent. Collision (identical prose, different global numbering): prefer a real
+    // translation (value != key) over a Swedish fallback (value == key).
+    locally {
+      val migrated = mutable.LinkedHashMap[String, String]()
+      var renum = 0
+      for (k, v) <- cache do
+        val (nk, l2g) = Latex.normalize(k)
+        val nv = Latex.globalToLocal(v, l2g.iterator.zipWithIndex.map((g, l) => (g, l)).toMap)
+        if nk != k then renum += 1
+        migrated.get(nk) match
+          case Some(existing) if existing != nk && nv == nk => () // keep the translation, drop the fallback
+          case _                                            => migrated(nk) = nv
+      cache.clear(); cache ++= migrated
+      if renum > 0 then println(s"  [cache] migrated $renum entries to placeholder-normalized keys")
+    }
+    // self-heal step 1: re-apply deterministic post-processing (quote-normalize + term enforcement,
+    // e.g. grundtyp's "primitive"->"basic") to stored values — fixes cached entries without --clean.
+    var fixed = 0
+    for (sv, en) <- cache.toList do
+      val n = enforceTerms(sv, normalize(en)); if n != en then { cache(sv) = n; fixed += 1 }
+    // self-heal step 2: DROP entries whose guard failure would BREAK the build (a hallucinated paragraph
+    // break / introduced LaTeX special / foreign script) — they must be re-translated; the fresh output is
+    // re-validated, so a repeat hallucination just falls back to the safe source. KEEP build-SAFE flags
+    // (too-long heuristic, placeholder reorder/merged-content): the committed cache builds clean with them,
+    // and dropping them forced a useless model call EVERY run (re-translation fails identically).
+    val buildBreaking = Set("introduced paragraph break", "introduced LaTeX special", "introduced non-ascii", "introduced LaTeX environment")
+    val drop = cache.iterator.collect { case (sv, en) if invalidReason(sv, en).exists(buildBreaking.contains) => sv }.toList
+    drop.foreach(cache.remove)
+    val kept = cache.iterator.filterNot((sv, en) => validate(sv, en)).size
+    if fixed > 0 then println(s"  [cache] normalized $fixed entries")
+    if drop.nonEmpty then println(s"  [cache] dropped ${drop.size} BUILD-BREAKING entries (re-translate; hallucinations re-fall-back)")
+    if kept > 0 then println(s"  [cache] kept $kept build-safe guard-flagged entries (trusting committed cache)")
+    // code prose store: self-heal with the code validator (drops poisoned entries, e.g. masked $vars
+    // or dropped interpolations cached before the guards existed → re-translated next run).
+    readTsv(codeCacheFile(root), codeCache)
+    // drop invalid entries (poisoned masking etc.) AND stale Swedish fallbacks (cached sv->sv that still
+    // has åäö = the model gave up earlier). Unlike the big LaTeX cache, the code corpus is small and the
+    // mirror is committed once, so retrying give-ups each run is worth the quality.
+    val badCode = codeCache.iterator.filter((sv, en) =>
+      codeReason(sv, enforceTerms(sv, en)).isDefined || (sv == en && sv.exists("åäöÅÄÖ".contains))
+    ).map(_._1).toList
+    badCode.foreach(codeCache.remove)
+    if badCode.nonEmpty then println(s"  [code-cache] dropped ${badCode.size} invalid/stale entries (re-translate under current guards)")
+  def saveCache(root: os.Path): Unit =
+    if !cacheOnly then { writeTsv(cacheFile(root), cache); writeTsv(codeCacheFile(root), codeCache) }
+
+  /** `--retry-fallbacks`: drop LaTeX-cache entries that are Swedish fallbacks — en == sv AND the text
+    * still contains åäö (the model gave up, usually a placeholder drop on a dense slide unit). They get
+    * re-translated on this run (ideally on a stronger backend / after segmentation improvements). The
+    * good translations stay cached (no re-translation). Returns how many were dropped. */
+  def dropSwedishFallbacks(): Int =
+    val drop = cache.iterator.filter((sv, en) => sv == en && sv.exists("åäöÅÄÖ".contains)).map(_._1).toList
+    drop.foreach(cache.remove)
+    drop.size
+
+  /** Non-destructive A/B: set `model`, sample the first `n` current Swedish fallbacks (en==sv with åäö)
+    * from the cache, re-translate each, and count how many now PASS validation (recover to English).
+    * Does NOT save the cache — use to compare backends before committing to a full --retry-fallbacks run.
+    * The sample is deterministic (cache insertion order), so the same units are tried across models. */
+  def modeltest(root: os.Path, model: String, n: Int): Unit =
+    SelectedModel = model
+    init(root) // loads cache + resolves backend with the chosen model (no disk write)
+    val fb = cache.iterator.filter((sv, en) => sv == en && sv.exists("åäöÅÄÖ".contains)).map(_._1).toVector
+    val sample = fb.take(n)
+    val log = collection.mutable.ArrayBuffer[String](s"modeltest: model=$model, backend=${backend.label} — sampling ${sample.size} of ${fb.size} Swedish fallbacks")
+    var recovered = 0
+    for (sv, i) <- sample.zipWithIndex do
+      modelTranslate(sv) match
+        case Some(en) if en != sv => recovered += 1; log += f"  [OK ${i + 1}%2d] ${sv.take(55)}  ->  ${en.take(55)}"
+        case _                    => log += f"  [-- ${i + 1}%2d] ${sv.take(80)}"
+    log += s"=== $model recovered $recovered / ${sample.size} sampled fallbacks ==="
+    val out = root / "autotranslate" / "scratch" / s"modeltest-${model.replace(":", "-").replace("/", "-")}.txt"
+    os.write.over(out, log.mkString("\n") + "\n")
+    log.foreach(println)
+    println(s"(report written to $out)")
+
+  // ---------- backend: modly model server (GPU) preferred, else local CPU Ollama ----------
+  var backend: Backend = Backend.Offline
+
+  private def httpGet(url: String, timeoutMs: Int): Option[String] =
+    try Some(requests.get(url, readTimeout = timeoutMs, connectTimeout = timeoutMs).text())
+    catch case _: Throwable => None
+
+  private def httpPost(url: String, body: String, timeoutMs: Int): Option[String] =
+    try Some(requests.post(url, data = body, headers = Map("Content-Type" -> "application/json"),
+      readTimeout = timeoutMs, connectTimeout = timeoutMs).text())
+    catch case _: Throwable => None
+
+  /** Models reported by the modly server; None if modly is unreachable. */
+  def modlyModels(): Option[List[String]] =
+    httpGet(s"$ModlyUrl/models", 3000).flatMap { s =>
+      try Some(ujson.read(s)("models").arr.map(_.str).toList) catch case _: Throwable => None
+    }
+
+  /** Models in the local Ollama (via /api/tags); Nil if unreachable. */
+  def localModels(): List[String] =
+    httpGet(OllamaTags, 3000).flatMap { s =>
+      try Some(ujson.read(s)("models").arr.map(_("name").str).toList) catch case _: Throwable => None
+    }.getOrElse(Nil)
+
+  /** Resolve which backend serves SelectedModel and PRINT model + description + backend.
+    * Prefers modly (GPU) if reachable AND it has the model; else local Ollama; else offline. */
+  def resolveBackend(): Unit =
+    val m = catalogue.getOrElse(SelectedModel, Model(SelectedModel, "(uncatalogued model)"))
+    val mm = modlyModels()
+    backend =
+      if mm.exists(_.contains(SelectedModel)) then Backend.Modly
+      else if localModels().contains(SelectedModel) then Backend.Local
+      else Backend.Offline
+    if backend == Backend.Modly then
+      // tell modly the active model + deterministic defaults once (used by /generate)
+      httpPost(s"$ModlyUrl/set-model",
+        ujson.write(ujson.Obj("model" -> SelectedModel, "temperature" -> 0, "seed" -> Seed)), 120000)
+    println(s"  model:   ${m.name} — ${m.description}")
+    println(s"  backend: ${backend.label}")
+    println(s"  modly: ${mm.map(ms => s"UP (${ms.size} models)").getOrElse("down/unreachable")} ($ModlyUrl)")
+    if backend == Backend.Offline then
+      println(s"  [warn] '$SelectedModel' is on neither modly nor local Ollama — keeping Swedish.")
+
+  // ---------- model call ----------
+  var modelCalls = 0
+  var fallbacks = 0
+  var overrideHits = 0
+
+  // ---------- override-suggestion capture (--dump-overrides) ----------
+  // When on, every unit that resolves to the MODEL tier (not override/authoritative/cache) is recorded
+  // with its CLEAN Swedish key (the form Overrides.scala uses) + the model's English, so the misses that
+  // keep a `--all` run from being 0-model-calls can be curated into Overrides.scala. Pure diagnostics.
+  var captureSuggestions = false
+  var dumpFallbacks = false // --sweep-fallbacks: record SLIDE units whose result is still Swedish
+  // --cache-only (CI mode): backend is never resolved (no network attempt at all, so a runner without
+  // LAN/model access cannot stall on connection timeouts), uncached units keep Swedish and count as
+  // fallbacks, and the cache is NOT written back (a CI run must not mint sv->sv entries that would
+  // hide the same units from the next run's fallback count — cache completeness is the invariant).
+  var cacheOnly = false
+  var currentLabel = ""
+  val suggestions = mutable.ArrayBuffer[(String, String, String, String)]() // (kind, label, cleanSv, en)
+
+  /** Authoritative term pairs whose Swedish term occurs in `t`, formatted for the prompt. */
+  def glossaryFor(t: String): String =
+    val low = t.toLowerCase
+    termPairs.collect { case (sv, en) if sv.length >= 4 && low.contains(sv.toLowerCase) => s"$sv = $en" }
+      .toSeq.sorted.take(40).mkString("; ")
+
+  // LaTeX special chars that were all masked away — the model must not invent them in prose.
+  val Specials: String = "{}\\$%&#^_~"
+
+  /** Post-process raw model output into build-safe, house-style LaTeX prose. Deterministic (no model
+    * call), so it is safe to also re-apply to cached entries on load (self-healing).
+    *
+    * Converts straight ASCII double-quotes "x" to directional ``x'': the compendium loads
+    * babel[swedish], where " is an ACTIVE shorthand character. A stray " (e.g. the model's "scal")
+    * makes pdflatex die with "! Incomplete \iffalse" deep inside babel's shorthand expansion. The
+    * Swedish source never uses " (house style is ``...''), so qwen's " is the sole source. */
+  def normalize(en: String): String =
+    if !en.contains('"') then en
+    else
+      val sb = StringBuilder(); var open = true
+      en.foreach: c =>
+        if c == '"' then { sb ++= (if open then "``" else "''"); open = !open }
+        else sb += c
+      sb.toString
+
+  /** Source-aware TERM enforcement (deterministic; safe to re-apply to cached entries on load).
+    * "grundtyp" (basic type) is a beginner-friendly term and must NOT become "primitive type" — that
+    * is a JVM term of art (e.g. String is NOT a JVM primitive). The source uses "primitiv" separately
+    * (~50×) for genuine primitives, so we only rewrite units whose Swedish has grundtyp and NOT
+    * primitiv. Extend this map as more such pairs are found. */
+  def enforceTerms(sv: String, en: String): String =
+    val low = sv.toLowerCase
+    if low.contains("grundtyp") && !low.contains("primitiv")
+    then en.replace("primitive", "basic").replace("Primitive", "Basic")
+    else en
+
+  /** qwen sometimes ignores "output ONLY the translation" and emits meta-commentary such as
+    * `Note: The term "dator" was translated to "computer" as per the official translation provided.`
+    * These phrases never occur in real course prose, so treat them as a failed unit (keep Swedish). */
+  private val leakMarkers = List("was translated", "official translation", "translation provided")
+  private def looksLikeLeak(en: String): Boolean =
+    val low = en.toLowerCase
+    leakMarkers.exists(low.contains)
+
+  /** All structural guards a translated unit must satisfy. Applied to BOTH fresh model output and
+    * cached entries on load, so the cache self-heals when the guards get stricter. */
+  def validate(sv: String, en: String): Boolean = invalidReason(sv, en).isEmpty
+
+  /** None if `en` is a structurally-safe translation of masked `sv`; else the first failing reason. */
+  def invalidReason(sv: String, en: String): Option[String] =
+    if en.isEmpty then Some("empty")
+    else if en.length > sv.length * 4 + 80 then Some("too long")
+    else if looksLikeLeak(en) then Some("model meta-comment leak")
+    // INTRODUCED PARAGRAPH BREAK: the model sometimes hallucinates a blank line + extra text on short
+    // units (e.g. "Latex:" -> "Latex:\n\nEnglish:"), which splits an \item / breaks list & \textcolor
+    // structure -> build break. A single translation unit is one paragraph, so a NEW blank line it didn't
+    // have is always a mangle -> reject (falls back to the safe source, e.g. the proper noun unchanged).
+    else if en.contains("\n\n") && !sv.contains("\n\n") then Some("introduced paragraph break")
+    // STRICT placeholder structure (order-sensitive). A relaxation that allowed reordering was tried
+    // and reverted: it recovered only ~292 units (most complex-unit fallbacks are genuine placeholder
+    // DROPs, not reorders) and let a mangled unit through into a build break — a bad trade vs the
+    // build-safety priority. Keep strict.
+    else if Latex.placeholderSeq(en) != Latex.placeholderSeq(sv) then Some("placeholder reorder/drop")
+    else if Latex.placeholderAdjacency(en) != Latex.placeholderAdjacency(sv) then Some("collapsed newline around placeholder")
+    else if Latex.placeholderGapText(en) != Latex.placeholderGapText(sv) then Some("merged content between placeholders")
+    else if Latex.stripPlaceholders(en).exists(c => Specials.contains(c)) then Some("introduced LaTeX special")
+    else if introducedEnvs(sv, Latex.stripPlaceholders(en)) then Some("introduced LaTeX environment")
+    // INTRODUCED NON-ASCII: reject any char > U+007F the (masked) source didn't have — foreign letters (CJK,
+    // Cyrillic), Latin-but-non-Swedish letters (e.g. Icelandic ð), AND emoji/symbols. pdflatex has no glyph
+    // for these → fatal "Unicode character not set up". Swedish åäö and any accented char carried from the
+    // source survive (they're in `sv`). Subsumes the old foreign-LETTER rule and mirrors codeReason's guard;
+    // it is what a small split unit needs when the model hallucinates gibberish (the w?? `Við`+🏠 break).
+    else if Latex.stripPlaceholders(en).exists(c => c.toInt > 127 && !sv.contains(c)) then Some("introduced non-ascii")
+    else None
+
+  private val envRe = raw"\\(?:begin|end)\s*\{[^}]*\}".r
+  /** True if `en` contains a `\begin{}`/`\end{}` environment token MORE times than `sv` did — i.e. the model
+    * INTRODUCED a LaTeX environment (e.g. hallucinated `\begin{align*}` out of code-like text, as in the w04
+    * disabled-slide bug). An introduced environment turns inert text into live markup (alignment `&`, math)
+    * → fatal build break, so reject (fall back to the safe source). Count-based, so envs the source genuinely
+    * had and the model preserved pass unharmed. */
+  private def introducedEnvs(sv: String, en: String): Boolean =
+    val svCount = envRe.findAllIn(sv).toList.groupMapReduce(identity)(_ => 1)(_ + _)
+    envRe.findAllIn(en).toList.groupMapReduce(identity)(_ => 1)(_ + _)
+      .exists((tok, c) => c > svCount.getOrElse(tok, 0))
+
+  /** System instructions (+ glossary) shared by both backends. */
+  private def buildSystem(sv: String): String =
+    val gloss = glossaryFor(sv)
+    "You are a precise Swedish-to-English translator for an introductory Scala programming course. " +
+      "Translate the Swedish to natural English. Keep numbers, symbols and code unchanged. " +
+      "Keep every placeholder token of the form __C0__, __C1__, ... EXACTLY as-is and in place. " +
+      "Output ONLY the translation: no quotes, no notes, no extra text." +
+      (if gloss.nonEmpty then s" Use these official term translations where they occur: $gloss." else "")
+
+  private def checkOut(sv: String, out: String): Option[String] =
+    val cleaned = enforceTerms(sv, normalize(out)) // build-safe + term post-processing, then validate
+    invalidReason(sv, cleaned) match
+      case None         => Some(cleaned)
+      case Some(reason) => println(s"  [fallback] $reason, kept Swedish for: ${sv.take(60)}"); None
+
+  /** Validator for CODE prose (comments / string literals): NO LaTeX placeholder/specials guards
+    * (code legitimately has {}, $, …), and NO quote-normalization (a `"` must stay literal). Instead
+    * reject anything that would break the code: an introduced `"` or newline. */
+  private val interpRe = raw"\$$\{[^}]*\}|\$$[A-Za-z_][A-Za-z0-9_]*".r
+  private val escapeRe = raw"\\.".r
+  private val placeholderLeakRe = raw"__C\d".r // masking-placeholder leak (e.g. __C0__) from an old code path
+  /** Pure validity check for translated CODE prose (no printing) — used by both the validator and the
+    * code-cache self-heal. `cleaned` is the post-enforceTerms candidate. */
+  private def codeReason(sv: String, cleaned: String): Option[String] =
+    // string-interpolation tokens ($x, ${...}) must survive verbatim, else the value is silently lost
+    val svInterps = interpRe.findAllIn(sv).toSet
+    // escape sequences (\n, \t, \", \\, …) must survive too — dropping a \n silently changes I/O
+    val svEscapes = escapeRe.findAllIn(sv).toList
+    if cleaned.isEmpty then Some("empty")
+    else if cleaned.length > sv.length * 4 + 80 then Some("too long")
+    else if looksLikeLeak(cleaned) then Some("leak")
+    else if placeholderLeakRe.findFirstIn(cleaned).isDefined && placeholderLeakRe.findFirstIn(sv).isEmpty then Some("placeholder leak")
+    // reject only delimiters the source didn't have (a single-line "..." or // breaks; a multi-line
+    // """...""" legitimately keeps its newlines and inner quotes, so those are fine if sv had them).
+    else if cleaned.contains('"') && !sv.contains('"') then Some("introduced quote")
+    else if cleaned.contains('\n') && !sv.contains('\n') then Some("introduced newline")
+    else if svInterps.exists(t => !cleaned.contains(t)) then Some("dropped interpolation")
+    else if svEscapes.distinct.exists(e => escapeRe.findAllIn(cleaned).count(_ == e) < svEscapes.count(_ == e)) then Some("dropped escape")
+    // reject ANY non-ASCII char the source didn't have, not just foreign letters: code is rendered by the
+    // `listings` package which only handles the specific extended chars the source uses (åäö), so a model-
+    // introduced ² / ³ / smart-quote / em-dash breaks the build (Invalid UTF-8 in \lst@EC). Source used the
+    // ASCII-safe `km^2`; the model "improved" it to `km²` and broke compendium2-en. Fall back to Swedish
+    // (ASCII-safe) instead. Subsumes the old foreign-letter rule.
+    else if cleaned.exists(c => c.toInt > 127 && !sv.contains(c)) then Some("introduced non-ascii")
+    // the w04 root cause: a disabled tikz slide routed through the code path let the model hallucinate
+    // `\begin{align*}` from `src/*.scala`, turning a comment into live `&` alignment → fatal build break.
+    else if introducedEnvs(sv, cleaned) then Some("introduced LaTeX environment")
+    else None
+
+  private def checkOutCode(sv: String, out: String): Option[String] =
+    val cleaned = enforceTerms(sv, out)
+    codeReason(sv, cleaned) match
+      case None => Some(cleaned)
+      case Some(r) => println(s"  [code-fallback] $r: ${sv.take(50)}"); None
+
+  /** Translate one unit via the resolved backend; None on failure/offline (caller keeps Swedish).
+    * temperature 0 + fixed seed on both backends ⇒ reproducible. `check` validates the raw output. */
+  def modelTranslate(sv: String, check: (String, String) => Option[String] = checkOut): Option[String] = backend match
+    case Backend.Offline => None
+    case Backend.Local =>
+      val payload = ujson.Obj(
+        "model" -> SelectedModel,
+        "messages" -> ujson.Arr(
+          ujson.Obj("role" -> "system", "content" -> buildSystem(sv)),
+          ujson.Obj("role" -> "user", "content" -> sv)),
+        "stream" -> false,
+        "options" -> ujson.Obj("seed" -> Seed, "temperature" -> 0, "num_thread" -> numThreads, "num_ctx" -> 2048))
+      httpPost(OllamaChat, ujson.write(payload), 600000) match
+        case Some(r) => check(sv, try ujson.read(r)("message")("content").str.trim catch case _: Throwable => "")
+        case None    => println(s"  [fallback] local Ollama error for: ${sv.take(50)}"); None
+    case Backend.Modly =>
+      // modly /generate is single-prompt (Ollama /api/generate); combine instructions + masked text
+      val prompt = buildSystem(sv) + "\n\nSwedish:\n" + sv + "\n\nEnglish:"
+      val payload = ujson.Obj("prompt" -> prompt, "temperature" -> 0, "seed" -> Seed)
+      httpPost(s"$ModlyUrl/generate", ujson.write(payload), 600000) match
+        case Some(r) => check(sv, try ujson.read(r)("response").str.trim catch case _: Throwable => "")
+        case None    => println(s"  [fallback] modly error for: ${sv.take(50)}"); None
+
+  // incremental cache persistence (set in init): flush every SaveEvery model translations.
+  private var saveRoot: Option[os.Path] = None
+  private var sinceSave = 0
+
+  private def noteCacheAdd(): Unit =
+    sinceSave += 1
+    if sinceSave >= SaveEvery then { saveRoot.foreach(saveCache); sinceSave = 0 }
+
+  /** Diagnostic: append each MODEL/FB unit's clean key (+ current file) to scratch/model-calls.txt so a
+    * long run is inspectable live and a runaway ("why N calls?") is instantly traceable to its units.
+    * Truncated at the start of each run (see translateAll init). Best-effort; never fails a run. */
+  def diagLog(kind: String, sv: String): Unit =
+    saveRoot.foreach { r =>
+      try os.write.append(r / "autotranslate" / "scratch" / "model-calls.txt",
+        s"$kind\t$currentLabel\t${sv.replace("\n", "⏎").take(180)}\n")
+      catch case _: Throwable => ()
+    }
+
+  /** sv -> en with precedence OVERRIDE > AUTHORITATIVE > CACHE > MODEL; Swedish on fallback.
+    * The CACHE is keyed on the placeholder-NORMALIZED masked form (`Latex.normalize`) so it is independent
+    * of global `__C<n>__` numbering — an upstream edit that shifts placeholder numbers no longer re-keys
+    * (and re-translates) the rest of the file. The cached value is stored normalized too and de-normalized
+    * back to this unit's globals on a hit. */
+  def translate(sv: String): String =
+    if sv.isEmpty then ""
+    else overrides.get(sv).orElse(authoritative.get(sv)).getOrElse {
+      val (norm, l2g) = Latex.normalize(sv)
+      cache.get(norm) match
+        case Some(v) => Latex.denormalize(v, l2g)
+        case None =>
+          modelTranslate(sv) match
+            case Some(en) =>
+              modelCalls += 1; diagLog("MODEL", sv)
+              val g2l = l2g.iterator.zipWithIndex.map((g, l) => (g, l)).toMap
+              cache(norm) = Latex.globalToLocal(en, g2l); noteCacheAdd(); en
+            // cache the Swedish fallback too (normalized), so hopeless 3B units aren't re-tried every run.
+            case None => fallbacks += 1; diagLog("FB", sv); cache(norm) = norm; noteCacheAdd(); sv
+    }
+
+  /** Translate CODE prose (a comment / string-literal body) — preserves leading/trailing whitespace,
+    * uses the code-safe validator + a separate code cache. Passed to Code.translate as `tr`. */
+  def translatePlain(sv: String): String =
+    val lead = sv.length - sv.dropWhile(_.isWhitespace).length
+    val trail = sv.length - sv.reverse.dropWhile(_.isWhitespace).length
+    if lead + trail >= sv.length then sv
+    else
+      val core = sv.substring(lead, sv.length - trail)
+      val willModel = captureSuggestions &&
+        !overrides.contains(core) && !authoritative.contains(core) && !codeCache.contains(core)
+      val en = overrides.get(core).orElse(authoritative.get(core)).orElse(codeCache.get(core)).getOrElse {
+        modelTranslate(core, checkOutCode) match
+          case Some(t) => modelCalls += 1; codeCache(core) = t; noteCacheAdd(); t
+          case None    => fallbacks += 1; codeCache(core) = core; noteCacheAdd(); core
+      }
+      if willModel then suggestions += (("code", currentLabel, core, en))
+      sv.substring(0, lead) + en + sv.substring(sv.length - trail)
+
+  /** Report which tier a string resolves from (for diagnostics). */
+  def sourceOf(sv: String): String =
+    if overrides.contains(sv) then "override"
+    else if authoritative.contains(sv) then "authoritative"
+    else if cache.contains(sv) then "cache"
+    else "model"
+
+  // ---------- progress bar (global across the whole run) ----------
+  private var startMs = 0L
+  private var lastPrintMs = 0L
+  var totalUnits = 0
+  var doneUnits = 0
+
+  /** Call once before translating, with the total translatable block count across all files. */
+  def beginProgress(total: Int): Unit =
+    totalUnits = total; doneUnits = 0; startMs = System.currentTimeMillis; lastPrintMs = 0L
+
+  private def fmt(ms: Long): String = { val s = ms / 1000; f"${s / 60}%dm${s % 60}%02ds" }
+
+  /** Throttled single-line progress bar (carriage-return, in-place). */
+  def printBar(label: String, force: Boolean): Unit =
+    val now = System.currentTimeMillis
+    if force || now - lastPrintMs >= 800 then
+      lastPrintMs = now
+      // clamp to [0,1] / [0,∞) as an honesty safety net: the block-count estimate can be slightly off
+      // (e.g. main-doc preamble vs body), so never show >100% or a negative ETA.
+      val frac = if totalUnits > 0 then math.min(1.0, doneUnits.toDouble / totalUnits) else 0.0
+      val w = 24; val n = (frac * w).toInt
+      val bar = "#" * n + "-" * (w - n)
+      val elapsed = now - startMs
+      val eta = if doneUnits > 0 then math.max(0L, ((elapsed.toDouble / doneUnits) * (totalUnits - doneUnits)).toLong) else 0L
+      print(f"\r  [$bar] ${(frac * 100).toInt}%3d%%  $doneUnits/$totalUnits  model=$modelCalls cache=${cache.size} fb=$fallbacks  ${fmt(elapsed)} ETA ${fmt(eta)}  $label        ")
+      System.out.flush()
+      // ALSO write the same status to a file, so a long run can be monitored live even when stdout is
+      // buffered (e.g. `sbt --client` only flushes at completion). Throttled with the bar (≤ every 800ms),
+      // a tiny overwrite — no throughput impact. Best-effort: never let a write error abort the run.
+      saveRoot.foreach: r =>
+        try os.write.over(r / "autotranslate" / "scratch" / "progress.txt",
+          f"${(frac * 100).toInt}%3d%%  $doneUnits/$totalUnits blocks  model=$modelCalls cache=${cache.size} fb=$fallbacks  elapsed ${fmt(elapsed)} ETA ${fmt(eta)}  at: $label\n")
+        catch case _: Throwable => ()
+
+  /** Translate a whole .tex body: mask → segment (paragraphs) → translate each masked segment
+    * (skip pure-markup segments) → rejoin → restore. \Eng{...} is stripped on the en side.
+    * Updates the global progress bar so long runs show %/counts/ETA. */
+  private val placeRe = raw"__C\d+__".r
+
+  /** Length of the leading run of [whitespace | placeholder] (structural prefix the model must not touch). */
+  private def leadLen(b: String): Int =
+    var i = 0; var changed = true
+    while changed do
+      changed = false
+      while i < b.length && b(i).isWhitespace do { i += 1; changed = true }
+      placeRe.findPrefixMatchOf(b.substring(i)) match
+        case Some(m) => i += m.end; changed = true
+        case None    => ()
+    i
+
+  /** Start index of the trailing run of [whitespace | placeholder] (structural suffix to preserve). */
+  private def trailStart(b: String): Int =
+    var i = b.length; var changed = true
+    while changed do
+      changed = false
+      while i > 0 && b(i - 1).isWhitespace do { i -= 1; changed = true }
+      placeRe.findAllMatchIn(b.substring(0, i)).toList.lastOption match
+        case Some(m) if m.end == i => i = m.start; changed = true
+        case _                     => ()
+    i
+
+  /** Translate a segment, keeping ALL boundary structure deterministic: peel the leading and
+    * trailing runs of whitespace+placeholders (e.g. `\item`, `\end{itemize}`, and the NEWLINES
+    * between them — beamer fragile frames need `\end{...}` at line start) and translate only the
+    * prose core. The model thus cannot move structural tokens or alter the whitespace around them. */
+  private def translateBlock(b: String, spans: IndexedSeq[String], collapseEmph: Boolean = false): String =
+    val lead = leadLen(b)
+    val trail = trailStart(b)
+    if trail <= lead then b // all whitespace/placeholders, no prose
+    else
+      val core = b.substring(lead, trail)
+      if !Latex.hasText(core) then b
+      else
+        // CONTRIBUTOR OVERRIDE (highest precedence): match the unit's CLEAN (unmasked) Swedish, so
+        // overrides.tsv keys are plain Swedish exactly as in the source — no internal __C0__ forms.
+        // The override value is used verbatim (the contributor writes natural English incl. any LaTeX),
+        // so it also works for units that contain inline commands.
+        val clean = Latex.restore(core, spans).trim
+        overrides.get(clean) match
+          case Some(en) => overrideHits += 1; b.substring(0, lead) + en + b.substring(trail)
+          case None     =>
+            val willModel = captureSuggestions && sourceOf(core) == "model"
+            val en = translate(core)
+            if willModel then suggestions += (("tex", currentLabel, clean, Latex.restore(en, spans).trim))
+            // TIER-2 RETRY: the exposed-emphasis translation fell back (still Swedish) on a unit WITH
+            // inline emphasis → re-translate with emphasis collapsed to single placeholders (child-
+            // translated). Tier-1 (exposed) keeps in-context grammar for the units that succeed; only
+            // the placeholder-dense fallbacks pay the isolated-emphasis cost.
+            if !collapseEmph && Code.swedishish(Latex.restore(en, spans)) && Latex.hasEmphArg(clean) then
+              b.substring(0, lead) + translateRegion(Latex.restore(core, spans), currentLabel, collapseEmph = true) + b.substring(trail)
+            else
+              if dumpFallbacks && Code.swedishish(Latex.restore(en, spans)) then
+                // ALL files (slides + compendium): record the unit's EXACT clean Swedish key (the override
+                // key) + its still-Swedish output, so --sweep-fallbacks is a reliable Overrides-key source.
+                suggestions += (("sv-fallback", currentLabel, clean, Latex.restore(en, spans).trim))
+              b.substring(0, lead) + en + b.substring(trail)
+
+  /** Translate one region (mask -> segment -> translate prose blocks -> restore). */
+  private def translateRegion(region: String, label: String, collapseEmph: Boolean = false): String =
+    currentLabel = label
+    val (masked, spans, itemIdx) = Latex.mask(region, stripEng = true, collapseEmph = collapseEmph)
+    val (blocks, seps) = Latex.segmentMasked(masked, itemIdx, Latex.separatorIdx(spans))
+    val translated = Array.from[String](blocks)
+    for k <- blocks.indices do
+      if Latex.hasText(blocks(k)) then
+        translated(k) = translateBlock(blocks(k), spans, collapseEmph)
+        // Count ONLY top-level blocks toward progress: countTextBlocks (the denominator) counts top-level
+        // blocks, so the tier-2 emphArg children (recursive translateRegion with collapseEmph=true) must
+        // NOT increment doneUnits — else doneUnits exceeds the total and the bar reads >100%.
+        if !collapseEmph then doneUnits += 1
+        printBar(label, force = false) // still refresh display often (model/cache/fb update during children)
+    val sb = StringBuilder()
+    for k <- blocks.indices do
+      sb ++= translated(k); if k < seps.size then sb ++= seps(k)
+    // When emphasis was collapsed (tier-2), translate each \Emph/\Alert/... span's inner text as a child
+    // unit. No-op under tier-1 (exposed) masking, where emphasis isn't a whole-command span.
+    val finalSpans = if !collapseEmph then spans
+      else spans.map(sp => Latex.reEmphArg(sp, child => translateRegion(child, label, collapseEmph = true)))
+    Latex.restore(sb.toString, finalSpans)
+
+  /** Translate a .tex body. For a MAIN document, ONLY the matter between \begin{document} and
+    * \end{document} is translated: the preamble (\documentclass, \usepackage[..]{..}, \geometry,
+    * lengths, macro setup, ...) is pure LaTeX, not prose, and translating it mangles the build
+    * (\usepackage[swedish]{babel} -> "\usepackage Scala{babel}" -> File `S.sty' not found). Any
+    * post-\end{document} matter is preserved too. \input fragments (no \begin{document}) translate
+    * whole — that is where the real content lives. */
+  def translateTex(body: String, label: String = ""): String =
+    val bTok = "\\begin{document}"
+    val bi = body.indexOf(bTok)
+    // Only a REAL main doc (first non-comment line is \documentclass) uses the preamble/body split. A
+    // slide-body \input FRAGMENT may contain \begin{document} as VERBATIM EXAMPLE text (the dod:latex
+    // lecture shows document structure) — the naive split then treats the whole real slide body BEFORE
+    // that example as "preamble" and skips translating it. Gate on \documentclass to avoid that.
+    val isMainDoc = body.linesIterator.map(_.trim).find(l => l.nonEmpty && !l.startsWith("%"))
+      .exists(_.startsWith("\\documentclass"))
+    if bi < 0 || !isMainDoc then translateRegion(body, label) // fragment: translate the whole body
+    else
+      val bodyStart = bi + bTok.length
+      val ei = body.lastIndexOf("\\end{document}")
+      if ei < bodyStart then
+        body.substring(0, bodyStart) + translateRegion(body.substring(bodyStart), label)
+      else
+        body.substring(0, bodyStart) + translateRegion(body.substring(bodyStart, ei), label) + body.substring(ei)
+
+  /** HD2 HYBRID (BR-approved 2026-07-01): translate COMMENTS + Swedish STRING LITERALS inside inline code
+    * environments (Code/CodeSmall/REPL/…) using the SAME `Code.translate` as the .scala assets — identifiers
+    * are kept verbatim (their translation is the job of the source-side `\ifswedish` id-glossary clamps).
+    * Runs on the MIRROR only (wired in Main.mirror), so the Swedish source is untouched and the sv build is
+    * unaffected. Composes with apply-b0d clamps: it also translates the comments inside an `\else`
+    * (English-identifier) branch, completing that branch to fully-English code. This closes the gap where
+    * inline code-env prose was translated by NEITHER the id-glossary NOR Code.translate (see the plan note).
+    * Code envs do not nest, so a non-greedy DOTALL match to the matching `\end{env}` is exact. */
+  // Scala-code envs whose identifiers are safe to rename via CodeGlossary. NOT all codeEnvs: tikz/pgf/forest
+  // (node NAMES / \foreach vars) and algorithm (keyword macros) would break refs/macros if renamed (see the
+  // Latex.verbatimEnvs notes). exlatex/envi (raw LaTeX examples), comment, verbatim/Verbatim also excluded.
+  private val scalaCodeEnvs = Set("Code", "CodeSmall", "REPL", "REPLnonum", "REPLsmall", "lstlisting", "Trace", "Output")
+  private val inlineCodeRe = raw"\\(code|jcode|lstinline)\{([^}]*)\}".r
+
+  /** After prose translation, translate the PROSE inside inline code + code ENVs (comments + Swedish strings,
+    * via Code.translate) AND — Option-D via the mirror — rename Swedish identifiers via CodeGlossary in the
+    * Scala-code envs and inline \code{}/\jcode{}/\lstinline{}. Identifier rename is ENGLISH-ONLY (the Swedish
+    * source is untouched, so no \ifswedish clamp is needed for it); it uses CodeGlossary.renderCodeIds
+    * (code-region-aware, id-only). `relPath` (mirror-relative) selects per-file overrides / opt-out
+    * (CodeGlossary.perFileId / optOut) so a context conflict (e.g. a colour `Färg`) can deviate. */
+  def translateCodeEnvBodies(tex: String, relPath: String = ""): String =
+    val extraId = CodeGlossary.overridesFor(relPath)
+    val doIds = !CodeGlossary.isOptedOut(relPath)
+    // Leave code inside `\ifswedish...\fi` clamps alone: both branches are hand-final, so translating there
+    // would mutate the Swedish branch into a mixed listing (e.g. `def makeNoise` next to `print(läte*2)` in the
+    // hand-clamped Fyle example). Ranges computed on the ORIGINAL text; matches keep their original offsets
+    // because replaceAllIn scans left-to-right and we test m.start against the pre-substitution positions.
+    val protectedRanges = Latex.ifswedishRanges(tex)
+    def clamped(pos: Int): Boolean = protectedRanges.exists(r => pos >= r.start && pos < r.end)
+    val envAlt = codeEnvs.toSeq.map(java.util.regex.Pattern.quote).mkString("|")
+    val re = ("(?s)(\\\\begin\\{(" + envAlt + ")\\})(.*?)(\\\\end\\{\\2\\})").r
+    val withEnvs = re.replaceAllIn(tex, m =>
+      if clamped(m.start) then java.util.regex.Matcher.quoteReplacement(m.matched)
+      else
+        val body = if doIds && scalaCodeEnvs(m.group(2)) then CodeGlossary.renderCodeIds(m.group(3), extraId) else m.group(3)
+        java.util.regex.Matcher.quoteReplacement(m.group(1) + Code.translate(body, translatePlain, skipTexComments = true) + m.group(4)))
+    if !doIds then withEnvs
+    else
+      // the env pass changed lengths, so recompute clamp ranges against `withEnvs` for the inline pass.
+      val inlineRanges = Latex.ifswedishRanges(withEnvs)
+      def clampedInline(pos: Int): Boolean = inlineRanges.exists(r => pos >= r.start && pos < r.end)
+      inlineCodeRe.replaceAllIn(withEnvs, m =>
+        if clampedInline(m.start) then java.util.regex.Matcher.quoteReplacement(m.matched)
+        else java.util.regex.Matcher.quoteReplacement(s"\\${m.group(1)}{" + CodeGlossary.renderCodeIds(m.group(2), extraId) + "}"))
+
+  // ---------- lifecycle ----------
+  /** Load cache and make sure the model is ready (called before mirror translation).
+    * Overrides need no loading — they are compiled in (Overrides.overridingTranslations). */
+  def init(root: os.Path, withModel: Boolean = true): Unit =
+    modelCalls = 0; fallbacks = 0; overrideHits = 0; sinceSave = 0
+    saveRoot = Some(root) // enable incremental cache flushing
+    try os.write.over(root / "autotranslate" / "scratch" / "model-calls.txt", "") catch case _: Throwable => ()
+    loadCache(root)
+    if withModel then resolveBackend()
+    else
+      backend = Backend.Offline
+      if cacheOnly then println("  [cache-only] backend disabled — uncached units keep Swedish; cache is NOT written back")
+      else println("  [dryrun] backend disabled — all units kept Swedish (pipeline structural test)")
+    println(s"  translate init: concepts=${concepts.size} authoritative=${authoritative.size} " +
+      s"overrides=${overrides.size} cache=${cache.size} threads=$numThreads")
+
+  // ---------- commands ----------
+  def clean(root: os.Path): Unit =
+    val f = cacheFile(root)
+    if os.exists(f) then { os.remove(f); println(s"autotranslate --clean: removed $f (next run re-translates from scratch)") }
+    else println(s"autotranslate --clean: no cache to remove at $f")
+
+  /** Quick, MODEL-FREE progress metric for the Overrides ralph-loop (see handover-to-codex.md): count the
+    * DISTINCT Swedish-looking lines remaining in the generated `-en` mirrors, reusing `Code.swedishish`
+    * (the same åäö + Swedish-stop-word notion the translator uses to decide what to translate). Scans the
+    * already-generated `-en` .tex (run after a `--all` pass); prints the corpus total + the worst files so
+    * the loop can target them and watch the number fall. */
+  // Verbatim/code environments whose body is NOT reader-facing PROSE — Swedish inside is accepted code
+  // residual, so the prose gauge skips them (de-noised metric, 2026-06-29).
+  // Envs whose body is NON-prose and must be excluded from the prose gauge. SINGLE SOURCE OF TRUTH:
+  // the exact set Latex.mask masks WHOLE (so it is never a translation unit) — incl. algorithm (pseudocode
+  // kept Swedish for build safety), tikz/forest diagrams, and all code/REPL variants — plus the REPL
+  // Trace/Output envs. Previously this list omitted algorithm/tikz, so algorithm pseudocode leaked into the
+  // prose gauge and --prose-leaks as false "fixable prose" (it is accepted, deliberately-Swedish residual).
+  private val codeEnvs = Latex.verbatimEnvs ++ Set("Trace", "Output")
+  private val beginEnvRe = raw"\\begin\{([A-Za-z*]+)\}".r
+  private val endEnvRe = raw"\\end\{([A-Za-z*]+)\}".r
+  /** Render the ENGLISH side of `\ifswedish A \else B \fi` (= `B`) and `\ifswedish A \fi` (= dropped) — i.e.
+    * exactly what the en build emits under `\swedishfalse`, so the gauge counts only Swedish that actually
+    * renders in English. Handles INLINE and MULTI-LINE clamps uniformly (scans the whole text), nesting-
+    * aware. Returns (renderedText, number-of-`\ifswedish` clamps). */
+  def renderEnglishSide(text: String): (String, Int) =
+    val sb = new StringBuilder
+    val n = text.length
+    def isLetter(k: Int) = k < n && text(k).isLetter
+    var i = 0
+    var count = 0
+    while i < n do
+      val idx = text.indexOf("\\ifswedish", i)
+      if idx < 0 then { sb.append(text.substring(i)); i = n }
+      else
+        sb.append(text.substring(i, idx)); count += 1
+        var j = idx + 10 // past "\ifswedish"
+        var depth = 0; var elsePos = -1; var fiStart = -1
+        while fiStart < 0 && j < n do
+          if text.startsWith("\\fi", j) && !isLetter(j + 3) then
+            if depth == 0 then fiStart = j else { depth -= 1; j += 3 }
+          else if text.startsWith("\\else", j) && !isLetter(j + 5) then { if depth == 0 then elsePos = j; j += 5 }
+          else if text.startsWith("\\if", j) && isLetter(j + 3) then { depth += 1; j += 3 } // nested \ifX
+          else j += 1
+        if fiStart < 0 then { sb.append(text.substring(idx)); i = n } // unmatched — keep verbatim
+        else
+          if elsePos >= 0 then sb.append(text.substring(elsePos + 5, fiStart)) // the \else (English) branch
+          i = fiStart + 3
+    (sb.toString, count)
+
+  /** Reader-facing PROSE lines: drop `%`-comment lines (never rendered) and code/verbatim env bodies
+    * (accepted code residual). Run on text already passed through `renderEnglishSide`, so `\ifswedish` SV
+    * branches are already gone (inline + multi-line). */
+  private def proseLines(raw: Iterable[String]): Vector[String] =
+    val out = mutable.ArrayBuffer[String]()
+    var depth = 0
+    for line <- raw do
+      val t = line.trim
+      val begins = beginEnvRe.findAllMatchIn(t).map(_.group(1)).count(codeEnvs.contains)
+      val ends = endEnvRe.findAllMatchIn(t).map(_.group(1)).count(codeEnvs.contains)
+      val insideBefore = depth > 0
+      depth = math.max(0, depth + begins - ends)
+      if t.nonEmpty && !t.startsWith("%") && !insideBefore && begins == 0 then out += t
+    out.toVector
+
+  /** PROSE lines of one generated file, English-side-rendered. Returns (prose lines, #`\ifswedish` clamps). */
+  private def proseFromFile(f: os.Path): (Vector[String], Int) =
+    val (eng, ifCount) = renderEnglishSide(os.read(f))
+    (proseLines(eng.linesIterator.toSeq), ifCount)
+
+  /** Dump the actual Swedish PROSE lines of ONE generated -en file (comments + code blocks excluded) —
+    * the spotting tool for the Overrides loop: shows exactly which prose to fix in a target file. */
+  def dumpSwedishProse(root: os.Path, relpath: String): Unit =
+    val f = os.Path(relpath, root)
+    if !os.exists(f) then { println(s"  [swedish-lines] no file at $f"); return }
+    val (lines, clamps) = proseFromFile(f)
+    val sw = lines.filter(Code.swedishish).distinct
+    println(s"  ${sw.size} Swedish prose lines in $relpath ($clamps \\ifswedish clamps, interiors excluded):")
+    sw.foreach(l => println(s"    $l"))
+
+  private val placeholderRe = raw"__C\d+__".r
+
+  // Gauge-only proper-noun / place allowlist (V-bucket false-positive cure). These carry å/ä/ö INSIDE an
+  // ASCII-letter word (so the de-lettering run-strip below does not remove them) but are NOT fixable prose —
+  // Swedish/Nordic author+contributor names and town names that are correctly KEPT verbatim in English prose.
+  // Stripped BEFORE the swedishish test in `proseLeak`, so a line whose ONLY "Swedish" is a proper noun stops
+  // being counted as a leak. This affects ONLY the leak gauge; it does NOT touch Code.swedishish as used by the
+  // code-string translator, so no real translation behaviour changes. (Culture-specific place names that should
+  // be RE-THEMED for the EN edition are a separate concern handled by \ifswedish culture clamps, not the gauge.)
+  private val gaugeProperNouns = Seq(
+    "Björn", "Regnell", "Flisbäck", "Åradsson", "Löfgren", // author + contributor names
+    "Luleå", "Brunnshög", "Skåne", "Linköping", "Malmö")   // place names kept verbatim in EN prose
+
+  /** TRUE-prose-leak discriminator. Mask a single prose line via Latex.mask (which replaces inline code
+    * spans `\code`/`\jcode`/`\lstinline`/`\verb`, math, `\Eng`, and braces with `__C<n>__` placeholders),
+    * strip the placeholders, and re-test Code.swedishish on what remains. Some(strippedProse) iff the
+    * line is a REAL fixable prose leak; None iff its Swedish lived ONLY inside masked (deferred) code
+    * identifiers. This removes the code-identifier overcount that --swedish-lines/--swedish-left has:
+    * `öka`/`minska`/Kojo turtle verbs inside `\code{}` no longer count as prose to fix. */
+  private def proseLeak(line: String): Option[String] =
+    val (masked, _, _) = Latex.mask(line, stripEng = true)
+    val stripped = placeholderRe.replaceAllIn(masked, " ").replaceAll("\\s+", " ").trim
+    // False-positive guard: English prose that merely MENTIONS the letters (e.g. "the sort order of Ä, Å, Ö"
+    // or a RUN like "ÄÅÖ") is swedishish only via standalone å/ä/ö letters. Remove standalone RUNS of å/ä/ö
+    // (bounded by non-ASCII-letters, so `ÄÅÖ`/`Ä, Å, Ö` both go) before the test, so it fires only on real
+    // Swedish words (för, många, plats...) where å/ä/ö sit inside an ASCII-letter word.
+    // (Java `(?i)` does NOT unicode-case-fold, so `[åäö]` alone misses uppercase ÅÄÖ — list both cases.)
+    // Strip LaTeX metavariable placeholders <word> (e.g. do <satser> while <villkor>) that survive
+    // code-masking when they sit OUTSIDE a \code{} span — pseudocode syntax, not prose. SM018 FP fix:
+    // w04-objects "do <satser> while <villkor> where <satser> are executed…" is English instructional
+    // prose. (`<=`/`<-` have a non-letter after `<`, so this only removes letter-only placeholders.)
+    val deMeta = stripped.replaceAll("<[A-Za-zåäöÅÄÖ]+>", " ")
+    val deLettered = deMeta.replaceAll("(?<![a-zA-Z])[åäöÅÄÖ]+(?![a-zA-Z])", "")
+    // also drop known proper nouns (people/places) so a line whose only Swedish signal is a name is not a leak
+    val deNamed = gaugeProperNouns.foldLeft(deLettered)((s, nm) => s.replace(nm, " "))
+    if stripped.nonEmpty && Code.swedishish(deNamed) then Some(stripped) else None
+
+  /** --prose-leaks <relpath>: list ONLY the TRUE prose leaks of one -en file, with inline code spans
+    * masked out, so the Overrides loop targets fixable prose and NOT deferred code identifiers. Prints
+    * each leak's original prose line and, indented, the code-stripped form that is still Swedish (the
+    * actual text to translate via an Overrides.scala entry). */
+  def dumpProseLeaks(root: os.Path, relpath: String): Unit =
+    val f = os.Path(relpath, root)
+    if !os.exists(f) then { println(s"  [prose-leaks] no file at $f"); return }
+    val (lines, clamps) = proseFromFile(f)
+    val leaks = lines.distinct.flatMap(l => proseLeak(l).map(s => (l, s)))
+    val head = s"  ${leaks.size} TRUE prose leaks in $relpath ($clamps \\ifswedish clamps, inline code spans masked):"
+    val body = leaks.map { case (orig, stripped) => s"    $orig\n        -> $stripped" }.mkString("\n")
+    val report = s"$head\n$body\n"
+    print(report)
+    val out = root / "autotranslate" / "scratch" / "prose-leaks-report.txt"
+    os.write.over(out, report)
+    println(s"  (report also written to ${out.relativeTo(root)})")
+
+  /** --prose-leaks (no file): corpus priority list — per-file TRUE-prose-leak counts across slides-en +
+    * compendium-en, sorted desc. The REAL grind priority (vs --swedish-left, which overcounts deferred
+    * code identifiers). Counts are distinct-per-file then summed — a priority signal, not a global %. */
+  def proseLeakCorpus(root: os.Path): Int =
+    val perFile = mutable.ArrayBuffer[(String, Int)]()
+    var total = 0
+    for dir <- Seq("slides-en", "compendium-en"); d = root / dir if os.exists(d)
+        f <- os.walk(d) if os.isFile(f) && f.ext == "tex"
+    do
+      val (lines, _) = proseFromFile(f)
+      val n = lines.distinct.flatMap(proseLeak).size
+      if n > 0 then { perFile += ((f.relativeTo(root).toString, n)); total += n }
+    val head = s"  prose-leaks corpus: $total TRUE prose-leak lines across ${perFile.size} files (inline code spans masked):"
+    val body = perFile.sortBy(-_._2).map((p, c) => f"    $c%4d  $p").mkString("\n")
+    val report = s"$head\n$body\n"
+    print(report)
+    val out = root / "autotranslate" / "scratch" / "prose-leaks-corpus.txt"
+    os.write.over(out, report)
+    println(s"  (report also written to ${out.relativeTo(root)})")
+    total
+
+  /** --prose-leaks-dump (no file): corpus-wide dump of EVERY true prose-leak line across slides-en +
+    * compendium-en, grouped by file in priority (count-desc) order, each with its code-stripped Swedish
+    * form. proseLeakCorpus gives per-file COUNTS and dumpProseLeaks gives ONE file's lines; this gives the
+    * whole corpus's lines in one report — the input for categorizing leaks (author-sensitive / mechanical /
+    * structural) without 70 single-file invocations. Analysis-only (emits a report; no translation). */
+  def proseLeakDump(root: os.Path): Unit =
+    val files = mutable.ArrayBuffer[(String, Vector[(String, String)])]()
+    var total = 0
+    for dir <- Seq("slides-en", "compendium-en"); d = root / dir if os.exists(d)
+        f <- os.walk(d) if os.isFile(f) && f.ext == "tex"
+    do
+      val (lines, _) = proseFromFile(f)
+      val leaks = lines.distinct.flatMap(l => proseLeak(l).map(s => (l, s)))
+      if leaks.nonEmpty then { files += ((f.relativeTo(root).toString, leaks)); total += leaks.size }
+    val sorted = files.sortBy(-_._2.size)
+    val sb = new StringBuilder
+    sb.append(s"  prose-leaks dump: $total TRUE prose-leak lines across ${sorted.size} files (inline code spans masked):\n")
+    for (path, leaks) <- sorted do
+      sb.append(s"\n=== ${leaks.size}  $path ===\n")
+      for (orig, stripped) <- leaks do sb.append(s"    $orig\n        -> $stripped\n")
+    val report = sb.toString
+    print(report)
+    val out = root / "autotranslate" / "scratch" / "prose-leaks-dump.txt"
+    os.write.over(out, report)
+    println(s"  (report also written to ${out.relativeTo(root)})")
+
+  def checkHowMuchSwedishLeft(root: os.Path): Unit =
+    val all = mutable.LinkedHashSet[String]()      // distinct Swedish PROSE lines (rendered English side)
+    val allLines = mutable.LinkedHashSet[String]() // distinct PROSE lines (the % denominator)
+    val perFile = mutable.ArrayBuffer[(String, Int)]()
+    var clamps = 0                                 // total \ifswedish clamps (reporting feature)
+    for dir <- Seq("slides-en", "compendium-en"); d = root / dir if os.exists(d)
+        f <- os.walk(d) if os.isFile(f) && f.ext == "tex" // PROSE gauge: .tex only (code Swedish is accepted residual)
+    do
+      val (lines, ifCount) = proseFromFile(f) // English-side rendered: \ifswedish SV interiors excluded
+      clamps += ifCount
+      val sw = lines.filter(Code.swedishish).distinct
+      if sw.nonEmpty then perFile += ((f.relativeTo(root).toString, sw.size))
+      all ++= sw; allLines ++= lines
+    val total = allLines.size
+    val pct = if total == 0 then 0.0 else all.size * 100.0 / total
+    if all.isEmpty then println(s"  swedish-left: 0% prose — fully English ✅ ($total distinct prose lines, ${perFile.size} files; $clamps \\ifswedish clamps)")
+    else println(f"  swedish-left: $pct%.1f%% Swedish PROSE — ${all.size}/$total distinct lines (comments + code + $clamps \\ifswedish-clamp interiors excluded), ${perFile.size} files")
+    perFile.sortBy(-_._2).take(20).foreach((p, c) => println(f"    $c%4d  $p"))
+
+  // ---- --prose-swedish : prose-only Swedish gauge (SM018) ----------------------------------------
+  // Glossary constructs whose Swedish is DELIBERATELY bilingual (pedagogical ground truth) — excluded
+  // from the leak count and tagged [glossary]. DRAFT list, PENDING BR ratification (the SM018 exclusion-
+  // policy gate): prose-leaks-worklist.md triaged \TermItem as fixable (M) while plan §1 calls it accepted
+  // residual, so it is BR's call. Explicit + reviewable (BR's design rule: no regex heuristics).
+  val glossaryCommands = Seq("\\TermItem")
+  private def isGlossaryLine(line: String): Boolean =
+    val t = line.trim; glossaryCommands.exists(t.contains)
+
+  /** --prose-swedish: prose-only Swedish gauge (SM018). Numerator = TRUE prose leaks (proseLeak: inline
+    * code masked, names + åäö-runs allowlisted); denominator = all distinct reader-facing prose lines
+    * (English-side rendered via renderEnglishSide, code/verbatim envs + %-comments excluded, glossary
+    * excluded). Reports leak-lines / prose-lines = X.XX% and writes a deterministic, sorted, tagged dump
+    * (scratch/prose-swedish-dump.txt: [leak]/[allowed]/[glossary]). Model-free, read-only — no cache or
+    * source mutation, same class as --prose-leaks. */
+  def proseSwedish(root: os.Path): Unit =
+    val allProse = mutable.LinkedHashSet[String]()               // distinct non-glossary prose (the denominator)
+    val perFile = mutable.ArrayBuffer[(String, Int)]()           // (path, leakCount) for the stdout table
+    val leakDump = mutable.ArrayBuffer[(String, Vector[(String, String)])]()
+    val allowedLines = mutable.ArrayBuffer[(String, String)]()   // (file, line) accepted-residual, tagged
+    val glossaryLines = mutable.ArrayBuffer[(String, String)]()  // (file, line) glossary, tagged
+    var totalLeaks = 0; var totalAllowed = 0; var totalGlossary = 0; var clamps = 0
+    for dir <- Seq("slides-en", "compendium-en"); d = root / dir if os.exists(d)
+        f <- os.walk(d) if os.isFile(f) && f.ext == "tex"
+    do
+      val rel = f.relativeTo(root).toString
+      val (lines, ifCount) = proseFromFile(f)                    // English-side rendered; code envs + %-comments dropped
+      clamps += ifCount
+      val leaks = mutable.ArrayBuffer[(String, String)]()
+      for line <- lines.distinct do
+        if isGlossaryLine(line) then { totalGlossary += 1; glossaryLines += ((rel, line)) }
+        else
+          allProse += line
+          proseLeak(line) match
+            case Some(stripped) => leaks += ((line, stripped))
+            case None           => if Code.swedishish(line) then { totalAllowed += 1; allowedLines += ((rel, line)) }
+      if leaks.nonEmpty then { leakDump += ((rel, leaks.toVector)); perFile += ((rel, leaks.size)) }
+      totalLeaks += leaks.size
+    val denom = allProse.size
+    val pct = if denom == 0 then 0.0 else totalLeaks * 100.0 / denom
+    // ---- stdout: summary + per-file leak-count table (the loop reads the headline number) ----
+    println(f"  prose-swedish gauge: $totalLeaks [leak] / $denom prose lines = $pct%.2f%% reader-facing prose Swedish")
+    println(f"    + $totalAllowed [allowed] accepted-residual, $totalGlossary [glossary] excluded, $clamps \\ifswedish clamps")
+    println( "    DRAFT gauge — glossary/allowed exclusion PENDING BR ratification (SM018 gate); model-free, read-only.")
+    perFile.sortBy(-_._2).take(25).foreach((p, c) => println(f"    $c%4d  $p"))
+    // ---- file: full deterministic, sorted, tagged dump (the evidence ledger) ----
+    val sb = new StringBuilder
+    sb.append(f"prose-swedish gauge: $totalLeaks [leak] / $denom prose lines = $pct%.2f%% reader-facing prose Swedish\n")
+    sb.append(f"  + $totalAllowed [allowed], $totalGlossary [glossary] excluded, $clamps \\ifswedish clamps\n")
+    sb.append("  glossaryCommands (DRAFT, pending BR ratification): " + glossaryCommands.mkString(", ") + "\n")
+    sb.append("\n=== [leak] lines by file (count desc) — the grind worklist ===\n")
+    for (path, ls) <- leakDump.sortBy(-_._2.size) do
+      sb.append(s"\n--- ${ls.size}  $path ---\n")
+      for (orig, stripped) <- ls do sb.append(s"  [leak] $orig\n         -> $stripped\n")
+    sb.append("\n=== [allowed] accepted-residual (swedishish, but only names / code / example-data) ===\n")
+    for (rel, line) <- allowedLines.sortBy(x => (x._1, x._2)) do sb.append(s"  [allowed] $rel :: $line\n")
+    sb.append("\n=== [glossary] excluded (deliberately bilingual; DRAFT — pending BR ratification) ===\n")
+    for (rel, line) <- glossaryLines.sortBy(x => (x._1, x._2)) do sb.append(s"  [glossary] $rel :: $line\n")
+    val out = root / "autotranslate" / "scratch" / "prose-swedish-dump.txt"
+    os.write.over(out, sb.toString)
+    println(s"  (full tagged dump -> ${out.relativeTo(root)})")
+
+  /** Insourced PDF Swedish scan (was scratch/pdf-swedish.scala): pdftotext → the fraction of DISTINCT
+    * non-empty lines that `Code.swedishish` flags. The *En build tasks call this so they ALWAYS report
+    * how close to 0% we are. Prints a clear `0% — fully English ✅` or `X.X% Swedish ⚠`; writes the full
+    * Swedish-line list next to the PDF (swedish-<name>.txt) for inspection. Fail-safe (no pdftotext → skip). */
+  def pdfSwedish(root: os.Path, pdfStr: String): Unit =
+    val pdf = os.Path(pdfStr, root)
+    if !os.exists(pdf) then { println(s"  [swedish] no PDF at $pdf"); return }
+    // pdftotext is OPTIONAL: if the binary is missing OR exits non-zero, just WARN (with install hint) and
+    // skip the report — never throw, so a `--pdf-swedish` / *En build is NEVER killed by a missing tool.
+    val res =
+      try os.proc("pdftotext", "-layout", pdf.toString, "-").call(check = false)
+      catch case _: Throwable =>
+        println("  [swedish] WARNING: 'pdftotext' not found — install it for the Swedish-% report " +
+          "(e.g. `sudo apt install poppler-utils`); skipping (build NOT affected).")
+        return
+    if res.exitCode != 0 then
+      println(s"  [swedish] WARNING: pdftotext failed (exit ${res.exitCode}) on ${pdf.last} — " +
+        "install/repair poppler-utils; skipping the Swedish-% report (build NOT affected).")
+      return
+    val lines = res.out.text().linesIterator.map(_.trim).filter(_.nonEmpty).toVector.distinct
+    val sw = lines.filter(Code.swedishish)
+    val pct = if lines.isEmpty then 0.0 else sw.size * 100.0 / lines.size
+    val outFile = pdf / os.up / s"swedish-${pdf.baseName}.txt"
+    os.write.over(outFile, if sw.isEmpty then "" else sw.mkString("\n") + "\n")
+    if sw.isEmpty then { println(s"  [swedish] ${pdf.last}: 0% — fully English ✅ (${lines.size} lines)"); os.remove(outFile) }
+    else
+      println(f"  [swedish] ${pdf.last}: $pct%.1f%% Swedish — ${sw.size}/${lines.size} distinct lines ⚠")
+      // Accepted residual is mostly Swedish in CODE examples (identifiers/strings). List the lines a human
+      // can fix at the source (grep the source tree for them): full list written next to the PDF.
+      println(s"            lines to fix (incl. code) -> ${outFile}")
+
+  /** P0 self-test: exercise the precedence + fallback on a few plain sentences. */
+  def selftest(root: os.Path): Unit =
+    println(s"autotranslate --selftest: seed=$Seed")
+    loadCache(root)
+    resolveBackend()
+    println(s"  concepts: ${concepts.size}, term pairs: ${termPairs.size}, authoritative sentences: ${authoritative.size}, " +
+      s"overrides: ${overrides.size}, cache: ${cache.size}")
+
+    val authSample = concepts.find(_.svLongExplanation.nonEmpty)
+    val samples: Seq[String] = Seq(
+      authSample.map(_.svLongExplanation).getOrElse("En klass är en mall för objekt."),
+      "En klass är en mall som beskriver struktur och beteende.",
+      "Detta är en enkel mening om programmering i Scala."
+    )
+    println("\n  --- translations ---")
+    for sv <- samples do
+      val tier = sourceOf(sv)
+      val en = translate(sv)
+      println(s"\n  [$tier] SV: ${sv.take(110)}${if sv.length > 110 then "…" else ""}")
+      println(s"          EN: ${en.take(110)}${if en.length > 110 then "…" else ""}")
+
+    saveCache(root)
+    println(s"\n  done. model calls: $modelCalls, fallbacks: $fallbacks, cache now: ${cache.size}")
+    if modelCalls == 0 then println("  (no model calls — everything came from authoritative/override/cache)")

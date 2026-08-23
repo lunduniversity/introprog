@@ -1,0 +1,200 @@
+# Swedish CLOSED-CLASS function words, for detecting untranslated Swedish PROSE.
+#
+# WHY function words and not a big Swedish dictionary. The rows we test are mostly cache entries where
+# key == value, and words are identical in both languages precisely when they are SHARED (program, data,
+# text, index, problem, system, start, test, int). A big inclusive Swedish list contains those, so it
+# would flag correct rows as Swedish and purge them. Function words barely overlap with English, appear
+# in essentially every Swedish sentence, and can be audited by eye. Generalises the 10-word list already
+# proven in scratch/swedish-scan.scala.
+#
+# THE ERROR ASYMMETRY THIS IS TUNED FOR. A miss (stale row kept) costs nothing: it stays Swedish, which
+# is the status quo. A false positive (correct row purged) costs a needless re-translation and risks the
+# model returning something worse than a correctly-identical term. So this list is PRECISION-FIRST:
+# when in doubt, leave a word out. Recall is not the goal.
+#
+# Format: one word per line, lowercase. `#` starts a comment. Blank lines ignored. Matching is
+# whole-word and case-insensitive.
+#
+# ============================================================================================
+# DELIBERATELY EXCLUDED. These are ordinary Swedish function words that a normal stop-word list
+# WOULD include, and that are actively dangerous in a PROGRAMMING textbook. Do not add them back
+# without reading this:
+#
+#   var    Scala/Java keyword, in nearly every code listing
+#   min    min/max, a function name in every language
+#   sin    trigonometry, and a Scala method
+#   i      the universal loop variable
+#   du     the Unix disk-usage command
+#   vi     the editor
+#   man    English "man", and the Unix manual command
+#   men    English "men"
+#   under  English "under"
+#   till   English "till"
+#   in     English "in"
+#   er     English "er", and too short to be safe
+#
+# Rule of thumb: if a word is both a common Swedish function word AND plausible inside a Scala
+# listing or an English sentence, it does not belong here. Let the letters å/ä/ö and the suffix
+# rules carry those cases instead.
+# ============================================================================================
+
+# --- conjunctions and subjunctions ---
+och
+eller
+att
+som
+eftersom
+därför
+medan
+fastän
+ifall
+utan
+både
+antingen
+varken
+samt
+alltså
+dock
+därmed
+således
+
+# --- articles and determiners ---
+en
+ett
+den
+det
+de
+denna
+detta
+dessa
+någon
+något
+några
+ingen
+inget
+inga
+varje
+alla
+allt
+samma
+andra
+första
+sådan
+sådant
+sådana
+vilken
+vilket
+vilka
+
+# --- pronouns (collision-free ones only; see exclusions above) ---
+jag
+mig
+mitt
+mina
+dig
+din
+ditt
+dina
+han
+honom
+hans
+hon
+henne
+hennes
+oss
+vår
+vårt
+våra
+ni
+dem
+deras
+sig
+sitt
+sina
+själv
+själva
+varandra
+
+# --- auxiliaries and very common verbs ---
+är
+vara
+blir
+blev
+bli
+har
+hade
+haft
+kan
+kunde
+kunna
+ska
+skall
+skulle
+måste
+får
+fick
+vill
+ville
+bör
+borde
+
+# --- prepositions ---
+av
+på
+från
+för
+med
+vid
+om
+över
+mellan
+genom
+efter
+före
+mot
+utanför
+inuti
+enligt
+hos
+åt
+kring
+
+# --- adverbs and particles ---
+inte
+icke
+också
+bara
+endast
+mycket
+många
+fler
+mest
+här
+där
+när
+hur
+varför
+vad
+vem
+vart
+sedan
+redan
+ännu
+alltid
+aldrig
+ofta
+sällan
+kanske
+ganska
+nu
+då
+så
+ju
+väl
+nog
+tyvärr
+faktiskt
+egentligen
+istället
+dessutom
+exempelvis

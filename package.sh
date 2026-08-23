@@ -1,6 +1,6 @@
 # workspace is published in repo (should be in release only...)
 rm -i lib/workspace.zip
-zip -9 -r lib/workspace.zip -x="*target*" -x=*.class -x="workspace/project/*" -x="**/.*" -x="**/.scala-build" workspace
+zip -9 -r lib/workspace.zip -x="*target*" -x=*.class -x="workspace/project/*" -x="**/.*" -x="**/.scala-build" -x="**/*.aux"  -x="**/*.fdb_latexmk"  -x="**/*.fls"  -x="**/*.log"  -x="**/*.synctex.gz" workspace
 
 # kärt barn har många namn
 scp lib/workspace.zip $LUCATID@$WEB_REMOTE_LU:/Websites/Fileadmin/pgk/ws.zip

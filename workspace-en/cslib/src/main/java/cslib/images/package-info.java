@@ -1,0 +1,6 @@
+/**
+ * Bildbehandling.
+ */
+
+package cslib.images;
+

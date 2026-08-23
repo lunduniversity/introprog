@@ -67,7 +67,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
     ),
 
     QuizID("quiz-w02-concepts") -> Vector(  //programs
-      "kompilera      " -> "maskinkod skapas ur en eller flera källkodsfiler",
+      "kompilering    " -> "kod på lägre nivå skapas ur källkodsfiler",
       "skript         " -> "ensam kodfil, huvudprogram behövs ej",
       "objekt         " -> "samlar variabler och funktioner",
       "@main          " -> "där exekveringen av kompilerat program startar",
@@ -418,7 +418,7 @@ object QuizData {  // to generate tables for a concept connection quizes in late
       "dynamisk bindning"  -> "körtidstypen avgör vilken metod som körs",
       "polymorfism"        -> "kan ha många former, t.ex. en av flera subtyper",
       "trait"              -> "är abstrakt, kan mixas in, kan ha parametrar",
-      "inmixning"          -> "tillföra egenskaper med \\code|with| och en trait",
+      "inmixning"          -> "tillföra flera egenskaper genom arv av trait",
       "överskuggad medlem" -> "medlem i subtyp ersätter medlem i supertyp",
       "anonym klass"       -> "klass utan namn, utvidgad med extra implementation",
       "skyddad medlem"     -> "är endast synlig i subtyper",

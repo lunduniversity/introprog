@@ -59,9 +59,14 @@
           
     //def latexBodyRow(row: RowMap) = heading.map(row).mkString(""," & "," \\\\")
 
-    def latexTableBody: String = 
-      grid.map(latexBodyRowLastcolMulticolumnIfEmpty).mkString("\n")      
+    def latexTableBody: String =
+      grid.map(latexBodyRowLastcolMulticolumnIfEmpty).mkString("\n")
       // grid.map(latexBodyRow).mkString("\n")
+
+    /** Same as latexTableBody but for a caller-supplied grid (e.g. one whose cells were translated) —
+      * used to emit the English module-plan with translated concept terms. */
+    def latexTableBodyOf(g: Grid): String =
+      g.map(_.withDefaultValue(" ")).map(latexBodyRowLastcolMulticolumnIfEmpty).mkString("\n")
     
     def toLatex: String = 
       s"""|\\begin{tabular}${Seq.fill(heading.size)("l").mkString("{","|","}")}

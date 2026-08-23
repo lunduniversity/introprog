@@ -2,19 +2,65 @@ name: Build
 on:
   push:
     branches:
-      - main
+      - master
+  pull_request:
   workflow_dispatch:
 
 jobs:
+  # "Only compilable code should pass": every example .scala the mirror translates via CodeGlossary must
+  # still compile after the identifier rename (catches e.g. an s-interpolation left pointing at a renamed
+  # field). Runs from source (renders on the fly) — no mirror/texlive needed, so it's a fast, standalone gate.
+  Example-compile-gate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v5
+      - name: Setup scala-cli
+        uses: VirtusLab/scala-cli-setup@v1
+      - name: Compile gate for mirror example translation
+        run: scala-cli run autotranslate/scratch/verify-mirror-examples.scala -- .
+        shell: bash
+
+  # The English mirror must be fully reconstructible from the COMMITTED translate-cache.tsv with NO
+  # model backend -- that is what lets a cloner (and this runner) regenerate compendium-en/ offline.
+  # Catches CACHE DRIFT: Swedish prose edited without a following `--all`, which otherwise degrades
+  # the English side silently for everyone who regenerates it. Needs no texlive and no ollama, so
+  # it is a fast standalone gate. `--cache-only` is the no-flag default stated explicitly.
+  English-mirror-gate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v5
+
+      - name: Setup JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: sbt
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
+
+      - name: English mirror must resolve from the committed cache
+        run: sbt "autotranslateProject/run --cache-only"
+        shell: bash
+
   Compile-and-Build:
-    strategy:
-      matrix:
-        os: [ubuntu-22.04, ubuntu-20.04]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
+
+      - name: Setup JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
 
       - name: Setup dependencies
         run: |
@@ -42,7 +88,7 @@ jobs:
 #       this will upload generated pdfs as artifacts
 #       maybe we just want the compendium?
 #       - name: Upload PDF artifacts
-#         uses: actions/upload-artifact@v2
+#         uses: actions/upload-artifact@v4
 #         with:
 #           name: PDF
 #           path: ./*.pdf

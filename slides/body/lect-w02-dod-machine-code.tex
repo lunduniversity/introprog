@@ -1,0 +1,466 @@
+%!TEX encoding = UTF-8 Unicode
+%!TEX root = ../lect-w02-dod.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%BEGIN TODO: flytta dessa till alla cls-filer compendium.cls lecturenotes.cls etc
+% \newcommand{\ii}{\item}
+% \newcommand{\is}{\item}
+% \newcommand{\di}{\item}
+% \newcommand{\ts}{\textit}
+% \newcommand{\ti}{\textit}
+% \newcommand{\enquote}[1]{''#1''}
+% \newcommand{\halfblankline}{\vspace{0.5em}}
+% \newcommand{\blankline}{\vspace{1.0em}}
+% \newcommand{\commandchar}{\texttt}
+%%%END TODO
+%%%%copypejsted from lect-preamble-dod 
+
+\ifkompendium\else
+\begin{Slide}{Föreläsning: Maskinkod}
+
+          \ti{Förberedelse inför veckans dod-laboration!}
+
+        \halfblankline
+        \begin{itemize}
+            \ii{Vad är en dator?}
+            \ii{Binära tal}
+            \ii{CPU och Minne}
+            \ii{Maskinkod och instruktioner}
+            \ii{Assembly-språk}
+            \ii{Kompilerare och tolkar}
+            \ii{\emph{c3pu} -- används på laborationen}
+        \end{itemize}
+
+        \halfblankline
+
+\end{Slide}
+\fi
+
+\Subsection{Bakgrund}
+
+\begin{Slide}{Bakgrund}\SlideFontSmall
+    \begin{multicols}{2}
+            \ti{Varför lära sig Maskinkod?}
+
+            \blankline
+            \begin{itemize}\SlideFontSmall
+                \ii{Insikt i hur datorer fungerar på en grundläggande nivå.}
+                \begin{itemize}\SlideFontTiny
+                    \ii{\emph{Vad händer i datorn när den utför instruktioner?}}
+                    \ii{\emph{Vad finns egentligen i datorns minne?}}
+                \end{itemize}
+                \ii{Förståelse för kopplingen mellan källkod och maskinkod.}
+                \begin{itemize}\SlideFontTiny
+                  \ii{\emph{Hur ser utdata ut från en kompilator?}}
+                  \ii{\emph{Vad skiljer källkod och maskinkod?}}
+                \end{itemize}
+                % \ii{Effektiv problemlösning och innovativt tänkande.}
+                % \begin{itemize}\SlideFontTiny
+                %     \ii{\emph{Hur kan vi skriva snabb och effektiv kod?}}
+                %     \ii{\emph{Hur kan vi hitta på innovativa lösningar?}}
+                % \end{itemize}
+            \end{itemize}
+
+       \columnbreak
+
+            \vspace{-2em}
+            \begin{center}
+                \begin{tikzpicture}
+                        \node (hl) [rectangle, draw, fill=blue!20, text width=6em, text centered, minimum height=2em] {\ifswedish Högnivåspråk\else High-level language\fi};
+                        \node (al) [rectangle, draw, fill=green!20, below=of hl, text width=6em, text centered, minimum height=2em] {Assembly};
+                        \node (mc) [rectangle, draw, fill=red!20, below=of al, text width=6em, text centered, minimum height=2em] {\ifswedish Maskinkod\else Machine code\fi};
+                        \node (hw) [rectangle, draw, fill=orange!20, below=of mc, text width=6em, text centered, minimum height=2em] {\ifswedish Hårdvara\else Hardware\fi};
+                        
+                        \draw[->] (hl) -- (al);
+                        \draw[->] (al) -- (mc);
+                        \draw[->] (mc) -- (hw);
+                    \end{tikzpicture}
+            \end{center}
+
+          \end{multicols}
+\end{Slide}
+
+
+%% Nedan exempel borttaget då det för många nybörjare nog är överväldigande och tisdkrävande att ta sig igenom och se kopplingen
+
+% \begin{Slide}{Exempel: ordpussel}\SlideFontSmall
+%     \vspace{1em}
+
+%     Kul exempel där lågnivåtänk gör stor skillnad:
+
+%     \url{https://www.youtube.com/watch?v=_-AfhLQfb6w}
+
+%     \blankline
+
+%     \begin{itemize}
+%         \ii{Problem: hitta fem engelska fembokstavsord som tillsammans
+%         använder 25 olika bokstäver (en bokstav blir över).}
+%         \ii{Naiv lösning: prova alla kombinationer av ord
+%         $\rightarrow$ \emph{orimligt många}, tog 30+ dagar.}
+%         \ii{Snabbare lösningar från tittare:}
+%         \begin{itemize}\SlideFontTiny
+%             \ii{Representera varje ord som ett 26-bitars tal (en bit per bokstav).}
+%             \ii{Kolla överlapp med snabba bitoperationer (\texttt{\&}, \texttt{|}).}
+%             \ii{Bygg en graf: sök efter kombinationer utan gemensamma bokstäver.}
+%             \ii{Smart filtrering och pruning $\rightarrow$ lösning på millisekunder.}
+%         \end{itemize}
+%     \end{itemize}
+
+%     \vspace{1em}
+%     \ti{\emph{Slutsats:} Rätt datastruktur och lågnivåtänk kan
+%     ge enorma hastighetsvinster.}
+% \end{Slide}
+
+
+
+\begin{Slide}{Vad är en dator?}\SlideFontSmall
+  \begin{multicols}{2}
+    \ti{Programvara vs. Hårdvara:}
+    \begin{itemize}
+        \ii{\textbf{Hårdvara:} En dators fysiska delar}
+        \ii{\textbf{Mjukvara (programvara):} Instruktioner för att utföra uppgifter}
+    \end{itemize}
+    
+    \ti{Komponenter:}
+        \begin{itemize}
+            \ii{\textbf{CPU:} ALU, kontrollenhet, cache}
+            \ii{\textbf{Minne:} RAM och lagring (hårddisk)}
+            \ii{\textbf{I/O-enheter:} In- och utmatning (mus, tangentbord, skärm)}
+            \ii{\ifswedish\textbf{Moderkort:} Kopplar ihop alla komponenter\else\textbf{Motherboard:} Connects all components\fi}
+        \end{itemize}
+
+
+\columnbreak
+
+            \begin{center}
+                            En schematisk bild av en dator:
+
+                \vspace{1em}\begin{tikzpicture}[scale=0.8, every node/.style={scale=0.8}]
+                    % Define CPU and its internal components
+                    \node (cpu) [rectangle, draw, fill=blue!20, minimum height=9.2em, minimum width=9.5em, rounded corners, align=center, label=above:CPU] {};
+                    \node (cu) [rectangle, draw, fill=green!30, below=.5em of cpu.north, minimum height=1.5em, minimum width=9em, align=center] {Control Unit};
+                    \node (alu) [rectangle, draw, fill=red!30, below=.5em of cu, minimum height=1.5em, minimum width=9em, align=center] {ALU};
+                    \node (pm) [rectangle, draw, fill=orange!40, below=.5em of alu, minimum height=1.5em, minimum width=9em, align=center] {Primary Cache};
+                    \node (sm) [rectangle, draw, fill=yellow!40, below=.2em of pm, minimum height=1.5em, minimum width=9em, align=center] {Secondary Cache};
+
+                    % Define I/O Devices
+                    \node (io) [rectangle, draw, fill=gray!30, below=of cpu, minimum height=3em, minimum width=9.5em, rounded corners, align=center, label=above:I/O Devices] {Mouse, Keyboard,\\Screen, etc.};
+
+                    % Define RAM
+                    \node (ram) [rectangle, draw, fill=purple!40, left=of cpu, yshift=-3.1em, xshift=3em, minimum height=15.5em, minimum width=3em, rounded corners, align=center, label=above:RAM] {};
+
+                \end{tikzpicture}
+            \end{center}
+  \end{multicols}
+
+\end{Slide}
+
+\Subsection{Binära tal}
+
+
+\begin{Slide}{Binära tal - Introduktion}\SlideFontSmall
+
+    \ti{Olika talsystem}
+
+    \begin{itemize}
+        \ii{Talsystem används för att representera tal med symboler.}
+        \ii{Decimal (bas 10) -- vanligast, använder siffror 0-9.}
+        \ii{Siffrors position bestämmer 10-potensvärdet. Exempel:\\
+            \halfblankline
+            \hspace{5mm}\(274 = 2\cdot 100 + 7\cdot 10 + 4\cdot 1\)\\
+            \hspace{5mm}\(274 = 2\cdot 10^2 + 7\cdot 10^1 + 4\cdot 10^0\)}
+    \end{itemize}
+
+    \blankline\noindent
+    \ti{Binärt talsystem}
+    \begin{itemize}
+        \ii{Binärt (bas 2) -- används av datorer, bara två siffror, 0 och 1.}
+        \ii{Varje siffra kallas en \textit{bit}.}
+        \ii{Siffrors position bestämmer 2-potensvärdet. Exempel:\\
+            \halfblankline
+            \hspace{5mm}\(1011_2 = 1\cdot 2^3 + 0\cdot 2^2 + 1\cdot 2^1 + 1\cdot 2^0\)\\
+            \hspace{5mm}\(1011_2 = 1\cdot 8 + 0\cdot 4 + 1\cdot 2 + 1\cdot 1 = 11\)}
+    \end{itemize}
+
+\end{Slide}
+
+\begin{Slide}{Binära tal - Varför?}\SlideFontSmall
+
+    \ti{Effekten av olika baser}
+    \begin{itemize}
+        \ii{Basen bestämmer antalet symboler (siffror) som används för att representera tal.}
+        \ii{Större bas kräver färre symboler för att representera samma tal.}
+        \ii{Exempel:}
+        \begin{itemize}\SlideFontSmall
+            \is{Talet $999_{10}$ skrivs med 3 siffror}
+            \ii{Motsvarande i binärt: $1111100111_2$, 10 siffror.}
+        \end{itemize}
+    \end{itemize}
+
+    \blankline\noindent
+    \ti{Varför binära tal i datorer?}
+
+    \halfblankline
+    \begin{itemize}
+        \ii{Enkelt att representera elektroniskt (ström finns/ström saknas).}
+        \ii{Pålitligt att tolka signaler som hög (1) eller låg (0) spänning.}
+    \end{itemize}
+\end{Slide}
+
+\begin{Slide}{Binära tal - I Datorer}
+
+
+    \ti{Bits, Bytes och Ord}
+
+    \halfblankline
+    \begin{itemize}
+        \ii{\textbf{Bit:} Grundläggande enhet av data i datorer (0 eller 1)}
+        \ii{\textbf{Byte:} Grupp av 8 bitar}
+        \ii{\textbf{Ord:} Processor-specifik grupp av bitar (t.ex., 32-bit eller 64-bit)}
+    \end{itemize}
+
+    \blankline\noindent
+    \ti{Användning av binära tal}
+
+    \halfblankline
+    \begin{itemize}
+        \ii{Lagring och bearbetning av all data och instruktioner}
+        \ii{Varje byte kan t.ex. representera ett litet heltal (0--255) eller ett tecken (ASCII-kod)}
+        \ii{Större grupper (ord) hanterar mer komplexa data som heltal och flyttal}
+    \end{itemize}
+
+\end{Slide}
+
+\begin{Slide}{Hexadecimala Tal}
+
+    \ti{Hexadecimala talsystemet}
+
+    \begin{itemize}
+        \ii{Hexadecimal (bas 16) - använder siffror 0-9 och bokstäverna A-F.}
+    \end{itemize}
+
+    \blankline\noindent
+    \ti{Varför Hexadecimala tal?}
+
+    \begin{itemize}
+        \ii{Förenkling!}
+        \begin{itemize}
+            \ii{Varje hexadecimalt tecken motsvarar fyra binära siffror (bitar).}
+            \ii{Lättare att läsa och skriva stora binära tal.}
+        \end{itemize}
+        \ii{Används ofta för att representera \emph{minnesadresser}}
+    \end{itemize}
+
+    \blankline\noindent
+    \ti{Exempel}
+
+    \begin{itemize}
+        \ii{Binärt: \texttt{1011 1010} = Hex: \texttt{BA}}
+        \ii{Större binärtal: \(1011 1010 0101 1110_2\) = Hex: \(BA5E_{16}\)}
+    \end{itemize}
+
+\end{Slide}
+
+
+\Subsection{CPU och Minne}
+
+
+\begin{Slide}{Central Processing Unit (CPU)}
+
+    \ti{Struktur och funktion}
+    \begin{itemize}
+        \ii{ALU (Aritmetisk-logisk enhet) -- utför beräkningar och logiska operationer}
+        \ii{Register -- lagrar tillfällig data under exekvering}
+        \ii{Kontrollenhet -- styr och koordinerar CPU:ns aktiviteter}
+        \ii{Cache -- snabbt minne för att optimera åtkomst till data}
+    \end{itemize}
+
+    \blankline\noindent
+    \ti{Vad gör CPU:n?}
+    \begin{itemize}
+        \ii{Läser instruktioner från minnet}
+        \ii{Avkodar (tolkar) dem}
+        \ii{Utför instruktionerna (exekverar)}
+    \end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Minne i datorer}
+
+    \ti{Typer av minne}
+    \begin{itemize}
+        \ii{Hårddisk, SSD, etc. -- permanent lagring av data}
+        \ii{RAM -- arbetsminne som lagrar data och instruktioner temporärt}
+        \ii{Cache -- snabbare minne nära CPU:n för att optimera åtkomst}
+        \ii{ROM -- lagrar permanent data, t.ex. firmware}
+    \end{itemize}
+
+    \blankline\noindent
+    \ti{Var används vilket minne?}
+    \begin{itemize}
+        \ii{Moderkortet har litet ROM, för att starta datorn}
+        \ii{CPU:n kan komma åt RAM via moderkortet}
+        \ii{Cache används för att minska åtkomsttiden till ofta använd data\\
+            \emph{(Finns ofta flera nivåer av cache)}}
+    \end{itemize}
+\end{Slide}
+
+\Subsection{Maskinkod}
+
+\begin{Slide}{Maskinkod -- definition och egenskaper}
+
+    \ti{Vad är maskinkod?}
+    \begin{itemize}
+        \ii{Binära instruktioner direkt förstådda av CPU:n}
+        \ii{Utför enkla operationer som aritmetik, logik, och flyttning av data}
+        \ii{CPU:n använder en specifik instruktionsuppsättning (ISA -- \emph{Instruction Set Architecture})}
+    \end{itemize}
+
+    \blankline\noindent
+    \ti{Exempel på maskininstruktioner}
+    \begin{itemize}
+        \ii{\texttt{MOV}, \texttt{ADD}, \texttt{SUB}, \texttt{JMP}}
+    \end{itemize}
+\end{Slide}
+
+\begin{Slide}{Maskininstruktioner}\SlideFontSmall
+
+        % because the png has a yellow color that does not work on white background, set background to light gray:
+        \setlength{\fboxsep}{0pt}\colorbox{gray!45}{%
+        \includegraphics[height=2.2cm]{../img/Mips32_addi_cr}}
+
+    \ti{Komponenter av en instruktion}
+    \begin{itemize}
+        \ii{Opcode -- specificerar operationen (t.ex. \texttt{ADD})}
+        \ii{Operand(er) -- data eller adresser för operationen (t.ex. register)}
+        \ii{Exempel: \texttt{ADD R1, R2, R3}}
+    \end{itemize}
+
+    % \begin{envi}
+    %     \begin{figure}
+    %         \includegraphics{Mips32_addi}
+    %         % \caption{By en:User:Booyabazooka - \url{http://en.wikipedia.org/wiki/Image:Mips32_addi.svg}, CC BY-SA 3.0, \url{https://commons.wikimedia.org/w/index.php?curid=1362890}}
+    %     \end{figure}
+    % \end{envi}
+
+    \blankline\noindent
+    \ti{Exekvering av instruktioner (fetch-decode-execute)}
+    \begin{itemize}
+        \ii{CPU:n hämtar instruktionen från minnet}
+        \ii{Avkodar opcode och identifierar operand(er)}
+        \ii{Utför operationen}
+    \end{itemize}
+\end{Slide}
+
+\begin{Slide}{Assembly-språk}
+
+    \ti{Vad är Assembly-språk?}
+    \begin{itemize}
+        \ii{Lågnivåspråk nära maskinkod, använder textrepresentation av instruktioner}
+        \ii{Varje assembly-instruktion motsvaras direkt av en maskininstruktion}
+        \ii{CPU-specifikt, beroende på arkitektur}
+    \end{itemize}
+
+    \blankline\noindent
+    \ti{Översättning till maskinkod}
+    \begin{itemize}
+        \ii{Assembler konverterar assembly till maskinkod som CPU:n kan exekvera}
+    \end{itemize}
+\end{Slide}
+
+\begin{Slide}{Exempel på en assembly-instruktion}
+
+    \ti{Instruktion: \texttt{ADD R1, R2, R2}}
+    \begin{itemize}
+        \ii{Adderar värdet i \texttt{R1} och \texttt{R2}, lagrar resultatet i \texttt{R2}}
+        \ii{R1 och R2 är register som används för temporär datalagring i CPU:n}
+    \end{itemize}
+
+    \blankline\noindent
+    \ti{Relation till maskinkod}
+    \begin{itemize}
+        \ii{Varje OP Code har binära representationer.}
+        \ii{Register och andra operanders adresser representeras också binärt.}
+        \ii{Exempel: \texttt{ADD R1, R2, R2} $\rightarrow$ \texttt{1001 0001 0010 0010}}
+    \end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Instruktionsuppsättningsarkitektur (ISA)}
+
+    \ti{Vad är ISA?}
+    \begin{itemize}
+        \ii{ISA specificerar alla maskininstruktioner som en CPU kan förstå och utföra}
+        \ii{Olika CPU-arkitekturer har olika uppsättningar}
+        \ii{Påverkar hur assembly-språk och maskinkod ser ut för olika processorer}
+    \end{itemize}
+
+    \blankline
+    \ti{Exempel på ISA:er}\noindent
+    \begin{itemize}
+        \ii{x86 -- Används i de flesta persondatorer}
+        \ii{ARM -- Vanlig i mobila enheter}
+        \ii{RISC-V -- Öppen arkitektur, växande i popularitet}
+    \end{itemize}
+\end{Slide}
+
+\begin{Slide}{Maskinkod vs. Högnivåspråk}
+
+    \ti{Utmaningar med maskinkod}
+    \begin{itemize}
+        \ii{Maskinkod är lågnivå och svår att läsa och skriva för människor}
+        \ii{Svårt att hantera tillstånd och strukturer, och att debugga}
+        \ii{Inga if/else och loopar -- ersätts med jämförelser och hopp}
+        \ii{Funktioner är manuellt hanterade med stack- och registeroperationer}
+        \ii{Ingen objektorientering (klasser, arv, etc.)}
+    \end{itemize}
+
+    \blankline\noindent
+    \ti{Varför högnivåspråk?}
+    \begin{itemize}
+        \ii{Abstraktioner för vanliga strukturer, vilket gör kod enklare att skriva, läsa och underhålla}
+        \ii{Kompilatorer hanterar översättning av komplexa strukturer till maskinkod}
+    \end{itemize}
+\end{Slide}
+
+
+\begin{Slide}{Laboration -- \texttt{c3pu}}
+
+        \ti{\large Så, vad ska ni göra på laborationen?}
+
+        \halfblankline
+        \begin{itemize}
+            \ii{Översätta kod till assembly?}
+            \ii{Nej, värre än så \dots}
+            \ii{Skriva egen assembly-kod?}
+            \ii{Nej, ännu värre än så!}
+            \ii{\textbf{Skriva maskinkod för hand!}\\
+                \texttt{01010111 01010100 01000110 00100001 00111111}}
+        \end{itemize}
+
+\end{Slide}
+
+
+\ifkompendium
+\begin{Slide}{Vad är \texttt{c3pu}?}
+\begin{itemize}
+\item \texttt{c3pu} är en enkel CPU-simulator utvecklad för denna kurs för att illustrera principiellt hur maskinkod fungerar.
+\item  Ladda ner här här: \\
+{\small\url{https://github.com/lunduniversity/introprog-cpu-emulator/releases/latest}}
+\item Läs labbinstruktionerna i avsnitt \ref{section:lab:\LabWeekTWOdod}.
+\end{itemize}
+\end{Slide}
+\else
+\begin{Slide}{\texttt{c3pu} -- Demo}
+
+    \begin{center}
+        \Huge DEMO
+
+        {\Large \texttt{c3pu} -- en enkel CPU-simulator}
+
+        \bigskip
+        \normalsize\url{https://github.com/lunduniversity/introprog-cpu-emulator/releases/latest}
+    \end{center}
+\end{Slide}
+\fi

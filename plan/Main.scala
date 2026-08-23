@@ -33,7 +33,7 @@ def exerciseRow(s: String) = s"""\\ExeRow{$s}"""
 
 def labRow(s: String) = s"""\\LabRow{$s}"""
 
-val labs = row("Lab").map(labRow).mkString("\n")
+val labs = row("Lab").mkString(", ").split(", ").map(labRow).mkString("\n")
 
 def row(col: String) = 
   weeks.map(weekPlan.column(col)(_)).filterNot(_ == "--").filterNot(isFirstUpper)
@@ -73,6 +73,31 @@ end modulePlan
 object overview extends Plan with Table:
   override val heading = Seq("W", "Modul", "Övn", "Lab")
 
+def nameDefRow(week: Int, modName: String, labName: String, exeName: String) =
+    val moduleExercise = s"""
+    |\\newcommand{\\ModWeek${weekNumAlpha(week)}}{$modName}
+    |\\newcommand{\\ExeWeek${weekNumAlpha(week)}}{$exeName}
+    |""".stripMargin
+
+    val dodLabs = Set("linux", "c3pu", "latex", "git")
+
+    val labRows = 
+      val labNames = labName.split(",").toSeq.map(_.trim)
+      def labType(n: String) = if dodLabs.contains(n) then "dod" else "" 
+      labNames.zipWithIndex.map((n, i) => s"""\\newcommand{\\LabWeek${weekNumAlpha(week)}${labType(n)}}{$n}""")
+
+    moduleExercise + labRows.mkString("\n")
+
+def namesOfWeek(w: Int) =
+  nameDefRow(w, weekPlan.column("Modul")(w), weekPlan.column("Lab")(w), weekPlan.column("Övn")(w))
+
+val nameDefs = {
+  val ws = for (w <- weeks) yield namesOfWeek(w)
+  ws.mkString("\n")
+}
+
+
+
 @main def Main =
   println("*** plan generation started in: " + here)
 
@@ -82,6 +107,27 @@ object overview extends Plan with Table:
   modulePlan.toMarkdown.    save(currentDir + "module-plan-generated.md")
   modulePlan.toHtmlPatched. save(currentDir + "module-plan-generated.html")
   modulePlan.latexTableBody.save(currentDir + "module-plan-generated.tex")
+
+  // English module-plan: translate ONLY the concept column ("Innehåll") via the authoritative glossary
+  // sv->en concepts (same source as FindTranslations). Module names (col "Modul") are LEFT IN SWEDISH on
+  // purpose — autotranslate's enChrome translates them with the SAME `moduleNames` map it uses for the
+  // overview-en, so module titles can never diverge between the two tables. A concept with no English in
+  // the glossary stays Swedish (surfacing a glossary gap to fix at the source).
+  val conceptEn: Map[String, String] = glossary.explain.allConcepts
+    .filter(_.en.nonEmpty).map(c => c.sv.trim -> c.en.trim).toMap
+  var missing = 0
+  def translateConcepts(innehall: String): String =
+    innehall.split(',').toVector.map { raw =>
+      val term = raw.trim
+      conceptEn.get(term) match
+        case Some(en)                 => raw.replace(term, en) // keep original surrounding spaces
+        case None if term.isEmpty     => raw
+        case None                     => missing += 1; raw     // no glossary English -> keep Swedish
+    }.mkString(",")
+  val enGrid = modulePlan.grid.map(row => row.updated("Innehåll", translateConcepts(row("Innehåll"))))
+  modulePlan.latexTableBodyOf(enGrid).save(currentDir + "module-plan-generated-en.tex")
+  println(s"Generated module-plan-generated-en.tex (${conceptEn.size} glossary terms; $missing concept terms had no English -> kept Swedish)")
+
   overview  .toLatex   .prepend(texUtf).save(currentDir + "overview-generated.tex")
 
   for w <- weeks do
@@ -105,16 +151,6 @@ object overview extends Plan with Table:
 
   exercises.prepend(texUtf).save(currentDir + "../compendium/generated/exercises-generated.tex")
 
-  def nameDefRow(week: Int, modName: String, labName: String, exeName: String) =
-    s"""
-    |\\newcommand{\\ModWeek${weekNumAlpha(week)}}{$modName}
-    |\\newcommand{\\ExeWeek${weekNumAlpha(week)}}{$exeName}
-    |\\newcommand{\\LabWeek${weekNumAlpha(week)}}{$labName}
-    |""".stripMargin
-
-  def namesOfWeek(w: Int) =
-    nameDefRow(w, weekPlan.column("Modul")(w), weekPlan.column("Lab")(w), weekPlan.column("Övn")(w))
-  val nameDefs = (for (w <- weeks) yield namesOfWeek(w)).mkString("\n")
   nameDefs.prepend(texUtf).save(currentDir + "../compendium/generated/names-generated.tex")
 
   def overviewTemplate(module: String, exe: String, lab: String, body: String, cols: Int = 3): String = 
@@ -141,4 +177,6 @@ object overview extends Plan with Table:
   end for
 
   FindHeadings()
+
+  FindTranslations()
 

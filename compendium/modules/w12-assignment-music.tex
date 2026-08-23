@@ -7,7 +7,7 @@
 \begin{Preparations}
 \item Testa så att datorn du ska använda på redovisningen kan spela upp ljud med \code{javax.sound.midi} genom att köra igång \code{Main} i den givna koden.\footnote{I skrivande stund fungerar inte ljud under WSL (Windows Subsystem for Linux). Sök gärna på nätet efter ev. lösningar på problem med ljud i WSL.}
 \item Det är bra om du kan ta med hörlurar till datorsalen så att du inte stör andra.
-\item Hämta given kod via \href{https://github.com/lunduniversity/introprog/tree/master/workspace/}{kursen github-plats} eller via kurshemsidan under \href{httphttps://lunduniversity.github.io/pgk/#l%C3%A4nkar}{Länkar}.
+\item Hämta given kod via \href{https://github.com/lunduniversity/introprog/tree/master/workspace/}{kursen github-plats} eller via kurshemsidan under \href{https://lunduniversity.github.io/pgk/#l%C3%A4nkar}{Länkar}.
 \end{Preparations}
 
 \subsection{Bakgrund}
@@ -21,24 +21,24 @@ Med denna domänmodell ska du skapa ditt eget musikprogram som använder \emph{a
 
 \subsubsection{Tonhöjd}
 
-En \textbf{ton} \Eng{note} som spelas på ett instrument, t.ex. ett piano eller en gitarr, har en \textbf{tonhöjd} \Eng{pitch} som är relaterad till den specifika  grundfrekvens som tonens ljud har. I vår modell av musikdomänen tillordnar vi olika distinkta tonhöjder ett unikt heltal. En tonhöjd kan då beskrivas av en \code{case class Pitch(nbr: Int)} där vi använder \code{nbr} i intervallet \code{(0 to 127)}. Heltalet \code{60} motsvarar en viss ton, som även har namnet  \code{"C5"}, och som ligger ungefär i mitten av tangentbordet på ett piano.
+En \textbf{ton} \Eng{note} som spelas på ett instrument, t.ex. ett piano eller en gitarr, har en \textbf{tonhöjd} \Eng{pitch} som är relaterad till den specifika  grundfrekvens som tonens ljud har. I vår modell av musikdomänen tillordnar vi olika distinkta tonhöjder ett unikt heltal. En tonhöjd kan då beskrivas av en \code{case class Pitch(number: Int)} där vi använder \code{number} på intervallet \code{(0 to 127)}. Heltalet \code{60} motsvarar en viss ton, som även har namnet  \code{"C4"}, och som ligger ungefär i mitten av tangentbordet på ett piano.
 
 Inom (västerländsk) musik utgår man från 12 olika \emph{tonklasser} \Eng{pitch classes}.
 Dessa tolv tonklasser är ordnade i en sekvens av så kallade \emph{halva tonsteg} och har följande \textbf{tonklassnamn}:
-\begin{Code}
-  val pitchClassNames: Vector[String] =
-    Vector("C","C#","D","D#","E","F","F#","G","G#","A","A#","B")
-\end{Code}
+
+C, D$\flat$, D, E$\flat$, E, F, G$\flat$, G, A$\flat$, A, B$\flat$ och B.
+
 Efter tonklassen med namnet \code{B} återkommer tonklassen med namnet \code{C}.
-Symbolen \code{#} representerar en höjning ett halvt tonsteg. Tonklassen \code{C#} uttalas \emph{siss} på svenska, och \emph{see sharp} på engelska.\footnote{Man använder även b-förtecknet $\flat$, som uttalas \emph{flat} på engelska, för sänkning av en ton ett halvt tonsteg, men för enkelhetens skull bortser vi i vår modell från detta sätt att namnge toner.}
- Notera att det är ett halvt tonsteg mellan \code{E} och \code{F}, samt mellan \code{B} och \code{C} (det finns därför varken \code{E#} eller \code{B#} i listan med tonklassnamn.\footnote{Varför det är på detta viset kan du läsa mer om på t.ex. Wikipedia, men du kan också nöja dig med att det helt enkelt är så på grund av historiska skäl.})
+Symbolen ''$\flat$'' (skrives \code{b} i ascii) representerar en höjning ett halvt tonsteg. Tonklassen C$\flat$ uttalas \emph{sess} på svenska, och \emph{see flat} på engelska.\footnote{Man använder även $\sharp$-förtecknet, som uttalas \emph{sharp} på engelska, för höjning av en ton ett halvt tonsteg, men för enkelhetens skull bortser vi i vår modell från detta sätt att namnge toner.}
+Notera att det är ett halvt tonsteg mellan \code{E} och \code{F}, samt mellan \code{B} och \code{C} (det finns därför varken E$\flat$ eller C$\flat$ i listan med tonklassnamn.\footnote{Varför det är på detta viset kan du läsa mer om på t.ex. Wikipedia, men du kan också nöja dig med att det helt enkelt är så på grund av historiska skäl.})
 
-På ett piano motsvaras de vita tangenterna av tonklassnamen \code{C D E F G A B} och de svarta tangenterna motsvaras av tonklassnamnen \code{C# D# F# G# A#}.
+På ett piano motsvaras de vita tangenterna av tonklassnamen C D E F G A B och de svarta tangenterna motsvaras av tonklassnamnen C$\flat$ D$\flat$ F$\flat$ G$\flat$ A$\flat$.
 
-En s.k. \textbf{tonklass} är ett positivt heltal i intervallet \code{0 until 12} som motsvaras av index för tonklassnamnet i \code{pitchClassNames}. En tonhöjd  \code{Pitch(nbr)} tillhör tonklassen \code{nbr % 12}.
+En s.k. \textbf{tonklass} är ett värde av \code{enum}en \code{Pitch.Class}.
+En tonhöjd \code{pitch} tillhör tonklassen \code{pitch.pitchClass}\footnote{Repetitionen av ordet \code{pitch} krävs ty \code{class} är ett reserverat ord i scala.}.
 
-Med hjälp av heltalsdivision med 12 får man fram tonhöjdens så kallade \textbf{oktav}, alltså \code{nbr / 12}. Ett piano har normalt toner som spänner över 7 eller 8 oktaver.
-En tonhöjd \code{Pitch(nbr)} kan även namnges med en kombination av tonklassnamnet och tonens oktav, t.ex. \code{"C5"}.
+Med hjälp av heltalsdivision med 12 får man fram tonhöjdens så kallade \textbf{oktav}, alltså \code{number / 12 - 1}. Ett piano har normalt toner som spänner över 7 eller 8 oktaver.
+En tonhöjd kan även namnges med en kombination av tonklassnamnet och tonens oktav, t.ex. \code{"C5"}.
 
 Med denna domänbeskrivning kan vi skapa en mer detaljerad modell av konceptet tonhöjd med hjälp av en case-klass och tillhörande kompanjonsobjekt:
 
@@ -58,19 +58,18 @@ Med denna domänbeskrivning kan vi skapa en mer detaljerad modell av konceptet t
 \Task Undersök klassen \code{Pitch} i REPL.
 
 \begin{REPL}
-> sbt
-sbt> console
-Welcome to Scala 2.13.3 (OpenJDK 64-Bit Server VM, Java 11.0.8).
+> scala repl .
+
+Welcome to Scala 3.5.2 (26.0.2, Java OpenJDK 64-Bit Server VM).
 Type in expressions for evaluation. Or try :help.
 
-scala> import music._
-import music._
+scala> import music.*
 
-scala> Pitch("C#5").nbr
-res0: Int = 61
+scala> Pitch("Db5").number
+val res0: Int = 73
 
 scala> Pitch("C") + 1
-res1: music.Pitch = Pitch("C#5")
+val res1: music.Pitch = Pitch(Db4)
 \end{REPL}
 
 
@@ -101,7 +100,7 @@ Ett \textbf{intervall} är en tons relativa tonhöjdsavstånd från grundtonen. 
   \item maj-sju-ackord som betecknas t.ex. \code{"Cmaj7"}.
 \end{itemize}
 
-I case-klassen \code{Chord} nedan finns en metod \code{name} som definerar vilka intervall som ingår i de olika ackordtyperna ovan, utom maj-sju-ackord. Den krångliga modulo-12-omräkningen innan matchningen gör så att intervall i olika oktaver behandlas lika, även för negativa intervall.
+I case-klassen \code{Chord} nedan finns en metod \code{name} som definierar vilka intervall som ingår i de olika ackordtyperna ovan, utom maj-sju-ackord. Den krångliga modulo-12-omräkningen innan matchningen gör så att intervall i olika oktaver behandlas lika, även för negativa intervall.
 
 \scalainputlisting[basicstyle=\ttfamily\fontsize{10}{13}\selectfont]{../workspace/w13_music_proj/src/main/scala/music/Chord.scala}
 
@@ -109,10 +108,10 @@ I case-klassen \code{Chord} nedan finns en metod \code{name} som definerar vilka
 
 \Subtask Maj-sju-ackord har samma intervall som sju-ackord, förutom att det fjärde intervallet ska vara \code{11} halva tonsteg från grundtonen i stället för \code{10}. Lägg till en case-klausul i \code{Chord.name} så att maj-sju-ackord ges namn som slutar med ändelsen \code{"maj7"}.
 
-\Subtask Testa din kod och kontrollera så att ackordet \code{Chord("D4","F#4","A4","C#5")} får namnet \code{"Dmaj7"}
+\Subtask Testa din kod och kontrollera så att ackordet \code{Chord("D4","Gb4","A4","Db5")} får namnet \code{"Dmaj7"}
 
 \begin{REPL}
-scala> Chord("D4","F#4","A4","C#5").name()
+scala> Chord("D4","Gb4","A4","Db5").name()
 res2: String = "Dmaj7"
 \end{REPL}
 
@@ -250,8 +249,8 @@ Det ska fungera att göra nästlade def-kommando, alltså att kroppen för en de
 
 \Task Gör så att definitioner sparas mellan körningar.
 
-\Task Implementera fler valfria kommandon. Du kan t.ex. 
-\begin{itemize} 
+\Task Implementera fler valfria kommandon. Du kan t.ex.
+\begin{itemize}
 \item skapa kommando som ritar en grepptabell för gitarrackord eller fingersättning på piano med \code{introprog.PixelWindow}.
 \item skapa kommando för att göra drumbeats, t.ex. \code{drum mygrove x x o x} för 2 hihat + basatrumma + 1 hihat och \code{start mygrove} och \code{stop mygrove} för uppspelning av beat i bakgrunden med \code{playConcurrently}. Se i \code{Synth.scala} för vilka instrument som ger trumljud med ledning av deras namn \\\code{music.Synth.instruments.map(_.getName)}, t.ex \code{Standard Kit} eller \code{Synth Drum}. Använd kanal 10 för att spela upp trumljuden.
 \end{itemize}

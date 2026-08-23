@@ -57,14 +57,23 @@
 \QUESTBEGIN
 
 \Task  \what~  Man vill ofta lägga in objekt av olika typ i samma samling.
+\ifswedish
 \begin{REPL}
 scala> class Gurka(val vikt: Int)
 scala> class Tomat(val vikt: Int)
 scala> val gurkor = Vector(Gurka(100), Gurka(200))
 scala> val grönsaker = Vector(Gurka(300), Tomat(42))
 \end{REPL}
+\else
+\begin{REPL}
+scala> class Cucumber(val weight: Int)
+scala> class Tomato(val weight: Int)
+scala> val gurkor = Vector(Cucumber(100), Cucumber(200))
+scala> val vegetables = Vector(Cucumber(300), Tomato(42))
+\end{REPL}
+\fi
 
-\Subtask Om en samling innehåller objekt av flera olika typer försöker kompilatorn härleda den mest specifika typen som objekten har gemensamt. Vad blir det för typ på värdet \code{grönsaker} ovan?
+\Subtask Om en samling innehåller objekt av flera olika typer försöker kompilatorn härleda den mest specifika typen som objekten har gemensamt. Vad blir det för typ på värdet \ifswedish\code{grönsaker}\else\code{vegetables}\fi{} ovan?
 
 \Subtask Försök ta reda på summan av vikterna enligt nedan. Vad ger andra raden för felmeddelande? Varför?
 
@@ -73,10 +82,11 @@ scala> gurkor.map(_.vikt).sum     // fungerar
 scala> grönsaker.map(_.vikt).sum  // fungerar inte
 \end{REPL}
 
-\Subtask Du ska nu göra så att du kan komma åt vikten på alla grönsaker genom att ge gurkor och tomater en gemensam bastyp som de olika konkreta grönsakstyperna utvidgar med nyckelordet \code{extends}. Det heter att subtyperna \code{Gurka} och \code{Tomat} \textbf{ärver} egenskaperna hos supertypen \code{Grönsak}.
+\Subtask Du ska nu göra så att du kan komma åt vikten på alla grönsaker genom att ge gurkor och tomater en gemensam bastyp som de olika konkreta grönsakstyperna utvidgar med nyckelordet \code{extends}. Det heter att subtyperna \ifswedish\code{Gurka}\else\code{Cucumber}\fi{} och \ifswedish\code{Tomat}\else\code{Tomato}\fi \textbf{ärver} egenskaperna hos supertypen \ifswedish\code{Grönsak}\else\code{Vegetable}\fi.
 
-Skapa en bastyp \code{Grönsak} med ett abstrakt attribut \code{vikt}. Låt sedan de konkreta grönsakerna ärva bastypen:
+Skapa en bastyp \ifswedish\code{Grönsak}\else\code{Vegetable}\fi{} med ett abstrakt attribut \ifswedish\code{vikt}\else\code{weight}\fi. Låt sedan de konkreta grönsakerna ärva bastypen:
 
+\ifswedish
 \begin{REPL}
 scala> trait Grönsak { val vikt: Int }
 scala> class Gurka(val vikt: Int) extends Grönsak
@@ -84,28 +94,50 @@ scala> class Tomat(val vikt: Int) extends Grönsak
 scala> val gurkor = Vector(Gurka(100), Gurka(200))
 scala> val grönsaker = Vector(Gurka(300), Tomat(42))
 \end{REPL}
-När sker initialisering av attributet \code{vikt}?
+\else
+\begin{REPL}
+scala> trait Vegetable { val weight: Int }
+scala> class Cucumber(val weight: Int) extends Vegetable
+scala> class Tomato(val weight: Int) extends Vegetable
+scala> val gurkor = Vector(Cucumber(100), Cucumber(200))
+scala> val vegetables = Vector(Cucumber(300), Tomato(42))
+\end{REPL}
+\fi
+När sker initialisering av attributet \ifswedish\code{vikt}\else\code{weight}\fi?
 
-\Subtask Vad blir det nu för typ på variabeln \code{grönsaker} ovan?
+\Subtask Vad blir det nu för typ på variabeln \ifswedish\code{grönsaker}\else\code{vegetables}\fi{} ovan?
 
-\Subtask Går det nu att summera vikterna i \code{grönsaker} med uttrycket nedan? Varför?\\ \code{grönsaker.map(_.vikt).sum}
+\Subtask Går det nu att summera vikterna i \ifswedish\code{grönsaker}\else\code{vegetables}\fi{} med uttrycket nedan? Varför?\\ \ifswedish\code{grönsaker.map(_.vikt).sum}\else\code{vegetables.map(_.weight).sum}\fi
 
 
 \Subtask En trait liknar en klass, men man kan inte instansiera den direkt. Vad blir det för felmeddelande om du försöker skapa en instans av en trait enligt nedan?
+\ifswedish
 \begin{REPL}
 scala> trait Grönsak { val vikt: Int }
 scala> new Grönsak
 \end{REPL}
+\else
+\begin{REPL}
+scala> trait Vegetable { val weight: Int }
+scala> new Vegetable
+\end{REPL}
+\fi
 
 
-\Subtask Traiten \code{Grönsak} har en abstrakt medlem \code{vikt}. Den sägs vara abstrakt eftersom den saknar implementation -- medlemmen har bara ett namn och en typ men inget värde. Du kan instansiera den abstrakta traiten \code{Grönsak} om du fyller i det som ''fattas'', nämligen ett värde på \code{vikt}. Man kan fylla på det som fattas i genom att ''hänga på'' ett block efter typens namn vid instansiering. Man får då vad som kallas en \textbf{anonym klass}, i detta fall en ganska konstig grönsak som inte är någon speciell sorts grönsak med som ändå har en vikt.
+\Subtask Traiten \ifswedish\code{Grönsak}\else\code{Vegetable}\fi{} har en abstrakt medlem \ifswedish\code{vikt}\else\code{weight}\fi. Den sägs vara abstrakt eftersom den saknar implementation -- medlemmen har bara ett namn och en typ men inget värde. Du kan instansiera den abstrakta traiten \ifswedish\code{Grönsak}\else\code{Vegetable}\fi{} om du fyller i det som ''fattas'', nämligen ett värde på \ifswedish\code{vikt}\else\code{weight}\fi. Man kan fylla på det som fattas i genom att ''hänga på'' ett block efter typens namn vid instansiering. Man får då vad som kallas en \textbf{anonym klass}, i detta fall en ganska konstig grönsak som inte är någon speciell sorts grönsak med som ändå har en vikt.
 
-Vad får \code{anonymGrönsak} nedan för typ och strängrepresenation?
+Vad får \ifswedish\code{anonymGrönsak}\else\code{anonymousVegetable}\fi{} nedan för typ och strängrepresenation?
+\ifswedish
 \begin{REPL}
 scala> val anonymGrönsak = new Grönsak { val vikt = 42 }
 \end{REPL}
+\else
+\begin{REPL}
+scala> val anonymousVegetable = new Vegetable { val weight = 42 }
+\end{REPL}
+\fi
 
-\Subtask Vad blir felmeddelandet om du skapar en anonym klass \code{Grönsak} med en kropp som saknar definition av vikt?
+\Subtask Vad blir felmeddelandet om du skapar en anonym klass \ifswedish\code{Grönsak}\else\code{Vegetable}\fi{} med en kropp som saknar definition av vikt?
 
 \SOLUTION
 
@@ -116,6 +148,7 @@ scala> val anonymGrönsak = new Grönsak { val vikt = 42 }
 \SubtaskSolved  \code{Vector[Object]}. Typen \code{Object} i JVM är motsvarar typen \code{AnyRef} som är bastyp för alla referenstyper.
 
 \SubtaskSolved  Felmeddelande:
+\ifswedish
 \begin{REPLnonum}
 scala> grönsaker.map(_.vikt).sum  
 -- Error:                                                                                 
@@ -127,15 +160,29 @@ scala> grönsaker.map(_.vikt).sum
   |                         ^
   |ambiguous implicit arguments: both object DoubleIsFractional in object Numeric and object ShortIsIntegral in object Numeric match type Numeric[B] of parameter num of method sum in trait IterableOnceOps
 \end{REPLnonum}
-Det första felmeddelandet beror på att vektorns element är av typen \code{Object} och medlemmen \code{vikt} är inte definierat för denna typ. Det andra felmeddelandet är ett följdfel som beror på att en sekvens med element av typen \code{Object} inte kan summeras eftersom kompilatorn inte kan härleda att elementtypen är numerisk.
+\else
+\begin{REPLnonum}
+scala> vegetables.map(_.weight).sum  
+-- Error:                                                                                 
+1 |vegetables.map(_.weight).sum
+  |              ^^^^^^
+  |             value weight is not a member of Object - did you mean wait?
+-- Error:
+1 |vegetables.map(_.weight).sum
+  |                         ^
+  |ambiguous implicit arguments: both object DoubleIsFractional in object Numeric and object ShortIsIntegral in object Numeric match type Numeric[B] of parameter num of method sum in trait IterableOnceOps
+\end{REPLnonum}
+\fi
+Det första felmeddelandet beror på att vektorns element är av typen \code{Object} och medlemmen \ifswedish\code{vikt}\else\code{weight}\fi{} är inte definierat för denna typ. Det andra felmeddelandet är ett följdfel som beror på att en sekvens med element av typen \code{Object} inte kan summeras eftersom kompilatorn inte kan härleda att elementtypen är numerisk.
 
-\SubtaskSolved  Attributet \code{vikt} initialiseras vid konstruktion av \code{Gurka} resp. \code{Tomat}. Värdet ges av resp. klassparameter.
+\SubtaskSolved  Attributet \ifswedish\code{vikt}\else\code{weight}\fi{} initialiseras vid konstruktion av \ifswedish\code{Gurka}\else\code{Cucumber}\fi{} resp. \ifswedish\code{Tomat}\else\code{Tomato}\fi. Värdet ges av resp. klassparameter.
 
-\SubtaskSolved  \code{Vector[Grönsak]}.
+\SubtaskSolved  \ifswedish\code{Vector[Grönsak]}\else\code{Vector[Vegetable]}\fi.
 
-\SubtaskSolved  Ja. Eftersom den statiska typen för elementen i sekvensen är \code{Grönsak} (den dynamiska typen kan vara godtycklig subtyp av \code{Grönsak}) och alla instanser av denna typ garanterat har attributet \code{vikt} som är av typen \code{Int} så kan kompilatorn vid \emph{kompileringstid} dra slutsatsen att summeringen är giltig och därmed kan kompilatorn kompilera koden till körbar maskinkod.
+\SubtaskSolved  Ja. Eftersom den statiska typen för elementen i sekvensen är \ifswedish\code{Grönsak}\else\code{Vegetable}\fi (den dynamiska typen kan vara godtycklig subtyp av \ifswedish\code{Grönsak}\else\code{Vegetable}\fi) och alla instanser av denna typ garanterat har attributet \ifswedish\code{vikt}\else\code{weight}\fi{} som är av typen \code{Int} så kan kompilatorn vid \emph{kompileringstid} dra slutsatsen att summeringen är giltig och därmed kan kompilatorn kompilera koden till körbar maskinkod.
 
 \SubtaskSolved  
+\ifswedish
 \begin{REPLnonum}
 scala> new Grönsak
 -- Error:
@@ -143,20 +190,39 @@ scala> new Grönsak
   |    ^^^^^^^
   |    Grönsak is a trait; it cannot be instantiated
 \end{REPLnonum}
+\else
+\begin{REPLnonum}
+scala> new Vegetable
+-- Error:
+1 |new Vegetable
+  |    ^^^^^^^
+  |    Vegetable is a trait; it cannot be instantiated
+\end{REPLnonum}
+\fi
 
 \SubtaskSolved  
+\ifswedish
 \begin{REPLnonum}
 scala> val anonymGrönsak = new Grönsak { val vikt = 42 }
 val anonymGrönsak: Grönsak = anon$1@1edde8b6
 scala> anonymGrönsak.toString                                                                                      
 val res0: String = anon$1@1edde8b6
 \end{REPLnonum}
-Typen är \code{Grönsak} och blir här en s.k. \emph{anonym klass}, eftersom vi inte har använt en namngiven klass med \code{extends}, utan bara ''hängt på'' en klasskropp inom klammerparenteser direkt vid konstruktion. När du skapar anonyma klasser måste du använda nyckelordet \code{new}.
+\else
+\begin{REPLnonum}
+scala> val anonymousVegetable = new Vegetable { val weight = 42 }
+val anonymousVegetable: Vegetable = anon$1@1edde8b6
+scala> anonymousVegetable.toString                                                                                      
+val res0: String = anon$1@1edde8b6
+\end{REPLnonum}
+\fi
+Typen är \ifswedish\code{Grönsak}\else\code{Vegetable}\fi{} och blir här en s.k. \emph{anonym klass}, eftersom vi inte har använt en namngiven klass med \code{extends}, utan bara ''hängt på'' en klasskropp inom klammerparenteser direkt vid konstruktion. När du skapar anonyma klasser måste du använda nyckelordet \code{new}.
 
 Kompilatorn hittar på ett unikt klassnamn, här anon\$1, för att hålla reda på den anonyma klassen under kompilering till maskinkod. Strängrepresentationen innehåller ett hexadecimalt heltal som är unikt för instansen, här \code{1edde8b6}.
 
 \SubtaskSolved  
 
+\ifswedish
 \begin{REPLsmall}
 scala> new Grönsak { }
 -- Error:
@@ -165,6 +231,16 @@ scala> new Grönsak { }
   |object creation impossible, since val vikt: Int in trait Grönsak is not defined 
 
 \end{REPLsmall}
+\else
+\begin{REPLsmall}
+scala> new Vegetable { }
+-- Error:
+1 |new Vegetable { }
+  |^
+  |object creation impossible, since val weight: Int in trait Vegetable is not defined 
+
+\end{REPLsmall}
+\fi
 
 
 \QUESTEND
@@ -923,11 +999,13 @@ case class Circle(pos: Point, radius: Double) extends Shape:
 
 \QUESTBEGIN
 
-\Task \label{task:fyle} \what~   Man kan utvidga en klass med multipla traits med en kommaseparerad lista. På så sätt kan man fördela medlemmar i olika traits och återanvända gemensamma koddelar genom så kallad \textbf{inmixning}, så som nedan exempel visar.
+\Task \label{task:fyle} \what~   \ifswedish Man kan utvidga en klass med multipla traits med en kommaseparerad lista. På så sätt kan man fördela medlemmar i olika traits och återanvända gemensamma koddelar genom så kallad \textbf{inmixning}, så som nedan exempel visar.\else You can extend a class with multiple traits given as a comma-separated list. This lets you spread members across different traits and reuse shared code through so-called \textbf{mix-in composition}, as the example below shows.\fi
 
-En alternativ fågeltaxonomi, speciellt populär i Skåne, delar in alla fåglar i två specifika kategorier: Kråga respektive Ånka. Krågor kan flyga men inte simma, medan Ånkor kan simma och oftast även flyga. Fågel i generell, kollektiv bemärkelse kallas på gammal skånska för Fyle.%
-\footnote{\href{http://www.klangfix.se/ordlista.htm}{www.klangfix.se/ordlista.htm}}
+\ifswedish En alternativ fågeltaxonomi, speciellt populär i Skåne, delar in alla fåglar i två specifika kategorier: Kråga respektive Ånka. Krågor kan flyga men inte simma, medan Ånkor kan simma och oftast även flyga. Fågel i generell, kollektiv bemärkelse kallas på gammal skånska för Fyle.%
+\footnote{\href{http://www.klangfix.se/ordlista.htm}{www.klangfix.se/ordlista.htm}}\else In the remote Welsh village of Llanffowl-y-Gwyll, whose inhabitants have --- for reasons long since lost to scholarship --- never seen the need to tell apart more than a couple of birds, the local taxonomy sorts all fowl into precisely two kinds: the \emph{Crawke} and the \emph{Quaddle}. A Crawke can fly but cannot swim, whereas a Quaddle can swim and, more often than not, fly as well. A bird in the general, collective sense is known in the old village dialect as a \emph{Fowlk}.%
+\footnote{Affectionately modelled on a genuine alternative bird taxonomy from Scania (Skåne) in southern Sweden, whence the idea came; see \href{http://www.klangfix.se/ordlista.htm}{www.klangfix.se/ordlista.htm}.}\fi
 
+\ifswedish
 \begin{CodeSmall}
 trait Fyle:
   val läte: String
@@ -943,25 +1021,62 @@ trait KanKanskeFlyga { val ärFlygkunnig = math.random() < 0.8 }
 class Kråga extends Fyle, KanFlyga, KanInteSimma:
   val läte = "krax"
 
-class Ånka extends Fyle, KanSimma, KanKanskeFlyga: 
+class Ånka extends Fyle, KanSimma, KanKanskeFlyga:
   val läte = "kvack"
   override def väsnas = print(läte * 4)
 \end{CodeSmall}
+\else
+\begin{CodeSmall}
+trait Fowlk:
+  val call: String
+  def holler: Unit = print(call * 2)
+  val canActuallySwim: Boolean
+  val canActuallyFly: Boolean
 
-\Subtask En flitig ornitolog hittar 42 fåglar i en perfekt skog där alla fågelsorter är lika sannolika, representerat av vektorn \code{fyle} nedan. Skriv i REPL ett uttryck som undersöker hur många av dessa som är flygkunniga Ånkor, genom att använda metoderna \code{filter}, \code{isInstanceOf}, \code{ärFlygkunnig} och \code{size}.
+trait CanSwim       { val canActuallySwim = true }
+trait CannotSwim    { val canActuallySwim = false }
+trait CanFly        { val canActuallyFly = true }
+trait CanPerhapsFly { val canActuallyFly = math.random() < 0.8 }
 
+class Crawke extends Fowlk, CanFly, CannotSwim:
+  val call = "kraak"
+
+class Quaddle extends Fowlk, CanSwim, CanPerhapsFly:
+  val call = "quawk"
+  override def holler = print(call * 4)
+\end{CodeSmall}
+\fi
+
+\Subtask \ifswedish En flitig ornitolog hittar 42 fåglar i en perfekt skog där alla fågelsorter är lika sannolika, representerat av vektorn \code{fyle} nedan. Skriv i REPL ett uttryck som undersöker hur många av dessa som är flygkunniga Ånkor, genom att använda metoderna \code{filter}, \code{isInstanceOf}, \code{ärFlygkunnig} och \code{size}.\else A diligent ornithologist finds 42 birds in a perfect wood where every kind of bird is equally likely, represented by the vector \code{flock} below. Write, in the REPL, an expression that works out how many of them are flight-capable Quaddles, using the methods \code{filter}, \code{isInstanceOf}, \code{canActuallyFly} and \code{size}.\fi
+
+\ifswedish
 \begin{REPL}
 scala> val fyle =
          Vector.fill(42)(if math.random() > 0.5 then new Kråga else new Ånka)
 scala> fyle.foreach(_.väsnas)
 scala> val antalFlygånkor: Int = ???
 \end{REPL}
+\else
+\begin{REPL}
+scala> val flock =
+         Vector.fill(42)(if math.random() > 0.5 then new Crawke else new Quaddle)
+scala> flock.foreach(_.holler)
+scala> val flyingQuaddles: Int = ???
+\end{REPL}
+\fi
 
-\Subtask \label{subtask:fyle:sound} Om alla de fåglar som ornitologen hittade skulle väsnas exakt en gång var, hur många krax och hur många kvack skulle då höras? Använd metoderna \code{filter} och \code{size}, samt predikatet \code{ärSimkunnig} för att beräkna antalet krax respektive kvack.
+\Subtask \label{subtask:fyle:sound} \ifswedish Om alla de fåglar som ornitologen hittade skulle väsnas exakt en gång var, hur många krax och hur många kvack skulle då höras? Använd metoderna \code{filter} och \code{size}, samt predikatet \code{ärSimkunnig} för att beräkna antalet krax respektive kvack.\else If every bird the ornithologist found were to holler exactly once, how many kraaks and how many quawks would be heard? Use the methods \code{filter} and \code{size}, together with the predicate \code{canActuallySwim}, to compute the number of kraaks and quawks respectively.\fi
+\ifswedish
 \begin{REPL}
 scala> val antalKrax: Int = ???
 scala> val antalKvack: Int = ???
 \end{REPL}
+\else
+\begin{REPL}
+scala> val kraaks: Int = ???
+scala> val quawks: Int = ???
+\end{REPL}
+\fi
 
 \SOLUTION
 
@@ -970,19 +1085,20 @@ scala> val antalKvack: Int = ???
 
 
 \SubtaskSolved
-Det finns många olika sätt, några exempellösningar:
+\ifswedish Det finns många olika sätt, några exempellösningar:\else There are many ways; here are a few example solutions:\fi
+\ifswedish
 \begin{Code}
-val antalFlygånkor: Int = 
+val antalFlygånkor: Int =
   fyle.count(f => f.isInstanceOf[Ånka] && f.ärFlygkunnig)
 \end{Code}
 
 \begin{Code}
-val antalFlygånkor: Int = 
+val antalFlygånkor: Int =
   fyle.filter(f => f.isInstanceOf[Ånka] && f.ärFlygkunnig).size
 \end{Code}
 
 \begin{Code}
-val antalFlygånkor: Int = 
+val antalFlygånkor: Int =
   fyle.collect{case f: Ånka if f.ärFlygkunnig}.size
 \end{Code}
 
@@ -992,12 +1108,42 @@ val antalFlygånkor: Int = fyle.map(_ match
   case _ => 0
 ).sum
 \end{Code}
+\else
+\begin{Code}
+val flyingQuaddles: Int =
+  flock.count(f => f.isInstanceOf[Quaddle] && f.canActuallyFly)
+\end{Code}
+
+\begin{Code}
+val flyingQuaddles: Int =
+  flock.filter(f => f.isInstanceOf[Quaddle] && f.canActuallyFly).size
+\end{Code}
+
+\begin{Code}
+val flyingQuaddles: Int =
+  flock.collect{case f: Quaddle if f.canActuallyFly}.size
+\end{Code}
+
+\begin{Code}
+val flyingQuaddles: Int = flock.map(_ match
+  case f: Quaddle if f.canActuallyFly => 1
+  case _ => 0
+).sum
+\end{Code}
+\fi
 
 \SubtaskSolved
+\ifswedish
 \begin{Code}
 val antalKrax: Int = fyle.filter(f => !f.ärSimkunnig).size * 2
 val antalKvack: Int = fyle.filter(f => f.ärSimkunnig).size * 4
 \end{Code}
+\else
+\begin{Code}
+val kraaks: Int = flock.filter(f => !f.canActuallySwim).size * 2
+val quawks: Int = flock.filter(f => f.canActuallySwim).size * 4
+\end{Code}
+\fi
 
 
 \QUESTEND
@@ -1016,11 +1162,11 @@ val antalKvack: Int = fyle.filter(f => f.ärSimkunnig).size * 4
 
 \QUESTBEGIN
 
-\Task  \what~  Om man vill förhindra att man kan göra \code{extends} på en klass kan man göra den final genom att placera nyckelordet \code{final} före nyckelordet \code{class}.
+\Task  \what~  \ifswedish Om man vill förhindra att man kan göra \code{extends} på en klass kan man göra den final genom att placera nyckelordet \code{final} före nyckelordet \code{class}.\else If you want to prevent a class from being extended with \code{extends}, you can make it final by placing the keyword \code{final} before the keyword \code{class}.\fi
 
-\Subtask Eftersom klassificeringen av fåglar i uppgiften ovan i antingen Ånkor eller Krågor är fullständig och det inte finns några subtyper till varken Ånkor eller Krågor är det lämpligt att göra dessa finala. Ändra detta i din kod.
+\Subtask \ifswedish Eftersom klassificeringen av fåglar i uppgiften ovan i antingen Ånkor eller Krågor är fullständig och det inte finns några subtyper till varken Ånkor eller Krågor är det lämpligt att göra dessa finala. Ändra detta i din kod.\else Since the classification of birds in the task above into either Quaddles or Crawkes is complete, and there are no subtypes of either Quaddles or Crawkes, it is appropriate to make these final. Change this in your code.\fi
 
-\Subtask Testa att ändå försöka göra en subklass \code{Simkråga extends Kråga}. Vad ger kompilatorn för felmeddelande om man försöker utvidga en final klass?
+\Subtask \ifswedish Testa att ändå försöka göra en subklass \code{Simkråga extends Kråga}. Vad ger kompilatorn för felmeddelande om man försöker utvidga en final klass?\else Try nonetheless to make a subclass \code{Swimcrawke extends Crawke}. What error message does the compiler give if you try to extend a final class?\fi
 
 
 \SOLUTION
@@ -1029,9 +1175,9 @@ val antalKvack: Int = fyle.filter(f => f.ärSimkunnig).size * 4
 \TaskSolved \what
 
 
-\SubtaskSolved  Sätt \code{final} framför \code{class} i klasserna.
+\SubtaskSolved  \ifswedish Sätt \code{final} framför \code{class} i klasserna.\else Put \code{final} in front of \code{class} in the classes.\fi
 
-\SubtaskSolved  error: illegal inheritance from final class Kråga.
+\SubtaskSolved  \ifswedish error: illegal inheritance from final class Kråga.\else error: illegal inheritance from final class Crawke.\fi
 
 
 \QUESTEND
@@ -1106,9 +1252,9 @@ scala> (new Sub).vårHemlis
 
 \Task  \what~  Den flitige ornitologen från uppgift \ref{task:fyle} ska ringmärka alla 42 fåglar hen hittat i skogen. När hen ändå håller på bestämmer hen att även försöka ta reda på hur mycket oväsen som skapas av respektive fågelsort. För detta ändamål apterar den flitige ornitologen en Linuxdator på allt infångat fyle. Du ska hjälpa ornitologen att skriva programmet.
 
-\Subtask Inför en \code{protected var räknaLäte} i traiten \code{Fyle} och skriv kod på lämpliga ställen för att räkna hur många läten som respektive fågelinstans yttrar.
+\Subtask Inför en \ifswedish\code{protected var räknaLäte}\else\code{protected var callCount}\fi{} i traiten \ifswedish\code{Fyle}\else\code{Fowlk}\fi{} och skriv kod på lämpliga ställen för att räkna hur många läten som respektive fågelinstans yttrar.
 
-\Subtask Inför en metod \code{antalLäten} som returnerar antalet krax respektive kvack som en viss fågel yttrat sedan dess skapelse.
+\Subtask Inför en metod \ifswedish\code{antalLäten}\else\code{numberOfCalls}\fi{} som returnerar antalet krax respektive kvack som en viss fågel yttrat sedan dess skapelse.
 
 \Subtask Varför inte använda \code{private} i stället for \code{protected}?
 
@@ -1122,17 +1268,23 @@ scala> (new Sub).vårHemlis
 \TaskSolved \what
 
 
-\SubtaskSolved  I Fyle:
+\SubtaskSolved  \ifswedish I Fyle:
 \begin{Code}
 protected var räknaLäte: Int = 0
 def väsnas: Unit = { print(läte * 2); räknaLäte += 2 }
 \end{Code}
+\else In Fowlk:
+\begin{Code}
+protected var callCount: Int = 0
+def holler: Unit = { print(call * 2); callCount += 2 }
+\end{Code}
+\fi
 
-I Ånka: \code| override def väsnas = { print(läte * 4); räknaLäte += 4 }|
+\ifswedish I Ånka: \code| override def väsnas = { print(läte * 4); räknaLäte += 4 }|\else In Quaddle: \code| override def holler = { print(call * 4); callCount += 4 }|\fi
 
-\SubtaskSolved  \code{ def antalLäten: Int = räknaLäte }
+\SubtaskSolved  \ifswedish\code{ def antalLäten: Int = räknaLäte }\else\code{ def numberOfCalls: Int = callCount }\fi
 
-\SubtaskSolved  Om en klass som representerar en fågel som skulle ge ifrån sig fler/färre läten än en vanlig \code{Fyle}, behöver \code{väsnas} ändras. Denna metod behöver tillgång till \code{räknaLäte}, vilken inte får vara \code{private}.
+\SubtaskSolved  Om en klass som representerar en fågel som skulle ge ifrån sig fler/färre läten än en vanlig \ifswedish\code{Fyle}\else\code{Fowlk}\fi{}, behöver \ifswedish\code{väsnas}\else\code{holler}\fi{} ändras. Denna metod behöver tillgång till \ifswedish\code{räknaLäte}\else\code{callCount}\fi{}, vilken inte får vara \code{private}.
 
 \SubtaskSolved  Räknar-variabeln ska inte kunna påverkas i någon annan del av programmet.
 
@@ -1147,7 +1299,7 @@ I Ånka: \code| override def väsnas = { print(läte * 4); räknaLäte += 4 }|
 
 \QUESTBEGIN
 
-\Task  \what~ Det visar sig att vår flitige ornitolog från uppgift \ref{task:fyle} på sidan \pageref{task:fyle} sov på en av föreläsningarna i zoologi när hen var nolla på Natfak, och därför helt missat fylekategorin \code{Pjodd}. Hjälp vår stackars ornitolog så att fylehierarkin nu även omfattar Pjoddar. En Pjodd kan flyga som en Kråga men den \code{ÄrLiten} medan en Kråga \code{ÄrStor}. En Pjodd kvittrar dubbelt så många gånger som en Ånka kvackar. En Pjodd \code{KanKanskeSimma} där simkunnighetssannolikheten är $0.2$. Låt ornitologen ånyo finna 42 slumpmässiga fåglar i skogen och filtrera fram lämpliga arter. Undersök sedan hur dessa väsnas, i likhet med deluppgift \ref{task:fyle}\ref{subtask:fyle:sound}.
+\Task  \what~ \ifswedish Det visar sig att vår flitige ornitolog från uppgift \ref{task:fyle} på sidan \pageref{task:fyle} sov på en av föreläsningarna i zoologi när hen var nolla på Natfak, och därför helt missat fylekategorin \code{Pjodd}. Hjälp vår stackars ornitolog så att fylehierarkin nu även omfattar Pjoddar. En Pjodd kan flyga som en Kråga men den \code{ÄrLiten} medan en Kråga \code{ÄrStor}. En Pjodd kvittrar dubbelt så många gånger som en Ånka kvackar. En Pjodd \code{KanKanskeSimma} där simkunnighetssannolikheten är $0.2$. Låt ornitologen ånyo finna 42 slumpmässiga fåglar i skogen och filtrera fram lämpliga arter. Undersök sedan hur dessa väsnas, i likhet med deluppgift \ref{task:fyle}\ref{subtask:fyle:sound}.\else It turns out that our diligent ornithologist from task \ref{task:fyle} on page \pageref{task:fyle} slept through one of the zoology lectures back when they were a fresher at the science faculty, and so missed the Fowlk category \code{Pibb} entirely. Help our poor ornithologist so that the Fowlk hierarchy now also takes in Pibbs. A Pibb can fly like a Crawke, but it \code{IsSmall} whereas a Crawke \code{IsLarge}. A Pibb chitters twice as many times as a Quaddle quawks. A Pibb \code{CanPerhapsSwim}, with a swim-capability probability of $0.2$. Let the ornithologist once again find 42 random birds in the wood and filter out the appropriate species. Then examine how they holler, as in subtask \ref{task:fyle}\ref{subtask:fyle:sound}.\fi
 
 
 \SOLUTION
@@ -1155,6 +1307,7 @@ I Ånka: \code| override def väsnas = { print(läte * 4); räknaLäte += 4 }|
 \TaskSolved \what
 
 
+\ifswedish
 \begin{Code}
 trait Fyle:
   val läte: String
@@ -1184,8 +1337,40 @@ final class Pjodd extends Fyle, KanFlyga, KanKanskeSimma, ÄrLiten:
   val läte = "kvitter"
   override def väsnas = { print(läte * 8); räknaLäte += 8 }
 \end{Code}
+\else
+\begin{Code}
+trait Fowlk:
+  val call: String
+  def holler: Unit = { print(call * 2); callCount += 2 }
+  protected var callCount: Int = 0
+  val canActuallySwim: Boolean
+  val canActuallyFly: Boolean
+  val isLarge : Boolean
+  def numberOfCalls: Int = callCount
 
-I REPL:
+trait CanSwim { val canActuallySwim = true }
+trait CannotSwim { val canActuallySwim = false }
+trait CanFly { val canActuallyFly = true }
+trait CanPerhapsFly { val canActuallyFly = math.random() < 0.8 }
+trait CanPerhapsSwim { val canActuallySwim = math.random() < 0.2 }
+trait IsLarge { val isLarge = true }
+trait IsSmall { val isLarge = false }
+
+final class Crawke extends Fowlk, CanFly, CannotSwim, IsLarge:
+  val call = "kraak"
+
+final class Quaddle extends Fowlk, CanSwim, CanPerhapsFly, IsLarge:
+  val call = "quawk"
+  override def holler = { print(call * 4); callCount += 4 }
+
+final class Pibb extends Fowlk, CanFly, CanPerhapsSwim, IsSmall:
+  val call = "chitter"
+  override def holler = { print(call * 8); callCount += 8 }
+\end{Code}
+\fi
+
+\ifswedish I REPL:\else In the REPL:\fi
+\ifswedish
 \begin{REPL}
 val fyle = Vector.fill(42)(
   if math.random() < 0.33 then Kråga()
@@ -1196,6 +1381,18 @@ fyle.filter(f => f.isInstanceOf[Kråga]).size * 2
 fyle.filter(f => f.isInstanceOf[Ånka]).size * 4
 fyle.filter(f => f.isInstanceOf[Pjodd]).size * 8
 \end{REPL}
+\else
+\begin{REPL}
+val flock = Vector.fill(42)(
+  if math.random() < 0.33 then Crawke()
+  else if math.random() < 0.5 then Quaddle()
+  else Pibb()
+)
+flock.filter(f => f.isInstanceOf[Crawke]).size * 2
+flock.filter(f => f.isInstanceOf[Quaddle]).size * 4
+flock.filter(f => f.isInstanceOf[Pibb]).size * 8
+\end{REPL}
+\fi
 
 \QUESTEND
 

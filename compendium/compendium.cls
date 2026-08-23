@@ -39,6 +39,7 @@
 \usepackage{marvosym,dingbat,amssymb}
 
 \usepackage{xcolor}
+\usepackage{framed}
 
 \definecolor{mygreen}{rgb}{0,0.4,0}
 \definecolor{mylinkcolor}{rgb}{0,0.1,0.5}
@@ -116,10 +117,13 @@
 \tikzstyle{umlclass}=[rectangle, draw=black,  thick, anchor=north, text width=3cm, rectangle split, rectangle split parts = 3]
 \tikzstyle{umlarrow}=[->, >=open triangle 90, thick]
 
+\usepackage{forest}  % used by w01-lecture-dod-os.tex
+
+
 \newcommand{\TODO}{\colorbox{red!70}{TODO!!!}~}
 \newcommand{\StudyTheory}[1]{Studera begreppen i kapitel \ref{chapter:W#1}}
-\newcommand{\DoExercise}[2]{Gör övning {\tt #1} i avsnitt \ref{exe:W#2}}
-\newcommand{\ReadTheLab}{Läs igenom och begrunda hela laborationsinstruktionen.}
+\newcommand{\DoExercise}[2]{\ifswedish Gör övning\else Do exercise\fi{} {\tt #1} \ifswedish i avsnitt\else in section\fi{} \ref{exe:W#2}}
+\newcommand{\ReadTheLab}{\ifswedish Läs igenom och begrunda hela laborationsinstruktionen.\else Read through and consider the whole lab instruction.\fi}
 
 \newcommand{\Emph}[1]{\textcolor{myemphcolor}{\textbf{#1}}}
 \newcommand{\Alert}[1]{\textcolor{myalertcolor}{\textbf{#1}}}
@@ -130,15 +134,17 @@
 
 \newcommand{\ChapterUnnum}[1]{\chapter*{#1}\addcontentsline{toc}{chapter}{#1}}
 \newcommand{\SectionUnnum}[1]{\section*{#1}\addcontentsline{toc}{section}{#1}}
-\newcommand{\Exercise}[1]{\newpage\section{Övning {\tt #1}}\label{section:exe:#1}}
-\newcommand{\ExerciseSolution}[1]{\newpage\section{Lösning {\tt #1}}}
-\newcommand{\Lab}[1]{\newpage\section{Laboration: {\tt #1}}\label{section:lab:#1}}
-\newcommand{\Teamlab}[1]{\newpage\section{Grupplaboration: {\tt #1}}\label{section:lab:#1}}
-\newcommand{\Assignment}[1]{\newpage\section{Projektuppgift: {\tt #1}}\label{section:proj:#1}}
-\newcommand{\BasicTasks}{\subsection{Grunduppgifter; förberedelse inför laboration}}
-\newcommand{\BasicTasksNoLab}{\subsection{Grunduppgifter}}
-\newcommand{\ExtraTasks}{\subsection{Extrauppgifter; träna mer}}
-\newcommand{\AdvancedTasks}{\subsection{Fördjupningsuppgifter; utmaningar}}
+% Exercise/lab/task section headings — hardcoded text clamped with \ifswedish so the English build
+% (\swedishfalse) renders English. The {\tt #1} exercise names are language-neutral and stay as-is.
+\newcommand{\Exercise}[1]{\newpage\section{\ifswedish Övning\else Exercise\fi~{\tt #1}}\label{section:exe:#1}}
+\newcommand{\ExerciseSolution}[1]{\newpage\section{\ifswedish Lösning\else Solution\fi~{\tt #1}}}
+\newcommand{\Lab}[1]{\newpage\section{\ifswedish Laboration:\else Lab:\fi~{\tt #1}}\label{section:lab:#1}}
+\newcommand{\Teamlab}[1]{\newpage\section{\ifswedish Grupplaboration:\else Group lab:\fi~{\tt #1}}\label{section:lab:#1}}
+\newcommand{\Assignment}[1]{\newpage\section{\ifswedish Projektuppgift:\else Project assignment:\fi~{\tt #1}}\label{section:proj:#1}}
+\newcommand{\BasicTasks}{\subsection{\ifswedish Grunduppgifter; förberedelse inför laboration\else Basic tasks; preparation for the lab\fi}}
+\newcommand{\BasicTasksNoLab}{\subsection{\ifswedish Grunduppgifter\else Basic tasks\fi}}
+\newcommand{\ExtraTasks}{\subsection{\ifswedish Extrauppgifter; träna mer\else Extra tasks; practice more\fi}}
+\newcommand{\AdvancedTasks}{\subsection{\ifswedish Fördjupningsuppgifter; utmaningar\else Advanced tasks; challenges\fi}}
 \newcommand{\TaskSection}[1]{\subsubsection*{#1}}
 
 \newcommand\Menu[1]{\textit{#1}}
@@ -157,7 +163,7 @@
 \refstepcounter{TaskCounter}%
 \ifnum\value{TaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
 \pagebreak[2]
-\noindent{\Emph{Uppgift~\arabic{TaskCounter}.}~}%
+\noindent{\Emph{\ifswedish Uppgift \else Task \fi~\arabic{TaskCounter}.}~}%
 }
 
 \newcounter{SolutionTaskCounter}[section]
@@ -165,7 +171,7 @@
 \newcommand{\TaskSolved}{%
 \refstepcounter{SolutionTaskCounter}%
 \ifnum\value{SolutionTaskCounter}>1\vspace{1em}\else\vspace{0.25em}\fi%
-\pagebreak[2]\noindent{\Emph{Lösn. uppg.~\arabic{SolutionTaskCounter}.}~}%
+\pagebreak[2]\noindent{\Emph{\ifswedish Lösn. uppg.\else Sol. task\fi~\arabic{SolutionTaskCounter}.}~}%
 }
 
 
@@ -196,7 +202,7 @@
 \newcommand{\DescrCount}{\refstepcounter{DescrCounter}\Alph{DescrCounter}}
 
 \newenvironment{ConceptConnections}[1][0.5cm]%
-{\begingroup\renewcommand{\arraystretch}{1.2}\vspace{1em}\raggedright\begin{tabular}{@{}l |c p{#1} c| p{0.75\textwidth}}}%
+{\begingroup\renewcommand{\arraystretch}{1.2}\vspace{1em}\raggedright\begin{tabular}{@{}l |c p{#1} c| p{0.55\textwidth}}}%
 {\end{tabular}\vspace{1em}\endgroup}
 
 \newcommand{\Connect}[2]      {#1  &  \ConceptCount  &   &   \DescrCount  &  #2 \\}
@@ -221,17 +227,82 @@
 }
 
 
+%% BEGIN stuff from introprog-computer-intro to make it compile
+%% TODO: Mattias: could we just use item? 
+
+\newcommand{\ii}{\item}
+\newcommand{\ti}{\textit}
+\newcommand{\is}{\item}
+\newcommand{\di}{\item}
+\newcommand{\ts}{\textit}
+\newcommand{\enquote}[1]{''#1''}
+\newcommand{\commandchar}{\texttt}
+
+%\newcommand{\commandchar}[1]{\textsc{#1}}
+\newcommand{\file}[1]{\texttt{#1}}
+\usepackage{pifont}   % Provides the star symbols
+
+\newcommand{\stars}[1]{%
+  \ifnum#1>0 \ding{72}\else \ding{73}\fi
+  \ifnum#1>1 \ding{72}\else \ding{73}\fi
+  \ifnum#1>2 \ding{72}\else \ding{73}\fi
+  \ifnum#1>3 \ding{72}\else \ding{73}\fi
+  \ifnum#1>4 \ding{72}\else \ding{73}\fi
+}
+
+% Blockvariant (som tidigare)
+\newcommand{\difficulty}[2][]{%
+  \emph{\ifswedish Svårighet:\else Difficulty:\fi} \stars{#2}%
+  \ifx\relax#1\relax \else \hspace{3mm}(\textit{#1})\fi
+  %\par%
+  \noindent
+}
+
+% Inline-variant för löpande text
+\newcommand{\diffinline}[2][]{%
+  \stars{#2}%
+  \ifx\relax#1\relax \else \,(\textit{#1})\fi
+}
+
+\newcommand{\halfblankline}{\vspace{0.5em}}
+\newcommand{\blankline}{\vspace{1.0em}}
+
+
+
+% Define the hint command
+\newcommand{\hint}[2][]{\par\halfblankline\noindent\textbf{\ifswedish Ledtråd\else Hint\fi\ifx#1\empty\else\space#1\fi}: #2\par}
+
+%%% END stuff introprog-computer-intro
+
 \newenvironment{Goals}%
-{\subsubsection{Mål}\begin{itemize}[nosep, label={$\square$},]}%
+{\subsubsection{\ifswedish Mål\else Goals\fi}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
 
 \newenvironment{Preparations}%
-{\subsubsection{Förberedelser}\begin{itemize}[nosep, label={$\square$},]}%
+{\subsubsection{\ifswedish Förberedelser\else Preparations\fi}\begin{itemize}[nosep, label={$\square$},]}%
 {\end{itemize}}
+
+\newenvironment{Kontrollfragor}%
+{\subsubsection{\ifswedish Kontrollfragor\else Review questions\fi}\begin{itemize}[nosep, label={$\square$},]}%
+{\end{itemize}}
+
+\newenvironment{Extrauppgifter}%
+{\begin{enumerate}}{\end{enumerate}}
+
+\newenvironment{Datorarbete}%
+{\begin{enumerate}}{\end{enumerate}}
+
+
+\newenvironment{Deluppgifter}%
+{\begin{enumerate}[nosep]}{\end{enumerate}}
+
 
 \newenvironment{Background}%
 {\begin{adjustwidth}{\parindent}{}\small \emph{Bakgrund:}}%
 {\end{adjustwidth}}
+
+
+
 
 \newcommand{\vecka}{1}%renew this command in chapter.tex files
 
@@ -239,6 +310,31 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% changes to make slide stuff look good in compendium
+
+\newenvironment{block}[1]{%
+  \par\addvspace{0.8em}%
+  \noindent\begingroup
+  \setlength{\fboxsep}{0.45em}%
+  \colorbox{black!80}{%
+    \parbox{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \strut\sffamily\bfseries\color{white}#1\strut
+    }%
+  }%
+  \par\nobreak
+  \setlength{\FrameSep}{0.75em}%
+  \setlength{\OuterFrameSep}{0pt}%
+  \def\FrameCommand{%
+    \setlength{\fboxsep}{\FrameSep}%
+    \setlength{\fboxrule}{0.4pt}%
+    \fcolorbox{black!35}{black!5}%
+  }%
+  \MakeFramed{\advance\hsize-\width\FrameRestore}%
+  \noindent\ignorespaces
+}{%
+  \endMakeFramed
+  \par\addvspace{0.8em}%
+  \endgroup
+}
 
 \newcommand{\pause}{}% do nothing
 %%% SLIDE SIZES with no affect in compedium
@@ -389,3 +485,37 @@ tabsize=2,#1]{#2}}
 \newcommand{\javainputlisting}[2][]{\lstinputlisting[%
 language=Java,%
 tabsize=4,#1]{#2}}
+
+% Definiera färger för syntaxfärgläggning i latex-kod
+\definecolor{latexkeywordcolor}{rgb}{0.2, 0.2, 0.7}
+\definecolor{latexcommentcolor}{rgb}{0.1, 0.4, 0.1}
+
+
+% Definierar en specifik stil för LaTeX-kodexempel
+\lstdefinestyle{latexex}{
+    language=[LaTeX]TeX,
+    morekeywords={begin,end,documentclass,usepackage,author,title,date,maketitle,frame,includegraphics,centering,tableofcontents,section,subsection,subsubsection,paragraph,subparagraph,itemize,enumerate,description,figure,table,tabular,centering,includegraphics,resizebox,rotatebox,subfigure,subtable,subfloat,subcaption,subref,ref,eqref,label,footnote,cite,printbibliography,printindex,printglossary,printglossaries},
+    breaklines=true,                   % Aktiverar automatisk radbrytning
+    breakatwhitespace=true,            % Radbrytning vid mellanslag
+    basicstyle=\ttfamily\scriptsize,   % Grundstil för koden
+    keywordstyle=\color{latexkeywordcolor}, % Färg för nyckelord
+    commentstyle=\color{latexcommentcolor}, % Färg för kommentarer
+    showstringspaces=false             % Visar inte mellanslag inom strängar
+    xleftmargin=0pt,                   % Ingen marginal till vänster
+    xrightmargin=0pt,                  % Ingen marginal till höger
+    breakautoindent=true,             % Ingen indragning vid radbrytning
+    breakindent=0pt,                   % Ingen indragning vid radbrytning
+    frame=none,                        % Ram runt koden
+    columns=fullflexible,              % Flexibel kolumnbredd
+    resetmargins=true,                 % Återställ marginaler
+    aboveskip=0pt,                     % Avstånd ovanför kod
+    belowskip=0pt,                     % Avstånd under kod
+    framexleftmargin=0pt,              % Ingen marginal till vänster om ramen
+    framesep=0pt,                      % Ingen marginal runt ramen
+    rulesep=0pt,                       % Ingen marginal runt regeln
+    keepspaces=true,                   % Behåll mellanslag
+}
+
+\lstnewenvironment{exlatex}[1][]{%
+    \lstset{basicstyle=\ttfamily\fontsize{7}{9}\selectfont,style=latexex,#1}%
+}{}
