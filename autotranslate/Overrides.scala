@@ -763,13 +763,12 @@ object Overrides:
     // Of the 24 headings whose English equalled their Swedish, 20 are CORRECTLY identical (Kojo,
     // Rebase, sbt, Tips ...) and are listed in autotranslate/heading-residue-keep.txt. These four
     // were real Swedish leaking into the English book.
-    // ⚠ "Grupplaboration" is STILL not here, but the reason changed on 2026-08-23. The SM286c
-    // splitter fix (segment boundary at a heading's START, in Latex.mask) makes
-    // `\subsection{Grupplaboration}` its own translation unit at last -- it used to fuse backward
-    // into the \end{oframed} tail above it, so no key could reach it. Its ENGLISH wording is not
-    // ruled yet (the cache mixes "Group assignment" and "Group lab"), so it is left to the next
-    // model run + review rather than decided here. The \renewcommand{\Teamlab} \chapter title in
-    // labs.tex is a DIFFERENT cause (prose inside a masked macro body) and still needs a clamp.
+    // "Grupplaboration" -> "Group lab assignment" is RULED (BR 2026-08-23), reachable since the
+    // splitter fix (segment boundary at a heading's START in Latex.mask -- it used to fuse
+    // backward into the \end{oframed} tail above it, so no key could reach it). The
+    // \renewcommand{\Teamlab} \chapter title in labs.tex is a DIFFERENT cause (prose inside a
+    // masked macro body) and is fixed by an \ifswedish clamp there, worded consistently.
+    "Grupplaboration"                       -> "Group lab assignment",
     "Repeterade parametrar blir sekvens"    -> "Repeated parameters become a sequence",
     "bash-finesser 1"                       -> "bash tricks 1",
     "bash-finesser 2"                       -> "bash tricks 2",
