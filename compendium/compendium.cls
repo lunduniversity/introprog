@@ -139,7 +139,7 @@
 \newcommand{\Exercise}[1]{\newpage\section{\ifswedish Övning\else Exercise\fi~{\tt #1}}\label{section:exe:#1}}
 \newcommand{\ExerciseSolution}[1]{\newpage\section{\ifswedish Lösning\else Solution\fi~{\tt #1}}}
 \newcommand{\Lab}[1]{\newpage\section{\ifswedish Laboration:\else Lab:\fi~{\tt #1}}\label{section:lab:#1}}
-\newcommand{\Teamlab}[1]{\newpage\section{\ifswedish Grupplaboration:\else Group lab:\fi~{\tt #1}}\label{section:lab:#1}}
+\newcommand{\Teamlab}[1]{\newpage\section{\ifswedish Grupplaboration:\else Group lab assignment:\fi~{\tt #1}}\label{section:lab:#1}}
 \newcommand{\Assignment}[1]{\newpage\section{\ifswedish Projektuppgift:\else Project assignment:\fi~{\tt #1}}\label{section:proj:#1}}
 \newcommand{\BasicTasks}{\subsection{\ifswedish Grunduppgifter; förberedelse inför laboration\else Basic tasks; preparation for the lab\fi}}
 \newcommand{\BasicTasksNoLab}{\subsection{\ifswedish Grunduppgifter\else Basic tasks\fi}}
