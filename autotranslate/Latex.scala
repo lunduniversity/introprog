@@ -59,7 +59,7 @@ object Latex:
     "ref", "pageref", "eqref", "autoref", "nameref", "label", "cite", "input", "include", "hyphenation",
     "includegraphics", "scalainputlisting", "javainputlisting", "lstinputlisting", "inputgraphics", "hypertarget",
     "hyperlink", "url", "href", "index", "vspace", "hspace", "vskip", "hskip", "fontsize",
-    "setlength", "selectfont", "color", "textcolor", "colorbox", "raisebox", "includepdf",
+    "setlength", "setcounter", "selectfont", "color", "textcolor", "colorbox", "raisebox", "includepdf",
     "SlideFontSize", "marginnote", "reversemarginpar",
     "texttt", "title", "author", "date", "textsuperscript", // code / proper-noun / symbol — keep verbatim
     "renewcommand", "newcommand", "providecommand", // macro (re)definitions — never translate the body
@@ -85,7 +85,7 @@ object Latex:
   //   \section \subsection \subsubsection \Subsection \Section \chapter \paragraph \caption \footnote
   // commands taking 2 mandatory args.
   val argCount = Map(
-    "href" -> 2, "textcolor" -> 2, "hyperlink" -> 2, "fontsize" -> 2, "setlength" -> 2,
+    "href" -> 2, "textcolor" -> 2, "hyperlink" -> 2, "fontsize" -> 2, "setlength" -> 2, "setcounter" -> 2,
     "SlideImg" -> 2, "SlideFontSize" -> 2, "DoExercise" -> 2, "difficulty" -> 2,
     "renewcommand" -> 2, "newcommand" -> 2, "providecommand" -> 2
   )
@@ -251,6 +251,10 @@ object Latex:
                 // Mark the title's closing `}` as a segment boundary (titleCloseAt) so the title is
                 // translated as its OWN unit — better quality AND lets overrides.tsv-style keys be the
                 // plain title text even when slide body content follows with no blank line.
+                // ALSO cut just BEFORE the \begin (itemIdx on its placeholder): without a leading
+                // boundary, a title preceded by non-blank-line content fuses backward into the
+                // previous unit and its plain-title key can never match (the SM286c splitter bug).
+                itemIdx += spans.size
                 val k = skipOptional(text, j2)
                 if k < n && text(k) == '{' then titleCloseAt = skipGroup(text, k) - 1
                 protect(text.substring(i, k)); i = k
@@ -292,13 +296,31 @@ object Latex:
             case nm if maskWhole.contains(nm) =>
               val argc = argCount.getOrElse(nm, 1)
               var k = j
-              for _ <- 1 to argc do k = skipGroup(text, skipOptional(text, k))
+              var remaining = argc
+              // \renewcommand\thechapter{\Alph{chapter}}: the redefined command may be a BARE
+              // control word rather than a {\cmd} group — consume it as the first arg so the body
+              // is still masked whole (else the body's inner arg, e.g. `chapter`, leaks out as a
+              // bogus prose unit). ONLY for the *command definition macros: a zero-arg maskWhole
+              // command (\selectfont, \reversemarginpar) must never swallow a following command.
+              if nm.endsWith("command") then
+                var p = k
+                while p < n && text(p).isWhitespace do p += 1
+                if p + 1 < n && text(p) == '\\' && isCmdLetter(text(p + 1)) then
+                  var q = p + 1
+                  while q < n && isCmdLetter(text(q)) do q += 1
+                  k = q; remaining -= 1
+              for _ <- 1 to remaining do k = skipGroup(text, skipOptional(text, k))
               protect(text.substring(i, k)); i = k
             case nm if itemCmds.contains(nm) => // \item / \ii / \is / \di — list-item boundary
               val k = skipOptional(text, j); itemIdx += spans.size; protect(text.substring(i, k)); i = k
             case nm if headingCmds.contains(nm) => // \section/\subsection/... — heading is its OWN unit
               // mask the command + optional [short title]; leave {heading} for translate-arg, and mark
               // its closing `}` as a segment boundary (same mechanism as Slide titles, titleCloseAt).
+              // ALSO cut just BEFORE the command (itemIdx on its placeholder), so a heading with no
+              // preceding blank line (e.g. right after \end{oframed}) is not fused backward into the
+              // previous unit — the fusion that kept \subsection{Grupplaboration} from ever becoming
+              // a translation unit (the SM286c splitter bug).
+              itemIdx += spans.size
               val k = skipOptional(text, j)
               if k < n && text(k) == '{' then titleCloseAt = skipGroup(text, k) - 1
               protect(text.substring(i, k)); i = k

@@ -763,13 +763,38 @@ object Overrides:
     // Of the 24 headings whose English equalled their Swedish, 20 are CORRECTLY identical (Kojo,
     // Rebase, sbt, Tips ...) and are listed in autotranslate/heading-residue-keep.txt. These four
     // were real Swedish leaking into the English book.
-    // ⚠ "Grupplaboration" is NOT here on purpose. `\subsection{Grupplaboration}` in
-    // prechapters/course-instructions.tex never becomes a translation unit at all -- there is no
-    // such key in translate-cache.tsv -- so no Overrides entry can reach it, and one was tried and
-    // measured as a no-op before being removed. The residue gauge reports it as unruled, which is
-    // the correct outcome: it is a MECHANISM gap, not a missing translation. Same root cause as the
-    // Swedish \chapter title produced by \renewcommand{\Teamlab} in labs.tex.
+    // ⚠ "Grupplaboration" is STILL not here, but the reason changed on 2026-08-23. The SM286c
+    // splitter fix (segment boundary at a heading's START, in Latex.mask) makes
+    // `\subsection{Grupplaboration}` its own translation unit at last -- it used to fuse backward
+    // into the \end{oframed} tail above it, so no key could reach it. Its ENGLISH wording is not
+    // ruled yet (the cache mixes "Group assignment" and "Group lab"), so it is left to the next
+    // model run + review rather than decided here. The \renewcommand{\Teamlab} \chapter title in
+    // labs.tex is a DIFFERENT cause (prose inside a masked macro body) and still needs a clamp.
     "Repeterade parametrar blir sekvens"    -> "Repeated parameters become a sequence",
     "bash-finesser 1"                       -> "bash tricks 1",
     "bash-finesser 2"                       -> "bash tricks 2",
+
+    // ── full-heading keys, reachable since the SM286c splitter fix (2026-08-23) ─────────────────
+    // A heading that ENDS in a code span keeps that span in the unit's TRAILING placeholder run,
+    // so its plain-Swedish key could never match the peeled core. Translate.translateBlock now
+    // ALSO tries the full restored form (core + trailing run), which these keys match. Values
+    // apply the ratified minimal rule: prefix `Fördjupning:` -> `Deep dive:`, tails kept from the
+    // cached model English. Tail casing/wording is SM285's held book-wide decision -- revisit
+    // these values when that lands. Two tails could NOT be kept verbatim and carry new wording:
+    // the `arvssäker \texttt{equals}` one (the cached tail was translated blind to the peeled
+    // span and composes to broken English) -- flagged for review.
+    """Fördjupning: Implementera \texttt{equals}"""
+      -> """Deep dive: Implement \texttt{equals}""",
+    """Fördjupning: Implementera \texttt{equals} med \texttt{match}"""
+      -> """Deep dive: Implement \texttt{equals} with \texttt{match}""",
+    """Fördjupning: Recept i 8 steg för arvssäker \texttt{equals}"""
+      -> """Deep dive: 8-step recipe for inheritance-safe \texttt{equals}""",
+    """Fördjupning: Unionstyper och typen \text{Matchable}"""
+      -> """Deep dive: Union Types and the Type \text{Matchable}""",
+    """Fördjupning: metoden \texttt{unapply}"""
+      -> """Deep dive: the method \texttt{unapply}""",
+    """Fördjupning: override av \texttt{var} med \texttt{var}"""
+      -> """Deep dive: overriding \texttt{var} with \texttt{var}""",
+    """Fördjupning: override av \texttt{def} med \texttt{var}"""
+      -> """Deep dive: overriding \texttt{def} with \texttt{var}""",
   )

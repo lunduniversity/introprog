@@ -578,8 +578,18 @@ object Translate:
         // The override value is used verbatim (the contributor writes natural English incl. any LaTeX),
         // so it also works for units that contain inline commands.
         val clean = Latex.restore(core, spans).trim
-        overrides.get(clean) match
-          case Some(en) => overrideHits += 1; b.substring(0, lead) + en + b.substring(trail)
+        // FULL-UNIT override key: `core` excludes the TRAILING placeholder run, so a unit that ENDS
+        // in a masked span (a heading like `Fördjupning: … med \texttt{match}`) can never be matched
+        // by the full plain-Swedish key a contributor naturally writes — `clean` stops at `med`.
+        // Restore the trailing run too (up to the last non-whitespace char, so block-final whitespace
+        // is preserved verbatim) and try THAT key first; the override value replaces core+trail
+        // verbatim, carrying its own inline LaTeX (\texttt{…}) like every override value does.
+        val fullEnd = { var e = b.length; while e > lead && b(e - 1).isWhitespace do e -= 1; e }
+        val cleanFull = Latex.restore(b.substring(lead, fullEnd), spans).trim
+        val overrideHit = (if cleanFull != clean then overrides.get(cleanFull).map((_, fullEnd)) else None)
+          .orElse(overrides.get(clean).map((_, trail)))
+        overrideHit match
+          case Some((en, upto)) => overrideHits += 1; b.substring(0, lead) + en + b.substring(upto)
           case None     =>
             val willModel = captureSuggestions && sourceOf(core) == "model"
             val en = translate(core)
