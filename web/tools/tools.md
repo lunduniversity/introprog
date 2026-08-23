@@ -121,7 +121,7 @@ Du ska få något som börjar med `Scala code runner version 3`.
 Om du får varning med `MainGenericRunner`, installera explicit Scala-version:
 
 ```bash
-cs install scala:3.7.4
+cs install scala:3.8.4
 ```
 
 ### 4) Installera VS Code + Scala (Metals)
@@ -397,7 +397,7 @@ scala --version
 Vid `MainGenericRunner`-varning:
 
 ```bash
-cs install scala:3.7.4
+cs install scala:3.8.4
 ```
 
 ### 4) Installera VS Code + Scala (Metals)
