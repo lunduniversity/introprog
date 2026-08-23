@@ -796,4 +796,21 @@ object Overrides:
       -> """Deep dive: overriding \texttt{var} with \texttt{var}""",
     """Fördjupning: override av \texttt{def} med \texttt{var}"""
       -> """Deep dive: overriding \texttt{def} with \texttt{var}""",
+
+    // ── info-week00 dense-emphasis units the model mangled (2026-08-23 clearing run) ────────────
+    // Full-unit overrides bypass the tier-2 isolated-emphasis retry whose child translations
+    // produced the slop ("sink large", "deept", "self-contained ability", "requirement handling").
+    // ⚠ The Motivation key looks brace-unbalanced BY DESIGN: that unit STARTS inside \Emph{...},
+    // so the leading \Emph{ is peeled into the unit's lead — the key is the full restored form
+    // and the value must supply the matching closing brace (see translateBlock).
+    """Om \Alert{priset} på själva kodskrivandet \Alert{sjunker stort} så kommer \Emph{efterfrågan} på kod att \Emph{öka stort} (givet att grundläggande ekonomiska samband gäller)"""
+      -> """If \Alert{the price} of writing code itself \Alert{drops sharply}, then \Emph{demand} for code will \Emph{increase sharply} (given that basic economic relationships hold)""",
+    """I fokus: \Emph{kravhantering}, verifiering, design, arkitektur"""
+      -> """In focus: \Emph{requirements engineering}, verification, design, architecture""",
+    """Motivation} att lära på \Alert{djupet}"""
+      -> """Motivation} to learn \Alert{in depth}""",
+    """Fokus på \Emph{självständig förmåga} att kunna skapa och förstå kod utan att vara beroende av hjälpmedel"""
+      -> """Focus on the \Emph{independent ability} to create and understand code without depending on tools""",
+    "djupet"                -> "the depth",          // poisoned child entry: the model minted "deept"
+    "självständig förmåga"  -> "independent ability", // child entry said "self-contained ability"
   )
