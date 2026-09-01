@@ -263,7 +263,6 @@ javac --version
 
 ```bash
 brew install scala
-brew install Virtuslab/scala-cli/scala-cli
 ```
 
 Verifiera att det blev installerat:
