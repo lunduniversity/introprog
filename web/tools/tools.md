@@ -57,14 +57,14 @@ Innan du börjar:
 
 ### 2) Installera OpenJDK 25
 
-Kontrollera först i terminalen:
+Kontrollera först i terminalen (glöm inte sista c:et i javac):
 
 ```bash
 javac --version
 ```
-
-- Om `javac` saknas eller versionen är äldre än **25**: installera enligt instruktionerna nedan.
-- Om du har en äldre JDK: avinstallera den först.
+- Det går bra med Java JDK 21 också.
+- Om `javac` saknas eller versionen är något annat än **25** eller **21**: installera enligt instruktionerna nedan.
+- Om du har en annan JDK: avinstallera den först.
 
 Installera från: <https://adoptium.net/>
 
@@ -77,7 +77,7 @@ Installera från: <https://adoptium.net/>
    - Set or override JAVA_HOME variable
    - JavaSoft (Oracle) registry keys
 4. Starta om datorn.
-5. Verifiera igen med:
+5. Verifiera igen med (notera c:et i javac):
 
 ```bash
 javac --version
@@ -157,6 +157,8 @@ scala>
 5. Om en fönster öppnar och en padda dyker upp har du installerat den korrekt.
 
 Kojo används på [Vattenhallen Science Center](https://www.vattenhallen.lu.se/upplevelser/programmering/). LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen här: [https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/](https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/)
+
+*Valfritt*: Installera skrivbordsappen Kojo här: https://www.kogics.net/kojo-download där du kan programmera i äldre Scala 2 (se Appendix 1).
 
 ### 6) Installera Git
 
@@ -323,7 +325,8 @@ scala>
 ```
 5. Om en fönster öppnar och en padda dyker upp har du installerat den korrekt.
 
-Kojo används på [Vattenhallen Science Center](https://www.vattenhallen.lu.se/upplevelser/programmering/). LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen här: [https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/](https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/)
+*Valfritt*: Installera skrivbordsappen Kojo här: https://www.kogics.net/kojo-download där du kan programmera i äldre Scala 2 (se Appendix 1).
+
 
 ### 7) Installera Git
 
@@ -455,7 +458,7 @@ scala>
 ```
 5. Om en fönster öppnar och en padda dyker upp har du installerat den korrekt.
 
-Kojo används på [Vattenhallen Science Center](https://www.vattenhallen.lu.se/upplevelser/programmering/). LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen här: [https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/](https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/)
+*Valfritt*: Installera skrivbordsappen Kojo här: https://www.kogics.net/kojo-download där du kan programmera i äldre Scala 2 (se Appendix 1).
 
 ### 6) Installera Git
 
