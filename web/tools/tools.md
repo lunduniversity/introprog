@@ -142,12 +142,22 @@ code --install-extension scalameta.metals --force
 
 ### 5) Installera Kojo
 Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera.
-1. Ladda ner filen till en mapp: <https://fileadmin.cs.lth.se/kojo.scala>
-2. Öppna mappen i VS Code och kör enligt kompendiet, t.ex. genom att öppna terminalen i VS Code och skriva:
+1. Skapa en mapp och öppna den i VS Code genom att följa `File -> Open Folder... -> Hitta och tryck på mappen ->  Open`
+> OBS! Öppna inte filen direkt eller en mapp som innehåller många filer (t.ex Downloads), skapa alltid en ny mapp först och använd den.
+2. Ladda ner filen till mappen: <https://fileadmin.cs.lth.se/kojo.scala>
+3. Öppna terminalen i VS Code genom att följa `Terminal -> New Terminal` och skriv i den
 
 ```bash
 scala repl .
 ```
+4. Skriv i den nya terminalen som ser som nedan kommandot `fram`
+```bash 
+scala>
+```
+5. Om en fönster öppnar och en padda dyker upp har du installerat den korrekt.
+
+Kojo används på [Vattenhallen Science Center](https://www.vattenhallen.lu.se/upplevelser/programmering/). LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen här: [https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/](https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/)
+
 ### 6) Installera Git
 
 1. Ladda ner: <https://git-scm.com/download/win>  
@@ -160,6 +170,12 @@ scala repl .
 ```bash
 git --version
 ```
+
+### 7) Ladda ner Workspace
+För att kunna uppföra labbarna i denna kurs behöver du en workspace med redan givna filer.
+1. Ladda ner och packa upp <https://fileadmin.cs.lth.se/pgk/workspace.zip>
+2. Öppna mappen i VS Code genom att följa `File -> Open Folder... -> Hitta och tryck på mappen ->  Open`
+3. Utför dina labbar i respektive mapp för varje labb.
 
 ---
 
@@ -292,13 +308,20 @@ code --install-extension scalameta.metals --force
 5. Starta om VS Code.
 
 ### 6) Installera Kojo
-
-1. Ladda ner: <https://fileadmin.cs.lth.se/kojo.scala>
-2. Öppna mappen i VS Code och kör:
+Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera.
+1. Skapa en mapp och öppna den i VS Code genom att följa `File -> Open Folder... -> Hitta och tryck på mappen ->  Open`
+> OBS! Öppna inte Downloads eller Documents direkt, alltid skapa en ny mapp först och använd den.
+2. Ladda ner filen till mappen: <https://fileadmin.cs.lth.se/kojo.scala>
+3. Öppna terminalen i VS Code genom att följa `Terminal -> New Terminal` och skriv i den
 
 ```bash
 scala repl .
 ```
+4. Skriv i den nya terminalen som ser som nedan kommandot `fram`
+```bash 
+scala>
+```
+5. Om en fönster öppnar och en padda dyker upp har du installerat den korrekt.
 
 Kojo används på [Vattenhallen Science Center](https://www.vattenhallen.lu.se/upplevelser/programmering/). LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen här: [https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/](https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/)
 
@@ -310,6 +333,11 @@ brew install git
 git --version
 ```
 
+### 8) Ladda ner Workspace
+För att kunna uppföra labbarna i denna kurs behöver du en workspace med redan givna filer.
+1. Ladda ner och packa upp <https://fileadmin.cs.lth.se/pgk/workspace.zip>
+2. Öppna mappen i VS Code genom att följa `File -> Open Folder... -> Hitta och tryck på mappen ->  Open`
+3. Utför dina labbar i respektive mapp för varje labb.
 ---
 
 ## Linux (Ubuntu)
@@ -413,13 +441,19 @@ code --install-extension scalameta.metals --force
 
 ### 5) Installera Kojo
 Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera.
-
-1. Ladda ner till en mapp: <https://fileadmin.cs.lth.se/kojo.scala>
-2. Öppna mappen i VS Code, öppna terminalen i VS Code och kör:
+1. Skapa en mapp och öppna den i VS Code genom att följa `File -> Open Folder... -> Hitta och tryck på mappen ->  Open`
+> OBS! Öppna inte Downloads eller Documents direkt, alltid skapa en ny mapp först och använd den.
+2. Ladda ner filen till mappen: <https://fileadmin.cs.lth.se/kojo.scala>
+3. Öppna terminalen i VS Code genom att följa `Terminal -> New Terminal` och klistra i den
 
 ```bash
 scala repl .
 ```
+4. Skriv i den nya terminalen som ser som nedan kommandot `fram`
+```bash 
+scala>
+```
+5. Om en fönster öppnar och en padda dyker upp har du installerat den korrekt.
 
 Kojo används på [Vattenhallen Science Center](https://www.vattenhallen.lu.se/upplevelser/programmering/). LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen här: [https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/](https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/)
 
@@ -430,6 +464,12 @@ Klistra i terminalen och kolla att det blev installerat:
 apt-get install git
 git --version
 ```
+
+### 7) Ladda ner Workspace
+För att kunna uppföra labbarna i denna kurs behöver du en workspace med redan givna filer.
+1. Ladda ner och packa upp <https://fileadmin.cs.lth.se/pgk/workspace.zip>
+2. Öppna mappen i VS Code genom att följa `File -> Open Folder... -> Hitta och tryck på mappen -> Open`
+3. Utför dina labbar i respektive mapp för varje labb.
 
 ---
 
