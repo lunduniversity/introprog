@@ -267,7 +267,7 @@ Lägg till i miljön:
 
 ```bash
 echo 'export PATH="$(brew --prefix openjdk@25)/bin:$PATH"' >> ~/.zprofile
-echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 25)' >> ~/.zprofile
+echo 'export JAVA_HOME=$(brew --prefix openjdk@25)' >> ~/.zprofile
 source ~/.zprofile
 ```
 
