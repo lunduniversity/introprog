@@ -318,6 +318,8 @@ code --install-extension scalameta.metals --force
 
 5. Starta om VS Code.
 
+6. Gör så att `code` hamnar på PATH och därmed att det funkar att skriva `code .` i terminalen Cmd+Shift+P, skriv "shell command" som beskrivs här: https://code.visualstudio.com/docs/setup/mac#_launch-vs-code-from-the-command-line 
+
 ### 6) Installera Kojo
 Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera.
 1. Skapa en mapp och öppna den i VS Code genom att följa `File -> Open Folder... -> Hitta och tryck på mappen ->  Open`
