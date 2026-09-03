@@ -271,10 +271,19 @@ echo 'export JAVA_HOME=$(brew --prefix openjdk@25)' >> ~/.zprofile
 source ~/.zprofile
 ```
 
+Kolla vad som nu ligger i ~/.zprofile och PATH och JAVA_HOME:
+```bash
+cat ~/.zprofile
+echo $PATH
+echo $JAVA_HOME
+```
+JAVA_HOME ska inte vara tom och $PATH ska innehålla något med openjdk.
+
 Verifiera att det blev installerat:
 
 ```bash
-javac --version
+javac -version
+java -version
 ```
 
 ### 4) Installera Scala och Scala CLI
