@@ -225,14 +225,20 @@ Verifiera att det blev installerat:
 brew --version
 ```
 
-#### **Valfritt**: iTerm2
-MacOS kommer med en inbyggd terminal, men många föredrar att använda iTerm2 som är mer flexibel.
-Installera iTerm2 (valfritt) med:
+#### **Valfritt, rekommenderat**: kraftfullare terminal
+
+MacOS kommer med en inbyggd terminal, men denna brukar ersättas av ett mer flexibelt verktyg.
+
+Två vanliga alternativ är [Ghostty](https://ghostty.org/) och [iTerm2](https://iterm2.com/), som båda kan installeras med brew:
+
 ```bash
+brew install --cask ghostty
 brew install --cask iterm2
 ```
 
-Du kan nu stänga terminalen och öppna iTerm2.
+Är du osäker på vad skillnaden är så är Ghostty antagligen rätt för dig.
+
+Du kan nu stänga terminalen och öppna din nya terminal.
 
 ### 3) Installera OpenJDK 25
 
