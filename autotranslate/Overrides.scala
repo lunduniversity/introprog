@@ -22,10 +22,17 @@
   *     2. A unit is SPLIT AT a code span. The unit for `Framkalla värde med \texttt{summon}` is
   *        just `Framkalla värde med`, and `Exempel på \textbf{funktionell nedbrytning` ends
   *        WITHOUT its closing brace.
-  *   So confirm the key against the SOURCE .tex, and when a code span is involved look the unit
-  *   up in `translate-cache.tsv` or `scratch/override-suggestions.txt` instead of guessing.
+  *   ⇒ DO NOT transcribe the key from the SOURCE .tex. That advice used to stand here and it is what
+  *   caused two silent misses on 2026-09-06: a unit can BEGIN inside a macro, so its key opens with a
+  *   dangling `}` (`Kontinuerlig Muntaträning}: verifiera …`), and another can END inside an unclosed
+  *   one, so its key has no closing brace (`… du gjort \Emph{muntaträning`). Neither is guessable and
+  *   both look wrong when correct. GET THE KEY FROM THE SPLITTER:
+  *         scala-cli run autotranslate/scratch/unit-probe.scala -- <regex> <file.tex>
+  *   and copy its `clean:` line verbatim — that IS the override key.
   *   Then VERIFY: the `overrides: N` figure in the run summary rises by one per APPLIED entry,
-  *   so a count that does not move means your key missed.
+  *   so a count that does not move means your key missed. Since 2026-09-06 you do not have to
+  *   remember to check: a FULL run now reports `N never matched` and FAILS the cache-only gate on
+  *   any orphan key (Main.reportOverrideCoverage). A scoped `--only` run reports but never fails.
   *
   * ── STRINGS & BACKSLASHES (LaTeX!) ──────────────────────────────────────────────────────────
   *   Prefer PLAIN triple-quoted strings — backslashes are LITERAL, no escaping, and (verified on

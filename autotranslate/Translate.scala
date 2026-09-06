@@ -258,6 +258,20 @@ object Translate:
   var fallbacks = 0
   var overrideHits = 0
 
+  /** Every override KEY that actually matched a unit this run. An override whose key matches nothing
+    * does NOTHING — no error, no warning, no change — and looks exactly like a fix that works; the
+    * only prior signal was noticing that `overrideHits` failed to rise, which requires knowing the
+    * expected delta in advance. `Overrides.overridingTranslations.keySet -- usedOverrideKeys` is the
+    * orphan set, and on a FULL run it is a defect: see Main.enforceNoOrphanOverrides. */
+  val usedOverrideKeys = scala.collection.mutable.Set.empty[String]
+
+  /** Look an override up AND record the key as used, so a hit is observable. Every override lookup
+    * must go through here, or an orphan will be reported for a key that in fact matched. */
+  private def overrideFor(key: String): Option[String] =
+    val hit = overrides.get(key)
+    if hit.isDefined then usedOverrideKeys += key
+    hit
+
   // ---------- override-suggestion capture (--dump-overrides) ----------
   // When on, every unit that resolves to the MODEL tier (not override/authoritative/cache) is recorded
   // with its CLEAN Swedish key (the form Overrides.scala uses) + the model's English, so the misses that
@@ -461,7 +475,7 @@ object Translate:
     * back to this unit's globals on a hit. */
   def translate(sv: String): String =
     if sv.isEmpty then ""
-    else overrides.get(sv).orElse(authoritative.get(sv)).getOrElse {
+    else overrideFor(sv).orElse(authoritative.get(sv)).getOrElse {
       val (norm, l2g) = Latex.normalize(sv)
       cache.get(norm) match
         case Some(v) => Latex.denormalize(v, l2g)
@@ -485,7 +499,7 @@ object Translate:
       val core = sv.substring(lead, sv.length - trail)
       val willModel = captureSuggestions &&
         !overrides.contains(core) && !authoritative.contains(core) && !codeCache.contains(core)
-      val en = overrides.get(core).orElse(authoritative.get(core)).orElse(codeCache.get(core)).getOrElse {
+      val en = overrideFor(core).orElse(authoritative.get(core)).orElse(codeCache.get(core)).getOrElse {
         modelTranslate(core, checkOutCode) match
           case Some(t) => modelCalls += 1; codeCache(core) = t; noteCacheAdd(); t
           case None    => fallbacks += 1; codeCache(core) = core; noteCacheAdd(); core
@@ -586,8 +600,8 @@ object Translate:
         // verbatim, carrying its own inline LaTeX (\texttt{…}) like every override value does.
         val fullEnd = { var e = b.length; while e > lead && b(e - 1).isWhitespace do e -= 1; e }
         val cleanFull = Latex.restore(b.substring(lead, fullEnd), spans).trim
-        val overrideHit = (if cleanFull != clean then overrides.get(cleanFull).map((_, fullEnd)) else None)
-          .orElse(overrides.get(clean).map((_, trail)))
+        val overrideHit = (if cleanFull != clean then overrideFor(cleanFull).map((_, fullEnd)) else None)
+          .orElse(overrideFor(clean).map((_, trail)))
         overrideHit match
           case Some((en, upto)) => overrideHits += 1; b.substring(0, lead) + en + b.substring(upto)
           case None     =>
@@ -703,7 +717,7 @@ object Translate:
   /** Load cache and make sure the model is ready (called before mirror translation).
     * Overrides need no loading — they are compiled in (Overrides.overridingTranslations). */
   def init(root: os.Path, withModel: Boolean = true): Unit =
-    modelCalls = 0; fallbacks = 0; overrideHits = 0; sinceSave = 0
+    modelCalls = 0; fallbacks = 0; overrideHits = 0; sinceSave = 0; usedOverrideKeys.clear()
     saveRoot = Some(root) // enable incremental cache flushing
     try os.write.over(root / "autotranslate" / "scratch" / "model-calls.txt", "") catch case _: Throwable => ()
     loadCache(root)
