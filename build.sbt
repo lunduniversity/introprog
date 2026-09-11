@@ -245,7 +245,7 @@ def showTail(fileName: String, n: Int = 40): Unit = {
   println(lines.takeRight(n).mkString("\n"))
 }
 
-def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-console.log", maxPasses: Int = 1): Unit = {
+def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-console.log", maxPasses: Int = 3): Unit = {
   val cmd = scala.sys.process.Process(
     Seq("pdflatex","-halt-on-error", texFile.getName),
     workDir
@@ -254,10 +254,21 @@ def runPdfLatexCmd(texFile: File, workDir: File, stdOutSuffix: String = "-consol
   // val bibtexCmd = Process(Seq("bibtex", texFile.getName.replace(".tex", ".aux")), workDir)
 
   // Run pdflatex until the .toc / cross-refs converge, i.e. until LaTeX stops asking to rerun — capped at
-  // maxPasses (like a tiny latexmk; avoids guessing 2 vs 3). The Swedish tasks default to 1 because their working
-  // dir (compendium/, slides/) keeps .aux/.toc across builds; the English mirror dirs are regenerated fresh every
+  // maxPasses (like a tiny latexmk; avoids guessing 2 vs 3). The English mirror dirs are regenerated fresh every
   // run, so pass 1 writes the .toc but never reads it (no ToC), pass 2 typesets it (which shifts pages), and a
   // 3rd pass may be needed for the ToC/\pageref page numbers to settle. En tasks pass a cap of 4.
+  //
+  // The Swedish default USED TO BE 1, on the reasoning that compendium/ and slides/ keep .aux/.toc across builds
+  // so convergence happens across successive builds instead of within one. That holds only while the persisted
+  // state is GOOD, and on 2026-09-11 it was not: a build aborted under -halt-on-error leaves a TRUNCATED .out,
+  // hyperref embeds bookmarks from the .out of the previous run, and the next single pass therefore shipped
+  // compendium.pdf with 127 bookmarks instead of 982. Nothing failed; the sv->en heading map (joined on those
+  // bookmarks) silently collapsed from 778 pairs to 115 and was published to muntabot as half-Swedish labels.
+  // A cap of 3 lets that heal itself: pass 1 completes and writes a correct .out, hyperref asks to rerun
+  // ("Rerun to get outlines right" matches the check below), pass 2 embeds it, pass 3 settles page numbers.
+  // On an already converged tree this costs NOTHING, because the loop stops as soon as LaTeX stops asking.
+  // Note that CI was never exposed to this: it builds from a clean checkout (the .pdf is untracked and
+  // **/*.aux, **/*.out, **/*.toc are gitignored), so only a developer box carries state old enough to rot.
   println(s" ******* Compiling $texFile to pdf (up to $maxPasses pass(es)) *******")
   var exitValue = 0; var pass = 0; var rerun = true
   while (pass < math.max(1, maxPasses) && exitValue == 0 && rerun) {
