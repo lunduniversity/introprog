@@ -274,6 +274,14 @@ object FindHeadings:
             |$entries
             |  )
             |""".stripMargin
+      // RATCHET, and it gates BEFORE the write on purpose: a map that fails here never reaches
+      // target/, so a later `syncMuntabot` still ships the last good one instead of a collapsed
+      // map. WHY: the join is capped by whichever edition has fewer bookmarks, and a collapse is
+      // invisible -- on 2026-09-11 a truncated .out left compendium.pdf with 127 bookmarks
+      // instead of 982, this map fell from 775 pairs to 115, and the line below still printed
+      // OK! in green. muntabot shows Swedish for every heading absent from the map, so the only
+      // symptom was a half-Swedish English mode that nobody would see until a student did.
+      enforceMapFloor(pairs.size, os.pwd / "autotranslate" / "heading-map-baseline.txt")
       println(s"Saving: $out")
       os.write.over(out, generatedCode)
       println(
@@ -290,6 +298,47 @@ object FindHeadings:
     * in `autotranslate/heading-residue-keep.txt` records "these two sides SHOULD match" as an
     * explicit decision, which leaves this report showing only what still needs a human call --
     * and makes a newly added Swedish heading show up the first time `gen` runs after it lands. */
+  /** CI ratchet for the sv -> en map size -- INVERTED relative to the baselines in
+    * `autotranslate/Main.scala`. There, lower is better (fallbacks, orphan override keys) and the
+    * gate fails when measured EXCEEDS the baseline. Here more joined pairs is better, so the
+    * committed number is a FLOOR and the gate fails when measured falls BELOW it; the number may
+    * only rise. A missing baseline is a hard failure for the same reason it is there: the
+    * committed file is part of the contract, and a gate that passes without one is not a gate.
+    *
+    * `sys.error`, not `sys.exit`: run is not forked, so sys.exit would take the whole sbt server
+    * down with it (measured in the autotranslate gates); a thrown error fails just this task. */
+  def enforceMapFloor(measured: Int, baselineFile: os.Path): Unit =
+    val baseline =
+      if !os.exists(baselineFile) then None
+      else
+        os.read.lines(baselineFile).iterator
+          .map(_.trim)
+          .find(l => l.nonEmpty && !l.startsWith("#"))
+          .flatMap(_.toIntOption)
+    baseline match
+      case None =>
+        sys.error(
+          s"[heading-map] FAIL: no committed baseline at $baselineFile" +
+            s" -- commit one holding the current measured value ($measured)"
+        )
+      case Some(floor) if measured < floor =>
+        sys.error(
+          s"[heading-map] FAIL: measured $measured joined pair(s), below committed floor $floor ($baselineFile)" +
+            "\n  -> the map is joined on section number from pdftk BOOKMARKS, so it is capped by whichever" +
+            "\n     edition has fewer of them. Count both before assuming the translation is at fault:" +
+            "\n       scala-cli run autotranslate/scratch/bookmark-probe.scala -- \\" +
+            "\n         compendium/compendium.pdf compendium-en/compendium-en.pdf" +
+            "\n     A Swedish build that aborted leaves a truncated .out, and the next single pass (the" +
+            "\n     Swedish tasks run pdflatex once by design) embeds only those few bookmarks. Re-run" +
+            "\n     `sbt pdf` so a second pass reads a complete .out, then `sbt gen`."
+        )
+      case Some(floor) =>
+        println(
+          Console.GREEN + s"[heading-map] OK: measured $measured within floor $floor" +
+            (if measured > floor then s" -- ratchet can tighten: commit $measured to ${baselineFile.last}"
+             else "") + Console.RESET
+        )
+
   def reportResidue(identical: Seq[String]): Unit =
     val keepFile = os.pwd / "autotranslate" / "heading-residue-keep.txt"
     val allowed: Set[String] =
