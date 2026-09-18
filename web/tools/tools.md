@@ -243,7 +243,7 @@ Kontrollera först om du har redan java:
 javac --version
 ```
 
-Om `javac` saknas eller versionen < 25, installera :
+Om `javac` saknas eller versionen < 25, skriv i terminalen och installera:
 
 ```bash
 brew install --cask temurin@25

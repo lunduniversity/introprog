@@ -1,4 +1,5 @@
-//> using scala 3.9
+//> using scala 3
+
 
 import scala.io.StdIn.readLine
 
@@ -31,8 +32,7 @@ def play(): Unit =
       println("FEL! Den dörren finns inte. Men försöka duger.")
       points += 10
 
-@main 
-def run: Unit =
+@main def run: Unit =
   printWelcomeMessage()
   Thread.sleep(2000) // vänta 2 sekunder
   play()
