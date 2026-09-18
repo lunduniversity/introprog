@@ -186,9 +186,6 @@ defaults write NSGlobalDomain AppleShowAllExtensions -bool true && killall Finde
 defaults write com.apple.finder AppleShowAllFiles YES && killall Finder
 ```
 
-
-> macOS använder ofta `zsh` som standard. Det fungerar bra. Bash är valfritt.
-
 ### 2) Installera Homebrew
 Installera Homebrew genom att klistra:
 ```bash
@@ -213,26 +210,15 @@ Verifiera att det blev installerat:
 brew --version
 ```
 
-#### **Valfritt**: iTerm2 + Bash
-MacOS kommer med en inbyggd terminal, men många föredrar att använda iTerm2 som är mer flexibel.
-Installera iTerm2 (valfritt) och Bash med:
-```bash
-brew install --cask iterm2
-brew install bash
-```
+#### **Valfritt, rekommenderat**: kraftfullare terminal
 
-Nu kan du byta till bash:
-ARM:
+MacOS kommer med en inbyggd terminal, men många brukar ersätta med Ghostty, du kan installera den genom att köra:
 
 ```bash
-chsh -s /opt/homebrew/bin/bash
+brew install --cask ghostty
 ```
 
-x86:
-```bash
-chsh -s /usr/local/bin/bash
-```
-Du kan nu stänga terminalen och öppna iTerm2.
+Öppna sedan Ghostty med Spotlight Search eller Launchpad där du skriver Ghostty (samma som i punkt 1) och fortsätt därifrån.
 
 ### 3) Installera OpenJDK 25
 
@@ -242,17 +228,42 @@ Kontrollera först om du har redan java:
 javac --version
 ```
 
-Om `javac` saknas eller versionen < 25:
+Om `javac` saknas eller versionen < 25, installera :
+
+```bash
+brew install --cask temurin@25
+```
+
+Stäng och öppna terminalen igen och verifiera:
+
+```bash
+javac --version
+```
+
+Temurin installeras i `/Library/Java/JavaVirtualMachines/` och hittas därför
+automatiskt av macOS (`/usr/libexec/java_home -v 25`) utan att du behöver
+pilla med `PATH` eller `JAVA_HOME` manuellt.
+
+**Alternativ ENDAST OM TEMURIN FUNGERAR INTE:**
 
 ```bash
 brew install openjdk@25
 ```
 
-Lägg till i miljön:
+`openjdk@25` är så kallat *keg-only*: det läggs inte i `/Library/Java/...`,
+så `java_home` hittar det inte om du inte symlänkar det manuellt:
 
+Skriv i terminalen:
+```bash
+sudo ln -sfn $(brew --prefix openjdk@25)/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-25.jdk
+```
+
+Skriv därefter en rad it taget:
 ```bash
 echo 'export PATH="$(brew --prefix openjdk@25)/bin:$PATH"' >> ~/.zprofile
+echo 'export PATH="$(brew --prefix openjdk@25)/bin:$PATH"' >> ~/.zshrc
 echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 25)' >> ~/.zprofile
+echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 25)' >> ~/.zshrc
 source ~/.zprofile
 ```
 
@@ -262,16 +273,44 @@ Verifiera att det blev installerat:
 javac --version
 ```
 
-### 4) Installera Scala och Scala CLI
+#### Felsökning: Java hittas inte (`java not detected`, tom `JAVA_HOME`)
+
+1. Starta om terminalen (eller kör `source ~/.zprofile`) efter varje ändring i
+   `~/.zprofile`/`~/.zshrc`. VS Code måste också startas om för att plocka upp nya miljövariabler.
+2. Diagnostik, kör rad för rad:
+   ```bash
+   which javac
+   echo $JAVA_HOME
+   /usr/libexec/java_home -V
+   ```
+3. Om `/usr/libexec/java_home -v 25` svarar `Unable to find any JVMs` trots att
+   `brew install openjdk@25` lyckades: du har drabbats av *keg-only*-problemet ovan.
+   Gör symlänk-steget eller byt till Temurin (`brew install --cask temurin@25`).
+4. Om `javac --version` visar fel version (t.ex. 21 istället för 25): du har flera
+   JDK:er. Avinstallera den gamla eller se till att Java 25 ligger först i `PATH`.
+5. Blanda inte installationsmetoder (brew/apt/sdkman/coursier) i onödan, det försvårar felsökning.
+
+### 4) Installera Scala
 
 ```bash
 brew install scala
 ```
 
-Verifiera att det blev installerat:
+Stäng och öppna terminalen och verifiera:
+
 ```bash
 scala --version
 ```
+
+Du ska få något som börjar med `Scala code runner version 3`.
+
+Om du får varning med `MainGenericRunner`, installera explicit senaste Scala-version 3.8.4 (eller nyare, 3.9):
+
+```bash
+cs install scala:3.8.4
+```
+
+Starta om terminalen och testa med första kommandon igen.
 
 ### 5) Installera VS Code + Scala (Metals)
 
@@ -303,6 +342,17 @@ code --install-extension scalameta.metals --force
 scala repl .
 ```
 
+#### Felsökning Kojo på macOS
+
+Om Kojo-fönstret inte öppnas, eller om du får fel som
+`InaccessibleObjectException`, `IllegalAccessError` eller fel som nämner
+`sun.awt`, `sun.swing`, `sun.lwawt.macosx` eller `com.apple.laf`:
+
+1. Lägg in detta högst upp i din program:
+   ```scala
+
+   ```
+2. Kör igen med `scala repl .` Skriv sedan `fram` i REPL:en och tryck ENTER. Ett Kojo Canvas-fönster med en sköldpadda ska dyka upp.
 *Valfritt*: Installera skrivbordsappen Kojo här: https://www.kogics.net/kojo-download där du kan programmera i äldre Scala 2 (se Appendix 1).
 
 
