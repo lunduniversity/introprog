@@ -57,10 +57,17 @@ object CodeGlossary:
     "Examinerad" -> "Graduated",                                       // trait Graduated { val title: String }
     "kastaTärningTillsAllaUtfallUtomEtt" -> "rollDieUntilAllOutcomesExceptOne",
     "BaklängesHandler" -> "BackwardsHandler",
+    // lect-w11-context's covariant-enum demo (`enum Toalett[+T]`): a toilet's occupancy, so Occupied/Vacant as
+    // on a lavatory sign. GLOBAL, not perFileId: unlike Djur/Bur there is no context conflict to scope around
+    // — the three tokens occur nowhere else in slides/ or compendium/, and the surrounding `enum`/`case` are
+    // Scala keywords, which a token-exact rename cannot touch (no glossary key is a keyword).
+    // Proposed 2026-08-30, pending BR ratification.
+    "Toalett" -> "Toilet", "Upptagen" -> "Occupied", "Ledig" -> "Vacant",
     // NB: the ANIMAL cluster (Djur/Ko/Gris/Häst/väsnas/skapaDjur/bondgård) is NOT global — it lives in
     // `perFileId` scoped to w10-inheritance-exercise. `Djur` also occurs in lect-w11-context's generics demo
     // (class Katt/Hund extends Djur) where Katt/Hund aren't in the glossary; a global Djur->Animal rendered
-    // `class Katt extends Animal` (mixed). Scoping keeps w11 fully Swedish until that lecture is translated.
+    // `class Katt extends Animal` (mixed). w11 now carries its OWN scoped cluster (with Katt/Hund/Robothund),
+    // so the fix for a mixed render is a per-file entry, never promoting this cluster to global.
   )
   // string / comment inner text (longest first so a prefix doesn't pre-empt). exact substring replace.
   val str: Seq[(String, String)] = Seq(
@@ -110,6 +117,18 @@ object CodeGlossary:
     "Muuuuuuu" -> "Mooooo", "Nöffnöff" -> "Oink", "Gnääääägg" -> "Neigh",
     // PERSON: the researcher's title value (Task 5 REPL: new Researcher(..., "Doktorand")) — BR-ratified 2026-07-21.
     "Doktorand" -> "PhD student",
+    // lect-w11-context string DATA (proposed 2026-08-30, pending BR ratification). Exact whole-literal keys,
+    // so "hej" here can only match a literal that IS "hej" (`trait Y { val y = "hej" }`) and can never
+    // misfire inside a longer string the way a `str` substring would.
+    "hej" -> "hi",
+    "$this har behandlat $x" -> "$this has treated $x", // s-interpolated: only the prose between $refs differs
+    "syrlig" -> "tart",                                 // Tomat's taste in the intersection-type demo
+    // the given-value literal names its own object, so the clamped name has to appear inside the string too:
+    // without this the mirror read `given aGivenString: String = "a given value in EnNamnrymd"` (English
+    // prose, Swedish object name) even though the object above it had become ANamespace.
+    // ("tagen för givet" needs no entry: code-cache row 1236 already renders it "taken for granted".)
+    "ett givet värde i EnNamnrymd" -> "a given value in ANamespace",
+    "vattning" -> "watery",                             // Gurka's taste; source looks like a typo for "vattnig"
   )
 
   private val tok: Regex = "[A-Za-zÅÄÖåäö_][A-Za-z0-9ÅÄÖåäö_]*".r
@@ -195,8 +214,9 @@ object CodeGlossary:
   // need nothing here (their clamps are masked verbatim, so the mirror pass leaves them alone).
   val perFileId: Map[String, Map[String, String]] = Map(
     // e.g. "w01-kojo" -> Map("Färg" -> "Colour", "Röd" -> "Red", "Svart" -> "Black")
-    // ANIMAL cluster — scoped here (NOT global) so `Djur` doesn't bleed into lect-w11-context's generics demo
-    // (class Katt/Hund extends Djur, where Katt/Hund aren't glossary'd -> mixed `class Katt extends Animal`).
+    // ANIMAL cluster — scoped here (NOT global) so `Djur` doesn't bleed into files whose subclasses aren't
+    // glossary'd and would render mixed code (lect-w11-context has its own entry below; lect-w06-equals still
+    // has unclamped case class Hund/Katt and is deliberately left uniformly Swedish).
     // Task 3's own Fyle-bird example in this same file is hand-clamped (\ifswedish), so the mirror leaves it
     // alone (Latex.ifswedishRanges); only Task 3's unclamped REPL/Code envs get these. BR-agreed 2026-07-20.
     "w10-inheritance-exercise" -> Map(
@@ -212,6 +232,55 @@ object CodeGlossary:
       // placeholder code-file names (10.1.26): KlassensNamn (capitalised, = the public class's name) ->
       // ClassName; bastypensNamn (lowercase initial per the "multi-content file -> lowercase" rule) -> baseTypeName.
       "KlassensNamn" -> "ClassName", "bastypensNamn" -> "baseTypeName",
+    ),
+    // lect-w11-context: every Scala identifier in this lecture's demos is a throwaway example name, so the
+    // whole file is clamp-only work -- no prose depends on the Swedish spellings. Scoped (NOT global) for the
+    // same reason as the w10 cluster: `Bur`/`Typ`-style short tokens and `Djur` would bleed into files whose
+    // subclasses are NOT glossary'd and render mixed code (e.g. lect-w06-equals also has case class Hund/Katt
+    // and must stay uniformly Swedish until it is clamped too). Matching is per identifier TOKEN, so the
+    // compounds each need their own entry -- `Robothund` does not inherit from `Hund`, and `kattBur` does
+    // not inherit from `Bur`. Proposed 2026-08-30, pending BR ratification.
+    // The comment text of these same demos is clamped in Overrides.scala ("lect-w11-context" section), NOT
+    // here: renderCodeIds rewrites identifier tokens only, and `str` is deliberately kept out of it, so a
+    // comment naming a clamped type is an Overrides whole-unit match. The committed caches need no hand-edit
+    // for w11 -- an earlier fix to the translate-code-cache.tsv cell was moved to Overrides because every
+    // model-less run rewrites that file (writeTsv, unless --cache-only) and undoes it.
+    "lect-w11-context" -> Map(
+      // upper/lower type-bound demo (class Djur/Katt/Hund/Robothund + testUpperBound/testLowerBound)
+      "Djur" -> "Animal", "Katt" -> "Cat", "Hund" -> "Dog", "Robothund" -> "RobotDog",
+      // variance demo: Bur = cage (co-variant container), Veterinär = the contra-variant consumer
+      "Bur" -> "Cage", "Veterinär" -> "Vet",
+      "bytTill" -> "replaceWith", "släppUt" -> "letOut",
+      // the val names in the REPL transcripts; two spellings of the same value (djurbur / djurBur) both occur
+      "djur" -> "animal", "katt" -> "cat", "djurbur" -> "animalCage", "djurBur" -> "animalCage",
+      "kattBur" -> "catCage", "kattveterinär" -> "catVet",
+      // self-type demo (11.x): "är denna typ", plus the trait it is mixed into ("min trait")
+      "ÄrDennaTyp" -> "IsThisType", "MinTrait" -> "MyTrait",
+      // given/namespace demo: "en namnrymd" / "en given sträng" / "en annan namnrymd"
+      "EnNamnrymd" -> "ANamespace", "enGivenSträng" -> "aGivenString",
+      "EnAnnanNamnrymd" -> "AnotherNamespace",
+      // `framkalla` -> elicit, NOT summon: the very next slide introduces Predef's `summon` as "a generic
+      // variant of the method framkalla", so clamping it to `summon` would make that sentence tautological
+      // and put two `summon`s in the same demo. elicit keeps the Swedish pun's pedagogy intact.
+      "framkalla" -> "elicit",
+      // type-class demo: "använd parser"
+      "användParser" -> "useParser",
+      // (the covariant-enum demo's Toalett/Upptagen/Ledig live in the GLOBAL id map above — no context
+      //  conflict to scope around, so this file no longer needs them)
+      // contravariance demo: the vet TREATS an animal
+      "behandla" -> "treat",
+      // self-type / mixin demo ("kan skalas", "vikt efter skalning"); Grönsak+vikt are already global
+      "KanSkalas" -> "CanBePeeled", "viktEfterSkalning" -> "weightAfterPeeling",
+      // cyclic self-type demo. NOTE: the val `tulipanaros` is deliberately NOT clamped -- it is the Swedish
+      // portmanteau the slide links out to (sv.wikipedia.org/wiki/Tulipanaros), i.e. the joke itself, not an
+      // example identifier. Flagged for BR: clamp it too if the English deck should drop the reference.
+      "Tulpan" -> "Tulip", "Ros" -> "Rose",
+      // intersection-type demo ("har smak"); the `smak` -> taste rename is already global
+      "HarSmak" -> "HasTaste",
+      // `hej` also appears UNQUOTED in REPL echo (`= Pair(hej,42)`, `x: Int | String = hej`), where codeStr
+      // cannot see it -- codeStr needs a whole quoted literal. As an id-map token it is renamed in code
+      // regions only, so the quoted `val y = "hej"` still goes through codeStr. Both spellings covered.
+      "hej" -> "hi",
     ),
   )
   // Mirror-relative path substrings whose inline Scala-code envs SKIP the renderCodeIds pass entirely.
