@@ -227,18 +227,13 @@ brew --version
 
 #### **Valfritt, rekommenderat**: kraftfullare terminal
 
-MacOS kommer med en inbyggd terminal, men denna brukar ersättas av ett mer flexibelt verktyg.
-
-Två vanliga alternativ är [Ghostty](https://ghostty.org/) och [iTerm2](https://iterm2.com/), som båda kan installeras med brew:
+MacOS kommer med en inbyggd terminal, men många brukar ersätta med Ghostty, du kan installera den genom att köra:
 
 ```bash
 brew install --cask ghostty
-brew install --cask iterm2
 ```
 
-Är du osäker på vad skillnaden är så är Ghostty antagligen rätt för dig.
-
-Du kan nu stänga terminalen och öppna din nya terminal.
+Öppna sedan Ghostty med Spotlight Search eller Launchpad där du skriver Ghostty (samma som i punkt 1) och fortsätt därifrån.
 
 ### 3) Installera OpenJDK 25
 
@@ -248,17 +243,41 @@ Kontrollera först om du har redan java:
 javac --version
 ```
 
-Om `javac` saknas eller versionen < 25:
+Om `javac` saknas eller versionen < 25, skriv i terminalen och installera:
+
+```bash
+brew install --cask temurin@25
+```
+
+Stäng och öppna terminalen igen och verifiera:
+
+```bash
+javac --version
+```
+
+Temurin installeras i `/Library/Java/JavaVirtualMachines/` och hittas därför
+automatiskt av macOS (`/usr/libexec/java_home -v 25`) utan att du behöver
+pilla med `PATH` eller `JAVA_HOME` manuellt.
+
+**Alternativ ENDAST OM TEMURIN GICK INTE ATT INSTALLERA:**
 
 ```bash
 brew install openjdk@25
 ```
 
-Lägg till i miljön:
+`openjdk@25` är så kallat *keg-only*: det läggs inte i `/Library/Java/...`,
+så `java_home` hittar det inte om du inte symlänkar det manuellt:
 
 ```bash
+sudo ln -sfn $(brew --prefix openjdk@25)/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-25.jdk
+```
+
+Skriv därefter en rad i taget:
+```bash
 echo 'export PATH="$(brew --prefix openjdk@25)/bin:$PATH"' >> ~/.zprofile
-echo 'export JAVA_HOME=$(brew --prefix openjdk@25)' >> ~/.zprofile
+echo 'export PATH="$(brew --prefix openjdk@25)/bin:$PATH"' >> ~/.zshrc
+echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 25)' >> ~/.zprofile
+echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 25)' >> ~/.zshrc
 source ~/.zprofile
 ```
 
@@ -277,16 +296,36 @@ javac -version
 java -version
 ```
 
-### 4) Installera Scala och Scala CLI
+#### Felsökning: Java hittas inte (`java not detected`, tom `JAVA_HOME`)
+
+1. Starta om terminalen (eller kör `source ~/.zprofile`) efter varje ändring i
+   `~/.zprofile`/`~/.zshrc`. VS Code måste också startas om för att plocka upp nya miljövariabler.
+2. Diagnostik, kör rad för rad:
+   ```bash
+   which javac
+   echo $JAVA_HOME
+   /usr/libexec/java_home -V
+   ```
+3. Om `/usr/libexec/java_home -v 25` svarar `Unable to find any JVMs` trots att
+   `brew install openjdk@25` lyckades: du har drabbats av *keg-only*-problemet ovan.
+   Gör symlänk-steget eller byt till Temurin (`brew install --cask temurin@25`).
+4. Om `javac --version` visar fel version (t.ex. 21 istället för 25): du har flera
+   JDK:er. Avinstallera den gamla eller se till att Java 25 ligger först i `PATH`.
+5. Blanda inte installationsmetoder (brew/apt/sdkman/coursier) i onödan, det försvårar felsökning.
+
+### 4) Installera Scala
 
 ```bash
 brew install scala
 ```
 
-Verifiera att det blev installerat:
+Stäng och öppna terminalen och verifiera:
+
 ```bash
 scala --version
 ```
+
+Starta om terminalen och testa med första kommandon igen.
 
 ### 5) Installera VS Code + Scala (Metals)
 
@@ -327,6 +366,25 @@ scala>
 ```
 5. Om en fönster öppnar och en padda dyker upp har du installerat den korrekt.
 
+#### Felsökning Kojo på macOS
+
+Om Kojo-fönstret inte öppnas, eller om du får fel som
+`InaccessibleObjectException`, `IllegalAccessError` eller fel som nämner
+`sun.awt`, `sun.swing`, `sun.lwawt.macosx` eller `com.apple.laf`:
+
+1. Lägg in detta högst upp i ditt program:
+   ```scala
+//> using javaOptions "--add-exports=java.desktop/sun.awt=ALL-UNNAMED"
+//> using javaOptions "--add-exports=java.desktop/sun.swing=ALL-UNNAMED"
+//> using javaOptions "--add-opens=java.desktop/com.apple.laf=ALL-UNNAMED"
+//> using javaOptions "--add-opens=java.desktop/javax.swing=ALL-UNNAMED"
+//> using javaOptions "--add-exports=java.desktop/sun.lwawt.macosx=ALL-UNNAMED"
+//> using javaOptions "--add-exports=java.desktop/sun.java2d=ALL-UNNAMED"
+//> using javaOptions "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
+//> using javaOptions "--enable-native-access=ALL-UNNAMED"
+   ```
+
+2. Kör igen med `scala repl .` Skriv sedan `fram` i REPL:en och tryck ENTER. Ett Kojo Canvas-fönster med en sköldpadda ska dyka upp.
 *Valfritt*: Installera skrivbordsappen Kojo här: https://www.kogics.net/kojo-download där du kan programmera i äldre Scala 2 (se Appendix 1).
 
 
