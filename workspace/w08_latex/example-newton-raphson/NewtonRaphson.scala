@@ -1,6 +1,6 @@
-//> using scala 3.8.3
+//> using scala 3
 
-@main def run(x0: Double, eps: Double) = println(NewtonRaphson.solve(x0, eps))
+@main def exec(x0: Double, eps: Double) = println(NewtonRaphson.solve(x0, eps))
 
 object NewtonRaphson:
   def f(x: Double) = math.exp(-x) - math.sin(x)
