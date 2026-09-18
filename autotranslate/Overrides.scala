@@ -22,10 +22,17 @@
   *     2. A unit is SPLIT AT a code span. The unit for `Framkalla värde med \texttt{summon}` is
   *        just `Framkalla värde med`, and `Exempel på \textbf{funktionell nedbrytning` ends
   *        WITHOUT its closing brace.
-  *   So confirm the key against the SOURCE .tex, and when a code span is involved look the unit
-  *   up in `translate-cache.tsv` or `scratch/override-suggestions.txt` instead of guessing.
+  *   ⇒ DO NOT transcribe the key from the SOURCE .tex. That advice used to stand here and it is what
+  *   caused two silent misses on 2026-09-06: a unit can BEGIN inside a macro, so its key opens with a
+  *   dangling `}` (`Kontinuerlig Muntaträning}: verifiera …`), and another can END inside an unclosed
+  *   one, so its key has no closing brace (`… du gjort \Emph{muntaträning`). Neither is guessable and
+  *   both look wrong when correct. GET THE KEY FROM THE SPLITTER:
+  *         scala-cli run autotranslate/scratch/unit-probe.scala -- <regex> <file.tex>
+  *   and copy its `clean:` line verbatim — that IS the override key.
   *   Then VERIFY: the `overrides: N` figure in the run summary rises by one per APPLIED entry,
-  *   so a count that does not move means your key missed.
+  *   so a count that does not move means your key missed. Since 2026-09-06 you do not have to
+  *   remember to check: a FULL run now reports `N never matched` and FAILS the cache-only gate on
+  *   any orphan key (Main.reportOverrideCoverage). A scoped `--only` run reports but never fails.
   *
   * ── STRINGS & BACKSLASHES (LaTeX!) ──────────────────────────────────────────────────────────
   *   Prefer PLAIN triple-quoted strings — backslashes are LITERAL, no escaping, and (verified on
@@ -233,8 +240,8 @@ object Overrides:
     """Spara nedan Scala-kod i filen \code{hej.scala}:""" -> """Save the Scala code below in the file \code{hej.scala}:""",
     """En \href{https://sv.wikipedia.org/wiki/Algoritm}{algoritm} är en sekvens av instruktioner som beskriver hur man löser ett problem.""" ->
       """An \href{https://sv.wikipedia.org/wiki/Algoritm}{algorithm} is a sequence of instructions that describes how to solve a problem.""",
-    """Denna bättre \code{isHighscore} är nu en \Emph{äkta funktion} som alltid ger samma svar för samma inparametrar och \Alert{saknar sidoeffekter}; dessa funktioner är ofta lättare att förstå.""" ->
-      """This better \code{isHighscore} is now a \Emph{pure function} that always gives the same answer for the same inputs and \Alert{has no side effects}; such functions are often easier to understand.""",
+    """Denna bättre \code{isHighscore} är nu en \Emph{äkta funktion} som alltid ger samma svar för samma argument och \Alert{saknar sidoeffekter}; dessa funktioner är ofta lättare att förstå.""" ->
+      """This better \code{isHighscore} is now a \Emph{pure function} that always gives the same answer for the same arguments and \Alert{has no side effects}; such functions are often easier to understand.""",
     """I Scala (till skillnad från många andra språk) har ett block ett \Emph{värde} och är alltså ett \Emph{uttryck}.""" ->
       """In Scala (unlike many other languages) a block has a \Emph{value} and is therefore an \Emph{expression}.""",
     """Du \Emph{deklarerar egna procedurer} genom att ange \texttt{\Alert{Unit}} som returvärdestyp.""" ->
@@ -813,4 +820,64 @@ object Overrides:
       -> """Focus on the \Emph{independent ability} to create and understand code without depending on tools""",
     "djupet"                -> "the depth",          // poisoned child entry: the model minted "deept"
     "självständig förmåga"  -> "independent ability", // child entry said "self-contained ability"
+
+    // ── 2026-09-06: the w01/w02 + info-week00 prose added at semester start ─────────────────────
+    // gemma2:9b translated these; the wrong ones are corrected here rather than by re-rolling the
+    // model, because a re-roll is not reproducible and these are student-facing.
+    //
+    // WORST CLASS — `muntabot` is a PROPER NOUN (BR's own tool, live at fileadmin.cs.lth.se/pgk/
+    // muntabot) and the model rendered it FOUR different ways in one deck: "the documentation",
+    // "a code snippet", "the chatbot" and "the interactive tutorial". A student reading the English
+    // slides would not learn that these are all the same tool they are told to run every week.
+    "Kolla sen i muntabot." -> "Then check in muntabot.",
+    "Välj: från vecka 1 till vecka 2 i muntabot och verifiera att du kan förklara och kontrastera veckans begrepp (grön och gul knapp i muntabot)"
+      -> "Choose: from week 1 to week 2 in muntabot and verify that you can explain and contrast the week's concepts (green and yellow buttons in muntabot)",
+    """Kör muntabot \Alert{efter} att du gjort \Emph{grundövningarna} för vecka 1 \& 2"""
+      -> """Run muntabot \Alert{after} you have done the \Emph{basic exercises} for weeks 1 \& 2""",
+    """Muntabot ska \Alert{inte} ersätta övningsuppgifterna; använd muntabot som stickprov för verifiering av dina kunskaper."""
+      -> """Muntabot is \Alert{not} meant to replace the exercises; use muntabot as a spot check to verify your knowledge.""",
+    // the button label stays Swedish + a gloss: it is what the student actually sees in the tool
+    """När du har koll på begreppen: Skriv kod \Alert{självständigt} på \Emph{papper} genom att trycka på den röda ''Skriv kod''-knappen i muntabot"""
+      -> """When you have a grasp of the concepts: write code \Alert{independently} on \Emph{paper} by pressing the red ''Skriv kod'' (write code) button in muntabot""",
+
+    // FALSE FRIENDS AND LOST MEANING — each of these changed what the sentence tells a student to do
+    "Alla dagar kl 12-13 läsvecka 1--2 i E:2116."
+      -> "Every day 12-13 during study weeks 1--2 in E:2116.",          // läsvecka = study week, not "read week"
+    "Enkla/snabba individuella frågor på rasten i samband med föreläsningarna."
+      -> "Simple/quick individual questions during the break in connection with the lectures.", // rasten = the break, model said "on the chat"
+    "Swischa vid uthämtning enl. instruktioner i Canvas."
+      -> "Pay by Swish on collection, per the instructions in Canvas.", // Swish is a payment app; the model dropped paying entirely
+    "UTHÄMTNING av beställda men ej uthämtade bokpaket sker på CS expedition 2:a vån E:2179 (ovanför E:B) på föreläsningsraster."
+      -> "COLLECTION of ordered but uncollected book packages takes place at the CS office, 2nd floor E:2179 (above E:B), during lecture breaks.", // raster = breaks, not "hours"
+    "Studievägledare finns också till er hjälp, alla ska delta i schemalagd ''Workshop'' med Tobias Björklund och Joakim Cao, se anslag i Canvas."
+      -> "Study advisors are also there to help you; everyone should attend the scheduled ''Workshop'' with Tobias Björklund and Joakim Cao, see the notice in Canvas.", // studievägledare are advisors, not "tutors"
+    "När: Tisdagar lunchtid 12:15-12:45" -> "When: Tuesdays at lunchtime 12:15-12:45", // the model dropped "När:"
+    "Var: Samling utanför Björn Regnells kontor kl. 12:15 här:"
+      -> "Where: Meet outside Björn Regnell's office at 12:15 here:",   // Var = Where; Samling = meet, not "Collection"
+
+    // COURSE VOCABULARY — one English term per Swedish term, corpus-wide
+    "pluggkvällar" -> "study evenings",
+    "Kom till studierådets pluggkväll!" -> "Come to the study council's study evening!",
+    "få hjälp på resurstid och redovisa helst på resurstid (eller labbtid, om handledaren har tid över)"
+      -> "get help during help sessions (resurstid) and preferably present during help sessions (or lab time, if the lab assistant has time to spare)",
+    "Du får individuell hjälp på resurtider och labbar. Du ska gå på all schemalagd undervisning för att klara kursen och lära till max!"
+      -> "You get individual help at help sessions and labs. You should attend all scheduled teaching in order to pass the course and learn as much as possible!",
+    "Övningsuppgifterna i kompendiet är mer helteckande, med utförligare uppgiftsbeskrivningar och förklaringar i facit etc. Plugga i kompendiet!"
+      -> "The exercises in the compendium are more comprehensive, with fuller task descriptions and explanations in the solutions, etc. Study the compendium!", // kompendiet = compendium, not "textbook"
+
+    // `muntaträning` is the other half of the same problem, and it is worse because ONE of the three
+    // renderings is not merely inconsistent but meaningless: the w01 deck said "console practice".
+    // The three units below now all say ORAL PRACTICE — it is the training for the muntliga provet,
+    // so the word has to survive as the same term wherever a student meets it.
+    """Gör \Emph{muntaträning} med veckans begrepp och kodskrivningsuppgifter i dialog med handledare."""
+      -> """Do \Emph{oral practice} with this week's concepts and code-writing tasks in dialogue with a lab assistant.""", // was "console practice"
+    // NB the DANGLING closing brace: the unit starts INSIDE \Emph{...}, so the key begins after the
+    // opening brace and carries the closing one — confirmed with scratch/unit-probe.scala rather than
+    // guessed. My first attempt keyed it as \Emph{Kontinuerlig Muntaträning}: ... and silently missed.
+    """Kontinuerlig Muntaträning}: verifiera din individuella kodningsförmåga, konceptförståelse och utvecklingen av din pluggteknik."""
+      -> """Continuous Oral Practice}: verify your individual coding ability, concept understanding and the development of your study technique.""", // was "Continuous Coding Practice"
+    // ⚠ this unit ENDS INSIDE an unclosed \Emph{ — unit-probe reports the clean form with NO closing
+    // brace, and keying it with one silently missed. Copy keys from unit-probe, never from the source.
+    """I vecka 4 \& vecka 8: \Alert{obligatorisk kontroll} av att du gjort \Emph{muntaträning"""
+      -> """In week 4 \& week 8: \Alert{mandatory check} that you have done \Emph{oral practice""",
   )
