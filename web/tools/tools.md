@@ -259,7 +259,7 @@ Temurin installeras i `/Library/Java/JavaVirtualMachines/` och hittas därför
 automatiskt av macOS (`/usr/libexec/java_home -v 25`) utan att du behöver
 pilla med `PATH` eller `JAVA_HOME` manuellt.
 
-**Alternativ ENDAST OM TEMURIN FUNGERAR INTE:**
+**Alternativ ENDAST OM TEMURIN GICK INTE ATT INSTALLERA:**
 
 ```bash
 brew install openjdk@25
@@ -268,12 +268,11 @@ brew install openjdk@25
 `openjdk@25` är så kallat *keg-only*: det läggs inte i `/Library/Java/...`,
 så `java_home` hittar det inte om du inte symlänkar det manuellt:
 
-Skriv i terminalen:
 ```bash
 sudo ln -sfn $(brew --prefix openjdk@25)/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-25.jdk
 ```
 
-Skriv därefter en rad it taget:
+Skriv därefter en rad i taget:
 ```bash
 echo 'export PATH="$(brew --prefix openjdk@25)/bin:$PATH"' >> ~/.zprofile
 echo 'export PATH="$(brew --prefix openjdk@25)/bin:$PATH"' >> ~/.zshrc
@@ -326,14 +325,6 @@ Stäng och öppna terminalen och verifiera:
 scala --version
 ```
 
-Du ska få något som börjar med `Scala code runner version 3`.
-
-Om du får varning med `MainGenericRunner`, installera explicit senaste Scala-version 3.8.4 (eller nyare, 3.9):
-
-```bash
-cs install scala:3.8.4
-```
-
 Starta om terminalen och testa med första kommandon igen.
 
 ### 5) Installera VS Code + Scala (Metals)
@@ -381,7 +372,7 @@ Om Kojo-fönstret inte öppnas, eller om du får fel som
 `InaccessibleObjectException`, `IllegalAccessError` eller fel som nämner
 `sun.awt`, `sun.swing`, `sun.lwawt.macosx` eller `com.apple.laf`:
 
-1. Lägg in detta högst upp i din program:
+1. Lägg in detta högst upp i ditt program:
    ```scala
 //> using javaOptions "--add-exports=java.desktop/sun.awt=ALL-UNNAMED"
 //> using javaOptions "--add-exports=java.desktop/sun.swing=ALL-UNNAMED"
@@ -392,6 +383,7 @@ Om Kojo-fönstret inte öppnas, eller om du får fel som
 //> using javaOptions "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
 //> using javaOptions "--enable-native-access=ALL-UNNAMED"
    ```
+
 2. Kör igen med `scala repl .` Skriv sedan `fram` i REPL:en och tryck ENTER. Ett Kojo Canvas-fönster med en sköldpadda ska dyka upp.
 *Valfritt*: Installera skrivbordsappen Kojo här: https://www.kogics.net/kojo-download där du kan programmera i äldre Scala 2 (se Appendix 1).
 
