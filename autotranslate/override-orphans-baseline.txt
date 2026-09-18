@@ -1,0 +1,20 @@
+# Ratchet baseline: how many keys in Overrides.scala matched NO unit on a FULL run.
+#
+# An override whose key matches nothing does NOTHING -- no error, no warning, no change -- and is
+# indistinguishable from a fix that works. Keys are easy to get subtly wrong because a unit can BEGIN
+# inside a macro (key opens with a dangling `}`) or END inside an unclosed one (key has no closing
+# brace). Get keys from the splitter, never from the .tex source:
+#
+#     scala-cli run autotranslate/scratch/unit-probe.scala -- <regex> <file.tex>
+#
+# and copy its `clean:` line verbatim.
+#
+# This number is DEBT, not a target. It was 45 when the gate was switched on (2026-09-06): each is an
+# entry whose unit has since been edited out from under it, so the English it promises is not being
+# applied anywhere. Fixing one means finding the unit's current clean form and re-keying -- or
+# deleting the entry if the text is gone for good. The gate only lets this number FALL: a run that
+# measures fewer prints the tighter value to commit here.
+#
+# Only a FULL run measures it. A scoped `--only <substring>` run visits a fraction of the corpus, so
+# nearly every override is legitimately unmatched there; scoped runs report but never gate.
+45

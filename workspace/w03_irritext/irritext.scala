@@ -1,5 +1,6 @@
 //> using scala 3
 
+
 import scala.io.StdIn.readLine
 
 def printDead(): Unit = println("Du är nu DÖÖÖÖÖÖD! Tack och hej :(")

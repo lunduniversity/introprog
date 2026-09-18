@@ -142,12 +142,21 @@ code --install-extension scalameta.metals --force
 
 ### 5) Installera Kojo
 Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera.
-1. Ladda ner filen till en ny tom mapp: <https://fileadmin.cs.lth.se/kojo.scala>
-2. Öppna mappen i VS Code med menyn "File -> Open Folder" och kör enligt kompendiet, t.ex. genom att i aktuell mapp som innehåller kojo.scala-filen skriva:
+1. Skapa en mapp och öppna den i VS Code genom att följa `File -> Open Folder... -> Hitta och tryck på mappen ->  Open`
+> OBS! Öppna inte filen direkt eller en mapp som innehåller många filer (t.ex Downloads), skapa alltid en ny mapp först och använd den.
+2. Ladda ner filen till mappen: <https://fileadmin.cs.lth.se/kojo.scala>
+3. Öppna terminalen i VS Code genom att följa `Terminal -> New Terminal` och skriv i den
 
 ```bash
 scala repl .
 ```
+4. Skriv i den nya terminalen som ser som nedan kommandot `fram`
+```bash 
+scala>
+```
+5. Om en fönster öppnar och en padda dyker upp har du installerat den korrekt.
+
+Kojo används på [Vattenhallen Science Center](https://www.vattenhallen.lu.se/upplevelser/programmering/). LTH-studenter med programmeringskunskaper och intresse för pedagogik är välkomna att ansöka om att bli programmeringshandledare i Vattenhallen här: [https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/](https://www.vattenhallen.lu.se/om-oss/kontakt/vh-student/student-intresseanmalan/)
 
 *Valfritt*: Installera skrivbordsappen Kojo här: https://www.kogics.net/kojo-download där du kan programmera i äldre Scala 2 (se Appendix 1).
 
@@ -163,6 +172,12 @@ scala repl .
 ```bash
 git --version
 ```
+
+### 7) Ladda ner Workspace
+För att kunna uppföra labbarna i denna kurs behöver du en workspace med redan givna filer.
+1. Ladda ner och packa upp <https://fileadmin.cs.lth.se/pgk/workspace.zip>
+2. Öppna mappen i VS Code genom att följa `File -> Open Folder... -> Hitta och tryck på mappen ->  Open`
+3. Utför dina labbar i respektive mapp för varje labb.
 
 ---
 
@@ -252,14 +267,23 @@ Lägg till i miljön:
 
 ```bash
 echo 'export PATH="$(brew --prefix openjdk@25)/bin:$PATH"' >> ~/.zprofile
-echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 25)' >> ~/.zprofile
+echo 'export JAVA_HOME=$(brew --prefix openjdk@25)' >> ~/.zprofile
 source ~/.zprofile
 ```
+
+Kolla vad som nu ligger i ~/.zprofile och PATH och JAVA_HOME:
+```bash
+cat ~/.zprofile
+echo $PATH
+echo $JAVA_HOME
+```
+JAVA_HOME ska inte vara tom och $PATH ska innehålla något med openjdk.
 
 Verifiera att det blev installerat:
 
 ```bash
-javac --version
+javac -version
+java -version
 ```
 
 ### 4) Installera Scala och Scala CLI
@@ -294,14 +318,23 @@ code --install-extension scalameta.metals --force
 
 5. Starta om VS Code.
 
-### 6) Installera Kojo
+6. Gör så att `code` hamnar på PATH och därmed att det funkar att skriva `code .` i terminalen Cmd+Shift+P, skriv "shell command" som beskrivs här: https://code.visualstudio.com/docs/setup/mac#_launch-vs-code-from-the-command-line 
 
-1. Ladda ner: <https://fileadmin.cs.lth.se/kojo.scala>
-2. Öppna mappen i VS Code och kör:
+### 6) Installera Kojo
+Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera.
+1. Skapa en mapp och öppna den i VS Code genom att följa `File -> Open Folder... -> Hitta och tryck på mappen ->  Open`
+> OBS! Öppna inte Downloads eller Documents direkt, alltid skapa en ny mapp först och använd den.
+2. Ladda ner filen till mappen: <https://fileadmin.cs.lth.se/kojo.scala>
+3. Öppna terminalen i VS Code genom att följa `Terminal -> New Terminal` och skriv i den
 
 ```bash
 scala repl .
 ```
+4. Skriv i den nya terminalen som ser som nedan kommandot `fram`
+```bash 
+scala>
+```
+5. Om en fönster öppnar och en padda dyker upp har du installerat den korrekt.
 
 *Valfritt*: Installera skrivbordsappen Kojo här: https://www.kogics.net/kojo-download där du kan programmera i äldre Scala 2 (se Appendix 1).
 
@@ -314,6 +347,11 @@ brew install git
 git --version
 ```
 
+### 8) Ladda ner Workspace
+För att kunna uppföra labbarna i denna kurs behöver du en workspace med redan givna filer.
+1. Ladda ner och packa upp <https://fileadmin.cs.lth.se/pgk/workspace.zip>
+2. Öppna mappen i VS Code genom att följa `File -> Open Folder... -> Hitta och tryck på mappen ->  Open`
+3. Utför dina labbar i respektive mapp för varje labb.
 ---
 
 ## Linux (Ubuntu)
@@ -417,13 +455,19 @@ code --install-extension scalameta.metals --force
 
 ### 5) Installera Kojo
 Vi använder Kojo på första labben. Kojo är utvecklat speciellt för att hjälpa elever i grundskola och gymnasium att lära sig programmera.
-
-1. Ladda ner till en mapp: <https://fileadmin.cs.lth.se/kojo.scala>
-2. Öppna mappen i VS Code, öppna terminalen i VS Code och kör:
+1. Skapa en mapp och öppna den i VS Code genom att följa `File -> Open Folder... -> Hitta och tryck på mappen ->  Open`
+> OBS! Öppna inte Downloads eller Documents direkt, alltid skapa en ny mapp först och använd den.
+2. Ladda ner filen till mappen: <https://fileadmin.cs.lth.se/kojo.scala>
+3. Öppna terminalen i VS Code genom att följa `Terminal -> New Terminal` och klistra i den
 
 ```bash
 scala repl .
 ```
+4. Skriv i den nya terminalen som ser som nedan kommandot `fram`
+```bash 
+scala>
+```
+5. Om en fönster öppnar och en padda dyker upp har du installerat den korrekt.
 
 *Valfritt*: Installera skrivbordsappen Kojo här: https://www.kogics.net/kojo-download där du kan programmera i äldre Scala 2 (se Appendix 1).
 
@@ -434,6 +478,12 @@ Klistra i terminalen och kolla att det blev installerat:
 apt-get install git
 git --version
 ```
+
+### 7) Ladda ner Workspace
+För att kunna uppföra labbarna i denna kurs behöver du en workspace med redan givna filer.
+1. Ladda ner och packa upp <https://fileadmin.cs.lth.se/pgk/workspace.zip>
+2. Öppna mappen i VS Code genom att följa `File -> Open Folder... -> Hitta och tryck på mappen -> Open`
+3. Utför dina labbar i respektive mapp för varje labb.
 
 ---
 

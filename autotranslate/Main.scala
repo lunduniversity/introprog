@@ -308,10 +308,44 @@ object Main:
         println("  For a translated mirror: no flag (cache, offline) or --all (cache + model).")
       mirror(root, explicitTranslate || defaultCache, only, dryrun, retryFallbacks)
       if dumpOverrides || sweepFallbacks then writeOverrideSuggestions(root)
+      reportOverrideCoverage(root, only.isEmpty)
       if cacheOnly || defaultCache then // cache completeness is the CI invariant: every unit must resolve without a model
         enforceBaseline("cache-only", Translate.fallbacks, root / "autotranslate" / "cache-only-baseline.txt",
           hint = "new/changed Swedish prose is not in the cache yet -- run 'autotranslateProject/run --all' " +
                  "with a backend up (modly on LAN, else local ollama), then commit translate-cache.tsv")
+
+  /** Report override coverage, and on a FULL run FAIL on any override key that matched nothing.
+    *
+    * WHY THIS GATE EXISTS: an entry in Overrides.scala whose key matches no unit does nothing at all —
+    * no error, no warning, no change — and is indistinguishable from a fix that works. The keys are
+    * easy to get subtly wrong because a unit can BEGIN inside a macro (so the key opens with a
+    * dangling `}`) or END inside an unclosed one (so it has no closing brace); both shapes were hit
+    * on 2026-09-06 while correcting the w01/w02 prose, and both looked perfectly reasonable. Until
+    * now the only signal was noticing that the `overrides:` count failed to rise, which requires
+    * knowing the expected delta beforehand. Now a dead key fails the same gate CI already runs.
+    *
+    * ⚠ SCOPED RUNS ONLY REPORT. A `--only <substring>` run visits a fraction of the corpus, so almost
+    * every override is legitimately unmatched there; failing would make the flag unusable. The gate
+    * therefore fails only when the run covered everything — the same full-corpus condition the
+    * fallback ratchet depends on, and the same trap `--only` sets for that ratchet. */
+  def reportOverrideCoverage(root: os.Path, fullRun: Boolean): Unit =
+    val defined = Translate.overrides.keySet
+    val orphans = (defined -- Translate.usedOverrideKeys).toVector.sorted
+    println(s"  overrides: ${Translate.overrideHits} application(s) of ${defined.size} defined key(s), " +
+            s"${orphans.size} never matched${if fullRun then "" else " (scoped run -- not measured)"}")
+    if fullRun then
+      // A RATCHET, not a hard zero: switching this on found 45 dead keys already in the tree, from
+      // source edits that moved a unit out from under its override. Failing on those would redden a
+      // green build over old debt and teach everyone to route around the gate. Same shape as the
+      // fallback baseline next to it: new dead keys are blocked, and the number can only come down.
+      if orphans.nonEmpty then
+        println(s"  never-matched override key(s), first 10 of ${orphans.size}:")
+        orphans.take(10).foreach(k => println(s"      ${k.take(110)}"))
+      enforceBaseline("overrides", orphans.size, root / "autotranslate" / "override-orphans-baseline.txt",
+        hint = "an override whose key matches nothing changes nothing and looks exactly like a fix that " +
+               "works. Get the key from the splitter, NOT from the .tex source:\n" +
+               "     scala-cli run autotranslate/scratch/unit-probe.scala -- <regex> <file.tex>\n" +
+               "  and copy its `clean:` line verbatim -- a unit may OPEN with a dangling `}` or END unclosed")
 
   /** CI ratchet gate: fail if `measured` exceeds the integer in the committed baseline file (first
     * non-empty, non-# line). A missing/unreadable baseline is also a hard failure — the committed file
