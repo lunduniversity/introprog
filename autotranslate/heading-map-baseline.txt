@@ -1,0 +1,26 @@
+# Committed FLOOR for the sv -> en heading map (headingTranslateSvEn): the minimum number of
+# joined pairs a full `sbt gen` must produce.
+#
+# ⚠ THIS RATCHET IS INVERTED relative to its neighbours. cache-only-baseline.txt and
+# override-orphans-baseline.txt are CEILINGS -- lower is better and the gate fails when the
+# measured value EXCEEDS them. Here more is better: the gate fails when the measured value falls
+# BELOW this floor, and the number may only RISE.
+#
+# WHAT IT CATCHES: the map is joined on section number from pdftk BOOKMARKS of compendium.pdf and
+# compendium-en.pdf, so it is capped by whichever edition has fewer. muntabot displays Swedish for
+# every heading absent from the map, so a collapse does not fail anything -- it just quietly turns
+# English mode half Swedish.
+#
+# Measured 2026-09-11: 778, immediately after the incident that motivated the gate. The Swedish
+# build had been failing for five days (the SlideExtra guard bug); a -halt-on-error abort leaves a
+# TRUNCATED .out, and because the Swedish tasks run pdflatex once by design (build.sbt:257-259),
+# the next successful single pass embedded only 127 bookmarks instead of 982. The map fell to 115
+# pairs, FindHeadings still printed OK! in green, and the collapsed table was committed into
+# muntabot. Re-running `sbt pdf` restored 982 bookmarks and 778 pairs.
+#
+# If this gate fails, count the bookmarks in both editions before suspecting the translation:
+#   scala-cli run autotranslate/scratch/bookmark-probe.scala -- \
+#     compendium/compendium.pdf compendium-en/compendium-en.pdf
+#
+# Raise this number when a run measures more (the gate prints the tighter value to commit).
+778
