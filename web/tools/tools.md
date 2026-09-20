@@ -373,7 +373,7 @@ Om Kojo-fönstret inte öppnas, eller om du får fel som
 `sun.awt`, `sun.swing`, `sun.lwawt.macosx` eller `com.apple.laf`:
 
 1. Lägg in detta högst upp i ditt program:
-   ```scala
+```scala
 //> using javaOptions "--add-exports=java.desktop/sun.awt=ALL-UNNAMED"
 //> using javaOptions "--add-exports=java.desktop/sun.swing=ALL-UNNAMED"
 //> using javaOptions "--add-opens=java.desktop/com.apple.laf=ALL-UNNAMED"
@@ -382,7 +382,7 @@ Om Kojo-fönstret inte öppnas, eller om du får fel som
 //> using javaOptions "--add-exports=java.desktop/sun.java2d=ALL-UNNAMED"
 //> using javaOptions "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
 //> using javaOptions "--enable-native-access=ALL-UNNAMED"
-   ```
+```
 
 2. Kör igen med `scala repl .` Skriv sedan `fram` i REPL:en och tryck ENTER. Ett Kojo Canvas-fönster med en sköldpadda ska dyka upp.
 *Valfritt*: Installera skrivbordsappen Kojo här: https://www.kogics.net/kojo-download där du kan programmera i äldre Scala 2 (se Appendix 1).
