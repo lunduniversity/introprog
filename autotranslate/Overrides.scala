@@ -588,8 +588,8 @@ object Overrides:
       """Build on the code below and make a Rock-Paper-Scissors game\footnote{\url{https://sv.wikipedia.org/wiki/Sten,_sax,_påse}}. The code works as it should, except the function \code{winner} which cheats in the computer's favour.""",
 
     // ── w01-intro-lab: clean prose (Kojo lab abstractions kvadrat/stapel/rutnät kept as code) ──
-    """Skriv \code{\_f} och tryck på \commandchar{tab} igen; datorn fyller i till det unika filnamnet \file{report\_final.txt}. Tryck på \commandchar{retur} för att titta på filen.""" ->
-      """Type \code{\_f} and press \commandchar{tab} again; the computer fills in the unique file name \file{report\_final.txt}. Press \commandchar{retur} to look at the file.""",
+    """Skriv \code{_f} och tryck på \commandchar{tab} igen; datorn fyller i till det unika filnamnet \file{report\_final.txt}. Tryck på \commandchar{retur} för att titta på filen.""" ->
+      """Type \code{_f} and press \commandchar{tab} again; the computer fills in the unique file name \file{report\_final.txt}. Press \commandchar{retur} to look at the file.""",
     """Man kan tillfälligt avbryta exekveringen av ett program med \commandchar{control-z}. Skriv \code{xeyes} och sedan \commandchar{control-z}. Notera att programmet nu inte är aktivt (ögonen följer inte musmarkören). Med kommandot \code{fg} (foreground) återupptar man exekveringen igen.""" ->
       """You can temporarily pause the execution of a program with \commandchar{control-z}. Type \code{xeyes} and then \commandchar{control-z}. Note that the program is now not active (the eyes don't follow the mouse cursor). With the command \code{fg} (foreground) you resume execution again.""",
     """Definiera en egen procedur som heter \code{kvadrat} med hjälp av nyckelordet \code{def} som vid anrop ritar en kvadrat med hjälp av en \code{for}-loop.""" ->
