@@ -588,10 +588,19 @@ object Overrides:
       """Build on the code below and make a Rock-Paper-Scissors game\footnote{\url{https://sv.wikipedia.org/wiki/Sten,_sax,_påse}}. The code works as it should, except the function \code{winner} which cheats in the computer's favour.""",
 
     // ── w01-intro-lab: clean prose (Kojo lab abstractions kvadrat/stapel/rutnät kept as code) ──
-    """Skriv \code{\_f} och tryck på \commandchar{tab} igen; datorn fyller i till det unika filnamnet \file{report\_final.txt}. Tryck på \commandchar{retur} för att titta på filen.""" ->
-      """Type \code{\_f} and press \commandchar{tab} again; the computer fills in the unique file name \file{report\_final.txt}. Press \commandchar{retur} to look at the file.""",
-    """Man kan tillfälligt avbryta exekveringen av ett program med \commandchar{control-z}. Skriv \code{xeyes} och sedan \commandchar{control-z}. Notera att programmet nu inte är aktivt (ögonen följer inte musmarkören). Med kommandot \code{fg} (foreground) återupptar man exekveringen igen.""" ->
-      """You can temporarily pause the execution of a program with \commandchar{control-z}. Type \code{xeyes} and then \commandchar{control-z}. Note that the program is now not active (the eyes don't follow the mouse cursor). With the command \code{fg} (foreground) you resume execution again.""",
+    // The next two entries exist because the key-name sweep invalidated their cache rows and the
+    // model then damaged both: this one came back as VERBATIM SWEDISH, and the Ctrl+C one below came
+    // back as `\commandchar { Ctrl+C }`, padded inside the braces. Neither is a fallback — a model
+    // result that happens to be Swedish is cached as a success — so the cache-only gate stayed green
+    // at 9 while the English mirror got worse. Only the rising `swedish-left` figure caught it.
+    """Skriv \code{less r} och tryck på \commandchar{Tab}. Datorn fyller i tecken i filnamnet så länge de är unika (nu står det \code{less report} på kommando\-raden). Det finns mer än en fil vars namn börjar med \file{report}. Tryck på \commandchar{Tab} en gång till (ibland behövs det två extra tryckningar) så får du en lista över dessa filer.""" ->
+      """Write \code{less r} and press \commandchar{Tab}. The computer fills in characters in the filename as long as they are unique (now it says \code{less report} on the command\- line). There is more than one file whose name starts with \file{report}. Press the \commandchar{Tab} key once more (sometimes it takes two extra presses) to get a list of these files.""",
+    """Skriv \commandchar{Ctrl+C} i kommandofönstret för att avbryta \code{xeyes}-programmet.""" ->
+      """Type \commandchar{Ctrl+C} in the command prompt to interrupt the \code{xeyes} program.""",
+    """Skriv \code{_f} och tryck på \commandchar{Tab} igen; datorn fyller i till det unika filnamnet \file{report\_final.txt}. Tryck på \commandchar{Enter} för att titta på filen.""" ->
+      """Type \code{_f} and press \commandchar{Tab} again; the computer fills in the unique file name \file{report\_final.txt}. Press \commandchar{Enter} to look at the file.""",
+    """Man kan tillfälligt avbryta exekveringen av ett program med \commandchar{Ctrl+Z}. Skriv \code{xeyes} och sedan \commandchar{Ctrl+Z}. Notera att programmet nu inte är aktivt (ögonen följer inte musmarkören). Med kommandot \code{fg} (foreground) återupptar man exekveringen igen.""" ->
+      """You can temporarily pause the execution of a program with \commandchar{Ctrl+Z}. Type \code{xeyes} and then \commandchar{Ctrl+Z}. Note that the program is now not active (the eyes don't follow the mouse cursor). With the command \code{fg} (foreground) you resume execution again.""",
     """Definiera en egen procedur som heter \code{kvadrat} med hjälp av nyckelordet \code{def} som vid anrop ritar en kvadrat med hjälp av en \code{for}-loop.""" ->
       """Define your own procedure named \code{kvadrat} using the keyword \code{def} which, when called, draws a square using a \code{for} loop.""",
     """Studera hur anrop av proceduren \code{kvadrat} påverkar exekveringssekvensen av dina satser genom att göra lämpliga utskrifter så att du kan se när olika delar av koden exekveras.""" ->
@@ -610,6 +619,15 @@ object Overrides:
       """Generalise your abstractions \code{kvadrat} and \code{stapel} so that you can affect the fill colour and pen colour of the squares that are drawn.""",
     """Skriv \code{räknaSnabbt} terminalen för att köra huvudprogrammet.""" ->
       """Type \code{räknaSnabbt} in the terminal to run the main program.""",
+
+    // ── w09-setmap-lab: the nano hat-notation sentence ──
+    // Kept pinned rather than left to the model. The key-name sweep changed this unit's Swedish,
+    // so its cache row died and an unpinned unit would have been re-translated from scratch; a
+    // fresh attempt can come back worse than a reviewed one, so the safe move is to pin it.
+    // \commandchar names a key CAP: Tab, Enter, Ctrl+<LETTER>. Both sides use the same spelling
+    // now, so nothing here forces a translation of the key name any more.
+    """Där används tecknet \texttt{\^{}} (den lilla \enquote{hatten} vid sidan om \commandchar{Enter}) för att betyda Ctrl-knappen.""" ->
+      """There, the symbol \texttt{\^{}} (the small \enquote{hat} next to \commandchar{Enter}) is used to mean the Ctrl button.""",
 
     // ── w10-inheritance-lab: snake-game group lab ──
     """Gör övning {\tt \ExeWeekNINE} i kapitel \ref{exe:W10}, speciellt uppgift \ref{exe:inheritance:labprep-pair}.""" ->
@@ -880,4 +898,34 @@ object Overrides:
     // brace, and keying it with one silently missed. Copy keys from unit-probe, never from the source.
     """I vecka 4 \& vecka 8: \Alert{obligatorisk kontroll} av att du gjort \Emph{muntaträning"""
       -> """In week 4 \& week 8: \Alert{mandatory check} that you have done \Emph{oral practice""",
+
+    // ── lect-w11-context: code COMMENTS kept in step with the clamped identifiers ────────────────
+    // The "lect-w11-context" perFileId cluster (CodeGlossary) renames identifiers in CODE regions only, so
+    // these two comments still named the Swedish types and described code that no longer exists in the
+    // English listing: "av typen ÄrDennaTyp" sits above `self: IsThisType =>`, and "samma Bur" above
+    // `Cage[Animal]`. Here and not in CodeGlossary.str: str is deliberately kept OUT of renderCodeIds so it
+    // can never half-translate a span, and comments in inline .tex code envs resolve through the code-cache,
+    // which Overrides beats. Not fixed in the cache either — the covariance comment's code-cache row is an
+    // IDENTITY row (sv == en, i.e. a give-up entry the loader drops on every load), and the full-line row in
+    // translate-cache.tsv rewrites the prompt `ejscala>` (which marks deliberately-BROKEN code) to `scala>`,
+    // so it is guard-rejected. Proposed 2026-08-30, pending BR ratification.
+    "Kod här kan utgå från att denna instans är av typen ÄrDennaTyp"
+      -> "Code here can stem from the fact that this instance is of type IsThisType",
+    "en kovariant referens till samma Bur"
+      -> "a covariant reference to the same Cage",
+    // Moved here from a hand-fix to the translate-code-cache.tsv cell (2026-08-30). The cached translation
+    // carried a leaked mask placeholder — `... :(<-C0>` — which rendered literally in the English w11 deck,
+    // and read the typ-osäkert pun as "definitely". An override is the durable home: the cache cell had to be
+    // re-applied by hand after every model-less run rewrote the file, and a `--clean` + `--all` would
+    // re-translate the row and could reintroduce the leak. Pending BR ratification.
+    "KAOS! typosäkert hundkatt-monster :("
+      -> "CHAOS! type-unsafe cat-dog monster :(",
+    // ⚠ UPSTREAM SOURCE BUG, mirrored deliberately rather than papered over: this comment names `MinKontext`,
+    // an object that exists nowhere in the course material -- the object actually being imported is
+    // EnAnnanNamnrymd (AnotherNamespace in English). `MinKontext` is "min kontext"/MyContext, i.e. not even a
+    // misspelling of the real name. The English therefore keeps the same dangling reference, translated, so
+    // the two sides stay faithful to each other and the defect stays visible in both. The fix belongs in
+    // slides/body/lect-w11-context.tex. Proposed 2026-08-30, pending BR ratification.
+    "importerar alla givna värden i MinKontext"
+      -> "imports all given values into MyContext",
   )
