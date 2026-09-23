@@ -611,6 +611,14 @@ object Overrides:
     """Skriv \code{räknaSnabbt} terminalen för att köra huvudprogrammet.""" ->
       """Type \code{räknaSnabbt} in the terminal to run the main program.""",
 
+    // ── w09-setmap-lab: name the Enter key consistently in English ──
+    // The Swedish source spells this key two ways: \commandchar{retur} in the w01 lab and
+    // \commandchar{return} here. Only the English side is unified, to Enter, which is what the
+    // key caps in the Linux rooms say; the Swedish keeps whatever each source says, because an
+    // override key must match its unit exactly or the entry orphans.
+    """Där används tecknet \texttt{\^{}} (den lilla \enquote{hatten} vid sidan om \commandchar{return}) för att betyda Ctrl-knappen.""" ->
+      """There, the symbol \texttt{\^{}} (the small \enquote{hat} next to \commandchar{Enter}) is used to mean the Ctrl button.""",
+
     // ── w10-inheritance-lab: snake-game group lab ──
     """Gör övning {\tt \ExeWeekNINE} i kapitel \ref{exe:W10}, speciellt uppgift \ref{exe:inheritance:labprep-pair}.""" ->
       """Do exercise {\tt \ExeWeekNINE} in chapter \ref{exe:W10}, especially task \ref{exe:inheritance:labprep-pair}.""",
