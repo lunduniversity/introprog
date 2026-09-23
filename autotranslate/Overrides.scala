@@ -898,4 +898,34 @@ object Overrides:
     // brace, and keying it with one silently missed. Copy keys from unit-probe, never from the source.
     """I vecka 4 \& vecka 8: \Alert{obligatorisk kontroll} av att du gjort \Emph{muntaträning"""
       -> """In week 4 \& week 8: \Alert{mandatory check} that you have done \Emph{oral practice""",
+
+    // ── lect-w11-context: code COMMENTS kept in step with the clamped identifiers ────────────────
+    // The "lect-w11-context" perFileId cluster (CodeGlossary) renames identifiers in CODE regions only, so
+    // these two comments still named the Swedish types and described code that no longer exists in the
+    // English listing: "av typen ÄrDennaTyp" sits above `self: IsThisType =>`, and "samma Bur" above
+    // `Cage[Animal]`. Here and not in CodeGlossary.str: str is deliberately kept OUT of renderCodeIds so it
+    // can never half-translate a span, and comments in inline .tex code envs resolve through the code-cache,
+    // which Overrides beats. Not fixed in the cache either — the covariance comment's code-cache row is an
+    // IDENTITY row (sv == en, i.e. a give-up entry the loader drops on every load), and the full-line row in
+    // translate-cache.tsv rewrites the prompt `ejscala>` (which marks deliberately-BROKEN code) to `scala>`,
+    // so it is guard-rejected. Proposed 2026-08-30, pending BR ratification.
+    "Kod här kan utgå från att denna instans är av typen ÄrDennaTyp"
+      -> "Code here can stem from the fact that this instance is of type IsThisType",
+    "en kovariant referens till samma Bur"
+      -> "a covariant reference to the same Cage",
+    // Moved here from a hand-fix to the translate-code-cache.tsv cell (2026-08-30). The cached translation
+    // carried a leaked mask placeholder — `... :(<-C0>` — which rendered literally in the English w11 deck,
+    // and read the typ-osäkert pun as "definitely". An override is the durable home: the cache cell had to be
+    // re-applied by hand after every model-less run rewrote the file, and a `--clean` + `--all` would
+    // re-translate the row and could reintroduce the leak. Pending BR ratification.
+    "KAOS! typosäkert hundkatt-monster :("
+      -> "CHAOS! type-unsafe cat-dog monster :(",
+    // ⚠ UPSTREAM SOURCE BUG, mirrored deliberately rather than papered over: this comment names `MinKontext`,
+    // an object that exists nowhere in the course material -- the object actually being imported is
+    // EnAnnanNamnrymd (AnotherNamespace in English). `MinKontext` is "min kontext"/MyContext, i.e. not even a
+    // misspelling of the real name. The English therefore keeps the same dangling reference, translated, so
+    // the two sides stay faithful to each other and the defect stays visible in both. The fix belongs in
+    // slides/body/lect-w11-context.tex. Proposed 2026-08-30, pending BR ratification.
+    "importerar alla givna värden i MinKontext"
+      -> "imports all given values into MyContext",
   )
