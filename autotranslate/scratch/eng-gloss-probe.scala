@@ -35,8 +35,13 @@
   * weaker still: a line whose English prose is perfectly good can carry `\code{Färg}` where an
   * identifier is deliberately unclamped. Treat the numbers as an upper bound and READ the rows.
   *
-  * Baseline measured 2026-09-18 on master (before any bracing): 328 glosses, 147 with the term
-  * already delimited by a macro and 181 bare.
+  * Baselines, both measured rather than carried over, because this number gets quoted:
+  *   2026-09-18, before the `%`-comment skip existed: 328 glosses, 147 delimited, 181 bare.
+  *   2026-09-23, current: 307 glosses, 140 delimited, 167 bare. The drop of 21 is the
+  *     `%`-commented lines now skipped; the delimited/bare shift of 2 is the `stripTrailing`
+  *     fix below, which had been misreading a delimited gloss as bare whenever more than one
+  *     space or a tab sat before `\Eng{`. TERM-MISSING is 108 (40 delimited) on both counts,
+  *     so the figure issue #981 sequences on was never affected by that bug.
   *
   * Usage:
   *   scala-cli run autotranslate/scratch/eng-gloss-probe.scala -- . [out.tsv]
@@ -85,7 +90,7 @@ def swedishInProse(s: String): Boolean =
 def unaligned(src: String, mirror: String): Boolean =
   val m = mirror.trim
   m.length < 30 && src.trim.length > 60 &&
-    (m.startsWith("\\begin") || m.startsWith("\\end") || m == "\\pause" || m.startsWith("\\item]"))
+    (m.startsWith("\\begin") || m.startsWith("\\end") || m == "\\pause" || m.startsWith("\\item"))
 
 def mirrorOf(p: os.Path, root: os.Path): Option[os.Path] =
   val rel = p.relativeTo(root).toString
@@ -164,7 +169,7 @@ def glossesIn(line: String, f: os.Path, lineNo: Int, mirror: Option[String]): Se
   while k >= 0 do
     balanced(line, k + 4) match
       case Some((eng, close)) =>
-        val pre = line.substring(0, k).stripSuffix(" ")
+        val pre = line.substring(0, k).stripTrailing()
         val before = if pre.length > 60 then "..." + pre.takeRight(60) else pre
         out += Gloss(f, lineNo, eng, before, pre.endsWith("}"), line, mirror)
         from = close + 1
