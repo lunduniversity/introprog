@@ -931,4 +931,14 @@ object Overrides:
     // new text has been through a model run and cached.
     "importerar alla givna värden i EnAnnanNamnrymd"
       -> "imports all given values into AnotherNamespace",
+    // lect-w11-context:181, the one prose item in that lecture still rendering Swedish in the compendium.
+    // Its cache row (translate-cache.tsv, "Oföränderliga__C0__ samlingar är ofta kovarianta...") is an
+    // IDENTITY row, sv == en, so it is a cache HIT and renders Swedish with or without a backend, and neither
+    // gate sees it: not a fallback, not an orphan. That is the hole described on #983.
+    // ⚠ The key is brace-unbalanced BY DESIGN, like the Motivation entry above: the unit STARTS inside
+    // \Emph{...}, so the leading \Emph{ is peeled into the lead and the key carries the closing brace, which
+    // the value must therefore supply too. Key taken verbatim from the `clean:` line of
+    // scratch/unit-probe.scala rather than from the .tex, per override-orphans-baseline.txt.
+    """Oföränderliga} samlingar är ofta kovarianta, t.ex Vector, Option, List."""
+      -> """Immutable} collections are often covariant, e.g. Vector, Option, List.""",
   )
