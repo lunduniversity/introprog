@@ -920,12 +920,15 @@ object Overrides:
     // re-translate the row and could reintroduce the leak. Pending BR ratification.
     "KAOS! typosäkert hundkatt-monster :("
       -> "CHAOS! type-unsafe cat-dog monster :(",
-    // ⚠ UPSTREAM SOURCE BUG, mirrored deliberately rather than papered over: this comment names `MinKontext`,
-    // an object that exists nowhere in the course material -- the object actually being imported is
-    // EnAnnanNamnrymd (AnotherNamespace in English). `MinKontext` is "min kontext"/MyContext, i.e. not even a
-    // misspelling of the real name. The English therefore keeps the same dangling reference, translated, so
-    // the two sides stay faithful to each other and the defect stays visible in both. The fix belongs in
-    // slides/body/lect-w11-context.tex. Proposed 2026-08-30, pending BR ratification.
-    "importerar alla givna värden i MinKontext"
-      -> "imports all given values into MyContext",
+    // The import comment in lect-w11-context (#968). It used to name `MinKontext`, an object existing nowhere
+    // in the material, and this entry mirrored that dangling reference as MyContext so the defect stayed
+    // visible in both languages. The Swedish is fixed in this same change, so the key moves to the corrected
+    // spelling and the value now names the object that is actually imported.
+    // NOT deleted, which is what #976 said would happen once the source was fixed: the fix changes the unit's
+    // Swedish, so its committed code-cache row (keyed on the MinKontext spelling) no longer matches, and with
+    // no model backend reachable here the unit would fall back to Swedish -- +1 fallback against a ceiling of
+    // 9, and an English comment in Swedish. Re-keying keeps it resolved model-free. Drop the entry once the
+    // new text has been through a model run and cached.
+    "importerar alla givna värden i EnAnnanNamnrymd"
+      -> "imports all given values into AnotherNamespace",
   )
