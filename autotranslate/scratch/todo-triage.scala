@@ -91,6 +91,8 @@ val scalaNoise: Set[String] = Set(
   "map", "filter", "flatMap", "foreach", "fill", "length", "size", "toInt", "toString", "mkString",
   "apply", "head", "tail", "isEmpty", "nonEmpty", "get", "getOrElse", "sum", "sorted", "reverse",
   "indices", "indexOf", "StdIn", "readLine", "io", "reflect", "ClassTag", "compare", "equals",
+  // java/awt API names reached by the graphics examples, and Exception/Try machinery
+  "java", "awt", "swing", "util", "Color", "Graphics", "Exception", "Throwable", "Error", "Thread",
 )
 
 /** Candidate work inside a code line: identifier tokens that could need renaming, and the contents of
@@ -142,7 +144,12 @@ def texUnder(root: Path, dirs: Seq[String]): Vector[Src] =
         .iterator
         .asScala
         .toVector
+        // `old-*.tex` are superseded DUPLICATES of live exercise content that nothing \inputs -- but the
+        // same examples still reach the pdf through the live file, e.g. the Rymdvarelse/huvud1 example is
+        // in both old-classes-exercise and w05-classes-exercise. Since `old-` sorts first, keeping them
+        // would attribute every such hit to a file nobody builds and send the fix to the wrong place.
         .filter(p => Files.isRegularFile(p) && p.toString.endsWith(".tex"))
+        .filterNot(p => p.getFileName.toString.startsWith("old-"))
         .map(p => readSrc(root, root.relativize(p).toString))
         .sortBy(_.rel)
 
@@ -371,6 +378,48 @@ def parseTodo(path: Path): Vector[Entry] =
     Set(Kind.CodeIdent, Kind.CodeString, Kind.CodeComment, Kind.CodeLine, Kind.ProseSv, Kind.Glossed)
       .contains(k))
   emit(s"# model-free with an established mechanism: $modelFree of ${all.size}")
+
+  // --tokens: the ratification table. The fragment count overstates the work badly, because the same
+  // demo name recurs across lines and weeks -- one `öka` entry answers dozens of rows. What BR has to
+  // ratify is this list, not the fragments, and seeing every section a name appears in is what decides
+  // global versus perFileId.
+  if args.contains("--tokens") then
+    final case class Agg(n: Int, secs: Set[String], files: Set[String])
+    def add(m: Map[String, Agg], k: String, sec: String, file: String): Map[String, Agg] =
+      val a = m.getOrElse(k, Agg(0, Set.empty, Set.empty))
+      m.updated(k, Agg(a.n + 1, a.secs + sec, a.files + file))
+    var ids = Map.empty[String, Agg]
+    var strs = Map.empty[String, Agg]
+    var done = Map.empty[String, Agg]
+    val codeKinds = Set(Kind.CodeLine, Kind.CodeIdent, Kind.CodeString)
+    // EnSide rows are English prose from the mirror, so every English word in them would read as a
+    // rename candidate -- `the` and `weight` topped the list before this. Comment and pseudocode lines
+    // contribute their prose words the same way. So aggregate only over fragments that actually look
+    // like Scala, and drop English function words, which no Swedish demo name is.
+    def isScala(t: String): Boolean =
+      val looksCode = Vector("=", "(", "scala>", "def ", "val ", "var ").exists(t.contains)
+      val isProse = t.trim.startsWith("#") || t.trim.startsWith("//") || t.contains("←")
+      looksCode && !isProse
+    for (e, k, hits) <- all if codeKinds.contains(k) && isScala(e.text) do
+      val file = hits.headOption.map(_.rel.split("/").last).getOrElse("-")
+      val (i0, s, c) = candidates(e.text)
+      // A glossary VALUE is an English target, never a rename candidate. They turn up because a clamped
+      // file carries English in its \else branch, so the source itself contains `weight`, `Cucumber`...
+      val englishTargets = CodeGlossary.id.values.toSet ++ CodeGlossary.codeStr.values.toSet
+      val i = i0.filterNot(t => lists.english.contains(t.toLowerCase) || englishTargets.contains(t))
+      for t <- i do ids = add(ids, t, e.section, file)
+      for t <- s do strs = add(strs, t, e.section, file)
+      for t <- c do done = add(done, t, e.section, file)
+    def dump(title: String, m: Map[String, Agg]): Unit =
+      emit("")
+      emit(s"# $title: ${m.size} distinct")
+      for (t, a) <- m.toVector.sortBy((t, a) => (-a.n, t)) do
+        val where = a.files.toVector.sorted.take(2).mkString(",")
+        val secs = a.secs.toVector.sorted.take(5).mkString(" ")
+        emit(f"#   ${a.n}%4d  $t%-30s $where%-46s $secs")
+    dump("identifier candidates (need ratifying)", ids)
+    dump("string-literal candidates (codeStr; blocked on #990)", strs)
+    dump("already covered by CodeGlossary.id", done)
 
   if report.nonEmpty then
     Files.write(Path.of(report), sb.toString.getBytes("UTF-8"))
