@@ -54,14 +54,22 @@ def deMarkup(s: String): String =
   t = raw"\\[A-Za-z]+\*?".r.replaceAllIn(t, " ")
   t = t.replace("``", "\"").replace("''", "\"").replace("\u201d", "\"").replace("\u201c", "\"")
   t = t.replace("\u2019", "'").replace("{", "").replace("}", "")
-  norm(t)
+  // `$` goes too: the inventory quotes rendered output ("gurka nr i") while the source interpolates
+  // ("gurka nr $i"), and dropping it on both sides makes those meet.
+  t = t.replace("$", "")
+  // LaTeX writes thousands with a space inside math ($12 750$) and the pdf pastes as 12750, so close
+  // gaps BETWEEN digits only -- narrow enough that it cannot join two separate numbers in prose.
+  t = raw"(?<=\d) (?=\d)".r.replaceAllIn(norm(t), "")
+  t
 
 // A section header needs at least one DOT: a bare leading digit is far more likely to be a REPL error
 // gutter ("1 |val djurbur: Bur[Djur] = ...") than a heading, and treating those as headers silently
 // re-labels every following fragment with the wrong chapter. Learned by doing exactly that.
 val HeaderRx = raw"^\s*(-?\d+(?:\.\d+)+)\s*(.*)$$".r
 val ChapterRx = raw"^\s*Chapter\s+(\d+)\b.*$$".r
-val TaskRx = raw"^\s*[Tt]ask\s+(\d+)\b.*$$".r
+// `Task 6` and `Task6` are both written in practice, so the space is optional. Requiring it turned
+// eight location markers per chapter into unlocatable "fragments".
+val TaskRx = raw"^\s*[Tt]ask\s*(\d+)\b.*$$".r
 // `footnote 1` / `bullet 3` are LOCATION markers, not commentary: they say which footnote or bullet of
 // the current section the following fragment sits in. Keeping them is what makes the entry findable.
 val NoteRx = raw"^\s*((?:footnote|bullet)\s*\d*)\s*$$".r
@@ -155,7 +163,13 @@ def variants(text: String): Vector[String] =
   val t = text.trim
   val noEnum = raw"^[a-zA-Z]\)\s*".r.replaceFirstIn(t, "")
   val noHyphen = if t.endsWith("-") then t.dropRight(1).reverse.dropWhile(_ != ' ').reverse.trim else t
-  Vector(t, noEnum, noHyphen).distinct.filter(_.length >= 5)
+  // A pdf TABLE row pastes as its cells joined by runs of spaces ("cp orig kopia  Copy the file orig
+  // to kopia."), and no single source line contains that whole string. Try the cells separately.
+  val cells = if raw"\s{2,}".r.findFirstIn(t).isDefined then raw"\s{2,}".r.split(t).toVector else Vector.empty
+  // A resolved cross-reference ends the fragment with a number LaTeX supplied ("...i kapitel 1"),
+  // which is in no source file. Dropping the last word recovers the sentence.
+  val noLast = t.reverse.dropWhile(_ != ' ').reverse.trim
+  (Vector(t, noEnum, noHyphen) ++ cells :+ noLast).map(_.trim).distinct.filter(_.length >= 5)
 
 /** Second pass for fragments the todo quotes as one rendered sentence while the source hard-wraps it
   * across two lines. Only used when the single-line search finds nothing, so it cannot add noise. */
@@ -171,7 +185,7 @@ def findInPairs(idx: Vector[Src], needle: String): Vector[Hit] =
 
 enum Kind:
   case CodeIdent, CodeString, CodeComment, CodeLine, CodeOther, Glossed, ProseSv, Pseudocode, Url,
-    EnInSv, EnSide, Unclear, TodoNote, NotFound
+    EnInSv, EnSide, Unclear, TodoNote, Noise, NotFound
 
 def mechanism(k: Kind): String = k match
   case Kind.CodeIdent   => "CodeGlossary.id / .perFileId"
@@ -180,6 +194,7 @@ def mechanism(k: Kind): String = k match
   case Kind.CodeLine    => "CodeGlossary.id / .perFileId (tokens listed)"
   case Kind.CodeOther   => "inspect: code region, no Swedish token found"
   case Kind.TodoNote    => "none: a note in the inventory, not a fragment"
+  case Kind.Noise       => "none: punctuation or a stray line from a pasted transcript"
   case Kind.Glossed     => "issue-981 transform (source already names the English)"
   case Kind.ProseSv     => "Overrides (unit-probe key)"
   case Kind.Pseudocode  => "ASK BR: algorithm block, no mechanism reaches it"
@@ -193,16 +208,28 @@ def mechanism(k: Kind): String = k match
 def classify(text: String, svHits: Vector[Hit], enHits: Vector[Hit], srcLine: Option[String],
     lists: SwedishScore.Lists): Kind =
   val t = norm(text)
-  val verdict = SwedishScore.verdict(SwedishScore.score(t, lists))
+  val sc = SwedishScore.score(t, lists)
+  val verdict = SwedishScore.verdict(sc)
   val line = srcLine.getOrElse("")
+  // a lone `}` or `|` is a stray line from a pasted transcript, not a defect. Separated from TodoNote
+  // so that category means "the inventory's own words" and stays small enough to read.
+  if t.count(_.isLetter) < 2 then Kind.Noise
   // a URL is a URL whether or not the search located it: \url{...} with accent escapes often defeats
   // the flattened match, and the verdict does not depend on finding it.
-  if t.contains("http") || t.contains("wikipedia.org") then Kind.Url
+  else if t.contains("http") || t.contains("wikipedia.org") then Kind.Url
   else if svHits.isEmpty then
     if enHits.nonEmpty then Kind.EnSide
-    // not in either tree and not Swedish: almost always the inventory's own prose -- a question, a
-    // heading like "Chapter 7", or a stray "|" from a pasted REPL gutter. Not work, so not a defect.
-    else if verdict != SwedishScore.Verdict.Swedish then Kind.TodoNote
+    // Not in either tree. Call it the inventory's own voice only on POSITIVE English evidence --
+    // "Column Swedish name can be completely removed in English studyguide" scores en >> sv. Merely
+    // failing to look Swedish is not enough: "Studera begreppen i kapitel 1" is Swedish that happens
+    // to carry no function words the detector knows, and calling that commentary hides real work.
+    // ...and never on a code fragment. Scala keywords ARE English function words -- `if`, `then`,
+    // `else`, `def` -- so any transcript line scores as confident English and would be written off as
+    // commentary. A `scala>` line that is in neither tree means the mirror is stale or built on
+    // another branch, which is work to redo, not a note to ignore.
+    else if raw"scala>|^\s*(def|val|var|class|object|trait|enum)\s".r.findFirstIn(t).isDefined then
+      Kind.NotFound
+    else if sc.en > sc.strong then Kind.TodoNote
     else Kind.NotFound
   else if t.contains("Indata") || t.contains("Utdata") || t.contains("\u2190") then Kind.Pseudocode
   else if t.contains("http") || t.contains("wikipedia.org") then Kind.Url
@@ -300,6 +327,19 @@ def parseTodo(path: Path): Vector[Entry] =
   emit(s"# todo-triage: ${entries.size} fragments from ${todo.getFileName}" +
     (if chapterFilter.nonEmpty then s", chapter $chapterFilter" else ""))
   emit(s"# ${sv.size} Swedish .tex indexed, ${en.size} mirror .tex indexed")
+  // EnSide depends entirely on the generated mirror matching the checked-out branch. A mirror built on
+  // another branch silently moves rows to NotFound -- `singlaSlant` vanished from both trees that way,
+  // because the mirror on disk had been generated where it is already `flipCoin`.
+  def newest(dirs: Seq[String]): Long =
+    dirs.flatMap: d =>
+      val base = root.resolve(d)
+      if !Files.isDirectory(base) then Seq(0L)
+      else Files.walk(base).iterator.asScala.toSeq.map(p => Files.getLastModifiedTime(p).toMillis)
+    .maxOption.getOrElse(0L)
+  val (svAge, enAge) = (newest(Seq("compendium", "slides")), newest(Seq("compendium-en", "slides-en")))
+  if enAge < svAge then
+    emit(s"# WARNING: the mirror is OLDER than the source (${(svAge - enAge) / 60000} min). Regenerate")
+    emit("#   before trusting EnSide, or a mirror built on another branch will read as NotFound.")
   emit("")
   emit("section\ttask\tkind\twhere\tmechanism\ttokens\tfragment")
   for (e, k, hits) <- all do
