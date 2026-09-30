@@ -93,7 +93,16 @@ val scalaNoise: Set[String] = Set(
   "indices", "indexOf", "StdIn", "readLine", "io", "reflect", "ClassTag", "compare", "equals",
   // java/awt API names reached by the graphics examples, and Exception/Try machinery
   "java", "awt", "swing", "util", "Color", "Graphics", "Exception", "Throwable", "Error", "Thread",
+  "IllegalArgumentException", "Random", "PixelWindow", "atan2", "sqrt", "abs", "toUpperCase",
+  "toLowerCase", "MaxValue", "MinValue", "until", "orElse", "recover", "extension", "add", "min",
+  "max", "str", "pos", "find", "empty", "block", "argument", "collection", "content", "Values", "TAB",
+  // English words that leak in from translated comments and compiler messages inside code envs
+  "called", "cannot", "compared", "equality", "required", "found", "expected", "declared",
 )
+
+/** REPL artefacts: object hashes and synthetic lambda names, e.g. `$Lambda7356/0x0000000841ed2840`.
+  * They are neither Swedish nor identifiers anyone wrote, and they differ on every run. */
+val replArtefact: scala.util.matching.Regex = raw"(?:Lambda\d+|x?[0-9a-f]{6,}|\w*\d{3,}\w*)".r
 
 /** Example names that are ALREADY English, so never rename candidates. Curated by hand as the table
   * surfaces them, because no detector can tell `monster` -- the same word in both languages -- or the
@@ -117,7 +126,7 @@ def candidates(line: String): (Vector[String], Vector[String], Vector[String]) =
     .distinct
     .filter(t =>
       t.length > 2 && !scalaNoise.contains(t) && !raw"res\d+".r.matches(t)
-        && !englishExampleNames.contains(t.toLowerCase))
+        && !englishExampleNames.contains(t.toLowerCase) && !replArtefact.matches(t))
     .filterNot(inStrings.contains)
   val (covered, fresh) = idents.partition(t => CodeGlossary.id.contains(t))
   (fresh, strings.filterNot(CodeGlossary.codeStr.contains), covered)
