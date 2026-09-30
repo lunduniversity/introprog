@@ -95,6 +95,12 @@ val scalaNoise: Set[String] = Set(
   "java", "awt", "swing", "util", "Color", "Graphics", "Exception", "Throwable", "Error", "Thread",
 )
 
+/** Example names that are ALREADY English, so never rename candidates. Curated by hand as the table
+  * surfaces them, because no detector can tell `monster` -- the same word in both languages -- or the
+  * English `alien`/`predator` in the Rymdvarelse example from a Swedish coinage. Grows over time; that
+  * is the point, since every entry here is one fewer false candidate in every future run. */
+val englishExampleNames: Set[String] = Set("monster", "alien", "predator")
+
 /** Candidate work inside a code line: identifier tokens that could need renaming, and the contents of
   * quoted literals, which are a different mechanism (codeStr, not id). Deliberately NOT a Swedishness
   * judgement -- SwedishScore's lists are FUNCTION words, which cannot see `dubblera` or `gurka`, and
@@ -109,7 +115,9 @@ def candidates(line: String): (Vector[String], Vector[String], Vector[String]) =
     .findAllIn(line)
     .toVector
     .distinct
-    .filter(t => t.length > 2 && !scalaNoise.contains(t) && !raw"res\d+".r.matches(t))
+    .filter(t =>
+      t.length > 2 && !scalaNoise.contains(t) && !raw"res\d+".r.matches(t)
+        && !englishExampleNames.contains(t.toLowerCase))
     .filterNot(inStrings.contains)
   val (covered, fresh) = idents.partition(t => CodeGlossary.id.contains(t))
   (fresh, strings.filterNot(CodeGlossary.codeStr.contains), covered)
