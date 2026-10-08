@@ -13,7 +13,7 @@ class BlockWindow(
   /** Update the block at position pos by setting its color */
   def setBlock(pos: Pos, color: java.awt.Color): Unit = ???
 
-  /** Returns the colour of the block with position pos */
+  /** Returns the color of the block at position pos */
   def getBlock(pos: Pos): java.awt.Color = ???
 
   def write(
