@@ -10,7 +10,7 @@ class BlockWindow(
   val pixelWindow = new PixelWindow(
     nbrOfBlocks._1 * blockSize, nbrOfBlocks._2 * blockSize, title)
 
-  /** Färgar blocket med kordinaterna pos till color. */
+  /** Uppdatera blocket med koordinater pos så att dess färg blir color. */
   def setBlock(pos: Pos, color: java.awt.Color): Unit = ???
 
   /** Returnerar färgen på blocket med kordinaterna pos. */
