@@ -10,8 +10,10 @@ class BlockWindow(
   val pixelWindow = new PixelWindow(
     nbrOfBlocks._1 * blockSize, nbrOfBlocks._2 * blockSize, title)
 
+  /** Update the block at position pos by setting its color */
   def setBlock(pos: Pos, color: java.awt.Color): Unit = ???
 
+  /** Returns the color of the block at position pos */
   def getBlock(pos: Pos): java.awt.Color = ???
 
   def write(
