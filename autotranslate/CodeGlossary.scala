@@ -63,6 +63,23 @@ object CodeGlossary:
     // Scala keywords, which a token-exact rename cannot touch (no glossary key is a keyword).
     // Proposed 2026-08-30, pending BR ratification.
     "Toalett" -> "Toilet", "Upptagen" -> "Occupied", "Ledig" -> "Vacant",
+    // ── chapter 1 (w01) example identifiers, from reading the built English compendium ──
+    // GLOBAL for the same reason as the Toalett triple: each is a one-off demo name with no context
+    // conflict, so scoping would only hide it from the file that reuses it. Occurrence counts checked
+    // across slides/ and compendium/ before choosing global, per the rule ratified on #976.
+    // Proposed 2026-09-30, pending BR ratification.
+    "dubblera" -> "double",               // 7 sites: lect-w01-intro, slides/simple/intro, w01 exercise
+    "gurklängd" -> "cucumberLength",      // 4 sites, w01 only; follows the ratified gurka -> cucumber
+    "värdeSaknas" -> "valueMissing",      // 5 sites, w01-intro-exercise: the `def värdeSaknas = ()` Unit demo
+    // `bokstavlig` occurs inside a BACKTICKED name: val `bokstavlig val` = 42, demonstrating that
+    // backticks allow both a space and a keyword. Renaming the one token gives `literal val`, which keeps
+    // that point intact -- `val` is a keyword and no glossary key is a keyword, so it cannot be renamed.
+    "bokstavlig" -> "literal",
+    // one demo, two weeks: w01-intro-exercise and lect-w02-codestruct both flip a coin, so a single
+    // global entry is what keeps them saying the same thing.
+    "singlaSlant" -> "flipCoin",
+    // NOT renamed, though the sweep flagged it: `var monster = false` in w01-intro-exercise is already
+    // the English word. Renaming for the sake of it would be churn.
     // NB: the ANIMAL cluster (Djur/Ko/Gris/Häst/väsnas/skapaDjur/bondgård) is NOT global — it lives in
     // `perFileId` scoped to w10-inheritance-exercise. `Djur` also occurs in lect-w11-context's generics demo
     // (class Katt/Hund extends Djur) where Katt/Hund aren't in the glossary; a global Djur->Animal rendered
