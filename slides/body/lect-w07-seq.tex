@@ -201,23 +201,29 @@ val res1: Vector[Int] = Vector(0, 1, 2)
 \begin{Slide}{Några konstigheter med Array}
 \begin{itemize}\SlideFontSmall
 \item \Alert{Referenslikhet} (och inte innehållslikhet): 
-\begin{REPLnonum}
+\begin{REPLsmall}
 scala> Vector(1,2,3) == Vector(1,2,3) //innehållslikhet
 val res0: Boolean = true
 
 scala> Array(1,2,3) == Array(1,2,3) // referenslikhet
 val res1: Boolean = false  // aaargh!!
-\end{REPLnonum}
+\end{REPLsmall}
 Notera: Metoden \code{==} mellan två \code{ArraySeq} ger \Emph{innehållslikhet}.
 \item Special-syntax för allokering \Alert{utan} explicit initialisering: \\
 {\SlideFontSmall\code{val xs = new Array[String](1000)  // 1000 null-referenser}}
 \item Fungerar inte lika bra med generiska typer:
-\begin{REPLnonum}
+\begin{REPLsmall}
 scala> def box[T](x: T) = Vector[T](x)  //funkar fint
 
 scala> def abox[T](x: T) = Array[T](x)
   error: No ClassTag available for T
-\end{REPLnonum}
+\end{REPLsmall}
+\pause
+Då behövs \code{reflect.ClassTag} för att typen för x ska finnas vid körtid:
+\begin{REPLsmall}
+scala> def abox[T: reflect.ClassTag](x: T) = Array[T](x)
+\end{REPLsmall}
+
 %\item I stället för \code{Array} använd \code{scala.collection.mutable.ArraySeq} som beter sig som en ''normal'' samling.
 % Men ClassTag behövs ändå för arrayseq :(
 \end{itemize}
