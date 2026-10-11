@@ -68,7 +68,7 @@ object CodeGlossary:
     // conflict, so scoping would only hide it from the file that reuses it. Occurrence counts checked
     // across slides/ and compendium/ before choosing global, per the rule ratified on #976.
     // Proposed 2026-09-30, pending BR ratification.
-    "dubblera" -> "double",               // 7 sites: lect-w01-intro, slides/simple/intro, w01 exercise
+    "dubblera" -> "double",               // 6 sites: 3 each in lect-w01-intro and slides/simple/intro
     "gurklängd" -> "cucumberLength",      // 4 sites, w01 only; follows the ratified gurka -> cucumber
     "värdeSaknas" -> "valueMissing",      // 5 sites, w01-intro-exercise: the `def värdeSaknas = ()` Unit demo
     // `bokstavlig` occurs inside a BACKTICKED name: val `bokstavlig val` = 42, demonstrating that

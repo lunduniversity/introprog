@@ -930,7 +930,7 @@ object Overrides:
     // 9, and an English comment in Swedish. Re-keying keeps it resolved model-free. Drop the entry once the
     // new text has been through a model run and cached.
     "importerar alla givna värden i EnAnnanNamnrymd"
-      -> "imports all given values into AnotherNamespace",
+      -> "imports all given values from AnotherNamespace",
     // lect-w11-context:181, the one prose item in that lecture still rendering Swedish in the compendium.
     // Its cache row (translate-cache.tsv, "Oföränderliga__C0__ samlingar är ofta kovarianta...") is an
     // IDENTITY row, sv == en, so it is a cache HIT and renders Swedish with or without a backend, and neither
@@ -941,4 +941,10 @@ object Overrides:
     // scratch/unit-probe.scala rather than from the .tex, per override-orphans-baseline.txt.
     """Oföränderliga} samlingar är ofta kovarianta, t.ex Vector, Option, List."""
       -> """Immutable} collections are often covariant, e.g. Vector, Option, List.""",
+    // w01-intro-exercise:1607, the solution naming the backticked variable. Its model translation read
+    // 'alphanumeric valued', which contradicts the code once #991 renamed bokstavlig -> literal, so the
+    // English now names `literal val` as the code does. The DOUBLE space in the key is where \Eng{backticks}
+    // is masked out; key taken from the `clean:` line of scratch/unit-probe.scala, not from the .tex.
+    "Variabeln får namnet 'bokstavlig val', bakåt-apostrofer  gör att man kan namnge variabler till annars otillåtna namn, t.ex. med mellanrum eller nyckelord i sig."
+      -> "The variable gets the name 'literal val'; backticks make it possible to give variables otherwise disallowed names, e.g. with spaces or keywords in them.",
   )
