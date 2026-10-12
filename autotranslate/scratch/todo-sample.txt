@@ -7,8 +7,15 @@
 ## The comment marker is `##`, not `#`. A single `#` cannot be one: the w01 lab's fragments ARE shell
 ## comments (`# gå till katalogen`), so treating those as comments deleted ten real rows from the log
 ## and took CodeComment from 16 to 7 before this was caught.
+##
+## `##expect KIND` binds to the NEXT fragment line, and `--selftest` checks it. That is what makes
+## this a regression fixture rather than an example: a change that silently re-breaks one of the
+## reviewed bugs fails here instead of looking fine.
 
+## gurklängd was ratified in #991, so this must read as covered, not as open work. That is the
+## perFileId/id lookup working -- it read as "needs ratifying" before the review fixes.
 1.1.24
+##expect CodeCovered
 def gurklängd = 42 + x
 gurklängd
 
@@ -17,58 +24,73 @@ gurklängd
 ## were attributed to the wrong task.
 1.3.1
 Task6
+## `monster` is already the English word and sits in the curated exclusion list, so this line has no
+## rename candidate left: CodeOther, not CodeLine.
+##expect CodeOther
 scala> var monster = false
 scala> if monster then println("akta dig!!!")
 
 ## `footnote n` is a location marker too: the fragment under it sits in that footnote.
 1.1.15
 footnote 1
+##expect EnSide
 Andra språk, t.ex. Python och Javascript är dynamic och där skjuts typkontrollen upp till körningsdags
 
 ## A pdf TABLE row: cells joined by runs of spaces. No single source line holds the whole string, so
 ## the cells have to be tried separately.
 1.2.15
+##expect EnInSv
 cp orig kopia  Copy the file orig to kopia.
 
 ## A pdf line-break hyphen. The word is whole in the source.
 1.3.1
+##expect Url
 Om du surfar till http://www.scala-lang.org/api/current/ och skriver math i sökru-
 
 ## A LaTeX-generated enumerator that exists in no source file.
 1.3.1
 Task25
+##expect ProseSv
 a)poäng > 100 && poäng > 1000
 
 ## A cross-reference LaTeX resolved to a number, and thousands spacing written as $12 750$ in the
 ## source but pasted as 12750.
 1.3
+##expect NotFound
 Studera begreppen i kapitel 1
+##expect EnSide
 c) The Earth's (average) diameter (at the equator) is approximately 12750 km.
 
 ## Interpolation: the log quotes the rendered output, the source writes s"gurka nr $i".
 1.1.36
+##expect CodeCovered
 gurka nr i
 
 ## A stray line from a pasted transcript. Punctuation only, so: Noise, not a remark.
 1.1.38
+##expect Noise
 }
 
 ## A dotted number that is an EXPRESSION, not a section header.
 4.1.21
+##expect NotFound
 0.5 * bredd
 
 ## Control flow with no `scala>` and no def/val opener. Scala keywords are English function words, so
 ## without a code guard this scores as confident English and lands in the remarks bucket.
 1.1.36
+##expect CodeLine
 for i <- 1 to 10 do println(s"gurka nr $i")
 
 ## A lone identifier: belongs in the candidate table, which an isScala test demanding `=` or `(` drops.
 1.3.1
+##expect CodeIdent
 värdeSaknas
 
 ## Already scoped in CodeGlossary.perFileId, so it must read as covered rather than as needing
 ## ratification.
 11.1.9
+##expect CodeCovered
 case class Katt() extends Djur
 
 ## Genuinely the reader's own voice: an instruction about structure, not a defect to translate.

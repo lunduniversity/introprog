@@ -30,7 +30,8 @@
 import java.nio.file.{Files, Path}
 import scala.jdk.CollectionConverters.*
 
-final case class Entry(todoLine: Int, section: String, task: String, text: String)
+final case class Entry(todoLine: Int, section: String, task: String, text: String,
+    expect: Option[String] = None)
 final case class Hit(rel: String, line: Int, inCode: Boolean)
 
 /** A source file plus, per line, whether that line sits inside a verbatim/code environment, and the
@@ -351,6 +352,7 @@ def parseTodo(path: Path): Vector[Entry] =
   val lines = String(Files.readAllBytes(path), "UTF-8").linesIterator.toVector
   var section = ""
   var task = ""
+  var expect: Option[String] = None
   val out = Vector.newBuilder[Entry]
   for (raw, i) <- lines.zipWithIndex do
     val ln = raw.stripTrailing
@@ -359,6 +361,10 @@ def parseTodo(path: Path): Vector[Entry] =
       // `##` starts a comment, so a fixture can say what each line tests. NOT a single `#`: the w01
       // lab's fragments are shell comments (`# gå till katalogen`), and treating those as comments
       // silently deleted ten real rows from the log and took CodeComment from 16 to 7.
+      // `##expect KIND` binds to the next fragment; --selftest checks it. Everything else after ## is
+      // a comment, which is what lets the fixture explain each case next to it.
+      case _ if ln.trim.startsWith("##expect") =>
+        expect = Some(ln.trim.stripPrefix("##expect").trim)
       case _ if ln.trim.startsWith("##") => ()
       case ChapterRx(n)                 => section = n; task = ""
       case TaskRx(n)            => task = s"Task $n"
@@ -367,7 +373,9 @@ def parseTodo(path: Path): Vector[Entry] =
         // a header may carry a note on the same line ("1.1.16 Column Swedish name can be removed")
         if rest.trim.length > 3 then out += Entry(i + 1, sec, "note", rest.trim)
       case NoteRx(marker) => task = marker.trim
-      case _              => out += Entry(i + 1, section, task, ln.trim)
+      case _ =>
+        out += Entry(i + 1, section, task, ln.trim, expect)
+        expect = None
   out.result()
 
 @main def todoTriage(args: String*): Unit =
@@ -496,6 +504,21 @@ def parseTodo(path: Path): Vector[Entry] =
     Set(Kind.CodeIdent, Kind.CodeString, Kind.CodeComment, Kind.CodeLine, Kind.ProseSv, Kind.Glossed)
       .contains(k))
   emit(s"# model-free with an established mechanism: $modelFree of ${all.size}")
+
+  // --selftest: check every `##expect KIND` in the log against what this run actually classified, and
+  // exit non-zero on any mismatch. Without it the sample log is an example rather than a regression
+  // fixture -- a change could silently re-break one of the reviewed bugs and the output would still
+  // look reasonable to anyone who did not already know what each line should produce.
+  if args.contains("--selftest") then
+    val checked = all.collect { case (e, k, _) if e.expect.isDefined => (e, k, e.expect.get) }
+    val failed = checked.filter((_, k, want) => k.toString != want)
+    emit("")
+    emit(s"# selftest: ${checked.size} expectations, ${failed.size} failed")
+    for (e, k, want) <- failed do
+      emit(s"#   FAIL line ${e.todoLine}: expected $want, got $k   ${e.text.take(70)}")
+    if checked.isEmpty then
+      emit("#   (no ##expect lines in this log -- selftest is for the sample fixture)")
+    if failed.nonEmpty then sys.exit(1)
 
   // --tokens: the ratification table. The fragment count overstates the work badly, because the same
   // demo name recurs across lines and weeks -- one `öka` entry answers dozens of rows. What BR has to
