@@ -30,8 +30,13 @@
 import java.nio.file.{Files, Path}
 import scala.jdk.CollectionConverters.*
 
+/** One line of the log. `issue` groups ADJACENT lines that belong together -- most often a single REPL
+  * session quoted over several lines. That grouping is not cosmetic: a transcript has to be fixed as a
+  * unit, because the identifiers in the input and in the echoed output must agree and the whole thing
+  * must still compile (the phase 1-3 gates). Counting its lines separately both inflates the work and
+  * invites fixing half of one. */
 final case class Entry(todoLine: Int, section: String, task: String, text: String,
-    expect: Option[String] = None)
+    expect: Option[String] = None, issue: Int = 0)
 final case class Hit(rel: String, line: Int, inCode: Boolean)
 
 /** A source file plus, per line, whether that line sits inside a verbatim/code environment, and the
@@ -165,6 +170,29 @@ final case class Cands(open: Vector[String], strings: Vector[String], covered: V
   def nothingOpen: Boolean = open.isEmpty && strings.isEmpty
 
 def norm(s: String): String = s.trim.replaceAll("\\s+", " ")
+
+/** The built English pdf, as `pdftotext` extracted it, flattened into one searchable string.
+  *
+  * This is the only honest oracle for "is this still broken". The source always still contains the
+  * Swedish, so source-based checking reports every fixed item as open work; and the mirror .tex is no
+  * better, because a clamped item keeps BOTH branches there while the reader sees only one. What a
+  * reader actually meets is the pdf. De-hyphenation first: pdftotext breaks words across lines, so
+  * `sökru-\ntan` has to become `sökrutan` before anything can be found. */
+def loadPdfText(path: Path): String =
+  val raw = String(Files.readAllBytes(path), "UTF-8")
+  norm(raw.replaceAll("-\\n", "").replace('­', ' '))
+
+/** Is this fragment still visible in the built English pdf? `None` when no pdf was given, or when the
+  * fragment is not the kind of thing that should appear there at all (a remark, a stray brace). */
+def stillInPdf(pdf: Option[String], text: String): Option[Boolean] =
+  pdf.map: haystack =>
+    val n = deMarkup(text)
+    if n.length >= 12 then haystack.contains(n)
+    else
+      // short fragments match too easily; require the whole token run, which for `gurka nr i` or a
+      // lone identifier is still specific enough to mean something
+      val toks = n.split(" ").filter(_.nonEmpty)
+      toks.nonEmpty && haystack.contains(toks.mkString(" "))
 
 /** Replica of Translate.scala's private `scalaCodeEnvs` (Translate.scala:682) -- keep in sync, the way
   * unit-probe.scala replicates leadLen/trailStart. This is the set the RENAME PASS runs in, which is
@@ -364,11 +392,18 @@ def parseTodo(path: Path): Vector[Entry] =
   var section = ""
   var task = ""
   var expect: Option[String] = None
+  // What groups lines into one issue is a TRANSCRIPT, not mere adjacency. A `scala>` line opens one
+  // and the following lines join it -- the other prompts, the echoed values, the error gutter -- until
+  // a marker, a blank line, or a shell comment, which is a different medium. Grouping on adjacency
+  // alone swallowed fifteen independent `# ...` lab fragments into a single "issue", because the log
+  // writes them under one header with no blank lines.
+  var issue = 0
+  var inTranscript = false
   val out = Vector.newBuilder[Entry]
   for (raw, i) <- lines.zipWithIndex do
     val ln = raw.stripTrailing
     ln match
-      case _ if ln.trim.isEmpty      => ()
+      case _ if ln.trim.isEmpty      => issue += 1; inTranscript = false
       // `##` starts a comment, so a fixture can say what each line tests. NOT a single `#`: the w01
       // lab's fragments are shell comments (`# gå till katalogen`), and treating those as comments
       // silently deleted ten real rows from the log and took CodeComment from 16 to 7.
@@ -377,15 +412,21 @@ def parseTodo(path: Path): Vector[Entry] =
       case _ if ln.trim.startsWith("##expect") =>
         expect = Some(ln.trim.stripPrefix("##expect").trim)
       case _ if ln.trim.startsWith("##") => ()
-      case ChapterRx(n)                 => section = n; task = ""
-      case TaskRx(n)            => task = s"Task $n"
+      case ChapterRx(n)                 => section = n; task = ""; issue += 1; inTranscript = false
+      case TaskRx(n)                    => task = s"Task $n"; issue += 1; inTranscript = false
       case HeaderRx(sec, rest) if looksLikeHeader(rest) =>
-        section = sec; task = ""
+        section = sec; task = ""; issue += 1; inTranscript = false
         // a header may carry a note on the same line ("1.1.16 Column Swedish name can be removed")
-        if rest.trim.length > 3 then out += Entry(i + 1, sec, "note", rest.trim)
-      case NoteRx(marker) => task = marker.trim
+        if rest.trim.length > 3 then out += Entry(i + 1, sec, "note", rest.trim, None, issue)
+      case NoteRx(marker) => task = marker.trim; issue += 1; inTranscript = false
       case _ =>
-        out += Entry(i + 1, section, task, ln.trim, expect)
+        val t = ln.trim
+        val opensTranscript = t.contains("scala>")
+        val joins = inTranscript && !t.startsWith("#")
+        if opensTranscript && !inTranscript then issue += 1
+        else if !joins then issue += 1
+        inTranscript = opensTranscript || joins
+        out += Entry(i + 1, section, task, t, expect, issue)
         expect = None
   out.result()
 
@@ -401,6 +442,10 @@ def parseTodo(path: Path): Vector[Entry] =
                |  --root <dir>      repo root (default: nearest ancestor of the cwd holding autotranslate/)
                |  --chapter <n>     only this chapter, matched on the chapter component
                |  --kind <NAME>     only this kind, e.g. EnSide, ProseSv, CodeLine, NotFound
+               |  --pdf <file>      pdftotext output of the built English pdf; adds a status column
+               |                    saying which fragments a reader can still see (SOLVED vs open)
+               |  --open            hide rows the pdf says are already solved
+               |  --selftest        check every ##expect in the log; exit 1 on a mismatch
                |  --tokens          print the distinct-candidate table instead of per-fragment rows
                |  --hits            list every location, not just the first
                |  --report <file>   also write the output here
@@ -425,6 +470,14 @@ def parseTodo(path: Path): Vector[Entry] =
   val kindFilter = opt("kind", "")
   val report = opt("report", "")
   val showHits = args.contains("--hits")
+  val openOnly = args.contains("--open")
+  val pdfText =
+    val p = opt("pdf", "")
+    if p.isEmpty then None
+    else if !Files.isRegularFile(Path.of(p)) then
+      println(s"no pdf text at $p -- extract it first: pdftotext compendium-en/compendium-en.pdf out.txt")
+      sys.exit(2)
+    else Some(loadPdfText(Path.of(p)))
 
   if !Files.isRegularFile(todo) then
     println(s"no inventory at $todo")
@@ -483,8 +536,20 @@ def parseTodo(path: Path): Vector[Entry] =
     emit(s"# WARNING: the mirror is OLDER than the source (${(svAge - enAge) / 60000} min). Regenerate")
     emit("#   before trusting EnSide, or a mirror built on another branch will read as NotFound.")
   emit("")
-  emit("section\ttask\tkind\twhere\tmechanism\ttokens\tfragment")
-  for (e, k, hits) <- all do
+  // Kinds that should leave a visible trace in the built pdf, and so can be asked whether they are
+  // still there. A remark, a stray brace or a pdf artefact never appears as such, so asking is
+  // meaningless and the status stays "-".
+  val checkable = Set(Kind.CodeIdent, Kind.CodeString, Kind.CodeComment, Kind.CodeLine,
+    Kind.CodeCovered, Kind.CodeOther, Kind.Glossed, Kind.ProseSv, Kind.Pseudocode, Kind.EnInSv,
+    Kind.EnSide, Kind.Unclear)
+  def statusOf(e: Entry, k: Kind): String =
+    if !checkable.contains(k) then "-"
+    else stillInPdf(pdfText, e.text).map(if _ then "open" else "SOLVED").getOrElse("-")
+
+  val shown = if openOnly then all.filter((e, k, _) => statusOf(e, k) != "SOLVED") else all
+
+  emit("section\ttask\tkind\tstatus\twhere\tmechanism\ttokens\tfragment")
+  for (e, k, hits) <- shown do
     val where = hits.headOption.map(h => s"${h.rel}:${h.line}").getOrElse("-")
     val extra = if hits.size > 1 then s" (+${hits.size - 1})" else ""
     val toks =
@@ -509,9 +574,10 @@ def parseTodo(path: Path): Vector[Entry] =
           .flatMap(h => svCounterpart(sv, h.rel, h.line, e.text))
           .map((ln, t) => s"  SV $ln: ${t.take(80)}")
       else None
-    emit(s"${e.section}\t${e.task}\t$k\t$where$extra\t${mechanism(k)}\t$toks\t${e.text.take(90)}")
-    for s <- svText do emit(s"\t\t\t\t\t\t$s")
-    if showHits then for h <- hits.drop(1) do emit(s"\t\t\t${h.rel}:${h.line}\t\t")
+    emit(s"${e.section}\t${e.task}\t$k\t${statusOf(e, k)}\t$where$extra\t${mechanism(k)}\t$toks\t" +
+      e.text.take(90))
+    for s <- svText do emit(s"\t\t\t\t\t\t\t$s")
+    if showHits then for h <- hits.drop(1) do emit(s"\t\t\t\t${h.rel}:${h.line}\t\t")
 
   emit("")
   emit("# counts by kind")
@@ -521,6 +587,43 @@ def parseTodo(path: Path): Vector[Entry] =
     Set(Kind.CodeIdent, Kind.CodeString, Kind.CodeComment, Kind.CodeLine, Kind.ProseSv, Kind.Glossed)
       .contains(k))
   emit(s"# model-free with an established mechanism: $modelFree of ${all.size}")
+  // Issues, not lines, are the unit of work: a REPL session written over six lines is one fix, and
+  // has to be made as one, because the names in the input and in the echoed output must agree and the
+  // result must still compile. Counting lines overstates the job and invites fixing half a transcript.
+  val issues = all.groupBy((e, _, _) => e.issue)
+  val multiLine = issues.count((_, rows) => rows.size > 1)
+  emit(s"# ${issues.size} issues across ${all.size} fragment lines" +
+    s" ($multiLine span several lines, most often one REPL session)")
+  // What is left to do, as opposed to what was once written down. Without the pdf the tool can only
+  // report settled-by-name, which is a small fraction: a prose fix lands in the cache or an override
+  // where no name-based check can see it, so those rows read as open work forever.
+  for _ <- pdfText do
+    val checkableRows = all.filter((_, k, _) => checkable.contains(k))
+    val solved = checkableRows.count((e, k, _) => statusOf(e, k) == "SOLVED")
+    emit(s"# against the built pdf: $solved of ${checkableRows.size} checkable fragments are SOLVED" +
+      s" (${checkableRows.size - solved} still visible to a reader)")
+  if pdfText.isEmpty then
+    emit("# no --pdf given: status is unknown, so every row reads as open. Extract the built pdf with")
+    emit("#   pdftotext compendium-en/compendium-en.pdf /tmp/en.txt   and pass --pdf /tmp/en.txt")
+
+  // --issues: one block per issue rather than one row per line, which is how the work is actually
+  // taken on. A block that holds several code lines is a transcript: fix it as a unit, keep the
+  // identifiers in the input and the echo in step, and run the phase 1-3 compile gates afterwards.
+  if args.contains("--issues") then
+    emit("")
+    emit("# issues, in log order")
+    for (id, rows) <- issues.toVector.sortBy((id, _) => id) do
+      val (e0, _, _) = rows.head
+      val kinds = rows.map((_, k, _) => k.toString).distinct.sorted.mkString(",")
+      val where = rows.flatMap((_, _, hs) => hs.headOption).headOption
+        .map(h => s"${h.rel}:${h.line}").getOrElse("-")
+      val status = rows.map((e, k, _) => statusOf(e, k)).distinct
+      val stat = if status.contains("open") then "open" else status.mkString(",")
+      val repl = rows.count((e, _, _) => looksLikeScala(e.text)) > 1
+      emit(s"")
+      emit(s"# issue $id  ${e0.section} ${e0.task}  $stat  $kinds  $where" +
+        (if repl then "   [transcript: fix as one unit, then run the phase 1-3 gates]" else ""))
+      for (e, k, _) <- rows do emit(s"    ${e.text.take(100)}")
 
   // --selftest: check every `##expect KIND` in the log against what this run actually classified, and
   // exit non-zero on any mismatch. Without it the sample log is an example rather than a regression
