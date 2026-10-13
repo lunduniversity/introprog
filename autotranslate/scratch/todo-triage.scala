@@ -36,7 +36,7 @@ import scala.jdk.CollectionConverters.*
   * must still compile (the phase 1-3 gates). Counting its lines separately both inflates the work and
   * invites fixing half of one. */
 final case class Entry(todoLine: Int, section: String, task: String, text: String,
-    expect: Option[String] = None, issue: Int = 0)
+    expect: Option[String] = None, issue: Int = 0, expectStatus: Option[String] = None)
 final case class Hit(rel: String, line: Int, inCode: Boolean)
 
 /** A source file plus, per line, whether that line sits inside a verbatim/code environment, and the
@@ -406,6 +406,7 @@ def parseTodo(path: Path): Vector[Entry] =
   var section = ""
   var task = ""
   var expect: Option[String] = None
+  var expectStatus: Option[String] = None
   // What groups lines into one issue is a TRANSCRIPT, not mere adjacency. A `scala>` line opens one
   // and the following lines join it -- the other prompts, the echoed values, the error gutter -- until
   // a marker, a blank line, or a shell comment, which is a different medium. Grouping on adjacency
@@ -423,6 +424,9 @@ def parseTodo(path: Path): Vector[Entry] =
       // silently deleted ten real rows from the log and took CodeComment from 16 to 7.
       // `##expect KIND` binds to the next fragment; --selftest checks it. Everything else after ## is
       // a comment, which is what lets the fixture explain each case next to it.
+      // `##expect-status` must be tested BEFORE `##expect`, or it parses as a kind called "-status ..."
+      case _ if ln.trim.startsWith("##expect-status") =>
+        expectStatus = Some(ln.trim.stripPrefix("##expect-status").trim)
       case _ if ln.trim.startsWith("##expect") =>
         expect = Some(ln.trim.stripPrefix("##expect").trim)
       case _ if ln.trim.startsWith("##") => ()
@@ -440,8 +444,9 @@ def parseTodo(path: Path): Vector[Entry] =
         if opensTranscript && !inTranscript then issue += 1
         else if !joins then issue += 1
         inTranscript = opensTranscript || joins
-        out += Entry(i + 1, section, task, t, expect, issue)
+        out += Entry(i + 1, section, task, t, expect, issue, expectStatus)
         expect = None
+        expectStatus = None
   out.result()
 
 @main def todoTriage(args: String*): Unit =
@@ -456,10 +461,13 @@ def parseTodo(path: Path): Vector[Entry] =
                |  --root <dir>      repo root (default: nearest ancestor of the cwd holding autotranslate/)
                |  --chapter <n>     only this chapter, matched on the chapter component
                |  --kind <NAME>     only this kind, e.g. EnSide, ProseSv, CodeLine, NotFound
-               |  --pdf <file>      pdftotext output of the built English pdf; adds a status column
-               |                    saying which fragments a reader can still see (SOLVED vs open)
+               |  --pdf <file>      pdftotext output of the built COMPENDIUM English pdf; adds a status
+               |                    column: open, SOLVED, or "-" when this pdf cannot say (a slides-only
+               |                    fragment is missing from it however the mirror reads)
                |  --open            hide rows the pdf says are already solved
-               |  --selftest        check every ##expect in the log; exit 1 on a mismatch
+               |  --issues          one block per issue instead of per line; marks REPL transcripts
+               |  --selftest        check every ##expect (and ##expect-status, with --pdf) in the log;
+               |                    exit 1 on a mismatch. See scratch/todo-sample.txt
                |  --tokens          print the distinct-candidate table instead of per-fragment rows
                |  --hits            list every location, not just the first
                |  --report <file>   also write the output here
@@ -676,6 +684,21 @@ def parseTodo(path: Path): Vector[Entry] =
       emit(s"#   FAIL line ${e.todoLine}: expected $want, got $k   ${e.text.take(70)}")
     if checked.isEmpty then
       emit("#   (no ##expect lines in this log -- selftest is for the sample fixture)")
+    // `##expect-status` covers the OTHER question, and it is the one that was answered wrongly 74 times
+    // out of 81: not "which mechanism fixes this" but "is it still in front of a reader". It needs a
+    // pdf to check against, so the fixture ships a pretend extract rather than requiring a build.
+    val statusChecked =
+      all.collect { case (e, k, h) if e.expectStatus.isDefined => (e, statusOf(e, k, h), e.expectStatus.get) }
+    if statusChecked.nonEmpty then
+      if pdfText.isEmpty then
+        emit(s"# selftest: ${statusChecked.size} status expectations SKIPPED -- pass --pdf to check them")
+        emit("#   --pdf autotranslate/scratch/todo-sample-pdf.txt")
+      else
+        val statusFailed = statusChecked.filter((_, got, want) => got != want)
+        emit(s"# selftest: ${statusChecked.size} status expectations, ${statusFailed.size} failed")
+        for (e, got, want) <- statusFailed do
+          emit(s"#   FAIL line ${e.todoLine}: expected status $want, got $got   ${e.text.take(60)}")
+        if statusFailed.nonEmpty then sys.exit(1)
     if failed.nonEmpty then sys.exit(1)
 
   // --tokens: the ratification table. The fragment count overstates the work badly, because the same

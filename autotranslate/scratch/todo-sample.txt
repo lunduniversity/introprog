@@ -96,3 +96,48 @@ case class Katt() extends Djur
 
 ## Genuinely the reader's own voice: an instruction about structure, not a defect to translate.
 1.1.16 Column Swedish name can be completely removed in English studyguide
+
+## ---------------------------------------------------------------------------------------------
+## `##expect-status` checks the OTHER question -- not "which mechanism fixes this" but "is it still
+## in front of a reader". Run with the pretend extract:
+##
+##   scala-cli run autotranslate/scratch/todo-triage.scala --main-class todoTriage \
+##     -- --todo autotranslate/scratch/todo-sample.txt --selftest \
+##        --pdf autotranslate/scratch/todo-sample-pdf.txt
+##
+## A hand check of all 81 rows the tool once called SOLVED left 7 standing. The four cases below are
+## the ways it went wrong, and they all failed in the same dangerous direction: work still in front
+## of a reader vanished off the queue.
+
+## The fragment was de-markup'd and the pdf extract was not, so `$` and the braces could never meet.
+## Still in the extract, so: open.
+1.3.1
+##expect-status open
+s"Dubbla längden: ${namn.size * 2}"
+
+## The log glues the enumerator onto its item (`a)poäng`); the pdf writes `a) poäng`. No markup
+## handling would have matched that -- only squashing both sides to letters and digits does.
+1.3.1
+Task25
+##expect-status open
+a)poäng > 100 && poäng > 1000
+
+## deMarkup eats `\n` as a LaTeX command, so the needle lost letters the extract kept. This line
+## stands verbatim in the real English pdf and was reported fixed.
+4.1.37
+Task11
+##expect-status open
+println(s"\n--- FREKVENSANALYS AV:\n\$s")
+
+## Slides-only: the compendium pdf never held it, so its absence is evidence of nothing. Must read
+## `-`, not SOLVED. 49 of the 81 false positives were this.
+4.1.30
+##expect-status -
+scala> öka. // tryck TAB
+
+## A real fix: värdeSaknas became valueMissing in #991, the fragment is in a compendium module, and
+## it is gone from the extract. This is what SOLVED is supposed to mean.
+1.3.1
+Task17
+##expect-status SOLVED
+scala> def värdeSaknas = ()
