@@ -611,8 +611,19 @@ def parseTodo(path: Path): Vector[Entry] =
   // identifiers in the input and the echo in step, and run the phase 1-3 compile gates afterwards.
   if args.contains("--issues") then
     emit("")
-    emit("# issues, in log order")
-    for (id, rows) <- issues.toVector.sortBy((id, _) => id) do
+    // --open applies here too, or the work queue still lists what is already done. An issue counts as
+    // done only when the pdf says so for at least one of its lines and contradicts none: a row whose
+    // status is "-" is unknown, not finished, so an issue made only of those stays in the queue. A
+    // part-done transcript is kept WHOLE, with its finished lines marked, because the rest has to be
+    // fixed against what is already there.
+    def issueOpen(rows: Vector[(Entry, Kind, Vector[Hit])]): Boolean =
+      val st = rows.map((e, k, _) => statusOf(e, k))
+      st.contains("open") || !st.contains("SOLVED")
+    val issueList = issues.toVector.sortBy((id, _) => id)
+      .filter((_, rows) => !openOnly || issueOpen(rows))
+    emit(s"# ${issueList.size} issues, in log order" +
+      (if openOnly then s" (--open: ${issues.size - issueList.size} fully solved ones hidden)" else ""))
+    for (id, rows) <- issueList do
       val (e0, _, _) = rows.head
       val kinds = rows.map((_, k, _) => k.toString).distinct.sorted.mkString(",")
       val where = rows.flatMap((_, _, hs) => hs.headOption).headOption
@@ -623,7 +634,9 @@ def parseTodo(path: Path): Vector[Entry] =
       emit(s"")
       emit(s"# issue $id  ${e0.section} ${e0.task}  $stat  $kinds  $where" +
         (if repl then "   [transcript: fix as one unit, then run the phase 1-3 gates]" else ""))
-      for (e, k, _) <- rows do emit(s"    ${e.text.take(100)}")
+      for (e, k, _) <- rows do
+        val mark = if statusOf(e, k) == "SOLVED" then "  done" else "      "
+        emit(s"  $mark ${e.text.take(100)}")
 
   // --selftest: check every `##expect KIND` in the log against what this run actually classified, and
   // exit non-zero on any mismatch. Without it the sample log is an example rather than a regression
