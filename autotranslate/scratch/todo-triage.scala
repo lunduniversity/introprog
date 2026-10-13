@@ -182,17 +182,31 @@ def loadPdfText(path: Path): String =
   val raw = String(Files.readAllBytes(path), "UTF-8")
   norm(raw.replaceAll("-\\n", "").replace('­', ' '))
 
-/** Is this fragment still visible in the built English pdf? `None` when no pdf was given, or when the
-  * fragment is not the kind of thing that should appear there at all (a remark, a stray brace). */
-def stillInPdf(pdf: Option[String], text: String): Option[Boolean] =
-  pdf.map: haystack =>
-    val n = deMarkup(text)
-    if n.length >= 12 then haystack.contains(n)
-    else
-      // short fragments match too easily; require the whole token run, which for `gurka nr i` or a
-      // lone identifier is still specific enough to mean something
-      val toks = n.split(" ").filter(_.nonEmpty)
-      toks.nonEmpty && haystack.contains(toks.mkString(" "))
+/** Letters and digits only, lowercased. The log quotes the pdf and the pdf renders the source, and the
+  * three disagree about everything EXCEPT the letters: the source writes `s"Dubbla längden:
+  * ${namn.size * 2}"` where deMarkup leaves `s"Dubbla längden: namn.size * 2"`, and the pdf still has
+  * its `$` and braces; the log glues an enumerator onto its item (`a)poäng > 100`); the pdf wraps and
+  * hyphenates where the log does not. Comparing de-markup'd text against a RAW extract made every one
+  * of those read as SOLVED -- `Dubbla längden`, `poäng > 100`, `är för stort` and `desarmerad bomb` are
+  * all still in the English pdf, and all four were reported fixed. Squashing both sides is blunt and
+  * can join across a line or page break, but it errs toward "still there", which is the safe direction:
+  * a fragment wrongly left in the queue costs a second look, a fragment wrongly called SOLVED is work
+  * silently dropped.
+  *
+  * Both sides also lose `\cmd`, because deMarkup already took it off the needle and a Scala escape is
+  * not a LaTeX command: `println(s"\n--- FREKVENSANALYS AV:\n\$s")` stands verbatim in the English pdf,
+  * but deMarkup ate the two `\n` while the extract kept their `n`, and the row read SOLVED. */
+def squash(s: String): String =
+  raw"\\[A-Za-z]+".r.replaceAllIn(s, " ").toLowerCase.filter(_.isLetterOrDigit)
+
+def stillInPdf(pdfSquashed: Option[String], text: String): Option[Boolean] =
+  pdfSquashed.map(_.contains(squash(deMarkup(text))))
+
+/** The tree a located fragment lives in. `--pdf` takes ONE pdf, so absence only means something for
+  * fragments that pdf could have contained: a slides-only line is missing from the compendium pdf
+  * whatever anyone does to it. */
+def inCompendium(hits: Vector[Hit]): Boolean =
+  hits.exists(h => h.rel.startsWith("compendium/") || h.rel.startsWith("compendium-en/"))
 
 /** Replica of Translate.scala's private `scalaCodeEnvs` (Translate.scala:682) -- keep in sync, the way
   * unit-probe.scala replicates leadLen/trailStart. This is the set the RENAME PASS runs in, which is
@@ -542,11 +556,19 @@ def parseTodo(path: Path): Vector[Entry] =
   val checkable = Set(Kind.CodeIdent, Kind.CodeString, Kind.CodeComment, Kind.CodeLine,
     Kind.CodeCovered, Kind.CodeOther, Kind.Glossed, Kind.ProseSv, Kind.Pseudocode, Kind.EnInSv,
     Kind.EnSide, Kind.Unclear)
-  def statusOf(e: Entry, k: Kind): String =
+  val pdfSquashed = pdfText.map(squash)
+  // "not in the compendium pdf" is evidence of a fix only for a fragment the compendium pdf could have
+  // held. 49 of the first 81 SOLVED rows were located only under slides/, where absence means nothing,
+  // so they now read "-" (unknown to this oracle) rather than claiming work that was never done.
+  def statusOf(e: Entry, k: Kind, hits: Vector[Hit]): String =
     if !checkable.contains(k) then "-"
-    else stillInPdf(pdfText, e.text).map(if _ then "open" else "SOLVED").getOrElse("-")
+    else
+      stillInPdf(pdfSquashed, e.text) match
+        case None => "-"
+        case Some(true) => "open"
+        case Some(false) => if inCompendium(hits) then "SOLVED" else "-"
 
-  val shown = if openOnly then all.filter((e, k, _) => statusOf(e, k) != "SOLVED") else all
+  val shown = if openOnly then all.filter((e, k, h) => statusOf(e, k, h) != "SOLVED") else all
 
   emit("section\ttask\tkind\tstatus\twhere\tmechanism\ttokens\tfragment")
   for (e, k, hits) <- shown do
@@ -574,7 +596,7 @@ def parseTodo(path: Path): Vector[Entry] =
           .flatMap(h => svCounterpart(sv, h.rel, h.line, e.text))
           .map((ln, t) => s"  SV $ln: ${t.take(80)}")
       else None
-    emit(s"${e.section}\t${e.task}\t$k\t${statusOf(e, k)}\t$where$extra\t${mechanism(k)}\t$toks\t" +
+    emit(s"${e.section}\t${e.task}\t$k\t${statusOf(e, k, hits)}\t$where$extra\t${mechanism(k)}\t$toks\t" +
       e.text.take(90))
     for s <- svText do emit(s"\t\t\t\t\t\t\t$s")
     if showHits then for h <- hits.drop(1) do emit(s"\t\t\t\t${h.rel}:${h.line}\t\t")
@@ -599,9 +621,12 @@ def parseTodo(path: Path): Vector[Entry] =
   // where no name-based check can see it, so those rows read as open work forever.
   for _ <- pdfText do
     val checkableRows = all.filter((_, k, _) => checkable.contains(k))
-    val solved = checkableRows.count((e, k, _) => statusOf(e, k) == "SOLVED")
-    emit(s"# against the built pdf: $solved of ${checkableRows.size} checkable fragments are SOLVED" +
-      s" (${checkableRows.size - solved} still visible to a reader)")
+    val judged = checkableRows.map((e, k, h) => statusOf(e, k, h))
+    val solved = judged.count(_ == "SOLVED")
+    val open = judged.count(_ == "open")
+    emit(s"# against the built pdf: $solved SOLVED, $open still visible to a reader" +
+      s" (${checkableRows.size - solved - open} of ${checkableRows.size} checkable fragments are" +
+      " outside this pdf -- slides-only, so it cannot say)")
   if pdfText.isEmpty then
     emit("# no --pdf given: status is unknown, so every row reads as open. Extract the built pdf with")
     emit("#   pdftotext compendium-en/compendium-en.pdf /tmp/en.txt   and pass --pdf /tmp/en.txt")
@@ -617,7 +642,7 @@ def parseTodo(path: Path): Vector[Entry] =
     // part-done transcript is kept WHOLE, with its finished lines marked, because the rest has to be
     // fixed against what is already there.
     def issueOpen(rows: Vector[(Entry, Kind, Vector[Hit])]): Boolean =
-      val st = rows.map((e, k, _) => statusOf(e, k))
+      val st = rows.map((e, k, h) => statusOf(e, k, h))
       st.contains("open") || !st.contains("SOLVED")
     val issueList = issues.toVector.sortBy((id, _) => id)
       .filter((_, rows) => !openOnly || issueOpen(rows))
@@ -628,14 +653,14 @@ def parseTodo(path: Path): Vector[Entry] =
       val kinds = rows.map((_, k, _) => k.toString).distinct.sorted.mkString(",")
       val where = rows.flatMap((_, _, hs) => hs.headOption).headOption
         .map(h => s"${h.rel}:${h.line}").getOrElse("-")
-      val status = rows.map((e, k, _) => statusOf(e, k)).distinct
+      val status = rows.map((e, k, h) => statusOf(e, k, h)).distinct
       val stat = if status.contains("open") then "open" else status.mkString(",")
       val repl = rows.count((e, _, _) => looksLikeScala(e.text)) > 1
       emit(s"")
       emit(s"# issue $id  ${e0.section} ${e0.task}  $stat  $kinds  $where" +
         (if repl then "   [transcript: fix as one unit, then run the phase 1-3 gates]" else ""))
-      for (e, k, _) <- rows do
-        val mark = if statusOf(e, k) == "SOLVED" then "  done" else "      "
+      for (e, k, hs) <- rows do
+        val mark = if statusOf(e, k, hs) == "SOLVED" then "  done" else "      "
         emit(s"  $mark ${e.text.take(100)}")
 
   // --selftest: check every `##expect KIND` in the log against what this run actually classified, and
