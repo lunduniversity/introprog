@@ -132,26 +132,37 @@ val englishExampleNames: Set[String] = Set("monster", "alien", "predator")
   * judgement -- SwedishScore's lists are FUNCTION words, which cannot see `dubblera` or `gurka`, and
   * every name needs BR's ratification regardless. So: surface candidates, exclude what is certainly
   * not one, and mark what the glossary already covers. */
-def candidates(line: String, rel: String = ""): (Vector[String], Vector[String], Vector[String]) =
+def candidates(line: String, rel: String = ""): Cands =
   val idRx = raw"[A-Za-zÅÄÖåäö_][A-Za-z0-9ÅÄÖåäö_]*".r
   val strRx = raw""""([^"]*)"""".r
   val strings = strRx.findAllMatchIn(line).map(_.group(1)).toVector.filter(_.trim.nonEmpty).distinct
   val inStrings = strings.mkString(" ")
-  val idents = idRx
+  val worth = idRx
     .findAllIn(line)
     .toVector
     .distinct
-    .filter(t =>
-      t.length > 2 && !scalaNoise.contains(t) && !raw"res\d+".r.matches(t)
-        && !englishExampleNames.contains(t.toLowerCase) && !replArtefact.matches(t))
+    .filter(t => t.length > 2 && !scalaNoise.contains(t) && !raw"res\d+".r.matches(t)
+      && !replArtefact.matches(t))
     .filterNot(inStrings.contains)
+  // Being on the exclusion list is a DECISION -- "already English, no rename" -- and dropping those
+  // tokens silently made the decision invisible: a line whose only candidate was `monster` reported
+  // as "no Swedish token found", which reads as unexamined rather than settled. Keep them, labelled.
+  val (english, idents) = worth.partition(t => englishExampleNames.contains(t.toLowerCase))
   // perFileId counts as covered too. Ignoring it listed every already-scoped name -- Djur, Katt,
   // Bur, the whole w10 and w11 clusters -- as still needing ratification. overridesFor does the
   // lookup the mirror itself does, so a name scoped to THIS file reads as done and a name scoped to
   // another file still reads as open, which is the distinction that matters.
   val scoped = if rel.isEmpty then Map.empty[String, String] else CodeGlossary.overridesFor(rel)
   val (covered, fresh) = idents.partition(t => CodeGlossary.id.contains(t) || scoped.contains(t))
-  (fresh, strings.filterNot(CodeGlossary.codeStr.contains), covered)
+  Cands(fresh, strings.filterNot(CodeGlossary.codeStr.contains), covered, english)
+
+/** The three states a name can be in, which the report has to keep apart: `open` still needs a
+  * ratified English name; `covered` already has one in the glossary; `english` was ruled already-English
+  * and needs none. Conflating the last two with "nothing found here" is what hid settled decisions. */
+final case class Cands(open: Vector[String], strings: Vector[String], covered: Vector[String],
+    english: Vector[String]):
+  def settled: Vector[String] = covered ++ english
+  def nothingOpen: Boolean = open.isEmpty && strings.isEmpty
 
 def norm(s: String): String = s.trim.replaceAll("\\s+", " ")
 
@@ -256,7 +267,7 @@ def mechanism(k: Kind): String = k match
   case Kind.CodeString  => "CodeGlossary.codeStr"
   case Kind.CodeComment => "Overrides (unit-probe key)"
   case Kind.CodeLine    => "CodeGlossary.id / .perFileId (tokens listed)"
-  case Kind.CodeCovered => "none: every name here is already in the glossary"
+  case Kind.CodeCovered => "none: every name here is settled (in the glossary, or ruled English)"
   case Kind.CodeOther   => "inspect: code region, no Swedish token found"
   case Kind.TodoNote    => "none: a note in the inventory, not a fragment"
   case Kind.Noise       => "none: punctuation or a stray line from a pasted transcript"
@@ -307,14 +318,14 @@ def classify(text: String, svHits: Vector[Hit], enHits: Vector[Hit], srcLine: Op
     val afterComment = markerAt.nonEmpty && markerAt.min < math.max(0, line.indexOf(t.take(12)))
       || t.startsWith("#") || t.startsWith("//")
     val quoted = raw""""[^"]*"""".r.findAllIn(line).exists(q => norm(q).contains(t))
-    val (idents, strings, covered) = candidates(t, svHits.headOption.map(_.rel).getOrElse(""))
+    val c = candidates(t, svHits.headOption.map(_.rel).getOrElse(""))
     if afterComment then Kind.CodeComment
     else if quoted then Kind.CodeString
     else if !t.contains(" ") then Kind.CodeIdent
-    else if idents.nonEmpty || strings.nonEmpty then Kind.CodeLine
-    // every name on the line is already in the glossary: that is "done", which is a different thing
-    // from "nothing Swedish found here" and was being reported as the latter.
-    else if covered.nonEmpty then Kind.CodeCovered
+    else if !c.nothingOpen then Kind.CodeLine
+    // every name on the line is settled -- in the glossary, or ruled already-English. That is "done",
+    // a different thing from "nothing Swedish found here", and it was reported as the latter.
+    else if c.settled.nonEmpty then Kind.CodeCovered
     else Kind.CodeOther
   else if line.contains("\\Eng{") then Kind.Glossed
   else
@@ -477,12 +488,18 @@ def parseTodo(path: Path): Vector[Entry] =
     val where = hits.headOption.map(h => s"${h.rel}:${h.line}").getOrElse("-")
     val extra = if hits.size > 1 then s" (+${hits.size - 1})" else ""
     val toks =
-      if Set(Kind.CodeLine, Kind.CodeIdent, Kind.CodeString, Kind.CodeOther).contains(k) then
-        val (idents, strings, covered) = candidates(e.text, hits.headOption.map(_.rel).getOrElse(""))
+      // CodeCovered belongs here too: a settled row has to say WHY it is settled, or it reads as an
+      // unexplained verdict.
+      if Set(Kind.CodeLine, Kind.CodeIdent, Kind.CodeString, Kind.CodeOther, Kind.CodeCovered)
+          .contains(k)
+      then
+        val c = candidates(e.text, hits.headOption.map(_.rel).getOrElse(""))
         Vector(
-          if idents.nonEmpty then s"id:${idents.mkString(",")}" else "",
-          if strings.nonEmpty then s"str:${strings.mkString(",")}" else "",
-          if covered.nonEmpty then s"done:${covered.mkString(",")}" else "",
+          if c.open.nonEmpty then s"id:${c.open.mkString(",")}" else "",
+          if c.strings.nonEmpty then s"str:${c.strings.mkString(",")}" else "",
+          if c.covered.nonEmpty then s"done:${c.covered.mkString(",")}" else "",
+          // a settled decision, shown rather than silently filtered away
+          if c.english.nonEmpty then s"english:${c.english.mkString(",")}" else "",
         ).filter(_.nonEmpty).mkString(" ")
       else ""
     // an EnSide fragment is mangled English, so show the Swedish it came from: that is the override key
@@ -532,6 +549,7 @@ def parseTodo(path: Path): Vector[Entry] =
     var ids = Map.empty[String, Agg]
     var strs = Map.empty[String, Agg]
     var done = Map.empty[String, Agg]
+    var ruled = Map.empty[String, Agg]
     val codeKinds = Set(Kind.CodeLine, Kind.CodeIdent, Kind.CodeString)
     // EnSide rows are English prose from the mirror, so every English word in them would read as a
     // rename candidate -- `the` and `weight` topped the list before this. Comment and pseudocode lines
@@ -544,14 +562,15 @@ def parseTodo(path: Path): Vector[Entry] =
     for (e, k, hits) <- all if codeKinds.contains(k) && (k == Kind.CodeIdent || looksLikeScala(e.text))
     do
       val file = hits.headOption.map(_.rel.split("/").last).getOrElse("-")
-      val (i0, s, c) = candidates(e.text, hits.headOption.map(_.rel).getOrElse(""))
+      val c = candidates(e.text, hits.headOption.map(_.rel).getOrElse(""))
       // A glossary VALUE is an English target, never a rename candidate. They turn up because a clamped
       // file carries English in its \else branch, so the source itself contains `weight`, `Cucumber`...
       val englishTargets = CodeGlossary.id.values.toSet ++ CodeGlossary.codeStr.values.toSet
-      val i = i0.filterNot(t => lists.english.contains(t.toLowerCase) || englishTargets.contains(t))
+      val i = c.open.filterNot(t => lists.english.contains(t.toLowerCase) || englishTargets.contains(t))
       for t <- i do ids = add(ids, t, e.section, file)
-      for t <- s do strs = add(strs, t, e.section, file)
-      for t <- c do done = add(done, t, e.section, file)
+      for t <- c.strings do strs = add(strs, t, e.section, file)
+      for t <- c.covered do done = add(done, t, e.section, file)
+      for t <- c.english do ruled = add(ruled, t, e.section, file)
     def dump(title: String, m: Map[String, Agg]): Unit =
       emit("")
       emit(s"# $title: ${m.size} distinct")
@@ -561,7 +580,8 @@ def parseTodo(path: Path): Vector[Entry] =
         emit(f"#   ${a.n}%4d  $t%-30s $where%-46s $secs")
     dump("identifier candidates (need ratifying)", ids)
     dump("string-literal candidates (codeStr; blocked on #990)", strs)
-    dump("already covered by CodeGlossary.id", done)
+    dump("already covered by the glossary", done)
+    dump("ruled already-English, no rename needed", ruled)
 
   if report.nonEmpty then
     Files.write(Path.of(report), sb.toString.getBytes("UTF-8"))
