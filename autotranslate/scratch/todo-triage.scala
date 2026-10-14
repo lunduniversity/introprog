@@ -199,8 +199,36 @@ def loadPdfText(path: Path): String =
 def squash(s: String): String =
   raw"\\[A-Za-z]+".r.replaceAllIn(s, " ").toLowerCase.filter(_.isLetterOrDigit)
 
-def stillInPdf(pdfSquashed: Option[String], text: String): Option[Boolean] =
-  pdfSquashed.map(_.contains(squash(deMarkup(text))))
+/** The squashed extract, plus the map back from each squashed character to where it came from in the
+  * original. Squashing is what makes the match robust and also what makes a match unreadable: the only
+  * way to judge an "open" verdict is to see the text it matched, in the pdf's own words. */
+final case class Pdf(raw: String, squashed: String, origin: Array[Int])
+
+def preparePdf(text: String): Pdf =
+  val stripped = raw"\\[A-Za-z]+".r.replaceAllIn(text, " ")
+  val sb = StringBuilder()
+  val idx = Array.newBuilder[Int]
+  // `stripped` and `text` differ in length, so positions are taken in `stripped` and the context is
+  // read from `stripped` too -- close enough to the pdf's words, and always self-consistent.
+  for (c, i) <- stripped.zipWithIndex do
+    val lower = c.toLower
+    if lower.isLetterOrDigit then { sb += lower; idx += i }
+  Pdf(stripped, sb.result(), idx.result())
+
+/** Is the fragment still in the pdf, and if so, what did it match? The context is the point: a short
+  * fragment can match inside a longer word -- the heading `Bakgrund` matches `bakgrund(svart)`, a Kojo
+  * command that is out of scope -- and without seeing the hit there is no way to tell a real leftover
+  * from a coincidence. */
+def stillInPdf(pdf: Option[Pdf], text: String): Option[(Boolean, String)] =
+  pdf.map: p =>
+    val n = squash(deMarkup(text))
+    val at = p.squashed.indexOf(n)
+    if at < 0 then (false, "")
+    else
+      val from = p.origin(at)
+      val to = p.origin(math.min(at + n.length, p.origin.length - 1))
+      val ctx = p.raw.slice(math.max(0, from - 25), math.min(p.raw.length, to + 25))
+      (true, raw"\s+".r.replaceAllIn(ctx, " ").trim)
 
 /** The tree a located fragment lives in. `--pdf` takes ONE pdf, so absence only means something for
   * fragments that pdf could have contained: a slides-only line is missing from the compendium pdf
@@ -582,17 +610,30 @@ def parseTodo(path: Path): Vector[Entry] =
   val checkable = Set(Kind.CodeIdent, Kind.CodeString, Kind.CodeComment, Kind.CodeLine,
     Kind.CodeCovered, Kind.CodeOther, Kind.Glossed, Kind.ProseSv, Kind.Pseudocode, Kind.EnInSv,
     Kind.EnSide, Kind.Unclear, Kind.ClassFile)
-  val pdfSquashed = pdfText.map(squash)
+  val pdf = pdfText.map(preparePdf)
   // "not in the compendium pdf" is evidence of a fix only for a fragment the compendium pdf could have
   // held. 49 of the first 81 SOLVED rows were located only under slides/, where absence means nothing,
   // so they now read "-" (unknown to this oracle) rather than claiming work that was never done.
   def statusOf(e: Entry, k: Kind, hits: Vector[Hit]): String =
     if !checkable.contains(k) then "-"
     else
-      stillInPdf(pdfSquashed, e.text) match
+      stillInPdf(pdf, e.text) match
         case None => "-"
-        case Some(true) => "open"
-        case Some(false) => if inCompendium(hits) then "SOLVED" else "-"
+        case Some((true, _)) => "open"
+        case Some((false, _)) => if inCompendium(hits) then "SOLVED" else "-"
+
+  /** The pdf text behind an `open` verdict, shown when the match is weak enough to doubt: a needle of
+    * only a few characters can land inside a longer word. The heading `Bakgrund` matched
+    * `bakgrund(svart)`, a Kojo command, and read as unfixed work after it had in fact been fixed.
+    * Kojo's Swedish command names are deliberately out of scope for this log -- they are a real API,
+    * renaming them would break them, and the maintainer owns that question -- so without the evidence
+    * column that row looked like a defect twice over. */
+  def evidence(e: Entry, k: Kind, hits: Vector[Hit]): String =
+    if statusOf(e, k, hits) != "open" then ""
+    else
+      val n = squash(deMarkup(e.text))
+      if n.length >= 16 then ""
+      else stillInPdf(pdf, e.text).filter(_._1).map((_, ctx) => s" pdf:\"$ctx\"").getOrElse("")
 
   val shown = if openOnly then all.filter((e, k, h) => statusOf(e, k, h) != "SOLVED") else all
 
@@ -636,8 +677,8 @@ def parseTodo(path: Path): Vector[Entry] =
           .flatMap(h => svCounterpart(sv, h.rel, h.line, e.text))
           .map((ln, t) => s"  SV $ln: ${t.take(80)}")
       else None
-    emit(s"${e.section}\t${e.task}\t$k\t${statusOf(e, k, hits)}\t$where$extra\t${mechanism(k)}\t$toks\t" +
-      e.text.take(90))
+    emit(s"${e.section}\t${e.task}\t$k\t${statusOf(e, k, hits)}\t$where$extra\t${mechanism(k)}" +
+      s"\t$toks${evidence(e, k, hits)}\t" + e.text.take(90))
     for s <- svText do emit(s"\t\t\t\t\t\t\t$s")
     if showHits then for h <- hits.drop(1) do emit(s"\t\t\t\t${h.rel}:${h.line}\t\t")
 
