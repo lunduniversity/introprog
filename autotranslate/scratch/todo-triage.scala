@@ -242,6 +242,14 @@ def readSrc(root: Path, rel: String): Src =
   val lines = String(Files.readAllBytes(root.resolve(rel)), "UTF-8").linesIterator.toVector
   Src(rel, lines, codeFlags(lines), lines.map(deMarkup))
 
+/** `.cls` as well as `.tex`, and that is not a detail. `compendium/compendium.cls` is copied BYTE-FOR-BYTE
+  * into `compendium-en/` -- the two are identical files -- so no translation pass touches it. It gets away
+  * with that today because every user-visible string in it is already wrapped in `\ifswedish ... \else ...
+  * \fi` and the English document injects `\swedishfalse`; the 32 remaining Swedish hits are all in trailing
+  * `%` comments, which never render. But a NEW string added there without an `\else` branch would print
+  * Swedish in the English pdf, and nothing would catch it: the mirror copies the file verbatim, the
+  * glossary and Overrides never see it, and this tool used to report the fragment as "not located in
+  * source or mirror". Indexing `.cls` turns that silent case into a located one with its own mechanism. */
 def texUnder(root: Path, dirs: Seq[String]): Vector[Src] =
   dirs.toVector.flatMap: d =>
     val base = root.resolve(d)
@@ -252,7 +260,8 @@ def texUnder(root: Path, dirs: Seq[String]): Vector[Src] =
         // same examples still reach the pdf through the live file, e.g. the Rymdvarelse/huvud1 example is
         // in both old-classes-exercise and w05-classes-exercise. Since `old-` sorts first, keeping them
         // would attribute every such hit to a file nobody builds and send the fix to the wrong place.
-        .filter(p => Files.isRegularFile(p) && p.toString.endsWith(".tex"))
+        .filter(p => Files.isRegularFile(p) &&
+          (p.toString.endsWith(".tex") || p.toString.endsWith(".cls") || p.toString.endsWith(".sty")))
         .filterNot(p => p.getFileName.toString.startsWith("old-"))
         .map(p => readSrc(root, root.relativize(p).toString))
         .sortBy(_.rel)
@@ -302,7 +311,7 @@ def findInPairs(idx: Vector[Src], needle: String): Vector[Hit] =
 
 enum Kind:
   case CodeIdent, CodeString, CodeComment, CodeLine, CodeCovered, CodeOther, Glossed, ProseSv,
-    Pseudocode, Url, EnInSv, EnSide, Unclear, TodoNote, Noise, NotFound
+    Pseudocode, Url, EnInSv, EnSide, Unclear, TodoNote, Noise, ClassFile, NotFound
 
 def mechanism(k: Kind): String = k match
   case Kind.CodeIdent   => "CodeGlossary.id / .perFileId"
@@ -320,6 +329,10 @@ def mechanism(k: Kind): String = k match
   case Kind.EnInSv      => "source fix (English already, merely wrong)"
   case Kind.EnSide      => "source fix or Overrides: defect exists only in the English"
   case Kind.Unclear     => "manual: Swedish verdict weak"
+  // No glossary entry and no Overrides key can reach a .cls: the mirror copies it verbatim, so the
+  // only repair is in the class itself, and it has to be the bilingual form rather than a translation --
+  // the SAME file is used by the Swedish build.
+  case Kind.ClassFile   => "source fix in the .cls: wrap it in \\ifswedish ... \\else ... \\fi"
   case Kind.NotFound    => "manual: not located in source or mirror"
 
 /** Classify one fragment given where it was found. */
@@ -348,6 +361,10 @@ def classify(text: String, svHits: Vector[Hit], enHits: Vector[Hit], srcLine: Op
     else if looksLikeScala(t) then Kind.NotFound
     else if sc.en > sc.strong then Kind.TodoNote
     else Kind.NotFound
+  // ClassFile only when the class file is the ONLY place it was found. A `.cls` hit must not outrank a
+  // `.tex` one: `while` occurs once in compendium.cls and 218 times in the .tex files, and letting the
+  // class win sent a plain code fragment to the wrong mechanism. If it is in a .tex, fix it there.
+  else if svHits.forall(h => h.rel.endsWith(".cls") || h.rel.endsWith(".sty")) then Kind.ClassFile
   else if t.contains("Indata") || t.contains("Utdata") || t.contains("\u2190") then Kind.Pseudocode
   else if t.contains("http") || t.contains("wikipedia.org") then Kind.Url
   // inline \code{..} in running prose counts as code here: the rename pass reaches it (Translate's
@@ -549,7 +566,8 @@ def parseTodo(path: Path): Vector[Entry] =
       else
         scala.util.Using.resource(Files.walk(base)): stream =>
           stream.iterator.asScala
-            .filter(p => p.toString.endsWith(".tex"))
+            // same set texUnder indexes: a .cls edit can leak Swedish too, so it counts as source
+            .filter(p => Seq(".tex", ".cls", ".sty").exists(p.toString.endsWith))
             .map(p => Files.getLastModifiedTime(p).toMillis)
             .toSeq
     .maxOption.getOrElse(0L)
@@ -563,7 +581,7 @@ def parseTodo(path: Path): Vector[Entry] =
   // meaningless and the status stays "-".
   val checkable = Set(Kind.CodeIdent, Kind.CodeString, Kind.CodeComment, Kind.CodeLine,
     Kind.CodeCovered, Kind.CodeOther, Kind.Glossed, Kind.ProseSv, Kind.Pseudocode, Kind.EnInSv,
-    Kind.EnSide, Kind.Unclear)
+    Kind.EnSide, Kind.Unclear, Kind.ClassFile)
   val pdfSquashed = pdfText.map(squash)
   // "not in the compendium pdf" is evidence of a fix only for a fragment the compendium pdf could have
   // held. 49 of the first 81 SOLVED rows were located only under slides/, where absence means nothing,
@@ -580,8 +598,22 @@ def parseTodo(path: Path): Vector[Entry] =
 
   emit("section\ttask\tkind\tstatus\twhere\tmechanism\ttokens\tfragment")
   for (e, k, hits) <- shown do
-    val where = hits.headOption.map(h => s"${h.rel}:${h.line}").getOrElse("-")
-    val extra = if hits.size > 1 then s" (+${hits.size - 1})" else ""
+    // `where` must point at the file the mechanism applies to. compendium.cls sorts before
+    // compendium/modules/, so a fragment that merely also occurs in the class would otherwise show the
+    // class as its location while being bucketed for a .tex fix.
+    val primary =
+      if k == Kind.ClassFile then hits.headOption
+      else hits.find(h => !(h.rel.endsWith(".cls") || h.rel.endsWith(".sty"))).orElse(hits.headOption)
+    val where = primary.map(h => s"${h.rel}:${h.line}").getOrElse("-")
+    // A fragment found in BOTH a .tex and the class file keeps its .tex bucket -- that is where a
+    // glossary or Overrides fix belongs -- but the class hit still has to be visible, because the
+    // rendered text may be coming from the macro rather than from the .tex. `Bakgrund` is exactly that:
+    // the `Background` environment in compendium.cls types `\emph{Bakgrund:}` with no \else branch.
+    val clsAlso =
+      if k == Kind.ClassFile then ""
+      else hits.find(h => h.rel.endsWith(".cls") || h.rel.endsWith(".sty"))
+        .map(h => s" +cls:${h.rel.split('/').last}:${h.line}").getOrElse("")
+    val extra = (if hits.size > 1 then s" (+${hits.size - 1})" else "") + clsAlso
     val toks =
       // CodeCovered belongs here too: a settled row has to say WHY it is settled, or it reads as an
       // unexplained verdict.
