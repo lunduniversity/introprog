@@ -121,7 +121,7 @@
 
 
 \newcommand{\TODO}{\colorbox{red!70}{TODO!!!}~}
-\newcommand{\StudyTheory}[1]{Studera begreppen i kapitel \ref{chapter:W#1}}
+\newcommand{\StudyTheory}[1]{\ifswedish Studera begreppen i kapitel\else Study the concepts in chapter\fi{} \ref{chapter:W#1}}
 \newcommand{\DoExercise}[2]{\ifswedish Gör övning\else Do exercise\fi{} {\tt #1} \ifswedish i avsnitt\else in section\fi{} \ref{exe:W#2}}
 \newcommand{\ReadTheLab}{\ifswedish Läs igenom och begrunda hela laborationsinstruktionen.\else Read through and consider the whole lab instruction.\fi}
 
@@ -298,7 +298,7 @@
 
 
 \newenvironment{Background}%
-{\begin{adjustwidth}{\parindent}{}\small \emph{Bakgrund:}}%
+{\begin{adjustwidth}{\parindent}{}\small \emph{\ifswedish Bakgrund:\else Background:\fi}}%
 {\end{adjustwidth}}
 
 
