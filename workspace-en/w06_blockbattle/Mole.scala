@@ -22,4 +22,4 @@ class Mole(
   def move(): Unit = ???
 
   /** Gives the next position according to the direction dir without updating pos */
-  def nextPos: Pos = ???
+  def nextPos(): Pos = ???
