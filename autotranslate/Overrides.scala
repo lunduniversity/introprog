@@ -684,7 +684,10 @@ object Overrides:
     "Citationstecken (1/2)"                 -> "Quotation marks (1/2)",    // NOT punctuation
     "Citationstecken (2/2)"                 -> "Quotation marks (2/2)",
     "Typjoker: varning för gränslösa typer" -> "Type wildcard: warning for unbounded types", // joker = wildcard
-    "Varians och kontextparametrar"         -> "Variance and context parameters", // varians = variance
+    // re-keyed 2026-10-27 (#1005): the w11 chapter was retitled in the plan update, so the old key
+    // ("Varians och kontextparametrar") matched nothing and the heading shipped in Swedish.
+    "Fördjupning: Varians, kontextparametrar, info om valfri tenta" ->
+      "Deep dive: Variance, context parameters, info about the optional exam", // varians = variance
     "Kompilera om det som ändrats vid varje sparning" -> "Recompile what has changed at each save", // sparning = save
     "Ändra på plats i förändringsbar samling" -> "Modify in place in a mutable collection", // på plats = in place
     "Java-exempel: Klassen JPerson"         -> "Java example: The class JPerson", // said "Scala example"
@@ -753,7 +756,9 @@ object Overrides:
     "Fördjupning:"                            -> "Deep dive:",
     "Fördjupning för den intresserade:"       -> "Deep dive for the Interested:",
     "Fördjupning för kännedom:"               -> "Deep dive for understanding:",
-    "Fördjupning, Projekt"                    -> "Deep dive, Project", // the comma was dropped too
+    // re-keyed 2026-10-27 (#1005): the w12 chapter is now just "PROJEKT". Capitalised in the source, so
+    // capitalised here -- the chaphead is set in caps deliberately.
+    "PROJEKT"                                 -> "PROJECT",
     "Fördjupning: Använda Java-samlingar i Scala med" -> "Deep dive: Using Java Collections in Scala with",
     "Fördjupning: Användning av hjälpkonstruktor" -> "Deep dive: Usage of Helper Constructor",
     "Fördjupning: Detaljerade regler för override" -> "Deep dive: Detailed Rules for Override",
