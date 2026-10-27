@@ -179,6 +179,48 @@ object CodeGlossary:
     "ärRaktUnderUppgången" -> "isStraightBelowTheExit",
     "djup" -> "depth",
     "rak" -> "straight",
+
+    // ---- w05, classes, equality, specifications — BR-ratified 2026-10-11 (#993), global as proposed ----
+    // Four of these are CONSTRUCTOR or CASE-CLASS PARAMETERS rather than val/def -- `harHår`,
+    // `ärTillVänster`, `huvud1`, `kompis`. The rename pass reaches those (they are identifier tokens in
+    // a code region), so they are in; they are called out because a declaration grep for val/var/def
+    // alone would wrongly report them missing.
+    "Rymdvarelse" -> "SpaceCreature",
+    "Huvud" -> "Head",
+    "huvud1" -> "head1",
+    "huvud2" -> "head2",
+    "harHår" -> "hasHair",
+    "ärSkallig" -> "isBald",
+    "ärTillVänster" -> "isOnTheLeft",
+    // `Ben` -> `Leg` is ratified in #993, but in the six-questions list rather than in the w05 table
+    // ("Ben: Leg, it is the anatomical one"), so it would have been missed by implementing the table
+    // alone. Without it the creature read `case class Ben` beside `case class Head` with `ben1: Ben`
+    // next to `huvud1: Head` -- the mixed family BR objected to as `Cat extends Djur`. `Arm`/`arm1`/
+    // `arm2` need no entry: arm is the same word in both languages.
+    "Ben" -> "Leg",
+    "ben1" -> "leg1",
+    "ben2" -> "leg2",
+    // the equality ladder: eight separate classes, one per step of the argument. All eight confirmed to
+    // exist as `class GurkaN` before being listed here.
+    "Gurka1" -> "Cucumber1", "Gurka2" -> "Cucumber2", "Gurka3" -> "Cucumber3", "Gurka4" -> "Cucumber4",
+    "Gurka5" -> "Cucumber5", "Gurka6" -> "Cucumber6", "Gurka7" -> "Cucumber7", "Gurka8" -> "Cucumber8",
+    "kompis" -> "buddy",
+    "kompisVikt" -> "buddyWeight",
+    "Bil" -> "Car",
+    // `vikt` is already global, but matching is per whole TOKEN, so the backing-field spellings need
+    // their own entries.
+    "_vikt" -> "_weight",
+    "vikt_" -> "weight_",
+    "visaHemlis" -> "showSecret",
+    "jagSjälv" -> "myself",
+    "sprängsSnart" -> "explodesSoon",
+    "ärUng" -> "isYoung",
+    // HELD, all three for the same reason as `tryck` in w04: they are COMMENT text, which renderCodeIds
+    // copies verbatim, so an entry would change nothing anywhere.
+    //   `syns`                             -- only in `def visaHemlis = Y.y  // y syns i X`
+    //   `referenslikhetstest`, `olika`     -- only in `scala> v1 eq v2  //referenslikhetstest: olika instanser`
+    // The table's counts come from the reading log, which reads the rendered pdf, where a comment looks
+    // exactly like code. The same will be true of entries in the w06 and w07 tables.
     // The tuple-demo trio. These look like the `gurka1` trap -- string literal plus the REPL's bare echo
     // of it -- but the mirror says otherwise, and the mirror is the thing to believe: the LITERALS are
     // already translated by the code cache (rows 1344 `Ålder->Age` and 555 `Längd->Length`), so before
