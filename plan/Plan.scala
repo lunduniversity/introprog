@@ -139,11 +139,11 @@ trait Plan:
       | abstrakt klass, info om projektet, valfri grupplabb snake
       """.stripTrim),
 
-    Module("Fördjupning: Varians, kontextparametrar",
+    Module("Fördjupning: Varians, kontextparametrar, info om valfri tenta",
       id = "context", exercise = "context", labs = Seq("snake1"), contents = """
       | övre- och undre typgräns, varians, kontravarians, kovarians, typjoker, kontextgräns, typkonstruktor, egentyp, typjoker,
       | givet värde (given), kontextparameter (using), ad hoc polymorfism,  typklass,
-      | api, kodläsbarhet
+      | api, kodläsbarhet, info om valfri tentan
       """.stripTrim),
 
     Module("PROJEKT",
