@@ -256,6 +256,33 @@ object CodeGlossary:
     //     björn: Person = Person@7ae75ba6
     "björn" -> "bjorn",
     "Björn" -> "Bjorn",
+
+    // ---- w07 + the w01 remainder — BR-ratified 2026-10-11 (#993). The last batch of that table. ----
+    "registreraTärningskast" -> "registerDiceRoll",
+    "udda" -> "odd",
+    "omkrets" -> "circumference",
+    "radie" -> "radius",          // a parameter of `def omkrets(radie: Double)`
+    "frukt" -> "fruit",
+    // the file-permission demo in the dod/OS lab. Live and reachable: both occurrences sit inside
+    // \begin{Code}, which is in scalaCodeEnvs --
+    //     (skydd)       (ägare)     (grupp)
+    //     chmod skydd fil1 fil2 etc
+    "skydd" -> "protection",
+    "ägare" -> "owner",
+    "grupp" -> "group",
+    // two of BR's six answered questions in #993. (`björn` and `Ben` are above; `loop` and `veg` he
+    // asked to leave alone, so they appear nowhere.)
+    "funkis" -> "funval",
+    // "`kind` is fine where it means a type; leave it where it is filler." It is reachable in exactly
+    // one place -- `class Bil(val typ: String)` -- because the filler sense occurs only in Swedish
+    // PROSE ("Vilken typ har ...?"), which no rename touches. Bil is already Car from the w05 batch,
+    // so without this the class read `class Car(val typ: String)`.
+    "typ" -> "kind",
+    // HELD from the w07 table, none of them reachable as identifiers:
+    //   `nollor`   -- only inside a code COMMENT, `val result = ??? /* Array med 6 nollor */`
+    //   `slumptal` -- a KOJO command (`\code|slumptal(100)|`) with no Scala declaration anywhere
+    //   `dra`      -- lab pseudocode in prose, "dra slumptal $r$ så att $0 <= r <= i$"
+    // `fyll` is ratified too but is SCOPED rather than global -- see perFileId below.
     // HELD, all three for the same reason as `tryck` in w04: they are COMMENT text, which renderCodeIds
     // copies verbatim, so an entry would change nothing anywhere.
     //   `syns`                             -- only in `def visaHemlis = Y.y  // y syns i X`
@@ -437,6 +464,19 @@ object CodeGlossary:
     // `röd` has no Kojo use and is global. How the English edition should present Kojo's Swedish command
     // vocabulary is a question for BR, and scoping keeps this batch out of it.
     "lect-w04-objects" -> Map("grön" -> "green"),
+    // `fyll` -> `fill` is ratified in #993's w07 table, but it is a Kojo command AND one of our own
+    // example names, in different files. Scoped to the three where it is genuinely ours:
+    //   Scala: w04-objects-exercise (`def fyll(p: Pt)(s: Int)`), lect-w07-seq (`fyll(42, ...)`),
+    //          lect-wjava-body (`def fyll[T](n: Int, x: T)`)
+    //   Kojo:  w01-intro-lab, w01-intro-exercise, kojo-commands (`\code|fyll(lila)|`,
+    //          `\code|fyll(genomskinlig)|`) -- left alone, since renaming one command in a table of
+    //          Swedish ones is the `upprepa` problem from #1004 again.
+    // NOT lect-w04-objects (its `fyll-färg` is prose) and NOT lect-w05-classes, whose only match was
+    // `def fyllÅr` -- a different token, and commented out. Both were false hits from a `def fyll`
+    // grep that matched a prefix.
+    "w04-objects-exercise" -> Map("fyll" -> "fill"),
+    "lect-w07-seq" -> Map("fyll" -> "fill"),
+    "lect-wjava-body" -> Map("fyll" -> "fill"),
     // ANIMAL cluster — scoped here (NOT global) so `Djur` doesn't bleed into files whose subclasses aren't
     // glossary'd and would render mixed code (lect-w11-context has its own entry below; lect-w06-equals still
     // has unclamped case class Hund/Katt and is deliberately left uniformly Swedish).
