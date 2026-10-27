@@ -144,6 +144,55 @@ object CodeGlossary:
     "hälsning" -> "greeting",
     "fleraAnrop" -> "severalCalls",
     "antal" -> "count",
+
+    // ---- w04, objects and the bank account — BR-ratified 2026-10-11 (#993), global as proposed ----
+    // Every key below was verified to be a real DECLARATION (val/var/def/object/class) before being
+    // added, not merely a token the reading log saw in the pdf. Four names from the table failed that
+    // test and are held at the end of this block.
+    "saldo" -> "balance",
+    "Bankkonto" -> "BankAccount",
+    "mittBankkonto" -> "myBankAccount",
+    "kontonr" -> "accountNo",
+    "ärSkuldsatt" -> "isInDebt",
+    "bk1" -> "ba1",
+    "bk2" -> "ba2",
+    "skrikBaklänges" -> "shoutBackwards",
+    "skrik" -> "shout",
+    "baklänges" -> "backwards",
+    "längd" -> "length",
+    "polär" -> "polar",
+    "polärForm" -> "polarForm",
+    "vinkel" -> "angle",
+    "evaluerasVidVarjeAnrop" -> "evaluatedOnEveryCall",
+    "förAlltidSammaReferens" -> "alwaysTheSameReference",
+    "ännuStörreArray" -> "evenBiggerArray",
+    // `röd` is global; its partner `grön` is NOT — see perFileId below. kojo-commands.tex has a live
+    // `\code|bakgrund2(grön,gul)|` next to its English twin `setBackgroundV(green, yellow)`, and a global
+    // rename would rewrite the Swedish cell of that pair. `röd` appears in no Kojo code.
+    "röd" -> "red",
+    // the mole exercise (w04-objects-exercise). Its API is already English — mole, soil, tunnel, pos,
+    // color — so only these six are Swedish.
+    "Mullvaden" -> "TheMole",
+    "Masken" -> "TheWorm",
+    "Underjorden" -> "TheUnderground",
+    "ärMullvadsmat" -> "isMoleFood",
+    "ärRaktUnderUppgången" -> "isStraightBelowTheExit",
+    "djup" -> "depth",
+    "rak" -> "straight",
+    // The tuple-demo trio. These look like the `gurka1` trap -- string literal plus the REPL's bare echo
+    // of it -- but the mirror says otherwise, and the mirror is the thing to believe: the LITERALS are
+    // already translated by the code cache (rows 1344 `Ålder->Age` and 555 `Längd->Length`), so before
+    // this batch the slide read
+    //        scala> Vector("Age" -> 42, "Length" -> 178, "Vikt" -> 65)
+    //                Vector((Ålder,42), (Längd,178), (Vikt,65))
+    // -- English going in, Swedish coming out. Here the id entry is the MISSING HALF, not the hazard.
+    // `Vikt` has no cache row, so it also needs the whole-literal codeStr entry added above, or it would
+    // be the only one of the three left mismatched.
+    "Längd" -> "Length",
+    "Vikt" -> "Weight",
+    "Ålder" -> "Age",
+    // HELD: `tryck` occurs only inside code COMMENTS (`scala> öka.   // tryck TAB`), which renderCodeIds
+    // copies verbatim, so the entry would change nothing anywhere.
   )
   // string / comment inner text (longest first so a prefix doesn't pre-empt). exact substring replace.
   val str: Seq[(String, String)] = Seq(
@@ -193,6 +242,10 @@ object CodeGlossary:
     "Muuuuuuu" -> "Mooooo", "Nöffnöff" -> "Oink", "Gnääääägg" -> "Neigh",
     // PERSON: the researcher's title value (Task 5 REPL: new Researcher(..., "Doktorand")) — BR-ratified 2026-07-21.
     "Doktorand" -> "PhD student",
+    // w04's tuple demo keys the pair on a literal and echoes it bare. `Ålder` and `Längd` already have
+    // code-cache rows that translate the literal; `Vikt` does not, so without this entry it would be the
+    // one of the three whose literal stayed Swedish while its echo turned English.
+    "Vikt" -> "Weight",
     // lect-w11-context string DATA (proposed 2026-08-30, pending BR ratification). Exact whole-literal keys,
     // so "hej" here can only match a literal that IS "hej" (`trait Y { val y = "hej" }`) and can never
     // misfire inside a longer string the way a `str` substring would.
@@ -294,6 +347,13 @@ object CodeGlossary:
   // need nothing here (their clamps are masked verbatim, so the mirror pass leaves them alone).
   val perFileId: Map[String, Map[String, String]] = Map(
     // e.g. "w01-kojo" -> Map("Färg" -> "Colour", "Röd" -> "Red", "Svart" -> "Black")
+    // w04's colour demo: `val grön = JColor(0, 255, 0)` with its REPL echo. Scoped rather than global
+    // (#993 proposed it global) because `grön` is also a KOJO argument: kojo-commands.tex has a live
+    // `\code|bakgrund2(grön,gul)|` beside its English twin `\code|setBackgroundV(green, yellow)|`, and a
+    // global rename would rewrite the Swedish cell of that pair into `bakgrund2(green,gul)`. Its partner
+    // `röd` has no Kojo use and is global. How the English edition should present Kojo's Swedish command
+    // vocabulary is a question for BR, and scoping keeps this batch out of it.
+    "lect-w04-objects" -> Map("grön" -> "green"),
     // ANIMAL cluster — scoped here (NOT global) so `Djur` doesn't bleed into files whose subclasses aren't
     // glossary'd and would render mixed code (lect-w11-context has its own entry below; lect-w06-equals still
     // has unclamped case class Hund/Katt and is deliberately left uniformly Swedish).
