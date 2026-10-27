@@ -85,6 +85,156 @@ object CodeGlossary:
     // (class Katt/Hund extends Djur) where Katt/Hund aren't in the glossary; a global Djur->Animal rendered
     // `class Katt extends Animal` (mixed). w11 now carries its OWN scoped cluster (with Katt/Hund/Robothund),
     // so the fix for a mixed render is a per-file entry, never promoting this cluster to global.
+
+    // ---- w02, arithmetic and code structure — BR-ratified 2026-10-11 (#993), global as proposed ----
+    // `öka`/`minska` span w02 and w03, which is the whole reason #993 agreed the names once across weeks
+    // rather than per chapter. `öka` is the single largest entry in the corpus: 31 logged fragments.
+    "öka" -> "increase",
+    "minska" -> "decrease",
+    "heltal" -> "integer",
+    "resten" -> "remainder",
+    "jättestortIntervall" -> "hugeRange",
+    "intervall" -> "range",
+    "ettArgument" -> "oneArgument",
+    "minParameter" -> "myParameter",
+    "lokaltNamn" -> "localName",
+    "summa" -> "sum",
+    "sekvens" -> "sequence",
+    "åsikter" -> "opinions",
+    // `gurka1`/`gurka2`/`tomat1` are HELD, though #993 ratified gurka1/tomat1: they are not identifiers
+    // at all. They occur only as string LITERALS and as the REPL's bare echo of them, so an id entry
+    // renames the echo and cannot touch the input, and the slide contradicted itself:
+    //     scala> val xs = Vector("gurka1","gurka2","tomat1")
+    //     val xs: Vector[String] = Vector(cucumber1, cucumber2, tomato1)
+    // That is precisely the reason BR held `Hej`/`hej`/`dej` in #993; the table did not notice it applies
+    // here too. Uniformly Swedish is better than a transcript that disagrees with itself, so these wait
+    // for the same decision. (The harvester never listed them as code identifiers either — consistent.)
+    // NB `Hej`/`hej`/`dej` are deliberately NOT here. BR held them in #993 until perFileCodeStr exists,
+    // because a global id rename reaches the echoed output of the w07 sorting slide (`Array(Hej, gurka,
+    // hej)`) while the literals that produce it stay as they are — the #990 desync. The mechanism now
+    // exists (#1003), but which English `hej` should have outside w11 is still open there.
+
+    // ---- w03, functions — BR-ratified 2026-10-11 (#993), global as proposed ----
+    "hemlis" -> "secret",
+    "gissning" -> "guess",
+    "gissat" -> "guessed",
+    "gissaTalet" -> "guessTheNumber",
+    "skrivLedtrådOmEjRätt" -> "writeHintIfNotRight",
+    "inteRätt" -> "notRight",
+    "ärRätt" -> "isRight",
+    "tvåGånger" -> "twice",
+    "fakultet" -> "factorial",
+    // `upprepa` -> `repeat` is ratified in #993 but deliberately HELD OUT of this batch: it is a Kojo
+    // command, not an example name of ours. lect-w03-functions builds its own version on the slide
+    // titled "Hur fungerar egentligen `upprepa` i Kojo?", and w01-intro-lab uses it in Kojo code next to
+    // `fram` and `höger`, which are not renamed. `repeat` IS Kojo's English name, so the rename would at
+    // least compile — but it would leave the w01 lab reading `repeat(4): fram`, half of one command
+    // vocabulary. How the English edition presents Kojo's Swedish command names is a separate question
+    // for BR, so this one waits for it rather than being decided by a glossary entry.
+    // `matte` -> `myMath`, NOT `math`: BR's exception 2 in #993. In lect-w03-functions it names an
+    // `object`, and `object math` would shadow the `scala.math` package that w01 teaches.
+    "matte" -> "myMath",
+    "tomParameterlista" -> "emptyParameterList",
+    "ingenParameterlista" -> "noParameterList",
+    "förnamn" -> "firstName",
+    "efternamn" -> "lastName",
+    "förnamnFörst" -> "firstNameFirst",
+    "skrivNamn" -> "writeName",
+    "hälsa" -> "greet",
+    "hälsning" -> "greeting",
+    "fleraAnrop" -> "severalCalls",
+    "antal" -> "count",
+
+    // ---- w04, objects and the bank account — BR-ratified 2026-10-11 (#993), global as proposed ----
+    // Every key below was verified to be a real DECLARATION (val/var/def/object/class) before being
+    // added, not merely a token the reading log saw in the pdf. Four names from the table failed that
+    // test and are held at the end of this block.
+    "saldo" -> "balance",
+    "Bankkonto" -> "BankAccount",
+    "mittBankkonto" -> "myBankAccount",
+    "kontonr" -> "accountNo",
+    "ärSkuldsatt" -> "isInDebt",
+    "bk1" -> "ba1",
+    "bk2" -> "ba2",
+    "skrikBaklänges" -> "shoutBackwards",
+    "skrik" -> "shout",
+    "baklänges" -> "backwards",
+    "längd" -> "length",
+    "polär" -> "polar",
+    "polärForm" -> "polarForm",
+    "vinkel" -> "angle",
+    "evaluerasVidVarjeAnrop" -> "evaluatedOnEveryCall",
+    "förAlltidSammaReferens" -> "alwaysTheSameReference",
+    "ännuStörreArray" -> "evenBiggerArray",
+    // `röd` is global; its partner `grön` is NOT — see perFileId below. kojo-commands.tex has a live
+    // `\code|bakgrund2(grön,gul)|` next to its English twin `setBackgroundV(green, yellow)`, and a global
+    // rename would rewrite the Swedish cell of that pair. `röd` appears in no Kojo code.
+    "röd" -> "red",
+    // the mole exercise (w04-objects-exercise). Its API is already English — mole, soil, tunnel, pos,
+    // color — so only these six are Swedish.
+    "Mullvaden" -> "TheMole",
+    "Masken" -> "TheWorm",
+    "Underjorden" -> "TheUnderground",
+    "ärMullvadsmat" -> "isMoleFood",
+    "ärRaktUnderUppgången" -> "isStraightBelowTheExit",
+    "djup" -> "depth",
+    "rak" -> "straight",
+
+    // ---- w05, classes, equality, specifications — BR-ratified 2026-10-11 (#993), global as proposed ----
+    // Four of these are CONSTRUCTOR or CASE-CLASS PARAMETERS rather than val/def -- `harHår`,
+    // `ärTillVänster`, `huvud1`, `kompis`. The rename pass reaches those (they are identifier tokens in
+    // a code region), so they are in; they are called out because a declaration grep for val/var/def
+    // alone would wrongly report them missing.
+    "Rymdvarelse" -> "SpaceCreature",
+    "Huvud" -> "Head",
+    "huvud1" -> "head1",
+    "huvud2" -> "head2",
+    "harHår" -> "hasHair",
+    "ärSkallig" -> "isBald",
+    "ärTillVänster" -> "isOnTheLeft",
+    // `Ben` -> `Leg` is ratified in #993, but in the six-questions list rather than in the w05 table
+    // ("Ben: Leg, it is the anatomical one"), so it would have been missed by implementing the table
+    // alone. Without it the creature read `case class Ben` beside `case class Head` with `ben1: Ben`
+    // next to `huvud1: Head` -- the mixed family BR objected to as `Cat extends Djur`. `Arm`/`arm1`/
+    // `arm2` need no entry: arm is the same word in both languages.
+    "Ben" -> "Leg",
+    "ben1" -> "leg1",
+    "ben2" -> "leg2",
+    // the equality ladder: eight separate classes, one per step of the argument. All eight confirmed to
+    // exist as `class GurkaN` before being listed here.
+    "Gurka1" -> "Cucumber1", "Gurka2" -> "Cucumber2", "Gurka3" -> "Cucumber3", "Gurka4" -> "Cucumber4",
+    "Gurka5" -> "Cucumber5", "Gurka6" -> "Cucumber6", "Gurka7" -> "Cucumber7", "Gurka8" -> "Cucumber8",
+    "kompis" -> "buddy",
+    "kompisVikt" -> "buddyWeight",
+    "Bil" -> "Car",
+    // `vikt` is already global, but matching is per whole TOKEN, so the backing-field spellings need
+    // their own entries.
+    "_vikt" -> "_weight",
+    "vikt_" -> "weight_",
+    "visaHemlis" -> "showSecret",
+    "jagSjälv" -> "myself",
+    "sprängsSnart" -> "explodesSoon",
+    "ärUng" -> "isYoung",
+    // HELD, all three for the same reason as `tryck` in w04: they are COMMENT text, which renderCodeIds
+    // copies verbatim, so an entry would change nothing anywhere.
+    //   `syns`                             -- only in `def visaHemlis = Y.y  // y syns i X`
+    //   `referenslikhetstest`, `olika`     -- only in `scala> v1 eq v2  //referenslikhetstest: olika instanser`
+    // The table's counts come from the reading log, which reads the rendered pdf, where a comment looks
+    // exactly like code. The same will be true of entries in the w06 and w07 tables.
+    // The tuple-demo trio. These look like the `gurka1` trap -- string literal plus the REPL's bare echo
+    // of it -- but the mirror says otherwise, and the mirror is the thing to believe: the LITERALS are
+    // already translated by the code cache (rows 1344 `Ålder->Age` and 555 `Längd->Length`), so before
+    // this batch the slide read
+    //        scala> Vector("Age" -> 42, "Length" -> 178, "Vikt" -> 65)
+    //                Vector((Ålder,42), (Längd,178), (Vikt,65))
+    // -- English going in, Swedish coming out. Here the id entry is the MISSING HALF, not the hazard.
+    // `Vikt` has no cache row, so it also needs the whole-literal codeStr entry added above, or it would
+    // be the only one of the three left mismatched.
+    "Längd" -> "Length",
+    "Vikt" -> "Weight",
+    "Ålder" -> "Age",
+    // HELD: `tryck` occurs only inside code COMMENTS (`scala> öka.   // tryck TAB`), which renderCodeIds
+    // copies verbatim, so the entry would change nothing anywhere.
   )
   // string / comment inner text (longest first so a prefix doesn't pre-empt). exact substring replace.
   val str: Seq[(String, String)] = Seq(
@@ -134,6 +284,10 @@ object CodeGlossary:
     "Muuuuuuu" -> "Mooooo", "Nöffnöff" -> "Oink", "Gnääääägg" -> "Neigh",
     // PERSON: the researcher's title value (Task 5 REPL: new Researcher(..., "Doktorand")) — BR-ratified 2026-07-21.
     "Doktorand" -> "PhD student",
+    // w04's tuple demo keys the pair on a literal and echoes it bare. `Ålder` and `Längd` already have
+    // code-cache rows that translate the literal; `Vikt` does not, so without this entry it would be the
+    // one of the three whose literal stayed Swedish while its echo turned English.
+    "Vikt" -> "Weight",
     // lect-w11-context string DATA (proposed 2026-08-30, pending BR ratification). Exact whole-literal keys,
     // so "hej" here can only match a literal that IS "hej" (`trait Y { val y = "hej" }`) and can never
     // misfire inside a longer string the way a `str` substring would.
@@ -235,6 +389,13 @@ object CodeGlossary:
   // need nothing here (their clamps are masked verbatim, so the mirror pass leaves them alone).
   val perFileId: Map[String, Map[String, String]] = Map(
     // e.g. "w01-kojo" -> Map("Färg" -> "Colour", "Röd" -> "Red", "Svart" -> "Black")
+    // w04's colour demo: `val grön = JColor(0, 255, 0)` with its REPL echo. Scoped rather than global
+    // (#993 proposed it global) because `grön` is also a KOJO argument: kojo-commands.tex has a live
+    // `\code|bakgrund2(grön,gul)|` beside its English twin `\code|setBackgroundV(green, yellow)|`, and a
+    // global rename would rewrite the Swedish cell of that pair into `bakgrund2(green,gul)`. Its partner
+    // `röd` has no Kojo use and is global. How the English edition should present Kojo's Swedish command
+    // vocabulary is a question for BR, and scoping keeps this batch out of it.
+    "lect-w04-objects" -> Map("grön" -> "green"),
     // ANIMAL cluster — scoped here (NOT global) so `Djur` doesn't bleed into files whose subclasses aren't
     // glossary'd and would render mixed code (lect-w11-context has its own entry below; lect-w06-equals still
     // has unclamped case class Hund/Katt and is deliberately left uniformly Swedish).
