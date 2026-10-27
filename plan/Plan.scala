@@ -96,7 +96,7 @@ trait Plan:
       """.stripTrim), 
 
 
-    Module("Sekvenser och enumerationer",
+    Module("Sekvenser och enumerationer, typsättning",
       id = "sequences", exercise = "sequences", labs = Seq("shuffle"), contents = """
       | översikt av Scalas samlingsbibliotek och samlingsmetoder,
       | klasshierarkin i scala.collection, Iterable,
@@ -109,16 +109,16 @@ trait Plan:
       | översikt strängmetoder, StringBuilder,
       | ordning, inbyggda sökmetoder, find, indexOf, indexWhere,
       | inbyggda sorteringsmetoder, sorted, sortWith, sortBy,
-      | repeterade parametrar,
+      | repeterade parametrar,dod: typsättning
       """.stripTrim),
 
     Module("--", id = "", exercise = "", labs = Seq(), contents = "".stripTrim),
 
-    Module("Nästlade och generiska strukturer, typsättning",
+    Module("Nästlade och generiska strukturer",
       id = "matrices", exercise = "matrices", labs = Seq("life", "latex"), contents = """
       | matris, nästlad samling, nästlad for-sats,
       | typparameter, generisk funktion, generisk klass, fri och bunden typparameter,
-      | generiska datastrukturer, generiska samlingar i Scala, dod: typsättning
+      | generiska datastrukturer, generiska samlingar i Scala 
       """.stripTrim),
 
     Module("Mängder och tabeller, versionshantering",
@@ -176,8 +176,8 @@ trait Plan:
   }
 
   lazy val lecturesOfWeek =
-    Vector("P01 P02 D1","P03 P04 D2","P05 P06","P07 P08","P09 P10", "P11 P12", "P13 P14", "--") ++
-    Vector("P15 P16 D3","P17 P18 D4","P19 P20","P21 P22","P23 P24", "P25 P26", "--", "--")
+    Vector("P01 P02 D1","P03 P04 D2","P05 P06","P07 P08","P09 P10", "P11 P12", "P13 P14 D3", "--") ++
+    Vector("P15 P16","P17 P18 D4","P19 P20","P21 P22","P23 P24", "P25 P26", "--", "--")
 
   lazy val exerciseNumOfWeek =
     ( "Övn01,Övn02,Övn03,Övn04,Övn05,Övn06,Övn07,--," +
@@ -190,7 +190,7 @@ trait Plan:
   }
 
   lazy val labNumOfWeek =
-    "LabProg01+LabDod01,LabDod02,LabProg02,LabProg03,LabProg04,LabProg05,LabProg06,--,LabProg7+LabDod03,LabProg08+LabDod04,LabProg09,LabProg10,Projekt0,Projekt1,--,--,--"
+    "LabProg01+LabDod01,LabDod02,LabProg02,LabProg03,LabProg04,LabProg05,LabProg06+LabDod03,--,LabProg7,LabProg08+LabDod04,LabProg09,LabProg10,Projekt0,Projekt1,--,--,--"
       .split(',').toVector
 
   lazy val labOfWeek = for (w <- 0 until labNumOfWeek.size) yield {
@@ -203,7 +203,7 @@ trait Plan:
 
   lazy val startLp2 = Date(2026, 11, 2)
 
-  lazy val tentadatum = Date(2027, 1, 7)
+  lazy val tentadatum = Date(2027, 1, 8)
 
   def weeksOf(date: Date, n: Int): Seq[String] =
     for (week <- 0 until n) yield date.addDays(week*7).workWeek
