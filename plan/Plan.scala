@@ -129,30 +129,29 @@ trait Plan:
     | persistens, serialisering, textfiler, Source.fromFile, java.nio.file, dod: versionshantering
     """.stripTrim),
 
-    Module("Arv och komposition", 
+    Module("Arv och komposition, info om projektet", 
       id = "inheritance", exercise = "inheritance", labs = Seq("snake0"), contents = """
       | arv, komposition, polymorfism, trait, extends, asInstanceOf, with, inmixning,
       | supertyp, subtyp, bastyp, override,
       | Scalas typhierarki, Any, AnyRef, Object, AnyVal, Null, Nothing,
       | topptyp, bottentyp, referenstyper, värdetyper,
       | accessregler vid arv, protected, final,
-      | abstrakt klass, 
+      | abstrakt klass, info om projektet, valfri grupplabb snake
       """.stripTrim),
 
-    Module("Varians och kontextparametrar",
+    Module("Fördjupning: Varians, kontextparametrar",
       id = "context", exercise = "context", labs = Seq("snake1"), contents = """
       | övre- och undre typgräns, varians, kontravarians, kovarians, typjoker, kontextgräns, typkonstruktor, egentyp, typjoker,
       | givet värde (given), kontextparameter (using), ad hoc polymorfism,  typklass,
-      | api, kodläsbarhet, granskningar
+      | api, kodläsbarhet
       """.stripTrim),
 
-    Module("Fördjupning, Projekt",
+    Module("PROJEKT",
         id = "extra", exercise = "extra", labs = Seq("project0"), contents = """
         | välj valfritt fördjupningsområde, påbörja projekt,
         """.stripTrim),
-        //http://techie-notebook.blogspot.se/2014/07/difference-between-sorted-sortwith-and.html
 
-    Module("Repetition", id = "examprep", exercise = "examprep", labs = Seq("project1"), 
+    Module("REPETITION", id = "examprep", exercise = "examprep", labs = Seq("project1"), 
       contents = "träna på extentor, redovisa projekt, träna inför muntligt prov"),
 
     Module("MUNTLIGT PROV",
@@ -177,7 +176,7 @@ trait Plan:
 
   lazy val lecturesOfWeek =
     Vector("P01 P02 D1","P03 P04 D2","P05 P06","P07 P08","P09 P10", "P11 P12", "P13 P14 D3", "--") ++
-    Vector("P15 P16","P17 P18 D4","P19 P20","P21 P22","P23 P24", "P25 P26", "--", "--")
+    Vector("P15 P16","P17 P18 D4","P19 P20","P21 P22","-- --", "-- --", "--", "--")
 
   lazy val exerciseNumOfWeek =
     ( "Övn01,Övn02,Övn03,Övn04,Övn05,Övn06,Övn07,--," +
