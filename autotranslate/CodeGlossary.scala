@@ -246,6 +246,16 @@ object CodeGlossary:
     // cluster, so that is a separate decision rather than a side effect of this batch.
     "Hund" -> "Dog",
     "Katt" -> "Cat",
+    // `björn` -> `bjorn` is ratified in #993's six-questions list ("use `bjorn` to keep it a name but
+    // not requiring strange swedish char"), not in any chapter table, so implementing the tables alone
+    // misses it -- the same recovery as `Ben` -> `Leg` in w05. It belongs to the w05 class demo, and is
+    // here rather than in that batch only because it was found after w05 was pushed.
+    // Without it lect-w05-classes rendered mixed, since `ålder` and `längd` are already global:
+    //     scala> object Björn { var age = 54; val length = 178 }
+    //     scala> val björn = new Person
+    //     björn: Person = Person@7ae75ba6
+    "björn" -> "bjorn",
+    "Björn" -> "Bjorn",
     // HELD, all three for the same reason as `tryck` in w04: they are COMMENT text, which renderCodeIds
     // copies verbatim, so an entry would change nothing anywhere.
     //   `syns`                             -- only in `def visaHemlis = Y.y  // y syns i X`
