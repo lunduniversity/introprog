@@ -135,21 +135,25 @@ object CodeGlossary:
     // PERSON: the researcher's title value (Task 5 REPL: new Researcher(..., "Doktorand")) — BR-ratified 2026-07-21.
     "Doktorand" -> "PhD student",
     // lect-w11-context string DATA (proposed 2026-08-30, pending BR ratification). Exact whole-literal keys,
-    // so "hej" here can only match a literal that IS "hej" (`trait Y { val y = "hej" }`) and can never
-    // misfire inside a longer string the way a `str` substring would.
+    // so a key here can only match a literal that IS that text and can never misfire inside a longer string
+    // the way a `str` substring would.
+    // `hej` STAYS GLOBAL for now, though #990 asks for it to be scoped to lect-w11-context once
+    // perFileCodeStr exists (which it now does, below). Scoping it does not do what that instruction
+    // expects, and removing it changes ten files that are nothing to do with w11 — measured, not feared:
+    //   * w07 does not go back to one vocabulary. The literal is then claimed by the code cache
+    //     (translate-code-cache.tsv `hej -> hello`), a pass that runs AFTER renderCodeIds, so the slide
+    //     reads `xs.add("hello")` answered by `Buffer(hej)` — the same desync, a different word. An
+    //     identity entry here cannot block it; that was tried and changed nothing.
+    //   * This entry is also masking a corpus-wide disagreement. The code cache holds ~14 `hej…` rows
+    //     that render it `hello` AND `hey` (`hej! -> hello!`, `hej lazy val -> hey lazy val`), so with
+    //     this line gone, ten mirror files move off `hi` — e.g. w02's `print "hej"` becomes
+    //     `print "hello"`.
+    // Which English `hej` should have outside w11 is therefore a vocabulary decision across those files,
+    // not a scoping detail, and it is asked separately in #990.
     "hej" -> "hi",
-    "$this har behandlat $x" -> "$this has treated $x", // s-interpolated: only the prose between $refs differs
-    "syrlig" -> "tart",                                 // Tomat's taste in the intersection-type demo
-    // the given-value literal names its own object, so the clamped name has to appear inside the string too:
-    // without this the mirror read `given aGivenString: String = "a given value in EnNamnrymd"` (English
-    // prose, Swedish object name) even though the object above it had become ANamespace.
-    // ("tagen för givet" needs no entry: code-cache row 1236 already renders it "taken for granted".)
-    "ett givet värde i EnNamnrymd" -> "a given value in ANamespace",
-    // Gurka's taste. Keyed on "vattnig", the adjective BR corrected the source to in 09f82404 (it read
-    // "vattning", a noun, when this entry was written); "syrlig" above is the parallel adjective for Tomat.
-    // Nothing gates a dead key here -- the orphan ratchet counts Overrides keys only -- so this one has to
-    // track the source by hand until that gap is closed.
-    "vattnig" -> "watery",
+    // the other lect-w11-context strings moved to perFileCodeStr below, where they belong: each occurs
+    // in that file and nowhere else, so scoping them changes no English anywhere and gives the new
+    // mechanism a real user instead of a placeholder.
   )
 
   private val tok: Regex = "[A-Za-zÅÄÖåäö_][A-Za-z0-9ÅÄÖåäö_]*".r
@@ -169,8 +173,11 @@ object CodeGlossary:
     * translated, and s/f-interpolation bodies get identifier renames. For mirrored example .scala/.java, other
     * Swedish strings/comments are left for Code.translate + Overrides (a knowledge string like "Skållas."->
     * "Blanched." resolves via Overrides; nothing half-translates). No bare-substring `str` replace here. */
-  def renderCodeIds(s: String, extraId: Map[String, String] = Map.empty): String =
+  def renderCodeIds(s: String, extraId: Map[String, String] = Map.empty,
+      extraStr: Map[String, String] = Map.empty): String =
     val out = new StringBuilder; val code = new StringBuilder; var i = 0; val n = s.length
+    // per-file whole-literal strings win over the global ones, exactly as extraId wins over id
+    val strMap = if extraStr.isEmpty then codeStr else codeStr ++ extraStr
     def flush(): Unit = if code.nonEmpty then { out ++= renameAll(code.toString, extraId); code.clear() }
     def copyChar(): Unit = // copy a '...' char literal verbatim (handles \-escapes); never interpolated
       out += s(i); i += 1
@@ -207,7 +214,7 @@ object CodeGlossary:
       def atClose: Boolean = if triple then i+2 < n && s(i)=='"' && s(i+1)=='"' && s(i+2)=='"' else i < n && s(i)=='"'
       while i < n && !atClose do { if !triple && s(i)=='\\' && i+1 < n then i += 2 else i += 1 }
       val rawInner = s.substring(start, i)                 // literal content, verbatim (escapes preserved)
-      codeStr.get(rawInner) match
+      strMap.get(rawInner) match
         case Some(en) => out ++= en
         case None     => out ++= (if interp then renameInterp(rawInner) else rawInner)
       if triple then { if i+2 < n then { out ++= "\"\"\""; i += 3 } else while i < n do { out += s(i); i += 1 } }
@@ -304,6 +311,43 @@ object CodeGlossary:
       "hej" -> "hi",
     ),
   )
+  // ---- per-file WHOLE-LITERAL code strings (#990) ----
+  // Same shape and same scoping rule as perFileId, one level down: a mirror-relative path containing a key
+  // gets that map MERGED OVER the global `codeStr`. BR chose this over fixing the desync in shared machinery
+  // (#990, 2026-10-11) because it reuses a mechanism we already trust.
+  //
+  // WHY a string ever needs scoping, which is not obvious: a quoted literal and the REPL's echo of it are
+  // translated by DIFFERENT mechanisms. `codeStr` sees `xs.add("hej")` because the literal is quoted; the
+  // echo `Buffer(hej)` is bare text in a transcript and nothing in this pass can reach it. A GLOBAL entry
+  // therefore half-translates every transcript that echoes the value — one vocabulary in, another out.
+  // Scoping keeps a value English only in the file where the whole transcript has been dealt with.
+  val perFileCodeStr: Map[String, Map[String, String]] = Map(
+    // The w11 demos are throwaway example data and the file's transcripts are clamped, so `hej` is safe
+    // HERE and nowhere else. The unquoted REPL echoes in this same file (`= Pair(hej,42)`) are covered by
+    // the `"hej" -> "hi"` entry in perFileId above, which renames identifier tokens in code regions.
+    // Every key here was verified to occur in lect-w11-context.tex and in no other source file, so
+    // moving them out of the global map is a no-op for the mirror. `hej` is deliberately NOT here yet:
+    // see the note in codeStr above and #990.
+    "lect-w11-context" -> Map(
+      // s-interpolated: only the prose between the $refs differs
+      "$this har behandlat $x" -> "$this has treated $x",
+      "syrlig" -> "tart",   // Tomat's taste in the intersection-type demo
+      // the given-value literal names its own object, so the clamped name has to appear inside the string
+      // too: without this the mirror read `given aGivenString: String = "a given value in EnNamnrymd"` —
+      // English prose, Swedish object name — even though the object above it had become ANamespace.
+      // ("tagen för givet" needs no entry: code-cache row 1236 already renders it "taken for granted".)
+      "ett givet värde i EnNamnrymd" -> "a given value in ANamespace",
+      // Gurka's taste. Keyed on "vattnig", the adjective BR corrected the source to in 09f82404 (it read
+      // "vattning", a noun, when this entry was written); "syrlig" above is the parallel adjective for
+      // Tomat. Nothing gates a dead key here — the orphan ratchet counts Overrides keys only — so this
+      // one has to track the source by hand until that gap is closed.
+      "vattnig" -> "watery",
+    ),
+  )
+  /** Per-file whole-literal string map for a mirror-relative path (empty = just the global codeStr). */
+  def codeStrFor(relPath: String): Map[String, String] =
+    perFileCodeStr.iterator.collect { case (k, m) if relPath.contains(k) => m }.flatten.toMap
+
   // Mirror-relative path substrings whose inline Scala-code envs SKIP the renderCodeIds pass entirely.
   val optOut: Set[String] = Set()
   /** Per-file override map for a mirror-relative path (empty = just the global id applies). */
