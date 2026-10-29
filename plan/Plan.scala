@@ -148,15 +148,14 @@ trait Plan:
 
     Module("PROJEKT",
         id = "extra", exercise = "extra", labs = Seq("project0"), contents = """
-        | välj valfritt fördjupningsområde, påbörja projekt,
+        | välj valfritt fördjupningsområde, påbörja projekt, valfri övning: jämförlse Scala-Java, ingen föreläsning denna vecka
         """.stripTrim),
 
     Module("REPETITION", id = "examprep", exercise = "examprep", labs = Seq("project1"), 
-      contents = "träna på extentor, redovisa projekt, träna inför muntligt prov"),
+      contents = "träna på extentor, redovisa projekt, träna inför muntligt prov, ingen föreläsning denna vecka"),
 
     Module("MUNTLIGT PROV",
-      id = "munta", exercise = "Munta", labs = Seq("Munta"), contents = """
-      """.stripTrim),
+      id = "munta", exercise = "Munta", labs = Seq("Munta"), contents = "ingen föreläsning denna vecka"),
 
     Module(name = "VALFRI TENTAMEN", id = "", exercise = "", labs = Seq(), contents = "")
   )
