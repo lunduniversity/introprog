@@ -354,8 +354,25 @@ def mechanism(k: Kind): String = k match
   case Kind.ProseSv     => "Overrides (unit-probe key)"
   case Kind.Pseudocode  => "ASK BR: algorithm block, no mechanism reaches it"
   case Kind.Url         => "ASK BR: Swedish URL, source change"
-  case Kind.EnInSv      => "source fix (English already, merely wrong)"
-  case Kind.EnSide      => "source fix or Overrides: defect exists only in the English"
+  // Both of these used to name a CAUSE the test does not establish, which sent the reader of the report
+  // looking for the wrong thing. They now report the EVIDENCE, with the populations that actually turn
+  // up in it. The distinction matters because each bucket is two different jobs wearing one name.
+  //
+  // EnInSv was "source fix (English already, merely wrong)". The test is only: found in the Swedish
+  // source, in prose, and SwedishScore says NOT Swedish. In this corpus the larger population is the
+  // second kind -- `programmeringsparadigm`, `datatyp`, `Hemkatalog`, `antalet heltal` and the
+  // placeholder templates (`paketnamn.objektnamn.metodnamn`) are Swedish compounds with no function
+  // words for the scorer to catch, not English that went wrong.
+  case Kind.EnInSv      =>
+    "in Swedish source, scored NOT Swedish: English that is wrong, OR Swedish the scorer missed"
+  // EnSide was "defect exists only in the English". The test is: NOT found in the Swedish source, but
+  // found in the mirror. Usually that is English-side damage (`for-satement`, `Simpleidentifier`), but
+  // it is also exactly what a STALE log entry looks like once the Swedish has moved -- and the #993
+  // identifier batches moved a great deal of it. Across one consolidated build EnSide fell 158 -> 96
+  // while NotFound rose 66 -> 117 and CodeCovered 12 -> 227; those rows were neither fixed nor broken,
+  // they stopped matching. Anyone working this bucket has to expect stale rows in it.
+  case Kind.EnSide      =>
+    "in mirror, not in Swedish source: English-side damage, OR the Swedish moved since the log"
   case Kind.Unclear     => "manual: Swedish verdict weak"
   // No glossary entry and no Overrides key can reach a .cls: the mirror copies it verbatim, so the
   // only repair is in the class itself, and it has to be the bilingual form rather than a translation --
