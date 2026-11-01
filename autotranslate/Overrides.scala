@@ -759,6 +759,11 @@ object Overrides:
     // re-keyed 2026-10-27 (#1005): the w12 chapter is now just "PROJEKT". Capitalised in the source, so
     // capitalised here -- the chaphead is set in caps deliberately.
     "PROJEKT"                                 -> "PROJECT",
+    // The compound was glued rather than split: the w05 chaphead and overview rendered "accessrules".
+    // The longer unit in w10 ("accessregler vid arv") came out correctly as "access rules for
+    // inheritance", so this is the bare compound alone. Key from unit-probe on
+    // compendium/generated/w05-chaphead-generated.tex, block 13, `clean: accessregler`.
+    "accessregler"                            -> "access rules",
     "Fördjupning: Använda Java-samlingar i Scala med" -> "Deep dive: Using Java Collections in Scala with",
     "Fördjupning: Användning av hjälpkonstruktor" -> "Deep dive: Usage of Helper Constructor",
     "Fördjupning: Detaljerade regler för override" -> "Deep dive: Detailed Rules for Override",
