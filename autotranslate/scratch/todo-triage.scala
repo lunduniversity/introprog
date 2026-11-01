@@ -30,8 +30,13 @@
 import java.nio.file.{Files, Path}
 import scala.jdk.CollectionConverters.*
 
+/** One line of the log. `issue` groups ADJACENT lines that belong together -- most often a single REPL
+  * session quoted over several lines. That grouping is not cosmetic: a transcript has to be fixed as a
+  * unit, because the identifiers in the input and in the echoed output must agree and the whole thing
+  * must still compile (the phase 1-3 gates). Counting its lines separately both inflates the work and
+  * invites fixing half of one. */
 final case class Entry(todoLine: Int, section: String, task: String, text: String,
-    expect: Option[String] = None)
+    expect: Option[String] = None, issue: Int = 0, expectStatus: Option[String] = None)
 final case class Hit(rel: String, line: Int, inCode: Boolean)
 
 /** A source file plus, per line, whether that line sits inside a verbatim/code environment, and the
@@ -132,28 +137,104 @@ val englishExampleNames: Set[String] = Set("monster", "alien", "predator")
   * judgement -- SwedishScore's lists are FUNCTION words, which cannot see `dubblera` or `gurka`, and
   * every name needs BR's ratification regardless. So: surface candidates, exclude what is certainly
   * not one, and mark what the glossary already covers. */
-def candidates(line: String, rel: String = ""): (Vector[String], Vector[String], Vector[String]) =
+def candidates(line: String, rel: String = ""): Cands =
   val idRx = raw"[A-Za-zÅÄÖåäö_][A-Za-z0-9ÅÄÖåäö_]*".r
   val strRx = raw""""([^"]*)"""".r
   val strings = strRx.findAllMatchIn(line).map(_.group(1)).toVector.filter(_.trim.nonEmpty).distinct
   val inStrings = strings.mkString(" ")
-  val idents = idRx
+  val worth = idRx
     .findAllIn(line)
     .toVector
     .distinct
-    .filter(t =>
-      t.length > 2 && !scalaNoise.contains(t) && !raw"res\d+".r.matches(t)
-        && !englishExampleNames.contains(t.toLowerCase) && !replArtefact.matches(t))
+    .filter(t => t.length > 2 && !scalaNoise.contains(t) && !raw"res\d+".r.matches(t)
+      && !replArtefact.matches(t))
     .filterNot(inStrings.contains)
+  // Being on the exclusion list is a DECISION -- "already English, no rename" -- and dropping those
+  // tokens silently made the decision invisible: a line whose only candidate was `monster` reported
+  // as "no Swedish token found", which reads as unexamined rather than settled. Keep them, labelled.
+  val (english, idents) = worth.partition(t => englishExampleNames.contains(t.toLowerCase))
   // perFileId counts as covered too. Ignoring it listed every already-scoped name -- Djur, Katt,
   // Bur, the whole w10 and w11 clusters -- as still needing ratification. overridesFor does the
   // lookup the mirror itself does, so a name scoped to THIS file reads as done and a name scoped to
   // another file still reads as open, which is the distinction that matters.
   val scoped = if rel.isEmpty then Map.empty[String, String] else CodeGlossary.overridesFor(rel)
   val (covered, fresh) = idents.partition(t => CodeGlossary.id.contains(t) || scoped.contains(t))
-  (fresh, strings.filterNot(CodeGlossary.codeStr.contains), covered)
+  Cands(fresh, strings.filterNot(CodeGlossary.codeStr.contains), covered, english)
+
+/** The three states a name can be in, which the report has to keep apart: `open` still needs a
+  * ratified English name; `covered` already has one in the glossary; `english` was ruled already-English
+  * and needs none. Conflating the last two with "nothing found here" is what hid settled decisions. */
+final case class Cands(open: Vector[String], strings: Vector[String], covered: Vector[String],
+    english: Vector[String]):
+  def settled: Vector[String] = covered ++ english
+  def nothingOpen: Boolean = open.isEmpty && strings.isEmpty
 
 def norm(s: String): String = s.trim.replaceAll("\\s+", " ")
+
+/** The built English pdf, as `pdftotext` extracted it, flattened into one searchable string.
+  *
+  * This is the only honest oracle for "is this still broken". The source always still contains the
+  * Swedish, so source-based checking reports every fixed item as open work; and the mirror .tex is no
+  * better, because a clamped item keeps BOTH branches there while the reader sees only one. What a
+  * reader actually meets is the pdf. De-hyphenation first: pdftotext breaks words across lines, so
+  * `sökru-\ntan` has to become `sökrutan` before anything can be found. */
+def loadPdfText(path: Path): String =
+  val raw = String(Files.readAllBytes(path), "UTF-8")
+  norm(raw.replaceAll("-\\n", "").replace('­', ' '))
+
+/** Letters and digits only, lowercased. The log quotes the pdf and the pdf renders the source, and the
+  * three disagree about everything EXCEPT the letters: the source writes `s"Dubbla längden:
+  * ${namn.size * 2}"` where deMarkup leaves `s"Dubbla längden: namn.size * 2"`, and the pdf still has
+  * its `$` and braces; the log glues an enumerator onto its item (`a)poäng > 100`); the pdf wraps and
+  * hyphenates where the log does not. Comparing de-markup'd text against a RAW extract made every one
+  * of those read as SOLVED -- `Dubbla längden`, `poäng > 100`, `är för stort` and `desarmerad bomb` are
+  * all still in the English pdf, and all four were reported fixed. Squashing both sides is blunt and
+  * can join across a line or page break, but it errs toward "still there", which is the safe direction:
+  * a fragment wrongly left in the queue costs a second look, a fragment wrongly called SOLVED is work
+  * silently dropped.
+  *
+  * Both sides also lose `\cmd`, because deMarkup already took it off the needle and a Scala escape is
+  * not a LaTeX command: `println(s"\n--- FREKVENSANALYS AV:\n\$s")` stands verbatim in the English pdf,
+  * but deMarkup ate the two `\n` while the extract kept their `n`, and the row read SOLVED. */
+def squash(s: String): String =
+  raw"\\[A-Za-z]+".r.replaceAllIn(s, " ").toLowerCase.filter(_.isLetterOrDigit)
+
+/** The squashed extract, plus the map back from each squashed character to where it came from in the
+  * original. Squashing is what makes the match robust and also what makes a match unreadable: the only
+  * way to judge an "open" verdict is to see the text it matched, in the pdf's own words. */
+final case class Pdf(raw: String, squashed: String, origin: Array[Int])
+
+def preparePdf(text: String): Pdf =
+  val stripped = raw"\\[A-Za-z]+".r.replaceAllIn(text, " ")
+  val sb = StringBuilder()
+  val idx = Array.newBuilder[Int]
+  // `stripped` and `text` differ in length, so positions are taken in `stripped` and the context is
+  // read from `stripped` too -- close enough to the pdf's words, and always self-consistent.
+  for (c, i) <- stripped.zipWithIndex do
+    val lower = c.toLower
+    if lower.isLetterOrDigit then { sb += lower; idx += i }
+  Pdf(stripped, sb.result(), idx.result())
+
+/** Is the fragment still in the pdf, and if so, what did it match? The context is the point: a short
+  * fragment can match inside a longer word -- the heading `Bakgrund` matches `bakgrund(svart)`, a Kojo
+  * command that is out of scope -- and without seeing the hit there is no way to tell a real leftover
+  * from a coincidence. */
+def stillInPdf(pdf: Option[Pdf], text: String): Option[(Boolean, String)] =
+  pdf.map: p =>
+    val n = squash(deMarkup(text))
+    val at = p.squashed.indexOf(n)
+    if at < 0 then (false, "")
+    else
+      val from = p.origin(at)
+      val to = p.origin(math.min(at + n.length, p.origin.length - 1))
+      val ctx = p.raw.slice(math.max(0, from - 25), math.min(p.raw.length, to + 25))
+      (true, raw"\s+".r.replaceAllIn(ctx, " ").trim)
+
+/** The tree a located fragment lives in. `--pdf` takes ONE pdf, so absence only means something for
+  * fragments that pdf could have contained: a slides-only line is missing from the compendium pdf
+  * whatever anyone does to it. */
+def inCompendium(hits: Vector[Hit]): Boolean =
+  hits.exists(h => h.rel.startsWith("compendium/") || h.rel.startsWith("compendium-en/"))
 
 /** Replica of Translate.scala's private `scalaCodeEnvs` (Translate.scala:682) -- keep in sync, the way
   * unit-probe.scala replicates leadLen/trailStart. This is the set the RENAME PASS runs in, which is
@@ -189,6 +270,14 @@ def readSrc(root: Path, rel: String): Src =
   val lines = String(Files.readAllBytes(root.resolve(rel)), "UTF-8").linesIterator.toVector
   Src(rel, lines, codeFlags(lines), lines.map(deMarkup))
 
+/** `.cls` as well as `.tex`, and that is not a detail. `compendium/compendium.cls` is copied BYTE-FOR-BYTE
+  * into `compendium-en/` -- the two are identical files -- so no translation pass touches it. It gets away
+  * with that today because every user-visible string in it is already wrapped in `\ifswedish ... \else ...
+  * \fi` and the English document injects `\swedishfalse`; the 32 remaining Swedish hits are all in trailing
+  * `%` comments, which never render. But a NEW string added there without an `\else` branch would print
+  * Swedish in the English pdf, and nothing would catch it: the mirror copies the file verbatim, the
+  * glossary and Overrides never see it, and this tool used to report the fragment as "not located in
+  * source or mirror". Indexing `.cls` turns that silent case into a located one with its own mechanism. */
 def texUnder(root: Path, dirs: Seq[String]): Vector[Src] =
   dirs.toVector.flatMap: d =>
     val base = root.resolve(d)
@@ -199,7 +288,8 @@ def texUnder(root: Path, dirs: Seq[String]): Vector[Src] =
         // same examples still reach the pdf through the live file, e.g. the Rymdvarelse/huvud1 example is
         // in both old-classes-exercise and w05-classes-exercise. Since `old-` sorts first, keeping them
         // would attribute every such hit to a file nobody builds and send the fix to the wrong place.
-        .filter(p => Files.isRegularFile(p) && p.toString.endsWith(".tex"))
+        .filter(p => Files.isRegularFile(p) &&
+          (p.toString.endsWith(".tex") || p.toString.endsWith(".cls") || p.toString.endsWith(".sty")))
         .filterNot(p => p.getFileName.toString.startsWith("old-"))
         .map(p => readSrc(root, root.relativize(p).toString))
         .sortBy(_.rel)
@@ -249,14 +339,14 @@ def findInPairs(idx: Vector[Src], needle: String): Vector[Hit] =
 
 enum Kind:
   case CodeIdent, CodeString, CodeComment, CodeLine, CodeCovered, CodeOther, Glossed, ProseSv,
-    Pseudocode, Url, EnInSv, EnSide, Unclear, TodoNote, Noise, NotFound
+    Pseudocode, Url, EnInSv, EnSide, Unclear, TodoNote, Noise, ClassFile, NotFound
 
 def mechanism(k: Kind): String = k match
   case Kind.CodeIdent   => "CodeGlossary.id / .perFileId"
   case Kind.CodeString  => "CodeGlossary.codeStr"
   case Kind.CodeComment => "Overrides (unit-probe key)"
   case Kind.CodeLine    => "CodeGlossary.id / .perFileId (tokens listed)"
-  case Kind.CodeCovered => "none: every name here is already in the glossary"
+  case Kind.CodeCovered => "none: every name here is settled (in the glossary, or ruled English)"
   case Kind.CodeOther   => "inspect: code region, no Swedish token found"
   case Kind.TodoNote    => "none: a note in the inventory, not a fragment"
   case Kind.Noise       => "none: punctuation or a stray line from a pasted transcript"
@@ -264,9 +354,30 @@ def mechanism(k: Kind): String = k match
   case Kind.ProseSv     => "Overrides (unit-probe key)"
   case Kind.Pseudocode  => "ASK BR: algorithm block, no mechanism reaches it"
   case Kind.Url         => "ASK BR: Swedish URL, source change"
-  case Kind.EnInSv      => "source fix (English already, merely wrong)"
-  case Kind.EnSide      => "source fix or Overrides: defect exists only in the English"
+  // Both of these used to name a CAUSE the test does not establish, which sent the reader of the report
+  // looking for the wrong thing. They now report the EVIDENCE, with the populations that actually turn
+  // up in it. The distinction matters because each bucket is two different jobs wearing one name.
+  //
+  // EnInSv was "source fix (English already, merely wrong)". The test is only: found in the Swedish
+  // source, in prose, and SwedishScore says NOT Swedish. In this corpus the larger population is the
+  // second kind -- `programmeringsparadigm`, `datatyp`, `Hemkatalog`, `antalet heltal` and the
+  // placeholder templates (`paketnamn.objektnamn.metodnamn`) are Swedish compounds with no function
+  // words for the scorer to catch, not English that went wrong.
+  case Kind.EnInSv      =>
+    "in Swedish source, scored NOT Swedish: English that is wrong, OR Swedish the scorer missed"
+  // EnSide was "defect exists only in the English". The test is: NOT found in the Swedish source, but
+  // found in the mirror. Usually that is English-side damage (`for-satement`, `Simpleidentifier`), but
+  // it is also exactly what a STALE log entry looks like once the Swedish has moved -- and the #993
+  // identifier batches moved a great deal of it. Across one consolidated build EnSide fell 158 -> 96
+  // while NotFound rose 66 -> 117 and CodeCovered 12 -> 227; those rows were neither fixed nor broken,
+  // they stopped matching. Anyone working this bucket has to expect stale rows in it.
+  case Kind.EnSide      =>
+    "in mirror, not in Swedish source: English-side damage, OR the Swedish moved since the log"
   case Kind.Unclear     => "manual: Swedish verdict weak"
+  // No glossary entry and no Overrides key can reach a .cls: the mirror copies it verbatim, so the
+  // only repair is in the class itself, and it has to be the bilingual form rather than a translation --
+  // the SAME file is used by the Swedish build.
+  case Kind.ClassFile   => "source fix in the .cls: wrap it in \\ifswedish ... \\else ... \\fi"
   case Kind.NotFound    => "manual: not located in source or mirror"
 
 /** Classify one fragment given where it was found. */
@@ -295,6 +406,10 @@ def classify(text: String, svHits: Vector[Hit], enHits: Vector[Hit], srcLine: Op
     else if looksLikeScala(t) then Kind.NotFound
     else if sc.en > sc.strong then Kind.TodoNote
     else Kind.NotFound
+  // ClassFile only when the class file is the ONLY place it was found. A `.cls` hit must not outrank a
+  // `.tex` one: `while` occurs once in compendium.cls and 218 times in the .tex files, and letting the
+  // class win sent a plain code fragment to the wrong mechanism. If it is in a .tex, fix it there.
+  else if svHits.forall(h => h.rel.endsWith(".cls") || h.rel.endsWith(".sty")) then Kind.ClassFile
   else if t.contains("Indata") || t.contains("Utdata") || t.contains("\u2190") then Kind.Pseudocode
   else if t.contains("http") || t.contains("wikipedia.org") then Kind.Url
   // inline \code{..} in running prose counts as code here: the rename pass reaches it (Translate's
@@ -307,14 +422,14 @@ def classify(text: String, svHits: Vector[Hit], enHits: Vector[Hit], srcLine: Op
     val afterComment = markerAt.nonEmpty && markerAt.min < math.max(0, line.indexOf(t.take(12)))
       || t.startsWith("#") || t.startsWith("//")
     val quoted = raw""""[^"]*"""".r.findAllIn(line).exists(q => norm(q).contains(t))
-    val (idents, strings, covered) = candidates(t, svHits.headOption.map(_.rel).getOrElse(""))
+    val c = candidates(t, svHits.headOption.map(_.rel).getOrElse(""))
     if afterComment then Kind.CodeComment
     else if quoted then Kind.CodeString
     else if !t.contains(" ") then Kind.CodeIdent
-    else if idents.nonEmpty || strings.nonEmpty then Kind.CodeLine
-    // every name on the line is already in the glossary: that is "done", which is a different thing
-    // from "nothing Swedish found here" and was being reported as the latter.
-    else if covered.nonEmpty then Kind.CodeCovered
+    else if !c.nothingOpen then Kind.CodeLine
+    // every name on the line is settled -- in the glossary, or ruled already-English. That is "done",
+    // a different thing from "nothing Swedish found here", and it was reported as the latter.
+    else if c.settled.nonEmpty then Kind.CodeCovered
     else Kind.CodeOther
   else if line.contains("\\Eng{") then Kind.Glossed
   else
@@ -353,29 +468,47 @@ def parseTodo(path: Path): Vector[Entry] =
   var section = ""
   var task = ""
   var expect: Option[String] = None
+  var expectStatus: Option[String] = None
+  // What groups lines into one issue is a TRANSCRIPT, not mere adjacency. A `scala>` line opens one
+  // and the following lines join it -- the other prompts, the echoed values, the error gutter -- until
+  // a marker, a blank line, or a shell comment, which is a different medium. Grouping on adjacency
+  // alone swallowed fifteen independent `# ...` lab fragments into a single "issue", because the log
+  // writes them under one header with no blank lines.
+  var issue = 0
+  var inTranscript = false
   val out = Vector.newBuilder[Entry]
   for (raw, i) <- lines.zipWithIndex do
     val ln = raw.stripTrailing
     ln match
-      case _ if ln.trim.isEmpty      => ()
+      case _ if ln.trim.isEmpty      => issue += 1; inTranscript = false
       // `##` starts a comment, so a fixture can say what each line tests. NOT a single `#`: the w01
       // lab's fragments are shell comments (`# gå till katalogen`), and treating those as comments
       // silently deleted ten real rows from the log and took CodeComment from 16 to 7.
       // `##expect KIND` binds to the next fragment; --selftest checks it. Everything else after ## is
       // a comment, which is what lets the fixture explain each case next to it.
+      // `##expect-status` must be tested BEFORE `##expect`, or it parses as a kind called "-status ..."
+      case _ if ln.trim.startsWith("##expect-status") =>
+        expectStatus = Some(ln.trim.stripPrefix("##expect-status").trim)
       case _ if ln.trim.startsWith("##expect") =>
         expect = Some(ln.trim.stripPrefix("##expect").trim)
       case _ if ln.trim.startsWith("##") => ()
-      case ChapterRx(n)                 => section = n; task = ""
-      case TaskRx(n)            => task = s"Task $n"
+      case ChapterRx(n)                 => section = n; task = ""; issue += 1; inTranscript = false
+      case TaskRx(n)                    => task = s"Task $n"; issue += 1; inTranscript = false
       case HeaderRx(sec, rest) if looksLikeHeader(rest) =>
-        section = sec; task = ""
+        section = sec; task = ""; issue += 1; inTranscript = false
         // a header may carry a note on the same line ("1.1.16 Column Swedish name can be removed")
-        if rest.trim.length > 3 then out += Entry(i + 1, sec, "note", rest.trim)
-      case NoteRx(marker) => task = marker.trim
+        if rest.trim.length > 3 then out += Entry(i + 1, sec, "note", rest.trim, None, issue)
+      case NoteRx(marker) => task = marker.trim; issue += 1; inTranscript = false
       case _ =>
-        out += Entry(i + 1, section, task, ln.trim, expect)
+        val t = ln.trim
+        val opensTranscript = t.contains("scala>")
+        val joins = inTranscript && !t.startsWith("#")
+        if opensTranscript && !inTranscript then issue += 1
+        else if !joins then issue += 1
+        inTranscript = opensTranscript || joins
+        out += Entry(i + 1, section, task, t, expect, issue, expectStatus)
         expect = None
+        expectStatus = None
   out.result()
 
 @main def todoTriage(args: String*): Unit =
@@ -390,6 +523,13 @@ def parseTodo(path: Path): Vector[Entry] =
                |  --root <dir>      repo root (default: nearest ancestor of the cwd holding autotranslate/)
                |  --chapter <n>     only this chapter, matched on the chapter component
                |  --kind <NAME>     only this kind, e.g. EnSide, ProseSv, CodeLine, NotFound
+               |  --pdf <file>      pdftotext output of the built COMPENDIUM English pdf; adds a status
+               |                    column: open, SOLVED, or "-" when this pdf cannot say (a slides-only
+               |                    fragment is missing from it however the mirror reads)
+               |  --open            hide rows the pdf says are already solved
+               |  --issues          one block per issue instead of per line; marks REPL transcripts
+               |  --selftest        check every ##expect (and ##expect-status, with --pdf) in the log;
+               |                    exit 1 on a mismatch. See scratch/todo-sample.txt
                |  --tokens          print the distinct-candidate table instead of per-fragment rows
                |  --hits            list every location, not just the first
                |  --report <file>   also write the output here
@@ -414,6 +554,14 @@ def parseTodo(path: Path): Vector[Entry] =
   val kindFilter = opt("kind", "")
   val report = opt("report", "")
   val showHits = args.contains("--hits")
+  val openOnly = args.contains("--open")
+  val pdfText =
+    val p = opt("pdf", "")
+    if p.isEmpty then None
+    else if !Files.isRegularFile(Path.of(p)) then
+      println(s"no pdf text at $p -- extract it first: pdftotext compendium-en/compendium-en.pdf out.txt")
+      sys.exit(2)
+    else Some(loadPdfText(Path.of(p)))
 
   if !Files.isRegularFile(todo) then
     println(s"no inventory at $todo")
@@ -463,7 +611,8 @@ def parseTodo(path: Path): Vector[Entry] =
       else
         scala.util.Using.resource(Files.walk(base)): stream =>
           stream.iterator.asScala
-            .filter(p => p.toString.endsWith(".tex"))
+            // same set texUnder indexes: a .cls edit can leak Swedish too, so it counts as source
+            .filter(p => Seq(".tex", ".cls", ".sty").exists(p.toString.endsWith))
             .map(p => Files.getLastModifiedTime(p).toMillis)
             .toSeq
     .maxOption.getOrElse(0L)
@@ -472,17 +621,70 @@ def parseTodo(path: Path): Vector[Entry] =
     emit(s"# WARNING: the mirror is OLDER than the source (${(svAge - enAge) / 60000} min). Regenerate")
     emit("#   before trusting EnSide, or a mirror built on another branch will read as NotFound.")
   emit("")
-  emit("section\ttask\tkind\twhere\tmechanism\ttokens\tfragment")
-  for (e, k, hits) <- all do
-    val where = hits.headOption.map(h => s"${h.rel}:${h.line}").getOrElse("-")
-    val extra = if hits.size > 1 then s" (+${hits.size - 1})" else ""
+  // Kinds that should leave a visible trace in the built pdf, and so can be asked whether they are
+  // still there. A remark, a stray brace or a pdf artefact never appears as such, so asking is
+  // meaningless and the status stays "-".
+  val checkable = Set(Kind.CodeIdent, Kind.CodeString, Kind.CodeComment, Kind.CodeLine,
+    Kind.CodeCovered, Kind.CodeOther, Kind.Glossed, Kind.ProseSv, Kind.Pseudocode, Kind.EnInSv,
+    Kind.EnSide, Kind.Unclear, Kind.ClassFile)
+  val pdf = pdfText.map(preparePdf)
+  // "not in the compendium pdf" is evidence of a fix only for a fragment the compendium pdf could have
+  // held. 49 of the first 81 SOLVED rows were located only under slides/, where absence means nothing,
+  // so they now read "-" (unknown to this oracle) rather than claiming work that was never done.
+  def statusOf(e: Entry, k: Kind, hits: Vector[Hit]): String =
+    if !checkable.contains(k) then "-"
+    else
+      stillInPdf(pdf, e.text) match
+        case None => "-"
+        case Some((true, _)) => "open"
+        case Some((false, _)) => if inCompendium(hits) then "SOLVED" else "-"
+
+  /** The pdf text behind an `open` verdict, shown when the match is weak enough to doubt: a needle of
+    * only a few characters can land inside a longer word. The heading `Bakgrund` matched
+    * `bakgrund(svart)`, a Kojo command, and read as unfixed work after it had in fact been fixed.
+    * Kojo's Swedish command names are deliberately out of scope for this log -- they are a real API,
+    * renaming them would break them, and the maintainer owns that question -- so without the evidence
+    * column that row looked like a defect twice over. */
+  def evidence(e: Entry, k: Kind, hits: Vector[Hit]): String =
+    if statusOf(e, k, hits) != "open" then ""
+    else
+      val n = squash(deMarkup(e.text))
+      if n.length >= 16 then ""
+      else stillInPdf(pdf, e.text).filter(_._1).map((_, ctx) => s" pdf:\"$ctx\"").getOrElse("")
+
+  val shown = if openOnly then all.filter((e, k, h) => statusOf(e, k, h) != "SOLVED") else all
+
+  emit("section\ttask\tkind\tstatus\twhere\tmechanism\ttokens\tfragment")
+  for (e, k, hits) <- shown do
+    // `where` must point at the file the mechanism applies to. compendium.cls sorts before
+    // compendium/modules/, so a fragment that merely also occurs in the class would otherwise show the
+    // class as its location while being bucketed for a .tex fix.
+    val primary =
+      if k == Kind.ClassFile then hits.headOption
+      else hits.find(h => !(h.rel.endsWith(".cls") || h.rel.endsWith(".sty"))).orElse(hits.headOption)
+    val where = primary.map(h => s"${h.rel}:${h.line}").getOrElse("-")
+    // A fragment found in BOTH a .tex and the class file keeps its .tex bucket -- that is where a
+    // glossary or Overrides fix belongs -- but the class hit still has to be visible, because the
+    // rendered text may be coming from the macro rather than from the .tex. `Bakgrund` is exactly that:
+    // the `Background` environment in compendium.cls types `\emph{Bakgrund:}` with no \else branch.
+    val clsAlso =
+      if k == Kind.ClassFile then ""
+      else hits.find(h => h.rel.endsWith(".cls") || h.rel.endsWith(".sty"))
+        .map(h => s" +cls:${h.rel.split('/').last}:${h.line}").getOrElse("")
+    val extra = (if hits.size > 1 then s" (+${hits.size - 1})" else "") + clsAlso
     val toks =
-      if Set(Kind.CodeLine, Kind.CodeIdent, Kind.CodeString, Kind.CodeOther).contains(k) then
-        val (idents, strings, covered) = candidates(e.text, hits.headOption.map(_.rel).getOrElse(""))
+      // CodeCovered belongs here too: a settled row has to say WHY it is settled, or it reads as an
+      // unexplained verdict.
+      if Set(Kind.CodeLine, Kind.CodeIdent, Kind.CodeString, Kind.CodeOther, Kind.CodeCovered)
+          .contains(k)
+      then
+        val c = candidates(e.text, hits.headOption.map(_.rel).getOrElse(""))
         Vector(
-          if idents.nonEmpty then s"id:${idents.mkString(",")}" else "",
-          if strings.nonEmpty then s"str:${strings.mkString(",")}" else "",
-          if covered.nonEmpty then s"done:${covered.mkString(",")}" else "",
+          if c.open.nonEmpty then s"id:${c.open.mkString(",")}" else "",
+          if c.strings.nonEmpty then s"str:${c.strings.mkString(",")}" else "",
+          if c.covered.nonEmpty then s"done:${c.covered.mkString(",")}" else "",
+          // a settled decision, shown rather than silently filtered away
+          if c.english.nonEmpty then s"english:${c.english.mkString(",")}" else "",
         ).filter(_.nonEmpty).mkString(" ")
       else ""
     // an EnSide fragment is mangled English, so show the Swedish it came from: that is the override key
@@ -492,9 +694,10 @@ def parseTodo(path: Path): Vector[Entry] =
           .flatMap(h => svCounterpart(sv, h.rel, h.line, e.text))
           .map((ln, t) => s"  SV $ln: ${t.take(80)}")
       else None
-    emit(s"${e.section}\t${e.task}\t$k\t$where$extra\t${mechanism(k)}\t$toks\t${e.text.take(90)}")
-    for s <- svText do emit(s"\t\t\t\t\t\t$s")
-    if showHits then for h <- hits.drop(1) do emit(s"\t\t\t${h.rel}:${h.line}\t\t")
+    emit(s"${e.section}\t${e.task}\t$k\t${statusOf(e, k, hits)}\t$where$extra\t${mechanism(k)}" +
+      s"\t$toks${evidence(e, k, hits)}\t" + e.text.take(90))
+    for s <- svText do emit(s"\t\t\t\t\t\t\t$s")
+    if showHits then for h <- hits.drop(1) do emit(s"\t\t\t\t${h.rel}:${h.line}\t\t")
 
   emit("")
   emit("# counts by kind")
@@ -504,6 +707,59 @@ def parseTodo(path: Path): Vector[Entry] =
     Set(Kind.CodeIdent, Kind.CodeString, Kind.CodeComment, Kind.CodeLine, Kind.ProseSv, Kind.Glossed)
       .contains(k))
   emit(s"# model-free with an established mechanism: $modelFree of ${all.size}")
+  // Issues, not lines, are the unit of work: a REPL session written over six lines is one fix, and
+  // has to be made as one, because the names in the input and in the echoed output must agree and the
+  // result must still compile. Counting lines overstates the job and invites fixing half a transcript.
+  val issues = all.groupBy((e, _, _) => e.issue)
+  val multiLine = issues.count((_, rows) => rows.size > 1)
+  emit(s"# ${issues.size} issues across ${all.size} fragment lines" +
+    s" ($multiLine span several lines, most often one REPL session)")
+  // What is left to do, as opposed to what was once written down. Without the pdf the tool can only
+  // report settled-by-name, which is a small fraction: a prose fix lands in the cache or an override
+  // where no name-based check can see it, so those rows read as open work forever.
+  for _ <- pdfText do
+    val checkableRows = all.filter((_, k, _) => checkable.contains(k))
+    val judged = checkableRows.map((e, k, h) => statusOf(e, k, h))
+    val solved = judged.count(_ == "SOLVED")
+    val open = judged.count(_ == "open")
+    emit(s"# against the built pdf: $solved SOLVED, $open still visible to a reader" +
+      s" (${checkableRows.size - solved - open} of ${checkableRows.size} checkable fragments are" +
+      " outside this pdf -- slides-only, so it cannot say)")
+  if pdfText.isEmpty then
+    emit("# no --pdf given: status is unknown, so every row reads as open. Extract the built pdf with")
+    emit("#   pdftotext compendium-en/compendium-en.pdf /tmp/en.txt   and pass --pdf /tmp/en.txt")
+
+  // --issues: one block per issue rather than one row per line, which is how the work is actually
+  // taken on. A block that holds several code lines is a transcript: fix it as a unit, keep the
+  // identifiers in the input and the echo in step, and run the phase 1-3 compile gates afterwards.
+  if args.contains("--issues") then
+    emit("")
+    // --open applies here too, or the work queue still lists what is already done. An issue counts as
+    // done only when the pdf says so for at least one of its lines and contradicts none: a row whose
+    // status is "-" is unknown, not finished, so an issue made only of those stays in the queue. A
+    // part-done transcript is kept WHOLE, with its finished lines marked, because the rest has to be
+    // fixed against what is already there.
+    def issueOpen(rows: Vector[(Entry, Kind, Vector[Hit])]): Boolean =
+      val st = rows.map((e, k, h) => statusOf(e, k, h))
+      st.contains("open") || !st.contains("SOLVED")
+    val issueList = issues.toVector.sortBy((id, _) => id)
+      .filter((_, rows) => !openOnly || issueOpen(rows))
+    emit(s"# ${issueList.size} issues, in log order" +
+      (if openOnly then s" (--open: ${issues.size - issueList.size} fully solved ones hidden)" else ""))
+    for (id, rows) <- issueList do
+      val (e0, _, _) = rows.head
+      val kinds = rows.map((_, k, _) => k.toString).distinct.sorted.mkString(",")
+      val where = rows.flatMap((_, _, hs) => hs.headOption).headOption
+        .map(h => s"${h.rel}:${h.line}").getOrElse("-")
+      val status = rows.map((e, k, h) => statusOf(e, k, h)).distinct
+      val stat = if status.contains("open") then "open" else status.mkString(",")
+      val repl = rows.count((e, _, _) => looksLikeScala(e.text)) > 1
+      emit(s"")
+      emit(s"# issue $id  ${e0.section} ${e0.task}  $stat  $kinds  $where" +
+        (if repl then "   [transcript: fix as one unit, then run the phase 1-3 gates]" else ""))
+      for (e, k, hs) <- rows do
+        val mark = if statusOf(e, k, hs) == "SOLVED" then "  done" else "      "
+        emit(s"  $mark ${e.text.take(100)}")
 
   // --selftest: check every `##expect KIND` in the log against what this run actually classified, and
   // exit non-zero on any mismatch. Without it the sample log is an example rather than a regression
@@ -518,6 +774,21 @@ def parseTodo(path: Path): Vector[Entry] =
       emit(s"#   FAIL line ${e.todoLine}: expected $want, got $k   ${e.text.take(70)}")
     if checked.isEmpty then
       emit("#   (no ##expect lines in this log -- selftest is for the sample fixture)")
+    // `##expect-status` covers the OTHER question, and it is the one that was answered wrongly 74 times
+    // out of 81: not "which mechanism fixes this" but "is it still in front of a reader". It needs a
+    // pdf to check against, so the fixture ships a pretend extract rather than requiring a build.
+    val statusChecked =
+      all.collect { case (e, k, h) if e.expectStatus.isDefined => (e, statusOf(e, k, h), e.expectStatus.get) }
+    if statusChecked.nonEmpty then
+      if pdfText.isEmpty then
+        emit(s"# selftest: ${statusChecked.size} status expectations SKIPPED -- pass --pdf to check them")
+        emit("#   --pdf autotranslate/scratch/todo-sample-pdf.txt")
+      else
+        val statusFailed = statusChecked.filter((_, got, want) => got != want)
+        emit(s"# selftest: ${statusChecked.size} status expectations, ${statusFailed.size} failed")
+        for (e, got, want) <- statusFailed do
+          emit(s"#   FAIL line ${e.todoLine}: expected status $want, got $got   ${e.text.take(60)}")
+        if statusFailed.nonEmpty then sys.exit(1)
     if failed.nonEmpty then sys.exit(1)
 
   // --tokens: the ratification table. The fragment count overstates the work badly, because the same
@@ -532,6 +803,7 @@ def parseTodo(path: Path): Vector[Entry] =
     var ids = Map.empty[String, Agg]
     var strs = Map.empty[String, Agg]
     var done = Map.empty[String, Agg]
+    var ruled = Map.empty[String, Agg]
     val codeKinds = Set(Kind.CodeLine, Kind.CodeIdent, Kind.CodeString)
     // EnSide rows are English prose from the mirror, so every English word in them would read as a
     // rename candidate -- `the` and `weight` topped the list before this. Comment and pseudocode lines
@@ -544,14 +816,15 @@ def parseTodo(path: Path): Vector[Entry] =
     for (e, k, hits) <- all if codeKinds.contains(k) && (k == Kind.CodeIdent || looksLikeScala(e.text))
     do
       val file = hits.headOption.map(_.rel.split("/").last).getOrElse("-")
-      val (i0, s, c) = candidates(e.text, hits.headOption.map(_.rel).getOrElse(""))
+      val c = candidates(e.text, hits.headOption.map(_.rel).getOrElse(""))
       // A glossary VALUE is an English target, never a rename candidate. They turn up because a clamped
       // file carries English in its \else branch, so the source itself contains `weight`, `Cucumber`...
       val englishTargets = CodeGlossary.id.values.toSet ++ CodeGlossary.codeStr.values.toSet
-      val i = i0.filterNot(t => lists.english.contains(t.toLowerCase) || englishTargets.contains(t))
+      val i = c.open.filterNot(t => lists.english.contains(t.toLowerCase) || englishTargets.contains(t))
       for t <- i do ids = add(ids, t, e.section, file)
-      for t <- s do strs = add(strs, t, e.section, file)
-      for t <- c do done = add(done, t, e.section, file)
+      for t <- c.strings do strs = add(strs, t, e.section, file)
+      for t <- c.covered do done = add(done, t, e.section, file)
+      for t <- c.english do ruled = add(ruled, t, e.section, file)
     def dump(title: String, m: Map[String, Agg]): Unit =
       emit("")
       emit(s"# $title: ${m.size} distinct")
@@ -561,7 +834,8 @@ def parseTodo(path: Path): Vector[Entry] =
         emit(f"#   ${a.n}%4d  $t%-30s $where%-46s $secs")
     dump("identifier candidates (need ratifying)", ids)
     dump("string-literal candidates (codeStr; blocked on #990)", strs)
-    dump("already covered by CodeGlossary.id", done)
+    dump("already covered by the glossary", done)
+    dump("ruled already-English, no rename needed", ruled)
 
   if report.nonEmpty then
     Files.write(Path.of(report), sb.toString.getBytes("UTF-8"))
