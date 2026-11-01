@@ -690,6 +690,7 @@ object Translate:
     * (CodeGlossary.perFileId / optOut) so a context conflict (e.g. a colour `Färg`) can deviate. */
   def translateCodeEnvBodies(tex: String, relPath: String = ""): String =
     val extraId = CodeGlossary.overridesFor(relPath)
+    val extraStr = CodeGlossary.codeStrFor(relPath)
     val doIds = !CodeGlossary.isOptedOut(relPath)
     // Leave code inside `\ifswedish...\fi` clamps alone: both branches are hand-final, so translating there
     // would mutate the Swedish branch into a mixed listing (e.g. `def makeNoise` next to `print(läte*2)` in the
@@ -702,7 +703,7 @@ object Translate:
     val withEnvs = re.replaceAllIn(tex, m =>
       if clamped(m.start) then java.util.regex.Matcher.quoteReplacement(m.matched)
       else
-        val body = if doIds && scalaCodeEnvs(m.group(2)) then CodeGlossary.renderCodeIds(m.group(3), extraId) else m.group(3)
+        val body = if doIds && scalaCodeEnvs(m.group(2)) then CodeGlossary.renderCodeIds(m.group(3), extraId, extraStr) else m.group(3)
         java.util.regex.Matcher.quoteReplacement(m.group(1) + Code.translate(body, translatePlain, skipTexComments = true) + m.group(4)))
     if !doIds then withEnvs
     else
@@ -711,7 +712,7 @@ object Translate:
       def clampedInline(pos: Int): Boolean = inlineRanges.exists(r => pos >= r.start && pos < r.end)
       inlineCodeRe.replaceAllIn(withEnvs, m =>
         if clampedInline(m.start) then java.util.regex.Matcher.quoteReplacement(m.matched)
-        else java.util.regex.Matcher.quoteReplacement(s"\\${m.group(1)}{" + CodeGlossary.renderCodeIds(m.group(2), extraId) + "}"))
+        else java.util.regex.Matcher.quoteReplacement(s"\\${m.group(1)}{" + CodeGlossary.renderCodeIds(m.group(2), extraId, extraStr) + "}"))
 
   // ---------- lifecycle ----------
   /** Load cache and make sure the model is ready (called before mirror translation).
