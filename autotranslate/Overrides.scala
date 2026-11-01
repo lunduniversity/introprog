@@ -759,6 +759,15 @@ object Overrides:
     // re-keyed 2026-10-27 (#1005): the w12 chapter is now just "PROJEKT". Capitalised in the source, so
     // capitalised here -- the chaphead is set in caps deliberately.
     "PROJEKT"                                 -> "PROJECT",
+    // BR's call 2026-11-01: "repetition" in the course sense (rehearse, recall before the exam) is
+    // REVIEW in English. Not "Revision", which American readers take as editing a text, and not
+    // "Repetition", which in English only means doing something again. The w13 module name is set
+    // in caps like PROJEKT; the chapter heading uses the same word so module and chapter agree.
+    "REPETITION"                              -> "REVIEW",
+    "Repetition och tentatips"                -> "Review and Exam Tips",
+    // typsättning is TYPESETTING (the w08 LaTeX lab), as everywhere else in this file; the model read
+    // it as "type system", which is a different subject the chapter does not cover.
+    "Sekvenser och enumerationer, typsättning" -> "Sequences and enumerations, typesetting",
     // The compound was glued rather than split: the w05 chaphead and overview rendered "accessrules".
     // The longer unit in w10 ("accessregler vid arv") came out correctly as "access rules for
     // inheritance", so this is the bare compound alone. Key from unit-probe on

@@ -148,6 +148,16 @@ object Main:
     * the plan-table -en variant) the full-course overview table. */
   val moduleNames: Seq[(String, String)] = Seq(
     // longest-first where one phrase is a prefix of another (substring-safe replace order):
+    // ── the plan's CURRENT module names (plan/Plan.scala, renamed 2026-10-27), as they reach
+    // names-generated-en.tex and the plan tables. English agrees with the compendium chapter titles.
+    "Fördjupning: Varians, kontextparametrar, info om valfri tenta"
+      -> "Deep dive: Variance, context parameters, info about the optional exam",
+    "Arv och komposition, info om projektet"         -> "Inheritance and composition, project information",
+    "Sekvenser och enumerationer, typsättning"       -> "Sequences and enumerations, typesetting",
+    "MUNTLIGT PROV"                                  -> "ORAL EXAM",
+    "REPETITION"                                     -> "REVIEW",
+    "PROJEKT"                                        -> "PROJECT",
+    // ── older names, still used by the slide decks' \veckotema titles (slides/lect-wNN.tex):
     "Nästlade och generiska strukturer, typsättning" -> "Nested and generic structures, typesetting",
     "Nästlade och generiska strukturer"              -> "Nested and generic structures",
     "Mängder och tabeller, versionshantering"        -> "Sets and tables, version control",
@@ -163,7 +173,10 @@ object Main:
     "Varians och kontextparametrar"                  -> "Variance and context parameters",
     "Fördjupning, Projekt"                           -> "In-depth study, Project",
     "Introduktion"                                   -> "Introduction",
-    "Repetition"                                     -> "Revision",
+    // Braced, not the bare word: this list is replaced document-wide AFTER translation, so a bare
+    // "Repetition" rewrote every English occurrence of the word. "{Repetition}" only hits the w13
+    // \veckotema argument it is meant for. REVIEW, not Revision: BR's call 2026-11-01.
+    "{Repetition}"                                   -> "{Review}",
     "Avslutning"                                     -> "Conclusion",
   )
 
