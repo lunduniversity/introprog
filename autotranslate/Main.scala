@@ -93,18 +93,40 @@ object Main:
     tex.replace("../workspace/", "../workspace-en/")
       .replace("../compendium/examples/", "../compendium-en/examples/")
 
+  /** workspace files with no language in them, so workspace-en keeps them byte-identical. */
+  def isLanguageNeutral(rel: os.RelPath): Boolean =
+    rel.last == "project.scala" || rel.ext == "code-workspace"
+
+  /** The scala-cli `//> using` lines of a source file: language-neutral even in a translated file. */
+  def usingDirectives(src: String): Seq[String] =
+    src.linesIterator.map(_.trim).filter(_.startsWith("//> using")).toSeq
+
+  /** True if the en copy of a workspace file has drifted in a part that is not translated: the whole
+    * file when it is language-neutral, else the `//> using` lines of a .scala file. */
+  def hasNeutralDrift(rel: os.RelPath, sv: String, en: String): Boolean =
+    if isLanguageNeutral(rel) then sv != en
+    else rel.ext == "scala" && usingDirectives(sv) != usingDirectives(en)
+
   /** workspace-en is a COMMITTED, hand-maintained English copy of workspace/. Surface DRIFT: warn if
     * workspace/ has files (lab code etc.) that workspace-en/ is missing, so the English listings don't
-    * silently fall back to / break on a missing input when new lab code is added. */
+    * silently fall back to / break on a missing input when new lab code is added; and warn if a file
+    * present on both sides differs in its untranslated part (hasNeutralDrift), e.g. a version bump. */
   def checkWorkspaceDrift(root: os.Path): Unit =
     val ws = root / "workspace"; val wsen = root / "workspace-en"
     if os.exists(ws) && os.exists(wsen) then
-      val missing = os.walk(ws).filter(f => os.isFile(f)
-        && !f.relativeTo(ws).segments.exists(skipSeg) && !skipExt(f.ext)
-        && !os.exists(wsen / f.relativeTo(ws)))
+      val files = os.walk(ws).filter(f => os.isFile(f)
+        && !f.relativeTo(ws).segments.exists(skipSeg) && !skipExt(f.ext))
+      val (present, missing) = files.partition(f => os.exists(wsen / f.relativeTo(ws)))
       if missing.nonEmpty then
         println(s"  [DRIFT] workspace-en is missing ${missing.size} file(s) present in workspace/ — translate + commit:")
         missing.take(20).foreach(f => println(s"    ${f.relativeTo(ws)}"))
+      val differing = present.filter: f =>
+        val rel = f.relativeTo(ws)
+        hasNeutralDrift(rel, os.read(f), os.read(wsen / rel))
+      if differing.nonEmpty then
+        println(s"  [DRIFT] workspace-en differs from workspace/ in an untranslated part of ${differing.size} file(s)"
+          + " (whole file for project.scala and .code-workspace, else the //> using lines) — port + commit:")
+        differing.take(20).foreach(f => println(s"    ${f.relativeTo(ws)}"))
     else if os.exists(ws) then println("  [DRIFT] workspace-en/ does not exist yet — create the committed English mirror.")
 
   /** Rewrite a MAIN document's preamble for the English build (the preamble is otherwise translation-

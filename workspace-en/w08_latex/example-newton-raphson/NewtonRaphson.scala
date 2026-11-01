@@ -1,4 +1,4 @@
-//> using scala 3.8.3
+//> using scala 3
 
 @main def exec(x0: Double, eps: Double) = println(NewtonRaphson.solve(x0, eps))
 
