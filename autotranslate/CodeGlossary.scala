@@ -215,6 +215,47 @@ object CodeGlossary:
     "jagSjälv" -> "myself",
     "sprängsSnart" -> "explodesSoon",
     "ärUng" -> "isYoung",
+
+    // ---- w06, patterns, exceptions, equals, option — BR-ratified 2026-10-11 (#993), global ----
+    "kanske" -> "maybe",
+    "kanskePang" -> "maybeBang",
+    "pang" -> "bang",
+    "kanskeOk" -> "maybeOk",
+    "annanKanske" -> "anotherMaybe",
+    "merKanske" -> "moreMaybe",
+    "ökaOmFinns" -> "increaseIfPresent",
+    // `attempt`, not `try`: `try` is a keyword, so a demo named `def try` would not compile.
+    "försök" -> "attempt",
+    "meningen" -> "theMeaning",
+    "ejMeningen" -> "notTheMeaning",
+    "huvudstad" -> "capital",
+    "trettonde" -> "thirteenth",
+    // a PATTERN BINDING (`case vadsomhelst => ...`), which is an identifier token in a code region and
+    // so is reached by the rename, even though it is neither a val nor a def.
+    "vadsomhelst" -> "anything",
+    // The animal pair, BR's exception 3 in #993: "yes, but please check them together with `Djur` ...
+    // so no file ends up with `Cat extends Djur`". Checked, and it cannot happen:
+    //   Hund/Katt occur in lect-w06-equals and lect-w11-context only;
+    //   Djur occurs in w10-inheritance-exercise and lect-w11-context only;
+    //   lect-w06-equals has NO Djur, so promoting these two cannot mix that file;
+    //   lect-w11-context already scopes Katt->Cat and Hund->Dog in perFileId, i.e. the same values as
+    //     these globals, which is the agreement he asked to verify. Its scoped entries stay: they also
+    //     carry Djur and Robothund, which are not global.
+    // `Djur` itself stays scoped. The table note observes that clamping w06 removes the reason the w10
+    // and w11 clusters had to be scoped, but the standing comment above says never to promote that
+    // cluster, so that is a separate decision rather than a side effect of this batch.
+    "Hund" -> "Dog",
+    "Katt" -> "Cat",
+    // `björn` -> `bjorn` is ratified in #993's six-questions list ("use `bjorn` to keep it a name but
+    // not requiring strange swedish char"), not in any chapter table, so implementing the tables alone
+    // misses it -- the same recovery as `Ben` -> `Leg` in w05. It belongs to the w05 class demo, and is
+    // here rather than in that batch only because it was found after w05 was pushed.
+    // Without it lect-w05-classes rendered mixed, since `ålder` and `längd` are already global:
+    //     scala> object Björn { var age = 54; val length = 178 }
+    //     scala> val björn = new Person
+    //     björn: Person = Person@7ae75ba6
+    "björn" -> "bjorn",
+    "Björn" -> "Bjorn",
     // HELD, all three for the same reason as `tryck` in w04: they are COMMENT text, which renderCodeIds
     // copies verbatim, so an entry would change nothing anywhere.
     //   `syns`                             -- only in `def visaHemlis = Y.y  // y syns i X`
