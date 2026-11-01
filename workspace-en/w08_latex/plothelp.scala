@@ -1,4 +1,4 @@
-//> using scala 3.8.3
+//> using scala 3
 //> using dep org.knowm.xchart:xchart:4.0.0
 
 import org.knowm.xchart.{XYChart, XYChartBuilder, BitmapEncoder}

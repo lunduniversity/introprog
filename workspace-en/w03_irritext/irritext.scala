@@ -1,4 +1,4 @@
-//> using scala 3.5
+//> using scala 3
 
 import scala.io.StdIn.readLine
 
@@ -31,8 +31,7 @@ def play(): Unit =
       println("ERROR! That door does not exist. But trying is okay.")
       points += 10
 
-@main 
-def run: Unit =
+@main def run: Unit =
   printWelcomeMessage()
   Thread.sleep(2000) // wait 2 seconds
   play()
