@@ -30,7 +30,8 @@
 import java.nio.file.{Files, Path}
 import scala.jdk.CollectionConverters.*
 
-final case class Entry(todoLine: Int, section: String, task: String, text: String)
+final case class Entry(todoLine: Int, section: String, task: String, text: String,
+    expect: Option[String] = None)
 final case class Hit(rel: String, line: Int, inCode: Boolean)
 
 /** A source file plus, per line, whether that line sits inside a verbatim/code environment, and the
@@ -74,10 +75,26 @@ val TaskRx = raw"^\s*[Tt]ask\s*(\d+)\b.*$$".r
 // the current section the following fragment sits in. Keeping them is what makes the entry findable.
 val NoteRx = raw"^\s*((?:footnote|bullet)\s*\d*)\s*$$".r
 
-/** A dotted number is only a header if what follows does not look like code. */
+/** Does this fragment look like Scala? Used in two places that previously disagreed: the guard that
+  * keeps code out of the English-evidence test, and the --tokens aggregation. Both were too narrow --
+  * they wanted `scala>` or a def/val/var opener -- so `for i <- 1 to 10 do ...` and `if x then y`
+  * scored as confident English and landed in the remarks bucket, and lone identifiers were dropped
+  * from the candidate table. Scala keywords ARE English function words, so this has to be generous. */
+def looksLikeScala(text: String): Boolean =
+  val t = text.trim
+  val markers = Vector("scala>", "<-", "=>", "::", "def ", "val ", "var ", " then ", " do ", " yield ",
+    " match", "case ", "println", "(", "=")
+  val opener = raw"^(def|val|var|class|object|trait|enum|given|case|for|if|while|import)\b".r
+  val isProse = t.startsWith("#") || t.startsWith("//") || t.contains("←")
+  !isProse && (markers.exists(t.contains) || opener.findFirstIn(t).isDefined)
+
+/** A dotted number is only a header if what follows does not look like code. `0.5 * bredd` is an
+  * expression, not section 0.5. */
 def looksLikeHeader(rest: String): Boolean =
   val r = rest.trim
-  !r.startsWith("|") && !r.contains("scala>") && !r.startsWith("=") && !r.startsWith("(")
+  val operatorStart = raw"^[*+\-/=<>%&|^!]".r.findFirstIn(r).isDefined
+  !r.startsWith("|") && !r.contains("scala>") && !r.startsWith("(") && !operatorStart
+    && !Vector("=", "*", "<-", "=>").exists(r.contains)
 
 /** Scala keywords, stdlib names and REPL noise: tokens that must never be proposed as renames. Not a
   * Swedishness test -- just the floor of things that are certainly not example names. */
@@ -115,7 +132,7 @@ val englishExampleNames: Set[String] = Set("monster", "alien", "predator")
   * judgement -- SwedishScore's lists are FUNCTION words, which cannot see `dubblera` or `gurka`, and
   * every name needs BR's ratification regardless. So: surface candidates, exclude what is certainly
   * not one, and mark what the glossary already covers. */
-def candidates(line: String): (Vector[String], Vector[String], Vector[String]) =
+def candidates(line: String, rel: String = ""): (Vector[String], Vector[String], Vector[String]) =
   val idRx = raw"[A-Za-zÅÄÖåäö_][A-Za-z0-9ÅÄÖåäö_]*".r
   val strRx = raw""""([^"]*)"""".r
   val strings = strRx.findAllMatchIn(line).map(_.group(1)).toVector.filter(_.trim.nonEmpty).distinct
@@ -128,24 +145,45 @@ def candidates(line: String): (Vector[String], Vector[String], Vector[String]) =
       t.length > 2 && !scalaNoise.contains(t) && !raw"res\d+".r.matches(t)
         && !englishExampleNames.contains(t.toLowerCase) && !replArtefact.matches(t))
     .filterNot(inStrings.contains)
-  val (covered, fresh) = idents.partition(t => CodeGlossary.id.contains(t))
+  // perFileId counts as covered too. Ignoring it listed every already-scoped name -- Djur, Katt,
+  // Bur, the whole w10 and w11 clusters -- as still needing ratification. overridesFor does the
+  // lookup the mirror itself does, so a name scoped to THIS file reads as done and a name scoped to
+  // another file still reads as open, which is the distinction that matters.
+  val scoped = if rel.isEmpty then Map.empty[String, String] else CodeGlossary.overridesFor(rel)
+  val (covered, fresh) = idents.partition(t => CodeGlossary.id.contains(t) || scoped.contains(t))
   (fresh, strings.filterNot(CodeGlossary.codeStr.contains), covered)
 
 def norm(s: String): String = s.trim.replaceAll("\\s+", " ")
 
-/** Mark each line as inside-code or not by tracking \begin/\end of the environments the mirror masks
-  * verbatim. Reuses Latex.verbatimEnvs so this cannot drift from what the pipeline actually masks. */
+/** Replica of Translate.scala's private `scalaCodeEnvs` (Translate.scala:682) -- keep in sync, the way
+  * unit-probe.scala replicates leadLen/trailStart. This is the set the RENAME PASS runs in, which is
+  * the question this tool asks. Latex.verbatimEnvs is a wider set: it also masks tikz, algorithm and
+  * the like, where a glossary entry would never reach, so using it suggested CodeGlossary for lines no
+  * rename can touch and inflated the model-free count. */
+val scalaCodeEnvs: Set[String] =
+  Set("Code", "CodeSmall", "REPL", "REPLnonum", "REPLsmall", "lstlisting", "Trace", "Output")
+
+/** Mark each line as inside a Scala code environment. */
 def codeFlags(lines: Vector[String]): Vector[Boolean] =
   val beginRx = raw"\\begin\{([A-Za-z*]+)\}".r
   val endRx = raw"\\end\{([A-Za-z*]+)\}".r
   var depth = 0
   lines.map: ln =>
-    val opened = beginRx.findAllMatchIn(ln).count(m => Latex.verbatimEnvs.contains(m.group(1)))
-    val closed = endRx.findAllMatchIn(ln).count(m => Latex.verbatimEnvs.contains(m.group(1)))
+    val opened = beginRx.findAllMatchIn(ln).count(m => scalaCodeEnvs.contains(m.group(1)))
+    val closed = endRx.findAllMatchIn(ln).count(m => scalaCodeEnvs.contains(m.group(1)))
     val wasIn = depth > 0
     depth = math.max(0, depth + opened - closed)
     // a line carrying \begin{Code} is chrome, not content; a line inside the env is content
-    wasIn || (opened > 0 && closed == 0 && false)
+    wasIn
+
+/** The contents of inline code spans on a line: \code{..}, \jcode{..}, \lstinline{..} and their
+  * pipe-delimited forms. The rename pass reaches these too (Translate.scala's inlineCodeRe), so a
+  * fragment sitting inside one is code even though it stands in running prose -- which the
+  * environment tracking alone cannot see. */
+def inlineCode(line: String): Vector[String] =
+  val brace = raw"\\(?:code|jcode|lstinline)\*?\{([^{}]*)\}".r
+  val pipe = raw"\\(?:code|jcode|lstinline|verb)\*?\|([^|]*)\|".r
+  (brace.findAllMatchIn(line) ++ pipe.findAllMatchIn(line)).map(_.group(1)).toVector
 
 def readSrc(root: Path, rel: String): Src =
   val lines = String(Files.readAllBytes(root.resolve(rel)), "UTF-8").linesIterator.toVector
@@ -156,11 +194,7 @@ def texUnder(root: Path, dirs: Seq[String]): Vector[Src] =
     val base = root.resolve(d)
     if !Files.isDirectory(base) then Vector.empty
     else
-      Files
-        .walk(base)
-        .iterator
-        .asScala
-        .toVector
+      scala.util.Using.resource(Files.walk(base))(_.iterator.asScala.toVector)
         // `old-*.tex` are superseded DUPLICATES of live exercise content that nothing \inputs -- but the
         // same examples still reach the pdf through the live file, e.g. the Rymdvarelse/huvud1 example is
         // in both old-classes-exercise and w05-classes-exercise. Since `old-` sorts first, keeping them
@@ -191,8 +225,14 @@ def variants(text: String): Vector[String] =
   // to kopia."), and no single source line contains that whole string. Try the cells separately.
   val cells = if raw"\s{2,}".r.findFirstIn(t).isDefined then raw"\s{2,}".r.split(t).toVector else Vector.empty
   // A resolved cross-reference ends the fragment with a number LaTeX supplied ("...i kapitel 1"),
-  // which is in no source file. Dropping the last word recovers the sentence.
-  val noLast = t.reverse.dropWhile(_ != ' ').reverse.trim
+  // which is in no source file. Drop that last token -- but ONLY when it is a number, and only when
+  // something substantial survives. Dropping it unconditionally turned `scala> singlaSlant` into
+  // `scala>`, which matches the first REPL line in the corpus and reported a confidently wrong
+  // file:line.
+  val toks = t.split("\\s+").toVector
+  val noLast =
+    if toks.length >= 3 && toks.last.forall(c => c.isDigit || c == '.') then toks.init.mkString(" ")
+    else t
   (Vector(t, noEnum, noHyphen) ++ cells :+ noLast).map(_.trim).distinct.filter(_.length >= 5)
 
 /** Second pass for fragments the todo quotes as one rendered sentence while the source hard-wraps it
@@ -208,14 +248,15 @@ def findInPairs(idx: Vector[Src], needle: String): Vector[Hit] =
     yield Hit(s.rel, i + 1, s.inCode(i))
 
 enum Kind:
-  case CodeIdent, CodeString, CodeComment, CodeLine, CodeOther, Glossed, ProseSv, Pseudocode, Url,
-    EnInSv, EnSide, Unclear, TodoNote, Noise, NotFound
+  case CodeIdent, CodeString, CodeComment, CodeLine, CodeCovered, CodeOther, Glossed, ProseSv,
+    Pseudocode, Url, EnInSv, EnSide, Unclear, TodoNote, Noise, NotFound
 
 def mechanism(k: Kind): String = k match
   case Kind.CodeIdent   => "CodeGlossary.id / .perFileId"
   case Kind.CodeString  => "CodeGlossary.codeStr"
   case Kind.CodeComment => "Overrides (unit-probe key)"
   case Kind.CodeLine    => "CodeGlossary.id / .perFileId (tokens listed)"
+  case Kind.CodeCovered => "none: every name here is already in the glossary"
   case Kind.CodeOther   => "inspect: code region, no Swedish token found"
   case Kind.TodoNote    => "none: a note in the inventory, not a fragment"
   case Kind.Noise       => "none: punctuation or a stray line from a pasted transcript"
@@ -251,24 +292,29 @@ def classify(text: String, svHits: Vector[Hit], enHits: Vector[Hit], srcLine: Op
     // `else`, `def` -- so any transcript line scores as confident English and would be written off as
     // commentary. A `scala>` line that is in neither tree means the mirror is stale or built on
     // another branch, which is work to redo, not a note to ignore.
-    else if raw"scala>|^\s*(def|val|var|class|object|trait|enum)\s".r.findFirstIn(t).isDefined then
-      Kind.NotFound
+    else if looksLikeScala(t) then Kind.NotFound
     else if sc.en > sc.strong then Kind.TodoNote
     else Kind.NotFound
   else if t.contains("Indata") || t.contains("Utdata") || t.contains("\u2190") then Kind.Pseudocode
   else if t.contains("http") || t.contains("wikipedia.org") then Kind.Url
-  else if svHits.exists(_.inCode) then
+  // inline \code{..} in running prose counts as code here: the rename pass reaches it (Translate's
+  // inlineCodeRe), so a fragment quoted from inside one wants a glossary entry, not an override.
+  // Environment tracking alone never sees these, because the line itself is prose.
+  else if svHits.exists(_.inCode) || inlineCode(line).exists(sp => norm(sp).contains(t)) then
     // a comment marker before the fragment: `//` in Scala, `#` in the shell/terminal listings that
     // make up most of the w01 lab. Both are prose inside a code env, so both are Overrides work.
     val markerAt = Vector(line.indexOf("//"), line.indexOf("#")).filter(_ >= 0)
     val afterComment = markerAt.nonEmpty && markerAt.min < math.max(0, line.indexOf(t.take(12)))
       || t.startsWith("#") || t.startsWith("//")
     val quoted = raw""""[^"]*"""".r.findAllIn(line).exists(q => norm(q).contains(t))
-    val (idents, strings, _) = candidates(t)
+    val (idents, strings, covered) = candidates(t, svHits.headOption.map(_.rel).getOrElse(""))
     if afterComment then Kind.CodeComment
     else if quoted then Kind.CodeString
     else if !t.contains(" ") then Kind.CodeIdent
     else if idents.nonEmpty || strings.nonEmpty then Kind.CodeLine
+    // every name on the line is already in the glossary: that is "done", which is a different thing
+    // from "nothing Swedish found here" and was being reported as the latter.
+    else if covered.nonEmpty then Kind.CodeCovered
     else Kind.CodeOther
   else if line.contains("\\Eng{") then Kind.Glossed
   else
@@ -279,37 +325,90 @@ def classify(text: String, svHits: Vector[Hit], enHits: Vector[Hit], srcLine: Op
 
 /** For a hit in the generated mirror, the Swedish line it was generated from. The mirror preserves line
   * structure, so the same line number in the corresponding source file is the counterpart -- which is
-  * what an EnSide row needs, because an override has to be keyed on the SWEDISH text, and the todo
-  * quotes the mangled English. */
-def svCounterpart(sv: Vector[Src], enRel: String, line: Int): Option[String] =
+  * what an EnSide row needs, because an override has to be keyed on the SWEDISH text, and the log
+  * quotes the mangled English.
+  *
+  * The mirror does NOT preserve line numbers: w01-intro-exercise sv:1607 is en:1602, sv:902 is en:897,
+  * intro.tex:569 is intro-en.tex:570 -- it drifts both ways as clamps and masked blocks change length.
+  * Taking the same number printed an unrelated line, or an empty one, and a wrong line makes a wrong
+  * override key. So search a window for the line sharing the most distinctive tokens, and return
+  * nothing when the best candidate shares too little: silence beats a plausible wrong key. */
+def svCounterpart(sv: Vector[Src], enRel: String, line: Int, enText: String): Option[(Int, String)] =
   val rel = enRel.replace("compendium-en/", "compendium/").replace("slides-en/", "slides/")
     .replaceAll("-en\\.tex$", ".tex")
-  sv.find(_.rel == rel).flatMap(s => if line <= s.lines.size then Some(s.lines(line - 1).trim) else None)
+  val distinctive = raw"[A-Za-zÅÄÖåäö_][A-Za-z0-9ÅÄÖåäö_]{3,}|\d+".r
+  def keys(s: String): Set[String] = distinctive.findAllIn(s).map(_.toLowerCase).toSet
+  val want = keys(enText)
+  sv.find(_.rel == rel).flatMap: s =>
+    val lo = math.max(0, line - 1 - 25)
+    val hi = math.min(s.lines.size - 1, line - 1 + 25)
+    if lo > hi || want.isEmpty then None
+    else
+      val (bestIdx, bestScore) = (lo to hi).map(i => (i, (keys(s.lines(i)) & want).size)).maxBy((_, n) => n)
+      // two shared distinctive tokens is the floor; below that it is a guess dressed as evidence
+      if bestScore >= 2 then Some((bestIdx + 1, s.lines(bestIdx).trim)) else None
 
 def parseTodo(path: Path): Vector[Entry] =
   val lines = String(Files.readAllBytes(path), "UTF-8").linesIterator.toVector
   var section = ""
   var task = ""
+  var expect: Option[String] = None
   val out = Vector.newBuilder[Entry]
   for (raw, i) <- lines.zipWithIndex do
     val ln = raw.stripTrailing
     ln match
-      case _ if ln.trim.isEmpty => ()
-      case ChapterRx(n)         => section = n; task = ""
+      case _ if ln.trim.isEmpty      => ()
+      // `##` starts a comment, so a fixture can say what each line tests. NOT a single `#`: the w01
+      // lab's fragments are shell comments (`# gå till katalogen`), and treating those as comments
+      // silently deleted ten real rows from the log and took CodeComment from 16 to 7.
+      // `##expect KIND` binds to the next fragment; --selftest checks it. Everything else after ## is
+      // a comment, which is what lets the fixture explain each case next to it.
+      case _ if ln.trim.startsWith("##expect") =>
+        expect = Some(ln.trim.stripPrefix("##expect").trim)
+      case _ if ln.trim.startsWith("##") => ()
+      case ChapterRx(n)                 => section = n; task = ""
       case TaskRx(n)            => task = s"Task $n"
       case HeaderRx(sec, rest) if looksLikeHeader(rest) =>
         section = sec; task = ""
         // a header may carry a note on the same line ("1.1.16 Column Swedish name can be removed")
         if rest.trim.length > 3 then out += Entry(i + 1, sec, "note", rest.trim)
       case NoteRx(marker) => task = marker.trim
-      case _              => out += Entry(i + 1, section, task, ln.trim)
+      case _ =>
+        out += Entry(i + 1, section, task, ln.trim, expect)
+        expect = None
   out.result()
 
 @main def todoTriage(args: String*): Unit =
   def opt(name: String, default: String): String =
     val i = args.indexOf(s"--$name")
     if i >= 0 && i + 1 < args.length then args(i + 1) else default
-  val root = Path.of(opt("root", ".")).toAbsolutePath.normalize
+
+  if args.contains("--help") || args.contains("-h") then
+    println("""todo-triage -- turn a reading log of Swedish in the built English pdf into a worklist
+               |
+               |  --todo <file>     the reading log (default: <root>/compendium-todo)
+               |  --root <dir>      repo root (default: nearest ancestor of the cwd holding autotranslate/)
+               |  --chapter <n>     only this chapter, matched on the chapter component
+               |  --kind <NAME>     only this kind, e.g. EnSide, ProseSv, CodeLine, NotFound
+               |  --tokens          print the distinct-candidate table instead of per-fragment rows
+               |  --hits            list every location, not just the first
+               |  --report <file>   also write the output here
+               |
+               |Run with --main-class todoTriage: SwedishScore.scala carries its own main.""".stripMargin)
+    sys.exit(0)
+
+  // Default the root by walking up for the directory that holds autotranslate/, so the tool works
+  // from anywhere in the tree rather than only from the repo root.
+  def findRoot(start: Path): Path =
+    Iterator
+      .iterate(start)(_.getParent)
+      .takeWhile(_ != null)
+      .find(p => Files.isDirectory(p.resolve("autotranslate")))
+      .getOrElse(start)
+  val root =
+    val given_ = opt("root", "")
+    if given_.nonEmpty then Path.of(given_).toAbsolutePath.normalize
+    else findRoot(Path.of(".").toAbsolutePath.normalize)
   val todo = Path.of(opt("todo", root.resolve("compendium-todo").toString))
   val chapterFilter = opt("chapter", "")
   val kindFilter = opt("kind", "")
@@ -354,11 +453,19 @@ def parseTodo(path: Path): Vector[Entry] =
   // EnSide depends entirely on the generated mirror matching the checked-out branch. A mirror built on
   // another branch silently moves rows to NotFound -- `singlaSlant` vanished from both trees that way,
   // because the mirror on disk had been generated where it is already `flipCoin`.
+  // .tex only: the trees also hold pdf, aux and log files whose timestamps have nothing to do with
+  // whether the mirror was regenerated, so comparing everything both warned falsely and, worse,
+  // hid a stale mirror behind a freshly written .log.
   def newest(dirs: Seq[String]): Long =
     dirs.flatMap: d =>
       val base = root.resolve(d)
       if !Files.isDirectory(base) then Seq(0L)
-      else Files.walk(base).iterator.asScala.toSeq.map(p => Files.getLastModifiedTime(p).toMillis)
+      else
+        scala.util.Using.resource(Files.walk(base)): stream =>
+          stream.iterator.asScala
+            .filter(p => p.toString.endsWith(".tex"))
+            .map(p => Files.getLastModifiedTime(p).toMillis)
+            .toSeq
     .maxOption.getOrElse(0L)
   val (svAge, enAge) = (newest(Seq("compendium", "slides")), newest(Seq("compendium-en", "slides-en")))
   if enAge < svAge then
@@ -371,7 +478,7 @@ def parseTodo(path: Path): Vector[Entry] =
     val extra = if hits.size > 1 then s" (+${hits.size - 1})" else ""
     val toks =
       if Set(Kind.CodeLine, Kind.CodeIdent, Kind.CodeString, Kind.CodeOther).contains(k) then
-        val (idents, strings, covered) = candidates(e.text)
+        val (idents, strings, covered) = candidates(e.text, hits.headOption.map(_.rel).getOrElse(""))
         Vector(
           if idents.nonEmpty then s"id:${idents.mkString(",")}" else "",
           if strings.nonEmpty then s"str:${strings.mkString(",")}" else "",
@@ -381,7 +488,9 @@ def parseTodo(path: Path): Vector[Entry] =
     // an EnSide fragment is mangled English, so show the Swedish it came from: that is the override key
     val svText =
       if k == Kind.EnSide then
-        hits.headOption.flatMap(h => svCounterpart(sv, h.rel, h.line)).map(t => s"  SV: ${t.take(80)}")
+        hits.headOption
+          .flatMap(h => svCounterpart(sv, h.rel, h.line, e.text))
+          .map((ln, t) => s"  SV $ln: ${t.take(80)}")
       else None
     emit(s"${e.section}\t${e.task}\t$k\t$where$extra\t${mechanism(k)}\t$toks\t${e.text.take(90)}")
     for s <- svText do emit(s"\t\t\t\t\t\t$s")
@@ -395,6 +504,21 @@ def parseTodo(path: Path): Vector[Entry] =
     Set(Kind.CodeIdent, Kind.CodeString, Kind.CodeComment, Kind.CodeLine, Kind.ProseSv, Kind.Glossed)
       .contains(k))
   emit(s"# model-free with an established mechanism: $modelFree of ${all.size}")
+
+  // --selftest: check every `##expect KIND` in the log against what this run actually classified, and
+  // exit non-zero on any mismatch. Without it the sample log is an example rather than a regression
+  // fixture -- a change could silently re-break one of the reviewed bugs and the output would still
+  // look reasonable to anyone who did not already know what each line should produce.
+  if args.contains("--selftest") then
+    val checked = all.collect { case (e, k, _) if e.expect.isDefined => (e, k, e.expect.get) }
+    val failed = checked.filter((_, k, want) => k.toString != want)
+    emit("")
+    emit(s"# selftest: ${checked.size} expectations, ${failed.size} failed")
+    for (e, k, want) <- failed do
+      emit(s"#   FAIL line ${e.todoLine}: expected $want, got $k   ${e.text.take(70)}")
+    if checked.isEmpty then
+      emit("#   (no ##expect lines in this log -- selftest is for the sample fixture)")
+    if failed.nonEmpty then sys.exit(1)
 
   // --tokens: the ratification table. The fragment count overstates the work badly, because the same
   // demo name recurs across lines and weeks -- one `öka` entry answers dozens of rows. What BR has to
@@ -413,13 +537,14 @@ def parseTodo(path: Path): Vector[Entry] =
     // rename candidate -- `the` and `weight` topped the list before this. Comment and pseudocode lines
     // contribute their prose words the same way. So aggregate only over fragments that actually look
     // like Scala, and drop English function words, which no Swedish demo name is.
-    def isScala(t: String): Boolean =
-      val looksCode = Vector("=", "(", "scala>", "def ", "val ", "var ").exists(t.contains)
-      val isProse = t.trim.startsWith("#") || t.trim.startsWith("//") || t.contains("←")
-      looksCode && !isProse
-    for (e, k, hits) <- all if codeKinds.contains(k) && isScala(e.text) do
+    // A lone identifier IS a candidate -- the old local test demanded `=`, `(`, `scala>` or a
+    // def/val/var opener, so a fragment that is just `värdeSaknas` was dropped from the table it
+    // most belongs in. CodeIdent rows are therefore always included, and everything else goes
+    // through the shared looksLikeScala.
+    for (e, k, hits) <- all if codeKinds.contains(k) && (k == Kind.CodeIdent || looksLikeScala(e.text))
+    do
       val file = hits.headOption.map(_.rel.split("/").last).getOrElse("-")
-      val (i0, s, c) = candidates(e.text)
+      val (i0, s, c) = candidates(e.text, hits.headOption.map(_.rel).getOrElse(""))
       // A glossary VALUE is an English target, never a rename candidate. They turn up because a clamped
       // file carries English in its \else branch, so the source itself contains `weight`, `Cucumber`...
       val englishTargets = CodeGlossary.id.values.toSet ++ CodeGlossary.codeStr.values.toSet
