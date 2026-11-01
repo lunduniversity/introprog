@@ -85,6 +85,65 @@ object CodeGlossary:
     // (class Katt/Hund extends Djur) where Katt/Hund aren't in the glossary; a global Djur->Animal rendered
     // `class Katt extends Animal` (mixed). w11 now carries its OWN scoped cluster (with Katt/Hund/Robothund),
     // so the fix for a mixed render is a per-file entry, never promoting this cluster to global.
+
+    // ---- w02, arithmetic and code structure — BR-ratified 2026-10-11 (#993), global as proposed ----
+    // `öka`/`minska` span w02 and w03, which is the whole reason #993 agreed the names once across weeks
+    // rather than per chapter. `öka` is the single largest entry in the corpus: 31 logged fragments.
+    "öka" -> "increase",
+    "minska" -> "decrease",
+    "heltal" -> "integer",
+    "resten" -> "remainder",
+    "jättestortIntervall" -> "hugeRange",
+    "intervall" -> "range",
+    "ettArgument" -> "oneArgument",
+    "minParameter" -> "myParameter",
+    "lokaltNamn" -> "localName",
+    "summa" -> "sum",
+    "sekvens" -> "sequence",
+    "åsikter" -> "opinions",
+    // `gurka1`/`gurka2`/`tomat1` are HELD, though #993 ratified gurka1/tomat1: they are not identifiers
+    // at all. They occur only as string LITERALS and as the REPL's bare echo of them, so an id entry
+    // renames the echo and cannot touch the input, and the slide contradicted itself:
+    //     scala> val xs = Vector("gurka1","gurka2","tomat1")
+    //     val xs: Vector[String] = Vector(cucumber1, cucumber2, tomato1)
+    // That is precisely the reason BR held `Hej`/`hej`/`dej` in #993; the table did not notice it applies
+    // here too. Uniformly Swedish is better than a transcript that disagrees with itself, so these wait
+    // for the same decision. (The harvester never listed them as code identifiers either — consistent.)
+    // NB `Hej`/`hej`/`dej` are deliberately NOT here. BR held them in #993 until perFileCodeStr exists,
+    // because a global id rename reaches the echoed output of the w07 sorting slide (`Array(Hej, gurka,
+    // hej)`) while the literals that produce it stay as they are — the #990 desync. The mechanism now
+    // exists (#1003), but which English `hej` should have outside w11 is still open there.
+
+    // ---- w03, functions — BR-ratified 2026-10-11 (#993), global as proposed ----
+    "hemlis" -> "secret",
+    "gissning" -> "guess",
+    "gissat" -> "guessed",
+    "gissaTalet" -> "guessTheNumber",
+    "skrivLedtrådOmEjRätt" -> "writeHintIfNotRight",
+    "inteRätt" -> "notRight",
+    "ärRätt" -> "isRight",
+    "tvåGånger" -> "twice",
+    "fakultet" -> "factorial",
+    // `upprepa` -> `repeat` is ratified in #993 but deliberately HELD OUT of this batch: it is a Kojo
+    // command, not an example name of ours. lect-w03-functions builds its own version on the slide
+    // titled "Hur fungerar egentligen `upprepa` i Kojo?", and w01-intro-lab uses it in Kojo code next to
+    // `fram` and `höger`, which are not renamed. `repeat` IS Kojo's English name, so the rename would at
+    // least compile — but it would leave the w01 lab reading `repeat(4): fram`, half of one command
+    // vocabulary. How the English edition presents Kojo's Swedish command names is a separate question
+    // for BR, so this one waits for it rather than being decided by a glossary entry.
+    // `matte` -> `myMath`, NOT `math`: BR's exception 2 in #993. In lect-w03-functions it names an
+    // `object`, and `object math` would shadow the `scala.math` package that w01 teaches.
+    "matte" -> "myMath",
+    "tomParameterlista" -> "emptyParameterList",
+    "ingenParameterlista" -> "noParameterList",
+    "förnamn" -> "firstName",
+    "efternamn" -> "lastName",
+    "förnamnFörst" -> "firstNameFirst",
+    "skrivNamn" -> "writeName",
+    "hälsa" -> "greet",
+    "hälsning" -> "greeting",
+    "fleraAnrop" -> "severalCalls",
+    "antal" -> "count",
   )
   // string / comment inner text (longest first so a prefix doesn't pre-empt). exact substring replace.
   val str: Seq[(String, String)] = Seq(
