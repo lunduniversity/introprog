@@ -75,10 +75,32 @@ val HeaderRx = raw"^\s*(-?\d+(?:\.\d+)+)\s*(.*)$$".r
 val ChapterRx = raw"^\s*Chapter\s+(\d+)\b.*$$".r
 // `Task 6` and `Task6` are both written in practice, so the space is optional. Requiring it turned
 // eight location markers per chapter into unlocatable "fragments".
-val TaskRx = raw"^\s*[Tt]ask\s*(\d+)\b.*$$".r
+// The solution sections label their tasks `Sol. task 18` (compendium.cls: `\ifswedish Lösn. uppg.\else
+// Sol. task\fi`), and the reading log uses that form as a marker too. It is a DIFFERENT location from
+// exercise task 18 -- same number, other part of the book -- so the prefix is kept rather than
+// normalised away.
+val TaskRx = raw"^\s*(Sol\.\s*)?[Tt]ask\s*(\d+)\b.*$$".r
 // `footnote 1` / `bullet 3` are LOCATION markers, not commentary: they say which footnote or bullet of
 // the current section the following fragment sits in. Keeping them is what makes the entry findable.
 val NoteRx = raw"^\s*((?:footnote|bullet)\s*\d*)\s*$$".r
+// `quiz:` and `Quiz containing swedish words like fleraAnrop, hälsa, Hej` are the same kind of marker:
+// they say the Swedish beneath -- or named inline -- is in a generated quiz. Both were being counted as
+// defects. The WHOLE line is kept as the marker, so a marker that names its words inline does not throw
+// that detail away. (Those quiz rows are the ones no rename reaches, #1012.)
+val QuizRx = raw"^\s*([Qq]uiz\b.*)$$".r
+
+// Appendices and the solution sections are LETTERED, not numbered: the compendium prints
+// `A.1 What is Kojo?` and `L.3 Solution functions`. HeaderRx needs a leading digit, so it cannot see
+// either, and every fragment under them was attributed to the last NUMBERED section -- chapter 11, in
+// the log that prompted this.
+//   `Appendix A` is a TITLE standing above `A.1`, not a section of its own, so it sets the letter and
+//   the `A.1` beneath it refines to the real section.
+val AppendixRx = raw"^\s*Appendix\s+([A-Z][0-9]*)\s*$$".r
+//   `L.3` is the printed form; `L1.` and `L3` are how it gets transcribed, so both normalise to it.
+//   The dotless variant is restricted to `L` on purpose: a general letter+digits rule would read the
+//   price table's `M16` as section `M.16`.
+val LetterHeaderRx = raw"^\s*([A-Z])\.(\d+(?:\.\d+)*)\s*(.*)$$".r
+val SolutionRx = raw"^\s*L\.?(\d+)\.?\s*(.*)$$".r
 
 /** Does this fragment look like Scala? Used in two places that previously disagreed: the guard that
   * keeps code out of the English-evidence test, and the --tokens aggregation. Both were too narrow --
@@ -493,12 +515,22 @@ def parseTodo(path: Path): Vector[Entry] =
         expect = Some(ln.trim.stripPrefix("##expect").trim)
       case _ if ln.trim.startsWith("##") => ()
       case ChapterRx(n)                 => section = n; task = ""; issue += 1; inTranscript = false
-      case TaskRx(n)                    => task = s"Task $n"; issue += 1; inTranscript = false
+      case AppendixRx(letter)           => section = letter; task = ""; issue += 1; inTranscript = false
+      case LetterHeaderRx(letter, nums, rest) if looksLikeHeader(rest) =>
+        section = s"$letter.$nums"; task = ""; issue += 1; inTranscript = false
+        if rest.trim.length > 3 then out += Entry(i + 1, section, "note", rest.trim, None, issue)
+      case SolutionRx(n, rest) if looksLikeHeader(rest) =>
+        section = s"L.$n"; task = ""; issue += 1; inTranscript = false
+        if rest.trim.length > 3 then out += Entry(i + 1, section, "note", rest.trim, None, issue)
+      case TaskRx(sol, n)               =>
+        task = if sol == null then s"Task $n" else s"Sol. task $n"
+        issue += 1; inTranscript = false
       case HeaderRx(sec, rest) if looksLikeHeader(rest) =>
         section = sec; task = ""; issue += 1; inTranscript = false
         // a header may carry a note on the same line ("1.1.16 Column Swedish name can be removed")
         if rest.trim.length > 3 then out += Entry(i + 1, sec, "note", rest.trim, None, issue)
       case NoteRx(marker) => task = marker.trim; issue += 1; inTranscript = false
+      case QuizRx(marker) => task = marker.trim.take(60); issue += 1; inTranscript = false
       case _ =>
         val t = ln.trim
         val opensTranscript = t.contains("scala>")
@@ -694,7 +726,17 @@ def parseTodo(path: Path): Vector[Entry] =
           .flatMap(h => svCounterpart(sv, h.rel, h.line, e.text))
           .map((ln, t) => s"  SV $ln: ${t.take(80)}")
       else None
-    emit(s"${e.section}\t${e.task}\t$k\t${statusOf(e, k, hits)}\t$where$extra\t${mechanism(k)}" +
+    // Quiz PROSE translates normally -- quiz-w01-concepts reads "to introduce new concepts that
+    // simplify coding" -- so most quizzes are correct English. What is stuck is narrower: identifiers
+    // inside the pipe-delimited cells, `\code| ps.sorted.head.förnamn.take(2) |`, which the rename
+    // pass never sees because it matches only brace-form \code{..} (#1012). A file made entirely of
+    // such cells comes through byte-identical. The text itself lives in quiz/QuizData.scala, which
+    // `genquiz` generates from and which is shared with the Swedish edition.
+    val mech =
+      if e.task.toLowerCase.startsWith("quiz")
+      then "quiz cell: prose translates, identifiers in \\code|..| do not (#1012); text in QuizData.scala"
+      else mechanism(k)
+    emit(s"${e.section}\t${e.task}\t$k\t${statusOf(e, k, hits)}\t$where$extra\t$mech" +
       s"\t$toks${evidence(e, k, hits)}\t" + e.text.take(90))
     for s <- svText do emit(s"\t\t\t\t\t\t\t$s")
     if showHits then for h <- hits.drop(1) do emit(s"\t\t\t\t${h.rel}:${h.line}\t\t")
