@@ -273,11 +273,11 @@ object CodeGlossary:
     // two of BR's six answered questions in #993. (`björn` and `Ben` are above; `loop` and `veg` he
     // asked to leave alone, so they appear nowhere.)
     "funkis" -> "funval",
-    // "`kind` is fine where it means a type; leave it where it is filler." It is reachable in exactly
-    // one place -- `class Bil(val typ: String)` -- because the filler sense occurs only in Swedish
-    // PROSE ("Vilken typ har ...?"), which no rename touches. Bil is already Car from the w05 batch,
-    // so without this the class read `class Car(val typ: String)`.
-    "typ" -> "kind",
+    // `typ` -> `kind` is NOT global: see perFileId below. It was global when #1010 shipped, on a claim
+    // that it was reachable in exactly one place. That claim was wrong -- the check behind it looked at
+    // inline \code{} spans and `val typ` declarations, and never at Code ENVIRONMENTS, where
+    // lect-w08-matrices has the syntax template `xs: typ??? = värde???` six times. A global entry
+    // rendered that `xs: kind??? = värde???`, and in a declaration skeleton the placeholder means Type.
     // HELD from the w07 table, none of them reachable as identifiers:
     //   `nollor`   -- only inside a code COMMENT, `val result = ??? /* Array med 6 nollor */`
     //   `slumptal` -- a KOJO command (`\code|slumptal(100)|`) with no Scala declaration anywhere
@@ -471,6 +471,12 @@ object CodeGlossary:
     // `röd` has no Kojo use and is global. How the English edition should present Kojo's Swedish command
     // vocabulary is a question for BR, and scoping keeps this batch out of it.
     "lect-w04-objects" -> Map("grön" -> "green"),
+    // `typ` -> `kind`, scoped here after the w08 regression described in the id map above. BR ratified
+    // "`kind` is fine where it means a type; leave it where it is filler" (#993) -- this file is the
+    // where-it-means-a-type case, `class Bil(val typ: String)` -> `class Car(val kind: String)`, three
+    // renderings. The w08 template keeps `typ`: Swedish, but not wrong English, and what those skeleton
+    // placeholders should say is a separate question.
+    "w05-classes-exercise" -> Map("typ" -> "kind"),
     // `fyll` -> `fill` is ratified in #993's w07 table, but it is a Kojo command AND one of our own
     // example names, in different files. Scoped to the three where it is genuinely ours:
     //   Scala: w04-objects-exercise (`def fyll(p: Pt)(s: Int)`), lect-w07-seq (`fyll(42, ...)`),
