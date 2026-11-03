@@ -726,12 +726,15 @@ def parseTodo(path: Path): Vector[Entry] =
           .flatMap(h => svCounterpart(sv, h.rel, h.line, e.text))
           .map((ln, t) => s"  SV $ln: ${t.take(80)}")
       else None
-    // A fragment under a `quiz` marker is in generated content: the quizzes come from
-    // quiz/QuizData.scala via `genquiz`, so the fix is there and not in a .tex. It is also unreachable
-    // by the rename pass today, because the quiz rows are pipe-delimited `\code| ... |` (#1012). The
-    // bucket's own mechanism would send the reader to CodeGlossary, which cannot work here.
+    // Quiz PROSE translates normally -- quiz-w01-concepts reads "to introduce new concepts that
+    // simplify coding" -- so most quizzes are correct English. What is stuck is narrower: identifiers
+    // inside the pipe-delimited cells, `\code| ps.sorted.head.förnamn.take(2) |`, which the rename
+    // pass never sees because it matches only brace-form \code{..} (#1012). A file made entirely of
+    // such cells comes through byte-identical. The text itself lives in quiz/QuizData.scala, which
+    // `genquiz` generates from and which is shared with the Swedish edition.
     val mech =
-      if e.task.toLowerCase.startsWith("quiz") then "quiz/QuizData.scala via genquiz; unreachable today (#1012)"
+      if e.task.toLowerCase.startsWith("quiz")
+      then "quiz cell: prose translates, identifiers in \\code|..| do not (#1012); text in QuizData.scala"
       else mechanism(k)
     emit(s"${e.section}\t${e.task}\t$k\t${statusOf(e, k, hits)}\t$where$extra\t$mech" +
       s"\t$toks${evidence(e, k, hits)}\t" + e.text.take(90))
