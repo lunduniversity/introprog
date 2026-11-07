@@ -356,8 +356,10 @@ object CodeGlossary:
     // Global rather than scoped: the word spans three files and means one thing, like the animal sounds
     // above. Both spellings are needed because codeStr matches a WHOLE literal exactly -- the dice loop
     // writes `print("GRATTIS! ")` with a trailing space, the highscore one `"GRATTIS!"` without.
-    // `GE INTE UPP!` is not merely untranslated: the code cache renders it "DO NOT PANIC!", which is a
-    // different sentence. Ge inte upp = do not give up.
+    // `GE INTE UPP!` was not merely untranslated: the code cache rendered it "DO NOT PANIC!", which is
+    // a different sentence (Ge inte upp = do not give up). That cache row is corrected here too, so the
+    // two layers agree: Code envs read the cache, inline \code{} reads this map, and the w01 highscore
+    // task has the string in BOTH -- prose instruction and model solution must not diverge.
     // Safe as whole-literal data: the only unquoted occurrence in the corpus is Swedish PROSE, not a
     // transcript echo, so there is no input/output pair to desync (the trap that holds `hej` and
     // `gurka1`).
