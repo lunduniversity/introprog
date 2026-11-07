@@ -773,6 +773,14 @@ object Overrides:
     // inheritance", so this is the bare compound alone. Key from unit-probe on
     // compendium/generated/w05-chaphead-generated.tex, block 13, `clean: accessregler`.
     "accessregler"                            -> "access rules",
+    // Two defects in one sentence. The model turned `en kugghjulsdator` into "Analytical Engine" --
+    // historically apt, Lovelace did write for Babbage's engine -- and then glued the article's
+    // translation onto it, giving "intended for aAnalytical Engine." The Swedish DESCRIBES the machine
+    // rather than naming it, so the description is kept faithful here; naming it is BR's call.
+    // "published ... already in the 1800s" is also a Swedish construction (`redan på`), hence "as early
+    // as". Key from unit-probe on slides/body/lect-w01-intro.tex; core == clean, no placeholders.
+    "Ada Lovelace publicerade det första programmet redan på 1800-talet ämnat för en kugghjulsdator." ->
+      "Ada Lovelace published the first program as early as the 1800s, intended for a cogwheel computer.",
     "Fördjupning: Använda Java-samlingar i Scala med" -> "Deep dive: Using Java Collections in Scala with",
     "Fördjupning: Användning av hjälpkonstruktor" -> "Deep dive: Usage of Helper Constructor",
     "Fördjupning: Detaljerade regler för override" -> "Deep dive: Detailed Rules for Override",
