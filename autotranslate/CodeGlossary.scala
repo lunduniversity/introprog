@@ -180,6 +180,9 @@ object CodeGlossary:
     "Mullvaden" -> "TheMole",
     "Masken" -> "TheWorm",
     "Underjorden" -> "TheUnderground",
+    // The 3D follow-up task declares `object Underjorden3D`, a DIFFERENT token from `Underjorden`, so the
+    // line above never reached it and the mirror kept `object Underjorden3D:` beside `object TheUnderground:`.
+    "Underjorden3D" -> "TheUnderground3D",
     "ärMullvadsmat" -> "isMoleFood",
     "ärRaktUnderUppgången" -> "isStraightBelowTheExit",
     "djup" -> "depth",
