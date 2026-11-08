@@ -150,6 +150,11 @@ object CodeGlossary:
     // added, not merely a token the reading log saw in the pdf. Four names from the table failed that
     // test and are held at the end of this block.
     "saldo" -> "balance",
+    // The w12 race-condition example backs `saldo` with a private field `_saldo`. `tok` (below) admits a
+    // leading underscore as an identifier START char, so `_saldo` is ONE token and never matches `saldo`
+    // -- the mirror read `def balance: Int = _saldo` with the field still Swedish. Same ratified decision,
+    // second spelling, exactly as `GRATTIS! ` needed an entry apart from `GRATTIS!`.
+    "_saldo" -> "_balance",
     "Bankkonto" -> "BankAccount",
     "mittBankkonto" -> "myBankAccount",
     "kontonr" -> "accountNo",
