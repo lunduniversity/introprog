@@ -49,6 +49,11 @@ object CodeGlossary:
     "Kanske" -> "Maybe", "Någon" -> "Just", "Ingen" -> "Empty",
     // PERSON cluster (personExample*.scala + lect-w10-override) — BR-ratified 2026-07-19 (#942).
     "namn" -> "name", "ålder" -> "age", "universitet" -> "university", "titel" -> "title",
+    // The bare halves of the w01 solution outputs (`\item Output: \code{sant}`, `\code{1:krona 2:klave}`).
+    // Paired with the codeStr entries on the same words: the quoted literal is the code, these are the
+    // answer the book prints beside it. Safe as id entries because the id map only enters CODE regions --
+    // the ~20 prose occurrences of `sant` are never touched. `TRE` is deliberately absent (no bare form).
+    "sant" -> "true", "falskt" -> "false", "krona" -> "heads", "klave" -> "tails",
     "Akademiker" -> "Academic", "Forskare" -> "Researcher", "IckeAkademiker" -> "NonAcademic",
     // lowercase val-name forms (Task 5 REPL: `val akademiker = new Academic(...)`) — same words as the classes
     // above, just lowercased per Scala val-naming convention — BR-ratified 2026-07-21.
@@ -352,6 +357,17 @@ object CodeGlossary:
     "Muuuuuuu" -> "Mooooo", "Nöffnöff" -> "Oink", "Gnääääägg" -> "Neigh",
     // PERSON: the researcher's title value (Task 5 REPL: new Researcher(..., "Doktorand")) — BR-ratified 2026-07-21.
     "Doktorand" -> "PhD student",
+    // w01 solutions, chapter 1.3.1. Each of these is printed by code AND quoted back as bare text in the
+    // worked solution (`\item Output: \code{falskt}`), so each needs BOTH a codeStr entry for the quoted
+    // literal and an id entry below for the bare form -- translate one side only and the solution stops
+    // matching the code it solves. `krona`/`klave` are the two FACES of a coin (heads/tails); the model had
+    // read `krona` as the Scandinavian currency and produced "krone", so code and solution already
+    // disagreed. `TRE` gets no id entry: it has no bare occurrence, and a dead key is not free.
+    "TRE" -> "THREE",
+    "sant" -> "true",
+    "falskt" -> "false",
+    "krona" -> "heads",
+    "klave" -> "tails",
     // w04's tuple demo keys the pair on a literal and echoes it bare. `Ålder` and `Längd` already have
     // code-cache rows that translate the literal; `Vikt` does not, so without this entry it would be the
     // one of the three whose literal stayed Swedish while its echo turned English.
