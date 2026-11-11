@@ -504,7 +504,15 @@ object CodeGlossary:
     // also an English verb. Even within this file its other three occurrences are prose (`lär dig`,
     // `Tänk dig`), which the id map never enters, and the two inside `"akta dig!!!"` are string-literal
     // content, which copyStr copies verbatim. So this fires at exactly one site.
-    "w01-intro-exercise" -> Map("akta" -> "watch", "dig" -> "out"),
+    // Task 35's echo, `Jättegurkan är 0.667 meter lång`, is bare output: no literal, no comment, so the
+    // cache can never reach it (I tried a row; it was dead). The id map is the only mechanism that does,
+    // and these four words are PROSE, which is why they are scoped to death rather than ratified.
+    // Measured before adding: in the code regions of this one file, each of `Jättegurkan`, `är`, `meter`
+    // and `lång` occurs EXACTLY ONCE -- on that line. Literal content is excluded anyway (copyStr copies
+    // it verbatim) and prose is outside the id map entirely, so this fires on one line and nowhere else.
+    // Does NOT generalise: see #1028 for the 205-line class this belongs to.
+    "w01-intro-exercise" -> Map("akta" -> "watch", "dig" -> "out",
+      "Jättegurkan" -> "The giant cucumber", "är" -> "is", "meter" -> "meters", "lång" -> "long"),
     // `fyll` -> `fill` is ratified in #993's w07 table, but it is a Kojo command AND one of our own
     // example names, in different files. Scoped to the three where it is genuinely ours:
     //   Scala: w04-objects-exercise (`def fyll(p: Pt)(s: Int)`), lect-w07-seq (`fyll(42, ...)`),
