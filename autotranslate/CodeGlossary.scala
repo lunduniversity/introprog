@@ -49,11 +49,13 @@ object CodeGlossary:
     "Kanske" -> "Maybe", "Någon" -> "Just", "Ingen" -> "Empty",
     // PERSON cluster (personExample*.scala + lect-w10-override) — BR-ratified 2026-07-19 (#942).
     "namn" -> "name", "ålder" -> "age", "universitet" -> "university", "titel" -> "title",
-    // The bare halves of the w01 solution outputs (`\item Output: \code{sant}`, `\code{1:krona 2:klave}`).
-    // Paired with the codeStr entries on the same words: the quoted literal is the code, these are the
-    // answer the book prints beside it. Safe as id entries because the id map only enters CODE regions --
-    // the ~20 prose occurrences of `sant` are never touched. `TRE` is deliberately absent (no bare form).
-    "sant" -> "true", "falskt" -> "false", "krona" -> "heads", "klave" -> "tails",
+    // The bare halves of the w01 solution outputs (`\code{1:krona 2:klave}`). Paired with the codeStr
+    // entries on the same words: the quoted literal is the code, these are the answer the book prints
+    // beside it. The id map only enters CODE regions, so prose occurrences are never touched.
+    // `sant`/`falskt` are NOT here -- their values are Scala keywords, so a global entry would rewrite
+    // any future `val sant` into `val true` and break the build far from this line. Scoped instead, in
+    // perFileId below. `TRE` is deliberately absent (no bare form).
+    "krona" -> "heads", "klave" -> "tails",
     // `morot` joins the ratified vego family (Gurka/Tomat already global): it is a command-line argument
     // in lect-w02-codestruct's `scala run ... -- 2 morot gurka tomat` and its echo, where its two
     // neighbours already render English. 3 occurrences corpus-wide, all this demo.
@@ -511,7 +513,12 @@ object CodeGlossary:
     // and `lång` occurs EXACTLY ONCE -- on that line. Literal content is excluded anyway (copyStr copies
     // it verbatim) and prose is outside the id map entirely, so this fires on one line and nowhere else.
     // Does NOT generalise: see #1028 for the 205-line class this belongs to.
+    // `sant`/`falskt` live here rather than in the global id map because their VALUES are Scala
+    // keywords: a global entry would turn any future `val sant` into `val true`, which does not compile,
+    // and the breakage would surface nowhere near the entry. Their only live sites are this file's
+    // solution items (`\item Output: \code{sant}`), so scoping costs nothing.
     "w01-intro-exercise" -> Map("akta" -> "watch", "dig" -> "out",
+      "sant" -> "true", "falskt" -> "false",
       "Jättegurkan" -> "The giant cucumber", "är" -> "is", "meter" -> "meters", "lång" -> "long"),
     // `fyll` -> `fill` is ratified in #993's w07 table, but it is a Kojo command AND one of our own
     // example names, in different files. Scoped to the three where it is genuinely ours:
