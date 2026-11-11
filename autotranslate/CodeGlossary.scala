@@ -370,6 +370,12 @@ object CodeGlossary:
     // read `krona` as the Scandinavian currency and produced "krone", so code and solution already
     // disagreed. `TRE` gets no id entry: it has no bare occurrence, and a dead key is not free.
     "TRE" -> "THREE",
+    // w06's exception demo. Paired with the scoped id entries in perFileId below: these two are the
+    // quoted literals the code throws and prints, those are the bare words the REPL echoes back. Shipping
+    // either half alone leaves English code above Swedish output, or the reverse -- no better than
+    // leaving it Swedish.
+    "stormvind" -> "storm wind",
+    "Fångad av en " -> "Caught by a ",
     "akta dig!!!" -> "watch out!!!",
     // lect-w02-codestruct's loop demo prints ` gurka 1 gurka 2 ...`. The bare echo was already renamed by
     // the id map (`gurka` -> `cucumber`) while the literal it comes from was not, so the slide showed code
@@ -498,6 +504,13 @@ object CodeGlossary:
     // `röd` has no Kojo use and is global. How the English edition should present Kojo's Swedish command
     // vocabulary is a question for BR, and scoping keeps this batch out of it.
     "lect-w04-objects" -> Map("grön" -> "green"),
+    // The bare half of w06's exception demo: the REPL echoes `Fångad av en stormvind` three times, which
+    // only the id map reaches. `av` and `en` are ordinary Swedish words and would be catastrophic as
+    // global entries. Measured before adding: in THIS file's code regions each of these four occurs
+    // exactly 3 times -- all on those three echo lines -- so the scope fires nowhere else. Prose is
+    // outside the id map and string-literal content is copied verbatim by copyStr, so neither is at risk.
+    "lect-w06-exceptions" -> Map("Fångad" -> "Caught", "av" -> "by", "en" -> "a",
+      "stormvind" -> "storm wind"),
     // `akta dig!!!` is printed by the code AND quoted back bare in the worked solution
     // (`\item[4:] \code{akta dig!!!}`). The quoted half has a codeStr entry; the bare half can only be
     // reached by the id map, and unit-probe finds NO translation unit for that line -- it is a label plus
