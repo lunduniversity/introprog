@@ -101,6 +101,12 @@ val AppendixRx = raw"^\s*Appendix\s+([A-Z][0-9]*)\s*$$".r
 //   price table's `M16` as section `M.16`.
 val LetterHeaderRx = raw"^\s*([A-Z])\.(\d+(?:\.\d+)*)\s*(.*)$$".r
 val SolutionRx = raw"^\s*L\.?(\d+)\.?\s*(.*)$$".r
+//   Front matter has names, not numbers. Without these, everything a reader logs from the preface or
+//   the course instructions comes through with an EMPTY section label and is unattributable in the
+//   report. The compendium's own prechapters are the vocabulary: preface, course instructions, how to
+//   contribute. Matched case-insensitively and alone on the line, so a mention inside a sentence does
+//   not reset the section.
+val FrontMatterRx = raw"(?i)^\s*(preface|course\s+instructions|how\s+to\s+contribute|foreword|introduction)\s*$$".r
 
 /** Does this fragment look like Scala? Used in two places that previously disagreed: the guard that
   * keeps code out of the English-evidence test, and the --tokens aggregation. Both were too narrow --
@@ -516,6 +522,8 @@ def parseTodo(path: Path): Vector[Entry] =
       case _ if ln.trim.startsWith("##") => ()
       case ChapterRx(n)                 => section = n; task = ""; issue += 1; inTranscript = false
       case AppendixRx(letter)           => section = letter; task = ""; issue += 1; inTranscript = false
+      case FrontMatterRx(name)          =>
+        section = name.trim.toLowerCase.replaceAll("\\s+", "-"); task = ""; issue += 1; inTranscript = false
       case LetterHeaderRx(letter, nums, rest) if looksLikeHeader(rest) =>
         section = s"$letter.$nums"; task = ""; issue += 1; inTranscript = false
         if rest.trim.length > 3 then out += Entry(i + 1, section, "note", rest.trim, None, issue)
