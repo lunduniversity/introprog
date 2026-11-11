@@ -169,6 +169,30 @@ object Inv:
     println(f"      line ${r.line}%5d  ${r.sv.take(62)}")
   if !verbose && disguised.size > 12 then println(s"      ... ${disguised.size - 12} more (--list for all)")
 
+  // ---- I8: keyword collision -------------------------------------------------------------------
+  // An identifier rename whose VALUE is a Scala reserved word emits code that does not compile, and it
+  // does so silently: the entry looks correct, and the breakage appears wherever the Swedish name is
+  // used, not where the entry was written. `sant -> true` and `falskt -> false` were both global when
+  // this check was added (2026-11-11) -- harmless only because neither word happened to be used as a
+  // declaration anywhere in the corpus. A future `val sant = ...` would have produced `val true = ...`.
+  // Scoping to perFileId does not remove the hazard, it bounds it, so scoped hits are reported too.
+  val reserved = Set("abstract", "case", "catch", "class", "def", "do", "else", "enum", "export",
+    "extends", "false", "final", "finally", "for", "given", "if", "implicit", "import", "lazy", "match",
+    "new", "null", "object", "override", "package", "private", "protected", "return", "sealed", "super",
+    "then", "throw", "trait", "true", "try", "type", "val", "var", "while", "with", "yield")
+  val softKw = Set("as", "derives", "end", "extension", "infix", "inline", "opaque", "open",
+    "transparent", "using")
+  val globalHits = CodeGlossary.id.filter((_, en) => reserved(en) || softKw(en)).toVector
+  val scopedHits = CodeGlossary.perFileId.toVector.flatMap: (file, m) =>
+    m.filter((_, en) => reserved(en) || softKw(en)).toVector.map((sv, en) => (file, sv, en))
+  println()
+  println(s"=== I8 keyword collision: ${globalHits.size} global, ${scopedHits.size} scoped ===")
+  println("    a rename whose value is a Scala keyword emits uncompilable code, far from its entry")
+  for (sv, en) <- globalHits do
+    println(f"      GLOBAL  $sv%-22s -> $en   ${if reserved(en) then "[RESERVED]" else "[soft]"}")
+  for (file, sv, en) <- scopedHits do
+    println(f"      scoped  $sv%-22s -> $en   in $file")
+
   // ---- V3: frozen ground truth ---------------------------------------------------------------
   // A checker that has only ever reported zero is untested. This replays a REAL historical defect:
   // `hemlis -> secret` (#993) stranded the guessing-game translation, and the English compendium
@@ -202,4 +226,4 @@ object Inv:
 
   println()
   println(s"summary: ${stranded.size} stranded by rename, ${disguised.size} disguised failures")
-  if stranded.nonEmpty then System.exit(1)
+  if stranded.nonEmpty || globalHits.nonEmpty then System.exit(1)
