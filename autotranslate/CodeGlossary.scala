@@ -54,6 +54,10 @@ object CodeGlossary:
     // answer the book prints beside it. Safe as id entries because the id map only enters CODE regions --
     // the ~20 prose occurrences of `sant` are never touched. `TRE` is deliberately absent (no bare form).
     "sant" -> "true", "falskt" -> "false", "krona" -> "heads", "klave" -> "tails",
+    // `morot` joins the ratified vego family (Gurka/Tomat already global): it is a command-line argument
+    // in lect-w02-codestruct's `scala run ... -- 2 morot gurka tomat` and its echo, where its two
+    // neighbours already render English. 3 occurrences corpus-wide, all this demo.
+    "morot" -> "carrot",
     "Akademiker" -> "Academic", "Forskare" -> "Researcher", "IckeAkademiker" -> "NonAcademic",
     // lowercase val-name forms (Task 5 REPL: `val akademiker = new Academic(...)`) — same words as the classes
     // above, just lowercased per Scala val-naming convention — BR-ratified 2026-07-21.
@@ -365,6 +369,10 @@ object CodeGlossary:
     // disagreed. `TRE` gets no id entry: it has no bare occurrence, and a dead key is not free.
     "TRE" -> "THREE",
     "akta dig!!!" -> "watch out!!!",
+    // lect-w02-codestruct's loop demo prints ` gurka 1 gurka 2 ...`. The bare echo was already renamed by
+    // the id map (`gurka` -> `cucumber`) while the literal it comes from was not, so the slide showed code
+    // printing "gurka" above output saying "cucumber". Whole-literal key, spaces included: one occurrence.
+    " gurka " -> " cucumber ",
     "sant" -> "true",
     "falskt" -> "false",
     "krona" -> "heads",
