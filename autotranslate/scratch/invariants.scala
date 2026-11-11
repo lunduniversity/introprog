@@ -22,10 +22,45 @@
   *                     This validates the checker without waiting for a real defect -- the discipline
   *                     that was missing when the pdf oracle reported 81 fixed and 7 were.
   *
+  *   I8 KEYWORD        an identifier rename whose VALUE is a Scala reserved word emits code that does
+  *                     not compile, silently, far from the entry that caused it.
+  *
   * DESIGN RULE: never reimplement the build's region logic. `Code.translate` takes the translate
   * function as a parameter, so we harvest the REAL keys by passing a collector that returns its input
   * unchanged. Any reimplementation would drift from the pipeline it audits, and a reachability check
   * that lies is worse than none.
+  *
+  * ---------------------------------------------------------------------------------------------
+  * USING IT AS A GATE
+  *
+  *   scala-cli run autotranslate/scratch/invariants.scala --main-class invariants -- --root .
+  *
+  * Exit 0 = clean, exit 1 = a FAILING invariant, exit 2 = the selftest itself broke. Needs no model,
+  * no backend and no built pdf; it reads the committed sources and caches, so it is safe in CI and
+  * takes seconds. Add it beside the other ratchets in .github/workflows/main.yml.
+  *
+  * WHAT FAILS THE RUN, and what only reports:
+  *   FAILS   I4 stranded-by-rename  -- an active regression: correct English under a dead key
+  *   FAILS   I8 global keyword collision -- emits uncompilable code
+  *   reports I4 obsolete            -- clutter, not a defect; source content is simply gone
+  *   reports I6 disguised failures  -- debt to work down, not a reason to block a PR
+  *   reports I8 scoped collision    -- scoping bounds the hazard rather than removing it
+  *
+  * This is deliberately NOT a ratchet with a committed baseline number. A stranded key is a REGRESSION
+  * -- it means correct English stopped being applied -- so the right threshold is zero, not "no worse
+  * than last time". The obsolete and disguised counts are the ones that behave like debt, and those do
+  * not fail.
+  *
+  * FLAGS
+  *   --root <dir>     repo root (default `.`)
+  *   --list           print every violation rather than the first 12
+  *   --selftest       replay a known historical defect; exit 2 if the detector no longer catches it
+  *   --mutate sv=en   simulate ratifying a name, report how many live cache rows it would kill
+  *
+  * VALIDATING A CHANGE TO THIS FILE: a checker that has only ever reported zero is untested. Both
+  * detectors here were validated by INJECTION -- re-adding the historical `$hemlis` row made I4 report
+  * exactly one stranded key, and a synthetic `zzTest -> object` made I8 report one global collision and
+  * exit 1. Do the same for anything added: make it fire on a planted defect before trusting its zero.
   */
 
 import java.nio.file.{Files, Path}
