@@ -778,6 +778,10 @@ object Overrides:
     // `piece()` never offered them to the translator. They are comments, so `codeStr` (string literals)
     // does not apply either. Overrides is the designed home for code comments; it just could not fire
     // here until now.
+    // w06 code comments. Same gate as the w05 block above: two of these have no åäö, so they are
+    // only reachable now that the .tex code-env path passes `alsoTranslate`.
+    "flatMap ignorerar None"                                 -> "flatMap ignores None",
+    "Tryck TAB efter punkten"                                -> "Press TAB after the dot",
     "absolutbeloppet"                                        -> "the absolute value",
     "vinkeln i radianer"                                     -> "the angle in radians",
     "resultatet av addition"                                 -> "the result of addition",
