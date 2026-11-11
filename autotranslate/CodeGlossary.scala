@@ -364,6 +364,7 @@ object CodeGlossary:
     // read `krona` as the Scandinavian currency and produced "krone", so code and solution already
     // disagreed. `TRE` gets no id entry: it has no bare occurrence, and a dead key is not free.
     "TRE" -> "THREE",
+    "akta dig!!!" -> "watch out!!!",
     "sant" -> "true",
     "falskt" -> "false",
     "krona" -> "heads",
@@ -487,6 +488,15 @@ object CodeGlossary:
     // `röd` has no Kojo use and is global. How the English edition should present Kojo's Swedish command
     // vocabulary is a question for BR, and scoping keeps this batch out of it.
     "lect-w04-objects" -> Map("grön" -> "green"),
+    // `akta dig!!!` is printed by the code AND quoted back bare in the worked solution
+    // (`\item[4:] \code{akta dig!!!}`). The quoted half has a codeStr entry; the bare half can only be
+    // reached by the id map, and unit-probe finds NO translation unit for that line -- it is a label plus
+    // a code span with no prose, so Overrides has no key to attach to.
+    // Scoped, not global: `dig` is an ordinary Swedish pronoun with 223 occurrences across 70 files, and
+    // also an English verb. Even within this file its other three occurrences are prose (`lär dig`,
+    // `Tänk dig`), which the id map never enters, and the two inside `"akta dig!!!"` are string-literal
+    // content, which copyStr copies verbatim. So this fires at exactly one site.
+    "w01-intro-exercise" -> Map("akta" -> "watch", "dig" -> "out"),
     // `fyll` -> `fill` is ratified in #993's w07 table, but it is a Kojo command AND one of our own
     // example names, in different files. Scoped to the three where it is genuinely ours:
     //   Scala: w04-objects-exercise (`def fyll(p: Pt)(s: Int)`), lect-w07-seq (`fyll(42, ...)`),
