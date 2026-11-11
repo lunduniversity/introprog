@@ -773,6 +773,25 @@ object Overrides:
     // inheritance", so this is the bare compound alone. Key from unit-probe on
     // compendium/generated/w05-chaphead-generated.tex, block 13, `clean: accessregler`.
     "accessregler"                            -> "access rules",
+    // w05 code comments that no mechanism could reach before the `alsoTranslate` gate was passed to
+    // the .tex code-env path: none of them has åäö or a Swedish stopword, so `swedishish` is false and
+    // `piece()` never offered them to the translator. They are comments, so `codeStr` (string literals)
+    // does not apply either. Overrides is the designed home for code comments; it just could not fire
+    // here until now.
+    "absolutbeloppet"                                        -> "the absolute value",
+    "vinkeln i radianer"                                     -> "the angle in radians",
+    "resultatet av addition"                                 -> "the result of addition",
+    "konstruktion av instans av Complex"                     -> "construction of an instance of Complex",
+    "anrop med namngivet argument"                           -> "call with named argument",
+    "instansen allokeras"                                    -> "the instance is allocated",
+    "klassparametrar"                                        -> "class parameters",
+    "Koden kommer fastna i en evig loop."                    -> "The code will get stuck in an infinite loop.",
+    "lika storlek"                                           -> "same size",
+    "olika storlek"                                          -> "different size",
+    "olika objekt"                                           -> "different objects",
+    "olika instanser"                                        -> "different instances",
+    "s1 har sidan 1"                                         -> "s1 has side 1",
+    "y syns i X"                                             -> "y is visible in X",
     "Fördjupning: Använda Java-samlingar i Scala med" -> "Deep dive: Using Java Collections in Scala with",
     "Fördjupning: Användning av hjälpkonstruktor" -> "Deep dive: Usage of Helper Constructor",
     "Fördjupning: Detaljerade regler för override" -> "Deep dive: Detailed Rules for Override",
