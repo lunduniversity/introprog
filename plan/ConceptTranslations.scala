@@ -19,6 +19,8 @@
   */
 object ConceptTranslations:
   val svToEn: Map[String, String] = Map(
+    "valfri grupplabb snake" -> "optional group lab snake",
+    "valfri övning: jämförlse Scala-Java" -> "optional exercise: comparison Scala-Java",
     "applikationsdomän" -> "application domain",
     "dod: typsättning" -> "dod: typesetting",
     "ingen föreläsning denna vecka" -> "no lecture this week",
