@@ -781,6 +781,15 @@ object Overrides:
     // w06 code comments. Same gate as the w05 block above: two of these have no åäö, so they are
     // only reachable now that the .tex code-env path passes `alsoTranslate`.
     "flatMap ignorerar None"                                 -> "flatMap ignores None",
+    // The `tryck TAB` family: REPL hints telling the reader to press TAB for completion. One key per
+    // CAPITALISATION -- translatePlain trims the comment, so `//tryck X` and `// tryck X` share a key,
+    // but `tryck` and `Tryck` do not. Only the variants still Swedish in the built mirror are here.
+    "tryck TAB en gång" -> "press TAB once",
+    "tryck TAB och se alla publika medlemmar" -> "press TAB and see all public members",
+    "Tryck TAB direkt efter punkten och betrakta listan" -> "Press TAB right after the dot and look at the list",
+    "tryck TAB 2 gånger" -> "press TAB 2 times",
+    "tryck TAB" -> "press TAB",
+    "tryck TAB efter punkten" -> "press TAB after the dot",
     "Tryck TAB efter punkten"                                -> "Press TAB after the dot",
     // w01 dod-os slide. `skal` is Swedish for shell; the model rendered it "shall", so the English
     // edition explained a command interpreter with a modal verb. The sentence also teaches Swedish

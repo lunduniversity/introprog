@@ -377,6 +377,15 @@ object CodeGlossary:
     "gurka" -> "cucumber",
     "tomat" -> "tomato",
     "gurka nr $i" -> "cucumber nr $i",
+    // task 21's remaining values. Whole-literal keys, so the ~50 PROSE occurrences of `gott` are not
+    // reachable from here -- codeStr never enters prose. `"inte gott" -> "not good"` already exists,
+    // so without these the line read `then "gott" else "not good"`.
+    "gott" -> "good",
+    "banan" -> "banana",
+    // `Finkodare` ("fine coder") is a joke surname, and the demo ASSERTS ITS LENGTH -- the expected
+    // output says "has 9 letters". Finkodare is 9; Finecoder is 9. Any future renaming has to keep
+    // that, or the exercise starts stating a falsehood.
+    "Finkodare" -> "Finecoder",
     // w06's exception demo. Paired with the scoped id entries in perFileId below: these two are the
     // quoted literals the code throws and prints, those are the bare words the REPL echoes back. Shipping
     // either half alone leaves English code above Swedish output, or the reverse -- no better than
@@ -521,6 +530,13 @@ object CodeGlossary:
     // Scoped: `upprepa` is a real control-structure demo name in 6 other files and `kompilera` is an
     // ordinary Swedish verb with 58 corpus occurrences. In THIS file each occurs exactly once, in that
     // one block. (`testa` -> `test` is already ratified globally and needs nothing.)
+    // The REPL echoes task 21's value back bare (`val res0: String = gott`), which only the id map
+    // reaches. Scoped: elsewhere `gott` appears bare only inside echoed SENTENCES ("Gurka är gott"),
+    // where renaming one word would just make the mix different rather than better.
+    // Task 26's expected output is bare REPL text (`Kim har 3 bokstäver.`), so the id map is the
+    // only route -- and here it maps 1:1: `har`->`has`, `bokstäver`->`letters`. Scoped because
+    // `har` is one of the commonest Swedish words; in this file it occurs 3 times in code
+    // regions, all on those output lines. `Finkodare` is a name and stays.
     "lect-w01-intro" -> Map("upprepa" -> "repeat", "editera" -> "edit", "kompilera" -> "compile"),
     "lect-w06-exceptions" -> Map("Fångad" -> "Caught", "av" -> "by", "en" -> "a",
       "stormvind" -> "storm wind"),
@@ -543,9 +559,16 @@ object CodeGlossary:
     // keywords: a global entry would turn any future `val sant` into `val true`, which does not compile,
     // and the breakage would surface nowhere near the entry. Their only live sites are this file's
     // solution items (`\item Output: \code{sant}`), so scoping costs nothing.
+    // ONE entry per file: a Map literal keeps the LAST duplicate key and silently drops the rest, so a
+    // second `"w01-intro-exercise" -> Map(...)` elsewhere in this map would delete everything here.
     "w01-intro-exercise" -> Map("akta" -> "watch", "dig" -> "out",
       "sant" -> "true", "falskt" -> "false",
-      "Jättegurkan" -> "The giant cucumber", "är" -> "is", "meter" -> "meters", "lång" -> "long"),
+      "Jättegurkan" -> "The giant cucumber", "är" -> "is", "meter" -> "meters", "lång" -> "long",
+      // task 21's echoed value, and task 26's expected output (`Kim har 3 bokstäver.`), both bare REPL
+      // text that only the id map reaches. `har` is one of the commonest Swedish words; in this file it
+      // occurs 3 times in code regions, all on those output lines.
+      "gott" -> "good", "har" -> "has", "bokstäver" -> "letters",
+      "Finkodare" -> "Finecoder"),
     // `fyll` -> `fill` is ratified in #993's w07 table, but it is a Kojo command AND one of our own
     // example names, in different files. Scoped to the three where it is genuinely ours:
     //   Scala: w04-objects-exercise (`def fyll(p: Pt)(s: Int)`), lect-w07-seq (`fyll(42, ...)`),
