@@ -122,7 +122,14 @@ val nameDefs = {
       conceptEn.get(term) match
         case Some(en)                 => raw.replace(term, en) // keep original surrounding spaces
         case None if term.isEmpty     => raw
-        case None                     => missing += 1; raw     // no glossary English -> keep Swedish
+        case None                     =>
+          // Naming-only fallback. The glossary is a PEDAGOGICAL artifact: an entry there carries four
+          // explanation fields that students read, so a term needing only a NAME does not belong in it.
+          // Consulted after the glossary and never before, so a term that later earns a real Concept
+          // stops reaching this table.
+          ConceptTranslations.svToEn.get(term) match
+            case Some(en) => raw.replace(term, en)
+            case None     => missing += 1; raw                 // genuinely untranslated -> keep Swedish
     }.mkString(",")
   val enGrid = modulePlan.grid.map(row => row.updated("Innehåll", translateConcepts(row("Innehåll"))))
   modulePlan.latexTableBodyOf(enGrid).save(currentDir + "module-plan-generated-en.tex")

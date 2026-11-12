@@ -704,7 +704,16 @@ object Translate:
       if clamped(m.start) then java.util.regex.Matcher.quoteReplacement(m.matched)
       else
         val body = if doIds && scalaCodeEnvs(m.group(2)) then CodeGlossary.renderCodeIds(m.group(3), extraId, extraStr) else m.group(3)
-        java.util.regex.Matcher.quoteReplacement(m.group(1) + Code.translate(body, translatePlain, skipTexComments = true) + m.group(4)))
+        // `alsoTranslate` opens the second gate for exact human knowledge, exactly as the mirrored .scala
+        // path already does (Main.scala, `alsoTranslate = Translate.overrides.contains`). Without it, a
+        // Swedish comment with no åäö and no stopword -- `// absolutbeloppet`, `// olika instanser` --
+        // fails `swedishish`, is never offered to the translator, and is therefore unreachable by EVERY
+        // mechanism: no cache row can fire for a piece that is never looked up, and `codeStr` covers
+        // string literals, not comments. Safe by construction: only a string someone deliberately wrote
+        // an Overrides entry for passes the gate, so this cannot route new text to the model.
+        java.util.regex.Matcher.quoteReplacement(m.group(1) +
+          Code.translate(body, translatePlain, skipTexComments = true, alsoTranslate = overrides.contains) +
+          m.group(4)))
     if !doIds then withEnvs
     else
       // the env pass changed lengths, so recompute clamp ranges against `withEnvs` for the inline pass.

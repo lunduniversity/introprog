@@ -773,6 +773,44 @@ object Overrides:
     // inheritance", so this is the bare compound alone. Key from unit-probe on
     // compendium/generated/w05-chaphead-generated.tex, block 13, `clean: accessregler`.
     "accessregler"                            -> "access rules",
+    // w05 code comments that no mechanism could reach before the `alsoTranslate` gate was passed to
+    // the .tex code-env path: none of them has åäö or a Swedish stopword, so `swedishish` is false and
+    // `piece()` never offered them to the translator. They are comments, so `codeStr` (string literals)
+    // does not apply either. Overrides is the designed home for code comments; it just could not fire
+    // here until now.
+    // w06 code comments. Same gate as the w05 block above: two of these have no åäö, so they are
+    // only reachable now that the .tex code-env path passes `alsoTranslate`.
+    "flatMap ignorerar None"                                 -> "flatMap ignores None",
+    // The `tryck TAB` family: REPL hints telling the reader to press TAB for completion. One key per
+    // CAPITALISATION -- translatePlain trims the comment, so `//tryck X` and `// tryck X` share a key,
+    // but `tryck` and `Tryck` do not. Only the variants still Swedish in the built mirror are here.
+    "tryck TAB en gång" -> "press TAB once",
+    "tryck TAB och se alla publika medlemmar" -> "press TAB and see all public members",
+    "Tryck TAB direkt efter punkten och betrakta listan" -> "Press TAB right after the dot and look at the list",
+    "tryck TAB 2 gånger" -> "press TAB 2 times",
+    "tryck TAB" -> "press TAB",
+    "tryck TAB efter punkten" -> "press TAB after the dot",
+    "Tryck TAB efter punkten"                                -> "Press TAB after the dot",
+    // w01 dod-os slide. `skal` is Swedish for shell; the model rendered it "shall", so the English
+    // edition explained a command interpreter with a modal verb. The sentence also teaches Swedish
+    // students that English "shell" = Swedish "kommandotolk", which has to be re-pointed for an
+    // English reader: name the thing, and keep the Swedish word as the foreign term.
+    "Hemkatalog (tilde)" -> "Home directory (tilde)",
+    """Shell}: {Engelska för kommandotolk}, \textit{skal} på svenska""" -> """Shell}: {a command-line interpreter}, \textit{skal} in Swedish""",
+    "absolutbeloppet"                                        -> "the absolute value",
+    "vinkeln i radianer"                                     -> "the angle in radians",
+    "resultatet av addition"                                 -> "the result of addition",
+    "konstruktion av instans av Complex"                     -> "construction of an instance of Complex",
+    "anrop med namngivet argument"                           -> "call with named argument",
+    "instansen allokeras"                                    -> "the instance is allocated",
+    "klassparametrar"                                        -> "class parameters",
+    "Koden kommer fastna i en evig loop."                    -> "The code will get stuck in an infinite loop.",
+    "lika storlek"                                           -> "same size",
+    "olika storlek"                                          -> "different size",
+    "olika objekt"                                           -> "different objects",
+    "olika instanser"                                        -> "different instances",
+    "s1 har sidan 1"                                         -> "s1 has side 1",
+    "y syns i X"                                             -> "y is visible in X",
     "Fördjupning: Använda Java-samlingar i Scala med" -> "Deep dive: Using Java Collections in Scala with",
     "Fördjupning: Användning av hjälpkonstruktor" -> "Deep dive: Usage of Helper Constructor",
     "Fördjupning: Detaljerade regler för override" -> "Deep dive: Detailed Rules for Override",

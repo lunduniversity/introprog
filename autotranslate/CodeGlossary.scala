@@ -49,6 +49,17 @@ object CodeGlossary:
     "Kanske" -> "Maybe", "Någon" -> "Just", "Ingen" -> "Empty",
     // PERSON cluster (personExample*.scala + lect-w10-override) — BR-ratified 2026-07-19 (#942).
     "namn" -> "name", "ålder" -> "age", "universitet" -> "university", "titel" -> "title",
+    // The bare halves of the w01 solution outputs (`\code{1:krona 2:klave}`). Paired with the codeStr
+    // entries on the same words: the quoted literal is the code, these are the answer the book prints
+    // beside it. The id map only enters CODE regions, so prose occurrences are never touched.
+    // `sant`/`falskt` are NOT here -- their values are Scala keywords, so a global entry would rewrite
+    // any future `val sant` into `val true` and break the build far from this line. Scoped instead, in
+    // perFileId below. `TRE` is deliberately absent (no bare form).
+    "krona" -> "heads", "klave" -> "tails",
+    // `morot` joins the ratified vego family (Gurka/Tomat already global): it is a command-line argument
+    // in lect-w02-codestruct's `scala run ... -- 2 morot gurka tomat` and its echo, where its two
+    // neighbours already render English. 3 occurrences corpus-wide, all this demo.
+    "morot" -> "carrot",
     "Akademiker" -> "Academic", "Forskare" -> "Researcher", "IckeAkademiker" -> "NonAcademic",
     // lowercase val-name forms (Task 5 REPL: `val akademiker = new Academic(...)`) — same words as the classes
     // above, just lowercased per Scala val-naming convention — BR-ratified 2026-07-21.
@@ -352,6 +363,44 @@ object CodeGlossary:
     "Muuuuuuu" -> "Mooooo", "Nöffnöff" -> "Oink", "Gnääääägg" -> "Neigh",
     // PERSON: the researcher's title value (Task 5 REPL: new Researcher(..., "Doktorand")) — BR-ratified 2026-07-21.
     "Doktorand" -> "PhD student",
+    // w01 solutions, chapter 1.3.1. Each of these is printed by code AND quoted back as bare text in the
+    // worked solution (`\item Output: \code{falskt}`), so each needs BOTH a codeStr entry for the quoted
+    // literal and an id entry below for the bare form -- translate one side only and the solution stops
+    // matching the code it solves. `krona`/`klave` are the two FACES of a coin (heads/tails); the model had
+    // read `krona` as the Scandinavian currency and produced "krone", so code and solution already
+    // disagreed. `TRE` gets no id entry: it has no bare occurrence, and a dead key is not free.
+    "TRE" -> "THREE",
+    // w01's if/while/for demos print these and the REPL echoes them back bare. The echo was ALREADY
+    // English (`gurka`/`tomat` are ratified IDENTIFIERS, and the id map reaches bare output) while the
+    // literals the code prints were not -- so the slide showed `println("gurka")` above output saying
+    // `cucumber`. Same pair as the id entries, different map: one renames tokens, this one whole literals.
+    "gurka" -> "cucumber",
+    "tomat" -> "tomato",
+    "gurka nr $i" -> "cucumber nr $i",
+    // task 21's remaining values. Whole-literal keys, so the ~50 PROSE occurrences of `gott` are not
+    // reachable from here -- codeStr never enters prose. `"inte gott" -> "not good"` already exists,
+    // so without these the line read `then "gott" else "not good"`.
+    "gott" -> "good",
+    "banan" -> "banana",
+    // `Finkodare` ("fine coder") is a joke surname, and the demo ASSERTS ITS LENGTH -- the expected
+    // output says "has 9 letters". Finkodare is 9; Finecoder is 9. Any future renaming has to keep
+    // that, or the exercise starts stating a falsehood.
+    "Finkodare" -> "Finecoder",
+    // w06's exception demo. Paired with the scoped id entries in perFileId below: these two are the
+    // quoted literals the code throws and prints, those are the bare words the REPL echoes back. Shipping
+    // either half alone leaves English code above Swedish output, or the reverse -- no better than
+    // leaving it Swedish.
+    "stormvind" -> "storm wind",
+    "Fångad av en " -> "Caught by a ",
+    "akta dig!!!" -> "watch out!!!",
+    // lect-w02-codestruct's loop demo prints ` gurka 1 gurka 2 ...`. The bare echo was already renamed by
+    // the id map (`gurka` -> `cucumber`) while the literal it comes from was not, so the slide showed code
+    // printing "gurka" above output saying "cucumber". Whole-literal key, spaces included: one occurrence.
+    " gurka " -> " cucumber ",
+    "sant" -> "true",
+    "falskt" -> "false",
+    "krona" -> "heads",
+    "klave" -> "tails",
     // w04's tuple demo keys the pair on a literal and echoes it bare. `Ålder` and `Längd` already have
     // code-cache rows that translate the literal; `Vikt` does not, so without this entry it would be the
     // one of the three whose literal stayed Swedish while its echo turned English.
@@ -471,6 +520,56 @@ object CodeGlossary:
     // `röd` has no Kojo use and is global. How the English edition should present Kojo's Swedish command
     // vocabulary is a question for BR, and scoping keeps this batch out of it.
     "lect-w04-objects" -> Map("grön" -> "green"),
+    // The bare half of w06's exception demo: the REPL echoes `Fångad av en stormvind` three times, which
+    // only the id map reaches. `av` and `en` are ordinary Swedish words and would be catastrophic as
+    // global entries. Measured before adding: in THIS file's code regions each of these four occurs
+    // exactly 3 times -- all on those three echo lines -- so the scope fires nowhere else. Prose is
+    // outside the id map and string-literal content is copied verbatim by copyStr, so neither is at risk.
+    // w01's edit/compile/test loop is written as pseudocode in a Code env, so the id map is the only
+    // thing that reaches it -- the prose above the block already reads "edit; compile; find errors".
+    // Scoped: `upprepa` is a real control-structure demo name in 6 other files and `kompilera` is an
+    // ordinary Swedish verb with 58 corpus occurrences. In THIS file each occurs exactly once, in that
+    // one block. (`testa` -> `test` is already ratified globally and needs nothing.)
+    // The REPL echoes task 21's value back bare (`val res0: String = gott`), which only the id map
+    // reaches. Scoped: elsewhere `gott` appears bare only inside echoed SENTENCES ("Gurka är gott"),
+    // where renaming one word would just make the mix different rather than better.
+    // Task 26's expected output is bare REPL text (`Kim har 3 bokstäver.`), so the id map is the
+    // only route -- and here it maps 1:1: `har`->`has`, `bokstäver`->`characters` ("letters" is ambiguous in English:
+      // it also means correspondence, and "Kim has 3 letters" could be read as mail). Scoped because
+    // `har` is one of the commonest Swedish words; in this file it occurs 3 times in code
+    // regions, all on those output lines. `Finkodare` is a name and stays.
+    "lect-w01-intro" -> Map("upprepa" -> "repeat", "editera" -> "edit", "kompilera" -> "compile"),
+    "lect-w06-exceptions" -> Map("Fångad" -> "Caught", "av" -> "by", "en" -> "a",
+      "stormvind" -> "storm wind"),
+    // `akta dig!!!` is printed by the code AND quoted back bare in the worked solution
+    // (`\item[4:] \code{akta dig!!!}`). The quoted half has a codeStr entry; the bare half can only be
+    // reached by the id map, and unit-probe finds NO translation unit for that line -- it is a label plus
+    // a code span with no prose, so Overrides has no key to attach to.
+    // Scoped, not global: `dig` is an ordinary Swedish pronoun with 223 occurrences across 70 files, and
+    // also an English verb. Even within this file its other three occurrences are prose (`lär dig`,
+    // `Tänk dig`), which the id map never enters, and the two inside `"akta dig!!!"` are string-literal
+    // content, which copyStr copies verbatim. So this fires at exactly one site.
+    // Task 35's echo, `Jättegurkan är 0.667 meter lång`, is bare output: no literal, no comment, so the
+    // cache can never reach it (I tried a row; it was dead). The id map is the only mechanism that does,
+    // and these four words are PROSE, which is why they are scoped to death rather than ratified.
+    // Measured before adding: in the code regions of this one file, each of `Jättegurkan`, `är`, `meter`
+    // and `lång` occurs EXACTLY ONCE -- on that line. Literal content is excluded anyway (copyStr copies
+    // it verbatim) and prose is outside the id map entirely, so this fires on one line and nowhere else.
+    // Does NOT generalise: see #1028 for the 205-line class this belongs to.
+    // `sant`/`falskt` live here rather than in the global id map because their VALUES are Scala
+    // keywords: a global entry would turn any future `val sant` into `val true`, which does not compile,
+    // and the breakage would surface nowhere near the entry. Their only live sites are this file's
+    // solution items (`\item Output: \code{sant}`), so scoping costs nothing.
+    // ONE entry per file: a Map literal keeps the LAST duplicate key and silently drops the rest, so a
+    // second `"w01-intro-exercise" -> Map(...)` elsewhere in this map would delete everything here.
+    "w01-intro-exercise" -> Map("akta" -> "watch", "dig" -> "out",
+      "sant" -> "true", "falskt" -> "false",
+      "Jättegurkan" -> "The giant cucumber", "är" -> "is", "meter" -> "meters", "lång" -> "long",
+      // task 21's echoed value, and task 26's expected output (`Kim har 3 bokstäver.`), both bare REPL
+      // text that only the id map reaches. `har` is one of the commonest Swedish words; in this file it
+      // occurs 3 times in code regions, all on those output lines.
+      "gott" -> "good", "har" -> "has", "bokstäver" -> "characters",
+      "Finkodare" -> "Finecoder", "Namnet" -> "The name"),
     // `fyll` -> `fill` is ratified in #993's w07 table, but it is a Kojo command AND one of our own
     // example names, in different files. Scoped to the three where it is genuinely ours:
     //   Scala: w04-objects-exercise (`def fyll(p: Pt)(s: Int)`), lect-w07-seq (`fyll(42, ...)`),
