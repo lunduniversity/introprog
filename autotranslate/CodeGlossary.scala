@@ -534,7 +534,8 @@ object CodeGlossary:
     // reaches. Scoped: elsewhere `gott` appears bare only inside echoed SENTENCES ("Gurka är gott"),
     // where renaming one word would just make the mix different rather than better.
     // Task 26's expected output is bare REPL text (`Kim har 3 bokstäver.`), so the id map is the
-    // only route -- and here it maps 1:1: `har`->`has`, `bokstäver`->`letters`. Scoped because
+    // only route -- and here it maps 1:1: `har`->`has`, `bokstäver`->`characters` ("letters" is ambiguous in English:
+      // it also means correspondence, and "Kim has 3 letters" could be read as mail). Scoped because
     // `har` is one of the commonest Swedish words; in this file it occurs 3 times in code
     // regions, all on those output lines. `Finkodare` is a name and stays.
     "lect-w01-intro" -> Map("upprepa" -> "repeat", "editera" -> "edit", "kompilera" -> "compile"),
@@ -567,8 +568,8 @@ object CodeGlossary:
       // task 21's echoed value, and task 26's expected output (`Kim har 3 bokstäver.`), both bare REPL
       // text that only the id map reaches. `har` is one of the commonest Swedish words; in this file it
       // occurs 3 times in code regions, all on those output lines.
-      "gott" -> "good", "har" -> "has", "bokstäver" -> "letters",
-      "Finkodare" -> "Finecoder"),
+      "gott" -> "good", "har" -> "has", "bokstäver" -> "characters",
+      "Finkodare" -> "Finecoder", "Namnet" -> "The name"),
     // `fyll` -> `fill` is ratified in #993's w07 table, but it is a Kojo command AND one of our own
     // example names, in different files. Scoped to the three where it is genuinely ours:
     //   Scala: w04-objects-exercise (`def fyll(p: Pt)(s: Int)`), lect-w07-seq (`fyll(42, ...)`),
