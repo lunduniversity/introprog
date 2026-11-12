@@ -370,6 +370,13 @@ object CodeGlossary:
     // read `krona` as the Scandinavian currency and produced "krone", so code and solution already
     // disagreed. `TRE` gets no id entry: it has no bare occurrence, and a dead key is not free.
     "TRE" -> "THREE",
+    // w01's if/while/for demos print these and the REPL echoes them back bare. The echo was ALREADY
+    // English (`gurka`/`tomat` are ratified IDENTIFIERS, and the id map reaches bare output) while the
+    // literals the code prints were not -- so the slide showed `println("gurka")` above output saying
+    // `cucumber`. Same pair as the id entries, different map: one renames tokens, this one whole literals.
+    "gurka" -> "cucumber",
+    "tomat" -> "tomato",
+    "gurka nr $i" -> "cucumber nr $i",
     // w06's exception demo. Paired with the scoped id entries in perFileId below: these two are the
     // quoted literals the code throws and prints, those are the bare words the REPL echoes back. Shipping
     // either half alone leaves English code above Swedish output, or the reverse -- no better than
@@ -509,6 +516,12 @@ object CodeGlossary:
     // global entries. Measured before adding: in THIS file's code regions each of these four occurs
     // exactly 3 times -- all on those three echo lines -- so the scope fires nowhere else. Prose is
     // outside the id map and string-literal content is copied verbatim by copyStr, so neither is at risk.
+    // w01's edit/compile/test loop is written as pseudocode in a Code env, so the id map is the only
+    // thing that reaches it -- the prose above the block already reads "edit; compile; find errors".
+    // Scoped: `upprepa` is a real control-structure demo name in 6 other files and `kompilera` is an
+    // ordinary Swedish verb with 58 corpus occurrences. In THIS file each occurs exactly once, in that
+    // one block. (`testa` -> `test` is already ratified globally and needs nothing.)
+    "lect-w01-intro" -> Map("upprepa" -> "repeat", "editera" -> "edit", "kompilera" -> "compile"),
     "lect-w06-exceptions" -> Map("Fångad" -> "Caught", "av" -> "by", "en" -> "a",
       "stormvind" -> "storm wind"),
     // `akta dig!!!` is printed by the code AND quoted back bare in the worked solution

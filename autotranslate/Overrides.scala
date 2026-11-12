@@ -782,6 +782,12 @@ object Overrides:
     // only reachable now that the .tex code-env path passes `alsoTranslate`.
     "flatMap ignorerar None"                                 -> "flatMap ignores None",
     "Tryck TAB efter punkten"                                -> "Press TAB after the dot",
+    // w01 dod-os slide. `skal` is Swedish for shell; the model rendered it "shall", so the English
+    // edition explained a command interpreter with a modal verb. The sentence also teaches Swedish
+    // students that English "shell" = Swedish "kommandotolk", which has to be re-pointed for an
+    // English reader: name the thing, and keep the Swedish word as the foreign term.
+    "Hemkatalog (tilde)" -> "Home directory (tilde)",
+    """Shell}: {Engelska för kommandotolk}, \textit{skal} på svenska""" -> """Shell}: {a command-line interpreter}, \textit{skal} in Swedish""",
     "absolutbeloppet"                                        -> "the absolute value",
     "vinkeln i radianer"                                     -> "the angle in radians",
     "resultatet av addition"                                 -> "the result of addition",
