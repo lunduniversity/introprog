@@ -774,6 +774,21 @@ object Overrides:
     // inheritance", so this is the bare compound alone. Key from unit-probe on
     // compendium/generated/w05-chaphead-generated.tex, block 13, `clean: accessregler`.
     "accessregler"                            -> "access rules",
+    // Three semantic defects found by auditing the caches for CORRECTNESS rather than for leftover
+    // Swedish: each of these was translated confidently into something that means another thing, so it
+    // reads as finished work and no gate can see it.
+    //
+    // 1. `oföränderlig` is IMMUTABLE. The prose in the same lecture (lect-w05-classes:403) already says
+    //    "public immutable attribute"; only the code comment on :281 said "final", which in Scala is a
+    //    different property -- `val` is immutable, `final` is about overriding.
+    "publikt oföränderligt attribut"          -> "public immutable attribute",
+    // 2 and 3. `datavetenskap` is COMPUTER science, not data science -- a different field, and in w12 it
+    //    names the course a student is told to enrol on. The w12 unit also loses a stray period the
+    //    translation introduced after `\emph{...}`.
+    """viktiga datavetenskapliga idéer\\namnrymd, datatyp, samling, uppdelning i delproblem, ...""" ->
+      """important computer science ideas\\namespace, data type, collection, decomposition into subproblems, ...""",
+    """Linjärsökning med find.} Teknologen Oddput Clementina vill gå första bästa datavetenskapskurs som är på G2-nivå.""" ->
+      """Linear search with find.} The technologist Oddput Clementina wants to take the first available computer science course at G2-level.""",
     "Fördjupning: Använda Java-samlingar i Scala med" -> "Deep dive: Using Java Collections in Scala with",
     "Fördjupning: Användning av hjälpkonstruktor" -> "Deep dive: Usage of Helper Constructor",
     "Fördjupning: Detaljerade regler för override" -> "Deep dive: Detailed Rules for Override",
