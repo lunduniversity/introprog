@@ -34,6 +34,9 @@ def trailStart(b: String): Int =
 
 def show(s: String): String = s.replace("\n", "⏎")
 
+/** Shorten for overview lines only, and say so: an ellipsis marks every cut. */
+def cut(s: String, max: Int = 160): String = if s.length <= max then s else s.take(max) + " …[cut]"
+
 @main def unitProbe(pattern: String, files: String*): Unit =
   val re = pattern.r
   for file <- files do
@@ -46,12 +49,14 @@ def show(s: String): String = s.replace("\n", "⏎")
       val restored = Latex.restore(b, spans)
       if re.findFirstIn(restored).isDefined then
         val lead = leadLen(b); val trail = trailStart(b)
-        if trail <= lead then println(s"  [block $k] MATCH but no prose core: ${show(restored.take(160))}")
+        if trail <= lead then println(s"  [block $k] MATCH but no prose core: ${show(cut(restored))}")
         else
           val core = b.substring(lead, trail)
           val clean = Latex.restore(core, spans).trim
           val cleanFull = Latex.restore(b.substring(lead), spans).trim
           println(s"  [block $k]")
-          println(s"    core:      ${show(core.take(160))}")
-          println(s"    clean:     ${show(clean.take(160))}")
-          println(s"    cleanFull: ${show(cleanFull.take(160))}")
+          // clean/cleanFull are printed WHOLE (never truncated): `clean` is the override key, and a
+          // truncated key that looks complete never matches (#1013). The length makes a cut visible.
+          println(s"    core:      ${show(cut(core))}")
+          println(s"    clean:     ${show(clean)}  (${clean.length} chars)")
+          println(s"    cleanFull: ${show(cleanFull)}  (${cleanFull.length} chars)")
