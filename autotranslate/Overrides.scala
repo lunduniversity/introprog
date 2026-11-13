@@ -105,7 +105,40 @@ object Overrides:
     "Variansproblem -- tack kompilatorn!"     -> "Variance problem -- thanks to the compiler!", // varians = variance, not "variation"
     "Exempel: PolygonArray, ändring på plats" -> "Example: PolygonArray, in-place modification", // på plats = in place
     "Redovisning på schemalagd labbtid"   -> "Presentation at scheduled lab time",
-    "Alla obl. labbar ska vara gk innan munta." -> "All mandatory labs must be passed before the oral exam.", // gk = godkänd = passed, munta = oral exam, not "meeting" // redovisning = presentation, not "redemption"
+    "Alla obl. labbar ska vara gk innan munta." -> "All mandatory labs must be passed before the oral exam.", // gk = godkänd = passed, munta = oral exam, not "meeting"
+
+    // ── kojo-commands: paddan = Kojo's TURTLE (the model gave pad / paddle / padd / paddan, and twitch / Lage);
+    //    keys from unit-probe, one unit per table row; "the turtle" as in the w01 overrides further down ──
+    "Paddan går framåt 25 steg." -> "The turtle moves forward 25 steps.",
+    "Paddan går framåt 100 steg." -> "The turtle moves forward 100 steps.",
+    "Paddan vrider sig 90 grader åt höger." -> "The turtle turns 90 degrees to the right.",
+    "Paddan vrider sig 45 grader åt höger." -> "The turtle turns 45 degrees to the right.",
+    "Paddan vrider sig 90 grader åt vänster." -> "The turtle turns 90 degrees to the left.",
+    "Paddan vrider sig 45 grader åt vänster." -> "The turtle turns 45 degrees to the left.",
+    "Paddan hoppar 25 steg utan att rita." -> "The turtle jumps 25 steps without drawing.",
+    "Paddan hoppar 100 steg utan att rita." -> "The turtle jumps 100 steps without drawing.",
+    "Paddan hoppar till läget (100, 200) utan att rita." -> "The turtle jumps to the position (100, 200) without drawing.",
+    "Paddan vrider sig och går till läget (100, 200)." -> "The turtle turns and moves to the position (100, 200).",
+    "Paddan går tillbaka till utgångsläget (0, 0)." -> "The turtle goes back to the starting position (0, 0).",
+    "Paddan vrider sig så att nosen pekar åt höger." -> "The turtle turns so that its nose points to the right.",
+    "Paddan vrider sig så att nosen pekar åt vänster." -> "The turtle turns so that its nose points to the left.",
+    "Paddan vrider sig så att nosen pekar uppåt." -> "The turtle turns so that its nose points up.",
+    "Paddan vrider sig så att nosen pekar neråt." -> "The turtle turns so that its nose points down.",
+    "Paddan vrider sig så att nosen pekar mot läget (100, 200)" -> "The turtle turns so that its nose points towards the position (100, 200)",
+    "Paddan vrider nosen till vinkeln 90 grader." -> "The turtle turns its nose to the angle 90 degrees.",
+    "Ger vinkelvärdet dit paddans nos pekar." -> "Gives the angle in which the turtle's nose points.",
+    "Gör så att paddan ritar jättesakta." -> "Makes the turtle draw extremely slowly.",
+    "Paddan skriver med jättestor text nästa gång du gör skriv." -> "The turtle writes with huge text the next time you write.",
+    "Paddan ritar en båge med radie 100 och vinkel 90." -> "The turtle draws an arc with radius 100 and angle 90.",
+    "Paddan ritar en cirkel med radie 100." -> "The turtle draws a circle with radius 100.",
+    "Paddan blir synlig." -> "The turtle becomes visible.",
+    "Paddan blir osynlig." -> "The turtle becomes invisible.",
+    "Ger paddans x-läge" -> "Gives the turtle's x position",
+    "Ger paddans y-läge" -> "Gives the turtle's y position",
+    "Sätter ner paddans penna så att den ritar när den går." -> "Puts the turtle's pen down so that it draws when it moves.",
+    "Lyfter upp paddans penna så att den INTE ritar när den går." -> "Lifts the turtle's pen so that it does NOT draw when it moves.",
+    "Gör så att paddan inte fyller i något när den ritar." -> "Makes the turtle not fill in anything when it draws.",
+    "Paddan går fram och svänger höger 4 gånger." -> "The turtle moves forward and turns right 4 times.", // redovisning = presentation, not "redemption"
     "Vad är fördelen med egentyper i stället för arv?" -> "What is the advantage of self-types instead of inheritance?", // egentyp = self-type, not "case class"
     // NB: a title's TRAILING inline \code{}/\texttt{} is peeled as structure, so the key is the PROSE
     // ONLY (the trailing command is restored automatically — and one key covers all \code{X} variants).
