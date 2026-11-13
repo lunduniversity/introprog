@@ -492,6 +492,10 @@ object CodeGlossary:
     // renderings. The w08 template keeps `typ`: Swedish, but not wrong English, and what those skeleton
     // placeholders should say is a separate question.
     "w05-classes-exercise" -> Map("typ" -> "kind"),
+    // the same where-it-means-a-type case in the Kojo "strange names" program: the parameter `typ: String`
+    // and its uses `namn+": "+typ`, `typ.size`. It rendered `kind` under the old global entry; scoping it
+    // in #1017 would otherwise quietly revert it to `typ`.
+    "w01-intro-lab" -> Map("typ" -> "kind"),
     // `fyll` -> `fill` is ratified in #993's w07 table, but it is a Kojo command AND one of our own
     // example names, in different files. Scoped to the three where it is genuinely ours:
     //   Scala: w04-objects-exercise (`def fyll(p: Pt)(s: Int)`), lect-w07-seq (`fyll(42, ...)`),
