@@ -104,7 +104,8 @@ object Overrides:
     "Binärsökning"                            -> "Binary search",             // qwen "BinarySearch"
     "Variansproblem -- tack kompilatorn!"     -> "Variance problem -- thanks to the compiler!", // varians = variance, not "variation"
     "Exempel: PolygonArray, ändring på plats" -> "Example: PolygonArray, in-place modification", // på plats = in place
-    "Redovisning på obligatorisk schemalagd labbtid"   -> "Presentation at mandatory scheduled lab time", // redovisning = presentation, not "redemption"
+    "Redovisning på schemalagd labbtid"   -> "Presentation at scheduled lab time",
+    "Alla obl. labbar ska vara gk innan munta." -> "All mandatory labs must be passed before the oral exam.", // gk = godkänd = passed, munta = oral exam, not "meeting" // redovisning = presentation, not "redemption"
     "Vad är fördelen med egentyper i stället för arv?" -> "What is the advantage of self-types instead of inheritance?", // egentyp = self-type, not "case class"
     // NB: a title's TRAILING inline \code{}/\texttt{} is peeled as structure, so the key is the PROSE
     // ONLY (the trailing command is restored automatically — and one key covers all \code{X} variants).
