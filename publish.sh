@@ -20,7 +20,27 @@ echo "*** scp ENGLISH pdfs to $WEB_REMOTE_LU"
 ls compendium-en/*.pdf >/dev/null 2>&1 && scp compendium-en/*.pdf $LUCATID@$WEB_REMOTE_LU:/Websites/Fileadmin/pgk/. || echo "  (no compendium-en/*.pdf yet — run 'sbt pdfCompendiumEn')"
 ls slides-en/*.pdf     >/dev/null 2>&1 && scp slides-en/*.pdf     $LUCATID@$WEB_REMOTE_LU:/Websites/Fileadmin/pgk/. || echo "  (no slides-en/*.pdf yet — run 'sbt \"pdfSlidesEn w01 ...\"')"
 
-for f in plan/*-generated.html glossary/*-generated.html 
+# Pull the website clone BEFORE copying into it. Commits pushed from elsewhere (another machine, the
+# GitHub web UI) otherwise make every push below fail with "rejected (fetch first)". --ff-only never
+# merges or rewrites: if the clone has diverged it stops, says so, and the website update is skipped.
+# (No 'exit' here: this script is usually run with 'source', and exit would close the terminal.)
+echo "*** pull $WEB_LOCAL_GITHUB before copying"
+if (cd $WEB_LOCAL_GITHUB && git pull --ff-only)
+then
+  WEB_PULL_OK=yes
+else
+  WEB_PULL_OK=no
+  echo "  !!! could not fast-forward $WEB_LOCAL_GITHUB: it has local commits that are not on GitHub"
+  echo "      Fix it by hand, e.g. if they are only generated files:"
+  echo "        (cd $WEB_LOCAL_GITHUB && git fetch && git reset --hard origin/main)"
+  echo "      then re-run publish.sh. SKIPPING the website update now."
+fi
+
+# build.sh regenerates the SERVED copy pgk/resources/ from src/pgk/resources/, so both are staged;
+# committing only src/ left the live page unchanged until someone committed pgk/ by hand.
+if [ "$WEB_PULL_OK" = yes ]
+then
+for f in plan/*-generated.html glossary/*-generated.html
 do
   b=$(basename $f)
   dest=$WEB_LOCAL_GITHUB_DEST/$b
@@ -34,15 +54,16 @@ do
     cp -i $f $dest && \
       cd $WEB_LOCAL_GITHUB && \
         source build.sh && \
-          git add $WEB_LOCAL_GITHUB_PATH/$b && \
+          git add $WEB_LOCAL_GITHUB_PATH/$b pgk/resources/$b && \
             git status && \
-              git commit -m "update $WEB_LOCAL_GITHUB_PATH/$b" && \
+              git commit -m "update $WEB_LOCAL_GITHUB_PATH/$b and pgk/resources/$b" && \
                 git push
     cd $HERE
   else
     echo "  no changes: $f"
   fi
 done
+fi
 
 # ---------------------------------------------------------------------------------
 # STALE-LINK WARNING -- the coupling that has no detector.
