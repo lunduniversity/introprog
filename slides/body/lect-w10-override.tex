@@ -66,7 +66,7 @@ En medlem M1 i en supertyp får överskuggas av en medlem M2 i en subtyp, enligt
 \begin{Slide}{Fördjupning: override av \texttt{var} med \texttt{var}}\SlideFontTiny
 Det krävs speciella förutsättningar för att ersätta en \code{var} med en \code{var} vid arv.
 \begin{itemize}
-\item En konkret medlem får \Alert{inte} bytas ut mot en \code{var} -- inte ens en konkret \code{var}:
+\item En konkret medlem (t.ex. en konkret \code{var}) får \Alert{inte} bytas ut mot en \code{var}:
 \begin{REPLsmall}
 scala> trait ConcreteVar { var x = 42 }
 scala> trait Sub extends ConcreteVar { override var x = 43 }
@@ -100,13 +100,13 @@ scala> trait Super { def x: Int }
 scala> trait Sub extends Super { override var x = 43 }
 -- Error:
 1 |trait Sub extends Super { override var x = 43 }
-  |                                             ^
-  |                                             setter x_= overrides nothing
+  |                                       ^
+  |                                       setter x_= overrides nothing
 
 scala> trait Sub extends Super { var x = 43 }   // funkar om ej override
 \end{REPLsmall}
 Den abstrakta \code{def}-medlemmen blir då implementerad av en konkret getter. 
-\item Egentligen är en publik \code{var}-medlem en kombination av en getter och en setter. Du kan skapa konkret getter+setter och överskugga gettern explicit med \code{override} (notera att settern inte kan göra \code{override}, eftersom superklassen inte har någon motsvarande metod att byta ut -- jämför felmeddelande ovan):
+\item Egentligen är en publik \code{var}-medlem en kombination av en getter och en setter. Du kan skapa konkret getter+setter och överskugga gettern explicit med \code{override} (notera att settern inte kan göra \code{override}, eftersom supertypen inte har någon motsvarande metod att byta ut -- jämför felmeddelande ovan):
 \begin{REPLsmall}
 scala> trait Sub2 extends Super:
          private var myPrivateValue = 42
