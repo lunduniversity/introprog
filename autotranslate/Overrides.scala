@@ -403,12 +403,20 @@ object Overrides:
       """If you haven't already done so: \\Show the \href{https://github.com/bjornregnell/lth-eda016-2015/tree/master/assignments}{collaboration contract} to an assistant during a tutorial.""",
 
     // ── lect-w10-override: clean slide prose (Färg/Röd/Svart/namn/ålder are example identifiers) ──
-    """Om en medlem i en supertyp är abstrakt \emph{behöver} man inte använda nyckelordet \code{override} i subtypen. (Men det är bra att göra det ändå så att kompilatorn hjälper dig att kolla att du verkligen överskuggar något.)""" ->
-      """If a member of a supertype is abstract you \emph{do not need} to use the keyword \code{override} in the subtype. (But it is good to do so anyway, so the compiler helps you check that you really are overriding something.)""",
+    // ⚠ RE-POINTED: the bullet at lect-w10-override:56 gained a trailing exception clause (de811d35,
+    // "rules got stricter in Scala 3"), which moved the closing `)` and stranded the old key ending
+    // `överskuggar något.)`. The unit now ENDS at `något.` because what follows is \Alert{Undantag:},
+    // a masked span that splits the unit — so the key is SHORTER than the bullet, and the new clause
+    // is separate units that translate on their own. Key from unit-probe block 36, `clean:` line.
+    """Om en medlem i en supertyp är abstrakt \emph{behöver} man inte använda nyckelordet \code{override} i subtypen. (Men det är bra att göra det ändå så att kompilatorn hjälper dig att kolla att du verkligen överskuggar något.""" ->
+      """If a member of a supertype is abstract you \emph{do not need} to use the keyword \code{override} in the subtype. (But it is good to do so anyway, so the compiler helps you check that you really are overriding something.""",
     """Om en medlem i en supertyp är konkret \emph{måste} man använda nyckelordet \code{override} i subtypen, annars ges kompileringsfel.""" ->
       """If a member of a supertype is concrete you \emph{must} use the keyword \code{override} in the subtype, otherwise you get a compile error.""",
-    """En konkret medlem får \Alert{inte} bytas ut mot en \code{var} -- inte ens en konkret \code{var}:""" ->
-      """A concrete member may \Alert{not} be replaced by a \code{var} -- not even a concrete \code{var}:""",
+    // ⚠ RE-POINTED: the bullet at lect-w10-override:69 was rewritten (the `-- inte ens en konkret
+    // \code{var}` tail became a parenthetical `(t.ex. en konkret \code{var})` after the subject), which
+    // stranded the old key. Key from unit-probe block 48, `clean:` line.
+    """En konkret medlem (t.ex. en konkret \code{var}) får \Alert{inte} bytas ut mot en \code{var}:""" ->
+      """A concrete member (e.g. a concrete \code{var}) may \Alert{not} be replaced by a \code{var}:""",
     """En produkt-typ är en ''och''-typ (ä.k. record, struct), exempel: \\ \code|case class Person(namn: String, ålder: Int)| \\består av attributen namn \Alert{OCH} ålder.""" ->
       """A product type is an ''and''-type (a.k.a. record, struct), example: \\ \code|case class Person(namn: String, ålder: Int)| \\consists of the attributes namn \Alert{AND} ålder.""",
     """Exempel: \code|enum Färg { case Röd, Svart}| \\Färg kan vara antingen Röd \Emph{ELLER} Svart.""" ->
