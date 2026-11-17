@@ -680,7 +680,16 @@ object Translate:
   // (node NAMES / \foreach vars) and algorithm (keyword macros) would break refs/macros if renamed (see the
   // Latex.verbatimEnvs notes). exlatex/envi (raw LaTeX examples), comment, verbatim/Verbatim also excluded.
   private val scalaCodeEnvs = Set("Code", "CodeSmall", "REPL", "REPLnonum", "REPLsmall", "lstlisting", "Trace", "Output")
-  private val inlineCodeRe = raw"\\(code|jcode|lstinline)\{([^}]*)\}".r
+  // Both delimiter forms. The PIPE form was invisible until 2026-11-08: the generated quiz rows emit
+  // `\code| … |` exclusively (596 spans, ZERO brace-delimited), so NO quiz code cell was reachable by the
+  // id map and ratified names stayed Swedish on the page -- `öka`, `fleraAnrop`, `hälsa` all ratified, all
+  // still Swedish. `\verb` is deliberately NOT included: verbatim is meant to be literal, and its content
+  // here is REPL output (`p1: Point = Point@30ef773e`).
+  // Safe to match non-greedily: a census of every pipe in compendium-en + slides-en found 0 content pipes.
+  // Every `|` is a delimiter of code/jcode/lstinline/verb, or sits outside any span -- longtable column
+  // specs and Scala 3 compiler-error gutters (`|^`, `|method f does not take more parameters`). So
+  // `[^|]*` cannot run past a closing delimiter or pair across two spans.
+  private val inlineCodeRe = raw"\\(code|jcode|lstinline)(?:\{([^}]*)\}|\|([^|]*)\|)".r
 
   /** After prose translation, translate the PROSE inside inline code + code ENVs (comments + Swedish strings,
     * via Code.translate) AND — Option-D via the mirror — rename Swedish identifiers via CodeGlossary in the
@@ -712,7 +721,14 @@ object Translate:
       def clampedInline(pos: Int): Boolean = inlineRanges.exists(r => pos >= r.start && pos < r.end)
       inlineCodeRe.replaceAllIn(withEnvs, m =>
         if clampedInline(m.start) then java.util.regex.Matcher.quoteReplacement(m.matched)
-        else java.util.regex.Matcher.quoteReplacement(s"\\${m.group(1)}{" + CodeGlossary.renderCodeIds(m.group(2), extraId, extraStr) + "}"))
+        else
+          // group 2 = brace body, group 3 = pipe body; exactly one is non-null. Re-emit the SAME
+          // delimiter the source used -- swapping `|` for `{}` would break any body containing a brace,
+          // which is presumably why the quiz generator chose pipes in the first place.
+          val (open, body, close) =
+            if m.group(2) != null then ("{", m.group(2), "}") else ("|", m.group(3), "|")
+          java.util.regex.Matcher.quoteReplacement(
+            s"\\${m.group(1)}$open" + CodeGlossary.renderCodeIds(body, extraId, extraStr) + close))
 
   // ---------- lifecycle ----------
   /** Load cache and make sure the model is ready (called before mirror translation).
