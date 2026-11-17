@@ -806,6 +806,40 @@ object Overrides:
     // The longer unit in w10 ("accessregler vid arv") came out correctly as "access rules for
     // inheritance", so this is the bare compound alone. Key from unit-probe on
     // compendium/generated/w05-chaphead-generated.tex, block 13, `clean: accessregler`.
+    // CODE COMMENTS, unreachable until the .tex code-env path passes `alsoTranslate` (this PR).
+    // None of these has åäö or a Swedish stopword, so `swedishish` is false, `Code.piece` never
+    // offers them to the translator, and no cache row for them can ever fire. `codeStr` covers
+    // string literals, not comments. One key per CAPITALISATION: translatePlain trims the comment,
+    // so `//tryck X` and `// tryck X` share a key, but `tryck` and `Tryck` do not.
+    "absolutbeloppet" -> "the absolute value",
+    "vinkeln i radianer" -> "the angle in radians",
+    "resultatet av addition" -> "the result of addition",
+    "konstruktion av instans av Complex" -> "construction of an instance of Complex",
+    "anrop med namngivet argument" -> "call with named argument",
+    "instansen allokeras" -> "the instance is allocated",
+    "klassparametrar" -> "class parameters",
+    "Koden kommer fastna i en evig loop." -> "The code will get stuck in an infinite loop.",
+    "lika storlek" -> "same size",
+    "olika storlek" -> "different size",
+    "olika objekt" -> "different objects",
+    "olika instanser" -> "different instances",
+    "s1 har sidan 1" -> "s1 has side 1",
+    "y syns i X" -> "y is visible in X",
+    "flatMap ignorerar None" -> "flatMap ignores None",
+    "tryck TAB en gång" -> "press TAB once",
+    "tryck TAB och se alla publika medlemmar" -> "press TAB and see all public members",
+    "Tryck TAB direkt efter punkten och betrakta listan" -> "Press TAB right after the dot and look at the list",
+    "tryck TAB 2 gånger" -> "press TAB 2 times",
+    "tryck TAB" -> "press TAB",
+    "tryck TAB efter punkten" -> "press TAB after the dot",
+    "Tryck TAB efter punkten" -> "Press TAB after the dot",
+    // w01 dod-os slide (needs no gate -- it has åäö). The model rendered `skal` as "shall", so the
+    // English edition explained a command interpreter with a modal verb. The trailing clause is
+    // DROPPED rather than translated: ", skal på svenska" exists to tell a SWEDISH reader which
+    // word maps to English "shell". An English reader has no use for the Swedish word.
+    "Hemkatalog (tilde)" -> "Home directory (tilde)",
+    """Shell}: {Engelska för kommandotolk}, \textit{skal} på svenska""" ->
+      """Shell}: {a command-line interpreter}""",
     "accessregler"                            -> "access rules",
     // Three semantic defects found by auditing the caches for CORRECTNESS rather than for leftover
     // Swedish: each of these was translated confidently into something that means another thing, so it
