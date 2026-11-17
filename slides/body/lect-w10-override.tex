@@ -30,7 +30,7 @@
 Övergripande (förenklade) regler:
 
 \begin{itemize}\SlideFontTiny
-\item När man överskuggar \Eng{override} en medlemmen med en annan medlem med samma namn i en subtyp, får denna medlem en (ny) implementation.
+\item När man överskuggar \Eng{override} en medlem med en annan medlem med samma namn i en subtyp, får denna medlem en (ny) implementation.
 
 \item Singelobjekt kan ej ärvas (och medlemmar i singelobjekt kan därmed ej överskuggas).
 
@@ -43,18 +43,22 @@
 
 \begin{Slide}{Fördjupning: Detaljerade regler för override} \SlideFontTiny
 \label{slideW07:overriderules}
-En medlem M1 i en supertyp får överskuggas av en medlem M2 i en subtyp, enligt dessa regler: (se även \url{https://stackoverflow.com/questions/40057337})
+En medlem M1 i en supertyp får överskuggas av en medlem M2 i en subtyp, enligt dessa regler: (se även \href{https://www.scala-lang.org/files/archive/spec/3.4/05-classes-and-objects.html#overriding}{www.scala-lang.org/files/archive/spec/})
 \begin{enumerate}
 \item M1 och M2 ska ha samma namn och typerna ska matcha.
-\item \code{def} får bytas ut mot: \code{def}, \code{val}, och \code{lazy val}, och under speciella förutsättningar \code{var} (mer om att byta \code{def} mot \code{var} snart)
-\item \code{val} får bytas ut mot \code{val}. Om medlemmen i M1 som överskuggas är abstrakt så får en \code{val} även bytas mot en \code{lazy val}.
+
+\item \code{def} får bytas ut mot: \code{def}, \code{val}, och \code{lazy val}, och om \code{def} är abstrakt även mot \code{var} (mer om att byta \code{def} mot \code{var} snart)
+
+\item \code{val} får bara bytas ut mot \code{val}. 
 \item En abstrakt \code{var} får bara bytas ut mot en \code{var}. En konkret \code{var} får ej bytas ut.
 \item \code{lazy val} får bara bytas ut mot en \code{lazy val}.
-\item Om en medlem i en supertyp är abstrakt \emph{behöver} man inte använda nyckelordet \code{override} i subtypen. (Men det är bra att göra det ändå så att kompilatorn hjälper dig att kolla att du verkligen överskuggar något.)
+
+\item Om en medlem i en supertyp är abstrakt \emph{behöver} man inte använda nyckelordet \code{override} i subtypen. (Men det är bra att göra det ändå så att kompilatorn hjälper dig att kolla att du verkligen överskuggar något. \Alert{Undantag:} om medlemmen i subtypen är en \code{var} får man \emph{inte} skriva \code{override}, se kommande bilder.)
+
 \item Om en medlem i en supertyp är konkret \emph{måste} man använda nyckelordet \code{override} i subtypen, annars ges kompileringsfel.
 \item M1 får inte vara \code{final}.
-\item M1 får inte vara \code{private}, men kan vara \code{private[X]} om M2 också är \code{private[X]}, eller \code{private[Y]} om X är (en del av) Y.
-\item Om M1 är \code{protected} måste även M2 vara det.
+\item M2 får inte vara \code{private}. (En privat M1 ärvs inte alls, så den kan inte överskuggas.) Om M2 är \code{private[Y]} måste M1 vara \code{private[X]} där X är Y eller ligger inuti Y.
+\item Om M2 är \code{protected} måste även M1 vara det (man får vidga men inte begränsa synligheten).
 
 \end{enumerate}
 \end{Slide}
@@ -62,7 +66,7 @@ En medlem M1 i en supertyp får överskuggas av en medlem M2 i en subtyp, enligt
 \begin{Slide}{Fördjupning: override av \texttt{var} med \texttt{var}}\SlideFontTiny
 Det krävs speciella förutsättningar för att ersätta en \code{var} med en \code{var} vid arv.
 \begin{itemize}
-\item En konkret medlem får \Alert{inte} bytas ut mot en \code{var} -- inte ens en konkret \code{var}:
+\item En konkret medlem (t.ex. en konkret \code{var}) får \Alert{inte} bytas ut mot en \code{var}:
 \begin{REPLsmall}
 scala> trait ConcreteVar { var x = 42 }
 scala> trait Sub extends ConcreteVar { override var x = 43 }
@@ -96,18 +100,18 @@ scala> trait Super { def x: Int }
 scala> trait Sub extends Super { override var x = 43 }
 -- Error:
 1 |trait Sub extends Super { override var x = 43 }
-  |                                             ^
-  |                                             setter x_= overrides nothing
+  |                                       ^
+  |                                       setter x_= overrides nothing
 
 scala> trait Sub extends Super { var x = 43 }   // funkar om ej override
 \end{REPLsmall}
 Den abstrakta \code{def}-medlemmen blir då implementerad av en konkret getter. 
-\item Egentligen är en publik \code{var}-medlem en kombination av en getter och en setter. Du kan skapa konkret getter+setter och överskugga gettern explicit med \code{override} (notera att settern inte kan göra \code{override}, eftersom superklassen inte har någon motsvarande metod att byta ut -- jämför felmeddelande ovan):
+\item Egentligen är en publik \code{var}-medlem en kombination av en getter och en setter. Du kan skapa konkret getter+setter och överskugga gettern explicit med \code{override} (notera att settern inte kan göra \code{override}, eftersom supertypen inte har någon motsvarande metod att byta ut -- jämför felmeddelande ovan):
 \begin{REPLsmall}
 scala> trait Sub2 extends Super:
          private var myPrivateValue = 42
          override def x: Int = myPrivateValue
-         def x_(newValue: Int): Unit = myPrivateValue = newValue
+         def x_=(newValue: Int): Unit = myPrivateValue = newValue
 \end{REPLsmall}
 Ovan fungerar fint eftersom vi nu har en giltig kombination av getter+setter.
 \end{itemize}
@@ -124,10 +128,10 @@ scala> class Y extends X:
          val sg = super.gurka
 
 scala> val y = new Y
-y: Y = Y@26ba2a48
+val y: Y = Y@26ba2a48
 
 scala> y.gurka
-res0: String = :(
+val res0: String = :(
 \end{REPL}
 \else
 \begin{REPL}
@@ -138,10 +142,10 @@ scala> class Y extends X:
          val sg = super.cucumber
 
 scala> val y = new Y
-y: Y = Y@26ba2a48
+val y: Y = Y@26ba2a48
 
 scala> y.cucumber
-res0: String = :(
+val res0: String = :(
 \end{REPL}
 \fi{}
 
@@ -149,7 +153,7 @@ res0: String = :(
 Super Pepinos to the rescue:
 \begin{REPLnonum}
 scala> y.sg
-res1: String = super pepino
+val res1: String = super pepino
 
 \end{REPLnonum}
 
@@ -181,16 +185,16 @@ res1: String = super pepino
 \Emph{abstrakt typ}     & en typ som kan ha abstrakta medlemmar; kan ej instansieras\\
 \Emph{konkret typ}      & en typ som ej har abstrakta medlemmar; kan instansieras\\
 \Emph{anonym klass}     & en namnlös klass som skapas direkt vid instansiering \\
-\code|class|            & en konkret typ som \Alert{kan ej ha abstrakta medlemmar}\\
+\code|class|            & en konkret typ som \Alert{ej kan ha abstrakta medlemmar}\\
 \code|abstract class|   & en abstrakt typ som \Emph{kan ha abstrakta medlemmar}\\
 \code|trait|            & är en abstrakt typ som \Emph{kan mixas in} \\
 \code|extends|          & står före en supertyp, medför arv av supertypens medlemmar\\
-\code|override|         & en medlem överskuggar (byter ut) en medlem i en superttyp\\
+\code|override|         & en medlem överskuggar (byter ut) en medlem i en supertyp\\
 \code|protected|        & gör en medlem synlig i subtyper till denna typ (jmf \code|private|)\\
-\code|final def gurka|  & gör medlemen gurka final: förhindrar överskuggning\\
+\code|final def gurka|  & gör medlemmen gurka final: förhindrar överskuggning\\
 \code|final class|      & gör klassen final: förhindrar vidare subtypning\\
-\code|sealed|           & förseglad trait/klass: enbart subtyper i denna kodfil, koll av match\\
-\code|open class|       & berätta att den är tänkt att ärvas, \code|open| krävs för arv i annan kodfil\\   
+\code|sealed|           & förseglad trait/klass: enbart direkta subtyper i samma kodfil, koll av match\\
+\code|open class|       & visa att den är tänkt att ärvas, annars varning (framöver) för arv i annan kodfil\\   
 %\code|transparent trait|& gör typen ''genomskinlig'' (alltså osynlig) vid typhärledning\\
 \code|super.gurka|      & refererar till supertypens medlem \code|gurka| (jmf \code|this|)\\
 
@@ -213,8 +217,8 @@ res1: String = super pepino
 \code|protected|        & makes a member visible in subtypes of this type (cf.\ \code|private|)\\
 \code|final def gurka|  & makes the member gurka final: prevents overriding\\
 \code|final class|      & makes the class final: prevents further subtyping\\
-\code|sealed|           & sealed trait/class: only subtypes in this code file, enables match checking\\
-\code|open class|       & signals it is meant to be inherited, \code|open| required for inheritance in another code file\\
+\code|sealed|           & sealed trait/class: only direct subtypes in the same code file, enables match checking\\
+\code|open class|       & signals it is meant to be inherited, otherwise (in future) a warning for inheritance in another code file\\
 \code|super.gurka|      & refers to the supertype's member \code|gurka| (cf.\ \code|this|)\\
 
 \end{tabular}
@@ -250,7 +254,7 @@ Algebraisk datatyp \Eng{algebraic data type}, förk. ADT:
 \item \Emph{produkt}-typer och \Alert{summa}-typer:
 \begin{itemize}%\SlideFontTiny
 \item En produkt-typ är en ''och''-typ (ä.k. record, struct), exempel: \\ \ifswedish\code|case class Person(namn: String, ålder: Int)|\else\code|case class Person(name: String, age: Int)|\fi{} \\består av attributen namn \Alert{OCH} ålder.
-\item En summa-typ  är en 'Eller''-typ (ä.k. disjunkt union, co-produkt).
+\item En summa-typ  är en ''eller''-typ (ä.k. disjunkt union, co-produkt).
 \item Exempel: \ifswedish\code|enum Färg { case Röd, Svart}|\else\code|enum Colour { case Red, Black }|\fi{} \\Färg kan vara antingen Röd \Emph{ELLER} Svart.
 \item[] En \ifswedish\code{Grönsak}\else\code{Vegetable}\fi{} är antingen en \ifswedish\code{Gurka}\else\code{Cucumber}\fi{} \Emph{ELLER} en \ifswedish\code{Tomat}\else\code{Tomato}\fi{}
 \ifswedish
@@ -281,20 +285,20 @@ scala> val p = Person("Kim",42)
 val p: Person = Person(Kim,42)
 
 scala> p.isInstanceOf[Product]
-val res1: Boolean = true
+val res0: Boolean = true
 
 scala> p.product   // Tryck TAB
 productArity          productElement    productElementName
 productElementNames   productIterator   productPrefix
           
 scala> p.productElementNames.toVector
-val res2: Vector[String] = Vector(namn, ålder)
+val res1: Vector[String] = Vector(namn, ålder)
 
 scala> p.productElement
-val res3: Int => Any = Lambda1981/0x00000008408f2840@44498af0
+val res2: Int => Any = Lambda1981/0x00000008408f2840@44498af0
 
 scala> p.productElement(0)
-val res4: Any = Kim
+val res3: Any = Kim
 
 \end{REPL}
 \else
@@ -307,7 +311,7 @@ val p: Person = Person(Kim,42)
 scala> p.isInstanceOf[Product]
 val res1: Boolean = true
 
-scala> p.product   // Tryck TAB
+scala> p.product   // Press TAB
 productArity          productElement    productElementName
 productElementNames   productIterator   productPrefix
           

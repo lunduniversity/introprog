@@ -145,13 +145,17 @@
     val tex = os.read(f)
     val rel = f.relativeTo(root).toString
     val extraId = CodeGlossary.overridesFor(rel)
+    // #1003 follow-up: the mirror passes the per-file whole-literal strings too, so the gate has to
+    // render identically or it is not replicating what ships. It cannot change a verdict -- a string's
+    // text cannot break compilation -- but a gate that renders differently from the mirror is not a gate.
+    val extraStr = CodeGlossary.codeStrFor(rel)
     if !CodeGlossary.isOptedOut(rel) then
       val clampRanges = Latex.ifswedishRanges(tex)
       def clamped(pos: Int): Boolean = clampRanges.exists(r => pos >= r.start && pos < r.end)
       for m <- envRe.findAllMatchIn(tex) if !clamped(m.start) do
         val env = m.group(1)
         val body = if env == "lstlisting" then stripLstOpt(m.group(2)) else m.group(2)
-        val en = CodeGlossary.renderCodeIds(body, extraId)
+        val en = CodeGlossary.renderCodeIds(body, extraId, extraStr)
         if en != body then                                   // only REWRITTEN bodies are gate-relevant
           if env.startsWith("REPL") then replDeferred += 1   // rewritten transcripts -> phase 2
           else if !phase1Envs(env) then nonCode += 1         // Trace/Output — not compilable Scala
@@ -211,12 +215,16 @@
     val tex = os.read(f)
     val rel = f.relativeTo(root).toString
     val extraId = CodeGlossary.overridesFor(rel)
+    // #1003 follow-up: the mirror passes the per-file whole-literal strings too, so the gate has to
+    // render identically or it is not replicating what ships. It cannot change a verdict -- a string's
+    // text cannot break compilation -- but a gate that renders differently from the mirror is not a gate.
+    val extraStr = CodeGlossary.codeStrFor(rel)
     if !CodeGlossary.isOptedOut(rel) then
       val clampRanges = Latex.ifswedishRanges(tex)
       def clamped(pos: Int): Boolean = clampRanges.exists(r => pos >= r.start && pos < r.end)
       for m <- envRe.findAllMatchIn(tex) if replEnvs(m.group(1)) && !clamped(m.start) do
         val body = stripLstOpt(m.group(2))                           // strip a leading [numbers=none] optional arg
-        val en = CodeGlossary.renderCodeIds(body, extraId)
+        val en = CodeGlossary.renderCodeIds(body, extraId, extraStr)
         if en != body then
           val loc = s"$rel:${lineOf(tex, m.start)}"
           val enProg = replProgram(en)
@@ -349,6 +357,10 @@
     val f = items.head.file
     val tex = os.read(f)
     val extraId = CodeGlossary.overridesFor(rel)
+    // #1003 follow-up: the mirror passes the per-file whole-literal strings too, so the gate has to
+    // render identically or it is not replicating what ships. It cannot change a verdict -- a string's
+    // text cannot break compilation -- but a gate that renders differently from the mirror is not a gate.
+    val extraStr = CodeGlossary.codeStrFor(rel)
     val boundaries = boundaryRe.findAllMatchIn(tex).map(_.start).toVector
     val branches = Latex.ifswedishBranches(tex)
     def clampIdx(pos: Int): Int = branches.indexWhere(b => pos >= b.start && pos < b.end)
@@ -363,7 +375,7 @@
       val ci = clampIdx(ctxEnvs(q).pos)
       if ci < 0 then
         val sv = envCode(ctxEnvs(q).env, ctxEnvs(q).body)
-        units += ((pos = ctxEnvs(q).pos, sv = sv, en = CodeGlossary.renderCodeIds(sv, extraId)))
+        units += ((pos = ctxEnvs(q).pos, sv = sv, en = CodeGlossary.renderCodeIds(sv, extraId, extraStr)))
         q += 1
       else
         val b = branches(ci)
@@ -376,7 +388,7 @@
       val m = bodyAt(it.pos)
       val raw = stripLstOpt(m.group(2))
       val svBody = envCode(it.env, m.group(2))
-      val enBody = CodeGlossary.renderCodeIds(svBody, extraId)
+      val enBody = CodeGlossary.renderCodeIds(svBody, extraId, extraStr)
       val sessStart = boundaries.filter(_ <= it.pos).lastOption.getOrElse(0)
       val before = units.filter(u => u.pos >= sessStart && u.pos < it.pos).toVector
       val loc = s"$rel:${lineOf(tex, it.pos)} (${it.env})"

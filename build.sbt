@@ -36,7 +36,7 @@ hello := println("""
 
     --- English mirror (autotranslate sub-project) ---
 
-      NOTE: a MODEL BACKEND (local ollama, or codeberg.org/bjornregnell/modly on LAN)
+      NOTE: a MODEL BACKEND (local ollama, or github.com/bjornregnell/modly on LAN)
             is needed ONLY for --all with new Swedish prose, and for --clean.
             The default path below is offline: it reads the committed cache.
 
