@@ -46,7 +46,11 @@
   *   KEY   = the CLEAN Swedish of ONE unit, exactly as in the source, trimmed. Plain Swedish —
   *           NOT the internal __C0__ placeholder form.
   *   VALUE = the English you want, used verbatim (may contain LaTeX commands).
-  *   Duplicate keys are a compile error (Map literal) — good, it stops accidental clashes.
+  *   ⚠ DUPLICATE KEYS ARE NOT A COMPILE ERROR. This line used to claim they were; a Scala `Map`
+  *           literal silently keeps the LAST pair, so a second entry for an existing key replaces the
+  *           first with no warning from anywhere — including when the two disagree. Before adding a
+  *           short key, check whether it is already in here:
+  *                 scala-cli run autotranslate/scratch/dup-keys.scala -- autotranslate/Overrides.scala
   */
 object Overrides:
   type Swedish = String
@@ -1032,13 +1036,22 @@ object Overrides:
     // two generated checklists above, which is what keeps the three renderings of one term identical --
     // the divergence a plan-local table could not have prevented.
     //
+    // ⚠ SEVEN of these terms were ALREADY overridden higher up in this file and are deliberately absent
+    // here: alternativ, repetition, identifierare, topptyp, bottentyp, slumptal, dod: operativsystem (and
+    // accessregler). Re-adding one is not a compile error -- the header of this file says duplicate keys
+    // are, and that is WRONG: a Scala Map literal silently keeps the LAST pair. The first draft of this
+    // list re-added all seven, and `"alternativ" -> "selection"` -- the right term in the
+    // sekvens/alternativ/repetition triad -- became "alternative" with every gate still green.
+    // Check with: scala-cli run autotranslate/scratch/dup-keys.scala -- autotranslate/Overrides.scala
+    //
     // ⚠ The keys must match plan/Plan.scala EXACTLY. Two in the first draft of this list did not and were
     // silent no-ops: a composite `Nästlade och generiska strukturer & matris` (the module name is a
     // different column, and `matris` is a real glossary Concept) and `jämförlse`, a typo since corrected in
     // the Swedish source. scratch/concept-gap.scala reports both halves -- dead keys and uncovered terms.
     "abstraktion"                       -> "abstraction",
-    "accessregler"                      -> "access rules",
-    "accessregler vid arv"              -> "access rules in inheritance",
+    // "for", not "in": the cache row for this term already says "access rules for inheritance",
+    // and the bare `accessregler` override sits higher up in this file.
+    "accessregler vid arv"              -> "access rules for inheritance",
     "ad hoc polymorfism"                -> "ad hoc polymorphism",
     "aktiveringspost"                   -> "activation record",
     "algoritm: LINEAR-SEARCH"           -> "algorithm: LINEAR-SEARCH",
@@ -1046,7 +1059,6 @@ object Overrides:
     "algoritm: SEQ-REGISTER"            -> "algorithm: SEQ-REGISTER",
     "algoritm: SEQ-REVERSE"             -> "algorithm: SEQ-REVERSE",
     "algoritmexempel: SWAP"             -> "algorithm example: SWAP",
-    "alternativ"                        -> "alternative", // in sekvens/alternativ/repetition, not "option"
     "alternativ konstruktor"            -> "alternative constructor",
     "anonyma funktioner"                -> "anonymous functions",
     "anropsstacken"                     -> "call stack",
@@ -1055,14 +1067,12 @@ object Overrides:
     "applikationsdomän"                 -> "application domain",
     "aritmetik"                         -> "arithmetic",
     "bokstavliga mönster"               -> "literal patterns",
-    "bottentyp"                         -> "bottom type",
     "datamodell"                        -> "data model",
     "datorns delar"                     -> "parts of the computer",
     "de Morgans lagar"                  -> "De Morgan's laws",
     "definiera och anropa funktion"     -> "define and call function",
     // `dod` is the companion course Datorer och datoranvändning -- a course code, kept as-is.
     "dod: maskinkod"                    -> "dod: machine code",
-    "dod: operativsystem"               -> "dod: operating system",
     "dod: typsättning"                  -> "dod: typesetting",
     "dod: versionshantering"            -> "dod: version control",
     "dokumentation"                     -> "documentation",
@@ -1085,7 +1095,6 @@ object Overrides:
     "getter och setter"                 -> "getter and setter",
     "givet värde (given)"               -> "given value (given)",
     "huvudprogram"                      -> "main program",
-    "identifierare"                     -> "identifier",
     "implementera equals"               -> "implement equals",
     "inbyggda grundtyper"               -> "built-in basic types", // never "primitive": see enforceTerms
     "inbyggda sorteringsmetoder"        -> "built-in sorting methods",
@@ -1140,14 +1149,12 @@ object Overrides:
     "serialisering"                     -> "serialization",
     "skapa egen kontrollstruktur"       -> "define own control structure",
     "skuggning"                         -> "shadowing",
-    "slumptal"                          -> "random numbers",
     // lect-w03-functions:813 glosses it in the source: \Emph{stegade funktioner} \Eng{curried functions}.
     "stegad funktion"                   -> "curried function",
     "stränginterpolatorn s"             -> "string interpolator s",
     "synlighet"                         -> "visibility",
     "textfiler"                         -> "text files",
     "tillstånd"                         -> "state",
-    "topptyp"                           -> "top type",
     "tupel"                             -> "tuple",
     "typen Unit"                        -> "the type Unit",
     "typjoker"                          -> "type wildcard",
