@@ -148,7 +148,7 @@ trait Plan:
 
     Module("PROJEKT",
         id = "extra", exercise = "extra", labs = Seq("project0"), contents = """
-        | välj valfritt fördjupningsområde, påbörja projekt, valfri övning: jämförlse Scala-Java, ingen föreläsning denna vecka
+        | välj valfritt fördjupningsområde, påbörja projekt, valfri övning: jämförelse Scala-Java, ingen föreläsning denna vecka
         """.stripTrim),
 
     Module("REPETITION", id = "examprep", exercise = "examprep", labs = Seq("project1"), 

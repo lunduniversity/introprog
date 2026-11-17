@@ -104,7 +104,41 @@ object Overrides:
     "Binärsökning"                            -> "Binary search",             // qwen "BinarySearch"
     "Variansproblem -- tack kompilatorn!"     -> "Variance problem -- thanks to the compiler!", // varians = variance, not "variation"
     "Exempel: PolygonArray, ändring på plats" -> "Example: PolygonArray, in-place modification", // på plats = in place
-    "Redovisning på obligatorisk schemalagd labbtid"   -> "Presentation at mandatory scheduled lab time", // redovisning = presentation, not "redemption"
+    "Redovisning på schemalagd labbtid"   -> "Presentation at scheduled lab time",
+    "Alla obl. labbar ska vara gk innan munta." -> "All mandatory labs must be passed before the oral exam.", // gk = godkänd = passed, munta = oral exam, not "meeting"
+
+    // ── kojo-commands: paddan = Kojo's TURTLE (the model gave pad / paddle / padd / paddan, and twitch / Lage);
+    //    keys from unit-probe, one unit per table row; "the turtle" as in the w01 overrides further down ──
+    "Paddan går framåt 25 steg." -> "The turtle moves forward 25 steps.",
+    "Paddan går framåt 100 steg." -> "The turtle moves forward 100 steps.",
+    "Paddan vrider sig 90 grader åt höger." -> "The turtle turns 90 degrees to the right.",
+    "Paddan vrider sig 45 grader åt höger." -> "The turtle turns 45 degrees to the right.",
+    "Paddan vrider sig 90 grader åt vänster." -> "The turtle turns 90 degrees to the left.",
+    "Paddan vrider sig 45 grader åt vänster." -> "The turtle turns 45 degrees to the left.",
+    "Paddan hoppar 25 steg utan att rita." -> "The turtle jumps 25 steps without drawing.",
+    "Paddan hoppar 100 steg utan att rita." -> "The turtle jumps 100 steps without drawing.",
+    "Paddan hoppar till läget (100, 200) utan att rita." -> "The turtle jumps to the position (100, 200) without drawing.",
+    "Paddan vrider sig och går till läget (100, 200)." -> "The turtle turns and moves to the position (100, 200).",
+    "Paddan går tillbaka till utgångsläget (0, 0)." -> "The turtle goes back to the starting position (0, 0).",
+    "Paddan vrider sig så att nosen pekar åt höger." -> "The turtle turns so that its nose points to the right.",
+    "Paddan vrider sig så att nosen pekar åt vänster." -> "The turtle turns so that its nose points to the left.",
+    "Paddan vrider sig så att nosen pekar uppåt." -> "The turtle turns so that its nose points up.",
+    "Paddan vrider sig så att nosen pekar neråt." -> "The turtle turns so that its nose points down.",
+    "Paddan vrider sig så att nosen pekar mot läget (100, 200)" -> "The turtle turns so that its nose points towards the position (100, 200)",
+    "Paddan vrider nosen till vinkeln 90 grader." -> "The turtle turns its nose to the angle 90 degrees.",
+    "Ger vinkelvärdet dit paddans nos pekar." -> "Gives the angle in which the turtle's nose points.",
+    "Gör så att paddan ritar jättesakta." -> "Makes the turtle draw extremely slowly.",
+    "Paddan skriver med jättestor text nästa gång du gör skriv." -> "The turtle writes with huge text the next time you write.",
+    "Paddan ritar en båge med radie 100 och vinkel 90." -> "The turtle draws an arc with radius 100 and angle 90.",
+    "Paddan ritar en cirkel med radie 100." -> "The turtle draws a circle with radius 100.",
+    "Paddan blir synlig." -> "The turtle becomes visible.",
+    "Paddan blir osynlig." -> "The turtle becomes invisible.",
+    "Ger paddans x-läge" -> "Gives the turtle's x position",
+    "Ger paddans y-läge" -> "Gives the turtle's y position",
+    "Sätter ner paddans penna så att den ritar när den går." -> "Puts the turtle's pen down so that it draws when it moves.",
+    "Lyfter upp paddans penna så att den INTE ritar när den går." -> "Lifts the turtle's pen so that it does NOT draw when it moves.",
+    "Gör så att paddan inte fyller i något när den ritar." -> "Makes the turtle not fill in anything when it draws.",
+    "Paddan går fram och svänger höger 4 gånger." -> "The turtle moves forward and turns right 4 times.", // redovisning = presentation, not "redemption"
     "Vad är fördelen med egentyper i stället för arv?" -> "What is the advantage of self-types instead of inheritance?", // egentyp = self-type, not "case class"
     // NB: a title's TRAILING inline \code{}/\texttt{} is peeled as structure, so the key is the PROSE
     // ONLY (the trailing command is restored automatically — and one key covers all \code{X} variants).
@@ -773,6 +807,21 @@ object Overrides:
     // inheritance", so this is the bare compound alone. Key from unit-probe on
     // compendium/generated/w05-chaphead-generated.tex, block 13, `clean: accessregler`.
     "accessregler"                            -> "access rules",
+    // Three semantic defects found by auditing the caches for CORRECTNESS rather than for leftover
+    // Swedish: each of these was translated confidently into something that means another thing, so it
+    // reads as finished work and no gate can see it.
+    //
+    // 1. `oföränderlig` is IMMUTABLE. The prose in the same lecture (lect-w05-classes:403) already says
+    //    "public immutable attribute"; only the code comment on :281 said "final", which in Scala is a
+    //    different property -- `val` is immutable, `final` is about overriding.
+    "publikt oföränderligt attribut"          -> "public immutable attribute",
+    // 2 and 3. `datavetenskap` is COMPUTER science, not data science -- a different field, and in w12 it
+    //    names the course a student is told to enrol on. The w12 unit also loses a stray period the
+    //    translation introduced after `\emph{...}`.
+    """viktiga datavetenskapliga idéer\\namnrymd, datatyp, samling, uppdelning i delproblem, ...""" ->
+      """important computer science ideas\\namespace, data type, collection, decomposition into subproblems, ...""",
+    """Linjärsökning med find.} Teknologen Oddput Clementina vill gå första bästa datavetenskapskurs som är på G2-nivå.""" ->
+      """Linear search with find.} The technologist Oddput Clementina wants to take the first available computer science course at G2-level.""",
     "Fördjupning: Använda Java-samlingar i Scala med" -> "Deep dive: Using Java Collections in Scala with",
     "Fördjupning: Användning av hjälpkonstruktor" -> "Deep dive: Usage of Helper Constructor",
     "Fördjupning: Detaljerade regler för override" -> "Deep dive: Detailed Rules for Override",
