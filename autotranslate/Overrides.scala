@@ -1015,4 +1015,17 @@ object Overrides:
     // is masked out; key taken from the `clean:` line of scratch/unit-probe.scala, not from the .tex.
     "Variabeln får namnet 'bokstavlig val', bakåt-apostrofer  gör att man kan namnge variabler till annars otillåtna namn, t.ex. med mellanrum eller nyckelord i sig."
       -> "The variable gets the name 'literal val'; backticks make it possible to give variables otherwise disallowed names, e.g. with spaces or keywords in them.",
+    // The PREFACE -- the first page a reader meets -- was half translated. Its long paragraph splits
+    // into several units and this one FELL BACK to Swedish, so the page opened in English, switched to
+    // Swedish for two sentences, then closed in English again with "Welcome to the fascinating world of
+    // computer science!". It is NOT a fallback: translate-cache.tsv:10913 is an IDENTITY row, sv == en,
+    // so it is a cache HIT that renders Swedish with or without a backend — the #983 hole, same shape as
+    // the `Oföränderliga} samlingar` entry above. Not a fallback, not an orphan, so no gate can see it,
+    // and the fallback count does NOT drop when this override lands. 681 rows in that cache are identity
+    // rows whose key contains åäö; this is one of them.
+    // ⚠ Key taken from the MIRROR, not from unit-probe: a fallback writes the source verbatim, so the
+    // Swedish run in compendium-en/prechapters/preface-en.tex IS the key, character for character.
+    // unit-probe truncates its display, which would have produced a dead key that looked right.
+    """Ta vara på det och prova dig fram genom att koda egna idéer -- det är kul när det funkar, men minst lika lärorikt är felsökning, buggrättande och alla misslyckade försök som, ibland efter hårt arbete vänds till lyckade lösningar och bestående lärdomar."""
+      -> """Make the most of that and experiment by coding your own ideas -- it is fun when it works, but just as instructive are the debugging, the bug-fixing and all the failed attempts that, sometimes after hard work, turn into successful solutions and lasting insights.""",
   )
