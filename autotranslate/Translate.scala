@@ -266,8 +266,12 @@ object Translate:
   val usedOverrideKeys = scala.collection.mutable.Set.empty[String]
 
   /** Look an override up AND record the key as used, so a hit is observable. Every override lookup
-    * must go through here, or an orphan will be reported for a key that in fact matched. */
-  private def overrideFor(key: String): Option[String] =
+    * must go through here, or an orphan will be reported for a key that in fact matched.
+    *
+    * Public because the mirror has one lookup OUTSIDE the unit translator: `Main.enConcepts` resolves
+    * the module-plan concept terms the glossary does not cover. Going through this function is what
+    * keeps those keys out of the orphan set. */
+  def overrideFor(key: String): Option[String] =
     val hit = overrides.get(key)
     if hit.isDefined then usedOverrideKeys += key
     hit

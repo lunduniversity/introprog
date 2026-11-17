@@ -52,7 +52,7 @@ trait Plan:
       | funktionsvärde, funktionstyp, äkta funktion, stegad funktion, apply,
       | anonyma funktioner, lambda, predikat,
       | aktiveringspost, anropsstacken, objektheapen, stack trace,
-      | värdeandrop, namnanrop, 
+      | värdeanrop, namnanrop,
       | klammerparentes och kolon vid ensam parameter, 
       | rekursion,
       | scala.util.Random, slumptalsfrö
