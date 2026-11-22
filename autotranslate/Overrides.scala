@@ -1015,4 +1015,56 @@ object Overrides:
     // is masked out; key taken from the `clean:` line of scratch/unit-probe.scala, not from the .tex.
     "Variabeln får namnet 'bokstavlig val', bakåt-apostrofer  gör att man kan namnge variabler till annars otillåtna namn, t.ex. med mellanrum eller nyckelord i sig."
       -> "The variable gets the name 'literal val'; backticks make it possible to give variables otherwise disallowed names, e.g. with spaces or keywords in them.",
+
+    // ── w06-patterns-lab: the blockbattle lab called its two creatures six different things ──────
+    // `blockmullvad` and `blockmask` are the whole subject of this lab, and the model renamed them
+    // per unit: block mole, blockmole, snail, block comment, block sediment, and bare block. `mask`
+    // is Swedish for WORM and was read as the English word, giving "block masks". Nothing caught it:
+    // every rendering is fluent English and none is Swedish, so neither the fallback count nor the
+    // orphan count nor the Swedish percentage can move. Found by invariants.scala I9 (#1030), which
+    // compares prose against the terms CodeGlossary ratifies -- here Mullvaden -> TheMole.
+    //
+    // The English is NOT invented here: line 37 of this file is BR's own hand-clamped caption, and it
+    // says "block worms" and "block moles". The lab and label names he already anglicised in the
+    // SWEDISH source (`\code{blockmole}`, `\ref{lab:blockmole:task:blockworm}`) fix the solid form for
+    // identifiers; prose uses the two-word form, as the caption does.
+    //
+    // Whole-unit keys from scratch/unit-probe.scala blocks 21-99, `clean:` lines verbatim. Two are
+    // worth a second look when editing: the `blockmaskar` item ENDS mid-sentence at `uppg.` because
+    // the unit splits at the following \ref, and the picture unit spans TWO source lines, so its key
+    // carries a real newline.
+    """Du ska utveckla ett spel för två spelare som sitter vid samma tangentbord, där den vänstra spelaren styr en blockmullvad med tangenterna A,S,D,W, och den högra spelaren styr en annan blockmullvad med piltangenterna."""
+      -> """You are to develop a game for two players sitting at the same keyboard, where the left player controls one block mole with the keys A,S,D,W, and the right player controls another block mole with the arrow keys.""",
+    """I bilden till vänster ser du hur spelet kan se ut. Det finns en ljusbrun och en mörkbrun mullvad. Poängräkningen visas överst i himlen. Det finns fyra rosa blockmaskar (se uppgift \ref{lab:blockmole:task:blockworm} i laboration \code{blockmole}) som mullvadarna tävlar om att försöka fånga. När en blockmask teleporterar sig till en ny slumpmässig position lämnar den jord efter sig. När en mullvad gräver sig upp till gräsytan blir det hål i gräset.
+Det ger poäng att gräva tunnlar och att fånga blockmaskar."""
+      -> """In the picture on the left you see what the game can look like. There is a light brown and a dark brown block mole. The score is shown at the top of the sky. There are four pink block worms (see task \ref{lab:blockmole:task:blockworm} in lab \code{blockmole}) that the block moles compete to catch. When a block worm teleports to a new random position it leaves soil behind it. When a block mole digs its way up to the grass surface, holes appear in the grass.
+Digging tunnels and catching block worms give points.""",
+    """Varje mullvad rör sig i sin aktuella riktning tills användaren ändrar riktning genom att trycka på ''sin'' motsvarande knapp, t.ex. W eller pil-upp."""
+      -> """Each block mole moves in its current direction until the user changes direction by pressing ''its'' corresponding key, e.g. W or arrow-up.""",
+    """Då en mullvad går i mörkbrun jord ska ljusbruna tunnlar grävas."""
+      -> """When a block mole moves through dark brown soil, light brown tunnels should be dug.""",
+    """Då en blockmullvad når fönstrets kant eller himlen ska dess riktning reverseras."""
+      -> """When a block mole reaches the edge of the window or the sky, its direction should be reversed.""",
+    """Det ska finnas lagom många blockmaskar (se labb \code{blockmole} uppg."""
+      -> """There should be a reasonable number of block worms (see lab \code{blockmole} task""",
+    """Blockmullvadarna ska även ha ett attribut som representerar hälsan, t.ex. ett numeriskt värde mellan 0 och 100. Hälsan ska försvagas något när man gräver tunnlar. Hälsan ska synas i spelfönstret, t.ex. som en sekvens med röda block i himlen som indikerar andelen av maxhälsan för resp. spelare."""
+      -> """The block moles should also have an attribute representing health, e.g. a numeric value between 0 and 100. Health should weaken somewhat when digging tunnels. Health should be visible in the game window, e.g. as a sequence of red blocks in the sky indicating the proportion of maximum health for each player.""",
+    """Att fånga blockmask ska påverka poäng och/eller hälsa."""
+      -> """Catching a block worm should affect points and/or health.""",
+    """Det ska vid spelstart gå att välja namn på respektive blockmullvad och namnet ska synas i spelet vid poängutskriften."""
+      -> """At the start of the game it should be possible to choose a name for each block mole, and the name should be visible in the game beside the score.""",
+    """Om en blockmullvad fångar en blockmask ska dess grävhastighet öka."""
+      -> """If a block mole catches a block worm, its digging speed should increase.""",
+    """Om en blockmullvad krockar med en annan blockmullvad ska något hända, t.ex. att dess riktning reverseras."""
+      -> """If a block mole collides with another block mole, something should happen, e.g. that its direction is reversed.""",
+    """Nedan finns exempelvis en funktion som ger bakgrundsfärgen för en viss y-koordinat, vilken är användbar när du ska återställa bakgrunden efter att en mullvad har flyttat sig."""
+      -> """Below there is, for example, a function that gives the background colour for a given y-coordinate, which is useful when you need to restore the background after a block mole has moved.""",
+    """För att slippa mullvadsflimmer kan du ''\emph{rita först -- sudda sen}'' enligt nedan.\footnote{Inom spelutveckling använder man oftast istället så kallad \emph{double buffering} (eller till och med \emph{triple buffering}) för att få helt flimmerfri grafik."""
+      -> """To avoid block mole flicker you can ''\emph{draw first -- erase afterwards}'' as below.\footnote{In game development one usually instead uses so-called \emph{double buffering} (or even \emph{triple buffering}) to get completely flicker-free graphics.""",
+    // The last one, and the only CODE comment among them: lect sketch at :191. Its code-cache row
+    // (translate-code-cache.tsv:1356) translated the sentence but left the noun -- "change direction
+    // for resp. mullvad" -- so the creature stayed Swedish inside a comment while the prose around it
+    // became English. `resp.` is the Swedish abbreviation for `respektive`, which is "each" here, not
+    // an English "resp.". An override beats the cache row, so no cache edit is needed.
+    """ändra riktning på resp. mullvad""" -> """change direction for each block mole""",
   )
