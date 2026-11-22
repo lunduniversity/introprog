@@ -308,7 +308,7 @@ ejscala> val katt: Katt = kattBur.släppUt  // KAOS! typosäkert hundkatt-monste
 \end{Slide}
 
 
-\begin{Slide}{Typjoker: varning för gränslösa typer}\SlideFontSmall
+\begin{Slide}{Typjoker: gränslösa typer}\SlideFontSmall
 \Emph{Invarianta} klasser har oflexibel typparameter, vilket begränsar användningen. %(mer om varians senare).
 \begin{REPL}
 scala> class Box[A](val value: A)
@@ -696,7 +696,7 @@ def summon[T](using x: T) = x
 Funktionen \code{summon} kan användas för att testa vilket värde kompilatorn framkallar i en viss kontext:
 \begin{Code}
 object EnAnnanNamnrymd:
-  given String = "tagen för givet" //namn behövs ej, det räcker med typ
+  given String = "tagen för givet"
 \end{Code}
 \ifkompendium\else
 \vspace{-0.8em}
@@ -747,7 +747,7 @@ trait Parser[T]:
   def fromString(value: String): Option[T]
 
 object Parser: //implementationer för en viss typ kan erbjudas som givna värden
-  given Parser[Int] with //nyckelordet with behövs då abstrakt medlem implementeras
+  given Parser[Int]: 
     def fromString(value: String): Option[Int] = value.toIntOption   
 \end{CodeSmall}
 \begin{itemize}\SlideFontTiny
@@ -771,7 +771,7 @@ scala> användParser[java.awt.Color]("Color(120,10,0)")
   | for parameter p of method användParser
 \end{REPLsmall}
 \begin{Code}
-given Parser[java.awt.Color] with
+given Parser[java.awt.Color]:
   def fromString(value: String): Option[java.awt.Color] =
     if !value.startsWith("Color(") then None else 
       val trimmed = value.trim.stripPrefix("Color(").stripSuffix(")")
@@ -827,7 +827,7 @@ Kompilatorn expandera detta automatiskt till kontextparametern \code{(using F[T]
 
 
 \begin{Slide}{Ännu smidigare typklass med extensionsmetod}\SlideFontSmall
-Det får att kombinera kontextgräns med extensionsmetoder:
+Det går att kombinera kontextgräns med extensionsmetoder:
 \begin{Code}
 extension [T: Parser](s: String) 
   def parseOrElse(default: T): T = 
@@ -896,7 +896,7 @@ scala> xs.sorted
 \pause
 Detta kan fixas genom att tillhandahålla en given ordning för \code{Gurka}:
 \begin{Code}
-given Ordering[Gurka] with
+given Ordering[Gurka]:
   def compare(x: Gurka, y: Gurka): Int =
     if (x == y) then 0 
     else if x.vikt < y.vikt then -1 
@@ -953,11 +953,10 @@ Notera denna text i labben, avsnitt \emph{Tips och förslag}: ''Det är tillåte
 \begin{Slide}{Översikt av kursens avslutning}
 Återstående moment:
 \begin{itemize}
-\item W11: \code{snake} \hfill Alla ska vara aktiva på redovisningen.
 \item W12-W13: Projekt \hfill Individuellt arbete, välj gärna \code{bank}.
 \item W14: Munta \hfill På schematider endast ons-tors.
 \begin{itemize}
-\item Om du är väl förberedd för muntan kan du göra den redan W11--W13 så snart alla labbar t.om. snake är klara. 
+\item Om du är väl förberedd för muntan kan du göra den redan W11--W13 så snart alla obligatoriska labbar är klara. 
 \item Prata med handledare om din pluggplan.
 \item Förbered dig noga med hjälp av \url{https://fileadmin.cs.lth.se/pgk/muntabot}
 \item Läs om muntan i kompendiet.
