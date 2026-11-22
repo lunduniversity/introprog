@@ -384,19 +384,83 @@ object Inv:
     println(f"            en: ${d.en.take(96)}")
   if !verbose && drift.size > 12 then println(s"      ... ${drift.size - 12} more (--list for all)")
 
-  // `--todo <file>` APPENDS the findings in the shape compendium-todo already uses: a location line,
-  // then the offending text. The point is that this generalises -- any future check can emit the same
-  // block, so the reading log and the automated checks share one queue instead of two.
+  // `--todo <file>` APPENDS findings in the shape compendium-todo already uses, so the reading log and
+  // the automated checks share one queue. Any future check can emit the same block.
+  //
+  // A finding is useless in that log unless it carries the STUDY GUIDE's own numbering: the log is
+  // organised by `6.3.5`, not by source path, and a block of `file:line` headers does not sort or read
+  // with the rest of it. `--pdftext <file>` is a `pdftotext` dump of the built English pdf, and that is
+  // where the printed numbers live -- they exist nowhere in the source, being assigned by LaTeX.
+  //
+  // In the dump a subsection number sits ALONE on its line, with the title following a blank line:
+  //     6.3.2
+  //
+  //     Background
+  // so carrying the last such number forward gives the section in force at any point. The text is then
+  // matched against a flattened copy, because pdftotext wraps prose mid-sentence and the source line
+  // and the printed line share no line breaks at all.
   val todoOut = opt("todo", "")
   if todoOut.nonEmpty && drift.nonEmpty then
+    val pdfText = opt("pdftext", "")
+    // (offset into `flat`, section in force) and the flattened text itself
+    val (flat, marks): (String, Vector[(Int, String)]) =
+      if pdfText.isEmpty || !Files.isRegularFile(Path.of(pdfText)) then ("", Vector.empty)
+      else
+        val secRe = """^\s*(\d+\.\d+(?:\.\d+)?|[A-Z]\.\d+(?:\.\d+)?)\s*$""".r
+        val sb = StringBuilder()
+        val ms = Vector.newBuilder[(Int, String)]
+        for line <- Files.readAllLines(Path.of(pdfText)).asScala do
+          secRe.findFirstMatchIn(line) match
+            case Some(m) => ms += ((sb.length, m.group(1)))
+            case None    => sb ++= line.trim; sb += ' '
+        (sb.toString.replaceAll("\\s+", " "), ms.result())
+    /** LaTeX out, so the source line can be compared with what the pdf printed. */
+    def plain(s: String): String =
+      var t = s
+      t = t.replaceAll("""\\(ref|pageref|label|cite|index|footnote)\{[^}]*\}""", " ")
+      for _ <- 1 to 4 do t = t.replaceAll("""\\[A-Za-z@]+\s*\{([^{}]*)\}""", "$1")
+      t = t.replaceAll("""\\[A-Za-z@]+""", " ").replaceAll("""[{}$\\]""", " ")
+      t.replaceAll("\\s+", " ").trim
+    /** The printed section a finding sits in, or None when the text cannot be located. */
+    def sectionOf(en: String): Option[String] =
+      if flat.isEmpty then None
+      else
+        val p = plain(en)
+        val words = p.split(' ').filter(_.length > 2)
+        // a 6-word window, not the whole line: the mirror has moved on since the pdf was built, and a
+        // single changed word would otherwise lose the whole finding
+        val probe = if words.length >= 6 then words.slice(0, 6).mkString(" ") else p
+        val at = if probe.length < 12 then -1 else flat.indexOf(probe)
+        if at < 0 then None else marks.takeWhile(_._1 <= at).lastOption.map(_._2)
     val stamp = java.time.LocalDate.now.toString
     val sb = StringBuilder()
     sb ++= s"\n# I9 prose term drift (invariants.scala, $stamp): prose contradicts a ratified CodeGlossary term\n"
-    for d <- drift.toVector.sortBy(d => (d.file, d.line)) do
-      sb ++= s"${d.file}:${d.line}  [${d.stem} -> ${d.root}]\n${d.en}\n"
+    val located = drift.toVector.map(d => (sectionOf(d.en), d))
+    val bySection = located.collect { case (Some(s), d) => (s, d) }
+      // sort 2.10 after 2.9, and keep lettered appendices after numbered chapters
+      .groupBy(_._1).toVector.sortBy: (s, _) =>
+        val parts = s.split("[.]").toVector
+        val lead = parts.head.toIntOption.getOrElse(1000 + parts.head.headOption.map(_.toInt).getOrElse(0))
+        (lead, parts.lift(1).flatMap(_.toIntOption).getOrElse(0), parts.lift(2).flatMap(_.toIntOption).getOrElse(0))
+    for (sec, rows) <- bySection do
+      sb ++= s"$sec\n"
+      for (_, d) <- rows.sortBy(_._2.line) do sb ++= s"${d.en}\n"
+    // Two DIFFERENT reasons a finding has no number, kept apart because they mean opposite things.
+    // A slides line is not in a compendium pdf at all and never will be -- nothing to fix. Anything
+    // else means the text moved since the pdf was built, which is a signal to rebuild: pass a
+    // `--pdftext` dumped from the SAME tree as the mirror, or most findings land here.
+    val (slidesOnly, unplaced) =
+      located.collect { case (None, d) => d }.partition(_.file.startsWith("slides/"))
+    if slidesOnly.nonEmpty then
+      sb ++= s"# slides, so not in the compendium pdf (${slidesOnly.size}) -- source position only\n"
+      for d <- slidesOnly.sortBy(d => (d.file, d.line)) do sb ++= s"${d.file}:${d.line}\n${d.en}\n"
+    if unplaced.nonEmpty then
+      sb ++= s"# not found in the pdf (${unplaced.size}) -- mirror newer than the pdf? rebuild and re-run\n"
+      for d <- unplaced.sortBy(d => (d.file, d.line)) do sb ++= s"${d.file}:${d.line}\n${d.en}\n"
     Files.writeString(Path.of(todoOut), sb.toString,
       java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND)
-    println(s"    appended ${drift.size} finding(s) to $todoOut")
+    println(s"    appended ${drift.size} finding(s) to $todoOut " +
+            s"(${located.count(_._1.isDefined)} with a section number)")
 
   // ---- V3: frozen ground truth ---------------------------------------------------------------
   // A checker that has only ever reported zero is untested. This replays a REAL historical defect:
