@@ -412,8 +412,11 @@ object Inv:
         for line <- Files.readAllLines(Path.of(pdfText)).asScala do
           secRe.findFirstMatchIn(line) match
             case Some(m) => ms += ((sb.length, m.group(1)))
-            case None    => sb ++= line.trim; sb += ' '
-        (sb.toString.replaceAll("\\s+", " "), ms.result())
+            // Normalise BEFORE appending. Collapsing whitespace on the finished string would move
+            // every character, while the offsets in `ms` were recorded against the UN-collapsed text,
+            // so each lookup drifted backwards -- far enough to report 6.2.2 for a line in 6.3.2.
+            case None    => sb ++= line.trim.replaceAll("\\s+", " "); sb += ' '
+        (sb.toString, ms.result())
     /** LaTeX out, so the source line can be compared with what the pdf printed. */
     def plain(s: String): String =
       var t = s
@@ -452,7 +455,9 @@ object Inv:
         (lead, parts.lift(1).flatMap(_.toIntOption).getOrElse(0), parts.lift(2).flatMap(_.toIntOption).getOrElse(0))
     for (sec, rows) <- bySection do
       sb ++= s"$sec\n"
-      for (_, d) <- rows.sortBy(_._2.line) do sb ++= s"${d.en}\n"
+      // one line can contradict two or three terms at once (mullvad AND mask AND underjord on the
+      // same sentence); the reader wants the line once
+      for (_, d) <- rows.sortBy(_._2.line).distinctBy(_._2.en) do sb ++= s"${d.en}\n"
     // Two DIFFERENT reasons a finding has no number, kept apart because they mean opposite things.
     // A slides line is not in a compendium pdf at all and never will be -- nothing to fix. Anything
     // else means the text moved since the pdf was built, which is a signal to rebuild: pass a
