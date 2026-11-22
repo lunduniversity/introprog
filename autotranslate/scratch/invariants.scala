@@ -426,11 +426,19 @@ object Inv:
       if flat.isEmpty then None
       else
         val p = plain(en)
-        val words = p.split(' ').filter(_.length > 2)
+        // EVERY token, including one- and two-letter ones. Dropping the short words while joining
+        // the rest with a non-letter separator makes the probe unmatchable the moment a short word
+        // sits between two kept ones -- "develop a game" -- which is what sank the whole w06 lab.
+        val words = p.split("[^A-Za-zÅÄÖåäö]+").filter(_.nonEmpty)
         // a 6-word window, not the whole line: the mirror has moved on since the pdf was built, and a
         // single changed word would otherwise lose the whole finding
-        val probe = if words.length >= 6 then words.slice(0, 6).mkString(" ") else p
-        val at = if probe.length < 12 then -1 else flat.indexOf(probe)
+        // Match a SEQUENCE OF WORDS, not literal text. A literal indexOf fails on anything the two
+        // sides punctuate differently -- `\what~In` leaves a stray tilde, quotes differ, pdftotext
+        // hyphenates -- and that alone cost three quarters of the recall. Letters only, any gap.
+        val probe = words.take(8).map(java.util.regex.Pattern.quote).mkString("[^A-Za-z]+")
+        val at =
+          if words.length < 5 then -1
+          else probe.r.findFirstMatchIn(flat).map(_.start).getOrElse(-1)
         if at < 0 then None else marks.takeWhile(_._1 <= at).lastOption.map(_._2)
     val stamp = java.time.LocalDate.now.toString
     val sb = StringBuilder()
