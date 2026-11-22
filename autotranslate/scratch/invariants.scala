@@ -135,6 +135,85 @@ object Inv:
 
     out.toSet
 
+  // ---- I9 support: ratified domain terms, and prose lines paired with the mirror ---------------
+
+  /** The mirror file for a source .tex, or None. `compendium/modules/x.tex` -> `compendium-en/
+    * modules/x-en.tex`. Only exists after an autotranslate run; I9 skips silently without it. */
+  def mirrorOf(root: Path, f: Path): Option[Path] =
+    val rel = root.relativize(f).toString
+    val mapped = rel match
+      case r if r.startsWith("compendium/") => Some("compendium-en/" + r.stripPrefix("compendium/"))
+      case r if r.startsWith("slides/")     => Some("slides-en/" + r.stripPrefix("slides/"))
+      case _                                => None
+    mapped
+      .map(m => root.resolve(m.stripSuffix(".tex") + "-en.tex"))
+      .filter(Files.isRegularFile(_))
+
+  /** Line numbers (1-based) that fall INSIDE a code environment. Prose is everything else. Uses the
+    * SAME env regex construction as `producibleKeys`, so the two cannot drift apart. */
+  def codeEnvLines(text: String): Set[Int] =
+    val envAlt = codeEnvs.toSeq.map(java.util.regex.Pattern.quote).mkString("|")
+    val re = ("(?s)(\\\\begin\\{(" + envAlt + ")\\})(.*?)(\\\\end\\{\\2\\})").r
+    val out = collection.mutable.Set.empty[Int]
+    for m <- re.findAllMatchIn(text) do
+      val from = text.take(m.start).count(_ == '\n') + 1
+      val to   = text.take(m.end).count(_ == '\n') + 1
+      out ++= (from to to)
+    out.toSet
+
+  /** A ratified DOMAIN TERM: a CodeGlossary identifier entry that names a thing, reduced to a Swedish
+    * stem and the English root the prose is then obliged to use.
+    *
+    * Only entries whose English value is a single noun survive: `Mullvaden -> TheMole` yields
+    * (mullvad, mole), but `ärMullvadsmat -> isMoleFood` is a predicate, not a name for a thing, and is
+    * dropped. The Swedish stem has its definite/plural ending removed so that `mullvaden`,
+    * `blockmullvadar` and `mullvader` all match the one entry. */
+  def domainTerms(root: Path): Vector[(String, String, String)] =
+    val svSuffixes = Vector("arna", "erna", "orna", "en", "et", "ar", "er", "or", "na", "n", "a")
+    val articles = Set("the", "a", "an")
+    // BR's canonical list, the same one SwedishScore uses. `Ingen`, `Någon` and `Kanske` are the MAYBE
+    // cluster's case names -- capitalised, so they pass the identifier test, but they are also three of
+    // the commonest words in Swedish, and prose uses them in their everyday sense with no obligation to
+    // the glossary. They alone produced 145 of this check's first 220 hits. Reusing the repo's own list
+    // rather than a stoplist invented here, so the two cannot disagree.
+    val functionWords: Set[String] =
+      val p = root.resolve("autotranslate/swedish-function-words.txt")
+      if Files.isRegularFile(p) then
+        Files.readAllLines(p).asScala.map(_.trim.toLowerCase).filter(_.nonEmpty).toSet
+      else Set.empty
+    def enRoot(en: String): Option[String] =
+      if !en.forall(_.isLetter) then None
+      else
+        val toks = en.split("(?=[A-Z])").toVector.filter(_.nonEmpty).map(_.toLowerCase)
+        val body = if toks.length > 1 && articles(toks.head) then toks.tail else toks
+        // singularise: `Grönsaker -> Vegetables` must still match prose that writes "vegetable"
+        val one = body.headOption.map(w => if w.length > 5 && w.endsWith("s") then w.dropRight(1) else w)
+        one.filter(_ => body.length == 1).filter(_.length >= 4)
+    def svStem(sv: String): Option[String] =
+      val low = sv.toLowerCase
+      if !low.forall(c => c.isLetter) then None
+      else
+        val cut = svSuffixes.find(s => low.endsWith(s) && low.length - s.length >= 4)
+          .map(s => low.dropRight(s.length)).getOrElse(low)
+        Option.when(cut.length >= 4)(cut)
+    val scoped = CodeGlossary.perFileId.toVector.flatMap((f, m) => m.toVector.map((sv, en) => (sv, en, f)))
+    (CodeGlossary.id.toVector.map((sv, en) => (sv, en, "global")) ++ scoped)
+      // ONLY CAPITALISED KEYS. A lowercase entry is usually an ordinary Swedish word that happens to be
+      // used as a val name -- `sant`, `ingen`, `antal`, `någon` -- and prose uses those thousands of
+      // times in their everyday sense, with no obligation to the glossary at all. Including them made
+      // the first run of this check report 1053 violations, of which the visible ones were all noise
+      // (`sant` matched inside `intressant`). A capitalised identifier names a TYPE or a singleton,
+      // i.e. a thing in the domain, which is exactly what the prose has to keep calling by one name.
+      .filter((sv, _, _) => sv.headOption.exists(_.isUpper) && !functionWords(sv.toLowerCase))
+      .flatMap: (sv, en, where) =>
+      for
+        stem <- svStem(sv)
+        root <- enRoot(en)
+        // a rename that changes nothing of substance cannot be contradicted by prose
+        if !stem.contains(root) && !root.contains(stem)
+      yield (stem, root, where)
+    .distinctBy((stem, root, _) => (stem, root))
+
 @main def invariants(args: String*): Unit =
   def opt(n: String, d: String): String =
     val i = args.indexOf(s"--$n"); if i >= 0 && i + 1 < args.length then args(i + 1) else d
@@ -227,6 +306,97 @@ object Inv:
     println(f"      GLOBAL  $sv%-22s -> $en   ${if reserved(en) then "[RESERVED]" else "[soft]"}")
   for (file, sv, en) <- scopedHits do
     println(f"      scoped  $sv%-22s -> $en   in $file")
+
+  // ---- I9: prose term drift --------------------------------------------------------------------
+  // CodeGlossary ratifies a Swedish name to an English one for CODE. The same word also appears in the
+  // PROSE around that code, and prose is translated by the model, which picks a synonym freely and
+  // differently each time. So the book ends up calling one thing several things, and no existing gate
+  // can see it: every rendering is fluent English and none is Swedish.
+  //
+  // Found by this check on 2026-11-22, all in compendium/modules/w06-patterns-lab.tex, where the glossary
+  // says Mullvaden -> TheMole and Masken -> TheWorm, and BR's own hand-clamped caption on line 37 says
+  // "block worms" and "block moles": the model-translated prose in the SAME FILE says "block masks"
+  // (mask read as the English word, not Swedish for worm) and "block sediment" for a mole.
+  //
+  // The comparison is line-for-line against the mirror, which preserves line numbering. A line the
+  // mirror left byte-identical is SKIPPED: that is either untranslated or the Swedish branch of a
+  // clamp, which is I4/I6 territory, not drift.
+  val terms = Inv.domainTerms(root)
+  // Precompiled ONCE. Building these per line per term per file turned a seconds-long check into
+  // minutes; the regex is the same every time, only the line changes.
+  val rootPat: Map[String, java.util.regex.Pattern] =
+    terms.map((_, r, _) => r -> java.util.regex.Pattern.compile(
+      // FREE PREFIX, boundary only at the END: the English compounds are written solid
+      // ("blockworm", "blockmole"), so requiring \b before the root missed exactly the drift this
+      // check exists for. Requiring it AFTER still rejects "suitable" for the root "suit".
+      "[a-zA-Z]*" + java.util.regex.Pattern.quote(r) + "(s|es|d|ed|ing|er|ers|ion|ions)?\\b")).toMap
+  val stemPat: Map[String, java.util.regex.Pattern] =
+    terms.map((st, _, _) => st -> java.util.regex.Pattern.compile(
+      "(?i)[a-zåäö]*" + java.util.regex.Pattern.quote(st) + "(arna|erna|orna|en|et|ar|er|or|na|n|a)?\\b")).toMap
+  val mirrorFiles = Inv.texFiles(root).flatMap(f => Inv.mirrorOf(root, f).map(f -> _))
+  case class Drift(file: String, line: Int, stem: String, root: String, sv: String, en: String)
+  val drift = collection.mutable.ArrayBuffer.empty[Drift]
+  // `old-*` modules are kept in the tree but \input by nothing, so nothing in them reaches a reader.
+  for (src, mir) <- mirrorFiles if !src.getFileName.toString.startsWith("old-") do
+    val svText = Files.readString(src)
+    val svLines = svText.linesIterator.toVector
+    val enLines = Files.readString(mir).linesIterator.toVector
+    if svLines.length == enLines.length then // differing length => no sound line correspondence
+      val inCode = Inv.codeEnvLines(svText)
+      val enLower = enLines.map(_.toLowerCase)
+      val svLower = svText.toLowerCase
+      val enWhole = enLower.mkString("\n")
+      // PRUNE PER FILE before touching a single line. Of 26 terms, a given file mentions one or two;
+      // deciding that with two whole-text scans turns an O(files x lines x terms) walk into an
+      // O(files x terms + files x lines) one. Without this the check took minutes instead of seconds.
+      val live = terms.filter: (stem, rootWord, _) =>
+        svLower.contains(stem) && rootPat(rootWord).matcher(enWhole).find()
+      // The term must already be ESTABLISHED in this file's English: at least two other lines use the
+      // ratified root. That turns the check into "this file calls one thing two things", which is the
+      // defect the reader actually meets, and it drops every term the file merely happens to mention.
+      // WORD BOUNDARY, not substring: `contains("suit")` is true of "suitable", which is how a cards
+      // cluster term came to look established in a Kojo COLOUR lab and produced five false positives.
+      def established(rootWord: String): Boolean =
+        enLower.count(l => rootPat(rootWord).matcher(l).find()) >= 2
+      for
+        i <- svLines.indices
+        if !inCode(i + 1) && svLines(i) != enLines(i)
+        // three things that look like prose to a line scanner and are not:
+        //   a commented-out line is not in the book at all
+        //   a one-line \ifswedish clamp carries BOTH languages, so the Swedish half always "fails"
+        //   a URL or \href target is an address, not a word anyone translates
+        if !svLines(i).trim.startsWith("%")
+        if !svLines(i).contains("\\ifswedish") && !svLines(i).contains("\\href")
+        if !svLines(i).contains("http")
+        (stem, rootWord, _) <- live
+        if established(rootWord)
+        // `[a-zåäö]*` before the stem lets COMPOUNDS match (blockmullvadar); the suffix group keeps
+        // `maskin` from matching the stem `mask`.
+        if stemPat(stem).matcher(svLines(i)).find()
+        if !rootPat(rootWord).matcher(enLines(i).toLowerCase).find()
+      do drift += Drift(root.relativize(src).toString, i + 1, stem, rootWord, svLines(i).trim, enLines(i).trim)
+  println()
+  println(s"=== I9 prose term drift: ${drift.size} prose line(s) contradict a ratified term ===")
+  println(s"    ${terms.size} CodeGlossary entries name a thing and so constrain the prose around it")
+  println(s"    compared ${mirrorFiles.size} file(s) line-for-line against the mirror")
+  for d <- (if verbose then drift.toVector else drift.toVector.take(12)) do
+    println(f"      ${d.file}:${d.line}  ${d.stem} -> ${d.root}")
+    println(f"            en: ${d.en.take(96)}")
+  if !verbose && drift.size > 12 then println(s"      ... ${drift.size - 12} more (--list for all)")
+
+  // `--todo <file>` APPENDS the findings in the shape compendium-todo already uses: a location line,
+  // then the offending text. The point is that this generalises -- any future check can emit the same
+  // block, so the reading log and the automated checks share one queue instead of two.
+  val todoOut = opt("todo", "")
+  if todoOut.nonEmpty && drift.nonEmpty then
+    val stamp = java.time.LocalDate.now.toString
+    val sb = StringBuilder()
+    sb ++= s"\n# I9 prose term drift (invariants.scala, $stamp): prose contradicts a ratified CodeGlossary term\n"
+    for d <- drift.toVector.sortBy(d => (d.file, d.line)) do
+      sb ++= s"${d.file}:${d.line}  [${d.stem} -> ${d.root}]\n${d.en}\n"
+    Files.writeString(Path.of(todoOut), sb.toString,
+      java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND)
+    println(s"    appended ${drift.size} finding(s) to $todoOut")
 
   // ---- V3: frozen ground truth ---------------------------------------------------------------
   // A checker that has only ever reported zero is untested. This replays a REAL historical defect:
