@@ -46,7 +46,11 @@
   *   KEY   = the CLEAN Swedish of ONE unit, exactly as in the source, trimmed. Plain Swedish —
   *           NOT the internal __C0__ placeholder form.
   *   VALUE = the English you want, used verbatim (may contain LaTeX commands).
-  *   Duplicate keys are a compile error (Map literal) — good, it stops accidental clashes.
+  *   ⚠ DUPLICATE KEYS ARE NOT A COMPILE ERROR. This line used to claim they were; a Scala `Map`
+  *           literal silently keeps the LAST pair, so a second entry for an existing key replaces the
+  *           first with no warning from anywhere — including when the two disagree. Before adding a
+  *           short key, check whether it is already in here:
+  *                 scala-cli run autotranslate/scratch/dup-keys.scala -- autotranslate/Overrides.scala
   */
 object Overrides:
   type Swedish = String
@@ -1015,4 +1019,166 @@ object Overrides:
     // is masked out; key taken from the `clean:` line of scratch/unit-probe.scala, not from the .tex.
     "Variabeln får namnet 'bokstavlig val', bakåt-apostrofer  gör att man kan namnge variabler till annars otillåtna namn, t.ex. med mellanrum eller nyckelord i sig."
       -> "The variable gets the name 'literal val'; backticks make it possible to give variables otherwise disallowed names, e.g. with spaces or keywords in them.",
+
+    // ── module-plan concept terms the glossary has no Concept for ───────────────────────────────
+    // The course's concept list lives in plan/Plan.scala and surfaces in THREE places: the module-plan
+    // table (plan/module-plan-generated.tex), each week's overview checklist (slides/generated/
+    // wNN-overview-generated.tex) and each chapter head (compendium/generated/wNN-chaphead-generated.tex).
+    // `plan.Main` translates the table through the AUTHORITATIVE glossary; 210 of the 277 terms have no
+    // Concept and stayed Swedish. About 120 of those are Scala CODE (`val`, `flatMap`, `private[this]`,
+    // `java.nio.file`) and verbatim IS the English, so only the prose terms below need an entry.
+    //
+    // They are here rather than in the glossary on purpose: a Concept carries four explanation fields that
+    // students read, and a concept LIST needs a NAME, not an explanation. Consulted only AFTER the glossary
+    // (Main.enConcepts), so a term that later earns a real Concept stops reaching this map on its own.
+    //
+    // Because these are ordinary override keys they ALSO match the standalone `\item <term>` units in the
+    // two generated checklists above, which is what keeps the three renderings of one term identical --
+    // the divergence a plan-local table could not have prevented.
+    //
+    // ⚠ SEVEN of these terms were ALREADY overridden higher up in this file and are deliberately absent
+    // here: alternativ, repetition, identifierare, topptyp, bottentyp, slumptal, dod: operativsystem (and
+    // accessregler). Re-adding one is not a compile error -- the header of this file says duplicate keys
+    // are, and that is WRONG: a Scala Map literal silently keeps the LAST pair. The first draft of this
+    // list re-added all seven, and `"alternativ" -> "selection"` -- the right term in the
+    // sekvens/alternativ/repetition triad -- became "alternative" with every gate still green.
+    // Check with: scala-cli run autotranslate/scratch/dup-keys.scala -- autotranslate/Overrides.scala
+    //
+    // ⚠ The keys must match plan/Plan.scala EXACTLY. Two in the first draft of this list did not and were
+    // silent no-ops: a composite `Nästlade och generiska strukturer & matris` (the module name is a
+    // different column, and `matris` is a real glossary Concept) and `jämförlse`, a typo since corrected in
+    // the Swedish source. scratch/concept-gap.scala reports both halves -- dead keys and uncovered terms.
+    "abstraktion"                       -> "abstraction",
+    // "for", not "in": the cache row for this term already says "access rules for inheritance",
+    // and the bare `accessregler` override sits higher up in this file.
+    "accessregler vid arv"              -> "access rules for inheritance",
+    "ad hoc polymorfism"                -> "ad hoc polymorphism",
+    "aktiveringspost"                   -> "activation record",
+    "algoritm: LINEAR-SEARCH"           -> "algorithm: LINEAR-SEARCH",
+    "algoritm: SEQ-COPY"                -> "algorithm: SEQ-COPY",
+    "algoritm: SEQ-REGISTER"            -> "algorithm: SEQ-REGISTER",
+    "algoritm: SEQ-REVERSE"             -> "algorithm: SEQ-REVERSE",
+    "algoritmexempel: SWAP"             -> "algorithm example: SWAP",
+    "alternativ konstruktor"            -> "alternative constructor",
+    "anonyma funktioner"                -> "anonymous functions",
+    "anropsstacken"                     -> "call stack",
+    "applicera funktion på alla element i en samling"
+                                        -> "apply function to all elements in a collection",
+    "applikationsdomän"                 -> "application domain",
+    "aritmetik"                         -> "arithmetic",
+    "bokstavliga mönster"               -> "literal patterns",
+    "datamodell"                        -> "data model",
+    "datorns delar"                     -> "parts of the computer",
+    "de Morgans lagar"                  -> "De Morgan's laws",
+    "definiera och anropa funktion"     -> "define and call function",
+    // `dod` is the companion course Datorer och datoranvändning -- a course code, kept as-is.
+    "dod: maskinkod"                    -> "dod: machine code",
+    "dod: typsättning"                  -> "dod: typesetting",
+    "dod: versionshantering"            -> "dod: version control",
+    "dokumentation"                     -> "documentation",
+    "editera"                           -> "edit",
+    "egentyp"                           -> "self type",
+    "enhetsvärdet ()"                   -> "unit value ()",
+    "exekvera"                          -> "execute",
+    "filstruktur"                       -> "file structure",
+    "for-uttryck"                       -> "for-expression",
+    "fri och bunden typparameter"       -> "free and bound type parameter",
+    "funktioner är objekt med apply-metod"
+                                        -> "functions are objects with apply method",
+    "funktionstyp"                      -> "function type",
+    "funktionsvärde"                    -> "function value",
+    "förändringsbar"                    -> "mutable",
+    "generisk funktion"                 -> "generic function",
+    "generisk klass"                    -> "generic class",
+    "generiska datastrukturer"          -> "generic data structures",
+    "generiska samlingar i Scala"       -> "generic collections in Scala",
+    "getter och setter"                 -> "getter and setter",
+    "givet värde (given)"               -> "given value (given)",
+    "huvudprogram"                      -> "main program",
+    "implementera equals"               -> "implement equals",
+    "inbyggda grundtyper"               -> "built-in basic types", // never "primitive": see enforceTerms
+    "inbyggda sorteringsmetoder"        -> "built-in sorting methods",
+    "inbyggda sökmetoder"               -> "built-in search methods",
+    "indata"                            -> "input",
+    "indexering"                        -> "indexing",
+    "info om projektet"                 -> "info about the project",
+    "info om valfri tentan"             -> "info about the optional exam",
+    "ingen föreläsning denna vecka"     -> "no lecture this week",
+    "initialisering"                    -> "initialization",
+    "inkapsling"                        -> "encapsulation",
+    "innehållstest"                     -> "membership test",
+    "intervall"                         -> "range",
+    "iterera över element i samling"    -> "iterate over elements in collection",
+    "klammerparentes och kolon vid ensam parameter"
+                                        -> "curly braces and colon for single parameter",
+    "klasshierarkin i scala.collection" -> "class hierarchy in scala.collection",
+    "kodläsbarhet"                      -> "code readability",
+    "komposition"                       -> "composition",
+    "kontextgräns"                      -> "context bound",
+    "kontextparameter (using)"          -> "context parameter (using)",
+    "kontravarians"                     -> "contravariance",
+    "kovarians"                         -> "covariance",
+    "logiska uttryck"                   -> "logical expressions",
+    "lokal funktion"                    -> "local function",
+    "lokal variabel"                    -> "local variable",
+    "multipla returvärden"              -> "multiple return values",
+    "mönstermatchning"                  -> "pattern matching",
+    "namn"                              -> "name",
+    "namnbyte vid import"               -> "renaming on import",
+    "nästlad for-sats"                  -> "nested for-statement",
+    "nästlad samling"                   -> "nested collection",
+    "objektheapen"                      -> "object heap",
+    "objektorientering"                 -> "object orientation",
+    "oföränderlig"                      -> "immutable",
+    "partiella funktioner"              -> "partial functions",
+    "primär konstruktor"                -> "primary constructor",
+    "principen om enhetlig access"      -> "uniform access principle",
+    "privat medlem"                     -> "private member",
+    "program-argument"                  -> "program argument",
+    "pseudokod"                         -> "pseudocode",
+    "påbörja projekt"                   -> "start project",
+    "referenstyper"                     -> "reference types",
+    "rekursion"                         -> "recursion",
+    "redovisa projekt"                  -> "report project",
+    "repeterade parametrar"             -> "repeated parameters",
+    "returtyp"                          -> "return type",
+    "Scalas typhierarki"                -> "Scala type hierarchy",
+    "sekvens"                           -> "sequence",
+    "sekvens-wildcard"                  -> "sequence wildcard",
+    "selektiv import"                   -> "selective import",
+    "serialisering"                     -> "serialization",
+    "skapa egen kontrollstruktur"       -> "define own control structure",
+    "skuggning"                         -> "shadowing",
+    // lect-w03-functions:813 glosses it in the source: \Emph{stegade funktioner} \Eng{curried functions}.
+    "stegad funktion"                   -> "curried function",
+    "stränginterpolatorn s"             -> "string interpolator s",
+    "synlighet"                         -> "visibility",
+    "textfiler"                         -> "text files",
+    "tillstånd"                         -> "state",
+    "tupel"                             -> "tuple",
+    "typen Unit"                        -> "the type Unit",
+    "typjoker"                          -> "type wildcard",
+    "typklass"                          -> "type class",
+    "typkonstruktor"                    -> "type constructor",
+    "typparameter"                      -> "type parameter",
+    // the parameter list is SPLIT (multipla parameterlistor); currying is what that enables, and
+    // `stegad funktion` above already carries "curried" -- so the two terms stay distinguishable.
+    "uppdelad parameterlista"           -> "split parameter list",
+    "valfri grupplabb snake"            -> "optional group lab snake",
+    "valfri övning: jämförelse Scala-Java"
+                                        -> "optional exercise: comparison Scala-Java",
+    "variabelbindning i mönster"        -> "variable binding in patterns",
+    "varians"                           -> "variance",
+    "virtuell maskin"                   -> "virtual machine",
+    "välj valfritt fördjupningsområde"  -> "choose any advanced topic",
+    "värde"                             -> "value",
+    "värdetyper"                        -> "value types",
+    "wildcard-mönster"                  -> "wildcard patterns",
+    "träna inför muntligt prov"         -> "prepare for oral exam",
+    "träna på extentor"                 -> "practice on old exams", // extentor = gamla tentor
+    "överlagring av metoder"            -> "method overloading",
+    "översikt av Scalas samlingsbibliotek och samlingsmetoder"
+                                        -> "overview of Scala's collection library and collection methods",
+    "översikt strängmetoder"            -> "overview of string methods",
+    "övre- och undre typgräns"          -> "upper and lower type bound",
   )

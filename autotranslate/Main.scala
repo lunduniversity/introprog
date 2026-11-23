@@ -210,6 +210,41 @@ object Main:
   def enChrome(tex: String): String =
     (moduleNames ++ chromePhrases).foldLeft(tex) { case (s, (sv, en)) => s.replace(sv, en) }
 
+  /** Finish the module-plan concept column: `plan.Main` translates it through the AUTHORITATIVE
+    * glossary (`explain.allConcepts`) and leaves any term that has no Concept in Swedish.
+    *
+    * 210 of the 277 terms are such leftovers, and they split cleanly in two. About 120 are Scala
+    * CODE — `val`, `flatMap`, `private[this]`, `java.nio.file`, `==` — and "untranslated" is the
+    * right rendering for them: the English table should show exactly what the Swedish one shows.
+    * The rest are Swedish prose a reader of the English compendium cannot parse.
+    *
+    * Those come from Overrides, the one map of manual translation knowledge the mirror already has.
+    * They deliberately do NOT go in the glossary: a Concept carries four explanation fields that
+    * students read, and a concept LIST needs a name, not an explanation. A term that later earns a
+    * real Concept simply stops reaching this pass, since plan resolves it first.
+    *
+    * Lookup is term-wise and EXACT (no substring), so an unknown term is left verbatim rather than
+    * half-replaced, and it goes through `Translate.overrideFor` so these keys count as used and do
+    * not show up as orphans. Idempotent: an English term matches no Swedish key, so re-running on an
+    * already-translated file is a no-op — which matters, because the file is patched in place. */
+  def enConcepts(tex: String): String =
+    tex.linesWithSeparators.map { line =>
+      val cols = line.split('&')
+      if cols.length != 3 then line // not a `W03 & Module & concepts \\` row — leave alone
+      else
+        // the row terminator `\\` rides along in the last column; keep it out of the last term
+        val endOfTerms = { val i = cols(2).indexOf("""\\"""); if i >= 0 then i else cols(2).length }
+        val terms = cols(2).substring(0, endOfTerms).split(',').map { raw =>
+          val term = raw.trim
+          if term.isEmpty then raw
+          else
+            Translate.overrideFor(term) match
+              case Some(en) => Translate.overrideHits += 1; raw.replace(term, en)
+              case None     => raw
+        }.mkString(",")
+        cols(0) + "&" + cols(1) + "&" + terms + cols(2).substring(endOfTerms)
+    }.mkString
+
   /** TeX eats the space after the control word `\fi`, gluing the next word onto the clamp content
     * ("Suitis", "tomatoin" — the v2026.5 review class). Translation can reorder a word to sit right
     * after a masked `\ifswedish..\fi` block even when the Swedish source is safe (e.g. `\fi,`), so
@@ -516,10 +551,14 @@ object Main:
     // but with module names left SWEDISH — translate them here with the SAME enChrome/moduleNames the
     // overview-en uses, so module titles are identical across both tables. enChrome is a literal sv->en
     // replace, so running it on the (partly-English) file is a safe in-place no-op for already-English text.
+    // The same file still carries every CONCEPT term the glossary has no Concept for — enConcepts
+    // finishes those from Overrides. Run it BEFORE enChrome: both are literal replacements and neither
+    // can see the other's output, but the module-name column is enChrome's and the concept column is
+    // enConcepts', so order only matters for reading the diff.
     val modulePlanEn = root / "plan" / "module-plan-generated-en.tex"
     if os.exists(modulePlanEn) then
-      os.write.over(modulePlanEn, enChrome(os.read(modulePlanEn)))
-      println("autotranslate: plan/module-plan-generated-en.tex (module names -> chrome)")
+      os.write.over(modulePlanEn, enChrome(enConcepts(os.read(modulePlanEn))))
+      println("autotranslate: plan/module-plan-generated-en.tex (concepts -> overrides, module names -> chrome)")
     if doTranslate then
       Translate.printBar("done", force = true); println()
       Translate.saveCache(root)
