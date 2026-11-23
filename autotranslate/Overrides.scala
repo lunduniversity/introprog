@@ -609,6 +609,19 @@ object Overrides:
     // the blockbattle lab, named from chapter 4: same two-word prose form as PR #1038 uses
     """På veckans laboration ska du implementera ett enkelt spel där användaren kan styra en blockmullvad med tangentbordet."""
       -> """In this week's lab you will implement a simple game where the user can control a block mole with the keyboard.""",
+
+    // ── w04-objects-lab: the program skeleton in 4.3.2 Task 2 ───────────────────────────────────
+    // Three defects in one ten-line Code block, all from its code-cache rows:
+    //   `blockmullvad` became a SNAIL (translate-code-cache.tsv:588)
+    //   `introprog` -- the course's own package -- was split into "introductory prog" (:503), so the
+    //     comment pointed at a package that does not exist. NB this is the ONLY place that split is
+    //     wrong: "an introductory programming course" in the preface and w09 is ordinary English, so
+    //     a term-level rule for it would corrupt those. Hence a unit override, not enforceTerms.
+    //   `Ska rita ut underjorden!` became "To print underground!" -- rita is DRAW, not print (:608)
+    """Representerar en blockmullvad som kan gräva""" -> """Represents a block mole that can dig""",
+    """Har ett introprog.PixelWindow och ritar blockgrafik"""
+      -> """Has an introprog.PixelWindow and draws block graphics""",
+    """Ska rita ut underjorden!""" -> """Going to draw the underground!""",
     """Predikatet  \code{ärRaktUnderUppgången} ska vara sant om $x$- och $y$-koordinaterna sammanfaller med den hemliga uppgången till överjorden.""" ->
       """The predicate \code{ärRaktUnderUppgången} should be true if the $x$ and $y$ coordinates coincide with the secret entrance to the overworld.""",
     """Undersök i REPL vad uttrycket \code{"päronisglass".split('i')} har för värde.""" ->
