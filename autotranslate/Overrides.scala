@@ -622,6 +622,47 @@ object Overrides:
     """Har ett introprog.PixelWindow och ritar blockgrafik"""
       -> """Has an introprog.PixelWindow and draws block graphics""",
     """Ska rita ut underjorden!""" -> """Going to draw the underground!""",
+
+    // ── w04-objects-lab prose: the chapter-4 half of the blockbattle naming ─────────────────────
+    // Same defect as #1038 and worse. Across this one lab the model rendered `blockmullvad` as block
+    // marmot, blockmiller, blockmullvaders, mudslide, block mudwall, block sediment, Mullvad,
+    // Mullvads and snail, and `blockmask` as "block mask" -- reading Swedish `mask` (= WORM) as the
+    // English word. Nine names for the animal the whole lab is about.
+    //
+    // NOT fixed by sweeping the cache rows, which was tried and abandoned: a replacement table
+    // produced "the block block mole", "since block mole cannot read it" (the Swedish is plural) and
+    // "two Lundensisk block mole". Articles and number need deciding per sentence, so these are
+    // whole-unit overrides with the English written from the SWEDISH, not patched onto the model's.
+    //
+    // Wording follows #1038 and BR's own caption: "block mole" / "block worm", two words, and
+    // `underjorden` as "the underground" to agree with the ratified `Underjorden -> TheUnderground`.
+    //
+    // ⚠ Why I9 never reported this file: the mirror is 422 lines to the source's 423, and the check
+    // requires equal line counts before it will compare anything. A one-line drift silences it for a
+    // whole file.
+    """Nu har du skrivit ett program som uppmanar en blockmullvad att fortsätta gräva."""
+      -> """Now you have written a program that urges a block mole to keep digging.""",
+    """Det programmet är inte så användbart, eftersom mullvadar inte kan läsa."""
+      -> """That program is not very useful, since block moles cannot read.""",
+    // ⚠ brace-unbalanced BY DESIGN: the unit opens inside \emph{...}, so the key carries the closing
+    // brace and the value must supply it too.
+    """Skapa rektangelprocedur och underjorden.} Du ska nu skriva en procedur med namnet \code{rectangle} som ritar en rektangel med hjälp av proceduren \code{block}. Sen ska du använda \code{rectangle} i \code{Main.drawWorld} för att rita upp mullvadens underjordiska värld."""
+      -> """Create a rectangle procedure and the underground.} You will now write a procedure named \code{rectangle} that draws a rectangle using the procedure \code{block}. Then you will use \code{rectangle} in \code{Main.drawWorld} to draw the block mole's underground world.""",
+    """Mullvaden kan för tillfället gräva sig utanför fönstret."""
+      -> """The block mole can currently dig its way outside the window.""",
+    """Mullvadar är inte så intresserade av livet ovanför jord, men det kan vara trevligt att se hur långt ner mullvaden grävt sig."""
+      -> """Block moles are not very interested in life above ground, but it can be nice to see how far down the block mole has dug.""",
+    """Fånga blockmasken.""" -> """Catch the block worm.""",
+    """Gör så att texten \code{"WORM CAUGHT!"} skrivs ut i terminalen om blockmullvaden är på samma plats som blockmasken."""
+      -> """Make the text \code{"WORM CAUGHT!"} print in the terminal if the block mole is in the same place as the block worm.""",
+    """Använd parametern \code{notHere} till att förhindra att blockmasken teleporterar sig till samma plats som blockmullvaden."""
+      -> """Use the parameter \code{notHere} to prevent the block worm from teleporting to the same place as the block mole.""",
+    """Gör så att blockmullvaden får $1000$ poäng varje gång den fångar blockmasken."""
+      -> """Make the block mole get $1000$ points every time it catches the block worm.""",
+    """Gör så att spelet varar en bestämd, lagom lång tid, innan \code{Game Over}. Använd \code{System.currentTimeMillis} som ger aktuella antalet millisekunder sedan den förste januari 1970. När spelet är slut ska den totala poängen som blockmullvaden samlat skrivas ut i terminalen."""
+      -> """Make the game last a definite, reasonable length of time before \code{Game Over}. Use \code{System.currentTimeMillis}, which gives the current number of milliseconds since the first of January 1970. When the game is over, the total score the block mole has collected should be printed in the terminal.""",
+    """Gör så att spelets hastighet ökar (d.v.s. att fördröjningen i spel-loopen minskar) efter en viss tid. I samband med det ska sannolikheten för att blockmasken teleporterar sig öka."""
+      -> """Make the game's speed increase (i.e. the delay in the game loop decreases) after a certain time. Along with that, the probability of the block worm teleporting should increase.""",
     """Predikatet  \code{ärRaktUnderUppgången} ska vara sant om $x$- och $y$-koordinaterna sammanfaller med den hemliga uppgången till överjorden.""" ->
       """The predicate \code{ärRaktUnderUppgången} should be true if the $x$ and $y$ coordinates coincide with the secret entrance to the overworld.""",
     """Undersök i REPL vad uttrycket \code{"päronisglass".split('i')} har för värde.""" ->
