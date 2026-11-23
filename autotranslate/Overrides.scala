@@ -563,13 +563,106 @@ object Overrides:
     """En \Emph{jar}-fil följer ett standardiserat filformat och används för att \Alert{paketera flera filer} i en och samma fil, exempelvis:""" ->
       """A \Emph{jar} file follows a standardised file format and is used to \Alert{package several files} into one and the same file, for example:""",
 
-    // ── w04-objects-exercise: Underjorden/Mullvaden/Masken etc. are example identifiers (kept as code) ──
+    // ── w04-objects-exercise: Underjorden/Mullvaden/Masken ──────────────────────────────────────
+    // These three WERE kept Swedish in prose, on the rule that an example identifier stays as code.
+    // That rule stopped holding when the names were ratified: CodeGlossary now renames the code to
+    // `TheUnderground`, `TheMole`, `TheWorm` and `isMoleFood`, so the student reads `object TheMole`
+    // and is then told to "Import Underjorden's members so that you see Mullvaden and Masken" --
+    // instructions naming things their own file does not contain.
+    //
+    // Note WHY only some of it broke: a name inside `\code{}` is renamed by renderCodeIds even in an
+    // override VALUE, so `\code{ärMullvadsmat}` became `isMoleFood` on its own, while the same name
+    // bare in prose did not. That is why one unit of this task reads correctly and its neighbours do
+    // not, and it is the rule to keep in mind when writing the values below.
+    //
+    // Convention here, following the entry that was already right: generic nouns in narrative prose
+    // ("the mole", "the worm"), and the exact `\code{}` name wherever the student has to type or
+    // recognise the identifier.
     """Skapa ovan kod i filen \code{Underjorden.scala} med en editor och implementera predikatet  \code{ärMullvadsmat} så att det blir sant om mullvadens koordinater är samma som maskens.""" ->
       """Create the code above in the file \code{Underjorden.scala} with an editor and implement the predicate \code{ärMullvadsmat} so that it becomes true if the mole's coordinates are the same as the worm's.""",
     """Testa livet i Underjorden genom att klistra in din modul i REPL. Importera Underjordens medlemmar med asterisk så att du ser Mullvaden och Masken. Flytta med hjälp av tilldelning Maskens y-koordinat så att Masken hamnar på samma plats som Mullvaden. Kontrollera att predikatet \code{ärMullvadsmat} fungerar som tänkt.""" ->
-      """Test life in Underjorden by pasting your module into the REPL. Import Underjorden's members with an asterisk so that you see Mullvaden and Masken. Using assignment, move Masken's y-coordinate so that Masken ends up in the same place as Mullvaden. Check that the predicate \code{ärMullvadsmat} works as intended.""",
+      """Test life in \code{Underjorden} by pasting your module into the REPL. Import the members of \code{Underjorden} with an asterisk so that you see \code{Mullvaden} and \code{Masken}. Using assignment, move the worm's y-coordinate so that it ends up in the same place as the mole. Check that the predicate \code{ärMullvadsmat} works as intended.""",
     """Predikatet \code{ärMullvadsmat} ska vara sant om Masken finns på samma plats som Mullvaden.""" ->
-      """The predicate \code{ärMullvadsmat} should be true if Masken is in the same place as Mullvaden.""",
+      """The predicate \code{ärMullvadsmat} should be true if \code{Masken} is in the same place as \code{Mullvaden}.""",
+    // The rest of the same task. Written with the Swedish names inside `\code{}` on purpose: that is
+    // the form renderCodeIds renames, so these values stay correct if the ratified English ever changes.
+    """I den tvådimensionella Underjorden bor Mullvaden och Masken."""
+      -> """In the two-dimensional \code{Underjorden} live \code{Mullvaden} and \code{Masken}.""",
+    """Masken har gömt sig för Mullvaden och befinner sig på en plats långt bort."""
+      -> """The worm has hidden from the mole and is in a place far away.""",
+    """Masken har även gjort delar av sin position osynlig för omvärlden:"""
+      -> """The worm has also made parts of its position invisible to the outside world:""",
+    """Importera därefter allt i Mullvaden och sedan allt i Masken och tilldela \code{x} ett nytt värde enligt raderna 1--3 nedan. Vad ger uttrycken på raderna 4--6 nedan för värde? Förklara vad som händer i termer av namnöverskuggning och synlighet?"""
+      -> """Then import everything in \code{Mullvaden} and then everything in \code{Masken} and assign \code{x} a new value according to rows 1--3 below. What values do the expressions on rows 4--6 below give? Explain what happens in terms of name shadowing and visibility?""",
+    // ⚠ brace-unbalanced BY DESIGN: the unit starts inside \textbf{...}, so the key opens after the
+    // macro and carries its closing brace, which the value must supply too.
+    """Förklaring:} När importen av Maskens alla synliga medlemmar sker kommer de som ej är privata att överskugga andra medlemmar med samma namn."""
+      -> """Explanation:} When all visible members of \code{Masken} are imported, those that are not private will shadow other members with the same name.""",
+    """Det är Mullvadens \code{x}-variabel som tilldelas \code{-1} eftersom Maskens \code{x} är privat och ej syns utåt."""
+      -> """It is the \code{x} variable of \code{Mullvaden} that is assigned \code{-1}, because the \code{x} of \code{Masken} is private and not visible from outside.""",
+    """Underjordens medlemmar blir överskuggade av Maskens \code{y} och Mullvadens \code{x} men man kan komma åt dem genom att använda punktnotation."""
+      -> """The members of \code{Underjorden} are shadowed by the \code{y} of \code{Masken} and the \code{x} of \code{Mullvaden}, but you can reach them by using dot notation.""",
+    """Nedan används tupler för att representera en 3D-punkt i underjorden med koordinater \code{(x, y, z)} av typen \code{(Int, Int, Double)}, där $z$-koordinaten anger hur djupt ner i underjorden punkten ligger."""
+      -> """Below, tuples are used to represent a 3D point in the underground with coordinates \code{(x, y, z)} of type \code{(Int, Int, Double)}, where the $z$-coordinate states how deep down in the underground the point lies.""",
+    """Funktionen \code{djup} ska ge $z$-koordinaten för Mullvaden."""
+      -> """The function \code{djup} should give the $z$-coordinate of \code{Mullvaden}.""",
+    // the blockbattle lab, named from chapter 4: same two-word prose form as PR #1038 uses
+    """På veckans laboration ska du implementera ett enkelt spel där användaren kan styra en blockmullvad med tangentbordet."""
+      -> """In this week's lab you will implement a simple game where the user can control a block mole with the keyboard.""",
+
+    // ── w04-objects-lab: the program skeleton in 4.3.2 Task 2 ───────────────────────────────────
+    // Three defects in one ten-line Code block, all from its code-cache rows:
+    //   `blockmullvad` became a SNAIL (translate-code-cache.tsv:588)
+    //   `introprog` -- the course's own package -- was split into "introductory prog" (:503), so the
+    //     comment pointed at a package that does not exist. NB this is the ONLY place that split is
+    //     wrong: "an introductory programming course" in the preface and w09 is ordinary English, so
+    //     a term-level rule for it would corrupt those. Hence a unit override, not enforceTerms.
+    //   `Ska rita ut underjorden!` became "To print underground!" -- rita is DRAW, not print (:608)
+    """Representerar en blockmullvad som kan gräva""" -> """Represents a block mole that can dig""",
+    """Har ett introprog.PixelWindow och ritar blockgrafik"""
+      -> """Has an introprog.PixelWindow and draws block graphics""",
+    """Ska rita ut underjorden!""" -> """Going to draw the underground!""",
+
+    // ── w04-objects-lab prose: the chapter-4 half of the blockbattle naming ─────────────────────
+    // Same defect as #1038 and worse. Across this one lab the model rendered `blockmullvad` as block
+    // marmot, blockmiller, blockmullvaders, mudslide, block mudwall, block sediment, Mullvad,
+    // Mullvads and snail, and `blockmask` as "block mask" -- reading Swedish `mask` (= WORM) as the
+    // English word. Nine names for the animal the whole lab is about.
+    //
+    // NOT fixed by sweeping the cache rows, which was tried and abandoned: a replacement table
+    // produced "the block block mole", "since block mole cannot read it" (the Swedish is plural) and
+    // "two Lundensisk block mole". Articles and number need deciding per sentence, so these are
+    // whole-unit overrides with the English written from the SWEDISH, not patched onto the model's.
+    //
+    // Wording follows #1038 and BR's own caption: "block mole" / "block worm", two words, and
+    // `underjorden` as "the underground" to agree with the ratified `Underjorden -> TheUnderground`.
+    //
+    // ⚠ Why I9 never reported this file: the mirror is 422 lines to the source's 423, and the check
+    // requires equal line counts before it will compare anything. A one-line drift silences it for a
+    // whole file.
+    """Nu har du skrivit ett program som uppmanar en blockmullvad att fortsätta gräva."""
+      -> """Now you have written a program that urges a block mole to keep digging.""",
+    """Det programmet är inte så användbart, eftersom mullvadar inte kan läsa."""
+      -> """That program is not very useful, since block moles cannot read.""",
+    // ⚠ brace-unbalanced BY DESIGN: the unit opens inside \emph{...}, so the key carries the closing
+    // brace and the value must supply it too.
+    """Skapa rektangelprocedur och underjorden.} Du ska nu skriva en procedur med namnet \code{rectangle} som ritar en rektangel med hjälp av proceduren \code{block}. Sen ska du använda \code{rectangle} i \code{Main.drawWorld} för att rita upp mullvadens underjordiska värld."""
+      -> """Create a rectangle procedure and the underground.} You will now write a procedure named \code{rectangle} that draws a rectangle using the procedure \code{block}. Then you will use \code{rectangle} in \code{Main.drawWorld} to draw the block mole's underground world.""",
+    """Mullvaden kan för tillfället gräva sig utanför fönstret."""
+      -> """The block mole can currently dig its way outside the window.""",
+    """Mullvadar är inte så intresserade av livet ovanför jord, men det kan vara trevligt att se hur långt ner mullvaden grävt sig."""
+      -> """Block moles are not very interested in life above ground, but it can be nice to see how far down the block mole has dug.""",
+    """Fånga blockmasken.""" -> """Catch the block worm.""",
+    """Gör så att texten \code{"WORM CAUGHT!"} skrivs ut i terminalen om blockmullvaden är på samma plats som blockmasken."""
+      -> """Make the text \code{"WORM CAUGHT!"} print in the terminal if the block mole is in the same place as the block worm.""",
+    """Använd parametern \code{notHere} till att förhindra att blockmasken teleporterar sig till samma plats som blockmullvaden."""
+      -> """Use the parameter \code{notHere} to prevent the block worm from teleporting to the same place as the block mole.""",
+    """Gör så att blockmullvaden får $1000$ poäng varje gång den fångar blockmasken."""
+      -> """Make the block mole get $1000$ points every time it catches the block worm.""",
+    """Gör så att spelet varar en bestämd, lagom lång tid, innan \code{Game Over}. Använd \code{System.currentTimeMillis} som ger aktuella antalet millisekunder sedan den förste januari 1970. När spelet är slut ska den totala poängen som blockmullvaden samlat skrivas ut i terminalen."""
+      -> """Make the game last a definite, reasonable length of time before \code{Game Over}. Use \code{System.currentTimeMillis}, which gives the current number of milliseconds since the first of January 1970. When the game is over, the total score the block mole has collected should be printed in the terminal.""",
+    """Gör så att spelets hastighet ökar (d.v.s. att fördröjningen i spel-loopen minskar) efter en viss tid. I samband med det ska sannolikheten för att blockmasken teleporterar sig öka."""
+      -> """Make the game's speed increase (i.e. the delay in the game loop decreases) after a certain time. Along with that, the probability of the block worm teleporting should increase.""",
     """Predikatet  \code{ärRaktUnderUppgången} ska vara sant om $x$- och $y$-koordinaterna sammanfaller med den hemliga uppgången till överjorden.""" ->
       """The predicate \code{ärRaktUnderUppgången} should be true if the $x$ and $y$ coordinates coincide with the secret entrance to the overworld.""",
     """Undersök i REPL vad uttrycket \code{"päronisglass".split('i')} har för värde.""" ->
