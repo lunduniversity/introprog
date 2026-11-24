@@ -172,6 +172,22 @@ object CodeGlossary:
     "röd" -> "red",
     // the mole exercise (w04-objects-exercise). Its API is already English — mole, soil, tunnel, pos,
     // color — so only these six are Swedish.
+    // ── w12 concurrency batch, ratified by BR on #993 ───────────────────────────────────────────
+    // The bank-account race demo in w12-extra-exercise. `Bank` and `saldo` are already handled --
+    // `Bank` is the same word in English and `_saldo`/`saldo` landed as `_balance`/`balance` in #1024.
+    // `slösaSpara -> spendSave` is BR's wording: it keeps the Swedish pairing while the method body
+    // (withdraw, sleep, deposit) is what explains the race.
+    // Character names: `bamse` and `skutt` STAY Swedish -- they are Bamse and Skutt from the comic, so
+    // they are names, not descriptions. `farmor` and `vargen` ARE descriptions, so they translate.
+    // That asymmetry is deliberate and was BR's call.
+    "Kund" -> "Customer",
+    "SäkerBank" -> "SafeBank",
+    "SäkerKund" -> "SafeCustomer",
+    "sättIn" -> "deposit",
+    "taUt" -> "withdraw",
+    "slösaSpara" -> "spendSave",
+    "farmor" -> "grandma",
+    "vargen" -> "theWolf",
     "Mullvaden" -> "TheMole",
     "Masken" -> "TheWorm",
     "Underjorden" -> "TheUnderground",
@@ -478,6 +494,12 @@ object CodeGlossary:
   // must be `Colour` (not the global `Färg->Suit` for cards). Slide files with hand `\ifswedish` clamps
   // need nothing here (their clamps are masked verbatim, so the mirror pass leaves them alone).
   val perFileId: Map[String, Map[String, String]] = Map(
+    // ⚠ SCOPED, NOT GLOBAL, and that is the whole point of this entry. `ofta` and `ibland` are
+    // ordinary Swedish adverbs ("often", "sometimes") and occur as PROSE about 148 and 49 times across
+    // the corpus. `def ofta` / `def ibland` exist in exactly ONE file, this one, where they are the
+    // two helper functions that start threads. A global entry would rewrite the adverb everywhere it
+    // appears in a code environment. Ratified scoped by BR on #993.
+    "w12-extra-exercise" -> Map("ofta" -> "often", "ibland" -> "sometimes"),
     // e.g. "w01-kojo" -> Map("Färg" -> "Colour", "Röd" -> "Red", "Svart" -> "Black")
     // w04's colour demo: `val grön = JColor(0, 255, 0)` with its REPL echo. Scoped rather than global
     // (#993 proposed it global) because `grön` is also a KOJO argument: kojo-commands.tex has a live
