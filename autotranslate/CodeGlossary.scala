@@ -49,6 +49,16 @@ object CodeGlossary:
     "Kanske" -> "Maybe", "Någon" -> "Just", "Ingen" -> "Empty",
     // PERSON cluster (personExample*.scala + lect-w10-override) — BR-ratified 2026-07-19 (#942).
     "namn" -> "name", "ålder" -> "age", "universitet" -> "university", "titel" -> "title",
+    // `Namn` is DATA, not an identifier: it is the label a REPL transcript echoes back
+    // (w03-functions-exercise ~516 `Namn: Triangelsson, Stina`). An unquoted echo can only be reached by
+    // the id map, so this is the designed pairing for the `codeStr` entry on the quoted literal below --
+    // translate one without the other and the transcript's input stops matching its own output, which is
+    // the desync class of #990/#1023. Scope check, corrected after review: there are TWO bare `Namn`
+    // tokens not followed by `:`, both in `old-lthopoly.tex` (227, 251) inside REPL envs, so a global
+    // entry does reach them -- `Rutans Namn [Ägare]` would become `Rutans Name [Ägare]`. That file is
+    // an `old-` module, but the earlier comment here claimed ZERO and that was simply wrong. The
+    // `Namn:` lines in w12-assignment-bank are prose (`\textbf{...}`, no code env) and are not reached.
+    "Namn" -> "Name",
     "Akademiker" -> "Academic", "Forskare" -> "Researcher", "IckeAkademiker" -> "NonAcademic",
     // lowercase val-name forms (Task 5 REPL: `val akademiker = new Academic(...)`) — same words as the classes
     // above, just lowercased per Scala val-naming convention — BR-ratified 2026-07-21.
@@ -150,6 +160,11 @@ object CodeGlossary:
     // added, not merely a token the reading log saw in the pdf. Four names from the table failed that
     // test and are held at the end of this block.
     "saldo" -> "balance",
+    // The w12 race-condition example backs `saldo` with a private field `_saldo`. `tok` (below) admits a
+    // leading underscore as an identifier START char, so `_saldo` is ONE token and never matches `saldo`
+    // -- the mirror read `def balance: Int = _saldo` with the field still Swedish. Same ratified decision,
+    // second spelling, exactly as `GRATTIS! ` needed an entry apart from `GRATTIS!`.
+    "_saldo" -> "_balance",
     "Bankkonto" -> "BankAccount",
     "mittBankkonto" -> "myBankAccount",
     "kontonr" -> "accountNo",
@@ -175,6 +190,9 @@ object CodeGlossary:
     "Mullvaden" -> "TheMole",
     "Masken" -> "TheWorm",
     "Underjorden" -> "TheUnderground",
+    // The 3D follow-up task declares `object Underjorden3D`, a DIFFERENT token from `Underjorden`, so the
+    // line above never reached it and the mirror kept `object Underjorden3D:` beside `object TheUnderground:`.
+    "Underjorden3D" -> "TheUnderground3D",
     "ärMullvadsmat" -> "isMoleFood",
     "ärRaktUnderUppgången" -> "isStraightBelowTheExit",
     "djup" -> "depth",
@@ -352,6 +370,15 @@ object CodeGlossary:
     "Muuuuuuu" -> "Mooooo", "Nöffnöff" -> "Oink", "Gnääääägg" -> "Neigh",
     // PERSON: the researcher's title value (Task 5 REPL: new Researcher(..., "Doktorand")) — BR-ratified 2026-07-21.
     "Doktorand" -> "PhD student",
+    // The name-printing demo (w03-functions-exercise REPL ~500, lect-w03-functions 168-172). These are here
+    // and NOT in the code cache because the cache cannot reach them: `Code.piece` only offers a string to the
+    // translator when `swedishish` holds, and neither literal has åäö while `Namn` is not in
+    // `Code.swedishWords` -- so no cache row for them can ever fire. `codeStr` is consulted in `copyStr`
+    // inside renderCodeIds, which runs BEFORE Code.translate and has no Swedish-detection gate at all.
+    // Keys are the PRE-rename literals (copyStr looks up rawInner), so the values must spell the ratified
+    // identifiers themselves -- a codeStr hit skips renameInterp.
+    "Namn: $efternamn, $förnamn" -> "Name: $lastName, $firstName",
+    "Namn:" -> "Name:",
     // w01's dice and highscore demos, plus the same GRATTIS in lect-w02-codestruct and lect-wjava-body.
     // Global rather than scoped: the word spans three files and means one thing, like the animal sounds
     // above. Both spellings are needed because codeStr matches a WHOLE literal exactly -- the dice loop
