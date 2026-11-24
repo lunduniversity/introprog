@@ -348,6 +348,11 @@ object CodeGlossary:
   // ratified string DATA that must be English but isn't reachable via Code.translate/Overrides (inline .tex
   // code never runs Code.translate). Keyed on the literal's inner text (no quotes).
   val codeStr: Map[String, String] = Map(
+    // `najs` is Swedish slang for "nice". BR already ratified the English himself, in a clamp at
+    // lect-w05-case-classes:40 — `\ifswedish najs toString\else nice toString\fi` — so this only makes
+    // the w05-classes slide agree with the one next door. Paired with the perFileId `najs` entry below:
+    // the literal is printed by the code, and the REPL echoes it back BARE on the following line.
+    "najs toString" -> "nice toString",
     // ANIMAL cluster onomatopoeia (w10-inheritance-exercise Task 3) — BR-ratified 2026-07-20: English sounds.
     "Muuuuuuu" -> "Mooooo", "Nöffnöff" -> "Oink", "Gnääääägg" -> "Neigh",
     // PERSON: the researcher's title value (Task 5 REPL: new Researcher(..., "Doktorand")) — BR-ratified 2026-07-21.
@@ -478,6 +483,12 @@ object CodeGlossary:
   // must be `Colour` (not the global `Färg->Suit` for cards). Slide files with hand `\ifswedish` clamps
   // need nothing here (their clamps are masked verbatim, so the mirror pass leaves them alone).
   val perFileId: Map[String, Map[String, String]] = Map(
+    // The bare half of the `najs toString` pair: `val p: Person = najs toString` is the REPL echoing
+    // the literal back, and an unquoted echo is only reachable by the id map. SCOPED, not global,
+    // because `najs` also appears in lect-w07-enums at `val res0: String = najs` -- and that line is a
+    // bug in the SWEDISH source, which feeds `Veg.Tomato("nice")` and then echoes `najs`. Renaming it
+    // here would quietly paper over a source defect that should be fixed on the Swedish side.
+    "lect-w05-classes" -> Map("najs" -> "nice"),
     // e.g. "w01-kojo" -> Map("Färg" -> "Colour", "Röd" -> "Red", "Svart" -> "Black")
     // w04's colour demo: `val grön = JColor(0, 255, 0)` with its REPL echo. Scoped rather than global
     // (#993 proposed it global) because `grön` is also a KOJO argument: kojo-commands.tex has a live

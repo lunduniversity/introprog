@@ -1015,4 +1015,32 @@ object Overrides:
     // is masked out; key taken from the `clean:` line of scratch/unit-probe.scala, not from the .tex.
     "Variabeln får namnet 'bokstavlig val', bakåt-apostrofer  gör att man kan namnge variabler till annars otillåtna namn, t.ex. med mellanrum eller nyckelord i sig."
       -> "The variable gets the name 'literal val'; backticks make it possible to give variables otherwise disallowed names, e.g. with spaces or keywords in them.",
+
+    // ── w05-classes: chapter-5 prose and comments, from reading the 2026-11-23 build ────────────
+    // This unit fell back with only its EMPHASIS translated, so it reads as a half-finished sentence
+    // rather than as missing work: \Emph{primärkonstruktor} came out as "primary constructor" sitting
+    // inside an otherwise untouched Swedish sentence.
+    """(Kompilatorn skapar \Emph{primärkonstruktor}: kod som allokerar \& initialiserar alla attribut.)"""
+      -> """(The compiler creates a \Emph{primary constructor}: code that allocates \& initialises all attributes.)""",
+    // `oföränderlig` rendered "immutable" on one bullet and "unchanging" on the very next one, and
+    // `förnamn` became the IDENTIFIER firstName in a prose bullet that is not code.
+    """oföränderligt förnamn"""   -> """immutable first name""",
+    """oföränderligt efternamn""" -> """immutable last name""",
+    // najs = nice, slang. BR ratified the English himself in the clamp at lect-w05-case-classes:40;
+    // these are the PROSE halves, the code halves are the CodeGlossary pair.
+    """Skapa egen najs toString""" -> """Write your own nice toString""",
+    """En najs \code{toString}-metod med klassens namn och dess attributvärden."""
+      -> """A nice \code{toString} method with the class name and its attribute values.""",
+    // the model translated around \Emph{} and left `smidigt` inside it in Swedish
+    """En \code{copy}-metod med alla attribut som parametrar och instansens attributvärden som default-argument: det blir då \Emph{smidigt att skapa} \Alert{delvis förändrade kopior} där några attribut ändrats med namngivna argument och andra förblir som innan."""
+      -> """A \code{copy} method with all attributes as parameters and the instance's attribute values as default arguments: it then becomes \Emph{convenient to create} \Alert{partially changed copies} where some attributes are changed with named arguments and the others stay as before.""",
+    // code comment: "syns inte utåt" came out as "does not syn outside", a Swedish verb stem left bare
+    """privat medlem syns inte utåt""" -> """private member is not visible from outside""",
+
+    // w04-objects-lab 4.3.2: the SWEDISH source was missing a space -- `\texttt{.class}i underkataloger`
+    // -- so BOTH editions printed ".classi". Fixed at the source, which changes the unit's text and
+    // therefore its cache key, so the unit would fall back to Swedish without this entry. Key is the
+    // post-fix text from unit-probe; it ends mid-sentence because the unit splits at the next \texttt.
+    """Kompilera ditt program med \texttt{scala compile .} och leta efter filer som slutar på \texttt{.class} i underkataloger till"""
+      -> """Compile your program with \texttt{scala compile .} and look for files ending in \texttt{.class} in subdirectories of""",
   )
