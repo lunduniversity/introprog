@@ -1015,4 +1015,17 @@ object Overrides:
     // is masked out; key taken from the `clean:` line of scratch/unit-probe.scala, not from the .tex.
     "Variabeln får namnet 'bokstavlig val', bakåt-apostrofer  gör att man kan namnge variabler till annars otillåtna namn, t.ex. med mellanrum eller nyckelord i sig."
       -> "The variable gets the name 'literal val'; backticks make it possible to give variables otherwise disallowed names, e.g. with spaces or keywords in them.",
+
+    // ── Appendix J: comments in the mirrored .java examples ───────────────────────────────────
+    // These four already HAVE correct code-cache rows -- and the rows are dead. `Code.piece` only
+    // offers a string when `swedishish` holds, and every comment in JComplex.java that translates has
+    // åäö in it while these have none and no stopword the list knows. So the translator was never
+    // asked, the rows can never fire, and the English sitting in the cache is unreachable.
+    // The values below are exactly what those rows say, lifted to a layer that can actually apply.
+    // No gate needed here: Main.scala already passes `alsoTranslate = Translate.overrides.contains`
+    // for mirrored .scala/.java, which is the same hole #1033 closes for .tex code environments.
+    "man kan ej deklarera klassparametrar i Java" -> "one cannot declare class parameters in Java",
+    "initialiseras i konstruktorn nedan" -> "initialized in the constructor below",
+    "motsvarar: list.add(Integer.valueOf(nbr));" -> "corresponds to: list.add(Integer.valueOf(nbr));",
+    "motsvarar: int nbr = list.get(i).intValue();" -> "corresponds to: int nbr = list.get(i).intValue();",
   )
