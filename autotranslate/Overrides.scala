@@ -839,6 +839,11 @@ object Overrides:
     // translator was never asked. Without the gate these two entries would simply be dead keys.
     // chapters 4-5, same story: no cache row exists for any of these four, because none has åäö or a
     // stopword, so swedishish never offered them. Only this PR's gate makes them reachable.
+    // three more, from Appendix J and chapter 3. Same test as the rest: no åäö, no stopword, no cache
+    // row, so swedishish never offered them and only this PR's gate reaches them.
+    "Program i filen bmi.scala" -> "Program in the file bmi.scala",
+    "ser du buggen?" -> "do you see the bug?",
+    "indexera med [i]" -> "index with [i]",
     "1-baserad access" -> "1-based access",
     "0-baserad indexering, implicit apply" -> "0-based indexing, implicit apply",
     "klassbeskrivning" -> "class description",
