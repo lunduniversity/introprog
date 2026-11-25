@@ -153,6 +153,21 @@ object CodeGlossary:
     "Bankkonto" -> "BankAccount",
     "mittBankkonto" -> "myBankAccount",
     "kontonr" -> "accountNo",
+    // ── chapters 4-5, from Hans's reading list, where he supplied the English ──────────────────
+    // Coined example names, each confined to lect-w04-objects (or w05-specifications for the last
+    // two), so global is safe and there is no prose to collide with. `kontonr` above was already
+    // here, as were `mittBankkonto` and `saldo`.
+    "mittpaket" -> "mypackage",
+    "mittLataObjekt" -> "myLazyObject",
+    "storArray" -> "largeArray",
+    "kanÄndrasMedTilldelning" -> "canBeChangedByAssignment",
+    "fördröjdInit" -> "delayedInit",
+    "befintligtNamn" -> "existingName",
+    "nyttNamn" -> "newName",
+    "exkluderaMig" -> "excludeMe",
+    "ärTonåring" -> "isTeenager",
+    "ärGammal" -> "isOld",
+    "Singelpunkt" -> "SinglePoint",
     "ärSkuldsatt" -> "isInDebt",
     "bk1" -> "ba1",
     "bk2" -> "ba2",
@@ -485,7 +500,11 @@ object CodeGlossary:
     // global rename would rewrite the Swedish cell of that pair into `bakgrund2(green,gul)`. Its partner
     // `röd` has no Kojo use and is global. How the English edition should present Kojo's Swedish command
     // vocabulary is a question for BR, and scoping keeps this batch out of it.
-    "lect-w04-objects" -> Map("grön" -> "green"),
+    // `exempel` and `funkar` are SCOPED and merged into this existing entry, never global: `exempel`
+    // is the ordinary Swedish word and occurs 220 times corpus-wide, `funkar` 47. Here they are
+    // `object exempel:` and `val funkar = Y.a`. Merged rather than added as a second
+    // "lect-w04-objects" key, which a Map literal would silently discard.
+    "lect-w04-objects" -> Map("grön" -> "green", "exempel" -> "example", "funkar" -> "works"),
     // `typ` -> `kind`, scoped here after the w08 regression described in the id map above. BR ratified
     // "`kind` is fine where it means a type; leave it where it is filler" (#993) -- this file is the
     // where-it-means-a-type case, `class Bil(val typ: String)` -> `class Car(val kind: String)`, three
@@ -506,7 +525,9 @@ object CodeGlossary:
     // NOT lect-w04-objects (its `fyll-färg` is prose) and NOT lect-w05-classes, whose only match was
     // `def fyllÅr` -- a different token, and commented out. Both were false hits from a `def fyll`
     // grep that matched a prefix.
-    "w04-objects-exercise" -> Map("fyll" -> "fill"),
+    // `ord` (97 corpus-wide) and `meningar` (13) are ordinary words; here they are the counters in
+    // `println(s"# ord : ${count.words(s)}")`. Merged into the existing entry for the same reason.
+    "w04-objects-exercise" -> Map("fyll" -> "fill", "ord" -> "words", "meningar" -> "sentences", "funkar" -> "works"),
     "lect-w07-seq" -> Map("fyll" -> "fill"),
     "lect-wjava-body" -> Map("fyll" -> "fill"),
     // ANIMAL cluster — scoped here (NOT global) so `Djur` doesn't bleed into files whose subclasses aren't
