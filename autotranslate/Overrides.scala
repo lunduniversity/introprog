@@ -1015,4 +1015,25 @@ object Overrides:
     // is masked out; key taken from the `clean:` line of scratch/unit-probe.scala, not from the .tex.
     "Variabeln får namnet 'bokstavlig val', bakåt-apostrofer  gör att man kan namnge variabler till annars otillåtna namn, t.ex. med mellanrum eller nyckelord i sig."
       -> "The variable gets the name 'literal val'; backticks make it possible to give variables otherwise disallowed names, e.g. with spaces or keywords in them.",
+
+    // ── the progress log on page ii, the first table a student meets ───────────────────────────
+    // Two labels in compendium/prechapters/progress-forms.tex, each broken a different way, and both
+    // invisible to the gates because they are one word with no åäö.
+    //
+    // `Grund` had a cache row that rendered it "Bas" -- the model answered a Swedish word with another
+    // SWEDISH word, so the English table printed a column header no English reader can use. "Basic"
+    // matches enforceTerms, which already rewrites `grundtyp` to "basic" and never "primitive".
+    //
+    // `Namn:` had an IDENTITY row, sv == en (translate-cache.tsv:8248): a cache HIT that renders
+    // Swedish deterministically and shows up as neither a fallback nor an orphan -- the #983 class.
+    "Grund" -> "Basic",
+    "Namn:" -> "Name:",
+    // The bank-statement forms in w12-assignment-bank carry the same label, but NOT the same unit:
+    // each one opens inside \textbf, so the key is `Namn: \textbf{<name>` with an unbalanced brace
+    // and the name inside it. The bare `Namn:` entry above does not reach them -- checked, rather
+    // than assumed, after it turned out two of the five were already English for an unrelated reason.
+    // Keys from unit-probe; the personal names are left alone.
+    """Namn: \textbf{Adam Asson""" -> """Name: \textbf{Adam Asson""",
+    """Namn: \textbf{adam"""       -> """Name: \textbf{adam""",
+    """Namn: \textbf{erit"""       -> """Name: \textbf{erit""",
   )
