@@ -833,6 +833,12 @@ object Overrides:
     "tryck TAB" -> "press TAB",
     "tryck TAB efter punkten" -> "press TAB after the dot",
     "Tryck TAB efter punkten" -> "Press TAB after the dot",
+    // w12-extra-exercise: the two thread helpers. Found by reading the 2026-11-24 build, and a clean
+    // demonstration of why this gate exists -- neither comment has åäö or a stopword, so `swedishish`
+    // never offered them and NO cache row for them exists at all. They are not stale translations; the
+    // translator was never asked. Without the gate these two entries would simply be dead keys.
+    "varje millisekund" -> "every millisecond",
+    "varje 600 ms" -> "every 600 ms",
     // w01 dod-os slide (needs no gate -- it has åäö). The model rendered `skal` as "shall", so the
     // English edition explained a command interpreter with a modal verb. The trailing clause is
     // DROPPED rather than translated: ", skal på svenska" exists to tell a SWEDISH reader which
