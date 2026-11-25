@@ -1015,4 +1015,26 @@ object Overrides:
     // is masked out; key taken from the `clean:` line of scratch/unit-probe.scala, not from the .tex.
     "Variabeln får namnet 'bokstavlig val', bakåt-apostrofer  gör att man kan namnge variabler till annars otillåtna namn, t.ex. med mellanrum eller nyckelord i sig."
       -> "The variable gets the name 'literal val'; backticks make it possible to give variables otherwise disallowed names, e.g. with spaces or keywords in them.",
+
+    // ── chapters 4-5 prose, from reading the built pdf ─────────────────────────────────────────
+    // Two of these lose the SEPARATOR after an emphasis span, which the reader meets as a run-on
+    // word: lect-w05-classes printed "\Emph{methods}are also called operations" and the equality
+    // slide "same instance\Emph {in memory}". The second also MOVED the emphasis -- the Swedish
+    // stresses `samma instans`, the English stressed `in memory` -- so the slide highlighted the
+    // wrong half of its own definition.
+    // ⚠ Three of the four keys are brace-unbalanced BY DESIGN: the unit opens inside \Emph{...}, so
+    // it carries the closing brace and the value must supply it too.
+    """metoder}, kallas även operationer:"""
+      -> """methods} are also called operations:""",
+    """Referenslikhet} : två referenser anses lika om de refererar till \Emph{samma instans} i minnet."""
+      -> """Reference equality}: two references are considered equal if they refer to the \Emph{same instance} in memory.""",
+    // The sibling bullet came through almost entirely Swedish, with only \Emph{samma innehåll}
+    // translated. "equality", not "similarity": the Swedish source glosses it itself as
+    // \Eng{structural equality}, so the English term is already settled in the source.
+    """Innehållslikhet}, ä.k. strukturlikhet : två referenser anses lika om de refererar till objekt med \Emph{samma innehåll}."""
+      -> """Content equality}, also known as structural equality: two references are considered equal if they refer to objects with the \Emph{same content}.""",
+    // `förena` became "mergea" -- a word that does not exist, from a model that fused the verb with
+    // the article that followed it.
+    """Scala visar hur man kan \Alert{förena"""
+      -> """Scala shows how to \Alert{merge""",
   )
