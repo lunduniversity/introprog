@@ -837,6 +837,12 @@ object Overrides:
     // demonstration of why this gate exists -- neither comment has åäö or a stopword, so `swedishish`
     // never offered them and NO cache row for them exists at all. They are not stale translations; the
     // translator was never asked. Without the gate these two entries would simply be dead keys.
+    // chapters 4-5, same story: no cache row exists for any of these four, because none has åäö or a
+    // stopword, so swedishish never offered them. Only this PR's gate makes them reachable.
+    "1-baserad access" -> "1-based access",
+    "0-baserad indexering, implicit apply" -> "0-based indexing, implicit apply",
+    "klassbeskrivning" -> "class description",
+    "referenslikhetstest: olika instanser" -> "reference equality test: different instances",
     "varje millisekund" -> "every millisecond",
     "varje 600 ms" -> "every 600 ms",
     // w01 dod-os slide (needs no gate -- it has åäö). The model rendered `skal` as "shall", so the
