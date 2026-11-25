@@ -124,6 +124,15 @@ object CodeGlossary:
     "ärRätt" -> "isRight",
     "tvåGånger" -> "twice",
     "fakultet" -> "factorial",
+    // ── chapters 1-3, from Hans's reading list, where he supplied the English ──────────────────
+    // All five are COINED example names, not ordinary Swedish words, and each is confined to one
+    // exercise file -- `valdFärg` 2 occurrences in w01-intro-lab, the rest 2-6 in
+    // w03-functions-exercise -- so global is safe and there is no prose to collide with.
+    "valdFärg" -> "selectedColor",
+    "ngtnamn" -> "someName",
+    "bortkastad" -> "discarded",
+    "bortkastad2" -> "discarded2",
+    "görDettaTvåGånger" -> "doThisTwice",
     // `upprepa` -> `repeat` is ratified in #993 but deliberately HELD OUT of this batch: it is a Kojo
     // command, not an example name of ours. lect-w03-functions builds its own version on the slide
     // titled "Hur fungerar egentligen `upprepa` i Kojo?", and w01-intro-lab uses it in Kojo code next to
@@ -348,6 +357,10 @@ object CodeGlossary:
   // ratified string DATA that must be English but isn't reachable via Code.translate/Overrides (inline .tex
   // code never runs Code.translate). Keyed on the literal's inner text (no quotes).
   val codeStr: Map[String, String] = Map(
+    // The block passed to `doThisTwice` prints it, w03-functions-exercise:650. No cache row exists:
+    // `goddag` has neither åäö nor a stopword, so `swedishish` never offered it. codeStr has no such
+    // gate, which is why the literal is reachable here when a cache row could never have been made.
+    "goddag" -> "good day",
     // ANIMAL cluster onomatopoeia (w10-inheritance-exercise Task 3) — BR-ratified 2026-07-20: English sounds.
     "Muuuuuuu" -> "Mooooo", "Nöffnöff" -> "Oink", "Gnääääägg" -> "Neigh",
     // PERSON: the researcher's title value (Task 5 REPL: new Researcher(..., "Doktorand")) — BR-ratified 2026-07-21.
