@@ -513,7 +513,11 @@ object CodeGlossary:
     // the REPL echoes a bare `slut` token on its own line. A global entry renames the echo and not the
     // string it came from, which is the desync class of #990. The one place `slut` is a parameter name
     // is `\code{Range(start, slut)}` in this file.
-    "lect-w02-codestruct" -> Map("slut" -> "end"),
+    // `god` joins this entry -- the vegetable-opinions demo prints `s"god $g"` and the REPL echoes
+    // `Vector(god cucumber, god tomato, ...)`. Scoped: `god` occurs 18 times corpus-wide and every
+    // one of them is Swedish PROSE ("god nytta", "i god tid"). The id map stays out of prose, but
+    // scoping documents that and keeps a future code-region `god` from being caught by accident.
+    "lect-w02-codestruct" -> Map("slut" -> "end", "god" -> "good", "selleri" -> "celery"),
     // e.g. "w01-kojo" -> Map("Färg" -> "Colour", "Röd" -> "Red", "Svart" -> "Black")
     // w04's colour demo: `val grön = JColor(0, 255, 0)` with its REPL echo. Scoped rather than global
     // (#993 proposed it global) because `grön` is also a KOJO argument: kojo-commands.tex has a live
@@ -629,6 +633,10 @@ object CodeGlossary:
   // therefore half-translates every transcript that echoes the value — one vocabulary in, another out.
   // Scoping keeps a value English only in the file where the whole transcript has been dealt with.
   val perFileCodeStr: Map[String, Map[String, String]] = Map(
+    // The s-interpolated literal the opinions demo builds, paired with the `god` id entry above so the
+    // literal and the echo it produces cannot disagree -- the #990 desync class. Scoped for the same
+    // reason as its partner.
+    "lect-w02-codestruct" -> Map("god $g" -> "good $g", "selleri" -> "celery"),
     // The w11 demos are throwaway example data and the file's transcripts are clamped, so `hej` is safe
     // HERE and nowhere else. The unquoted REPL echoes in this same file (`= Pair(hej,42)`) are covered by
     // the `"hej" -> "hi"` entry in perFileId above, which renames identifier tokens in code regions.
