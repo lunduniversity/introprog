@@ -1029,7 +1029,16 @@ object Overrides:
     """Om en funktion \Emph{deklareras} \Alert{med} tom parameterlista \code{()} så \emph{ska} den \Emph{anropas} \Alert{med} tom parameterlista."""
       -> """If a function is \Emph{declared} \Alert{with} an empty parameter list \code{()} then it \emph{must} be \Emph{called} \Alert{with} an empty parameter list.""",
     """En äkta funktion har \Alert{inga sidoeffekter}, t.ex. utskrift, skriva/läsa filer,  eller uppdateringar av variabler \Alert{synliga utanför} funktionen."""
-      -> """A true function has \Alert{no side effects}, e.g. printing, writing/reading files,  or updates of variables \Alert{visible outside} the function.""",
+      -> """A pure function has \Alert{no side effects}, e.g. printing, writing/reading files,  or updates of variables \Alert{visible outside} the function.""",
+    // "pure", not "true": the slide two bullets above this one glosses the term itself as
+    // \Emph{äkta} \Eng{pure}, and the mirror says "pure function" in nine other places. The first
+    // version of this entry said "true function" and so contradicted its own slide.
+    // NB `äkta` carries a second sense in w03 that is NOT purity -- `äkta värden` below means
+    // functions are first-class VALUES -- so the two are deliberately rendered differently.
+    """Funktioner är \emph{äkta värden} i Scala%\footnote{I likhet med t.ex. Javascript, men till skillnad från t.ex. Java.}
+. Det betyder att variabler kan ha funktioner som värden och funktionsvärden kan vara argument till funktioner som har funktionsparametrar."""
+      -> """Functions are \emph{actual values} in Scala%\footnote{Like e.g. Javascript, but unlike e.g. Java.}
+. This means that variables can have functions as values and function values can be arguments to functions that have function parameters.""",
 
     // ── chapter 2, the same emphasis-only failure in two more places ───────────────────────────
     // lect-w02-codestruct:125 printed "stores data in variables, so-called \Emph{attributet}" -- the
