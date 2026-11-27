@@ -366,6 +366,12 @@ object CodeGlossary:
     // `goddag` has neither åäö nor a stopword, so `swedishish` never offered it. codeStr has no such
     // gate, which is why the literal is reachable here when a cache row could never have been made.
     "goddag" -> "good day",
+    // `selleri` is GLOBAL rather than scoped, and the scoping was my mistake: the first version only
+    // looked at *.tex and so missed compendium/examples/Switch.java and Match.scala, where
+    // `String favorite = "selleri"` is the input the whole demo prints about. codeStr matches WHOLE
+    // literals, so this cannot reach lect-w10-extends, whose `s"Det går precis lika bra med selleri!"`
+    // is a longer literal an Overrides entry already renders "Celery works just as well!".
+    "selleri" -> "celery",
     // the string `def nuff` returns, `"nöff " * x`. Trailing space is part of the literal, and the
     // entry has to be here rather than left to the cache: translate-code-cache.tsv:1109 renders it
     // `nope`, so without this the method would be called `nuff` and print something else.
@@ -643,7 +649,7 @@ object CodeGlossary:
     // The s-interpolated literal the opinions demo builds, paired with the `god` id entry above so the
     // literal and the echo it produces cannot disagree -- the #990 desync class. Scoped for the same
     // reason as its partner.
-    "lect-w02-codestruct" -> Map("god $g" -> "good $g", "selleri" -> "celery"),
+    "lect-w02-codestruct" -> Map("god $g" -> "good $g"),
     // The w11 demos are throwaway example data and the file's transcripts are clamped, so `hej` is safe
     // HERE and nowhere else. The unquoted REPL echoes in this same file (`= Pair(hej,42)`) are covered by
     // the `"hej" -> "hi"` entry in perFileId above, which renames identifier tokens in code regions.
