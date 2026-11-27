@@ -1015,4 +1015,7 @@ object Overrides:
     // is masked out; key taken from the `clean:` line of scratch/unit-probe.scala, not from the .tex.
     "Variabeln får namnet 'bokstavlig val', bakåt-apostrofer  gör att man kan namnge variabler till annars otillåtna namn, t.ex. med mellanrum eller nyckelord i sig."
       -> "The variable gets the name 'literal val'; backticks make it possible to give variables otherwise disallowed names, e.g. with spaces or keywords in them.",
+
+    // ── lect-wjava-body: two comments inside \begin{Code} ─────────────────────────────────────
+    """* Tar reda på elementet på plats index""" -> """* Finds the element at position index""",
   )
