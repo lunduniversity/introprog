@@ -348,6 +348,12 @@ object CodeGlossary:
   // ratified string DATA that must be English but isn't reachable via Code.translate/Overrides (inline .tex
   // code never runs Code.translate). Keyed on the literal's inner text (no quotes).
   val codeStr: Map[String, String] = Map(
+    // TryCatch.java and the Scala listing in w06-patterns-exercise print these two, so they are the
+    // same parallel-example shape as the Match/Switch default branch in this PR. No cache row exists
+    // for either: neither has åäö nor a stopword, so swedishish never offered them. codeStr has no
+    // such gate, which is why a string literal is reachable where a comment in the same file is not.
+    "Skyddad division!" -> "Protected division!",
+    "Oskyddad division!" -> "Unprotected division!",
     // ANIMAL cluster onomatopoeia (w10-inheritance-exercise Task 3) — BR-ratified 2026-07-20: English sounds.
     "Muuuuuuu" -> "Mooooo", "Nöffnöff" -> "Oink", "Gnääääägg" -> "Neigh",
     // PERSON: the researcher's title value (Task 5 REPL: new Researcher(..., "Doktorand")) — BR-ratified 2026-07-21.
