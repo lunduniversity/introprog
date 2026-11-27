@@ -124,6 +124,20 @@ object CodeGlossary:
     "ärRätt" -> "isRight",
     "tvåGånger" -> "twice",
     "fakultet" -> "factorial",
+    // ── chapters 1-3, from Hans's reading list, where he supplied the English ──────────────────
+    // All five are COINED example names, not ordinary Swedish words, and each is confined to one
+    // exercise file -- `valdFärg` 2 occurrences in w01-intro-lab, the rest 2-6 in
+    // w03-functions-exercise -- so global is safe and there is no prose to collide with.
+    // `nöff` is the pig's snort, and w10 already ratifies that sound as `Oink`. No collision: that
+    // entry is the SOUND as data (`"Nöffnöff"`), this one is a METHOD NAME, and the two live in
+    // different demos. Hans's call. The method's own string is paired below so the name and what it
+    // prints cannot drift -- its cache row currently says `nope`, a third spelling.
+    "nöff" -> "nuff",
+    "valdFärg" -> "selectedColor",
+    "ngtnamn" -> "someName",
+    "bortkastad" -> "discarded",
+    "bortkastad2" -> "discarded2",
+    "görDettaTvåGånger" -> "doThisTwice",
     // `upprepa` -> `repeat` is ratified in #993 but deliberately HELD OUT of this batch: it is a Kojo
     // command, not an example name of ours. lect-w03-functions builds its own version on the slide
     // titled "Hur fungerar egentligen `upprepa` i Kojo?", and w01-intro-lab uses it in Kojo code next to
@@ -348,6 +362,20 @@ object CodeGlossary:
   // ratified string DATA that must be English but isn't reachable via Code.translate/Overrides (inline .tex
   // code never runs Code.translate). Keyed on the literal's inner text (no quotes).
   val codeStr: Map[String, String] = Map(
+    // The block passed to `doThisTwice` prints it, w03-functions-exercise:650. No cache row exists:
+    // `goddag` has neither åäö nor a stopword, so `swedishish` never offered it. codeStr has no such
+    // gate, which is why the literal is reachable here when a cache row could never have been made.
+    "goddag" -> "good day",
+    // `selleri` is GLOBAL rather than scoped, and the scoping was my mistake: the first version only
+    // looked at *.tex and so missed compendium/examples/Switch.java and Match.scala, where
+    // `String favorite = "selleri"` is the input the whole demo prints about. codeStr matches WHOLE
+    // literals, so this cannot reach lect-w10-extends, whose `s"Det går precis lika bra med selleri!"`
+    // is a longer literal an Overrides entry already renders "Celery works just as well!".
+    "selleri" -> "celery",
+    // the string `def nuff` returns, `"nöff " * x`. Trailing space is part of the literal, and the
+    // entry has to be here rather than left to the cache: translate-code-cache.tsv:1109 renders it
+    // `nope`, so without this the method would be called `nuff` and print something else.
+    "nöff " -> "nuff ",
     // ANIMAL cluster onomatopoeia (w10-inheritance-exercise Task 3) — BR-ratified 2026-07-20: English sounds.
     "Muuuuuuu" -> "Mooooo", "Nöffnöff" -> "Oink", "Gnääääägg" -> "Neigh",
     // PERSON: the researcher's title value (Task 5 REPL: new Researcher(..., "Doktorand")) — BR-ratified 2026-07-21.
@@ -478,6 +506,24 @@ object CodeGlossary:
   // must be `Colour` (not the global `Färg->Suit` for cards). Slide files with hand `\ifswedish` clamps
   // need nothing here (their clamps are masked verbatim, so the mirror pass leaves them alone).
   val perFileId: Map[String, Map[String, String]] = Map(
+    // `slut` -> `end`. The soft-keyword objection does not hold here, and Scala settles it: `Range`
+    // itself declares `def end: Int`, so a parameter named `end` is demonstrably legal -- only the
+    // `end marker` form, a line beginning `end foo`, is special, and this one sits inside parens.
+    // `stop` was considered and rejected: ten lines below the bullet the same slide runs
+    // `hugeRange.end`, which returns exactly that second argument, so any other name would have the
+    // slide teach one word and the REPL answer with another. I8 will REPORT this as a soft-keyword
+    // hit, which is what that check does for scoped entries; it is not wrong here.
+    // ⚠ SCOPED. `slut` is the ordinary Swedish word for "end" and occurs 38 times across 26 files,
+    // nearly all of it prose. The id map stays out of prose, so that alone is not the hazard -- the
+    // hazard is lect-wjava-body, where a Scanner demo holds the literal `"hej 42 42.0   42 slut"` and
+    // the REPL echoes a bare `slut` token on its own line. A global entry renames the echo and not the
+    // string it came from, which is the desync class of #990. The one place `slut` is a parameter name
+    // is `\code{Range(start, slut)}` in this file.
+    // `god` joins this entry -- the vegetable-opinions demo prints `s"god $g"` and the REPL echoes
+    // `Vector(god cucumber, god tomato, ...)`. Scoped: `god` occurs 18 times corpus-wide and every
+    // one of them is Swedish PROSE ("god nytta", "i god tid"). The id map stays out of prose, but
+    // scoping documents that and keeps a future code-region `god` from being caught by accident.
+    "lect-w02-codestruct" -> Map("slut" -> "end", "god" -> "good", "selleri" -> "celery"),
     // e.g. "w01-kojo" -> Map("Färg" -> "Colour", "Röd" -> "Red", "Svart" -> "Black")
     // w04's colour demo: `val grön = JColor(0, 255, 0)` with its REPL echo. Scoped rather than global
     // (#993 proposed it global) because `grön` is also a KOJO argument: kojo-commands.tex has a live
@@ -508,7 +554,18 @@ object CodeGlossary:
     // grep that matched a prefix.
     "w04-objects-exercise" -> Map("fyll" -> "fill"),
     "lect-w07-seq" -> Map("fyll" -> "fill"),
-    "lect-wjava-body" -> Map("fyll" -> "fill"),
+    // `slut` joins this entry rather than opening a second "lect-wjava-body" one: a Map literal keeps
+    // the LAST duplicate, so a second entry would have silently thrown `fyll` away. Its own defect is
+    // the mirror image of w02's -- the Scanner literal already renders "hello 42 42.0   42 end" while
+    // the bare echo of that last token, eleven lines down, still prints `slut`.
+    // The SwitchForgotBreak output transcript (J.1.14) printed "Skriv vegetable: / gurka / gott! /
+    // mycket gott!" -- the id map had already renamed `grönsak`, so three bare tokens were all that
+    // was left. "good", not "tasty": the program's own source renders `är gott!` as "is good!",
+    // and the transcript has to match the listing directly above it.
+    // Scoped, and this is not a formality: Skriv/gott/mycket occur 160/51/131 times corpus-wide
+    // across 46/12/55 files. Inside THIS file's code envs they occur on exactly those three lines.
+    "lect-wjava-body" -> Map("fyll" -> "fill", "slut" -> "end",
+                             "Skriv" -> "Enter", "gott" -> "good", "mycket" -> "very"),
     // ANIMAL cluster — scoped here (NOT global) so `Djur` doesn't bleed into files whose subclasses aren't
     // glossary'd and would render mixed code (lect-w11-context has its own entry below; lect-w06-equals still
     // has unclamped case class Hund/Katt and is deliberately left uniformly Swedish).
@@ -589,6 +646,10 @@ object CodeGlossary:
   // therefore half-translates every transcript that echoes the value — one vocabulary in, another out.
   // Scoping keeps a value English only in the file where the whole transcript has been dealt with.
   val perFileCodeStr: Map[String, Map[String, String]] = Map(
+    // The s-interpolated literal the opinions demo builds, paired with the `god` id entry above so the
+    // literal and the echo it produces cannot disagree -- the #990 desync class. Scoped for the same
+    // reason as its partner.
+    "lect-w02-codestruct" -> Map("god $g" -> "good $g"),
     // The w11 demos are throwaway example data and the file's transcripts are clamped, so `hej` is safe
     // HERE and nowhere else. The unquoted REPL echoes in this same file (`= Pair(hej,42)`) are covered by
     // the `"hej" -> "hi"` entry in perFileId above, which renames identifier tokens in code regions.
