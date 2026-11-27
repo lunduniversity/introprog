@@ -1015,4 +1015,25 @@ object Overrides:
     // is masked out; key taken from the `clean:` line of scratch/unit-probe.scala, not from the .tex.
     "Variabeln får namnet 'bokstavlig val', bakåt-apostrofer  gör att man kan namnge variabler till annars otillåtna namn, t.ex. med mellanrum eller nyckelord i sig."
       -> "The variable gets the name 'literal val'; backticks make it possible to give variables otherwise disallowed names, e.g. with spaces or keywords in them.",
+
+    // ── front matter and chapters 1-2: sentences a reader meets early and that stayed Swedish ──
+    // Four of these are the emphasis-only failure again (#1044/#1046): the \Alert{} and \Emph{} spans
+    // translated, the sentence around them did not, so the reader sees "Träffas regelbundet i working
+    // group" and "Namnet före pilen ... refers till ett new värde". English supplied by Hans.
+    // ⚠ Several keys are brace-unbalanced BY DESIGN -- the unit opens inside \Alert{ or \Emph{ -- so
+    // the key carries the closing brace and the value must supply it too.
+    """Träffas} regelbundet i \Emph{samarbetsgruppen} och hjälp varandra att förstå mer och fördjupa lärandet, förslagsvis på återkommande tider varje vecka då alla i gruppen kan."""
+      -> """Meet} regularly in the \Emph{working group} and help each other understand more and deepen your learning, ideally at recurring times each week when everyone in the group can.""",
+    """Diskutera gärna olika lösningsvarianter med dina kursare och handledare -- att prova många olika sätt att lösa en uppgift fördjupar ditt lärande avsevärt!"""
+      -> """Feel free to discuss different solution approaches with your fellow students and supervisors -- trying out many different ways to solve a task deepens your learning considerably!""",
+    """När jag fixat problemet gjorde jag \texttt{git add} på filen och sedan"""
+      -> """Once I had fixed the problem I ran \texttt{git add} on the file and then""",
+    // the slide title and its body are one unit here; `Kommandotolken` is the command interpreter,
+    // the same term #1033 settled for `kommandotolk`.
+    """Vanliga program}{~Kommandotolken söker efter programfiler i \texttt{PATH}."""
+      -> """Common programs}{~The command interpreter searches for program files in \texttt{PATH}.""",
+    """Namnet} före pilen (här \code{g}) \Alert{refererar} till ett \Emph{nytt} värde för varje runda i loopen."""
+      -> """The name} before the arrow (here \code{g}) \Alert{refers} to a \Emph{new} value for each round of the loop.""",
+    """Läs igenom kompendiet  \emph{Introduktion till LTH:s Linuxdatorer}\footnote{Ladda ner kompendiet här:"""
+      -> """Read through the handbook  \emph{Introduction to LTH's Linux Computers}\footnote{Download the handbook here:""",
   )
