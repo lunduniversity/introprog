@@ -1015,4 +1015,23 @@ object Overrides:
     // is masked out; key taken from the `clean:` line of scratch/unit-probe.scala, not from the .tex.
     "Variabeln får namnet 'bokstavlig val', bakåt-apostrofer  gör att man kan namnge variabler till annars otillåtna namn, t.ex. med mellanrum eller nyckelord i sig."
       -> "The variable gets the name 'literal val'; backticks make it possible to give variables otherwise disallowed names, e.g. with spaces or keywords in them.",
+
+    // ── lect-wjava-body: one unit spanning both branches of an \ifkompendium ───────────────────
+    // The exercise statement in Appendix J is written twice, once per MEDIUM -- `\ifkompendium` for
+    // the compendium and `\else` for the slides -- and the splitter does not treat that as a
+    // boundary, so BOTH branches are one translation unit. Hence the `\else` sitting inside this key.
+    // The source is NOT touched: this is a medium conditional, not a language clamp, so both branches
+    // are Swedish by design and clamping would be the #1035 mistake again.
+    //
+    // Each branch failed differently, which is why the whole thing had to be read before fixing:
+    //   compendium  only \Alert{förändringsbara} translated, rest left Swedish
+    //   slides      rest translated, but the emphasis came out "mutablea" -- a non-word, the model
+    //               carrying the Swedish plural -a across, same shape as "mergea" in #1046
+    // ⚠ The key ENDS inside \Alert{ with no closing brace, because the `\\` after it splits the unit.
+    """Gör \code{Person} + \code{JPerson} \Alert{förändringsbara} så att namnet och åldern går att uppdatera och följande krav uppfylls:
+\else
+Gör \code{Person} + \code{JPerson} \Alert{förändringsbara"""
+      -> """Make \code{Person} + \code{JPerson} \Alert{mutable} so that the name and the age can be updated and the following requirements are met:
+\else
+Make \code{Person} + \code{JPerson} \Alert{mutable""",
   )
