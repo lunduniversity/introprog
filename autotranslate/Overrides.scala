@@ -1015,4 +1015,33 @@ object Overrides:
     // is masked out; key taken from the `clean:` line of scratch/unit-probe.scala, not from the .tex.
     "Variabeln får namnet 'bokstavlig val', bakåt-apostrofer  gör att man kan namnge variabler till annars otillåtna namn, t.ex. med mellanrum eller nyckelord i sig."
       -> "The variable gets the name 'literal val'; backticks make it possible to give variables otherwise disallowed names, e.g. with spaces or keywords in them.",
+
+    // ── lect-wjava-body: the autoboxing slides (J.1.50, J.1.55) ────────────────────────────────
+    // Two units, each swallowing the \end{itemize} and spacing lines between the sentences it spans,
+    // so the values have to reproduce that structure verbatim.
+    //
+    // The second one is the mirror image of the bullet directly above it, which DID translate:
+    //   1608  "If an int value appears where an Integer object is needed, the compiler
+    //          \Alert{automatically} emits code that creates an Integer object wrapping the value."
+    //   1609  "Om ett Integer-objekt forekommer dar det behovs ett int-varde, lagger kompilatorn
+    //          \Alert{automatic} ut kod ..."
+    // So one direction of autoboxing was explained in English and the other in Swedish, on adjacent
+    // lines, with the emphasis rendered "automatic" rather than "automatically". The English below
+    // follows 1608 word for word so the pair reads as the pair it is.
+    """Speciella regler för implicita konverteringar, s.k. ''auto-boxing'' 
+\end{itemize}
+\end{itemize}
+\SlideFontTiny\vspace{1em}
+Ofta fungerar det fint, men det finns fallgropar."""
+      -> """Special rules for implicit conversions, so-called ''auto-boxing'' 
+\end{itemize}
+\end{itemize}
+\SlideFontTiny\vspace{1em}
+It often works fine, but there are pitfalls.""",
+    """Om ett \code{Integer}-objekt förekommer där det behövs ett \code{int}-värde, lägger kompilatorn \Alert{automatiskt} ut kod som anropar metoden \code{intValue()}.
+\end{itemize}
+Samma gäller mellan alla primitiva typer och dess wrapper-klasser:"""
+      -> """If an \code{Integer} object appears where an \code{int} value is needed, the compiler \Alert{automatically} emits code that calls the method \code{intValue()}.
+\end{itemize}
+The same applies between all primitive types and their wrapper classes:""",
   )
