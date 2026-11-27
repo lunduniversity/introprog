@@ -552,7 +552,14 @@ object CodeGlossary:
     // the LAST duplicate, so a second entry would have silently thrown `fyll` away. Its own defect is
     // the mirror image of w02's -- the Scanner literal already renders "hello 42 42.0   42 end" while
     // the bare echo of that last token, eleven lines down, still prints `slut`.
-    "lect-wjava-body" -> Map("fyll" -> "fill", "slut" -> "end"),
+    // The SwitchForgotBreak output transcript (J.1.14) printed "Skriv vegetable: / gurka / gott! /
+    // mycket gott!" -- the id map had already renamed `grönsak`, so three bare tokens were all that
+    // was left. "good", not "tasty": the program's own source renders `är gott!` as "is good!",
+    // and the transcript has to match the listing directly above it.
+    // Scoped, and this is not a formality: Skriv/gott/mycket occur 160/51/131 times corpus-wide
+    // across 46/12/55 files. Inside THIS file's code envs they occur on exactly those three lines.
+    "lect-wjava-body" -> Map("fyll" -> "fill", "slut" -> "end",
+                             "Skriv" -> "Enter", "gott" -> "good", "mycket" -> "very"),
     // ANIMAL cluster — scoped here (NOT global) so `Djur` doesn't bleed into files whose subclasses aren't
     // glossary'd and would render mixed code (lect-w11-context has its own entry below; lect-w06-equals still
     // has unclamped case class Hund/Katt and is deliberately left uniformly Swedish).
