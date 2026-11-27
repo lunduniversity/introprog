@@ -1015,4 +1015,15 @@ object Overrides:
     // is masked out; key taken from the `clean:` line of scratch/unit-probe.scala, not from the .tex.
     "Variabeln får namnet 'bokstavlig val', bakåt-apostrofer  gör att man kan namnge variabler till annars otillåtna namn, t.ex. med mellanrum eller nyckelord i sig."
       -> "The variable gets the name 'literal val'; backticks make it possible to give variables otherwise disallowed names, e.g. with spaces or keywords in them.",
+
+    // ── Match.scala / Switch.java must print the same thing ───────────────────────────────────
+    // The Java appendix sets these two side by side, a Scala `match` against a Java `switch`, as a
+    // direct comparison. Their default branches hold the same Swedish, `är mindre gott...`, and the
+    // cache translated it twice, differently:
+    //   translate-code-cache.tsv:7     $favorite är mindre gott...  -> "$favorite is not so great..."
+    //   translate-code-cache.tsv:1362  är mindre gott...            -> "is not as good..."
+    // So the comparison showed two programs printing different text for identical code. Unified on
+    // the Switch.java wording, which also matches the three positive branches already rendering
+    // "is good!" -- changing those instead would have meant rewriting correct English in four rows.
+    """$favorite är mindre gott...""" -> """$favorite is not as good...""",
   )
